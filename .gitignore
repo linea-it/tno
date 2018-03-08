@@ -1,0 +1,20 @@
+
+# Node Packages
+node_modules
+
+# Build Directory
+/build
+
+.tmp
+.publish
+.deploy
+Thumbs.db
+.node_history
+
+*.seed
+*.log
+*.out
+*.pid
+npm-debug.log
+*.iml
+
