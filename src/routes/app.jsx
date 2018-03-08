@@ -5,10 +5,11 @@ import Typography from 'views/Typography/Typography';
 import Icons from 'views/Icons/Icons';
 import Maps from 'views/Maps/Maps';
 import Notifications from 'views/Notifications/Notifications';
-import Upgrade from 'views/Upgrade/Upgrade';
+import SkyBot from 'views/SkyBot/SkyBot';
 
 const appRoutes = [
-    { path: "/dashboard", name: "Dashboard", icon: "pe-7s-graph", component: Dashboard },
+    { path: "/dashboard", name: "Dashboard", icon: "fa fa-home", component: Dashboard },
+    { path: "/skybot", name: "SkyBoT", icon: "", component: SkyBot },
     { path: "/user", name: "User Profile", icon: "pe-7s-user", component: UserProfile },
     { path: "/table", name: "Table List", icon: "pe-7s-note2", component: TableList },
     { path: "/typography", name: "Typography", icon: "pe-7s-news-paper", component: Typography },
