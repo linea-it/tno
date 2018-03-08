@@ -75,17 +75,18 @@ class App extends Component {
             default:
                 break;
         }
-        _notificationSystem.addNotification({
-            title: (<span data-notify="icon" className="pe-7s-gift"></span>),
-            message: (
-                <div>
-                    Welcome to <b>Light Bootstrap Dashboard</b> - a beautiful freebie for every web developer.
-                </div>
-            ),
-            level: level,
-            position: "tr",
-            autoDismiss: 15,
-        });
+        // Comment exemple of notification
+        // _notificationSystem.addNotification({
+        //     title: (<span data-notify="icon" className="pe-7s-gift"></span>),
+        //     message: (
+        //         <div>
+        //             Welcome to <b>Light Bootstrap Dashboard</b> - a beautiful freebie for every web developer.
+        //         </div>
+        //     ),
+        //     level: level,
+        //     position: "tr",
+        //     autoDismiss: 15,
+        // });
     }
     componentDidUpdate(e){
         if(window.innerWidth < 993 && e.history.location.pathname !== e.location.pathname && document.documentElement.className.indexOf('nav-open') !== -1){
