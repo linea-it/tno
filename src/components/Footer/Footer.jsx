@@ -7,6 +7,8 @@ class Footer extends Component {
             <footer className="footer">
                 <Grid>
                     <nav className="pull-left">
+						{/*
+						Exemplo de Links no Rodape
                         <ul>
                             <li>
                                 <a href="#pablo">
@@ -29,9 +31,10 @@ class Footer extends Component {
                                 </a>
                             </li>
                         </ul>
+						*/}
                     </nav>
                     <p className="copyright pull-right">
-                        &copy; {(new Date()).getFullYear()} <a href="http://www.creative-tim.com">Creative Tim</a>, made with love for a better web
+                        Created by <a href="http://www.linea.gov.br/">LIneA</a>
                     </p>
                 </Grid>
             </footer>
