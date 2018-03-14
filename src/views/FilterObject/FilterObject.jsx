@@ -6,6 +6,8 @@ import Card from 'components/Card/Card.jsx'
 import {FormInputs} from 'components/FormInputs/FormInputs.jsx';
 import Button from 'elements/CustomButton/CustomButton.jsx';
 
+import FilterObjectForm from './FilterObjectForm';
+
 class FilterObject extends Component {
     render() {
         return (
@@ -14,16 +16,16 @@ class FilterObject extends Component {
                     <Row>
                         <Col md={4}>
                             <Card
-                                title="Filter Objects"
+                                title="Filters"
                                 category=""
                                 content={
-                                    <div/>
+                                    <FilterObjectForm />
                                 }
                             />
                         </Col>
                         <Col md={8}>
                             <Card
-                                title="Tasks"
+                                title=""
                                 category=""
                                 content={
                                     <div/>
