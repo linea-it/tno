@@ -8,6 +8,7 @@
     "google-maps-react": "^1.1.0",
     "node-sass-chokidar": "0.0.3",
     "npm-run-all": "^4.1.1",
+    "rc-slider": "^8.6.1",
     "react": "^15.6.1",
     "react-bootstrap": "^0.31.1",
     "react-chartist": "^0.13.0",

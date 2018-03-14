@@ -7,6 +7,8 @@ import {FormInputs} from 'components/FormInputs/FormInputs.jsx';
 import Button from 'elements/CustomButton/CustomButton.jsx';
 
 import FilterObjectForm from './FilterObjectForm';
+import FilterObjectSearch from './FilterObjectSearch';
+import FilterObjectTable from './FilterObjectTable';
 
 class FilterObject extends Component {
     render() {
@@ -15,20 +17,29 @@ class FilterObject extends Component {
                 <Grid fluid>
                     <Row>
                         <Col md={4}>
-                            <Card
-                                title="Filters"
-                                category=""
-                                content={
-                                    <FilterObjectForm />
-                                }
-                            />
-                        </Col>
+                            <Row>
+                                <Card
+                                    content={
+                                        <FilterObjectSearch />
+                                    }
+                                />
+                            </Row>                            
+                            <Row>
+                                <Card
+                                    title="Filters"
+                                    category=""
+                                    content={
+                                        <FilterObjectForm />
+                                    }
+                                />
+                            </Row>
+                        </Col >
                         <Col md={8}>
                             <Card
                                 title=""
                                 category=""
                                 content={
-                                    <div/>
+                                    <FilterObjectTable/>
                                 }
                             />
                         </Col>
