@@ -21,6 +21,14 @@ class FilterObjectSearch extends Component {
     handleSubmit(event) {
       alert('A name was submitted: ' + this.state.search);
       event.preventDefault();
+
+      fetch("http://localhost:7003")
+      // fetch("/filter_objects")
+        .then(response => response.json())
+        .then(json => {
+          console.log(json);
+          console.log('Carregou')
+        });
     }
 
     render() {

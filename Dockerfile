@@ -1,5 +1,5 @@
-
 FROM node:8.3
+#FROM node:8.3-slim
 
 COPY . /src/app
 WORKDIR /src/app
