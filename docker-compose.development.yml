@@ -1,0 +1,28 @@
+# Dashboard
+node:
+  build: ./dashboard
+  volumes:
+    - ./dashboard:/src/app
+    - /src/app/node_modules
+  working_dir: /src/app
+  ports:
+    - 7000:3000
+  command: npm start
+
+# Get Pointings
+get-pointings:
+    build: ./get_pointings
+    ports:
+      - 7001:7001
+
+# Filter Objects
+filter-objects:
+    build: ./filter_objects
+    environment:
+      - DATABASE_URI
+    ports:
+      - 7003:7003
+
+
+# Baseado neste exemplo
+# https://github.com/zackferrofields/docker-nginx-react/blob/develop/docker-compose.yml

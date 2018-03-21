@@ -4,6 +4,11 @@ node_modules
 # Build Directory
 /build
 
+# Other repositories
+/dashboard
+/filter_objects
+/get_pointings
+
 .tmp
 .publish
 .deploy

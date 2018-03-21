@@ -1,0 +1,2 @@
+# Filter Objects Database
+DATABASE_URI=postgresql+psycopg2://<user>:<password>@<host>:<port>/<dbname>
