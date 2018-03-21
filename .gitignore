@@ -1,4 +1,3 @@
-
 # Node Packages
 node_modules
 
@@ -17,4 +16,4 @@ Thumbs.db
 *.pid
 npm-debug.log
 *.iml
-
+.env
