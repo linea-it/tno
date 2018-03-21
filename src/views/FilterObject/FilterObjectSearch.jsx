@@ -7,37 +7,33 @@ import Button from 'elements/CustomButton/CustomButton.jsx';
 class FilterObjectSearch extends Component {
     constructor(props) {
       super(props);
-      this.state = {search: ''};
+
+      this.state = {search: "2002 TP36"};
 
       this.handleChange = this.handleChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleChange(event) {
-      console.log(this.state)
       this.setState({search: event.target.value});
     }
 
     handleSubmit(event) {
-      alert('A name was submitted: ' + this.state.search);
-      event.preventDefault();
-
-      fetch("http://localhost:7003")
-      // fetch("/filter_objects")
-        .then(response => response.json())
-        .then(json => {
-          console.log(json);
-          console.log('Carregou')
-        });
+        event.preventDefault();
+        // Apenas executa o metodo do component parent passando o termo que foi
+        // usado na busca.
+        if (this.state.search) {
+            this.props.onSearch(this.state.search)
+        }
     }
 
     render() {
         return (
-            <form inline>
+            <form>
                 <FormGroup>
                   <InputGroup>
                     <FormControl type="text" placeholder="Search By Name"
-                        value={this.state.value} onChange={this.handleChange}/>
+                        value={this.state.search} onChange={this.handleChange}/>
                     <InputGroup.Button>
                         <Button onClick={this.handleSubmit}>Search</Button>
                     </InputGroup.Button>

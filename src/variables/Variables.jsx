@@ -20,7 +20,7 @@ var style = {
             height: 'auto',
             display: 'inline-block',
             border: '0',
-            fontSize: '14px',
+            fontSize: '12px',
             WebkitFontSmoothing: "antialiased",
             fontFamily: '"Roboto","Helvetica Neue",Arial,sans-serif',
             fontWeight: '400',
