@@ -18,6 +18,8 @@ get-pointings:
 # Filter Objects
 filter-objects:
     build: ./filter_objects
+    volumes:
+    - ./filter_objects:/app    
     environment:
       - DATABASE_URI
     ports:
