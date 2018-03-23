@@ -1,5 +1,5 @@
 # Dashboard
-node:
+dashboard:
   build: ./dashboard
   volumes:
     - ./dashboard:/src/app
@@ -19,7 +19,7 @@ get-pointings:
 filter-objects:
     build: ./filter_objects
     volumes:
-    - ./filter_objects:/app    
+    - ./filter_objects:/app
     environment:
       - DATABASE_URI
     ports:

@@ -1,6 +1,6 @@
 # Dashboard
-node:
-  build: ./dashboard
+dashboard:
+  build: gverde/tno-dashboard
   volumes:
     - ./dashboard:/src/app
     - /src/app/node_modules
@@ -22,9 +22,9 @@ nginx:
   # volumes:
   #   - ./dashboard:/src/app
   volumes_from:
-    - node
+    - dashboard
   links:
-    - node
+    - dashboard
   ports:
     - "80:80"
 
