@@ -1,19 +1,8 @@
-# Dashboard
-dashboard:
-  build: ./dashboard
-  volumes:
-    - ./dashboard:/src/app
-    - /src/app/node_modules
-  working_dir: /src/app
-  ports:
-    - 7000:3000
-  command: npm start
-
 # Get Pointings
 get-pointings:
     build: ./get_pointings
     ports:
-      - 7001:7001
+      - 7005:7005
 
 # Filter Objects
 filter-objects:
@@ -23,7 +12,21 @@ filter-objects:
     environment:
       - DATABASE_URI
     ports:
-      - 7003:7003
+      - 7008:7008
+
+# Dashboard
+dashboard:
+  build: ./dashboard
+  volumes:
+    - ./dashboard:/src/app
+    # - ./dashboard/node_modules:/src/app/node_modules
+  working_dir: /src/app
+  depends_on:
+      - get-pointings
+      - filter-objects
+  ports:
+    - 7000:3000
+  command: ./entrypoint.sh
 
 
 # Baseado neste exemplo
