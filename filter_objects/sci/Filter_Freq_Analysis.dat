@@ -1,0 +1,38 @@
+Value					| Row name		 	 |Description 
+KBO_A_.txt			| InputName			 |Input Name			
+0				| FClass	 	 	 |Class (0 if All DES File, else readme)
+0					| FVmag	 	 	 |Visual Mag(0 if no filter)(dot decimal separation)
+0					| Fposerr 	 	 	 |Position error (0 if no filter)
+0					| FObjectName 	 	 |Object name ( 0 if all objects)
+0					| FNumNights		 |Minimun Observed nights
+0					| ShowMTFS			 |Show Only if Has more than one filter in the some night
+80					| FilterDelta		 |Filter my minimun Delta time in days
+0					| OnlyNames			 |Output files with only names (0 for yes, 1 for all columns)
+names_download.txt			| OutputName 		 |Output File name 
+#_____________________________#________________________#______________________________________
+#
+# This program uses the file created by Freq_Analysis to filter then with desired objects.
+# Use only names option for Download_from_DES. Or to create a table with only objects names.
+# 
+#
+# Classes : You need to paste this Name without "" in Class filter
+#  "Centaur"
+#  "KBO>Detache" 
+#  "KBO>Inner_C"
+#  "KBO>Main_Cl"
+#  "KBO>Outer_C"
+#  "KBO>Resonan"
+#  "KBO>SDO"
+#  "Mars-Crosse"
+#  "MB>Cybele"
+#  "MB>Hilda"
+#  "MB>Hungaria"
+#  "MB>IMB"
+#  "MB>MMB"
+#  "MB>OMB"
+#  "MB>Outer"
+#  "NEA>Amor"
+#  "NEA>Apollo"
+#  "NEA>Aten"
+#  "Trojan"
+

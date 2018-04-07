@@ -1,0 +1,63 @@
+FROM python:alpine
+MAINTAINER Glauber Costa Vila Verde <glauber.vila.verde@gmail.com>
+
+ENV GUNICORN_PORT=8000
+ENV GUNICORN_MODULE=api
+ENV GUNICORN_CALLABLE=app
+ENV GUNICORN_USER=gunicorn
+ENV APP_PATH=/app
+
+
+# Install dependencies and create runtime user.
+RUN apk --update add --no-cache python3 python3-dev unzip libaio-dev \
+    && python3 -m ensurepip \
+    && pip3 install --upgrade pip gunicorn \
+    && adduser -D -h $APP_PATH $GUNICORN_USER
+
+
+
+# Copy the application over into the container.
+ADD . $APP_PATH
+
+# Install Oracle Client
+RUN ls $APP_PATH/oracle/
+
+RUN mkdir /oracle \
+    && unzip $APP_PATH/oracle/instantclient-basic-linux.x64-12.2.0.1.0.zip -d /oracle \
+    && unzip $APP_PATH/oracle/instantclient-sdk-linux.x64-12.2.0.1.0.zip -d /oracle \
+    && mv /oracle/instantclient_12_2 /oracle/instantclient \
+    && ln -s /oracle/instantclient/libclntsh.so.12.2 /oracle/instantclient/libclntsh.so \
+    && ln -s /oracle/instantclient/libocci.so.12.2 /oracle/instantclient/libocci.so
+
+
+# RUN ls --color /oracle/instantclient
+
+#export ORACLE_HOME=/oracle/instantclient
+#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME
+
+#export OCI_HOME="/oracle/instantclient"
+#export OCI_LIB_DIR="/oracle/instantclient"
+#export OCI_INCLUDE_DIR="/oracle/instantclient/sdk/include"
+
+ENV ORACLE_HOME=/oracle/instantclient
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME
+
+ENV OCI_HOME=/oracle/instantclient
+ENV OCI_LIB_DIR=/oracle/instantclient
+ENV OCI_INCLUDE_DIR=/oracle/instantclient/sdk/include
+
+RUN pip3 install cx_Oracle
+
+
+
+
+
+
+
+
+# Install  the application's dependencies.
+RUN pip3 install -r $APP_PATH/requirements.txt
+
+USER $GUNICORN_USER
+WORKDIR $APP_PATH
+ENTRYPOINT $APP_PATH/entrypoint.sh

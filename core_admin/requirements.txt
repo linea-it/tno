@@ -1,0 +1,5 @@
+Django==2.0.3
+djangorestframework
+django-filter
+django-url-filter
+psycopg2-binary

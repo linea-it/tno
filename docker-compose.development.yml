@@ -3,11 +3,20 @@ node:
   build: ./dashboard
   volumes:
     - ./dashboard:/src/app
-    - /src/app/node_modules
+    - ./dashboard/node_modules:/src/app/node_modules
   working_dir: /src/app
   ports:
     - 7000:3000
   command: npm start
+
+# Core Admin - Django
+core-admin:
+    build: ./core_admin
+    volumes:
+      - ./core_admin:/app
+    ports:
+      - 8000:8000
+    command: python manage.py runserver 0.0.0.0:8000
 
 # Get Pointings
 get-pointings:
