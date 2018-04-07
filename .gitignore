@@ -17,3 +17,26 @@ Thumbs.db
 npm-debug.log
 *.iml
 .env
+
+
+# Dashboard
+
+# Node Packages
+/dashboard/node_modules
+
+# Build Directory
+/dashboard/build
+
+/dashboard/.tmp
+/dashboard/.publish
+/dashboard/.deploy
+/dashboard/Thumbs.db
+/dashboard/.node_history
+
+/dashboard/*.seed
+/dashboard/*.log
+/dashboard/*.out
+/dashboard/*.pid
+/dashboard/npm-debug.log
+/dashboard/*.iml
+
