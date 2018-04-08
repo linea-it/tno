@@ -22,21 +22,21 @@ npm-debug.log
 # Dashboard
 
 # Node Packages
-/dashboard/node_modules
+#/dashboard/node_modules
 
 # Build Directory
-/dashboard/build
+#/dashboard/build
 
-/dashboard/.tmp
-/dashboard/.publish
-/dashboard/.deploy
-/dashboard/Thumbs.db
-/dashboard/.node_history
+#/dashboard/.tmp
+#/dashboard/.publish
+#/dashboard/.deploy
+#/dashboard/Thumbs.db
+#/dashboard/.node_history
 
-/dashboard/*.seed
-/dashboard/*.log
-/dashboard/*.out
-/dashboard/*.pid
-/dashboard/npm-debug.log
-/dashboard/*.iml
+#/dashboard/*.seed
+#/dashboard/*.log
+#/dashboard/*.out
+#/dashboard/*.pid
+#/dashboard/npm-debug.log
+#/dashboard/*.iml
 

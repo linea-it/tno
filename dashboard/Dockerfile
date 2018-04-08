@@ -1,8 +1,8 @@
 
 FROM node:8.3
 
-COPY . /src/app
-WORKDIR /src/app
+COPY . /app
+WORKDIR /app
 
 RUN npm install --save
 
