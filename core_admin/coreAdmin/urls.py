@@ -16,6 +16,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-urlpatterns = [
+from django.conf.urls import url
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.routers import DefaultRouter
+from rest_framework.authtoken.views import obtain_auth_token
+
+from tno.views import UserViewSet
+
+router = DefaultRouter()
+router.register(r'users', UserViewSet)
+
+
+urlpatterns = router.urls
+
+urlpatterns += [
     path('admin/', admin.site.urls),
+    url(r'^obtain-auth-token/$', csrf_exempt(obtain_auth_token))
 ]
