@@ -7,15 +7,15 @@ ENV GUNICORN_MODULE=coreAdmin.wsgi
 ENV GUNICORN_CALLABLE=application
 ENV APP_PATH=/app
 
-RUN mkdir /app
+RUN mkdir $APP_PATH
 
-WORKDIR /app
+WORKDIR $APP_PATH
 
-ADD requirements.txt /app
+ADD requirements.txt $APP_PATH
 
 RUN pip install -r requirements.txt
 
-COPY . /app
+COPY . $APP_PATH
 
 WORKDIR $APP_PATH
 ENTRYPOINT $APP_PATH/entrypoint.sh

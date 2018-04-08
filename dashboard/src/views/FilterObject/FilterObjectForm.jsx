@@ -35,7 +35,7 @@ class FilterObjectForm extends Component {
         super(props);
 
         this.state = {
-            objectTable: "",
+            objectTable: "Centaur",
             useMagnitude: false,
             magnitude: 24,
             useDifferenceTime: false,

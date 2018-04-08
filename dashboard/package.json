@@ -12,7 +12,8 @@
     "rc-slider": "^8.6.1",
     "react": "^15.6.1",
     "react-bootstrap": "^0.31.1",
-    "react-bootstrap-table-next": "^0.1.5",
+    "react-bootstrap-table-next": "^0.1.6",
+    "react-bootstrap-table2-overlay": "^0.1.1",
     "react-chartist": "^0.13.0",
     "react-dom": "^15.6.1",
     "react-notification-system": "^0.2.15",
@@ -29,6 +30,18 @@
     "start": "npm-run-all -p watch-css start-js",
     "build": "npm run build-css && react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-import": "^2.10.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-prettier": "^2.6.0",
+    "eslint-plugin-react": "^7.7.0",
+    "prettier": "^1.11.1"
   }
 }

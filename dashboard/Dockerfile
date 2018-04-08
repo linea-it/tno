@@ -1,11 +1,11 @@
 
 FROM node:8.3
 
-COPY . /app
-WORKDIR /app
+COPY . /src/app
+WORKDIR /src/app
 
-RUN npm install --save
+RUN yarn install 
 
 COPY . .
 
-CMD ["npm", "start"]
+CMD ["yarn", "start"]
