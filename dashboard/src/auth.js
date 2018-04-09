@@ -1,5 +1,6 @@
 export function isAuthenticated() {
-  return !!localStorage.token;
+//   return !!localStorage.token;
+    return true
 }
 
 // export function login(username, password) {

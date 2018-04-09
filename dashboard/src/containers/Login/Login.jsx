@@ -1,5 +1,18 @@
 import React, { Component } from 'react';
-import { FormGroup, ControlLabel, FormControl, Button } from 'react-bootstrap';
+import {
+  Table,
+  Grid,
+  Row,
+  Col,
+  FormGroup,
+  ControlLabel,
+  FormControl,
+} from 'react-bootstrap';
+
+import Button from 'elements/CustomButton/CustomButton.jsx';
+import Card from 'components/Card/Card';
+import 'assets/css/bootstrap.min.css';
+import 'assets/sass/light-bootstrap-dashboard.css';
 import 'assets/css/login.css';
 
 class Login extends Component {
@@ -24,36 +37,49 @@ class Login extends Component {
 
   render() {
     return (
-      <div className="wrapper">
-        <form>
-          <FormGroup>
-            <ControlLabel>User</ControlLabel>
-            <FormControl
-              type="text"
-              id="username"
-              value={this.state.username}
-              onChange={this.handleChange}
-              autoFocus
+      <div className="Login content col-sm-4 col-sm-offset-4">
+        <Grid fluid>
+          <Row>
+            <Card
+              hCenter
+              title="TNO"
+              category="Description "
+              content={
+                <form>
+                  <FormGroup>
+                    <ControlLabel>User</ControlLabel>
+                    <FormControl
+                      type="text"
+                      id="username"
+                      value={this.state.username}
+                      onChange={this.handleChange}
+                      autoFocus
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <ControlLabel>Password</ControlLabel>
+                    <FormControl
+                      type="text"
+                      id="password"
+                      value={this.state.password}
+                      onChange={this.handleChange}
+                    />
+                  </FormGroup>
+                  <Button
+                    bsStyle="info"
+                    fill
+                    block
+                    // type="submit"
+                    // bsSize="medium"
+                    disabled={!this.validateForm()}
+                  >
+                    Login
+                  </Button>
+                </form>
+              }
             />
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>Password</ControlLabel>
-            <FormControl
-              type="text"
-              id="password"
-              value={this.state.password}
-              onChange={this.handleChange}
-            />
-          </FormGroup>
-          <Button
-            block
-            bsSize="large"
-            disabled={!this.validateForm()}
-            type="submit"
-          >
-            Login
-          </Button>
-        </form>
+          </Row>
+        </Grid>
       </div>
     );
   }

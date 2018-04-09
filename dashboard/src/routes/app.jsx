@@ -10,9 +10,7 @@ import SolarSystems from 'views/SolarSystems/SolarSystems';
 import FilterObject from 'views/FilterObject/FilterObject';
 import GetPointings from 'views/GetPointings/GetPointings';
 import ExposureDownload from 'views/ExposureDownload/ExposureDownload';
-// import Login from '../containers/Login/Login';
 const appRoutes = [
-//   { path: '/login', name: 'Login', icon: 'fa fa-key', component: Login },
   {
     path: '/dashboard',
     name: 'Dashboard',
