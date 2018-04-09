@@ -16,7 +16,7 @@ Edit .env file with correct access to PostgresSql database
 
 ### Run Docker
 ```
-docker run -it --rm --name tno-core-admin --publish 7001:3000 --volume $PWD/:/app --env-file $PWD/.env tno-core-admin
+docker run -it --rm --name tno-core-admin --publish 7001:7001 --volume $PWD/:/app --env-file $PWD/.env tno-core-admin
 ```
 
 ### Create Superuser 

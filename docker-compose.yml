@@ -15,8 +15,19 @@ services:
       - DATABASE_URI
     ports:
       - 7008:7008
-    # expose:
-    #   - 7008
+    networks:
+      - backend
+
+
+  # Core Admin (Backend Django)
+  filter-objects:
+    build: ./core_admin
+    volumes:
+    - ./core_admin:/app
+    environment:
+      - DATABASE_URI
+    ports:
+      - 7001:7001
     networks:
       - backend
 
