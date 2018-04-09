@@ -1,32 +1,43 @@
-# Dashboard
-dashboard:
-  build: gverde/tno-dashboard
-  volumes:
-    - ./dashboard:/src/app
-    - /src/app/node_modules
-  working_dir: /src/app
-  ports:
-    - "3000"
-  command: npm start
+version: "3.6"
+services:
+  # # Get Pointings
+  # get-pointings:
+  #   build: ./get_pointings
+  #   ports:
+  #     - 7005:7005
 
-# Filter Objects
-filter-objects:
-    image: gverde/tno-filter-objects
+  # Filter Objects
+  filter-objects:
+    build: ./filter_objects
+    volumes:
+    - ./filter_objects:/app
     environment:
       - DATABASE_URI
     ports:
-      - 7003:7003
+      - 7008:7008
+    # expose:
+    #   - 7008
+    networks:
+      - backend
 
-nginx:
-  build: ./nginx
-  # volumes:
-  #   - ./dashboard:/src/app
-  volumes_from:
-    - dashboard
-  links:
-    - dashboard
-  ports:
-    - "80:80"
+  # Dashboard
+  dashboard:
+    build: ./dashboard
+    volumes:
+      - ./dashboard:/src/app
+      # - ./dashboard/node_modules:/src/app/node_modules
+    working_dir: /src/app
+    # links:
+    #     - filter-objects
+    depends_on:
+      - filter-objects
+    ports:
+      - 7000:3000
+    networks:
+      - backend
+    command: ./entrypoint.sh
 
+networks:
+  backend:
 # Baseado neste exemplo
 # https://github.com/zackferrofields/docker-nginx-react/blob/develop/docker-compose.yml

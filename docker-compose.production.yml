@@ -1,0 +1,32 @@
+# Dashboard
+dashboard:
+  build: gverde/tno-dashboard
+  volumes:
+    - ./dashboard:/src/app
+    - /src/app/node_modules
+  working_dir: /src/app
+  ports:
+    - "3000"
+  command: npm start
+
+# Filter Objects
+filter-objects:
+    image: gverde/tno-filter-objects
+    environment:
+      - DATABASE_URI
+    ports:
+      - 7003:7003
+
+nginx:
+  build: ./nginx
+  # volumes:
+  #   - ./dashboard:/src/app
+  volumes_from:
+    - dashboard
+  links:
+    - dashboard
+  ports:
+    - "80:80"
+
+# Baseado neste exemplo
+# https://github.com/zackferrofields/docker-nginx-react/blob/develop/docker-compose.yml

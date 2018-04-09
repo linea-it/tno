@@ -2,6 +2,9 @@
 # Node Packages
 node_modules
 
+# Except .env
+!.env
+
 # Build Directory
 /build
 
