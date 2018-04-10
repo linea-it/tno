@@ -3,7 +3,14 @@ import axios from 'axios';
 const api = process.env.REACT_APP_API;
 
 export function isAuthenticated() {
-  return !!localStorage.token;
+  // return !!localStorage.token;
+  if (localStorage.token) {
+    axios.defaults.headers.common['Authorization'] =
+      'Token ' + localStorage.token;
+    return true;
+  } else {
+    return false;
+  }
 }
 
 export function login(username, password, cb) {
@@ -14,6 +21,7 @@ export function login(username, password, cb) {
   getToken(username, password, res => {
     if (res.authenticated) {
       localStorage.token = res.token;
+      axios.defaults.headers.common['Authorization'] = 'Token ' + res.token;
       if (cb) cb(true);
     } else {
       if (cb) cb(false);

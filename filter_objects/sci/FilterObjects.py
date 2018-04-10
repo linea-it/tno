@@ -1,19 +1,24 @@
 
 
 from common.db import DBBase
-from sqlalchemy.sql import select, and_, or_, func
+from sqlalchemy.sql import select, and_, or_, func, subquery
 from sqlalchemy import literal_column, null
 
 class FilterObjects():
+
+    """
+
+        Exemplo de Query com subquery para retornar a quantidade de bandas. 
+        - SELECT name, count(name) as freq, (SELECT COUNT(DISTINCT(band)) FROM tno.skybot_output WHERE name = a.name) as filters FROM tno.skybot_output a  GROUP BY name LIMIT 5
+    """
+
 
     def __init__(self, app):
         self.db = DBBase(app)
         self.table = self.db.get_table_skybot()
         self.columns = self.table.c
 
-    def get_objects(self,
-            objectTable=None, magnitude=None, diffDateNights=None, moreFilter=None):
-
+    def get_base_stm(self):
         stm = select([
                 self.columns.dynclass.label("object_table"),
                 self.columns.name,
@@ -26,6 +31,15 @@ class FilterObjects():
                 func.count(func.distinct(self.columns.jdref)).label('diff_nights'),
                 (func.max(self.columns.jdref) - func.min(self.columns.jdref)).label('diff_date_nights')
             ])
+
+        return stm
+
+
+    def get_objects(self,
+            objectTable=None, magnitude=None, diffDateNights=None, moreFilter=None):
+
+
+        stm = self.get_base_stm()
 
         # Filtros
         terms = list([])
@@ -95,20 +109,10 @@ class FilterObjects():
         diff_nights    | 7
 
         """
+        stm = self.get_base_stm()
 
-        stm = select([
-                self.columns.name,
-                func.count(self.columns.name).label("freq"),
-                null().label('filters'),
-                func.min(self.columns.mv).label('mag_min'),
-                func.max(self.columns.mv).label('mag_max'),
-                func.min(self.columns.errpos).label('min_errpos'),
-                func.max(self.columns.errpos).label('max_errpos'),
-                func.count(func.distinct(self.columns.jdref)).label('diff_nights'),
-                (func.max(self.columns.jdref) - func.min(self.columns.jdref)).label('diff_date_nights')
-            ]).\
-            where(self.columns.name.ilike("%"+name+"%")).\
-            group_by(self.columns.name)
+        stm = stm.where(self.columns.name.ilike("%"+name+"%"))
+        stm = stm.group_by(self.columns.name, self.columns.dynclass)
 
         rows = self.db.fetch_all_dict(stm)
         print(rows)
