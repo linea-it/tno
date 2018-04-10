@@ -19,6 +19,7 @@ import 'assets/css/login.css';
 
 class Login extends Component {
   state = {
+    from: '/',
     username: 'gverde',
     password: 'adminadmin',
   };

@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { logout } from 'auth';
 
 class HeaderLinks extends Component {
-  logoutClick = event => {
+  logoutHandler = event => {
     logout()
     this.props.history.push('/login');
   };
@@ -53,7 +53,7 @@ class HeaderLinks extends Component {
             <MenuItem divider />
             <MenuItem eventKey={2.5}>Log out</MenuItem>
           </NavDropdown> */}
-          <NavItem onClick={this.logoutClick}>Log out</NavItem>
+          <NavItem onClick={this.logoutHandler}>Log out</NavItem>
           {/* <NavDropdown
             eventKey={4}
             title={actions}
