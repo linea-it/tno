@@ -14,23 +14,9 @@ import './assets/css/pe-icon-7-stroke.css';
 
 import history from './history';
 
-import { isAuthenticated, login } from './auth';
+import { isAuthenticated } from './auth';
 
-console.log("isAuthenticated: %o", isAuthenticated())
-
-login("gverde", "adminadmin")
-
-const fakeAuth = {
-  isAuthenticated: false,
-  authenticate(cb) {
-    this.isAuthenticated = true;
-    setTimeout(cb, 100); // fake async
-  },
-  signout(cb) {
-    this.isAuthenticated = false;
-    setTimeout(cb, 100);
-  },
-};
+console.log('isAuthenticated: %o', isAuthenticated());
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route

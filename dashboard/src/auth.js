@@ -1,72 +1,41 @@
+import axios from 'axios';
+
+const api = process.env.REACT_APP_API;
+
 export function isAuthenticated() {
-//   return !!localStorage.token;
-    return true
+  return !!localStorage.token;
 }
 
-// export function login(username, password) {
-
-//     if (localStorage.token) {
-//         return
-//     }
-
-
-// }
-
-
-export function login(username, password) {
-    if (localStorage.token) {
-        return;
+export function login(username, password, cb) {
+  if (localStorage.token) {
+    if (cb) cb(true);
+    return;
+  }
+  getToken(username, password, res => {
+    if (res.authenticated) {
+      localStorage.token = res.token;
+      if (cb) cb(true);
+    } else {
+      if (cb) cb(false);
     }
-    getToken(username, password, (res) => {
-        if (res.authenticated) {
-        }
-        else {
-        }
+  });
+}
+
+export function logout() {
+  delete localStorage.token;
+}
+
+export function getToken(username, password, cb) {
+  axios
+    .post(`${api}/obtain-auth-token/`, {
+      username: username,
+      password: password,
+    })
+    .then(res => {
+      var result = res.data;
+      cb({
+        authenticated: true,
+        token: result.token,
+      });
     });
 }
-export function getToken(username, password) {
-    console.log("getToken()");
-}
-
-
-// module.exports = {
-//   login: function(username, pass, cb) {
-//     if (localStorage.token) {
-//       if (cb) cb(true)
-//       return
-//     }
-//     this.getToken(username, pass, (res) => {
-//         if (res.authenticated) {
-//             localStorage.token = res.token
-//             if (cb) cb(true)
-//           } else {
-//             if (cb) cb(false)
-//           }
-//       });
-//   },
-
-//   logout: function() {
-//     delete localStorage.token
-//   },
-
-//   loggedIn: function() {
-//     return !!localStorage.token
-//   },
-
-//   getToken: function(username, pass, cb) {
-//     $.ajax({
-//         type: 'POST',
-//         url: '/api/obtain-auth-token/',
-//         data: {
-//             username: username,
-//             password: pass
-//           },
-//         success: function(res){
-//             cb({
-//                 authenticated: true,
-//                 token: res.token
-//               });
-//           },
-//       });
-//   },
-// };

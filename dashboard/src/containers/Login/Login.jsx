@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import {
-  Table,
   Grid,
   Row,
-  Col,
   FormGroup,
   ControlLabel,
   FormControl,
@@ -11,14 +9,18 @@ import {
 
 import Button from 'elements/CustomButton/CustomButton.jsx';
 import Card from 'components/Card/Card';
+import { login } from 'auth';
+
+import { withRouter } from 'react-router-dom';
+
 import 'assets/css/bootstrap.min.css';
 import 'assets/sass/light-bootstrap-dashboard.css';
 import 'assets/css/login.css';
 
 class Login extends Component {
   state = {
-    username: '',
-    password: '',
+    username: 'gverde',
+    password: 'adminadmin',
   };
 
   handleChange = event => {
@@ -33,6 +35,15 @@ class Login extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
+
+    var username = this.state.username;
+    var password = this.state.password;
+
+    login(username, password, loggedIn => {
+      if (loggedIn) {
+        this.props.history.push('/');
+      }
+    });
   };
 
   render() {
@@ -69,9 +80,8 @@ class Login extends Component {
                     bsStyle="info"
                     fill
                     block
-                    // type="submit"
-                    // bsSize="medium"
                     disabled={!this.validateForm()}
+                    onClick={this.handleSubmit}
                   >
                     Login
                   </Button>
@@ -84,4 +94,4 @@ class Login extends Component {
     );
   }
 }
-export default Login;
+export default withRouter(Login);
