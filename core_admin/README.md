@@ -44,3 +44,10 @@ Once created, being outside the container, change the permission to the director
 ```
 sudo chown -R <your_local_user>:<your_local_user> <new_app>/
 ```
+
+
+Copy Table to csv:
+```
+\copy (SELECT id, pfw_attempt_id, desfile_id, to_date(nite, 'YYYYMMDD'), date_obs, expnum, ccdnum, band, exptime, cloud_apass, cloud_nomad, t_eff, crossra0, radeg, decdeg, racmin, racmax, deccmin, deccmax, ra_cent, dec_cent, rac1, rac2, rac3, rac4, decc1, decc2, decc3, decc4, ra_size, dec_size, path, filename, compression, False FROM tno.pointings order by date_obs ASC limit 1000) TO /tmp/test.csv With CSV DELIMITER ';'
+COPY 1000
+```
