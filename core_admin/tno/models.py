@@ -166,7 +166,7 @@ class SkybotOutput(models.Model):
     """
     # Relation With Pointings
     pointing = models.ForeignKey(
-        Pointing, on_delete=models.CASCADE, verbose_name='Pointing'
+        Pointing, on_delete=models.CASCADE, verbose_name='Pointing', default=None, null=True, blank=True
     )
     
     num = models.CharField(
@@ -187,12 +187,14 @@ class SkybotOutput(models.Model):
         help_text='(ucd=“meta.code.class;src.class”) Object class (TNO, Centaur, Trojan, etc.).'
     )
 
-    ra = models.FloatField(
-        verbose_name='RA',
+    ra = models.CharField(
+        max_length=20,        
+        verbose_name='RA', 
         help_text='(ucd=“pos.eq.ra;meta.main”) Right ascension of the identified object.'
     )
 
-    dec = models.FloatField(
+    dec = models.CharField(
+        max_length=20,
         verbose_name='Dec',
         help_text='(ucd=“pos.eq.dec;meta.main”) Declination of the identified object.'
     )
@@ -293,15 +295,18 @@ class SkybotOutput(models.Model):
     )
 
     expnum = models.BigIntegerField(
-        verbose_name='Exposure', help_text='Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)'
+        verbose_name='Exposure', help_text='Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)', 
+        default=None, null=True, blank=True
     )
     ccdnum = models.IntegerField(
-        verbose_name='CCD', help_text='CCD Number (1, 2, ..., 62)'
+        verbose_name='CCD', help_text='CCD Number (1, 2, ..., 62)', 
+        default=None, null=True, blank=True
     )
 
     band = models.CharField(
         max_length=1,
         verbose_name='Filter', help_text='Filter used to do the observation (u, g, r, i, z, Y).', 
+        default=None, null=True, blank=True,
         choices=(('u','u'),('g','g'),('r','r'),('i','i'),('z','z'),('Y','Y'))
     )    
 

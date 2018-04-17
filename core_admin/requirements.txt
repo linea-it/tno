@@ -5,4 +5,4 @@ django-filter
 django-url-filter
 django-cors-headers
 psycopg2-binary
-
+SQLAlchemy

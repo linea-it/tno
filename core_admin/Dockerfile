@@ -13,6 +13,8 @@ WORKDIR $APP_PATH
 
 ADD requirements.txt $APP_PATH
 
+RUN pip install --upgrade pip
+
 RUN pip install -r requirements.txt
 
 COPY . $APP_PATH
