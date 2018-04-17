@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from .models import Pointings
+from .models import Pointing
 
-@admin.register(Pointings)
-class PointingsAdmin(admin.ModelAdmin):
+@admin.register(Pointing)
+class PointingAdmin(admin.ModelAdmin):
     list_display = ('id', 'date_obs', 'expnum', 'ccdnum', 'band', 'filename',)
     search_fields = ('expnum', 'ccdnum', 'filename',)
