@@ -40,10 +40,12 @@ UPDATE tno.tno_ccdimage SET pointing_id = subquery.pointing_id FROM (SELECT a.id
 # UPDATE tno_pointing campo downloaded baseado na tabela de ccdimage.
 UPDATE tno.tno_pointing a SET downloaded = true FROM (SELECT a.pointing_id FROM tno.tno_ccdimage a ) as subquery WHERE a.id = subquery.pointing_id;
 
+
+## Querys de Exemplos
 # Exemplo de Query utilizando as 3 tabelas
 SELECT a.id, a.name, b.id as pointing_id, c.download_start_time, c.download_finish_time FROM tno.tno_skybotoutput a LEFT JOIN tno.tno_pointing b ON (a.pointing_id = b.id) INNER JOIN tno.tno_ccdimage c ON (a.pointing_id = c.pointing_id) WHERE a.pointing_id is not null LIMIT 5;
 
-## Querys de Exemplos
+
 
 # Objetos com apontamento e com ccd image baixado. 
 SELECT a.id, a.name, a.expnum, a.ccdnum, a.band FROM tno.tno_skybotoutput a LEFT JOIN tno.tno_pointing b ON (a.pointing_id = b.id) WHERE a.pointing_id is not null AND b.downloaded is true LIMIT 5;

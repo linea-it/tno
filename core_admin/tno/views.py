@@ -6,8 +6,8 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from django.contrib.auth.models import User
 
-from .serializers import UserSerializer
-
+from .serializers import UserSerializer, SkybotOutputSerializer
+from .models import SkybotOutput
 
 class UserViewSet(viewsets.ModelViewSet):
 
@@ -36,3 +36,9 @@ class UserViewSet(viewsets.ModelViewSet):
                 context={'request':request}).data)
 
         return super(UserViewSet, self).retrieve(request, pk)
+
+
+class SkybotOutputViewSet(viewsets.ModelViewSet):
+
+    queryset = SkybotOutput.objects.all()
+    serializer_class = SkybotOutputSerializer

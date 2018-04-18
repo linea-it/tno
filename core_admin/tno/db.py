@@ -3,6 +3,7 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy import select, create_engine, inspect, MetaData, func, Table, Column, Integer, String, Float, Boolean
 import collections
 import os
+from django.conf import settings
 class DBBase(SQLAlchemy):
 
     def get_db_uri(self):
@@ -14,11 +15,12 @@ class DBBase(SQLAlchemy):
                 os.environ['DB_USER'], os.environ['DB_PASS'], 
                 os.environ['DB_HOST'], os.environ['DB_PORT'], os.environ['DB_NAME'])
 
-
         else:
             # Use Sqlite
-            db_uri = ""
+            sqlite_database = settings.SQLITE_DATABASE
+            db_uri = "sqlite:///%s" % sqlite_database
 
+        print(db_uri)
         return db_uri
 
     def to_dict(self, queryset):
