@@ -1,10 +1,24 @@
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine, inspect, MetaData, func, Table, Column, Integer, String, Float, Boolean
+from sqlalchemy import exc as sa_exc
+# from sqlalchemy.dialects import oracle
+from sqlalchemy.dialects import sqlite
 from sqlalchemy.dialects import postgresql
-from sqlalchemy import select, create_engine, inspect, MetaData, func, Table, Column, Integer, String, Float, Boolean
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.sql import select, and_, text
+from sqlalchemy.sql.expression import Executable, ClauseElement
+from sqlalchemy.sql.expression import literal_column, between
+from sqlalchemy.schema import Sequence
+
 import collections
 import os
 from django.conf import settings
-class DBBase(SQLAlchemy):
+
+class DBBase():
+
+    def __init__(self):
+
+        self.engine = create_engine(self.get_db_uri())
+
 
     def get_db_uri(self):
         db_uri = ""
@@ -35,12 +49,11 @@ class DBBase(SQLAlchemy):
         queryset = self.engine.execute(stm)
         return self.to_dict(queryset)
 
-    def get_table_skybot(self):
 
+    def get_table_skybot(self):
         schema = None 
         if 'DB_SCHEMA' in os.environ:
             schema = os.environ['DB_SCHEMA']
-
 
         self.tbl_skybot = Table(
             "tno_skybotoutput", MetaData(self.engine), autoload=True, schema=schema)

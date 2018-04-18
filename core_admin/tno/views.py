@@ -1,13 +1,20 @@
 from django.shortcuts import render
 
-from rest_framework import viewsets, response, mixins
+from rest_framework import viewsets, response, mixins, filters
 
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+
+from rest_framework.decorators import list_route
+
+from rest_framework.response import Response
 
 from django.contrib.auth.models import User
 
 from .serializers import UserSerializer, SkybotOutputSerializer
+
 from .models import SkybotOutput
+
+from .skybotoutput import FilterObjects
 
 class UserViewSet(viewsets.ModelViewSet):
 
@@ -40,5 +47,30 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class SkybotOutputViewSet(viewsets.ModelViewSet):
 
-    queryset = SkybotOutput.objects.all()
+    queryset = SkybotOutput.objects.select_related().all()
     serializer_class = SkybotOutputSerializer
+    filter_fields = ('id', 'name', 'expnum',)
+    search_fields = ('name', 'dynclass',)
+
+    @list_route()
+    def search(self, request):
+        """ 
+
+        """
+        name = request.query_params.get('name', None)
+        print("Search Objects By Name: %s" % name)
+
+        if not name:
+            return Response({
+                'success': False,
+                'msg': 'Parameter name is required.'
+            })
+
+
+        rows, count = FilterObjects().objects_by_name(name)       
+
+        return Response({
+            'success': True,
+            "results": rows,
+            "count": count
+        })
