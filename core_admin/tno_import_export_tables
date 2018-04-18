@@ -27,3 +27,6 @@ UPDATE tno.tno_skybotoutput SET ccdnum = subquery.ccdnum FROM (SELECT a.id, (SEL
 
 # Update da tabela skybot coluna band
 UPDATE tno.tno_skybotoutput SET band = subquery.band FROM (SELECT a.id, (SELECT b.band FROM tno.tno_pointing b WHERE a.expnum = b.expnum AND a.raj2000 BETWEEN b.rac2 AND b.rac4 AND a.decj2000 BETWEEN b.decc2 AND b.decc4) as band FROM tno.tno_skybotoutput a ) as subquery WHERE tno.tno_skybotoutput.id = subquery.id;
+
+# Import Lista de CCD Images Baixados.
+\copy tno.tno_ccdimage (filename, download_start_time, download_finish_time, file_size) FROM '/home/glauber.costa/tno_ccdimage.csv' WITH (FORMAT csv, DELIMITER ';', HEADER true)

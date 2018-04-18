@@ -331,14 +331,16 @@ class CcdImage(models.Model):
     """
     # Relation With Pointings
     pointing = models.ForeignKey(
-        Pointing, on_delete=models.CASCADE, verbose_name='Pointing'
+        Pointing, on_delete=models.CASCADE, verbose_name='Pointing',
+        null=True, blank=True, default=None
     )
 
     desfile_id = models.BigIntegerField(
+        null=True, blank=True, default=None,
         verbose_name='CCD Id', help_text='Unique identifier for each CCD.')
 
     filename = models.CharField(
-        max_length=256,
+        max_length=256, 
         verbose_name='Filename', help_text='Name of FITS file with a CCD image.'
     )
 
