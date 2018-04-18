@@ -30,3 +30,23 @@ UPDATE tno.tno_skybotoutput SET band = subquery.band FROM (SELECT a.id, (SELECT 
 
 # Import Lista de CCD Images Baixados.
 \copy tno.tno_ccdimage (filename, download_start_time, download_finish_time, file_size) FROM '/home/glauber.costa/tno_ccdimage.csv' WITH (FORMAT csv, DELIMITER ';', HEADER true)
+
+# Update ccdimage com o campo desfile_id
+UPDATE tno.tno_ccdimage SET desfile_id = subquery.desfile_id FROM (SELECT a.id, a.filename, b.desfile_id FROM tno.tno_ccdimage a LEFT JOIN tno.tno_pointing b ON (a.filename = b.filename)) as subquery WHERE tno.tno_ccdimage.id = subquery.id;
+
+# UPDATE ccdimage com o campo pointing_id
+UPDATE tno.tno_ccdimage SET pointing_id = subquery.pointing_id FROM (SELECT a.id, a.filename, b.id as pointing_id FROM tno.tno_ccdimage a LEFT JOIN tno.tno_pointing b ON (a.filename = b.filename)) as subquery WHERE tno.tno_ccdimage.id = subquery.id;
+
+# UPDATE tno_pointing campo downloaded baseado na tabela de ccdimage.
+UPDATE tno.tno_pointing a SET downloaded = true FROM (SELECT a.pointing_id FROM tno.tno_ccdimage a ) as subquery WHERE a.id = subquery.pointing_id;
+
+# Exemplo de Query utilizando as 3 tabelas
+SELECT a.id, a.name, b.id as pointing_id, c.download_start_time, c.download_finish_time FROM tno.tno_skybotoutput a LEFT JOIN tno.tno_pointing b ON (a.pointing_id = b.id) INNER JOIN tno.tno_ccdimage c ON (a.pointing_id = c.pointing_id) WHERE a.pointing_id is not null LIMIT 5;
+
+## Querys de Exemplos
+
+# Objetos com apontamento e com ccd image baixado. 
+SELECT a.id, a.name, a.expnum, a.ccdnum, a.band FROM tno.tno_skybotoutput a LEFT JOIN tno.tno_pointing b ON (a.pointing_id = b.id) WHERE a.pointing_id is not null AND b.downloaded is true LIMIT 5;
+
+# Quantidade de Objetos que possuem ccd image baixado. (OBS: o numero de objetos e maior que o numero de imagem baixadas por que na mesma imagem pode haver mais de um objeto)
+SELECT COUNT(*) FROM tno.tno_skybotoutput a LEFT JOIN tno.tno_pointing b ON (a.pointing_id = b.id) WHERE a.pointing_id is not null AND b.downloaded is true;
