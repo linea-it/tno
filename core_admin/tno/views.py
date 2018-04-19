@@ -74,3 +74,34 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
             "results": rows,
             "count": count
         })
+
+    
+    @list_route()
+    def objects(self, request):
+        """ 
+
+        """
+        # Retrive Params
+        objectTable = request.query_params.get('objectTable')
+
+        magnitude = None
+        if request.query_params.get('useMagnitude') and float(request.query_params.get('magnitude')) > 0:
+            magnitude = float(request.query_params.get('magnitude'))
+
+        diffDateNights = None
+        if request.query_params.get('useDifferenceTime') and float(request.query_params.get('diffDateNights')) > 0:
+            diffDateNights = float(request.query_params.get('diffDateNights'))
+
+        moreFilter = request.query_params.get('moreFilter')
+
+
+        rows, count = FilterObjects().get_objects(
+                        objectTable, magnitude, diffDateNights, moreFilter)       
+
+        print(rows)
+
+        return Response({
+            'success': True,
+            "results": rows,
+            "count": count
+        })
