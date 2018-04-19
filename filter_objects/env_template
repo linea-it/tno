@@ -1,6 +1,0 @@
-
-# String de conexao com banco de dados
-# Docs: http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html
-# Psycopg2: http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2
-# template: postgresql+psycopg2://user:password@host:port/dbname[?key=value&key=value...]
-DATABASE_URI=postgresql+psycopg2://<user>:<password>@<host>:<port>/<dbname>

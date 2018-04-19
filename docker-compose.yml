@@ -7,25 +7,25 @@ services:
   #     - 7005:7005
 
   # Filter Objects
-  filter-objects:
-    build: ./filter_objects
-    volumes:
-    - ./filter_objects:/app
-    environment:
-      - DATABASE_URI
-    ports:
-      - 7008:7008
-    networks:
-      - backend
+  # filter-objects:
+  #   build: ./filter_objects
+  #   volumes:
+  #   - ./filter_objects:/app
+  #   environment:
+  #     - DATABASE_URI
+  #   ports:
+  #     - 7008:7008
+  #   networks:
+  #     - backend
 
 
   # Core Admin (Backend Django)
-  filter-objects:
+  core-admin:
     build: ./core_admin
     volumes:
-    - ./core_admin:/app
-    environment:
-      - DATABASE_URI
+      - ./core_admin:/app
+    env_file:
+      - .env
     ports:
       - 7001:7001
     networks:
