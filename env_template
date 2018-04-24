@@ -1,5 +1,7 @@
-# Filter Objects string de conexao com banco de dados
-# Docs: http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html
-# Psycopg2: http://docs.sqlalchemy.org/en/latest/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg2
-# template: postgresql+psycopg2://user:password@host:port/dbname[?key=value&key=value...]
-DATABASE_URI=postgresql+psycopg2://<user>:<password>@<host>:<port>/<dbname>
+# Database Settings for Django Backend "CoreAdmin"
+DB_NAME=<Database Name>
+DB_SCHEMA=<Database Schema>
+DB_USER=<Database User>
+DB_PASS=<Database Pass>
+DB_HOST=<Database Host>
+DB_PORT=<Database Port>

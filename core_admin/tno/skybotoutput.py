@@ -8,7 +8,7 @@ class FilterObjects(DBBase):
 
     """
 
-        Exemplo de Query com subquery para retornar a quantidade de bandas. 
+        Exemplo de Query com subquery para retornar a quantidade de bandas.
         - SELECT name, count(name) as freq, (SELECT COUNT(DISTINCT(band)) FROM tno.skybot_output WHERE name = a.name) as filters FROM tno.skybot_output a  GROUP BY name LIMIT 5
     """
 
@@ -35,22 +35,28 @@ class FilterObjects(DBBase):
                 func.min(cols.errpos).label('min_errpos'),
                 func.max(cols.errpos).label('max_errpos'),
                 func.count(func.distinct(cols.jdref)).label('diff_nights'),
-                (func.max(cols.jdref) - func.min(cols.jdref)).label('diff_date_nights')
+                (func.max(cols.jdref) - func.min(cols.jdref)).label('diff_date_nights'),
+                # func.count().over().label('totalCount')
             ])
 
         return stm
 
 
     def get_objects(self,
-            objectTable=None, magnitude=None, diffDateNights=None, moreFilter=None):
+            name=None, objectTable=None, magnitude=None, diffDateNights=None,
+            moreFilter=None, page=1, pageSize=100):
 
-        """Applies the filters to the skybot output table and returns the list 
+        """Applies the filters to the skybot output table and returns the list
         of objects that meet the requirements.
 
         Args:
+            name (str): Object Name.
             objectTable (str): Object class, dynclass column in skybot output table.
             magnitude (float): magnitude less than or equal to
             diffDateNights
+
+        Returns:
+            (rows, count) Returns the list of objects and the total of found objects.
         """
         stm = self.get_base_stm()
         cols = self.table.c
@@ -58,9 +64,11 @@ class FilterObjects(DBBase):
         # Filtros
         terms = list([])
 
+        if name:
+            terms.append(cols.name.ilike("%"+name+"%"))
+
         if objectTable:
             if objectTable.find(";"):
-                print("Tem mais de uma tabela")
                 ltbls = list([])
                 tbls = objectTable.split(";")
 
@@ -84,8 +92,6 @@ class FilterObjects(DBBase):
             #select name, min(mv), max(jdref) - min(jdref) as DiffDateNights from tno.skybot_output where dynclass like 'Centaur' group by name  HAVING max(jdref) - min(jdref) > 1000 limit 10 ;
             stm = stm.having((func.max(cols.jdref) - func.min(cols.jdref)) > float(diffDateNights))
 
-
-
         if len(terms):
             stm = stm.where(and_(*terms))
 
@@ -96,36 +102,14 @@ class FilterObjects(DBBase):
         stm = stm.order_by(cols.name)
 
         # Paginacao
-        stm = stm.limit(10)
+        stm = stm.limit(pageSize)
 
-        print(str(stm))
+        if page and pageSize:
+            offset = (int(page) * int(pageSize)) - int(pageSize)
+            stm = stm.offset(offset)
 
-
-        rows = self.fetch_all_dict(stm)
-        print(rows)
-
-        return rows, len(rows)
-
-
-
-
-    def objects_by_name(self, name):
-        """Searches for the name of the object in the skybot output table.
-
-        Args:
-            name (str): Object Name.
-
-        Returns:
-            (rows, count) Returns the list of objects and the total of found objects.
-        """
-        stm = self.get_base_stm()
-
-        cols = self.table.c
-
-        stm = stm.where(cols.name.ilike("%"+name+"%"))
-        stm = stm.group_by(cols.name, cols.dynclass)
+        totalSize = self.stm_count(stm)
 
         rows = self.fetch_all_dict(stm)
-        print(rows)
 
-        return rows, len(rows)
+        return rows, totalSize

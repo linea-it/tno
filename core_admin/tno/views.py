@@ -10,7 +10,7 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User
 
-from .serializers import UserSerializer, SkybotOutputSerializer
+from .serializers import UserSerializer, SkybotOutputSerializer, ObjectClassSerializer
 
 from .models import SkybotOutput
 
@@ -24,7 +24,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         """
         Instantiates and returns the list of permissions that this view requires.
-        """        
+        """
         if self.action == 'retrieve':
             permission_classes = [IsAuthenticated]
         else:
@@ -53,35 +53,14 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
     search_fields = ('name', 'dynclass',)
 
     @list_route()
-    def search(self, request):
-        """ 
-
-        """
-        name = request.query_params.get('name', None)
-        print("Search Objects By Name: %s" % name)
-
-        if not name:
-            return Response({
-                'success': False,
-                'msg': 'Parameter name is required.'
-            })
-
-
-        rows, count = FilterObjects().objects_by_name(name)       
-
-        return Response({
-            'success': True,
-            "results": rows,
-            "count": count
-        })
-
-    
-    @list_route()
     def objects(self, request):
-        """ 
+        """
 
         """
         # Retrive Params
+
+        name = request.query_params.get('name')
+
         objectTable = request.query_params.get('objectTable')
 
         magnitude = None
@@ -94,14 +73,23 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
 
         moreFilter = request.query_params.get('moreFilter')
 
+        page = request.query_params.get('page', 1)
+        pageSize = request.query_params.get('pageSize', self.pagination_class.page_size)
 
         rows, count = FilterObjects().get_objects(
-                        objectTable, magnitude, diffDateNights, moreFilter)       
-
-        print(rows)
+                        name, objectTable, magnitude, diffDateNights,
+                        moreFilter, int(page), int(pageSize))
 
         return Response({
             'success': True,
             "results": rows,
             "count": count
         })
+
+class ObjectClassViewSet(viewsets.GenericViewSet,
+                        mixins.ListModelMixin):
+
+    queryset = SkybotOutput.objects.select_related().order_by('dynclass').distinct('dynclass')
+    serializer_class = ObjectClassSerializer
+    # Turn off pagination Class
+    pagination_class = None

@@ -26,6 +26,7 @@ class FilterObjectTable extends Component {
       };
     }
 
+
     componentWillReceiveProps(nextProps) {
         console.log("componentWillReceiveProps")
         this.setState({"records":nextProps.records})

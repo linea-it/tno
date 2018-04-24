@@ -25,7 +25,7 @@ SECRET_KEY = 'm=5=08^4a(il)bba)$cd%f*#wrcammi(r(q#($b$n^-jz8%+j0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
