@@ -46,3 +46,9 @@ class SkybotOutputSerializer(serializers.ModelSerializer):
             'ccdnum',
             'band',
             )
+
+
+class ObjectClassSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SkybotOutput
+        fields = ('dynclass',)

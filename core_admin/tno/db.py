@@ -19,6 +19,8 @@ class DBBase():
 
         self.engine = create_engine(self.get_db_uri())
 
+        self.current_dialect = None
+
 
     def get_db_uri(self):
         db_uri = ""
@@ -26,13 +28,17 @@ class DBBase():
         if 'DB_NAME' in os.environ:
             # postgresql+psycopg2
             db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
-                os.environ['DB_USER'], os.environ['DB_PASS'], 
+                os.environ['DB_USER'], os.environ['DB_PASS'],
                 os.environ['DB_HOST'], os.environ['DB_PORT'], os.environ['DB_NAME'])
+
+            self.current_dialect = postgresql.dialect()
 
         else:
             # Use Sqlite
             sqlite_database = settings.SQLITE_DATABASE
             db_uri = "sqlite:///%s" % sqlite_database
+
+            self.current_dialect = sqlite.dialect()
 
         print(db_uri)
         return db_uri
@@ -47,11 +53,33 @@ class DBBase():
 
     def fetch_all_dict(self, stm):
         queryset = self.engine.execute(stm)
+
+        if settings.DEBUG:
+            self.debug_query(stm, True)
+
         return self.to_dict(queryset)
 
+    def stm_count(self, stm):
+        with self.engine.connect() as con:
+            # Over para que a contagem seja feita no final da query em casos
+            # que tenham counts ou distincts
+            stm_count = stm.with_only_columns([func.count().over().label('totalCount')]).limit(None).offset(None)
+            count = con.execute(stm_count).scalar()
+
+            if settings.DEBUG:
+                self.debug_query(stm_count, True)
+
+            return count
+
+
+    def debug_query(self, stm, with_parameters=False):
+        # TODO send debug to Log
+        print(str(stm.compile(
+            dialect=self.current_dialect,
+            compile_kwargs={"literal_binds": with_parameters})))
 
     def get_table_skybot(self):
-        schema = None 
+        schema = None
         if 'DB_SCHEMA' in os.environ:
             schema = os.environ['DB_SCHEMA']
 

@@ -7,7 +7,7 @@ class FilterObjectSearch extends Component {
     constructor(props) {
       super(props);
 
-      this.state = {search: "2002 TP36"};
+      this.state = {search: ""};
 
       this.handleChange = this.handleChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);

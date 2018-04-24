@@ -18,5 +18,5 @@ npm-debug.log
 *.iml
 .env
 
-
+.vscode
 

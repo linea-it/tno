@@ -8,50 +8,32 @@ import FilterObjectForm from './FilterObjectForm';
 import FilterObjectSearch from './FilterObjectSearch';
 import FilterObjectTable from './FilterObjectTable';
 
-const api = process.env.REACT_APP_API_FILTER_OBJECTS;
+const api = process.env.REACT_APP_API;
 
 class FilterObject extends Component {
   state = {
-    search: '',
+    searchPattern: '',
     objects: [],
+    totalSize: 0,
+    page: 1,
+    filters: {}
   };
 
   onSearch = pattern => {
-    this.setState({ search: pattern });
-
-    axios
-      .get(`${api}/object_by_name`, {
-        params: {
-          name: pattern,
-        },
-      })
-      .then(res => {
-        var result = res.data;
-        console.log(result);
-        if (result.success) {
-          this.setState({ objects: result.data });
-        }
-      });
+    this.setState({
+      searchPattern: pattern,
+      filters: {}
+     });
   };
 
   onFilter = filters => {
-    this.setState({ filters: filters });
-
-    axios
-      .get(`${api}/get_objects`, {
-        params: filters,
-      })
-      .then(res => {
-        var result = res.data;
-        console.log(result);
-        if (result.success) {
-          this.setState({ objects: result.data });
-        }
-
-        console.log(this.state.objects);
-      });
+    console.log('onFilter: ', filters)
+    this.setState({
+      filters: filters,
+      searchPattern: ''
+     });
   };
-
+  
   render() {
     return (
       <div className="content">
@@ -75,7 +57,12 @@ class FilterObject extends Component {
               <Card
                 title=""
                 category=""
-                content={<FilterObjectTable records={this.state.objects} />}
+                content={
+                  <FilterObjectTable
+                    filters={this.state.filters}
+                    searchPattern={this.state.searchPattern}
+                  />
+                }
               />
             </Col>
           </Row>
