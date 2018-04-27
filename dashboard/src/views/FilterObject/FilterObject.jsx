@@ -7,6 +7,7 @@ import Card from 'components/Card/Card.jsx';
 import FilterObjectForm from './FilterObjectForm';
 import FilterObjectSearch from './FilterObjectSearch';
 import FilterObjectTable from './FilterObjectTable';
+import CreateListForm from './CreateListForm';
 
 const api = process.env.REACT_APP_API;
 
@@ -16,7 +17,8 @@ class FilterObject extends Component {
     objects: [],
     totalSize: 0,
     page: 1,
-    filters: {}
+    filters: {},
+    showCreate: false
   };
 
   onSearch = pattern => {
@@ -36,9 +38,12 @@ class FilterObject extends Component {
 
   saveList = () => {
     console.log("saveList")
+
+    this.setState({ showCreate: true })
   }
 
   render() {
+    let closeCreate = () => this.setState({ showCreate: false })
     return (
       <div className="content">
         <Grid fluid>
@@ -72,6 +77,7 @@ class FilterObject extends Component {
             </Col>
           </Row>
         </Grid>
+        <CreateListForm show={ this.state.showCreate } onHide={closeCreate}/>
       </div>
     );
   }
