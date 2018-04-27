@@ -33,7 +33,11 @@ class FilterObject extends Component {
       searchPattern: ''
      });
   };
-  
+
+  saveList = () => {
+    console.log("saveList")
+  }
+
   render() {
     return (
       <div className="content">
@@ -61,6 +65,7 @@ class FilterObject extends Component {
                   <FilterObjectTable
                     filters={this.state.filters}
                     searchPattern={this.state.searchPattern}
+                    saveList={this.saveList}
                   />
                 }
               />

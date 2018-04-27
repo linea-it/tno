@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button, ButtonToolbar } from 'react-bootstrap';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
@@ -53,7 +54,8 @@ class FilterObjectTable extends Component {
       sizePerPage: 10,
       loading: false,
       filters:{},
-      searchPattern:{}
+      searchPattern:{},
+      haveData: false
     };
   }
 
@@ -130,7 +132,7 @@ class FilterObjectTable extends Component {
 
   render() {
     console.log("render()")
-    const { data, sizePerPage, page, totalSize, loading } = this.state;
+    const { data, sizePerPage, page, totalSize, loading, haveData } = this.state;
     const pagination = paginationFactory({
       page: page,
       sizePerPage: sizePerPage,
@@ -146,20 +148,29 @@ class FilterObjectTable extends Component {
     }
     return (
       <div>
-      <BootstrapTable
-        striped
-        hover
-        remote
-        keyField="fake_id"
-        noDataIndication="no results to display"
-        data={data}
-        columns={columns}
-        pagination={pagination}
-        onTableChange={this.handleTableChange}
-        loading={ loading }
-        overlay={ overlayFactory({ spinner: true, background: 'rgba(192,192,192,0.3)' }) }
-      />
-      <p className="text-left">{ rowsCount }</p>
+        <ButtonToolbar>
+          <Button
+            bsStyle="info"
+            fill
+            disabled={ !haveData }
+            onClick={this.props.saveList} >
+            Save
+          </Button>
+        </ButtonToolbar>
+        <BootstrapTable
+          striped
+          hover
+          remote
+          keyField="fake_id"
+          noDataIndication="no results to display"
+          data={data}
+          columns={columns}
+          pagination={pagination}
+          onTableChange={this.handleTableChange}
+          loading={ loading }
+          overlay={ overlayFactory({ spinner: true, background: 'rgba(192,192,192,0.3)' }) }
+        />
+        <p className="text-left">{ rowsCount }</p>
       </div>
     );
   }
