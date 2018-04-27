@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Button, ButtonToolbar } from 'react-bootstrap';
+import { ButtonToolbar } from 'react-bootstrap';
+import Button from 'elements/CustomButton/CustomButton.jsx';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
@@ -55,7 +56,7 @@ class FilterObjectTable extends Component {
       loading: false,
       filters:{},
       searchPattern:{},
-      haveData: false
+      haveData: true
     };
   }
 
