@@ -20,3 +20,7 @@ npm-debug.log
 
 .vscode
 
+
+# Postgres data file in development
+/pg_data
+/pg_backups
