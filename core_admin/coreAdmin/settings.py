@@ -83,28 +83,22 @@ WSGI_APPLICATION = 'coreAdmin.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-if 'DB_NAME' in os.environ:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.environ['DB_NAME'],
-            'USER': os.environ['DB_USER'],
-            'PASSWORD': os.environ['DB_PASS'],
-            'HOST': os.environ['DB_HOST'],
-            'PORT': os.environ['DB_PORT'],
-            'OPTIONS' : {
-                'options': '-c search_path=%s,public' % os.environ['DB_SCHEMA']
-            },            
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ['DB_NAME'],
+        'USER': os.environ['DB_USER'],
+        'PASSWORD': os.environ['DB_PASS'],
+        'HOST': os.environ['DB_HOST'],
+        'PORT': os.environ['DB_PORT'],
     }
-else: 
-    SQLITE_DATABASE = os.path.join(BASE_DIR, 'db.sqlite3')
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': SQLITE_DATABASE 
+}
+# caso o banco de dados tenha definido um schema
+if 'DB_SCHEMA' in os.environ:
+    DATABASES['default']['OPTIONS'] = {
+            'options': '-c search_path=%s,public' % os.environ['DB_SCHEMA']
         }
-    }
+
 
 
 # Password validation

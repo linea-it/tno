@@ -1,48 +1,50 @@
 import React, { Component } from 'react';
-import {FormGroup, FormControl, InputGroup } from 'react-bootstrap';
+import { FormGroup, FormControl, InputGroup } from 'react-bootstrap';
 import Button from 'elements/CustomButton/CustomButton.jsx';
 
-
 class FilterObjectSearch extends Component {
-    constructor(props) {
-      super(props);
+  constructor(props) {
+    super(props);
 
-      this.state = {search: ""};
+    this.state = { search: '' };
 
-      this.handleChange = this.handleChange.bind(this);
-      this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({ search: event.target.value });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    // Apenas executa o metodo do component parent passando o termo que foi
+    // usado na busca.
+    if (this.state.search) {
+      this.props.onSearch(this.state.search);
     }
+  }
 
-    handleChange(event) {
-      this.setState({search: event.target.value});
-    }
-
-    handleSubmit(event) {
-        event.preventDefault();
-        // Apenas executa o metodo do component parent passando o termo que foi
-        // usado na busca.
-        if (this.state.search) {
-            this.props.onSearch(this.state.search)
-        }
-    }
-
-    render() {
-        return (
-            <form>
-                <FormGroup>
-                  <InputGroup>
-                    <FormControl type="text" placeholder="Search By Name"
-                        value={this.state.search} onChange={this.handleChange}/>
-                    <InputGroup.Button>
-                        <Button onClick={this.handleSubmit}>Search</Button>
-                    </InputGroup.Button>
-                  </InputGroup>
-                </FormGroup>
-                <div className="clearfix"></div>
-            </form>
-        );
-    }
-
+  render() {
+    return (
+      <form>
+        <FormGroup>
+          <InputGroup>
+            <FormControl
+              type="text"
+              placeholder="Search By Name"
+              value={this.state.search}
+              onChange={this.handleChange}
+            />
+            <InputGroup.Button>
+              <Button onClick={this.handleSubmit}>Search</Button>
+            </InputGroup.Button>
+          </InputGroup>
+        </FormGroup>
+        <div className="clearfix" />
+      </form>
+    );
+  }
 }
 
 export default FilterObjectSearch;
