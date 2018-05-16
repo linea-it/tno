@@ -18,6 +18,25 @@ services:
   #   networks:
   #     - backend
 
+  # Database
+  database:
+    image: postgres:9.6
+    restart: always
+    env_file:
+      - .env
+    expose:
+      - 5432
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+      - ./pg_backups:/pg_backups
+      - ./database_subset:/data
+    # TODO acertar essas variaveis de ambiente
+    # environment:
+    #   - POSTGRES_USER=$DB_USER
+    #   - POSTGRES_PASSWORD=$DB_PASS
+    #   - POSTGRES_DB=$DB_NAME
+    networks:
+      - backend
 
   # Core Admin (Backend Django)
   core-admin:
@@ -30,18 +49,15 @@ services:
       - 7001:7001
     networks:
       - backend
+    depends_on:
+      - database
 
   # Dashboard
   dashboard:
     build: ./dashboard
     volumes:
       - ./dashboard:/src/app
-      # - ./dashboard/node_modules:/src/app/node_modules
     working_dir: /src/app
-    # links:
-    #     - filter-objects
-    depends_on:
-      - filter-objects
     ports:
       - 7000:3000
     networks:

@@ -8,7 +8,7 @@ import axios from 'axios';
 const api = process.env.REACT_APP_API;
 
 const columns = [
-  { dataField: 'object_table', text: 'Table' },
+  // { dataField: 'object_table', text: 'Table' },
   { dataField: 'name', text: 'Name' },
   { dataField: 'freq', text: 'Freq' },
   { dataField: 'more_than_one_filter', text: 'More Than One Filter' },
@@ -52,8 +52,8 @@ class FilterObjectTable extends Component {
       totalSize: 0,
       sizePerPage: 10,
       loading: false,
-      filters:{},
-      searchPattern:{}
+      filters: {},
+      searchPattern: {},
     };
   }
 
@@ -61,17 +61,17 @@ class FilterObjectTable extends Component {
   // https://rocketseat.com.br/blog/context-api-react-16-ciclo-de-vida/
   // getDerivedStateFromProps
   componentWillReceiveProps(nextProps) {
-    console.log('componentWillReceiveProps(%o)', nextProps)
+    console.log('componentWillReceiveProps(%o)', nextProps);
     this.setState({
       filters: nextProps.filters,
-      searchPattern: nextProps.searchPattern
+      searchPattern: nextProps.searchPattern,
     });
 
     this.fetchData({
       filters: nextProps.filters,
       page: this.state.page,
-      pattern: nextProps.searchPattern
-    })
+      pattern: nextProps.searchPattern,
+    });
   }
 
   handleTableChange = (type, { page, sizePerPage }) => {
@@ -80,21 +80,21 @@ class FilterObjectTable extends Component {
     this.fetchData({
       filters: this.state.filters,
       pattern: this.state.searchPattern,
-      page: page
-    })
+      page: page,
+    });
   };
 
   fetchData = ({ filters = {}, page = 1, pattern }, cb) => {
     console.log('fetchData()', filters, page, pattern);
 
-    if ((Object.keys(filters).length === 0) && (!pattern)){
-      console.log("nao faz nada")
+    if (Object.keys(filters).length === 0 && !pattern) {
+      console.log('nao faz nada');
       // Se nao tiver filtro nao executa o request
       this.setState({
         data: [],
         totalSize: 0,
         page: 1,
-        loading: false
+        loading: false,
       });
     } else {
       this.setState({ loading: true });
@@ -114,14 +114,14 @@ class FilterObjectTable extends Component {
           var r = res.data;
           if (r.success) {
             // Add a Fake ID for suppres warning
-            r.results.forEach(function (row, i) {
+            r.results.forEach(function(row, i) {
               row.fake_id = i;
             });
             this.setState({
               data: r.results,
               totalSize: r.count,
               page: page,
-              loading: false
+              loading: false,
             });
           }
         });
@@ -129,7 +129,7 @@ class FilterObjectTable extends Component {
   };
 
   render() {
-    console.log("render()")
+    console.log('render()');
     const { data, sizePerPage, page, totalSize, loading } = this.state;
     const pagination = paginationFactory({
       page: page,
@@ -140,26 +140,29 @@ class FilterObjectTable extends Component {
       hidePageListOnlyOnePage: true,
     });
 
-    var rowsCount = ""
+    var rowsCount = '';
     if (totalSize > 0) {
-      rowsCount = totalSize + " Rows"
+      rowsCount = totalSize + ' Rows';
     }
     return (
       <div>
-      <BootstrapTable
-        striped
-        hover
-        remote
-        keyField="fake_id"
-        noDataIndication="no results to display"
-        data={data}
-        columns={columns}
-        pagination={pagination}
-        onTableChange={this.handleTableChange}
-        loading={ loading }
-        overlay={ overlayFactory({ spinner: true, background: 'rgba(192,192,192,0.3)' }) }
-      />
-      <p className="text-left">{ rowsCount }</p>
+        <BootstrapTable
+          striped
+          hover
+          remote
+          keyField="fake_id"
+          noDataIndication="no results to display"
+          data={data}
+          columns={columns}
+          pagination={pagination}
+          onTableChange={this.handleTableChange}
+          loading={loading}
+          overlay={overlayFactory({
+            spinner: true,
+            background: 'rgba(192,192,192,0.3)',
+          })}
+        />
+        <p className="text-left">{rowsCount}</p>
       </div>
     );
   }

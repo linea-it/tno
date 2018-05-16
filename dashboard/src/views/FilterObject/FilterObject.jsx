@@ -16,24 +16,24 @@ class FilterObject extends Component {
     objects: [],
     totalSize: 0,
     page: 1,
-    filters: {}
+    filters: {},
   };
 
   onSearch = pattern => {
     this.setState({
       searchPattern: pattern,
-      filters: {}
-     });
+      filters: {},
+    });
   };
 
   onFilter = filters => {
-    console.log('onFilter: ', filters)
+    console.log('onFilter: ', filters);
     this.setState({
       filters: filters,
-      searchPattern: ''
-     });
+      searchPattern: '',
+    });
   };
-  
+
   render() {
     return (
       <div className="content">
