@@ -18,32 +18,32 @@ class FilterObject extends Component {
     totalSize: 0,
     page: 1,
     filters: {},
-    showCreate: false
+    showCreate: false,
   };
 
   onSearch = pattern => {
     this.setState({
       searchPattern: pattern,
-      filters: {}
-     });
+      filters: {},
+    });
   };
 
   onFilter = filters => {
-    console.log('onFilter: ', filters)
+    console.log('onFilter: ', filters);
     this.setState({
       filters: filters,
-      searchPattern: ''
-     });
+      searchPattern: '',
+    });
   };
 
   saveList = () => {
     console.log("saveList")
 
-    this.setState({ showCreate: true })
-  }
+    this.setState({ showCreate: true });
+  };
 
   render() {
-    let closeCreate = () => this.setState({ showCreate: false })
+    const closeCreate = () => this.setState({ showCreate: false })
     return (
       <div className="content">
         <Grid fluid>

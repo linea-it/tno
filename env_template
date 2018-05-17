@@ -1,7 +1,13 @@
+# FOR DEVELOPMENT WITH docker-compose
+
 # Database Settings for Django Backend "CoreAdmin"
-DB_NAME=<Database Name>
-DB_SCHEMA=<Database Schema>
-DB_USER=<Database User>
-DB_PASS=<Database Pass>
-DB_HOST=<Database Host>
-DB_PORT=<Database Port>
+DB_NAME=postgres
+DB_USER=postgres
+DB_PASS=postgres
+DB_HOST=database
+DB_PORT=5432
+
+# Variaveis usadas apenas no container do postgres em desenvolvimento
+POSTGRES_USER=$DB_USER
+POSTGRES_PASSWORD=$DB_PASS
+POSTGRES_DB=$DB_NAME
