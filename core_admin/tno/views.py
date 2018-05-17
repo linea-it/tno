@@ -100,3 +100,5 @@ class CustomListViewSet(viewsets.ModelViewSet):
     
     queryset = CustomList.objects.all()
     serializer_class = CustomListSerializer
+    filter_fields = ('id', 'displayname', 'tablename',)
+    search_fields = ('displayname', 'description',)
