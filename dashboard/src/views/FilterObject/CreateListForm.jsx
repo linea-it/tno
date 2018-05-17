@@ -38,8 +38,6 @@ class CreateListForm extends React.Component {
       .replace(/\s/gi, '_')
       .trim()
       .toLowerCase();
-
-    // TODO: Verificar se o nome de tabela esta disponivel.
     if (tablename.length > 3) {
       if (tablename.length >= 40) {
         this.setState({
@@ -49,6 +47,7 @@ class CreateListForm extends React.Component {
           nameHelpBlock: 'maximum of 40 characters',
         });
       } else {
+        // Verificar se tabela ja existe
         axios
           .get(`${api}/customlist/`, {
             params: {
@@ -85,6 +84,41 @@ class CreateListForm extends React.Component {
     }
   }
 
+  // validName = (e) => {
+
+  //   this.setState({ name: e.target.value })
+
+  //   if ((e.target.value.length > 40) || (e.target.value.length == '')) {
+  //     this.setState({ nameState: 'error' })
+  //   } else {
+  //     this.setState({ nameState: 'success' })
+  //   }
+
+  //   this.validForm();
+  // };
+
+  // validDescription = (e) => {
+
+  //   this.setState({ description: e.target.value })
+
+  //   if ((e.target.value.length == 0) || (e.target.value.length == '')) {
+  //     this.setState({ descriptionState: 'error' })
+  //   } else {
+  //     this.setState({ descriptionState: 'success' })
+  //   }
+
+  //   this.validForm()
+  // };
+
+  // validForm = () => {
+  //   if ((this.state.nameState == 'success') && (this.state.descriptionState == 'success')) {
+  //     this.setState({ formValid: true })
+  //   } else {
+  //     this.setState({ formValid: false })
+  //   }
+  // };
+
+
   render() {
     return (
       <Modal {...this.props}>
@@ -93,7 +127,7 @@ class CreateListForm extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+          Save this result to a new table..
           </p>
           <Form>
             <FormGroup validationState={this.state.nameValidationState}>
