@@ -7,6 +7,7 @@ import Card from 'components/Card/Card.jsx';
 import FilterObjectForm from './FilterObjectForm';
 import FilterObjectSearch from './FilterObjectSearch';
 import FilterObjectTable from './FilterObjectTable';
+import CreateListForm from './CreateListForm';
 
 const api = process.env.REACT_APP_API;
 
@@ -17,6 +18,7 @@ class FilterObject extends Component {
     totalSize: 0,
     page: 1,
     filters: {},
+    showCreate: false,
   };
 
   onSearch = pattern => {
@@ -27,14 +29,31 @@ class FilterObject extends Component {
   };
 
   onFilter = filters => {
-    console.log('onFilter: ', filters);
     this.setState({
       filters: filters,
       searchPattern: '',
     });
   };
 
+  saveList = () => {
+    this.setState({ showCreate: true });
+  };
+
+  createCustomList = (displayname, tablename, description) => {
+    console.log(
+      'createCustomList(%o, %o, %o)',
+      displayname,
+      tablename,
+      description
+    );
+
+    console.log('filters:', this.state.filters);
+
+    // Todo criar metodo para salvar a lista
+  };
+
   render() {
+    const closeCreate = () => this.setState({ showCreate: false });
     return (
       <div className="content">
         <Grid fluid>
@@ -61,12 +80,18 @@ class FilterObject extends Component {
                   <FilterObjectTable
                     filters={this.state.filters}
                     searchPattern={this.state.searchPattern}
+                    saveList={this.saveList}
                   />
                 }
               />
             </Col>
           </Row>
         </Grid>
+        <CreateListForm
+          show={this.state.showCreate}
+          onHide={closeCreate}
+          save={this.createCustomList}
+        />
       </div>
     );
   }

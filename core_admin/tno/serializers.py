@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from django.contrib.auth.models import User
-from .models import Pointing, SkybotOutput
+from .models import Pointing, SkybotOutput, CustomList
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -52,3 +52,20 @@ class ObjectClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = SkybotOutput
         fields = ('dynclass',)
+
+class CustomListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomList
+        fields = (
+            'displayname',
+            'description',
+            'database',
+            'schema',
+            'tablename',
+            'rows',
+            'columns',
+            'size',
+            'creation_date',
+            'sql',
+            'sql_creation'
+        )

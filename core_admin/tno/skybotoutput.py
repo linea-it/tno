@@ -113,3 +113,7 @@ class FilterObjects(DBBase):
         rows = self.fetch_all_dict(stm)
 
         return rows, totalSize
+
+
+    def create_object_list(self):
+        print("create_object_list")

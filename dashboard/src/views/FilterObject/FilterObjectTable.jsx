@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { ButtonToolbar } from 'react-bootstrap';
+import Button from 'elements/CustomButton/CustomButton.jsx';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
@@ -54,6 +56,7 @@ class FilterObjectTable extends Component {
       loading: false,
       filters: {},
       searchPattern: {},
+      haveData: true,
     };
   }
 
@@ -61,7 +64,7 @@ class FilterObjectTable extends Component {
   // https://rocketseat.com.br/blog/context-api-react-16-ciclo-de-vida/
   // getDerivedStateFromProps
   componentWillReceiveProps(nextProps) {
-    console.log('componentWillReceiveProps(%o)', nextProps);
+    // console.log('componentWillReceiveProps(%o)', nextProps);
     this.setState({
       filters: nextProps.filters,
       searchPattern: nextProps.searchPattern,
@@ -75,7 +78,7 @@ class FilterObjectTable extends Component {
   }
 
   handleTableChange = (type, { page, sizePerPage }) => {
-    console.log('handleTableChange()');
+    // console.log('handleTableChange()');
 
     this.fetchData({
       filters: this.state.filters,
@@ -85,10 +88,9 @@ class FilterObjectTable extends Component {
   };
 
   fetchData = ({ filters = {}, page = 1, pattern }, cb) => {
-    console.log('fetchData()', filters, page, pattern);
+    // console.log('fetchData()', filters, page, pattern);
 
     if (Object.keys(filters).length === 0 && !pattern) {
-      console.log('nao faz nada');
       // Se nao tiver filtro nao executa o request
       this.setState({
         data: [],
@@ -129,8 +131,14 @@ class FilterObjectTable extends Component {
   };
 
   render() {
-    console.log('render()');
-    const { data, sizePerPage, page, totalSize, loading } = this.state;
+    const {
+      data,
+      sizePerPage,
+      page,
+      totalSize,
+      loading,
+      haveData,
+    } = this.state;
     const pagination = paginationFactory({
       page: page,
       sizePerPage: sizePerPage,
@@ -146,6 +154,16 @@ class FilterObjectTable extends Component {
     }
     return (
       <div>
+        <ButtonToolbar>
+          <Button
+            bsStyle="info"
+            fill
+            disabled={!haveData}
+            onClick={this.props.saveList}
+          >
+            Save
+          </Button>
+        </ButtonToolbar>
         <BootstrapTable
           striped
           hover

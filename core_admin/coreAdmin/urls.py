@@ -21,12 +21,13 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
 
-from tno.views import UserViewSet, SkybotOutputViewSet, ObjectClassViewSet
+from tno.views import UserViewSet, SkybotOutputViewSet, ObjectClassViewSet, CustomListViewSet
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'skybotoutput', SkybotOutputViewSet)
 router.register(r'objectclass', ObjectClassViewSet)
+router.register(r'customlist', CustomListViewSet)
 
 urlpatterns = router.urls
 

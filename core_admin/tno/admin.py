@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Pointing, SkybotOutput, CcdImage
+from .models import Pointing, SkybotOutput, CcdImage, CustomList
 
 @admin.register(Pointing)
 class PointingAdmin(admin.ModelAdmin):
@@ -10,10 +10,11 @@ class PointingAdmin(admin.ModelAdmin):
 
 @admin.register(SkybotOutput)
 class SkybotOutputAdmin(admin.ModelAdmin):
-    list_display = ('id', 'pointing', 'name', 'dynclass', 'raj2000', 'decj2000', 'expnum', 'ccdnum', 'band',)
+    list_display = ('id', 'pointing', 'name', 'dynclass', 'raj2000',
+        'decj2000', 'expnum', 'ccdnum', 'band',)
     search_fields = ('name', 'dynaclass', 'expnum')
 
-    # Retira do Formulario a campo de chave estrangeira "pointing" 
+    # Retira do Formulario a campo de chave estrangeira "pointing"
     # que tem milhares de registros e causa tavamento da interface
     # exclude = ('pointing',)
 
@@ -22,8 +23,15 @@ class SkybotOutputAdmin(admin.ModelAdmin):
 
 @admin.register(CcdImage)
 class CcdImageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'desfile_id', 'filename', 'download_start_time', 'download_finish_time', 'file_size',)
+    list_display = ('id', 'desfile_id', 'filename', 'download_start_time',
+        'download_finish_time', 'file_size',)
     search_fields = ('desfile_id', 'filename',)
 
     # Troca o tipo de imput de Select para um text field com botao de busca
     raw_id_fields = ('pointing',)
+
+@admin.register(CustomList)
+class CustomListAdmin(admin.ModelAdmin):
+    list_display = ('id', 'displayname', 'schema', 'tablename', 'rows',
+        'columns', 'size', 'creation_date')
+    search_fields = ('displayname', 'tablename', 'description')

@@ -10,9 +10,9 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User
 
-from .serializers import UserSerializer, SkybotOutputSerializer, ObjectClassSerializer
+from .serializers import UserSerializer, SkybotOutputSerializer, ObjectClassSerializer , CustomListSerializer
 
-from .models import SkybotOutput
+from .models import SkybotOutput, CustomList
 
 from .skybotoutput import FilterObjects
 
@@ -93,3 +93,12 @@ class ObjectClassViewSet(viewsets.GenericViewSet,
     serializer_class = ObjectClassSerializer
     # Turn off pagination Class
     pagination_class = None
+
+
+
+class CustomListViewSet(viewsets.ModelViewSet):
+    
+    queryset = CustomList.objects.all()
+    serializer_class = CustomListSerializer
+    filter_fields = ('id', 'displayname', 'tablename',)
+    search_fields = ('displayname', 'description',)
