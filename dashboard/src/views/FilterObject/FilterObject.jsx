@@ -29,7 +29,6 @@ class FilterObject extends Component {
   };
 
   onFilter = filters => {
-    console.log('onFilter: ', filters);
     this.setState({
       filters: filters,
       searchPattern: '',
@@ -37,13 +36,24 @@ class FilterObject extends Component {
   };
 
   saveList = () => {
-    console.log("saveList")
-
     this.setState({ showCreate: true });
   };
 
+  createCustomList = (displayname, tablename, description) => {
+    console.log(
+      'createCustomList(%o, %o, %o)',
+      displayname,
+      tablename,
+      description
+    );
+
+    console.log('filters:', this.state.filters);
+
+    // Todo criar metodo para salvar a lista
+  };
+
   render() {
-    const closeCreate = () => this.setState({ showCreate: false })
+    const closeCreate = () => this.setState({ showCreate: false });
     return (
       <div className="content">
         <Grid fluid>
@@ -77,7 +87,11 @@ class FilterObject extends Component {
             </Col>
           </Row>
         </Grid>
-        <CreateListForm show={ this.state.showCreate } onHide={closeCreate}/>
+        <CreateListForm
+          show={this.state.showCreate}
+          onHide={closeCreate}
+          save={this.createCustomList}
+        />
       </div>
     );
   }

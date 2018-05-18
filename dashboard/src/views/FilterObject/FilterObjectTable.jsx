@@ -78,7 +78,7 @@ class FilterObjectTable extends Component {
   }
 
   handleTableChange = (type, { page, sizePerPage }) => {
-    console.log('handleTableChange()');
+    // console.log('handleTableChange()');
 
     this.fetchData({
       filters: this.state.filters,
@@ -88,10 +88,9 @@ class FilterObjectTable extends Component {
   };
 
   fetchData = ({ filters = {}, page = 1, pattern }, cb) => {
-    console.log('fetchData()', filters, page, pattern);
+    // console.log('fetchData()', filters, page, pattern);
 
     if (Object.keys(filters).length === 0 && !pattern) {
-      console.log('nao faz nada');
       // Se nao tiver filtro nao executa o request
       this.setState({
         data: [],
@@ -132,7 +131,6 @@ class FilterObjectTable extends Component {
   };
 
   render() {
-    console.log('render()');
     const {
       data,
       sizePerPage,
