@@ -9,6 +9,7 @@ import {
 } from 'react-bootstrap';
 import Button from 'elements/CustomButton/CustomButton.jsx';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 
 const api = process.env.REACT_APP_API;
 
@@ -24,6 +25,10 @@ class CreateListForm extends React.Component {
       nameHelpBlock: '',
     };
   }
+
+  static propTypes = {
+    save: PropTypes.func.isRequired,
+  };
 
   handleChangeName = event => {
     this.setState(

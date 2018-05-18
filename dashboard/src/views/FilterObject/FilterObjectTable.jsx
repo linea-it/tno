@@ -64,7 +64,7 @@ class FilterObjectTable extends Component {
   // https://rocketseat.com.br/blog/context-api-react-16-ciclo-de-vida/
   // getDerivedStateFromProps
   componentWillReceiveProps(nextProps) {
-    console.log('componentWillReceiveProps(%o)', nextProps);
+    // console.log('componentWillReceiveProps(%o)', nextProps);
     this.setState({
       filters: nextProps.filters,
       searchPattern: nextProps.searchPattern,
