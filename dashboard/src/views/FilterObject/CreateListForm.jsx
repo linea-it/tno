@@ -27,7 +27,7 @@ class CreateListForm extends React.Component {
   }
 
   static propTypes = {
-    save: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired,
   };
 
   handleChangeName = event => {
@@ -86,7 +86,7 @@ class CreateListForm extends React.Component {
   onSaveList = () => {
     console.log('onSaveList');
 
-    this.props.save(
+    this.props.onSave(
       this.state.displayName,
       this.state.tablename,
       this.state.description

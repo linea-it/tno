@@ -90,7 +90,7 @@ class FilterObject extends Component {
         <CreateListForm
           show={this.state.showCreate}
           onHide={closeCreate}
-          save={this.createCustomList}
+          onSave={this.createCustomList}
         />
       </div>
     );
