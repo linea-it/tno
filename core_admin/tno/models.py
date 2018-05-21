@@ -363,7 +363,8 @@ class CustomList(models.Model):
         max_length=128, verbose_name='Name', help_text='List name')
 
     description = models.TextField(
-        verbose_name='Description'
+        verbose_name='Description',
+        null=True, blank=True
     )
 
     database = models.CharField(
@@ -372,7 +373,7 @@ class CustomList(models.Model):
 
     schema = models.CharField(
         max_length=128,
-        verbose_name='Schema name', null=True, blank=True)
+        verbose_name='Schema', null=True, blank=True)
 
     tablename = models.CharField(
         max_length=128,
@@ -391,6 +392,12 @@ class CustomList(models.Model):
         verbose_name='Creation Date',
         auto_now_add=True, null=True, blank=True)
 
+    creation_time = models.IntegerField(
+        verbose_name='Creation Time',
+        help_text='Creation Time in seconds',
+        null=True, blank=True
+    )
+
     sql = models.TextField(
         verbose_name="SQL",
         null=True, blank=True,
@@ -402,3 +409,37 @@ class CustomList(models.Model):
         null=True, blank=True,
         help_text="Sql used in table creation"
     )
+
+    filter_name = models.CharField(
+        max_length=32,
+        verbose_name='Filter Name',
+        help_text='Filter By Object name.',
+        null=True, blank=True 
+    )
+
+    filter_dynclass = models.CharField(
+        max_length=256,
+        verbose_name='Filter Classification',
+        help_text='Filter by Object class (TNO, Centaur, Trojan, etc.).',
+        null=True, blank=True 
+    )
+
+    filter_magnitude = models.FloatField(
+        verbose_name='Filter Magnitude',
+        help_text = 'Filter by Object Magnitude',
+        null=True, blank=True 
+    )
+
+    filter_diffdatenights = models.FloatField(
+        verbose_name='Filter diff nights',
+        help_text= 'Filter by minimun difference time between observations',
+        null=True, blank=True 
+    )
+
+    filter_morefilter = models.BooleanField(
+        verbose_name='Filter more Bands',
+        help_text='Filter by objects with more than one filter in the some night',
+        default=False
+    )
+
+    

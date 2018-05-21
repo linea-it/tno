@@ -3,6 +3,7 @@ import os
 from .db import DBBase
 from sqlalchemy.sql import select, and_, or_, func, subquery
 from sqlalchemy import create_engine, inspect, MetaData, func, Table, Column, Integer, String, Float, Boolean, literal_column, null
+from django.utils import timezone
 
 class FilterObjects(DBBase):
 
@@ -144,6 +145,8 @@ class FilterObjects(DBBase):
                         tablename, name, objectTable, 
                         magnitude, diffDateNights, moreFilter):
 
+        start = timezone.now()
+
         # Recuperar o stm que retorna todos os objetos que atendem o filtro
         stm = self.get_objects_stm(
             name=name, objectTable=objectTable, magnitude=magnitude, 
@@ -184,6 +187,10 @@ class FilterObjects(DBBase):
             tbl_columns = self.get_table_columns(tablename, schema)
             total_columns = len(tbl_columns)
 
+            finish = timezone.now()
+            tdelta = finish - start
+            seconds = tdelta.total_seconds()
+
             result = dict({
                 "tablename": tablename,
                 "schema": schema,
@@ -192,7 +199,8 @@ class FilterObjects(DBBase):
                 "rows": total_count,
                 "n_columns": total_columns, 
                 "columns": tbl_columns, 
-                "size": tbl_status.get("total_bytes") 
+                "size": tbl_status.get("total_bytes"),
+                "creation_time": seconds
             })
 
             return result
