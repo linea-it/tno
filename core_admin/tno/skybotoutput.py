@@ -1,8 +1,8 @@
 
-
+import os
 from .db import DBBase
 from sqlalchemy.sql import select, and_, or_, func, subquery
-from sqlalchemy import literal_column, null
+from sqlalchemy import create_engine, inspect, MetaData, func, Table, Column, Integer, String, Float, Boolean, literal_column, null
 
 class FilterObjects(DBBase):
 
@@ -17,6 +17,11 @@ class FilterObjects(DBBase):
 
         self.table = None
 
+    def get_table_skybot(self):
+        schema = self.get_base_schema()
+        self.tbl_skybot = self.get_table('tno_skybotoutput', schema)
+
+        return self.tbl_skybot
 
     def get_base_stm(self):
 
@@ -42,7 +47,7 @@ class FilterObjects(DBBase):
         return stm
 
 
-    def get_objects(self,
+    def get_objects_stm(self,
             name=None, objectTable=None, magnitude=None, diffDateNights=None,
             moreFilter=None, page=1, pageSize=100):
 
@@ -55,8 +60,6 @@ class FilterObjects(DBBase):
             magnitude (float): magnitude less than or equal to
             diffDateNights
 
-        Returns:
-            (rows, count) Returns the list of objects and the total of found objects.
         """
         stm = self.get_base_stm()
         cols = self.table.c
@@ -108,6 +111,28 @@ class FilterObjects(DBBase):
             offset = (int(page) * int(pageSize)) - int(pageSize)
             stm = stm.offset(offset)
 
+        return stm
+
+    def get_objects(self,
+            name=None, objectTable=None, magnitude=None, diffDateNights=None,
+            moreFilter=None, page=1, pageSize=100):
+
+        """Applies the filters to the skybot output table and returns the list
+        of objects that meet the requirements.
+
+        Args:
+            name (str): Object Name.
+            objectTable (str): Object class, dynclass column in skybot output table.
+            magnitude (float): magnitude less than or equal to
+            diffDateNights
+
+        Returns:
+            (rows, count) Returns the list of objects and the total of found objects.
+        """
+
+        stm = self.get_objects_stm(
+            name, objectTable, magnitude, diffDateNights, moreFilter, page, pageSize)
+
         totalSize = self.stm_count(stm)
 
         rows = self.fetch_all_dict(stm)
@@ -115,5 +140,62 @@ class FilterObjects(DBBase):
         return rows, totalSize
 
 
-    def create_object_list(self):
-        print("create_object_list")
+    def create_object_list(self, 
+                        tablename, name, objectTable, 
+                        magnitude, diffDateNights, moreFilter):
+
+        # Recuperar o stm que retorna todos os objetos que atendem o filtro
+        stm = self.get_objects_stm(
+            name=name, objectTable=objectTable, magnitude=magnitude, 
+            diffDateNights=diffDateNights, moreFilter=moreFilter, pageSize=None
+        )
+
+        self.debug_query(stm, True)
+
+        # Trocar as colunas, para retornar apenas os nomes dos objetos e retirar o limit.
+        cols = self.table.c
+
+        # Todos os objetos por nome
+        stm_content = stm.with_only_columns([cols.name]).limit(None)
+        self.debug_query(stm_content, True)
+
+        # Query com todos as linhas que contem estes objetos, name in (stm_content).
+        all_stm = select([self.table], cols.name.in_(stm_content))
+
+        self.debug_query(all_stm, True)
+
+        # Create table As
+        # TODO este schema precisa ser revisto talvez criar um schema para conter todas as customLists ou um schema por procces_id.
+        schema = self.get_base_schema()
+
+        try:
+            create_stm = self.create_table_as(
+                tablename, all_stm, schema=schema)
+      
+            new_tbl = self.get_table(tablename, schema)
+
+            # Total de linhas na nova tabela
+            total_count = self.get_count(new_tbl)
+
+            # Infos de Status da nova tabela
+            tbl_status = self.get_table_status(tablename, schema)
+
+            # Colunas da nova tabela
+            tbl_columns = self.get_table_columns(tablename, schema)
+            total_columns = len(tbl_columns)
+
+            result = dict({
+                "tablename": tablename,
+                "schema": schema,
+                "sql_content": self.stm_to_str(stm_content, True), 
+                "sql_create": create_stm,
+                "rows": total_count,
+                "n_columns": total_columns, 
+                "columns": tbl_columns, 
+                "size": tbl_status.get("total_bytes") 
+            })
+
+            return result
+
+        except Exception as e:
+            raise(e)

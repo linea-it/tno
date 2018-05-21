@@ -102,3 +102,26 @@ class CustomListViewSet(viewsets.ModelViewSet):
     serializer_class = CustomListSerializer
     filter_fields = ('id', 'displayname', 'tablename',)
     search_fields = ('displayname', 'description',)
+
+    @list_route()
+    def test(self, request):
+
+        print("Entrou na funcao de test")
+
+        tablename = 'test'
+        name = None
+        objectTable = 'Centaur'
+        magnitude = None
+        diffDateNights = None
+        moreFilter = None
+
+        result = FilterObjects().create_object_list(
+                        tablename, name, objectTable, 
+                        magnitude, diffDateNights, moreFilter)
+
+
+        print(result)
+
+        return Response({
+            'success': True,
+        })
