@@ -4,7 +4,8 @@ FROM node:8.3
 COPY . /src/app
 WORKDIR /src/app
 
-RUN yarn install 
+RUN yarn -v
+RUN yarn 
 
 COPY . .
 

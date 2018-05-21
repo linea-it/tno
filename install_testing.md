@@ -41,3 +41,32 @@ ALTER USER postgres WITH PASSWORD 'postgres';
 ```
 
 ### Create a superuser in Django
+run createsuperuser to create a admin user in Django.
+with the docker running open a new terminal and run this command.
+```
+ docker exec -it tnotest_core-admin_1 python manage.py createsuperuser
+```
+
+### Importar os csv para o banco de dados
+Com o Container Database rodando, verificar se o diretorio com os csv está montado como volume no container. 
+executar os comando do psql para importar as tabelas. nos exemplos o diretorio com os CSVs esta montado em /data.
+
+Usar o comando docker ps para saber o nome do container que esta rodando neste exemplo 'tno_database_1'
+``` 
+docker ps 
+``` 
+
+#### Pointings
+```
+docker exec -it tno_database_1 psql -h localhost -U postgres -c "\\copy tno_pointing from '/data/tno_pointings.csv' DELIMITER ';' CSV HEADER"
+```
+
+#### CCD Images
+```
+docker exec -it tno_database_1 psql -h localhost -U postgres -c "\\copy tno_ccdimage from '/data/tno_ccdimage.csv' DELIMITER ';' CSV HEADER"
+```
+
+#### Skybot Output
+```
+docker exec -it tno_database_1 psql -h localhost -U postgres -c "\\copy tno_skybotoutput from '/data/tno_skybotoutput.csv' DELIMITER ';' CSV HEADER"
+```
