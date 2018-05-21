@@ -28,8 +28,10 @@ cp env_template .env
 docker-compose build
 ```
 
+### Prepare Database
+
 ```
-docker-compose up
+docker-compose up database
 ```
 
 OBS: Se der erro de authenticação entrar no container do database e mudar a senha do usuario postgres. 
@@ -41,6 +43,12 @@ ALTER USER postgres WITH PASSWORD 'postgres';
 ```
 
 ### Create a superuser in Django
+Stop database container and up core-admin
+
+```
+docker-compose up core-admin
+```
+
 run createsuperuser to create a admin user in Django.
 with the docker running open a new terminal and run this command.
 ```
@@ -70,3 +78,11 @@ docker exec -it tno_database_1 psql -h localhost -U postgres -c "\\copy tno_ccdi
 ```
 docker exec -it tno_database_1 psql -h localhost -U postgres -c "\\copy tno_skybotoutput from '/data/tno_skybotoutput.csv' DELIMITER ';' CSV HEADER"
 ```
+
+### Run 
+Stop all containers and run in background mode
+```
+docker-compose up -d
+```
+
+## Configure ngnix
