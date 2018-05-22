@@ -37,6 +37,12 @@ class DBBase():
 
         return db_uri
 
+    def get_database(self):
+        if 'DB_NAME' in os.environ:
+            return os.environ['DB_NAME']
+        else:
+            return None
+
     def get_base_schema(self):
         schema = None
         if 'DB_SCHEMA' in os.environ:

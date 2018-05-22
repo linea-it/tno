@@ -169,6 +169,7 @@ class FilterObjects(DBBase):
 
         # Create table As
         # TODO este schema precisa ser revisto talvez criar um schema para conter todas as customLists ou um schema por procces_id.
+        databse = self.get_database()
         schema = self.get_base_schema()
 
         try:
@@ -192,10 +193,11 @@ class FilterObjects(DBBase):
             seconds = tdelta.total_seconds()
 
             result = dict({
+                "database": databse,
                 "tablename": tablename,
                 "schema": schema,
                 "sql_content": self.stm_to_str(stm_content, True), 
-                "sql_create": create_stm,
+                "sql_creation": create_stm,
                 "rows": total_count,
                 "n_columns": total_columns, 
                 "columns": tbl_columns, 

@@ -32,6 +32,6 @@ class CcdImageAdmin(admin.ModelAdmin):
 
 @admin.register(CustomList)
 class CustomListAdmin(admin.ModelAdmin):
-    list_display = ('id', 'displayname', 'schema', 'tablename', 'rows',
-        'columns', 'size', 'creation_date')
+    list_display = ('id', 'status', 'displayname', 'schema', 'tablename', 'owner', 'rows',
+        'n_columns', 'size', 'creation_date', 'creation_time', )
     search_fields = ('displayname', 'tablename', 'description')

@@ -63,9 +63,16 @@ class CustomListSerializer(serializers.ModelSerializer):
             'schema',
             'tablename',
             'rows',
+            'n_columns',
             'columns',
             'size',
             'creation_date',
+            'creation_time',
             'sql',
-            'sql_creation'
+            'sql_creation',
+            'filter_name',
+            'filter_dynclass',
+            'filter_magnitude',
+            'filter_diffdatenights',
+            'filter_morefilter'
         )

@@ -1,5 +1,6 @@
 from django.db import models
-
+from current_user import get_current_user
+from django.conf import settings
 class Pointing(models.Model):
 
     pfw_attempt_id = models.BigIntegerField(
@@ -359,6 +360,10 @@ class CcdImage(models.Model):
 
 class CustomList(models.Model):
 
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE, default=get_current_user, verbose_name='Owner')
+
     displayname = models.CharField(
         max_length=128, verbose_name='Name', help_text='List name')
 
@@ -382,8 +387,15 @@ class CustomList(models.Model):
     rows = models.PositiveIntegerField(
         verbose_name='Num of rows', null=True, blank=True)
 
-    columns = models.PositiveIntegerField(
+    n_columns = models.PositiveIntegerField(
         verbose_name='Num of columns', null=True, blank=True)
+    
+    columns = models.CharField(
+        verbose_name='Columns',
+        max_length=1024,
+        help_text='Column names separated by comma.',
+        null=True, blank=True
+    )
 
     size = models.PositiveIntegerField(
         verbose_name='Size in bytes', null=True, blank=True)
@@ -392,7 +404,7 @@ class CustomList(models.Model):
         verbose_name='Creation Date',
         auto_now_add=True, null=True, blank=True)
 
-    creation_time = models.IntegerField(
+    creation_time = models.FloatField(
         verbose_name='Creation Time',
         help_text='Creation Time in seconds',
         null=True, blank=True
@@ -442,4 +454,14 @@ class CustomList(models.Model):
         default=False
     )
 
-    
+    status = models.CharField(
+        max_length=10,
+        verbose_name='Status', 
+        default='pending', null=True, blank=True,
+        choices=(('pending','Pending'),('running','Running'),('success','Success'),('error','Error'))
+    )
+
+    error_msg = models.TextField(
+        verbose_name='Error Message',
+        null=True, blank=True
+    )
