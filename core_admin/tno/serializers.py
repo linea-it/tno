@@ -54,14 +54,19 @@ class ObjectClassSerializer(serializers.ModelSerializer):
         fields = ('dynclass',)
 
 class CustomListSerializer(serializers.ModelSerializer):
+    owner = serializers.SerializerMethodField()
+    creation_date = serializers.DateTimeField(read_only=True)
+
     class Meta:
         model = CustomList
         fields = (
+            'id',
+            'owner',
             'displayname',
+            'tablename',            
             'description',
             'database',
             'schema',
-            'tablename',
             'rows',
             'n_columns',
             'columns',
@@ -69,10 +74,18 @@ class CustomListSerializer(serializers.ModelSerializer):
             'creation_date',
             'creation_time',
             'sql',
-            'sql_creation',
+            'sql_creation',            
             'filter_name',
             'filter_dynclass',
             'filter_magnitude',
             'filter_diffdatenights',
-            'filter_morefilter'
+            'filter_morefilter',
+            'status',
+            'error_msg'
         )
+
+    def get_owner(self, obj):
+        try:
+            return obj.owner.username
+        except:
+            return None

@@ -18,7 +18,8 @@ def init_new_user(sender, instance, signal, created, **kwargs):
 @receiver(post_save, sender=CustomList)
 def create_custom_list_table(sender, instance, signal, created, **kwargs):
     """
-        This method creates the table related to customList
+        This method performs the function responsible for creating 
+        the table related to Customlist, after running updates the status and data of the CustomList.
     """
     if created:
         try:

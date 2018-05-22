@@ -362,7 +362,7 @@ class CustomList(models.Model):
 
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, default=get_current_user, verbose_name='Owner')
+        on_delete=models.CASCADE, default=None, verbose_name='Owner', null=True, blank=True)
 
     displayname = models.CharField(
         max_length=128, verbose_name='Name', help_text='List name')

@@ -11,13 +11,11 @@ class CurrentUserMiddleware():
     def __call__(self, request):
         # Code to be executed for each request before
         # the view (and later middleware) are called.
-        _user.value = request.user
-
         response = self.get_response(request)
 
+        _user.value = request.user
         # Code to be executed for each request/response after
         # the view is called.
-
         return response
 
 

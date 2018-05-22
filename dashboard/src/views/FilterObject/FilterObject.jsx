@@ -40,16 +40,36 @@ class FilterObject extends Component {
   };
 
   createCustomList = (displayname, tablename, description) => {
-    console.log(
-      'createCustomList(%o, %o, %o)',
-      displayname,
-      tablename,
-      description
-    );
+    const filters = this.state.filters;
 
-    console.log('filters:', this.state.filters);
+    console.log('filters:', filters);
 
+    const params = {
+      displayname: displayname,
+      tablename: tablename,
+      description: description,
+      filter_dynclass: filters.objectTable,
+      filter_morefilter: filters.moreFilter,
+    };
+
+    // filtro por magnitude
+    if (filters.useMagnitude) {
+      params.filter_magnitude = filters.magnitude;
+    }
+    if (filters.useDifferenceTime) {
+      params.filter_diffdatenights = filters.diffDateNights;
+    }
+
+    console.log(params)
     // Todo criar metodo para salvar a lista
+    axios
+      .post(`${api}/customlist/`, params)
+      .then(function(response) {
+        console.log(response);
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
   };
 
   render() {
