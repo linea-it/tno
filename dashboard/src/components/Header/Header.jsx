@@ -45,7 +45,12 @@ class Header extends Component {
             name = prop.name;
           }
         } else {
-          if (prop.path === this.props.location.pathname) {
+          // Verificar se o prop.path e igual ao location ou se espera algum parametro,
+          // se esperar parametro pode usar o mesmo nome
+          if (
+            prop.path === this.props.location.pathname ||
+            prop.path.indexOf(':') !== -1
+          ) {
             name = prop.name;
           }
         }

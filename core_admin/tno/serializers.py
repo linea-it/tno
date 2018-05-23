@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from django.contrib.auth.models import User
 from .models import Pointing, SkybotOutput, CustomList
+import humanize
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -56,6 +57,7 @@ class ObjectClassSerializer(serializers.ModelSerializer):
 class CustomListSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
     creation_date = serializers.DateTimeField(read_only=True)
+    h_size = serializers.SerializerMethodField()
 
     class Meta:
         model = CustomList
@@ -81,11 +83,18 @@ class CustomListSerializer(serializers.ModelSerializer):
             'filter_diffdatenights',
             'filter_morefilter',
             'status',
-            'error_msg'
+            'error_msg',
+            'h_size',
         )
 
     def get_owner(self, obj):
         try:
             return obj.owner.username
+        except:
+            return None
+
+    def get_h_size(self, obj):
+        try:
+            return humanize.naturalsize(obj.size)
         except:
             return None

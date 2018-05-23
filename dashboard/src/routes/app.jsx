@@ -3,6 +3,7 @@ import SolarSystems from 'views/SolarSystems/SolarSystems';
 import FilterObject from 'views/FilterObject/FilterObject';
 import GetPointings from 'views/GetPointings/GetPointings';
 import ExposureDownload from 'views/ExposureDownload/ExposureDownload';
+import ObjectList from 'views/ObjectList/ObjectList';
 
 import Dashboard from 'views/Dashboard/Dashboard';
 import UserProfile from 'views/UserProfile/UserProfile';
@@ -36,6 +37,12 @@ const appRoutes = [
     name: 'Filter Objects',
     icon: 'pe-7s-filter',
     component: FilterObject,
+  },
+  {
+    path: '/objects/:id',
+    name: 'Objects',
+    // icon: 'pe-7s-filter',
+    component: ObjectList,
   },
   {
     path: '/exposuredownload',

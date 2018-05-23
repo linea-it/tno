@@ -16,7 +16,11 @@ const api = process.env.REACT_APP_API;
 class CreateListForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
+    this.state = this.initialState;
+  }
+
+  get initialState() {
+    return {
       displayName: '',
       tablename: '',
       description: '',
@@ -27,7 +31,13 @@ class CreateListForm extends React.Component {
   }
 
   static propTypes = {
+    show: PropTypes.bool.isRequired,
     onSave: PropTypes.func.isRequired,
+    onHide: PropTypes.func.isRequired,
+  };
+
+  resetState = () => {
+    this.setState(this.initialState);
   };
 
   handleChangeName = event => {
@@ -93,10 +103,15 @@ class CreateListForm extends React.Component {
     );
   };
 
+  onClose = () => {
+    this.resetState();
+    this.props.onHide();
+  }
+
   render() {
-    const { show, onHide } = this.props;
+    const { show } = this.props;
     return (
-      <Modal show={show} onHide={onHide}>
+      <Modal show={show} onHide={this.onClose}>
         <Modal.Header closeButton>
           <Modal.Title>Save list</Modal.Title>
         </Modal.Header>
@@ -129,7 +144,7 @@ class CreateListForm extends React.Component {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={this.props.onHide}>Close</Button>
+          <Button onClick={this.onClose}>Close</Button>
           <Button onClick={this.onSaveList} disabled={!this.state.validName}>
             Save
           </Button>

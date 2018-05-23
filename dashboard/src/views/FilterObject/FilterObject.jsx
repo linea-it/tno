@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Grid, Row, Col } from 'react-bootstrap';
-
 import Card from 'components/Card/Card.jsx';
-
+import { withRouter } from 'react-router-dom';
 import FilterObjectForm from './FilterObjectForm';
 import FilterObjectSearch from './FilterObjectSearch';
 import FilterObjectTable from './FilterObjectTable';
@@ -12,14 +11,18 @@ import CreateListForm from './CreateListForm';
 const api = process.env.REACT_APP_API;
 
 class FilterObject extends Component {
-  state = {
-    searchPattern: '',
-    objects: [],
-    totalSize: 0,
-    page: 1,
-    filters: {},
-    showCreate: false,
-  };
+  state = this.initialState;
+
+  get initialState() {
+    return {
+      searchPattern: '',
+      objects: [],
+      totalSize: 0,
+      page: 1,
+      filters: {},
+      showCreate: false,
+    };
+  }
 
   onSearch = pattern => {
     this.setState({
@@ -42,8 +45,6 @@ class FilterObject extends Component {
   createCustomList = (displayname, tablename, description) => {
     const filters = this.state.filters;
 
-    console.log('filters:', filters);
-
     const params = {
       displayname: displayname,
       tablename: tablename,
@@ -60,16 +61,20 @@ class FilterObject extends Component {
       params.filter_diffdatenights = filters.diffDateNights;
     }
 
-    console.log(params)
-    // Todo criar metodo para salvar a lista
+    // Salvar a lista
     axios
       .post(`${api}/customlist/`, params)
-      .then(function(response) {
-        console.log(response);
+      .then(res => {
+        this.toObjectList(res);
       })
       .catch(function(error) {
         console.log(error);
       });
+  };
+
+  toObjectList = response => {
+    console.log('toObjectList: %o', response);
+    this.props.history.push('/exposuredownload/'+response.data.id);
   };
 
   render() {
@@ -117,4 +122,4 @@ class FilterObject extends Component {
   }
 }
 
-export default FilterObject;
+export default withRouter(FilterObject);

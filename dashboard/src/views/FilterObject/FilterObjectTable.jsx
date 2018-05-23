@@ -7,6 +7,8 @@ import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import axios from 'axios';
+import PropTypes from 'prop-types';
+
 const api = process.env.REACT_APP_API;
 
 const columns = [
@@ -23,40 +25,28 @@ const columns = [
   { dataField: 'diff_date_nights', text: 'Diff Date Max' },
 ];
 
-const RemotePagination = ({
-  data,
-  page,
-  sizePerPage,
-  onTableChange,
-  totalSize,
-}) => (
-  <div>
-    <BootstrapTable
-      remote
-      keyField="id"
-      data={data}
-      columns={columns}
-      pagination={paginationFactory({ page, sizePerPage, totalSize })}
-      onTableChange={onTableChange}
-      striped
-      hover
-      noDataIndication="no results to display"
-    />
-  </div>
-);
-
 class FilterObjectTable extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+    this.state = this.initialState;
+  }
+
+  static propTypes = {
+    saveList: PropTypes.func.isRequired,
+    searchPattern: PropTypes.string.isRequired,
+    filters: PropTypes.object.isRequired,
+  };
+
+  get initialState() {
+    return {
       data: [],
       page: 1,
       totalSize: 0,
-      sizePerPage: 10,
+      sizePerPage: 50,
       loading: false,
       filters: {},
       searchPattern: {},
-      haveData: true,
+      haveData: false,
     };
   }
 
@@ -77,9 +67,7 @@ class FilterObjectTable extends Component {
     });
   }
 
-  handleTableChange = (type, { page, sizePerPage }) => {
-    // console.log('handleTableChange()');
-
+  handleTableChange = (type, { page }) => {
     this.fetchData({
       filters: this.state.filters,
       pattern: this.state.searchPattern,
@@ -87,17 +75,10 @@ class FilterObjectTable extends Component {
     });
   };
 
-  fetchData = ({ filters = {}, page = 1, pattern }, cb) => {
-    // console.log('fetchData()', filters, page, pattern);
-
+  fetchData = ({ filters = {}, page = 1, pattern }) => {
     if (Object.keys(filters).length === 0 && !pattern) {
       // Se nao tiver filtro nao executa o request
-      this.setState({
-        data: [],
-        totalSize: 0,
-        page: 1,
-        loading: false,
-      });
+      this.setState(this.initialState);
     } else {
       this.setState({ loading: true });
 
@@ -124,6 +105,7 @@ class FilterObjectTable extends Component {
               totalSize: r.count,
               page: page,
               loading: false,
+              haveData: true,
             });
           }
         });
