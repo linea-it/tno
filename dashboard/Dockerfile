@@ -5,7 +5,7 @@ COPY . /src/app
 WORKDIR /src/app
 
 RUN yarn -v
-RUN yarn 
+RUN yarn --ignore-optional
 
 COPY . .
 

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
   Form,
   FormGroup,
@@ -69,6 +69,7 @@ class CreateListForm extends React.Component {
         .get(`${api}/customlist/`, {
           params: {
             tablename: tablename,
+            status: 'success',
           },
         })
         .then(res => {
@@ -94,8 +95,6 @@ class CreateListForm extends React.Component {
   };
 
   onSaveList = () => {
-    console.log('onSaveList');
-
     this.props.onSave(
       this.state.displayName,
       this.state.tablename,

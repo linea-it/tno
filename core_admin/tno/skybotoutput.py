@@ -24,6 +24,12 @@ class FilterObjects(DBBase):
 
         return self.tbl_skybot
 
+    def get_table_ccdimage(self):
+        schema = self.get_base_schema()
+        self.tbl_ccdimage = self.get_table('tno_ccdimage', schema)
+
+        return self.tbl_ccdimage
+
     def get_base_stm(self):
 
         if not self.table:
@@ -209,3 +215,28 @@ class FilterObjects(DBBase):
 
         except Exception as e:
             raise(e)
+
+
+    def list_objects_by_table(self, tablename, schema=None, page=1, pageSize=100):
+
+        tbl = self.get_table(tablename, schema).alias('a')
+        tbl_ccd = self.get_table_ccdimage().alias('b')
+
+        stm_join = tbl.join(tbl_ccd, tbl.c.pointing_id == tbl_ccd.c.pointing_id, isouter=True)
+
+        stm = select([tbl, tbl_ccd.c.filename, tbl_ccd.c.file_size]).select_from(stm_join)
+
+
+        # Paginacao
+        stm = stm.limit(pageSize)
+
+        if page and pageSize:
+            offset = (int(page) * int(pageSize)) - int(pageSize)
+            stm = stm.offset(offset)
+
+        # Total de rows independente da paginacao
+        totalSize = self.stm_count(stm)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows, totalSize

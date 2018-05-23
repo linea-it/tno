@@ -100,7 +100,7 @@ class CustomListViewSet(viewsets.ModelViewSet):
     
     queryset = CustomList.objects.all()
     serializer_class = CustomListSerializer
-    filter_fields = ('id', 'displayname', 'tablename',)
+    filter_fields = ('id', 'displayname', 'tablename', 'status')
     search_fields = ('displayname', 'description',)
 
     def perform_create(self, serializer):
@@ -108,3 +108,27 @@ class CustomListViewSet(viewsets.ModelViewSet):
         if not self.request.user.pk:
             raise Exception('It is necessary an active login to perform this operation.')
         serializer.save(owner=self.request.user)
+
+
+    @list_route()
+    def list_objects(self, request):
+        """
+
+        """
+        # Retrive Params
+        tablename = request.query_params.get('tablename')
+        page = request.query_params.get('page', 1)
+        pageSize = request.query_params.get('pageSize', self.pagination_class.page_size)
+
+        # Retrieve Custom List
+        customlist = CustomList.objects.get(tablename=tablename, status='success')
+
+
+        rows, count = FilterObjects().list_objects_by_table(
+            customlist.tablename, customlist.schema, page, pageSize)
+
+        return Response({
+            'success': True,
+            "results": rows,
+            "count": count
+        })            
