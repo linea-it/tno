@@ -226,6 +226,8 @@ class FilterObjects(DBBase):
 
         stm = select([tbl, tbl_ccd.c.filename, tbl_ccd.c.file_size]).select_from(stm_join)
 
+        # Ordenacao
+        stm = stm.order_by(tbl.c.name)
 
         # Paginacao
         stm = stm.limit(pageSize)
