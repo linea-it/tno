@@ -242,3 +242,85 @@ class FilterObjects(DBBase):
         rows = self.fetch_all_dict(stm)
 
         return rows, totalSize
+
+    def count_distinct_objects(self, tablename, schema=None):
+
+        tbl = self.get_table(tablename, schema).alias('a')
+        tbl_ccd = self.get_table_ccdimage().alias('b')
+
+        stm_join = tbl.join(tbl_ccd, tbl.c.pointing_id == tbl_ccd.c.pointing_id, isouter=True)
+
+        stm = select([func.count(func.distinct(tbl.c.name))]).select_from(stm_join)
+
+        distinct_objects = self.fetch_scalar(stm)
+
+        return distinct_objects
+
+
+    def count_distinct_pointing(self, tablename, schema=None):
+
+        tbl = self.get_table(tablename, schema).alias('a')
+        tbl_ccd = self.get_table_ccdimage().alias('b')
+
+        stm_join = tbl.join(tbl_ccd, tbl.c.pointing_id == tbl_ccd.c.pointing_id, isouter=True)
+
+        stm = select([func.count(func.distinct(tbl_ccd.c.filename))]).select_from(stm_join)
+
+        distinct_pointings = self.fetch_scalar(stm)
+
+        return distinct_pointings
+
+    def count_missing_pointing(self, tablename, schema=None):
+        # SELECT COUNT(*) FROM <tablename> a LEFT JOIN tno_ccdimage b ON (a.pointing_id = b.pointing_id) WHERE b.filename is null;
+
+        tbl = self.get_table(tablename, schema).alias('a')
+        tbl_ccd = self.get_table_ccdimage().alias('b')
+
+        stm_join = tbl.join(tbl_ccd, tbl.c.pointing_id == tbl_ccd.c.pointing_id, isouter=True)
+
+        stm = select([func.count(tbl.c.name)]).select_from(stm_join)
+
+        stm = stm.where(tbl_ccd.c.filename.is_(None))
+
+        missing_pointings = self.fetch_scalar(stm)
+
+        return missing_pointings
+
+    def list_ccdimage_by_table(self, tablename, schema=None, page=1, pageSize=None):
+
+        tbl = self.get_table(tablename, schema).alias('a')
+        tbl_ccd = self.get_table_ccdimage().alias('b')
+
+        stm_join = tbl.join(tbl_ccd, tbl.c.pointing_id == tbl_ccd.c.pointing_id, isouter=True)
+
+        stm = select(tbl_ccd.c).select_from(stm_join)
+
+        # Ordenacao
+        stm = stm.order_by(tbl_ccd.c.filename)
+
+        # Paginacao
+        stm = stm.limit(pageSize)
+
+        if page and pageSize:
+            offset = (int(page) * int(pageSize)) - int(pageSize)
+            stm = stm.offset(offset)
+
+        # Total de rows independente da paginacao
+        totalSize = self.stm_count(stm)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows, totalSize
+
+    def count_ccdimage_size(self, tablename, schema=None):
+
+        tbl = self.get_table(tablename, schema).alias('a')
+        tbl_ccd = self.get_table_ccdimage().alias('b')
+
+        stm_join = tbl.join(tbl_ccd, tbl.c.pointing_id == tbl_ccd.c.pointing_id, isouter=True)
+
+        stm = select([func.sum(tbl_ccd.c.file_size)]).select_from(stm_join)
+
+        image_size = self.fetch_scalar(stm)
+
+        return image_size

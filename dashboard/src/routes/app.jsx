@@ -41,7 +41,7 @@ const appRoutes = [
   {
     path: '/objects/:id',
     name: 'Objects',
-    // icon: 'pe-7s-filter',
+    hidden: true,
     component: ObjectList,
   },
   {

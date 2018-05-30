@@ -12,6 +12,14 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { coordinateFormater, formatColumnHeader } from 'utils';
 
+// https://github.com/zlargon/react-highlight
+import Highlight from 'react-syntax-highlight';
+import 'highlight.js/styles/default.css';
+import 'highlight.js/styles/atom-one-light.css';
+
+// https://github.com/zeroturnaround/sql-formatter
+import sqlFormatter from 'sql-formatter';
+
 function exposureFormatter(cell, row, rowindex, formatExtraData) {
   if (parseFloat(row.file_size) > 0) {
     return <i className={formatExtraData['success']} />;
@@ -98,7 +106,10 @@ class ObjectList extends Component {
   get initialState() {
     return {
       id: null,
-      customList: {},
+      customList: {
+        sql_creation: '',
+        sql: '',
+      },
       data: [],
       page: 1,
       totalSize: 0,
@@ -113,17 +124,15 @@ class ObjectList extends Component {
       match: { params },
     } = this.props;
 
-    this.api.getList({ id: params.id }).then(res => {
+    this.api.getListStats({ id: params.id }).then(res => {
+      const data = res.data.data;
+      console.log(data);
       this.setState(
         {
           id: res.data.id,
-          customList: res.data,
+          customList: data,
         },
-        this.fetchData(
-          res.data.tablename,
-          this.state.page,
-          this.state.sizePerPage
-        )
+        this.fetchData(data.tablename, this.state.page, this.state.sizePerPage)
       );
     });
   }
@@ -154,7 +163,14 @@ class ObjectList extends Component {
   };
 
   render() {
-    const { data, sizePerPage, page, totalSize, loading } = this.state;
+    const {
+      data,
+      sizePerPage,
+      page,
+      totalSize,
+      loading,
+      customList,
+    } = this.state;
     const pagination = paginationFactory({
       page: page,
       sizePerPage: sizePerPage,
@@ -163,6 +179,14 @@ class ObjectList extends Component {
       hidePageListOnlyOnePage: true,
       showTotal: true,
     });
+
+    // Formating Create Date
+    const date = new Date(customList.creation_date);
+    const create_date = date.toUTCString();
+
+    // Formating SQL
+    const sql = sqlFormatter.format(customList.sql);
+    const sql_create = sqlFormatter.format(customList.sql_creation);
 
     return (
       <div className="content">
@@ -181,27 +205,18 @@ class ObjectList extends Component {
               <StatsCard
                 bigIcon={<i className="fa fa-file-image-o text-success" />}
                 statsText="Exposures"
-                statsValue="1345"
+                statsValue={this.state.customList.distinct_pointing}
                 statsIcon={<i className="fa fa-hdd-o" />}
-                statsIconText="TAMANHO DAS EXPOSURES"
+                statsIconText={this.state.customList.size_ccdimages}
               />
             </Col>
             <Col lg={3} sm={6}>
               <StatsCard
-                bigIcon={<i className="pe-7s-graph1 text-danger" />}
-                statsText="Errors"
-                statsValue="23"
-                statsIcon={<i className="fa fa-clock-o" />}
-                statsIconText="In the last hour"
-              />
-            </Col>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="fa fa-twitter text-info" />}
-                statsText="Followers"
-                statsValue="+45"
-                statsIcon={<i className="fa fa-refresh" />}
-                statsIconText="Updated now"
+                bigIcon={<i className="fa fa-download text-danger" />}
+                statsText="Missing"
+                statsValue={this.state.customList.missing_pointing}
+                statsIcon={<i className="fa fa-hdd-o" />}
+                statsIconText={this.state.customList.size_pointing_missing}
               />
             </Col>
           </Row>
@@ -211,24 +226,97 @@ class ObjectList extends Component {
                 title={this.state.customList.displayname}
                 category=""
                 content={
-                  <BootstrapTable
-                    striped
-                    hover
-                    condensed
-                    remote
-                    bordered={false}
-                    keyField="id"
-                    noDataIndication="no results to display"
-                    data={data}
-                    columns={columns}
-                    pagination={pagination}
-                    onTableChange={this.handleTableChange}
-                    loading={loading}
-                    overlay={overlayFactory({
-                      spinner: true,
-                      background: 'rgba(192,192,192,0.3)',
-                    })}
-                  />
+                  <div>
+                    <BootstrapTable
+                      striped
+                      hover
+                      condensed
+                      remote
+                      bordered={false}
+                      keyField="id"
+                      noDataIndication="no results to display"
+                      data={data}
+                      columns={columns}
+                      pagination={pagination}
+                      onTableChange={this.handleTableChange}
+                      loading={loading}
+                      overlay={overlayFactory({
+                        spinner: true,
+                        background: 'rgba(192,192,192,0.3)',
+                      })}
+                    />
+                    <span>{totalSize} rows</span>
+                  </div>
+                }
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col md={12}>
+              <Card
+                title="Detail"
+                category=""
+                content={
+                  <div>
+                    <span>
+                      <b>Owner:</b> {customList.owner}
+                    </span>
+                    <br />
+                    <span>
+                      <b>Display Name:</b> {customList.displayname}
+                    </span>
+                    <br />
+                    <span>
+                      <b>Tablename:</b> {customList.tablename}
+                    </span>
+                    <br />
+                    <span>
+                      <b>Creation Date:</b> {create_date}
+                    </span>
+                    <br />
+                    <span>
+                      <b>Description:</b> {customList.description}
+                    </span>
+                    <br />
+                    <span>
+                      <b>Objects:</b> {customList.distinct_objects}
+                    </span>
+                    <br />
+                    <span>
+                      <b>Rows:</b> {customList.rows}
+                    </span>
+                    <br />
+                    <span>
+                      <b>Pointings:</b> {customList.distinct_pointing}
+                    </span>
+                    <br />
+                    <span>
+                      <b>Object Table:</b> {customList.filter_dynclass}
+                    </span>
+                    <br />
+                    <span>
+                      <b>Magnitude:</b> {customList.filter_magnitude}
+                    </span>
+                    <br />
+                    <span>
+                      <b>Minimun difference time between observations:</b>
+                      {customList.filter_diffdatenights}
+                    </span>
+                    <br />
+                    <span>
+                      <b>More than one Filter:</b>{' '}
+                      {customList.filter_morefilter}
+                    </span>
+                    <br />
+                    <span>
+                      <b>SQL:</b>
+                    </span>
+                    <Highlight lang="sql" value={sql} />
+                    <span>
+                      <b>SQL Create:</b>
+                    </span>
+                    <Highlight lang="sql" value={sql_create} />
+                  </div>
                 }
               />
             </Col>
