@@ -7,7 +7,7 @@ import FilterObjectForm from './FilterObjectForm';
 import FilterObjectSearch from './FilterObjectSearch';
 import FilterObjectTable from './FilterObjectTable';
 import CreateListForm from './CreateListForm';
-
+import PropTypes from 'prop-types';
 const api = process.env.REACT_APP_API;
 
 class FilterObject extends Component {
@@ -23,6 +23,10 @@ class FilterObject extends Component {
       showCreate: false,
     };
   }
+
+  static propTypes = {
+    history: PropTypes.any.isRequired,
+  };
 
   onSearch = pattern => {
     this.setState({
@@ -68,13 +72,13 @@ class FilterObject extends Component {
         this.toObjectList(res);
       })
       .catch(function(error) {
+        // TODO implementar mensagem de error
         console.log(error);
       });
   };
 
   toObjectList = response => {
-    console.log('toObjectList: %o', response);
-    this.props.history.push('/exposuredownload/'+response.data.id);
+    this.props.history.push('/objects/' + response.data.id);
   };
 
   render() {

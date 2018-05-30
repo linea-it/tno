@@ -79,6 +79,13 @@ class DBBase():
 
         return self.to_dict(queryset)
 
+    def fetch_scalar(self, stm):
+        if settings.DEBUG:
+            self.debug_query(stm, True)
+
+        with self.engine.connect() as con:
+            return con.execute(stm).scalar()
+
     def stm_count(self, stm):
         with self.engine.connect() as con:
             # Over para que a contagem seja feita no final da query em casos

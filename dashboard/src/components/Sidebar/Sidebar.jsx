@@ -61,7 +61,7 @@ class Sidebar extends Component {
           <ul className="nav">
             {this.state.width <= 991 ? <HeaderLinks /> : null}
             {appRoutes.map((prop, key) => {
-              if (!prop.redirect)
+              if (!prop.redirect && !prop.hidden) {
                 return (
                   <li className={this.activeRoute(prop.path)} key={key}>
                     <NavLink
@@ -74,6 +74,7 @@ class Sidebar extends Component {
                     </NavLink>
                   </li>
                 );
+              }
               return null;
             })}
           </ul>

@@ -16,6 +16,8 @@ from .models import SkybotOutput, CustomList
 
 from .skybotoutput import FilterObjects
 
+import humanize
+
 class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all()
@@ -100,7 +102,7 @@ class CustomListViewSet(viewsets.ModelViewSet):
     
     queryset = CustomList.objects.all()
     serializer_class = CustomListSerializer
-    filter_fields = ('id', 'displayname', 'tablename',)
+    filter_fields = ('id', 'displayname', 'tablename', 'status')
     search_fields = ('displayname', 'description',)
 
     def perform_create(self, serializer):
@@ -108,3 +110,72 @@ class CustomListViewSet(viewsets.ModelViewSet):
         if not self.request.user.pk:
             raise Exception('It is necessary an active login to perform this operation.')
         serializer.save(owner=self.request.user)
+
+
+    @list_route()
+    def list_objects(self, request):
+        """
+
+        """
+        # Retrive Params
+        tablename = request.query_params.get('tablename')
+        page = request.query_params.get('page', 1)
+        pageSize = request.query_params.get('pageSize', self.pagination_class.page_size)
+
+        # Retrieve Custom List
+        customlist = CustomList.objects.get(tablename=tablename, status='success')
+
+
+        rows, count = FilterObjects().list_objects_by_table(
+            customlist.tablename, customlist.schema, page, pageSize)
+
+        return Response({
+            'success': True,
+            "results": rows,
+            "count": count
+        })            
+
+    @list_route()
+    def get_stats(self, request):
+        # Retrive Params
+        tablename = request.query_params.get('tablename', None)
+        id = request.query_params.get('id', None)
+
+        # Retrieve Custom List by tablename
+        customlist = None
+        if tablename is not None:
+            customlist = CustomList.objects.get(tablename=tablename, status='success')
+        elif id is not None:
+            customlist = CustomList.objects.get(pk=id)
+
+        serializer = self.serializer_class(customlist)
+
+        data = serializer.data
+
+        distinct_objects = FilterObjects().count_distinct_objects(
+            customlist.tablename, customlist.schema)
+
+        distinct_pointing = FilterObjects().count_distinct_pointing(
+            customlist.tablename, customlist.schema)
+
+        missing_pointing = FilterObjects().count_missing_pointing(
+            customlist.tablename, customlist.schema)
+
+        size_ccdimages = FilterObjects().count_ccdimage_size(
+            customlist.tablename, customlist.schema)
+
+        size_pointing_missing = (size_ccdimages / data.get("rows")) * missing_pointing
+
+
+        data.update({
+            'distinct_objects': distinct_objects,
+            'distinct_pointing': distinct_pointing,
+            'missing_pointing': missing_pointing,
+            'size_ccdimages': humanize.naturalsize(size_ccdimages),
+            'size_pointing_missing': humanize.naturalsize(size_pointing_missing)
+        })
+
+        return Response({
+            'success': True,
+            'data': data
+        })
