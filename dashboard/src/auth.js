@@ -45,5 +45,11 @@ export function getToken(username, password, cb) {
         authenticated: true,
         token: result.token,
       });
+    })
+    .catch(error => {
+      const data = error.response.data;
+      if ('non_field_errors' in data) {
+        alert(data.non_field_errors[0]);
+      }
     });
 }

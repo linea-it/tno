@@ -119,14 +119,13 @@ class ObjectList extends Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount()');
     const {
       match: { params },
     } = this.props;
 
     this.api.getListStats({ id: params.id }).then(res => {
       const data = res.data.data;
-      console.log(data);
+
       this.setState(
         {
           id: res.data.id,
@@ -138,14 +137,14 @@ class ObjectList extends Component {
   }
 
   handleTableChange = (type, { page, sizePerPage }) => {
-    console.log('handleTableChange(%o, %o)', page, sizePerPage);
+    // console.log('handleTableChange(%o, %o)', page, sizePerPage);
 
     const tablename = this.state.customList.tablename;
     this.fetchData(tablename, page, sizePerPage);
   };
 
   fetchData = (tablename, page, pageSize) => {
-    console.log('fetchData(%o, %o, %o)', tablename, page, pageSize);
+    // console.log('fetchData(%o, %o, %o)', tablename, page, pageSize);
 
     this.setState({ loading: true });
 
