@@ -20,8 +20,8 @@ import 'assets/css/login.css';
 class Login extends Component {
   state = {
     from: '/',
-    username: 'gverde',
-    password: 'adminadmin',
+    username: '',
+    password: '',
   };
 
   handleChange = event => {
@@ -34,19 +34,29 @@ class Login extends Component {
     return this.state.username.length > 0 && this.state.password.length > 0;
   }
 
-  handleSubmit = event => {
-    event.preventDefault();
-
-    var username = this.state.username;
-    var password = this.state.password;
-
-    login(username, password, loggedIn => {
-      if (loggedIn) {
-        this.props.history.push('/');
-      }
-    });
+  onKeyPress = event => {
+    console.log('onKeyPress')
+    if (event.charCode == 13 && this.validateForm()) {
+      this.submit();
+    }
   };
 
+  handleSubmit = event => {
+    event.preventDefault();
+    this.submit();
+  };
+
+  submit = () => {
+    console.log('submit')
+    if (this.validateForm()){
+      login(this.state.username, this.state.password, loggedIn => {
+        if (loggedIn) {
+          this.props.history.push('/');
+        }
+      });
+    }
+  };
+  
   render() {
     return (
       <div className="Login content col-sm-4 col-sm-offset-4">
@@ -75,6 +85,7 @@ class Login extends Component {
                       id="password"
                       value={this.state.password}
                       onChange={this.handleChange}
+                      onKeyPress={this.onKeyPress}
                     />
                   </FormGroup>
                   <Button
