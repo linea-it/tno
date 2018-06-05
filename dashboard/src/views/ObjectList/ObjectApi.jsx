@@ -5,6 +5,11 @@ class ObjectApi {
     this.api = process.env.REACT_APP_API;
   }
 
+  getCustomLists = ({ page, pageSize }) =>
+    axios.get(`${this.api}/customlist/`, {
+      params: { page: page, pageSize: pageSize },
+    });
+
   getList = ({ id }) => axios.get(`${this.api}/customlist/${id}/`);
 
   getListStats = ({ id }) =>

@@ -14,3 +14,9 @@ export function formatColumnHeader(column) {
   }
   return style;
 }
+
+// Format date to UTC
+export function formatDateUTC(date) {
+  const dt = new Date(date);
+  return dt.toUTCString();
+}

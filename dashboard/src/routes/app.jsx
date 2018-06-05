@@ -3,6 +3,7 @@ import SolarSystems from 'views/SolarSystems/SolarSystems';
 import FilterObject from 'views/FilterObject/FilterObject';
 import GetPointings from 'views/GetPointings/GetPointings';
 import ExposureDownload from 'views/ExposureDownload/ExposureDownload';
+import CustomList from 'views/ObjectList/CustomList';
 import ObjectList from 'views/ObjectList/ObjectList';
 
 import Dashboard from 'views/Dashboard/Dashboard';
@@ -39,6 +40,12 @@ const appRoutes = [
     component: FilterObject,
   },
   {
+    path: '/custom_list',
+    name: 'Custom Lists',
+    icon: 'fa fa-list',
+    component: CustomList,
+  },
+  {
     path: '/objects/:id',
     name: 'Objects',
     hidden: true,
@@ -53,8 +60,13 @@ const appRoutes = [
 
   // { path: "/user", name: "User Profile", icon: "pe-7s-user", component: UserProfile },
   // { path: "/table", name: "Table List", icon: "pe-7s-note2", component: TableList },
-  // { path: "/typography", name: "Typography", icon: "pe-7s-news-paper", component: Typography },
-  // { path: "/icons", name: "Icons", icon: "pe-7s-science", component: Icons },
+  {
+    path: '/typography',
+    name: 'Typography',
+    icon: 'pe-7s-news-paper',
+    component: Typography,
+  },
+  { path: '/icons', name: 'Icons', icon: 'pe-7s-science', component: Icons },
   // { path: "/notifications", name: "Notifications", icon: "pe-7s-bell", component: Notifications },
   // { redirect: true, path:"/", to:"/dashboard", name: "Dashboard" }
 ];
