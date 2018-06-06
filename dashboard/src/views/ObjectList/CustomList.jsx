@@ -26,14 +26,15 @@ const columns = [
     dataField: 'id',
     width: 60,
     headerStyle: formatColumnHeader,
+    hidden: true
   },
+  { text: 'Name', dataField: 'displayname' },
   {
     text: 'Owner',
     dataField: 'owner',
     width: 120,
     headerStyle: formatColumnHeader,
   },
-  { text: 'Name', dataField: 'displayname' },
   {
     text: 'Rows',
     dataField: 'rows',
