@@ -20,56 +20,12 @@ import 'highlight.js/styles/atom-one-light.css';
 // https://github.com/zeroturnaround/sql-formatter
 import sqlFormatter from 'sql-formatter';
 
-function externalLinkFormatter(cell, row) {
-  return (
-    <a href={row.externallink} target="_blank">
-      <i className="fa fa-info-circle text-primary" />
-    </a>
-  );
-}
-
-function actionDetail(cell, row) {
-  return (
-    <a href={row.id} target="_blank">
-      <i className="fa fa-arrow-right text-primary" />
-    </a>
-  );
-}
-// {
-//   "id": 2,
-//   "owner": "gverde",
-//   "displayname": "teste",
-//   "tablename": "teste",
-//   "description": "",
-//   "database": "postgres",
-//   "schema": null,
-//   "rows": 1229,
-//   "n_columns": 29,
-//   "columns": "id;num;name;dynclass;ra;dec;raj2000;decj2000;mv;errpos;d;dracosdec;ddec;dgeo;dhelio;phase;solelong;px;py;pz;vx;vy;vz;jdref;externallink;expnum;ccdnum;band;pointing_id",
-//   "size": 425984,
-//   "creation_date": "2018-06-04T19:49:26.936656Z",
-//   "creation_time": 0.172658,
-//   "sql": "SELECT tno_skybotoutput.name  FROM tno_skybotoutput  WHERE tno_skybotoutput.dynclass ILIKE 'Centaur' GROUP BY tno_skybotoutput.name, tno_skybotoutput.dynclass ORDER BY tno_skybotoutput.name",
-//   "sql_creation": "CREATE TABLE teste AS SELECT tno_skybotoutput.id, tno_skybotoutput.num, tno_skybotoutput.name, tno_skybotoutput.dynclass, tno_skybotoutput.ra, tno_skybotoutput.dec, tno_skybotoutput.raj2000, tno_skybotoutput.decj2000, tno_skybotoutput.mv, tno_skybotoutput.errpos, tno_skybotoutput.d, tno_skybotoutput.dracosdec, tno_skybotoutput.ddec, tno_skybotoutput.dgeo, tno_skybotoutput.dhelio, tno_skybotoutput.phase, tno_skybotoutput.solelong, tno_skybotoutput.px, tno_skybotoutput.py, tno_skybotoutput.pz, tno_skybotoutput.vx, tno_skybotoutput.vy, tno_skybotoutput.vz, tno_skybotoutput.jdref, tno_skybotoutput.externallink, tno_skybotoutput.expnum, tno_skybotoutput.ccdnum, tno_skybotoutput.band, tno_skybotoutput.pointing_id  FROM tno_skybotoutput  WHERE tno_skybotoutput.name IN (SELECT tno_skybotoutput.name  FROM tno_skybotoutput  WHERE tno_skybotoutput.dynclass ILIKE 'Centaur' GROUP BY tno_skybotoutput.name, tno_skybotoutput.dynclass ORDER BY tno_skybotoutput.name)",
-//   "filter_name": null,
-//   "filter_dynclass": "Centaur",
-//   "filter_magnitude": null,
-//   "filter_diffdatenights": null,
-//   "filter_morefilter": false,
-//   "status": "success",
-//   "error_msg": null,
-//   "h_size": "426.0 kB"
-// }
-
 const columns = [
   {
     text: 'Id',
     dataField: 'id',
     width: 60,
     headerStyle: formatColumnHeader,
-    events: {
-      onClick: () => alert('Click on Product ID field'),
-    },
   },
   {
     text: 'Owner',
@@ -97,25 +53,7 @@ const columns = [
     width: 80,
     headerStyle: formatColumnHeader,
   },
-  {
-    text: 'Objects',
-    dataField: 'id',
-    width: 80,
-    align: 'center',
-    headerStyle: formatColumnHeader,
-    formatter: actionDetail,
-    events: {
-      onClick: (event, row) => {
-        console.log(event)
-        // console.log(row.id);
-      },
-    },
-  },
 ];
-
-// toObjectList = (event, row) => {
-//   this.props.history.push('/objects/' + row.id);
-// };
 
 class CustomList extends Component {
   state = this.initialState;
@@ -173,6 +111,14 @@ class CustomList extends Component {
       showTotal: true,
     });
 
+    const history = this.props.history;
+
+    const rowEvents = {
+      onClick: (e, row) => {
+        history.push('/objects/' + row.id);
+      },
+    };
+
     return (
       <div className="content">
         <Grid fluid>
@@ -200,6 +146,7 @@ class CustomList extends Component {
                         spinner: true,
                         background: 'rgba(192,192,192,0.3)',
                       })}
+                      rowEvents={rowEvents}
                     />
                     <span>{totalSize} rows</span>
                   </div>
