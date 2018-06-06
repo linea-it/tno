@@ -37,8 +37,8 @@ function externalLinkFormatter(cell, row) {
 }
 
 const columns = [
-  { dataField: 'name', text: 'Name' },
   { dataField: 'dynclass', text: 'Class' },
+  { dataField: 'name', text: 'Name' },
   {
     dataField: 'raj2000',
     text: 'RA',
@@ -75,7 +75,7 @@ const columns = [
   },
   {
     dataField: 'filename',
-    text: 'Exposure',
+    text: 'CCD',
     align: 'center',
     formatter: exposureFormatter,
     formatExtraData: {
@@ -191,16 +191,7 @@ class ObjectList extends Component {
       <div className="content">
         <Grid fluid>
           <Row>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="pe-7s-server text-warning" />}
-                statsText="Rows"
-                statsValue={this.state.customList.rows}
-                statsIcon={<i className="fa fa-hdd-o" />}
-                statsIconText={this.state.customList.h_size}
-              />
-            </Col>
-            <Col lg={3} sm={6}>
+          <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="fa fa-file-image-o text-success" />}
                 statsText="Exposures"
@@ -208,11 +199,20 @@ class ObjectList extends Component {
                 statsIcon={<i className="fa fa-hdd-o" />}
                 statsIconText={this.state.customList.size_ccdimages}
               />
+            </Col>            
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-server text-warning" />}
+                statsText="CCDs"
+                statsValue={this.state.customList.rows}
+                statsIcon={<i className="fa fa-hdd-o" />}
+                statsIconText={this.state.customList.h_size}
+              />
             </Col>
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="fa fa-download text-danger" />}
-                statsText="Missing"
+                statsText="Need to be Download"
                 statsValue={this.state.customList.missing_pointing}
                 statsIcon={<i className="fa fa-hdd-o" />}
                 statsIconText={this.state.customList.size_pointing_missing}
@@ -244,7 +244,7 @@ class ObjectList extends Component {
                         background: 'rgba(192,192,192,0.3)',
                       })}
                     />
-                    <span>{totalSize} rows</span>
+                    <span>{totalSize} CCDs</span>
                   </div>
                 }
               />

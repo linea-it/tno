@@ -47,14 +47,14 @@ export function getToken(username, password, cb) {
       });
     })
     .catch(error => {
-      cb({
-        authenticated: true,
-        token: "dhsudhuasduas",
-      });
+      // cb({
+      //   authenticated: true,
+      //   token: "dhsudhuasduas",
+      // });
 
-      // const data = error.response.data;
-      // if ('non_field_errors' in data) {
-      //   alert(data.non_field_errors[0]);
-      // }
+      const data = error.response.data;
+      if ('non_field_errors' in data) {
+        alert(data.non_field_errors[0]);
+      }
     });
 }
