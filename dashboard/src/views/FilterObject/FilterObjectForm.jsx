@@ -121,7 +121,7 @@ class FilterObjectForm extends Component {
         </FormGroup>
         <FormGroup>
           <Checkbox inline onChange={this.handleChangeFilterMagnitude}>
-               Magnitude "Visual Magnitude  &#60;=" 
+               Magnitude "Visual Magnitude &#60;=" 
           </Checkbox>
           <NumericInput
             className="form-control"
