@@ -8,21 +8,81 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import { formatColumnHeader } from 'utils';
 
 const api = process.env.REACT_APP_API;
 
 const columns = [
   // { dataField: 'object_table', text: 'Table' },
-  { dataField: 'name', text: 'Name' },
-  { dataField: 'freq', text: 'Freq' },
-  { dataField: 'more_than_one_filter', text: 'More Than One Filter' },
-  { dataField: 'filters', text: 'Filters' },
-  { dataField: 'mag_min', text: 'Mag Min' },
-  { dataField: 'mag_max', text: 'Mag Max' },
-  { dataField: 'min_errpos', text: 'Min errpos' },
-  { dataField: 'max_errpos', text: 'Max errpos' },
-  { dataField: 'diff_nights', text: 'Diff Nights' },
-  { dataField: 'diff_date_nights', text: 'Diff Date Max' },
+  {
+    dataField: 'name',
+    text: 'Name',
+    width: 100,
+    headerStyle: formatColumnHeader,
+  },
+  {
+    dataField: 'freq',
+    text: 'Freq',
+    align: 'center',
+    width: 30,
+    headerStyle: formatColumnHeader,
+  },
+  {
+    dataField: 'more_than_one_filter',
+    text: 'More Than One Filter',
+    align: 'center',
+    width: 40,
+    headerStyle: formatColumnHeader,
+  },
+  {
+    dataField: 'filters',
+    text: 'Filters',
+    align: 'center',
+    width: 40,
+    headerStyle: formatColumnHeader,
+  },
+  {
+    dataField: 'mag_min',
+    text: 'Mag Min',
+    align: 'center',
+    width: 40,
+    headerStyle: formatColumnHeader,
+  },
+  {
+    dataField: 'mag_max',
+    text: 'Mag Max',
+    align: 'center',
+    width: 40,
+    headerStyle: formatColumnHeader,
+  },
+  {
+    dataField: 'min_errpos',
+    text: 'Min errpos',
+    align: 'center',
+    width: 40,
+    headerStyle: formatColumnHeader,
+  },
+  {
+    dataField: 'max_errpos',
+    text: 'Max errpos',
+    align: 'center',
+    width: 40,
+    headerStyle: formatColumnHeader,
+  },
+  {
+    dataField: 'diff_nights',
+    text: 'Diff Nights',
+    align: 'center',
+    width: 40,
+    headerStyle: formatColumnHeader,
+  },
+  {
+    dataField: 'diff_date_nights',
+    text: 'Diff Date Max',
+    align: 'center',
+    width: 40,
+    headerStyle: formatColumnHeader,
+  },
 ];
 
 class FilterObjectTable extends Component {

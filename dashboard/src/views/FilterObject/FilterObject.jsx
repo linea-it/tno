@@ -87,7 +87,7 @@ class FilterObject extends Component {
       <div className="content">
         <Grid fluid>
           <Row>
-            <Col md={4}>
+            <Col md={3}>
               <Row>
                 <Card
                   content={<FilterObjectSearch onSearch={this.onSearch} />}
@@ -101,7 +101,7 @@ class FilterObject extends Component {
                 />
               </Row>
             </Col>
-            <Col md={8}>
+            <Col md={9}>
               <Card
                 title=""
                 category=""

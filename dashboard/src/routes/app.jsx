@@ -5,6 +5,7 @@ import GetPointings from 'views/GetPointings/GetPointings';
 import ExposureDownload from 'views/ExposureDownload/ExposureDownload';
 import CustomList from 'views/ObjectList/CustomList';
 import ObjectList from 'views/ObjectList/ObjectList';
+import Praia from 'views/Astrometry/Praia';
 
 import Dashboard from 'views/Dashboard/Dashboard';
 import UserProfile from 'views/UserProfile/UserProfile';
@@ -68,7 +69,7 @@ const appRoutes = [
     path: '/astrometry',
     name: 'Astrometry',
     // icon: 'pe-7s-download',
-    component: ExposureDownload,
+    component: Praia,
   },
   {
     path: '/refine_orbit',
