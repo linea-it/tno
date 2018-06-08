@@ -38,7 +38,8 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "lint": "eslint .",
-    "lint-fix": "eslint . --fix"
+    "lint-fix": "eslint . --fix",
+    "serve": "serve -s build -l 7000"
   },
   "devDependencies": {
     "eslint": "^3.19.0",
