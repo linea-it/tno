@@ -14,7 +14,9 @@ cd tno_testing/
 Unzip the csv files with data to the database.
 you have to do it before doing the build and up of the container, because the directory will be mounted in the postgres image.
 ```
-unzip database_subset/tno_database.subset.zip
+cd database_subset
+unzip tno_database.subset.zip
+cd ..
 ```
 
 ### Create a .env based in env_template

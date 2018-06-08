@@ -1,6 +1,7 @@
 {
   "name": "light-bootstrap-dashboard-react",
   "version": "1.1.0",
+  "homepage" : "http://webback14.linea.gov.br:8080",
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
