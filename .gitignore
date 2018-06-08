@@ -24,3 +24,6 @@ npm-debug.log
 # Postgres data file in development
 /pg_data
 /pg_backups
+
+# Django static files for admin and restframework
+/core_admin/static

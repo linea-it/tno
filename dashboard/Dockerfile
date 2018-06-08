@@ -7,6 +7,9 @@ WORKDIR /src/app
 RUN yarn -v
 RUN yarn --ignore-optional
 
-COPY . .
+#RUN echo "Build dashboard static files"
+RUN yarn run build
 
-CMD ["yarn", "start"]
+#COPY . .
+
+#CMD ["yarn", "start"]
