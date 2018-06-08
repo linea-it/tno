@@ -25,6 +25,7 @@
     "react-scripts": "1.0.10",
     "react-select": "^1.2.1",
     "react-syntax-highlight": "^15.3.1",
+    "serve": "^8.1.2",
     "sql-formatter": "^2.3.1"
   },
   "scripts": {
