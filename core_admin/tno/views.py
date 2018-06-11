@@ -10,9 +10,9 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User
 
-from .serializers import UserSerializer, SkybotOutputSerializer, ObjectClassSerializer , CustomListSerializer
+from .serializers import UserSerializer, PointingSerializer, SkybotOutputSerializer, ObjectClassSerializer , CustomListSerializer
 
-from .models import SkybotOutput, CustomList
+from .models import Pointing, SkybotOutput, CustomList
 
 from .skybotoutput import FilterObjects
 
@@ -45,6 +45,14 @@ class UserViewSet(viewsets.ModelViewSet):
                 context={'request':request}).data)
 
         return super(UserViewSet, self).retrieve(request, pk)
+
+
+class PointingViewSet(viewsets.ModelViewSet):
+    queryset = Pointing.objects.all()
+    serializer_class = PointingSerializer
+    filter_fields = ('id', 'desfile_id', 'expnum',)
+    search_fields = ('filename', 'desfile_id', 'expnum')
+    
 
 
 class SkybotOutputViewSet(viewsets.ModelViewSet):
