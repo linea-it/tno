@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col, Button } from 'react-bootstrap';
+import { Grid,
+         Row, 
+         Col, 
+         Button
+       } from 'react-bootstrap';
 import { StatsCard } from 'components/StatsCard/StatsCard.jsx';
 import { withRouter } from 'react-router-dom';
 import Card from 'components/Card/Card.jsx';
@@ -20,37 +24,69 @@ import 'highlight.js/styles/atom-one-light.css';
 // https://github.com/zeroturnaround/sql-formatter
 import sqlFormatter from 'sql-formatter';
 
-const columns = [
+// function exposureFormatter(cell, row, rowindex, formatExtraData) {
+//   if (parseFloat(row.file_size) > 0) {
+//     return <i className={formatExtraData['success']} />;
+//   } else {
+//     return <i className={formatExtraData['failure']} />;
+//   }
+// }
+
+function exposureFormatter(cell, row, rowindex, formatExtraData) {
+  console.log(row)
+  console.log(row.downloaded)
+  if (row.downloaded) {
+    return <i className={formatExtraData['success']} />;
+  } else {
+    return <i className={formatExtraData['failure']} />;
+  }
+}
+
+const pointing_columns = [
   {
-    text: 'Id',
+    text: 'ID',
     dataField: 'id',
     width: 60,
     headerStyle: formatColumnHeader,
-    hidden: true
   },
-  { text: 'Name', dataField: 'displayname' },
   {
-    text: 'Owner',
-    dataField: 'owner',
-    width: 120,
+    text: 'Data de Observação',
+    dataField: 'date_obs',
+    width: 180,
+    headerStyle: formatColumnHeader,
+    formatter: formatDateUTC,
+
+  },
+  {
+    text: 'Exposure',
+    dataField: 'expnum',
+    align: 'center',
+    width: 60,
     headerStyle: formatColumnHeader,
   },
   {
-    text: 'Rows',
-    dataField: 'rows',
+    text: 'CDD',
+    dataField: 'ccdnum',
+    align: 'center',
+    width: 60,
+    headerStyle: formatColumnHeader,
   },
   {
-    text: 'Size',
-    dataField: 'h_size',
+    text: 'Filter',
+    dataField: 'band',
+    align: 'center',
+    width: 60,
+    headerStyle: formatColumnHeader,
   },
   {
-    text: 'Date',
-    dataField: 'creation_date',
-    formatter: formatDateUTC,
-  },
-  {
-    text: 'Status',
-    dataField: 'status',
+    text: 'downloaded',
+    dataField: 'downloaded',
+    align: 'center',
+    formatter: exposureFormatter,
+    formatExtraData: {
+      success: 'fa fa-check text-success',
+      failure: 'fa fa-exclamation-triangle text-warning',
+    },
     width: 80,
     headerStyle: formatColumnHeader,
   },
@@ -76,21 +112,23 @@ class GetPointings extends Component {
   }
 
   componentDidMount() {
+    console.log('componentDidMount()')
     this.fetchData(this.state.page, this.state.sizePerPage);
   }
 
   handleTableChange = (type, { page, sizePerPage }) => {
-    // console.log('handleTableChange(%o, %o)', page, sizePerPage);
+    console.log('handleTableChange(%o, %o)', page, sizePerPage);
 
     this.fetchData(page, sizePerPage);
   };
 
   fetchData = (page, pageSize) => {
-    // console.log('fetchData(%o, %o, %o)', tablename, page, pageSize);
+    console.log('fetchData(%o, %o, %o)', page, pageSize);
 
     this.setState({ loading: true });
 
-    this.api.getCustomLists({ page: page, pageSize: pageSize }).then(res => {
+    this.api.getPointingLists({ page: page, pageSize: pageSize }).then(res => {
+      console.log("Carregou: %o", res)
       const r = res.data;
       this.setState({
         data: r.results,
@@ -116,7 +154,7 @@ class GetPointings extends Component {
 
     const rowEvents = {
       onClick: (e, row) => {
-        history.push('/objects/' + row.id);
+        //history.push('/objects/' + row.id);
       },
     };
 
@@ -139,7 +177,7 @@ class GetPointings extends Component {
                       keyField="id"
                       noDataIndication="no results to display"
                       data={data}
-                      columns={columns}
+                      columns={pointing_columns}
                       pagination={pagination}
                       onTableChange={this.handleTableChange}
                       loading={loading}
