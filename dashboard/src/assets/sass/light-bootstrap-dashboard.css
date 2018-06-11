@@ -760,19 +760,6 @@ body > .navbar-collapse[data-color="purple"]:after {
   margin-top: -1px;
   right: 8px; }
 
-
-.custom-form {
-  margin-left: 1em;
-  margin-top: 1em;
-  margin-bottom: 1em;
-  margin-right: 1em;
-}
-
-.form-inline {
-  margin-left: 1em;
-  margin-top: 1em;
-}
-
 .form-control::-moz-placeholder {
   color: #DDDDDD;
   opacity: 1;

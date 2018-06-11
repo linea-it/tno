@@ -9,6 +9,47 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username',)
 
+class PointingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Pointing
+        fields = (
+            'id',
+            'pfw_attempt_id',
+            'desfile_id',
+            'nite',
+            'date_obs',
+            'expnum',
+            'ccdnum',
+            'band',
+            'exptime',
+            'cloud_apass',
+            'cloud_nomad',
+            't_eff',
+            'crossra0',
+            'radeg',
+            'decdeg',
+            'racmin',
+            'racmax',
+            'deccmin',
+            'deccmax',
+            'ra_cent',
+            'dec_cent',
+            'rac1',
+            'rac2',
+            'rac3',
+            'rac4',
+            'decc1',
+            'decc2',
+            'decc3',
+            'decc4',
+            'ra_size',
+            'dec_size',
+            'path',
+            'filename',
+            'compression',
+            'downloaded',
+        )
 
 class SkybotOutputSerializer(serializers.ModelSerializer):
 
