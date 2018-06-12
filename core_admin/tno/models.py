@@ -1,6 +1,7 @@
 from django.db import models
 from current_user import get_current_user
 from django.conf import settings
+from praia.models import Run as PraiaRun
 class Pointing(models.Model):
 
     pfw_attempt_id = models.BigIntegerField(
@@ -465,3 +466,71 @@ class CustomList(models.Model):
         verbose_name='Error Message',
         null=True, blank=True
     )
+
+
+class Proccess(models.Model):
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE, default=None, verbose_name='Owner', null=True, blank=True)
+
+    start_time = models.DateTimeField(
+        verbose_name='Start Time',
+        auto_now_add=True, null=True, blank=True)
+
+    finish_time = models.DateTimeField(
+        verbose_name='Finish Time',
+        auto_now_add=True, null=True, blank=True)     
+
+    status = models.CharField(
+        max_length=10,
+        verbose_name='Status', 
+        default='pending', null=True, blank=True,
+        choices=(('pending','Pending'),('running','Running'),('success','Success'),('error','Error'))
+    )
+
+    praia = models.ForeignKey(
+        PraiaRun, on_delete=models.CASCADE, verbose_name='PRAIA',
+        null=True, blank=True, default=None
+    )
+
+class Product(models.Model):
+
+    proccess = models.ForeignKey(
+        Proccess, on_delete=models.CASCADE, verbose_name='Proccess',
+        null=True, blank=True, default=None
+    )
+
+    product_type = models.CharField(
+        max_length=10,
+        verbose_name='Type', 
+        null=True, blank=True,
+        choices=(('table','Table'),('fits','Fits'),('image','Image'),)
+    )
+
+    database = models.CharField(
+        max_length=128, verbose_name='Database',
+        null=True, blank=True, help_text='Database identifier in settings')
+
+    schema = models.CharField(
+        max_length=128,
+        verbose_name='Schema', null=True, blank=True)
+
+    tablename = models.CharField(
+        max_length=128,
+        verbose_name='Tablename', help_text='Tablename without schema',
+        null=True, blank=True)
+
+    rows = models.PositiveIntegerField(
+        verbose_name='Num of rows', null=True, blank=True)
+
+    filename = models.CharField(
+        max_length=256,
+        verbose_name='Filename', help_text='Name of FITS file with a CCD image.',
+        null=True, blank=True,)
+    
+    file_size = models.PositiveIntegerField(
+        verbose_name='File Size',
+        null=True, blank=True, default=None, help_text='File Size in bytes')
+
+    

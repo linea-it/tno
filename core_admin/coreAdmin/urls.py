@@ -21,7 +21,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
 
-from tno.views import UserViewSet, PointingViewSet, SkybotOutputViewSet, ObjectClassViewSet, CustomListViewSet
+from tno.views import UserViewSet, PointingViewSet, SkybotOutputViewSet, ObjectClassViewSet, CustomListViewSet, ProccessViewSet, ProductViewSet
+from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -29,6 +30,11 @@ router.register(r'pointing', PointingViewSet)
 router.register(r'skybotoutput', SkybotOutputViewSet)
 # router.register(r'objectclass', ObjectClassViewSet)
 router.register(r'customlist', CustomListViewSet)
+router.register(r'proccess', ProccessViewSet)
+router.register(r'product', ProductViewSet)
+router.register(r'praia_run', PraiaRunViewSet)
+router.register(r'praia_configuration', PraiaConfigurationViewSet)
+
 
 urlpatterns = router.urls
 

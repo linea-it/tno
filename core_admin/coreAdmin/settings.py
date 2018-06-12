@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # Project Apps
-    'tno'
+    'tno',
+    'praia'
 ]
 
 MIDDLEWARE = [

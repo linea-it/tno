@@ -10,9 +10,9 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User
 
-from .serializers import UserSerializer, PointingSerializer, SkybotOutputSerializer, ObjectClassSerializer , CustomListSerializer
+from .serializers import UserSerializer, PointingSerializer, SkybotOutputSerializer, ObjectClassSerializer , CustomListSerializer, ProccessSerializer, ProductSerializer
 
-from .models import Pointing, SkybotOutput, CustomList
+from .models import Pointing, SkybotOutput, CustomList, Proccess, Product
 
 from .skybotoutput import FilterObjects
 
@@ -51,7 +51,7 @@ class PointingViewSet(viewsets.ModelViewSet):
     queryset = Pointing.objects.all()
     serializer_class = PointingSerializer
     filter_fields = ('id', 'desfile_id', 'expnum',)
-    search_fields = ('filename', 'desfile_id', 'expnum')
+    search_fields = ('id', 'filename', 'desfile_id', 'expnum')
     
 
 
@@ -187,3 +187,16 @@ class CustomListViewSet(viewsets.ModelViewSet):
             'success': True,
             'data': data
         })
+
+
+class ProccessViewSet(viewsets.ModelViewSet):
+    queryset = Proccess.objects.all()
+    serializer_class = ProccessSerializer
+    filter_fields = ('id',)
+    search_fields = ('id',)
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    filter_fields = ('id',)
+    search_fields = ('id',)
