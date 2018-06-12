@@ -1,6 +1,7 @@
 {
   "name": "light-bootstrap-dashboard-react",
   "version": "1.1.0",
+  "homepage": "http://webback14.linea.gov.br:8080",
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
@@ -37,7 +38,8 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "lint": "eslint .",
-    "lint-fix": "eslint . --fix"
+    "lint-fix": "eslint . --fix",
+    "serve": "serve -s build -l 7000"
   },
   "devDependencies": {
     "eslint": "^3.19.0",

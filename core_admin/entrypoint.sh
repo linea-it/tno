@@ -15,6 +15,9 @@ then
     echo "Running Migrate to apply changes in database"
     python manage.py migrate
 
+    echo "Running Collect Statics"
+    python manage.py collectstatic --clear --noinput --verbosity 0
+
     python manage.py runserver 0.0.0.0:$GUNICORN_PORT
 
     # Para producao usar Gunicorn

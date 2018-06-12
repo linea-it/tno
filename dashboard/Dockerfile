@@ -7,6 +7,8 @@ WORKDIR /src/app
 RUN yarn -v
 RUN yarn --ignore-optional
 
-COPY . .
 
-CMD ["yarn", "start"]
+RUN yarn run build
+
+
+ENTRYPOINT /src/app/entrypoint.sh
