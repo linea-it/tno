@@ -159,7 +159,8 @@ class Pointing(models.Model):
             models.Index(fields=['decc4']),
         ]
 
-
+    def __str__(self):
+        return str(self.id)
 
 class SkybotOutput(models.Model):
     """
@@ -325,6 +326,9 @@ class SkybotOutput(models.Model):
             models.Index(fields=['expnum', 'ccdnum', 'band']),
         ]
 
+    def __str__(self):
+        return str(self.id)
+
 class CcdImage(models.Model):
     """
         This table stores information about the images of CCDs that have already been
@@ -358,6 +362,8 @@ class CcdImage(models.Model):
         verbose_name='File Size',
         null=True, blank=True, default=None, help_text='File Size in bytes')
 
+    def __str__(self):
+        return str(self.id)
 
 class CustomList(models.Model):
 
@@ -467,6 +473,8 @@ class CustomList(models.Model):
         null=True, blank=True
     )
 
+    def __str__(self):
+        return self.displayname
 
 class Proccess(models.Model):
 
@@ -493,6 +501,9 @@ class Proccess(models.Model):
         PraiaRun, on_delete=models.CASCADE, verbose_name='PRAIA',
         null=True, blank=True, default=None
     )
+
+    def __str__(self):
+        return str(self.id)
 
 class Product(models.Model):
 
@@ -533,4 +544,5 @@ class Product(models.Model):
         verbose_name='File Size',
         null=True, blank=True, default=None, help_text='File Size in bytes')
 
-    
+    def __str__(self):
+        return str(self.id)

@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
-   
+# from tno.models import CustomList
+
 class Configuration(models.Model):
 
     owner = models.ForeignKey(
@@ -14,6 +15,8 @@ class Configuration(models.Model):
     displayname = models.CharField(
         max_length=128, verbose_name='Name')
 
+    def __str__(self):
+        return self.displayname
 
 class Run(models.Model):
 
@@ -30,8 +33,23 @@ class Run(models.Model):
         auto_now_add=True, null=True, blank=True)        
 
     # Relation With PraiaConfig
-    config = models.ForeignKey(
-        Configuration, on_delete=models.CASCADE, verbose_name='Config',
+    configuration = models.ForeignKey(
+        Configuration, on_delete=models.CASCADE, verbose_name='Configuration',
         null=True, blank=True, default=None
     )
 
+    # Relation With Tno.CustomList
+    input_list = models.ForeignKey(
+        'tno.CustomList', on_delete=models.CASCADE, verbose_name='Input List',
+        null=True, blank=True, default=None
+    )
+
+    status = models.CharField(
+        max_length=10,
+        verbose_name='Status', 
+        default='pending', null=True, blank=True,
+        choices=(('pending','Pending'),('running','Running'),('success','Success'),('error','Error'))
+    )
+
+    def __str__(self):
+        return str(self.id)
