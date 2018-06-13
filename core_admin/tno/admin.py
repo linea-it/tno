@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Pointing, SkybotOutput, CcdImage, CustomList
+from .models import Pointing, SkybotOutput, CcdImage, CustomList, Proccess, Product
 
 @admin.register(Pointing)
 class PointingAdmin(admin.ModelAdmin):
@@ -35,3 +35,12 @@ class CustomListAdmin(admin.ModelAdmin):
     list_display = ('id', 'status', 'displayname', 'schema', 'tablename', 'owner', 'rows',
         'n_columns', 'size', 'creation_date', 'creation_time', )
     search_fields = ('displayname', 'tablename', 'description')
+
+
+@admin.register(Proccess)
+class ProccessAdmin(admin.ModelAdmin):
+    list_display = ('id', 'owner', 'start_time', 'finish_time', 'status',)
+
+@admin.register(Product)
+class ProccessAdmin(admin.ModelAdmin):
+    list_display = ('id', 'proccess', 'product_type', 'database', 'schema', 'tablename', 'filename')

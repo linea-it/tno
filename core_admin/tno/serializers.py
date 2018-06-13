@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from django.contrib.auth.models import User
-from .models import Pointing, SkybotOutput, CustomList
+from .models import Pointing, SkybotOutput, CustomList, Proccess, Product
 import humanize
 
 class UserSerializer(serializers.ModelSerializer):
@@ -139,3 +139,34 @@ class CustomListSerializer(serializers.ModelSerializer):
             return humanize.naturalsize(obj.size)
         except:
             return None
+
+class ProccessSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Proccess
+        fields = (
+            'id',
+            'owner',
+            'start_time',
+            'finish_time',
+            'status',
+        )
+
+class ProductSerializer(serializers.ModelSerializer):
+
+    proccess = serializers.PrimaryKeyRelatedField(
+        queryset=Proccess.objects.all(), many=False)
+
+    class Meta:
+        model = Product
+        fields = (
+            'id',
+            'proccess',
+            'product_type',
+            'database',
+            'schema',
+            'tablename',
+            'rows',
+            'filename',
+            'file_size',
+        )
