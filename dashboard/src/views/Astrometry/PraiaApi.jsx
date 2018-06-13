@@ -9,6 +9,16 @@ class PraiaApi {
     axios.get(`${this.api}/praia_run/`, {
       params: { page: page, pageSize: pageSize },
     });
+
+  getConfigurations = ({ page, pageSize, search, ordering }) =>
+    axios.get(`${this.api}/praia_configuration/`, {
+      params: {
+        page: page,
+        pageSize: pageSize,
+        search: search,
+        ordering: ordering,
+      },
+    });
 }
 
 export default PraiaApi;

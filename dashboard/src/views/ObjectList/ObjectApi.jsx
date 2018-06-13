@@ -10,6 +10,11 @@ class ObjectApi {
       params: { page: page, pageSize: pageSize },
     });
 
+  getListsByStatus = ({ status, search }) =>
+    axios.get(`${this.api}/customlist/`, {
+      params: { status: status, search: search },
+    });
+
   getList = ({ id }) => axios.get(`${this.api}/customlist/${id}/`);
 
   getListStats = ({ id }) =>
