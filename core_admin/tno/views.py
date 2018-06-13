@@ -51,11 +51,7 @@ class PointingViewSet(viewsets.ModelViewSet):
     queryset = Pointing.objects.all()
     serializer_class = PointingSerializer
     filter_fields = ('id', 'desfile_id', 'expnum',)
-<<<<<<< HEAD
-    search_fields = ('filename', 'desfile_id', 'expnum')
-=======
     search_fields = ('id', 'filename', 'desfile_id', 'expnum')
->>>>>>> 0f7e51b84bea9dcf7b07758b18ff4eceec1e90f2
     
 
 
