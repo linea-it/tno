@@ -1,6 +1,6 @@
 import SolarSystems from 'views/SolarSystems/SolarSystems';
 import FilterObject from 'views/FilterObject/FilterObject';
-import GetPointings from 'views/GetPointings/GetPointings';
+import Get from 'views/GetPointings/Get';
 import ExposureDownload from 'views/ExposureDownload/ExposureDownload';
 import CustomList from 'views/ObjectList/CustomList';
 import ObjectList from 'views/ObjectList/ObjectList';
@@ -12,6 +12,7 @@ import TableList from 'views/TableList/TableList';
 import Typography from 'views/Typography/Typography';
 import Icons from 'views/Icons/Icons';
 import Notifications from 'views/Notifications/Notifications';
+import GetPointings from '../views/GetPointings/GetPointings';
 
 const appRoutes = [
   {
@@ -28,9 +29,9 @@ const appRoutes = [
   },
   {
     path: '/getpointings',
-    name: 'Get Pointings',
+    name: 'GetPointings',
     // icon: 'pe-7s-target',
-    component: GetPointings,
+    component: Get,
   },
   {
     path: '/solarsystems',

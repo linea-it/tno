@@ -24,12 +24,12 @@ const columns = [
     headerStyle: formatColumnHeader,
   },
   {
-    text: 'start_time',
+    text: 'Start',
     dataField: 'start_time',
     formatter: formatDateUTC,
   },
   {
-    text: 'Date',
+    text: 'Finish',
     dataField: 'finish_time',
     formatter: formatDateUTC,
   },
