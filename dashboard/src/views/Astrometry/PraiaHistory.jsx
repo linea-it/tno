@@ -33,15 +33,7 @@ const columns = [
     width: 120,
     headerStyle: formatColumnHeader,
   },
-  {
-    text: 'Size',
-    dataField: 'h_size',
-  },
-  {
-    text: 'Date',
-    dataField: 'creation_date',
-    formatter: formatDateUTC,
-  },
+  
   {
     text: 'Status',
     dataField: 'status',
