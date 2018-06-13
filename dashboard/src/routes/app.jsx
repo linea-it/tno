@@ -1,4 +1,3 @@
-import SkyBot from 'views/SkyBot/SkyBot';
 import SolarSystems from 'views/SolarSystems/SolarSystems';
 import FilterObject from 'views/FilterObject/FilterObject';
 import GetPointings from 'views/GetPointings/GetPointings';
@@ -89,17 +88,41 @@ const appRoutes = [
     // icon: 'pe-7s-download',
     component: ExposureDownload,
   },
-  // { path: "/user", name: "User Profile", icon: "pe-7s-user", component: UserProfile },
-  // { path: "/table", name: "Table List", icon: "pe-7s-note2", component: TableList },
-  // {
-  //   path: '/typography',
-  //   name: 'Typography',
-  //   icon: 'pe-7s-news-paper',
-  //   component: Typography,
-  // },
-  // { path: '/icons', name: 'Icons', icon: 'pe-7s-science', component: Icons },
-  // { path: "/notifications", name: "Notifications", icon: "pe-7s-bell", component: Notifications },
-  // { redirect: true, path:"/", to:"/dashboard", name: "Dashboard" }
+  {
+    path: '/user',
+    name: 'User Profile',
+    icon: 'pe-7s-user',
+    component: UserProfile,
+    hidden: true,
+  },
+  {
+    path: '/table',
+    name: 'Table List',
+    icon: 'pe-7s-note2',
+    component: TableList,
+    hidden: true,
+  },
+  {
+    path: '/typography',
+    name: 'Typography',
+    icon: 'pe-7s-news-paper',
+    component: Typography,
+  },
+  {
+    path: '/icons',
+    name: 'Icons',
+    icon: 'pe-7s-science',
+    component: Icons,
+    hidden: true,
+  },
+  {
+    path: '/notifications',
+    name: 'Notifications',
+    icon: 'pe-7s-bell',
+    component: Notifications,
+    hidden: true,
+  },
+  { redirect: true, path: '/', to: '/dashboard', name: 'Dashboard' },
 ];
 
 export default appRoutes;

@@ -16,12 +16,16 @@ import { withRouter } from 'react-router-dom';
 import 'assets/css/bootstrap.min.css';
 import 'assets/sass/light-bootstrap-dashboard.css';
 import 'assets/css/login.css';
-
+import PropTypes from 'prop-types';
 class Login extends Component {
   state = {
     from: '/',
     username: '',
     password: '',
+  };
+
+  static propTypes = {
+    history: PropTypes.any.isRequired,
   };
 
   handleChange = event => {
@@ -35,8 +39,7 @@ class Login extends Component {
   }
 
   onKeyPress = event => {
-    console.log('onKeyPress')
-    if (event.charCode == 13 && this.validateForm()) {
+    if (event.charCode === 13 && this.validateForm()) {
       this.submit();
     }
   };
@@ -47,8 +50,7 @@ class Login extends Component {
   };
 
   submit = () => {
-    console.log('submit')
-    if (this.validateForm()){
+    if (this.validateForm()) {
       login(this.state.username, this.state.password, loggedIn => {
         if (loggedIn) {
           this.props.history.push('/');
@@ -56,7 +58,7 @@ class Login extends Component {
       });
     }
   };
-  
+
   render() {
     return (
       <div className="Login content col-sm-4 col-sm-offset-4">

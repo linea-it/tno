@@ -9,8 +9,8 @@ from .serializers import RunSerializer, ConfigurationSerializer
 class PraiaRunViewSet(viewsets.ModelViewSet):
     queryset = Run.objects.all()
     serializer_class = RunSerializer
-    filter_fields = ('id','product_type', 'tablename', 'filename')
-    search_fields = ('id','tablename', 'filename',)
+    filter_fields = ('id','owner', 'status',)
+    search_fields = ('id',)
 
 
 class PraiaConfigurationViewSet(viewsets.ModelViewSet):

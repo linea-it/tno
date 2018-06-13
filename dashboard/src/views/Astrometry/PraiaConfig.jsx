@@ -4,8 +4,6 @@ import {
   Row,
   Col,
   Panel,
-  ListGroup,
-  ListGroupItem,
   Form,
   FormGroup,
   FormControl,
@@ -16,8 +14,7 @@ import {
 } from 'react-bootstrap';
 import Card from 'components/Card/Card.jsx';
 import PraiaApi from './PraiaApi';
-import PropTypes from 'prop-types';
-import { Tasks } from 'components/Tasks/Tasks.jsx';
+
 class PraiaConfig extends Component {
   state = this.initialState;
   api = new PraiaApi();

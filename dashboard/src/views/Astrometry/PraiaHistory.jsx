@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col, Button, Panel } from 'react-bootstrap';
-import { StatsCard } from 'components/StatsCard/StatsCard.jsx';
 import { withRouter } from 'react-router-dom';
 import Card from 'components/Card/Card.jsx';
 import PraiaApi from './PraiaApi';
@@ -11,14 +9,6 @@ import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { formatDateUTC, formatColumnHeader } from 'utils';
-
-// https://github.com/zlargon/react-highlight
-import Highlight from 'react-syntax-highlight';
-import 'highlight.js/styles/default.css';
-import 'highlight.js/styles/atom-one-light.css';
-
-// https://github.com/zeroturnaround/sql-formatter
-import sqlFormatter from 'sql-formatter';
 
 const columns = [
   {
@@ -34,13 +24,18 @@ const columns = [
     headerStyle: formatColumnHeader,
   },
   {
-    text: 'Size',
-    dataField: 'h_size',
+    text: 'start_time',
+    dataField: 'start_time',
+    formatter: formatDateUTC,
   },
   {
     text: 'Date',
-    dataField: 'creation_date',
+    dataField: 'finish_time',
     formatter: formatDateUTC,
+  },
+  {
+    text: 'Configuration',
+    dataField: 'configuration',
   },
   {
     text: 'Status',
@@ -84,7 +79,7 @@ class PraiaHistory extends Component {
 
     this.setState({ loading: true });
 
-    this.api.getCustomLists({ page: page, pageSize: pageSize }).then(res => {
+    this.api.getPraiaRuns({ page: page, pageSize: pageSize }).then(res => {
       const r = res.data;
       this.setState({
         data: r.results,

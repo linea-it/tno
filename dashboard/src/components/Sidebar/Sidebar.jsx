@@ -26,9 +26,6 @@ class Sidebar extends Component {
     window.addEventListener('resize', this.updateDimensions.bind(this));
   }
   render() {
-    const sidebarBackground = {
-      backgroundImage: 'url(' + imagine + ')',
-    };
     return (
       <div
         id="sidebar"
@@ -36,10 +33,6 @@ class Sidebar extends Component {
         data-color="black"
         data-image={imagine}
       >
-        {
-          // Imagem de fundo no sidebar
-          // <div className="sidebar-background" style={sidebarBackground}></div>
-        }
         <div className="sidebar-background" />
         <div className="logo">
           <a
