@@ -1,5 +1,12 @@
 import React, { Component } from 'react';
+import {
+  FormGroup,
+  FormControl,
+  InputGroup,
+  ButtonToolbar,
+} from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
+import Button from 'elements/CustomButton/CustomButton.jsx';
 import PointingApi from './PointingApi';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -98,21 +105,36 @@ class GetPointings extends Component {
     this.fetchData(page, sizePerPage);
   };
 
-  fetchData = (page, pageSize) => {
-    // console.log('fetchData(%o, %o, %o)', page, pageSize);
+  handleSubmit(event) {
+    event.preventDefault();
+    // Apenas executa o metodo do component parent passando o termo que foi
+    // usado na busca.
+    if (this.state.search) {
+      this.props.onSearch(this.state.search);
+    }
+  }
+
+  fetchData = (page, pageSize, search) => {
+    console.log('fetchData(%o, %o, %o)', page, pageSize);
 
     this.setState({ loading: true });
 
-    this.api.getPointingLists({ page: page, pageSize: pageSize }).then(res => {
-      // console.log('Carregou: %o', res);
-      const r = res.data;
-      this.setState({
-        data: r.results,
-        totalSize: r.count,
+    this.api
+      .getPointingLists({
         page: page,
-        loading: false,
+        pageSize: pageSize,
+        search_fields: search,
+      })
+      .then(res => {
+        console.log('Carregou: %o', res);
+        const r = res.data;
+        this.setState({
+          data: r.results,
+          totalSize: r.count,
+          page: page,
+          loading: false,
+        });
       });
-    });
   };
 
   render() {
@@ -129,6 +151,24 @@ class GetPointings extends Component {
     return (
       <div className="content">
         <div>
+          <ButtonToolbar>
+            <form>
+              <FormGroup>
+                <InputGroup>
+                  <FormControl
+                    type="text"
+                    placeholder="Search By id, expnum, filename"
+                    value={this.state.search}
+                    onChange={this.handleChange}
+                  />
+                  <InputGroup.Button>
+                    <Button onClick={this.handleSubmit}>Search</Button>
+                  </InputGroup.Button>
+                </InputGroup>
+              </FormGroup>
+              <div className="clearfix" />
+            </form>
+          </ButtonToolbar>
           <BootstrapTable
             striped
             hover
