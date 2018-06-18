@@ -4,6 +4,9 @@ import {
   FormControl,
   InputGroup,
   ButtonToolbar,
+  Grid,
+  Col,
+  Row,
 } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import Button from 'elements/CustomButton/CustomButton.jsx';
@@ -39,6 +42,12 @@ const pointing_columns = [
     width: 180,
     headerStyle: formatColumnHeader,
     formatter: formatDateUTC,
+  },
+  {
+    text: 'FileName',
+    dataField: 'filename',
+    width: 180,
+    headerStyle: formatColumnHeader,
   },
   {
     text: 'Exposure',
@@ -89,8 +98,9 @@ class GetPointings extends Component {
       data: [],
       page: 1,
       totalSize: 0,
-      sizePerPage: 10,
+      sizePerPage: 3,
       loading: false,
+      search: '',
     };
   }
 
@@ -98,21 +108,40 @@ class GetPointings extends Component {
     // console.log('componentDidMount()');
     this.fetchData(this.state.page, this.state.sizePerPage);
   }
-
+  onClickMessage = event => {
+    if (this.setState({ search: event.target.value }) == '')
+      console.log('Tá errado');
+  };
   handleTableChange = (type, { page, sizePerPage }) => {
     // console.log('handleTableChange(%o, %o)', page, sizePerPage);
 
     this.fetchData(page, sizePerPage);
   };
 
-  handleSubmit(event) {
-    event.preventDefault();
-    // Apenas executa o metodo do component parent passando o termo que foi
-    // usado na busca.
+  onChangeSearch = event => {
+    this.setState({ search: event.target.value });
+    //if (this.setState({ search: event.target.value }) !== ''){ this.fetchData(); console.log('teste')};
+  };
+
+  onKeyPress = event => {
+    if (event.charCode == 13) this.handleSearch();
+  };
+
+  handleSearch = event => {
+    // event.preventDefault();
     if (this.state.search) {
-      this.props.onSearch(this.state.search);
+       console.log('fazer a busca');
+      this.fetchData(this.state.page, this.state.pageSize, this.state.search);
+      console.log('passou a pesquisa');
+    } else {
+      this.fetchData(this.state.page, this.state.pageSize);
+      console.log('passou sem a pesquisa');
     }
-  }
+  };
+
+  handlerClear = event => {
+    this.setState({ search: '' }, this.fetchData());
+  };
 
   fetchData = (page, pageSize, search) => {
     console.log('fetchData(%o, %o, %o)', page, pageSize);
@@ -123,10 +152,10 @@ class GetPointings extends Component {
       .getPointingLists({
         page: page,
         pageSize: pageSize,
-        search_fields: search,
+        search: search,
       })
       .then(res => {
-        console.log('Carregou: %o', res);
+        // console.log('Carregou: %o', res);
         const r = res.data;
         this.setState({
           data: r.results,
@@ -138,7 +167,7 @@ class GetPointings extends Component {
   };
 
   render() {
-    const { data, sizePerPage, page, totalSize, loading } = this.state;
+    const { data, sizePerPage, page, totalSize, loading, search } = this.state;
     const pagination = paginationFactory({
       page: page,
       sizePerPage: sizePerPage,
@@ -151,24 +180,30 @@ class GetPointings extends Component {
     return (
       <div className="content">
         <div>
+          {/* <Grid className="fluid"> */}
           <ButtonToolbar>
-            <form>
-              <FormGroup>
-                <InputGroup>
-                  <FormControl
-                    type="text"
-                    placeholder="Search By id, expnum, filename"
-                    value={this.state.search}
-                    onChange={this.handleChange}
-                  />
-                  <InputGroup.Button>
-                    <Button onClick={this.handleSubmit}>Search</Button>
-                  </InputGroup.Button>
-                </InputGroup>
-              </FormGroup>
-              <div className="clearfix" />
-            </form>
+            <FormGroup>
+              <InputGroup>
+                <FormControl
+                  type="text"
+                  placeholder="Search By id, expnum, filename"
+                  value={search}
+                  onChange={this.onChangeSearch}
+                  onKeyPress={this.onKeyPress}
+                />
+
+                <InputGroup.Button>
+                  <Button onClick={this.handleSearch}>Search</Button>
+                </InputGroup.Button>
+                <InputGroup.Button>
+                  <Button onClick={this.handlerClear}>Clear</Button>
+                </InputGroup.Button>
+              </InputGroup>
+            </FormGroup>
           </ButtonToolbar>
+
+          <div className="clearfix" />
+
           <BootstrapTable
             striped
             hover
