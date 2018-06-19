@@ -57,4 +57,26 @@
             }
         }
     }
+
+    // Background for table cels
+    .background-muted {
+        background-color: $dark-gray !important;
+    }  
+    .background-primary {
+        background-color: $primary-states-color !important;
+    }    
+    .background-info {
+        background-color: $info-color !important;
+    }      
+    .background-success {
+        background-color: $success-color !important;
+    }
+    .background-warning {
+        background-color: $warning-color !important;
+    }  
+    .background-danger {
+        background-color: $danger-color !important;
+    }          
 }
+
+
