@@ -1,7 +1,6 @@
 import SolarSystems from 'views/SolarSystems/SolarSystems';
-import FilterObject from 'views/FilterObject/FilterObject';
 import Get from 'views/GetPointings/Get';
-import ExposureDownload from 'views/ExposureDownload/ExposureDownload';
+import FilterPanel from 'views/FilterObject/Panel';
 import CustomList from 'views/ObjectList/CustomList';
 import ObjectList from 'views/ObjectList/ObjectList';
 import Praia from 'views/Astrometry/Praia';
@@ -12,7 +11,7 @@ import TableList from 'views/TableList/TableList';
 import Typography from 'views/Typography/Typography';
 import Icons from 'views/Icons/Icons';
 import Notifications from 'views/Notifications/Notifications';
-import GetPointings from '../views/GetPointings/GetPointings';
+
 
 const appRoutes = [
   {
@@ -25,7 +24,7 @@ const appRoutes = [
     path: '/registration',
     name: 'Registration',
     icon: '',
-    component: GetPointings,
+    component: SolarSystems,
   },
   {
     path: '/getpointings',
@@ -44,7 +43,7 @@ const appRoutes = [
     path: '/filterobject',
     name: 'Filter Objects',
     // icon: 'pe-7s-filter',
-    component: FilterObject,
+    component: FilterPanel,
   },
   {
     path: '/custom_list',
@@ -63,7 +62,7 @@ const appRoutes = [
     path: '/exposuredownload',
     name: 'Download',
     // icon: 'pe-7s-download',
-    component: ExposureDownload,
+    component: SolarSystems,
   },
   {
     path: '/astrometry',
@@ -75,19 +74,19 @@ const appRoutes = [
     path: '/refine_orbit',
     name: 'Refine Orbit',
     // icon: 'pe-7s-download',
-    component: ExposureDownload,
+    component: SolarSystems,
   },
   {
     path: '/post_results',
     name: 'Post Results',
     // icon: 'pe-7s-download',
-    component: ExposureDownload,
+    component: SolarSystems,
   },
   {
     path: '/light_curve',
     name: 'Light Curve Analysis',
     // icon: 'pe-7s-download',
-    component: ExposureDownload,
+    component: SolarSystems,
   },
   {
     path: '/user',
@@ -101,13 +100,14 @@ const appRoutes = [
     name: 'Table List',
     icon: 'pe-7s-note2',
     component: TableList,
-    hidden: true,
+    hidden: false,
   },
   {
     path: '/typography',
     name: 'Typography',
     icon: 'pe-7s-news-paper',
     component: Typography,
+    hidden: false,
   },
   {
     path: '/icons',

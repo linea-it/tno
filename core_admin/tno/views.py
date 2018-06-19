@@ -166,6 +166,10 @@ class CustomListViewSet(viewsets.ModelViewSet):
         distinct_pointing = FilterObjects().count_distinct_pointing(
             customlist.tablename, customlist.schema)
 
+        not_downloaded = FilterObjects().count_pointing_not_downloaded(
+            customlist.tablename, customlist.schema
+        )
+
         missing_pointing = FilterObjects().count_missing_pointing(
             customlist.tablename, customlist.schema)
 
@@ -178,6 +182,7 @@ class CustomListViewSet(viewsets.ModelViewSet):
         data.update({
             'distinct_objects': distinct_objects,
             'distinct_pointing': distinct_pointing,
+            'not_downloaded': not_downloaded,
             'missing_pointing': missing_pointing,
             'size_ccdimages': humanize.naturalsize(size_ccdimages),
             'size_pointing_missing': humanize.naturalsize(size_pointing_missing)

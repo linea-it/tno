@@ -271,8 +271,25 @@ class FilterObjects(DBBase):
         return distinct_pointings
 
     def count_missing_pointing(self, tablename, schema=None):
-        # SELECT COUNT(*) FROM <tablename> a LEFT JOIN tno_ccdimage b ON (a.pointing_id = b.pointing_id) WHERE b.filename is null;
+        """
+            Retorna o total de registros que esta na lista mais nao esta dentro 
+            de nenhum apontamento ou CCD.
+        """
+        # SELECT COUNT(*) FROM <tablename> WHERE pointing_id is null;
+        tbl = self.get_table(tablename, schema).alias('a')
 
+        stm = select([func.count(tbl.c.id)]).where(tbl.c.pointing_id.is_(None))
+
+        missing_pointings = self.fetch_scalar(stm)
+
+        return missing_pointings
+
+    def count_pointing_not_downloaded(self, tablename, schema=None):
+        """
+            Retorna o total de registros que esta associado a um CCD mais nao teve 
+            as imagens baixadas ainda.
+        """
+        # SELECT COUNT(*) FROM <tablename> a LEFT JOIN tno_ccdimage b ON (a.pointing_id = b.pointing_id) WHERE a.pointing_id is not null AND b.filename is null;
         tbl = self.get_table(tablename, schema).alias('a')
         tbl_ccd = self.get_table_ccdimage().alias('b')
 
@@ -280,11 +297,13 @@ class FilterObjects(DBBase):
 
         stm = select([func.count(tbl.c.name)]).select_from(stm_join)
 
-        stm = stm.where(tbl_ccd.c.filename.is_(None))
+        stm = stm.where(and_(tbl.c.pointing_id.isnot(None), tbl_ccd.c.filename.is_(None)))
 
-        missing_pointings = self.fetch_scalar(stm)
+        not_downloaded = self.fetch_scalar(stm)
 
-        return missing_pointings
+        return not_downloaded
+
+
 
     def list_ccdimage_by_table(self, tablename, schema=None, page=1, pageSize=None):
 

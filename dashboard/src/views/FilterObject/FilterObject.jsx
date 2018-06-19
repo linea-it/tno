@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Grid, Row, Col } from 'react-bootstrap';
+import { Grid, Row, Col, Panel } from 'react-bootstrap';
 import Card from 'components/Card/Card.jsx';
 import { withRouter } from 'react-router-dom';
 import FilterObjectForm from './FilterObjectForm';
@@ -8,6 +8,7 @@ import FilterObjectSearch from './FilterObjectSearch';
 import FilterObjectTable from './FilterObjectTable';
 import CreateListForm from './CreateListForm';
 import PropTypes from 'prop-types';
+
 const api = process.env.REACT_APP_API;
 
 class FilterObject extends Component {
@@ -85,37 +86,43 @@ class FilterObject extends Component {
     const closeCreate = () => this.setState({ showCreate: false });
     return (
       <div className="content">
-        <Grid fluid>
-          <Row>
-            <Col md={3}>
+        <Card
+          title=""
+          category="Filter the objects and create a list with the result."
+          content={
+            <Grid fluid>
               <Row>
-                <Card
-                  content={<FilterObjectSearch onSearch={this.onSearch} />}
-                />
-              </Row>
-              <Row>
-                <Card
-                  title="Filters"
-                  category=""
-                  content={<FilterObjectForm onFilter={this.onFilter} />}
-                />
-              </Row>
-            </Col>
-            <Col md={9}>
-              <Card
-                title=""
-                category=""
-                content={
-                  <FilterObjectTable
-                    filters={this.state.filters}
-                    searchPattern={this.state.searchPattern}
-                    saveList={this.saveList}
+                <Col md={3}>
+                  <Row>
+                    <Card
+                      content={<FilterObjectSearch onSearch={this.onSearch} />}
+                    />
+                  </Row>
+                  <Row>
+                    <Card
+                      title="Filters"
+                      category=""
+                      content={<FilterObjectForm onFilter={this.onFilter} />}
+                    />
+                  </Row>
+                </Col>
+                <Col md={9}>
+                  <Card
+                    title=""
+                    category=""
+                    content={
+                      <FilterObjectTable
+                        filters={this.state.filters}
+                        searchPattern={this.state.searchPattern}
+                        saveList={this.saveList}
+                      />
+                    }
                   />
-                }
-              />
-            </Col>
-          </Row>
-        </Grid>
+                </Col>
+              </Row>
+            </Grid>
+          }
+        />
         <CreateListForm
           show={this.state.showCreate}
           onHide={closeCreate}
