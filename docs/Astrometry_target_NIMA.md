@@ -4,13 +4,13 @@ Exemplo de um arquivo de saida da etapa Astrometry (PRAIA) que é usado como inp
 
 | Coluna      | Exemplo                   | Descrição |
 |-------------|---------------------------|-----------|
-| RA          | 01 42 42.1823             |  |
-| Dec         | -03 23 33.772             |  |
-| Mag         | 18.199                    |  |
-| JD          | 2456544.86192355          |  |
-| Site        | W84                       |  |
+| RA          | 01 42 42.1823             | Observed right ascension (ICRF) - Unit: Hour - Format: hour:minute:second.fraction_of_second  |
+| Dec         | -03 23 33.772             | Observed declination (ICRF) - Unit: Degree - Format: degree:arcminute:arcsecond.fraction_of_arcsecond |
+| Mag         | 18.199                    | Magnitude |
+| JD          | 2456544.86192355          | Julian Date (UTC) of RA and Dec |
+| Site        | W84                       | IAU code of site (see https://www.minorplanetcenter.net/iau/lists/ObsCodesF.html) |
 | Catalog     | U                         |  |
-| Object Name | Eris                      |  |
+| Object Name | Eris                      | Identificacao do objeto |
 
 
 O Arquivo não tem Cabeçalho e é separado por espaços.
