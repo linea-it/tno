@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col, Button } from 'react-bootstrap';
+import { Grid, Row, Col } from 'react-bootstrap';
 import { StatsCard } from 'components/StatsCard/StatsCard.jsx';
 import { withRouter } from 'react-router-dom';
 import Card from 'components/Card/Card.jsx';
@@ -191,7 +191,7 @@ class ObjectList extends Component {
       <div className="content">
         <Grid fluid>
           <Row>
-          <Col lg={3} sm={6}>
+            <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="fa fa-file-image-o text-success" />}
                 statsText="Exposures"
@@ -199,7 +199,7 @@ class ObjectList extends Component {
                 statsIcon={<i className="fa fa-hdd-o" />}
                 statsIconText={this.state.customList.size_ccdimages}
               />
-            </Col>            
+            </Col>
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-server text-warning" />}

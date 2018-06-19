@@ -74,7 +74,7 @@ class CreateListForm extends React.Component {
         })
         .then(res => {
           var r = res.data;
-          if (r.count == 0) {
+          if (r.count === 0) {
             // Nao existe nenhuma tabela com mesmo nome.
             this.setState({
               tablename: tablename,

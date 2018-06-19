@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col, Button } from 'react-bootstrap';
-import { StatsCard } from 'components/StatsCard/StatsCard.jsx';
+import { Grid, Row, Col } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import Card from 'components/Card/Card.jsx';
 import ObjectApi from './ObjectApi';
@@ -12,21 +11,13 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { formatDateUTC, formatColumnHeader } from 'utils';
 
-// https://github.com/zlargon/react-highlight
-import Highlight from 'react-syntax-highlight';
-import 'highlight.js/styles/default.css';
-import 'highlight.js/styles/atom-one-light.css';
-
-// https://github.com/zeroturnaround/sql-formatter
-import sqlFormatter from 'sql-formatter';
-
 const columns = [
   {
     text: 'Id',
     dataField: 'id',
     width: 60,
     headerStyle: formatColumnHeader,
-    hidden: true
+    hidden: true,
   },
   { text: 'Name', dataField: 'displayname' },
   {

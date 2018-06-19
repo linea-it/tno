@@ -14,7 +14,8 @@ class RunSerializer(serializers.ModelSerializer):
             'owner',
             'start_time',
             'finish_time',
-            'configuration'
+            'configuration',
+            'status'
             )
 
 class ConfigurationSerializer(serializers.ModelSerializer):

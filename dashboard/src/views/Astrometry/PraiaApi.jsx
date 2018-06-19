@@ -5,19 +5,19 @@ class PraiaApi {
     this.api = process.env.REACT_APP_API;
   }
 
-  getCustomLists = ({ page, pageSize }) =>
-    axios.get(`${this.api}/customlist/`, {
+  getPraiaRuns = ({ page, pageSize }) =>
+    axios.get(`${this.api}/praia_run/`, {
       params: { page: page, pageSize: pageSize },
     });
 
-  getList = ({ id }) => axios.get(`${this.api}/customlist/${id}/`);
-
-  getListStats = ({ id }) =>
-    axios.get(`${this.api}/customlist/get_stats/`, { params: { id: id } });
-
-  listObjects = ({ tablename, page, pageSize }) =>
-    axios.get(`${this.api}/customlist/list_objects/`, {
-      params: { tablename: tablename, page: page, pageSize: pageSize },
+  getConfigurations = ({ page, pageSize, search, ordering }) =>
+    axios.get(`${this.api}/praia_configuration/`, {
+      params: {
+        page: page,
+        pageSize: pageSize,
+        search: search,
+        ordering: ordering,
+      },
     });
 }
 
