@@ -83,7 +83,7 @@ class Login extends Component {
                   <FormGroup>
                     <ControlLabel>Password</ControlLabel>
                     <FormControl
-                      type="text"
+                      type="password"
                       id="password"
                       value={this.state.password}
                       onChange={this.handleChange}
