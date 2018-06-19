@@ -1,5 +1,15 @@
 import React, { Component } from 'react';
+import {
+  FormGroup,
+  FormControl,
+  InputGroup,
+  ButtonToolbar,
+  Grid,
+  Col,
+  Row,
+} from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
+import Button from 'elements/CustomButton/CustomButton.jsx';
 import PointingApi from './PointingApi';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -32,6 +42,12 @@ const pointing_columns = [
     width: 180,
     headerStyle: formatColumnHeader,
     formatter: formatDateUTC,
+  },
+  {
+    text: 'FileName',
+    dataField: 'filename',
+    width: 180,
+    headerStyle: formatColumnHeader,
   },
   {
     text: 'Exposure',
@@ -82,8 +98,9 @@ class GetPointings extends Component {
       data: [],
       page: 1,
       totalSize: 0,
-      sizePerPage: 10,
+      sizePerPage: 3,
       loading: false,
+      search: '',
     };
   }
 
@@ -98,12 +115,49 @@ class GetPointings extends Component {
     this.fetchData(page, sizePerPage);
   };
 
-  fetchData = (page, pageSize) => {
-    // console.log('fetchData(%o, %o, %o)', page, pageSize);
+  onChangeSearch = event => {
+    this.setState({ search: event.target.value });
+    //if (this.setState({ search: event.target.value }) !== ''){ this.fetchData(); console.log('teste')};
+  };
+
+  onKeyPress = event => {
+    if (event.charCode == 13) this.handleSearch();
+  };
+
+  handleSearch = event => {
+    // event.preventDefault();
+
+    if (this.state.search) {
+      // console.log('fazer a busca');
+      // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
+      this.setState(
+        { page: 1 },
+        this.fetchData(this.state.page, this.state.pageSize, this.state.search)
+      );
+    } else {
+      this.fetchData(this.state.page, this.state.pageSize);
+    }
+  };
+
+  handlerClear = event => {
+    this.setState({ search: '' }, this.fetchData());
+  };
+
+  fetchData = (page, pageSize, search) => {
+    console.log('fetchData(%o, %o, %o)', page, pageSize, search);
 
     this.setState({ loading: true });
 
-    this.api.getPointingLists({ page: page, pageSize: pageSize }).then(res => {
+    const params = {
+      pageSize: pageSize,
+    };
+    if (search) {
+      params.search = search;
+    } else {
+      params.page = page;
+    }
+
+    this.api.getPointingLists(params).then(res => {
       // console.log('Carregou: %o', res);
       const r = res.data;
       this.setState({
@@ -116,7 +170,7 @@ class GetPointings extends Component {
   };
 
   render() {
-    const { data, sizePerPage, page, totalSize, loading } = this.state;
+    const { data, sizePerPage, page, totalSize, loading, search } = this.state;
     const pagination = paginationFactory({
       page: page,
       sizePerPage: sizePerPage,
@@ -129,6 +183,29 @@ class GetPointings extends Component {
     return (
       <div className="content">
         <div>
+          <ButtonToolbar>
+            <FormGroup>
+              <InputGroup>
+                <FormControl
+                  type="text"
+                  placeholder="Search By id, expnum, filename"
+                  value={search}
+                  onChange={this.onChangeSearch}
+                  onKeyPress={this.onKeyPress}
+                />
+
+                <InputGroup.Button>
+                  <Button onClick={this.handleSearch}>Search</Button>
+                </InputGroup.Button>
+                <InputGroup.Button>
+                  <Button onClick={this.handlerClear}>Clear</Button>
+                </InputGroup.Button>
+              </InputGroup>
+            </FormGroup>
+          </ButtonToolbar>
+
+          <div className="clearfix" />
+
           <BootstrapTable
             striped
             hover
