@@ -100,14 +100,14 @@ const appRoutes = [
     name: 'Table List',
     icon: 'pe-7s-note2',
     component: TableList,
-    hidden: false,
+    hidden: true,
   },
   {
     path: '/typography',
     name: 'Typography',
     icon: 'pe-7s-news-paper',
     component: Typography,
-    hidden: false,
+    hidden: true,
   },
   {
     path: '/icons',
