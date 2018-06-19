@@ -108,10 +108,7 @@ class GetPointings extends Component {
     // console.log('componentDidMount()');
     this.fetchData(this.state.page, this.state.sizePerPage);
   }
-  onClickMessage = event => {
-    if (this.setState({ search: event.target.value }) == '')
-      console.log('Tá errado');
-  };
+
   handleTableChange = (type, { page, sizePerPage }) => {
     // console.log('handleTableChange(%o, %o)', page, sizePerPage);
 
@@ -133,14 +130,12 @@ class GetPointings extends Component {
     if (this.state.search) {
       // console.log('fazer a busca');
       // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
-      this.setState({ page: 1 }, 
+      this.setState(
+        { page: 1 },
         this.fetchData(this.state.page, this.state.pageSize, this.state.search)
       );
-
-      // console.log('passou a pesquisa');
     } else {
       this.fetchData(this.state.page, this.state.pageSize);
-      console.log('passou sem a pesquisa');
     }
   };
 
@@ -153,28 +148,25 @@ class GetPointings extends Component {
 
     this.setState({ loading: true });
 
-    // Aqui já foi resolvido
     const params = {
       pageSize: pageSize,
-    }
+    };
     if (search) {
-      params.search = search
+      params.search = search;
     } else {
-      params.page = page
+      params.page = page;
     }
 
-    this.api
-      .getPointingLists(params)
-      .then(res => {
-        // console.log('Carregou: %o', res);
-        const r = res.data;
-        this.setState({
-          data: r.results,
-          totalSize: r.count,
-          page: page,
-          loading: false,
-        });
+    this.api.getPointingLists(params).then(res => {
+      // console.log('Carregou: %o', res);
+      const r = res.data;
+      this.setState({
+        data: r.results,
+        totalSize: r.count,
+        page: page,
+        loading: false,
       });
+    });
   };
 
   render() {
@@ -191,7 +183,6 @@ class GetPointings extends Component {
     return (
       <div className="content">
         <div>
-          {/* <Grid className="fluid"> */}
           <ButtonToolbar>
             <FormGroup>
               <InputGroup>
