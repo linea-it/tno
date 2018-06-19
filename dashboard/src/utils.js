@@ -20,3 +20,19 @@ export function formatDateUTC(date) {
   const dt = new Date(date);
   return dt.toUTCString();
 }
+
+// Format cell background by status
+export function formatStatus(cell, row) {
+  if (row.status === 'pending') {
+    return 'background-muted';
+  }
+  if (row.status === 'running') {
+    return 'background-info';
+  }
+  if (row.status === 'success') {
+    return 'background-success';
+  }
+  if (row.status === 'error') {
+    return 'background-danger';
+  }
+}

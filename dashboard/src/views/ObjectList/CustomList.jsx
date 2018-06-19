@@ -9,7 +9,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import { formatDateUTC, formatColumnHeader } from 'utils';
+import { formatDateUTC, formatColumnHeader, formatStatus } from 'utils';
 
 const columns = [
   {
@@ -43,7 +43,9 @@ const columns = [
     text: 'Status',
     dataField: 'status',
     width: 80,
+    align: 'center',
     headerStyle: formatColumnHeader,
+    classes: formatStatus,
   },
 ];
 
@@ -113,40 +115,34 @@ class CustomList extends Component {
 
     return (
       <div className="content">
-        <Grid fluid>
-          <Row>
-            <Col md={12}>
-              <Card
-                title="Custom Lists"
-                category=""
-                content={
-                  <div>
-                    <BootstrapTable
-                      striped
-                      hover
-                      condensed
-                      remote
-                      bordered={false}
-                      keyField="id"
-                      noDataIndication="no results to display"
-                      data={data}
-                      columns={columns}
-                      pagination={pagination}
-                      onTableChange={this.handleTableChange}
-                      loading={loading}
-                      overlay={overlayFactory({
-                        spinner: true,
-                        background: 'rgba(192,192,192,0.3)',
-                      })}
-                      rowEvents={rowEvents}
-                    />
-                    <span>{totalSize} rows</span>
-                  </div>
-                }
+        <Card
+          title="Custom Lists"
+          category="Lists all results saved by Filter Objects. click on a line to open the list of Objects."
+          content={
+            <div>
+              <BootstrapTable
+                striped
+                hover
+                condensed
+                remote
+                bordered={false}
+                keyField="id"
+                noDataIndication="no results to display"
+                data={data}
+                columns={columns}
+                pagination={pagination}
+                onTableChange={this.handleTableChange}
+                loading={loading}
+                overlay={overlayFactory({
+                  spinner: true,
+                  background: 'rgba(192,192,192,0.3)',
+                })}
+                rowEvents={rowEvents}
               />
-            </Col>
-          </Row>
-        </Grid>
+              <span>{totalSize} rows</span>
+            </div>
+          }
+        />
       </div>
     );
   }
