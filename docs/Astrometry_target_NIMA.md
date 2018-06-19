@@ -9,7 +9,7 @@ Exemplo de um arquivo de saida da etapa Astrometry (PRAIA) que é usado como inp
 | Mag         | 18.199                    | Magnitude |
 | JD          | 2456544.86192355          | Julian Date (UTC) of RA and Dec |
 | Site        | W84                       | IAU code of site (see https://www.minorplanetcenter.net/iau/lists/ObsCodesF.html) |
-| Catalog     | U                         |  |
+| Catalog Code | U                         | Catalogue Codes of site (see https://minorplanetcenter.net/iau/info/CatalogueCodes.html ) |
 | Object Name | Eris                      | Identificacao do objeto |
 
 
