@@ -129,10 +129,15 @@ class GetPointings extends Component {
 
   handleSearch = event => {
     // event.preventDefault();
+
     if (this.state.search) {
-       console.log('fazer a busca');
-      this.fetchData(this.state.page, this.state.pageSize, this.state.search);
-      console.log('passou a pesquisa');
+      // console.log('fazer a busca');
+      // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
+      this.setState({ page: 1 }, 
+        this.fetchData(this.state.page, this.state.pageSize, this.state.search)
+      );
+
+      // console.log('passou a pesquisa');
     } else {
       this.fetchData(this.state.page, this.state.pageSize);
       console.log('passou sem a pesquisa');
@@ -144,16 +149,22 @@ class GetPointings extends Component {
   };
 
   fetchData = (page, pageSize, search) => {
-    console.log('fetchData(%o, %o, %o)', page, pageSize);
+    console.log('fetchData(%o, %o, %o)', page, pageSize, search);
 
     this.setState({ loading: true });
 
+    // Aqui já foi resolvido
+    const params = {
+      pageSize: pageSize,
+    }
+    if (search) {
+      params.search = search
+    } else {
+      params.page = page
+    }
+
     this.api
-      .getPointingLists({
-        page: page,
-        pageSize: pageSize,
-        search: search,
-      })
+      .getPointingLists(params)
       .then(res => {
         // console.log('Carregou: %o', res);
         const r = res.data;
