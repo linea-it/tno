@@ -327,7 +327,7 @@ class ObjectList extends Component {
                     </span>
                     <br />
                     <span>
-                      <b>Object Table:</b> {customList.filter_dynclass}
+                      <b>Class:</b> {customList.filter_dynclass}
                     </span>
                     <br />
                     <span>
@@ -342,6 +342,10 @@ class ObjectList extends Component {
                     <span>
                       <b>More than one Filter:</b>{' '}
                       {customList.filter_morefilter}
+                    </span>
+                    <br />
+                    <span>
+                      <b>Filter by Name:</b> {customList.filter_name}
                     </span>
                     <br />
                     <span>
