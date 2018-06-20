@@ -247,7 +247,7 @@ class ObjectList extends Component {
                 statsText="Need to be Download"
                 statsValue={this.state.customList.not_downloaded}
                 statsIcon={<i className="fa fa-hdd-o" />}
-                statsIconText={this.state.customList.size_pointing_missing}
+                statsIconText={this.state.customList.size_not_downloaded}
               />
             </Col>
           </Row>

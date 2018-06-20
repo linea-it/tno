@@ -176,7 +176,7 @@ class CustomListViewSet(viewsets.ModelViewSet):
         size_ccdimages = FilterObjects().count_ccdimage_size(
             customlist.tablename, customlist.schema)
 
-        size_pointing_missing = (size_ccdimages / data.get("rows")) * missing_pointing
+        size_not_downloaded = (size_ccdimages / data.get("rows")) * not_downloaded
 
 
         data.update({
@@ -185,7 +185,7 @@ class CustomListViewSet(viewsets.ModelViewSet):
             'not_downloaded': not_downloaded,
             'missing_pointing': missing_pointing,
             'size_ccdimages': humanize.naturalsize(size_ccdimages),
-            'size_pointing_missing': humanize.naturalsize(size_pointing_missing)
+            'size_not_downloaded': humanize.naturalsize(size_not_downloaded)
         })
 
         return Response({
