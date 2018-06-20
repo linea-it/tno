@@ -16,17 +16,12 @@ class Praia extends Component {
   };
 
   get initialState() {
-    return {
-      inputs: [],
-    };
+    return {};
   }
 
-  componentDidMount() {
-
-  }
+  componentDidMount() {}
 
   render() {
-    const { inputs } = this.state;
     return (
       <div className="content">
         <Tabs defaultActiveKey={1} animation={true}>

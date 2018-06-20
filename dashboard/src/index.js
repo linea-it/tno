@@ -16,8 +16,6 @@ import history from './history';
 
 import { isAuthenticated } from './auth';
 
-console.log('isAuthenticated: %o', isAuthenticated());
-
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}

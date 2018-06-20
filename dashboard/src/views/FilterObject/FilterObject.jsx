@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Grid, Row, Col, Panel } from 'react-bootstrap';
+import { Grid, Row, Col } from 'react-bootstrap';
 import Card from 'components/Card/Card.jsx';
 import { withRouter } from 'react-router-dom';
 import FilterObjectForm from './FilterObjectForm';
@@ -49,19 +49,21 @@ class FilterObject extends Component {
 
   createCustomList = (displayname, tablename, description) => {
     const filters = this.state.filters;
-
+    const searchPattern = this.state.searchPattern;
     const params = {
       displayname: displayname,
       tablename: tablename,
       description: description,
       filter_dynclass: filters.objectTable,
       filter_morefilter: filters.moreFilter,
+      filter_name: searchPattern,
     };
 
     // filtro por magnitude
     if (filters.useMagnitude) {
       params.filter_magnitude = filters.magnitude;
     }
+    // filtro por difference time
     if (filters.useDifferenceTime) {
       params.filter_diffdatenights = filters.diffDateNights;
     }

@@ -4,7 +4,6 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import FilterObject from './FilterObject';
 import CustomList from 'views/ObjectList/CustomList';
-import Card from 'components/Card/Card.jsx';
 
 class FilterPanel extends Component {
   state = this.initialState;

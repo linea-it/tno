@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { FormGroup, FormControl, InputGroup } from 'react-bootstrap';
 import Button from 'elements/CustomButton/CustomButton.jsx';
+import PropTypes from 'prop-types';
 
 class FilterObjectSearch extends Component {
   constructor(props) {
@@ -11,6 +12,10 @@ class FilterObjectSearch extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
+  static propTypes = {
+    onSearch: PropTypes.func.isRequired,
+  };
 
   handleChange(event) {
     this.setState({ search: event.target.value });
