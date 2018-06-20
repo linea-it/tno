@@ -4,24 +4,25 @@ import {
   FormControl,
   InputGroup,
   ButtonToolbar,
-  Grid,
-  Col,
-  Row,
 } from 'react-bootstrap';
+
 import { withRouter } from 'react-router-dom';
 import Button from 'elements/CustomButton/CustomButton.jsx';
 import PointingApi from './PointingApi';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
+import DetailsPointings from './DetailsPointings';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { formatDateUTC, formatColumnHeader } from 'utils';
 
-function exposureFormatter(cell, row, rowindex, formatExtraData) {
+function exposureFormatter(_cell, row, _rowindex, formatExtraData) {
   // console.log(row);
+
   // console.log(row.downloaded);
+
   if (row.downloaded) {
     return <i className={formatExtraData['success']} />;
   } else {
@@ -36,6 +37,7 @@ const pointing_columns = [
     width: 60,
     headerStyle: formatColumnHeader,
   },
+
   {
     text: 'Data de Observação',
     dataField: 'date_obs',
@@ -43,12 +45,14 @@ const pointing_columns = [
     headerStyle: formatColumnHeader,
     formatter: formatDateUTC,
   },
+
   {
     text: 'FileName',
     dataField: 'filename',
     width: 180,
     headerStyle: formatColumnHeader,
   },
+
   {
     text: 'Exposure',
     dataField: 'expnum',
@@ -56,6 +60,7 @@ const pointing_columns = [
     width: 60,
     headerStyle: formatColumnHeader,
   },
+
   {
     text: 'CDD',
     dataField: 'ccdnum',
@@ -63,6 +68,7 @@ const pointing_columns = [
     width: 60,
     headerStyle: formatColumnHeader,
   },
+
   {
     text: 'Filter',
     dataField: 'band',
@@ -70,15 +76,18 @@ const pointing_columns = [
     width: 60,
     headerStyle: formatColumnHeader,
   },
+
   {
     text: 'downloaded',
     dataField: 'downloaded',
     align: 'center',
     formatter: exposureFormatter,
+
     formatExtraData: {
       success: 'fa fa-check text-success',
       failure: 'fa fa-exclamation-triangle text-warning',
     },
+
     width: 80,
     headerStyle: formatColumnHeader,
   },
@@ -86,6 +95,7 @@ const pointing_columns = [
 
 class GetPointings extends Component {
   state = this.initialState;
+
   api = new PointingApi();
 
   static propTypes = {
@@ -106,10 +116,11 @@ class GetPointings extends Component {
 
   componentDidMount() {
     // console.log('componentDidMount()');
+
     this.fetchData(this.state.page, this.state.sizePerPage);
   }
 
-  handleTableChange = (type, { page, sizePerPage }) => {
+  handleTableChange = (_type, { page, sizePerPage }) => {
     // console.log('handleTableChange(%o, %o)', page, sizePerPage);
 
     this.fetchData(page, sizePerPage);
@@ -117,6 +128,7 @@ class GetPointings extends Component {
 
   onChangeSearch = event => {
     this.setState({ search: event.target.value });
+
     //if (this.setState({ search: event.target.value }) !== ''){ this.fetchData(); console.log('teste')};
   };
 
@@ -129,9 +141,12 @@ class GetPointings extends Component {
 
     if (this.state.search) {
       // console.log('fazer a busca');
+
       // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
+
       this.setState(
         { page: 1 },
+
         this.fetchData(this.state.page, this.state.pageSize, this.state.search)
       );
     } else {
@@ -145,12 +160,12 @@ class GetPointings extends Component {
 
   fetchData = (page, pageSize, search) => {
     console.log('fetchData(%o, %o, %o)', page, pageSize, search);
-
     this.setState({ loading: true });
 
     const params = {
       pageSize: pageSize,
     };
+
     if (search) {
       params.search = search;
     } else {
@@ -159,7 +174,9 @@ class GetPointings extends Component {
 
     this.api.getPointingLists(params).then(res => {
       // console.log('Carregou: %o', res);
+
       const r = res.data;
+
       this.setState({
         data: r.results,
         totalSize: r.count,
@@ -169,8 +186,22 @@ class GetPointings extends Component {
     });
   };
 
+  showDetail = (event, _row) => {
+    //alert(`clicked on row with index`);
+    this.setState({ show: true });
+  };
+
+  // close = () => this.setState({ showCreate: false });
+
+
+  onClose = () => {
+    this.setState({ show: false });
+  };
+
   render() {
+
     const { data, sizePerPage, page, totalSize, loading, search } = this.state;
+
     const pagination = paginationFactory({
       page: page,
       sizePerPage: sizePerPage,
@@ -179,6 +210,14 @@ class GetPointings extends Component {
       hidePageListOnlyOnePage: true,
       showTotal: true,
     });
+
+    const rowEvents = {
+      onClick: this.showDetail,
+      // onClick: (e, row, rowIndex) => {
+      //   //this.setState({ show: true });
+      //   //alert(`clicked on row with index: ${rowIndex}`);
+      // },
+    };
 
     return (
       <div className="content">
@@ -197,6 +236,7 @@ class GetPointings extends Component {
                 <InputGroup.Button>
                   <Button onClick={this.handleSearch}>Search</Button>
                 </InputGroup.Button>
+
                 <InputGroup.Button>
                   <Button onClick={this.handlerClear}>Clear</Button>
                 </InputGroup.Button>
@@ -218,14 +258,17 @@ class GetPointings extends Component {
             columns={pointing_columns}
             pagination={pagination}
             onTableChange={this.handleTableChange}
+            rowEvents={rowEvents}
             loading={loading}
             overlay={overlayFactory({
               spinner: true,
+
               background: 'rgba(192,192,192,0.3)',
             })}
           />
           <span>{totalSize} rows</span>
         </div>
+        <DetailsPointings show={this.state.show} onHide={this.onClose} />
       </div>
     );
   }
