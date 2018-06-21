@@ -31,12 +31,12 @@ function exposureFormatter(_cell, row, _rowindex, formatExtraData) {
 }
 
 const pointing_columns = [
-  {
-    text: 'ID',
-    dataField: 'id',
-    width: 60,
-    headerStyle: formatColumnHeader,
-  },
+  // {
+  //   text: 'ID',
+  //   dataField: 'id',
+  //   width: 60,
+  //   headerStyle: formatColumnHeader,
+  // },
 
   {
     text: 'Data de Observação',
@@ -44,6 +44,8 @@ const pointing_columns = [
     width: 180,
     headerStyle: formatColumnHeader,
     formatter: formatDateUTC,
+    helpText: 'Date and time of observation',
+    headerTitle: column => `${column.helpText}`,
   },
 
   {
@@ -72,6 +74,14 @@ const pointing_columns = [
   {
     text: 'Filter',
     dataField: 'band',
+    align: 'center',
+    width: 60,
+    headerStyle: formatColumnHeader,
+  },
+
+  {
+    text: 'Exposure time',
+    dataField: 'exptime',
     align: 'center',
     width: 60,
     headerStyle: formatColumnHeader,
@@ -111,6 +121,7 @@ class GetPointings extends Component {
       sizePerPage: 3,
       loading: false,
       search: '',
+      record: null,
     };
   }
 
@@ -133,7 +144,7 @@ class GetPointings extends Component {
   };
 
   onKeyPress = event => {
-    if (event.charCode == 13) this.handleSearch();
+    if (event.charCode === 13) this.handleSearch();
   };
 
   handleSearch = event => {
@@ -186,21 +197,28 @@ class GetPointings extends Component {
     });
   };
 
-  showDetail = (event, _row) => {
+  showDetail = (event, row, rowIndex) => {
     //alert(`clicked on row with index`);
-    this.setState({ show: true });
+    console.log(row);
+    this.setState({ show: true, record: row });
   };
 
   // close = () => this.setState({ showCreate: false });
-
 
   onClose = () => {
     this.setState({ show: false });
   };
 
   render() {
-
-    const { data, sizePerPage, page, totalSize, loading, search } = this.state;
+    const {
+      data,
+      sizePerPage,
+      page,
+      totalSize,
+      loading,
+      search,
+      record,
+    } = this.state;
 
     const pagination = paginationFactory({
       page: page,
@@ -268,7 +286,11 @@ class GetPointings extends Component {
           />
           <span>{totalSize} rows</span>
         </div>
-        <DetailsPointings show={this.state.show} onHide={this.onClose} />
+        <DetailsPointings
+          show={this.state.show}
+          onHide={this.onClose}
+          record={record}
+        />
       </div>
     );
   }
