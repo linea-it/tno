@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col, Button, Tabs, Tab, Panel} from 'react-bootstrap';
+import { Grid, Row, Col, Button, Tabs, Tab, Panel } from 'react-bootstrap';
 import { StatsCard } from 'components/StatsCard/StatsCard.jsx';
 import { withRouter } from 'react-router-dom';
 import Card from 'components/Card/Card.jsx';
@@ -33,20 +33,8 @@ class Get extends Component {
   }
 
   render() {
-    const { data, sizePerPage, page, totalSize, loading } = this.state;
-    const pagination = paginationFactory({
-      page: page,
-      sizePerPage: sizePerPage,
-      totalSize: totalSize,
-      hideSizePerPage: true,
-      hidePageListOnlyOnePage: true,
-      showTotal: true,
-    });
-
-    const history = this.props.history;
-
     return (
-        <div className="content">
+      <div className="content">
         <Grid fluid>
           <Row>
             <Col md={12}>

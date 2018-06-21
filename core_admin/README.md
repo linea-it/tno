@@ -15,8 +15,10 @@ cp env_template .env
 Edit .env file with correct access to PostgresSql database
 
 ### Run Docker
+Rodar o Container fora do docker-compose, é necessário ter o .env com os dados de conexão com o banco de dados. 
+o parametro --network só é necessário quando usado em conjunto com o container do banco de dados, para saber o nome da rede usar o comando docker "network ls".
 ```
-docker run -it --rm --name tno-core-admin --publish 7001:7001 --volume $PWD/:/app --env-file $PWD/.env --network tno_new_backend tno-core-admin
+docker run -it --rm --name tno-core-admin --publish 7001:7001 --volume $PWD/:/app --env-file $PWD/../.env --network tno_backend tno-core-admin
 ```
 
 ### Create Superuser 

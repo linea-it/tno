@@ -21,10 +21,12 @@ import 'highlight.js/styles/atom-one-light.css';
 import sqlFormatter from 'sql-formatter';
 
 function exposureFormatter(cell, row, rowindex, formatExtraData) {
-  if (parseFloat(row.file_size) > 0) {
-    return <i className={formatExtraData['success']} />;
-  } else {
-    return <i className={formatExtraData['failure']} />;
+  if (row.pointing_id) {
+    if (parseFloat(row.file_size) > 0) {
+      return <i className={formatExtraData['success']} />;
+    } else {
+      return <i className={formatExtraData['failure']} />;
+    }
   }
 }
 
@@ -37,7 +39,15 @@ function externalLinkFormatter(cell, row) {
 }
 
 const columns = [
-  { dataField: 'dynclass', text: 'Class' },
+  {
+    text: 'Pointing',
+    dataField: 'pointing_id',
+    hidden: true,
+  },
+  {
+    dataField: 'dynclass',
+    text: 'Class',
+  },
   { dataField: 'name', text: 'Name' },
   {
     dataField: 'raj2000',
@@ -67,6 +77,18 @@ const columns = [
     headerStyle: formatColumnHeader,
   },
   {
+    text: 'Exp Num',
+    dataField: 'expnum',
+    width: 80,
+    headerStyle: formatColumnHeader,
+  },
+  {
+    text: 'CCD Num',
+    dataField: 'ccdnum',
+    width: 80,
+    headerStyle: formatColumnHeader,
+  },
+  {
     dataField: 'band',
     text: 'band',
     align: 'center',
@@ -75,14 +97,14 @@ const columns = [
   },
   {
     dataField: 'filename',
-    text: 'CCD',
+    text: 'Downloaded',
     align: 'center',
     formatter: exposureFormatter,
     formatExtraData: {
       success: 'fa fa-check text-success',
       failure: 'fa fa-exclamation-triangle text-warning',
     },
-    width: 80,
+    width: 100,
     headerStyle: formatColumnHeader,
   },
   {
@@ -187,6 +209,16 @@ class ObjectList extends Component {
     const sql = sqlFormatter.format(customList.sql);
     const sql_create = sqlFormatter.format(customList.sql_creation);
 
+    const rowClasses = row => {
+      let classes = null;
+
+      if (!row.pointing_id) {
+        classes = 'text-muted text-line-through';
+      }
+
+      return classes;
+    };
+
     return (
       <div className="content">
         <Grid fluid>
@@ -213,9 +245,9 @@ class ObjectList extends Component {
               <StatsCard
                 bigIcon={<i className="fa fa-download text-danger" />}
                 statsText="Need to be Download"
-                statsValue={this.state.customList.missing_pointing}
+                statsValue={this.state.customList.not_downloaded}
                 statsIcon={<i className="fa fa-hdd-o" />}
-                statsIconText={this.state.customList.size_pointing_missing}
+                statsIconText={this.state.customList.size_not_downloaded}
               />
             </Col>
           </Row>
@@ -243,6 +275,7 @@ class ObjectList extends Component {
                         spinner: true,
                         background: 'rgba(192,192,192,0.3)',
                       })}
+                      rowClasses={rowClasses}
                     />
                     <span>{totalSize} CCDs</span>
                   </div>
@@ -290,7 +323,11 @@ class ObjectList extends Component {
                     </span>
                     <br />
                     <span>
-                      <b>Object Table:</b> {customList.filter_dynclass}
+                      <b>Objects not on CCD:</b> {customList.missing_pointing}
+                    </span>
+                    <br />
+                    <span>
+                      <b>Class:</b> {customList.filter_dynclass}
                     </span>
                     <br />
                     <span>
@@ -305,6 +342,10 @@ class ObjectList extends Component {
                     <span>
                       <b>More than one Filter:</b>{' '}
                       {customList.filter_morefilter}
+                    </span>
+                    <br />
+                    <span>
+                      <b>Filter by Name:</b> {customList.filter_name}
                     </span>
                     <br />
                     <span>

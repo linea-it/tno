@@ -122,6 +122,9 @@ h1 .subtitle {
 .text-danger, .text-danger:hover {
   color: #FF4A55 !important; }
 
+.text-line-through {
+  text-decoration: line-through; }
+
 /*     General overwrite     */
 body,
 .wrapper {
@@ -999,6 +1002,24 @@ body > .navbar-collapse[data-color="purple"]:after {
   .table > tbody > tr:hover .td-actions .btn {
     opacity: 1;
     filter: alpha(opacity=100); }
+
+.table .background-muted {
+  background-color: #9A9A9A !important; }
+
+.table .background-primary {
+  background-color: #1D62F0 !important; }
+
+.table .background-info {
+  background-color: #1DC7EA !important; }
+
+.table .background-success {
+  background-color: #87CB16 !important; }
+
+.table .background-warning {
+  background-color: #FF9500 !important; }
+
+.table .background-danger {
+  background-color: #FF4A55 !important; }
 
 /*      Checkbox and radio         */
 .checkbox,

@@ -1,13 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Panel,
-  Form,
-  FormGroup,
-  FormControl,
-  ControlLabel,
-  Button,
-} from 'react-bootstrap';
-import PropTypes from 'prop-types';
+import { Panel, Form, FormGroup, ControlLabel, Button } from 'react-bootstrap';
 import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
 import ObjectApi from '../ObjectList/ObjectApi';
