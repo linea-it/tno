@@ -10,9 +10,9 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User
 
-from .serializers import UserSerializer, PointingSerializer, SkybotOutputSerializer, ObjectClassSerializer , CustomListSerializer, ProccessSerializer, ProductSerializer
+from .serializers import UserSerializer, PointingSerializer, SkybotOutputSerializer, ObjectClassSerializer , CustomListSerializer, ProccessSerializer, ProductSerializer, ObservationSerializer, OrbitalParameterSerializer
 
-from .models import Pointing, SkybotOutput, CustomList, Proccess, Product
+from .models import Pointing, SkybotOutput, CustomList, Proccess, Product, Observation, OrbitalParameter
 
 from .skybotoutput import FilterObjects
 
@@ -205,3 +205,15 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     filter_fields = ('id',)
     search_fields = ('id',)
+
+class ObservationViewSet(viewsets.ModelViewSet):
+    queryset = Observation.objects.all()
+    serializer_class = ObservationSerializer
+    filter_fields = ('id', 'name', 'source', 'observations')
+    search_fields = ('id', 'name', 'filename', 'external_url')
+
+class OrbitalParameterViewSet(viewsets.ModelViewSet):
+    queryset = Observation.objects.all()
+    serializer_class = ObservationSerializer
+    filter_fields = ('id', 'name', 'source', 'observations')
+    search_fields = ('id', 'name', 'filename', 'external_url')    
