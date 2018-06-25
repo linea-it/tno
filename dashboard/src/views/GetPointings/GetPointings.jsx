@@ -20,7 +20,6 @@ import { formatDateUTC, formatColumnHeader } from 'utils';
 
 function exposureFormatter(_cell, row, _rowindex, formatExtraData) {
   // console.log(row);
-
   // console.log(row.downloaded);
 
   if (row.downloaded) {
@@ -147,17 +146,13 @@ class GetPointings extends Component {
     if (event.charCode === 13) this.handleSearch();
   };
 
-  handleSearch = event => {
+  handleSearch = () => {
     // event.preventDefault();
-
     if (this.state.search) {
       // console.log('fazer a busca');
-
       // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
-
       this.setState(
         { page: 1 },
-
         this.fetchData(this.state.page, this.state.pageSize, this.state.search)
       );
     } else {
@@ -165,12 +160,12 @@ class GetPointings extends Component {
     }
   };
 
-  handlerClear = event => {
+  handlerClear = () => {
     this.setState({ search: '' }, this.fetchData());
   };
 
   fetchData = (page, pageSize, search) => {
-    console.log('fetchData(%o, %o, %o)', page, pageSize, search);
+   // console.log('fetchData(%o, %o, %o)', page, pageSize, search);
     this.setState({ loading: true });
 
     const params = {
@@ -197,9 +192,8 @@ class GetPointings extends Component {
     });
   };
 
-  showDetail = (event, row, rowIndex) => {
-    //alert(`clicked on row with index`);
-    console.log(row);
+  showDetail = (index, row, rowindex) => {
+    //console.log(row);
     this.setState({ show: true, record: row });
   };
 
