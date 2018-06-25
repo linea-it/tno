@@ -52,6 +52,8 @@ const pointing_columns = [
     dataField: 'filename',
     width: 180,
     headerStyle: formatColumnHeader,
+    helpText: 'Name of FITS file with a CCD image.',
+    headerTitle: column => `${column.helpText}`,
   },
 
   {
@@ -60,6 +62,9 @@ const pointing_columns = [
     align: 'center',
     width: 60,
     headerStyle: formatColumnHeader,
+    helpText: 'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
+    headerTitle: column => `${column.helpText}`,
+
   },
 
   {
@@ -68,6 +73,9 @@ const pointing_columns = [
     align: 'center',
     width: 60,
     headerStyle: formatColumnHeader,
+    helpText: 'CCD Number (1, 2, ..., 62)',
+    headerTitle: column => `${column.helpText}`,
+
   },
 
   {
@@ -76,6 +84,9 @@ const pointing_columns = [
     align: 'center',
     width: 60,
     headerStyle: formatColumnHeader,
+    helpText: 'Filter used to do the observation (u, g, r, i, z, Y).',
+    headerTitle: column => `${column.helpText}`,
+
   },
 
   {
@@ -84,6 +95,9 @@ const pointing_columns = [
     align: 'center',
     width: 60,
     headerStyle: formatColumnHeader,
+    helpText: 'Exposure time of observation.',
+    headerTitle: column => `${column.helpText}`,
+
   },
 
   {
@@ -91,6 +105,9 @@ const pointing_columns = [
     dataField: 'downloaded',
     align: 'center',
     formatter: exposureFormatter,
+    helpText: 'flag indicating whether the image was downloaded from DES.',
+    headerTitle: column => `${column.helpText}`,
+
 
     formatExtraData: {
       success: 'fa fa-check text-success',
