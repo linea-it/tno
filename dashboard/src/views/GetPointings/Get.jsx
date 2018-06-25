@@ -1,17 +1,12 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col, Button, Tabs, Tab, Panel } from 'react-bootstrap';
-import { StatsCard } from 'components/StatsCard/StatsCard.jsx';
+import { Grid, Row, Col, Tabs, Tab } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
-import Card from 'components/Card/Card.jsx';
 import PointingApi from './PointingApi';
 import GetPointings from './GetPointings';
 import PropTypes from 'prop-types';
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import { formatDateUTC, formatColumnHeader } from 'utils';
+
 
 class Get extends Component {
   state = this.initialState;

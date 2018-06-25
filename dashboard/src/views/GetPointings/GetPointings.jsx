@@ -4,24 +4,24 @@ import {
   FormControl,
   InputGroup,
   ButtonToolbar,
-  Grid,
-  Col,
-  Row,
 } from 'react-bootstrap';
+
 import { withRouter } from 'react-router-dom';
 import Button from 'elements/CustomButton/CustomButton.jsx';
 import PointingApi from './PointingApi';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
+import DetailsPointings from './DetailsPointings';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { formatDateUTC, formatColumnHeader } from 'utils';
 
-function exposureFormatter(cell, row, rowindex, formatExtraData) {
+function exposureFormatter(_cell, row, _rowindex, formatExtraData) {
   // console.log(row);
   // console.log(row.downloaded);
+
   if (row.downloaded) {
     return <i className={formatExtraData['success']} />;
   } else {
@@ -30,55 +30,90 @@ function exposureFormatter(cell, row, rowindex, formatExtraData) {
 }
 
 const pointing_columns = [
-  {
-    text: 'ID',
-    dataField: 'id',
-    width: 60,
-    headerStyle: formatColumnHeader,
-  },
+  // {
+  //   text: 'ID',
+  //   dataField: 'id',
+  //   width: 60,
+  //   headerStyle: formatColumnHeader,
+  // },
+
   {
     text: 'Data de Observação',
     dataField: 'date_obs',
     width: 180,
     headerStyle: formatColumnHeader,
     formatter: formatDateUTC,
+    helpText: 'Date and time of observation',
+    headerTitle: column => `${column.helpText}`,
   },
+
   {
     text: 'FileName',
     dataField: 'filename',
     width: 180,
     headerStyle: formatColumnHeader,
+    helpText: 'Name of FITS file with a CCD image.',
+    headerTitle: column => `${column.helpText}`,
   },
+
   {
     text: 'Exposure',
     dataField: 'expnum',
     align: 'center',
     width: 60,
     headerStyle: formatColumnHeader,
+    helpText: 'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
+    headerTitle: column => `${column.helpText}`,
+
   },
+
   {
     text: 'CDD',
     dataField: 'ccdnum',
     align: 'center',
     width: 60,
     headerStyle: formatColumnHeader,
+    helpText: 'CCD Number (1, 2, ..., 62)',
+    headerTitle: column => `${column.helpText}`,
+
   },
+
   {
     text: 'Filter',
     dataField: 'band',
     align: 'center',
     width: 60,
     headerStyle: formatColumnHeader,
+    helpText: 'Filter used to do the observation (u, g, r, i, z, Y).',
+    headerTitle: column => `${column.helpText}`,
+
   },
+
+  {
+    text: 'Exposure time',
+    dataField: 'exptime',
+    align: 'center',
+    width: 60,
+    headerStyle: formatColumnHeader,
+    helpText: 'Exposure time of observation.',
+    headerTitle: column => `${column.helpText}`,
+
+  },
+
   {
     text: 'downloaded',
     dataField: 'downloaded',
     align: 'center',
     formatter: exposureFormatter,
+    helpText: 'flag indicating whether the image was downloaded from DES.',
+    headerTitle: column => `${column.helpText}`,
+
+
     formatExtraData: {
       success: 'fa fa-check text-success',
       failure: 'fa fa-exclamation-triangle text-warning',
     },
+
     width: 80,
     headerStyle: formatColumnHeader,
   },
@@ -86,6 +121,7 @@ const pointing_columns = [
 
 class GetPointings extends Component {
   state = this.initialState;
+
   api = new PointingApi();
 
   static propTypes = {
@@ -101,15 +137,17 @@ class GetPointings extends Component {
       sizePerPage: 3,
       loading: false,
       search: '',
+      record: null,
     };
   }
 
   componentDidMount() {
     // console.log('componentDidMount()');
+
     this.fetchData(this.state.page, this.state.sizePerPage);
   }
 
-  handleTableChange = (type, { page, sizePerPage }) => {
+  handleTableChange = (_type, { page, sizePerPage }) => {
     // console.log('handleTableChange(%o, %o)', page, sizePerPage);
 
     this.fetchData(page, sizePerPage);
@@ -117,16 +155,16 @@ class GetPointings extends Component {
 
   onChangeSearch = event => {
     this.setState({ search: event.target.value });
+
     //if (this.setState({ search: event.target.value }) !== ''){ this.fetchData(); console.log('teste')};
   };
 
   onKeyPress = event => {
-    if (event.charCode == 13) this.handleSearch();
+    if (event.charCode === 13) this.handleSearch();
   };
 
-  handleSearch = event => {
+  handleSearch = () => {
     // event.preventDefault();
-
     if (this.state.search) {
       // console.log('fazer a busca');
       // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
@@ -139,18 +177,18 @@ class GetPointings extends Component {
     }
   };
 
-  handlerClear = event => {
+  handlerClear = () => {
     this.setState({ search: '' }, this.fetchData());
   };
 
   fetchData = (page, pageSize, search) => {
-    console.log('fetchData(%o, %o, %o)', page, pageSize, search);
-
+   // console.log('fetchData(%o, %o, %o)', page, pageSize, search);
     this.setState({ loading: true });
 
     const params = {
       pageSize: pageSize,
     };
+
     if (search) {
       params.search = search;
     } else {
@@ -159,7 +197,9 @@ class GetPointings extends Component {
 
     this.api.getPointingLists(params).then(res => {
       // console.log('Carregou: %o', res);
+
       const r = res.data;
+
       this.setState({
         data: r.results,
         totalSize: r.count,
@@ -169,8 +209,28 @@ class GetPointings extends Component {
     });
   };
 
+  showDetail = (index, row, rowindex) => {
+    //console.log(row);
+    this.setState({ show: true, record: row });
+  };
+
+  // close = () => this.setState({ showCreate: false });
+
+  onClose = () => {
+    this.setState({ show: false });
+  };
+
   render() {
-    const { data, sizePerPage, page, totalSize, loading, search } = this.state;
+    const {
+      data,
+      sizePerPage,
+      page,
+      totalSize,
+      loading,
+      search,
+      record,
+    } = this.state;
+
     const pagination = paginationFactory({
       page: page,
       sizePerPage: sizePerPage,
@@ -179,6 +239,14 @@ class GetPointings extends Component {
       hidePageListOnlyOnePage: true,
       showTotal: true,
     });
+
+    const rowEvents = {
+      onClick: this.showDetail,
+      // onClick: (e, row, rowIndex) => {
+      //   //this.setState({ show: true });
+      //   //alert(`clicked on row with index: ${rowIndex}`);
+      // },
+    };
 
     return (
       <div className="content">
@@ -197,6 +265,7 @@ class GetPointings extends Component {
                 <InputGroup.Button>
                   <Button onClick={this.handleSearch}>Search</Button>
                 </InputGroup.Button>
+
                 <InputGroup.Button>
                   <Button onClick={this.handlerClear}>Clear</Button>
                 </InputGroup.Button>
@@ -218,14 +287,21 @@ class GetPointings extends Component {
             columns={pointing_columns}
             pagination={pagination}
             onTableChange={this.handleTableChange}
+            rowEvents={rowEvents}
             loading={loading}
             overlay={overlayFactory({
               spinner: true,
+
               background: 'rgba(192,192,192,0.3)',
             })}
           />
           <span>{totalSize} rows</span>
         </div>
+        <DetailsPointings
+          show={this.state.show}
+          onHide={this.onClose}
+          record={record}
+        />
       </div>
     );
   }
