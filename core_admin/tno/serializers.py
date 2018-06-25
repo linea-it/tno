@@ -59,6 +59,7 @@ class SkybotOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = SkybotOutput
         fields = (
+            'id',
             'pointing',
             'num',
             'name',

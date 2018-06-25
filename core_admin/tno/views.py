@@ -60,7 +60,7 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
     queryset = SkybotOutput.objects.select_related().all()
     serializer_class = SkybotOutputSerializer
     filter_fields = ('id', 'name', 'expnum',)
-    search_fields = ('name', 'dynclass',)
+    search_fields = ('name', 'dynclass', 'num')
 
     @list_route()
     def objects(self, request):
