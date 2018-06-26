@@ -1,16 +1,24 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col } from 'react-bootstrap';
+import {
+  Grid,
+  Row,
+  Col,
+  ButtonToolbar,
+  ButtonGroup,
+  Button,
+} from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import Card from 'components/Card/Card.jsx';
+import Properties from './Properties';
+import Observation from './Observation';
+import OrbitalParameters from './OrbitalParameters';
+import PlotCCD from './PlotCCD';
 // import ObjectApi from './ObjectApi';
 import PropTypes from 'prop-types';
-import paginationFactory from 'react-bootstrap-table2-paginator';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 
-
 import SkybotApi from './SkybotApi';
-import GetSkybot from './GetSkybot';
 
 class SkybotDetail extends Component {
   state = this.initialState;
@@ -18,7 +26,54 @@ class SkybotDetail extends Component {
 
   static propTypes = {
     match: PropTypes.object.isRequired,
+    record: PropTypes.object,
+    history: PropTypes.any.isRequired,
   };
+
+  //   record_properties = [
+  //     {
+  //       text: 'ID',
+  //       dataField: 'id',
+  //       helpText:
+  //         'Unique identifier for each image (1 image is composed by 62 CCDs)',
+  //     },
+  //     {
+  //       text: 'Pointings',
+  //       dataField: 'pointing',
+  //       helpText:
+  //         'Unique identifier for each image (1 image is composed by 62 CCDs)',
+  //     },
+  //     {
+  //       text: 'Name',
+  //       dataField: 'name',
+  //       helpText:
+  //         'Unique identifier for each image (1 image is composed by 62 CCDs)',
+  //     },
+  //     {
+  //       text: 'Object classification',
+  //       dataField: 'dynclass',
+  //       helpText:
+  //         'Unique identifier for each image (1 image is composed by 62 CCDs)',
+  //     },
+  //     {
+  //       text: 'Object classification',
+  //       dataField: 'id',
+  //       helpText:
+  //         'Unique identifier for each image (1 image is composed by 62 CCDs)',
+  //     },
+  //   {
+  //     text: 'ID',
+  //     dataField: 'id',
+  //     helpText:
+  //       'Unique identifier for each image (1 image is composed by 62 CCDs)',
+  //   },
+  //   {
+  //     text: 'ID',
+  //     dataField: 'id',
+  //     helpText:
+  //       'Unique identifier for each image (1 image is composed by 62 CCDs)',
+  //   },
+  //   ];
 
   get initialState() {
     return {
@@ -28,141 +83,81 @@ class SkybotDetail extends Component {
       totalSize: 0,
       sizePerPage: 10,
       loading: false,
-      getSkybot: '',
+      record: {},
     };
   }
 
   componentDidMount() {
+    //console.log('componentDidMount');
     const {
-        match: { params },
-      } = this.props;
-  
-      this.api.getListStats({ id: params.id }).then(res => {
-        const data = res.data.data;
-  
-        this.setState(
-          {
-            id: res.data.id,
-            getSkybot: data,
-          },
-        //   this.fetchData(this.state.page, this.state.sizePerPage)
-        );
-      });
-    }
-  handleTableChange = (type, { page, sizePerPage }) => {
-    // console.log('handleTableChange(%o, %o)', page, sizePerPage);
+      match: { params },
+    } = this.props;
+    // console.log('ID: ', params.id);
 
-    const tablename = this.state.customList.tablename;
-    this.fetchData(tablename, page, sizePerPage);
+    this.api.getSkybotRecord({ id: params.id }).then(res => {
+      const record = res.data;
+      //console.log(record);
+
+      this.setState({ record: record });
+    });
+  }
+
+  onClick = () => {
+    console.log('foi clicado');
+    this.props.history.goBack();
   };
 
-//   fetchData = (tablename, page, pageSize) => {
-//     // console.log('fetchData(%o, %o, %o)', tablename, page, pageSize);
-
-//     this.setState({ loading: true });
-
-//     // this.api
-//     //   .listObjects({ tablename: tablename, page: page, pageSize: pageSize })
-//     //   .then(res => {
-//     //     const r = res.data;
-//     //     this.setState({
-//     //       data: r.results,
-//     //       totalSize: r.count,
-//     //       page: page,
-//     //       loading: false,
-//     //     });
-//     //   });
-//   };
-
   render() {
-    const {
-      data,
-      sizePerPage,
-      page,
-      totalSize,
-      loading,
-      getSkybot,
-    } = this.state;
-    const pagination = paginationFactory({
-      page: page,
-      sizePerPage: sizePerPage,
-      totalSize: totalSize,
-      hideSizePerPage: true,
-      hidePageListOnlyOnePage: true,
-      showTotal: true,
-    });
+    const { record } = this.state;
 
+    console.log('Render: recodord(%o)', record);
+
+    // const body = [];
+
+    // if (record) {
+    //   this.record_properties.forEach((p, i) => {
+    //     const { text, dataField } = p;
+
+    //     body.push(
+    //       <span key={i}>
+    //         <b> {text} </b>:
+    //         {record[dataField].toString()}
+    //         <br />
+    //       </span>
+    //     );
+    //   });
+    // }
     return (
       <div className="content">
-        <Grid fluid>
-          <Row>
-            <Col md={12}>
-              <Card
-                title="Detail"
-                category=""
-                content={
-                  <div>
-                    <span>
-                      <b>Owner:</b> {getSkybot.pointing}
-                    </span>
-                    {/* <br />
-                    <span>
-                      <b>Display Name:</b> {customList.displayname}
-                    </span>
-                    <br />
-                    <span>
-                      <b>Tablename:</b> {customList.tablename}
-                    </span>
-                    <br />
-                    <br />
-                    <span>
-                      <b>Description:</b> {customList.description}
-                    </span>
-                    <br />
-                    <span>
-                      <b>Objects:</b> {customList.distinct_objects}
-                    </span>
-                    <br />
-                    <span>
-                      <b>Rows:</b> {customList.rows}
-                    </span>
-                    <br />
-                    <span>
-                      <b>Pointings:</b> {customList.distinct_pointing}
-                    </span>
-                    <br />
-                    <span>
-                      <b>Objects not on CCD:</b> {customList.missing_pointing}
-                    </span>
-                    <br />
-                    <span>
-                      <b>Class:</b> {customList.filter_dynclass}
-                    </span>
-                    <br />
-                    <span>
-                      <b>Magnitude:</b>  {}
-                    </span>
-                    <br />
-                    <span>
-                      <b>Minimun difference time between observations:</b>
-                      {customList.filter_diffdatenights}
-                    </span>
-                    <br />
-                    <span>
-                      <b>More than one Filter:</b>{' '}
-                      {customList.filter_morefilter}
-                    </span>
-                    <br />
-                    <span>
-                      <b>Filter by Name:</b> {customList.filter_name}
-                    </span>
-                    <br /> */}
-                  </div>
-                }
-              />
-            </Col>
-          </Row>
-        </Grid>
+        <Card
+          title="Detail"
+          category=""
+          content={
+            <Grid fluid>
+              <Row>
+                <Col mdOffset={11}>
+                  <Button onClick={this.onClick}>back</Button>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={4}>
+                  <Properties record={record} />
+                </Col>
+                <Col md={4}>
+                  <OrbitalParameters />
+                </Col>
+                <Col md={4}>
+                  <PlotCCD />
+                </Col>
+              </Row>
+              <Row>
+                <Col md={12}>
+                  <Observation />
+                </Col>
+              </Row>
+            </Grid>
+          }
+        />
       </div>
     );
   }

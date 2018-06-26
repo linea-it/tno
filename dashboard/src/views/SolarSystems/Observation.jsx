@@ -1,24 +1,15 @@
 import React, { Component } from 'react';
-import {
-  FormGroup,
-  FormControl,
-  InputGroup,
-  ButtonToolbar,
-} from 'react-bootstrap';
-
 import { withRouter } from 'react-router-dom';
-import Button from 'elements/CustomButton/CustomButton.jsx';
-import SkybotApi from './SkybotApi';
 import PropTypes from 'prop-types';
+import Card from 'components/Card/Card.jsx';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import { formatColumnHeader } from 'utils';
-import SkybotDetail from './SkybotDetail';
+import { formatDateUTC, formatColumnHeader } from 'utils';
 
-const skybot_columns = [
+const pointing_columns = [
   // {
   //   text: 'ID',
   //   dataField: 'id',
@@ -27,68 +18,89 @@ const skybot_columns = [
   // },
 
   {
-    text: 'Name',
-    dataField: 'name',
-    width: 20,
-    align: 'center',
+    text: 'Texto1',
+    dataField: 'date_obs',
+    width: 180,
     headerStyle: formatColumnHeader,
-    helpText:
-      '(ucd=“meta.id;meta.main”) Object name (official or provisional designation).',
+    formatter: formatDateUTC,
+    helpText: 'Date and time of observation',
     headerTitle: column => `${column.helpText}`,
   },
 
   {
-    text: 'Num',
-    dataField: 'num',
-    align: 'center',
-    width: 20,
+    text: 'Texto2',
+    dataField: 'filename',
+    width: 180,
     headerStyle: formatColumnHeader,
-    helpText:
-      '(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).',
+    helpText: 'Name of FITS file with a CCD image.',
     headerTitle: column => `${column.helpText}`,
   },
 
   {
-    text: 'RA (deg)',
-    dataField: 'raj2000',
-    align: 'center',
-    width: 20,
-    headerStyle: formatColumnHeader,
-    helpText:
-      '(ucd=“pos.eq.ra;meta.main”) Right ascension of the identified object in degrees.',
-    headerTitle: column => `${column.helpText}`,
-  },
-
-  {
-    text: 'Dec (deg)',
-    dataField: 'decj2000',
-    align: 'center',
-    width: 20,
-    headerStyle: formatColumnHeader,
-    helpText:
-      '(ucd=“pos.eq.dec;meta.main”) Declination of the identified object in degrees.',
-    headerTitle: column => `${column.helpText}`,
-  },
-
-  {
-    text: 'Exposure',
+    text: 'Texto3',
     dataField: 'expnum',
     align: 'center',
-    width: 20,
+    width: 60,
+    headerStyle: formatColumnHeader,
+    helpText:
+      'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
+    headerTitle: column => `${column.helpText}`,
+  },
+
+  {
+    text: 'Texto4',
+    dataField: 'ccdnum',
+    align: 'center',
+    width: 60,
+    headerStyle: formatColumnHeader,
+    helpText: 'CCD Number (1, 2, ..., 62)',
+    headerTitle: column => `${column.helpText}`,
+  },
+
+  {
+    text: 'Texto5',
+    dataField: 'band',
+    align: 'center',
+    width: 60,
     headerStyle: formatColumnHeader,
     helpText: 'Filter used to do the observation (u, g, r, i, z, Y).',
     headerTitle: column => `${column.helpText}`,
   },
+
+  {
+    text: 'Texto6',
+    dataField: 'exptime',
+    align: 'center',
+    width: 60,
+    headerStyle: formatColumnHeader,
+    helpText: 'Exposure time of observation.',
+    headerTitle: column => `${column.helpText}`,
+  },
+
+  {
+    text: 'Texto7',
+    dataField: 'downloaded',
+    align: 'center',
+    helpText: 'flag indicating whether the image was downloaded from DES.',
+    headerTitle: column => `${column.helpText}`,
+
+    formatExtraData: {
+      success: 'fa fa-check text-success',
+      failure: 'fa fa-exclamation-triangle text-warning',
+    },
+
+    width: 80,
+    headerStyle: formatColumnHeader,
+  },
 ];
 
-class GetSkybot extends Component {
+class Observation extends Component {
   state = this.initialState;
 
-  api = new SkybotApi();
+  //   api = new PointingApi();
 
   static propTypes = {
     history: PropTypes.any.isRequired,
-    match: PropTypes.object.isRequired,
   };
 
   get initialState() {
@@ -107,22 +119,7 @@ class GetSkybot extends Component {
   componentDidMount() {
     // console.log('componentDidMount()');
 
-    //   const {
-    //     match: { params },
-    //   } = this.props;
-
-    //   this.api.getListStats({ id: params.id }).then(res => {
-    //     const data = res.data.data;
-
-    //     this.setState(
-    //       {
-    //         id: res.data.id,
-    //         customList: data,
-    //       },
-
     this.fetchData(this.state.page, this.state.sizePerPage);
-    //     );
-    //   });
   }
 
   handleTableChange = (_type, { page, sizePerPage }) => {
@@ -172,29 +169,17 @@ class GetSkybot extends Component {
     } else {
       params.page = page;
     }
-    this.api.getSkybotLists(params).then(res => {
-      // console.log('Carregou: %o', res);
+  };
 
-      const r = res.data;
-
-      this.setState({
-        data: r.results,
-        totalSize: r.count,
-        page: page,
-        loading: false,
-      });
-    });
+  showDetail = (index, row, rowindex) => {
+    //console.log(row);
+    this.setState({ show: true, record: row });
   };
 
   // close = () => this.setState({ showCreate: false });
 
   onClose = () => {
     this.setState({ show: false });
-  };
-
-  showDetail = (index, row, rowindex) => {
-    //console.log(row);
-    this.setState({ record: row });
   };
 
   render() {
@@ -217,68 +202,49 @@ class GetSkybot extends Component {
       showTotal: true,
     });
 
-    const history = this.props.history;
-
     const rowEvents = {
-      onClick: (e, row) => {
-        history.push('/skybotdetail/' + row.id);
-        // this.showDetail;
-      },
+      onClick: this.showDetail,
+      // onClick: (e, row, rowIndex) => {
+      //   //this.setState({ show: true });
+      //   //alert(`clicked on row with index: ${rowIndex}`);
+      // },
     };
 
     return (
       <div className="content">
-        <div>
-          <ButtonToolbar>
-            <FormGroup>
-              <InputGroup>
-                <FormControl
-                  type="text"
-                  placeholder="Search By name, number"
-                  value={search}
-                  onChange={this.onChangeSearch}
-                  onKeyPress={this.onKeyPress}
-                />
+        <div className="clearfix" />
+        <Card
+          title="Observation"
+          category=""
+          content={
+            <div>
+              <BootstrapTable
+                striped
+                hover
+                condensed
+                remote
+                bordered={false}
+                keyField="id"
+                noDataIndication="no results to display"
+                data={data}
+                columns={pointing_columns}
+                pagination={pagination}
+                onTableChange={this.handleTableChange}
+                rowEvents={rowEvents}
+                // loading={loading}
+                overlay={overlayFactory({
+                  spinner: true,
 
-                <InputGroup.Button>
-                  <Button onClick={this.handleSearch}>Search</Button>
-                </InputGroup.Button>
-
-                <InputGroup.Button>
-                  <Button onClick={this.handlerClear}>Clear</Button>
-                </InputGroup.Button>
-              </InputGroup>
-            </FormGroup>
-          </ButtonToolbar>
-
-          <div className="clearfix" />
-
-          <BootstrapTable
-            striped
-            hover
-            condensed
-            remote
-            bordered={false}
-            keyField="id"
-            noDataIndication="no results to display"
-            data={data}
-            columns={skybot_columns}
-            pagination={pagination}
-            onTableChange={this.handleTableChange}
-            rowEvents={rowEvents}
-            loading={loading}
-            overlay={overlayFactory({
-              spinner: true,
-
-              background: 'rgba(192,192,192,0.3)',
-            })}
-          />
-          <span>{totalSize} rows</span>
-        </div>
-        <SkybotDetail record={record} />
+                  background: 'rgba(192,192,192,0.3)',
+                })}
+              />
+              <span>{totalSize} rows</span>
+            </div>
+          }
+        />
       </div>
     );
   }
 }
 
-export default withRouter(GetSkybot);
+export default withRouter(Observation);

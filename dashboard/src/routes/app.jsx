@@ -60,8 +60,8 @@ const appRoutes = [
     component: ObjectList,
   },
   {
-    path: '/SkybotDetail/:id',
-    name: 'SkybotDetails',
+    path: '/skybotdetail/:id',
+    name: 'Skybot Details',
     hidden: true,
     component: SkybotDetail,
   },
