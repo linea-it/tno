@@ -16,12 +16,19 @@ class Praia extends Component {
   };
 
   get initialState() {
-    return {};
+    return {
+      // Praia Run recem criado e que esta em andamento ainda
+      record: {},
+    };
   }
 
-  componentDidMount() {}
+  onCreateRun = record => {
+    console.log('onCreateRun(%o)', record);
+    this.setState({ record: record });
+  };
 
   render() {
+    const { record } = this.state;
     return (
       <div className="content">
         <Card
@@ -31,10 +38,10 @@ class Praia extends Component {
             <Grid fluid>
               <Row>
                 <Col md={4}>
-                  <PraiaSubmit />
+                  <PraiaSubmit onCreateRun={this.onCreateRun} />
                 </Col>
                 <Col md={8}>
-                  <PraiaRunning />
+                  <PraiaRunning record={record} />
                 </Col>
               </Row>
               <Row>

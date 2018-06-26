@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Panel, Form, FormGroup, ControlLabel, Button } from 'react-bootstrap';
+import { Form, FormGroup, ControlLabel, Button } from 'react-bootstrap';
 import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
 import ObjectApi from '../ObjectList/ObjectApi';
 import PraiaApi from './PraiaApi';
 import Card from 'components/Card/Card.jsx';
+import PropTypes from 'prop-types';
 class PraiaSubmit extends Component {
   state = this.initialState;
 
@@ -14,6 +15,10 @@ class PraiaSubmit extends Component {
   get initialState() {
     return { input: null, config: null };
   }
+
+  static propTypes = {
+    onCreateRun: PropTypes.func.isRequired,
+  };
 
   componentDidMount() {
     // console.log("Praia Config mount")
@@ -53,12 +58,31 @@ class PraiaSubmit extends Component {
     }
   };
 
-  onClickSubmit = event => {
-    console.log('onClickSubmit()');
-    console.log(this.state.config)
-    console.log(this.state.config)
+  onClickSubmit = () => {
+    const { input, config } = this.state;
+    if (!input || !config) {
+      console.log('Falta um parametro');
+      // TODO: Implementar notifacao de parametro faltante
+      return;
+    }
+    this.praia_api
+      .createPraiaRun({ input: input, config: config })
+      .then(res => {
+        console.log(res);
+        this.onCreateSuccess(res.data);
+      })
+      .catch(this.onCreateFailure);
+  };
 
-  }
+  onCreateSuccess = record => {
+    console.log('onCreateSuccess(%o)', record);
+    this.props.onCreateRun(record)
+  };
+
+  onCreateFailure = error => {
+    // TODO: Criar uma Notificacao de falha.
+    console.log('onCreateFailure(%o)', error);
+  };
 
   render() {
     const { input, config } = this.state;
