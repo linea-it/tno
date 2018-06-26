@@ -6,6 +6,7 @@ import ObjectApi from '../ObjectList/ObjectApi';
 import PraiaApi from './PraiaApi';
 import Card from 'components/Card/Card.jsx';
 import PropTypes from 'prop-types';
+
 class PraiaSubmit extends Component {
   state = this.initialState;
 
@@ -19,10 +20,6 @@ class PraiaSubmit extends Component {
   static propTypes = {
     onCreateRun: PropTypes.func.isRequired,
   };
-
-  componentDidMount() {
-    // console.log("Praia Config mount")
-  }
 
   loadInputs = inputValue => {
     return this.object_api
@@ -76,7 +73,7 @@ class PraiaSubmit extends Component {
 
   onCreateSuccess = record => {
     console.log('onCreateSuccess(%o)', record);
-    this.props.onCreateRun(record)
+    this.setState(this.initialState, this.props.onCreateRun(record));
   };
 
   onCreateFailure = error => {

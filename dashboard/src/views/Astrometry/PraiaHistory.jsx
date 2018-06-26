@@ -8,7 +8,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import { formatDateUTC, formatColumnHeader } from 'utils';
+import { formatDateUTC, formatColumnHeader, formatStatus } from 'utils';
 
 const columns = [
   {
@@ -35,13 +35,15 @@ const columns = [
   },
   {
     text: 'Configuration',
-    dataField: 'configuration',
+    dataField: 'configuration_displayname',
   },
   {
     text: 'Status',
     dataField: 'status',
     width: 80,
+    align: 'center',
     headerStyle: formatColumnHeader,
+    classes: formatStatus,
   },
 ];
 
@@ -51,11 +53,11 @@ class PraiaHistory extends Component {
 
   static propTypes = {
     history: PropTypes.any.isRequired,
+    loading: PropTypes.bool,
   };
 
   get initialState() {
     return {
-      id: null,
       data: [],
       page: 1,
       totalSize: 0,
@@ -68,8 +70,13 @@ class PraiaHistory extends Component {
     this.fetchData(this.state.page, this.state.sizePerPage);
   }
 
-  handleTableChange = (type, { page, sizePerPage }) => {
-    // console.log('handleTableChange(%o, %o)', page, sizePerPage);
+  componentWillReceiveProps() {
+    // Atualiza o Conteudo da datagrid toda vez que recebe uma propriedade
+    this.fetchData(this.state.page, this.state.sizePerPage);
+  }
+
+  handleTableChange = ({ page, sizePerPage }) => {
+    console.log('handleTableChange(%o, %o)', page, sizePerPage);
 
     this.fetchData(page, sizePerPage);
   };
@@ -104,7 +111,7 @@ class PraiaHistory extends Component {
     const history = this.props.history;
 
     const rowEvents = {
-      onClick: (e, row) => {
+      onClick: (row) => {
         history.push('/objects/' + row.id);
       },
     };

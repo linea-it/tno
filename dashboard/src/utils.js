@@ -17,8 +17,12 @@ export function formatColumnHeader(column) {
 
 // Format date to UTC
 export function formatDateUTC(date) {
-  const dt = new Date(date);
-  return dt.toUTCString();
+  if (date) {
+    const dt = new Date(date);
+    return dt.toUTCString();
+  } else {
+    return date;
+  }
 }
 
 // Format cell background by status

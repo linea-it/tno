@@ -30,7 +30,7 @@ class Run(models.Model):
 
     finish_time = models.DateTimeField(
         verbose_name='Finish Time',
-        auto_now_add=True, null=True, blank=True)        
+        auto_now_add=False, null=True, blank=True)        
 
     # Relation With PraiaConfig
     configuration = models.ForeignKey(

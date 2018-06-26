@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { Tabs, Tab, Grid, Row, Col } from 'react-bootstrap';
+import { Grid, Row, Col } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import PraiaApi from './PraiaApi';
 import PraiaSubmit from './PraiaSubmit';
 import PraiaHistory from './PraiaHistory';
-import PraiaConfig from './PraiaConfig';
 import PraiaRunning from './PraiaRunning';
 import PropTypes from 'prop-types';
 import Card from 'components/Card/Card.jsx';
@@ -23,8 +22,8 @@ class Praia extends Component {
   }
 
   onCreateRun = record => {
-    console.log('onCreateRun(%o)', record);
-    this.setState({ record: record });
+    // Toda vez que cria um novo registro forca a execucao do metodo render()
+    this.setState(this.state);
   };
 
   render() {
