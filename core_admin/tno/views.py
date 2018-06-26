@@ -210,10 +210,10 @@ class ObservationViewSet(viewsets.ModelViewSet):
     queryset = Observation.objects.all()
     serializer_class = ObservationSerializer
     filter_fields = ('id', 'name', 'source', 'observations')
-    search_fields = ('id', 'name', 'filename', 'external_url')
+    search_fields = ('id', 'name', 'filename',)
 
 class OrbitalParameterViewSet(viewsets.ModelViewSet):
     queryset = Observation.objects.all()
     serializer_class = ObservationSerializer
     filter_fields = ('id', 'name', 'source', 'observations')
-    search_fields = ('id', 'name', 'filename', 'external_url')    
+    search_fields = ('id', 'name', 'filename',)    
