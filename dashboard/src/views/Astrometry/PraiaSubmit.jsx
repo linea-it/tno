@@ -4,7 +4,7 @@ import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
 import ObjectApi from '../ObjectList/ObjectApi';
 import PraiaApi from './PraiaApi';
-
+import Card from 'components/Card/Card.jsx';
 class PraiaSubmit extends Component {
   state = this.initialState;
 
@@ -53,41 +53,53 @@ class PraiaSubmit extends Component {
     }
   };
 
+  onClickSubmit = event => {
+    console.log('onClickSubmit()');
+    console.log(this.state.config)
+    console.log(this.state.config)
+
+  }
+
   render() {
     const { input, config } = this.state;
     return (
-      <div className="content">
-        <Panel>
-          <Panel.Heading>Run</Panel.Heading>
-          <Form>
-            <FormGroup>
-              <ControlLabel>Input</ControlLabel>
-              <Async
-                onChange={this.onSelectInput}
-                value={input}
-                cacheOptions
-                valueKey="id"
-                labelKey="displayname"
-                defaultOptions
-                loadOptions={this.loadInputs}
-              />
-            </FormGroup>
-            <FormGroup>
-              <ControlLabel>Configuration</ControlLabel>
-              <Async
-                onChange={this.onSelectConfig}
-                value={config}
-                cacheOptions
-                valueKey="id"
-                labelKey="displayname"
-                defaultOptions
-                loadOptions={this.loadConfigs}
-              />
-            </FormGroup>{' '}
-            <Button type="submit">Run</Button>
-          </Form>
-        </Panel>
-      </div>
+      <Card
+        title="Execute"
+        category="DESCRIÇÃO SOBRE A EXECUÇÃO"
+        content={
+          <div className="content">
+            <Form>
+              <FormGroup>
+                <ControlLabel>Input</ControlLabel>
+                <Async
+                  onChange={this.onSelectInput}
+                  value={input}
+                  cacheOptions
+                  valueKey="id"
+                  labelKey="displayname"
+                  defaultOptions
+                  loadOptions={this.loadInputs}
+                />
+              </FormGroup>
+              <FormGroup>
+                <ControlLabel>Configuration</ControlLabel>
+                <Async
+                  onChange={this.onSelectConfig}
+                  value={config}
+                  cacheOptions
+                  valueKey="id"
+                  labelKey="displayname"
+                  defaultOptions
+                  loadOptions={this.loadConfigs}
+                />
+              </FormGroup>
+              <Button bsStyle="info" onClick={this.onClickSubmit}>
+                Submit
+              </Button>
+            </Form>
+          </div>
+        }
+      />
     );
   }
 }

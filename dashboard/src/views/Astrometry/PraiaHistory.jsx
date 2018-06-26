@@ -112,7 +112,7 @@ class PraiaHistory extends Component {
     return (
       <Card
         title=""
-        category="Manage the completed PRAIA rounds"
+        category="Manage the completed Astrometry rounds"
         content={
           <div>
             <BootstrapTable

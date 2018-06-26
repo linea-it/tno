@@ -24,34 +24,27 @@ class Praia extends Component {
   render() {
     return (
       <div className="content">
-        <Tabs defaultActiveKey={1} animation={true}>
-          <Tab eventKey={1} title="PRAIA">
-            <Card
-              title=""
-              category="Manage and monitor the rounds Praia"
-              content={
-                <Grid fluid>
-                  <Row>
-                    <Col md={12}>
-                      <PraiaSubmit />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md={12}>
-                      <PraiaConfig />
-                    </Col>
-                  </Row>
-                </Grid>
-              }
-            />
-          </Tab>
-          <Tab eventKey={2} title="Runing">
-            <PraiaRunning />
-          </Tab>
-          <Tab eventKey={3} title="History">
-            <PraiaHistory />
-          </Tab>
-        </Tabs>
+        <Card
+          title="Astrometry"
+          category="DESCRIÇÃO SOBRE A ETAPA DE ASTROMETRY"
+          content={
+            <Grid fluid>
+              <Row>
+                <Col md={4}>
+                  <PraiaSubmit />
+                </Col>
+                <Col md={8}>
+                  <PraiaRunning />
+                </Col>
+              </Row>
+              <Row>
+                <Col md={12}>
+                  <PraiaHistory />
+                </Col>
+              </Row>
+            </Grid>
+          }
+        />
       </div>
     );
   }
