@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from django.contrib.auth.models import User
-from .models import Pointing, SkybotOutput, CustomList, Proccess, Product
+from .models import Pointing, SkybotOutput, CustomList, Proccess, Product, Observation, OrbitalParameter
 import humanize
 
 class UserSerializer(serializers.ModelSerializer):
@@ -170,3 +170,34 @@ class ProductSerializer(serializers.ModelSerializer):
             'filename',
             'file_size',
         )
+
+class ObservationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Observation
+        fields = (
+            'id',
+            'name',
+            'source',
+            'observations',
+            'filename',
+            'download_start_time',
+            'download_finish_time',
+            'file_size',
+            'external_url'
+        )
+
+class OrbitalParameterSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = OrbitalParameter
+        fields = (
+            'id',
+            'name',
+            'source',
+            'filename',
+            'download_start_time',
+            'download_finish_time',
+            'file_size',
+            'external_url'
+        )        
