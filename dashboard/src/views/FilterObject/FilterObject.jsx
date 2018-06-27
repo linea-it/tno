@@ -102,7 +102,7 @@ class FilterObject extends Component {
                   </Row>
                   <Row>
                     <Card
-                      title="Filters"
+                      title=""
                       category=""
                       content={<FilterObjectForm onFilter={this.onFilter} />}
                     />
