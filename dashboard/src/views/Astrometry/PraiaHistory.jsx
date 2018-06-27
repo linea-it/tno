@@ -106,12 +106,9 @@ class PraiaHistory extends Component {
       showTotal: true,
     });
 
-    const history = this.props.history;
-
     const rowEvents = {
       onDoubleClick: row => {
         console.log("Clicou 2 vezes")
-        //history.push('/objects/' + row.id);
       },
     };
 

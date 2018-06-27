@@ -112,6 +112,9 @@ class CustomListViewSet(viewsets.ModelViewSet):
     serializer_class = CustomListSerializer
     filter_fields = ('id', 'displayname', 'tablename', 'status')
     search_fields = ('displayname', 'description',)
+    ordering_fields = ('id', 'displayname', 'tablename', 'status', 'creation_date')
+    ordering = ('-creation_date',)
+
 
     def perform_create(self, serializer):
         # Adiconar usuario logado
