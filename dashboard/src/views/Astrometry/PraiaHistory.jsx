@@ -109,8 +109,9 @@ class PraiaHistory extends Component {
     const history = this.props.history;
 
     const rowEvents = {
-      onClick: row => {
-        history.push('/objects/' + row.id);
+      onDoubleClick: row => {
+        console.log("Clicou 2 vezes")
+        //history.push('/objects/' + row.id);
       },
     };
 
@@ -119,28 +120,25 @@ class PraiaHistory extends Component {
         title=""
         category="Manage the completed Astrometry rounds"
         content={
-          <div>
-            <BootstrapTable
-              striped
-              hover
-              condensed
-              remote
-              bordered={false}
-              keyField="id"
-              noDataIndication="..."
-              data={data}
-              columns={columns}
-              pagination={pagination}
-              onTableChange={this.handleTableChange}
-              loading={loading}
-              overlay={overlayFactory({
-                spinner: true,
-                background: 'rgba(192,192,192,0.3)',
-              })}
-              rowEvents={rowEvents}
-            />
-            <span>{totalSize} rows</span>
-          </div>
+          <BootstrapTable
+            striped
+            hover
+            condensed
+            remote
+            bordered={false}
+            keyField="id"
+            noDataIndication="..."
+            data={data}
+            columns={columns}
+            pagination={pagination}
+            onTableChange={this.handleTableChange}
+            loading={loading}
+            overlay={overlayFactory({
+              spinner: true,
+              background: 'rgba(192,192,192,0.3)',
+            })}
+            rowEvents={rowEvents}
+          />
         }
       />
     );

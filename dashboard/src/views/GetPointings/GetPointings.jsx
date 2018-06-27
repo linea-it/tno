@@ -233,17 +233,12 @@ class GetPointings extends Component {
       page: page,
       sizePerPage: sizePerPage,
       totalSize: totalSize,
-      // hideSizePerPage: true,
       hidePageListOnlyOnePage: true,
       showTotal: true,
     });
 
     const rowEvents = {
-      onClick: this.showDetail,
-      // onClick: (e, row, rowIndex) => {
-      //   //this.setState({ show: true });
-      //   //alert(`clicked on row with index: ${rowIndex}`);
-      // },
+      onDoubleClick: this.showDetail,
     };
 
     return (
@@ -293,7 +288,6 @@ class GetPointings extends Component {
               background: 'rgba(192,192,192,0.3)',
             })}
           />
-          <span>{totalSize} rows</span>
         </div>
         <DetailsPointings
           show={this.state.show}
