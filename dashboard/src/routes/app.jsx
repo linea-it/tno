@@ -1,5 +1,5 @@
 import SolarSystems from 'views/SolarSystems/SolarSystems';
-import Get from 'views/GetPointings/Get';
+import PointingsPanel from 'views/Pointings/Pointings';
 import FilterPanel from 'views/FilterObject/Panel';
 import CustomList from 'views/ObjectList/CustomList';
 import ObjectList from 'views/ObjectList/ObjectList';
@@ -27,10 +27,10 @@ const appRoutes = [
     component: SolarSystems,
   },
   {
-    path: '/getpointings',
-    name: 'GetPointings',
+    path: '/pointings',
+    name: 'Pointings',
     // icon: 'pe-7s-target',
-    component: Get,
+    component: PointingsPanel,
   },
   {
     path: '/solarsystems',
