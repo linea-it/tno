@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { Panel, Form, FormGroup, ControlLabel, Button } from 'react-bootstrap';
+import { Form, FormGroup, ControlLabel, Button } from 'react-bootstrap';
 import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
 import ObjectApi from '../ObjectList/ObjectApi';
 import PraiaApi from './PraiaApi';
+import Card from 'components/Card/Card.jsx';
+import PropTypes from 'prop-types';
 
 class PraiaSubmit extends Component {
   state = this.initialState;
@@ -15,9 +17,9 @@ class PraiaSubmit extends Component {
     return { input: null, config: null };
   }
 
-  componentDidMount() {
-    // console.log("Praia Config mount")
-  }
+  static propTypes = {
+    onCreateRun: PropTypes.func.isRequired,
+  };
 
   loadInputs = inputValue => {
     return this.object_api
@@ -53,41 +55,72 @@ class PraiaSubmit extends Component {
     }
   };
 
+  onClickSubmit = () => {
+    const { input, config } = this.state;
+    if (!input || !config) {
+      console.log('Falta um parametro');
+      // TODO: Implementar notifacao de parametro faltante
+      return;
+    }
+    this.praia_api
+      .createPraiaRun({ input: input, config: config })
+      .then(res => {
+        console.log(res);
+        this.onCreateSuccess(res.data);
+      })
+      .catch(this.onCreateFailure);
+  };
+
+  onCreateSuccess = record => {
+    console.log('onCreateSuccess(%o)', record);
+    this.setState(this.initialState, this.props.onCreateRun(record));
+  };
+
+  onCreateFailure = error => {
+    // TODO: Criar uma Notificacao de falha.
+    console.log('onCreateFailure(%o)', error);
+  };
+
   render() {
     const { input, config } = this.state;
     return (
-      <div className="content">
-        <Panel>
-          <Panel.Heading>Run</Panel.Heading>
-          <Form>
-            <FormGroup>
-              <ControlLabel>Input</ControlLabel>
-              <Async
-                onChange={this.onSelectInput}
-                value={input}
-                cacheOptions
-                valueKey="id"
-                labelKey="displayname"
-                defaultOptions
-                loadOptions={this.loadInputs}
-              />
-            </FormGroup>
-            <FormGroup>
-              <ControlLabel>Configuration</ControlLabel>
-              <Async
-                onChange={this.onSelectConfig}
-                value={config}
-                cacheOptions
-                valueKey="id"
-                labelKey="displayname"
-                defaultOptions
-                loadOptions={this.loadConfigs}
-              />
-            </FormGroup>{' '}
-            <Button type="submit">Run</Button>
-          </Form>
-        </Panel>
-      </div>
+      <Card
+        title="Execute"
+        category="DESCRIÇÃO SOBRE A EXECUÇÃO"
+        content={
+          <div className="content">
+            <Form>
+              <FormGroup>
+                <ControlLabel>Input</ControlLabel>
+                <Async
+                  onChange={this.onSelectInput}
+                  value={input}
+                  cacheOptions
+                  valueKey="id"
+                  labelKey="displayname"
+                  defaultOptions
+                  loadOptions={this.loadInputs}
+                />
+              </FormGroup>
+              <FormGroup>
+                <ControlLabel>Configuration</ControlLabel>
+                <Async
+                  onChange={this.onSelectConfig}
+                  value={config}
+                  cacheOptions
+                  valueKey="id"
+                  labelKey="displayname"
+                  defaultOptions
+                  loadOptions={this.loadConfigs}
+                />
+              </FormGroup>
+              <Button bsStyle="info" onClick={this.onClickSubmit}>
+                Submit
+              </Button>
+            </Form>
+          </div>
+        }
+      />
     );
   }
 }

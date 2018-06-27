@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col } from 'react-bootstrap';
 import Card from 'components/Card/Card.jsx';
 import PraiaApi from './PraiaApi';
-import { Tasks } from 'components/Tasks/Tasks.jsx';
+import PropTypes from 'prop-types';
 class PraiaRunning extends Component {
   state = this.initialState;
   api = new PraiaApi();
@@ -11,55 +10,26 @@ class PraiaRunning extends Component {
     return {};
   }
 
+  static propTypes = {
+    record: PropTypes.object.isRequired,
+  };
+
   componentDidMount() {
     // console.log("Praia Config mount")
   }
 
   render() {
+    const { record } = this.props;
+    let id = '';
+
+    if ('id' in record) {
+      id = record.id;
+    }
     return (
       <Card
-        title=""
-        category="Monitor the rounds Praia"
-        content={
-          <Grid fluid>
-            <Row>
-              <Col md={6}>
-                <Card
-                  id="chartActivity"
-                  title="2014 Sales"
-                  category="All products including Taxes"
-                  stats="Data information certified"
-                  statsIcon="fa fa-check"
-                  content={
-                    <div className="ct-chart">
-                      {/* <ChartistGraph
-                          data={dataBar}
-                          type="Bar"
-                          options={optionsBar}
-                          responsiveOptions={responsiveBar}
-                        /> */}
-                    </div>
-                  }
-                />
-              </Col>
-              <Col md={6}>
-                <Card
-                  title="Tasks"
-                  category="Backend development"
-                  stats="Updated 3 minutes ago"
-                  statsIcon="fa fa-history"
-                  content={
-                    <div className="table-full-width">
-                      <table className="table">
-                        <Tasks />
-                      </table>
-                    </div>
-                  }
-                />
-              </Col>
-            </Row>
-          </Grid>
-        }
+        title="Running"
+        category="Monitor the rounds Astrometry"
+        content={<div className="content">PRAIA RUN ID: {id}</div>}
       />
     );
   }

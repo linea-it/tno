@@ -89,17 +89,18 @@ class CustomList extends Component {
         totalSize: r.count,
         page: page,
         loading: false,
+        sizePerPage: pageSize,
       });
     });
   };
 
   render() {
     const { data, sizePerPage, page, totalSize, loading } = this.state;
+
     const pagination = paginationFactory({
       page: page,
       sizePerPage: sizePerPage,
       totalSize: totalSize,
-      hideSizePerPage: true,
       hidePageListOnlyOnePage: true,
       showTotal: true,
     });
@@ -107,42 +108,39 @@ class CustomList extends Component {
     const history = this.props.history;
 
     const rowEvents = {
-      onClick: (e, row) => {
+      onDoubleClick: (e, row) => {
         history.push('/objects/' + row.id);
       },
     };
 
     return (
-      <div className="content">
-        <Card
-          title="Custom Lists"
-          category="Lists all results saved by Filter Objects. click on a line to open the list of Objects."
-          content={
-            <div>
-              <BootstrapTable
-                striped
-                hover
-                condensed
-                remote
-                bordered={false}
-                keyField="id"
-                noDataIndication="no results to display"
-                data={data}
-                columns={columns}
-                pagination={pagination}
-                onTableChange={this.handleTableChange}
-                loading={loading}
-                overlay={overlayFactory({
-                  spinner: true,
-                  background: 'rgba(192,192,192,0.3)',
-                })}
-                rowEvents={rowEvents}
-              />
-              <span>{totalSize} rows</span>
-            </div>
-          }
-        />
-      </div>
+      <Card
+        title="Custom Lists"
+        category="Lists all results saved by Filter Objects. click on a line to open the list of Objects."
+        content={
+          <div>
+            <BootstrapTable
+              striped
+              hover
+              condensed
+              remote
+              bordered={false}
+              keyField="id"
+              noDataIndication="no results to display"
+              data={data}
+              columns={columns}
+              pagination={pagination}
+              onTableChange={this.handleTableChange}
+              loading={loading}
+              overlay={overlayFactory({
+                spinner: true,
+                background: 'rgba(192,192,192,0.3)',
+              })}
+              rowEvents={rowEvents}
+            />
+          </div>
+        }
+      />
     );
   }
 }

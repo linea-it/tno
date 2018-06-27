@@ -19,9 +19,6 @@ import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
 import { formatDateUTC, formatColumnHeader } from 'utils';
 
 function exposureFormatter(_cell, row, _rowindex, formatExtraData) {
-  // console.log(row);
-  // console.log(row.downloaded);
-
   if (row.downloaded) {
     return <i className={formatExtraData['success']} />;
   } else {
@@ -62,9 +59,9 @@ const pointing_columns = [
     align: 'center',
     width: 60,
     headerStyle: formatColumnHeader,
-    helpText: 'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
+    helpText:
+      'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
     headerTitle: column => `${column.helpText}`,
-
   },
 
   {
@@ -75,7 +72,6 @@ const pointing_columns = [
     headerStyle: formatColumnHeader,
     helpText: 'CCD Number (1, 2, ..., 62)',
     headerTitle: column => `${column.helpText}`,
-
   },
 
   {
@@ -86,7 +82,6 @@ const pointing_columns = [
     headerStyle: formatColumnHeader,
     helpText: 'Filter used to do the observation (u, g, r, i, z, Y).',
     headerTitle: column => `${column.helpText}`,
-
   },
 
   {
@@ -97,7 +92,6 @@ const pointing_columns = [
     headerStyle: formatColumnHeader,
     helpText: 'Exposure time of observation.',
     headerTitle: column => `${column.helpText}`,
-
   },
 
   {
@@ -107,7 +101,6 @@ const pointing_columns = [
     formatter: exposureFormatter,
     helpText: 'flag indicating whether the image was downloaded from DES.',
     headerTitle: column => `${column.helpText}`,
-
 
     formatExtraData: {
       success: 'fa fa-check text-success',
@@ -119,7 +112,7 @@ const pointing_columns = [
   },
 ];
 
-class GetPointings extends Component {
+class PointingList extends Component {
   state = this.initialState;
 
   api = new PointingApi();
@@ -134,7 +127,7 @@ class GetPointings extends Component {
       data: [],
       page: 1,
       totalSize: 0,
-      sizePerPage: 3,
+      sizePerPage: 10,
       loading: false,
       search: '',
       record: null,
@@ -170,10 +163,14 @@ class GetPointings extends Component {
       // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
       this.setState(
         { page: 1 },
-        this.fetchData(this.state.page, this.state.pageSize, this.state.search)
+        this.fetchData(
+          this.state.page,
+          this.state.sizePerPage,
+          this.state.search
+        )
       );
     } else {
-      this.fetchData(this.state.page, this.state.pageSize);
+      this.fetchData(this.state.page, this.state.sizePerPage);
     }
   };
 
@@ -181,12 +178,12 @@ class GetPointings extends Component {
     this.setState({ search: '' }, this.fetchData());
   };
 
-  fetchData = (page, pageSize, search) => {
-   // console.log('fetchData(%o, %o, %o)', page, pageSize, search);
+  fetchData = (page, sizePerPage, search) => {
+    // console.log('fetchData(%o, %o, %o)', page, pageSize, search);
     this.setState({ loading: true });
 
     const params = {
-      pageSize: pageSize,
+      pageSize: sizePerPage,
     };
 
     if (search) {
@@ -204,6 +201,7 @@ class GetPointings extends Component {
         data: r.results,
         totalSize: r.count,
         page: page,
+        sizePerPage: sizePerPage,
         loading: false,
       });
     });
@@ -235,17 +233,12 @@ class GetPointings extends Component {
       page: page,
       sizePerPage: sizePerPage,
       totalSize: totalSize,
-      hideSizePerPage: true,
       hidePageListOnlyOnePage: true,
       showTotal: true,
     });
 
     const rowEvents = {
-      onClick: this.showDetail,
-      // onClick: (e, row, rowIndex) => {
-      //   //this.setState({ show: true });
-      //   //alert(`clicked on row with index: ${rowIndex}`);
-      // },
+      onDoubleClick: this.showDetail,
     };
 
     return (
@@ -295,7 +288,6 @@ class GetPointings extends Component {
               background: 'rgba(192,192,192,0.3)',
             })}
           />
-          <span>{totalSize} rows</span>
         </div>
         <DetailsPointings
           show={this.state.show}
@@ -307,4 +299,4 @@ class GetPointings extends Component {
   }
 }
 
-export default withRouter(GetPointings);
+export default withRouter(PointingList);

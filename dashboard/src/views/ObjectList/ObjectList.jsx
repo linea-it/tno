@@ -165,19 +165,20 @@ class ObjectList extends Component {
     this.fetchData(tablename, page, sizePerPage);
   };
 
-  fetchData = (tablename, page, pageSize) => {
+  fetchData = (tablename, page, sizePerPage) => {
     // console.log('fetchData(%o, %o, %o)', tablename, page, pageSize);
 
     this.setState({ loading: true });
 
     this.api
-      .listObjects({ tablename: tablename, page: page, pageSize: pageSize })
+      .listObjects({ tablename: tablename, page: page, pageSize: sizePerPage })
       .then(res => {
         const r = res.data;
         this.setState({
           data: r.results,
           totalSize: r.count,
           page: page,
+          sizePerPage: sizePerPage,
           loading: false,
         });
       });
@@ -196,7 +197,6 @@ class ObjectList extends Component {
       page: page,
       sizePerPage: sizePerPage,
       totalSize: totalSize,
-      hideSizePerPage: true,
       hidePageListOnlyOnePage: true,
       showTotal: true,
     });
@@ -257,28 +257,25 @@ class ObjectList extends Component {
                 title={this.state.customList.displayname}
                 category=""
                 content={
-                  <div>
-                    <BootstrapTable
-                      striped
-                      hover
-                      condensed
-                      remote
-                      bordered={false}
-                      keyField="id"
-                      noDataIndication="no results to display"
-                      data={data}
-                      columns={columns}
-                      pagination={pagination}
-                      onTableChange={this.handleTableChange}
-                      loading={loading}
-                      overlay={overlayFactory({
-                        spinner: true,
-                        background: 'rgba(192,192,192,0.3)',
-                      })}
-                      rowClasses={rowClasses}
-                    />
-                    <span>{totalSize} CCDs</span>
-                  </div>
+                  <BootstrapTable
+                    striped
+                    hover
+                    condensed
+                    remote
+                    bordered={false}
+                    keyField="id"
+                    noDataIndication="no results to display"
+                    data={data}
+                    columns={columns}
+                    pagination={pagination}
+                    onTableChange={this.handleTableChange}
+                    loading={loading}
+                    overlay={overlayFactory({
+                      spinner: true,
+                      background: 'rgba(192,192,192,0.3)',
+                    })}
+                    rowClasses={rowClasses}
+                  />
                 }
               />
             </Col>

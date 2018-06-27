@@ -10,9 +10,9 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User
 
-from .serializers import UserSerializer, PointingSerializer, SkybotOutputSerializer, ObjectClassSerializer , CustomListSerializer, ProccessSerializer, ProductSerializer
+from .serializers import UserSerializer, PointingSerializer, SkybotOutputSerializer, ObjectClassSerializer , CustomListSerializer, ProccessSerializer, ProductSerializer, ObservationSerializer, OrbitalParameterSerializer
 
-from .models import Pointing, SkybotOutput, CustomList, Proccess, Product
+from .models import Pointing, SkybotOutput, CustomList, Proccess, Product, Observation, OrbitalParameter
 
 from .skybotoutput import FilterObjects
 
@@ -112,6 +112,9 @@ class CustomListViewSet(viewsets.ModelViewSet):
     serializer_class = CustomListSerializer
     filter_fields = ('id', 'displayname', 'tablename', 'status')
     search_fields = ('displayname', 'description',)
+    ordering_fields = ('id', 'displayname', 'tablename', 'status', 'creation_date')
+    ordering = ('-creation_date',)
+
 
     def perform_create(self, serializer):
         # Adiconar usuario logado
@@ -205,3 +208,15 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     filter_fields = ('id',)
     search_fields = ('id',)
+
+class ObservationViewSet(viewsets.ModelViewSet):
+    queryset = Observation.objects.all()
+    serializer_class = ObservationSerializer
+    filter_fields = ('id', 'name', 'source', 'observations')
+    search_fields = ('id', 'name', 'filename',)
+
+class OrbitalParameterViewSet(viewsets.ModelViewSet):
+    queryset = Observation.objects.all()
+    serializer_class = ObservationSerializer
+    filter_fields = ('id', 'name', 'source', 'observations')
+    search_fields = ('id', 'name', 'filename',)    

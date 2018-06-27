@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col, Tabs, Tab } from 'react-bootstrap';
+import { Grid, Row, Col } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import FilterObject from './FilterObject';
@@ -22,18 +22,12 @@ class FilterPanel extends Component {
         <Grid fluid>
           <Row>
             <Col md={12}>
-              <Tabs
-                defaultActiveKey={1}
-                animation={true}
-                id="noanim-tab-example"
-              >
-                <Tab eventKey={1} title="Filter">
-                  <FilterObject />
-                </Tab>
-                <Tab eventKey={2} title="Lists">
-                  <CustomList />
-                </Tab>
-              </Tabs>
+              <FilterObject />
+            </Col>
+          </Row>
+          <Row>
+            <Col md={12}>
+              <CustomList />
             </Col>
           </Row>
         </Grid>

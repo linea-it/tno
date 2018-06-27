@@ -1,7 +1,7 @@
 {
-  "name": "light-bootstrap-dashboard-react",
+  "name": "LIneA-tno",
   "version": "1.1.0",
-  "homepage": "http://webback14.linea.gov.br:8080",
+  "homepage": "https://github.com/linea-it/tno",
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
@@ -19,6 +19,7 @@
     "react-bootstrap-table2-paginator": "^0.1.1",
     "react-chartist": "^0.13.0",
     "react-dom": "^16.0.0",
+    "react-interval": "^2.0.2",
     "react-notification-system": "^0.2.15",
     "react-numeric-input": "^2.2.3",
     "react-router": "^4.1.2",
