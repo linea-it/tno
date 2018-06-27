@@ -30,51 +30,6 @@ class SkybotDetail extends Component {
     history: PropTypes.any.isRequired,
   };
 
-  //   record_properties = [
-  //     {
-  //       text: 'ID',
-  //       dataField: 'id',
-  //       helpText:
-  //         'Unique identifier for each image (1 image is composed by 62 CCDs)',
-  //     },
-  //     {
-  //       text: 'Pointings',
-  //       dataField: 'pointing',
-  //       helpText:
-  //         'Unique identifier for each image (1 image is composed by 62 CCDs)',
-  //     },
-  //     {
-  //       text: 'Name',
-  //       dataField: 'name',
-  //       helpText:
-  //         'Unique identifier for each image (1 image is composed by 62 CCDs)',
-  //     },
-  //     {
-  //       text: 'Object classification',
-  //       dataField: 'dynclass',
-  //       helpText:
-  //         'Unique identifier for each image (1 image is composed by 62 CCDs)',
-  //     },
-  //     {
-  //       text: 'Object classification',
-  //       dataField: 'id',
-  //       helpText:
-  //         'Unique identifier for each image (1 image is composed by 62 CCDs)',
-  //     },
-  //   {
-  //     text: 'ID',
-  //     dataField: 'id',
-  //     helpText:
-  //       'Unique identifier for each image (1 image is composed by 62 CCDs)',
-  //   },
-  //   {
-  //     text: 'ID',
-  //     dataField: 'id',
-  //     helpText:
-  //       'Unique identifier for each image (1 image is composed by 62 CCDs)',
-  //   },
-  //   ];
-
   get initialState() {
     return {
       id: null,
@@ -110,23 +65,7 @@ class SkybotDetail extends Component {
   render() {
     const { record } = this.state;
 
-    console.log('Render: recodord(%o)', record);
-
-    // const body = [];
-
-    // if (record) {
-    //   this.record_properties.forEach((p, i) => {
-    //     const { text, dataField } = p;
-
-    //     body.push(
-    //       <span key={i}>
-    //         <b> {text} </b>:
-    //         {record[dataField].toString()}
-    //         <br />
-    //       </span>
-    //     );
-    //   });
-    // }
+    //console.log('Render: recodord(%o)', record);
     return (
       <div className="content">
         <Card
@@ -143,16 +82,20 @@ class SkybotDetail extends Component {
                 <Col md={4}>
                   <Properties record={record} />
                 </Col>
-                <Col md={4}>
-                  <OrbitalParameters />
-                </Col>
-                <Col md={4}>
-                  <PlotCCD />
-                </Col>
-              </Row>
-              <Row>
-                <Col md={12}>
-                  <Observation />
+                <Col md={8}>
+                  <Row>
+                    <Col md={12}>
+                      <OrbitalParameters />
+                    </Col>
+                    {/* <Col md={12}>
+                      <PlotCCD />
+                    </Col> */}
+                  </Row>
+                  <Row>
+                    <Col md={12}>
+                      <Observation />
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
             </Grid>

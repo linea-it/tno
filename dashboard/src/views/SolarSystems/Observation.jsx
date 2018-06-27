@@ -18,9 +18,9 @@ const pointing_columns = [
   // },
 
   {
-    text: 'Texto1',
+    text: 'Date (UT)',
     dataField: 'date_obs',
-    width: 180,
+    width: 60,
     headerStyle: formatColumnHeader,
     formatter: formatDateUTC,
     helpText: 'Date and time of observation',
@@ -28,16 +28,16 @@ const pointing_columns = [
   },
 
   {
-    text: 'Texto2',
+    text: 'J2000 RA',
     dataField: 'filename',
-    width: 180,
+    width: 60,
     headerStyle: formatColumnHeader,
     helpText: 'Name of FITS file with a CCD image.',
     headerTitle: column => `${column.helpText}`,
   },
 
   {
-    text: 'Texto3',
+    text: 'J2000 Dec',
     dataField: 'expnum',
     align: 'center',
     width: 60,
@@ -48,7 +48,7 @@ const pointing_columns = [
   },
 
   {
-    text: 'Texto4',
+    text: 'Magn',
     dataField: 'ccdnum',
     align: 'center',
     width: 60,
@@ -58,7 +58,7 @@ const pointing_columns = [
   },
 
   {
-    text: 'Texto5',
+    text: 'Location',
     dataField: 'band',
     align: 'center',
     width: 60,
@@ -68,29 +68,13 @@ const pointing_columns = [
   },
 
   {
-    text: 'Texto6',
+    text: 'Ref',
     dataField: 'exptime',
     align: 'center',
     width: 60,
     headerStyle: formatColumnHeader,
     helpText: 'Exposure time of observation.',
     headerTitle: column => `${column.helpText}`,
-  },
-
-  {
-    text: 'Texto7',
-    dataField: 'downloaded',
-    align: 'center',
-    helpText: 'flag indicating whether the image was downloaded from DES.',
-    headerTitle: column => `${column.helpText}`,
-
-    formatExtraData: {
-      success: 'fa fa-check text-success',
-      failure: 'fa fa-exclamation-triangle text-warning',
-    },
-
-    width: 80,
-    headerStyle: formatColumnHeader,
   },
 ];
 
@@ -209,6 +193,18 @@ class Observation extends Component {
       //   //alert(`clicked on row with index: ${rowIndex}`);
       // },
     };
+
+    var rows = [];
+    for (var i = 0; i < 13; i++) {
+      rows.push(
+        <tr key={i}>
+          <td>{i}</td>
+          <td>Lorem</td>
+          <td>Ipsum</td>
+          <td>Lorem</td>
+        </tr>
+      );
+    }
 
     return (
       <div className="content">

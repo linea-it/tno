@@ -13,41 +13,44 @@ class SkybotDetail extends Component {
   };
 
   render() {
+    const parameters = [
+      'epoch',
+      'epoch JD',
+      'perihelion date',
+      'perihelion JD',
+      'argument of perihelion (°)',
+      'ascending node (°)',
+      'inclination (°)',
+      'eccentricity',
+      'perihelion distance (AU)',
+      'Tisserand w.r.t. Jupiter',
+      'ΔV w.r.t. Earth (km/sec)',
+    ];
+    var rows = [];
+    for (var i = 0; i < parameters.length; i++) {
+      rows.push(
+        <tr key={i}>
+          <td>{parameters[i]}</td>
+          <td>{parameters[i].length}</td>
+        </tr>
+      );
+    }
+
     return (
       <div className="content">
         <Card
           title="Orbital Parameters"
-          category=""
+          category="EXEMPLO DO CONTEÚDO DE UM ARQUIVO ORBITAL PARAMETERS"
           content={
             <div>
               <Table striped bordered condensed hover>
                 <thead>
                   <tr>
-                    <th>#</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Username</th>
+                    <th>atributte</th>
+                    <th>Value</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td colSpan="2">Larry the Bird</td>
-                    <td>@twitter</td>
-                  </tr>
-                </tbody>
+                <tbody>{rows}</tbody>
               </Table>
             </div>
           }

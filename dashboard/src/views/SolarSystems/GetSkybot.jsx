@@ -100,7 +100,7 @@ class GetSkybot extends Component {
       sizePerPage: 3,
       loading: false,
       search: '',
-      record: null,
+      record: '',
     };
   }
 
@@ -275,7 +275,6 @@ class GetSkybot extends Component {
           />
           <span>{totalSize} rows</span>
         </div>
-        <SkybotDetail record={record} />
       </div>
     );
   }
