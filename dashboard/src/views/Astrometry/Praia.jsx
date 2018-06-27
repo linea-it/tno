@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { Tabs, Tab, Grid, Row, Col } from 'react-bootstrap';
+import { Grid, Row, Col } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import PraiaApi from './PraiaApi';
 import PraiaSubmit from './PraiaSubmit';
 import PraiaHistory from './PraiaHistory';
-import PraiaConfig from './PraiaConfig';
 import PraiaRunning from './PraiaRunning';
 import PropTypes from 'prop-types';
 import Card from 'components/Card/Card.jsx';
@@ -16,42 +15,42 @@ class Praia extends Component {
   };
 
   get initialState() {
-    return {};
+    return {
+      // Praia Run recem criado e que esta em andamento ainda
+      record: {},
+    };
   }
 
-  componentDidMount() {}
+  onCreateRun = record => {
+    // Toda vez que cria um novo registro forca a execucao do metodo render()
+    this.setState(this.state);
+  };
 
   render() {
+    const { record } = this.state;
     return (
       <div className="content">
-        <Tabs defaultActiveKey={1} animation={true}>
-          <Tab eventKey={1} title="PRAIA">
-            <Card
-              title=""
-              category="Manage and monitor the rounds Praia"
-              content={
-                <Grid fluid>
-                  <Row>
-                    <Col md={12}>
-                      <PraiaSubmit />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md={12}>
-                      <PraiaConfig />
-                    </Col>
-                  </Row>
-                </Grid>
-              }
-            />
-          </Tab>
-          <Tab eventKey={2} title="Runing">
-            <PraiaRunning />
-          </Tab>
-          <Tab eventKey={3} title="History">
-            <PraiaHistory />
-          </Tab>
-        </Tabs>
+        <Card
+          title="Astrometry"
+          category="DESCRIÇÃO SOBRE A ETAPA DE ASTROMETRY"
+          content={
+            <Grid fluid>
+              <Row>
+                <Col md={4}>
+                  <PraiaSubmit onCreateRun={this.onCreateRun} />
+                </Col>
+                <Col md={8}>
+                  <PraiaRunning record={record} />
+                </Col>
+              </Row>
+              <Row>
+                <Col md={12}>
+                  <PraiaHistory />
+                </Col>
+              </Row>
+            </Grid>
+          }
+        />
       </div>
     );
   }

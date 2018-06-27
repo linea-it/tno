@@ -89,17 +89,18 @@ class CustomList extends Component {
         totalSize: r.count,
         page: page,
         loading: false,
+        sizePerPage: pageSize,
       });
     });
   };
 
   render() {
     const { data, sizePerPage, page, totalSize, loading } = this.state;
+
     const pagination = paginationFactory({
       page: page,
       sizePerPage: sizePerPage,
       totalSize: totalSize,
-      hideSizePerPage: true,
       hidePageListOnlyOnePage: true,
       showTotal: true,
     });

@@ -19,6 +19,12 @@ class PraiaApi {
         ordering: ordering,
       },
     });
+
+  createPraiaRun = ({ input, config }) =>
+    axios.post(`${this.api}/praia_run/`, {
+      input: input,
+      configuration: config,
+    });
 }
 
 export default PraiaApi;

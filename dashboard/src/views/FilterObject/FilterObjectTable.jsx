@@ -102,7 +102,7 @@ class FilterObjectTable extends Component {
       data: [],
       page: 1,
       totalSize: 0,
-      sizePerPage: 50,
+      sizePerPage: 3,
       loading: false,
       filters: {},
       searchPattern: {},
@@ -123,19 +123,21 @@ class FilterObjectTable extends Component {
     this.fetchData({
       filters: nextProps.filters,
       page: this.state.page,
+      sizePerPage: this.state.sizePerPage,
       pattern: nextProps.searchPattern,
     });
   }
 
-  handleTableChange = (type, { page }) => {
+  handleTableChange = (type, { page, sizePerPage }) => {
     this.fetchData({
       filters: this.state.filters,
       pattern: this.state.searchPattern,
       page: page,
+      sizePerPage: sizePerPage,
     });
   };
 
-  fetchData = ({ filters = {}, page = 1, pattern }) => {
+  fetchData = ({ filters = {}, page = 1, pattern, sizePerPage }) => {
     if (Object.keys(filters).length === 0 && !pattern) {
       // Se nao tiver filtro nao executa o request
       this.setState(this.initialState);
@@ -143,7 +145,7 @@ class FilterObjectTable extends Component {
       this.setState({ loading: true });
 
       filters.page = page;
-      filters.pageSize = this.state.sizePerPage;
+      filters.pageSize = sizePerPage;
 
       if (pattern) {
         filters.name = pattern;
@@ -164,6 +166,7 @@ class FilterObjectTable extends Component {
               data: r.results,
               totalSize: r.count,
               page: page,
+              sizePerPage: sizePerPage,
               loading: false,
               haveData: true,
             });
@@ -185,8 +188,6 @@ class FilterObjectTable extends Component {
       page: page,
       sizePerPage: sizePerPage,
       totalSize: totalSize,
-      // sizePerPageList: [50, 100, 200],
-      hideSizePerPage: true,
       hidePageListOnlyOnePage: true,
     });
 
