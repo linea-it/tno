@@ -1,4 +1,5 @@
 import SolarSystems from 'views/SolarSystems/SolarSystems';
+import SolarSystemsPanel from 'views/SolarSystems/SolarSystemPanel';
 import PointingsPanel from 'views/Pointings/Pointings';
 import FilterPanel from 'views/FilterObject/Panel';
 import CustomList from 'views/ObjectList/CustomList';
@@ -11,7 +12,7 @@ import TableList from 'views/TableList/TableList';
 import Typography from 'views/Typography/Typography';
 import Icons from 'views/Icons/Icons';
 import Notifications from 'views/Notifications/Notifications';
-
+import SkybotDetail from '../views/SolarSystems/SkybotDetail';
 
 const appRoutes = [
   {
@@ -36,7 +37,7 @@ const appRoutes = [
     path: '/solarsystems',
     name: 'Search SSSO',
     // icon: 'pe-7s-sun',
-    component: SolarSystems,
+    component: SolarSystemsPanel,
   },
   // { path: '/skybot', name: 'SkyBoT', icon: 'pe-7s-science', component: SkyBot },
   {
@@ -57,6 +58,12 @@ const appRoutes = [
     name: 'Objects',
     hidden: true,
     component: ObjectList,
+  },
+  {
+    path: '/skybotdetail/:id',
+    name: 'Skybot Details',
+    hidden: true,
+    component: SkybotDetail,
   },
   {
     path: '/exposuredownload',
