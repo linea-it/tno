@@ -102,7 +102,7 @@ class FilterObjectTable extends Component {
       data: [],
       page: 1,
       totalSize: 0,
-      sizePerPage: 3,
+      sizePerPage: 10,
       loading: false,
       filters: {},
       searchPattern: {},
@@ -189,12 +189,9 @@ class FilterObjectTable extends Component {
       sizePerPage: sizePerPage,
       totalSize: totalSize,
       hidePageListOnlyOnePage: true,
+      showTotal: true,
     });
 
-    var rowsCount = '';
-    if (totalSize > 0) {
-      rowsCount = totalSize + ' Rows';
-    }
     return (
       <div>
         <ButtonToolbar>
@@ -223,7 +220,6 @@ class FilterObjectTable extends Component {
             background: 'rgba(192,192,192,0.3)',
           })}
         />
-        <p className="text-left">{rowsCount}</p>
       </div>
     );
   }
