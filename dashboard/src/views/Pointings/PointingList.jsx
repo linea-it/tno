@@ -112,7 +112,7 @@ const pointing_columns = [
   },
 ];
 
-class GetPointings extends Component {
+class PointingList extends Component {
   state = this.initialState;
 
   api = new PointingApi();
@@ -299,4 +299,4 @@ class GetPointings extends Component {
   }
 }
 
-export default withRouter(GetPointings);
+export default withRouter(PointingList);
