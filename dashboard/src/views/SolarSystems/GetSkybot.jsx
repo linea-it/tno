@@ -220,7 +220,7 @@ class GetSkybot extends Component {
     const history = this.props.history;
 
     const rowEvents = {
-      onClick: (e, row) => {
+      onDoubleClick: (e, row) => {
         history.push('/skybotdetail/' + row.id);
         // this.showDetail;
       },

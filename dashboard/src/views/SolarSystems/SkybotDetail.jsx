@@ -1,18 +1,10 @@
 import React, { Component } from 'react';
-import {
-  Grid,
-  Row,
-  Col,
-  ButtonToolbar,
-  ButtonGroup,
-  Button,
-} from 'react-bootstrap';
+import { Grid, Row, Col, Button } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import Card from 'components/Card/Card.jsx';
 import Properties from './Properties';
 import Observation from './Observation';
 import OrbitalParameters from './OrbitalParameters';
-import PlotCCD from './PlotCCD';
 // import ObjectApi from './ObjectApi';
 import PropTypes from 'prop-types';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
@@ -57,7 +49,7 @@ class SkybotDetail extends Component {
     });
   }
 
-  onClick = () => {
+  onDoubleClick = () => {
     console.log('foi clicado');
     this.props.history.goBack();
   };
@@ -75,7 +67,7 @@ class SkybotDetail extends Component {
             <Grid fluid>
               <Row>
                 <Col mdOffset={11}>
-                  <Button onClick={this.onClick}>back</Button>
+                  <Button onClick={this.onDoubleClick}>back</Button>
                 </Col>
               </Row>
               <Row>

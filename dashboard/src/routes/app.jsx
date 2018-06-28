@@ -13,6 +13,9 @@ import Typography from 'views/Typography/Typography';
 import Icons from 'views/Icons/Icons';
 import Notifications from 'views/Notifications/Notifications';
 import SkybotDetail from '../views/SolarSystems/SkybotDetail';
+import PointingsDetail from '../views/Pointings/PointingsDetail';
+import PropertiesPointing from '../views/Pointings/PropertiesPointing';
+
 
 const appRoutes = [
   {
@@ -64,6 +67,12 @@ const appRoutes = [
     name: 'Skybot Details',
     hidden: true,
     component: SkybotDetail,
+  },
+  {
+    path: '/pointingsdetail/:id',
+    name: 'Pointings Details',
+    hidden: true,
+    component: PointingsDetail,
   },
   {
     path: '/exposuredownload',

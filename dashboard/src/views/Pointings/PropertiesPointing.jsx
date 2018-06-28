@@ -1,20 +1,19 @@
-import React from 'react';
-import { Modal, Button, Table, OverlayTrigger, Popover } from 'react-bootstrap';
+import React, { Component } from 'react';
+import { Col, Table, OverlayTrigger, Popover, Button } from 'react-bootstrap';
+import { withRouter } from 'react-router-dom';
+import Card from 'components/Card/Card.jsx';
+// import ObjectApi from './ObjectApi';
 import PropTypes from 'prop-types';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 
-class DetailsPointings extends React.Component {
+class PropertiesPointing extends Component {
   static propTypes = {
-    onHide: PropTypes.func.isRequired,
-    record: PropTypes.object,
+    record: PropTypes.object.isRequired,
+    history: PropTypes.any.isRequired,
   };
 
   record_properties = [
-    // {
-    //   text: 'Id',
-    //   dataField: 'id',
-    //   helpText:
-    //     'Unique identifier for each image (1 image is composed by 62 CCDs)',
-    // },
     {
       text: 'Image Id',
       dataField: 'pfw_attempt_id',
@@ -191,22 +190,20 @@ class DetailsPointings extends React.Component {
     },
   ];
 
-  handleClose = () => {
-    this.props.onHide();
-  };
-
-  handleShow = () => {
-    this.setState({ show: true });
+  onClick = () => {
+    this.props.history.goBack();
   };
 
   render() {
-    const { show, record } = this.props;
+    const { record } = this.props;
+
+    //console.log('Render: record(%o)', record);
 
     const body = [];
-    
+    //console.log('Record Keys: %o', Object.keys(record));
     if (Object.keys(record).length) {
+      //console.log('TEM');
       this.record_properties.forEach((p, i) => {
-        console.log("TEM");
         const { text, dataField, helpText } = p;
 
         const popoverHoverFocus = (
@@ -216,6 +213,7 @@ class DetailsPointings extends React.Component {
         );
 
         let td_help = <td width="200" />;
+
         if (helpText) {
           td_help = (
             <td width="200">
@@ -234,34 +232,39 @@ class DetailsPointings extends React.Component {
           );
         }
 
-        body.push(
+        body.push([
           <tr key={i}>
             <td width="200">
               <b> {text} </b>:
             </td>
             <td width="200-">{record[dataField].toString()}</td>
             {td_help}
-          </tr>
-        );
+          </tr>,
+        ]);
       });
     }
 
     return (
-      <Modal show={show} onHide={this.handleClose}>
-        <Modal.Header closeButton>
-          <h4>Details</h4>
-        </Modal.Header>
-        <Modal.Body>
-          <Table>
-            <tbody>{body}</tbody>
-          </Table>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={this.handleClose}> Close </Button>
-        </Modal.Footer>
-      </Modal>
+      <div className="content">
+        <Card
+          title="Details Pointing"
+          category=""
+          content={
+            <div>
+              <Col mdOffset={11}>
+                <Button onClick={this.onClick}>back</Button>
+              </Col>
+              <br />
+              <Table striped bordered condensed hover>
+                <tbody>{body}</tbody>
+              </Table>
+              <br />
+            </div>
+          }
+        />
+      </div>
     );
   }
 }
 
-export default DetailsPointings;
+export default withRouter(PropertiesPointing);

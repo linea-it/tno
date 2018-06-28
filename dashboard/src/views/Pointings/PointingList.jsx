@@ -119,6 +119,8 @@ class PointingList extends Component {
 
   static propTypes = {
     history: PropTypes.any.isRequired,
+    record: PropTypes.object,
+
   };
 
   get initialState() {
@@ -130,7 +132,7 @@ class PointingList extends Component {
       sizePerPage: 10,
       loading: false,
       search: '',
-      record: null,
+      record: {},
     };
   }
 
@@ -237,8 +239,17 @@ class PointingList extends Component {
       showTotal: true,
     });
 
+    // const rowEvents = {
+    //   onDoubleClick: this.showDetail,
+    // };
+    const history = this.props.history;
+
     const rowEvents = {
-      onDoubleClick: this.showDetail,
+      onDoubleClick: (e, row) => {
+        console.log(row.id);
+        history.push('/pointingsdetail/' + row.id);
+        // this.showDetail;
+      },
     };
 
     return (
