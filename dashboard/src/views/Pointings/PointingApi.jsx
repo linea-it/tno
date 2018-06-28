@@ -10,6 +10,8 @@ class PointingApi {
       params: { page: page, pageSize: pageSize, search: search },
     });
 
+  getPointingRecord = ({ id }) =>
+    axios.get(`${this.api}/pointing/${id}/`);
 }
 
 export default PointingApi;

@@ -80,6 +80,9 @@ class SkybotDetail extends Component {
                     </Col>
                   </Row>
                 </Col>
+                <Col mdOffset={11}>
+                  <Button onClick={this.onClick}>back</Button>
+                </Col>
               </Row>
             </Grid>
           }
