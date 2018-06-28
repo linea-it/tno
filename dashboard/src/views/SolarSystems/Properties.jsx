@@ -1,27 +1,17 @@
 import React, { Component } from 'react';
-import { Table, Button } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import Card from 'components/Card/Card.jsx';
-// import ObjectApi from './ObjectApi';
 import PropTypes from 'prop-types';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 
 class SkybotDetail extends Component {
-  // state = this.initialState;
-  // api = new SkybotApi();
-
   static propTypes = {
-    // match: PropTypes.object.isRequired,
     record: PropTypes.object.isRequired,
   };
 
   record_properties = [
-    // {
-    //   text: 'ID',
-    //   dataField: 'id',
-    //   helpText: '',
-    // },
     {
       text: 'Pointings',
       dataField: 'pointing',
@@ -119,18 +109,15 @@ class SkybotDetail extends Component {
   render() {
     const { record } = this.props;
 
-    //console.log('Render: record(%o)', record);
-
     const body = [];
-    //console.log('Record Keys: %o', Object.keys(record));
+
     if (Object.keys(record).length) {
-      //console.log('TEM');
       this.record_properties.forEach((p, i) => {
         const { text, dataField } = p;
 
         let value = null;
 
-        if (p.dataField == 'externallink') {
+        if (p.dataField === 'externallink') {
           value = (
             <a target="blank" href={record[dataField]}>
               open link
@@ -154,7 +141,7 @@ class SkybotDetail extends Component {
     return (
       <div className="content">
         <Card
-          title="Skybot"
+          title="SkyBot Output"
           category=""
           content={
             <div>

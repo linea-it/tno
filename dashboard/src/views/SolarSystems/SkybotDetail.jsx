@@ -1,19 +1,10 @@
 import React, { Component } from 'react';
-import {
-  Grid,
-  Row,
-  Col,
-  ButtonToolbar,
-  ButtonGroup,
-  Button,
-} from 'react-bootstrap';
+import { Grid, Row, Col, Button } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import Card from 'components/Card/Card.jsx';
 import Properties from './Properties';
 import Observation from './Observation';
 import OrbitalParameters from './OrbitalParameters';
-import PlotCCD from './PlotCCD';
-// import ObjectApi from './ObjectApi';
 import PropTypes from 'prop-types';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
@@ -43,29 +34,24 @@ class SkybotDetail extends Component {
   }
 
   componentDidMount() {
-    //console.log('componentDidMount');
     const {
       match: { params },
     } = this.props;
-    // console.log('ID: ', params.id);
 
     this.api.getSkybotRecord({ id: params.id }).then(res => {
       const record = res.data;
-      //console.log(record);
 
       this.setState({ record: record });
     });
   }
 
   onClick = () => {
-    console.log('foi clicado');
     this.props.history.goBack();
   };
 
   render() {
     const { record } = this.state;
 
-    //console.log('Render: recodord(%o)', record);
     return (
       <div className="content">
         <Card
@@ -87,9 +73,6 @@ class SkybotDetail extends Component {
                     <Col md={12}>
                       <OrbitalParameters />
                     </Col>
-                    {/* <Col md={12}>
-                      <PlotCCD />
-                    </Col> */}
                   </Row>
                   <Row>
                     <Col md={12}>
