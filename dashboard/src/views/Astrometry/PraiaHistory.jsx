@@ -9,6 +9,7 @@ import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { formatDateUTC, formatColumnHeader, formatStatus } from 'utils';
+import ReactInterval from 'react-interval';
 
 const columns = [
   {
@@ -24,6 +25,14 @@ const columns = [
     headerStyle: formatColumnHeader,
   },
   {
+    text: 'Input',
+    dataField: 'input_displayname',
+  },
+  {
+    text: 'Configuration',
+    dataField: 'configuration_displayname',
+  },
+  {
     text: 'Start',
     dataField: 'start_time',
     formatter: formatDateUTC,
@@ -32,10 +41,6 @@ const columns = [
     text: 'Finish',
     dataField: 'finish_time',
     formatter: formatDateUTC,
-  },
-  {
-    text: 'Configuration',
-    dataField: 'configuration_displayname',
   },
   {
     text: 'Status',
@@ -63,6 +68,8 @@ class PraiaHistory extends Component {
       totalSize: 0,
       sizePerPage: 10,
       loading: false,
+      // Tempo em segundos entre cada reload da lista
+      reload_interval: 5,
     };
   }
 
@@ -96,8 +103,19 @@ class PraiaHistory extends Component {
     });
   };
 
+  reload = () => {
+    this.fetchData(this.state.page, this.state.sizePerPage);
+  };
+
   render() {
-    const { data, sizePerPage, page, totalSize, loading } = this.state;
+    const {
+      data,
+      sizePerPage,
+      page,
+      totalSize,
+      loading,
+      reload_interval,
+    } = this.state;
     const pagination = paginationFactory({
       page: page,
       sizePerPage: sizePerPage,
@@ -106,38 +124,46 @@ class PraiaHistory extends Component {
       showTotal: true,
     });
 
+    const history = this.props.history;
     const rowEvents = {
-      onDoubleClick: row => {
-        console.log("Clicou 2 vezes")
+      onDoubleClick: (e, row) => {
+        history.push('/astrometry_run/' + row.id);
       },
     };
 
     return (
-      <Card
-        title=""
-        category="Manage the completed Astrometry rounds"
-        content={
-          <BootstrapTable
-            striped
-            hover
-            condensed
-            remote
-            bordered={false}
-            keyField="id"
-            noDataIndication="..."
-            data={data}
-            columns={columns}
-            pagination={pagination}
-            onTableChange={this.handleTableChange}
-            loading={loading}
-            overlay={overlayFactory({
-              spinner: true,
-              background: 'rgba(192,192,192,0.3)',
-            })}
-            rowEvents={rowEvents}
-          />
-        }
-      />
+      <div>
+        <ReactInterval
+          timeout={reload_interval * 1000}
+          enabled={true}
+          callback={this.reload}
+        />
+        <Card
+          title=""
+          category="Manage the completed Astrometry rounds"
+          content={
+            <BootstrapTable
+              striped
+              hover
+              condensed
+              remote
+              bordered={false}
+              keyField="id"
+              noDataIndication="..."
+              data={data}
+              columns={columns}
+              pagination={pagination}
+              onTableChange={this.handleTableChange}
+              loading={loading}
+              overlay={overlayFactory({
+                spinner: true,
+                background: 'rgba(192,192,192,0.3)',
+              })}
+              rowEvents={rowEvents}
+            />
+          }
+        />
+      </div>
     );
   }
 }

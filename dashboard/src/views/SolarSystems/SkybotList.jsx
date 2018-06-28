@@ -15,17 +15,9 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import { formatColumnHeader } from 'utils';
-import SkybotDetail from './SkybotDetail';
+import { formatColumnHeader, coordinateFormater } from 'utils';
 
 const skybot_columns = [
-  // {
-  //   text: 'ID',
-  //   dataField: 'id',
-  //   width: 60,
-  //   headerStyle: formatColumnHeader,
-  // },
-
   {
     text: 'Name',
     dataField: 'name',
@@ -38,7 +30,7 @@ const skybot_columns = [
   },
 
   {
-    text: 'Num',
+    text: 'Number',
     dataField: 'num',
     align: 'center',
     width: 20,
@@ -54,6 +46,7 @@ const skybot_columns = [
     align: 'center',
     width: 20,
     headerStyle: formatColumnHeader,
+    formatter: coordinateFormater,
     helpText:
       '(ucd=“pos.eq.ra;meta.main”) Right ascension of the identified object in degrees.',
     headerTitle: column => `${column.helpText}`,
@@ -65,6 +58,7 @@ const skybot_columns = [
     align: 'center',
     width: 20,
     headerStyle: formatColumnHeader,
+    formatter: coordinateFormater,
     helpText:
       '(ucd=“pos.eq.dec;meta.main”) Declination of the identified object in degrees.',
     headerTitle: column => `${column.helpText}`,
@@ -81,7 +75,7 @@ const skybot_columns = [
   },
 ];
 
-class GetSkybot extends Component {
+class SkybotList extends Component {
   state = this.initialState;
 
   api = new SkybotApi();
@@ -97,7 +91,7 @@ class GetSkybot extends Component {
       data: [],
       page: 1,
       totalSize: 0,
-      sizePerPage: 3,
+      sizePerPage: 10,
       loading: false,
       search: '',
       record: '',
@@ -105,24 +99,7 @@ class GetSkybot extends Component {
   }
 
   componentDidMount() {
-    // console.log('componentDidMount()');
-
-    //   const {
-    //     match: { params },
-    //   } = this.props;
-
-    //   this.api.getListStats({ id: params.id }).then(res => {
-    //     const data = res.data.data;
-
-    //     this.setState(
-    //       {
-    //         id: res.data.id,
-    //         customList: data,
-    //       },
-
     this.fetchData(this.state.page, this.state.sizePerPage);
-    //     );
-    //   });
   }
 
   handleTableChange = (_type, { page, sizePerPage }) => {
@@ -133,8 +110,6 @@ class GetSkybot extends Component {
 
   onChangeSearch = event => {
     this.setState({ search: event.target.value });
-
-    //if (this.setState({ search: event.target.value }) !== ''){ this.fetchData(); console.log('teste')};
   };
 
   onKeyPress = event => {
@@ -148,10 +123,14 @@ class GetSkybot extends Component {
       // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
       this.setState(
         { page: 1 },
-        this.fetchData(this.state.page, this.state.pageSize, this.state.search)
+        this.fetchData(
+          this.state.page,
+          this.state.sizePerPage,
+          this.state.search
+        )
       );
     } else {
-      this.fetchData(this.state.page, this.state.pageSize);
+      this.fetchData(this.state.page, this.state.sizePerPage);
     }
   };
 
@@ -159,12 +138,12 @@ class GetSkybot extends Component {
     this.setState({ search: '' }, this.fetchData());
   };
 
-  fetchData = (page, pageSize, search) => {
-    // console.log('fetchData(%o, %o, %o)', page, pageSize, search);
+  fetchData = (page, sizePerPage, search) => {
+    // console.log('fetchData(%o, %o, %o)', page, sizePerPage, search);
     this.setState({ loading: true });
 
     const params = {
-      pageSize: pageSize,
+      pageSize: sizePerPage,
     };
 
     if (search) {
@@ -173,8 +152,6 @@ class GetSkybot extends Component {
       params.page = page;
     }
     this.api.getSkybotLists(params).then(res => {
-      // console.log('Carregou: %o', res);
-
       const r = res.data;
 
       this.setState({
@@ -182,37 +159,26 @@ class GetSkybot extends Component {
         totalSize: r.count,
         page: page,
         loading: false,
+        sizePerPage: sizePerPage,
       });
     });
   };
-
-  // close = () => this.setState({ showCreate: false });
 
   onClose = () => {
     this.setState({ show: false });
   };
 
-  showDetail = (index, row, rowindex) => {
-    //console.log(row);
+  showDetail = (index, row) => {
     this.setState({ record: row });
   };
 
   render() {
-    const {
-      data,
-      sizePerPage,
-      page,
-      totalSize,
-      loading,
-      search,
-      record,
-    } = this.state;
+    const { data, sizePerPage, page, totalSize, loading, search } = this.state;
 
     const pagination = paginationFactory({
       page: page,
       sizePerPage: sizePerPage,
       totalSize: totalSize,
-      hideSizePerPage: true,
       hidePageListOnlyOnePage: true,
       showTotal: true,
     });
@@ -222,7 +188,6 @@ class GetSkybot extends Component {
     const rowEvents = {
       onDoubleClick: (e, row) => {
         history.push('/skybotdetail/' + row.id);
-        // this.showDetail;
       },
     };
 
@@ -269,15 +234,13 @@ class GetSkybot extends Component {
             loading={loading}
             overlay={overlayFactory({
               spinner: true,
-
               background: 'rgba(192,192,192,0.3)',
             })}
           />
-          <span>{totalSize} rows</span>
         </div>
       </div>
     );
   }
 }
 
-export default withRouter(GetSkybot);
+export default withRouter(SkybotList);
