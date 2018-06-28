@@ -49,7 +49,7 @@ class SkybotDetail extends Component {
     });
   }
 
-  onDoubleClick = () => {
+  onClick = () => {
     console.log('foi clicado');
     this.props.history.goBack();
   };
@@ -67,7 +67,7 @@ class SkybotDetail extends Component {
             <Grid fluid>
               <Row>
                 <Col mdOffset={11}>
-                  <Button onClick={this.onDoubleClick}>back</Button>
+                  <Button onClick={this.onClick}>back</Button>
                 </Col>
               </Row>
               <Row>
@@ -88,6 +88,9 @@ class SkybotDetail extends Component {
                       <Observation />
                     </Col>
                   </Row>
+                </Col>
+                <Col mdOffset={11}>
+                  <Button onClick={this.onClick}>back</Button>
                 </Col>
               </Row>
             </Grid>

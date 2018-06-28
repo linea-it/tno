@@ -258,7 +258,9 @@ class PropertiesPointing extends Component {
               <Table striped bordered condensed hover>
                 <tbody>{body}</tbody>
               </Table>
-              <br />
+              <Col mdOffset={11}>
+                <Button onClick={this.onClick}>back</Button>
+              </Col>
             </div>
           }
         />
