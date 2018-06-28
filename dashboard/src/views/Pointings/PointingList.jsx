@@ -27,13 +27,6 @@ function exposureFormatter(_cell, row, _rowindex, formatExtraData) {
 }
 
 const pointing_columns = [
-  // {
-  //   text: 'ID',
-  //   dataField: 'id',
-  //   width: 60,
-  //   headerStyle: formatColumnHeader,
-  // },
-
   {
     text: 'Data de Observação',
     dataField: 'date_obs',
@@ -150,8 +143,6 @@ class PointingList extends Component {
 
   onChangeSearch = event => {
     this.setState({ search: event.target.value });
-
-    //if (this.setState({ search: event.target.value }) !== ''){ this.fetchData(); console.log('teste')};
   };
 
   onKeyPress = event => {
@@ -159,7 +150,6 @@ class PointingList extends Component {
   };
 
   handleSearch = () => {
-    // event.preventDefault();
     if (this.state.search) {
       // console.log('fazer a busca');
       // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
@@ -195,7 +185,6 @@ class PointingList extends Component {
     }
 
     this.api.getPointingLists(params).then(res => {
-      // console.log('Carregou: %o', res);
 
       const r = res.data;
 
@@ -210,11 +199,8 @@ class PointingList extends Component {
   };
 
   showDetail = (index, row, rowindex) => {
-    //console.log(row);
     this.setState({ show: true, record: row });
   };
-
-  // close = () => this.setState({ showCreate: false });
 
   onClose = () => {
     this.setState({ show: false });
@@ -239,15 +225,11 @@ class PointingList extends Component {
       showTotal: true,
     });
 
-    // const rowEvents = {
-    //   onDoubleClick: this.showDetail,
-    // };
     const history = this.props.history;
 
     const rowEvents = {
       onDoubleClick: (e, row) => {
         history.push('/pointingsdetail/' + row.id);
-        // this.showDetail;
       },
     };
 
