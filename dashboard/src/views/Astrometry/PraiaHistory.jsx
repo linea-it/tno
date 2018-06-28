@@ -25,6 +25,14 @@ const columns = [
     headerStyle: formatColumnHeader,
   },
   {
+    text: 'Input',
+    dataField: 'input_displayname',
+  },
+  {
+    text: 'Configuration',
+    dataField: 'configuration_displayname',
+  },
+  {
     text: 'Start',
     dataField: 'start_time',
     formatter: formatDateUTC,
@@ -33,10 +41,6 @@ const columns = [
     text: 'Finish',
     dataField: 'finish_time',
     formatter: formatDateUTC,
-  },
-  {
-    text: 'Configuration',
-    dataField: 'configuration_displayname',
   },
   {
     text: 'Status',
