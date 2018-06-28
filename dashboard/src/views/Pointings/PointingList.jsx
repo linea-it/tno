@@ -246,7 +246,6 @@ class PointingList extends Component {
 
     const rowEvents = {
       onDoubleClick: (e, row) => {
-        console.log(row.id);
         history.push('/pointingsdetail/' + row.id);
         // this.showDetail;
       },
