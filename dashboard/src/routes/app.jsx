@@ -4,6 +4,7 @@ import FilterPanel from 'views/FilterObject/Panel';
 import CustomList from 'views/ObjectList/CustomList';
 import ObjectList from 'views/ObjectList/ObjectList';
 import Praia from 'views/Astrometry/Praia';
+import PraiaRun from 'views/Astrometry/PraiaRun';
 import Placeholder from 'views/Placeholder';
 
 import Dashboard from 'views/Dashboard/Dashboard';
@@ -76,6 +77,12 @@ const appRoutes = [
     name: 'Astrometry',
     // icon: 'pe-7s-download',
     component: Praia,
+  },
+  {
+    path: '/astrometry_run/:id',
+    name: 'Astrometry Run',
+    hidden: true,
+    component: PraiaRun,
   },
   {
     path: '/refine_orbit',

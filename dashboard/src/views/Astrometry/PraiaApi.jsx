@@ -22,7 +22,7 @@ class PraiaApi {
 
   createPraiaRun = ({ input, config }) =>
     axios.post(`${this.api}/praia_run/`, {
-      input: input,
+      input_list: input,
       configuration: config,
     });
 }
