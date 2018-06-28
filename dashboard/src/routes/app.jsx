@@ -1,10 +1,10 @@
-import SolarSystems from 'views/SolarSystems/SolarSystems';
-import SolarSystemsPanel from 'views/SolarSystems/SolarSystemPanel';
+import SolarSystemsPanel from 'views/SolarSystems/SolarSystems';
 import PointingsPanel from 'views/Pointings/Pointings';
 import FilterPanel from 'views/FilterObject/Panel';
 import CustomList from 'views/ObjectList/CustomList';
 import ObjectList from 'views/ObjectList/ObjectList';
 import Praia from 'views/Astrometry/Praia';
+import Placeholder from 'views/Placeholder';
 
 import Dashboard from 'views/Dashboard/Dashboard';
 import UserProfile from 'views/UserProfile/UserProfile';
@@ -25,7 +25,7 @@ const appRoutes = [
     path: '/registration',
     name: 'Registration',
     icon: '',
-    component: SolarSystems,
+    component: Placeholder,
   },
   {
     path: '/pointings',
@@ -69,7 +69,7 @@ const appRoutes = [
     path: '/exposuredownload',
     name: 'Download',
     // icon: 'pe-7s-download',
-    component: SolarSystems,
+    component: Placeholder,
   },
   {
     path: '/astrometry',
@@ -81,19 +81,19 @@ const appRoutes = [
     path: '/refine_orbit',
     name: 'Refine Orbit',
     // icon: 'pe-7s-download',
-    component: SolarSystems,
+    component: Placeholder,
   },
   {
     path: '/post_results',
     name: 'Post Results',
     // icon: 'pe-7s-download',
-    component: SolarSystems,
+    component: Placeholder,
   },
   {
     path: '/light_curve',
     name: 'Light Curve Analysis',
     // icon: 'pe-7s-download',
-    component: SolarSystems,
+    component: Placeholder,
   },
   {
     path: '/user',

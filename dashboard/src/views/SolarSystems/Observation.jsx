@@ -10,13 +10,6 @@ import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
 import { formatDateUTC, formatColumnHeader } from 'utils';
 
 const pointing_columns = [
-  // {
-  //   text: 'ID',
-  //   dataField: 'id',
-  //   width: 60,
-  //   headerStyle: formatColumnHeader,
-  // },
-
   {
     text: 'Date (UT)',
     dataField: 'date_obs',
@@ -100,82 +93,8 @@ class Observation extends Component {
     };
   }
 
-  componentDidMount() {
-    // console.log('componentDidMount()');
-
-    this.fetchData(this.state.page, this.state.sizePerPage);
-  }
-
-  handleTableChange = (_type, { page, sizePerPage }) => {
-    // console.log('handleTableChange(%o, %o)', page, sizePerPage);
-
-    this.fetchData(page, sizePerPage);
-  };
-
-  onChangeSearch = event => {
-    this.setState({ search: event.target.value });
-
-    //if (this.setState({ search: event.target.value }) !== ''){ this.fetchData(); console.log('teste')};
-  };
-
-  onKeyPress = event => {
-    if (event.charCode === 13) this.handleSearch();
-  };
-
-  handleSearch = () => {
-    // event.preventDefault();
-    if (this.state.search) {
-      // console.log('fazer a busca');
-      // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
-      this.setState(
-        { page: 1 },
-        this.fetchData(this.state.page, this.state.pageSize, this.state.search)
-      );
-    } else {
-      this.fetchData(this.state.page, this.state.pageSize);
-    }
-  };
-
-  handlerClear = () => {
-    this.setState({ search: '' }, this.fetchData());
-  };
-
-  fetchData = (page, pageSize, search) => {
-    // console.log('fetchData(%o, %o, %o)', page, pageSize, search);
-    this.setState({ loading: true });
-
-    const params = {
-      pageSize: pageSize,
-    };
-
-    if (search) {
-      params.search = search;
-    } else {
-      params.page = page;
-    }
-  };
-
-  showDetail = (index, row, rowindex) => {
-    //console.log(row);
-    this.setState({ show: true, record: row });
-  };
-
-  // close = () => this.setState({ showCreate: false });
-
-  onClose = () => {
-    this.setState({ show: false });
-  };
-
   render() {
-    const {
-      data,
-      sizePerPage,
-      page,
-      totalSize,
-      loading,
-      search,
-      record,
-    } = this.state;
+    const { data, sizePerPage, page, totalSize, loading } = this.state;
 
     const pagination = paginationFactory({
       page: page,
@@ -185,14 +104,6 @@ class Observation extends Component {
       hidePageListOnlyOnePage: true,
       showTotal: true,
     });
-
-    const rowEvents = {
-      onClick: this.showDetail,
-      // onClick: (e, row, rowIndex) => {
-      //   //this.setState({ show: true });
-      //   //alert(`clicked on row with index: ${rowIndex}`);
-      // },
-    };
 
     var rows = [];
     for (var i = 0; i < 13; i++) {
@@ -213,29 +124,24 @@ class Observation extends Component {
           title="Observation"
           category=""
           content={
-            <div>
-              <BootstrapTable
-                striped
-                hover
-                condensed
-                remote
-                bordered={false}
-                keyField="id"
-                noDataIndication="no results to display"
-                data={data}
-                columns={pointing_columns}
-                pagination={pagination}
-                onTableChange={this.handleTableChange}
-                rowEvents={rowEvents}
-                // loading={loading}
-                overlay={overlayFactory({
-                  spinner: true,
-
-                  background: 'rgba(192,192,192,0.3)',
-                })}
-              />
-              <span>{totalSize} rows</span>
-            </div>
+            <BootstrapTable
+              striped
+              hover
+              condensed
+              remote
+              bordered={false}
+              keyField="id"
+              noDataIndication="no results to display"
+              data={data}
+              columns={pointing_columns}
+              pagination={pagination}
+              onTableChange={this.handleTableChange}
+              loading={loading}
+              overlay={overlayFactory({
+                spinner: true,
+                background: 'rgba(192,192,192,0.3)',
+              })}
+            />
           }
         />
       </div>
