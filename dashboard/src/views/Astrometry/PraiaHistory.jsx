@@ -106,9 +106,10 @@ class PraiaHistory extends Component {
       showTotal: true,
     });
 
+    const history = this.props.history;
     const rowEvents = {
-      onDoubleClick: row => {
-        console.log("Clicou 2 vezes")
+      onDoubleClick: (e, row) => {
+        history.push('/astrometry_run/' + row.id);
       },
     };
 
