@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from .models import CustomList
 from .skybotoutput import FilterObjects
+from praia.models import Configuration
 
 @receiver(post_save, sender=User)
 def init_new_user(sender, instance, signal, created, **kwargs):
@@ -55,3 +56,12 @@ def create_custom_list_table(sender, instance, signal, created, **kwargs):
             instance.save()
             
             raise(e)
+
+# @receiver(post_save, sender=Configuration)
+# def test_signal(sender, instance, signal, created, **kwargs):
+#     """
+#         This method creates an access token every time a new user is created.
+#     """
+#     # if created:
+#     instance.displayname = 'success'
+#     instance.save()

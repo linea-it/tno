@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-# from tno.models import CustomList
 
 class Configuration(models.Model):
 

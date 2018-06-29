@@ -20,6 +20,9 @@ then
 
     python manage.py runserver 0.0.0.0:$GUNICORN_PORT
 
+    # Dar Permissao aos arquivos de log
+    chmod -R 775 $LOG_DIR
+
     # Para producao usar Gunicorn
     # Exemplo usando Gunicorn mais faltou o log no output do container.
     # echo "Starting Gunicorn"

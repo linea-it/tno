@@ -38,6 +38,7 @@ services:
     build: ./core_admin
     volumes:
       - ./core_admin:/app
+      - ./log:/log
     env_file:
       - .env
     ports:
@@ -50,8 +51,6 @@ services:
   # Dashboard
   dashboard:
     build: ./dashboard
-    # volumes:
-      # - ./dashboard:/src/app
     working_dir: /src/app
     ports:
       - 7000:7000
