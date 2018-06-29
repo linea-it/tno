@@ -6,6 +6,8 @@ from .models import Run, Configuration
 
 from .serializers import RunSerializer, ConfigurationSerializer
 
+from . import signals
+
 class PraiaRunViewSet(viewsets.ModelViewSet):
     queryset = Run.objects.all()
     serializer_class = RunSerializer

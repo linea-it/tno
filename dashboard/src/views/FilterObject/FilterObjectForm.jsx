@@ -157,7 +157,7 @@ class FilterObjectForm extends Component {
             checked={this.state.moreFilter}
             onChange={this.handleInputChange}
           >
-            Show Only Objects with More than one filter in the some night?
+            Show same Objects with More than one filter in the some night?
           </Checkbox>
         </FormGroup>
         <Button
