@@ -3,9 +3,11 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
-from .models import CustomList
+from .models import CustomList, Proccess
 from .skybotoutput import FilterObjects
-from praia.models import Configuration
+import logging
+import os, errno
+from django.conf import settings
 
 @receiver(post_save, sender=User)
 def init_new_user(sender, instance, signal, created, **kwargs):
@@ -57,11 +59,48 @@ def create_custom_list_table(sender, instance, signal, created, **kwargs):
             
             raise(e)
 
-# @receiver(post_save, sender=Configuration)
-# def test_signal(sender, instance, signal, created, **kwargs):
-#     """
-#         This method creates an access token every time a new user is created.
-#     """
-#     # if created:
-#     instance.displayname = 'success'
-#     instance.save()
+
+@receiver(post_save, sender=Proccess)
+def create_proccess(sender, instance, signal, created, **kwargs):
+    """
+        Executada toda vez que um registro de processo e criado.
+        Cria os Diretorios necessarios, alterea a permissao,
+        altera o status do processo, e notifica o usuario.
+    """
+    logger = logging.getLogger("astrometry")
+    if created:
+        logger.info("A new process was created with ID: [%s] Owner: [ %s ]" % (instance.id, instance.owner))
+
+        # primeira etapa criar um diretorio.
+        proccess_dir = settings.PROCCESS_DIR
+        directory_name = str(instance.id)
+        directory = os.path.join(proccess_dir, directory_name)
+        absolute_path = os.path.join(os.environ['PROCCESS_DIR'], directory_name)
+
+        try:
+            # Criar o Diretorio
+            os.makedirs(directory)
+
+            # Alterar a Permissao do Diretorio
+            os.chmod(directory, 0o775)
+
+            logger.info("Process directory created")
+            logger.debug("Directory: %s" % directory)
+            logger.debug("Absolute Path: %s" % absolute_path)
+
+            instance.relative_path = directory
+            instance.absolute_path = absolute_path
+            instance.status = 'running'
+            instance.save()
+
+            logger.info("Status changed to Running")
+
+            # TODO: Sending Notification.
+
+        except OSError as e:
+            instance.status = 'error'
+            instance.save()
+            logger.error("Failed to create process directory [ %s ]" % directory)
+            if e.errno != errno.EEXIST:
+                logger.error(e)
+                raise
