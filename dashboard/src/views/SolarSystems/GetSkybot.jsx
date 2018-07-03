@@ -8,41 +8,65 @@ import {
 
 import { withRouter } from 'react-router-dom';
 import Button from 'elements/CustomButton/CustomButton.jsx';
-import PointingApi from './PointingApi';
+import SkybotApi from './SkybotApi';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
-import DetailsPointings from './DetailsPointings';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import { formatDateUTC, formatColumnHeader } from 'utils';
+import { formatColumnHeader } from 'utils';
+import SkybotDetail from './SkybotDetail';
 
-function exposureFormatter(_cell, row, _rowindex, formatExtraData) {
-  if (row.downloaded) {
-    return <i className={formatExtraData['success']} />;
-  } else {
-    return <i className={formatExtraData['failure']} />;
-  }
-}
+const skybot_columns = [
+  // {
+  //   text: 'ID',
+  //   dataField: 'id',
+  //   width: 60,
+  //   headerStyle: formatColumnHeader,
+  // },
 
-const pointing_columns = [
   {
-    text: 'Observation Date',
-    dataField: 'date_obs',
-    width: 180,
+    text: 'Name',
+    dataField: 'name',
+    width: 20,
+    align: 'center',
     headerStyle: formatColumnHeader,
-    formatter: formatDateUTC,
-    helpText: 'Date and time of observation',
+    helpText:
+      '(ucd=“meta.id;meta.main”) Object name (official or provisional designation).',
     headerTitle: column => `${column.helpText}`,
   },
 
   {
-    text: 'FileName',
-    dataField: 'filename',
-    width: 180,
+    text: 'Num',
+    dataField: 'num',
+    align: 'center',
+    width: 20,
     headerStyle: formatColumnHeader,
-    helpText: 'Name of FITS file with a CCD image.',
+    helpText:
+      '(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).',
+    headerTitle: column => `${column.helpText}`,
+  },
+
+  {
+    text: 'RA (deg)',
+    dataField: 'raj2000',
+    align: 'center',
+    width: 20,
+    headerStyle: formatColumnHeader,
+    helpText:
+      '(ucd=“pos.eq.ra;meta.main”) Right ascension of the identified object in degrees.',
+    headerTitle: column => `${column.helpText}`,
+  },
+
+  {
+    text: 'Dec (deg)',
+    dataField: 'decj2000',
+    align: 'center',
+    width: 20,
+    headerStyle: formatColumnHeader,
+    helpText:
+      '(ucd=“pos.eq.dec;meta.main”) Declination of the identified object in degrees.',
     headerTitle: column => `${column.helpText}`,
   },
 
@@ -50,69 +74,21 @@ const pointing_columns = [
     text: 'Exposure',
     dataField: 'expnum',
     align: 'center',
-    width: 60,
-    headerStyle: formatColumnHeader,
-    helpText:
-      'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
-    headerTitle: column => `${column.helpText}`,
-  },
-
-  {
-    text: 'CDD',
-    dataField: 'ccdnum',
-    align: 'center',
-    width: 60,
-    headerStyle: formatColumnHeader,
-    helpText: 'CCD Number (1, 2, ..., 62)',
-    headerTitle: column => `${column.helpText}`,
-  },
-
-  {
-    text: 'Band',
-    dataField: 'band',
-    align: 'center',
-    width: 60,
+    width: 20,
     headerStyle: formatColumnHeader,
     helpText: 'Filter used to do the observation (u, g, r, i, z, Y).',
     headerTitle: column => `${column.helpText}`,
   },
-
-  {
-    text: 'Exposure time',
-    dataField: 'exptime',
-    align: 'center',
-    width: 60,
-    headerStyle: formatColumnHeader,
-    helpText: 'Exposure time of observation.',
-    headerTitle: column => `${column.helpText}`,
-  },
-
-  {
-    text: 'downloaded',
-    dataField: 'downloaded',
-    align: 'center',
-    formatter: exposureFormatter,
-    helpText: 'flag indicating whether the image was downloaded from DES.',
-    headerTitle: column => `${column.helpText}`,
-
-    formatExtraData: {
-      success: 'fa fa-check text-success',
-      failure: 'fa fa-exclamation-triangle text-warning',
-    },
-
-    width: 80,
-    headerStyle: formatColumnHeader,
-  },
 ];
 
-class PointingList extends Component {
+class GetSkybot extends Component {
   state = this.initialState;
 
-  api = new PointingApi();
+  api = new SkybotApi();
 
   static propTypes = {
     history: PropTypes.any.isRequired,
-    record: PropTypes.object,
+    match: PropTypes.object.isRequired,
   };
 
   get initialState() {
@@ -121,17 +97,32 @@ class PointingList extends Component {
       data: [],
       page: 1,
       totalSize: 0,
-      sizePerPage: 10,
+      sizePerPage: 3,
       loading: false,
       search: '',
-      record: {},
+      record: '',
     };
   }
 
   componentDidMount() {
     // console.log('componentDidMount()');
 
+    //   const {
+    //     match: { params },
+    //   } = this.props;
+
+    //   this.api.getListStats({ id: params.id }).then(res => {
+    //     const data = res.data.data;
+
+    //     this.setState(
+    //       {
+    //         id: res.data.id,
+    //         customList: data,
+    //       },
+
     this.fetchData(this.state.page, this.state.sizePerPage);
+    //     );
+    //   });
   }
 
   handleTableChange = (_type, { page, sizePerPage }) => {
@@ -142,6 +133,8 @@ class PointingList extends Component {
 
   onChangeSearch = event => {
     this.setState({ search: event.target.value });
+
+    //if (this.setState({ search: event.target.value }) !== ''){ this.fetchData(); console.log('teste')};
   };
 
   onKeyPress = event => {
@@ -149,35 +142,32 @@ class PointingList extends Component {
   };
 
   handleSearch = () => {
+    // event.preventDefault();
     if (this.state.search) {
       // console.log('fazer a busca');
       // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
       this.setState(
         { page: 1 },
-        this.fetchData(
-          this.state.page,
-          this.state.sizePerPage,
-          this.state.search
-        )
+        this.fetchData(this.state.page, this.state.pageSize, this.state.search)
       );
     } else {
-      this.fetchData(this.state.page, this.state.sizePerPage);
+      this.fetchData(this.state.page, this.state.pageSize);
     }
   };
 
   handlerClear = () => {
     this.setState(
       { search: '' },
-      this.fetchData(this.state.page, this.state.sizePerPage)
+      //this.fetchData(this.state.page, this.state.sizePerPage)
     );
   };
 
-  fetchData = (page, sizePerPage, search) => {
+  fetchData = (page, pageSize, search) => {
     // console.log('fetchData(%o, %o, %o)', page, pageSize, search);
     this.setState({ loading: true });
 
     const params = {
-      pageSize: sizePerPage,
+      pageSize: pageSize,
     };
 
     if (search) {
@@ -185,26 +175,29 @@ class PointingList extends Component {
     } else {
       params.page = page;
     }
+    this.api.getSkybotLists(params).then(res => {
+      // console.log('Carregou: %o', res);
 
-    this.api.getPointingLists(params).then(res => {
       const r = res.data;
 
       this.setState({
         data: r.results,
         totalSize: r.count,
         page: page,
-        sizePerPage: sizePerPage,
         loading: false,
       });
     });
   };
 
-  showDetail = (index, row, rowindex) => {
-    this.setState({ show: true, record: row });
-  };
+  // close = () => this.setState({ showCreate: false });
 
   onClose = () => {
     this.setState({ show: false });
+  };
+
+  showDetail = (index, row, rowindex) => {
+    //console.log(row);
+    this.setState({ record: row });
   };
 
   render() {
@@ -222,6 +215,7 @@ class PointingList extends Component {
       page: page,
       sizePerPage: sizePerPage,
       totalSize: totalSize,
+      hideSizePerPage: true,
       hidePageListOnlyOnePage: true,
       showTotal: true,
     });
@@ -230,7 +224,8 @@ class PointingList extends Component {
 
     const rowEvents = {
       onDoubleClick: (e, row) => {
-        history.push('/pointingsdetail/' + row.id);
+        history.push('/skybotdetail/' + row.id);
+        // this.showDetail;
       },
     };
 
@@ -242,7 +237,7 @@ class PointingList extends Component {
               <InputGroup>
                 <FormControl
                   type="text"
-                  placeholder="Search By expnum, filename"
+                  placeholder="Search By name, number"
                   value={search}
                   onChange={this.onChangeSearch}
                   onKeyPress={this.onKeyPress}
@@ -270,7 +265,7 @@ class PointingList extends Component {
             keyField="id"
             noDataIndication="no results to display"
             data={data}
-            columns={pointing_columns}
+            columns={skybot_columns}
             pagination={pagination}
             onTableChange={this.handleTableChange}
             rowEvents={rowEvents}
@@ -281,15 +276,11 @@ class PointingList extends Component {
               background: 'rgba(192,192,192,0.3)',
             })}
           />
+          <span>{totalSize} rows</span>
         </div>
-        <DetailsPointings
-          show={this.state.show}
-          onHide={this.onClose}
-          record={record}
-        />
       </div>
     );
   }
 }
 
-export default withRouter(PointingList);
+export default withRouter(GetSkybot);

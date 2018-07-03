@@ -206,40 +206,26 @@ class PropertiesPointing extends Component {
       this.record_properties.forEach((p, i) => {
         const { text, dataField, helpText } = p;
 
-        const popoverHoverFocus = (
-          <Popover id="`popover-trigger-hover-{i}`" title={p.text}>
+        const popoverClickRootClose = (
+          <Popover id="`popover-trigger-click-root-close-{i}`" title={p.text}>
             {helpText}
           </Popover>
         );
 
-        let td_help = <td width="200" />;
-
-        if (helpText) {
-          td_help = (
-            <td width="200">
-              <OverlayTrigger
-                trigger={['hover', 'focus']}
-                placement="right"
-                overlay={popoverHoverFocus}
-              >
-                <i
-                  onClick={this.showSubDetails}
-                  className="fa fa-question text-medium-dark-gray"
-                  aria-hidden="true"
-                />
-              </OverlayTrigger>
-            </td>
-          );
-        }
-
         body.push([
-          <tr key={i}>
-            <td width="200">
-              <b> {text} </b>:
-            </td>
-            <td width="200-">{record[dataField].toString()}</td>
-            {td_help}
-          </tr>,
+          <OverlayTrigger
+            trigger={['click']}
+            placement="bottom"
+            rootClose
+            overlay={popoverClickRootClose}
+          >
+            <tr key={i}>
+              <td width="300">
+                <b> {text} </b>:
+              </td>
+              <td width="100-">{record[dataField].toString()}</td>
+            </tr>
+          </OverlayTrigger>,
         ]);
       });
     }

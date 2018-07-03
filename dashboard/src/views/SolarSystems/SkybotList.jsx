@@ -135,7 +135,10 @@ class SkybotList extends Component {
   };
 
   handlerClear = () => {
-    this.setState({ search: '' }, this.fetchData());
+    this.setState(
+      { search: '' },
+      this.fetchData(this.state.page, this.state.sizePerPage)
+    );
   };
 
   fetchData = (page, sizePerPage, search) => {
@@ -188,6 +191,7 @@ class SkybotList extends Component {
     const rowEvents = {
       onDoubleClick: (e, row) => {
         history.push('/skybotdetail/' + row.id);
+        console.log('fetchData(%o, %o, %o)', page, sizePerPage, search);
       },
     };
 
