@@ -15,9 +15,13 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-LOG_DIR = os.environ['LOG_DIR']
-if not LOG_DIR:
-    LOG_DIR = os.path.join(BASE_DIR, 'log')
+# PROJECT PATHS
+# estes diretorios estao montados no container utilizando variaveis de ambiente, mas para o container sempre vao ser
+# os mesmos listados aqui.
+LOG_DIR = "/log"
+ARCHIVE_DIR = "/archive"
+PROCCESS_DIR = "/proccess"
+CCD_IMAGES_DIR = "/ccd_images"
 
 
 # Quick-start development settings - unsuitable for production
@@ -167,6 +171,7 @@ REST_FRAMEWORK = {
 
 
 CORS_ORIGIN_ALLOW_ALL = True
+
 
 LOGGING = {
     'version': 1,
