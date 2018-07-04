@@ -1,10 +1,11 @@
 
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from .models import CustomList, Proccess
 from .skybotoutput import FilterObjects
+from tno.proccess import ProccessManager
 import logging
 import os, errno
 from django.conf import settings
@@ -67,40 +68,30 @@ def create_proccess(sender, instance, signal, created, **kwargs):
         Cria os Diretorios necessarios, alterea a permissao,
         altera o status do processo, e notifica o usuario.
     """
-    logger = logging.getLogger("astrometry")
+    logger = logging.getLogger("proccess")
     if created:
         logger.info("A new process was created with ID: [%s] Owner: [ %s ]" % (instance.id, instance.owner))
 
         # primeira etapa criar um diretorio.
-        proccess_dir = settings.PROCCESS_DIR
-        directory_name = str(instance.id)
-        directory = os.path.join(proccess_dir, directory_name)
-        absolute_path = os.path.join(os.environ['PROCCESS_DIR'], directory_name)
 
-        try:
-            # Criar o Diretorio
-            os.makedirs(directory)
+        instance = ProccessManager().createProccessDirectory(instance=instance)
 
-            # Alterar a Permissao do Diretorio
-            os.chmod(directory, 0o775)
+        instance.status = 'running'
+        instance.save()
+        logger.info("Status changed to Running")
 
-            logger.info("Process directory created")
-            logger.debug("Directory: %s" % directory)
-            logger.debug("Absolute Path: %s" % absolute_path)
+        # TODO: Sending Notification.
 
-            instance.relative_path = directory
-            instance.absolute_path = absolute_path
-            instance.status = 'running'
-            instance.save()
 
-            logger.info("Status changed to Running")
+@receiver(pre_delete, sender=Proccess)
+def delete_proccess(sender, instance, using, **kwargs):
+    """
+        Executado Toda vez que um processo for deletado,
+    verifica se esta rodando no modo DEBUG se estiver executa o metodo purge.
 
-            # TODO: Sending Notification.
-
-        except OSError as e:
-            instance.status = 'error'
-            instance.save()
-            logger.error("Failed to create process directory [ %s ]" % directory)
-            if e.errno != errno.EEXIST:
-                logger.error(e)
-                raise
+    :param sender:
+    :param instance:
+    :return:
+    """
+    if settings.DEBUG:
+        instance = ProccessManager().purge(instance)

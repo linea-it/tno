@@ -23,6 +23,12 @@ class Run(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE, default=None, verbose_name='Owner', null=True, blank=True)
 
+    # Relation With Proccess
+    proccess = models.ForeignKey(
+        'tno.Proccess', on_delete=models.CASCADE, verbose_name='Proccess',
+        null=True, blank=True, default=None
+    )
+
     start_time = models.DateTimeField(
         verbose_name='Start Time',
         auto_now_add=True, null=True, blank=True)
@@ -41,6 +47,13 @@ class Run(models.Model):
     input_list = models.ForeignKey(
         'tno.CustomList', on_delete=models.CASCADE, verbose_name='Input List',
         null=True, blank=True, default=None
+    )
+
+    relative_path = models.CharField(
+        max_length=256,
+        verbose_name='Relative Path',
+        null=True, blank=True,
+        help_text='Path relative to the astrometry directory, this is the internal path in the container.',
     )
 
     status = models.CharField(

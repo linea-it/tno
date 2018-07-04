@@ -3,9 +3,10 @@ from django.dispatch import receiver
 from praia.models import Configuration
 from praia.models import Run
 from tno.models import Proccess
-
+import os, errno
 import logging
-
+from random import randrange
+import time
 
 @receiver(post_save, sender=Run)
 def test_signal(sender, instance, signal, created, **kwargs):
@@ -15,6 +16,9 @@ def test_signal(sender, instance, signal, created, **kwargs):
     logger = logging.getLogger("astrometry")
 
     if created:
+        logger.info("Was Created a new record of PRAIA Run")
+
+
         # Como a Astrometria e a primeira etapa ela fica responsavel por iniciar o processo.
         logger.info("Creating a Process")
         proccess = Proccess.objects.create(
@@ -24,21 +28,43 @@ def test_signal(sender, instance, signal, created, **kwargs):
         proccess.save()
         logger.info("Process Created with ID [ %s ]" % proccess.id)
 
-        # Criar um diretorio para os arquivos do PRAIA.
 
-        logger.info("Was Created a new record of PRAIA Run")
+        instance.proccess = proccess
+        instance.save()
+
+        # Criar um diretorio para os arquivos do PRAIA.
+        directory = "astrometry_%s" % instance.id
+        try:
+            # Criar o Diretorio
+            os.makedirs(directory)
+
+            # Alterar a Permissao do Diretorio
+            os.chmod(directory, 0o775)
+
+            logger.info("Astrometry directory created")
+            logger.debug("Directory: %s" % directory)
+
+            instance.relative_path = directory
+            instance.save()
+
+        except OSError as e:
+            instance.status = 'error'
+            instance.save()
+            logger.error("Failed to create astrometry directory [ %s ]" % directory)
+            if e.errno != errno.EEXIST:
+                logger.error(e)
+                raise
 
         instance.status = 'running'
         instance.save()
+        logger.info("Status changed to Running")
 
-        # Criar o Diretorio da rodada do PRAIA
 
-        # Criar arquivo input
+        time.sleep(randrange(15))
 
-        # Criar arquivo config.dat
-
-        # Criar o link para as imagens
-
-        # Simular os arquivos de output
+        # TODO: Importar a Classe responsavel por rodar a ASTROMETRIA
 
         # Encerrar a Rodada do praia
+        instance.status = 'success'
+        instance.save()
+        logger.info("Status changed to Success")

@@ -187,6 +187,14 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOG_DIR, 'django.log'),
         },
+        'proccess': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'proccess.log'),
+            'formatter': 'standard',
+        },
         'astrometry': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -199,6 +207,11 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'proccess': {
+            'handlers': ['proccess'],
             'level': 'DEBUG',
             'propagate': True,
         },

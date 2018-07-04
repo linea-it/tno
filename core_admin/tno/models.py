@@ -614,6 +614,12 @@ class Proccess(models.Model):
         choices=(('pending','Pending'),('running','Running'),('success','Success'),('error','Error'))
     )
 
+    purged = models.BooleanField(
+        verbose_name='Purged',
+        default=False,
+        help_text='This flag true indicates that the marked process was removed and your data excluded.'
+    )
+
     def __str__(self):
         return str(self.id)
 
