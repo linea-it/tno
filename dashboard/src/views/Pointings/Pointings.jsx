@@ -25,46 +25,108 @@ class PointingsPanel extends Component {
       totalSize: 0,
       sizePerPage: 10,
       loading: false,
+      status: {
+        totalSizeTable: 8137,
+        qtdBits: 25,
+        qtdDownloaded: 312,
+      },
     };
   }
 
   render() {
+    const stats = this.state;
     return (
       <div className="content">
         <Grid fluid>
           <Row>
-            <Col lg={3} sm={6}>
+            <Col lg={3} md={1} sm={6}>
+              <StatsCard
+                bigIcon={<i className="fa fa-table text-danger" />}
+                statsText="Amount CCDs per page"
+                statsValue={stats.status.totalSizeTable}
+                statsIcon={<i className="fa fa-hdd-o" />}
+                statsIconText=""
+              />
+            </Col>
+
+            <Col lg={3} mdOffset={1} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-server text-success" />}
+                statsText="Bits Size"
+                statsValue={[stats.status.qtdBits, ' bits']}
+                statsIcon={<i className="fa fa-hdd-o" />}
+                statsIconText=""
+              />
+            </Col>
+
+            {/* <Col lg={3} sm={6} md={8}>
+              <Card
+                title="Stats Images"
+                category=""
+                content={
+                  <div />
+                  // <Grid fluid>
+
+                  //   <Row>
+
+                  //     <Col md={6}>
+                  //       <StatsCard
+                  //         //bigIcon={<i className="pe-7s-server text-success" />}
+                  //         statsText="Amount Downloaded"
+                  //         statsValue={stats.status.qtdDownloaded}
+                  //         statsIcon={<i className="fa fa-hdd-o" />}
+                  //         statsIconText=""
+                  //       />
+                  //     </Col>
+
+                  //     <Col md={6}>
+                  //       <StatsCard
+                  //         //bigIcon={<i className="pe-7s-server text-success" />}
+                  //         statsText="Amount Downloaded"
+                  //         statsValue={stats.status.qtdDownloaded}
+                  //         statsIcon={<i className="fa fa-hdd-o" />}
+                  //         statsIconText=""
+                  //       />
+                  //     </Col>
+
+                  //   </Row>
+
+                  // </Grid>
+                }
+              />
+            </Col> */}
+            <Col lg={3} mdOffset={1} sm={6}>
+              <StatsCard
+                bigIcon={<i className="fa fa-bar-chart" />}
+                statsText=""
+                statsValue="3232"
+                statsIcon={<i className="fa fa-hdd-o" />}
+                statsIconText=""
+              />
+            </Col>
+            {/* <Col lg={3} md={4} sm={6}>
+              <StatsCard
+                bigIcon={<i className="fa fa-file-image-o" />}
                 statsText="ESTATISTICAS"
                 statsValue=""
                 statsIcon={<i className="fa fa-hdd-o" />}
                 statsIconText=""
               />
-            </Col>
-            <Col lg={3} sm={6}>
+            </Col> */}
+            <Col lg={3} mdOffset={3} sm={6}>
               <StatsCard
-                bigIcon={<i className="pe-7s-server text-success" />}
-                statsText="ESTATISTICAS"
-                statsValue=""
+                bigIcon={<i className="fa fa-cloud-download" />}
+                statsText="Amount already downloaded"
+                statsValue="230"
                 statsIcon={<i className="fa fa-hdd-o" />}
                 statsIconText=""
               />
             </Col>
-            <Col lg={3} sm={6}>
+            <Col lg={3} md={2} sm={6}>
               <StatsCard
-                bigIcon={<i className="pe-7s-server text-success" />}
-                statsText="ESTATISTICAS"
-                statsValue=""
-                statsIcon={<i className="fa fa-hdd-o" />}
-                statsIconText=""
-              />
-            </Col>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="pe-7s-server text-success" />}
-                statsText="ESTATISTICAS"
-                statsValue=""
+                bigIcon={<i className="fa fa-file-image-o" />}
+                statsText="Size total of images downloaded"
+                statsValue="2102"
                 statsIcon={<i className="fa fa-hdd-o" />}
                 statsIconText=""
               />
