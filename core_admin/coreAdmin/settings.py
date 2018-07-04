@@ -15,9 +15,13 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-LOG_DIR = os.environ['LOG_DIR']
-if not LOG_DIR:
-    LOG_DIR = os.path.join(BASE_DIR, 'log')
+# PROJECT PATHS
+# estes diretorios estao montados no container utilizando variaveis de ambiente, mas para o container sempre vao ser
+# os mesmos listados aqui.
+LOG_DIR = "/log"
+ARCHIVE_DIR = "/archive"
+PROCCESS_DIR = "/proccess"
+CCD_IMAGES_DIR = "/ccd_images"
 
 
 # Quick-start development settings - unsuitable for production
@@ -168,6 +172,7 @@ REST_FRAMEWORK = {
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -182,6 +187,14 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOG_DIR, 'django.log'),
         },
+        'proccess': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'proccess.log'),
+            'formatter': 'standard',
+        },
         'astrometry': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -194,6 +207,11 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'proccess': {
+            'handlers': ['proccess'],
             'level': 'DEBUG',
             'propagate': True,
         },
