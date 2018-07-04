@@ -246,7 +246,6 @@ class PointingList extends Component {
                   onChange={this.onChangeSearch}
                   onKeyPress={this.onKeyPress}
                 />
-
                 <InputGroup.Button>
                   <Button onClick={this.handleSearch}>Search</Button>
                 </InputGroup.Button>
