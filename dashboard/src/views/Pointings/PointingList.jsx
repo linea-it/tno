@@ -11,12 +11,13 @@ import Button from 'elements/CustomButton/CustomButton.jsx';
 import PointingApi from './PointingApi';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
-import DetailsPointings from './DetailsPointings';
+// import DetailsPointings from './DetailsPointings';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { formatDateUTC, formatColumnHeader } from 'utils';
+import FilterPointings from './FilterPointings';
 
 function exposureFormatter(_cell, row, _rowindex, formatExtraData) {
   if (row.downloaded) {
@@ -113,7 +114,6 @@ class PointingList extends Component {
   static propTypes = {
     history: PropTypes.any.isRequired,
     record: PropTypes.object,
-
   };
 
   get initialState() {
@@ -126,6 +126,7 @@ class PointingList extends Component {
       loading: false,
       search: '',
       record: {},
+      show: false,
     };
   }
 
@@ -185,7 +186,6 @@ class PointingList extends Component {
     }
 
     this.api.getPointingLists(params).then(res => {
-
       const r = res.data;
 
       this.setState({
@@ -202,7 +202,11 @@ class PointingList extends Component {
     this.setState({ show: true, record: row });
   };
 
-  onClose = () => {
+  // onClose = () => {
+  //   this.setState({ show: false });
+  // };
+
+  closeCreate = () => {
     this.setState({ show: false });
   };
 
@@ -239,6 +243,9 @@ class PointingList extends Component {
           <ButtonToolbar>
             <FormGroup>
               <InputGroup>
+                <InputGroup.Button>
+                  <Button onClick={this.showDetail}> Filters</Button>
+                </InputGroup.Button>
                 <FormControl
                   type="text"
                   placeholder="Search By id, expnum, filename"
@@ -280,11 +287,12 @@ class PointingList extends Component {
             })}
           />
         </div>
-        <DetailsPointings
+        {/* <DetailsPointings
           show={this.state.show}
           onHide={this.onClose}
           record={record}
-        />
+        /> */}
+        <FilterPointings show={this.state.show} onHide={this.closeCreate} />
       </div>
     );
   }

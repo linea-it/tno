@@ -6,6 +6,9 @@ import {
   ControlLabel,
   FormGroup,
   HelpBlock,
+  Grid,
+  Row,
+  Col,
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
@@ -25,33 +28,60 @@ class FilterSkybot extends React.Component {
       <div className="static-modal">
         <Modal show={show} onHide={onHide}>
           <Modal.Header>
-            <Modal.Title>Modal title</Modal.Title>
+            <Modal.Title>Filter Skybot</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
             <form>
-              <FormGroup controlId="formControlsSelect">
-                <ControlLabel>Select</ControlLabel>
-                <FormControl componentClass="select" placeholder="select">
-                  <option value="select">select</option>
-                  <option value="other">...</option>
-                </FormControl>
-              </FormGroup>
-              <FormGroup>
-                <ControlLabel>Name</ControlLabel>
-                <FormControl
-                  type="text"
-                  placeholder="Table Display Name"
-                  value={this.state.displayName}
-                  onChange={this.handleChangeName}
-                />
-                <HelpBlock>{this.state.nameHelpBlock}</HelpBlock>
-              </FormGroup>
+              <Grid fluid>
+                <Row>
+                  <Col md={12}>
+                    <FormGroup controlId="formControlsSelect">
+                      <ControlLabel>Total Size for Band</ControlLabel>
+                      <FormControl componentClass="select" placeholder="select">
+                        <option value="select">u</option>
+                        <option value="other">g</option>
+                        <option value="other">r</option>
+                        <option value="other">i</option>
+                        <option value="other">z</option>
+                        <option value="other">Y</option>
+                      </FormControl>
+                    </FormGroup>
+                  </Col>
+                </Row>
+              </Grid>
+
+              <Grid fluid>
+                <ControlLabel>Exposure Time</ControlLabel>
+                <Row>
+                  <Col md={6}>
+                    <FormGroup>
+                      <FormControl
+                        id="formControlsText"
+                        type="text"
+                        placeholder="Write the value initial"
+                        onChange=""
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md={6}>
+                    <FormGroup>
+                      <FormControl
+                        id="formControlsText"
+                        type="text"
+                        placeholder="Write the value finally"
+                        onChange=""
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+              </Grid>
             </form>
           </Modal.Body>
 
           <Modal.Footer>
             <Button onClick={this.onClose}>Close</Button>
+            <Button onClick={this.onClose}>Filter</Button>
           </Modal.Footer>
         </Modal>
       </div>
