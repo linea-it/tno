@@ -26,6 +26,9 @@
    // MANU : aici este ceva schimbat!!!
    > tbody > tr > td{
        font-size: 14px;
+       white-space: nowrap; 
+       overflow: hidden;
+       text-overflow: ellipsis;
    }
     > thead > tr > th{
         border-bottom-width: 1px;

@@ -43,7 +43,7 @@ class ProccessManager():
         self.logger.info("Process Purge")
         try:
 
-            if not instance.purged:
+            if not instance.purged and instance.relative_path is not None:
                 directory = instance.relative_path
 
                 self.logger.debug("Directory: %s" % directory)
