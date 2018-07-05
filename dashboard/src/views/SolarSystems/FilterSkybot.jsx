@@ -1,5 +1,12 @@
 import React from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import {
+  Modal,
+  Button,
+  FormControl,
+  ControlLabel,
+  FormGroup,
+  HelpBlock,
+} from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
 class FilterSkybot extends React.Component {
@@ -9,7 +16,7 @@ class FilterSkybot extends React.Component {
   };
 
   onClose = () => {
-    this.props.onHide()
+    this.props.onHide();
   };
 
   render() {
@@ -21,7 +28,27 @@ class FilterSkybot extends React.Component {
             <Modal.Title>Modal title</Modal.Title>
           </Modal.Header>
 
-          <Modal.Body>One fine body...</Modal.Body>
+          <Modal.Body>
+            <form>
+              <FormGroup controlId="formControlsSelect">
+                <ControlLabel>Select</ControlLabel>
+                <FormControl componentClass="select" placeholder="select">
+                  <option value="select">select</option>
+                  <option value="other">...</option>
+                </FormControl>
+              </FormGroup>
+              <FormGroup>
+                <ControlLabel>Name</ControlLabel>
+                <FormControl
+                  type="text"
+                  placeholder="Table Display Name"
+                  value={this.state.displayName}
+                  onChange={this.handleChangeName}
+                />
+                <HelpBlock>{this.state.nameHelpBlock}</HelpBlock>
+              </FormGroup>
+            </form>
+          </Modal.Body>
 
           <Modal.Footer>
             <Button onClick={this.onClose}>Close</Button>
