@@ -171,8 +171,8 @@ class PointingList extends Component {
     this.setState({ search: '' }, this.fetchData());
   };
 
-  fetchData = (page, sizePerPage, search) => {
-    // console.log('fetchData(%o, %o, %o)', page, pageSize, search);
+  fetchData = (page, sizePerPage, search, filter) => {
+    console.log('fetchData(%o, %o, %o, %o)', page, sizePerPage, search, filter);
     this.setState({ loading: true });
 
     const params = {
@@ -184,6 +184,8 @@ class PointingList extends Component {
     } else {
       params.page = page;
     }
+
+    if (filter) params.filter = filter;
 
     this.api.getPointingLists(params).then(res => {
       const r = res.data;
