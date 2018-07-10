@@ -10,30 +10,64 @@ import {
   Col,
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
-import PointingApi from './PointingApi';
+import Select from 'react-select';
+
+const options = {
+  band: [
+    {
+      value: 'u',
+      label: 'u',
+    },
+    {
+      value: 'r',
+      label: 'r',
+    },
+    {
+      value: 'g',
+      label: 'g',
+    },
+    {
+      value: 'i',
+      label: 'i',
+    },
+    {
+      value: 'Y',
+      label: 'Y',
+    },
+  ],
+};
 
 class FilterPointings extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      useExptime: false,
-      useBand: false,
-      useDate: false,
+      band: '',
     };
   }
-
-  api = new PointingApi();
 
   static propTypes = {
     show: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
   };
 
-  envia = valor => {
-    console.log('To aqui');
-    const band = valor;
-    console.log(band);
+  handleSelectChange = value => {
+    this.setState({ band: value });
+  };
+
+  handlerSubmitFilter = event => {
+    // passa para o parent por props
+
+    const filters = [];
+
+    if (this.state.band) {
+      filters.push({
+        property: 'band__in=',
+        value: this.state.band,
+      });
+      //console.log('eu sou o filter da filterPointings: %o', filters);
+      this.props.onFilter(this.state);
+    }
   };
 
   onClose = () => {
@@ -56,7 +90,11 @@ class FilterPointings extends React.Component {
                   <Col md={12}>
                     <FormGroup controlId="formControlsSelect">
                       {/* <ControlLabel>Expose Time</ControlLabel> */}
-                      <FormControl componentClass="select" placeholder="select">
+                      <FormControl
+                        onChange={this.handleSelectChange}
+                        componentClass="select"
+                        placeholder="select"
+                      >
                         <option value="select"> 0 - 100</option>
                         <option value="other">100 - 150</option>
                         <option value="other">150 - 200</option>
@@ -77,7 +115,6 @@ class FilterPointings extends React.Component {
                         id="formControlsText"
                         type="text"
                         placeholder="Write the value initial"
-                        onChange=""
                       />
                     </FormGroup>
                   </Col>
@@ -87,7 +124,6 @@ class FilterPointings extends React.Component {
                         id="formControlsText"
                         type="text"
                         placeholder="Write the value finally"
-                        onChange=""
                       />
                     </FormGroup>
                   </Col>
@@ -99,17 +135,16 @@ class FilterPointings extends React.Component {
                   <Col md={12}>
                     <FormGroup controlId="formControlsSelect">
                       <ControlLabel>Total Size for Band</ControlLabel>
-                      <FormControl
-                        componentClass="select"
-                        placeholder="select"
-                      >
-                        <option value="u">u</option>
-                        <option value="g">g</option>
-                        <option value="r">r</option>
-                        <option value="i">i</option>
-                        <option value="z">z</option>
-                        <option value="Y">Y</option>
-                      </FormControl>
+                      <Select
+                        disabled={false}
+                        multi
+                        onChange={this.handleSelectChange}
+                        options={options.band}
+                        placeholder="Select your object table(s)"
+                        removeSelected={true}
+                        simpleValue
+                        value={this.state.band}
+                      />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -119,7 +154,7 @@ class FilterPointings extends React.Component {
 
           <Modal.Footer>
             <Button onClick={this.onClose}>Close</Button>
-            {/* <Button onClick={this.envia()}> Filter </Button> */}
+            <Button onClick={this.handlerSubmitFilter}> Filter </Button>
           </Modal.Footer>
         </Modal>
       </div>

@@ -11,13 +11,12 @@ import Button from 'elements/CustomButton/CustomButton.jsx';
 import PointingApi from './PointingApi';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
-// import DetailsPointings from './DetailsPointings';
+import FilterPointings from './FilterPointings';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { formatDateUTC, formatColumnHeader } from 'utils';
-import FilterPointings from './FilterPointings';
 
 function exposureFormatter(_cell, row, _rowindex, formatExtraData) {
   if (row.downloaded) {
@@ -127,6 +126,8 @@ class PointingList extends Component {
       search: '',
       record: {},
       show: false,
+      filters: [],
+      searchPattern: {},
     };
   }
 
@@ -171,13 +172,22 @@ class PointingList extends Component {
     this.setState({ search: '' }, this.fetchData());
   };
 
-  fetchData = (page, sizePerPage, search, filter) => {
-    console.log('fetchData(%o, %o, %o, %o)', page, sizePerPage, search, filter);
+  fetchData = (page, sizePerPage, search, filters = []) => {
+    // console.log(
+    //   'fetchData(%o, %o, %o, %o)',
+    //   page,
+    //   sizePerPage,
+    //   search,
+    // );
+
     this.setState({ loading: true });
+    //console.log('valor do filtro recebido pelo onFilter %o', filters);
 
     const params = {
       pageSize: sizePerPage,
+      filters: filters,
     };
+   // console.log('este é o valor de params.filters %o', params);
 
     if (search) {
       params.search = search;
@@ -185,10 +195,16 @@ class PointingList extends Component {
       params.page = page;
     }
 
-    if (filter) params.filter = filter;
+    if (Object.keys(filters).length === 0) {
+      this.setState(this.initialState);
+    } else {
+      params.filters = filters;
+    }
 
     this.api.getPointingLists(params).then(res => {
       const r = res.data;
+
+      console.log(r);
 
       this.setState({
         data: r.results,
@@ -208,6 +224,19 @@ class PointingList extends Component {
   //   this.setState({ show: false });
   // };
 
+  onFilter = filters => {
+    this.setState(
+      { filters: filters },
+      this.fetchData(
+        this.state.page,
+        this.state.sizePerPage,
+        this.state.search,
+        filters
+      )
+    );
+    console.log('Este é o valor do filtro: %o', filters);
+  };
+
   closeCreate = () => {
     this.setState({ show: false });
   };
@@ -220,7 +249,7 @@ class PointingList extends Component {
       totalSize,
       loading,
       search,
-      record,
+      //record,
     } = this.state;
 
     const pagination = paginationFactory({
@@ -294,7 +323,11 @@ class PointingList extends Component {
           onHide={this.onClose}
           record={record}
         /> */}
-        <FilterPointings show={this.state.show} onHide={this.closeCreate} />
+        <FilterPointings
+          onFilter={this.onFilter}
+          show={this.state.show}
+          onHide={this.closeCreate}
+        />
       </div>
     );
   }

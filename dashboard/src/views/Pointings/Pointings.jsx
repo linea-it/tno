@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col, Button } from 'react-bootstrap';
+import { Grid, Row, Col } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import PointingApi from './PointingApi';
 import PointingList from './PointingList';
@@ -8,7 +8,6 @@ import { StatsCard } from 'components/StatsCard/StatsCard.jsx';
 import Card from 'components/Card/Card.jsx';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import FilterPointings from './FilterPointings';
 
 class PointingsPanel extends Component {
   state = this.initialState;
@@ -52,7 +51,7 @@ class PointingsPanel extends Component {
                 statsIconText=""
               />
             </Col>
-            <Col lgHidden={3} sm={6}>
+            <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-server text-success" />}
                 statsText="ESTATISTICAS ESSA AQUI"
@@ -74,7 +73,6 @@ class PointingsPanel extends Component {
           <Row>
             <Col md={12}>
               <Card
-                style="float:left"
                 title="Pointings"
                 category="complete list with all entries recorded in the database. can search for expnum and filename"
                 content={<PointingList />}
@@ -82,7 +80,6 @@ class PointingsPanel extends Component {
             </Col>
           </Row>
         </Grid>
-        <FilterPointings />
       </div>
     );
   }

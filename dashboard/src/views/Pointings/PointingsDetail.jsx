@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col, Button } from 'react-bootstrap';
+import { Grid, Row } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import PointingApi from './PointingApi';
 import PropertiesPointing from './PropertiesPointing';
