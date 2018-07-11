@@ -35,6 +35,33 @@ const options = {
       label: 'Y',
     },
   ],
+
+  valueTimes: [
+    {
+      value: '0, 100',
+      label: '0 - 100',
+    },
+    {
+      value: '100, 150',
+      label: '100 - 200',
+    },
+    {
+      value: '150, 200',
+      label: '150 - 200',
+    },
+    {
+      value: '200 , 250',
+      label: '200 - 250',
+    },
+    {
+      value: '250, 300',
+      label: '250 - 300',
+    },
+    {
+      value: '300, 400',
+      label: '300 - 400',
+    },
+  ],
 };
 
 class FilterPointings extends React.Component {
@@ -43,6 +70,8 @@ class FilterPointings extends React.Component {
 
     this.state = {
       band: '',
+      expTime: '',
+      dateObservation: '',
     };
   }
 
@@ -51,23 +80,41 @@ class FilterPointings extends React.Component {
     onHide: PropTypes.func.isRequired,
   };
 
-  handleSelectChange = value => {
+  handleSelectBand = value => {
     this.setState({ band: value });
   };
 
-  handlerSubmitFilter = event => {
-    // passa para o parent por props
+  handleSelectExpTime = value => {
+    this.setState({ expTime: value });
+  };
 
-    const filters = [];
+  handleDateObservation = (initial, final) => {
+    this.setState({ dateObservation: initial + ',' + final });
+  };
+
+  handlerSubmitFilter = () => {
+    // passa para o parent por props
+    const filter = [];
 
     if (this.state.band) {
-      filters.push({
-        property: 'band__in=',
-        value: this.state.band,
-      });
-      //console.log('eu sou o filter da filterPointings: %o', filters);
-      this.props.onFilter(this.state);
+      filter.push({ property: 'band__in', value: this.state.band });
+    } else {
+      if (this.state.expTime) {
+        filter.push({
+          property: 'exptime__range',
+          value: this.state.expTime.value,
+        });
+      } else {
+        filter.push({
+          property: 'date_obs__joined__range',
+          value: this.state.dateObservation,
+        });
+      }
     }
+
+    console.log('eu sou o filter da filterPointings: %o', filter);
+    this.props.onFilter(filter);
+    // console.log('Onfilter o%', this.state.band);
   };
 
   onClose = () => {
@@ -90,17 +137,17 @@ class FilterPointings extends React.Component {
                   <Col md={12}>
                     <FormGroup controlId="formControlsSelect">
                       {/* <ControlLabel>Expose Time</ControlLabel> */}
-                      <FormControl
-                        onChange={this.handleSelectChange}
-                        componentClass="select"
-                        placeholder="select"
-                      >
-                        <option value="select"> 0 - 100</option>
-                        <option value="other">100 - 150</option>
-                        <option value="other">150 - 200</option>
-                        <option value="other">200 - 250</option>
-                        <option value="other">300 - 360</option>
-                      </FormControl>
+                      <Select
+                        //disabled={false}
+                        onChange={this.handleSelectExpTime}
+                        options={options.valueTimes}
+                        //placeholder="Select your object table(s)"
+                        // removeSelected={true}
+                        //clearable
+                        //simpleValue
+                        //value={this.state.band}
+                        value={this.state.expTime}
+                      />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -138,7 +185,7 @@ class FilterPointings extends React.Component {
                       <Select
                         disabled={false}
                         multi
-                        onChange={this.handleSelectChange}
+                        onChange={this.handleSelectBand}
                         options={options.band}
                         placeholder="Select your object table(s)"
                         removeSelected={true}

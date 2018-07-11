@@ -113,6 +113,7 @@ class PointingList extends Component {
   static propTypes = {
     history: PropTypes.any.isRequired,
     record: PropTypes.object,
+    filters: PropTypes.array,
   };
 
   get initialState() {
@@ -126,7 +127,7 @@ class PointingList extends Component {
       search: '',
       record: {},
       show: false,
-      filters: [],
+      filtered: null,
       searchPattern: {},
     };
   }
@@ -172,12 +173,13 @@ class PointingList extends Component {
     this.setState({ search: '' }, this.fetchData());
   };
 
-  fetchData = (page, sizePerPage, search, filters = []) => {
+  fetchData = (page, sizePerPage, search, Arrayfilters = []) => {
     // console.log(
     //   'fetchData(%o, %o, %o, %o)',
     //   page,
     //   sizePerPage,
     //   search,
+    //   filters,
     // );
 
     this.setState({ loading: true });
@@ -185,9 +187,9 @@ class PointingList extends Component {
 
     const params = {
       pageSize: sizePerPage,
-      filters: filters,
+      filters: [],
     };
-   // console.log('este é o valor de params.filters %o', params);
+    // console.log('este é o valor de params.filters %o', params);
 
     if (search) {
       params.search = search;
@@ -195,16 +197,17 @@ class PointingList extends Component {
       params.page = page;
     }
 
-    if (Object.keys(filters).length === 0) {
+    if (Object.keys(Arrayfilters).length === 0) {
       this.setState(this.initialState);
     } else {
-      params.filters = filters;
+      params.filters = Arrayfilters;
     }
+    //.log('RESULTADO DE PARAMS.FILTER:', params);
 
     this.api.getPointingLists(params).then(res => {
       const r = res.data;
 
-      console.log(r);
+      console.log(res.data);
 
       this.setState({
         data: r.results,
@@ -222,19 +225,24 @@ class PointingList extends Component {
 
   // onClose = () => {
   //   this.setState({ show: false });
+  // this.fetchData(
+  //   this.state.page,
+  //   this.state.sizePerPage,
+  //   this.state.search,
+  //   filter
   // };
 
-  onFilter = filters => {
+  onFilter = filter => {
+    console.log('sou filter', filter);
     this.setState(
-      { filters: filters },
+      { filtered: filter },
       this.fetchData(
         this.state.page,
         this.state.sizePerPage,
         this.state.search,
-        filters
+        filter
       )
     );
-    console.log('Este é o valor do filtro: %o', filters);
   };
 
   closeCreate = () => {
@@ -242,6 +250,8 @@ class PointingList extends Component {
   };
 
   render() {
+    console.log('Este é o valor do filters: %o', this.state.filtered);
+
     const {
       data,
       sizePerPage,
