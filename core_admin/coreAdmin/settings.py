@@ -56,7 +56,8 @@ INSTALLED_APPS = [
     # Project Apps
     'common',
     'tno',
-    'praia'
+    'praia',
+    'orbit'
 ]
 
 MIDDLEWARE = [
@@ -171,6 +172,25 @@ REST_FRAMEWORK = {
 
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+
+# Parsl
+PARSL_CONFIG = {
+    "sites": [
+        {
+            "site": "Threads",
+            "auth": {"channel": None},
+            "execution": {
+                "executor": "threads",
+                "provider": None,
+                "maxThreads": int(os.environ.get('AVAILABLE_THREADS', 4))
+            }
+        }
+    ],
+    "globals": {
+        "lazyErrors": True,
+    }
+}
 
 
 LOGGING = {
