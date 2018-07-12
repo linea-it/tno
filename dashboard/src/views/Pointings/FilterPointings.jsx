@@ -2,12 +2,14 @@ import React from 'react';
 import {
   Modal,
   Button,
-  FormControl,
   ControlLabel,
   FormGroup,
   Grid,
   Row,
   Col,
+  Collapse,
+  Alert,
+  FormControl,
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
@@ -68,17 +70,28 @@ class FilterPointings extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
+    this.state = this.getInitialState();
+  }
+
+  getInitialState = () => {
+    const initialState = {
       band: '',
       expTime: '',
-      dateObservation: '',
+      dateObserInit: '',
+      dateObserFinal: '',
+      open: true,
     };
-  }
+    return initialState;
+  };
 
   static propTypes = {
     show: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
   };
+
+  componentDidMount() {
+    this.setState({ open: false });
+  }
 
   handleSelectBand = value => {
     this.setState({ band: value });
@@ -88,46 +101,85 @@ class FilterPointings extends React.Component {
     this.setState({ expTime: value });
   };
 
-  handleDateObservation = (initial, final) => {
-    this.setState({ dateObservation: initial + ',' + final });
+  handlerInputDateInit = event => {
+    this.setState({ dateObserInit: event.target.value });
+  };
+
+  handlerInputDateFinal = event => {
+    this.setState({ dateObserFinal: event.target.value });
+  };
+
+  onClear = () => {
+    this.setState(this.getInitialState());
+    this.setState({ open: false });
   };
 
   handlerSubmitFilter = () => {
-    // passa para o parent por props
-    const filter = [];
-
-    if (this.state.band) {
-      filter.push({ property: 'band__in', value: this.state.band });
+    if (
+      this.state.expTime == '' &&
+      this.state.band == '' &&
+      this.state.dateObserInit == '' &&
+      this.state.dateObserFinal == ''
+    ) {
+      this.setState({ open: true });
     } else {
+      this.setState({ open: false });
+      // passa para o parent por props
+      const filter = [];
+
+      if (this.state.band) {
+        filter.push({ property: 'band__in', value: this.state.band });
+      }
+
       if (this.state.expTime) {
         filter.push({
           property: 'exptime__range',
           value: this.state.expTime.value,
         });
-      } else {
+      }
+
+      if (this.state.dateObserFinal && this.state.dateObserFinal) {
         filter.push({
-          property: 'date_obs__joined__range',
-          value: this.state.dateObservation,
+          property: 'date_obs__range',
+          value: this.state.dateObserInit + ',' + this.state.dateObserFinal,
         });
       }
+
+      if (this.state.dateObserInit && !this.state.dateObserFinal) {
+        filter.push({
+          property: 'date_obs__gt',
+          value: this.state.dateObserInit,
+        });
+      }
+
+      if (!this.state.dateObserInit && this.state.dateObserFinal) {
+        filter.push({
+          property: 'date_obs__lt',
+          value: this.state.dateObserFinal,
+        });
+      }
+      //console.log('eu sou o filter da filterPointings: %o', filter);
+      this.props.onFilter(filter);
+
+      // console.log('Onfilter o%', this.state.band);
     }
 
-    console.log('eu sou o filter da filterPointings: %o', filter);
-    this.props.onFilter(filter);
-    // console.log('Onfilter o%', this.state.band);
+    this.setState({ state: this.getInitialState });
   };
 
   onClose = () => {
     this.props.onHide();
+    this.setState({ open: false });
   };
 
   render() {
     const { show, onHide } = this.props;
+
     return (
       <div className="static-modal">
         <Modal show={show} onHide={onHide}>
           <Modal.Header>
-            <Modal.Title>Filter Skybot</Modal.Title>
+            <Modal.Title>Filter Pointings</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
@@ -136,16 +188,11 @@ class FilterPointings extends React.Component {
                 <Row>
                   <Col md={12}>
                     <FormGroup controlId="formControlsSelect">
-                      {/* <ControlLabel>Expose Time</ControlLabel> */}
+                      <ControlLabel>Range of Expose Time</ControlLabel>
                       <Select
-                        //disabled={false}
                         onChange={this.handleSelectExpTime}
                         options={options.valueTimes}
-                        //placeholder="Select your object table(s)"
-                        // removeSelected={true}
-                        //clearable
-                        //simpleValue
-                        //value={this.state.band}
+                        placeholder="Select your object table(s)"
                         value={this.state.expTime}
                       />
                     </FormGroup>
@@ -154,24 +201,31 @@ class FilterPointings extends React.Component {
               </Grid>
 
               <Grid fluid>
-                <ControlLabel>Exposure Time</ControlLabel>
                 <Row>
                   <Col md={6}>
+                    <ControlLabel>Date de Observation Initial</ControlLabel>
                     <FormGroup>
-                      <FormControl
-                        id="formControlsText"
-                        type="text"
-                        placeholder="Write the value initial"
+                      <input
+                        className="form-control"
+                        type="date"
+                        value={this.state.dateObserInit}
+                        onChange={this.handlerInputDateInit}
+                        format="yyyy/mm/dd"
                       />
+                      <FormControl type="date" />
+                      <p>{this.state.dateObserInit}</p>
                     </FormGroup>
                   </Col>
                   <Col md={6}>
+                    <ControlLabel>Date de Observation Final</ControlLabel>
                     <FormGroup>
-                      <FormControl
-                        id="formControlsText"
-                        type="text"
-                        placeholder="Write the value finally"
+                      <input
+                        className="form-control"
+                        type="date"
+                        value={this.state.dateObserFinal}
+                        onChange={this.handlerInputDateFinal}
                       />
+                      <p>{this.state.dateObserFinal}</p>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -181,7 +235,7 @@ class FilterPointings extends React.Component {
                 <Row>
                   <Col md={12}>
                     <FormGroup controlId="formControlsSelect">
-                      <ControlLabel>Total Size for Band</ControlLabel>
+                      <ControlLabel>Quantity of ccds per band</ControlLabel>
                       <Select
                         disabled={false}
                         multi
@@ -197,11 +251,24 @@ class FilterPointings extends React.Component {
                 </Row>
               </Grid>
             </form>
+            <Grid fluid>
+              <Row>
+                <Collapse timeout="100" in={this.state.open}>
+                  <div>
+                    <Alert bsStyle="danger">
+                      <strong>No values ​​found!</strong> Check some filter to
+                      perform a search
+                    </Alert>
+                  </div>
+                </Collapse>
+              </Row>
+            </Grid>
           </Modal.Body>
 
           <Modal.Footer>
+            <Button onClick={this.handlerSubmitFilter}>Filter</Button>
+            <Button onClick={this.onClear}>Clear Inputs</Button>
             <Button onClick={this.onClose}>Close</Button>
-            <Button onClick={this.handlerSubmitFilter}> Filter </Button>
           </Modal.Footer>
         </Modal>
       </div>
