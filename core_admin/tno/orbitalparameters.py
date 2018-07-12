@@ -374,7 +374,8 @@ dfk = DataFlowKernel(config=local_config)
 
 parsl.set_file_logger('parsl.log')
 
-output_path = "/home/glauber/tno/archive/teste"
+# output_path = "/home/glauber/tno/archive/teste"
+output_path = "/archive/teste"
 
 
 # App that generates a random number

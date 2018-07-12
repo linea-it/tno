@@ -539,8 +539,7 @@ class CustomList(models.Model):
         null=True, blank=True 
     )
 
-    filter_dynclass = models.CharField(
-        max_length=256,
+    filter_dynclass = models.TextField(
         verbose_name='Filter Classification',
         help_text='Filter by Object class (TNO, Centaur, Trojan, etc.).',
         null=True, blank=True 

@@ -17,3 +17,6 @@ LOG_DIR=./log
 ARCHIVE_DIR=./archive
 PROCCESS_DIR=./archive/proccess
 CCD_IMAGES_DIR=./archive/ccd_images
+
+# Parsl maxThreads (https://parsl.readthedocs.io/en/stable/userguide/configuring.html)
+AVAILABLE_THREADS=100
