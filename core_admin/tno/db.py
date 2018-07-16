@@ -17,7 +17,7 @@ class DBBase():
 
     def __init__(self):
 
-        self.engine = create_engine(self.get_db_uri())
+        self.engine = create_engine(self.get_db_uri(), use_batch_mode=True)
 
         self.current_dialect = None
 

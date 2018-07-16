@@ -36,11 +36,15 @@ services:
   # Core Admin (Backend Django)
   core-admin:
     build: ./core_admin
-    volumes:
-      - ./core_admin:/app
-      - ./log:/log
+    image: tno-core-admin
     env_file:
       - .env
+    volumes:
+      - ./core_admin:/app
+      - ${LOG_DIR}:/log
+      - ${ARCHIVE_DIR}:/archive
+      - ${PROCCESS_DIR}:/proccess
+      - ${CCD_IMAGES_DIR}:/ccd_images
     ports:
       - 7001:7001
     networks:
@@ -51,6 +55,7 @@ services:
   # Dashboard
   dashboard:
     build: ./dashboard
+    image: tno-dashboard
     working_dir: /src/app
     ports:
       - 7000:7000
