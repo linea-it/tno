@@ -10,7 +10,6 @@ class PointingApi {
       page: page,
       pageSize: pageSize,
       search: search,
-      //band: filters,
     };
 
     filters.forEach(function(el) {
