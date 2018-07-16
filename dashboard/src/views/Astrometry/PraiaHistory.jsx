@@ -69,7 +69,7 @@ class PraiaHistory extends Component {
       sizePerPage: 10,
       loading: false,
       // Tempo em segundos entre cada reload da lista
-      reload_interval: 5,
+      reload_interval: 10,
     };
   }
 

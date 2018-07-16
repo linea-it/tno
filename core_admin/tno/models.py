@@ -539,8 +539,7 @@ class CustomList(models.Model):
         null=True, blank=True 
     )
 
-    filter_dynclass = models.CharField(
-        max_length=256,
+    filter_dynclass = models.TextField(
         verbose_name='Filter Classification',
         help_text='Filter by Object class (TNO, Centaur, Trojan, etc.).',
         null=True, blank=True 
@@ -591,7 +590,21 @@ class Proccess(models.Model):
 
     finish_time = models.DateTimeField(
         verbose_name='Finish Time',
-        auto_now_add=True, null=True, blank=True)     
+        auto_now_add=True, null=True, blank=True)
+
+    relative_path = models.CharField(
+        max_length=256,
+        verbose_name='Relative Path',
+        null=True, blank=True,
+        help_text='Path relative to the process directory, this is the internal path in the container.',
+    )
+
+    absolute_path = models.CharField(
+        max_length=1024,
+        verbose_name='Absolute Path',
+        null=True, blank=True,
+        help_text='Absolute path to the process directory, this is the EXTERNAL path to the container.',
+    )
 
     status = models.CharField(
         max_length=10,
@@ -600,9 +613,10 @@ class Proccess(models.Model):
         choices=(('pending','Pending'),('running','Running'),('success','Success'),('error','Error'))
     )
 
-    praia = models.ForeignKey(
-        PraiaRun, on_delete=models.CASCADE, verbose_name='PRAIA',
-        null=True, blank=True, default=None
+    purged = models.BooleanField(
+        verbose_name='Purged',
+        default=False,
+        help_text='This flag true indicates that the marked process was removed and your data excluded.'
     )
 
     def __str__(self):

@@ -50,7 +50,7 @@ class CustomListAdmin(admin.ModelAdmin):
 
 @admin.register(Proccess)
 class ProccessAdmin(admin.ModelAdmin):
-    list_display = ('id', 'owner', 'start_time', 'finish_time', 'status',)
+    list_display = ('id', 'owner', 'start_time', 'finish_time', 'status', 'relative_path')
 
 @admin.register(Product)
 class ProccessAdmin(admin.ModelAdmin):

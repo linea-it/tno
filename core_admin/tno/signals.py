@@ -1,10 +1,14 @@
 
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
-from .models import CustomList
+from .models import CustomList, Proccess
 from .skybotoutput import FilterObjects
+from tno.proccess import ProccessManager
+import logging
+import os, errno
+from django.conf import settings
 
 @receiver(post_save, sender=User)
 def init_new_user(sender, instance, signal, created, **kwargs):
@@ -55,3 +59,39 @@ def create_custom_list_table(sender, instance, signal, created, **kwargs):
             instance.save()
             
             raise(e)
+
+
+@receiver(post_save, sender=Proccess)
+def create_proccess(sender, instance, signal, created, **kwargs):
+    """
+        Executada toda vez que um registro de processo e criado.
+        Cria os Diretorios necessarios, alterea a permissao,
+        altera o status do processo, e notifica o usuario.
+    """
+    logger = logging.getLogger("proccess")
+    if created:
+        logger.info("A new process was created with ID: [%s] Owner: [ %s ]" % (instance.id, instance.owner))
+
+        # primeira etapa criar um diretorio.
+
+        instance = ProccessManager().createProccessDirectory(instance=instance)
+
+        instance.status = 'running'
+        instance.save()
+        logger.info("Status changed to Running")
+
+        # TODO: Sending Notification.
+
+
+@receiver(pre_delete, sender=Proccess)
+def delete_proccess(sender, instance, using, **kwargs):
+    """
+        Executado Toda vez que um processo for deletado,
+    verifica se esta rodando no modo DEBUG se estiver executa o metodo purge.
+
+    :param sender:
+    :param instance:
+    :return:
+    """
+    if settings.DEBUG:
+        instance = ProccessManager().purge(instance)

@@ -11,3 +11,12 @@ DB_PORT=5432
 POSTGRES_USER=$DB_USER
 POSTGRES_PASSWORD=$DB_PASS
 POSTGRES_DB=$DB_NAME
+
+# Diretorios externos aos containers
+LOG_DIR=./log
+ARCHIVE_DIR=./archive
+PROCCESS_DIR=./archive/proccess
+CCD_IMAGES_DIR=./archive/ccd_images
+
+# Parsl maxThreads (https://parsl.readthedocs.io/en/stable/userguide/configuring.html)
+AVAILABLE_THREADS=100

@@ -15,6 +15,14 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# PROJECT PATHS
+# estes diretorios estao montados no container utilizando variaveis de ambiente, mas para o container sempre vao ser
+# os mesmos listados aqui.
+LOG_DIR = "/log"
+ARCHIVE_DIR = "/archive"
+PROCCESS_DIR = "/proccess"
+CCD_IMAGES_DIR = "/ccd_images"
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -48,7 +56,8 @@ INSTALLED_APPS = [
     # Project Apps
     'common',
     'tno',
-    'praia'
+    'praia',
+    'orbit'
 ]
 
 MIDDLEWARE = [
@@ -164,21 +173,72 @@ REST_FRAMEWORK = {
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.FileHandler',
-#             'filename': os.path.join(BASE_DIR, 'log/django.log'),
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#     },
-# }
+
+# Parsl
+PARSL_CONFIG = {
+    "sites": [
+        {
+            "site": "Threads",
+            "auth": {"channel": None},
+            "execution": {
+                "executor": "threads",
+                "provider": None,
+                "maxThreads": int(os.environ.get('AVAILABLE_THREADS', 4))
+            }
+        }
+    ],
+    "globals": {
+        "lazyErrors": True,
+    }
+}
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_DIR, 'django.log'),
+        },
+        'proccess': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'proccess.log'),
+            'formatter': 'standard',
+        },
+        'astrometry': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'astrometry.log'),
+            'formatter': 'standard',
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'proccess': {
+            'handlers': ['proccess'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'astrometry': {
+            'handlers': ['astrometry'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },        
+    },
+}

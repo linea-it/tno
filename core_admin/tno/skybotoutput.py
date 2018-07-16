@@ -243,6 +243,38 @@ class FilterObjects(DBBase):
 
         return rows, totalSize
 
+    def list_distinct_objects_by_table(self, tablename, schema=None, page=1, pageSize=None):
+
+        tbl = self.get_table(tablename, schema)
+
+        # TODO acrescentar mais colunas a query
+        tbl = self.get_table(tablename, schema).alias('a')
+        tbl_ccd = self.get_table_ccdimage().alias('b')
+
+        stm_join = tbl.join(tbl_ccd, tbl.c.pointing_id == tbl_ccd.c.pointing_id, isouter=True)
+
+        stm = select([tbl.c.name, tbl.c.num]).select_from(stm_join)
+
+        # Agrupamento
+        stm = stm.group_by(tbl.c.name, tbl.c.num)
+
+        # Ordenacao
+        stm = stm.order_by(tbl.c.name)
+
+        # Paginacao
+        stm = stm.limit(pageSize)
+
+        if page and pageSize:
+            offset = (int(page) * int(pageSize)) - int(pageSize)
+            stm = stm.offset(offset)
+
+        # Total de rows independente da paginacao
+        totalSize = self.stm_count(stm)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows, totalSize
+
     def count_distinct_objects(self, tablename, schema=None):
 
         tbl = self.get_table(tablename, schema).alias('a')
