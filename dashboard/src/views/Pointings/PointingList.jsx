@@ -235,7 +235,6 @@ class PointingList extends Component {
       totalSize,
       loading,
       search,
-      //record,
     } = this.state;
 
     const pagination = paginationFactory({
