@@ -80,6 +80,10 @@ class FilterPointings extends React.Component {
       dateObserInit: '',
       dateObserFinal: '',
       open: true,
+      validationState: null,
+      controlId: null,
+      errorMessage: null,
+      colorAlert: null,
     };
     return initialState;
   };
@@ -109,59 +113,96 @@ class FilterPointings extends React.Component {
     this.setState({ dateObserFinal: event.target.value });
   };
 
+  ErroDate = () => {
+    this.setState({ validationState: 'warning' });
+    this.setState({ controlId: 'formValidationWarning4' });
+    this.setState({
+      errorMessage: 'Start date can not be greater than end date',
+    });
+    this.setState({ colorAlert: 'warning' });
+    this.setState({ open: true });
+  };
+
+  ErroEmpty = () => {
+    this.setState({ validationState: 'error' });
+    this.setState({ controlId: 'formValidationerror4' });
+    this.setState({
+      errorMessage: 'Empty fields, please fill in some search field ',
+    });
+    this.setState({ colorAlert: 'danger' });
+    this.setState({ open: true });
+  };
+
+  ErroReset = () => {
+    this.setState({ validationState: 'null' });
+    this.setState({ controlId: 'null' });
+    this.setState({
+      errorMessage: 'null ',
+    });
+    this.setState({ colorAlert: 'null' });
+    this.setState({ open: false });
+  };
+
   onClear = () => {
     this.setState(this.getInitialState());
     this.setState({ open: false });
   };
 
   handlerSubmitFilter = () => {
+    const dt1 = this.state.dateObserInit;
+    const dt2 = this.state.dateObserFinal;
+    const comp1 = new Date(dt1);
+    const comp2 = new Date(dt2);
+
     if (
       this.state.expTime == '' &&
       this.state.band == '' &&
       this.state.dateObserInit == '' &&
       this.state.dateObserFinal == ''
     ) {
-      this.setState({ open: true });
+      this.ErroEmpty();
     } else {
-      this.setState({ open: false });
-      // passa para o parent por props
-      const filter = [];
+      if (comp1 > comp2) {
+        this.ErroDate();
+      } else {
+        this.setState({ validationState: 'null' });
+        this.setState({ open: false });
+        // passa para o parent por props
+        const filter = [];
 
-      if (this.state.band) {
-        filter.push({ property: 'band__in', value: this.state.band });
+        if (this.state.band) {
+          filter.push({ property: 'band__in', value: this.state.band });
+        }
+
+        if (this.state.expTime) {
+          filter.push({
+            property: 'exptime__range',
+            value: this.state.expTime.value,
+          });
+        }
+
+        if (this.state.dateObserFinal && this.state.dateObserFinal) {
+          filter.push({
+            property: 'date_obs__range',
+            value: this.state.dateObserInit + ',' + this.state.dateObserFinal,
+          });
+        }
+
+        if (this.state.dateObserInit && !this.state.dateObserFinal) {
+          filter.push({
+            property: 'date_obs__gt',
+            value: this.state.dateObserInit,
+          });
+        }
+
+        if (!this.state.dateObserInit && this.state.dateObserFinal) {
+          filter.push({
+            property: 'date_obs__lt',
+            value: this.state.dateObserFinal,
+          });
+        }
+        this.props.onFilter(filter);
       }
-
-      if (this.state.expTime) {
-        filter.push({
-          property: 'exptime__range',
-          value: this.state.expTime.value,
-        });
-      }
-
-      if (this.state.dateObserFinal && this.state.dateObserFinal) {
-        filter.push({
-          property: 'date_obs__range',
-          value: this.state.dateObserInit + ',' + this.state.dateObserFinal,
-        });
-      }
-
-      if (this.state.dateObserInit && !this.state.dateObserFinal) {
-        filter.push({
-          property: 'date_obs__gt',
-          value: this.state.dateObserInit,
-        });
-      }
-
-      if (!this.state.dateObserInit && this.state.dateObserFinal) {
-        filter.push({
-          property: 'date_obs__lt',
-          value: this.state.dateObserFinal,
-        });
-      }
-      //console.log('eu sou o filter da filterPointings: %o', filter);
-      this.props.onFilter(filter);
-
-      // console.log('Onfilter o%', this.state.band);
     }
 
     this.setState({ state: this.getInitialState });
@@ -170,6 +211,7 @@ class FilterPointings extends React.Component {
   onClose = () => {
     this.props.onHide();
     this.setState({ open: false });
+    this.ErroReset();
   };
 
   render() {
@@ -187,7 +229,10 @@ class FilterPointings extends React.Component {
               <Grid fluid>
                 <Row>
                   <Col md={12}>
-                    <FormGroup controlId="formControlsSelect">
+                    <FormGroup
+                      controlId="formValidationError2"
+                      validationState={this.state.validationState}
+                    >
                       <ControlLabel>Range of Expose Time</ControlLabel>
                       <Select
                         onChange={this.handleSelectExpTime}
@@ -203,29 +248,34 @@ class FilterPointings extends React.Component {
               <Grid fluid>
                 <Row>
                   <Col md={6}>
-                    <ControlLabel>Date de Observation Initial</ControlLabel>
-                    <FormGroup>
-                      <input
+                    <FormGroup
+                      controlId="formValidationError2"
+                      validationState={this.state.validationState}
+                    >
+                      <ControlLabel>Date de Observation Initial</ControlLabel>
+
+                      <FormControl
                         className="form-control"
                         type="date"
                         value={this.state.dateObserInit}
                         onChange={this.handlerInputDateInit}
                         format="yyyy/mm/dd"
                       />
-                      <FormControl type="date" />
-                      <p>{this.state.dateObserInit}</p>
                     </FormGroup>
                   </Col>
                   <Col md={6}>
-                    <ControlLabel>Date de Observation Final</ControlLabel>
-                    <FormGroup>
-                      <input
+                    <FormGroup
+                      controlId={this.state.controlId}
+                      validationState={this.state.validationState}
+                    >
+                      <ControlLabel>Date de Observation Final</ControlLabel>
+
+                      <FormControl
                         className="form-control"
                         type="date"
                         value={this.state.dateObserFinal}
                         onChange={this.handlerInputDateFinal}
                       />
-                      <p>{this.state.dateObserFinal}</p>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -234,8 +284,12 @@ class FilterPointings extends React.Component {
               <Grid fluid>
                 <Row>
                   <Col md={12}>
-                    <FormGroup controlId="formControlsSelect">
+                    <FormGroup
+                      controlId={this.state.controlId}
+                      validationState={this.state.validationState}
+                    >
                       <ControlLabel>Quantity of ccds per band</ControlLabel>
+
                       <Select
                         disabled={false}
                         multi
@@ -255,9 +309,8 @@ class FilterPointings extends React.Component {
               <Row>
                 <Collapse timeout="100" in={this.state.open}>
                   <div>
-                    <Alert bsStyle="danger">
-                      <strong>No values ​​found!</strong> Check some filter to
-                      perform a search
+                    <Alert bsStyle={this.state.colorAlert}>
+                      {this.state.errorMessage}
                     </Alert>
                   </div>
                 </Collapse>

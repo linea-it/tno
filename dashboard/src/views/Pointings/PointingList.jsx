@@ -225,15 +225,10 @@ class PointingList extends Component {
 
   // onClose = () => {
   //   this.setState({ show: false });
-  // this.fetchData(
-  //   this.state.page,
-  //   this.state.sizePerPage,
-  //   this.state.search,
-  //   filter
   // };
 
   onFilter = filter => {
-    console.log('sou filter', filter);
+   // console.log('sou filter', filter);
     this.setState(
       { filtered: filter },
       this.fetchData(
