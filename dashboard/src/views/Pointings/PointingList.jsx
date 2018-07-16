@@ -174,22 +174,13 @@ class PointingList extends Component {
   };
 
   fetchData = (page, sizePerPage, search, Arrayfilters = []) => {
-    // console.log(
-    //   'fetchData(%o, %o, %o, %o)',
-    //   page,
-    //   sizePerPage,
-    //   search,
-    //   filters,
-    // );
-
+    
     this.setState({ loading: true });
-    //console.log('valor do filtro recebido pelo onFilter %o', filters);
 
     const params = {
       pageSize: sizePerPage,
       filters: [],
     };
-    // console.log('este é o valor de params.filters %o', params);
 
     if (search) {
       params.search = search;
@@ -202,13 +193,10 @@ class PointingList extends Component {
     } else {
       params.filters = Arrayfilters;
     }
-    //.log('RESULTADO DE PARAMS.FILTER:', params);
 
     this.api.getPointingLists(params).then(res => {
       const r = res.data;
-
-      console.log(res.data);
-
+      
       this.setState({
         data: r.results,
         totalSize: r.count,
@@ -223,12 +211,7 @@ class PointingList extends Component {
     this.setState({ show: true, record: row });
   };
 
-  // onClose = () => {
-  //   this.setState({ show: false });
-  // };
-
   onFilter = filter => {
-   // console.log('sou filter', filter);
     this.setState(
       { filtered: filter },
       this.fetchData(
@@ -245,8 +228,6 @@ class PointingList extends Component {
   };
 
   render() {
-    console.log('Este é o valor do filters: %o', this.state.filtered);
-
     const {
       data,
       sizePerPage,
@@ -323,11 +304,6 @@ class PointingList extends Component {
             })}
           />
         </div>
-        {/* <DetailsPointings
-          show={this.state.show}
-          onHide={this.onClose}
-          record={record}
-        /> */}
         <FilterPointings
           onFilter={this.onFilter}
           show={this.state.show}
