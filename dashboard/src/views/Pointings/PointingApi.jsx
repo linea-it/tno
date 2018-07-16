@@ -4,14 +4,22 @@ class PointingApi {
   constructor() {
     this.api = process.env.REACT_APP_API;
   }
+  getPointingLists = ({ page, pageSize, search, filters }) => {
 
-  getPointingLists = ({ page, pageSize, search }) =>
-    axios.get(`${this.api}/pointing/`, {
-      params: { page: page, pageSize: pageSize, search: search },
+    const params = {
+      page: page,
+      pageSize: pageSize,
+      search: search,
+    };
+
+    filters.forEach(function(el) {
+      params[el.property] = el.value;
     });
 
-  getPointingRecord = ({ id }) =>
-    axios.get(`${this.api}/pointing/${id}/`);
+    return axios.get(`${this.api}/pointing/`, { params: params });
+  };
+
+  getPointingRecord = ({ id }) => axios.get(`${this.api}/pointing/${id}/`);
 }
 
 export default PointingApi;

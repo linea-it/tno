@@ -7,6 +7,7 @@ import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
 import SkybotApi from './SkybotApi';
 import SkybotList from './SkybotList';
 import { StatsCard } from 'components/StatsCard/StatsCard.jsx';
+import FilterSkybot from './FilterSkybot';
 import Card from 'components/Card/Card.jsx';
 
 class SolarSystemsPanel extends Component {
@@ -80,6 +81,7 @@ class SolarSystemsPanel extends Component {
             </Col>
           </Row>
         </Grid>
+        <FilterSkybot />
       </div>
     );
   }

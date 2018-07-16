@@ -54,7 +54,7 @@ class PointingsPanel extends Component {
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-server text-success" />}
-                statsText="ESTATISTICAS"
+                statsText="ESTATISTICAS ESSA AQUI"
                 statsValue=""
                 statsIcon={<i className="fa fa-hdd-o" />}
                 statsIconText=""
