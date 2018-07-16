@@ -5,7 +5,7 @@ import {
   InputGroup,
   ButtonToolbar,
 } from 'react-bootstrap';
-
+import FilterSkybot from './FilterSkybot';
 import { withRouter } from 'react-router-dom';
 import Button from 'elements/CustomButton/CustomButton.jsx';
 import SkybotApi from './SkybotApi';
@@ -95,6 +95,7 @@ class SkybotList extends Component {
       loading: false,
       search: '',
       record: '',
+      show: false,
     };
   }
 
@@ -167,12 +168,13 @@ class SkybotList extends Component {
     });
   };
 
-  onClose = () => {
-    this.setState({ show: false });
+  showDetail = () => {
+    this.setState({ show: true });
   };
 
-  showDetail = (index, row) => {
-    this.setState({ record: row });
+  closeCreate = () => {
+    console.log("Entrei aqui");
+    this.setState({ show: false });
   };
 
   render() {
@@ -210,6 +212,10 @@ class SkybotList extends Component {
                 />
 
                 <InputGroup.Button>
+                  <Button onClick={this.showDetail}>Filter</Button>
+                </InputGroup.Button>
+
+                <InputGroup.Button>
                   <Button onClick={this.handleSearch}>Search</Button>
                 </InputGroup.Button>
 
@@ -242,6 +248,7 @@ class SkybotList extends Component {
             })}
           />
         </div>
+        <FilterSkybot show={this.state.show} onHide={this.closeCreate} />
       </div>
     );
   }

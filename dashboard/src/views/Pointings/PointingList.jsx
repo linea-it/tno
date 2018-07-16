@@ -11,7 +11,7 @@ import Button from 'elements/CustomButton/CustomButton.jsx';
 import PointingApi from './PointingApi';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
-import DetailsPointings from './DetailsPointings';
+import FilterPointings from './FilterPointings';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
@@ -113,6 +113,7 @@ class PointingList extends Component {
   static propTypes = {
     history: PropTypes.any.isRequired,
     record: PropTypes.object,
+    filters: PropTypes.array,
   };
 
   get initialState() {
@@ -125,6 +126,9 @@ class PointingList extends Component {
       loading: false,
       search: '',
       record: {},
+      show: false,
+      filtered: null,
+      searchPattern: {},
     };
   }
 
@@ -172,18 +176,24 @@ class PointingList extends Component {
     );
   };
 
-  fetchData = (page, sizePerPage, search) => {
-    // console.log('fetchData(%o, %o, %o)', page, pageSize, search);
+  fetchData = (page, sizePerPage, search, Arrayfilters = []) => {
     this.setState({ loading: true });
 
     const params = {
       pageSize: sizePerPage,
+      filters: [],
     };
 
     if (search) {
       params.search = search;
     } else {
       params.page = page;
+    }
+
+    if (Object.keys(Arrayfilters).length === 0) {
+      this.setState(this.initialState);
+    } else {
+      params.filters = Arrayfilters;
     }
 
     this.api.getPointingLists(params).then(res => {
@@ -203,20 +213,24 @@ class PointingList extends Component {
     this.setState({ show: true, record: row });
   };
 
-  onClose = () => {
+  onFilter = filter => {
+    this.setState(
+      { filtered: filter },
+      this.fetchData(
+        this.state.page,
+        this.state.sizePerPage,
+        this.state.search,
+        filter
+      )
+    );
+  };
+
+  closeCreate = () => {
     this.setState({ show: false });
   };
 
   render() {
-    const {
-      data,
-      sizePerPage,
-      page,
-      totalSize,
-      loading,
-      search,
-      record,
-    } = this.state;
+    const { data, sizePerPage, page, totalSize, loading, search } = this.state;
 
     const pagination = paginationFactory({
       page: page,
@@ -240,6 +254,9 @@ class PointingList extends Component {
           <ButtonToolbar>
             <FormGroup>
               <InputGroup>
+                <InputGroup.Button>
+                  <Button onClick={this.showDetail}> Filters</Button>
+                </InputGroup.Button>
                 <FormControl
                   type="text"
                   placeholder="Search By expnum, filename"
@@ -247,7 +264,6 @@ class PointingList extends Component {
                   onChange={this.onChangeSearch}
                   onKeyPress={this.onKeyPress}
                 />
-
                 <InputGroup.Button>
                   <Button onClick={this.handleSearch}>Search</Button>
                 </InputGroup.Button>
@@ -282,10 +298,10 @@ class PointingList extends Component {
             })}
           />
         </div>
-        <DetailsPointings
+        <FilterPointings
+          onFilter={this.onFilter}
           show={this.state.show}
-          onHide={this.onClose}
-          record={record}
+          onHide={this.closeCreate}
         />
       </div>
     );

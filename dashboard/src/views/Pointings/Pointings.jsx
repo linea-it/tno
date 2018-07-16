@@ -99,9 +99,9 @@ class PointingsPanel extends Component {
           <Row>
             <Col lg={3} md={1} sm={6}>
               <StatsCard
-                bigIcon={<i className="fa fa-bar-chart" />}
-                statsText=""
-                statsValue="3232"
+                bigIcon={<i className="pe-7s-server text-success" />}
+                statsText="ESTATISTICAS ESSA AQUI"
+                statsValue=""
                 statsIcon={<i className="fa fa-hdd-o" />}
                 statsIconText=""
               />

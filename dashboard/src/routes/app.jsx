@@ -15,8 +15,6 @@ import Icons from 'views/Icons/Icons';
 import Notifications from 'views/Notifications/Notifications';
 import SkybotDetail from '../views/SolarSystems/SkybotDetail';
 import PointingsDetail from '../views/Pointings/PointingsDetail';
-import PropertiesPointing from '../views/Pointings/PropertiesPointing';
-
 
 const appRoutes = [
   {
