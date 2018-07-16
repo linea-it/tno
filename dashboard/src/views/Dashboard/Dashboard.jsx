@@ -123,19 +123,7 @@ class Dashboard extends Component {
                 category="All products including Taxes"
                 stats="Data information certified"
                 statsIcon="fa fa-check"
-                content={
-                  <div className="ct-chart">
-                    <ChartistGraph
-                      data={dataBar}
-                      type="Bar"
-                      options={optionsBar}
-                      responsiveOptions={responsiveBar}
-                    />
-                  </div>
-                }
-                legend={
-                  <div className="legend">{this.createLegend(legendBar)}</div>
-                }
+                content={<div className="ct-chart" />}
               />
             </Col>
 

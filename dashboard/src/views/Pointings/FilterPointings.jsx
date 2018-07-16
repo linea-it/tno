@@ -33,6 +33,10 @@ const options = {
       label: 'i',
     },
     {
+      value: 'z',
+      label: 'z',
+    },
+    {
       value: 'Y',
       label: 'Y',
     },
@@ -220,7 +224,7 @@ class FilterPointings extends React.Component {
     return (
       <div className="static-modal">
         <Modal show={show} onHide={onHide}>
-          <Modal.Header>
+          <Modal.Header closeButton>
             <Modal.Title>Filter Pointings</Modal.Title>
           </Modal.Header>
 
@@ -233,7 +237,7 @@ class FilterPointings extends React.Component {
                       controlId="formValidationError2"
                       validationState={this.state.validationState}
                     >
-                      <ControlLabel>Range of Expose Time</ControlLabel>
+                      <ControlLabel>Expose Time</ControlLabel>
                       <Select
                         onChange={this.handleSelectExpTime}
                         options={options.valueTimes}
@@ -288,14 +292,14 @@ class FilterPointings extends React.Component {
                       controlId={this.state.controlId}
                       validationState={this.state.validationState}
                     >
-                      <ControlLabel>Quantity of ccds per band</ControlLabel>
+                      <ControlLabel>Band</ControlLabel>
 
                       <Select
                         disabled={false}
                         multi
                         onChange={this.handleSelectBand}
                         options={options.band}
-                        placeholder="Select your object table(s)"
+                        placeholder="Select one or more values of band"
                         removeSelected={true}
                         simpleValue
                         value={this.state.band}
@@ -320,7 +324,7 @@ class FilterPointings extends React.Component {
 
           <Modal.Footer>
             <Button onClick={this.handlerSubmitFilter}>Filter</Button>
-            <Button onClick={this.onClear}>Clear Inputs</Button>
+            <Button onClick={this.onClear}>Clear</Button>
             <Button onClick={this.onClose}>Close</Button>
           </Modal.Footer>
         </Modal>
