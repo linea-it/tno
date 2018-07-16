@@ -137,7 +137,7 @@ const appRoutes = [
     name: 'Icons',
     icon: 'pe-7s-science',
     component: Icons,
-    hidden: true,
+    hidden: false,
   },
   {
     path: '/notifications',

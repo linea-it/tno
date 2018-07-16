@@ -2,15 +2,13 @@ import React, { Component } from 'react';
 import { Grid, Row, Col, Button } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import Card from 'components/Card/Card.jsx';
-import Properties from './PropertiesSkybot';
 import Observation from './Observation';
-import OrbitalParameters from './OrbitalParameters';
 import PropTypes from 'prop-types';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 
 import SkybotApi from './SkybotApi';
-import PropertiesSkybot from './PropertiesSkybot';
+import PropertiesSkybot from './Properties';
 
 class SkybotDetail extends Component {
   state = this.initialState;

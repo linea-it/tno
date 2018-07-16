@@ -41,25 +41,26 @@ class PointingsPanel extends Component {
           <Row>
             <Col lg={3} md={1} sm={6}>
               <StatsCard
-                bigIcon={<i className="fa fa-table text-danger" />}
-                statsText="Amount CCDs per page"
+                bigIcon={<i className="pe-7s-graph2 text-success" />}
+                statsText="CCDs"
                 statsValue={stats.status.totalSizeTable}
                 statsIcon={<i className="fa fa-hdd-o" />}
-                statsIconText=""
+                statsIconText="Total quantity of CCDs"
               />
             </Col>
 
-            <Col lg={3} mdOffset={1} sm={6}>
+            <Col lg={3} md={1} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-server text-success" />}
                 statsText="Bits Size"
                 statsValue={[stats.status.qtdBits, ' bits']}
                 statsIcon={<i className="fa fa-hdd-o" />}
-                statsIconText=""
+                statsIconText="Number of CCDs for each band (u, g, r, i, z)"
               />
             </Col>
+          </Row>
 
-            {/* <Col lg={3} sm={6} md={8}>
+          {/* <Col lg={3} sm={6} md={8}>
               <Card
                 title="Stats Images"
                 category=""
@@ -95,7 +96,8 @@ class PointingsPanel extends Component {
                 }
               />
             </Col> */}
-            <Col lg={3} mdOffset={1} sm={6}>
+          <Row>
+            <Col lg={3} md={1} sm={6}>
               <StatsCard
                 bigIcon={<i className="fa fa-bar-chart" />}
                 statsText=""
@@ -113,7 +115,7 @@ class PointingsPanel extends Component {
                 statsIconText=""
               />
             </Col> */}
-            <Col lg={3} mdOffset={3} sm={6}>
+            <Col lg={3} md={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="fa fa-cloud-download" />}
                 statsText="Amount already downloaded"
@@ -122,17 +124,11 @@ class PointingsPanel extends Component {
                 statsIconText=""
               />
             </Col>
-            <Col lg={3} md={2} sm={6}>
-              <StatsCard
-                bigIcon={<i className="fa fa-file-image-o" />}
-                statsText="Size total of images downloaded"
-                statsValue="2102"
-                statsIcon={<i className="fa fa-hdd-o" />}
-                statsIconText=""
-              />
-            </Col>
           </Row>
           <Row>
+            {/* <Col lg={3} md={3} sm={6}>
+              <Card content={<p> to aqui </p>} />
+            </Col> */}
             <Col md={12}>
               <Card
                 title="Pointings"
