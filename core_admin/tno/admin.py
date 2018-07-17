@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Pointing, SkybotOutput, CcdImage, CustomList, Proccess, Product, Observation, OrbitalParameter
+from .models import Pointing, SkybotOutput, CcdImage, CustomList, Proccess
 @admin.register(Pointing)
 class PointingAdmin(admin.ModelAdmin):
     list_display = ('id', 'date_obs', 'expnum', 'ccdnum', 'band', 'filename',)
@@ -29,17 +29,6 @@ class CcdImageAdmin(admin.ModelAdmin):
     # Troca o tipo de imput de Select para um text field com botao de busca
     raw_id_fields = ('pointing',)
 
-@admin.register(Observation)
-class ObservationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'source', 'observations', 'filename', 'download_start_time',
-        'download_finish_time', 'file_size', 'external_url')
-    search_fields = ('name', 'filename', 'external_url')
-
-@admin.register(OrbitalParameter)
-class OrbitalParameterAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'source', 'filename', 'download_start_time',
-        'download_finish_time', 'file_size', 'external_url')
-    search_fields = ('name', 'filename', 'external_url')
 
 @admin.register(CustomList)
 class CustomListAdmin(admin.ModelAdmin):
@@ -52,6 +41,4 @@ class CustomListAdmin(admin.ModelAdmin):
 class ProccessAdmin(admin.ModelAdmin):
     list_display = ('id', 'owner', 'start_time', 'finish_time', 'status', 'relative_path')
 
-@admin.register(Product)
-class ProccessAdmin(admin.ModelAdmin):
-    list_display = ('id', 'proccess', 'product_type', 'database', 'schema', 'tablename', 'filename')
+

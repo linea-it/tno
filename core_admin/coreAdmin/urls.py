@@ -22,22 +22,23 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
 from common import views as common_views
 
-from tno.views import UserViewSet, PointingViewSet, SkybotOutputViewSet, ObjectClassViewSet, CustomListViewSet, ProccessViewSet, ProductViewSet, ObservationViewSet, OrbitalParameterViewSet
+from tno.views import UserViewSet, PointingViewSet, SkybotOutputViewSet, ObjectClassViewSet, CustomListViewSet, \
+    ProccessViewSet
 from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet
+
+# from orbit.views import  ObservationViewSet, OrbitalParameterViewSet
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'pointing', PointingViewSet)
 router.register(r'skybotoutput', SkybotOutputViewSet)
-router.register(r'observation', ObservationViewSet)
-router.register(r'orbital_parameter', OrbitalParameterViewSet)
-# router.register(r'objectclass', ObjectClassViewSet)
+# router.register(r'observation', ObservationViewSet)
+# router.register(r'orbital_parameter', OrbitalParameterViewSet)
+
 router.register(r'customlist', CustomListViewSet)
 router.register(r'proccess', ProccessViewSet)
-router.register(r'product', ProductViewSet)
 router.register(r'praia_run', PraiaRunViewSet)
 router.register(r'praia_configuration', PraiaConfigurationViewSet)
-
 
 urlpatterns = router.urls
 
