@@ -5,10 +5,17 @@ class PraiaApi {
     this.api = process.env.REACT_APP_API;
   }
 
-  getPraiaRuns = ({ page, pageSize }) =>
-    axios.get(`${this.api}/praia_run/`, {
-      params: { page: page, pageSize: pageSize },
+  getPraiaRuns = ({ page, pageSize, ordering, filters = [] }) => {
+    const params = { page: page, pageSize: pageSize, ordering: ordering };
+    filters.forEach(element => {
+      console.log(element);
+      params[element.property] = element.value;
     });
+
+    return axios.get(`${this.api}/praia_run/`, {
+      params: params,
+    });
+  };
 
   getConfigurations = ({ page, pageSize, search, ordering }) =>
     axios.get(`${this.api}/praia_configuration/`, {

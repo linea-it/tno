@@ -7,6 +7,13 @@ ENV GUNICORN_MODULE=coreAdmin.wsgi
 ENV GUNICORN_CALLABLE=application
 ENV APP_PATH=/app
 
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y  \
+                expect \
+                telnet \
+                ftp \
+            && rm -rf /var/lib/apt/lists/*
+
 RUN mkdir $APP_PATH
 
 WORKDIR $APP_PATH

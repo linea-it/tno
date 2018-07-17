@@ -1,5 +1,7 @@
 # FOR DEVELOPMENT WITH docker-compose
 
+EMAIL_NOTIFICATIONS=
+
 # Database Settings for Django Backend "CoreAdmin"
 DB_NAME=postgres
 DB_USER=postgres
@@ -19,4 +21,4 @@ PROCCESS_DIR=./archive/proccess
 CCD_IMAGES_DIR=./archive/ccd_images
 
 # Parsl maxThreads (https://parsl.readthedocs.io/en/stable/userguide/configuring.html)
-AVAILABLE_THREADS=100
+AVAILABLE_THREADS=20

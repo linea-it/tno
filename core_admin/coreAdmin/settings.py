@@ -15,6 +15,9 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Diretorio com scripts externos.
+BIN_DIR = os.path.join(BASE_DIR, 'bin')
+
 # PROJECT PATHS
 # estes diretorios estao montados no container utilizando variaveis de ambiente, mas para o container sempre vao ser
 # os mesmos listados aqui.
@@ -22,6 +25,25 @@ LOG_DIR = "/log"
 ARCHIVE_DIR = "/archive"
 PROCCESS_DIR = "/proccess"
 CCD_IMAGES_DIR = "/ccd_images"
+
+# Sub diretorios que ficam dentro de /archive
+
+OBSERVATIONS_DIR = os.path.join(ARCHIVE_DIR, "observations")
+if not os.path.exists(OBSERVATIONS_DIR):
+    os.mkdir(OBSERVATIONS_DIR)
+
+ORBITAL_PARAMETERS_DIR = os.path.join(ARCHIVE_DIR, "orbital_parameters")
+if not os.path.exists(ORBITAL_PARAMETERS_DIR):
+    os.mkdir(ORBITAL_PARAMETERS_DIR)
+
+BSP_JPL_DIR = os.path.join(ARCHIVE_DIR, "bsp_jpl")
+if not os.path.exists(BSP_JPL_DIR):
+    os.mkdir(BSP_JPL_DIR)
+
+
+# Emails
+# Notifications Email
+EMAIL_NOTIFICATIONS = os.environ.get('EMAIL_NOTIFICATIONS', None)
 
 
 # Quick-start development settings - unsuitable for production
