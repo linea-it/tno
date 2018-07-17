@@ -9,10 +9,50 @@ import os
 import csv
 from datetime import datetime
 import humanize
+from orbit.bsp_jpl import BSPJPL
 
 
 @api_view(['GET'])
 def teste(request):
+    if request.method == 'GET':
+
+        # TODO esta parte do input deve ser separado, na submissao da rodada.
+        # TODO o path deve ser do processo
+        archive = settings.ARCHIVE_DIR
+        output_path = os.path.join(archive, 'teste')
+        input_file = os.path.join(output_path, 'objects.csv')
+
+        # Id da Custom List
+        id = request.GET.get("custom_list", None)
+        if id is None:
+            raise Exception("is necessary the custom_list parameter")
+
+        # print("Custom List ID: %s" % id)
+
+        # Retrieve Custom List
+        customlist = CustomList.objects.get(pk=id, status='success')
+
+        # Recupera os objetos da tabela.
+        rows, count = FilterObjects().list_distinct_objects_by_table(
+            customlist.tablename, customlist.schema, pageSize=5)
+
+        if count > 0:
+            # Escrever o arquivo de input no diretorio de destino
+            with open(input_file, 'w') as csvfile:
+                fieldnames = ['name', 'num']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';', extrasaction='ignore')
+
+                writer.writeheader()
+                writer.writerows(rows)
+
+        BSPJPL().run(input_file, output_path)
+
+        return Response(dict({'status': "success"}))
+
+
+# TODO esse bloco de codigo vai sair da view e ir para uma execucao do celery
+@api_view(['GET'])
+def downloadOrbitalParameters(request):
     if request.method == 'GET':
 
         total_time0 = datetime.now()
@@ -33,7 +73,7 @@ def teste(request):
 
         # Recupera os objetos da tabela.
         rows, count = FilterObjects().list_distinct_objects_by_table(
-            customlist.tablename, customlist.schema)
+            customlist.tablename, customlist.schema, pageSize=10)
 
         if count > 0:
             # Escrever o arquivo de input no diretorio de destino

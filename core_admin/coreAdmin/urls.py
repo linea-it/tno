@@ -45,4 +45,5 @@ urlpatterns += [
     path('admin/', admin.site.urls),
     url(r'^obtain-auth-token/$', csrf_exempt(obtain_auth_token)),
     url(r'^teste/', common_views.teste),
+    url(r'^teste2/', common_views.downloadOrbitalParameters),
 ]

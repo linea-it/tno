@@ -30,7 +30,7 @@ class PointingsPanel extends Component {
       id: null,
       data: [],
       page: 1,
-      totalSize: 0,
+      totalSize: 8137,
       sizePerPage: 10,
       loading: false,
       status: {

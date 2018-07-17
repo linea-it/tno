@@ -17,16 +17,12 @@ import Select from 'react-select';
 const options = {
   band: [
     {
-      value: 'u',
-      label: 'u',
-    },
+      value: 'g',
+      label: 'g',
+    },    
     {
       value: 'r',
       label: 'r',
-    },
-    {
-      value: 'g',
-      label: 'g',
     },
     {
       value: 'i',
@@ -40,6 +36,10 @@ const options = {
       value: 'Y',
       label: 'Y',
     },
+    {
+      value: 'u',
+      label: 'u',
+    },    
   ],
 
   valueTimes: [

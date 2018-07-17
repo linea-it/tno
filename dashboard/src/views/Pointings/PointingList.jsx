@@ -197,7 +197,6 @@ class PointingList extends Component {
 
     this.api.getPointingLists(params).then(res => {
       const r = res.data;
-      console.log(r.count)
 
       this.setState({
         data: r.results,
