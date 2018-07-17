@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import Card from 'components/Card/Card.jsx';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import plotPointings from '/home/george/tno_testing/dashboard/src/assets/img/plotPointings.png';
+import plotPointings from 'assets/img/plotPointings.png';
 
 class PointingsPanel extends Component {
   state = this.initialState;
@@ -52,6 +52,23 @@ class PointingsPanel extends Component {
     };
   }
 
+  componentDidMount() {
+    this.api.getPointingCount().then(res => {
+      const r = res.data;
+      this.setState({
+        totalSize: r.count,
+      });
+    });
+
+    // this.api.getPointingCount().then(res => {
+    //   const r = res.data;
+    //   this.setState({
+    //     band_u: r.band_u,
+    //   });
+
+    //   // this.setState({ record: record });
+    // });
+  }
   render() {
     return (
       <div className="content">

@@ -19,6 +19,10 @@ class PointingApi {
   };
 
   getPointingRecord = ({ id }) => axios.get(`${this.api}/pointing/${id}/`);
+
+  getPointingCount = () => axios.get(`${this.api}/pointing/`);
+  // getPointingBandU = () => axios.get(`${this.api}/pointing/band_in=u`);
+
 }
 
 export default PointingApi;
