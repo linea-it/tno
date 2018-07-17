@@ -5,7 +5,6 @@ class PointingApi {
     this.api = process.env.REACT_APP_API;
   }
   getPointingLists = ({ page, pageSize, search, filters }) => {
-
     const params = {
       page: page,
       pageSize: pageSize,
@@ -15,7 +14,7 @@ class PointingApi {
     filters.forEach(function(el) {
       params[el.property] = el.value;
     });
-
+    //console.log(params);
     return axios.get(`${this.api}/pointing/`, { params: params });
   };
 

@@ -17,25 +17,29 @@ import Select from 'react-select';
 const options = {
   band: [
     {
-      value: 'u',
-      label: 'u',
-    },
+      value: 'g',
+      label: 'g',
+    },    
     {
       value: 'r',
       label: 'r',
-    },
-    {
-      value: 'g',
-      label: 'g',
     },
     {
       value: 'i',
       label: 'i',
     },
     {
+      value: 'z',
+      label: 'z',
+    },
+    {
       value: 'Y',
       label: 'Y',
     },
+    {
+      value: 'u',
+      label: 'u',
+    },    
   ],
 
   valueTimes: [
@@ -44,20 +48,12 @@ const options = {
       label: '0 - 100',
     },
     {
-      value: '100, 150',
+      value: '100, 200',
       label: '100 - 200',
     },
     {
-      value: '150, 200',
-      label: '150 - 200',
-    },
-    {
-      value: '200 , 250',
-      label: '200 - 250',
-    },
-    {
-      value: '250, 300',
-      label: '250 - 300',
+      value: '200, 300',
+      label: '200 - 300',
     },
     {
       value: '300, 400',
@@ -80,7 +76,7 @@ class FilterPointings extends React.Component {
       dateObserInit: '',
       dateObserFinal: '',
       open: true,
-      validationState: null,
+      validation: null,
       controlId: null,
       errorMessage: null,
       colorAlert: null,
@@ -114,7 +110,7 @@ class FilterPointings extends React.Component {
   };
 
   ErroDate = () => {
-    this.setState({ validationState: 'warning' });
+    this.setState({ validation: 'warning' });
     this.setState({ controlId: 'formValidationWarning4' });
     this.setState({
       errorMessage: 'Start date can not be greater than end date',
@@ -124,7 +120,7 @@ class FilterPointings extends React.Component {
   };
 
   ErroEmpty = () => {
-    this.setState({ validationState: 'error' });
+    this.setState({ validation: 'error' });
     this.setState({ controlId: 'formValidationerror4' });
     this.setState({
       errorMessage: 'Empty fields, please fill in some search field ',
@@ -134,12 +130,12 @@ class FilterPointings extends React.Component {
   };
 
   ErroReset = () => {
-    this.setState({ validationState: 'null' });
-    this.setState({ controlId: 'null' });
+    this.setState({ validation: null });
+    this.setState({ controlId: null });
     this.setState({
-      errorMessage: 'null ',
+      errorMessage: null,
     });
-    this.setState({ colorAlert: 'null' });
+    this.setState({ colorAlert: null });
     this.setState({ open: false });
   };
 
@@ -155,17 +151,17 @@ class FilterPointings extends React.Component {
     const comp2 = new Date(dt2);
 
     if (
-      this.state.expTime == '' &&
-      this.state.band == '' &&
-      this.state.dateObserInit == '' &&
-      this.state.dateObserFinal == ''
+      this.state.expTime === '' &&
+      this.state.band === '' &&
+      this.state.dateObserInit === '' &&
+      this.state.dateObserFinal === ''
     ) {
       this.ErroEmpty();
     } else {
       if (comp1 > comp2) {
         this.ErroDate();
       } else {
-        this.setState({ validationState: 'null' });
+        this.setState({ validation: null });
         this.setState({ open: false });
         // passa para o parent por props
         const filter = [];
@@ -220,7 +216,7 @@ class FilterPointings extends React.Component {
     return (
       <div className="static-modal">
         <Modal show={show} onHide={onHide}>
-          <Modal.Header>
+          <Modal.Header closeButton>
             <Modal.Title>Filter Pointings</Modal.Title>
           </Modal.Header>
 
@@ -231,9 +227,9 @@ class FilterPointings extends React.Component {
                   <Col md={12}>
                     <FormGroup
                       controlId="formValidationError2"
-                      validationState={this.state.validationState}
+                      validationState={this.state.validation}
                     >
-                      <ControlLabel>Range of Expose Time</ControlLabel>
+                      <ControlLabel>Expose Time</ControlLabel>
                       <Select
                         onChange={this.handleSelectExpTime}
                         options={options.valueTimes}
@@ -250,7 +246,7 @@ class FilterPointings extends React.Component {
                   <Col md={6}>
                     <FormGroup
                       controlId="formValidationError2"
-                      validationState={this.state.validationState}
+                      validationState={this.state.validation}
                     >
                       <ControlLabel>Date de Observation Initial</ControlLabel>
 
@@ -266,7 +262,7 @@ class FilterPointings extends React.Component {
                   <Col md={6}>
                     <FormGroup
                       controlId={this.state.controlId}
-                      validationState={this.state.validationState}
+                      validationState={this.state.validation}
                     >
                       <ControlLabel>Date de Observation Final</ControlLabel>
 
@@ -286,16 +282,16 @@ class FilterPointings extends React.Component {
                   <Col md={12}>
                     <FormGroup
                       controlId={this.state.controlId}
-                      validationState={this.state.validationState}
+                      validationState={this.state.validation}
                     >
-                      <ControlLabel>Quantity of ccds per band</ControlLabel>
+                      <ControlLabel>Band</ControlLabel>
 
                       <Select
                         disabled={false}
                         multi
                         onChange={this.handleSelectBand}
                         options={options.band}
-                        placeholder="Select your object table(s)"
+                        placeholder="Select one or more values of band"
                         removeSelected={true}
                         simpleValue
                         value={this.state.band}
@@ -307,7 +303,7 @@ class FilterPointings extends React.Component {
             </form>
             <Grid fluid>
               <Row>
-                <Collapse timeout="100" in={this.state.open}>
+                <Collapse in={this.state.open}>
                   <div>
                     <Alert bsStyle={this.state.colorAlert}>
                       {this.state.errorMessage}
@@ -320,7 +316,7 @@ class FilterPointings extends React.Component {
 
           <Modal.Footer>
             <Button onClick={this.handlerSubmitFilter}>Filter</Button>
-            <Button onClick={this.onClear}>Clear Inputs</Button>
+            <Button onClick={this.onClear}>Clear</Button>
             <Button onClick={this.onClose}>Close</Button>
           </Modal.Footer>
         </Modal>

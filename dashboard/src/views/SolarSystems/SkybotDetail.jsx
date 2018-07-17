@@ -2,14 +2,13 @@ import React, { Component } from 'react';
 import { Grid, Row, Col, Button } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import Card from 'components/Card/Card.jsx';
-import Properties from './Properties';
 import Observation from './Observation';
-import OrbitalParameters from './OrbitalParameters';
 import PropTypes from 'prop-types';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 
 import SkybotApi from './SkybotApi';
+import PropertiesSkybot from './Properties';
 
 class SkybotDetail extends Component {
   state = this.initialState;
@@ -27,7 +26,7 @@ class SkybotDetail extends Component {
       data: [],
       page: 1,
       totalSize: 0,
-      sizePerPage: 10,
+      sizePerPage: '',
       loading: false,
       record: {},
     };
@@ -66,13 +65,13 @@ class SkybotDetail extends Component {
               </Row>
               <Row>
                 <Col md={4}>
-                  <Properties record={record} />
+                  <PropertiesSkybot record={record} />
                 </Col>
                 <Col md={8}>
                   <Row>
-                    <Col md={12}>
+                    {/* <Col md={12}>
                       <OrbitalParameters />
-                    </Col>
+                    </Col> */}
                   </Row>
                   <Row>
                     <Col md={12}>
@@ -80,6 +79,8 @@ class SkybotDetail extends Component {
                     </Col>
                   </Row>
                 </Col>
+              </Row>
+              <Row>
                 <Col mdOffset={11}>
                   <Button onClick={this.onClick}>back</Button>
                 </Col>
