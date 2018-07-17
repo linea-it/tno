@@ -28,7 +28,7 @@ function exposureFormatter(_cell, row, _rowindex, formatExtraData) {
 
 const pointing_columns = [
   {
-    text: 'Data de Observação',
+    text: 'Observation Date',
     dataField: 'date_obs',
     width: 180,
     headerStyle: formatColumnHeader,
@@ -68,7 +68,7 @@ const pointing_columns = [
   },
 
   {
-    text: 'Filter',
+    text: 'Band',
     dataField: 'band',
     align: 'center',
     width: 60,
@@ -154,7 +154,6 @@ class PointingList extends Component {
 
   handleSearch = () => {
     if (this.state.search) {
-      // console.log('fazer a busca');
       // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
       this.setState(
         { page: 1 },
@@ -170,11 +169,13 @@ class PointingList extends Component {
   };
 
   handlerClear = () => {
-    this.setState({ search: '' }, this.fetchData());
+    this.setState(
+      { search: '' },
+      this.fetchData(this.state.page, this.state.sizePerPage)
+    );
   };
 
   fetchData = (page, sizePerPage, search, Arrayfilters = []) => {
-    
     this.setState({ loading: true });
 
     const params = {
@@ -196,7 +197,7 @@ class PointingList extends Component {
 
     this.api.getPointingLists(params).then(res => {
       const r = res.data;
-      
+
       this.setState({
         data: r.results,
         totalSize: r.count,
@@ -228,14 +229,7 @@ class PointingList extends Component {
   };
 
   render() {
-    const {
-      data,
-      sizePerPage,
-      page,
-      totalSize,
-      loading,
-      search,
-    } = this.state;
+    const { data, sizePerPage, page, totalSize, loading, search } = this.state;
 
     const pagination = paginationFactory({
       page: page,
@@ -264,7 +258,7 @@ class PointingList extends Component {
                 </InputGroup.Button>
                 <FormControl
                   type="text"
-                  placeholder="Search By id, expnum, filename"
+                  placeholder="Search By expnum, filename"
                   value={search}
                   onChange={this.onChangeSearch}
                   onKeyPress={this.onKeyPress}
@@ -274,7 +268,7 @@ class PointingList extends Component {
                 </InputGroup.Button>
 
                 <InputGroup.Button>
-                  <Button onClick={this.handlerClear}>Clear</Button>
+                  <Button onClick={this.handlerClear}>Reload</Button>
                 </InputGroup.Button>
               </InputGroup>
             </FormGroup>

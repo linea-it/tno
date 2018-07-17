@@ -5,7 +5,7 @@ import {
   InputGroup,
   ButtonToolbar,
 } from 'react-bootstrap';
-import FilterSkybot from './FilterSkybot';
+
 import { withRouter } from 'react-router-dom';
 import Button from 'elements/CustomButton/CustomButton.jsx';
 import SkybotApi from './SkybotApi';
@@ -15,9 +15,17 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import { formatColumnHeader, coordinateFormater } from 'utils';
+import { formatColumnHeader } from 'utils';
+import SkybotDetail from './SkybotDetail';
 
 const skybot_columns = [
+  // {
+  //   text: 'ID',
+  //   dataField: 'id',
+  //   width: 60,
+  //   headerStyle: formatColumnHeader,
+  // },
+
   {
     text: 'Name',
     dataField: 'name',
@@ -30,7 +38,7 @@ const skybot_columns = [
   },
 
   {
-    text: 'Number',
+    text: 'Num',
     dataField: 'num',
     align: 'center',
     width: 20,
@@ -46,7 +54,6 @@ const skybot_columns = [
     align: 'center',
     width: 20,
     headerStyle: formatColumnHeader,
-    formatter: coordinateFormater,
     helpText:
       '(ucd=“pos.eq.ra;meta.main”) Right ascension of the identified object in degrees.',
     headerTitle: column => `${column.helpText}`,
@@ -58,7 +65,6 @@ const skybot_columns = [
     align: 'center',
     width: 20,
     headerStyle: formatColumnHeader,
-    formatter: coordinateFormater,
     helpText:
       '(ucd=“pos.eq.dec;meta.main”) Declination of the identified object in degrees.',
     headerTitle: column => `${column.helpText}`,
@@ -75,7 +81,7 @@ const skybot_columns = [
   },
 ];
 
-class SkybotList extends Component {
+class GetSkybot extends Component {
   state = this.initialState;
 
   api = new SkybotApi();
@@ -91,16 +97,32 @@ class SkybotList extends Component {
       data: [],
       page: 1,
       totalSize: 0,
-      sizePerPage: 10,
+      sizePerPage: 3,
       loading: false,
       search: '',
       record: '',
-      show: false,
     };
   }
 
   componentDidMount() {
+    // console.log('componentDidMount()');
+
+    //   const {
+    //     match: { params },
+    //   } = this.props;
+
+    //   this.api.getListStats({ id: params.id }).then(res => {
+    //     const data = res.data.data;
+
+    //     this.setState(
+    //       {
+    //         id: res.data.id,
+    //         customList: data,
+    //       },
+
     this.fetchData(this.state.page, this.state.sizePerPage);
+    //     );
+    //   });
   }
 
   handleTableChange = (_type, { page, sizePerPage }) => {
@@ -111,6 +133,8 @@ class SkybotList extends Component {
 
   onChangeSearch = event => {
     this.setState({ search: event.target.value });
+
+    //if (this.setState({ search: event.target.value }) !== ''){ this.fetchData(); console.log('teste')};
   };
 
   onKeyPress = event => {
@@ -124,30 +148,26 @@ class SkybotList extends Component {
       // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
       this.setState(
         { page: 1 },
-        this.fetchData(
-          this.state.page,
-          this.state.sizePerPage,
-          this.state.search
-        )
+        this.fetchData(this.state.page, this.state.pageSize, this.state.search)
       );
     } else {
-      this.fetchData(this.state.page, this.state.sizePerPage);
+      this.fetchData(this.state.page, this.state.pageSize);
     }
   };
 
   handlerClear = () => {
     this.setState(
       { search: '' },
-      this.fetchData(this.state.page, this.state.sizePerPage)
+      //this.fetchData(this.state.page, this.state.sizePerPage)
     );
   };
 
-  fetchData = (page, sizePerPage, search) => {
-    // console.log('fetchData(%o, %o, %o)', page, sizePerPage, search);
+  fetchData = (page, pageSize, search) => {
+    // console.log('fetchData(%o, %o, %o)', page, pageSize, search);
     this.setState({ loading: true });
 
     const params = {
-      pageSize: sizePerPage,
+      pageSize: pageSize,
     };
 
     if (search) {
@@ -156,6 +176,8 @@ class SkybotList extends Component {
       params.page = page;
     }
     this.api.getSkybotLists(params).then(res => {
+      // console.log('Carregou: %o', res);
+
       const r = res.data;
 
       this.setState({
@@ -163,27 +185,37 @@ class SkybotList extends Component {
         totalSize: r.count,
         page: page,
         loading: false,
-        sizePerPage: sizePerPage,
       });
     });
   };
 
-  showDetail = () => {
-    this.setState({ show: true });
-  };
+  // close = () => this.setState({ showCreate: false });
 
-  closeCreate = () => {
-    console.log("Entrei aqui");
+  onClose = () => {
     this.setState({ show: false });
   };
 
+  showDetail = (index, row, rowindex) => {
+    //console.log(row);
+    this.setState({ record: row });
+  };
+
   render() {
-    const { data, sizePerPage, page, totalSize, loading, search } = this.state;
+    const {
+      data,
+      sizePerPage,
+      page,
+      totalSize,
+      loading,
+      search,
+      record,
+    } = this.state;
 
     const pagination = paginationFactory({
       page: page,
       sizePerPage: sizePerPage,
       totalSize: totalSize,
+      hideSizePerPage: true,
       hidePageListOnlyOnePage: true,
       showTotal: true,
     });
@@ -193,7 +225,7 @@ class SkybotList extends Component {
     const rowEvents = {
       onDoubleClick: (e, row) => {
         history.push('/skybotdetail/' + row.id);
-        console.log('fetchData(%o, %o, %o)', page, sizePerPage, search);
+        // this.showDetail;
       },
     };
 
@@ -210,10 +242,6 @@ class SkybotList extends Component {
                   onChange={this.onChangeSearch}
                   onKeyPress={this.onKeyPress}
                 />
-
-                <InputGroup.Button>
-                  <Button onClick={this.showDetail}>Filter</Button>
-                </InputGroup.Button>
 
                 <InputGroup.Button>
                   <Button onClick={this.handleSearch}>Search</Button>
@@ -244,14 +272,15 @@ class SkybotList extends Component {
             loading={loading}
             overlay={overlayFactory({
               spinner: true,
+
               background: 'rgba(192,192,192,0.3)',
             })}
           />
+          <span>{totalSize} rows</span>
         </div>
-        <FilterSkybot show={this.state.show} onHide={this.closeCreate} />
       </div>
     );
   }
 }
 
-export default withRouter(SkybotList);
+export default withRouter(GetSkybot);

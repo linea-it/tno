@@ -143,10 +143,10 @@ class CreateListForm extends React.Component {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={this.onClose}>Close</Button>
           <Button onClick={this.onSaveList} disabled={!this.state.validName}>
             Save
           </Button>
+          <Button onClick={this.onClose}>Close</Button>
         </Modal.Footer>
       </Modal>
     );

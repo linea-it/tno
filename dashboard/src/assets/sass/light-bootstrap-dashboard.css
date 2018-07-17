@@ -989,8 +989,8 @@ body > .navbar-collapse[data-color="purple"]:after {
   border-bottom-width: 1px;
   font-size: 12px;
   text-transform: uppercase;
-  color: #9A9A9A;
-  font-weight: 400;
+  color: #403f3f;
+  font-weight: 500;
   padding-bottom: 5px; }
 
 .table .td-actions .btn {
