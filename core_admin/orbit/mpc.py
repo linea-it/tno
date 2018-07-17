@@ -125,13 +125,19 @@ class MPC():
 
             tdelta = finish - start
             seconds = tdelta.total_seconds()
+
+            # Rename filename
+            new_filename = name.replace(' ', '_') + '.eq0'
+            new_file = os.path.join(output_path, new_filename)
+            os.rename(file, new_file)
+
             download_stats = dict({
                 "start_time": start,
                 "finish_time": finish,
                 "download_time": seconds,
                 "file_size": size,
-                "filename": filename,
-                "file_path": file,
+                "filename": new_filename,
+                "file_path": new_file,
                 "path": output_path
             })
 

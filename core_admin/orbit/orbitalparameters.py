@@ -11,6 +11,20 @@ from django.conf import settings
 
 
 class GetOrbitalParameters():
+
+    def __init__(self):
+
+        if settings.OBSERVATIONS_DIR is None:
+            raise Exception("it is necessary to have a valid path defined in the OBSERVATIONS_DIR settings variable.")
+
+        if settings.ORBITAL_PARAMETERS_DIR is None:
+            raise Exception("it is necessary to have a valid path defined in the ORBITAL_PARAMETERS_DIR settings variable.")
+
+
+        self.observations_dir = settings.OBSERVATIONS_DIR
+        self.orbital_parameters_dir = settings.ORBITAL_PARAMETERS_DIR
+
+
     def getOrbitalParameters(self, name, number, output_path):
         """
             Function to manage the download the file with orbital parameters
@@ -20,7 +34,8 @@ class GetOrbitalParameters():
         :param output_path:
         :return:
         """
-        download_stats = None
+
+        files_path = self.orbital_parameters_dir
 
         source = "AstDys"
         # AstDyS Object URL
@@ -30,10 +45,10 @@ class GetOrbitalParameters():
         url = AstDys().getOrbitalParametersURL(name, number)
 
         # AstDys Orbital Parameters Filename
-        filename = AstDys().getObitalParametersFilename(name, number)
-
+        # filename = AstDys().getObitalParametersFilename(name, number)
+        filename = name.replace(' ', '_') + '.eq0'
         # Try to download the AstDyS files.
-        file_path, download_stats = Download().download_file_from_url(url, output_path=output_path, filename=filename,
+        file_path, download_stats = Download().download_file_from_url(url, output_path=files_path, filename=filename,
                                                                       overwrite=True, ignore_errors=True)
         result = dict({
             "name": name,
@@ -44,9 +59,9 @@ class GetOrbitalParameters():
             result = dict({
                 "name": name,
                 "source": source,
-                "filename": filename,
+                "filename": download_stats.get("filename"),
                 "download_start_time": download_stats.get("start_time"),
-                "download_finish_time": download_stats.get("finish"),
+                "download_finish_time": download_stats.get("finish_time"),
                 "download_time": download_stats.get('download_time'),
                 "file_size": download_stats.get("file_size"),
                 "external_url": url_object,
@@ -69,7 +84,7 @@ class GetOrbitalParameters():
                     "source": source,
                     "filename": download_stats.get("filename"),
                     "download_start_time": download_stats.get("start_time"),
-                    "download_finish_time": download_stats.get("finish"),
+                    "download_finish_time": download_stats.get("finish_time"),
                     "download_time": download_stats.get('download_time'),
                     "file_size": download_stats.get("file_size"),
                     "external_url": url_object,
@@ -87,9 +102,10 @@ class GetOrbitalParameters():
         :param output_path:
         :return:
         """
-        t0 = datetime.now()
 
-        download_stats = None
+        files_path = self.observations_dir
+
+        t0 = datetime.now()
 
         result = dict({
             "name": name
@@ -102,10 +118,11 @@ class GetOrbitalParameters():
         # AstDys Observation URL
         url = AstDys().getObservationsURL(name, number)
 
-        filename = AstDys().getObservationsFilename(name, number)
+        # filename = AstDys().getObservationsFilename(name, number)
+        filename = name.replace(' ', '_') + '.rwo'
 
         # Try to download the AstDyS files.
-        file_path, download_stats = Download().download_file_from_url(url, output_path=output_path, filename=filename,
+        file_path, download_stats = Download().download_file_from_url(url, output_path=files_path, filename=filename,
                                                                       overwrite=True, ignore_errors=True)
         t1 = datetime.now()
 
@@ -114,7 +131,7 @@ class GetOrbitalParameters():
             result = dict({
                 "name": name,
                 "source": source,
-                "filename": filename,
+                "filename": download_stats.get('filename'),
                 "download_start_time": t0,
                 "download_finish_time": t1,
                 "download_time": download_stats.get('download_time'),
@@ -134,11 +151,8 @@ class GetOrbitalParameters():
             # MPC Observation URL
             url = MPC().getObservationsURL(name, number)
             if url is not None:
-                # Filename
-                filename = MPC().getObservationsFilename(name, number)
-
                 # Try to download the MPC files.
-                file_path, download_stats = Download().download_file_from_url(url, output_path=output_path,
+                file_path, download_stats = Download().download_file_from_url(url, output_path=files_path,
                                                                               filename=filename, overwrite=True,
                                                                               ignore_errors=True)
                 if download_stats:
@@ -147,7 +161,7 @@ class GetOrbitalParameters():
                         "source": source,
                         "filename": download_stats.get("filename"),
                         "download_start_time": download_stats.get("start_time"),
-                        "download_finish_time": download_stats.get("finish"),
+                        "download_finish_time": download_stats.get("finish_time"),
                         "download_time": download_stats.get('download_time'),
                         "file_size": download_stats.get("file_size"),
                         "external_url": url_object,

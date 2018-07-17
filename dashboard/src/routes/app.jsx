@@ -4,6 +4,7 @@ import FilterPanel from 'views/FilterObject/Panel';
 import CustomList from 'views/ObjectList/CustomList';
 import ObjectList from 'views/ObjectList/ObjectList';
 import Praia from 'views/Astrometry/Praia';
+import RefineOrbitPanel from 'views/RefineOrbit/Panel';
 import PraiaRun from 'views/Astrometry/PraiaRun';
 import Placeholder from 'views/Placeholder';
 
@@ -78,13 +79,11 @@ const appRoutes = [
   {
     path: '/exposuredownload',
     name: 'Download',
-    // icon: 'pe-7s-download',
     component: Placeholder,
   },
   {
     path: '/astrometry',
     name: 'Astrometry',
-    // icon: 'pe-7s-download',
     component: Praia,
   },
   {
@@ -96,19 +95,16 @@ const appRoutes = [
   {
     path: '/refine_orbit',
     name: 'Refine Orbit',
-    // icon: 'pe-7s-download',
-    component: Placeholder,
+    component: RefineOrbitPanel,
   },
   {
     path: '/post_results',
     name: 'Post Results',
-    // icon: 'pe-7s-download',
     component: Placeholder,
   },
   {
     path: '/light_curve',
     name: 'Light Curve Analysis',
-    // icon: 'pe-7s-download',
     component: Placeholder,
   },
   {
