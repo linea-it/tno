@@ -12,10 +12,6 @@ import {
   optionsSales,
   responsiveSales,
   legendSales,
-  dataBar,
-  optionsBar,
-  responsiveBar,
-  legendBar,
 } from 'variables/Variables.jsx';
 
 class Dashboard extends Component {

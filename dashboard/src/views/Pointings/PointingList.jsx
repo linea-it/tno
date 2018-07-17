@@ -154,7 +154,6 @@ class PointingList extends Component {
 
   handleSearch = () => {
     if (this.state.search) {
-      // console.log('fazer a busca');
       // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
       this.setState(
         { page: 1 },
@@ -269,7 +268,7 @@ class PointingList extends Component {
                 </InputGroup.Button>
 
                 <InputGroup.Button>
-                  <Button onClick={this.handlerClear}>Clear</Button>
+                  <Button onClick={this.handlerClear}>Reload</Button>
                 </InputGroup.Button>
               </InputGroup>
             </FormGroup>
