@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import Card from 'components/Card/Card.jsx';
+import { ButtonToolbar, Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -13,7 +14,14 @@ import OrbitApi from './OrbitApi';
 
 const columns = [
   {
-    text: 'Id',
+    text: 'Proccess',
+    dataField: 'proccess',
+    width: 80,
+    align: 'center',
+    headerStyle: formatColumnHeader,
+  },
+  {
+    text: 'Run Id',
     dataField: 'id',
     width: 60,
     headerStyle: formatColumnHeader,
@@ -62,6 +70,8 @@ class RefineOrbitHistory extends Component {
       loading: false,
       // Tempo em segundos entre cada reload da lista
       reload_interval: 10,
+      selected: [],
+      selected_record: null,
     };
   }
 
@@ -99,6 +109,25 @@ class RefineOrbitHistory extends Component {
     this.fetchData(this.state.page, this.state.sizePerPage);
   };
 
+  handleOnRerun = () => {
+    console.log('On Re-run');
+  };
+
+  handleOnSelect = (row, isSelect) => {
+    console.log(row);
+    if (isSelect) {
+      this.setState(() => ({
+        selected: [row.id],
+        selected_record: row,
+      }));
+    } else {
+      this.setState(() => ({
+        selected: [],
+        selected_record: null,
+      }));
+    }
+  };
+
   render() {
     const {
       data,
@@ -107,7 +136,10 @@ class RefineOrbitHistory extends Component {
       totalSize,
       loading,
       reload_interval,
+      selected,
+      selected_record,
     } = this.state;
+
     const pagination = paginationFactory({
       page: page,
       sizePerPage: sizePerPage,
@@ -115,6 +147,13 @@ class RefineOrbitHistory extends Component {
       hidePageListOnlyOnePage: true,
       showTotal: true,
     });
+
+    const selectRow = {
+      mode: 'radio',
+      clickToSelect: true,
+      onSelect: this.handleOnSelect,
+      selected: selected,
+    };
 
     const history = this.props.history;
     const rowEvents = {
@@ -134,25 +173,36 @@ class RefineOrbitHistory extends Component {
           title=""
           category="Manage the completed NIMA rounds"
           content={
-            <BootstrapTable
-              striped
-              hover
-              condensed
-              remote
-              bordered={false}
-              keyField="id"
-              noDataIndication="..."
-              data={data}
-              columns={columns}
-              pagination={pagination}
-              onTableChange={this.handleTableChange}
-              loading={loading}
-              overlay={overlayFactory({
-                spinner: true,
-                background: 'rgba(192,192,192,0.3)',
-              })}
-              rowEvents={rowEvents}
-            />
+            <div>
+              <ButtonToolbar>
+                <Button
+                  disabled={!selected_record}
+                  onClick={this.handleOnRerun}
+                >
+                  Re-run
+                </Button>
+              </ButtonToolbar>
+              <BootstrapTable
+                striped
+                hover
+                condensed
+                remote
+                bordered={false}
+                keyField="id"
+                noDataIndication="..."
+                data={data}
+                columns={columns}
+                pagination={pagination}
+                onTableChange={this.handleTableChange}
+                loading={loading}
+                overlay={overlayFactory({
+                  spinner: true,
+                  background: 'rgba(192,192,192,0.3)',
+                })}
+                rowEvents={rowEvents}
+                selectRow={selectRow}
+              />
+            </div>
           }
         />
       </div>
