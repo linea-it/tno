@@ -9,6 +9,7 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { formatDateUTC, formatColumnHeader, formatStatus } from 'utils';
 import ReactInterval from 'react-interval';
+import OrbitApi from './OrbitApi';
 
 const columns = [
   {
@@ -45,6 +46,7 @@ const columns = [
 
 class RefineOrbitHistory extends Component {
   state = this.initialState;
+  api = new OrbitApi();
 
   static propTypes = {
     history: PropTypes.any.isRequired,
@@ -63,39 +65,39 @@ class RefineOrbitHistory extends Component {
     };
   }
 
-  // componentDidMount() {
-  //   this.fetchData(this.state.page, this.state.sizePerPage);
-  // }
+  componentDidMount() {
+    this.fetchData(this.state.page, this.state.sizePerPage);
+  }
 
-  // componentWillReceiveProps() {
-  //   // Atualiza o Conteudo da datagrid toda vez que recebe uma propriedade
-  //   this.fetchData(this.state.page, this.state.sizePerPage);
-  // }
+  componentWillReceiveProps() {
+    // Atualiza o Conteudo da datagrid toda vez que recebe uma propriedade
+    this.fetchData(this.state.page, this.state.sizePerPage);
+  }
 
-  // handleTableChange = (type, { page, sizePerPage }) => {
-  //   this.fetchData(page, sizePerPage);
-  // };
+  handleTableChange = (type, { page, sizePerPage }) => {
+    this.fetchData(page, sizePerPage);
+  };
 
-  // fetchData = (page, sizePerPage) => {
-  //   // console.log('fetchData(%o, %o, %o)', tablename, page, pageSize);
+  fetchData = (page, sizePerPage) => {
+    // console.log('fetchData(%o, %o, %o)', tablename, page, pageSize);
 
-  //   this.setState({ loading: true });
+    this.setState({ loading: true });
 
-  //   this.api.getPraiaRuns({ page: page, pageSize: sizePerPage }).then(res => {
-  //     const r = res.data;
-  //     this.setState({
-  //       data: r.results,
-  //       totalSize: r.count,
-  //       page: page,
-  //       sizePerPage: sizePerPage,
-  //       loading: false,
-  //     });
-  //   });
-  // };
+    this.api.getOrbitRuns({ page: page, pageSize: sizePerPage }).then(res => {
+      const r = res.data;
+      this.setState({
+        data: r.results,
+        totalSize: r.count,
+        page: page,
+        sizePerPage: sizePerPage,
+        loading: false,
+      });
+    });
+  };
 
-  // reload = () => {
-  //   this.fetchData(this.state.page, this.state.sizePerPage);
-  // };
+  reload = () => {
+    this.fetchData(this.state.page, this.state.sizePerPage);
+  };
 
   render() {
     const {

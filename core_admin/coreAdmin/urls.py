@@ -26,12 +26,15 @@ from tno.views import UserViewSet, PointingViewSet, SkybotOutputViewSet, ObjectC
     ProccessViewSet
 from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet
 
-# from orbit.views import  ObservationViewSet, OrbitalParameterViewSet
+from orbit.views import OrbitRunViewSet
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'pointing', PointingViewSet)
 router.register(r'skybotoutput', SkybotOutputViewSet)
+
+router.register(r'orbit_run', OrbitRunViewSet)
+
 # router.register(r'observation', ObservationViewSet)
 # router.register(r'orbital_parameter', OrbitalParameterViewSet)
 
@@ -47,4 +50,6 @@ urlpatterns += [
     url(r'^obtain-auth-token/$', csrf_exempt(obtain_auth_token)),
     url(r'^teste/', common_views.teste),
     url(r'^teste2/', common_views.downloadOrbitalParameters),
+
+    url(r'^t1/', common_views.t1),
 ]

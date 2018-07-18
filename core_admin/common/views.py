@@ -13,6 +13,29 @@ from orbit.bsp_jpl import BSPJPL
 
 
 @api_view(['GET'])
+def t1(request):
+    if request.method == 'GET':
+
+        from orbit.refine_orbit import RefineOrbitDB
+
+
+        # rows = RefineOrbitDB().get_observations(
+        #     tablename="martin_test_list", schema=None, max_age=30)
+
+        # rows = RefineOrbitDB().get_bsp_jpl(
+        #     tablename="martin_test_list", schema=None, max_age=30)
+        #
+        # print(len(rows))
+
+        rows = RefineOrbitDB().get_orbital_parameters(
+            tablename="martin_test_list", schema=None, max_age=30)
+
+
+        print(rows[0])
+
+        return Response(dict({'status': "success"}))
+
+@api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
 
@@ -73,7 +96,7 @@ def downloadOrbitalParameters(request):
 
         # Recupera os objetos da tabela.
         rows, count = FilterObjects().list_distinct_objects_by_table(
-            customlist.tablename, customlist.schema, pageSize=10)
+            customlist.tablename, customlist.schema, pageSize=1)
 
         if count > 0:
             # Escrever o arquivo de input no diretorio de destino

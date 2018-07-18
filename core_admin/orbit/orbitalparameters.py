@@ -244,7 +244,8 @@ class GetOrbitalParameters():
                 msg = "Download [ FAILURE ] - Object: %s " % (result.get('name'))
 
                 if result.get('filename', None) is not None:
-                    msg = "Download [ SUCCESS ] - Object: %s File: %s Size: %s Time: %s seconds" % (
+                    msg = "Download [ SUCCESS ] - [ %s ] Object: %s File: %s Size: %s Time: %s seconds" % (
+                        result.get('source'),
                         result.get('name'), result.get('filename'), humanize.naturalsize(result.get('file_size')),
                         result.get('download_time'))
 
@@ -313,7 +314,8 @@ class GetOrbitalParameters():
                 msg = "Download [ FAILURE ] - Object: %s " % (result.get('name'))
 
                 if result.get('filename', None) is not None:
-                    msg = "Download [ SUCCESS ] - Object: %s File: %s Size: %s Time: %s seconds" % (
+                    msg = "Download [ SUCCESS ] - [ %s ] Object: %s File: %s Size: %s Time: %s seconds" % (
+                        result.get('source'),
                         result.get('name'), result.get('filename'), humanize.naturalsize(result.get('file_size')),
                         result.get('download_time'))
 
@@ -343,3 +345,5 @@ class GetOrbitalParameters():
         with open(download_log, 'a') as f:
             f.write('Download Completed in %s\n' % humanize.naturaldelta(tdelta))
         f.close()
+
+

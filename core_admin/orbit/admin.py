@@ -1,11 +1,11 @@
 from django.contrib import admin
 
-from .models import Run
+from .models import OrbitRun
 from .models import ObservationFile
 from .models import OrbitalParameterFile
 from .models import BspJplFile
 
-@admin.register(Run)
+@admin.register(OrbitRun)
 class OrbitRunsAdmin(admin.ModelAdmin):
     list_display = ('id', 'owner', 'proccess', 'input_list', 'input_praia', 'start_time', 'finish_time', )
 

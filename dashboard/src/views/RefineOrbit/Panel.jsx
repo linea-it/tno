@@ -21,7 +21,7 @@ class RefineOrbitPanel extends Component {
 
   onCreateRun = record => {
     // Toda vez que cria um novo registro forca a execucao do metodo render()
-    this.setState(this.state);
+    this.setState({ record: record });
   };
 
   render() {

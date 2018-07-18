@@ -1,8 +1,8 @@
 from django.db import models
 from django.conf import settings
 
-class Configuration(models.Model):
 
+class Configuration(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE, default=None, verbose_name='Owner', null=True, blank=True)
@@ -17,8 +17,8 @@ class Configuration(models.Model):
     def __str__(self):
         return self.displayname
 
-class Run(models.Model):
 
+class Run(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE, default=None, verbose_name='Owner', null=True, blank=True)
@@ -35,7 +35,7 @@ class Run(models.Model):
 
     finish_time = models.DateTimeField(
         verbose_name='Finish Time',
-        auto_now_add=False, null=True, blank=True)        
+        auto_now_add=False, null=True, blank=True)
 
     # Relation With PraiaConfig
     configuration = models.ForeignKey(
@@ -53,14 +53,14 @@ class Run(models.Model):
         max_length=256,
         verbose_name='Relative Path',
         null=True, blank=True,
-        help_text='Path relative to the astrometry directory, this is the internal path in the container.',
+        help_text='Path relative to the astrometry directory, this is the internal path in the proccess directory.',
     )
 
     status = models.CharField(
         max_length=10,
-        verbose_name='Status', 
+        verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending','Pending'),('running','Running'),('success','Success'),('error','Error'))
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('error', 'Error'))
     )
 
     def __str__(self):

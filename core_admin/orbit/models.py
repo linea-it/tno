@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 
 
-class Run(models.Model):
+class OrbitRun(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE, default=None, verbose_name='Owner', null=True, blank=True, related_name='owner')
@@ -33,12 +33,12 @@ class Run(models.Model):
         null=True, blank=True, default=None, related_name='praia_run'
     )
 
-    # relative_path = models.CharField(
-    #     max_length=256,
-    #     verbose_name='Relative Path',
-    #     null=True, blank=True,
-    #     help_text='Path relative to the astrometry directory, this is the internal path in the container.',
-    # )
+    relative_path = models.CharField(
+        max_length=256,
+        verbose_name='Relative Path',
+        null=True, blank=True,
+        help_text='Path relative to the refine orbit directory, this is the internal path in the proccess directory.',
+    )
 
     status = models.CharField(
         max_length=10,
@@ -203,3 +203,5 @@ class BspJplFile(models.Model):
         verbose_name='File Size',
         null=True, blank=True, default=None, help_text='File Size in bytes')
 
+
+from . import signals
