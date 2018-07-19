@@ -210,7 +210,7 @@ class Statistics extends Component {
                   <ListGroupItem>
                     <h5>
                       <span>
-                        Number of CCDs don't downloaded&nbsp;:&nbsp;&nbsp;
+                        Number of CCDs not downloaded&nbsp;:&nbsp;&nbsp;
                       </span>
                       <strong>{this.state.qtdNotDownloaded}</strong>
                     </h5>

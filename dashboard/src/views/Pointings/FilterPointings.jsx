@@ -19,7 +19,7 @@ const options = {
     {
       value: 'g',
       label: 'g',
-    },    
+    },
     {
       value: 'r',
       label: 'r',
@@ -229,7 +229,7 @@ class FilterPointings extends React.Component {
                       controlId="formValidationError2"
                       validationState={this.state.validation}
                     >
-                      <ControlLabel>Expose Time</ControlLabel>
+                      <ControlLabel>Exposure Time</ControlLabel>
                       <Select
                         onChange={this.handleSelectExpTime}
                         options={options.valueTimes}
