@@ -28,6 +28,23 @@ class PointingsPanel extends Component {
     };
   }
 
+  componentDidMount() {
+    this.api.getPointingCount().then(res => {
+      const r = res.data;
+      this.setState({
+        totalSize: r.count,
+      });
+    });
+
+    // this.api.getPointingCount().then(res => {
+    //   const r = res.data;
+    //   this.setState({
+    //     band_u: r.band_u,
+    //   });
+
+    //   // this.setState({ record: record });
+    // });
+  }
   render() {
     return (
       <div className="content">
