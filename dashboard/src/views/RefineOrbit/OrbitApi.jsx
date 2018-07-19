@@ -21,6 +21,11 @@ class OrbitApi {
       input_list: input_list,
       proccess: proccess,
     });
+
+  orbitReRun = ({ id }) =>
+    axios.patch(`${this.api}/orbit_run/${id}/`, {
+      status: 'pending',
+    });
 }
 
 export default OrbitApi;

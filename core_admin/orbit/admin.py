@@ -7,7 +7,7 @@ from .models import BspJplFile
 
 @admin.register(OrbitRun)
 class OrbitRunsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'owner', 'proccess', 'input_list', 'input_praia', 'start_time', 'finish_time', )
+    list_display = ('id', 'owner', 'proccess', 'status', 'input_list', 'input_praia', 'start_time', 'finish_time', )
 
 
 @admin.register(ObservationFile)

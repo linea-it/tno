@@ -24,6 +24,10 @@ class RefineOrbit():
         customlist = instance.input_list
         self.logger.debug("CUSTOM LIST: %s - %s" % (customlist.id, customlist.displayname))
 
+        instance.status = 'running'
+        instance.save()
+        self.logger.info("Status changed to Running")
+
         # Criar um diretorio para os arquivos do NIMA
         instance = RefineOrbit().createRefienOrbitDirectory(instance)
 
@@ -56,9 +60,7 @@ class RefineOrbit():
         # TODO executar a classe que faz o Download.
 
 
-        instance.status = 'running'
-        instance.save()
-        self.logger.info("Status changed to Running")
+
 
 
 

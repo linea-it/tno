@@ -59,6 +59,7 @@ class RefineOrbitHistory extends Component {
   static propTypes = {
     history: PropTypes.any.isRequired,
     loading: PropTypes.bool,
+    onRerun: PropTypes.func.isRequired,
   };
 
   get initialState() {
@@ -110,7 +111,16 @@ class RefineOrbitHistory extends Component {
   };
 
   handleOnRerun = () => {
-    console.log('On Re-run');
+    const { selected_record } = this.state;
+
+    this.api.orbitReRun({ id: selected_record.id }).then(res => {
+      const record = res.data;
+
+      this.setState(
+        { selected: [], selected_record: null },
+        this.props.onRerun(record)
+      );
+    });
   };
 
   handleOnSelect = (row, isSelect) => {
@@ -179,7 +189,7 @@ class RefineOrbitHistory extends Component {
                   disabled={!selected_record}
                   onClick={this.handleOnRerun}
                 >
-                  Re-run
+                  Re-execute
                 </Button>
               </ButtonToolbar>
               <BootstrapTable

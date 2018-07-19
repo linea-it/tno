@@ -43,7 +43,7 @@ class RefineOrbitPanel extends Component {
               </Row>
               <Row>
                 <Col md={12}>
-                  <RefineOrbitHistory />
+                  <RefineOrbitHistory onRerun={this.onCreateRun} />
                 </Col>
               </Row>
             </Grid>
