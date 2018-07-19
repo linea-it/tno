@@ -1,5 +1,12 @@
 import axios from 'axios';
 
+const exptime = {
+  value: '0,100',
+};
+
+console.log(exptime);
+
+
 class PointingApi {
   constructor() {
     this.api = process.env.REACT_APP_API;
@@ -14,7 +21,7 @@ class PointingApi {
     filters.forEach(function(el) {
       params[el.property] = el.value;
     });
-   // console.log(params);
+    // console.log(params);
     return axios.get(`${this.api}/pointing/`, { params: params });
   };
 
@@ -29,8 +36,9 @@ class PointingApi {
   getPointingBand_i = () => axios.get(`${this.api}/pointing/?band__in=i`);
   getPointingBand_z = () => axios.get(`${this.api}/pointing/?band__in=z`);
   // gets in interval of exposure time
+
   getPointingBetween1 = () =>
-    axios.get(`${this.api}/pointing/?exptime__range=0,100`);
+    axios.get(`${this.api}/pointing/?exptime__range=${exptime.value}`);
   getPointingBetween2 = () =>
     axios.get(`${this.api}/pointing/?exptime__range=100,200`);
   getPointingBetween3 = () =>
@@ -46,7 +54,7 @@ class PointingApi {
     axios.get(`${this.api}/pointing`, {
       params: {
         ordering: '-date_obs',
-        pageSize:1
+        pageSize: 1,
       },
     });
 }
