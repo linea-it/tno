@@ -4,7 +4,6 @@ import {
   Row,
   Col,
   Panel,
-  Button,
   ListGroup,
   ListGroupItem,
   Image,
@@ -13,7 +12,7 @@ import Card from 'components/Card/Card.jsx';
 import PointingApi from './PointingApi';
 import plotPointings from 'assets/img/plotPointings.png';
 
-class Statistics extends Component {
+class PointingsStats extends Component {
   state = this.initialState;
   api = new PointingApi();
 
@@ -245,4 +244,4 @@ class Statistics extends Component {
   }
 }
 
-export default Statistics;
+export default PointingsStats;

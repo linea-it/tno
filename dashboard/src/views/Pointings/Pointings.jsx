@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Grid, Row, Col, Panel } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import PointingApi from './PointingApi';
-import Statistics from './Statistics';
+import PointingsStats from './PointingsStats';
 import PointingList from './PointingList';
 import PropTypes from 'prop-types';
 import Card from 'components/Card/Card.jsx';
@@ -51,7 +51,7 @@ class PointingsPanel extends Component {
         <Grid fluid>
           <Row>
             <Col md={12}>
-              <Statistics />
+              <PointingsStats />
             </Col>
           </Row>
           <Row>
