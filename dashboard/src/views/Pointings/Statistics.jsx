@@ -38,7 +38,7 @@ class Statistics extends Component {
     };
   }
 
-  componenDidMount = () => {
+  componentDidMount() {
     this.api.getPointingCount().then(res => {
       const r = res.data;
       this.setState({
@@ -123,7 +123,7 @@ class Statistics extends Component {
       const result = r.results[0].date_obs;
       this.setState({ dateRecent: result });
     });
-  };
+  }
 
   render() {
     return (

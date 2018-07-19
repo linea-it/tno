@@ -58,7 +58,7 @@ const pointing_columns = [
   },
 
   {
-    text: 'CDD',
+    text: 'CDD Number',
     dataField: 'ccdnum',
     align: 'center',
     width: 60,
@@ -80,6 +80,24 @@ const pointing_columns = [
   {
     text: 'Exposure time',
     dataField: 'exptime',
+    align: 'center',
+    width: 60,
+    headerStyle: formatColumnHeader,
+    helpText: 'Exposure time of observation.',
+    headerTitle: column => `${column.helpText}`,
+  },
+  {
+    text: 'RA_CENT',
+    dataField: 'ra_cent',
+    align: 'center',
+    width: 60,
+    headerStyle: formatColumnHeader,
+    helpText: 'Exposure time of observation.',
+    headerTitle: column => `${column.helpText}`,
+  },
+  {
+    text: 'DEC_CENT',
+    dataField: 'dec_cent',
     align: 'center',
     width: 60,
     headerStyle: formatColumnHeader,
@@ -197,7 +215,6 @@ class PointingList extends Component {
 
     this.api.getPointingLists(params).then(res => {
       const r = res.data;
-
       this.setState({
         data: r.results,
         totalSize: r.count,
