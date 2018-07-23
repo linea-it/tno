@@ -47,17 +47,6 @@ const pointing_columns = [
   },
 
   {
-    text: 'Exposure',
-    dataField: 'expnum',
-    align: 'center',
-    width: 60,
-    headerStyle: formatColumnHeader,
-    helpText:
-      'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
-    headerTitle: column => `${column.helpText}`,
-  },
-
-  {
     text: 'CDD Number',
     dataField: 'ccdnum',
     align: 'center',

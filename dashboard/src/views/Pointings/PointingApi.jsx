@@ -14,7 +14,7 @@ class PointingApi {
     filters.forEach(function(el) {
       params[el.property] = el.value;
     });
-   // console.log(params);
+    // console.log(params);
     return axios.get(`${this.api}/pointing/`, { params: params });
   };
 
@@ -46,7 +46,7 @@ class PointingApi {
     axios.get(`${this.api}/pointing`, {
       params: {
         ordering: '-date_obs',
-        pageSize:1
+        pageSize: 1,
       },
     });
 }
