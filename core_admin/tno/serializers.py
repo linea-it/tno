@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from django.contrib.auth.models import User
+from datetime import date
 from .models import Pointing, SkybotOutput, CustomList, Proccess, Product, Observation, OrbitalParameter
 import humanize
 
@@ -10,6 +11,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username',)
 
 class PointingSerializer(serializers.ModelSerializer):
+
+    date_obs = serializers.SerializerMethodField()
 
     class Meta:
         model = Pointing
@@ -50,6 +53,12 @@ class PointingSerializer(serializers.ModelSerializer):
             'compression',
             'downloaded',
         )
+
+    def get_date_obs(self, obj):
+        try:
+             return obj.date_obs.strftime('%Y/%m/%d')
+        except:
+            return None
 
 class SkybotOutputSerializer(serializers.ModelSerializer):
 

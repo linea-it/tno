@@ -19,13 +19,12 @@ import { formatColumnHeader, coordinateFormater } from 'utils';
 
 const skybot_columns = [
   {
-    text: 'Name',
+    text: 'Object Name',
     dataField: 'name',
     width: 20,
     align: 'center',
     headerStyle: formatColumnHeader,
-    helpText:
-      '(ucd=“meta.id;meta.main”) Object name (official or provisional designation).',
+    helpText: 'Object name (official or provisional designation).',
     headerTitle: column => `${column.helpText}`,
   },
 
@@ -35,8 +34,7 @@ const skybot_columns = [
     align: 'center',
     width: 20,
     headerStyle: formatColumnHeader,
-    helpText:
-      '(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).',
+    helpText: 'Object number (not all objects have numbers assigned).',
     headerTitle: column => `${column.helpText}`,
   },
 
@@ -47,8 +45,7 @@ const skybot_columns = [
     width: 20,
     headerStyle: formatColumnHeader,
     formatter: coordinateFormater,
-    helpText:
-      '(ucd=“pos.eq.ra;meta.main”) Right ascension of the identified object in degrees.',
+    helpText: 'Right ascension of the identified object in degrees.',
     headerTitle: column => `${column.helpText}`,
   },
 
@@ -59,18 +56,45 @@ const skybot_columns = [
     width: 20,
     headerStyle: formatColumnHeader,
     formatter: coordinateFormater,
-    helpText:
-      '(ucd=“pos.eq.dec;meta.main”) Declination of the identified object in degrees.',
+    helpText: 'Declination of the identified object in degrees.',
     headerTitle: column => `${column.helpText}`,
   },
 
+  // {
+  //   text: 'Exposure',
+  //   dataField: 'expnum',
+  //   align: 'center',
+  //   width: 20,
+  //   headerStyle: formatColumnHeader,
+  //   helpText: 'Filter used to do the observation (u, g, r, i, z, Y).',
+  //   headerTitle: column => `${column.helpText}`,
+  // },
+
   {
-    text: 'Exposure',
-    dataField: 'expnum',
+    text: 'Dynamic class ',
+    dataField: 'dynclass',
     align: 'center',
     width: 20,
     headerStyle: formatColumnHeader,
-    helpText: 'Filter used to do the observation (u, g, r, i, z, Y).',
+    helpText: 'Object class (TNO, Centaur, Trojan, etc.).',
+    headerTitle: column => `${column.helpText}`,
+  },
+  {
+    text: 'Visual magnitude',
+    dataField: 'mv',
+    align: 'center',
+    width: 20,
+    headerStyle: formatColumnHeader,
+    helpText: 'Visual magnitude',
+    headerTitle: column => `${column.helpText}`,
+  },
+  {
+    text: 'Error on the position',
+    dataField: 'errpos',
+    align: 'center',
+    width: 20,
+    headerStyle: formatColumnHeader,
+    helpText: 'Uncertainty on the (RA,DEC) coordinates',
     headerTitle: column => `${column.helpText}`,
   },
 ];
@@ -173,7 +197,7 @@ class SkybotList extends Component {
   };
 
   closeCreate = () => {
-    console.log("Entrei aqui");
+    console.log('Entrei aqui');
     this.setState({ show: false });
   };
 

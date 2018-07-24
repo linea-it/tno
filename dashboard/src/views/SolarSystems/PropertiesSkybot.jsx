@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, OverlayTrigger, Popover, Button } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import Card from 'components/Card/Card.jsx';
 import PropTypes from 'prop-types';
@@ -15,120 +15,110 @@ class SkybotDetail extends Component {
     {
       text: 'Pointings',
       dataField: 'pointing',
-      help_text: 'pointing',
     },
     {
-      text: 'Name',
+      text: 'Object Name',
       dataField: 'name',
-      help_text: 'Object name (official or provisional designation).',
     },
     {
-      text: 'Object classification',
+      text: 'Dynamic class',
       dataField: 'dynclass',
-      help_text: 'Object class (TNO, Centaur, Trojan, etc.).',
     },
     {
-      text: 'RA',
+      text: 'Right Ascension (RA) [hms]',
       dataField: 'ra',
-      help_text: 'Right ascension of the identified object.',
     },
     {
-      text: 'Dec',
+      text: 'Declination (Dec) [dms]',
       dataField: 'dec',
-      help_text: 'Declination of the identified object.',
     },
     {
-      text: 'Mv',
+      text: 'Visual Magnitude',
       dataField: 'mv',
-      help_text: 'Visual magnitude',
     },
     {
-      text: 'D',
+      text: 'Error on the position [arcsec]',
+      dataField: 'errpos',
+    },
+    {
+      text: 'Angular distance [arcsec]',
       dataField: 'd',
-      help_text: 'Body-to-center angular distance',
     },
     {
       text: 'dRAcosDec',
       dataField: 'dracosdec',
-      help_text: 'Motion in right ascension d(RA)cos(DEC)',
     },
     {
       text: 'dDEC',
       dataField: 'ddec',
-      help_text: 'Motion in declination d(DEC)',
     },
     {
-      text: 'Dgeo',
+      text: 'Right Ascension (RA) [degree]',
+      dataField: 'raj2000',
+    },
+    {
+      text: 'Declination (Dec) [degree]',
+      dataField: 'decj2000',
+    },
+    {
+      text: 'Geocentric distance [AU]',
       dataField: 'dgeo',
-      help_text: 'Distance from observer',
     },
     {
-      text: 'Dhelio',
+      text: 'Heliocentric distance [AU]',
       dataField: 'dhelio',
-      help_text: 'Distance from the Sun',
     },
     {
-      text: 'Phase',
+      text: 'Phase angle [degrees]',
       dataField: 'phase',
-      help_text:
-        'Phase angle, e.g. elongation of earth from sun as seen from object',
     },
     {
-      text: 'SolElong',
+      text: 'Solar elongation [degree]',
       dataField: 'solelong',
-      help_text:
-        'Solar elongation, e.g. elongation of object from sun as seen from Earth',
     },
     {
-      text: 'Px',
+      text: 'Vector position in x [AU]',
       dataField: 'px',
-      help_text: 'Mean J2000 heliocentric position vector, x component',
     },
     {
-      text: 'Py',
+      text: 'Vector position in y [AU]',
       dataField: 'py',
-      help_text: 'Mean J2000 heliocentric position vector, y component',
     },
     {
-      text: 'Vx ',
+      text: 'Vector position in z [AU]',
+      dataField: 'pz',
+    },
+    {
+      text: 'Vector motion in x [AU/d]',
       dataField: 'vx',
-      help_text: 'Mean J2000 heliocentric position vector, z component',
     },
     {
-      text: 'Vy ',
+      text: 'Vector motion in y [AU/d]',
       dataField: 'vy',
-      help_text: 'Mean J2000 heliocentric velocity vector, y component',
     },
     {
-      text: 'Vz ',
+      text: 'Vector motion in z [AU/d]',
       dataField: 'vz',
-      help_text: 'Mean J2000 heliocentric velocity vector, z component',
     },
     {
-      text: 'JDRef ',
+      text: 'Epoch of the position vector [Julien Day] ',
       dataField: 'jdref',
-      help_text: 'Reference epoch of the position/velocity vector',
     },
     {
-      text: 'ExternalLink ',
-      dataField: 'externallink',
-      help_text: 'External link to hint the target',
+      text: 'Band',
+      dataField: 'band',
     },
     {
       text: 'Exposure',
       dataField: 'expnum',
-      help_text:
-        'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
     },
     {
-      text: 'CCD',
+      text: 'CCD number',
       dataField: 'ccdnum',
-      help_text: 'CCD Number (1, 2, ..., 62)',
     },
     {
-      text: 'Filter',
-      dataField: 'band',
-      help_text: 'Filter used to do the observation (u, g, r, i, z, Y).',
+      text: 'ExternalLink ',
+      dataField: 'externallink',
     },
   ];
 
@@ -139,15 +129,9 @@ class SkybotDetail extends Component {
 
     if (Object.keys(record).length) {
       this.record_properties.forEach((p, i) => {
-        const { text, dataField, help_text } = p;
+        const { text, dataField } = p;
 
         let value = null;
-
-        const popoverClickRootClose = (
-          <Popover id="`popover-trigger-click-root-close-{i}`" title={p.text}>
-            {help_text}
-          </Popover>
-        );
 
         if (p.dataField === 'externallink') {
           value = (
@@ -160,17 +144,12 @@ class SkybotDetail extends Component {
         }
 
         body.push([
-          <OverlayTrigger
-            trigger={['click']}
-            placement="bottom"
-            rootClose
-            overlay={popoverClickRootClose}
-          >
-            <tr key={i}>
-              <td width="200">{text}:</td>
-              <td width="200">{value}</td>
-            </tr>
-          </OverlayTrigger>,
+          <tr key={i}>
+            <td width="200">
+              <b> {text} </b>:
+            </td>
+            <td width="200">{value}</td>
+          </tr>,
         ]);
       });
     }
