@@ -39,7 +39,7 @@ const options = {
     {
       value: 'u',
       label: 'u',
-    },    
+    },
   ],
 
   valueTimes: [
@@ -235,6 +235,7 @@ class FilterPointings extends React.Component {
                         options={options.valueTimes}
                         placeholder="Select your object table(s)"
                         value={this.state.expTime}
+                        clearable={false}
                       />
                     </FormGroup>
                   </Col>
@@ -295,6 +296,7 @@ class FilterPointings extends React.Component {
                         removeSelected={true}
                         simpleValue
                         value={this.state.band}
+                        clearable={false}
                       />
                     </FormGroup>
                   </Col>

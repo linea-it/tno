@@ -2,32 +2,175 @@ import React from 'react';
 import {
   Modal,
   Button,
-  FormControl,
   ControlLabel,
   FormGroup,
   Grid,
   Row,
   Col,
+  Collapse,
+  Alert,
 } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import Select from 'react-select';
 
-class FilterSkybot extends React.Component {
+const options = {
+  dynclassValues: [
+    { label: 'Centaur', value: 'Centaur' },
+    { label: 'Hungaria', value: 'Hungaria' },
+    { label: 'KBO>Classical>Inner', value: 'KBO>Classical>Inner' },
+    { label: 'KBO>Classical>Main', value: 'KBO>Classical>Main' },
+    { label: 'KBO>Detached', value: 'KBO>Detached' },
+    { label: 'KBO>Resonant>11:3', value: 'KBO>Resonant>11:3' },
+    { label: 'KBO>Resonant>11:6', value: 'KBO>Resonant>11:6' },
+    { label: 'KBO>Resonant>11:8', value: 'KBO>Resonant>11:8' },
+    { label: 'KBO>Resonant>19:9', value: 'KBO>Resonant>19:9' },
+    { label: 'KBO>Resonant>2:1', value: 'KBO>Resonant>2:1' },
+    { label: 'KBO>Resonant>3:1', value: 'KBO>Resonant>3:1' },
+    { label: 'KBO>Resonant>3:2', value: 'KBO>Resonant>3:2' },
+    { label: 'KBO>Resonant>4:3', value: 'KBO>Resonant>4:3' },
+    { label: 'KBO>Resonant>5:2', value: 'KBO>Resonant>5:2' },
+    { label: 'KBO>Resonant>5:3', value: 'KBO>Resonant>5:3' },
+    { label: 'KBO>Resonant>5:4', value: 'KBO>Resonant>5:4' },
+    { label: 'KBO>Resonant>7:2', value: 'KBO>Resonant>7:2' },
+    { label: 'KBO>Resonant>7:3', value: 'KBO>Resonant>7:3' },
+    { label: 'KBO>Resonant>7:4', value: 'KBO>Resonant>7:4' },
+    { label: 'KBO>Resonant>9:4', value: 'KBO>Resonant>9:4' },
+    { label: 'KBO>Resonant>9:5', value: 'KBO>Resonant>9:5' },
+    { label: 'KBO>SDO', value: 'KBO>SDO' },
+    { label: 'Mars-Crosser', value: 'Mars-Crosser' },
+    { label: 'MB>Cybele', value: 'MB>Cybele' },
+    { label: 'MB>Hilda', value: 'MB>Hilda' },
+    { label: 'MB>Inner', value: 'MB>Inner' },
+    { label: 'MB>Middle', value: 'MB>Middle' },
+    { label: 'MB>Outer', value: 'MB>Outer' },
+    { label: 'NEA>Amor', value: 'NEA>Amor' },
+    { label: 'NEA>Apollo', value: 'NEA>Apollo' },
+    { label: 'NEA>Aten', value: 'NEA>Aten' },
+    { label: 'Trojan', value: 'Trojan' },
+  ],
+
+  magnitude: [
+    { value: '18,19', label: '18 - 19' },
+    { value: '19,20', label: '19 - 20' },
+    { value: '20,21', label: '20 - 21' },
+    { value: '21,22', label: '21 - 22' },
+    { value: '22,23', label: '22 - 23' },
+    { value: '23,24', label: '23 - 24' },
+    { value: '24,25', label: '24 - 25' },
+    { value: '25,26', label: '25 - 26' },
+    { value: '26,27', label: '26 - 27' },
+    { value: '27,28', label: '27 - 28' },
+    { value: '28,29', label: '28 - 29' },
+    { value: '29,30', label: '29 - 30' },
+    { value: '30,31', label: '30 - 31' },
+    { value: '31,32', label: '31 - 32' },
+    { value: '32,33', label: '32 - 33' },
+    { value: '33,34', label: '33 - 34' },
+    { value: '34,35', label: '34 - 35' },
+    { value: '35,36', label: '35 - 36' },
+  ],
+};
+
+class FilterPointings extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = this.getInitialState();
+  }
+
+  getInitialState = () => {
+    const initialState = {
+      dynclass: '',
+      mv: '',
+      open: true,
+      validation: null,
+      controlId: null,
+      errorMessage: null,
+      colorAlert: null,
+    };
+    return initialState;
+  };
+
   static propTypes = {
     show: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
   };
 
+  componentDidMount() {
+    this.setState({ open: false });
+  }
+
+  handleSelectDynclass = value => {
+    this.setState({ dynclass: value });
+  };
+
+  handleSelectMV = value => {
+    this.setState({ mv: value });
+  };
+
+  ErroEmpty = () => {
+    this.setState({ validation: 'error' });
+    this.setState({ controlId: 'formValidationerror4' });
+    this.setState({
+      errorMessage: 'Empty fields, please fill in some search field ',
+    });
+    this.setState({ colorAlert: 'danger' });
+    this.setState({ open: true });
+  };
+
+  ErroReset = () => {
+    this.setState({ validation: null });
+    this.setState({ controlId: null });
+    this.setState({
+      errorMessage: null,
+    });
+    this.setState({ colorAlert: null });
+    this.setState({ open: false });
+  };
+
+  onClear = () => {
+    this.setState(this.getInitialState());
+    this.setState({ open: false });
+  };
+
+  handlerSubmitFilter = () => {
+    if (this.state.mv === '' && this.state.dynclass === '') {
+      this.ErroEmpty();
+    } else {
+      this.setState({ validation: null });
+      this.setState({ open: false });
+      // passa para o parent por props
+      const filter = [];
+
+      if (this.state.dynclass) {
+        filter.push({ property: 'dynclass__in', value: this.state.dynclass });
+      }
+
+      if (this.state.mv) {
+        filter.push({
+          property: 'mv__range',
+          value: this.state.mv.value,
+        });
+      }
+      this.props.onFilter(filter);
+    }
+    this.setState({ state: this.getInitialState });
+  };
+
   onClose = () => {
     this.props.onHide();
+    this.setState({ open: false });
+    this.ErroReset();
   };
 
   render() {
     const { show, onHide } = this.props;
+
     return (
       <div className="static-modal">
         <Modal show={show} onHide={onHide}>
-          <Modal.Header>
-            <Modal.Title>Filter Skybot</Modal.Title>
+          <Modal.Header closeButton>
+            <Modal.Title>Filter Skybots</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
@@ -35,52 +178,65 @@ class FilterSkybot extends React.Component {
               <Grid fluid>
                 <Row>
                   <Col md={12}>
-                    <FormGroup controlId="formControlsSelect">
-                      <ControlLabel>Total Size for Band</ControlLabel>
-                      <FormControl componentClass="select" placeholder="select">
-                        <option value="select">u</option>
-                        <option value="other">g</option>
-                        <option value="other">r</option>
-                        <option value="other">i</option>
-                        <option value="other">z</option>
-                        <option value="other">Y</option>
-                      </FormControl>
+                    <FormGroup
+                      controlId="formValidationError2"
+                      validationState={this.state.validation}
+                    >
+                      <ControlLabel>Visual Magnitude</ControlLabel>
+                      <Select
+                        onChange={this.handleSelectMV}
+                        options={options.magnitude}
+                        placeholder="Select your range of values"
+                        value={this.state.mv}
+                        clearable={false}
+                      />
                     </FormGroup>
                   </Col>
                 </Row>
               </Grid>
 
               <Grid fluid>
-                <ControlLabel>Exposure Time</ControlLabel>
                 <Row>
-                  <Col md={6}>
-                    <FormGroup>
-                      <FormControl
-                        id="formControlsText"
-                        type="text"
-                        placeholder="Write the value initial"
-                        onChange=""
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col md={6}>
-                    <FormGroup>
-                      <FormControl
-                        id="formControlsText"
-                        type="text"
-                        placeholder="Write the value finally"
-                        onChange=""
+                  <Col md={12}>
+                    <FormGroup
+                      controlId={this.state.controlId}
+                      validationState={this.state.validation}
+                    >
+                      <ControlLabel>Dynamics Class</ControlLabel>
+
+                      <Select
+                        disabled={false}
+                        multi
+                        onChange={this.handleSelectDynclass}
+                        options={options.dynclassValues}
+                        placeholder="Select one or more values of Dynamics Class"
+                        removeSelected={true}
+                        simpleValue
+                        value={this.state.dynclass}
+                        clearable={false}
                       />
                     </FormGroup>
                   </Col>
                 </Row>
               </Grid>
             </form>
+            <Grid fluid>
+              <Row>
+                <Collapse in={this.state.open}>
+                  <div>
+                    <Alert bsStyle={this.state.colorAlert}>
+                      {this.state.errorMessage}
+                    </Alert>
+                  </div>
+                </Collapse>
+              </Row>
+            </Grid>
           </Modal.Body>
 
           <Modal.Footer>
+            <Button onClick={this.handlerSubmitFilter}>Filter</Button>
+            <Button onClick={this.onClear}>Clear</Button>
             <Button onClick={this.onClose}>Close</Button>
-            <Button onClick={this.onClose}>Filter</Button>
           </Modal.Footer>
         </Modal>
       </div>
@@ -88,4 +244,4 @@ class FilterSkybot extends React.Component {
   }
 }
 
-export default FilterSkybot;
+export default FilterPointings;

@@ -45,18 +45,6 @@ const pointing_columns = [
     helpText: 'Name of FITS file with a CCD image.',
     headerTitle: column => `${column.helpText}`,
   },
-
-  {
-    text: 'Exposure',
-    dataField: 'expnum',
-    align: 'center',
-    width: 60,
-    headerStyle: formatColumnHeader,
-    helpText:
-      'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
-    headerTitle: column => `${column.helpText}`,
-  },
-
   {
     text: 'CDD Number',
     dataField: 'ccdnum',
@@ -215,7 +203,6 @@ class PointingList extends Component {
 
     this.api.getPointingLists(params).then(res => {
       const r = res.data;
-
       this.setState({
         data: r.results,
         totalSize: r.count,

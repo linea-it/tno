@@ -47,10 +47,9 @@ class PointingApi {
     axios.get(`${this.api}/pointing`, {
       params: {
         ordering: '-date_obs',
-        pageSize:1
+        pageSize: 1,
       },
     });
-
 }
 
 export default PointingApi;
