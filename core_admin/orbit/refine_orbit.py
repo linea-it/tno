@@ -8,7 +8,7 @@ import csv
 from .orbitalparameters import GetOrbitalParameters
 from .bsp_jpl import BSPJPL
 from orbit.orbitalparameters import GetOrbitalParameters, GetObservations
-import json
+
 from common.jsonfile import JsonFile
 
 class RefineOrbit():
@@ -52,6 +52,7 @@ class RefineOrbit():
         # TODO: pode vir como parametro da interface, None para atualizar todos.
         max_age = 30
 
+        # ---------------------- Observations ----------------------
         # Pesquisando as observacoes que precisam ser baixadas
         observations = RefineOrbitDB().get_observations(customlist.tablename, customlist.schema, max_age)
 
@@ -61,13 +62,15 @@ class RefineOrbit():
         # Download das Observations
         self.getObservations(instance, self.observations_input_file, steps_file)
 
-
+        # ---------------------- Orbital Parameters ----------------------
         # # Pesquisando os parametros orbitais que precisam ser baixadas
         # orbital_parameters = RefineOrbitDB().get_orbital_parameters(customlist.tablename, customlist.schema, max_age)
         #
         # orbital_parameters_csv = os.path.join(instance.relative_path, 'orbital_parameters.csv')
         # RefineOrbit().writer_refine_orbit_file_list(orbital_parameters_csv, orbital_parameters)
 
+
+        # ---------------------- BSPs ----------------------
         # Pesquisando os bsp_jpl que precisam ser baixadas
         bsp_jpl = RefineOrbitDB().get_bsp_jpl(customlist.tablename, customlist.schema, max_age)
 
@@ -75,18 +78,7 @@ class RefineOrbit():
         RefineOrbit().writer_refine_orbit_file_list(self.bsp_jpl_input_file, bsp_jpl)
 
         # Download dos BSP JPL
-        self.getBspJplFiles(instance, self.bsp_jpl_input_file)
-
-    def getBspJplFiles(self, instance, input_file):
-        """
-            Executa a etapa de download dos arquivos bsp vindo do JPL,
-            essa etapa verifica quantos arquivos precisam ser baixados, faz o download
-            e os arquivos ficam disponiveis no diretorio externo ao processo.
-
-        :param instance:
-        """
-
-        BSPJPL(debug_mode=True).run(input_file=input_file, output_path=instance.relative_path)
+        self.getBspJplFiles(instance, self.bsp_jpl_input_file, steps_file)
 
 
     def getObservations(self, instance, input_file, step_file):
@@ -98,7 +90,19 @@ class RefineOrbit():
         :param instance:
         """
 
-        GetObservations(debug_mode=True).run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
+        GetObservations().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
+
+
+    def getBspJplFiles(self, instance, input_file, step_file):
+        """
+            Executa a etapa de download dos arquivos bsp vindo do JPL,
+            essa etapa verifica quantos arquivos precisam ser baixados, faz o download
+            e os arquivos ficam disponiveis no diretorio externo ao processo.
+
+        :param instance:
+        """
+
+        BSPJPL().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
 
 
     def createRefienOrbitDirectory(self, instance):

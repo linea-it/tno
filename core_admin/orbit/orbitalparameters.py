@@ -12,6 +12,8 @@ import time
 from random import randrange
 from common.jsonfile import JsonFile
 from orbit.models import ObservationFile
+import logging
+
 
 class GetOrbitalParameters():
     def __init__(self, debug_mode=False):
@@ -287,86 +289,12 @@ class GetOrbitalParameters():
 
     def runObservations(self, input_file, output_path):
         pass
-        # # Le o CSV com a lista de objetos a serem baixados.
-        #
-        # t0 = datetime.now()
-        #
-        # files_path = settings.OBSERVATIONS_DIR
-        #
-        # # Le o arquivo de entrada e criar uma lista com nome e numero do objeto.
-        # records = self.read_input(input_file)
-        #
-        # # Exemplos para Debug
-        # # records = [('1988 RL13', '17420')]  # Exemplo AstDys
-        # # records = [('1999 CF119', '-')] # Exemplo AstDys sem Num
-        # # records = [('1999 RC216', '-')] # Exemplo MPC
-        # # records = [('2016 WM48', '-' )] # Exemplo objeto que nao tem AstDys e MPC
-        # # records = [('1988 RL13', '17420'), ('1999 CF119', '-'), ('1999 RC216', '-'), ('2016 WM48', '-' )] # Todos
-        #
-        # # Configuracao do Parsl
-        # dfk = DataFlowKernel(config=settings.PARSL_CONFIG)
-        #
-        # # Configuracao do Parsl Log.
-        # parsl.set_file_logger(os.path.join(output_path, 'parsl.log'))
-        #
-        #
-        # download_log = os.path.join(output_path, 'download_observations.log')
-        # with open(download_log, 'w') as f:
-        #     f.write('Starting the Download\n')
-        # f.close()
-        #
-        # # Declaracao do Parsl APP
-        # @App('python', dfk)
-        # def start_parsl_job(name, number, files_path):
-        #
-        #     result = GetOrbitalParameters().getOrbservations(name, number, files_path)
-        #
-        #     # Live Logging Downloaded files.
-        #     with open(download_log, 'a') as f:
-        #         msg = "Download [ FAILURE ] - Object: %s " % (result.get('name'))
-        #
-        #         if result.get('filename', None) is not None:
-        #             msg = "Download [ SUCCESS ] - [ %s ] Object: %s File: %s Size: %s Time: %s seconds" % (
-        #                 result.get('source'),
-        #                 result.get('name'), result.get('filename'), humanize.naturalsize(result.get('file_size')),
-        #                 result.get('download_time'))
-        #
-        #         time = "%s : " % str(datetime.now())
-        #         f.write(time + msg + '\n')
-        #     f.close()
-        #
-        #     return result
-        #
-        # # executa o app Parsl para cara registro em paralelo
-        # results = []
-        # for row in records:
-        #     # Utiliza o parsl apenas para os objetos que estao marcados
-        #     # para serem baixados.
-        #     if row.get("need_download"):
-        #         results.append(start_parsl_job(row.get("name"), row.get("number"), files_path))
-        #
-        # # Espera o Resultado de todos os jobs.
-        # outputs = [i.result() for i in results]
-        #
-        # for i in results:
-        #     i.done()
-        #
-        # dfk.cleanup()
-        #
-        # self.downloaded = outputs
-        #
-        # self.writer_results(output_path, outputs)
-        #
-        # t1 = datetime.now()
-        #
-        # tdelta = t1 - t0
-        # with open(download_log, 'a') as f:
-        #     f.write('Download Completed in %s\n' % humanize.naturaldelta(tdelta))
-        # f.close()
 
 
 class GetObservations():
     def __init__(self, debug_mode=False):
+
+        self.logger = logging.getLogger("refine_orbit")
 
         if settings.OBSERVATIONS_DIR is None:
             raise Exception("it is necessary to have a valid path defined in the OBSERVATIONS_DIR settings variable.")
@@ -379,28 +307,21 @@ class GetObservations():
 
         self.downloaded = []
 
+        self.need_download = 0
+
+        self.not_need_download = 0
+
     def run(self, input_file, output_path, step_file):
         # Le o CSV com a lista de objetos a serem baixados.
-        print("RUN do Observations")
 
         t0 = datetime.now()
 
-
         files_path = settings.OBSERVATIONS_DIR
-
 
         # Le o arquivo de entrada e criar uma lista com nome e numero do objeto.
         records = self.read_input(input_file)
 
-
         self.input_records = records
-
-        # Exemplos para Debug
-        # records = [('1988 RL13', '17420')]  # Exemplo AstDys
-        # records = [('1999 CF119', '-')] # Exemplo AstDys sem Num
-        # records = [('1999 RC216', '-')] # Exemplo MPC
-        # records = [('2016 WM48', '-' )] # Exemplo objeto que nao tem AstDys e MPC
-        # records = [('1988 RL13', '17420'), ('1999 CF119', '-'), ('1999 RC216', '-'), ('2016 WM48', '-' )] # Todos
 
         # Configuracao do Parsl
         dfk = DataFlowKernel(config=settings.PARSL_CONFIG)
@@ -443,7 +364,8 @@ class GetObservations():
             # Utiliza o parsl apenas para os objetos que estao marcados
             # para serem baixados.
             if row.get("need_download"):
-                results.append(start_parsl_job(row.get("name"), row.get("number"), files_path))
+                print(row)
+                results.append(start_parsl_job(row.get("name"), row.get("num"), files_path))
 
         # Espera o Resultado de todos os jobs.
         outputs = [i.result() for i in results]
@@ -455,10 +377,6 @@ class GetObservations():
 
         self.downloaded = outputs
 
-        print(outputs)
-
-        # self.writer_results(output_path, outputs)
-
         t1 = datetime.now()
 
         tdelta = t1 - t0
@@ -466,15 +384,18 @@ class GetObservations():
             f.write('Download Completed in %s\n' % humanize.naturaldelta(tdelta))
         f.close()
 
-
         # Registra na tabela Observations Files
         self.register_downloaded_files(outputs)
+
+        # TODO guardar no arquivo de status as contagens dos arquivos baixados e nao baixados.
+        self.logger.debug("Need Download:     [ %s ]" % self.need_download)
+        self.logger.debug("NOT Need Download: [ %s ]" % self.not_need_download)
 
         # Registra no Arquivo de steps que terminou de executar essa etapa.
         steps = JsonFile().read(step_file)
         steps.update({"observations": True})
-        JsonFile().write(steps, step_file)
 
+        JsonFile().write(steps, step_file)
 
     def download(self, name, number, output_path):
         """
@@ -500,7 +421,6 @@ class GetObservations():
         # TODO esperando o MPC desbloquer o nosso IP
         # if result is None:
         #     # Try to download from MPC
-        #
         #     self.download_mpc(name, number, filename, output_path)
 
         if result is None:
@@ -607,8 +527,13 @@ class GetObservations():
 
                 if row.get("need_download") in ['True', 'true', '1', 't', 'y', 'yes']:
                     row["need_download"] = True
+
+                    self.need_download += 1
+
                 else:
                     row["need_download"] = False
+
+                    self.not_need_download += 1
 
                 records.append(row)
 
@@ -620,29 +545,38 @@ class GetObservations():
 
         new = 0
         updated = 0
+        downloaded = 0
+        not_downloaded = 0
 
         for record in records:
 
-            obj, created = ObservationFile.objects.update_or_create(
-                name=record.get("name"),
-                source=record.get("source"),
-                defaults={
-                    'observations': 0, # TODO recuperar o numero de observacoes
-                    'filename': record.get("filename"),
-                    'download_start_time': record.get("download_start_time"),
-                    'download_finish_time': record.get("download_finish_time"),
-                    'file_size': record.get("file_size"),
-                    'external_url': record.get("external_url"),
-                    'download_url': record.get("download_url")
+            if record.get("filename"):
+                downloaded += 1
 
-                }
-            )
+                obj, created = ObservationFile.objects.update_or_create(
+                    name=record.get("name"),
+                    source=record.get("source"),
+                    defaults={
+                        # TODO recuperar o numero de observacoes
+                        'observations': 0,
+                        'filename': record.get("filename"),
+                        'download_start_time': record.get("download_start_time"),
+                        'download_finish_time': record.get("download_finish_time"),
+                        'file_size': record.get("file_size"),
+                        'external_url': record.get("external_url"),
+                        'download_url': record.get("download_url")
 
-            if created:
-                new = new + 1
-                self.logger.debug("Registered [ %s ] " % record.get("name"))
+                    }
+                )
+
+                if created:
+                    new += 1
+                    self.logger.debug("Registered [ %s ] " % record.get("name"))
+                else:
+                    updated += 1
+                    self.logger.debug("Updated [ %s ] " % record.get("name"))
             else:
-                updated = updated + 1
-                self.logger.debug("Updated [ %s ] " % record.get("name"))
+                not_downloaded += 1
 
-        self.logger.info("Inputs [ %s ] Downloaded [ %s ] Registered [ %s ] Updated [ %s ]" % (len(self.input_records), len(self.downloaded), new, updated))
+        self.logger.info("Inputs [ %s ] Downloaded [ %s ] Registered [ %s ] Updated [ %s ] Not Downloaded [ %s ]" % (
+            len(self.input_records), downloaded, new, updated, not_downloaded))

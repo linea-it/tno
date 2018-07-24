@@ -10,6 +10,7 @@ class AstDys():
         return self.getFileURL(name, number, "epoch", ".eq0")
 
     def getObservationsURL(self, name, number):
+        print("NAME: %s NUMBER: %s", (name, number))
         return self.getFileURL(name, number, "mpcobs", ".rwo")
 
     def getFileURL(self, name, number, key, ext):

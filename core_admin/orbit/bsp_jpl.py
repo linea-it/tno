@@ -11,6 +11,7 @@ import time
 from random import randrange
 from orbit.models import BspJplFile
 import logging
+from common.jsonfile import JsonFile
 
 class BSPJPL():
     """
@@ -40,6 +41,9 @@ class BSPJPL():
         self.input_records = []
 
         self.downloaded = []
+
+        self.need_download = 0
+        self.not_need_download = 0
 
     def download(self, name, outṕut_path):
 
@@ -92,7 +96,7 @@ class BSPJPL():
         else:
             return None
 
-    def run(self, input_file, output_path):
+    def run(self, input_file, output_path, step_file):
 
         t0 = datetime.now()
 
@@ -158,8 +162,6 @@ class BSPJPL():
             if row.get("need_download"):
                 results.append(start_parsl_job(row.get("name"), files_path))
 
-
-
         # Espera o Resultado de todos os jobs.
         outputs = [i.result() for i in results]
 
@@ -170,7 +172,6 @@ class BSPJPL():
 
         self.downloaded = outputs
 
-
         t1 = datetime.now()
         tdelta = t1 - t0
 
@@ -180,7 +181,14 @@ class BSPJPL():
 
         self.register_downloaded_files(outputs)
 
+        # TODO guardar no arquivo de status as contagens dos arquivos baixados e nao baixados.
+        self.logger.debug("Need Download:     [ %s ]" % self.need_download)
+        self.logger.debug("NOT Need Download: [ %s ]" % self.not_need_download)
 
+        steps = JsonFile().read(step_file)
+        steps.update({"bsp_jpl": True})
+
+        JsonFile().write(steps, step_file)
 
     def register_downloaded_files(self, records):
         # Apos o Download e necessario o registro
@@ -188,28 +196,33 @@ class BSPJPL():
 
         new = 0
         updated = 0
-
+        downloaded = 0
+        not_downloaded = 0
         for record in records:
+            if record.get("filename"):
+                downloaded += 1
 
-            obj, created = BspJplFile.objects.update_or_create(
-                name=record.get("name"),
-                defaults={
-                    'filename': record.get("filename"),
-                    'download_start_time': record.get("download_start_time"),
-                    'download_finish_time': record.get("download_finish_time"),
-                    'file_size': record.get("file_size"),
-                }
-            )
+                obj, created = BspJplFile.objects.update_or_create(
+                    name=record.get("name"),
+                    defaults={
+                        'filename': record.get("filename"),
+                        'download_start_time': record.get("download_start_time"),
+                        'download_finish_time': record.get("download_finish_time"),
+                        'file_size': record.get("file_size"),
+                    }
+                )
 
-            if created:
-                new = new + 1
-                self.logger.debug("Registered [ %s ] " % record.get("name"))
+                if created:
+                    new += 1
+                    self.logger.debug("Registered [ %s ] " % record.get("name"))
+                else:
+                    updated += updated
+                    self.logger.debug("Updated [ %s ] " % record.get("name"))
             else:
-                updated = updated + 1
-                self.logger.debug("Updated [ %s ] " % record.get("name"))
+                not_downloaded += 1
 
-        self.logger.info("Inputs [ %s ] Downloaded [ %s ] Registered [ %s ] Updated [ %s ]" % (len(self.input_records), len(self.downloaded), new, updated))
-
+        self.logger.info("Inputs [ %s ] Downloaded [ %s ] Registered [ %s ] Updated [ %s ] Not Downloaded [ %s ]" % (
+        len(self.input_records), downloaded, new, updated, not_downloaded))
 
     def read_input(self, input_file):
 
@@ -220,12 +233,14 @@ class BSPJPL():
 
                 if row.get("need_download") in ['True', 'true', '1', 't', 'y', 'yes']:
                     row["need_download"] = True
+
+                    self.need_download += 1
+
                 else:
                     row["need_download"] = False
+
+                    self.not_need_download += 1
 
                 records.append(row)
 
         return records
-
-
-
