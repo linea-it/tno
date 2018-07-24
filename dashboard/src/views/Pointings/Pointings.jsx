@@ -1,13 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Grid,
-  Row,
-  Col,
-  Panel,
-  ListGroup,
-  ListGroupItem,
-  Image,
-} from 'react-bootstrap';
+import { Grid, Row, Col, Panel } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import PointingApi from './PointingApi';
 import PointingsStats from './PointingsStats';

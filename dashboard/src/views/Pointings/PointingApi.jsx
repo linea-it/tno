@@ -14,14 +14,12 @@ class PointingApi {
     filters.forEach(function(el) {
       params[el.property] = el.value;
     });
-
     return axios.get(`${this.api}/pointing/`, { params: params });
   };
 
   getPointingRecord = ({ id }) => axios.get(`${this.api}/pointing/${id}/`);
 
   getPointingCount = () => axios.get(`${this.api}/pointing/`);
-
   // gets in band
   getPointingBand_u = () => axios.get(`${this.api}/pointing/?band__in=u`);
   getPointingBand_y = () => axios.get(`${this.api}/pointing/?band__in=Y`);
