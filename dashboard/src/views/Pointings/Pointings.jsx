@@ -1,16 +1,8 @@
 import React, { Component } from 'react';
-import {
-  Grid,
-  Row,
-  Col,
-  Panel,
-  ListGroup,
-  ListGroupItem,
-  Image,
-} from 'react-bootstrap';
+import { Grid, Row, Col, Panel } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import PointingApi from './PointingApi';
-import PointingsStats from './PointingsStats';
+import PointingStats from './PointingStats';
 import PointingList from './PointingList';
 import PropTypes from 'prop-types';
 import Card from 'components/Card/Card.jsx';
@@ -35,31 +27,13 @@ class PointingsPanel extends Component {
       loading: false,
     };
   }
-
-  componentDidMount() {
-    this.api.getPointingCount().then(res => {
-      const r = res.data;
-      this.setState({
-        totalSize: r.count,
-      });
-    });
-
-    // this.api.getPointingCount().then(res => {
-    //   const r = res.data;
-    //   this.setState({
-    //     band_u: r.band_u,
-    //   });
-
-    //   // this.setState({ record: record });
-    // });
-  }
   render() {
     return (
       <div className="content">
         <Grid fluid>
           <Row>
             <Col md={12}>
-              <PointingsStats />
+              <PointingStats />
             </Col>
           </Row>
           <Row>
