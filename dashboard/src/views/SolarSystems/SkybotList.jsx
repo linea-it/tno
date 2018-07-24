@@ -107,6 +107,7 @@ class SkybotList extends Component {
   static propTypes = {
     history: PropTypes.any.isRequired,
     match: PropTypes.object.isRequired,
+    filters: PropTypes.array,
   };
 
   get initialState() {
@@ -120,6 +121,7 @@ class SkybotList extends Component {
       search: '',
       record: '',
       show: false,
+      filtered: null,
     };
   }
 
@@ -144,7 +146,6 @@ class SkybotList extends Component {
   handleSearch = () => {
     // event.preventDefault();
     if (this.state.search) {
-      // console.log('fazer a busca');
       // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
       this.setState(
         { page: 1 },
@@ -166,12 +167,13 @@ class SkybotList extends Component {
     );
   };
 
-  fetchData = (page, sizePerPage, search) => {
-    // console.log('fetchData(%o, %o, %o)', page, sizePerPage, search);
+  fetchData = (page, sizePerPage, search, Arrayfilters = []) => {
+    //console.log('fetchData(%o, %o, %o)', page, sizePerPage, search);
     this.setState({ loading: true });
 
     const params = {
       pageSize: sizePerPage,
+      filters: [],
     };
 
     if (search) {
@@ -179,9 +181,15 @@ class SkybotList extends Component {
     } else {
       params.page = page;
     }
+
+    if (Object.keys(Arrayfilters).length === 0) {
+      this.setState(this.initialState);
+    } else {
+      params.filters = Arrayfilters;
+    }
+
     this.api.getSkybotLists(params).then(res => {
       const r = res.data;
-
       this.setState({
         data: r.results,
         totalSize: r.count,
@@ -196,8 +204,19 @@ class SkybotList extends Component {
     this.setState({ show: true });
   };
 
+  onFilter = filter => {
+    this.setState(
+      { filtered: filter },
+      this.fetchData(
+        this.state.page,
+        this.state.sizePerPage,
+        this.state.search,
+        filter
+      )
+    );
+  };
+
   closeCreate = () => {
-    console.log('Entrei aqui');
     this.setState({ show: false });
   };
 
@@ -217,7 +236,7 @@ class SkybotList extends Component {
     const rowEvents = {
       onDoubleClick: (e, row) => {
         history.push('/skybotdetail/' + row.id);
-        console.log('fetchData(%o, %o, %o)', page, sizePerPage, search);
+        //console.log('fetchData(%o, %o, %o)', page, sizePerPage, search);
       },
     };
 
@@ -227,6 +246,9 @@ class SkybotList extends Component {
           <ButtonToolbar>
             <FormGroup>
               <InputGroup>
+                <InputGroup.Button>
+                  <Button onClick={this.showDetail}>Filter</Button>
+                </InputGroup.Button>
                 <FormControl
                   type="text"
                   placeholder="Search By name, number"
@@ -234,10 +256,6 @@ class SkybotList extends Component {
                   onChange={this.onChangeSearch}
                   onKeyPress={this.onKeyPress}
                 />
-
-                <InputGroup.Button>
-                  <Button onClick={this.showDetail}>Filter</Button>
-                </InputGroup.Button>
 
                 <InputGroup.Button>
                   <Button onClick={this.handleSearch}>Search</Button>
@@ -272,7 +290,11 @@ class SkybotList extends Component {
             })}
           />
         </div>
-        <FilterSkybot show={this.state.show} onHide={this.closeCreate} />
+        <FilterSkybot
+          onFilter={this.onFilter}
+          show={this.state.show}
+          onHide={this.closeCreate}
+        />
       </div>
     );
   }

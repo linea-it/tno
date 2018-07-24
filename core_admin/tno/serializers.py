@@ -56,7 +56,6 @@ class PointingSerializer(serializers.ModelSerializer):
 
     def get_date_obs(self, obj):
         try:
-            # return "teste"
              return obj.date_obs.strftime('%Y/%m/%d')
         except:
             return None

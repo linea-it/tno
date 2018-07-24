@@ -37,8 +37,6 @@ class SolarSystemsPanel extends Component {
             <Col md={6}>
               <SkybotStats />
             </Col>
-            {/* </Row>
-          <Row> */}
             <Panel bsStyle="info">
               <Panel.Heading>
                 <Panel.Title componentClass="h1">
@@ -55,7 +53,6 @@ class SolarSystemsPanel extends Component {
             </Panel>
           </Row>
         </Grid>
-        {/* <FilterSkybot /> */}
       </div>
     );
   }
