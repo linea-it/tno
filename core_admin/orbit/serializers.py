@@ -14,6 +14,8 @@ class OrbitRunSerializer(serializers.ModelSerializer):
     proccess = serializers.PrimaryKeyRelatedField(
         queryset=Proccess.objects.all(), many=False)
 
+    proccess_displayname = serializers.SerializerMethodField()
+
     class Meta:
         model = OrbitRun
         fields = (
@@ -24,7 +26,8 @@ class OrbitRunSerializer(serializers.ModelSerializer):
             'input_list',
             'status',
             'input_displayname',
-            'proccess'
+            'proccess',
+            'proccess_displayname'
             )
 
     def get_owner(self, obj):
@@ -36,5 +39,11 @@ class OrbitRunSerializer(serializers.ModelSerializer):
     def get_input_displayname(self, obj):
         try:
             return obj.input_list.displayname
+        except:
+            return None
+
+    def get_proccess_displayname(self, obj):
+        try:
+            return "%s - %s" % (obj.proccess.id, obj.input_list.displayname)
         except:
             return None

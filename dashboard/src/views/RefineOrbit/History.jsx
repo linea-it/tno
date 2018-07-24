@@ -15,9 +15,8 @@ import OrbitApi from './OrbitApi';
 const columns = [
   {
     text: 'Proccess',
-    dataField: 'proccess',
-    width: 80,
-    align: 'center',
+    dataField: 'proccess_displayname',
+    width: 300,
     headerStyle: formatColumnHeader,
   },
   {

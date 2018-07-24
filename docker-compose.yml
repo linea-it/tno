@@ -63,6 +63,12 @@ services:
       - backend
     command: ./entrypoint.sh
 
+  # NIMA
+  nima:
+    image: linea/nima:7
+    volumes:
+      - ${PROCCESS_DIR}:/data
+
 networks:
   backend:
 # Baseado neste exemplo

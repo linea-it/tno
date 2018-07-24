@@ -7,7 +7,10 @@ from subprocess import DEVNULL, STDOUT, check_call, CalledProcessError
 from datetime import datetime
 import humanize
 import subprocess
-
+import time
+from random import randrange
+from orbit.models import BspJplFile
+import logging
 
 class BSPJPL():
     """
@@ -17,7 +20,9 @@ class BSPJPL():
         o script foi disponibilizado neste diret
     """
 
-    def __init__(self):
+    def __init__(self, debug_mode=False):
+
+        self.logger = logging.getLogger("refine_orbit")
 
         # Verifica se o script small_body_spk esta disponivel no diretorio bin e se tem permissao de execucao
         self.small_body_spk = os.path.join(settings.BIN_DIR, 'small_body_spk')
@@ -29,6 +34,12 @@ class BSPJPL():
 
         if settings.BSP_JPL_DIR is None:
             raise Exception("it is necessary to have a valid path defined in the BSP_JPL_DIR settings variable.")
+
+        self.debug_mode = debug_mode
+
+        self.input_records = []
+
+        self.downloaded = []
 
     def download(self, name, outṕut_path):
 
@@ -48,7 +59,14 @@ class BSPJPL():
                 settings.EMAIL_NOTIFICATIONS,
                 file_path]
 
-            check_call(args, stdout=DEVNULL, stderr=STDOUT)
+            # Se o mode de debug estiver ligado pula a etapa de download e acrescenta um sleep
+            if self.debug_mode:
+                # DEBUG MODE NAO FAZ DOWNLOAD
+                time.sleep(randrange(5))
+
+            else:
+                # executa de fato o download.
+                check_call(args, stdout=DEVNULL, stderr=STDOUT)
 
         except CalledProcessError:
             # TODO aqui deve ser adicionar uma mensagem de erro no log.
@@ -84,10 +102,12 @@ class BSPJPL():
         # Le o arquivo de entrada e criar uma lista com nome e numero do objeto.
         records = self.read_input(input_file)
 
+        self.input_records = records
+
         # Configuracao do Parsl.
         dfk = DataFlowKernel(config=settings.PARSL_CONFIG)
 
-        # Configuracao do Parsl Log. TODO: deve ficar separado no diretorio de processo.
+        # Configuracao do Parsl Log.
         parsl.set_file_logger(os.path.join(output_path, 'parsl.log'))
 
         download_log = os.path.join(output_path, 'download_bsp_jpl.log')
@@ -132,8 +152,13 @@ class BSPJPL():
 
         # executa o app Parsl para cara registro em paralelo
         results = []
-        for name in records:
-            results.append(start_parsl_job(name, files_path))
+        for row in records:
+            # Utiliza o parsl apenas para os objetos que estao marcados
+            # para serem baixados.
+            if row.get("need_download"):
+                results.append(start_parsl_job(row.get("name"), files_path))
+
+
 
         # Espera o Resultado de todos os jobs.
         outputs = [i.result() for i in results]
@@ -143,8 +168,8 @@ class BSPJPL():
 
         dfk.cleanup()
 
-        print("OUTPUTS:")
-        print(outputs)
+        self.downloaded = outputs
+
 
         t1 = datetime.now()
         tdelta = t1 - t0
@@ -153,12 +178,54 @@ class BSPJPL():
             f.write('Download Completed in %s\n' % humanize.naturaldelta(tdelta))
         f.close()
 
+        self.register_downloaded_files(outputs)
+
+
+
+    def register_downloaded_files(self, records):
+        # Apos o Download e necessario o registro
+        self.logger.info("Register downloaded BSP JPL")
+
+        new = 0
+        updated = 0
+
+        for record in records:
+
+            obj, created = BspJplFile.objects.update_or_create(
+                name=record.get("name"),
+                defaults={
+                    'filename': record.get("filename"),
+                    'download_start_time': record.get("download_start_time"),
+                    'download_finish_time': record.get("download_finish_time"),
+                    'file_size': record.get("file_size"),
+                }
+            )
+
+            if created:
+                new = new + 1
+                self.logger.debug("Registered [ %s ] " % record.get("name"))
+            else:
+                updated = updated + 1
+                self.logger.debug("Updated [ %s ] " % record.get("name"))
+
+        self.logger.info("Inputs [ %s ] Downloaded [ %s ] Registered [ %s ] Updated [ %s ]" % (len(self.input_records), len(self.downloaded), new, updated))
+
+
     def read_input(self, input_file):
 
         records = list()
         with open(input_file) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=';')
             for row in reader:
-                records.append(row['name'])
+
+                if row.get("need_download") in ['True', 'true', '1', 't', 'y', 'yes']:
+                    row["need_download"] = True
+                else:
+                    row["need_download"] = False
+
+                records.append(row)
 
         return records
+
+
+
