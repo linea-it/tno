@@ -34,23 +34,25 @@ class SolarSystemsPanel extends Component {
       <div className="content">
         <Grid fluid>
           <Row>
-            <Col md={6}>
+            <Col md={12}>
               <SkybotStats />
             </Col>
-            <Panel bsStyle="info">
-              <Panel.Heading>
-                <Panel.Title componentClass="h1">
-                  <strong>List with all pointings</strong>
-                </Panel.Title>
-              </Panel.Heading>
-              <Col md={6}>
+          </Row>
+          <Row>
+            <Col md={12}>
+              <Panel bsStyle="info">
+                <Panel.Heading>
+                  <Panel.Title componentClass="h1">
+                    <strong>List with all skybot</strong>
+                  </Panel.Title>
+                </Panel.Heading>
                 <Card
                   title="SkyBot Output"
                   category="complete list with all entries recorded in the database. can search for object name and number"
                   content={<SkybotList />}
                 />
-              </Col>
-            </Panel>
+              </Panel>
+            </Col>
           </Row>
         </Grid>
       </div>

@@ -6,9 +6,7 @@ import Observation from './Observation';
 import PropTypes from 'prop-types';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-
 import SkybotApi from './SkybotApi';
-
 import PropertiesSkybot from './Properties';
 
 class SkybotDetail extends Component {
@@ -56,7 +54,7 @@ class SkybotDetail extends Component {
       <div className="content">
         <Card
           title="Detail"
-          category=""
+          category="These are the details of the object of name Lorem Ipsum and number 000"
           content={
             <Grid fluid>
               <Row>
