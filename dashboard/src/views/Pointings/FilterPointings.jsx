@@ -17,16 +17,12 @@ import Select from 'react-select';
 const options = {
   band: [
     {
-      value: 'u',
-      label: 'u',
+      value: 'g',
+      label: 'g',
     },
     {
       value: 'r',
       label: 'r',
-    },
-    {
-      value: 'g',
-      label: 'g',
     },
     {
       value: 'i',
@@ -40,6 +36,10 @@ const options = {
       value: 'Y',
       label: 'Y',
     },
+    {
+      value: 'u',
+      label: 'u',
+    },    
   ],
 
   valueTimes: [
@@ -229,7 +229,7 @@ class FilterPointings extends React.Component {
                       controlId="formValidationError2"
                       validationState={this.state.validation}
                     >
-                      <ControlLabel>Expose Time</ControlLabel>
+                      <ControlLabel>Exposure Time</ControlLabel>
                       <Select
                         onChange={this.handleSelectExpTime}
                         options={options.valueTimes}

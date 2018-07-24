@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 import {
   Grid,
   Row,
@@ -10,6 +11,7 @@ import {
 } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import PointingApi from './PointingApi';
+import Statistics from './Statistics';
 import PointingList from './PointingList';
 import PropTypes from 'prop-types';
 import Card from 'components/Card/Card.jsx';
