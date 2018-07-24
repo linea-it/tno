@@ -19,13 +19,12 @@ import { formatColumnHeader, coordinateFormater } from 'utils';
 
 const skybot_columns = [
   {
-    text: 'Name',
+    text: 'Object Name',
     dataField: 'name',
     width: 20,
     align: 'center',
     headerStyle: formatColumnHeader,
-    helpText:
-      '(ucd=“meta.id;meta.main”) Object name (official or provisional designation).',
+    helpText: 'Object name (official or provisional designation).',
     headerTitle: column => `${column.helpText}`,
   },
 
@@ -35,8 +34,7 @@ const skybot_columns = [
     align: 'center',
     width: 20,
     headerStyle: formatColumnHeader,
-    helpText:
-      '(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).',
+    helpText: 'Object number (not all objects have numbers assigned).',
     headerTitle: column => `${column.helpText}`,
   },
 
@@ -47,8 +45,7 @@ const skybot_columns = [
     width: 20,
     headerStyle: formatColumnHeader,
     formatter: coordinateFormater,
-    helpText:
-      '(ucd=“pos.eq.ra;meta.main”) Right ascension of the identified object in degrees.',
+    helpText: 'Right ascension of the identified object in degrees.',
     headerTitle: column => `${column.helpText}`,
   },
 
@@ -59,18 +56,45 @@ const skybot_columns = [
     width: 20,
     headerStyle: formatColumnHeader,
     formatter: coordinateFormater,
-    helpText:
-      '(ucd=“pos.eq.dec;meta.main”) Declination of the identified object in degrees.',
+    helpText: 'Declination of the identified object in degrees.',
     headerTitle: column => `${column.helpText}`,
   },
 
+  // {
+  //   text: 'Exposure',
+  //   dataField: 'expnum',
+  //   align: 'center',
+  //   width: 20,
+  //   headerStyle: formatColumnHeader,
+  //   helpText: 'Filter used to do the observation (u, g, r, i, z, Y).',
+  //   headerTitle: column => `${column.helpText}`,
+  // },
+
   {
-    text: 'Exposure',
-    dataField: 'expnum',
+    text: 'Dynamic class ',
+    dataField: 'dynclass',
     align: 'center',
     width: 20,
     headerStyle: formatColumnHeader,
-    helpText: 'Filter used to do the observation (u, g, r, i, z, Y).',
+    helpText: 'Object class (TNO, Centaur, Trojan, etc.).',
+    headerTitle: column => `${column.helpText}`,
+  },
+  {
+    text: 'Visual magnitude',
+    dataField: 'mv',
+    align: 'center',
+    width: 20,
+    headerStyle: formatColumnHeader,
+    helpText: 'Visual magnitude',
+    headerTitle: column => `${column.helpText}`,
+  },
+  {
+    text: 'Error on the position',
+    dataField: 'errpos',
+    align: 'center',
+    width: 20,
+    headerStyle: formatColumnHeader,
+    helpText: 'Uncertainty on the (RA,DEC) coordinates',
     headerTitle: column => `${column.helpText}`,
   },
 ];
@@ -83,6 +107,7 @@ class SkybotList extends Component {
   static propTypes = {
     history: PropTypes.any.isRequired,
     match: PropTypes.object.isRequired,
+    filters: PropTypes.array,
   };
 
   get initialState() {
@@ -96,6 +121,7 @@ class SkybotList extends Component {
       search: '',
       record: '',
       show: false,
+      filtered: null,
     };
   }
 
@@ -120,7 +146,6 @@ class SkybotList extends Component {
   handleSearch = () => {
     // event.preventDefault();
     if (this.state.search) {
-      // console.log('fazer a busca');
       // TO DO ver como passar o estado da paginação nas pesquisa de mais de um registro
       this.setState(
         { page: 1 },
@@ -142,12 +167,13 @@ class SkybotList extends Component {
     );
   };
 
-  fetchData = (page, sizePerPage, search) => {
-    // console.log('fetchData(%o, %o, %o)', page, sizePerPage, search);
+  fetchData = (page, sizePerPage, search, Arrayfilters = []) => {
+    //console.log('fetchData(%o, %o, %o)', page, sizePerPage, search);
     this.setState({ loading: true });
 
     const params = {
       pageSize: sizePerPage,
+      filters: [],
     };
 
     if (search) {
@@ -155,9 +181,15 @@ class SkybotList extends Component {
     } else {
       params.page = page;
     }
+
+    if (Object.keys(Arrayfilters).length === 0) {
+      this.setState(this.initialState);
+    } else {
+      params.filters = Arrayfilters;
+    }
+
     this.api.getSkybotLists(params).then(res => {
       const r = res.data;
-
       this.setState({
         data: r.results,
         totalSize: r.count,
@@ -172,8 +204,19 @@ class SkybotList extends Component {
     this.setState({ show: true });
   };
 
+  onFilter = filter => {
+    this.setState(
+      { filtered: filter },
+      this.fetchData(
+        this.state.page,
+        this.state.sizePerPage,
+        this.state.search,
+        filter
+      )
+    );
+  };
+
   closeCreate = () => {
-    console.log("Entrei aqui");
     this.setState({ show: false });
   };
 
@@ -193,7 +236,7 @@ class SkybotList extends Component {
     const rowEvents = {
       onDoubleClick: (e, row) => {
         history.push('/skybotdetail/' + row.id);
-        console.log('fetchData(%o, %o, %o)', page, sizePerPage, search);
+        //console.log('fetchData(%o, %o, %o)', page, sizePerPage, search);
       },
     };
 
@@ -203,6 +246,9 @@ class SkybotList extends Component {
           <ButtonToolbar>
             <FormGroup>
               <InputGroup>
+                <InputGroup.Button>
+                  <Button onClick={this.showDetail}>Filter</Button>
+                </InputGroup.Button>
                 <FormControl
                   type="text"
                   placeholder="Search By name, number"
@@ -210,10 +256,6 @@ class SkybotList extends Component {
                   onChange={this.onChangeSearch}
                   onKeyPress={this.onKeyPress}
                 />
-
-                <InputGroup.Button>
-                  <Button onClick={this.showDetail}>Filter</Button>
-                </InputGroup.Button>
 
                 <InputGroup.Button>
                   <Button onClick={this.handleSearch}>Search</Button>
@@ -248,7 +290,11 @@ class SkybotList extends Component {
             })}
           />
         </div>
-        <FilterSkybot show={this.state.show} onHide={this.closeCreate} />
+        <FilterSkybot
+          onFilter={this.onFilter}
+          show={this.state.show}
+          onHide={this.closeCreate}
+        />
       </div>
     );
   }

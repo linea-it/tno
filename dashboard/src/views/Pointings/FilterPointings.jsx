@@ -19,7 +19,7 @@ const options = {
     {
       value: 'g',
       label: 'g',
-    },    
+    },
     {
       value: 'r',
       label: 'r',
@@ -39,7 +39,7 @@ const options = {
     {
       value: 'u',
       label: 'u',
-    },    
+    },
   ],
 
   valueTimes: [
@@ -229,12 +229,13 @@ class FilterPointings extends React.Component {
                       controlId="formValidationError2"
                       validationState={this.state.validation}
                     >
-                      <ControlLabel>Expose Time</ControlLabel>
+                      <ControlLabel>Exposure Time</ControlLabel>
                       <Select
                         onChange={this.handleSelectExpTime}
                         options={options.valueTimes}
                         placeholder="Select your object table(s)"
                         value={this.state.expTime}
+                        clearable={false}
                       />
                     </FormGroup>
                   </Col>
@@ -295,6 +296,7 @@ class FilterPointings extends React.Component {
                         removeSelected={true}
                         simpleValue
                         value={this.state.band}
+                        clearable={false}
                       />
                     </FormGroup>
                   </Col>

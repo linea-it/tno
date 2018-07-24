@@ -37,7 +37,7 @@ const appRoutes = [
     component: PointingsPanel,
   },
   {
-    path: '/solarsystems',
+    path: '/solarsystem',
     name: 'Search SSSO',
     // icon: 'pe-7s-sun',
     component: SolarSystemsPanel,
