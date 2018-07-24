@@ -31,7 +31,7 @@ class PropertiesPointing extends Component {
       helpText: 'Night at which the observation was made.',
     },
     {
-      text: 'Observation Date',
+      text: 'Date of observation',
       dataField: 'date_obs',
       helpText: 'Date and time of observation',
     },
@@ -42,18 +42,18 @@ class PropertiesPointing extends Component {
         'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
     },
     {
-      text: 'CCD',
+      text: 'CCD number',
       dataField: 'ccdnum',
       helpText: 'CCD Number (1, 2, ..., 62)',
     },
     {
-      text: 'Filter',
+      text: 'Band',
       dataField: 'band',
       helpText: 'Filter used to do the observation (u, g, r, i, z, Y).',
     },
 
     {
-      text: 'Exposure time',
+      text: 'Exposure time [s]',
       dataField: 'exptime',
       helpText: 'Exposure time of observation.',
     },
@@ -81,90 +81,90 @@ class PropertiesPointing extends Component {
       dataField: 'crossra0',
     },
     {
-      text: 'RA (deg)',
+      text: 'Right Ascension of pointing (center of mosaic of CCDs)',
       dataField: 'radeg',
     },
     {
-      text: 'Dec (deg)',
+      text: 'Declination of pointing (center of mosaic of CCDs)',
       dataField: 'decdeg',
     },
     {
-      text: 'racmin',
+      text: 'racmin [deg]',
       dataField: 'racmin',
       helpText: 'Minimal right ascension respectively of the CCD cover.',
     },
     {
-      text: 'racmax',
+      text: 'racmax [deg]',
       dataField: 'racmax',
       helpText: 'Maximum right ascension respectively of the CCD cover.',
     },
     {
-      text: 'deccmin',
+      text: 'deccmin [deg]',
       dataField: 'deccmin',
       helpText: 'Minimum declination respectively of the CCD cover.',
     },
     {
-      text: 'deccmax',
+      text: 'deccmax [deg]',
       dataField: 'deccmax',
       helpText: 'Maximum declination respectively of the CCD cover.',
     },
     {
-      text: 'ra_cent',
+      text: 'ra_cent [deg]',
       dataField: 'ra_cent',
       helpText: 'Right ascension of the CCD center',
     },
     {
-      text: 'dec_cent',
+      text: 'dec_cent [deg]',
       dataField: 'dec_cent',
       helpText: 'Declination of the CCD center',
     },
     {
-      text: 'rac1',
+      text: 'rac1 [deg]',
       dataField: 'rac1',
       helpText: 'CCD Corner Coordinates 1 - upper left.',
     },
     {
-      text: 'rac2',
+      text: 'rac2 [deg]',
       dataField: 'rac2',
       helpText: 'CCD Corner Coordinates 2 - lower left.',
     },
     {
-      text: 'rac3',
+      text: 'rac3 [deg]',
       dataField: 'rac3',
       helpText: 'CCD Corner Coordinates 3 - lower right.',
     },
     {
-      text: 'rac4',
+      text: 'rac4 [deg]',
       dataField: 'rac4',
       helpText: 'CCD Corner Coordinates 4 - upper right).',
     },
     {
-      text: 'decc1',
+      text: 'decc1 [deg]',
       dataField: 'decc1',
       helpText: 'CCD Corner Coordinates 1 - upper left.',
     },
     {
-      text: 'decc2',
+      text: 'decc2[deg]',
       dataField: 'decc2',
       helpText: 'CCD Corner Coordinates 2 - lower left.',
     },
     {
-      text: 'decc3',
+      text: 'decc3[deg]',
       dataField: 'decc3',
       helpText: 'CCD Corner Coordinates 3 - lower right.)',
     },
     {
-      text: 'decc4',
+      text: 'decc4 [deg]',
       dataField: 'decc4',
       helpText: 'CCD Corner Coordinates 4 - upper right).',
     },
     {
-      text: 'ra_size',
+      text: 'ra_size [deg]',
       dataField: 'ra_size',
       helpText: 'CCD dimensions in degrees (width × height).',
     },
     {
-      text: 'dec_size',
+      text: 'dec_size [deg]',
       dataField: 'dec_size',
       helpText: 'CCD dimensions in degrees (width × height).',
     },
@@ -234,7 +234,7 @@ class PropertiesPointing extends Component {
       <div className="content">
         <Card
           title="Details Pointing"
-          category=""
+          category="These are the details of the object named Lorem Ipsum and number 000"
           content={
             <div>
               <Col mdOffset={11}>

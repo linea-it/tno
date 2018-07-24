@@ -17,27 +17,31 @@ class SkybotDetail extends Component {
       dataField: 'pointing',
     },
     {
-      text: 'Name',
+      text: 'Object Name',
       dataField: 'name',
     },
     {
-      text: 'Object classification',
+      text: 'Dynamic class',
       dataField: 'dynclass',
     },
     {
-      text: 'RA',
+      text: 'Right Ascension (RA) [hms]',
       dataField: 'ra',
     },
     {
-      text: 'Dec',
+      text: 'Declination (Dec) [dms]',
       dataField: 'dec',
     },
     {
-      text: 'Mv',
+      text: 'Visual Magnitude',
       dataField: 'mv',
     },
     {
-      text: 'D',
+      text: 'Error on the position [arcsec]',
+      dataField: 'errpos',
+    },
+    {
+      text: 'Angular distance [arcsec]',
       dataField: 'd',
     },
     {
@@ -49,60 +53,72 @@ class SkybotDetail extends Component {
       dataField: 'ddec',
     },
     {
-      text: 'Dgeo',
+      text: 'Right Ascension (RA) [degree]',
+      dataField: 'raj2000',
+    },
+    {
+      text: 'Declination (Dec) [degree]',
+      dataField: 'decj2000',
+    },
+    {
+      text: 'Geocentric distance [AU]',
       dataField: 'dgeo',
     },
     {
-      text: 'Dhelio',
+      text: 'Heliocentric distance [AU]',
       dataField: 'dhelio',
     },
     {
-      text: 'Phase',
+      text: 'Phase angle [degrees]',
       dataField: 'phase',
     },
     {
-      text: 'SolElong',
+      text: 'Solar elongation [degree]',
       dataField: 'solelong',
     },
     {
-      text: 'Px',
+      text: 'Vector position in x [AU]',
       dataField: 'px',
     },
     {
-      text: 'Py',
+      text: 'Vector position in y [AU]',
       dataField: 'py',
     },
     {
-      text: 'Vx ',
+      text: 'Vector position in z [AU]',
+      dataField: 'pz',
+    },
+    {
+      text: 'Vector motion in x [AU/d]',
       dataField: 'vx',
     },
     {
-      text: 'Vy ',
+      text: 'Vector motion in y [AU/d]',
       dataField: 'vy',
     },
     {
-      text: 'Vz ',
+      text: 'Vector motion in z [AU/d]',
       dataField: 'vz',
     },
     {
-      text: 'JDRef ',
+      text: 'Epoch of the position vector [Julien Day] ',
       dataField: 'jdref',
     },
     {
-      text: 'ExternalLink ',
-      dataField: 'externallink',
+      text: 'Band',
+      dataField: 'band',
     },
     {
       text: 'Exposure',
       dataField: 'expnum',
     },
     {
-      text: 'CCD',
+      text: 'CCD number',
       dataField: 'ccdnum',
     },
     {
-      text: 'Filter',
-      dataField: 'band',
+      text: 'ExternalLink ',
+      dataField: 'externallink',
     },
   ];
 

@@ -2,8 +2,15 @@ import humanize
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
+<<<<<<< HEAD
 from .models import Pointing, SkybotOutput, CustomList, Proccess
 
+=======
+from django.contrib.auth.models import User
+from datetime import date
+from .models import Pointing, SkybotOutput, CustomList, Proccess, Product, Observation, OrbitalParameter
+import humanize
+>>>>>>> 945c8d6f90b32200538bf5ad1903d2241339eaef
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,7 +18,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username',)
 
 
+<<<<<<< HEAD
 class PointingSerializer(serializers.ModelSerializer):
+=======
+    date_obs = serializers.SerializerMethodField()
+
+>>>>>>> 945c8d6f90b32200538bf5ad1903d2241339eaef
     class Meta:
         model = Pointing
         fields = (
@@ -52,6 +64,16 @@ class PointingSerializer(serializers.ModelSerializer):
             'downloaded',
         )
 
+<<<<<<< HEAD
+=======
+    def get_date_obs(self, obj):
+        try:
+             return obj.date_obs.strftime('%Y/%m/%d')
+        except:
+            return None
+
+class SkybotOutputSerializer(serializers.ModelSerializer):
+>>>>>>> 945c8d6f90b32200538bf5ad1903d2241339eaef
 
 class SkybotOutputSerializer(serializers.ModelSerializer):
     pointing = serializers.PrimaryKeyRelatedField(
@@ -154,3 +176,53 @@ class ProccessSerializer(serializers.ModelSerializer):
             'finish_time',
             'status',
         )
+
+class ProductSerializer(serializers.ModelSerializer):
+
+    proccess = serializers.PrimaryKeyRelatedField(
+        queryset=Proccess.objects.all(), many=False)
+
+    class Meta:
+        model = Product
+        fields = (
+            'id',
+            'proccess',
+            'product_type',
+            'database',
+            'schema',
+            'tablename',
+            'rows',
+            'filename',
+            'file_size',
+        )
+
+class ObservationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Observation
+        fields = (
+            'id',
+            'name',
+            'source',
+            'observations',
+            'filename',
+            'download_start_time',
+            'download_finish_time',
+            'file_size',
+            'external_url'
+        )
+
+class OrbitalParameterSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = OrbitalParameter
+        fields = (
+            'id',
+            'name',
+            'source',
+            'filename',
+            'download_start_time',
+            'download_finish_time',
+            'file_size',
+            'external_url'
+        )        

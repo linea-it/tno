@@ -43,14 +43,16 @@ class UserViewSet(viewsets.ModelViewSet):
 class PointingViewSet(viewsets.ModelViewSet):
     queryset = Pointing.objects.all()
     serializer_class = PointingSerializer
-    filter_fields = ('id', 'desfile_id', 'expnum', 'band', 'exptime', 'date_obs')
+    filter_fields = ('id', 'desfile_id', 'expnum', 'band', 'exptime', 'date_obs', 'downloaded')
     search_fields = ('id', 'filename', 'desfile_id', 'expnum')
+    ordering_fields = ('id', 'expnum', 'date_obs', 'nite')
+    ordering = ('-date_obs',)
 
 
 class SkybotOutputViewSet(viewsets.ModelViewSet):
     queryset = SkybotOutput.objects.select_related().all()
     serializer_class = SkybotOutputSerializer
-    filter_fields = ('id', 'name', 'expnum',)
+    filter_fields = ('id', 'name', 'expnum', 'dynclass','mv')
     search_fields = ('name', 'dynclass', 'num')
 
     @list_route()
