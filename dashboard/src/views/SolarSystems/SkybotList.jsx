@@ -60,6 +60,34 @@ const skybot_columns = [
     headerTitle: column => `${column.helpText}`,
   },
 
+  // {
+  //   text: 'Exposure',
+  //   dataField: 'expnum',
+  //   align: 'center',
+  //   width: 20,
+  //   headerStyle: formatColumnHeader,
+  //   helpText: 'Filter used to do the observation (u, g, r, i, z, Y).',
+  //   headerTitle: column => `${column.helpText}`,
+  // },
+
+  {
+    text: 'Dynamic class ',
+    dataField: 'dynclass',
+    align: 'center',
+    width: 20,
+    headerStyle: formatColumnHeader,
+    helpText: 'Object class (TNO, Centaur, Trojan, etc.).',
+    headerTitle: column => `${column.helpText}`,
+  },
+  {
+    text: 'Visual magnitude',
+    dataField: 'mv',
+    align: 'center',
+    width: 20,
+    headerStyle: formatColumnHeader,
+    helpText: 'Visual magnitude',
+    headerTitle: column => `${column.helpText}`,
+  },
   {
     text: 'Dynamic class ',
     dataField: 'dynclass',

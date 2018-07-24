@@ -45,7 +45,6 @@ const pointing_columns = [
     helpText: 'Name of FITS file with a CCD image.',
     headerTitle: column => `${column.helpText}`,
   },
-
   {
     text: 'CDD Number',
     dataField: 'ccdnum',
