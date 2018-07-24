@@ -234,7 +234,7 @@ class PropertiesPointing extends Component {
       <div className="content">
         <Card
           title="Details Pointing"
-          category=""
+          category="These are the details of the object named Lorem Ipsum and number 000"
           content={
             <div>
               <Col mdOffset={11}>
