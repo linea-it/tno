@@ -1,11 +1,8 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from orbit.models import OrbitRun
-from tno.models import Proccess
-import os, errno
+import os
 import logging
-from random import randrange
-import time
 from orbit.refine_orbit import RefineOrbit, RefineOrbitDB
 import shutil
 

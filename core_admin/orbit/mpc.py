@@ -2,7 +2,7 @@ from datetime import datetime
 import requests
 import os
 from bs4 import BeautifulSoup
-
+import time
 
 # Structure with two parameters (name, value)
 class Couple:
@@ -140,6 +140,9 @@ class MPC():
                 "file_path": new_file,
                 "path": output_path
             })
+
+        # TODO: Este sleep e para respeitar a politica de seguranca do MPC
+        time.sleep(3)
 
         return download_stats
 

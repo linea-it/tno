@@ -1,15 +1,15 @@
 import os, errno
 import logging
-from sqlalchemy.sql import select, and_, or_, func, subquery, text, case, expression
-from sqlalchemy import Column, Boolean
-from sqlalchemy.sql.expression import literal_column, literal
+from sqlalchemy.sql import select, or_, func, text, case
+from sqlalchemy.sql.expression import literal_column
 from tno.db import DBBase
 import csv
-from .orbitalparameters import GetOrbitalParameters
 from .bsp_jpl import BSPJPL
-from orbit.orbitalparameters import GetOrbitalParameters, GetObservations
-
+from orbit.observations import GetObservations
+from orbit.orbital_parameters import GetOrbitalParameters
 from common.jsonfile import JsonFile
+from datetime import datetime
+import humanize
 
 class RefineOrbit():
     def __init__(self):
@@ -52,6 +52,9 @@ class RefineOrbit():
         # TODO: pode vir como parametro da interface, None para atualizar todos.
         max_age = 30
 
+        self.logger.info("Starting Download")
+
+        t0 = datetime.now()
         # ---------------------- Observations ----------------------
         # Pesquisando as observacoes que precisam ser baixadas
         observations = RefineOrbitDB().get_observations(customlist.tablename, customlist.schema, max_age)
@@ -63,11 +66,14 @@ class RefineOrbit():
         self.getObservations(instance, self.observations_input_file, steps_file)
 
         # ---------------------- Orbital Parameters ----------------------
-        # # Pesquisando os parametros orbitais que precisam ser baixadas
-        # orbital_parameters = RefineOrbitDB().get_orbital_parameters(customlist.tablename, customlist.schema, max_age)
-        #
-        # orbital_parameters_csv = os.path.join(instance.relative_path, 'orbital_parameters.csv')
-        # RefineOrbit().writer_refine_orbit_file_list(orbital_parameters_csv, orbital_parameters)
+        # Pesquisando os parametros orbitais que precisam ser baixadas
+        orbital_parameters = RefineOrbitDB().get_orbital_parameters(customlist.tablename, customlist.schema, max_age)
+
+        self.orbital_parameters_input_file = os.path.join(instance.relative_path, 'orbital_parameters.csv')
+        self.writer_refine_orbit_file_list(self.orbital_parameters_input_file, orbital_parameters)
+
+        # Download dos parametros Orbitais
+        self.getOrbitalParameters(instance, self.orbital_parameters_input_file, steps_file)
 
 
         # ---------------------- BSPs ----------------------
@@ -81,6 +87,11 @@ class RefineOrbit():
         self.getBspJplFiles(instance, self.bsp_jpl_input_file, steps_file)
 
 
+        t1 = datetime.now()
+        tdelta = t1 - t0
+        self.logger.info("Download Finish in %s" % humanize.naturaldelta(tdelta))
+
+
     def getObservations(self, instance, input_file, step_file):
         """
             Executa a etapa de download dos arquivos Observations vindo do AstDys ou MPC,
@@ -91,6 +102,18 @@ class RefineOrbit():
         """
 
         GetObservations().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
+
+
+    def getOrbitalParameters(self, instance, input_file, step_file):
+        """
+            Executa a etapa de download dos arquivos Orbital Parametros vindo do AstDys ou MPC,
+            essa etapa verifica quantos arquivos precisam ser baixados, faz o download
+            e os arquivos ficam disponiveis no diretorio externo ao processo.
+
+        :param instance:
+        """
+
+        GetOrbitalParameters().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
 
 
     def getBspJplFiles(self, instance, input_file, step_file):
@@ -147,7 +170,8 @@ class RefineOrbit():
         """
 
         """
-        self.logger.info("Writing %s " % file_path)
+        self.logger.info("Writing Input File")
+        self.logger.debug("Input File: %s" % file_path)
 
         header_orb_param = ["name", "num", "filename", "need_download"]
 
