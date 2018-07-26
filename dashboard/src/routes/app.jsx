@@ -16,6 +16,8 @@ import Icons from 'views/Icons/Icons';
 import Notifications from 'views/Notifications/Notifications';
 import SkybotDetail from '../views/SolarSystems/SkybotDetail';
 import PointingsDetail from '../views/Pointings/PointingsDetail';
+import App from '../views/RefineOrbit/Details';
+
 
 const appRoutes = [
   {
@@ -23,6 +25,7 @@ const appRoutes = [
     name: 'Dashboard',
     icon: 'fa fa-home',
     component: Dashboard,
+    helpText: 'teste',
   },
   {
     path: '/registration',
@@ -85,6 +88,12 @@ const appRoutes = [
     component: Praia,
   },
   {
+    path: '/details',
+    name: 'Details',
+    component: App,
+    hidden: true,
+  },
+  {
     path: '/astrometry_run/:id',
     name: 'Astrometry Run',
     hidden: true,
@@ -131,7 +140,7 @@ const appRoutes = [
     name: 'Icons',
     icon: 'pe-7s-science',
     component: Icons,
-    hidden: true,
+    hidden: false,
   },
   {
     path: '/notifications',

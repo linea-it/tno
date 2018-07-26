@@ -26,6 +26,8 @@ class OrbitApi {
     axios.patch(`${this.api}/orbit_run/${id}/`, {
       status: 'pending',
     });
-}
 
+  // dados na table do primereact
+  getRefineOrbits = id => axios.get(`${this.api}/orbit_run/${id}`);
+}
 export default OrbitApi;
