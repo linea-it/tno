@@ -123,7 +123,7 @@ class RefineOrbitHistory extends Component {
   };
 
   handleOnSelect = (row, isSelect) => {
-    console.log(row);
+    //console.log(row);
     if (isSelect) {
       this.setState(() => ({
         selected: [row.id],
@@ -135,6 +135,12 @@ class RefineOrbitHistory extends Component {
         selected_record: null,
       }));
     }
+  };
+
+  details = () => {
+    const history = this.props.history;
+    const id = this.state.selected_record.id;
+    history.push({ pathname: `/details/${id}` });
   };
 
   render() {
@@ -164,13 +170,6 @@ class RefineOrbitHistory extends Component {
       selected: selected,
     };
 
-    const history = this.props.history;
-    const rowEvents = {
-      onDoubleClick: (e, row) => {
-        history.push('/astrometry_run/' + row.id);
-      },
-    };
-
     return (
       <div>
         <ReactInterval
@@ -190,6 +189,9 @@ class RefineOrbitHistory extends Component {
                 >
                   Re-execute
                 </Button>
+                <Button disabled={!selected_record} onClick={this.details}>
+                  Detail
+                </Button>
               </ButtonToolbar>
               <BootstrapTable
                 striped
@@ -208,7 +210,6 @@ class RefineOrbitHistory extends Component {
                   spinner: true,
                   background: 'rgba(192,192,192,0.3)',
                 })}
-                rowEvents={rowEvents}
                 selectRow={selectRow}
               />
             </div>
