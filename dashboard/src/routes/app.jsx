@@ -16,8 +16,7 @@ import Icons from 'views/Icons/Icons';
 import Notifications from 'views/Notifications/Notifications';
 import SkybotDetail from '../views/SolarSystems/SkybotDetail';
 import PointingsDetail from '../views/Pointings/PointingsDetail';
-import App from '../views/RefineOrbit/Details';
-
+import RefineOrbitDetail from '../views/RefineOrbit/Details';
 
 const appRoutes = [
   {
@@ -90,7 +89,7 @@ const appRoutes = [
   {
     path: '/details',
     name: 'Details',
-    component: App,
+    component: RefineOrbitDetail,
     hidden: true,
   },
   {
@@ -103,6 +102,11 @@ const appRoutes = [
     path: '/refine_orbit',
     name: 'Refine Orbit',
     component: RefineOrbitPanel,
+  },
+  {
+    path: '/prediction',
+    name: 'Prediction of Occultations',
+    component: Placeholder,
   },
   {
     path: '/post_results',
@@ -140,7 +144,7 @@ const appRoutes = [
     name: 'Icons',
     icon: 'pe-7s-science',
     component: Icons,
-    hidden: false,
+    hidden: true,
   },
   {
     path: '/notifications',

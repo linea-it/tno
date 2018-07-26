@@ -240,7 +240,6 @@ class RefineOrbit():
 
             self.logger.debug("TESTE: %s" % astrometry_position_file)
 
-            self.logger.info("FUNCIONOU PORRAAAAAA")
 
     def copy_observation_file(self, obj, obj_dir):
         # Copiar arquivo de Observacoes do Objeto.

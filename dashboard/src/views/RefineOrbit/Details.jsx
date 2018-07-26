@@ -28,7 +28,7 @@ import { Column } from 'primereact/column';
 import { Accordion, AccordionTab } from 'primereact/accordion';
 import { Panel } from 'primereact/panel';
 
-class App extends Component {
+class RefineOrbitDetail extends Component {
   state = this.initialState;
   api = new OrbitApi();
 
@@ -145,13 +145,13 @@ class App extends Component {
     const lenght = this.state.valor;
     for (let index = 1; index <= lenght; index++) {
       preview.push(
-        <AccordionTab header={`Objeto${index}`}>
+        <AccordionTab header={`2013 RR98 ${index}`}>
           <Grid>
             <Row>
               <Col md={6}>
                 <Card
                   title="Preview"
-                  subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed, gravida."
+                  subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
                 >
                   <img width="525" height="380" src={plot1} />
                 </Card>
@@ -159,7 +159,7 @@ class App extends Component {
               <Col md={6}>
                 <Card
                   title="Preview"
-                  subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed, gravida."
+                  subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
                 >
                   <img width="525" height="380" src={plot2} />
                 </Card>
@@ -178,7 +178,7 @@ class App extends Component {
               <Col md={6}>
                 <Card
                   title="Preview"
-                  subTitle=" Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed, gravida."
+                  subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
                 >
                   <img width="525" height="380" src={plot4} />
                 </Card>
@@ -206,19 +206,19 @@ class App extends Component {
                     <ListGroup>
                       <ListGroupItem>
                         Total de Objetos de entrada&nbsp;:&nbsp;&nbsp;
-                        <strong>11332</strong>
+                        <strong>5</strong>
                       </ListGroupItem>
                       <ListGroupItem>
                         Total de objetos excecutados&nbsp;:&nbsp;&nbsp;
-                        <strong>5326</strong>
+                        <strong>4</strong>
                       </ListGroupItem>
                       <ListGroupItem>
                         Total de objetos falhados&nbsp;:&nbsp;&nbsp;
-                        <strong>3246</strong>
+                        <strong>0</strong>
                       </ListGroupItem>
                       <ListGroupItem>
                         Tempo de execução&nbsp;:&nbsp;&nbsp;
-                        <strong>07:39:10</strong>
+                        <strong>00:02:10</strong>
                       </ListGroupItem>
                       <ListGroupItem>
                         Tempo médio por objeto&nbsp;:&nbsp;&nbsp;
@@ -246,7 +246,7 @@ class App extends Component {
         <Card
           style={{ border: 1 + 'px solid #A9A9A9' }}
           title="Preview"
-          subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed, gravida."
+          subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
         >
           <Toolbar>
             <Dropdown
@@ -276,7 +276,7 @@ class App extends Component {
         <Card
           style={{ border: 1 + 'px solid #A9A9A9' }}
           title="Table of Objects"
-          subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed, gravida."
+          subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
         >
           <Toolbar>
             <div className="ui-toolbar-group-left">
@@ -305,4 +305,4 @@ class App extends Component {
     );
   }
 }
-export default App;
+export default RefineOrbitDetail;
