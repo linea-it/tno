@@ -8,7 +8,6 @@ class PraiaApi {
   getPraiaRuns = ({ page, pageSize, ordering, filters = [] }) => {
     const params = { page: page, pageSize: pageSize, ordering: ordering };
     filters.forEach(element => {
-      console.log(element);
       params[element.property] = element.value;
     });
 

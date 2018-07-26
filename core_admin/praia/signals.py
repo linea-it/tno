@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from praia.models import Configuration
 from praia.models import Run
@@ -9,10 +9,11 @@ from random import randrange
 import time
 
 @receiver(post_save, sender=Run)
-def test_signal(sender, instance, signal, created, **kwargs):
+def on_create_praia_run_signal(sender, instance, signal, created, **kwargs):
     """
-        This method creates an access token every time a new user is created.
+
     """
+    print("Entrou no PRAIA SIGNAL")
     logger = logging.getLogger("astrometry")
 
     if created:
@@ -32,20 +33,34 @@ def test_signal(sender, instance, signal, created, **kwargs):
         instance.proccess = proccess
         instance.save()
 
+        # TODO Confirmar o por que o diretorio de astrometria informa ser criado mais as vezes nao e.
+        # Esperar o diretorio de processo ser criado.
+        time.sleep(2)
+
         # Criar um diretorio para os arquivos do PRAIA.
-        directory = "astrometry_%s" % instance.id
+        directory_name = "astrometry_%s" % instance.id
+        directory = os.path.join(proccess.relative_path, directory_name)
+
         try:
             # Criar o Diretorio
             os.makedirs(directory)
 
-            # Alterar a Permissao do Diretorio
-            os.chmod(directory, 0o775)
+            if os.path.exists(directory):
+                # Alterar a Permissao do Diretorio
+                os.chmod(directory, 0o775)
 
-            logger.info("Astrometry directory created")
-            logger.debug("Directory: %s" % directory)
+                logger.info("Astrometry directory created")
+                logger.debug("Directory: %s" % directory)
 
-            instance.relative_path = directory
-            instance.save()
+                instance.relative_path = directory
+                instance.save()
+            else:
+                instance.status = 'error'
+                instance.save()
+                msg = "Failed to create astrometry directory [ %s ]" % directory
+                logger.error(msg)
+                raise Exception(msg)
+
 
         except OSError as e:
             instance.status = 'error'

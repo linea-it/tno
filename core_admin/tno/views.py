@@ -1,25 +1,19 @@
-from django.shortcuts import render
-
-from rest_framework import viewsets, response, mixins, filters
-
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
-
-from rest_framework.decorators import list_route
-
-from rest_framework.response import Response
-
-from django.contrib.auth.models import User
-
-from .serializers import UserSerializer, PointingSerializer, SkybotOutputSerializer, ObjectClassSerializer , CustomListSerializer, ProccessSerializer, ProductSerializer, ObservationSerializer, OrbitalParameterSerializer
-
-from .models import Pointing, SkybotOutput, CustomList, Proccess, Product, Observation, OrbitalParameter
-
-from .skybotoutput import FilterObjects
+from rest_framework import viewsets, response, mixins
 
 import humanize
+from django.contrib.auth.models import User
+from rest_framework import viewsets, response, mixins
+from rest_framework.decorators import list_route
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.response import Response
+
+from .models import Pointing, SkybotOutput, CustomList, Proccess
+from .serializers import UserSerializer, PointingSerializer, SkybotOutputSerializer, ObjectClassSerializer, \
+    CustomListSerializer, ProccessSerializer
+from .skybotoutput import FilterObjects
+
 
 class UserViewSet(viewsets.ModelViewSet):
-
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -34,7 +28,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return [permission() for permission in permission_classes]
 
-
     def retrieve(self, request, pk=None):
         """
             este metodo serve para retornar informacoes do usuario logado e
@@ -42,7 +35,7 @@ class UserViewSet(viewsets.ModelViewSet):
         """
         if pk == 'i':
             return response.Response(UserSerializer(request.user,
-                context={'request':request}).data)
+                                                    context={'request': request}).data)
 
         return super(UserViewSet, self).retrieve(request, pk)
 
@@ -57,7 +50,6 @@ class PointingViewSet(viewsets.ModelViewSet):
 
 
 class SkybotOutputViewSet(viewsets.ModelViewSet):
-
     queryset = SkybotOutput.objects.select_related().all()
     serializer_class = SkybotOutputSerializer
     filter_fields = ('id', 'name', 'expnum', 'dynclass','mv')
@@ -88,8 +80,8 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
         pageSize = request.query_params.get('pageSize', self.pagination_class.page_size)
 
         rows, count = FilterObjects().get_objects(
-                        name, objectTable, magnitude, diffDateNights,
-                        moreFilter, int(page), int(pageSize))
+            name, objectTable, magnitude, diffDateNights,
+            moreFilter, int(page), int(pageSize))
 
         return Response({
             'success': True,
@@ -97,18 +89,16 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
             "count": count
         })
 
-class ObjectClassViewSet(viewsets.GenericViewSet,
-                        mixins.ListModelMixin):
 
+class ObjectClassViewSet(viewsets.GenericViewSet,
+                         mixins.ListModelMixin):
     queryset = SkybotOutput.objects.select_related().order_by('dynclass').distinct('dynclass')
     serializer_class = ObjectClassSerializer
     # Turn off pagination Class
     pagination_class = None
 
 
-
 class CustomListViewSet(viewsets.ModelViewSet):
-    
     queryset = CustomList.objects.all()
     serializer_class = CustomListSerializer
     filter_fields = ('id', 'displayname', 'tablename', 'status')
@@ -116,13 +106,11 @@ class CustomListViewSet(viewsets.ModelViewSet):
     ordering_fields = ('id', 'displayname', 'tablename', 'status', 'creation_date')
     ordering = ('-creation_date',)
 
-
     def perform_create(self, serializer):
         # Adiconar usuario logado
         if not self.request.user.pk:
             raise Exception('It is necessary an active login to perform this operation.')
         serializer.save(owner=self.request.user)
-
 
     @list_route()
     def list_objects(self, request):
@@ -137,7 +125,6 @@ class CustomListViewSet(viewsets.ModelViewSet):
         # Retrieve Custom List
         customlist = CustomList.objects.get(tablename=tablename, status='success')
 
-
         rows, count = FilterObjects().list_objects_by_table(
             customlist.tablename, customlist.schema, page, pageSize)
 
@@ -145,7 +132,7 @@ class CustomListViewSet(viewsets.ModelViewSet):
             'success': True,
             "results": rows,
             "count": count
-        })            
+        })
 
     @list_route()
     def get_stats(self, request):
@@ -182,7 +169,6 @@ class CustomListViewSet(viewsets.ModelViewSet):
 
         size_not_downloaded = (size_ccdimages / data.get("rows")) * not_downloaded
 
-
         data.update({
             'distinct_objects': distinct_objects,
             'distinct_pointing': distinct_pointing,
@@ -203,21 +189,3 @@ class ProccessViewSet(viewsets.ModelViewSet):
     serializer_class = ProccessSerializer
     filter_fields = ('id',)
     search_fields = ('id',)
-
-class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    filter_fields = ('id',)
-    search_fields = ('id',)
-
-class ObservationViewSet(viewsets.ModelViewSet):
-    queryset = Observation.objects.all()
-    serializer_class = ObservationSerializer
-    filter_fields = ('id', 'name', 'source', 'observations')
-    search_fields = ('id', 'name', 'filename',)
-
-class OrbitalParameterViewSet(viewsets.ModelViewSet):
-    queryset = Observation.objects.all()
-    serializer_class = ObservationSerializer
-    filter_fields = ('id', 'name', 'source', 'observations')
-    search_fields = ('id', 'name', 'filename',)    

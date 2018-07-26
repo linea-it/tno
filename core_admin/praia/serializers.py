@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from .models import Run, Configuration
-from tno.models import CustomList
+from tno.models import CustomList, Proccess
 
 class RunSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
@@ -16,6 +16,9 @@ class RunSerializer(serializers.ModelSerializer):
 
     input_displayname = serializers.SerializerMethodField()
 
+    proccess = serializers.PrimaryKeyRelatedField(
+        queryset=Proccess.objects.all(), many=False, required=False)
+
     class Meta:
         model = Run
         fields = (
@@ -27,7 +30,8 @@ class RunSerializer(serializers.ModelSerializer):
             'input_list',
             'status',
             'configuration_displayname',
-            'input_displayname'
+            'input_displayname',
+            'proccess'
             )
 
     def get_owner(self, obj):

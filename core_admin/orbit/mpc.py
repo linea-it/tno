@@ -160,13 +160,18 @@ class MPC():
 
         link = self.getObjectURL(name)
 
-        r = requests.get(link, stream=True, verify=False)
-        header = r.text
+        try:
+            r = requests.get(link, stream=True, verify=False, timeout=5)
+            header = r.text
 
-        # This text only apper when the object is not registered in MPC yet.
-        substring = 'Unknown object'
+            # This text only apper when the object is not registered in MPC yet.
+            substring = 'Unknown object'
 
-        if substring not in header:
-            return href
-        else:
+            if substring not in header:
+                return href
+            else:
+                return None
+        except Exception as e:
+            # TODO escrever  os erros em um LOG
+            print(e)
             return None

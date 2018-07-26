@@ -18,17 +18,6 @@ class FilterObjects(DBBase):
 
         self.table = None
 
-    def get_table_skybot(self):
-        schema = self.get_base_schema()
-        self.tbl_skybot = self.get_table('tno_skybotoutput', schema)
-
-        return self.tbl_skybot
-
-    def get_table_ccdimage(self):
-        schema = self.get_base_schema()
-        self.tbl_ccdimage = self.get_table('tno_ccdimage', schema)
-
-        return self.tbl_ccdimage
 
     def get_base_stm(self):
 

@@ -7,6 +7,7 @@ import imagine from 'assets/img/sidebar-3.jpg';
 import logo from 'assets/img/reactlogo.png';
 
 import appRoutes from 'routes/app.jsx';
+import { Tooltip } from 'primereact/tooltip';
 
 class Sidebar extends Component {
   constructor(props) {
@@ -26,6 +27,8 @@ class Sidebar extends Component {
     window.addEventListener('resize', this.updateDimensions.bind(this));
   }
   render() {
+   
+
     return (
       <div
         id="sidebar"
@@ -58,6 +61,7 @@ class Sidebar extends Component {
                 return (
                   <li className={this.activeRoute(prop.path)} key={key}>
                     <NavLink
+                      id="id"
                       to={prop.path}
                       className="nav-link"
                       activeClassName="active"
@@ -65,6 +69,12 @@ class Sidebar extends Component {
                       <i className={prop.icon} />
                       <p>{prop.name}</p>
                     </NavLink>
+                    <Tooltip
+                      for="#id"
+                      tooltipEvent="focus"
+                      title={prop.helpText}
+                      tooltipPosition="bottom"
+                    />
                   </li>
                 );
               }

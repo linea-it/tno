@@ -19,8 +19,7 @@ npm-debug.log
 .env
 
 .vscode
-
-/archive
+.idea
 
 # Postgres data file in development
 /pg_data
@@ -28,3 +27,6 @@ npm-debug.log
 
 # Django static files for admin and restframework
 /core_admin/static
+
+# Develop Archive
+/archive

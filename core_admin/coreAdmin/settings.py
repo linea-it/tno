@@ -244,6 +244,14 @@ LOGGING = {
             'backupCount': 5,
             'filename': os.path.join(LOG_DIR, 'astrometry.log'),
             'formatter': 'standard',
+        },
+        'refine_orbit': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'refine_orbit.log'),
+            'formatter': 'standard',
         }
     },
     'loggers': {
@@ -261,6 +269,11 @@ LOGGING = {
             'handlers': ['astrometry'],
             'level': 'DEBUG',
             'propagate': True,
-        },        
+        },
+        'refine_orbit': {
+            'handlers': ['refine_orbit'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
 }
