@@ -40,11 +40,15 @@ BSP_JPL_DIR = os.path.join(ARCHIVE_DIR, "bsp_jpl")
 if not os.path.exists(BSP_JPL_DIR):
     os.mkdir(BSP_JPL_DIR)
 
+# TODO:  Este diretorio e provisorio faz parte da simulacao do PRAIA.
+ASTROMETRY_POSITIONS_DIR = os.path.join(ARCHIVE_DIR, "astrometry_positions")
+if not os.path.exists(ASTROMETRY_POSITIONS_DIR):
+    os.mkdir(ASTROMETRY_POSITIONS_DIR)
+    os.chmod(ASTROMETRY_POSITIONS_DIR, 0o775)
 
 # Emails
 # Notifications Email
 EMAIL_NOTIFICATIONS = os.environ.get('EMAIL_NOTIFICATIONS', None)
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -57,7 +61,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -68,7 +71,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    #third-party apps
+    # third-party apps
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
@@ -114,7 +117,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'coreAdmin.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {
@@ -130,10 +132,8 @@ DATABASES = {
 # caso o banco de dados tenha definido um schema
 if 'DB_SCHEMA' in os.environ:
     DATABASES['default']['OPTIONS'] = {
-            'options': '-c search_path=%s,public' % os.environ['DB_SCHEMA']
-        }
-
-
+        'options': '-c search_path=%s,public' % os.environ['DB_SCHEMA']
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -153,7 +153,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
@@ -167,7 +166,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
@@ -177,7 +175,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication'   
+        'rest_framework.authentication.SessionAuthentication'
     ),
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'DEFAULT_PAGINATION_CLASS': 'common.pagination.StandardResultsSetPagination',
@@ -189,12 +187,10 @@ REST_FRAMEWORK = {
         'url_filter.integrations.drf.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
-    ),        
+    ),
 }
 
-
 CORS_ORIGIN_ALLOW_ALL = True
-
 
 # Parsl
 PARSL_CONFIG = {
@@ -213,7 +209,6 @@ PARSL_CONFIG = {
         "lazyErrors": True,
     }
 }
-
 
 LOGGING = {
     'version': 1,

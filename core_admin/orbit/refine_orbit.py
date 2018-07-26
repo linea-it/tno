@@ -12,6 +12,7 @@ from datetime import datetime
 import humanize
 from tno.proccess import ProccessManager
 import shutil
+from praia.astrometry import Astrometry
 
 
 class RefineOrbit():
@@ -23,7 +24,6 @@ class RefineOrbit():
 
         self.proccess = None
         self.input_list = None
-
         self.objects_dir = None
 
     def startRefineOrbitRun(self, instance):
@@ -115,6 +115,7 @@ class RefineOrbit():
         self.logger.debug("Objects Dir: %s" % self.objects_dir)
 
         # Separa os inputs necessarios no diretorio individual de cada objeto.
+        # TODO: Essa etapa pode ser paralelizada com Parsl
         self.collect_inputs_by_objects(objects, self.objects_dir)
 
     def getObservations(self, instance, input_file, step_file):
@@ -224,7 +225,7 @@ class RefineOrbit():
             obj_dir = os.path.join(objects_path, obj_name)
 
             self.logger.debug("Object Dir: %s" % obj_dir)
-
+            # TODO: Essa etapa pode ser paralelizada com Parsl
             # Copiar os Arquivos de Observacoes
             observations_file = self.copy_observation_file(obj, obj_dir)
 
@@ -234,7 +235,12 @@ class RefineOrbit():
             # Copiar os Arquivos de BSP_JPL
             bsp_jpl_file = self.copy_bsp_jpl_file(obj, obj_dir)
 
-            self.logger.debug("TESTE: %s" % bsp_jpl_file)
+            # Verificar se o Arquivo do PRAIA (Astrometry position) existe no diretorio do objeto.
+            astrometry_position_file = self.verify_astrometry_position_file(obj, obj_dir)
+
+            self.logger.debug("TESTE: %s" % astrometry_position_file)
+
+            self.logger.info("FUNCIONOU PORRAAAAAA")
 
     def copy_observation_file(self, obj, obj_dir):
         # Copiar arquivo de Observacoes do Objeto.
@@ -284,8 +290,6 @@ class RefineOrbit():
 
         original_file = BSPJPL().get_file_path(obj.get("name"), obj.get("number"))
 
-        self.logger.debug(original_file)
-
         if original_file is not None:
             filename = os.path.basename(original_file)
             new_file_path = os.path.join(obj_dir, filename)
@@ -303,6 +307,30 @@ class RefineOrbit():
         else:
             self.logger.warning("Object [ %s ] has no BSP_JPL File" % obj.get("name"))
             return None
+
+    def verify_astrometry_position_file(self, obj, obj_dir):
+        """
+            Verifica se o Arquivo de Astrometric observed ICRF positions
+        gerado pela etapa de Astrometria esta disponivel no Diretorio do Objeto
+        :param obj:
+        :param obj_dir:
+        :return: File path do arquivo ou None caso nao exista.
+        """
+
+        # TODO: este metodo deveria estar dentro da classe de Astrometria
+
+        filename = Astrometry().get_astrometry_position_filename(obj.get("name"))
+
+        self.logger.debug("TESTE FILENAME: %s" % filename)
+
+        file_path = os.path.join(obj_dir, filename)
+
+        self.logger.debug("TESTE FILE_PATH: %s" % file_path)
+
+        if not os.path.exists(file_path):
+            file_path = None
+
+        return file_path
 
 
 class RefineOrbitDB(DBBase):
