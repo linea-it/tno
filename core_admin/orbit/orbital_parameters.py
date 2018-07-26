@@ -1,18 +1,17 @@
-from datetime import datetime
-import csv
-import os
-import parsl
-from parsl import *
-from orbit.astdys import AstDys
-from orbit.mpc import MPC
-from common.download import Download
-import humanize
-from django.conf import settings
-import time
-from random import randrange
-from common.jsonfile import JsonFile
-from orbit.models import ObservationFile, OrbitalParameterFile
 import logging
+import os
+from datetime import datetime
+
+import humanize
+import parsl
+from common.download import Download
+from common.jsonfile import JsonFile
+from django.conf import settings
+from orbit.astdys import AstDys
+from orbit.models import OrbitalParameterFile
+from orbit.mpc import MPC
+from parsl import *
+
 from .download_parameters import DownloadParameters
 
 
@@ -36,7 +35,7 @@ class GetOrbitalParameters(DownloadParameters):
         self.not_need_download = 0
 
     def run(self, input_file, output_path, step_file):
-        # Le o CSV com a lista de objetos a serem baixados.
+        self.logger.info("Starting Orbital Parameter Download")
 
         t0 = datetime.now()
 
@@ -60,8 +59,6 @@ class GetOrbitalParameters(DownloadParameters):
         # Configuracao do Parsl Log.
         parsl.set_file_logger(os.path.join(output_path, 'parsl_orbital_parameters.log'))
 
-        self.logger.info("Starting the Download")
-
         # Declaracao do Parsl APP
         @App('python', dfk)
         def start_parsl_job(name, number, files_path, logger):
@@ -77,7 +74,6 @@ class GetOrbitalParameters(DownloadParameters):
                     result.get('source'),
                     result.get('name'), result.get('filename'), humanize.naturalsize(result.get('file_size')),
                     result.get('download_time'))
-
 
             logger.info(msg)
 
@@ -101,12 +97,6 @@ class GetOrbitalParameters(DownloadParameters):
 
         self.downloaded = outputs
 
-        t1 = datetime.now()
-
-        tdelta = t1 - t0
-        self.logger.info('Download Completed in %s\n' % humanize.naturaldelta(tdelta))
-
-
         # Registra na tabela Observations Files
         self.register_downloaded_files(outputs)
 
@@ -120,6 +110,11 @@ class GetOrbitalParameters(DownloadParameters):
 
         JsonFile().write(steps, step_file)
 
+        t1 = datetime.now()
+
+        tdelta = t1 - t0
+        self.logger.info('Download Orbital Parameter Completed in %s' % humanize.naturaldelta(tdelta))
+
     def download(self, name, number, output_path):
         """
             Function to manage the download file with orbital parameters
@@ -131,15 +126,13 @@ class GetOrbitalParameters(DownloadParameters):
         """
         t0 = datetime.now()
 
-        filename = name.replace(' ', '_') + '.rwo'
-
         # Try to download the AstDyS files.
-        result = self.download_ast_dys(name, number, filename, output_path)
+        result = self.download_ast_dys(name, number, output_path)
 
         # Checking if the object exists in AstDyS if it does not exist it tries to look in the MPC.
         if result is None:
             # Try to download from MPC
-            self.download_mpc(name, number, filename, output_path)
+            self.download_mpc(name, number, output_path)
 
         if result is None:
             result = dict({
@@ -148,7 +141,7 @@ class GetOrbitalParameters(DownloadParameters):
 
         return result
 
-    def download_ast_dys(self, name, number, filename, output_path):
+    def download_ast_dys(self, name, number, output_path):
 
         t0 = datetime.now()
 
@@ -158,6 +151,8 @@ class GetOrbitalParameters(DownloadParameters):
 
         # AstDys Orbital Parameters URL
         url = AstDys().getOrbitalParametersURL(name, number)
+
+        filename = name.replace(" ", "_") + AstDys().orbital_parameters_extension
 
         # Try to download the AstDyS files.
         file_path, download_stats = Download().download_file_from_url(url, output_path=output_path, filename=filename,
@@ -181,12 +176,14 @@ class GetOrbitalParameters(DownloadParameters):
 
         return result
 
-    def download_mpc(self, name, number, filename, output_path):
+    def download_mpc(self, name, number, output_path):
         # Object not found in AstDys trying on MPC
         source = "MPC"
 
         # MPC Object URL
         url_object = MPC().getObjectURL(name)
+
+        filename = name.replace(" ", "_") + MPC().orbital_parameters_extension
 
         # MPC Orbital Parameters URL
         download_stats = MPC().getOrbitalParametersURL(number, name, output_path)
@@ -208,7 +205,6 @@ class GetOrbitalParameters(DownloadParameters):
 
         return result
 
-
     def update_or_create_record(self, record):
 
         return OrbitalParameterFile.objects.update_or_create(
@@ -224,3 +220,23 @@ class GetOrbitalParameters(DownloadParameters):
 
             }
         )
+
+    def get_file_path(self, name, number):
+
+        name = name.replace(" ", "_")
+
+        astdys_filename = name + AstDys().orbital_parameters_extension
+
+        file_path = os.path.join(self.orbital_parameters_dir, astdys_filename)
+
+        # Se o arquivo AstDys nao existir retornar o MPC
+        if not os.path.exists(file_path):
+            mpc_filename = name + MPC().orbital_parameters_extension
+
+            file_path = os.path.join(self.orbital_parameters_dir, mpc_filename)
+
+            # se o arquivo nao existir para o AstDys e MPC retorna None
+            if not os.path.exists(file_path):
+                file_path = None
+
+        return file_path

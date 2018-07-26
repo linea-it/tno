@@ -505,6 +505,12 @@ class Proccess(models.Model):
         help_text='Absolute path to the process directory, this is the EXTERNAL path to the container.',
     )
 
+    # Relation With Tno.CustomList
+    input_list = models.ForeignKey(
+        'tno.CustomList', on_delete=models.CASCADE, verbose_name='Input List',
+        null=True, blank=True, default=None
+    )
+
     status = models.CharField(
         max_length=10,
         verbose_name='Status', 

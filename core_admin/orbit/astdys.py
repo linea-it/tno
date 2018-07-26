@@ -1,4 +1,10 @@
 class AstDys():
+    def __init__(self):
+
+        self.observations_extension = ".rwo"
+
+        self.orbital_parameters_extension = ".eq0"
+
     def getObjectURL(self, name):
 
         temp_name = name.replace(' ', '+')
@@ -7,11 +13,10 @@ class AstDys():
         return url_object
 
     def getOrbitalParametersURL(self, name, number):
-        return self.getFileURL(name, number, "epoch", ".eq0")
+        return self.getFileURL(name, number, "epoch", self.orbital_parameters_extension)
 
     def getObservationsURL(self, name, number):
-        print("NAME: %s NUMBER: %s", (name, number))
-        return self.getFileURL(name, number, "mpcobs", ".rwo")
+        return self.getFileURL(name, number, "mpcobs", self.observations_extension)
 
     def getFileURL(self, name, number, key, ext):
         base_url = "http://hamilton.dm.unipi.it/~astdys2/%s/" % key
@@ -38,10 +43,10 @@ class AstDys():
         return url
 
     def getObitalParametersFilename(self, name, number):
-        return self.getFilename(name, number, '.eq0')
+        return self.getFilename(name, number, self.orbital_parameters_extension)
 
     def getObservationsFilename(self, name, number):
-        return self.getFilename(name, number, '.rwo')
+        return self.getFilename(name, number, self.observations_extension)
 
     def getFilename(self, name, number, ext):
 

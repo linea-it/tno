@@ -123,7 +123,6 @@ class RefineOrbitHistory extends Component {
   };
 
   handleOnSelect = (row, isSelect) => {
-    console.log(row);
     if (isSelect) {
       this.setState(() => ({
         selected: [row.id],

@@ -3,6 +3,7 @@ from rest_framework import serializers
 from .models import Run, Configuration
 from tno.models import CustomList, Proccess
 
+
 class RunSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
 
@@ -10,7 +11,7 @@ class RunSerializer(serializers.ModelSerializer):
         queryset=Configuration.objects.all(), many=False)
 
     input_list = serializers.PrimaryKeyRelatedField(
-        queryset=CustomList.objects.all(), many=False)        
+        queryset=CustomList.objects.all(), many=False)
 
     configuration_displayname = serializers.SerializerMethodField()
 
@@ -18,6 +19,8 @@ class RunSerializer(serializers.ModelSerializer):
 
     proccess = serializers.PrimaryKeyRelatedField(
         queryset=Proccess.objects.all(), many=False, required=False)
+
+    proccess_displayname = serializers.SerializerMethodField()
 
     class Meta:
         model = Run
@@ -31,8 +34,9 @@ class RunSerializer(serializers.ModelSerializer):
             'status',
             'configuration_displayname',
             'input_displayname',
-            'proccess'
-            )
+            'proccess',
+            'proccess_displayname',
+        )
 
     def get_owner(self, obj):
         try:
@@ -52,6 +56,13 @@ class RunSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    def get_proccess_displayname(self, obj):
+        try:
+            return "%s - %s" % (obj.proccess.id, obj.input_list.displayname)
+        except:
+            return None
+
+
 class ConfigurationSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
 
@@ -62,7 +73,7 @@ class ConfigurationSerializer(serializers.ModelSerializer):
             'owner',
             'creation_date',
             'displayname',
-            )
+        )
 
     def get_owner(self, obj):
         try:

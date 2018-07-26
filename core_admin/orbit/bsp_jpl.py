@@ -13,6 +13,8 @@ from orbit.models import BspJplFile
 import logging
 from common.jsonfile import JsonFile
 from .download_parameters import DownloadParameters
+
+
 class BSPJPL(DownloadParameters):
     """
         Esta classe contem os metodos para baixar os arquivos BSP do JPL.
@@ -36,6 +38,8 @@ class BSPJPL(DownloadParameters):
         if settings.BSP_JPL_DIR is None:
             raise Exception("it is necessary to have a valid path defined in the BSP_JPL_DIR settings variable.")
 
+        self.bsp_jpl_dir = settings.BSP_JPL_DIR
+
         self.debug_mode = debug_mode
 
         self.input_records = []
@@ -45,11 +49,13 @@ class BSPJPL(DownloadParameters):
         self.need_download = 0
         self.not_need_download = 0
 
+        self.bsp_jpl_extension = ".bsp"
+
     def download(self, name, outṕut_path):
 
         start = datetime.now()
         try:
-            filename = name.replace(" ", "_") + ".bsp"
+            filename = name.replace(" ", "_") + self.bsp_jpl_extension
 
             # Os arquivo baixados ficam no diretorio setado na variavel BSP_JPL.
             file_path = os.path.join(outṕut_path, filename)
@@ -98,6 +104,8 @@ class BSPJPL(DownloadParameters):
 
     def run(self, input_file, output_path, step_file):
 
+        self.logger.info("Starting BSP_JPL Download")
+
         t0 = datetime.now()
 
         # Cria o path para o diretorio de saida e verifica se existe, se nao existir cria.
@@ -114,14 +122,9 @@ class BSPJPL(DownloadParameters):
         # Configuracao do Parsl Log.
         parsl.set_file_logger(os.path.join(output_path, 'parsl.log'))
 
-        download_log = os.path.join(output_path, 'download_bsp_jpl.log')
-        with open(download_log, 'w') as f:
-            f.write('Starting the Download\n')
-        f.close()
-
         # Declaracao do Parsl APP
         @App("python", dfk)
-        def start_parsl_job(name, files_path):
+        def start_parsl_job(name, files_path, logger):
 
             result = dict({
                 "name": name,
@@ -146,11 +149,7 @@ class BSPJPL(DownloadParameters):
                     result.get('name'), result.get('filename'), humanize.naturalsize(result.get('file_size')),
                     result.get('download_time'))
 
-            # Live Logging Downloaded files.
-            with open(download_log, 'a') as f:
-                time = "%s : " % str(datetime.now())
-                f.write(time + msg + '\n')
-            f.close()
+            logger.info(msg)
 
             return result
 
@@ -160,7 +159,7 @@ class BSPJPL(DownloadParameters):
             # Utiliza o parsl apenas para os objetos que estao marcados
             # para serem baixados.
             if row.get("need_download"):
-                results.append(start_parsl_job(row.get("name"), files_path))
+                results.append(start_parsl_job(row.get("name"), files_path, self.logger))
 
         # Espera o Resultado de todos os jobs.
         outputs = [i.result() for i in results]
@@ -171,13 +170,6 @@ class BSPJPL(DownloadParameters):
         dfk.cleanup()
 
         self.downloaded = outputs
-
-        t1 = datetime.now()
-        tdelta = t1 - t0
-
-        with open(download_log, 'a') as f:
-            f.write('Download Completed in %s\n' % humanize.naturaldelta(tdelta))
-        f.close()
 
         self.register_downloaded_files(outputs)
 
@@ -190,6 +182,10 @@ class BSPJPL(DownloadParameters):
 
         JsonFile().write(steps, step_file)
 
+        t1 = datetime.now()
+        tdelta = t1 - t0
+
+        self.logger.info("Download BSP_JPL Completed in %s" % humanize.naturaldelta(tdelta))
 
     def update_or_create_record(self, record):
         return BspJplFile.objects.update_or_create(
@@ -202,38 +198,15 @@ class BSPJPL(DownloadParameters):
             }
         )
 
-    # def register_downloaded_files(self, records):
-    #     # Apos o Download e necessario o registro
-    #     self.logger.info("Register downloaded BSP JPL")
-    #
-    #     new = 0
-    #     updated = 0
-    #     downloaded = 0
-    #     not_downloaded = 0
-    #     for record in records:
-    #         if record.get("filename"):
-    #             downloaded += 1
-    #
-    #             obj, created = BspJplFile.objects.update_or_create(
-    #                 name=record.get("name"),
-    #                 defaults={
-    #                     'filename': record.get("filename"),
-    #                     'download_start_time': record.get("download_start_time"),
-    #                     'download_finish_time': record.get("download_finish_time"),
-    #                     'file_size': record.get("file_size"),
-    #                 }
-    #             )
-    #
-    #             if created:
-    #                 new += 1
-    #                 self.logger.debug("Registered [ %s ] " % record.get("name"))
-    #             else:
-    #                 updated += updated
-    #                 self.logger.debug("Updated [ %s ] " % record.get("name"))
-    #         else:
-    #             not_downloaded += 1
-    #
-    #     self.logger.info("Inputs [ %s ] Downloaded [ %s ] Registered [ %s ] Updated [ %s ] Not Downloaded [ %s ]" % (
-    #     len(self.input_records), downloaded, new, updated, not_downloaded))
-    #
-    #
+    def get_file_path(self, name, number):
+
+        name = name.replace(" ", "_")
+
+        filename = name + self.bsp_jpl_extension
+
+        file_path = os.path.join(self.bsp_jpl_dir, filename)
+
+        if not os.path.exists(file_path):
+            file_path = None
+
+        return file_path

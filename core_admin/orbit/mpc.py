@@ -4,6 +4,7 @@ import os
 from bs4 import BeautifulSoup
 import time
 
+
 # Structure with two parameters (name, value)
 class Couple:
     def __init__(self, name, value):
@@ -15,6 +16,12 @@ class Couple:
 
 
 class MPC():
+    def __init__(self):
+
+        self.observations_extension = ".rwo"
+
+        self.orbital_parameters_extension = ".eq0"
+
     def getObjectURL(self, name):
         # print("getObjectURL(%s)" % name)
 
@@ -66,9 +73,9 @@ class MPC():
         temp_name = name.replace(' ', '+')
         object_id = name.replace(' ', '')
 
-        filename = name.replace(" ", "") + ".eq0"
+        filename = name.replace(" ", "") + self.orbital_parameters_extension
         if number != "-" and number is not None:
-            filename = number + ".eq0"
+            filename = number + self.orbital_parameters_extension
 
         link = 'https://minorplanetcenter.net/db_search/show_object?object_id=' + temp_name
         r = requests.get(link, stream=True)
@@ -127,7 +134,7 @@ class MPC():
             seconds = tdelta.total_seconds()
 
             # Rename filename
-            new_filename = name.replace(' ', '_') + '.eq0'
+            new_filename = name.replace(' ', '_') + self.orbital_parameters_extension
             new_file = os.path.join(output_path, new_filename)
             os.rename(file, new_file)
 
@@ -147,10 +154,10 @@ class MPC():
         return download_stats
 
     def getObservationsFilename(self, name, number):
-        filename = name.replace(" ", "") + ".rwo"
+        filename = name.replace(" ", "") + self.observations_extension
 
         if number != "-":
-            filename = number + ".rwo"
+            filename = number + self.observations_extension
 
         return filename
 

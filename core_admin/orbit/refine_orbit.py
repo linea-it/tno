@@ -10,6 +10,9 @@ from orbit.orbital_parameters import GetOrbitalParameters
 from common.jsonfile import JsonFile
 from datetime import datetime
 import humanize
+from tno.proccess import ProccessManager
+import shutil
+
 
 class RefineOrbit():
     def __init__(self):
@@ -18,18 +21,26 @@ class RefineOrbit():
         self.bsp_jpl_input_file = None
         self.observations_input_file = None
 
+        self.proccess = None
+        self.input_list = None
+
+        self.objects_dir = None
+
     def startRefineOrbitRun(self, instance):
         self.logger.debug("ORBIT RUN: %s" % instance.id)
 
         # Recuperar a Instancia do processo
-        proccess = instance.proccess
+        self.proccess = instance.proccess
 
-        self.logger.debug("PROCCESS: %s" % proccess.id)
-        self.logger.debug("PROCCESS DIR: %s" % proccess.relative_path)
+        self.logger.debug("PROCCESS: %s" % self.proccess.id)
+        self.logger.debug("PROCCESS DIR: %s" % self.proccess.relative_path)
+
+        # Diretorio onde ficam os inputs e resultados separados por objetos.
+        self.objects_dir = os.path.join(self.proccess.relative_path, "objects")
 
         # recuperar a Custom List usada como input
-        customlist = instance.input_list
-        self.logger.debug("CUSTOM LIST: %s - %s" % (customlist.id, customlist.displayname))
+        self.input_list = instance.input_list
+        self.logger.debug("CUSTOM LIST: %s - %s" % (self.input_list.id, self.input_list.displayname))
 
         instance.status = 'running'
         instance.save()
@@ -55,9 +66,9 @@ class RefineOrbit():
         self.logger.info("Starting Download")
 
         t0 = datetime.now()
-        # ---------------------- Observations ----------------------
+        # ---------------------- Observations --------------------------------------------------------------------------
         # Pesquisando as observacoes que precisam ser baixadas
-        observations = RefineOrbitDB().get_observations(customlist.tablename, customlist.schema, max_age)
+        observations = RefineOrbitDB().get_observations(self.input_list.tablename, self.input_list.schema, max_age)
 
         self.observations_input_file = os.path.join(instance.relative_path, 'observations.csv')
         RefineOrbit().writer_refine_orbit_file_list(self.observations_input_file, observations)
@@ -65,9 +76,10 @@ class RefineOrbit():
         # Download das Observations
         self.getObservations(instance, self.observations_input_file, steps_file)
 
-        # ---------------------- Orbital Parameters ----------------------
+        # ---------------------- Orbital Parameters --------------------------------------------------------------------
         # Pesquisando os parametros orbitais que precisam ser baixadas
-        orbital_parameters = RefineOrbitDB().get_orbital_parameters(customlist.tablename, customlist.schema, max_age)
+        orbital_parameters = RefineOrbitDB().get_orbital_parameters(self.input_list.tablename, self.input_list.schema,
+                                                                    max_age)
 
         self.orbital_parameters_input_file = os.path.join(instance.relative_path, 'orbital_parameters.csv')
         self.writer_refine_orbit_file_list(self.orbital_parameters_input_file, orbital_parameters)
@@ -75,10 +87,9 @@ class RefineOrbit():
         # Download dos parametros Orbitais
         self.getOrbitalParameters(instance, self.orbital_parameters_input_file, steps_file)
 
-
-        # ---------------------- BSPs ----------------------
+        # ---------------------- BSPs ----------------------------------------------------------------------------------
         # Pesquisando os bsp_jpl que precisam ser baixadas
-        bsp_jpl = RefineOrbitDB().get_bsp_jpl(customlist.tablename, customlist.schema, max_age)
+        bsp_jpl = RefineOrbitDB().get_bsp_jpl(self.input_list.tablename, self.input_list.schema, max_age)
 
         self.bsp_jpl_input_file = os.path.join(instance.relative_path, 'bsp_jpl.csv')
         RefineOrbit().writer_refine_orbit_file_list(self.bsp_jpl_input_file, bsp_jpl)
@@ -86,11 +97,25 @@ class RefineOrbit():
         # Download dos BSP JPL
         self.getBspJplFiles(instance, self.bsp_jpl_input_file, steps_file)
 
-
         t1 = datetime.now()
         tdelta = t1 - t0
         self.logger.info("Download Finish in %s" % humanize.naturaldelta(tdelta))
 
+        # ---------------------- Objects -------------------------------------------------------------------------------
+
+        # Recuperando os Objetos
+        objects, obj_count = ProccessManager().get_objects(tablename=self.input_list.tablename,
+                                                           schema=self.input_list.schema)
+
+        self.logger.debug("Objects: %s" % obj_count)
+
+        # # ---------------------- Inputs --------------------------------------------------------------------------------
+        self.logger.info("Collect Inputs by Objects")
+
+        self.logger.debug("Objects Dir: %s" % self.objects_dir)
+
+        # Separa os inputs necessarios no diretorio individual de cada objeto.
+        self.collect_inputs_by_objects(objects, self.objects_dir)
 
     def getObservations(self, instance, input_file, step_file):
         """
@@ -101,8 +126,10 @@ class RefineOrbit():
         :param instance:
         """
 
-        GetObservations().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
-
+        GetObservations().run(
+            input_file=input_file,
+            output_path=instance.relative_path,
+            step_file=step_file)
 
     def getOrbitalParameters(self, instance, input_file, step_file):
         """
@@ -115,7 +142,6 @@ class RefineOrbit():
 
         GetOrbitalParameters().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
 
-
     def getBspJplFiles(self, instance, input_file, step_file):
         """
             Executa a etapa de download dos arquivos bsp vindo do JPL,
@@ -126,7 +152,6 @@ class RefineOrbit():
         """
 
         BSPJPL().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
-
 
     def createRefienOrbitDirectory(self, instance):
 
@@ -190,6 +215,94 @@ class RefineOrbit():
                 writer.writerow(row)
 
         return file_path
+
+    def collect_inputs_by_objects(self, objects, objects_path):
+
+        for obj in objects:
+            obj_name = obj.get("name").replace(" ", "_")
+
+            obj_dir = os.path.join(objects_path, obj_name)
+
+            self.logger.debug("Object Dir: %s" % obj_dir)
+
+            # Copiar os Arquivos de Observacoes
+            observations_file = self.copy_observation_file(obj, obj_dir)
+
+            # Copiar os Arquivos de Orbital Parameters
+            orbital_parameters_file = self.copy_orbital_parameters_file(obj, obj_dir)
+
+            # Copiar os Arquivos de BSP_JPL
+            bsp_jpl_file = self.copy_bsp_jpl_file(obj, obj_dir)
+
+            self.logger.debug("TESTE: %s" % bsp_jpl_file)
+
+    def copy_observation_file(self, obj, obj_dir):
+        # Copiar arquivo de Observacoes do Objeto.
+        original_observation_file = GetObservations().get_file_path(obj.get("name"), obj.get("number"))
+
+        if original_observation_file is not None:
+            filename = os.path.basename(original_observation_file)
+            new_file_path = os.path.join(obj_dir, filename)
+
+            shutil.copy2(original_observation_file, new_file_path)
+
+            if os.path.exists(new_file_path):
+                self.logger.debug("Object [ %s ] Observation File: %s" % (obj.get("name"), new_file_path))
+
+                return new_file_path
+            else:
+                self.logger.error(
+                    "Failed to copy Observations File: %s -> %s" % (original_observation_file, obj_dir))
+                return None
+        else:
+            self.logger.warning("Object [ %s ] has no Observations File" % obj.get("name"))
+            return None
+
+    def copy_orbital_parameters_file(self, obj, obj_dir):
+
+        original_file = GetOrbitalParameters().get_file_path(obj.get("name"), obj.get("number"))
+
+        if original_file is not None:
+            filename = os.path.basename(original_file)
+            new_file_path = os.path.join(obj_dir, filename)
+
+            shutil.copy2(original_file, new_file_path)
+
+            if os.path.exists(new_file_path):
+                self.logger.debug("Object [ %s ] Orbital Parameters File: %s" % (obj.get("name"), new_file_path))
+
+                return new_file_path
+            else:
+                self.logger.error(
+                    "Failed to copy Orbital Parameters File: %s -> %s" % (original_file, obj_dir))
+                return None
+        else:
+            self.logger.warning("Object [ %s ] has no Orbital Parameters File" % obj.get("name"))
+            return None
+
+    def copy_bsp_jpl_file(self, obj, obj_dir):
+
+        original_file = BSPJPL().get_file_path(obj.get("name"), obj.get("number"))
+
+        self.logger.debug(original_file)
+
+        if original_file is not None:
+            filename = os.path.basename(original_file)
+            new_file_path = os.path.join(obj_dir, filename)
+
+            shutil.copy2(original_file, new_file_path)
+
+            if os.path.exists(new_file_path):
+                self.logger.debug("Object [ %s ] BSP_JPL File: %s" % (obj.get("name"), new_file_path))
+
+                return new_file_path
+            else:
+                self.logger.error(
+                    "Failed to copy BSP_JPL File: %s -> %s" % (original_file, obj_dir))
+                return None
+        else:
+            self.logger.warning("Object [ %s ] has no BSP_JPL File" % obj.get("name"))
+            return None
 
 
 class RefineOrbitDB(DBBase):

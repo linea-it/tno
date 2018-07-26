@@ -1,9 +1,10 @@
 import logging
 import os, errno, shutil
 from django.conf import settings
+from .skybotoutput import FilterObjects
+
 
 class ProccessManager():
-
     def __init__(self):
         self.logger = logging.getLogger("proccess")
 
@@ -29,7 +30,7 @@ class ProccessManager():
             instance.absolute_path = absolute_path
             instance.save()
 
-            return instance
+
 
         except OSError as e:
             instance.status = 'error'
@@ -38,6 +39,49 @@ class ProccessManager():
             if e.errno != errno.EEXIST:
                 self.logger.error(e)
                 raise
+
+        self.logger.info("Creating directory for objects")
+
+        objects, object_count = self.get_objects(tablename=instance.input_list.tablename,
+                                                 schema=instance.input_list.schema)
+
+        self.logger.debug(objects)
+
+        self.logger.info("Distinct Objects: %s" % len(objects))
+
+        objects_dir = os.path.join(directory, "objects")
+        try:
+            # Criar o Diretorio
+            os.makedirs(objects_dir)
+
+            # Alterar a Permissao do Diretorio
+            os.chmod(objects_dir, 0o775)
+
+        except OSError as e:
+            self.logger.error("Failed to create directory for Objects")
+            self.logger.error(e)
+            raise
+
+        for object in objects:
+            directory_name = object.get("name").replace(" ", "_")
+            object_directory = os.path.join(objects_dir, directory_name)
+
+            try:
+
+                # Criar o Diretorio
+                os.makedirs(object_directory)
+
+                # Alterar a Permissao do Diretorio
+                os.chmod(object_directory, 0o775)
+
+                self.logger.debug("Object Dir: %s" % object_directory)
+
+            except OSError as e:
+                self.logger.error("Failed to create directory for Object [ %s ]" % object.get("name"))
+                self.logger.error(e)
+                raise
+
+        return instance
 
     def purge(self, instance):
         self.logger.info("Process Purge")
@@ -65,3 +109,6 @@ class ProccessManager():
             self.logger.error("Failed to remove process directory [ %s ]" % directory)
             self.logger.error(e)
             raise
+
+    def get_objects(self, tablename, schema=None):
+        return FilterObjects().list_distinct_objects_by_table(tablename, schema)

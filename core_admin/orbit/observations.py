@@ -15,6 +15,7 @@ from orbit.mpc import MPC
 from parsl import *
 from .download_parameters import DownloadParameters
 
+
 class GetObservations(DownloadParameters):
     def __init__(self, debug_mode=False):
 
@@ -36,7 +37,8 @@ class GetObservations(DownloadParameters):
         self.not_need_download = 0
 
     def run(self, input_file, output_path, step_file):
-        # Le o CSV com a lista de objetos a serem baixados.
+
+        self.logger.info("Starting Observations Download")
 
         t0 = datetime.now()
 
@@ -55,32 +57,23 @@ class GetObservations(DownloadParameters):
         # Configuracao do Parsl Log.
         parsl.set_file_logger(os.path.join(output_path, 'parsl.log'))
 
-        download_log = os.path.join(output_path, 'download_observations.log')
-        with open(download_log, 'w') as f:
-            f.write('Starting the Download\n')
-        f.close()
-
         # Declaracao do Parsl APP
         @App('python', dfk)
-        def start_parsl_job(name, number, files_path):
+        def start_parsl_job(name, number, files_path, logger):
 
             result = self.download(name, number, files_path)
 
-            # Live Logging Downloaded files.
-            with open(download_log, 'a') as f:
-                msg = "Download [ FAILURE ] - Object: %s " % (result.get('name'))
+            msg = "Download [ FAILURE ] - Object: %s " % (result.get('name'))
 
-                if result.get('filename', None) is not None:
-                    msg = "Download [ SUCCESS ] - [ %s ] Object: %s File: %s Size: %s Time: %s seconds" % (
-                        result.get('source'),
-                        result.get('name'), result.get('filename'), humanize.naturalsize(result.get('file_size')),
-                        result.get('download_time'))
+            if result.get('filename', None) is not None:
+                msg = "Download [ SUCCESS ] - [ %s ] Object: %s File: %s Size: %s Time: %s seconds" % (
+                    result.get('source'),
+                    result.get('name'), result.get('filename'), humanize.naturalsize(result.get('file_size')),
+                    result.get('download_time'))
 
-                    # TODO fazer a contagem das observacoes
+                # TODO fazer a contagem das observacoes
 
-                time = "%s : " % str(datetime.now())
-                f.write(time + msg + '\n')
-            f.close()
+            logger.info(msg)
 
             return result
 
@@ -90,7 +83,7 @@ class GetObservations(DownloadParameters):
             # Utiliza o parsl apenas para os objetos que estao marcados
             # para serem baixados.
             if row.get("need_download"):
-                results.append(start_parsl_job(row.get("name"), row.get("num"), files_path))
+                results.append(start_parsl_job(row.get("name"), row.get("num"), files_path, self.logger))
 
         # Espera o Resultado de todos os jobs.
         outputs = [i.result() for i in results]
@@ -101,13 +94,6 @@ class GetObservations(DownloadParameters):
         dfk.cleanup()
 
         self.downloaded = outputs
-
-        t1 = datetime.now()
-
-        tdelta = t1 - t0
-        with open(download_log, 'a') as f:
-            f.write('Download Completed in %s\n' % humanize.naturaldelta(tdelta))
-        f.close()
 
         # Registra na tabela Observations Files
         self.register_downloaded_files(outputs)
@@ -121,6 +107,11 @@ class GetObservations(DownloadParameters):
         steps.update({"observations": True})
 
         JsonFile().write(steps, step_file)
+
+        t1 = datetime.now()
+
+        tdelta = t1 - t0
+        self.logger.info("Download Observations Completed in %s" % humanize.naturaldelta(tdelta))
 
     def download(self, name, number, output_path):
         """
@@ -230,3 +221,23 @@ class GetObservations(DownloadParameters):
 
             }
         )
+
+    def get_file_path(self, name, number):
+
+        name = name.replace(" ", "_")
+
+        astdys_filename = name + AstDys().observations_extension
+
+        file_path = os.path.join(self.observations_dir, astdys_filename)
+
+        # Se o arquivo AstDys nao existir retornar o MPC
+        if not os.path.exists(file_path):
+            mpc_filename = name + MPC().observations_extension
+
+            file_path = os.path.join(self.observations_dir, mpc_filename)
+
+            # se o arquivo nao existir para o AstDys e MPC retorna None
+            if not os.path.exists(file_path):
+                file_path = None
+
+        return file_path
