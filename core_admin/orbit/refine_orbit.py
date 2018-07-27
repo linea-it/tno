@@ -67,31 +67,41 @@ class RefineOrbit():
 
         t0 = datetime.now()
         # ---------------------- Observations --------------------------------------------------------------------------
+
+        self.logger.debug("---------------------- Observations --------------------------------------------------------------------------")
         # Pesquisando as observacoes que precisam ser baixadas
         observations = RefineOrbitDB().get_observations(self.input_list.tablename, self.input_list.schema, max_age)
 
         self.observations_input_file = os.path.join(instance.relative_path, 'observations.csv')
+
+        self.logger.info("Writing Observations Input File")
         RefineOrbit().writer_refine_orbit_file_list(self.observations_input_file, observations)
 
         # Download das Observations
         self.getObservations(instance, self.observations_input_file, steps_file)
 
         # ---------------------- Orbital Parameters --------------------------------------------------------------------
+        self.logger.debug("---------------------- Orbital Parameters --------------------------------------------------------------------")
         # Pesquisando os parametros orbitais que precisam ser baixadas
         orbital_parameters = RefineOrbitDB().get_orbital_parameters(self.input_list.tablename, self.input_list.schema,
                                                                     max_age)
 
         self.orbital_parameters_input_file = os.path.join(instance.relative_path, 'orbital_parameters.csv')
+
+        self.logger.info("Writing Orbital Parameters Input File")
         self.writer_refine_orbit_file_list(self.orbital_parameters_input_file, orbital_parameters)
 
         # Download dos parametros Orbitais
         self.getOrbitalParameters(instance, self.orbital_parameters_input_file, steps_file)
 
         # ---------------------- BSPs ----------------------------------------------------------------------------------
+        self.logger.debug("---------------------- BSPs ----------------------------------------------------------------------------------")
         # Pesquisando os bsp_jpl que precisam ser baixadas
         bsp_jpl = RefineOrbitDB().get_bsp_jpl(self.input_list.tablename, self.input_list.schema, max_age)
 
         self.bsp_jpl_input_file = os.path.join(instance.relative_path, 'bsp_jpl.csv')
+
+        self.logger.info("Writing BSP JPL Input File")
         RefineOrbit().writer_refine_orbit_file_list(self.bsp_jpl_input_file, bsp_jpl)
 
         # Download dos BSP JPL
@@ -126,11 +136,14 @@ class RefineOrbit():
 
         :param instance:
         """
-
-        GetObservations().run(
-            input_file=input_file,
-            output_path=instance.relative_path,
-            step_file=step_file)
+        try:
+            GetObservations().run(
+                input_file=input_file,
+                output_path=instance.relative_path,
+                step_file=step_file)
+        except Exception as e:
+            self.logger.error(e)
+            raise(e)            
 
     def getOrbitalParameters(self, instance, input_file, step_file):
         """
@@ -140,8 +153,11 @@ class RefineOrbit():
 
         :param instance:
         """
-
-        GetOrbitalParameters().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
+        try:
+            GetOrbitalParameters().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
+        except Exception as e:
+            self.logger.error(e)
+            raise(e)            
 
     def getBspJplFiles(self, instance, input_file, step_file):
         """
@@ -151,8 +167,12 @@ class RefineOrbit():
 
         :param instance:
         """
-
-        BSPJPL().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
+        try:
+            BSPJPL().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
+        except Exception as e:
+            self.logger.error(e)
+            raise(e)
+         
 
     def createRefienOrbitDirectory(self, instance):
 
@@ -196,7 +216,6 @@ class RefineOrbit():
         """
 
         """
-        self.logger.info("Writing Input File")
         self.logger.debug("Input File: %s" % file_path)
 
         header_orb_param = ["name", "num", "filename", "need_download"]
