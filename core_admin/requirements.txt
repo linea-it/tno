@@ -7,6 +7,6 @@ django-cors-headers
 psycopg2-binary
 SQLAlchemy
 humanize
-parsl
+parsl==0.5.2
 requests
 bs4
