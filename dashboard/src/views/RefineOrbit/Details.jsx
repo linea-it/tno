@@ -1,12 +1,4 @@
 import React, { Component } from 'react';
-// import Card from 'components/Card/Card.jsx';
-//import BootstrapTable from 'react-bootstrap-table-next';
-// import paginationFactory from 'react-bootstrap-table2-paginator';
-// import overlayFactory from 'react-bootstrap-table2-overlay';
-// import PropTypes from 'prop-types';
-// import { formatDateUTC, formatColumnHeader, formatStatus } from 'utils';
-import { Messages } from 'primereact/messages';
-import { Message } from 'primereact/message';
 import OrbitApi from './OrbitApi';
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -22,11 +14,15 @@ import plot3 from 'assets/img/3.png';
 import plot4 from 'assets/img/4.png';
 import { Dropdown } from 'primereact/dropdown';
 import { Toolbar } from 'primereact/toolbar';
-// import { Lightbox } from 'primereact/lightbox';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Accordion, AccordionTab } from 'primereact/accordion';
+import { Tree } from 'primereact/tree';
 import { Panel } from 'primereact/panel';
+import Lightbox from 'react-images';
+import { Dialog } from 'primereact/dialog';
+
+const images = [{ src: plot1 }, { src: plot2 }, { src: plot3 }, { src: plot4 }];
 
 class RefineOrbitDetail extends Component {
   state = this.initialState;
@@ -46,15 +42,14 @@ class RefineOrbitDetail extends Component {
       cars: [],
       valor: '5',
       selected2: '',
+      lightboxIsOpen: false,
+      currentImage: 0,
+      visible: false,
     };
   }
 
   componentDidMount() {
     this.fetchData(this.state.page, this.state.sizePerPage);
-    // this.api
-    //   .getRefineOrbits(1)
-    //   .then(data => this.setState({ cars: data }, console.log(data.data)));
-
     const data = [
       {
         id: '0001',
@@ -112,6 +107,36 @@ class RefineOrbitDetail extends Component {
     });
   };
 
+  Slideshow = () => {
+    this.setState({ lightboxIsOpen: true });
+  };
+  gotoNextLightboxImage = () => {
+    this.setState({
+      currentImage: this.state.currentImage + 1,
+    });
+  };
+  gotoPrevLightboxImage = () => {
+    this.setState({
+      currentImage: this.state.currentImage - 1,
+    });
+  };
+  CloseLightbox = () => {
+    this.setState({ lightboxIsOpen: false });
+  };
+  handleClickImage() {
+    if (this.state.currentImage === images.length - 1) return;
+
+    this.gotoNextLightboxImag();
+  }
+
+  onClick = () => {
+    this.setState({ visible: true });
+  };
+
+  onHide = () => {
+    this.setState({ visible: false });
+  };
+
   render() {
     const item = [
       { label: '5', value: '5' },
@@ -120,12 +145,10 @@ class RefineOrbitDetail extends Component {
     ];
 
     const cols = [
-      // { field: 'id', header: 'id' },
       { field: 'input_displayname', header: 'Name' },
       { field: 'owner', header: 'Dinamics class' },
       { field: 'proccess', header: 'RA' },
       { field: 'proccess_displayname', header: 'Dec' },
-      // { field: 'start_time', header: 'S' },
       { field: 'status', header: 'Status' },
     ];
 
@@ -136,6 +159,7 @@ class RefineOrbitDetail extends Component {
           key={col.field}
           field={col.field}
           header={col.header}
+          style={{ textAlign: 'center' }}
         />
       );
     });
@@ -153,7 +177,12 @@ class RefineOrbitDetail extends Component {
                   title="Preview"
                   subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
                 >
-                  <img width="525" height="380" src={plot1} />
+                  <img
+                    onClick={this.Slideshow}
+                    width="425"
+                    height="280"
+                    src={plot1}
+                  />
                 </Card>
               </Col>
               <Col md={6}>
@@ -161,7 +190,12 @@ class RefineOrbitDetail extends Component {
                   title="Preview"
                   subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
                 >
-                  <img width="525" height="380" src={plot2} />
+                  <img
+                    onClick={this.Slideshow}
+                    width="425"
+                    height="280"
+                    src={plot2}
+                  />
                 </Card>
               </Col>
             </Row>
@@ -172,7 +206,12 @@ class RefineOrbitDetail extends Component {
                   title="Preview"
                   subTitle="Lorem ipsum Lorem ipsum Lorem ipsum"
                 >
-                  <img width="525" height="380" src={plot3} />
+                  <img
+                    onClick={this.Slideshow}
+                    width="425"
+                    height="280"
+                    src={plot3}
+                  />
                 </Card>
               </Col>
               <Col md={6}>
@@ -180,7 +219,12 @@ class RefineOrbitDetail extends Component {
                   title="Preview"
                   subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
                 >
-                  <img width="525" height="380" src={plot4} />
+                  <img
+                    onClick={this.Slideshow}
+                    width="425"
+                    height="280"
+                    src={plot4}
+                  />
                 </Card>
               </Col>
             </Row>
@@ -198,34 +242,37 @@ class RefineOrbitDetail extends Component {
               title="Execution Statistics"
               style={{ border: 1 + 'px solid #A9A9A9' }}
               subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-              //header={header}
             >
               <div className="ui-g">
                 <div className="ui-md-6">
-                  <Panel>
-                    <ListGroup>
-                      <ListGroupItem>
-                        Total de Objetos de entrada&nbsp;:&nbsp;&nbsp;
-                        <strong>5</strong>
-                      </ListGroupItem>
-                      <ListGroupItem>
-                        Total de objetos excecutados&nbsp;:&nbsp;&nbsp;
-                        <strong>4</strong>
-                      </ListGroupItem>
-                      <ListGroupItem>
-                        Total de objetos falhados&nbsp;:&nbsp;&nbsp;
-                        <strong>0</strong>
-                      </ListGroupItem>
-                      <ListGroupItem>
-                        Tempo de execução&nbsp;:&nbsp;&nbsp;
-                        <strong>00:02:10</strong>
-                      </ListGroupItem>
-                      <ListGroupItem>
-                        Tempo médio por objeto&nbsp;:&nbsp;&nbsp;
-                        <strong>00:00:23</strong>
-                      </ListGroupItem>
-                    </ListGroup>
-                  </Panel>
+                  <ListGroup>
+                    <ListGroupItem>
+                      Total de Objetos de entrada&nbsp;:&nbsp;&nbsp;
+                      <strong>5</strong>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      Total de objetos excecutados&nbsp;:&nbsp;&nbsp;
+                      <strong>4</strong>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      Total de objetos falhados&nbsp;:&nbsp;&nbsp;
+                      <strong>0</strong>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      Tempo de execução&nbsp;:&nbsp;&nbsp;
+                      <strong>00:02:10</strong>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      Tempo médio por objeto&nbsp;:&nbsp;&nbsp;
+                      <strong>00:00:23</strong>
+                    </ListGroupItem>
+                  </ListGroup>
+                </div>
+
+                <div className="content-section implementation">
+                  <div className="ui-md-6">
+                    {/* <Tree className=" ui-tree ui-tree-container"  value={dt} /> */}
+                  </div>
                 </div>
               </div>
               {/* <div className="ui-md-12">
@@ -243,6 +290,15 @@ class RefineOrbitDetail extends Component {
         </div>
         <br />
         <br />
+        <Lightbox
+          images={images}
+          isOpen={this.state.lightboxIsOpen}
+          onClickPrev={this.gotoPrevLightboxImage}
+          onClickNext={this.gotoNextLightboxImage}
+          onClose={this.CloseLightbox}
+          currentImage={this.state.currentImage}
+          onClickImage={this.handleClickImage}
+        />
         <Card
           style={{ border: 1 + 'px solid #A9A9A9' }}
           title="Preview"
@@ -263,16 +319,6 @@ class RefineOrbitDetail extends Component {
         </Card>
         <br />
         <br />
-        {/* <BootstrapTable
-          striped
-          hover
-          condensed
-          remote
-          bordered={true}
-          keyField="id"
-          columns={columns}
-          data={data}
-        /> */}
         <Card
           style={{ border: 1 + 'px solid #A9A9A9' }}
           title="Table of Objects"
@@ -285,18 +331,72 @@ class RefineOrbitDetail extends Component {
                 label="Log"
                 icon="pi pi-file"
                 className="ui-button-warning"
+                onClick={this.onClick}
               />
             </div>
           </Toolbar>
+          <Dialog
+            header=" Log Object:Godfather I"
+            visible={this.state.visible}
+            width="350px"
+            modal={true}
+            onHide={e => this.setState({ visible: false })}
+            style={{ backgroundColor: '#000', width: 900 + 'px' }}
+          >
+            <pre
+              style={{
+                color: '#00ff00',
+                backgroundColor: '#000',
+                height: 600 + 'px',
+              }}
+            >
+              <code>
+                <ul style={{ listStyle: 'none' }}>
+                  <li>
+                    "Records":
+                    <ul style={{ listStyle: 'none' }}>
+                      <li> "type": "IAMUser",</li>
+                      <li> "principalId": "EX_PRINCIPAL_ID",</li>
+                      <li> "arn": "arn:aws:iam::123456789012:user/Alice",</li>
+                      <li> "accountId": "123456789012",</li>
+                    </ul>
+                  </li>
+                  <li> "eventSource": "cloudtrail.amazonaws.com", </li>
+                </ul>
+                {/* "Records": 
+                "eventVersion": "1.04",
+                "userIdentity":
+                   
+                   
+                    
+                   
+                    "accessKeyId": "EXAMPLE_KEY_ID",
+                    "userName": "Alice",
+                "eventTime": "2016-07-14T19:15:45Z",
+                "eventSource": "cloudtrail.amazonaws.com",
+                "eventName": "UpdateTrail",
+                "awsRegion": "us-east-2",
+                "sourceIPAddress": "205.251.233.182",
+                "userAgent": "aws-cli/1.10.32 Python/2.7.9 Windows/7 botocore/1.4.22",
+                "errorCode": "TrailNotFoundException",
+                "errorMessage": "Unknown trail: myTrail2 for the user: 123456789012",
+                "requestParameters": "name": "myTrail2",
+                "responseElements": null,
+                "requestID": "5d40662a-49f7-11e6-97e4-d9cb6ff7d6a3",
+                "eventID": "b7d4398e-b2f0-4faa-9c76-e2d316a8d67f",
+                "eventType": "AwsApiCall",
+                "recipientAccountId": "123456789012" */}
+              </code>
+            </pre>
+          </Dialog>
           <div className="content-section implementation">
             <DataTable
               selectionMode="single"
-              style={{ border: 1 + 'px solid #A9A9A9' }}
+              style={{ border: 1 + 'px solid #A9A9A9', textAlign: 'center' }}
               value={this.state.cars}
               selection={this.state.selected2}
               onSelectionChange={e => this.setState({ selected2: e.data })}
             >
-              {/* <Column selectionMode="single" style={{ width: '2em' }} /> */}
               {dynamicColumns}
             </DataTable>
           </div>
