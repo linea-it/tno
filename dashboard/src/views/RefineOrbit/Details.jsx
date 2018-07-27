@@ -55,7 +55,7 @@ class RefineOrbitDetail extends Component {
     //   .getRefineOrbits(1)
     //   .then(data => this.setState({ cars: data }, console.log(data.data)));
 
-    const list = [
+    const data = [
       {
         id: '0001',
         input_displayname: '2013 RR98',
@@ -92,7 +92,7 @@ class RefineOrbitDetail extends Component {
         status: <Button icon="pi pi-times " className="ui-button-danger" />,
       },
     ];
-    this.setState({ cars: list });
+    this.setState({ cars: data });
   }
 
   fetchData = (page, sizePerPage) => {
@@ -294,9 +294,9 @@ class RefineOrbitDetail extends Component {
               style={{ border: 1 + 'px solid #A9A9A9' }}
               value={this.state.cars}
               selection={this.state.selected2}
-              onSelectionChange={e => this.setState({ selected22: e.value })}
+              onSelectionChange={e => this.setState({ selected2: e.data })}
             >
-              <Column selectionMode="single" style={{ width: '2em' }} />
+              {/* <Column selectionMode="single" style={{ width: '2em' }} /> */}
               {dynamicColumns}
             </DataTable>
           </div>
