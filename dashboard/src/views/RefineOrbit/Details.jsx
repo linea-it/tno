@@ -1,28 +1,118 @@
+// React e Prime React
 import React, { Component } from 'react';
-import OrbitApi from './OrbitApi';
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
-
+// Api Rest
+import OrbitApi from './OrbitApi';
+// interface components
+import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
-import { ListGroup, ListGroupItem, Grid, Row, Col } from 'react-bootstrap';
-import download from 'assets/img/download.jpeg';
-import plot1 from 'assets/img/1.png';
-import plot2 from 'assets/img/2.png';
-import plot3 from 'assets/img/3.png';
-import plot4 from 'assets/img/4.png';
 import { Dropdown } from 'primereact/dropdown';
 import { Toolbar } from 'primereact/toolbar';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Accordion, AccordionTab } from 'primereact/accordion';
+// import { Tree } from 'primereact/tree';
+import { Dialog } from 'primereact/dialog';
+import Lightbox from 'react-images';
 import { Tree } from 'primereact/tree';
 import { Panel } from 'primereact/panel';
-import Lightbox from 'react-images';
-import { Dialog } from 'primereact/dialog';
+//importing images
+import plot1 from 'assets/img/1.png';
+import plot2 from 'assets/img/2.png';
+import plot3 from 'assets/img/3.png';
+import plot4 from 'assets/img/4.png';
+import download from 'assets/img/download.jpeg';
+import { ScrollPanel } from 'primereact/scrollpanel';
+// import SlideImage from 'views/RefineOrbit/SlideImage.jsx';
+import Log from 'views/RefineOrbit/Log.jsx';
+import { Message } from 'primereact/message';
+import { TreeTable } from 'primereact/treetable';
 
 const images = [{ src: plot1 }, { src: plot2 }, { src: plot3 }, { src: plot4 }];
+
+const data = [
+  {
+    data: {
+      name: 'Documents',
+      size: '75kb',
+      type: 'Folder',
+    },
+    children: [
+      {
+        data: {
+          name: 'Work',
+          size: '55kb',
+          type: 'Folder',
+        },
+        children: [
+          {
+            data: {
+              name: 'Expenses.doc',
+              size: '30kb',
+              type: 'Document',
+            },
+          },
+          {
+            data: {
+              name: 'Resume.doc',
+              size: '25kb',
+              type: 'Resume',
+            },
+          },
+        ],
+      },
+      {
+        data: {
+          name: 'Home',
+          size: '20kb',
+          type: 'Folder',
+        },
+        children: [
+          {
+            data: {
+              name: 'Invoices',
+              size: '20kb',
+              type: 'Text',
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    data: {
+      name: 'Pictures',
+      size: '150kb',
+      type: 'Folder',
+    },
+    children: [
+      {
+        data: {
+          name: 'barcelona.jpg',
+          size: '90kb',
+          type: 'Picture',
+        },
+      },
+      {
+        data: {
+          name: 'primeui.png',
+          size: '30kb',
+          type: 'Picture',
+        },
+      },
+      {
+        data: {
+          name: 'optimus.jpg',
+          size: '30kb',
+          type: 'Picture',
+        },
+      },
+    ],
+  },
+];
 
 class RefineOrbitDetail extends Component {
   state = this.initialState;
@@ -30,6 +120,7 @@ class RefineOrbitDetail extends Component {
 
   get initialState() {
     return {
+      id: '',
       data: [],
       page: 1,
       totalSize: 0,
@@ -50,6 +141,8 @@ class RefineOrbitDetail extends Component {
 
   componentDidMount() {
     this.fetchData(this.state.page, this.state.sizePerPage);
+
+    // Array of table rows
     const data = [
       {
         id: '0001',
@@ -59,7 +152,12 @@ class RefineOrbitDetail extends Component {
         proccess: '61.470785',
         proccess_displayname: '-16.250106',
         start_time: '2018-07-24T17:40:02.878925Z',
-        status: <Button icon="pi pi-check" className="ui-button-success" />,
+        status: (
+          <i
+            className="pi pi-check "
+            style={{ fontSize: '1.5em', color: 'green' }}
+          />
+        ),
       },
       {
         id: '0002',
@@ -70,9 +168,9 @@ class RefineOrbitDetail extends Component {
         proccess_displayname: '-45.186892',
         start_time: '2018-07-24T17:40:02.878925Z',
         status: (
-          <Button
-            icon="pi pi-exclamation-triangle "
-            className="ui-button-warning"
+          <i
+            className="pi pi-exclamation-triangle"
+            style={{ fontSize: '1.5em', color: '#FF8C00' }}
           />
         ),
       },
@@ -84,7 +182,42 @@ class RefineOrbitDetail extends Component {
         proccess: '93.634311',
         proccess_displayname: '-45.186462',
         start_time: '2018-07-24T17:40:02.878925Z',
-        status: <Button icon="pi pi-times " className="ui-button-danger" />,
+        status: (
+          <i
+            className="pi pi-times"
+            style={{ fontSize: '1.5em', color: '#B22222' }}
+          />
+        ),
+      },
+      {
+        id: '0004',
+        input_displayname: '2014 RR98',
+        input_list: '3',
+        owner: 'KBO>SDO',
+        proccess: '93.634311',
+        proccess_displayname: '-45.186462',
+        start_time: '2018-07-24T17:40:02.878925Z',
+        status: (
+          <i
+            className="pi pi-times"
+            style={{ fontSize: '1.5em', color: '#B22222' }}
+          />
+        ),
+      },
+      {
+        id: '0005',
+        input_displayname: '2014 RR98',
+        input_list: '3',
+        owner: 'KBO>SDO',
+        proccess: '93.634311',
+        proccess_displayname: '-45.186462',
+        start_time: '2018-07-24T17:40:02.878925Z',
+        status: (
+          <i
+            className="pi pi-times"
+            style={{ fontSize: '1.5em', color: '#B22222' }}
+          />
+        ),
       },
     ];
     this.setState({ cars: data });
@@ -107,6 +240,7 @@ class RefineOrbitDetail extends Component {
     });
   };
 
+  // Methods for slide operation
   Slideshow = () => {
     this.setState({ lightboxIsOpen: true });
   };
@@ -123,27 +257,34 @@ class RefineOrbitDetail extends Component {
   CloseLightbox = () => {
     this.setState({ lightboxIsOpen: false });
   };
-  handleClickImage() {
+  handleClickImage = () => {
     if (this.state.currentImage === images.length - 1) return;
-
-    this.gotoNextLightboxImag();
-  }
-
-  onClick = () => {
-    this.setState({ visible: true });
+    this.gotoNextLightboxImage();
   };
-
+  onClick = () => {
+    const row = this.state.selected2;
+    if (!row) {
+      alert('Nenhum registro selecionado');
+    } else {
+      this.setState({ id: row });
+      this.setState({ visible: true });
+      console.log(this.state.id);
+    }
+  };
   onHide = () => {
     this.setState({ visible: false });
   };
+  // Render
 
   render() {
+    //Array with the amount of previews
     const item = [
       { label: '5', value: '5' },
       { label: '10', value: '10' },
       { label: '15', value: '15' },
     ];
 
+    // Array with table columns
     const cols = [
       { field: 'input_displayname', header: 'Name' },
       { field: 'owner', header: 'Dinamics class' },
@@ -152,87 +293,82 @@ class RefineOrbitDetail extends Component {
       { field: 'status', header: 'Status' },
     ];
 
+    // Filling the columns
     const dynamicColumns = cols.map((col, i) => {
       return (
         <Column
           rowClassName={this.rowClassName}
-          key={col.field}
+          key={i.field}
           field={col.field}
           header={col.header}
           style={{ textAlign: 'center' }}
         />
       );
     });
-
+    //
     const header = <img alt="Card" height="20" src={download} />;
     const preview = [];
     const lenght = this.state.valor;
     for (let index = 1; index <= lenght; index++) {
       preview.push(
         <AccordionTab header={`2013 RR98 ${index}`}>
-          <Grid>
-            <Row>
-              <Col md={6}>
-                <Card
-                  title="Preview"
-                  subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                >
+          <Panel header={`Plot object 2013 RR98 ${index}`}>
+            <div className="ui-g">
+              <div className="ui-md-12">
+                <div className="ui-g-12">
                   <img
+                    // style={{ width: 'inherit' }}
                     onClick={this.Slideshow}
-                    width="425"
+                    width="325"
                     height="280"
                     src={plot1}
                   />
-                </Card>
-              </Col>
-              <Col md={6}>
-                <Card
-                  title="Preview"
-                  subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                >
                   <img
+                    // style={{ width: 'inherit' }}
                     onClick={this.Slideshow}
-                    width="425"
+                    width="325"
                     height="280"
                     src={plot2}
                   />
-                </Card>
-              </Col>
-            </Row>
-            <br />
-            <Row>
-              <Col md={6}>
-                <Card
-                  title="Preview"
-                  subTitle="Lorem ipsum Lorem ipsum Lorem ipsum"
-                >
+                  {/* </div>
+                <div className="ui-g-12"> */}
                   <img
+                    // style={{ width: 'inherit' }}
                     onClick={this.Slideshow}
-                    width="425"
+                    width="325"
                     height="280"
                     src={plot3}
                   />
-                </Card>
-              </Col>
-              <Col md={6}>
-                <Card
-                  title="Preview"
-                  subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                >
                   <img
+                    // style={{ width: 'inherit' }}
                     onClick={this.Slideshow}
-                    width="425"
+                    width="325"
                     height="280"
                     src={plot4}
                   />
-                </Card>
-              </Col>
-            </Row>
-          </Grid>
+                </div>
+              </div>
+            </div>
+          </Panel>
+
+          {/* <ScrollPanel header="Plot objects"> */}
+
+          <br />
+          <Panel header="Tree of archive">
+            {/* <Tree
+              value={data}
+              style={{ height: '200px', width: '500px', fontSize: '1.5em' }}
+            /> */}
+            <TreeTable value={data} header="Basic">
+              <Column field="name" header="Name" />
+              <Column field="size" header="Size" />
+              <Column field="type" header="Type" />
+            </TreeTable>
+          </Panel>
+          {/* </ScrollPanel> */}
         </AccordionTab>
       );
     }
-
     return (
       <div className="content">
         <div className="ui-g">
@@ -275,17 +411,10 @@ class RefineOrbitDetail extends Component {
                   </div>
                 </div>
               </div>
-              {/* <div className="ui-md-12">
-                <h2>
-                  <Message
-                    severity="success"
-                    text="Success"
-                    detail="Validation failed"
-                    //style={{ width: 750 + 'px', height: 80 + 'px' }}
-                  />
-                </h2>
-              </div> */}
             </Card>
+          </div>
+
+          <div className="ui-md-6">
           </div>
         </div>
         <br />
@@ -299,6 +428,8 @@ class RefineOrbitDetail extends Component {
           currentImage={this.state.currentImage}
           onClickImage={this.handleClickImage}
         />
+        {/* <SlideImage /> */}
+
         <Card
           style={{ border: 1 + 'px solid #A9A9A9' }}
           title="Preview"
@@ -314,8 +445,8 @@ class RefineOrbitDetail extends Component {
               }}
               placeholder="Select a value"
             />
+            <Accordion>{preview}</Accordion>
           </Toolbar>
-          <Accordion>{preview}</Accordion>
         </Card>
         <br />
         <br />
@@ -335,60 +466,11 @@ class RefineOrbitDetail extends Component {
               />
             </div>
           </Toolbar>
-          <Dialog
-            header=" Log Object:Godfather I"
+          <Log
             visible={this.state.visible}
-            width="350px"
-            modal={true}
-            onHide={e => this.setState({ visible: false })}
-            style={{ backgroundColor: '#000', width: 900 + 'px' }}
-          >
-            <pre
-              style={{
-                color: '#00ff00',
-                backgroundColor: '#000',
-                height: 600 + 'px',
-              }}
-            >
-              <code>
-                <ul style={{ listStyle: 'none' }}>
-                  <li>
-                    "Records":
-                    <ul style={{ listStyle: 'none' }}>
-                      <li> "type": "IAMUser",</li>
-                      <li> "principalId": "EX_PRINCIPAL_ID",</li>
-                      <li> "arn": "arn:aws:iam::123456789012:user/Alice",</li>
-                      <li> "accountId": "123456789012",</li>
-                    </ul>
-                  </li>
-                  <li> "eventSource": "cloudtrail.amazonaws.com", </li>
-                </ul>
-                {/* "Records": 
-                "eventVersion": "1.04",
-                "userIdentity":
-                   
-                   
-                    
-                   
-                    "accessKeyId": "EXAMPLE_KEY_ID",
-                    "userName": "Alice",
-                "eventTime": "2016-07-14T19:15:45Z",
-                "eventSource": "cloudtrail.amazonaws.com",
-                "eventName": "UpdateTrail",
-                "awsRegion": "us-east-2",
-                "sourceIPAddress": "205.251.233.182",
-                "userAgent": "aws-cli/1.10.32 Python/2.7.9 Windows/7 botocore/1.4.22",
-                "errorCode": "TrailNotFoundException",
-                "errorMessage": "Unknown trail: myTrail2 for the user: 123456789012",
-                "requestParameters": "name": "myTrail2",
-                "responseElements": null,
-                "requestID": "5d40662a-49f7-11e6-97e4-d9cb6ff7d6a3",
-                "eventID": "b7d4398e-b2f0-4faa-9c76-e2d316a8d67f",
-                "eventType": "AwsApiCall",
-                "recipientAccountId": "123456789012" */}
-              </code>
-            </pre>
-          </Dialog>
+            onHide={this.onHide}
+            id={this.state.id}
+          />
           <div className="content-section implementation">
             <DataTable
               selectionMode="single"
