@@ -112,6 +112,9 @@ class Astrometry():
 
             original_file = os.path.join(self.astrometry_positions_dir, filename)
 
+
+            # Rename object_name_obs.txt -> objectname.txt
+            filename = filename.replace('_obs', '').replace('_', '')
             obj_dir = os.path.join(self.objects_dir, name)
             new_file = os.path.join(obj_dir, filename)
 

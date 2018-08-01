@@ -10,3 +10,4 @@ humanize
 parsl==0.5.2
 requests
 bs4
+docker==3.4.1

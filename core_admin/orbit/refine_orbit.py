@@ -128,6 +128,12 @@ class RefineOrbit():
         # TODO: Essa etapa pode ser paralelizada com Parsl
         self.collect_inputs_by_objects(objects, self.objects_dir)
 
+
+        # # ---------------------- Running NIMA --------------------------------------------------------------------------
+        self.logger.info("Running NIMA")
+
+
+
     def getObservations(self, instance, input_file, step_file):
         """
             Executa a etapa de download dos arquivos Observations vindo do AstDys ou MPC,
@@ -266,6 +272,10 @@ class RefineOrbit():
 
         if original_observation_file is not None:
             filename = os.path.basename(original_observation_file)
+
+            # Rename object_name.* -> objectname.*
+            filename = filename.replace('_', '')
+
             new_file_path = os.path.join(obj_dir, filename)
 
             shutil.copy2(original_observation_file, new_file_path)
@@ -288,6 +298,10 @@ class RefineOrbit():
 
         if original_file is not None:
             filename = os.path.basename(original_file)
+
+            # Rename object_name.* -> objectname.*
+            filename = filename.replace('_', '')
+
             new_file_path = os.path.join(obj_dir, filename)
 
             shutil.copy2(original_file, new_file_path)
@@ -310,6 +324,10 @@ class RefineOrbit():
 
         if original_file is not None:
             filename = os.path.basename(original_file)
+
+            # Rename bsp_jpl object_name.bsp -> objectname.bsp
+            filename = filename.replace('_', '')
+
             new_file_path = os.path.join(obj_dir, filename)
 
             shutil.copy2(original_file, new_file_path)
@@ -339,11 +357,9 @@ class RefineOrbit():
 
         filename = Astrometry().get_astrometry_position_filename(obj.get("name"))
 
-        self.logger.debug("TESTE FILENAME: %s" % filename)
-
         file_path = os.path.join(obj_dir, filename)
 
-        self.logger.debug("TESTE FILE_PATH: %s" % file_path)
+        self.logger.debug("Astrometry File: %s" % file_path)
 
         if not os.path.exists(file_path):
             file_path = None
