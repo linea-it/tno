@@ -13,7 +13,7 @@ import humanize
 from tno.proccess import ProccessManager
 import shutil
 from praia.astrometry import Astrometry
-
+import docker
 
 class RefineOrbit():
     def __init__(self):
@@ -131,6 +131,8 @@ class RefineOrbit():
 
         # # ---------------------- Running NIMA --------------------------------------------------------------------------
         self.logger.info("Running NIMA")
+        self.run_nima(objects, self.objects_dir)
+
 
 
 
@@ -357,6 +359,7 @@ class RefineOrbit():
 
         filename = Astrometry().get_astrometry_position_filename(obj.get("name"))
 
+        filename = filename.replace('_obs', '').replace('_', '')
         file_path = os.path.join(obj_dir, filename)
 
         self.logger.debug("Astrometry File: %s" % file_path)
@@ -366,6 +369,58 @@ class RefineOrbit():
 
         return file_path
 
+
+    def run_nima(self, objects, objects_path):
+
+        # Get docker Client Instance
+        # TODO: O endereco do cliente deve vir de uma variavel de ambiente
+        client = docker.DockerClient(base_url='tcp://172.19.0.1:2376')
+
+        try:
+            nima_image = client.images.get("nima:7")
+
+        except docker.errors.ImageNotFound as e:
+            # Imagem Nao encontrada Tentando baixar a imagem
+            nima_image = client.images.pull(my_image_name)
+
+        except docker.errors.APIError as e:
+            self.logger.error(e)
+            raise(e)
+
+        if not nima_image:
+            raise("Docker Image NIMA not available")
+
+        count = 0
+        for obj in objects:
+
+            # TODO o command pode passar o nome e numero do objeto.
+            cmd = "python /app/NIMAv7_user/executeNIMAv7.py"
+            try:
+                container = client.containers.run(
+                    nima_image, 
+                    command=cmd, 
+                    detach=True,
+                    name="nima_%s" % count,
+                    auto_remove=True,
+                    mem_limit='128m',
+                    volumes={
+                        '/home/glauber/tno/archive/proccess/6/objects/1999_RB216': {
+                            'bind': '/data', 
+                            'mode': 'rw'
+                        },
+                    }
+                )
+
+                self.logger.debug("ID: %s Name: %s Image: %s Status: %s" % (container.short_id, container.name, container.image, container.status))
+
+                for line in container.logs(stream=True):
+                    self.logger.debug(line.strip())
+
+            except docker.errors.ContainerError as e:
+                self.logger.error(e)
+                raise(e)
+
+            count += 1            
 
 class RefineOrbitDB(DBBase):
     def get_observations(self, tablename, schema=None, max_age=None):
