@@ -15,9 +15,8 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Accordion, AccordionTab } from 'primereact/accordion';
 // import { Tree } from 'primereact/tree';
-import { Dialog } from 'primereact/dialog';
 import Lightbox from 'react-images';
-import { Tree } from 'primereact/tree';
+// import { Tree } from 'primereact/tree';
 import { Panel } from 'primereact/panel';
 //importing images
 import plot1 from 'assets/img/1.png';
@@ -25,10 +24,9 @@ import plot2 from 'assets/img/2.png';
 import plot3 from 'assets/img/3.png';
 import plot4 from 'assets/img/4.png';
 import download from 'assets/img/download.jpeg';
-import { ScrollPanel } from 'primereact/scrollpanel';
 // import SlideImage from 'views/RefineOrbit/SlideImage.jsx';
 import Log from 'views/RefineOrbit/Log.jsx';
-import { Message } from 'primereact/message';
+// import { Message } from 'primereact/message';
 import { TreeTable } from 'primereact/treetable';
 
 const images = [{ src: plot1 }, { src: plot2 }, { src: plot3 }, { src: plot4 }];
@@ -268,7 +266,6 @@ class RefineOrbitDetail extends Component {
     } else {
       this.setState({ id: row });
       this.setState({ visible: true });
-      console.log(this.state.id);
     }
   };
   onHide = () => {
@@ -317,30 +314,24 @@ class RefineOrbitDetail extends Component {
               <div className="ui-md-12">
                 <div className="ui-g-12">
                   <img
-                    // style={{ width: 'inherit' }}
                     onClick={this.Slideshow}
                     width="325"
                     height="280"
                     src={plot1}
                   />
                   <img
-                    // style={{ width: 'inherit' }}
                     onClick={this.Slideshow}
                     width="325"
                     height="280"
                     src={plot2}
                   />
-                  {/* </div>
-                <div className="ui-g-12"> */}
                   <img
-                    // style={{ width: 'inherit' }}
                     onClick={this.Slideshow}
                     width="325"
                     height="280"
                     src={plot3}
                   />
                   <img
-                    // style={{ width: 'inherit' }}
                     onClick={this.Slideshow}
                     width="325"
                     height="280"
@@ -350,9 +341,6 @@ class RefineOrbitDetail extends Component {
               </div>
             </div>
           </Panel>
-
-          {/* <ScrollPanel header="Plot objects"> */}
-
           <br />
           <Panel header="Tree of archive">
             {/* <Tree
@@ -365,7 +353,6 @@ class RefineOrbitDetail extends Component {
               <Column field="type" header="Type" />
             </TreeTable>
           </Panel>
-          {/* </ScrollPanel> */}
         </AccordionTab>
       );
     }
@@ -406,16 +393,13 @@ class RefineOrbitDetail extends Component {
                 </div>
 
                 <div className="content-section implementation">
-                  <div className="ui-md-6">
-                    {/* <Tree className=" ui-tree ui-tree-container"  value={dt} /> */}
-                  </div>
+                  <div className="ui-md-6" />
                 </div>
               </div>
             </Card>
           </div>
 
-          <div className="ui-md-6">
-          </div>
+          <div className="ui-md-6" />
         </div>
         <br />
         <br />
@@ -428,8 +412,6 @@ class RefineOrbitDetail extends Component {
           currentImage={this.state.currentImage}
           onClickImage={this.handleClickImage}
         />
-        {/* <SlideImage /> */}
-
         <Card
           style={{ border: 1 + 'px solid #A9A9A9' }}
           title="Preview"

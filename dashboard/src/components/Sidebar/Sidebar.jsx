@@ -7,7 +7,7 @@ import imagine from 'assets/img/sidebar-3.jpg';
 import logo from 'assets/img/reactlogo.png';
 
 import appRoutes from 'routes/app.jsx';
-import { Tooltip } from 'primereact/tooltip';
+// import { Tooltip } from 'primereact/tooltip';
 
 class Sidebar extends Component {
   constructor(props) {
@@ -27,8 +27,6 @@ class Sidebar extends Component {
     window.addEventListener('resize', this.updateDimensions.bind(this));
   }
   render() {
-   
-
     return (
       <div
         id="sidebar"
@@ -56,7 +54,13 @@ class Sidebar extends Component {
         <div className="sidebar-wrapper">
           <ul className="nav">
             {this.state.width <= 991 ? <HeaderLinks /> : null}
-            {appRoutes.map((prop, key) => {
+            {appRoutes.map((prop, key, i) => {
+              // const listaFake = [];
+              // for (let index = 0; index < i.length; index++) {
+              //   console.log(listaFake.push(i[index].helpText));
+              // }
+              // this.helpTextInclude(listaFake);
+
               if (!prop.redirect && !prop.hidden) {
                 return (
                   <li className={this.activeRoute(prop.path)} key={key}>
@@ -69,12 +73,12 @@ class Sidebar extends Component {
                       <i className={prop.icon} />
                       <p>{prop.name}</p>
                     </NavLink>
-                    <Tooltip
+                    {/* <Tooltip
                       for="#id"
                       tooltipEvent="focus"
-                      title={prop.helpText}
+                      title=""
                       tooltipPosition="bottom"
-                    />
+                    /> */}
                   </li>
                 );
               }
