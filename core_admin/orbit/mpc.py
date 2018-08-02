@@ -18,9 +18,9 @@ class Couple:
 class MPC():
     def __init__(self):
 
-        self.observations_extension = ".rwo"
+        self.observations_extension = ".rwm"
 
-        self.orbital_parameters_extension = ".eq0"
+        self.orbital_parameters_extension = ".eqm"
 
     def getObjectURL(self, name):
         # print("getObjectURL(%s)" % name)

@@ -13,7 +13,7 @@ import humanize
 from tno.proccess import ProccessManager
 import shutil
 from praia.astrometry import Astrometry
-
+import docker
 
 class RefineOrbit():
     def __init__(self):
@@ -67,31 +67,41 @@ class RefineOrbit():
 
         t0 = datetime.now()
         # ---------------------- Observations --------------------------------------------------------------------------
+
+        self.logger.debug("---------------------- Observations --------------------------------------------------------------------------")
         # Pesquisando as observacoes que precisam ser baixadas
         observations = RefineOrbitDB().get_observations(self.input_list.tablename, self.input_list.schema, max_age)
 
         self.observations_input_file = os.path.join(instance.relative_path, 'observations.csv')
+
+        self.logger.info("Writing Observations Input File")
         RefineOrbit().writer_refine_orbit_file_list(self.observations_input_file, observations)
 
         # Download das Observations
         self.getObservations(instance, self.observations_input_file, steps_file)
 
         # ---------------------- Orbital Parameters --------------------------------------------------------------------
+        self.logger.debug("---------------------- Orbital Parameters --------------------------------------------------------------------")
         # Pesquisando os parametros orbitais que precisam ser baixadas
         orbital_parameters = RefineOrbitDB().get_orbital_parameters(self.input_list.tablename, self.input_list.schema,
                                                                     max_age)
 
         self.orbital_parameters_input_file = os.path.join(instance.relative_path, 'orbital_parameters.csv')
+
+        self.logger.info("Writing Orbital Parameters Input File")
         self.writer_refine_orbit_file_list(self.orbital_parameters_input_file, orbital_parameters)
 
         # Download dos parametros Orbitais
         self.getOrbitalParameters(instance, self.orbital_parameters_input_file, steps_file)
 
         # ---------------------- BSPs ----------------------------------------------------------------------------------
+        self.logger.debug("---------------------- BSPs ----------------------------------------------------------------------------------")
         # Pesquisando os bsp_jpl que precisam ser baixadas
         bsp_jpl = RefineOrbitDB().get_bsp_jpl(self.input_list.tablename, self.input_list.schema, max_age)
 
         self.bsp_jpl_input_file = os.path.join(instance.relative_path, 'bsp_jpl.csv')
+
+        self.logger.info("Writing BSP JPL Input File")
         RefineOrbit().writer_refine_orbit_file_list(self.bsp_jpl_input_file, bsp_jpl)
 
         # Download dos BSP JPL
@@ -118,6 +128,14 @@ class RefineOrbit():
         # TODO: Essa etapa pode ser paralelizada com Parsl
         self.collect_inputs_by_objects(objects, self.objects_dir)
 
+
+        # # ---------------------- Running NIMA --------------------------------------------------------------------------
+        self.logger.info("Running NIMA")
+        self.run_nima(objects, self.objects_dir)
+
+
+
+
     def getObservations(self, instance, input_file, step_file):
         """
             Executa a etapa de download dos arquivos Observations vindo do AstDys ou MPC,
@@ -126,11 +144,14 @@ class RefineOrbit():
 
         :param instance:
         """
-
-        GetObservations().run(
-            input_file=input_file,
-            output_path=instance.relative_path,
-            step_file=step_file)
+        try:
+            GetObservations().run(
+                input_file=input_file,
+                output_path=instance.relative_path,
+                step_file=step_file)
+        except Exception as e:
+            self.logger.error(e)
+            raise(e)            
 
     def getOrbitalParameters(self, instance, input_file, step_file):
         """
@@ -140,8 +161,11 @@ class RefineOrbit():
 
         :param instance:
         """
-
-        GetOrbitalParameters().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
+        try:
+            GetOrbitalParameters().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
+        except Exception as e:
+            self.logger.error(e)
+            raise(e)            
 
     def getBspJplFiles(self, instance, input_file, step_file):
         """
@@ -151,8 +175,12 @@ class RefineOrbit():
 
         :param instance:
         """
-
-        BSPJPL().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
+        try:
+            BSPJPL().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
+        except Exception as e:
+            self.logger.error(e)
+            raise(e)
+         
 
     def createRefienOrbitDirectory(self, instance):
 
@@ -196,7 +224,6 @@ class RefineOrbit():
         """
 
         """
-        self.logger.info("Writing Input File")
         self.logger.debug("Input File: %s" % file_path)
 
         header_orb_param = ["name", "num", "filename", "need_download"]
@@ -247,6 +274,10 @@ class RefineOrbit():
 
         if original_observation_file is not None:
             filename = os.path.basename(original_observation_file)
+
+            # Rename object_name.* -> objectname.*
+            filename = filename.replace('_', '')
+
             new_file_path = os.path.join(obj_dir, filename)
 
             shutil.copy2(original_observation_file, new_file_path)
@@ -269,6 +300,10 @@ class RefineOrbit():
 
         if original_file is not None:
             filename = os.path.basename(original_file)
+
+            # Rename object_name.* -> objectname.*
+            filename = filename.replace('_', '')
+
             new_file_path = os.path.join(obj_dir, filename)
 
             shutil.copy2(original_file, new_file_path)
@@ -291,6 +326,10 @@ class RefineOrbit():
 
         if original_file is not None:
             filename = os.path.basename(original_file)
+
+            # Rename bsp_jpl object_name.bsp -> objectname.bsp
+            filename = filename.replace('_', '')
+
             new_file_path = os.path.join(obj_dir, filename)
 
             shutil.copy2(original_file, new_file_path)
@@ -320,17 +359,68 @@ class RefineOrbit():
 
         filename = Astrometry().get_astrometry_position_filename(obj.get("name"))
 
-        self.logger.debug("TESTE FILENAME: %s" % filename)
-
+        filename = filename.replace('_obs', '').replace('_', '')
         file_path = os.path.join(obj_dir, filename)
 
-        self.logger.debug("TESTE FILE_PATH: %s" % file_path)
+        self.logger.debug("Astrometry File: %s" % file_path)
 
         if not os.path.exists(file_path):
             file_path = None
 
         return file_path
 
+
+    def run_nima(self, objects, objects_path):
+
+        # Get docker Client Instance
+        # TODO: O endereco do cliente deve vir de uma variavel de ambiente
+        client = docker.DockerClient(base_url='tcp://172.19.0.1:2376')
+
+        try:
+            nima_image = client.images.get("nima:7")
+
+        except docker.errors.ImageNotFound as e:
+            # Imagem Nao encontrada Tentando baixar a imagem
+            nima_image = client.images.pull(my_image_name)
+
+        except docker.errors.APIError as e:
+            self.logger.error(e)
+            raise(e)
+
+        if not nima_image:
+            raise("Docker Image NIMA not available")
+
+        count = 0
+        for obj in objects:
+
+            # TODO o command pode passar o nome e numero do objeto.
+            cmd = "python /app/NIMAv7_user/executeNIMAv7.py"
+            try:
+                container = client.containers.run(
+                    nima_image, 
+                    command=cmd, 
+                    detach=True,
+                    name="nima_%s" % count,
+                    auto_remove=True,
+                    mem_limit='128m',
+                    volumes={
+                        '/home/glauber/tno/archive/proccess/6/objects/1999_RB216': {
+                            'bind': '/data', 
+                            'mode': 'rw'
+                        },
+                    }
+                )
+
+                self.logger.debug("ID: %s Name: %s Image: %s Status: %s" % (container.short_id, container.name, container.image, container.status))
+
+                for line in container.logs(stream=True):
+                    self.logger.debug(line.strip())
+
+            except docker.errors.ContainerError as e:
+                self.logger.error(e)
+                raise(e)
+
+            count += 1            
 
 class RefineOrbitDB(DBBase):
     def get_observations(self, tablename, schema=None, max_age=None):

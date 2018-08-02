@@ -51,14 +51,12 @@ class BSPJPL(DownloadParameters):
 
         self.bsp_jpl_extension = ".bsp"
 
-    def download(self, name, outṕut_path):
+    def download(self, name, filename, output_path, logger):
 
         start = datetime.now()
         try:
-            filename = name.replace(" ", "_") + self.bsp_jpl_extension
-
             # Os arquivo baixados ficam no diretorio setado na variavel BSP_JPL.
-            file_path = os.path.join(outṕut_path, filename)
+            file_path = os.path.join(output_path, filename)
 
             args = [
                 self.small_body_spk,
@@ -69,14 +67,11 @@ class BSPJPL(DownloadParameters):
                 settings.EMAIL_NOTIFICATIONS,
                 file_path]
 
-            # Se o mode de debug estiver ligado pula a etapa de download e acrescenta um sleep
-            if self.debug_mode:
-                # DEBUG MODE NAO FAZ DOWNLOAD
-                time.sleep(randrange(5))
+            logger.debug("Command: [ %s ]" %(" ".join(args)))
 
-            else:
-                # executa de fato o download.
-                check_call(args, stdout=DEVNULL, stderr=STDOUT)
+            # TODO stdout deve ser jogado para um arquivo de log
+            # executa de fato o download.
+            check_call(args, stdout=DEVNULL, stderr=STDOUT)
 
         except CalledProcessError:
             # TODO aqui deve ser adicionar uma mensagem de erro no log.
@@ -96,7 +91,7 @@ class BSPJPL(DownloadParameters):
                 "file_size": size,
                 "filename": filename,
                 "file_path": file_path,
-                "path": outṕut_path
+                "path": output_path
             })
 
         else:
@@ -111,20 +106,34 @@ class BSPJPL(DownloadParameters):
         # Cria o path para o diretorio de saida e verifica se existe, se nao existir cria.
         files_path = settings.BSP_JPL_DIR
 
+        self.logger.debug("Files Path: %s" % files_path)
+
         # Le o arquivo de entrada e criar uma lista com nome e numero do objeto.
         records = self.read_input(input_file)
 
         self.input_records = records
 
-        # Configuracao do Parsl.
-        dfk = DataFlowKernel(config=settings.PARSL_CONFIG)
+        self.logger.info("Reading input file.")
+
+        self.logger.debug("Inputs: [ %s ]" % len(records))
+
+        # Configuracao do Parsl
+        try:
+            dfk = DataFlowKernel(config=dict(settings.PARSL_CONFIG))
+        except Exception as e:
+            self.logger.error(e)
+            raise e
+
+        self.logger.info("Configuring Parsl")
+        self.logger.debug("Parsl Config:" )
+        self.logger.debug(settings.PARSL_CONFIG)
 
         # Configuracao do Parsl Log.
-        parsl.set_file_logger(os.path.join(output_path, 'parsl.log'))
+        parsl.set_file_logger(os.path.join(output_path, 'bsp_jpl_parsl.log'))
 
         # Declaracao do Parsl APP
         @App("python", dfk)
-        def start_parsl_job(name, files_path, logger):
+        def start_parsl_job(name, filename, files_path, logger):
 
             result = dict({
                 "name": name,
@@ -133,7 +142,7 @@ class BSPJPL(DownloadParameters):
             msg = "Download [ FAILURE ] - Object: %s " % name
 
             # Executa o metodo de download
-            download_stats = self.download(name, files_path)
+            download_stats = self.download(name, filename, files_path, logger)
 
             if download_stats is not None:
                 result.update({
@@ -159,7 +168,17 @@ class BSPJPL(DownloadParameters):
             # Utiliza o parsl apenas para os objetos que estao marcados
             # para serem baixados.
             if row.get("need_download"):
-                results.append(start_parsl_job(row.get("name"), files_path, self.logger))
+                filename = row.get("name").replace(" ", "_") + self.bsp_jpl_extension
+
+                result = start_parsl_job(
+                    name=row.get("name"),
+                    filename=filename,
+                    files_path=files_path,
+                    logger=self.logger)
+
+                self.logger.debug(result)
+
+                results.append(result)
 
         # Espera o Resultado de todos os jobs.
         outputs = [i.result() for i in results]
