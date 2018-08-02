@@ -30,7 +30,6 @@
     "react-router-dom": "^4.1.2",
     "react-scripts": "1.0.10",
     "react-select": "^1.2.1",
-    "react-slideshow-image": "^0.2.2",
     "react-syntax-highlight": "^15.3.1",
     "serve": "^8.1.2",
     "sql-formatter": "^2.3.1"

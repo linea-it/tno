@@ -19,14 +19,13 @@ import Lightbox from 'react-images';
 // import { Tree } from 'primereact/tree';
 import { Panel } from 'primereact/panel';
 //importing images
+// import plot1 from 'assets/img/1.png';
 import plot1 from 'assets/img/1.png';
 import plot2 from 'assets/img/2.png';
 import plot3 from 'assets/img/3.png';
 import plot4 from 'assets/img/4.png';
 import download from 'assets/img/download.jpeg';
-// import SlideImage from 'views/RefineOrbit/SlideImage.jsx';
 import Log from 'views/RefineOrbit/Log.jsx';
-// import { Message } from 'primereact/message';
 import { TreeTable } from 'primereact/treetable';
 
 const images = [{ src: plot1 }, { src: plot2 }, { src: plot3 }, { src: plot4 }];
@@ -134,6 +133,7 @@ class RefineOrbitDetail extends Component {
       lightboxIsOpen: false,
       currentImage: 0,
       visible: false,
+      imageId: [],
     };
   }
 
@@ -240,7 +240,10 @@ class RefineOrbitDetail extends Component {
 
   // Methods for slide operation
   Slideshow = () => {
-    this.setState({ lightboxIsOpen: true });
+    //event.preventDefault();
+    this.setState({
+      lightboxIsOpen: true,
+    });
   };
   gotoNextLightboxImage = () => {
     this.setState({
@@ -255,6 +258,11 @@ class RefineOrbitDetail extends Component {
   CloseLightbox = () => {
     this.setState({ lightboxIsOpen: false });
   };
+  gotoImage(index) {
+    this.setState({
+      currentImage: index,
+    });
+  }
   handleClickImage = () => {
     if (this.state.currentImage === images.length - 1) return;
     this.gotoNextLightboxImage();
@@ -309,7 +317,9 @@ class RefineOrbitDetail extends Component {
     for (let index = 1; index <= lenght; index++) {
       preview.push(
         <AccordionTab header={`2013 RR98 ${index}`}>
-          <Panel header={`Plot object 2013 RR98 ${index}`}>
+          <Panel>
+            {/*
+ header={`Plot object 2013 RR98 ${index}`} */}
             <div className="ui-g">
               <div className="ui-md-12">
                 <div className="ui-g-12">
@@ -342,11 +352,7 @@ class RefineOrbitDetail extends Component {
             </div>
           </Panel>
           <br />
-          <Panel header="Tree of archive">
-            {/* <Tree
-              value={data}
-              style={{ height: '200px', width: '500px', fontSize: '1.5em' }}
-            /> */}
+          <Panel>
             <TreeTable value={data} header="Basic">
               <Column field="name" header="Name" />
               <Column field="size" header="Size" />
@@ -411,6 +417,7 @@ class RefineOrbitDetail extends Component {
           onClose={this.CloseLightbox}
           currentImage={this.state.currentImage}
           onClickImage={this.handleClickImage}
+          onClickThumbnail={this.gotoImage}
         />
         <Card
           style={{ border: 1 + 'px solid #A9A9A9' }}
