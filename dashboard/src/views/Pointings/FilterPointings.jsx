@@ -123,7 +123,7 @@ class FilterPointings extends React.Component {
     this.setState({ validation: 'error' });
     this.setState({ controlId: 'formValidationerror4' });
     this.setState({
-      errorMessage: 'Empty fields, please fill in some search field ',
+      errorMessage: 'Empty fields, please fill in some seact-bootstrap',
     });
     this.setState({ colorAlert: 'danger' });
     this.setState({ open: true });
