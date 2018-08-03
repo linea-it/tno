@@ -14,7 +14,7 @@ from tno.proccess import ProccessManager
 import shutil
 from praia.astrometry import Astrometry
 import docker
-
+from django.conf import settings
 
 class RefineOrbit():
     def __init__(self):
@@ -26,6 +26,7 @@ class RefineOrbit():
         self.proccess = None
         self.input_list = None
         self.objects_dir = None
+
 
     def startRefineOrbitRun(self, instance):
         self.logger.debug("ORBIT RUN: %s" % instance.id)
@@ -372,8 +373,7 @@ class RefineOrbit():
         self.logger.debug("Objects Path: %s" % objects_path)
 
         # Get docker Client Instance
-        # TODO: O endereco do cliente deve vir de uma variavel de ambiente
-        client = docker.DockerClient(base_url='tcp://172.19.0.1:2376')
+        client = docker.DockerClient(base_url=settings.DOCKER_HOST)
 
         image_name = "linea/nima:7"
 
@@ -403,7 +403,8 @@ class RefineOrbit():
             self.logger.debug("Input Path: %s" % input_path)
             self.nima_input_file(obj, input_path)
 
-            real_archive_path = '/home/glauber/tno/archive'
+            real_archive_path = settings.HOST_ARCHIVE_DIR
+
             real_input_path = os.path.join(real_archive_path, input_path.strip('/'))
 
             self.logger.debug("Real Input Path: %s" % real_input_path)
@@ -437,35 +438,27 @@ class RefineOrbit():
                 )
 
 
-                self.logger.info("Finish Container NIMA")
-
-                running_t1 = datetime.now()
-                running_tdelta = running_t1 - running_t0
-
-                self.logger.info("NIMA Execution Time: %s" % humanize.naturaldelta(running_tdelta))
-
-
+                log_data = ""
+                # Logging
                 try:
-
-                    log_data = ""
-
-                    # for line in container.logs(stream=True):
-                    #     line = str(line.strip().decode("utf-8"))
-                    #     self.logger.debug(line)
-                    #
-                    #     f_nima_log.write("%s\n" % line)
-
                     for line in container.logs(stream=True):
                         line = str(line.strip().decode("utf-8"))
-                        self.logger.debug(line)
-
                         log_data += "%s\n" % line
+                        self.logger.debug(line)
 
                     with open(nima_log, 'w') as f_nima_log:
                         f_nima_log.write(log_data)
 
                 except Exception as e:
                     self.logger.error(e)
+
+
+                self.logger.info("Finish Container NIMA")
+
+                running_t1 = datetime.now()
+                running_tdelta = running_t1 - running_t0
+
+                self.logger.info("NIMA Execution Time: %s" % humanize.naturaldelta(running_tdelta))
 
 
                 success_string = "Duration:"
