@@ -17,7 +17,7 @@ import docker
 from django.conf import settings
 import json
 from statistics import mean
-import unicode
+
 
 class RefineOrbit():
     def __init__(self):
@@ -53,7 +53,8 @@ class RefineOrbit():
     def startRefineOrbitRun(self, instance):
         self.logger.debug("ORBIT RUN: %s" % instance.id)
 
-        self.results["start_time"] = datetime.now()
+        start_time = datetime.now()
+        self.results["start_time"] = start_time.replace(microsecond=0).isoformat(' ')
 
         # Recuperar a Instancia do processo
         self.proccess = instance.proccess
@@ -193,15 +194,23 @@ class RefineOrbit():
 
         # ---------------------- Finish --------------------------------------------------------------------------------
 
-        self.results["finish_time"] = datetime.now()
-        tdelta = self.results["finish_time"] - self.results["start_time"]
-        self.results["execution_time"] = humanize.naturaldelta(tdelta)
+        finish_time = datetime.now()
+        instance.finish_time = finish_time
 
+        self.results["finish_time"] = finish_time.replace(microsecond=0).isoformat(' ')
+        tdelta = finish_time - start_time
+        self.results["execution_time"] = humanize.naturaldelta(tdelta)
         # Average Time per object
         self.results["average_time"] = mean(self.execution_time)
 
+        result_file = os.path.join(instance.relative_path, "results.json")
+        with open(result_file, "w") as fp:
+            json.dump(self.results, fp)
 
-        self.logger.debug(self.results)
+        instance.status = "success"
+        instance.save()
+
+        self.logger.info("Finish Refine Orbit")
 
 
     def getObservations(self, instance, input_file, step_file):
@@ -337,28 +346,56 @@ class RefineOrbit():
             error_msg = None
 
             if observations_file:
-                self.results["objects"][alias]["inputs"]["observations"] = observations_file
+                # self.logger.debug()
+                self.results["objects"][alias]["inputs"]["observations"] = dict({
+                    "filename": os.path.basename(observations_file),
+                    "file_path": observations_file,
+                    "file_size": os.path.getsize(observations_file), 
+                    "file_type": os.path.splitext(observations_file)[1]
+                })
+
+                            
             else:
                 status = "failure"
                 error_msg = "Missing Input Observations"
 
             if orbital_parameters_file:
-                self.results["objects"][alias]["inputs"]["orbital_parameters"] = orbital_parameters_file
+                self.results["objects"][alias]["inputs"]["orbital_parameters"] = dict({
+                    "filename": os.path.basename(orbital_parameters_file),
+                    "file_path": orbital_parameters_file,
+                    "file_size": os.path.getsize(orbital_parameters_file), 
+                    "file_type": os.path.splitext(orbital_parameters_file)[1]
+                })
+            
             else:
                 status = "failure"
                 error_msg = "Missing Input Orbital Parameters"
 
             if bsp_jpl_file:
-                self.results["objects"][alias]["inputs"]["bsp_jpl"] = bsp_jpl_file
+                self.results["objects"][alias]["inputs"]["bsp_jpl"] = dict({
+                    "filename": os.path.basename(bsp_jpl_file),
+                    "file_path": bsp_jpl_file,
+                    "file_size": os.path.getsize(bsp_jpl_file), 
+                    "file_type": os.path.splitext(bsp_jpl_file)[1]
+                })
+                
             else:
                 status = "failure"
                 error_msg = "Missing Input BSP JPL"
 
             if astrometry_position_file:
-                self.results["objects"][alias]["inputs"]["astrometry"] = astrometry_position_file
+                self.results["objects"][alias]["inputs"]["astrometry"] = dict({
+                    "filename": os.path.basename(astrometry_position_file),
+                    "file_path": astrometry_position_file,
+                    "file_size": os.path.getsize(astrometry_position_file), 
+                    "file_type": os.path.splitext(astrometry_position_file)[1]
+                })
+            
             else:
                 status = "failure"
                 error_msg = "Missing Input Astrometry Positions"
+
+            self.logger.debug(self.results)
 
             if status is not None:
                 self.results["objects"][alias]["status"] = status
@@ -556,7 +593,8 @@ class RefineOrbit():
                     for line in container.logs(stream=True):
                         line = str(line.strip().decode("utf-8"))
                         log_data += "%s\n" % line
-                        self.logger.debug(line)
+                        
+                        # self.logger.debug(line)
 
                     with open(nima_log, 'w') as f_nima_log:
                         f_nima_log.write(log_data)
@@ -599,12 +637,13 @@ class RefineOrbit():
 
             self.execution_time.append(tdelta.total_seconds())
 
-            # self.results["objects"][alias]["start_time"] = unicode(tstart.replace(microsecond=0))
-            self.results["objects"][alias]["start_time"] = tstart
-            self.results["objects"][alias]["finish_time"] = tfinish
+            self.results["objects"][alias]["start_time"] = tstart.replace(microsecond=0).isoformat(' ')
+            self.results["objects"][alias]["finish_time"] = tfinish.replace(microsecond=0).isoformat(' ')
             self.results["objects"][alias]["execution_time"] = tdelta.total_seconds()
 
             self.results["count_executed"] += 1
+
+            self.results["objects"][alias]["results"] = self.nima_check_results(self.results["objects"][alias])
 
 
     def nima_input_file(self, obj, input_path):
@@ -631,8 +670,31 @@ class RefineOrbit():
             self.logger.error(e)
             raise (e)
 
-    def nima_check_results(self, obj, result_path):
-        pass
+    def nima_check_results(self, obj):
+        
+        results = list()
+
+        inputs = list()
+        for i in obj["inputs"]:
+            f_input = obj["inputs"][i]
+            inputs.append(f_input["filename"])
+
+        files = os.listdir(obj["object_dir"])
+
+        for f in files:
+            
+            if f not in inputs:
+
+                file_path = os.path.join(obj["object_dir"], f)
+
+                results.append(dict({
+                    "filename": f,
+                    "file_size": os.path.getsize(file_path),
+                    "file_path": file_path,
+                    "file_type": os.path.splitext(file_path)[1]
+                }))
+
+        return results
 
 
 class RefineOrbitDB(DBBase):
