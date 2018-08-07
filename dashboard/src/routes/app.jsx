@@ -16,6 +16,7 @@ import Icons from 'views/Icons/Icons';
 import Notifications from 'views/Notifications/Notifications';
 import SkybotDetail from '../views/SolarSystems/SkybotDetail';
 import PointingsDetail from '../views/Pointings/PointingsDetail';
+import RefineOrbitDetail from '../views/RefineOrbit/Details';
 
 const appRoutes = [
   {
@@ -23,24 +24,28 @@ const appRoutes = [
     name: 'Dashboard',
     icon: 'fa fa-home',
     component: Dashboard,
+    helpText: 'texto1',
   },
   {
     path: '/registration',
     name: 'Registration',
     icon: '',
     component: Placeholder,
+    helpText: 'texto2',
   },
   {
     path: '/pointings',
     name: 'Pointings',
     // icon: 'pe-7s-target',
     component: PointingsPanel,
+    helpText: 'texto3',
   },
   {
     path: '/solarsystem',
     name: 'Search SSSO',
     // icon: 'pe-7s-sun',
     component: SolarSystemsPanel,
+    helpText: 'texto4',
   },
   // { path: '/skybot', name: 'SkyBoT', icon: 'pe-7s-science', component: SkyBot },
   {
@@ -48,6 +53,7 @@ const appRoutes = [
     name: 'Filter Objects',
     // icon: 'pe-7s-filter',
     component: FilterPanel,
+    helpText: 'texto5',
   },
   {
     path: '/custom_list',
@@ -55,6 +61,7 @@ const appRoutes = [
     // icon: 'fa fa-list',
     hidden: true,
     component: CustomList,
+    helpText: 'texto6',
   },
   {
     path: '/objects/:id',
@@ -78,11 +85,20 @@ const appRoutes = [
     path: '/exposuredownload',
     name: 'Download',
     component: Placeholder,
+    helpText: 'texto7',
   },
   {
     path: '/astrometry',
     name: 'Astrometry',
     component: Praia,
+    helpText: 'texto8',
+  },
+  {
+    path: '/details',
+    name: 'Details',
+    component: RefineOrbitDetail,
+    hidden: true,
+    helpText: 'texto9',
   },
   {
     path: '/astrometry_run/:id',
@@ -94,6 +110,13 @@ const appRoutes = [
     path: '/refine_orbit',
     name: 'Refine Orbit',
     component: RefineOrbitPanel,
+    helpText: 'texto10',
+  },
+  {
+    path: '/prediction',
+    name: 'Prediction of Occultations',
+    component: Placeholder,
+    helpText: 'texto11',
   },
   {
     path: '/post_results',

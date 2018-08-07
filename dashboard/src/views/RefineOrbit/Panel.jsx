@@ -21,7 +21,7 @@ class RefineOrbitPanel extends Component {
 
   onCreateRun = record => {
     // Toda vez que cria um novo registro forca a execucao do metodo render()
-    this.setState(this.state);
+    this.setState({ record: record });
   };
 
   render() {
@@ -43,7 +43,7 @@ class RefineOrbitPanel extends Component {
               </Row>
               <Row>
                 <Col md={12}>
-                  <RefineOrbitHistory />
+                  <RefineOrbitHistory onRerun={this.onCreateRun} />
                 </Col>
               </Row>
             </Grid>

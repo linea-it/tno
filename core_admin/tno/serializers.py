@@ -1,17 +1,17 @@
+import humanize
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from django.contrib.auth.models import User
-from datetime import date
-from .models import Pointing, SkybotOutput, CustomList, Proccess, Product, Observation, OrbitalParameter
-import humanize
+from .models import Pointing, SkybotOutput, CustomList, Proccess
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username',)
 
-class PointingSerializer(serializers.ModelSerializer):
 
+class PointingSerializer(serializers.ModelSerializer):
     date_obs = serializers.SerializerMethodField()
 
     class Meta:
@@ -61,7 +61,6 @@ class PointingSerializer(serializers.ModelSerializer):
             return None
 
 class SkybotOutputSerializer(serializers.ModelSerializer):
-
     pointing = serializers.PrimaryKeyRelatedField(
         queryset=Pointing.objects.all(), many=False)
 
@@ -97,13 +96,14 @@ class SkybotOutputSerializer(serializers.ModelSerializer):
             'expnum',
             'ccdnum',
             'band',
-            )
+        )
 
 
 class ObjectClassSerializer(serializers.ModelSerializer):
     class Meta:
         model = SkybotOutput
         fields = ('dynclass',)
+
 
 class CustomListSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
@@ -116,7 +116,7 @@ class CustomListSerializer(serializers.ModelSerializer):
             'id',
             'owner',
             'displayname',
-            'tablename',            
+            'tablename',
             'description',
             'database',
             'schema',
@@ -127,7 +127,7 @@ class CustomListSerializer(serializers.ModelSerializer):
             'creation_date',
             'creation_time',
             'sql',
-            'sql_creation',            
+            'sql_creation',
             'filter_name',
             'filter_dynclass',
             'filter_magnitude',
@@ -161,53 +161,3 @@ class ProccessSerializer(serializers.ModelSerializer):
             'finish_time',
             'status',
         )
-
-class ProductSerializer(serializers.ModelSerializer):
-
-    proccess = serializers.PrimaryKeyRelatedField(
-        queryset=Proccess.objects.all(), many=False)
-
-    class Meta:
-        model = Product
-        fields = (
-            'id',
-            'proccess',
-            'product_type',
-            'database',
-            'schema',
-            'tablename',
-            'rows',
-            'filename',
-            'file_size',
-        )
-
-class ObservationSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Observation
-        fields = (
-            'id',
-            'name',
-            'source',
-            'observations',
-            'filename',
-            'download_start_time',
-            'download_finish_time',
-            'file_size',
-            'external_url'
-        )
-
-class OrbitalParameterSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = OrbitalParameter
-        fields = (
-            'id',
-            'name',
-            'source',
-            'filename',
-            'download_start_time',
-            'download_finish_time',
-            'file_size',
-            'external_url'
-        )        

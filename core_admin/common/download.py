@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 class Download():
-    def download_file_from_url(self, url, output_path, filename, overwrite=True, ignore_errors=False):
+    def download_file_from_url(self, url, output_path, filename, overwrite=True, ignore_errors=False, timeout=30):
         """
         Esta funcao faz o download de um arquivo
         :param url: url completa de qual arquivo deve ser baixado
@@ -34,7 +34,7 @@ class Download():
         if not os.path.exists(file_path):
 
             try:
-                r = requests.get(url, stream=True, verify=False)
+                r = requests.get(url, stream=True, verify=False, timeout=timeout)
                 if r.status_code == 200:
                     with open(file_path, 'wb') as f:
                         r.raw.decode_content = True

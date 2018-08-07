@@ -2,6 +2,7 @@ from datetime import datetime
 import requests
 import os
 from bs4 import BeautifulSoup
+import time
 
 
 # Structure with two parameters (name, value)
@@ -15,6 +16,12 @@ class Couple:
 
 
 class MPC():
+    def __init__(self):
+
+        self.observations_extension = ".rwm"
+
+        self.orbital_parameters_extension = ".eqm"
+
     def getObjectURL(self, name):
         # print("getObjectURL(%s)" % name)
 
@@ -66,9 +73,9 @@ class MPC():
         temp_name = name.replace(' ', '+')
         object_id = name.replace(' ', '')
 
-        filename = name.replace(" ", "") + ".eq0"
+        filename = name.replace(" ", "") + self.orbital_parameters_extension
         if number != "-" and number is not None:
-            filename = number + ".eq0"
+            filename = number + self.orbital_parameters_extension
 
         link = 'https://minorplanetcenter.net/db_search/show_object?object_id=' + temp_name
         r = requests.get(link, stream=True)
@@ -127,7 +134,7 @@ class MPC():
             seconds = tdelta.total_seconds()
 
             # Rename filename
-            new_filename = name.replace(' ', '_') + '.eq0'
+            new_filename = name.replace(' ', '_') + self.orbital_parameters_extension
             new_file = os.path.join(output_path, new_filename)
             os.rename(file, new_file)
 
@@ -141,13 +148,16 @@ class MPC():
                 "path": output_path
             })
 
+        # TODO: Este sleep e para respeitar a politica de seguranca do MPC
+        time.sleep(3)
+
         return download_stats
 
     def getObservationsFilename(self, name, number):
-        filename = name.replace(" ", "") + ".rwo"
+        filename = name.replace(" ", "") + self.observations_extension
 
         if number != "-":
-            filename = number + ".rwo"
+            filename = number + self.observations_extension
 
         return filename
 
@@ -160,13 +170,18 @@ class MPC():
 
         link = self.getObjectURL(name)
 
-        r = requests.get(link, stream=True, verify=False)
-        header = r.text
+        try:
+            r = requests.get(link, stream=True, verify=False, timeout=5)
+            header = r.text
 
-        # This text only apper when the object is not registered in MPC yet.
-        substring = 'Unknown object'
+            # This text only apper when the object is not registered in MPC yet.
+            substring = 'Unknown object'
 
-        if substring not in header:
-            return href
-        else:
+            if substring not in header:
+                return href
+            else:
+                return None
+        except Exception as e:
+            # TODO escrever  os erros em um LOG
+            print(e)
             return None
