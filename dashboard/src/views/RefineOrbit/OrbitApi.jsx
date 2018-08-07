@@ -29,5 +29,7 @@ class OrbitApi {
 
   // dados na table do primereact
   getRefineOrbits = id => axios.get(`${this.api}/orbit_run/${id}`);
+
+  getLogRefineOrbits = () => axios.get(`${this.api}/teste/`);
 }
 export default OrbitApi;

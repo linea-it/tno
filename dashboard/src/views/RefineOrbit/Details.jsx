@@ -331,13 +331,12 @@ class RefineOrbitDetail extends Component {
         })
       );
     };
-    const ListGroup = () => {
-      statistics.forEach((element, i) => {
-        <ListGroup>
-          {element[i].text}&nbsp;:&nbsp;<strong>{element.value}</strong>
-        </ListGroup>;
-      });
-    };
+    // List of execution statistics
+    const List = statistics.map((element, i) => (
+      <ListGroupItem key={i}>
+        {element.text}:&nbsp;<strong>{element.value}</strong>
+      </ListGroupItem>
+    ));
 
     const header = <img alt="Card" height="20" src={download} />;
     const preview = [];
@@ -387,31 +386,7 @@ class RefineOrbitDetail extends Component {
               subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
             >
               <div className="ui-g">
-                <div className="ui-md-6">
-                  {/* {ListGroup} */}
-                  <ListGroup>
-                    <ListGroupItem>
-                      Total de Objetos de entrada&nbsp;:&nbsp;&nbsp;
-                      <strong>5</strong>
-                    </ListGroupItem>
-                    <ListGroupItem>
-                      Total de objetos excecutados&nbsp;:&nbsp;&nbsp;
-                      <strong>4</strong>
-                    </ListGroupItem>
-                    <ListGroupItem>
-                      Total de objetos falhados&nbsp;:&nbsp;&nbsp;
-                      <strong>0</strong>
-                    </ListGroupItem>
-                    <ListGroupItem>
-                      Tempo de execução&nbsp;:&nbsp;&nbsp;
-                      <strong>00:02:10</strong>
-                    </ListGroupItem>
-                    <ListGroupItem>
-                      Tempo médio por objeto&nbsp;:&nbsp;&nbsp;
-                      <strong>00:00:23</strong>
-                    </ListGroupItem>
-                  </ListGroup>
-                </div>
+                <div className="ui-md-6"> {List}</div>
 
                 <div className="content-section implementation">
                   <div className="ui-md-6" />
