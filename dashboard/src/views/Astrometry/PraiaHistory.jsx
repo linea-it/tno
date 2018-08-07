@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { ButtonToolbar, Button } from 'react-bootstrap';
 import Card from 'components/Card/Card.jsx';
 import PraiaApi from './PraiaApi';
 import PropTypes from 'prop-types';
@@ -13,7 +14,13 @@ import ReactInterval from 'react-interval';
 
 const columns = [
   {
-    text: 'Id',
+    text: 'Proccess',
+    dataField: 'proccess_displayname',
+    width: 300,
+    headerStyle: formatColumnHeader,
+  },
+  {
+    text: 'Run Id',
     dataField: 'id',
     width: 60,
     headerStyle: formatColumnHeader,
@@ -59,6 +66,7 @@ class PraiaHistory extends Component {
   static propTypes = {
     history: PropTypes.any.isRequired,
     loading: PropTypes.bool,
+    onRerun: PropTypes.func.isRequired,
   };
 
   get initialState() {
@@ -70,6 +78,8 @@ class PraiaHistory extends Component {
       loading: false,
       // Tempo em segundos entre cada reload da lista
       reload_interval: 10,
+      selected: [],
+      selected_record: null,
     };
   }
 
@@ -107,6 +117,32 @@ class PraiaHistory extends Component {
     this.fetchData(this.state.page, this.state.sizePerPage);
   };
 
+  handleOnSelect = (row, isSelect) => {
+    if (isSelect) {
+      this.setState(() => ({
+        selected: [row.id],
+        selected_record: row,
+      }));
+    } else {
+      this.setState(() => ({
+        selected: [],
+        selected_record: null,
+      }));
+    }
+  };
+
+  handleOnRerun = () => {
+    const { selected_record } = this.state;
+
+    this.api.praiaReRun({ id: selected_record.id }).then(res => {
+      const record = res.data;
+
+      this.setState(
+        { selected: [], selected_record: null },
+        this.props.onRerun(record)
+      );
+    });
+  };
   render() {
     const {
       data,
@@ -115,7 +151,10 @@ class PraiaHistory extends Component {
       totalSize,
       loading,
       reload_interval,
+      selected,
+      selected_record,
     } = this.state;
+
     const pagination = paginationFactory({
       page: page,
       sizePerPage: sizePerPage,
@@ -131,6 +170,13 @@ class PraiaHistory extends Component {
       },
     };
 
+    const selectRow = {
+      mode: 'radio',
+      clickToSelect: true,
+      onSelect: this.handleOnSelect,
+      selected: selected,
+    };
+
     return (
       <div>
         <ReactInterval
@@ -142,25 +188,36 @@ class PraiaHistory extends Component {
           title=""
           category="Manage the completed Astrometry rounds"
           content={
-            <BootstrapTable
-              striped
-              hover
-              condensed
-              remote
-              bordered={false}
-              keyField="id"
-              noDataIndication="..."
-              data={data}
-              columns={columns}
-              pagination={pagination}
-              onTableChange={this.handleTableChange}
-              loading={loading}
-              overlay={overlayFactory({
-                spinner: true,
-                background: 'rgba(192,192,192,0.3)',
-              })}
-              rowEvents={rowEvents}
-            />
+            <div>
+              <ButtonToolbar>
+                <Button
+                  disabled={!selected_record}
+                  onClick={this.handleOnRerun}
+                >
+                  Re-execute
+                </Button>
+              </ButtonToolbar>
+              <BootstrapTable
+                striped
+                hover
+                condensed
+                remote
+                bordered={false}
+                keyField="id"
+                noDataIndication="..."
+                data={data}
+                columns={columns}
+                pagination={pagination}
+                onTableChange={this.handleTableChange}
+                loading={loading}
+                overlay={overlayFactory({
+                  spinner: true,
+                  background: 'rgba(192,192,192,0.3)',
+                })}
+                rowEvents={rowEvents}
+                selectRow={selectRow}
+              />
+            </div>
           }
         />
       </div>

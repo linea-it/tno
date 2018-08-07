@@ -1,12 +1,12 @@
-
 import os
 from .db import DBBase
 from sqlalchemy.sql import select, and_, or_, func, subquery
-from sqlalchemy import create_engine, inspect, MetaData, func, Table, Column, Integer, String, Float, Boolean, literal_column, null
+from sqlalchemy import create_engine, inspect, MetaData, func, Table, Column, Integer, String, Float, Boolean, \
+    literal_column, null
 from django.utils import timezone
 
-class FilterObjects(DBBase):
 
+class FilterObjects(DBBase):
     """
 
         Exemplo de Query com subquery para retornar a quantidade de bandas.
@@ -18,18 +18,6 @@ class FilterObjects(DBBase):
 
         self.table = None
 
-    def get_table_skybot(self):
-        schema = self.get_base_schema()
-        self.tbl_skybot = self.get_table('tno_skybotoutput', schema)
-
-        return self.tbl_skybot
-
-    def get_table_ccdimage(self):
-        schema = self.get_base_schema()
-        self.tbl_ccdimage = self.get_table('tno_ccdimage', schema)
-
-        return self.tbl_ccdimage
-
     def get_base_stm(self):
 
         if not self.table:
@@ -38,25 +26,24 @@ class FilterObjects(DBBase):
         cols = self.table.c
 
         stm = select([
-                cols.dynclass.label("object_table"),
-                cols.name,
-                func.count(cols.name).label("freq"),
-                null().label('filters'),
-                func.min(cols.mv).label('mag_min'),
-                func.max(cols.mv).label('mag_max'),
-                func.min(cols.errpos).label('min_errpos'),
-                func.max(cols.errpos).label('max_errpos'),
-                func.count(func.distinct(cols.jdref)).label('diff_nights'),
-                (func.max(cols.jdref) - func.min(cols.jdref)).label('diff_date_nights'),
-                # func.count().over().label('totalCount')
-            ])
+            cols.dynclass.label("object_table"),
+            cols.name,
+            func.count(cols.name).label("freq"),
+            null().label('filters'),
+            func.min(cols.mv).label('mag_min'),
+            func.max(cols.mv).label('mag_max'),
+            func.min(cols.errpos).label('min_errpos'),
+            func.max(cols.errpos).label('max_errpos'),
+            func.count(func.distinct(cols.jdref)).label('diff_nights'),
+            (func.max(cols.jdref) - func.min(cols.jdref)).label('diff_date_nights'),
+            # func.count().over().label('totalCount')
+        ])
 
         return stm
 
-
     def get_objects_stm(self,
-            name=None, objectTable=None, magnitude=None, diffDateNights=None,
-            moreFilter=None, page=1, pageSize=100):
+                        name=None, objectTable=None, magnitude=None, diffDateNights=None,
+                        moreFilter=None, page=1, pageSize=100):
 
         """Applies the filters to the skybot output table and returns the list
         of objects that meet the requirements.
@@ -75,7 +62,7 @@ class FilterObjects(DBBase):
         terms = list([])
 
         if name:
-            terms.append(cols.name.ilike("%"+name+"%"))
+            terms.append(cols.name.ilike("%" + name + "%"))
 
         if objectTable:
             if objectTable.find(";"):
@@ -99,7 +86,7 @@ class FilterObjects(DBBase):
         # Minimum difference between diff_date_nights
         if diffDateNights:
             # Exemplo query com where por diffDateNights
-            #select name, min(mv), max(jdref) - min(jdref) as DiffDateNights from tno.skybot_output where dynclass like 'Centaur' group by name  HAVING max(jdref) - min(jdref) > 1000 limit 10 ;
+            # select name, min(mv), max(jdref) - min(jdref) as DiffDateNights from tno.skybot_output where dynclass like 'Centaur' group by name  HAVING max(jdref) - min(jdref) > 1000 limit 10 ;
             stm = stm.having((func.max(cols.jdref) - func.min(cols.jdref)) > float(diffDateNights))
 
         if len(terms):
@@ -121,8 +108,8 @@ class FilterObjects(DBBase):
         return stm
 
     def get_objects(self,
-            name=None, objectTable=None, magnitude=None, diffDateNights=None,
-            moreFilter=None, page=1, pageSize=100):
+                    name=None, objectTable=None, magnitude=None, diffDateNights=None,
+                    moreFilter=None, page=1, pageSize=100):
 
         """Applies the filters to the skybot output table and returns the list
         of objects that meet the requirements.
@@ -146,16 +133,15 @@ class FilterObjects(DBBase):
 
         return rows, totalSize
 
-
-    def create_object_list(self, 
-                        tablename, name, objectTable, 
-                        magnitude, diffDateNights, moreFilter):
+    def create_object_list(self,
+                           tablename, name, objectTable,
+                           magnitude, diffDateNights, moreFilter):
 
         start = timezone.now()
 
         # Recuperar o stm que retorna todos os objetos que atendem o filtro
         stm = self.get_objects_stm(
-            name=name, objectTable=objectTable, magnitude=magnitude, 
+            name=name, objectTable=objectTable, magnitude=magnitude,
             diffDateNights=diffDateNights, moreFilter=moreFilter, pageSize=None
         )
 
@@ -181,7 +167,7 @@ class FilterObjects(DBBase):
         try:
             create_stm = self.create_table_as(
                 tablename, all_stm, schema=schema)
-      
+
             new_tbl = self.get_table(tablename, schema)
 
             # Total de linhas na nova tabela
@@ -202,11 +188,11 @@ class FilterObjects(DBBase):
                 "database": databse,
                 "tablename": tablename,
                 "schema": schema,
-                "sql_content": self.stm_to_str(stm_content, True), 
+                "sql_content": self.stm_to_str(stm_content, True),
                 "sql_creation": create_stm,
                 "rows": total_count,
-                "n_columns": total_columns, 
-                "columns": tbl_columns, 
+                "n_columns": total_columns,
+                "columns": tbl_columns,
                 "size": tbl_status.get("total_bytes"),
                 "creation_time": seconds
             })
@@ -214,8 +200,7 @@ class FilterObjects(DBBase):
             return result
 
         except Exception as e:
-            raise(e)
-
+            raise (e)
 
     def list_objects_by_table(self, tablename, schema=None, page=1, pageSize=100):
 
@@ -288,7 +273,6 @@ class FilterObjects(DBBase):
 
         return distinct_objects
 
-
     def count_distinct_pointing(self, tablename, schema=None):
 
         tbl = self.get_table(tablename, schema).alias('a')
@@ -334,8 +318,6 @@ class FilterObjects(DBBase):
         not_downloaded = self.fetch_scalar(stm)
 
         return not_downloaded
-
-
 
     def list_ccdimage_by_table(self, tablename, schema=None, page=1, pageSize=None):
 

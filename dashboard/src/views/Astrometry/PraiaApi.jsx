@@ -8,7 +8,6 @@ class PraiaApi {
   getPraiaRuns = ({ page, pageSize, ordering, filters = [] }) => {
     const params = { page: page, pageSize: pageSize, ordering: ordering };
     filters.forEach(element => {
-      console.log(element);
       params[element.property] = element.value;
     });
 
@@ -31,6 +30,11 @@ class PraiaApi {
     axios.post(`${this.api}/praia_run/`, {
       input_list: input,
       configuration: config,
+    });
+
+  praiaReRun = ({ id }) =>
+    axios.patch(`${this.api}/praia_run/${id}/`, {
+      status: 'pending',
     });
 }
 

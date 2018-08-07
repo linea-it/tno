@@ -3,6 +3,7 @@ import { Form, FormGroup, ControlLabel, Button } from 'react-bootstrap';
 import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
 import PraiaApi from '../Astrometry/PraiaApi';
+import OrbitApi from './OrbitApi';
 import Card from 'components/Card/Card.jsx';
 import PropTypes from 'prop-types';
 
@@ -10,9 +11,13 @@ class RefineOrbitSubmit extends Component {
   state = this.initialState;
 
   praia_api = new PraiaApi();
+  orbit_api = new OrbitApi();
 
   get initialState() {
-    return { input: null };
+    return {
+      input: null,
+      record: null,
+    };
   }
 
   static propTypes = {
@@ -33,43 +38,52 @@ class RefineOrbitSubmit extends Component {
       })
       .then(res => {
         const configs = res.data.results;
+
+        configs.forEach(function(el) {
+          el['proccess_displayname'] =
+            el.proccess + ' - ' + el.input_displayname;
+        });
+
         return { options: configs };
       });
   };
 
   onSelectInput = selected => {
     if (selected) {
-      this.setState({ input: selected.id });
+      this.setState({ input: selected.id, record: selected });
     } else {
       this.setState({ input: null });
     }
   };
 
-  // onClickSubmit = () => {
-  //   const { input, config } = this.state;
-  //   if (!input || !config) {
-  //     console.log('Falta um parametro');
-  //     // TODO: Implementar notifacao de parametro faltante
-  //     return;
-  //   }
-  //   this.praia_api
-  //     .createPraiaRun({ input: input, config: config })
-  //     .then(res => {
-  //       console.log(res);
-  //       this.onCreateSuccess(res.data);
-  //     })
-  //     .catch(this.onCreateFailure);
-  // };
+  onClickSubmit = () => {
+    const { record } = this.state;
+    if (!record) {
+      // TODO: Implementar notifacao de parametro faltante
+      return;
+    }
 
-  // onCreateSuccess = record => {
-  //   console.log('onCreateSuccess(%o)', record);
-  //   this.setState(this.initialState, this.props.onCreateRun(record));
-  // };
+    this.orbit_api
+      .createOrbitRun({
+        input_list: record.input_list,
+        proccess: record.proccess,
+      })
+      .then(res => {
+        console.log(res);
+        this.onCreateSuccess(res.data);
+      })
+      .catch(this.onCreateFailure);
+  };
 
-  // onCreateFailure = error => {
-  //   // TODO: Criar uma Notificacao de falha.
-  //   console.log('onCreateFailure(%o)', error);
-  // };
+  onCreateSuccess = record => {
+    console.log('onCreateSuccess(%o)', record);
+    this.setState(this.initialState, this.props.onCreateRun(record));
+  };
+
+  onCreateFailure = error => {
+    // TODO: Criar uma Notificacao de falha.
+    console.log('onCreateFailure(%o)', error);
+  };
 
   render() {
     const { input } = this.state;
@@ -87,7 +101,7 @@ class RefineOrbitSubmit extends Component {
                   value={input}
                   cacheOptions
                   valueKey="id"
-                  labelKey="id"
+                  labelKey="proccess_displayname"
                   defaultOptions
                   loadOptions={this.loadInputs}
                 />

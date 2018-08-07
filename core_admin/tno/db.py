@@ -232,3 +232,41 @@ class DBBase():
                 trans.rollback()
                 trans.close()
                 raise(e)
+
+
+    # Tabelas principais gerenciadas pelo Django Models mais que eventualmente e necessario acessalas
+    # pelo sqlAlchemy
+
+    def get_table_skybot(self):
+        schema = self.get_base_schema()
+        self.tbl_skybot = self.get_table('tno_skybotoutput', schema)
+
+        return self.tbl_skybot
+
+    def get_table_ccdimage(self):
+        schema = self.get_base_schema()
+        self.tbl_ccdimage = self.get_table('tno_ccdimage', schema)
+
+        return self.tbl_ccdimage
+
+
+    def get_table_observations_file(self):
+        schema = self.get_base_schema()
+        self.table_observations_file = self.get_table('orbit_observationfile', schema)
+
+        return self.table_observations_file
+
+
+    def get_table_orbital_parameters_file(self):
+        schema = self.get_base_schema()
+        self.table_orbital_parameters_file = self.get_table('orbit_orbitalparameterfile', schema)
+
+        return self.table_orbital_parameters_file
+
+    def get_table_bsp_jpl_file(self):
+        schema = self.get_base_schema()
+        self.table_bsp_jpl_file = self.get_table('orbit_bspjplfile', schema)
+
+        return self.table_bsp_jpl_file
+
+
