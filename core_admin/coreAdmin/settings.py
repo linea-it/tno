@@ -48,11 +48,8 @@ if not os.path.exists(ASTROMETRY_POSITIONS_DIR):
 # Emails
 # Notifications Email
 EMAIL_NOTIFICATIONS = os.environ.get('EMAIL_NOTIFICATIONS', None)
-<<<<<<< HEAD
-=======
 if not EMAIL_NOTIFICATIONS:
     raise ("Environment variable EMAIL_NOTIFICATIONS can not be null.")
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -214,8 +211,6 @@ PARSL_CONFIG = {
     }
 }
 
-<<<<<<< HEAD
-=======
 # DOCKER Configuration
 try:
     DOCKER_HOST = os.environ["DOCKER_HOST"]
@@ -227,7 +222,6 @@ try:
 except Exception as e:
     raise ("Environment variable HOST_ARCHIVE can not be null.")
 
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

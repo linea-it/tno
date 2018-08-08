@@ -28,7 +28,6 @@ import download from 'assets/img/download.jpeg';
 import Log from 'views/RefineOrbit/Log.jsx';
 import { TreeTable } from 'primereact/treetable';
 
-<<<<<<< HEAD
 const statistics = [
   { text: 'Total de Objetos de entrada', value: '5' },
   { text: 'Total de objetos excecutados', value: '4' },
@@ -42,9 +41,6 @@ const images = [
   { src: plot3, id: 2 },
   { src: plot4, id: 3 },
 ];
-=======
-const images = [{ src: plot1 }, { src: plot2 }, { src: plot3 }, { src: plot4 }];
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
 const data = [
   {
@@ -149,26 +145,18 @@ class RefineOrbitDetail extends Component {
       lightboxIsOpen: false,
       currentImage: 0,
       visible: false,
-<<<<<<< HEAD
-      activeIndex: 0,
-=======
       imageId: [],
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
     };
   }
 
   componentDidMount() {
     this.fetchData(this.state.page, this.state.sizePerPage);
-<<<<<<< HEAD
-    this.setState({ activeIndex: 1 });
-=======
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
     // Array of table rows
     const data = [
       {
         id: '0001',
-        input_displayname: '2013 RR98',
+        input_displayname: '1999_RB216',
         input_list: '1',
         owner: 'KBO>SDO',
         proccess: '61.470785',
@@ -183,7 +171,7 @@ class RefineOrbitDetail extends Component {
       },
       {
         id: '0002',
-        input_displayname: '2013 RR98',
+        input_displayname: '1999_RB216',
         input_list: '2',
         owner: 'KBO>SDO',
         proccess: '93.63396',
@@ -198,7 +186,7 @@ class RefineOrbitDetail extends Component {
       },
       {
         id: '0003',
-        input_displayname: '2014 RR98',
+        input_displayname: '1999_RB216',
         input_list: '3',
         owner: 'KBO>SDO',
         proccess: '93.634311',
@@ -213,7 +201,7 @@ class RefineOrbitDetail extends Component {
       },
       {
         id: '0004',
-        input_displayname: '2014 RR98',
+        input_displayname: '1999_RB216',
         input_list: '3',
         owner: 'KBO>SDO',
         proccess: '93.634311',
@@ -228,7 +216,7 @@ class RefineOrbitDetail extends Component {
       },
       {
         id: '0005',
-        input_displayname: '2014 RR98',
+        input_displayname: '1999_RB216',
         input_list: '3',
         owner: 'KBO>SDO',
         proccess: '93.634311',
@@ -263,16 +251,6 @@ class RefineOrbitDetail extends Component {
   };
 
   // Methods for slide operation
-<<<<<<< HEAD
-
-=======
-  Slideshow = () => {
-    //event.preventDefault();
-    this.setState({
-      lightboxIsOpen: true,
-    });
-  };
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
   gotoNextLightboxImage = () => {
     this.setState({
       currentImage: this.state.currentImage + 1,
@@ -304,20 +282,13 @@ class RefineOrbitDetail extends Component {
       this.setState({ visible: true });
     }
   };
-<<<<<<< HEAD
-
-=======
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
   onHide = () => {
     this.setState({ visible: false });
   };
   // Render
 
-<<<<<<< HEAD
   // active = value => {};
 
-=======
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
   render() {
     //Array with the amount of previews
     const item = [
@@ -412,34 +383,7 @@ class RefineOrbitDetail extends Component {
               subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
             >
               <div className="ui-g">
-<<<<<<< HEAD
                 <div className="ui-md-6"> {List}</div>
-=======
-                <div className="ui-md-6">
-                  <ListGroup>
-                    <ListGroupItem>
-                      Total de Objetos de entrada&nbsp;:&nbsp;&nbsp;
-                      <strong>5</strong>
-                    </ListGroupItem>
-                    <ListGroupItem>
-                      Total de objetos excecutados&nbsp;:&nbsp;&nbsp;
-                      <strong>4</strong>
-                    </ListGroupItem>
-                    <ListGroupItem>
-                      Total de objetos falhados&nbsp;:&nbsp;&nbsp;
-                      <strong>0</strong>
-                    </ListGroupItem>
-                    <ListGroupItem>
-                      Tempo de execução&nbsp;:&nbsp;&nbsp;
-                      <strong>00:02:10</strong>
-                    </ListGroupItem>
-                    <ListGroupItem>
-                      Tempo médio por objeto&nbsp;:&nbsp;&nbsp;
-                      <strong>00:00:23</strong>
-                    </ListGroupItem>
-                  </ListGroup>
-                </div>
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
                 <div className="content-section implementation">
                   <div className="ui-md-6" />
@@ -477,11 +421,7 @@ class RefineOrbitDetail extends Component {
               }}
               placeholder="Select a value"
             />
-<<<<<<< HEAD
             <Accordion activeIndex={this.activeIndex}>{preview}</Accordion>
-=======
-            <Accordion>{preview}</Accordion>
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
           </Toolbar>
         </Card>
         <br />
@@ -523,8 +463,4 @@ class RefineOrbitDetail extends Component {
     );
   }
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 export default RefineOrbitDetail;

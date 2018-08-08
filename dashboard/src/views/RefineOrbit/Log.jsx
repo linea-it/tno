@@ -14,12 +14,17 @@ class Log extends Component {
     id: PropTypes.any.isRequired,
   };
 
-  componentDidMount() {
-    this.api.getLogRefineOrbits().then(res => {
+  getLog = (name, cod) => {
+    const params = {
+      name: name,
+      cod: cod,
+    };
+
+    this.api.getDataLog(params).then(res => {
       const r = res.data;
       this.setState({ textLog: r.lines });
     });
-  }
+  };
 
   render() {
     const { visible, onHide, id } = this.props;
@@ -28,6 +33,8 @@ class Log extends Component {
     alines.forEach(line => {
       teste.push(<div>{line}</div>);
     });
+    // console.log(id);
+    this.getLog(id.input_displayname, id.input_list);
     return (
       <Dialog
         header={id.input_displayname}

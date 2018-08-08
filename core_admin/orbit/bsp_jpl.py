@@ -51,19 +51,10 @@ class BSPJPL(DownloadParameters):
 
         self.bsp_jpl_extension = ".bsp"
 
-<<<<<<< HEAD
-    def download(self, name, outṕut_path):
-
-        start = datetime.now()
-        try:
-            filename = name.replace(" ", "_") + self.bsp_jpl_extension
-
-=======
     def download(self, name, filename, output_path, logger):
 
         start = datetime.now()
         try:
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
             # Os arquivo baixados ficam no diretorio setado na variavel BSP_JPL.
             file_path = os.path.join(output_path, filename)
 
@@ -76,22 +67,11 @@ class BSPJPL(DownloadParameters):
                 settings.EMAIL_NOTIFICATIONS,
                 file_path]
 
-<<<<<<< HEAD
-            # Se o mode de debug estiver ligado pula a etapa de download e acrescenta um sleep
-            if self.debug_mode:
-                # DEBUG MODE NAO FAZ DOWNLOAD
-                time.sleep(randrange(5))
-
-            else:
-                # executa de fato o download.
-                check_call(args, stdout=DEVNULL, stderr=STDOUT)
-=======
             logger.debug("Command: [ %s ]" %(" ".join(args)))
 
             # TODO stdout deve ser jogado para um arquivo de log
             # executa de fato o download.
             check_call(args, stdout=DEVNULL, stderr=STDOUT)
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
         except CalledProcessError:
             # TODO aqui deve ser adicionar uma mensagem de erro no log.
@@ -133,17 +113,6 @@ class BSPJPL(DownloadParameters):
 
         self.input_records = records
 
-<<<<<<< HEAD
-        # Configuracao do Parsl.
-        dfk = DataFlowKernel(config=settings.PARSL_CONFIG)
-
-        # Configuracao do Parsl Log.
-        parsl.set_file_logger(os.path.join(output_path, 'parsl.log'))
-
-        # Declaracao do Parsl APP
-        @App("python", dfk)
-        def start_parsl_job(name, files_path, logger):
-=======
         self.logger.info("Reading input file.")
 
         self.logger.debug("Inputs: [ %s ]" % len(records))
@@ -165,7 +134,6 @@ class BSPJPL(DownloadParameters):
         # Declaracao do Parsl APP
         @App("python", dfk)
         def start_parsl_job(name, filename, files_path, logger):
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
             result = dict({
                 "name": name,
@@ -200,9 +168,6 @@ class BSPJPL(DownloadParameters):
             # Utiliza o parsl apenas para os objetos que estao marcados
             # para serem baixados.
             if row.get("need_download"):
-<<<<<<< HEAD
-                results.append(start_parsl_job(row.get("name"), files_path, self.logger))
-=======
                 filename = row.get("name").replace(" ", "_") + self.bsp_jpl_extension
 
                 result = start_parsl_job(
@@ -214,7 +179,6 @@ class BSPJPL(DownloadParameters):
                 self.logger.debug(result)
 
                 results.append(result)
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
         # Espera o Resultado de todos os jobs.
         outputs = [i.result() for i in results]

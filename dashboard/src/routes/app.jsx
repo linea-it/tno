@@ -24,45 +24,29 @@ const appRoutes = [
     name: 'Dashboard',
     icon: 'fa fa-home',
     component: Dashboard,
-<<<<<<< HEAD
     //helpText: '',
-=======
-    helpText: 'texto1',
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
   },
   {
     path: '/registration',
     name: 'Registration',
     icon: '',
     component: Placeholder,
-<<<<<<< HEAD
     // helpText: '',
-=======
-    helpText: 'texto2',
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
   },
   {
     path: '/pointings',
     name: 'Pointings',
     // icon: 'pe-7s-target',
     component: PointingsPanel,
-<<<<<<< HEAD
     helpText:
       'Query the database and download the metadata telling, among others, pointing coordinates, date of observation, exposure time, band, and image location in database',
-=======
-    helpText: 'texto3',
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
   },
   {
     path: '/solarsystem',
     name: 'Search SSSO',
     // icon: 'pe-7s-sun',
     component: SolarSystemsPanel,
-<<<<<<< HEAD
     helpText: 'Identification of small solar system objects (SSSO) in all pointings using the SkyBoT service.',
-=======
-    helpText: 'texto4',
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
   },
   // { path: '/skybot', name: 'SkyBoT', icon: 'pe-7s-science', component: SkyBot },
   {
@@ -70,11 +54,7 @@ const appRoutes = [
     name: 'Filter Objects',
     // icon: 'pe-7s-filter',
     component: FilterPanel,
-<<<<<<< HEAD
     // helpText: 'Download of images which have observations of specific objects.',
-=======
-    helpText: 'texto5',
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
   },
   {
     path: '/custom_list',
@@ -106,31 +86,19 @@ const appRoutes = [
     path: '/exposuredownload',
     name: 'Download',
     component: Placeholder,
-<<<<<<< HEAD
     helpText: 'Download of images which have observations of specific objects.',
-=======
-    helpText: 'texto7',
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
   },
   {
     path: '/astrometry',
     name: 'Astrometry',
     component: Praia,
-<<<<<<< HEAD
     helpText: 'Astrometric reduction using PRAIA package and stellar catalogue Gaia like reference to detect and determine positions of objects from CCD frame.',
-=======
-    helpText: 'texto8',
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
   },
   {
     path: '/details',
     name: 'Details',
     component: RefineOrbitDetail,
     hidden: true,
-<<<<<<< HEAD
-=======
-    helpText: 'texto9',
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
   },
   {
     path: '/astrometry_run/:id',
@@ -142,21 +110,13 @@ const appRoutes = [
     path: '/refine_orbit',
     name: 'Refine Orbit',
     component: RefineOrbitPanel,
-<<<<<<< HEAD
     helpText: 'Refinement of Orbits of specifics objects using NIMA code',
-=======
-    helpText: 'texto10',
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
   },
   {
     path: '/prediction',
     name: 'Prediction of Occultations',
     component: Placeholder,
-<<<<<<< HEAD
     helpText: 'Comparison of objects’ ephemeris and positions of stars to predict events of stellar occultation using Gaia catalogue like reference',
-=======
-    helpText: 'texto11',
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
   },
   {
     path: '/post_results',

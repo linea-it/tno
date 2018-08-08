@@ -13,13 +13,10 @@ import humanize
 from tno.proccess import ProccessManager
 import shutil
 from praia.astrometry import Astrometry
-<<<<<<< HEAD
-=======
 import docker
 from django.conf import settings
 import json
 from statistics import mean
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
 
 class RefineOrbit():
@@ -33,11 +30,6 @@ class RefineOrbit():
         self.input_list = None
         self.objects_dir = None
 
-<<<<<<< HEAD
-    def startRefineOrbitRun(self, instance):
-        self.logger.debug("ORBIT RUN: %s" % instance.id)
-
-=======
         self.results = dict({
             "status": "running",
             "error_msg": None,
@@ -64,18 +56,12 @@ class RefineOrbit():
         start_time = datetime.now()
         self.results["start_time"] = start_time.replace(microsecond=0).isoformat(' ')
 
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
         # Recuperar a Instancia do processo
         self.proccess = instance.proccess
 
         self.logger.debug("PROCCESS: %s" % self.proccess.id)
         self.logger.debug("PROCCESS DIR: %s" % self.proccess.relative_path)
 
-<<<<<<< HEAD
-        # Diretorio onde ficam os inputs e resultados separados por objetos.
-        self.objects_dir = os.path.join(self.proccess.relative_path, "objects")
-
-=======
         self.results["proccess"] = self.proccess.id
 
         # Diretorio onde ficam os inputs e resultados separados por objetos.
@@ -83,16 +69,12 @@ class RefineOrbit():
 
         self.results["objects_dir"] = self.objects_dir
 
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
         # recuperar a Custom List usada como input
         self.input_list = instance.input_list
         self.logger.debug("CUSTOM LIST: %s - %s" % (self.input_list.id, self.input_list.displayname))
 
-<<<<<<< HEAD
-=======
         self.results["input_list"] = self.input_list.id
 
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
         instance.status = 'running'
         instance.save()
         self.logger.info("Status changed to Running")
@@ -118,62 +100,44 @@ class RefineOrbit():
 
         t0 = datetime.now()
         # ---------------------- Observations --------------------------------------------------------------------------
-<<<<<<< HEAD
-=======
 
         self.logger.debug(
             "---------------------- Observations --------------------------------------------------------------------------")
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
         # Pesquisando as observacoes que precisam ser baixadas
         observations = RefineOrbitDB().get_observations(self.input_list.tablename, self.input_list.schema, max_age)
 
         self.observations_input_file = os.path.join(instance.relative_path, 'observations.csv')
-<<<<<<< HEAD
-=======
 
         self.logger.info("Writing Observations Input File")
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
         RefineOrbit().writer_refine_orbit_file_list(self.observations_input_file, observations)
 
         # Download das Observations
         self.getObservations(instance, self.observations_input_file, steps_file)
 
         # ---------------------- Orbital Parameters --------------------------------------------------------------------
-<<<<<<< HEAD
-=======
         self.logger.debug(
             "---------------------- Orbital Parameters --------------------------------------------------------------------")
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
         # Pesquisando os parametros orbitais que precisam ser baixadas
         orbital_parameters = RefineOrbitDB().get_orbital_parameters(self.input_list.tablename, self.input_list.schema,
                                                                     max_age)
 
         self.orbital_parameters_input_file = os.path.join(instance.relative_path, 'orbital_parameters.csv')
-<<<<<<< HEAD
-=======
 
         self.logger.info("Writing Orbital Parameters Input File")
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
         self.writer_refine_orbit_file_list(self.orbital_parameters_input_file, orbital_parameters)
 
         # Download dos parametros Orbitais
         self.getOrbitalParameters(instance, self.orbital_parameters_input_file, steps_file)
 
         # ---------------------- BSPs ----------------------------------------------------------------------------------
-<<<<<<< HEAD
-=======
         self.logger.debug(
             "---------------------- BSPs ----------------------------------------------------------------------------------")
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
         # Pesquisando os bsp_jpl que precisam ser baixadas
         bsp_jpl = RefineOrbitDB().get_bsp_jpl(self.input_list.tablename, self.input_list.schema, max_age)
 
         self.bsp_jpl_input_file = os.path.join(instance.relative_path, 'bsp_jpl.csv')
-<<<<<<< HEAD
-=======
 
         self.logger.info("Writing BSP JPL Input File")
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
         RefineOrbit().writer_refine_orbit_file_list(self.bsp_jpl_input_file, bsp_jpl)
 
         # Download dos BSP JPL
@@ -189,11 +153,6 @@ class RefineOrbit():
         objects, obj_count = ProccessManager().get_objects(tablename=self.input_list.tablename,
                                                            schema=self.input_list.schema)
 
-<<<<<<< HEAD
-        self.logger.debug("Objects: %s" % obj_count)
-
-        # # ---------------------- Inputs --------------------------------------------------------------------------------
-=======
         self.results["count_objects"] = obj_count
 
         self.logger.debug("Objects: %s" % obj_count)
@@ -221,16 +180,12 @@ class RefineOrbit():
             })
 
         # ---------------------- Inputs --------------------------------------------------------------------------------
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
         self.logger.info("Collect Inputs by Objects")
 
         self.logger.debug("Objects Dir: %s" % self.objects_dir)
 
         # Separa os inputs necessarios no diretorio individual de cada objeto.
         # TODO: Essa etapa pode ser paralelizada com Parsl
-<<<<<<< HEAD
-        self.collect_inputs_by_objects(objects, self.objects_dir)
-=======
         self.collect_inputs_by_objects(self.results["objects"], self.objects_dir)
 
         # ---------------------- Running NIMA --------------------------------------------------------------------------
@@ -257,7 +212,6 @@ class RefineOrbit():
 
         self.logger.info("Finish Refine Orbit")
 
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
     def getObservations(self, instance, input_file, step_file):
         """
@@ -267,13 +221,6 @@ class RefineOrbit():
 
         :param instance:
         """
-<<<<<<< HEAD
-
-        GetObservations().run(
-            input_file=input_file,
-            output_path=instance.relative_path,
-            step_file=step_file)
-=======
         try:
             GetObservations().run(
                 input_file=input_file,
@@ -282,7 +229,6 @@ class RefineOrbit():
         except Exception as e:
             self.logger.error(e)
             raise (e)
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
     def getOrbitalParameters(self, instance, input_file, step_file):
         """
@@ -292,16 +238,11 @@ class RefineOrbit():
 
         :param instance:
         """
-<<<<<<< HEAD
-
-        GetOrbitalParameters().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
-=======
         try:
             GetOrbitalParameters().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
         except Exception as e:
             self.logger.error(e)
             raise (e)
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
     def getBspJplFiles(self, instance, input_file, step_file):
         """
@@ -311,16 +252,11 @@ class RefineOrbit():
 
         :param instance:
         """
-<<<<<<< HEAD
-
-        BSPJPL().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
-=======
         try:
             BSPJPL().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
         except Exception as e:
             self.logger.error(e)
             raise (e)
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
     def createRefienOrbitDirectory(self, instance):
 
@@ -364,10 +300,6 @@ class RefineOrbit():
         """
 
         """
-<<<<<<< HEAD
-        self.logger.info("Writing Input File")
-=======
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
         self.logger.debug("Input File: %s" % file_path)
 
         header_orb_param = ["name", "num", "filename", "need_download"]
@@ -390,14 +322,6 @@ class RefineOrbit():
 
     def collect_inputs_by_objects(self, objects, objects_path):
 
-<<<<<<< HEAD
-        for obj in objects:
-            obj_name = obj.get("name").replace(" ", "_")
-
-            obj_dir = os.path.join(objects_path, obj_name)
-
-            self.logger.debug("Object Dir: %s" % obj_dir)
-=======
         for alias in objects:
             obj = objects[alias]
 
@@ -405,7 +329,6 @@ class RefineOrbit():
 
             self.logger.debug("Object Dir: %s" % obj_dir)
 
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
             # TODO: Essa etapa pode ser paralelizada com Parsl
             # Copiar os Arquivos de Observacoes
             observations_file = self.copy_observation_file(obj, obj_dir)
@@ -419,10 +342,6 @@ class RefineOrbit():
             # Verificar se o Arquivo do PRAIA (Astrometry position) existe no diretorio do objeto.
             astrometry_position_file = self.verify_astrometry_position_file(obj, obj_dir)
 
-<<<<<<< HEAD
-            self.logger.debug("TESTE: %s" % astrometry_position_file)
-
-=======
             status = None
             error_msg = None
 
@@ -486,7 +405,6 @@ class RefineOrbit():
     def get_object_dir(self, name, objects_path):
         obj_name = name.replace(" ", "_")
         return os.path.join(objects_path, obj_name)
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
     def copy_observation_file(self, obj, obj_dir):
         # Copiar arquivo de Observacoes do Objeto.
@@ -494,13 +412,10 @@ class RefineOrbit():
 
         if original_observation_file is not None:
             filename = os.path.basename(original_observation_file)
-<<<<<<< HEAD
-=======
 
             # Rename object_name.* -> objectname.*
             filename = filename.replace('_', '')
 
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
             new_file_path = os.path.join(obj_dir, filename)
 
             shutil.copy2(original_observation_file, new_file_path)
@@ -523,13 +438,10 @@ class RefineOrbit():
 
         if original_file is not None:
             filename = os.path.basename(original_file)
-<<<<<<< HEAD
-=======
 
             # Rename object_name.* -> objectname.*
             filename = filename.replace('_', '')
 
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
             new_file_path = os.path.join(obj_dir, filename)
 
             shutil.copy2(original_file, new_file_path)
@@ -552,13 +464,10 @@ class RefineOrbit():
 
         if original_file is not None:
             filename = os.path.basename(original_file)
-<<<<<<< HEAD
-=======
 
             # Rename bsp_jpl object_name.bsp -> objectname.bsp
             filename = filename.replace('_', '')
 
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
             new_file_path = os.path.join(obj_dir, filename)
 
             shutil.copy2(original_file, new_file_path)
@@ -588,15 +497,6 @@ class RefineOrbit():
 
         filename = Astrometry().get_astrometry_position_filename(obj.get("name"))
 
-<<<<<<< HEAD
-        self.logger.debug("TESTE FILENAME: %s" % filename)
-
-        file_path = os.path.join(obj_dir, filename)
-
-        self.logger.debug("TESTE FILE_PATH: %s" % file_path)
-
-        if not os.path.exists(file_path):
-=======
         filename = filename.replace('_obs', '').replace('_', '')
         file_path = os.path.join(obj_dir, filename)
 
@@ -605,13 +505,10 @@ class RefineOrbit():
 
         else:
             self.logger.warning("Object [ %s ] has no Astrometry File" % obj.get("name"))
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
             file_path = None
 
         return file_path
 
-<<<<<<< HEAD
-=======
     def run_nima(self, objects, objects_path):
 
         self.logger.debug("Objects Path: %s" % objects_path)
@@ -799,7 +696,6 @@ class RefineOrbit():
 
         return results
 
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
 class RefineOrbitDB(DBBase):
     def get_observations(self, tablename, schema=None, max_age=None):

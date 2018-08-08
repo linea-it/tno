@@ -51,13 +51,6 @@ class GetObservations(DownloadParameters):
 
         self.input_records = records
 
-<<<<<<< HEAD
-        # Configuracao do Parsl
-        dfk = DataFlowKernel(config=settings.PARSL_CONFIG)
-
-        # Configuracao do Parsl Log.
-        parsl.set_file_logger(os.path.join(output_path, 'parsl.log'))
-=======
         self.logger.info("Reading input file.")
 
         self.logger.debug("Inputs: [ %s ]" % len(records))
@@ -76,7 +69,6 @@ class GetObservations(DownloadParameters):
         # Configuracao do Parsl Log.
         parsl.set_file_logger(os.path.join(output_path, 'observations_parsl.log'))
 
->>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
         # Declaracao do Parsl APP
         @App('python', dfk)
