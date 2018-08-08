@@ -21,6 +21,42 @@ class OrbitRun(models.Model):
         verbose_name='Finish Time',
         auto_now_add=False, null=True, blank=True)
 
+    execution_time = models.DurationField(
+        verbose_name='Execution Time',
+        null=True, blank=True
+    )
+
+    average_time = models.FloatField(
+        verbose_name='Average Time',
+        null=True, blank=True
+    )
+
+    count_objects = models.PositiveIntegerField(
+        verbose_name='Num Objects',
+        help_text='Number of objects received as input',
+        null=True, blank=True
+    )
+    count_executed = models.PositiveIntegerField(
+        verbose_name='Num Executed Objects',
+        help_text='Number of objects that were executed by NIMA.',
+        null=True, blank=True
+    )
+    count_not_executed = models.PositiveIntegerField(
+        verbose_name='Num Not Executed Objects',
+        help_text='Number of objects that were NOT executed by NIMA.',
+        null=True, blank=True
+    )
+    count_success = models.PositiveIntegerField(
+        verbose_name='Count Success',
+        help_text='Number of objects successfully executed',
+        null=True, blank=True
+    )
+    count_failed = models.PositiveIntegerField(
+        verbose_name='Count Failed',
+        help_text='Number of failed objects',
+        null=True, blank=True
+    )
+
     # Relation With Tno.CustomList
     input_list = models.ForeignKey(
         'tno.CustomList', on_delete=models.CASCADE, verbose_name='Input List',

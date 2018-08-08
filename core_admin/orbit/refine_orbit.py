@@ -203,11 +203,15 @@ class RefineOrbit():
         # Average Time per object
         self.results["average_time"] = mean(self.execution_time)
 
+        self.results["status"] = "success"
+
+        # Escrever os Resultados no results.json
         result_file = os.path.join(instance.relative_path, "results.json")
         with open(result_file, "w") as fp:
             json.dump(self.results, fp)
 
         instance.status = "success"
+        # execution_time
         instance.save()
 
         self.logger.info("Finish Refine Orbit")
