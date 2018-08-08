@@ -21,4 +21,17 @@ PROCCESS_DIR=./archive/proccess
 CCD_IMAGES_DIR=./archive/ccd_images
 
 # Parsl maxThreads (https://parsl.readthedocs.io/en/stable/userguide/configuring.html)
-AVAILABLE_THREADS=20
+AVAILABLE_THREADS=4
+
+# Path para o diretorio de archive na maquina host, utilizado para montar os volumes dos 
+# dos containers em tempo de execucao.
+# OBS: para developers o diretorio onde a aplicacao foi instalada. ex: /home/user/tno/archive
+HOST_ARCHIVE=/home/<user>/tno/archive
+
+# Docker Client
+# Ip e porta do configurado para o client docker do host. 
+# e possivel obter o ip utilizando o comando
+# docker inspect <container_id>
+# O IP do Host aparece no atributo "Network"->"Gateway": "172.19.0.1",
+# A porta tem que ser a definida no arquivo: /etc/systemd/system/docker.service.d/startup_options.conf
+DOCKER_HOST=tcp://0.0.0.0:2376

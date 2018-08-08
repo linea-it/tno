@@ -37,6 +37,7 @@ def teste(request):
         #         writer.writerows(rows)
         #
         # BSPJPL().run(input_file, output_path)
+<<<<<<< HEAD
       
         result = dict({
             'status': "success",
@@ -50,3 +51,7 @@ def teste(request):
                 result["lines"].append(line.strip())
                 
     return Response(result)
+=======
+
+        return Response(dict({'status': "success"}))
+>>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b

@@ -51,11 +51,32 @@ class GetObservations(DownloadParameters):
 
         self.input_records = records
 
+<<<<<<< HEAD
         # Configuracao do Parsl
         dfk = DataFlowKernel(config=settings.PARSL_CONFIG)
 
         # Configuracao do Parsl Log.
         parsl.set_file_logger(os.path.join(output_path, 'parsl.log'))
+=======
+        self.logger.info("Reading input file.")
+
+        self.logger.debug("Inputs: [ %s ]" % len(records))
+
+        # Configuracao do Parsl
+        try:
+            dfk = DataFlowKernel(config=dict(settings.PARSL_CONFIG))
+        except Exception as e:
+            self.logger.error(e)
+            raise e
+
+        self.logger.info("Configuring Parsl")
+        self.logger.debug("Parsl Config:" )
+        self.logger.debug(settings.PARSL_CONFIG)
+
+        # Configuracao do Parsl Log.
+        parsl.set_file_logger(os.path.join(output_path, 'observations_parsl.log'))
+
+>>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
         # Declaracao do Parsl APP
         @App('python', dfk)

@@ -27,7 +27,6 @@ PROCCESS_DIR = "/proccess"
 CCD_IMAGES_DIR = "/ccd_images"
 
 # Sub diretorios que ficam dentro de /archive
-
 OBSERVATIONS_DIR = os.path.join(ARCHIVE_DIR, "observations")
 if not os.path.exists(OBSERVATIONS_DIR):
     os.mkdir(OBSERVATIONS_DIR)
@@ -49,6 +48,11 @@ if not os.path.exists(ASTROMETRY_POSITIONS_DIR):
 # Emails
 # Notifications Email
 EMAIL_NOTIFICATIONS = os.environ.get('EMAIL_NOTIFICATIONS', None)
+<<<<<<< HEAD
+=======
+if not EMAIL_NOTIFICATIONS:
+    raise ("Environment variable EMAIL_NOTIFICATIONS can not be null.")
+>>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -210,6 +214,20 @@ PARSL_CONFIG = {
     }
 }
 
+<<<<<<< HEAD
+=======
+# DOCKER Configuration
+try:
+    DOCKER_HOST = os.environ["DOCKER_HOST"]
+except Exception as e:
+    raise ("Environment variable DOCKER_HOST can not be null.")
+
+try:
+    HOST_ARCHIVE_DIR = os.environ["HOST_ARCHIVE"]
+except Exception as e:
+    raise ("Environment variable HOST_ARCHIVE can not be null.")
+
+>>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

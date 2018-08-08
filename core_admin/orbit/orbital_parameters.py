@@ -48,6 +48,7 @@ class GetOrbitalParameters(DownloadParameters):
 
         self.input_records = records
 
+<<<<<<< HEAD
         self.logger.debug("Count Records: %s" % len(records))
 
         # Configuracao do Parsl
@@ -58,6 +59,25 @@ class GetOrbitalParameters(DownloadParameters):
 
         # Configuracao do Parsl Log.
         parsl.set_file_logger(os.path.join(output_path, 'parsl_orbital_parameters.log'))
+=======
+        self.logger.info("Reading input file.")
+
+        self.logger.debug("Inputs: [ %s ]" % len(records))
+
+        # Configuracao do Parsl
+        try:
+            dfk = DataFlowKernel(config=dict(settings.PARSL_CONFIG))
+        except Exception as e:
+            self.logger.error(e)
+            raise e
+
+        self.logger.info("Configuring Parsl")
+        self.logger.debug("Parsl Config:" )
+        self.logger.debug(settings.PARSL_CONFIG)
+
+        # Configuracao do Parsl Log.
+        parsl.set_file_logger(os.path.join(output_path, 'orbital_parameters_parsl.log'))
+>>>>>>> 414bbd0e5e97aa621ff37761e1b72ce62127e56b
 
         # Declaracao do Parsl APP
         @App('python', dfk)
