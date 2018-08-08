@@ -189,7 +189,7 @@ class RefineOrbit():
         self.collect_inputs_by_objects(self.results["objects"], self.objects_dir)
 
         # ---------------------- Running NIMA --------------------------------------------------------------------------
-        self.logger.info("Running NIMA")
+        self.logger.info("Running NIMA for all objects")
         self.run_nima(self.results["objects"], self.objects_dir)
 
         # ---------------------- Finish --------------------------------------------------------------------------------
@@ -211,7 +211,6 @@ class RefineOrbit():
         instance.save()
 
         self.logger.info("Finish Refine Orbit")
-
 
     def getObservations(self, instance, input_file, step_file):
         """
@@ -350,11 +349,11 @@ class RefineOrbit():
                 self.results["objects"][alias]["inputs"]["observations"] = dict({
                     "filename": os.path.basename(observations_file),
                     "file_path": observations_file,
-                    "file_size": os.path.getsize(observations_file), 
+                    "file_size": os.path.getsize(observations_file),
                     "file_type": os.path.splitext(observations_file)[1]
                 })
 
-                            
+
             else:
                 status = "failure"
                 error_msg = "Missing Input Observations"
@@ -363,10 +362,10 @@ class RefineOrbit():
                 self.results["objects"][alias]["inputs"]["orbital_parameters"] = dict({
                     "filename": os.path.basename(orbital_parameters_file),
                     "file_path": orbital_parameters_file,
-                    "file_size": os.path.getsize(orbital_parameters_file), 
+                    "file_size": os.path.getsize(orbital_parameters_file),
                     "file_type": os.path.splitext(orbital_parameters_file)[1]
                 })
-            
+
             else:
                 status = "failure"
                 error_msg = "Missing Input Orbital Parameters"
@@ -375,10 +374,10 @@ class RefineOrbit():
                 self.results["objects"][alias]["inputs"]["bsp_jpl"] = dict({
                     "filename": os.path.basename(bsp_jpl_file),
                     "file_path": bsp_jpl_file,
-                    "file_size": os.path.getsize(bsp_jpl_file), 
+                    "file_size": os.path.getsize(bsp_jpl_file),
                     "file_type": os.path.splitext(bsp_jpl_file)[1]
                 })
-                
+
             else:
                 status = "failure"
                 error_msg = "Missing Input BSP JPL"
@@ -387,15 +386,13 @@ class RefineOrbit():
                 self.results["objects"][alias]["inputs"]["astrometry"] = dict({
                     "filename": os.path.basename(astrometry_position_file),
                     "file_path": astrometry_position_file,
-                    "file_size": os.path.getsize(astrometry_position_file), 
+                    "file_size": os.path.getsize(astrometry_position_file),
                     "file_type": os.path.splitext(astrometry_position_file)[1]
                 })
-            
+
             else:
                 status = "failure"
                 error_msg = "Missing Input Astrometry Positions"
-
-            self.logger.debug(self.results)
 
             if status is not None:
                 self.results["objects"][alias]["status"] = status
@@ -511,8 +508,6 @@ class RefineOrbit():
 
     def run_nima(self, objects, objects_path):
 
-        self.logger.debug("Objects Path: %s" % objects_path)
-
         # Get docker Client Instance
         client = docker.DockerClient(base_url=settings.DOCKER_HOST)
 
@@ -536,115 +531,113 @@ class RefineOrbit():
         for alias in objects:
             obj = objects[alias]
 
-            self.logger.debug("Object")
-            self.logger.debug(obj)
+            if obj["status"] is not "failure":
 
-            self.results["objects"][alias]["status"] = "running"
-            tstart = datetime.now()
+                self.logger.debug("Running for object %s" % obj["name"])
 
-            input_path = os.path.join(objects_path, alias)
+                self.results["objects"][alias]["status"] = "running"
+                tstart = datetime.now()
 
-            nima_log = os.path.join(input_path, "nima.log")
+                input_path = os.path.join(objects_path, alias)
 
-            self.logger.debug("Input Path: %s" % input_path)
+                nima_log = os.path.join(input_path, "nima.log")
 
-            self.nima_input_file(obj, input_path)
+                self.nima_input_file(obj, input_path)
 
-            real_archive_path = settings.HOST_ARCHIVE_DIR
+                real_archive_path = settings.HOST_ARCHIVE_DIR
 
-            real_input_path = os.path.join(real_archive_path, input_path.strip('/'))
+                real_input_path = os.path.join(real_archive_path, input_path.strip('/'))
 
-            self.logger.debug("Real Input Path: %s" % real_input_path)
+                self.results["objects"][alias]["real_absolute_path"] = real_input_path
 
-            self.results["objects"][alias]["real_absolute_path"] = real_input_path
+                # TODO o command pode passar o nome e numero do objeto.
+                cmd = "python /app/run.py"
 
-            # TODO o command pode passar o nome e numero do objeto.
-            cmd = "python /app/run.py"
+                volumes = dict({})
+                volumes[real_input_path] = {
+                    'bind': '/data',
+                    'mode': 'rw'
+                }
 
-            volumes = dict({})
-            volumes[real_input_path] = {
-                'bind': '/data',
-                'mode': 'rw'
-            }
-
-            self.logger.debug("Volumes")
-            self.logger.debug(volumes)
-
-            status = "FAILURE"
-            try:
-
-                self.logger.info("Starting Container NIMA")
-
-                running_t0 = datetime.now()
-
-                container = client.containers.run(
-                    nima_image,
-                    command=cmd,
-                    detach=True,
-                    name="nima_%s" % count,
-                    auto_remove=True,
-                    mem_limit='1024m',
-                    volumes=volumes
-                )
-
-                log_data = ""
-                # Logging
+                status = "FAILURE"
                 try:
-                    for line in container.logs(stream=True):
-                        line = str(line.strip().decode("utf-8"))
-                        log_data += "%s\n" % line
-                        
-                        # self.logger.debug(line)
 
-                    with open(nima_log, 'w') as f_nima_log:
-                        f_nima_log.write(log_data)
+                    self.logger.debug("Starting Container NIMA")
 
-                except Exception as e:
+                    running_t0 = datetime.now()
+
+                    container = client.containers.run(
+                        nima_image,
+                        command=cmd,
+                        detach=True,
+                        name="nima_%s" % count,
+                        auto_remove=True,
+                        mem_limit='1024m',
+                        volumes=volumes
+                    )
+
+                    log_data = ""
+                    # Logging
+                    try:
+                        for line in container.logs(stream=True):
+                            line = str(line.strip().decode("utf-8"))
+                            log_data += "%s\n" % line
+
+                            # self.logger.debug(line)
+
+                        with open(nima_log, 'w') as f_nima_log:
+                            f_nima_log.write(log_data)
+
+                    except Exception as e:
+                        self.logger.error(e)
+
+                    self.logger.debug("Finish Container NIMA")
+
+                    running_t1 = datetime.now()
+                    running_tdelta = running_t1 - running_t0
+
+                    if log_data.find("SUCCESS"):
+                        status = "SUCCESS"
+                        self.results["objects"][alias]["status"] = "success"
+                        self.results["count_success"] += 1
+
+
+                    elif log_data.find("WARNING"):
+                        self.results["objects"][alias]["status"] = "warning"
+                        self.results["count_success"] += 1
+
+                    else:
+                        self.results["objects"][alias]["status"] = "failure"
+                        self.results["objects"][alias][
+                            "error_msg"] = "NIMA did not return success, see log for more information"
+                        self.results["count_failed"] += 1
+
+
+                except docker.errors.ContainerError as e:
                     self.logger.error(e)
-
-                self.logger.info("Finish Container NIMA")
-
-                running_t1 = datetime.now()
-                running_tdelta = running_t1 - running_t0
-
-                self.logger.info("NIMA Execution Time: %s" % humanize.naturaldelta(running_tdelta))
-
-                if log_data.find("SUCCESS"):
-                    status = "SUCCESS"
-                    self.results["objects"][alias]["status"] = "success"
-                    self.results["count_success"] += 1
-
-
-                elif log_data.find("WARNING"):
-                    self.results["objects"][alias]["status"] = "warning"
-                    self.results["count_success"] += 1
-
-                else:
-                    self.results["objects"][alias]["status"] = "error"
                     self.results["count_failed"] += 1
+                    self.results["objects"][alias]["status"] = "failure"
+                    self.results["objects"][alias][
+                        "error_msg"] = "Container NIMA failed"
 
+                tfinish = datetime.now()
+                tdelta = tfinish - tstart
 
-            except docker.errors.ContainerError as e:
-                self.logger.error(e)
-                self.results["count_failed"] += 1
-                # raise (e)
+                self.execution_time.append(tdelta.total_seconds())
 
-            self.logger.info("NIMA STATUS [ %s ]" % status)
+                self.results["objects"][alias]["start_time"] = tstart.replace(microsecond=0).isoformat(' ')
+                self.results["objects"][alias]["finish_time"] = tfinish.replace(microsecond=0).isoformat(' ')
+                self.results["objects"][alias]["execution_time"] = tdelta.total_seconds()
 
+                self.results["count_executed"] += 1
 
-            tfinish = datetime.now()
-            tdelta = tfinish - tstart
+                self.results["objects"][alias]["results"] = self.nima_check_results(self.results["objects"][alias])
 
-            self.execution_time.append(tdelta.total_seconds())
+                self.logger.info("NIMA Object [ %s ] STATUS [ %s ] Execution Time: %s" % (
+                obj["name"], status, humanize.naturaldelta(tdelta)))
 
-            self.results["objects"][alias]["start_time"] = tstart.replace(microsecond=0).isoformat(' ')
-            self.results["objects"][alias]["finish_time"] = tfinish.replace(microsecond=0).isoformat(' ')
-            self.results["objects"][alias]["execution_time"] = tdelta.total_seconds()
-
-            self.results["count_executed"] += 1
-
-            self.results["objects"][alias]["results"] = self.nima_check_results(self.results["objects"][alias])
-
+            else:
+                self.logger.warning("Did not run NIMA for object %s" % obj["name"])
 
     def nima_input_file(self, obj, input_path):
 
@@ -671,7 +664,7 @@ class RefineOrbit():
             raise (e)
 
     def nima_check_results(self, obj):
-        
+
         results = list()
 
         inputs = list()
@@ -682,9 +675,8 @@ class RefineOrbit():
         files = os.listdir(obj["object_dir"])
 
         for f in files:
-            
-            if f not in inputs:
 
+            if f not in inputs:
                 file_path = os.path.join(obj["object_dir"], f)
 
                 results.append(dict({
