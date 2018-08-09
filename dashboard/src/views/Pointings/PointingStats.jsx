@@ -126,120 +126,109 @@ class PointingsStats extends Component {
 
   render() {
     return (
-      <Panel bsStyle="info">
-        <Panel.Heading>
-          <Panel.Title componentClass="h1">
-            <strong>Statistics of pointings</strong>
-          </Panel.Title>
-        </Panel.Heading>
-        <Panel.Body>
-          <Grid fluid>
-            <Row>
-              <Col md={6}>
-                <ListGroup>
-                  <ListGroupItem>
-                    <h5>
-                      Total of CCDs&nbsp;:&nbsp;&nbsp;
-                      <strong>{this.state.totalSize}</strong>
-                    </h5>
-                  </ListGroupItem>
-                  <ListGroupItem>
-                    <h5>
-                      Number of CCDs for each band
-                      <br />
-                      <br />
-                      <ListGroup>
-                        <ListGroupItem>
-                          u :&nbsp;
-                          <strong>{this.state.band_u}</strong>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          r :&nbsp;{<strong>{this.state.band_r}</strong>}
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          g :&nbsp;
-                          <strong>{this.state.band_g}</strong>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          i :&nbsp;
-                          <strong> {this.state.band_i}</strong>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          Y :&nbsp;
-                          <strong>{this.state.band_y}</strong>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          z :&nbsp;
-                          <strong> {this.state.band_z}</strong>
-                        </ListGroupItem>
-                      </ListGroup>
-                    </h5>
-                  </ListGroupItem>
-                  <ListGroupItem>
-                    <h5>
-                      Number of CCDs in intervals of exposure time (seconds)
-                      <br />
-                      <br />
-                      <ListGroup>
-                        <ListGroupItem>
-                          between 0 and 100 :&nbsp;
-                          <strong>{this.state.exp1}</strong>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          between 100 and 200:&nbsp;
-                          <strong>{this.state.exp2}</strong>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          between 200 and 300:&nbsp;
-                          <strong>{this.state.exp3}</strong>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          between 300 and 400:&nbsp;
-                          <strong>{this.state.exp4}</strong>
-                        </ListGroupItem>
-                      </ListGroup>
-                    </h5>
-                  </ListGroupItem>
-                  <ListGroupItem>
-                    <h5>
-                      Number of CCDs downloaded&nbsp;:&nbsp;&nbsp;
-                      <strong>{this.state.qtdDownloaded}</strong>
-                    </h5>
-                  </ListGroupItem>
-                  <ListGroupItem>
-                    <h5>
-                      <span>
-                        Number of CCDs not downloaded&nbsp;:&nbsp;&nbsp;
-                      </span>
-                      <strong>{this.state.qtdNotDownloaded}</strong>
-                    </h5>
-                  </ListGroupItem>
-                  <ListGroupItem>
-                    <h5>
-                      <span>Latest pointing data&nbsp;:&nbsp;&nbsp;</span>
-                      <strong>{this.state.dateRecent}</strong>
-                    </h5>
-                  </ListGroupItem>
-                </ListGroup>
-              </Col>
-              <Col md={6}>
-                <Card
-                  title=" Pointings in sky"
-                  category="placeholder - plot with the projection of pointings in sky"
-                  content={
-                    <div>
-                      <br />
-                      <figure>
-                        <Image alt="text" src={plotPointings} />
-                      </figure>
-                    </div>
-                  }
-                />
-              </Col>
-            </Row>
-          </Grid>
-        </Panel.Body>
-      </Panel>
+      <Grid fluid>
+        <Row>
+          <Col md={6}>
+            <ListGroup>
+              <ListGroupItem>
+                <h5>
+                  Total of CCDs&nbsp;:&nbsp;&nbsp;
+                  <strong>{this.state.totalSize}</strong>
+                </h5>
+              </ListGroupItem>
+              <ListGroupItem>
+                <h5>
+                  Number of CCDs for each band
+                  <br />
+                  <br />
+                  <ListGroup>
+                    <ListGroupItem>
+                      u :&nbsp;
+                      <strong>{this.state.band_u}</strong>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      r :&nbsp;{<strong>{this.state.band_r}</strong>}
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      g :&nbsp;
+                      <strong>{this.state.band_g}</strong>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      i :&nbsp;
+                      <strong> {this.state.band_i}</strong>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      Y :&nbsp;
+                      <strong>{this.state.band_y}</strong>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      z :&nbsp;
+                      <strong> {this.state.band_z}</strong>
+                    </ListGroupItem>
+                  </ListGroup>
+                </h5>
+              </ListGroupItem>
+              <ListGroupItem>
+                <h5>
+                  Number of CCDs in intervals of exposure time (seconds)
+                  <br />
+                  <br />
+                  <ListGroup>
+                    <ListGroupItem>
+                      between 0 and 100 :&nbsp;
+                      <strong>{this.state.exp1}</strong>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      between 100 and 200:&nbsp;
+                      <strong>{this.state.exp2}</strong>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      between 200 and 300:&nbsp;
+                      <strong>{this.state.exp3}</strong>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      between 300 and 400:&nbsp;
+                      <strong>{this.state.exp4}</strong>
+                    </ListGroupItem>
+                  </ListGroup>
+                </h5>
+              </ListGroupItem>
+              <ListGroupItem>
+                <h5>
+                  Number of CCDs downloaded&nbsp;:&nbsp;&nbsp;
+                  <strong>{this.state.qtdDownloaded}</strong>
+                </h5>
+              </ListGroupItem>
+              <ListGroupItem>
+                <h5>
+                  <span>Number of CCDs not downloaded&nbsp;:&nbsp;&nbsp;</span>
+                  <strong>{this.state.qtdNotDownloaded}</strong>
+                </h5>
+              </ListGroupItem>
+              <ListGroupItem>
+                <h5>
+                  <span>Latest pointing data&nbsp;:&nbsp;&nbsp;</span>
+                  <strong>{this.state.dateRecent}</strong>
+                </h5>
+              </ListGroupItem>
+            </ListGroup>
+          </Col>
+          <Col md={6}>
+            <Card
+              title=" Pointings in sky"
+              category="placeholder - plot with the projection of pointings in sky"
+              content={
+                <div>
+                  <br />
+                  <figure>
+                    <Image alt="text" src={plotPointings} />
+                  </figure>
+                </div>
+              }
+            />
+          </Col>
+        </Row>
+      </Grid>
     );
   }
 }

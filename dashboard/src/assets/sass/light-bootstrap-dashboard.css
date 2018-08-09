@@ -3034,3 +3034,9 @@ body > .navbar-collapse[data-color="purple"]:after {
     overflow-y: hidden;
     -ms-overflow-style: -ms-autohiding-scrollbar;
     -webkit-overflow-scrolling: touch; } }
+
+[className*="costumize"] {
+  background: #566169 !important;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 400; }

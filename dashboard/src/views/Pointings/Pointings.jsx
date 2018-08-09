@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col, Panel } from 'react-bootstrap';
+import { Grid, Row, Col } from 'react-bootstrap';
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { Panel } from 'primereact/panel';
 import { withRouter } from 'react-router-dom';
 import PointingApi from './PointingApi';
 import PointingStats from './PointingStats';
@@ -33,17 +37,25 @@ class PointingsPanel extends Component {
         <Grid fluid>
           <Row>
             <Col md={12}>
-              <PointingStats />
+              <Panel header="Statistics">
+                <PointingStats />
+              </Panel>
             </Col>
           </Row>
+          <br />
           <Row>
             <Col md={12}>
-              <Panel bsStyle="info">
-                <Panel.Heading>
+              <Panel
+                // style={{ background: 'red' }}
+                className="costumize"
+                //bsStyle="info"
+                header="List with all pointings"
+              >
+                {/* <Panel.Heading>
                   <Panel.Title componentClass="h1">
                     <strong>List with all pointings</strong>
                   </Panel.Title>
-                </Panel.Heading>
+                </Panel.Heading> */}
                 <Card
                   //title="Pointings"
                   category="complete list with all entries recorded in the database. can search for expnum and filename"
