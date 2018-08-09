@@ -26,6 +26,16 @@ class OrbitRun(models.Model):
         null=True, blank=True
     )
 
+    execution_download_time = models.DurationField(
+        verbose_name='Execution Download Time',
+        null=True, blank=True
+    )
+
+    execution_nima_time = models.DurationField(
+        verbose_name='Execution NIMA Time',
+        null=True, blank=True
+    )
+
     average_time = models.FloatField(
         verbose_name='Average Time',
         null=True, blank=True

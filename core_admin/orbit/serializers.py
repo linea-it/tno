@@ -3,6 +3,8 @@ from rest_framework import serializers
 from tno.models import Proccess, CustomList
 import humanize
 from django.utils import timezone
+
+
 class OrbitRunSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
 
@@ -30,6 +32,8 @@ class OrbitRunSerializer(serializers.ModelSerializer):
             'start_time',
             'finish_time',
             'execution_time',
+            'execution_download_time',
+            'execution_nima_time',
             'h_execution_time',
             'h_time',
             'average_time',
@@ -43,7 +47,7 @@ class OrbitRunSerializer(serializers.ModelSerializer):
             'count_not_executed',
             'count_success',
             'count_failed',
-            )
+        )
 
     def get_owner(self, obj):
         try:

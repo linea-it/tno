@@ -23,6 +23,7 @@ const columns = [
     text: 'Run Id',
     dataField: 'id',
     width: 60,
+    hidden: true,
     headerStyle: formatColumnHeader,
   },
   {
@@ -33,14 +34,25 @@ const columns = [
   },
   {
     text: 'Start',
-    dataField: 'start_time',
-    formatter: formatDateUTC,
+    dataField: 'h_time',
   },
   {
-    text: 'Finish',
-    dataField: 'finish_time',
-    formatter: formatDateUTC,
+    text: 'Execution Time',
+    dataField: 'h_execution_time',
   },
+  {
+    text: 'Execution Time',
+    dataField: 'h_execution_time',
+  },
+  {
+    text: 'Objects',
+    dataField: 'count_objects',
+  },
+  // {
+  //   text: 'Finish',
+  //   dataField: 'finish_time',
+  //   // formatter: formatDateUTC,
+  // },
   {
     text: 'Status',
     dataField: 'status',

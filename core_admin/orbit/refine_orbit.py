@@ -36,6 +36,8 @@ class RefineOrbit():
             "start_time": None,
             "finish_time": None,
             "execution_time": None,
+            "execution_download_time": None,
+            "execution_nima_tima": None,
             "count_objects": 0,
             "count_executed": 0,
             "count_not_executed": 0,
@@ -98,7 +100,7 @@ class RefineOrbit():
 
         self.logger.info("Starting Download")
 
-        t0 = datetime.now()
+        t_download_0 = datetime.now()
         # ---------------------- Observations --------------------------------------------------------------------------
 
         self.logger.debug(
@@ -143,11 +145,16 @@ class RefineOrbit():
         # Download dos BSP JPL
         self.getBspJplFiles(instance, self.bsp_jpl_input_file, steps_file)
 
-        t1 = datetime.now()
-        tdelta = t1 - t0
-        self.logger.info("Download Finish in %s" % humanize.naturaldelta(tdelta))
+        t_download_1 = datetime.now()
+        t_download_delta = t_download_1 - t_download_0
+
+        self.results["execution_download_time"] = t_download_delta.total_seconds()
+
+        self.logger.info("Download Finish in %s" % humanize.naturaldelta(t_download_delta))
 
         # ---------------------- Objects -------------------------------------------------------------------------------
+
+        t_nima_0 = datetime.now()
 
         # Recuperando os Objetos
         objects, obj_count = ProccessManager().get_objects(tablename=self.input_list.tablename,
@@ -192,6 +199,10 @@ class RefineOrbit():
         self.logger.info("Running NIMA for all objects")
         self.run_nima(self.results["objects"], self.objects_dir)
 
+        t_nima_1 = datetime.now()
+        t_nima_delta = t_nima_1 - t_nima_0
+
+        self.results["execution_nima_time"] = t_nima_delta.total_seconds()
         # ---------------------- Finish --------------------------------------------------------------------------------
 
         finish_time = datetime.now()
@@ -201,7 +212,8 @@ class RefineOrbit():
         tdelta = finish_time - start_time
         self.results["execution_time"] = humanize.naturaldelta(tdelta)
         # Average Time per object
-        self.results["average_time"] = mean(self.execution_time)
+        average_time = mean(self.execution_time)
+        self.results["average_time"] = average_time
 
         self.results["status"] = "success"
 
@@ -211,7 +223,16 @@ class RefineOrbit():
             json.dump(self.results, fp)
 
         instance.status = "success"
-        # execution_time
+        instance.execution_time = tdelta
+        instance.execution_download_time = t_download_delta
+        instance.execution_nima_time = t_nima_delta
+        instance.average_time = average_time
+        instance.count_objects = obj_count
+        instance.count_executed = self.results["count_executed"]
+        instance.count_not_executed = self.results["count_not_executed"]
+        instance.count_success = self.results["count_success"]
+        instance.count_failed = self.results["count_failed"]
+
         instance.save()
 
         self.logger.info("Finish Refine Orbit")
@@ -638,7 +659,7 @@ class RefineOrbit():
                 self.results["objects"][alias]["results"] = self.nima_check_results(self.results["objects"][alias])
 
                 self.logger.info("NIMA Object [ %s ] STATUS [ %s ] Execution Time: %s" % (
-                obj["name"], status, humanize.naturaldelta(tdelta)))
+                    obj["name"], status, humanize.naturaldelta(tdelta)))
 
             else:
                 self.logger.warning("Did not run NIMA for object %s" % obj["name"])
