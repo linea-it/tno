@@ -1,4 +1,4 @@
-from orbit.models import OrbitRun
+from orbit.models import OrbitRun, RefinedAsteroid, RefinedOrbit
 from rest_framework import serializers
 from tno.models import Proccess, CustomList
 import humanize
@@ -78,3 +78,41 @@ class OrbitRunSerializer(serializers.ModelSerializer):
 
     def get_h_time(self, obj):
         return humanize.naturaltime(timezone.now() - obj.start_time)
+
+
+class RefinedAsteroidSerializer(serializers.ModelSerializer):
+
+    orbit_run = serializers.PrimaryKeyRelatedField(
+        queryset=OrbitRun.objects.all(), many=False)
+
+    class Meta:
+        model = RefinedAsteroid
+        fields = (
+            'id',
+            'orbit_run',
+            'name',
+            'number',
+            'status',
+            'error_msg',
+            'start_time',
+            'finish_time',
+            'execution_time',
+            'relative_path',
+        )
+
+
+class RefinedOrbitSerializer(serializers.ModelSerializer):
+
+    asteroid = serializers.PrimaryKeyRelatedField(
+        queryset=RefinedAsteroid.objects.all(), many=False)
+
+    class Meta:
+        model = RefinedOrbit
+        fields = (
+            'id',
+            'asteroid',
+            'filename',
+            'file_size',
+            'file_type',
+            'relative_path',
+        )

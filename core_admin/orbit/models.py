@@ -230,7 +230,6 @@ class BspJplFile(models.Model):
         null=False, blank=False,
         help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).')
 
-
     filename = models.CharField(
         max_length=256,
         null=True, blank=True,
@@ -249,5 +248,117 @@ class BspJplFile(models.Model):
         verbose_name='File Size',
         null=True, blank=True, default=None, help_text='File Size in bytes')
 
+
+class RefinedAsteroid(models.Model):
+    """
+        Este modelo representa a lista de Objetos (Asteroids),
+        que foram passados como input para o NIMA, neste modelo ficam
+        guardadas as informacoes sobre a execucao do NIMA para um unico objeto.
+
+        OBS: Name nao pode ser uma ForeignKey por que name na skybot nao e unico.
+    """
+    # Relation With orbit.OrbitRun
+    orbit_run = models.ForeignKey(
+        OrbitRun, on_delete=models.CASCADE, verbose_name='Orbit Run',
+        null=False, blank=False, default=None, related_name='orbit_run'
+    )
+
+    name = models.CharField(
+        verbose_name='Name',
+        max_length=32,
+        unique=True,
+        null=False, blank=False,
+        help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).')
+
+    number = models.CharField(
+        max_length=6, default=None, null=True, blank=True,
+        verbose_name='Number',
+        help_text='(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).'
+    )
+
+    status = models.CharField(
+        max_length=10,
+        verbose_name='Status',
+        default='pending', null=True, blank=True,
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('error', 'Error'))
+    )
+
+    error_msg = models.CharField(
+        max_length=256,
+        verbose_name="Error Message",
+        help_text="When the status is failure, this field should contain a message with the error.",
+        null=True, blank=True,
+    )
+
+    start_time = models.DateTimeField(
+        verbose_name='Start Time',
+        auto_now_add=False, null=True, blank=True)
+
+    finish_time = models.DateTimeField(
+        verbose_name='Finish Time',
+        auto_now_add=False, null=True, blank=True)
+
+    execution_time = models.DurationField(
+        verbose_name='Execution Time',
+        null=True, blank=True
+    )
+
+    relative_path = models.CharField(
+        max_length=256,
+        verbose_name='Relative Path',
+        null=True, blank=True,
+        help_text='Path relative to the refine orbit OBJECT directory, this is the internal path in the proccess directory.',
+    )
+
+    absolute_path = models.CharField(
+        max_length=1024,
+        verbose_name='Absolute Path',
+        null=True, blank=True,
+        help_text='Absolute Path to refine orbit OBJECT directory.',
+    )
+
+
+    def __str__(self):
+        return str(self.name)
+
+class RefinedOrbit(models.Model):
+    """
+        Este modelo representa os arquivos gerados pelo nima para cada Objeto.
+        Um Objeto pode ter varios arquivos de resultado de tipos diferentes.
+    """
+
+    asteroid = models.ForeignKey(
+        RefinedAsteroid, on_delete=models.CASCADE, verbose_name='Asteroid',
+        null=False, blank=False, related_name='asteroid'
+    )
+
+    filename = models.CharField(
+        max_length=256,
+        null=False, blank=False,
+        verbose_name='Filename',
+        help_text='Filename is formed by name without space and separated by underline.'
+    )
+
+    file_size = models.PositiveIntegerField(
+        verbose_name='File Size',
+        null=False, blank=False, help_text='File Size in bytes')
+
+    file_type = models.CharField(
+        max_length=10,
+        verbose_name='File Type',
+        null=False, blank=False,
+        help_text="File extension like '.txt'"
+    )
+
+    relative_path = models.CharField(
+        max_length=1024,
+        verbose_name='Relative Path',
+        null=True, blank=True,
+        help_text='Path relative to file, this is the internal path in the proccess directory.',
+    )
+
+
+    def __str__(self):
+        return str(self.filename)
 
 from . import signals

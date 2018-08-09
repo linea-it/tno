@@ -41,10 +41,6 @@ const columns = [
     dataField: 'h_execution_time',
   },
   {
-    text: 'Execution Time',
-    dataField: 'h_execution_time',
-  },
-  {
     text: 'Objects',
     dataField: 'count_objects',
   },
