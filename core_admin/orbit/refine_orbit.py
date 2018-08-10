@@ -17,6 +17,7 @@ import docker
 from django.conf import settings
 import json
 from statistics import mean
+from .models import RefinedAsteroid, RefinedOrbit
 
 
 class RefineOrbit():
@@ -37,7 +38,8 @@ class RefineOrbit():
             "finish_time": None,
             "execution_time": None,
             "execution_download_time": None,
-            "execution_nima_tima": None,
+            "execution_nima_time": None,
+            "execution_register_time": None,
             "count_objects": 0,
             "count_executed": 0,
             "count_not_executed": 0,
@@ -170,13 +172,13 @@ class RefineOrbit():
                 "name": obj.get("name"),
                 "number": obj.get("num"),
                 "alias": obj_name,
-                "object_dir": self.get_object_dir(obj.get("name"), self.objects_dir),
+                "relative_path": self.get_object_dir(obj.get("name"), self.objects_dir),
                 "status": None,
                 "error_msg": None,
                 "start_time": None,
                 "finish_time": None,
                 "execution_time": None,
-                "real_absolute_path": None,
+                "absolute_path": None,
                 "inputs": dict({
                     "observations": None,
                     "orbital_parameters": None,
@@ -203,6 +205,22 @@ class RefineOrbit():
         t_nima_delta = t_nima_1 - t_nima_0
 
         self.results["execution_nima_time"] = t_nima_delta.total_seconds()
+
+        # ---------------------- Recording the results. ----------------------------------------------------------------
+
+        t_register_0 = datetime.now()
+        # Iterate over objects
+        for alias in self.results["objects"]:
+            obj = self.results["objects"][alias]
+
+            # TODO: Registrar os Asteroids e o Resultado.
+            self.register_refined_asteroid(obj, instance)
+
+        t_register_1 = datetime.now()
+        t_register_delta = t_register_1 - t_register_0
+
+        self.results["execution_register_time"] = t_register_delta.total_seconds()
+
         # ---------------------- Finish --------------------------------------------------------------------------------
 
         finish_time = datetime.now()
@@ -210,7 +228,7 @@ class RefineOrbit():
 
         self.results["finish_time"] = finish_time.replace(microsecond=0).isoformat(' ')
         tdelta = finish_time - start_time
-        self.results["execution_time"] = humanize.naturaldelta(tdelta)
+        self.results["execution_time"] = tdelta.total_seconds()
         # Average Time per object
         average_time = mean(self.execution_time)
         self.results["average_time"] = average_time
@@ -226,6 +244,7 @@ class RefineOrbit():
         instance.execution_time = tdelta
         instance.execution_download_time = t_download_delta
         instance.execution_nima_time = t_nima_delta
+        instance.execution_register_time = t_register_delta
         instance.average_time = average_time
         instance.count_objects = obj_count
         instance.count_executed = self.results["count_executed"]
@@ -573,7 +592,7 @@ class RefineOrbit():
 
                 real_input_path = os.path.join(real_archive_path, input_path.strip('/'))
 
-                self.results["objects"][alias]["real_absolute_path"] = real_input_path
+                self.results["objects"][alias]["absolute_path"] = real_input_path
 
                 # TODO o command pode passar o nome e numero do objeto.
                 cmd = "python /app/run.py"
@@ -697,12 +716,12 @@ class RefineOrbit():
             f_input = obj["inputs"][i]
             inputs.append(f_input["filename"])
 
-        files = os.listdir(obj["object_dir"])
+        files = os.listdir(obj["relative_path"])
 
         for f in files:
 
             if f not in inputs:
-                file_path = os.path.join(obj["object_dir"], f)
+                file_path = os.path.join(obj["relative_path"], f)
 
                 results.append(dict({
                     "filename": f,
@@ -712,6 +731,57 @@ class RefineOrbit():
                 }))
 
         return results
+
+    def register_refined_asteroid(self, obj, orbit_run):
+
+        try:
+
+            t0 = datetime.strptime(obj.get("start_time"), '%Y-%m-%d %H:%M:%S')
+            t1 = datetime.strptime(obj.get("finish_time"), '%Y-%m-%d %H:%M:%S')
+            t_delta = t1 - t0
+
+            asteroid, created = RefinedAsteroid.objects.update_or_create(
+                orbit_run=orbit_run,
+                name=obj.get("name"),
+                defaults={
+                    'number': obj.get("number"),
+                    'status': obj.get("status"),
+                    'error_msg': obj.get("error_msg"),
+                    'start_time': t0,
+                    'finish_time': t1,
+                    'execution_time': t_delta,
+                    'relative_path': obj.get("relative_path"),
+                    'absolute_path': obj.get("absolute_path")
+                })
+
+            asteroid.save()
+
+            l_created = "Created"
+
+            # Apaga todas os resultados caso seja um update
+            if not created:
+                l_created = "Updated"
+
+                for orbit in asteroid.refined_orbit.all():
+                    orbit.delete()
+
+            for f in obj.get("results"):
+                orbit, created = RefinedOrbit.objects.update_or_create(
+                    asteroid=asteroid,
+                    filename=f.get("filename"),
+                    defaults={
+                        'file_size': f.get("file_size"),
+                        'file_type': f.get("file_type"),
+                        'relative_path': f.get("file_path"),
+                    }
+                )
+
+                orbit.save()
+
+            self.logger.info("Registered Object %s %s" % (obj.get("name"), l_created))
+
+        except Exception as e:
+            self.logger.error("Failed to Register Object %s Error: %s" % (obj.get("name"), e))
 
 
 class RefineOrbitDB(DBBase):

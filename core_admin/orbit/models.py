@@ -329,7 +329,7 @@ class RefinedOrbit(models.Model):
 
     asteroid = models.ForeignKey(
         RefinedAsteroid, on_delete=models.CASCADE, verbose_name='Asteroid',
-        null=False, blank=False, related_name='asteroid'
+        null=False, blank=False, related_name='refined_orbit'
     )
 
     filename = models.CharField(

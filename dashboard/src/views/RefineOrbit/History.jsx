@@ -41,7 +41,7 @@ const columns = [
     dataField: 'h_execution_time',
   },
   {
-    text: 'Objects',
+    text: 'Asteroids',
     dataField: 'count_objects',
   },
   // {
