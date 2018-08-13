@@ -27,7 +27,31 @@ class OrbitApi {
       status: 'pending',
     });
 
+  getOrbitRunById = ({ id }) => axios.patch(`${this.api}/orbit_run/${id}/`);
+
   // dados na table do primereact
   getRefineOrbits = id => axios.get(`${this.api}/orbit_run/${id}`);
+
+  getAsteroid = ({ page, pageSize, ordering, filters = [] }) => {
+    const params = { page: page, pageSize: pageSize, ordering: ordering };
+    filters.forEach(element => {
+      params[element.property] = element.value;
+    });
+
+    return axios.get(`${this.api}/refined_asteroid/`, {
+      params: params,
+    });
+  };
+
+  getAsteroidLog = ({ asteroid_id, name, orbit_run }) => {
+    let params = { name: name, orbit_run: orbit_run };
+    if (asteroid_id) {
+      params = { asteroid_id: asteroid_id };
+    }
+
+    return axios.get(`${this.api}/refined_asteroid/get_log/`, {
+      params: params,
+    });
+  };
 }
 export default OrbitApi;

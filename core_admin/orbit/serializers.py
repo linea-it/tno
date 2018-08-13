@@ -68,20 +68,31 @@ class OrbitRunSerializer(serializers.ModelSerializer):
             return None
 
     def get_start_time(self, obj):
-        return obj.start_time.strftime('%Y-%M-%d %H:%M:%S')
+        try:
+            return obj.start_time.strftime('%Y-%M-%d %H:%M:%S')
+        except:
+            return None
 
     def get_finish_time(self, obj):
-        return obj.finish_time.strftime('%Y-%M-%d %H:%M:%S')
+        try:
+            return obj.finish_time.strftime('%Y-%M-%d %H:%M:%S')
+        except:
+            return None
 
     def get_h_execution_time(self, obj):
-        return humanize.naturaldelta(obj.execution_time)
+        try:
+            return humanize.naturaldelta(obj.execution_time)
+        except:
+            return None
 
     def get_h_time(self, obj):
-        return humanize.naturaltime(timezone.now() - obj.start_time)
+        try:
+            return humanize.naturaltime(timezone.now() - obj.start_time)
+        except:
+            return None
 
 
 class RefinedAsteroidSerializer(serializers.ModelSerializer):
-
     orbit_run = serializers.PrimaryKeyRelatedField(
         queryset=OrbitRun.objects.all(), many=False)
 
@@ -102,7 +113,6 @@ class RefinedAsteroidSerializer(serializers.ModelSerializer):
 
 
 class RefinedOrbitSerializer(serializers.ModelSerializer):
-
     asteroid = serializers.PrimaryKeyRelatedField(
         queryset=RefinedAsteroid.objects.all(), many=False)
 

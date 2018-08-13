@@ -1,47 +1,62 @@
 import React, { Component } from 'react';
 import { Dialog } from 'primereact/dialog';
+import OrbitApi from './OrbitApi';
 import PropTypes from 'prop-types';
 
 class Log extends Component {
+  api = new OrbitApi();
+
+  state = { textLog: [] };
+
   static propTypes = {
     visible: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
-    id: PropTypes.any.isRequired,
+    id: PropTypes.number.isRequired,
+  };
+
+  getLog = asteroid_id => {
+
+    if (asteroid_id > 0) {
+      this.api.getAsteroidLog({ asteroid_id: asteroid_id }).then(res => {
+        const r = res.data;
+        this.setState({ textLog: r.lines });
+      });
+    }
   };
 
   render() {
     const { visible, onHide, id } = this.props;
+    const teste = [];
+    const alines = this.state.textLog;
+    alines.forEach(line => {
+      teste.push(<div>{line}</div>);
+    });
+    // console.log(id);
+    this.getLog(id);
     return (
       <Dialog
-        header=" Log Object:Godfather I"
+        header={id.input_displayname}
         visible={visible}
-        width="350px"
+        width="650px"
         modal={true}
         //e => this.setState({ visible: false })
         onHide={onHide}
-        style={{ backgroundColor: '#000', width: 900 + 'px' }}
+        style={{
+          color: '#ffffff',
+          backgroundColor: '#254356',
+          width: 900 + 'px',
+        }}
       >
         <pre
           style={{
-            color: '#00ff00',
-            backgroundColor: '#000',
-            height: 600 + 'px',
+            color: '#ffffff',
+            backgroundColor: '#254356',
+            height: 800 + 'px',
+            border: 'none',
           }}
         >
-          <code>
-            <ul style={{ listStyle: 'none' }}>
-              <li>
-                "Records": {id.id}
-                <ul style={{ listStyle: 'none' }}>
-                  <li> "type": "{id.input_displayname}",</li>
-                  {/* <li> "principalId": "{id.}",</li> */}
-                  <li> "arn": "arn:aws:iam::123456789012:user/Alice",</li>
-                  <li> "accountId": "123456789012",</li>
-                </ul>
-              </li>
-              <li> "eventSource": "cloudtrail.amazonaws.com", </li>
-            </ul>
-          </code>
+          Object: {id.input_displayname} id: {id.input_displayname}
+          {teste}
         </pre>
       </Dialog>
     );

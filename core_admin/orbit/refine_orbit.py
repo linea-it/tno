@@ -620,6 +620,8 @@ class RefineOrbit():
                         volumes=volumes
                     )
 
+                    count += 1
+
                     log_data = ""
                     # Logging
                     try:
@@ -664,6 +666,13 @@ class RefineOrbit():
                     self.results["objects"][alias][
                         "error_msg"] = "Container NIMA failed"
 
+                except Exception as e:
+                    self.logger.error(e)
+                    self.results["count_failed"] += 1
+                    self.results["objects"][alias]["status"] = "failure"
+                    self.results["objects"][alias]["error_msg"] = e
+
+
                 tfinish = datetime.now()
                 tdelta = tfinish - tstart
 
@@ -679,6 +688,8 @@ class RefineOrbit():
 
                 self.logger.info("NIMA Object [ %s ] STATUS [ %s ] Execution Time: %s" % (
                     obj["name"], status, humanize.naturaldelta(tdelta)))
+
+
 
             else:
                 self.logger.warning("Did not run NIMA for object %s" % obj["name"])
@@ -736,9 +747,19 @@ class RefineOrbit():
 
         try:
 
-            t0 = datetime.strptime(obj.get("start_time"), '%Y-%m-%d %H:%M:%S')
-            t1 = datetime.strptime(obj.get("finish_time"), '%Y-%m-%d %H:%M:%S')
-            t_delta = t1 - t0
+            try:
+                t0 = datetime.strptime(obj.get("start_time"), '%Y-%m-%d %H:%M:%S')
+            except:
+                t0 = None
+            try:
+                t1 = datetime.strptime(obj.get("finish_time"), '%Y-%m-%d %H:%M:%S')
+            except:
+                t1 = None
+
+            if t0 is not None and t1 is not None:
+                t_delta = t1 - t0
+            else:
+                t_delta = None
 
             asteroid, created = RefinedAsteroid.objects.update_or_create(
                 orbit_run=orbit_run,

@@ -303,7 +303,7 @@ class RefineOrbitDetail extends Component {
       return (
         <Column
           rowClassName={this.rowClassName}
-          key={col.field}
+          key={i.field}
           field={col.field}
           header={col.header}
           style={{ textAlign: 'center' }}
