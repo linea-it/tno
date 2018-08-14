@@ -15,7 +15,6 @@ class Log extends Component {
   };
 
   getLog = asteroid_id => {
-
     if (asteroid_id > 0) {
       this.api.getAsteroidLog({ asteroid_id: asteroid_id }).then(res => {
         const r = res.data;
@@ -51,12 +50,11 @@ class Log extends Component {
           style={{
             color: '#ffffff',
             backgroundColor: '#254356',
-            height: 800 + 'px',
+            // height: 800 + 'px',
             border: 'none',
           }}
         >
-          Object: {id.input_displayname} id: {id.input_displayname}
-          {teste}
+        {teste}
         </pre>
       </Dialog>
     );

@@ -6,41 +6,33 @@ import 'primeicons/primeicons.css';
 // Api Rest
 import OrbitApi from './OrbitApi';
 // interface components
-import { ListGroup, ListGroupItem } from 'react-bootstrap';
 import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
-import { Toolbar } from 'primereact/toolbar';
 import { DataTable } from 'primereact/datatable';
+import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
-import { Accordion, AccordionTab } from 'primereact/accordion';
-// import { Tree } from 'primereact/tree';
-import Lightbox from 'react-images';
-// import { Tree } from 'primereact/tree';
-import { Panel } from 'primereact/panel';
-//importing images
-// import plot1 from 'assets/img/1.png';
-import plot1 from 'assets/img/1.png';
-import plot2 from 'assets/img/2.png';
-import plot3 from 'assets/img/3.png';
-import plot4 from 'assets/img/4.png';
-import download from 'assets/img/download.jpeg';
 import Log from 'views/RefineOrbit/Log.jsx';
-import { TreeTable } from 'primereact/treetable';
 import PropTypes from 'prop-types';
+
 class AsteroidList extends Component {
   state = this.initialState;
   api = new OrbitApi();
 
   static propTypes = {
     orbit_run: PropTypes.number.isRequired,
+    view_asteroid: PropTypes.func.isRequired,
   };
 
   get initialState() {
     return {
       data: [],
       loading: false,
+      page: 1,
+      first: 0,
+      sizePerPage: 3,
       totalSize: 0,
+      sortField: 'name',
+      sortOrder: 1,
       asteroid_id: 0,
       log_visible: false,
     };
@@ -105,14 +97,15 @@ class AsteroidList extends Component {
   componentDidUpdate(prevProps) {
     // Typical usage (don't forget to compare props):
     if (this.props.orbit_run !== prevProps.orbit_run) {
-      this.fetchData({ orbit_run: this.props.orbit_run });
+      this.fetchData({
+        orbit_run: this.props.orbit_run,
+        page: this.state.page,
+        sizePerPage: this.state.sizePerPage,
+      });
     }
   }
 
-  fetchData = ({ orbit_run }) => {
-    console.log('FetchData');
-    console.log(orbit_run);
-
+  fetchData = ({ orbit_run, page, sizePerPage, sortField, sortOrder }) => {
     this.setState({ loading: true });
 
     const filters = [];
@@ -121,51 +114,103 @@ class AsteroidList extends Component {
       value: orbit_run,
     });
 
-    this.api.getAsteroid({ filters }).then(res => {
-      const r = res.data;
+    this.api
+      .getAsteroids({ filters, page, sizePerPage, sortField, sortOrder })
+      .then(res => {
+        const r = res.data;
 
-      console.log(r);
-
-      this.setState({
-        data: r.results,
-        totalSize: r.count,
-        // page: page,
-        // sizePerPage: sizePerPage,
-        loading: false,
+        this.setState({
+          data: r.results,
+          totalSize: r.count,
+          page: page,
+          sizePerPage: sizePerPage,
+          loading: false,
+          sortField: sortField,
+          sortOrder: sortOrder,
+        });
       });
-    });
   };
 
   showAsteroidLog = asteroid_id => {
     this.setState({ asteroid_id, log_visible: true });
   };
 
-  actionTemplate = (rowData, column) => {
-    console.log('teste: %o, %o', rowData, column);
+  onViewAsteroid = asteroid_id => {
+    console.log('onViewAsteroid(%o)', asteroid_id);
 
+    this.props.view_asteroid(asteroid_id);
+
+  };
+
+  actionTemplate = rowData => {
     const asteroid_id = rowData.id;
-    console.log(asteroid_id);
-    return (
-      <div>
-        {/* <Button
+    let btn_view = null;
+    let btn_log = null;
+
+    if (rowData.status === 'success') {
+      btn_view = (
+        <Button
           type="button"
           icon="fa fa-search"
-          className=".ui-button-info"
-          title="View"
-        /> */}
+          className="ui-button-info"
+          title="Log"
+          onClick={() => this.onViewAsteroid(asteroid_id)}
+        />
+      );
+      btn_log = (
         <Button
           type="button"
           icon="fa fa-file-text-o"
-          className=".ui-button-info"
+          className="ui-button-warning"
           title="Log"
           onClick={() => this.showAsteroidLog(asteroid_id)}
         />
+      );
+    }
+    return (
+      <div>
+        {btn_view}
+        {btn_log}
       </div>
     );
   };
 
   onLogHide = () => {
     this.setState({ log_visible: false, asteroid_id: 0 });
+  };
+
+  onPageChange = e => {
+    const page = e.page + 1;
+    this.setState(
+      {
+        first: e.first,
+        page: page,
+        sizePerPage: e.rows,
+      },
+      this.fetchData({
+        orbit_run: this.props.orbit_run,
+        page: page,
+        sizePerPage: e.rows,
+        sortField: this.state.sortField,
+        sortOrder: this.state.sortOrder,
+      })
+    );
+  };
+
+  onSort = e => {
+    this.setState(
+      {
+        sortField: e.sortField,
+        sortOrder: e.sortOrder,
+      },
+      this.fetchData({
+        orbit_run: this.props.orbit_run,
+        page: this.state.page,
+        sizePerPage: this.state.sizePerPage,
+        sortField: e.sortField,
+        sortOrder: e.sortOrder,
+      })
+    );
   };
 
   render() {
@@ -182,38 +227,19 @@ class AsteroidList extends Component {
       );
     });
 
-    const toolbar = (
-      <Toolbar>
-        <div className="ui-toolbar-group-left">
-          <Button label="View" icon="pi pi-plus" />
-          <Button
-            label="Log"
-            icon="pi pi-file"
-            className="ui-button-warning"
-            onClick={this.onClick}
-          />
-        </div>
-      </Toolbar>
-    );
-
-    const showLog = asteroid => {
-      console.log('Show Log: %o', asteroid);
-    };
-
     return (
       <Card
         title="Asteroids"
         subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
       >
-        {toolbar}
         <DataTable
           // header={tb_header}
           // footer={footer}
           value={this.state.data}
           resizableColumns={true}
           columnResizeMode="expand"
-          reorderableColumns={true}
-          reorderableRows={true}
+          reorderableColumns={false}
+          reorderableRows={false}
           responsive={true}
           // selectionMode="single"
           // selection={this.state.selectedCar1}
@@ -222,6 +248,9 @@ class AsteroidList extends Component {
           // scrollHeight="200px"
           loading={this.state.loading}
           totalRecords={this.state.totalSize}
+          sortField={this.state.sortField}
+          sortOrder={this.state.sortOrder}
+          onSort={this.onSort}
         >
           {columns}
           <Column
@@ -229,6 +258,12 @@ class AsteroidList extends Component {
             style={{ textAlign: 'center', width: '6em' }}
           />
         </DataTable>
+        <Paginator
+          rows={this.state.sizePerPage}
+          totalRecords={this.state.totalSize}
+          first={this.state.first}
+          onPageChange={this.onPageChange}
+        />
 
         <Log
           visible={this.state.log_visible}

@@ -17,6 +17,7 @@ import Notifications from 'views/Notifications/Notifications';
 import SkybotDetail from '../views/SolarSystems/SkybotDetail';
 import PointingsDetail from '../views/Pointings/PointingsDetail';
 import RefineRunOrbitDetail from '../views/RefineOrbit/RunDetail';
+import AsteroidDetail from '../views/RefineOrbit/AsteroidDetail';
 import RefineOrbitDetail from '../views/RefineOrbit/Details';
 
 const appRoutes = [
@@ -119,6 +120,12 @@ const appRoutes = [
     name: 'Refine Orbit',
     component: RefineOrbitPanel,
     helpText: 'texto10',
+  },
+  {
+    path: '/refined_asteroid/:id',
+    name: 'Refined Asteroid',
+    hidden: true,
+    component: AsteroidDetail,
   },
   {
     path: '/prediction',

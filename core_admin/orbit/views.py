@@ -89,5 +89,6 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
 class RefinedOrbitViewSet(viewsets.ModelViewSet):
     queryset = RefinedOrbit.objects.all()
     serializer_class = RefinedOrbitSerializer
-    filter_fields = ('id', 'filename')
+    filter_fields = ('id', 'filename', 'asteroid')
     search_fields = ('id', 'filename')
+    ordering = ('filename', 'file_type')

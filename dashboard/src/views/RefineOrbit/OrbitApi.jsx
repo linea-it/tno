@@ -32,8 +32,19 @@ class OrbitApi {
   // dados na table do primereact
   getRefineOrbits = id => axios.get(`${this.api}/orbit_run/${id}`);
 
-  getAsteroid = ({ page, pageSize, ordering, filters = [] }) => {
-    const params = { page: page, pageSize: pageSize, ordering: ordering };
+  getAsteroids = ({
+    page,
+    sizePerPage,
+    sortField,
+    sortOrder,
+    filters = [],
+  }) => {
+    let ordering = sortField;
+    if (sortOrder === -1) {
+      ordering = '-' + sortField;
+    }
+
+    const params = { page: page, pageSize: sizePerPage, ordering: ordering };
     filters.forEach(element => {
       params[element.property] = element.value;
     });
@@ -43,6 +54,9 @@ class OrbitApi {
     });
   };
 
+  getAsteroidById = ({ id }) =>
+    axios.patch(`${this.api}/refined_asteroid/${id}/`);
+
   getAsteroidLog = ({ asteroid_id, name, orbit_run }) => {
     let params = { name: name, orbit_run: orbit_run };
     if (asteroid_id) {
@@ -50,6 +64,15 @@ class OrbitApi {
     }
 
     return axios.get(`${this.api}/refined_asteroid/get_log/`, {
+      params: params,
+    });
+  };
+
+  getAsteroidFiles = ({ id }) => {
+    const params = {
+      asteroid: id,
+    };
+    return axios.get(`${this.api}/refined_orbit/`, {
       params: params,
     });
   };

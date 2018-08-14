@@ -45,6 +45,10 @@ if not os.path.exists(ASTROMETRY_POSITIONS_DIR):
     os.mkdir(ASTROMETRY_POSITIONS_DIR)
     os.chmod(ASTROMETRY_POSITIONS_DIR, 0o775)
 
+
+MEDIA_ROOT = ARCHIVE_DIR
+MEDIA_URL = '/media/'
+
 # Emails
 # Notifications Email
 EMAIL_NOTIFICATIONS = os.environ.get('EMAIL_NOTIFICATIONS', None)
