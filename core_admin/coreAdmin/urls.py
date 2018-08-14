@@ -26,7 +26,7 @@ from tno.views import UserViewSet, PointingViewSet, SkybotOutputViewSet, ObjectC
     ProccessViewSet
 from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet
 
-from orbit.views import OrbitRunViewSet
+from orbit.views import OrbitRunViewSet, RefinedAsteroidViewSet, RefinedOrbitViewSet
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -34,6 +34,8 @@ router.register(r'pointing', PointingViewSet)
 router.register(r'skybotoutput', SkybotOutputViewSet)
 
 router.register(r'orbit_run', OrbitRunViewSet)
+router.register(r'refined_asteroid', RefinedAsteroidViewSet)
+router.register(r'refined_orbit', RefinedOrbitViewSet)
 
 # router.register(r'observation', ObservationViewSet)
 # router.register(r'orbital_parameter', OrbitalParameterViewSet)

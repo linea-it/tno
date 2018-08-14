@@ -1,22 +1,11 @@
 import React from 'react';
-import {
-  Modal,
-  Button,
-  ControlLabel,
-  FormGroup,
-  Grid,
-  Row,
-  Col,
-  Collapse,
-  Alert,
-  FormControl,
-} from 'react-bootstrap';
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { Sidebar } from 'primereact/sidebar';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
+import { Button } from 'primereact/button';
 
 import PropTypes from 'prop-types';
 import Select from 'react-select';
@@ -267,30 +256,30 @@ class FilterPointings extends React.Component {
                   />
                 </div>
                 {console.log(this.state.dateObserInit)}
-              </div>
-              <div className="ui-g-12">
-                <p>Date de Observation Final </p>
-                <Calendar
-                  value={this.state.dateObserFinal}
-                  onChange={e => this.setState({ dateObserFinal: e.value })}
-                  showIcon={true}
-                  monthNavigator={true}
-                  yearNavigator={true}
-                  yearRange="2010:2030"
-                  dateFormat="yy/mm/dd"
-                  showButtonBar={true}
-                />
-                {console.log(this.state.dateObserFinal)}
+                <div className="ui-g-12">
+                  <p>Date de Observation Final </p>
+                  <Calendar
+                    value={this.state.dateObserFinal}
+                    onChange={e => this.setState({ dateObserFinal: e.value })}
+                    showIcon={true}
+                    monthNavigator={true}
+                    yearNavigator={true}
+                    yearRange="2010:2030"
+                    dateFormat="yy/mm/dd"
+                    showButtonBar={true}
+                  />
+                  {console.log(this.state.dateObserFinal)}
+                </div>
               </div>
 
               <div className="ui-g">
                 <div className="ui-g-12">
                   <p> Band </p>
                   <Dropdown
-                    value={this.state.expTime}
-                    options={options.valueTimes}
+                    value={this.state.band}
+                    options={options.band}
                     onChange={e => {
-                      this.setState({ exptime: e.value });
+                      this.setState({ band: e.value });
                     }}
                     placeholder="Select a expTime"
                     style={{ width: '200px' }}
@@ -386,9 +375,13 @@ class FilterPointings extends React.Component {
             </Collapse>
           </Row>
         </Grid> */}
-        <Button onClick={this.handlerSubmitFilter}>Filter</Button>
-        <Button onClick={this.onClear}>Clear</Button>
-        <Button onClick={this.onClose}>Close</Button>
+        <div className="ui-g">
+          <div className="ui-g-12">
+            <Button label="Filter" onClick={this.handlerSubmitFilter} />
+            <Button label="Clear" onClick={this.onClear} />
+            <Button label="Close" onClick={this.onClose} />
+          </div>
+        </div>
       </Sidebar>
       // <div className="static-modal">
       //   <Modal show={show} onHide={onHide}>

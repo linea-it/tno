@@ -17,6 +17,7 @@ import docker
 from django.conf import settings
 import json
 from statistics import mean
+from .models import RefinedAsteroid, RefinedOrbit
 
 
 class RefineOrbit():
@@ -36,6 +37,9 @@ class RefineOrbit():
             "start_time": None,
             "finish_time": None,
             "execution_time": None,
+            "execution_download_time": None,
+            "execution_nima_time": None,
+            "execution_register_time": None,
             "count_objects": 0,
             "count_executed": 0,
             "count_not_executed": 0,
@@ -98,7 +102,7 @@ class RefineOrbit():
 
         self.logger.info("Starting Download")
 
-        t0 = datetime.now()
+        t_download_0 = datetime.now()
         # ---------------------- Observations --------------------------------------------------------------------------
 
         self.logger.debug(
@@ -143,11 +147,16 @@ class RefineOrbit():
         # Download dos BSP JPL
         self.getBspJplFiles(instance, self.bsp_jpl_input_file, steps_file)
 
-        t1 = datetime.now()
-        tdelta = t1 - t0
-        self.logger.info("Download Finish in %s" % humanize.naturaldelta(tdelta))
+        t_download_1 = datetime.now()
+        t_download_delta = t_download_1 - t_download_0
+
+        self.results["execution_download_time"] = t_download_delta.total_seconds()
+
+        self.logger.info("Download Finish in %s" % humanize.naturaldelta(t_download_delta))
 
         # ---------------------- Objects -------------------------------------------------------------------------------
+
+        t_nima_0 = datetime.now()
 
         # Recuperando os Objetos
         objects, obj_count = ProccessManager().get_objects(tablename=self.input_list.tablename,
@@ -163,13 +172,13 @@ class RefineOrbit():
                 "name": obj.get("name"),
                 "number": obj.get("num"),
                 "alias": obj_name,
-                "object_dir": self.get_object_dir(obj.get("name"), self.objects_dir),
+                "relative_path": self.get_object_dir(obj.get("name"), self.objects_dir),
                 "status": None,
                 "error_msg": None,
                 "start_time": None,
                 "finish_time": None,
                 "execution_time": None,
-                "real_absolute_path": None,
+                "absolute_path": None,
                 "inputs": dict({
                     "observations": None,
                     "orbital_parameters": None,
@@ -189,8 +198,28 @@ class RefineOrbit():
         self.collect_inputs_by_objects(self.results["objects"], self.objects_dir)
 
         # ---------------------- Running NIMA --------------------------------------------------------------------------
-        self.logger.info("Running NIMA")
+        self.logger.info("Running NIMA for all objects")
         self.run_nima(self.results["objects"], self.objects_dir)
+
+        t_nima_1 = datetime.now()
+        t_nima_delta = t_nima_1 - t_nima_0
+
+        self.results["execution_nima_time"] = t_nima_delta.total_seconds()
+
+        # ---------------------- Recording the results. ----------------------------------------------------------------
+
+        t_register_0 = datetime.now()
+        # Iterate over objects
+        for alias in self.results["objects"]:
+            obj = self.results["objects"][alias]
+
+            # TODO: Registrar os Asteroids e o Resultado.
+            self.register_refined_asteroid(obj, instance)
+
+        t_register_1 = datetime.now()
+        t_register_delta = t_register_1 - t_register_0
+
+        self.results["execution_register_time"] = t_register_delta.total_seconds()
 
         # ---------------------- Finish --------------------------------------------------------------------------------
 
@@ -199,19 +228,33 @@ class RefineOrbit():
 
         self.results["finish_time"] = finish_time.replace(microsecond=0).isoformat(' ')
         tdelta = finish_time - start_time
-        self.results["execution_time"] = humanize.naturaldelta(tdelta)
+        self.results["execution_time"] = tdelta.total_seconds()
         # Average Time per object
-        self.results["average_time"] = mean(self.execution_time)
+        average_time = mean(self.execution_time)
+        self.results["average_time"] = average_time
 
+        self.results["status"] = "success"
+
+        # Escrever os Resultados no results.json
         result_file = os.path.join(instance.relative_path, "results.json")
         with open(result_file, "w") as fp:
             json.dump(self.results, fp)
 
         instance.status = "success"
+        instance.execution_time = tdelta
+        instance.execution_download_time = t_download_delta
+        instance.execution_nima_time = t_nima_delta
+        instance.execution_register_time = t_register_delta
+        instance.average_time = average_time
+        instance.count_objects = obj_count
+        instance.count_executed = self.results["count_executed"]
+        instance.count_not_executed = self.results["count_not_executed"]
+        instance.count_success = self.results["count_success"]
+        instance.count_failed = self.results["count_failed"]
+
         instance.save()
 
         self.logger.info("Finish Refine Orbit")
-
 
     def getObservations(self, instance, input_file, step_file):
         """
@@ -350,11 +393,11 @@ class RefineOrbit():
                 self.results["objects"][alias]["inputs"]["observations"] = dict({
                     "filename": os.path.basename(observations_file),
                     "file_path": observations_file,
-                    "file_size": os.path.getsize(observations_file), 
+                    "file_size": os.path.getsize(observations_file),
                     "file_type": os.path.splitext(observations_file)[1]
                 })
 
-                            
+
             else:
                 status = "failure"
                 error_msg = "Missing Input Observations"
@@ -363,10 +406,10 @@ class RefineOrbit():
                 self.results["objects"][alias]["inputs"]["orbital_parameters"] = dict({
                     "filename": os.path.basename(orbital_parameters_file),
                     "file_path": orbital_parameters_file,
-                    "file_size": os.path.getsize(orbital_parameters_file), 
+                    "file_size": os.path.getsize(orbital_parameters_file),
                     "file_type": os.path.splitext(orbital_parameters_file)[1]
                 })
-            
+
             else:
                 status = "failure"
                 error_msg = "Missing Input Orbital Parameters"
@@ -375,10 +418,10 @@ class RefineOrbit():
                 self.results["objects"][alias]["inputs"]["bsp_jpl"] = dict({
                     "filename": os.path.basename(bsp_jpl_file),
                     "file_path": bsp_jpl_file,
-                    "file_size": os.path.getsize(bsp_jpl_file), 
+                    "file_size": os.path.getsize(bsp_jpl_file),
                     "file_type": os.path.splitext(bsp_jpl_file)[1]
                 })
-                
+
             else:
                 status = "failure"
                 error_msg = "Missing Input BSP JPL"
@@ -387,15 +430,13 @@ class RefineOrbit():
                 self.results["objects"][alias]["inputs"]["astrometry"] = dict({
                     "filename": os.path.basename(astrometry_position_file),
                     "file_path": astrometry_position_file,
-                    "file_size": os.path.getsize(astrometry_position_file), 
+                    "file_size": os.path.getsize(astrometry_position_file),
                     "file_type": os.path.splitext(astrometry_position_file)[1]
                 })
-            
+
             else:
                 status = "failure"
                 error_msg = "Missing Input Astrometry Positions"
-
-            self.logger.debug(self.results)
 
             if status is not None:
                 self.results["objects"][alias]["status"] = status
@@ -511,8 +552,6 @@ class RefineOrbit():
 
     def run_nima(self, objects, objects_path):
 
-        self.logger.debug("Objects Path: %s" % objects_path)
-
         # Get docker Client Instance
         client = docker.DockerClient(base_url=settings.DOCKER_HOST)
 
@@ -536,115 +575,113 @@ class RefineOrbit():
         for alias in objects:
             obj = objects[alias]
 
-            self.logger.debug("Object")
-            self.logger.debug(obj)
+            if obj["status"] is not "failure":
 
-            self.results["objects"][alias]["status"] = "running"
-            tstart = datetime.now()
+                self.logger.debug("Running for object %s" % obj["name"])
 
-            input_path = os.path.join(objects_path, alias)
+                self.results["objects"][alias]["status"] = "running"
+                tstart = datetime.now()
 
-            nima_log = os.path.join(input_path, "nima.log")
+                input_path = os.path.join(objects_path, alias)
 
-            self.logger.debug("Input Path: %s" % input_path)
+                nima_log = os.path.join(input_path, "nima.log")
 
-            self.nima_input_file(obj, input_path)
+                self.nima_input_file(obj, input_path)
 
-            real_archive_path = settings.HOST_ARCHIVE_DIR
+                real_archive_path = settings.HOST_ARCHIVE_DIR
 
-            real_input_path = os.path.join(real_archive_path, input_path.strip('/'))
+                real_input_path = os.path.join(real_archive_path, input_path.strip('/'))
 
-            self.logger.debug("Real Input Path: %s" % real_input_path)
+                self.results["objects"][alias]["absolute_path"] = real_input_path
 
-            self.results["objects"][alias]["real_absolute_path"] = real_input_path
+                # TODO o command pode passar o nome e numero do objeto.
+                cmd = "python /app/run.py"
 
-            # TODO o command pode passar o nome e numero do objeto.
-            cmd = "python /app/run.py"
+                volumes = dict({})
+                volumes[real_input_path] = {
+                    'bind': '/data',
+                    'mode': 'rw'
+                }
 
-            volumes = dict({})
-            volumes[real_input_path] = {
-                'bind': '/data',
-                'mode': 'rw'
-            }
-
-            self.logger.debug("Volumes")
-            self.logger.debug(volumes)
-
-            status = "FAILURE"
-            try:
-
-                self.logger.info("Starting Container NIMA")
-
-                running_t0 = datetime.now()
-
-                container = client.containers.run(
-                    nima_image,
-                    command=cmd,
-                    detach=True,
-                    name="nima_%s" % count,
-                    auto_remove=True,
-                    mem_limit='1024m',
-                    volumes=volumes
-                )
-
-                log_data = ""
-                # Logging
+                status = "FAILURE"
                 try:
-                    for line in container.logs(stream=True):
-                        line = str(line.strip().decode("utf-8"))
-                        log_data += "%s\n" % line
-                        
-                        # self.logger.debug(line)
 
-                    with open(nima_log, 'w') as f_nima_log:
-                        f_nima_log.write(log_data)
+                    self.logger.debug("Starting Container NIMA")
 
-                except Exception as e:
+                    running_t0 = datetime.now()
+
+                    container = client.containers.run(
+                        nima_image,
+                        command=cmd,
+                        detach=True,
+                        name="nima_%s" % count,
+                        auto_remove=True,
+                        mem_limit='1024m',
+                        volumes=volumes
+                    )
+
+                    log_data = ""
+                    # Logging
+                    try:
+                        for line in container.logs(stream=True):
+                            line = str(line.strip().decode("utf-8"))
+                            log_data += "%s\n" % line
+
+                            # self.logger.debug(line)
+
+                        with open(nima_log, 'w') as f_nima_log:
+                            f_nima_log.write(log_data)
+
+                    except Exception as e:
+                        self.logger.error(e)
+
+                    self.logger.debug("Finish Container NIMA")
+
+                    running_t1 = datetime.now()
+                    running_tdelta = running_t1 - running_t0
+
+                    if log_data.find("SUCCESS"):
+                        status = "SUCCESS"
+                        self.results["objects"][alias]["status"] = "success"
+                        self.results["count_success"] += 1
+
+
+                    elif log_data.find("WARNING"):
+                        self.results["objects"][alias]["status"] = "warning"
+                        self.results["count_success"] += 1
+
+                    else:
+                        self.results["objects"][alias]["status"] = "failure"
+                        self.results["objects"][alias][
+                            "error_msg"] = "NIMA did not return success, see log for more information"
+                        self.results["count_failed"] += 1
+
+
+                except docker.errors.ContainerError as e:
                     self.logger.error(e)
-
-                self.logger.info("Finish Container NIMA")
-
-                running_t1 = datetime.now()
-                running_tdelta = running_t1 - running_t0
-
-                self.logger.info("NIMA Execution Time: %s" % humanize.naturaldelta(running_tdelta))
-
-                if log_data.find("SUCCESS"):
-                    status = "SUCCESS"
-                    self.results["objects"][alias]["status"] = "success"
-                    self.results["count_success"] += 1
-
-
-                elif log_data.find("WARNING"):
-                    self.results["objects"][alias]["status"] = "warning"
-                    self.results["count_success"] += 1
-
-                else:
-                    self.results["objects"][alias]["status"] = "error"
                     self.results["count_failed"] += 1
+                    self.results["objects"][alias]["status"] = "failure"
+                    self.results["objects"][alias][
+                        "error_msg"] = "Container NIMA failed"
 
+                tfinish = datetime.now()
+                tdelta = tfinish - tstart
 
-            except docker.errors.ContainerError as e:
-                self.logger.error(e)
-                self.results["count_failed"] += 1
-                # raise (e)
+                self.execution_time.append(tdelta.total_seconds())
 
-            self.logger.info("NIMA STATUS [ %s ]" % status)
+                self.results["objects"][alias]["start_time"] = tstart.replace(microsecond=0).isoformat(' ')
+                self.results["objects"][alias]["finish_time"] = tfinish.replace(microsecond=0).isoformat(' ')
+                self.results["objects"][alias]["execution_time"] = tdelta.total_seconds()
 
+                self.results["count_executed"] += 1
 
-            tfinish = datetime.now()
-            tdelta = tfinish - tstart
+                self.results["objects"][alias]["results"] = self.nima_check_results(self.results["objects"][alias])
 
-            self.execution_time.append(tdelta.total_seconds())
+                self.logger.info("NIMA Object [ %s ] STATUS [ %s ] Execution Time: %s" % (
+                    obj["name"], status, humanize.naturaldelta(tdelta)))
 
-            self.results["objects"][alias]["start_time"] = tstart.replace(microsecond=0).isoformat(' ')
-            self.results["objects"][alias]["finish_time"] = tfinish.replace(microsecond=0).isoformat(' ')
-            self.results["objects"][alias]["execution_time"] = tdelta.total_seconds()
-
-            self.results["count_executed"] += 1
-
-            self.results["objects"][alias]["results"] = self.nima_check_results(self.results["objects"][alias])
-
+            else:
+                self.logger.warning("Did not run NIMA for object %s" % obj["name"])
 
     def nima_input_file(self, obj, input_path):
 
@@ -671,7 +708,7 @@ class RefineOrbit():
             raise (e)
 
     def nima_check_results(self, obj):
-        
+
         results = list()
 
         inputs = list()
@@ -679,13 +716,12 @@ class RefineOrbit():
             f_input = obj["inputs"][i]
             inputs.append(f_input["filename"])
 
-        files = os.listdir(obj["object_dir"])
+        files = os.listdir(obj["relative_path"])
 
         for f in files:
-            
-            if f not in inputs:
 
-                file_path = os.path.join(obj["object_dir"], f)
+            if f not in inputs:
+                file_path = os.path.join(obj["relative_path"], f)
 
                 results.append(dict({
                     "filename": f,
@@ -695,6 +731,57 @@ class RefineOrbit():
                 }))
 
         return results
+
+    def register_refined_asteroid(self, obj, orbit_run):
+
+        try:
+
+            t0 = datetime.strptime(obj.get("start_time"), '%Y-%m-%d %H:%M:%S')
+            t1 = datetime.strptime(obj.get("finish_time"), '%Y-%m-%d %H:%M:%S')
+            t_delta = t1 - t0
+
+            asteroid, created = RefinedAsteroid.objects.update_or_create(
+                orbit_run=orbit_run,
+                name=obj.get("name"),
+                defaults={
+                    'number': obj.get("number"),
+                    'status': obj.get("status"),
+                    'error_msg': obj.get("error_msg"),
+                    'start_time': t0,
+                    'finish_time': t1,
+                    'execution_time': t_delta,
+                    'relative_path': obj.get("relative_path"),
+                    'absolute_path': obj.get("absolute_path")
+                })
+
+            asteroid.save()
+
+            l_created = "Created"
+
+            # Apaga todas os resultados caso seja um update
+            if not created:
+                l_created = "Updated"
+
+                for orbit in asteroid.refined_orbit.all():
+                    orbit.delete()
+
+            for f in obj.get("results"):
+                orbit, created = RefinedOrbit.objects.update_or_create(
+                    asteroid=asteroid,
+                    filename=f.get("filename"),
+                    defaults={
+                        'file_size': f.get("file_size"),
+                        'file_type': f.get("file_type"),
+                        'relative_path': f.get("file_path"),
+                    }
+                )
+
+                orbit.save()
+
+            self.logger.info("Registered Object %s %s" % (obj.get("name"), l_created))
+
+        except Exception as e:
+            self.logger.error("Failed to Register Object %s Error: %s" % (obj.get("name"), e))
 
 
 class RefineOrbitDB(DBBase):
