@@ -37,9 +37,9 @@ class PointingsPanel extends Component {
         <Grid fluid>
           <Row>
             <Col md={12}>
-              <Panel header="Statistics">
+              {/* <Panel header="Statistics"> */}
                 <PointingStats />
-              </Panel>
+              {/* </Panel> */}
             </Col>
           </Row>
           <br />
