@@ -18,7 +18,6 @@ import SkybotDetail from '../views/SolarSystems/SkybotDetail';
 import PointingsDetail from '../views/Pointings/PointingsDetail';
 import RefineRunOrbitDetail from '../views/RefineOrbit/RunDetail';
 import AsteroidDetail from '../views/RefineOrbit/AsteroidDetail';
-import RefineOrbitDetail from '../views/RefineOrbit/Details';
 
 const appRoutes = [
   {
@@ -96,17 +95,10 @@ const appRoutes = [
     helpText: 'texto8',
   },
   {
-    path: '/details',
-    name: 'Details',
-    component: RefineOrbitDetail,
-    hidden: true,
-    helpText: 'texto9',
-  },
-  {
     path: '/orbit_run_detail/:id',
     name: 'Refine Orbit Detail',
     component: RefineRunOrbitDetail,
-    hidden: false,
+    hidden: true,
     helpText: 'texto9',
   },
   {

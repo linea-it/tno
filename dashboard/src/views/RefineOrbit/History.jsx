@@ -147,7 +147,7 @@ class RefineOrbitHistory extends Component {
   details = () => {
     const history = this.props.history;
     const id = this.state.selected_record.id;
-    history.push({ pathname: `/details/${id}` });
+    history.push({ pathname: `/orbit_run_detail/${id}` });
   };
 
   render() {

@@ -29,7 +29,7 @@ class AsteroidList extends Component {
       loading: false,
       page: 1,
       first: 0,
-      sizePerPage: 3,
+      sizePerPage: 100,
       totalSize: 0,
       sortField: 'name',
       sortOrder: 1,
@@ -136,10 +136,7 @@ class AsteroidList extends Component {
   };
 
   onViewAsteroid = asteroid_id => {
-    console.log('onViewAsteroid(%o)', asteroid_id);
-
     this.props.view_asteroid(asteroid_id);
-
   };
 
   actionTemplate = rowData => {
@@ -153,7 +150,7 @@ class AsteroidList extends Component {
           type="button"
           icon="fa fa-search"
           className="ui-button-info"
-          title="Log"
+          title="View"
           onClick={() => this.onViewAsteroid(asteroid_id)}
         />
       );
