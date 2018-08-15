@@ -89,6 +89,45 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
 
 
     @list_route()
+    def get_neighbors(self, request):
+        id = request.query_params.get('asteroid_id', None)
+
+        if id is None:
+            return Response({
+                'success': False,
+                'msg': "Asteroid with id %s Not Found." % id,
+            })
+
+        try:
+            asteroid = RefinedAsteroid.objects.get(id=int(id))
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "Asteroid with id %s Not Found." % id,
+            })
+
+        next = None
+        try:
+            next_model = RefinedAsteroid.objects.filter(orbit_run=asteroid.orbit_run).filter(id__gt=asteroid.id).order_by('name').first()
+            next = next_model.id
+        except:
+            pass
+
+        prev = None
+        try:
+            prev_model = RefinedAsteroid.objects.filter(orbit_run=asteroid.orbit_run).filter(id__lt=asteroid.id).order_by('name').first()
+            prev = prev_model.id
+        except:
+            pass
+
+        return Response(dict({
+            "success": True,
+            "prev": prev,
+            "next": next
+        }))
+
+    @list_route()
     def download_results(self, request):
         id = request.query_params.get('asteroid_id', None)
 

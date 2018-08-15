@@ -53,12 +53,16 @@ class AsteroidDetail extends Component {
           const files = res.data.results;
 
           // Lista so com os arquivos que sao imagens
+          const excluded_images = ['diff_bsp-ni.png', 'omc_sep.png'];
           const images = [];
 
           const childrens = [];
 
           files.forEach(e => {
-            if (e.file_type === '.png') {
+            if (
+              e.file_type === '.png' &&
+              !excluded_images.includes(e.filename)
+            ) {
               // O source deve apontar para o backend
               e.src = this.api.api + e.src;
               images.push(e);
@@ -139,16 +143,15 @@ class AsteroidDetail extends Component {
     console.log('onClickDownload(%o)', asteroid_id);
     this.api.getAsteroidDownloadLink({ asteroid_id }).then(res => {
       const data = res.data;
-      console.log(data)
+      console.log(data);
       if (data.success) {
-        console.log("FUNCIONOU")
+        console.log('FUNCIONOU');
         const file_src = this.api.api + data.src;
-        console.log(file_src)
+        console.log(file_src);
         window.open(file_src);
       } else {
         // TODO: Implementar notificacao de erro.
       }
-
     });
   };
 
@@ -185,7 +188,7 @@ class AsteroidDetail extends Component {
         <div className="ui-g">
           {this.state.images.map((e, i) => {
             return (
-              <div className="ui-g-4" key={i}>
+              <div className="ui-g-5" key={i}>
                 <Card subTitle={e.filename}>
                   <img
                     key={i}
