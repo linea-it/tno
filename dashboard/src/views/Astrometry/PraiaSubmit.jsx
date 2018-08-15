@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
-import { Form, FormGroup, ControlLabel, Button } from 'react-bootstrap';
+import { Form, FormGroup, ControlLabel } from 'react-bootstrap';
 import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
 import ObjectApi from '../ObjectList/ObjectApi';
 import PraiaApi from './PraiaApi';
 import Card from 'components/Card/Card.jsx';
 import PropTypes from 'prop-types';
+
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { Button } from 'primereact/button';
 
 class PraiaSubmit extends Component {
   state = this.initialState;
@@ -114,9 +119,7 @@ class PraiaSubmit extends Component {
                   loadOptions={this.loadConfigs}
                 />
               </FormGroup>
-              <Button bsStyle="info" onClick={this.onClickSubmit}>
-                Submit
-              </Button>
+              <Button label="Submit" onClick={this.onClickSubmit} />
             </Form>
           </div>
         }

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { ButtonToolbar, Button } from 'react-bootstrap';
 import Card from 'components/Card/Card.jsx';
 import PraiaApi from './PraiaApi';
 import PropTypes from 'prop-types';
@@ -11,6 +10,12 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { formatDateUTC, formatColumnHeader, formatStatus } from 'utils';
 import ReactInterval from 'react-interval';
+
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { Button } from 'primereact/button';
+import { Toolbar } from 'primereact/toolbar';
 
 const columns = [
   {
@@ -189,14 +194,13 @@ class PraiaHistory extends Component {
           category="Manage the completed Astrometry rounds"
           content={
             <div>
-              <ButtonToolbar>
+              <Toolbar>
                 <Button
+                  label="Re-execute"
                   disabled={!selected_record}
                   onClick={this.handleOnRerun}
-                >
-                  Re-execute
-                </Button>
-              </ButtonToolbar>
+                />
+              </Toolbar>
               <BootstrapTable
                 striped
                 hover

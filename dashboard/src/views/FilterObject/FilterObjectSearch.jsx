@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
-import { FormGroup, FormControl, InputGroup } from 'react-bootstrap';
-import Button from 'elements/CustomButton/CustomButton.jsx';
+
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
 import PropTypes from 'prop-types';
 
 class FilterObjectSearch extends Component {
@@ -33,19 +37,16 @@ class FilterObjectSearch extends Component {
   render() {
     return (
       <form>
-        <FormGroup>
-          <InputGroup>
-            <FormControl
-              type="text"
-              placeholder="Search By Name"
-              value={this.state.search}
-              onChange={this.handleChange}
-            />
-            <InputGroup.Button>
-              <Button onClick={this.handleSubmit}>Search</Button>
-            </InputGroup.Button>
-          </InputGroup>
-        </FormGroup>
+        <div className="ui-inputgroup">
+          <InputText
+            value={this.state.search}
+            placeholder="Search By Name"
+            onChange={this.handleChange}
+            style={{ width: '300px' }}
+          />
+          <Button label="Search" onClick={this.handleSubmit} />
+        </div>
+
         <div className="clearfix" />
       </form>
     );

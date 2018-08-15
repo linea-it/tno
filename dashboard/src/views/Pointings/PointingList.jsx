@@ -314,6 +314,7 @@ class PointingList extends Component {
                     </div>
                     <div className="ui-g-1">
                       <Button
+                        style={{ border: '#007892', background: '#007892' }}
                         label="Filter"
                         onClick={e => {
                           this.setState({ show: true });

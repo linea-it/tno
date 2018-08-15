@@ -8,6 +8,15 @@ import {
   ListGroupItem,
   Image,
 } from 'react-bootstrap';
+
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+import { Toolbar } from 'primereact/toolbar';
+
+import { Icon, Statistic } from 'semantic-ui-react';
 import Card from 'components/Card/Card.jsx';
 import SkybotApi from './SkybotApi';
 import plotPointings from 'assets/img/plotPointings.png';
@@ -228,20 +237,6 @@ class SkybotStats extends Component {
                   </ListGroupItem>
                 </ListGroup>
               </Col>
-              {/* <Col md={6}>
-                <Card
-                  title=" Pointings in sky"
-                  category="placeholder - plot with the projection of pointings in sky"
-                  content={
-                    <div>
-                      <br />
-                      <figure>
-                        <Image alt="text" src={plotPointings} />
-                      </figure>
-                    </div>
-                  }
-                />
-              </Col> */}
             </Row>
           </Grid>
         </Panel.Body>

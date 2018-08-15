@@ -1,75 +1,13 @@
 import React from 'react';
-import {
-  Modal,
-  Button,
-  ControlLabel,
-  FormGroup,
-  Grid,
-  Row,
-  Col,
-  Collapse,
-  Alert,
-} from 'react-bootstrap';
 import PropTypes from 'prop-types';
-import Select from 'react-select';
 
-const options = {
-  dynclassValues: [
-    { label: 'Centaur', value: 'Centaur' },
-    { label: 'Hungaria', value: 'Hungaria' },
-    { label: 'KBO>Classical>Inner', value: 'KBO>Classical>Inner' },
-    { label: 'KBO>Classical>Main', value: 'KBO>Classical>Main' },
-    { label: 'KBO>Detached', value: 'KBO>Detached' },
-    { label: 'KBO>Resonant>11:3', value: 'KBO>Resonant>11:3' },
-    { label: 'KBO>Resonant>11:6', value: 'KBO>Resonant>11:6' },
-    { label: 'KBO>Resonant>11:8', value: 'KBO>Resonant>11:8' },
-    { label: 'KBO>Resonant>19:9', value: 'KBO>Resonant>19:9' },
-    { label: 'KBO>Resonant>2:1', value: 'KBO>Resonant>2:1' },
-    { label: 'KBO>Resonant>3:1', value: 'KBO>Resonant>3:1' },
-    { label: 'KBO>Resonant>3:2', value: 'KBO>Resonant>3:2' },
-    { label: 'KBO>Resonant>4:3', value: 'KBO>Resonant>4:3' },
-    { label: 'KBO>Resonant>5:2', value: 'KBO>Resonant>5:2' },
-    { label: 'KBO>Resonant>5:3', value: 'KBO>Resonant>5:3' },
-    { label: 'KBO>Resonant>5:4', value: 'KBO>Resonant>5:4' },
-    { label: 'KBO>Resonant>7:2', value: 'KBO>Resonant>7:2' },
-    { label: 'KBO>Resonant>7:3', value: 'KBO>Resonant>7:3' },
-    { label: 'KBO>Resonant>7:4', value: 'KBO>Resonant>7:4' },
-    { label: 'KBO>Resonant>9:4', value: 'KBO>Resonant>9:4' },
-    { label: 'KBO>Resonant>9:5', value: 'KBO>Resonant>9:5' },
-    { label: 'KBO>SDO', value: 'KBO>SDO' },
-    { label: 'Mars-Crosser', value: 'Mars-Crosser' },
-    { label: 'MB>Cybele', value: 'MB>Cybele' },
-    { label: 'MB>Hilda', value: 'MB>Hilda' },
-    { label: 'MB>Inner', value: 'MB>Inner' },
-    { label: 'MB>Middle', value: 'MB>Middle' },
-    { label: 'MB>Outer', value: 'MB>Outer' },
-    { label: 'NEA>Amor', value: 'NEA>Amor' },
-    { label: 'NEA>Apollo', value: 'NEA>Apollo' },
-    { label: 'NEA>Aten', value: 'NEA>Aten' },
-    { label: 'Trojan', value: 'Trojan' },
-  ],
-
-  magnitude: [
-    { value: '18,19', label: '18 - 19' },
-    { value: '19,20', label: '19 - 20' },
-    { value: '20,21', label: '20 - 21' },
-    { value: '21,22', label: '21 - 22' },
-    { value: '22,23', label: '22 - 23' },
-    { value: '23,24', label: '23 - 24' },
-    { value: '24,25', label: '24 - 25' },
-    { value: '25,26', label: '25 - 26' },
-    { value: '26,27', label: '26 - 27' },
-    { value: '27,28', label: '27 - 28' },
-    { value: '28,29', label: '28 - 29' },
-    { value: '29,30', label: '29 - 30' },
-    { value: '30,31', label: '30 - 31' },
-    { value: '31,32', label: '31 - 32' },
-    { value: '32,33', label: '32 - 33' },
-    { value: '33,34', label: '33 - 34' },
-    { value: '34,35', label: '34 - 35' },
-    { value: '35,36', label: '35 - 36' },
-  ],
-};
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { Sidebar } from 'primereact/sidebar';
+import { Dropdown } from 'primereact/dropdown';
+import { MultiSelect } from 'primereact/multiselect';
+import { Button } from 'primereact/button';
 
 class FilterPointings extends React.Component {
   constructor(props) {
@@ -166,80 +104,110 @@ class FilterPointings extends React.Component {
   render() {
     const { show, onHide } = this.props;
 
+    const dynclassValues = [
+      { label: 'Centaur', value: 'Centaur' },
+      { label: 'Hungaria', value: 'Hungaria' },
+      { label: 'KBO>Classical>Inner', value: 'KBO>Classical>Inner' },
+      { label: 'KBO>Classical>Main', value: 'KBO>Classical>Main' },
+      { label: 'KBO>Detached', value: 'KBO>Detached' },
+      { label: 'KBO>Resonant>11:3', value: 'KBO>Resonant>11:3' },
+      { label: 'KBO>Resonant>11:6', value: 'KBO>Resonant>11:6' },
+      { label: 'KBO>Resonant>11:8', value: 'KBO>Resonant>11:8' },
+      { label: 'KBO>Resonant>19:9', value: 'KBO>Resonant>19:9' },
+      { label: 'KBO>Resonant>2:1', value: 'KBO>Resonant>2:1' },
+      { label: 'KBO>Resonant>3:1', value: 'KBO>Resonant>3:1' },
+      { label: 'KBO>Resonant>3:2', value: 'KBO>Resonant>3:2' },
+      { label: 'KBO>Resonant>4:3', value: 'KBO>Resonant>4:3' },
+      { label: 'KBO>Resonant>5:2', value: 'KBO>Resonant>5:2' },
+      { label: 'KBO>Resonant>5:3', value: 'KBO>Resonant>5:3' },
+      { label: 'KBO>Resonant>5:4', value: 'KBO>Resonant>5:4' },
+      { label: 'KBO>Resonant>7:2', value: 'KBO>Resonant>7:2' },
+      { label: 'KBO>Resonant>7:3', value: 'KBO>Resonant>7:3' },
+      { label: 'KBO>Resonant>7:4', value: 'KBO>Resonant>7:4' },
+      { label: 'KBO>Resonant>9:4', value: 'KBO>Resonant>9:4' },
+      { label: 'KBO>Resonant>9:5', value: 'KBO>Resonant>9:5' },
+      { label: 'KBO>SDO', value: 'KBO>SDO' },
+      { label: 'Mars-Crosser', value: 'Mars-Crosser' },
+      { label: 'MB>Cybele', value: 'MB>Cybele' },
+      { label: 'MB>Hilda', value: 'MB>Hilda' },
+      { label: 'MB>Inner', value: 'MB>Inner' },
+      { label: 'MB>Middle', value: 'MB>Middle' },
+      { label: 'MB>Outer', value: 'MB>Outer' },
+      { label: 'NEA>Amor', value: 'NEA>Amor' },
+      { label: 'NEA>Apollo', value: 'NEA>Apollo' },
+      { label: 'NEA>Aten', value: 'NEA>Aten' },
+      { label: 'Trojan', value: 'Trojan' },
+    ];
+
+    const magnitude = [
+      { value: '18,19', label: '18 - 19' },
+      { value: '19,20', label: '19 - 20' },
+      { value: '20,21', label: '20 - 21' },
+      { value: '21,22', label: '21 - 22' },
+      { value: '22,23', label: '22 - 23' },
+      { value: '23,24', label: '23 - 24' },
+      { value: '24,25', label: '24 - 25' },
+      { value: '25,26', label: '25 - 26' },
+      { value: '26,27', label: '26 - 27' },
+      { value: '27,28', label: '27 - 28' },
+      { value: '28,29', label: '28 - 29' },
+      { value: '29,30', label: '29 - 30' },
+      { value: '30,31', label: '30 - 31' },
+      { value: '31,32', label: '31 - 32' },
+      { value: '32,33', label: '32 - 33' },
+      { value: '33,34', label: '33 - 34' },
+      { value: '34,35', label: '34 - 35' },
+      { value: '35,36', label: '35 - 36' },
+    ];
+
     return (
-      <div className="static-modal">
-        <Modal show={show} onHide={onHide}>
-          <Modal.Header closeButton>
-            <Modal.Title>Filter Skybots</Modal.Title>
-          </Modal.Header>
-
-          <Modal.Body>
+      <Sidebar
+        style={{ widht: 'none !important' }}
+        visible={show}
+        position="right"
+        onHide={onHide}
+      >
+        <br />
+        <div className="ui-g ui-fluid">
+          <div className="ui-g-12">
             <form>
-              <Grid fluid>
-                <Row>
-                  <Col md={12}>
-                    <FormGroup
-                      controlId="formValidationError2"
-                      validationState={this.state.validation}
-                    >
-                      <ControlLabel>Visual Magnitude</ControlLabel>
-                      <Select
-                        onChange={this.handleSelectMV}
-                        options={options.magnitude}
-                        placeholder="Select your range of values"
-                        value={this.state.mv}
-                        clearable={false}
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-              </Grid>
-
-              <Grid fluid>
-                <Row>
-                  <Col md={12}>
-                    <FormGroup
-                      controlId={this.state.controlId}
-                      validationState={this.state.validation}
-                    >
-                      <ControlLabel>Dynamics Class</ControlLabel>
-
-                      <Select
-                        disabled={false}
-                        multi
-                        onChange={this.handleSelectDynclass}
-                        options={options.dynclassValues}
-                        placeholder="Select one or more values of Dynamics Class"
-                        removeSelected={true}
-                        simpleValue
-                        value={this.state.dynclass}
-                        clearable={false}
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-              </Grid>
+              <div className="ui-g">
+                <div className="ui-g-12">
+                  <p> Visual Magnitude </p>
+                  <Dropdown
+                    value={this.state.mv}
+                    options={magnitude}
+                    onChange={this.handleSelectMV}
+                    placeholder="Select a visual magnitude"
+                    style={{ width: '200px' }}
+                  />
+                </div>
+              </div>
+              <div className="ui-g">
+                <div className="ui-g-12">
+                  <p> Dynamics Class </p>
+                  <MultiSelect
+                    value={this.state.dynclass}
+                    options={dynclassValues}
+                    onChange={this.handleSelectDynclass}
+                    filter={true}
+                    optionLabel="value"
+                    placeholder="Select a dynamics class"
+                    style={{ width: '200px' }}
+                  />
+                </div>
+              </div>
             </form>
-            <Grid fluid>
-              <Row>
-                <Collapse in={this.state.open}>
-                  <div>
-                    <Alert bsStyle={this.state.colorAlert}>
-                      {this.state.errorMessage}
-                    </Alert>
-                  </div>
-                </Collapse>
-              </Row>
-            </Grid>
-          </Modal.Body>
-
-          <Modal.Footer>
-            <Button onClick={this.handlerSubmitFilter}>Filter</Button>
-            <Button onClick={this.onClear}>Clear</Button>
-            <Button onClick={this.onClose}>Close</Button>
-          </Modal.Footer>
-        </Modal>
-      </div>
+          </div>
+        </div>
+        <div className="ui-g">
+          <div className="ui-g-12">
+            <Button label="Filter" onClick={this.handlerSubmitFilter} />
+            <Button label="Clear" onClick={this.onClear} />
+            <Button label="Close" onClick={this.onClose} />
+          </div>
+        </div>
+      </Sidebar>
     );
   }
 }

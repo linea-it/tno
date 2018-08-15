@@ -11,6 +11,7 @@ import {
   Legend,
 } from 'recharts';
 // import Card from 'components/Card/Card.jsx';
+import { Icon, Statistic } from 'semantic-ui-react';
 import { Card } from 'primereact/card';
 import PointingApi from './PointingApi';
 import plotPointings from 'assets/img/plotPointings.png';
@@ -110,14 +111,14 @@ class PointingsStats extends Component {
     this.api.getPointingDowloaded().then(res => {
       const r = res.data;
       this.setState({
-        qtdDownloaded: r.count,
+        qtdDownloaded: 3034, // setar r.count
       });
     });
 
     this.api.getPointingNotDowloaded().then(res => {
       const r = res.data;
       this.setState({
-        qtdNotDownloaded: r.count,
+        qtdNotDownloaded: 4032, // setar r.count
       });
     });
     this.api.getPointingDataRecent().then(res => {
@@ -138,19 +139,19 @@ class PointingsStats extends Component {
     ];
 
     const exptime = [
-      { name: '0 and 100', exposure: this.state.exp1 },
-      { name: '100 and 200', exposure: this.state.exp2 },
-      { name: '200 and 300', exposure: this.state.exp3 },
-      { name: '300 and 400', exposure: this.state.exp4 },
+      { name: '0-100', exposure: this.state.exp1 },
+      { name: '100-200', exposure: this.state.exp2 },
+      { name: '200-300', exposure: this.state.exp3 },
+      { name: '300-400', exposure: this.state.exp4 },
     ];
     return (
       <div className="ui-g">
         <div className="ui-g-8 ui-g-nopad">
-          <div className="ui-g-6">
+          <div className="ui-g-4">
             <Card title="" subTitle="Number of CCDs for each band">
               <BarChart
-                width={350}
-                height={175}
+                width={275}
+                height={198}
                 data={data}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
@@ -159,19 +160,19 @@ class PointingsStats extends Component {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar barSize="20" dataKey="band" fill="#8B008B" />;
+                <Bar barSize="20" dataKey="band" fill="#4B0082" />;
               </BarChart>
             </Card>
           </div>
 
-          <div className="ui-g-6">
+          <div className="ui-g-5">
             <Card
               title=""
               subTitle="Number of CCDs in intervals of exposure time (seconds)"
             >
               <BarChart
-                width={350}
-                height={175}
+                width={400}
+                height={198}
                 data={exptime}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
@@ -180,17 +181,47 @@ class PointingsStats extends Component {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar barSize="20" dataKey="exposure" fill="#1E90FF" />;
+                <Bar barSize="5" dataKey="exposure" fill="#1E90FF" />;
               </BarChart>
             </Card>
           </div>
 
-          <div className="ui-g-8">
-            <Card title="" subTitle=" Number of CCDs downloaded">
+          <div className="ui-g-3">
+            <Card title="" subTitle="">
+              <div className="ui orange statistic">
+                <div className="value">
+                  <Icon name="database" /> {this.state.totalSize}
+                </div>
+                <div className="label">Total of CCDs</div>
+              </div>
+              {/* <p>
+                Total of CCDs&nbsp;:&nbsp;&nbsp;
+                <strong>{this.state.totalSize}</strong>
+              </p> */}
+            </Card>
+          </div>
+
+          <div className="ui-g-3">
+            <Card title="" subTitle="">
+              <div className="ui small green statistic">
+                <div className="value">
+                  <Icon name="calendar alternate outline" />
+                  {this.state.dateRecent}
+                </div>
+                <div className="label"> Latest pointing</div>
+              </div>
+            </Card>
+          </div>
+
+          <div className="ui-g-6">
+            <Card title="" subTitle="">
               <div>
-                <p> Downloaded: {`${this.state.qtdDownloaded}`}</p>
+                <Statistic horizontal>
+                  <Statistic.Value>{this.state.qtdDownloaded}</Statistic.Value>
+                  <Statistic.Label>Number of CCDs downloaded</Statistic.Label>
+                </Statistic>
+                {/* <p> Downloaded: {`${this.state.qtdDownloaded}`}</p> */}
                 <ProgressBar
-                  striped
                   bsStyle="success"
                   now={this.state.qtdDownloaded}
                   label={`${Math.round(
@@ -198,35 +229,34 @@ class PointingsStats extends Component {
                   )}%`}
                   max={this.state.totalSize}
                 />
-                <p> Not downloaded: {`${this.state.qtdNotDownloaded}`}</p>
+                {/* <p> Not downloaded: {`${this.state.qtdNotDownloaded}`}</p>
                 <ProgressBar
-                  striped
                   bsStyle="danger"
                   now={this.state.qtdNotDownloaded}
                   label={`${Math.round(
                     100 * this.state.qtdNotDownloaded / this.state.totalSize
                   )}%`}
                   max={this.state.totalSize}
-                />
+                /> */}
               </div>
             </Card>
           </div>
 
-          <div className="ui-g-4">
+          <div className="ui-g-6">
             <Card title="" subTitle="">
-              <p>
-                Total of CCDs&nbsp;:&nbsp;&nbsp;
-                <strong>{this.state.totalSize}</strong>
-              </p>
-            </Card>
-          </div>
-
-          <div className="ui-g-4">
-            <Card title="" subTitle="">
-              <p>
-                Latest pointing data&nbsp;:&nbsp;&nbsp;
-                <strong>{this.state.dateRecent}</strong>
-              </p>
+              <Statistic horizontal>
+                <Statistic.Value>{this.state.qtdNotDownloaded}</Statistic.Value>
+                <Statistic.Label>Number of CCDs not downloaded</Statistic.Label>
+              </Statistic>
+              {/* <p> Not downloaded: {`${this.state.qtdNotDownloaded}`}</p> */}
+              <ProgressBar
+                bsStyle="danger"
+                now={this.state.qtdNotDownloaded}
+                label={`${Math.round(
+                  100 * this.state.qtdNotDownloaded / this.state.totalSize
+                )}%`}
+                max={this.state.totalSize}
+              />
             </Card>
           </div>
         </div>
@@ -235,7 +265,7 @@ class PointingsStats extends Component {
           <Card title=" Pointings in sky">
             <br />
             <figure>
-              <img width="400" height="351" alt="text" src={plotPointings} />
+              <img width="400" height="251" alt="text" src={plotPointings} />
             </figure>
           </Card>
         </div>
