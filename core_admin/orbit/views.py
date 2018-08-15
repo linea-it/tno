@@ -6,8 +6,9 @@ from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 import os
-
-
+import zipfile
+from django.conf import settings
+import urllib.parse
 class OrbitRunViewSet(viewsets.ModelViewSet):
     queryset = OrbitRun.objects.all()
     serializer_class = OrbitRunSerializer
@@ -28,6 +29,7 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
     serializer_class = RefinedAsteroidSerializer
     filter_fields = ('id', 'orbit_run', 'name', 'number', 'status')
     search_fields = ('id', 'name', 'number',)
+    ordering = ('name',)
 
     @list_route()
     def get_log(self, request):
@@ -84,6 +86,79 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
                 'success': False,
                 'msg': 'Failed to read asteroid %s log' % asteroid.name
             }))
+
+
+    @list_route()
+    def download_results(self, request):
+        id = request.query_params.get('asteroid_id', None)
+
+        print("Download Results for %s" % id)
+
+        asteroid = None
+
+        if id is not None:
+
+            try:
+                asteroid = RefinedAsteroid.objects.get(id=int(id))
+
+            except ObjectDoesNotExist:
+                return Response({
+                    'success': False,
+                    'msg': "Asteroid with id %s Not Found." % id,
+                })
+
+        else:
+            name = request.query_params.get('name', None)
+            run = request.query_params.get('orbit_run', None)
+
+            try:
+                asteroid = RefinedAsteroid.objects.get(name=str(name), orbit_run=int(run))
+            except ObjectDoesNotExist:
+                return Response({
+                    'success': False,
+                    'msg': "Asteroid with name %s and Orbit Run %s Not Found." % (name, run),
+                })
+
+
+        results_path = asteroid.relative_path
+
+        if not os.path.exists(results_path) and not os.path.isdir(results_path):
+            return Response(dict({
+                'success': False,
+                'msg': 'Failed to find asteroid %s results' % asteroid.name
+            }))
+
+
+
+        zipname = "%s.zip" % asteroid.name.replace(" ", "_")
+
+        zip_file = os.path.join(settings.MEDIA_TMP_DIR, zipname)
+
+        print("Zip directory: %s" % zip_file)
+
+        with zipfile.ZipFile(zip_file, 'w') as ziphandle:
+            for root, dirs, files in os.walk(results_path):
+                for file in files:
+                    origin_file = os.path.join(root, file)
+                    print("Adding File: %s" % origin_file)
+                    ziphandle.write(origin_file, arcname=file)
+
+        ziphandle.close()
+
+        if not os.path.exists(zip_file):
+            return Response(dict({
+                'success': False,
+                'msg': 'Failed to create zip file'
+            }))
+
+        src = urllib.parse.urljoin(settings.MEDIA_TMP_URL, zipname)
+
+        return Response(dict({
+            "success": True,
+            "src": src
+        }))
+
+
 
 
 class RefinedOrbitViewSet(viewsets.ModelViewSet):

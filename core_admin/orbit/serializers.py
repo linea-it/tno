@@ -101,12 +101,14 @@ class RefinedAsteroidSerializer(serializers.ModelSerializer):
     h_time = serializers.SerializerMethodField()
     h_execution_time = serializers.SerializerMethodField()
     h_size = serializers.SerializerMethodField()
+    proccess_displayname = serializers.SerializerMethodField()
 
     class Meta:
         model = RefinedAsteroid
         fields = (
             'id',
             'orbit_run',
+            'proccess_displayname',
             'name',
             'number',
             'status',
@@ -139,6 +141,12 @@ class RefinedAsteroidSerializer(serializers.ModelSerializer):
         except:
             return None
 
+
+    def get_proccess_displayname(self, obj):
+        try:
+            return "%s - %s" % (obj.orbit_run.proccess.id, obj.orbit_run.input_list.displayname)
+        except:
+            return None
 
 class RefinedOrbitSerializer(serializers.ModelSerializer):
     asteroid = serializers.PrimaryKeyRelatedField(

@@ -135,18 +135,41 @@ class AsteroidDetail extends Component {
     this.setState({ visible: false });
   };
 
+  onClickDownload = asteroid_id => {
+    console.log('onClickDownload(%o)', asteroid_id);
+    this.api.getAsteroidDownloadLink({ asteroid_id }).then(res => {
+      const data = res.data;
+      console.log(data)
+      if (data.success) {
+        console.log("FUNCIONOU")
+        const file_src = this.api.api + data.src;
+        console.log(file_src)
+        window.open(file_src);
+      } else {
+        // TODO: Implementar notificacao de erro.
+      }
+
+    });
+  };
+
   render() {
     const asteroid = this.state.asteroid;
+
+    let title = asteroid.name;
+    if (asteroid.number && asteroid.number !== '-') {
+      title = title + ' - ' + asteroid.number;
+    }
     return (
       <div className="content">
         <div className="ui-g">
           <div className="ui-g-4">
             <Card
-              title={asteroid.name}
-              subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
+              title={title}
+              subTitle={
+                'this result refers to process ' + asteroid.proccess_displayname
+              }
             >
               <span>Status: {asteroid.status}</span> <br />
-              <span>Number: {asteroid.number}</span> <br />
               <span>executed: {asteroid.h_time}</span> <br />
               <span>execution time: {asteroid.h_execution_time}</span> <br />
               <span>Size: {asteroid.h_size}</span> <br />
@@ -154,6 +177,7 @@ class AsteroidDetail extends Component {
                 label="Download"
                 icon="pi pi-cloud-download"
                 className="ui-button-info"
+                onClick={() => this.onClickDownload(asteroid.id)}
               />
             </Card>
           </div>

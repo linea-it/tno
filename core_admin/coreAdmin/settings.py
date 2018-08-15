@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import urllib.parse
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,6 +26,7 @@ LOG_DIR = "/log"
 ARCHIVE_DIR = "/archive"
 PROCCESS_DIR = "/proccess"
 CCD_IMAGES_DIR = "/ccd_images"
+
 
 # Sub diretorios que ficam dentro de /archive
 OBSERVATIONS_DIR = os.path.join(ARCHIVE_DIR, "observations")
@@ -48,6 +50,13 @@ if not os.path.exists(ASTROMETRY_POSITIONS_DIR):
 
 MEDIA_ROOT = ARCHIVE_DIR
 MEDIA_URL = '/media/'
+
+MEDIA_TMP_DIR = os.path.join(MEDIA_ROOT, "tmp")
+if not os.path.exists(MEDIA_TMP_DIR):
+    os.mkdir(MEDIA_TMP_DIR)
+
+MEDIA_TMP_URL = urllib.parse.urljoin(MEDIA_URL, 'tmp/')
+
 
 # Emails
 # Notifications Email
