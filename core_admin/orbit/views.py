@@ -245,6 +245,18 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
         }))
 
 
+    @list_route()
+    def get_orbital_parameters(self, request):
+        id = request.query_params.get('asteroid_id', None)
+
+        print("Orbital parameters: %s" % id)
+
+
+        return Response(dict({
+            "success": True,
+        }))
+
+
 class RefinedOrbitViewSet(viewsets.ModelViewSet):
     queryset = RefinedOrbit.objects.all()
     serializer_class = RefinedOrbitSerializer

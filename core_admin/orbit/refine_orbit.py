@@ -17,7 +17,7 @@ import docker
 from django.conf import settings
 import json
 from statistics import mean
-from .models import RefinedAsteroid, RefinedOrbit
+from .models import RefinedAsteroid, RefinedOrbit, RefinedOrbitInput
 
 
 class RefineOrbit():
@@ -388,41 +388,15 @@ class RefineOrbit():
             status = None
             error_msg = None
 
-            if observations_file:
-                # self.logger.debug()
-                self.results["objects"][alias]["inputs"]["observations"] = dict({
-                    "filename": os.path.basename(observations_file),
-                    "file_path": observations_file,
-                    "file_size": os.path.getsize(observations_file),
-                    "file_type": os.path.splitext(observations_file)[1]
-                })
-
-
-            else:
+            if not observations_file:
                 status = "failure"
                 error_msg = "Missing Input Observations"
 
-            if orbital_parameters_file:
-                self.results["objects"][alias]["inputs"]["orbital_parameters"] = dict({
-                    "filename": os.path.basename(orbital_parameters_file),
-                    "file_path": orbital_parameters_file,
-                    "file_size": os.path.getsize(orbital_parameters_file),
-                    "file_type": os.path.splitext(orbital_parameters_file)[1]
-                })
-
-            else:
+            if not orbital_parameters_file:
                 status = "failure"
                 error_msg = "Missing Input Orbital Parameters"
 
-            if bsp_jpl_file:
-                self.results["objects"][alias]["inputs"]["bsp_jpl"] = dict({
-                    "filename": os.path.basename(bsp_jpl_file),
-                    "file_path": bsp_jpl_file,
-                    "file_size": os.path.getsize(bsp_jpl_file),
-                    "file_type": os.path.splitext(bsp_jpl_file)[1]
-                })
-
-            else:
+            if not bsp_jpl_file:
                 status = "failure"
                 error_msg = "Missing Input BSP JPL"
 
@@ -449,10 +423,10 @@ class RefineOrbit():
 
     def copy_observation_file(self, obj, obj_dir):
         # Copiar arquivo de Observacoes do Objeto.
-        original_observation_file = GetObservations().get_file_path(obj.get("name"), obj.get("number"))
+        original_observation_file, observation = GetObservations().get_file_path(obj.get("name"))
 
         if original_observation_file is not None:
-            filename = os.path.basename(original_observation_file)
+            filename = observation.filename
 
             # Rename object_name.* -> objectname.*
             filename = filename.replace('_', '')
@@ -462,7 +436,20 @@ class RefineOrbit():
             shutil.copy2(original_observation_file, new_file_path)
 
             if os.path.exists(new_file_path):
+
+                date_time = observation.download_finish_time.replace(microsecond=0).isoformat(' '),
+                self.logger.debug(date_time)
                 self.logger.debug("Object [ %s ] Observation File: %s" % (obj.get("name"), new_file_path))
+
+                self.results["objects"][obj.get("alias")]["inputs"]["observations"] = dict({
+                    "filename": os.path.basename(new_file_path),
+                    "file_path": new_file_path,
+                    "file_size": os.path.getsize(new_file_path),
+                    "file_type": os.path.splitext(new_file_path)[1],
+                    "date_time": date_time,
+                    "source": observation.source,
+                    "observation_file_id": observation.id
+                })
 
                 return new_file_path
             else:
@@ -475,11 +462,10 @@ class RefineOrbit():
 
     def copy_orbital_parameters_file(self, obj, obj_dir):
 
-        original_file = GetOrbitalParameters().get_file_path(obj.get("name"), obj.get("number"))
+        original_file, orb_parameter = GetOrbitalParameters().get_file_path(obj.get("name"))
 
         if original_file is not None:
-            filename = os.path.basename(original_file)
-
+            filename = orb_parameter.filename
             # Rename object_name.* -> objectname.*
             filename = filename.replace('_', '')
 
@@ -489,6 +475,20 @@ class RefineOrbit():
 
             if os.path.exists(new_file_path):
                 self.logger.debug("Object [ %s ] Orbital Parameters File: %s" % (obj.get("name"), new_file_path))
+
+                date_time = orb_parameter.download_finish_time.replace(microsecond=0).isoformat(' '),
+
+                self.logger.debug(datetime)
+
+                self.results["objects"][obj.get("alias")]["inputs"]["orbital_parameters"] = dict({
+                    "filename": os.path.basename(new_file_path),
+                    "file_path": new_file_path,
+                    "file_size": os.path.getsize(new_file_path),
+                    "file_type": os.path.splitext(new_file_path)[1],
+                    "date_time": date_time,
+                    "source": orb_parameter.source,
+                    "orbital_parameter_file_id": orb_parameter.id
+                })
 
                 return new_file_path
             else:
@@ -501,10 +501,10 @@ class RefineOrbit():
 
     def copy_bsp_jpl_file(self, obj, obj_dir):
 
-        original_file = BSPJPL().get_file_path(obj.get("name"), obj.get("number"))
+        original_file, bsp_file = BSPJPL().get_file_path(obj.get("name"))
 
         if original_file is not None:
-            filename = os.path.basename(original_file)
+            filename = bsp_file.filename
 
             # Rename bsp_jpl object_name.bsp -> objectname.bsp
             filename = filename.replace('_', '')
@@ -514,6 +514,19 @@ class RefineOrbit():
             shutil.copy2(original_file, new_file_path)
 
             if os.path.exists(new_file_path):
+
+                date_time = bsp_file.download_finish_time.replace(microsecond=0).isoformat(' '),
+
+                self.results["objects"][obj.get("alias")]["inputs"]["bsp_jpl"] = dict({
+                    "filename": os.path.basename(new_file_path),
+                    "file_path": new_file_path,
+                    "file_size": os.path.getsize(new_file_path),
+                    "file_type": os.path.splitext(new_file_path)[1],
+                    "date_time": date_time,
+                    "source": "JPL",
+                    "bsp_file_id": bsp_file.id
+                })
+
                 self.logger.debug("Object [ %s ] BSP_JPL File: %s" % (obj.get("name"), new_file_path))
 
                 return new_file_path
@@ -672,7 +685,6 @@ class RefineOrbit():
                     self.results["objects"][alias]["status"] = "failure"
                     self.results["objects"][alias]["error_msg"] = e
 
-
                 tfinish = datetime.now()
                 tdelta = tfinish - tstart
 
@@ -798,6 +810,27 @@ class RefineOrbit():
                 )
 
                 orbit.save()
+
+            # Registra os Inputs Utilizados
+            for input_type in obj.get("inputs"):
+                inp = obj.get("inputs").get(input_type)
+
+                date_time = datetime.strptime(inp.get("date_time"), '%Y-%m-%d %H:%M:%S')
+
+                input_file, created = RefinedOrbitInput.objects.update_or_create(
+                    asteroid=asteroid,
+                    input_type=input_type,
+                    defaults={
+                        'source': inp.get("source"),
+                        'date_time': date_time,
+                        'filename': inp.get("filename"),
+                        'relative_path': inp.get("file_path"),
+                    }
+                )
+
+                input_file.save()
+
+
 
             self.logger.info("Registered Object %s %s" % (obj.get("name"), l_created))
 
