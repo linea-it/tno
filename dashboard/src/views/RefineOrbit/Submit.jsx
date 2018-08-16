@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
-import { Form, FormGroup, ControlLabel, Button } from 'react-bootstrap';
+import { Form, FormGroup, ControlLabel } from 'react-bootstrap';
 import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
 import PraiaApi from '../Astrometry/PraiaApi';
 import OrbitApi from './OrbitApi';
 import Card from 'components/Card/Card.jsx';
 import PropTypes from 'prop-types';
+
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { Button } from 'primereact/button';
+import { Toolbar } from 'primereact/toolbar';
 
 class RefineOrbitSubmit extends Component {
   state = this.initialState;
@@ -106,9 +112,11 @@ class RefineOrbitSubmit extends Component {
                   loadOptions={this.loadInputs}
                 />
               </FormGroup>
-              <Button bsStyle="info" onClick={this.onClickSubmit}>
-                Submit
-              </Button>
+              <Button
+                label="Submit"
+                onClick={this.onClickSubmit}
+                style={{ float: 'right', padding: '5px 25px' }}
+              />
             </Form>
           </div>
         }

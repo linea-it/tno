@@ -1,7 +1,16 @@
 import React, { Component } from 'react';
 import { FormGroup, ControlLabel, Checkbox } from 'react-bootstrap';
-import Button from 'elements/CustomButton/CustomButton.jsx';
 import NumericInput from 'react-numeric-input';
+
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { Spinner } from 'primereact/spinner';
+// import { Checkbox } from 'primereact/checkbox';
+
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+import PropTypes from 'prop-types';
 
 import Select from 'react-select';
 import 'react-select/dist/react-select.css';
@@ -52,6 +61,7 @@ class FilterObjectForm extends Component {
       useDifferenceTime: false,
       diffDateNights: 0,
       moreFilter: false,
+      checked: true,
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -119,9 +129,34 @@ class FilterObjectForm extends Component {
             value={this.state.objectTable}
           />
         </FormGroup>
+        {/* <input
+          className="check"
+          type="checkbox"
+          id="scales"
+          name="feature"
+          value="scales"
+        />
+        <label htmlFor="scales">Scales</label> */}
+        {/* <CheckboxDemo />
+        <Checkbox
+          //checked={this.state.useMagnitude}
+          readOnly={true}
+          value="mv"
+          inputId="mv"
+          onChange={this.handleChangeFilterMagnitude}
+        />
+
+        <label htmlFor="mv"> Magnitude "Visual Magnitude &#60;="</label>
+        {/* <Spinner
+          value={this.state.magnitude}
+          disabled={!this.state.useMagnitude}
+          onChange={this.handleNumberChange}
+          min={0}
+          max={55}
+        /> */} 
         <FormGroup>
           <Checkbox inline onChange={this.handleChangeFilterMagnitude}>
-               Magnitude "Visual Magnitude &#60;=" 
+            Magnitude "Visual Magnitude &#60;="
           </Checkbox>
           <NumericInput
             className="form-control"
@@ -161,15 +196,10 @@ class FilterObjectForm extends Component {
           </Checkbox>
         </FormGroup>
         <Button
-          bsStyle="info"
-          pullRight
-          fill
-          type="submit"
+          label="Filter"
+          style={{ float: 'right', padding: '5px 25px' }}
           onClick={this.handleSubmit}
-        >
-          Filter
-        </Button>
-
+        />
         <div className="clearfix" />
       </form>
     );

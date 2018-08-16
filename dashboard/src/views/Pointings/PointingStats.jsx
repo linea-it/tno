@@ -1,14 +1,18 @@
 import React, { Component } from 'react';
+import { ProgressBar } from 'react-bootstrap';
+
 import {
-  Grid,
-  Row,
-  Col,
-  Panel,
-  ListGroup,
-  ListGroupItem,
-  Image,
-} from 'react-bootstrap';
-import Card from 'components/Card/Card.jsx';
+  BarChart,
+  Bar,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+} from 'recharts';
+// import Card from 'components/Card/Card.jsx';
+import { Icon, Statistic } from 'semantic-ui-react';
+import { Card } from 'primereact/card';
 import PointingApi from './PointingApi';
 import plotPointings from 'assets/img/plotPointings.png';
 
@@ -20,8 +24,8 @@ class PointingsStats extends Component {
     return {
       totalSize: 0,
       qtdBits: 25,
-      qtdDownloaded: false,
-      qtdNotDownloaded: false,
+      qtdDownloaded: 0,
+      qtdNotDownloaded: 0,
       band_u: 0,
       band_i: 0,
       band_z: 0,
@@ -107,14 +111,14 @@ class PointingsStats extends Component {
     this.api.getPointingDowloaded().then(res => {
       const r = res.data;
       this.setState({
-        qtdDownloaded: r.count,
+        qtdDownloaded: 3034, // setar r.count
       });
     });
 
     this.api.getPointingNotDowloaded().then(res => {
       const r = res.data;
       this.setState({
-        qtdNotDownloaded: r.count,
+        qtdNotDownloaded: 4032, // setar r.count
       });
     });
     this.api.getPointingDataRecent().then(res => {
@@ -125,121 +129,147 @@ class PointingsStats extends Component {
   }
 
   render() {
+    const data = [
+      { name: 'g', band: this.state.band_g },
+      { name: 'r', band: this.state.band_r },
+      { name: 'y', band: this.state.band_y },
+      { name: 'z', band: this.state.band_z },
+      { name: 'i', band: this.state.band_i },
+      { name: 'u', band: this.state.band_u },
+    ];
+
+    const exptime = [
+      { name: '0-100', exposure: this.state.exp1 },
+      { name: '100-200', exposure: this.state.exp2 },
+      { name: '200-300', exposure: this.state.exp3 },
+      { name: '300-400', exposure: this.state.exp4 },
+    ];
     return (
-      <Panel bsStyle="info">
-        <Panel.Heading>
-          <Panel.Title componentClass="h1">
-            <strong>Statistics of pointings</strong>
-          </Panel.Title>
-        </Panel.Heading>
-        <Panel.Body>
-          <Grid fluid>
-            <Row>
-              <Col md={6}>
-                <ListGroup>
-                  <ListGroupItem>
-                    <h5>
-                      Total of CCDs&nbsp;:&nbsp;&nbsp;
-                      <strong>{this.state.totalSize}</strong>
-                    </h5>
-                  </ListGroupItem>
-                  <ListGroupItem>
-                    <h5>
-                      Number of CCDs for each band
-                      <br />
-                      <br />
-                      <ListGroup>
-                        <ListGroupItem>
-                          u :&nbsp;
-                          <strong>{this.state.band_u}</strong>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          r :&nbsp;{<strong>{this.state.band_r}</strong>}
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          g :&nbsp;
-                          <strong>{this.state.band_g}</strong>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          i :&nbsp;
-                          <strong> {this.state.band_i}</strong>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          Y :&nbsp;
-                          <strong>{this.state.band_y}</strong>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          z :&nbsp;
-                          <strong> {this.state.band_z}</strong>
-                        </ListGroupItem>
-                      </ListGroup>
-                    </h5>
-                  </ListGroupItem>
-                  <ListGroupItem>
-                    <h5>
-                      Number of CCDs in intervals of exposure time (seconds)
-                      <br />
-                      <br />
-                      <ListGroup>
-                        <ListGroupItem>
-                          between 0 and 100 :&nbsp;
-                          <strong>{this.state.exp1}</strong>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          between 100 and 200:&nbsp;
-                          <strong>{this.state.exp2}</strong>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          between 200 and 300:&nbsp;
-                          <strong>{this.state.exp3}</strong>
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          between 300 and 400:&nbsp;
-                          <strong>{this.state.exp4}</strong>
-                        </ListGroupItem>
-                      </ListGroup>
-                    </h5>
-                  </ListGroupItem>
-                  <ListGroupItem>
-                    <h5>
-                      Number of CCDs downloaded&nbsp;:&nbsp;&nbsp;
-                      <strong>{this.state.qtdDownloaded}</strong>
-                    </h5>
-                  </ListGroupItem>
-                  <ListGroupItem>
-                    <h5>
-                      <span>
-                        Number of CCDs not downloaded&nbsp;:&nbsp;&nbsp;
-                      </span>
-                      <strong>{this.state.qtdNotDownloaded}</strong>
-                    </h5>
-                  </ListGroupItem>
-                  <ListGroupItem>
-                    <h5>
-                      <span>Latest pointing data&nbsp;:&nbsp;&nbsp;</span>
-                      <strong>{this.state.dateRecent}</strong>
-                    </h5>
-                  </ListGroupItem>
-                </ListGroup>
-              </Col>
-              <Col md={6}>
-                <Card
-                  title=" Pointings in sky"
-                  category="placeholder - plot with the projection of pointings in sky"
-                  content={
-                    <div>
-                      <br />
-                      <figure>
-                        <Image alt="text" src={plotPointings} />
-                      </figure>
-                    </div>
-                  }
+      <div className="ui-g">
+        <div className="ui-g-8 ui-g-nopad">
+          <div className="ui-g-4">
+            <Card title="" subTitle="Number of CCDs for each band">
+              <BarChart
+                width={275}
+                height={198}
+                data={data}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar barSize={20} dataKey="band" fill="#4B0082" />;
+              </BarChart>
+            </Card>
+          </div>
+
+          <div className="ui-g-5">
+            <Card
+              title=""
+              subTitle="Number of CCDs in intervals of exposure time (seconds)"
+            >
+              <BarChart
+                width={400}
+                height={198}
+                data={exptime}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar barSize={20} dataKey="exposure" fill="#1E90FF" />;
+              </BarChart>
+            </Card>
+          </div>
+
+          <div className="ui-g-3">
+            <Card title="" subTitle="">
+              <div className="ui orange statistic">
+                <div className="value">
+                  <Icon name="database" /> {this.state.totalSize}
+                </div>
+                <div className="label">Total of CCDs</div>
+              </div>
+              {/* <p>
+                Total of CCDs&nbsp;:&nbsp;&nbsp;
+                <strong>{this.state.totalSize}</strong>
+              </p> */}
+            </Card>
+          </div>
+
+          <div className="ui-g-3">
+            <Card title="" subTitle="">
+              <div className="ui small green statistic">
+                <div className="value">
+                  <Icon name="calendar alternate outline" />
+                  {this.state.dateRecent}
+                </div>
+                <div className="label"> Latest pointing</div>
+              </div>
+            </Card>
+          </div>
+
+          <div className="ui-g-6">
+            <Card title="" subTitle="">
+              <div>
+                <Statistic horizontal>
+                  <Statistic.Value>{this.state.qtdDownloaded}</Statistic.Value>
+                  <Statistic.Label>Number of CCDs downloaded</Statistic.Label>
+                </Statistic>
+                {/* <p> Downloaded: {`${this.state.qtdDownloaded}`}</p> */}
+                <ProgressBar
+                  bsStyle="success"
+                  now={this.state.qtdDownloaded}
+                  label={`${Math.round(
+                    100 * this.state.qtdDownloaded / this.state.totalSize
+                  )}%`}
+                  max={this.state.totalSize}
                 />
-              </Col>
-            </Row>
-          </Grid>
-        </Panel.Body>
-      </Panel>
+                {/* <p> Not downloaded: {`${this.state.qtdNotDownloaded}`}</p>
+                <ProgressBar
+                  bsStyle="danger"
+                  now={this.state.qtdNotDownloaded}
+                  label={`${Math.round(
+                    100 * this.state.qtdNotDownloaded / this.state.totalSize
+                  )}%`}
+                  max={this.state.totalSize}
+                /> */}
+              </div>
+            </Card>
+          </div>
+
+          <div className="ui-g-6">
+            <Card title="" subTitle="">
+              <Statistic horizontal>
+                <Statistic.Value>{this.state.qtdNotDownloaded}</Statistic.Value>
+                <Statistic.Label>Number of CCDs not downloaded</Statistic.Label>
+              </Statistic>
+              {/* <p> Not downloaded: {`${this.state.qtdNotDownloaded}`}</p> */}
+              <ProgressBar
+                bsStyle="danger"
+                now={this.state.qtdNotDownloaded}
+                label={`${Math.round(
+                  100 * this.state.qtdNotDownloaded / this.state.totalSize
+                )}%`}
+                max={this.state.totalSize}
+              />
+            </Card>
+          </div>
+        </div>
+
+        <div className="ui-g-4">
+          <Card title=" Pointings in sky">
+            <br />
+            <figure>
+              <img width="400" height="251" alt="text" src={plotPointings} />
+            </figure>
+          </Card>
+        </div>
+      </div>
     );
   }
 }

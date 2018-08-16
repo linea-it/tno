@@ -37,5 +37,16 @@ def teste(request):
         #         writer.writerows(rows)
         #
         # BSPJPL().run(input_file, output_path)
+      
+        result = dict({
+            'status': "success",
+            'lines': list(),
+        })
 
-        return Response(dict({'status': "success"}))
+
+        with open('/archive/proccess/2/objects/1999_RB216/nima.log', 'r') as fp:
+            lines = fp.readlines()
+            for line in lines:
+                result["lines"].append(line.strip())
+                
+    return Response(result)

@@ -28,7 +28,19 @@ import download from 'assets/img/download.jpeg';
 import Log from 'views/RefineOrbit/Log.jsx';
 import { TreeTable } from 'primereact/treetable';
 
-const images = [{ src: plot1 }, { src: plot2 }, { src: plot3 }, { src: plot4 }];
+const statistics = [
+  { text: 'Total de Objetos de entrada', value: '5' },
+  { text: 'Total de objetos excecutados', value: '4' },
+  { text: 'Total de objetos falhados', value: '0' },
+  { text: 'Tempo de execução', value: '00:02:10' },
+  { text: 'Tempo médio por objeto', value: '00:00:23' },
+];
+const images = [
+  { src: plot1, id: 0 },
+  { src: plot2, id: 1 },
+  { src: plot3, id: 2 },
+  { src: plot4, id: 3 },
+];
 
 const data = [
   {
@@ -144,7 +156,7 @@ class RefineOrbitDetail extends Component {
     const data = [
       {
         id: '0001',
-        input_displayname: '2013 RR98',
+        input_displayname: '1999_RB216',
         input_list: '1',
         owner: 'KBO>SDO',
         proccess: '61.470785',
@@ -159,7 +171,7 @@ class RefineOrbitDetail extends Component {
       },
       {
         id: '0002',
-        input_displayname: '2013 RR98',
+        input_displayname: '1999_RB216',
         input_list: '2',
         owner: 'KBO>SDO',
         proccess: '93.63396',
@@ -174,7 +186,7 @@ class RefineOrbitDetail extends Component {
       },
       {
         id: '0003',
-        input_displayname: '2014 RR98',
+        input_displayname: '1999_RB216',
         input_list: '3',
         owner: 'KBO>SDO',
         proccess: '93.634311',
@@ -189,7 +201,7 @@ class RefineOrbitDetail extends Component {
       },
       {
         id: '0004',
-        input_displayname: '2014 RR98',
+        input_displayname: '1999_RB216',
         input_list: '3',
         owner: 'KBO>SDO',
         proccess: '93.634311',
@@ -204,7 +216,7 @@ class RefineOrbitDetail extends Component {
       },
       {
         id: '0005',
-        input_displayname: '2014 RR98',
+        input_displayname: '1999_RB216',
         input_list: '3',
         owner: 'KBO>SDO',
         proccess: '93.634311',
@@ -239,12 +251,6 @@ class RefineOrbitDetail extends Component {
   };
 
   // Methods for slide operation
-  Slideshow = () => {
-    //event.preventDefault();
-    this.setState({
-      lightboxIsOpen: true,
-    });
-  };
   gotoNextLightboxImage = () => {
     this.setState({
       currentImage: this.state.currentImage + 1,
@@ -281,6 +287,8 @@ class RefineOrbitDetail extends Component {
   };
   // Render
 
+  // active = value => {};
+
   render() {
     //Array with the amount of previews
     const item = [
@@ -310,7 +318,23 @@ class RefineOrbitDetail extends Component {
         />
       );
     });
-    //
+
+    const openLightbox = (index, event) => {
+      return (
+        event.preventDefault(),
+        this.setState({
+          lightboxIsOpen: true,
+          currentImage: index,
+        })
+      );
+    };
+    // List of execution statistics
+    const List = statistics.map((element, i) => (
+      <ListGroupItem key={i}>
+        {element.text}:&nbsp;<strong>{element.value}</strong>
+      </ListGroupItem>
+    ));
+
     const header = <img alt="Card" height="20" src={download} />;
     const preview = [];
     const lenght = this.state.valor;
@@ -318,35 +342,21 @@ class RefineOrbitDetail extends Component {
       preview.push(
         <AccordionTab header={`2013 RR98 ${index}`}>
           <Panel>
-            {/*
- header={`Plot object 2013 RR98 ${index}`} */}
             <div className="ui-g">
               <div className="ui-md-12">
                 <div className="ui-g-12">
-                  <img
-                    onClick={this.Slideshow}
-                    width="325"
-                    height="280"
-                    src={plot1}
-                  />
-                  <img
-                    onClick={this.Slideshow}
-                    width="325"
-                    height="280"
-                    src={plot2}
-                  />
-                  <img
-                    onClick={this.Slideshow}
-                    width="325"
-                    height="280"
-                    src={plot3}
-                  />
-                  <img
-                    onClick={this.Slideshow}
-                    width="325"
-                    height="280"
-                    src={plot4}
-                  />
+                  {images.map(function(i) {
+                    return (
+                      <a
+                        key={i.id}
+                        onClick={e => {
+                          openLightbox(i.id, e);
+                        }}
+                      >
+                        <img width="325" height="280" src={i.src} />
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -373,30 +383,7 @@ class RefineOrbitDetail extends Component {
               subTitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
             >
               <div className="ui-g">
-                <div className="ui-md-6">
-                  <ListGroup>
-                    <ListGroupItem>
-                      Total de Objetos de entrada&nbsp;:&nbsp;&nbsp;
-                      <strong>5</strong>
-                    </ListGroupItem>
-                    <ListGroupItem>
-                      Total de objetos excecutados&nbsp;:&nbsp;&nbsp;
-                      <strong>4</strong>
-                    </ListGroupItem>
-                    <ListGroupItem>
-                      Total de objetos falhados&nbsp;:&nbsp;&nbsp;
-                      <strong>0</strong>
-                    </ListGroupItem>
-                    <ListGroupItem>
-                      Tempo de execução&nbsp;:&nbsp;&nbsp;
-                      <strong>00:02:10</strong>
-                    </ListGroupItem>
-                    <ListGroupItem>
-                      Tempo médio por objeto&nbsp;:&nbsp;&nbsp;
-                      <strong>00:00:23</strong>
-                    </ListGroupItem>
-                  </ListGroup>
-                </div>
+                <div className="ui-md-6"> {List}</div>
 
                 <div className="content-section implementation">
                   <div className="ui-md-6" />
@@ -434,7 +421,7 @@ class RefineOrbitDetail extends Component {
               }}
               placeholder="Select a value"
             />
-            <Accordion>{preview}</Accordion>
+            <Accordion activeIndex={this.activeIndex}>{preview}</Accordion>
           </Toolbar>
         </Card>
         <br />

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "gulp": "^3.9.1",
     "primeicons": "^1.0.0-beta.10",
     "primereact": "^2.0.0-beta.1"
   }

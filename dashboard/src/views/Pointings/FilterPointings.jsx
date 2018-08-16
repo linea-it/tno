@@ -1,16 +1,12 @@
 import React from 'react';
-import {
-  Modal,
-  Button,
-  ControlLabel,
-  FormGroup,
-  Grid,
-  Row,
-  Col,
-  Collapse,
-  Alert,
-  FormControl,
-} from 'react-bootstrap';
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { Sidebar } from 'primereact/sidebar';
+import { Dropdown } from 'primereact/dropdown';
+import { Calendar } from 'primereact/calendar';
+import { Button } from 'primereact/button';
+
 import PropTypes from 'prop-types';
 import Select from 'react-select';
 
@@ -80,6 +76,7 @@ class FilterPointings extends React.Component {
       controlId: null,
       errorMessage: null,
       colorAlert: null,
+      visible: false,
     };
     return initialState;
   };
@@ -97,9 +94,9 @@ class FilterPointings extends React.Component {
     this.setState({ band: value });
   };
 
-  handleSelectExpTime = value => {
-    this.setState({ expTime: value });
-  };
+  // handleSelectExpTime = value => {
+  //   this.setState({ expTime: value });
+  // };
 
   handlerInputDateInit = event => {
     this.setState({ dateObserInit: event.target.value });
@@ -214,115 +211,193 @@ class FilterPointings extends React.Component {
     const { show, onHide } = this.props;
 
     return (
-      <div className="static-modal">
-        <Modal show={show} onHide={onHide}>
-          <Modal.Header closeButton>
-            <Modal.Title>Filter Pointings</Modal.Title>
-          </Modal.Header>
-
-          <Modal.Body>
+      <Sidebar
+        style={{ widht: 'none !important' }}
+        visible={show}
+        position="right"
+        onHide={onHide}
+      >
+        <br />
+        <div className="ui-g ui-fluid">
+          <div className="ui-g-12">
             <form>
-              <Grid fluid>
-                <Row>
-                  <Col md={12}>
-                    <FormGroup
-                      controlId="formValidationError2"
-                      validationState={this.state.validation}
-                    >
-                      <ControlLabel>Exposure Time</ControlLabel>
-                      <Select
-                        onChange={this.handleSelectExpTime}
-                        options={options.valueTimes}
-                        placeholder="Select your object table(s)"
-                        value={this.state.expTime}
-                        clearable={false}
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-              </Grid>
+              <div className="ui-g">
+                <div className="ui-g-12">
+                  <p> Exposure Time </p>
+                  <Dropdown
+                    value={this.state.expTime}
+                    options={options.valueTimes}
+                    onChange={e => {
+                      this.setState({ exptime: e.value });
+                    }}
+                    placeholder="Select a expTime"
+                    style={{ width: '200px' }}
+                  />
+                </div>
+              </div>
 
-              <Grid fluid>
-                <Row>
-                  <Col md={6}>
-                    <FormGroup
-                      controlId="formValidationError2"
-                      validationState={this.state.validation}
-                    >
-                      <ControlLabel>Date de Observation Initial</ControlLabel>
+              <div className="ui-g">
+                <div className="ui-g-12">
+                  <p>Date de Observation Initial </p>
+                  <Calendar
+                    value={this.state.dateObserInit}
+                    onChange={e => {
+                      const dt = Date(e.value);
+                      console.log(dt);
+                      // dt. ('yy-mm-dd')
+                      this.setState({ dateObserInit: e.value });
+                    }}
+                    showIcon={true}
+                    monthNavigator={true}
+                    yearNavigator={true}
+                    yearRange="2010:2030"
+                    dateFormat="yy/mm/dd"
+                    showButtonBar={true}
+                  />
+                </div>
+                {console.log(this.state.dateObserInit)}
+                <div className="ui-g-12">
+                  <p>Date de Observation Final </p>
+                  <Calendar
+                    value={this.state.dateObserFinal}
+                    onChange={e => this.setState({ dateObserFinal: e.value })}
+                    showIcon={true}
+                    monthNavigator={true}
+                    yearNavigator={true}
+                    yearRange="2010:2030"
+                    dateFormat="yy/mm/dd"
+                    showButtonBar={true}
+                  />
+                  {console.log(this.state.dateObserFinal)}
+                </div>
+              </div>
 
-                      <FormControl
-                        className="form-control"
-                        type="date"
-                        value={this.state.dateObserInit}
-                        onChange={this.handlerInputDateInit}
-                        format="yyyy/mm/dd"
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col md={6}>
-                    <FormGroup
-                      controlId={this.state.controlId}
-                      validationState={this.state.validation}
-                    >
-                      <ControlLabel>Date de Observation Final</ControlLabel>
-
-                      <FormControl
-                        className="form-control"
-                        type="date"
-                        value={this.state.dateObserFinal}
-                        onChange={this.handlerInputDateFinal}
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-              </Grid>
-
-              <Grid fluid>
-                <Row>
-                  <Col md={12}>
-                    <FormGroup
-                      controlId={this.state.controlId}
-                      validationState={this.state.validation}
-                    >
-                      <ControlLabel>Band</ControlLabel>
-
-                      <Select
-                        disabled={false}
-                        multi
-                        onChange={this.handleSelectBand}
-                        options={options.band}
-                        placeholder="Select one or more values of band"
-                        removeSelected={true}
-                        simpleValue
-                        value={this.state.band}
-                        clearable={false}
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-              </Grid>
+              <div className="ui-g">
+                <div className="ui-g-12">
+                  <p> Band </p>
+                  <Dropdown
+                    value={this.state.band}
+                    options={options.band}
+                    onChange={e => {
+                      this.setState({ band: e.value });
+                    }}
+                    placeholder="Select a expTime"
+                    style={{ width: '200px' }}
+                  />
+                </div>
+              </div>
             </form>
-            <Grid fluid>
-              <Row>
-                <Collapse in={this.state.open}>
-                  <div>
-                    <Alert bsStyle={this.state.colorAlert}>
-                      {this.state.errorMessage}
-                    </Alert>
-                  </div>
-                </Collapse>
-              </Row>
-            </Grid>
-          </Modal.Body>
+          </div>
+        </div>
 
-          <Modal.Footer>
-            <Button onClick={this.handlerSubmitFilter}>Filter</Button>
-            <Button onClick={this.onClear}>Clear</Button>
-            <Button onClick={this.onClose}>Close</Button>
-          </Modal.Footer>
-        </Modal>
-      </div>
+        {/* <FormGroup
+                  controlId="formValidationError2"
+                  validationState={this.state.validation}
+                >
+                  <ControlLabel>Exposure Time</ControlLabel>
+                  <Select
+                    onChange={this.handleSelectExpTime}
+                    options={options.valueTimes}
+                    placeholder="Select your object table(s)"
+                    value={this.state.expTime}
+                    clearable={false}
+                  />
+                </FormGroup> */}
+
+        {/* <Grid fluid>
+          <Row>
+            <Col md={12}>
+              <FormGroup
+                controlId="formValidationError2"
+                validationState={this.state.validation}
+              >
+                <ControlLabel>Date de Observation Initial</ControlLabel>
+
+                <FormControl
+                  className="form-control"
+                  type="date"
+                  value={this.state.dateObserInit}
+                  onChange={this.handlerInputDateInit}
+                  format="yyyy/mm/dd"
+                />
+              </FormGroup>
+            </Col>
+            <Col md={12}>
+              <FormGroup
+                controlId={this.state.controlId}
+                validationState={this.state.validation}
+              >
+                <ControlLabel>Date de Observation Final</ControlLabel>
+
+                <FormControl
+                  className="form-control"
+                  type="date"
+                  value={this.state.dateObserFinal}
+                  onChange={this.handlerInputDateFinal}
+                />
+              </FormGroup>
+            </Col>
+          </Row>
+        </Grid>
+
+        <Grid fluid>
+          <Row>
+            <Col md={12}>
+              <FormGroup
+                controlId={this.state.controlId}
+                validationState={this.state.validation}
+              >
+                <ControlLabel>Band</ControlLabel>
+
+                <Select
+                  disabled={false}
+                  multi
+                  onChange={this.handleSelectBand}
+                  options={options.band}
+                  placeholder="Select one or more values of band"
+                  removeSelected={true}
+                  simpleValue
+                  value={this.state.band}
+                  clearable={false}
+                />
+              </FormGroup>
+            </Col>
+          </Row>
+        </Grid>
+        <Grid fluid>
+          <Row>
+            <Collapse in={this.state.open}>
+              <div>
+                <Alert bsStyle={this.state.colorAlert}>
+                  {this.state.errorMessage}
+                </Alert>
+              </div>
+            </Collapse>
+          </Row>
+        </Grid> */}
+        <div className="ui-g">
+          <div className="ui-g-12">
+            <Button label="Filter" onClick={this.handlerSubmitFilter} />
+            <Button label="Clear" onClick={this.onClear} />
+            <Button label="Close" onClick={this.onClose} />
+          </div>
+        </div>
+      </Sidebar>
+      // <div className="static-modal">
+      //   <Modal show={show} onHide={onHide}>
+      //     <Modal.Header closeButton>
+      //       <Modal.Title>Filter Pointings</Modal.Title>
+      //     </Modal.Header>
+
+      //     <Modal.Body>
+
+      // </Modal.Body>
+
+      // <Modal.Footer>
+
+      //   </Modal.Footer>
+      // </Modal>
+      // </div>
     );
   }
 }

@@ -2,12 +2,19 @@ import React, { Component } from 'react';
 import {
   FormGroup,
   FormControl,
-  InputGroup,
-  ButtonToolbar,
+  // InputGroup,
+  // ButtonToolbar,
 } from 'react-bootstrap';
 
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+import { Toolbar } from 'primereact/toolbar';
+
 import { withRouter } from 'react-router-dom';
-import Button from 'elements/CustomButton/CustomButton.jsx';
+// import Button from 'elements/CustomButton/CustomButton.jsx';
 import PointingApi from './PointingApi';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -255,7 +262,7 @@ class PointingList extends Component {
     return (
       <div className="content">
         <div>
-          <ButtonToolbar>
+          {/* <ButtonToolbar>
             <FormGroup>
               <InputGroup>
                 <InputGroup.Button>
@@ -277,7 +284,50 @@ class PointingList extends Component {
                 </InputGroup.Button>
               </InputGroup>
             </FormGroup>
-          </ButtonToolbar>
+          </ButtonToolbar> */}
+          <Toolbar>
+            <div className="ui-toolbar">
+              <div className="ui-g ui-fluid">
+                <div className="ui-g-12">
+                  <h5>
+                    <div className="ui-g-10">
+                      <div className="ui-inputgroup">
+                        <InputText
+                          placeholder="Search By expnum, filename"
+                          value={search}
+                          onChange={this.onChangeSearch}
+                          onKeyPress={this.onKeyPress}
+                        />
+                        <Button label="Search" onClick={this.handleSearch} />
+                      </div>
+                    </div>
+
+                    <div className="ui-g-1">
+                      <Button
+                        label="Clear"
+                        onClick={e => {
+                          this.handlerClear();
+                        }}
+                        icon="pi pi-check"
+                        iconPos="left"
+                      />
+                    </div>
+                    <div className="ui-g-1">
+                      <Button
+                        style={{ border: '#007892', background: '#007892' }}
+                        label="Filter"
+                        onClick={e => {
+                          this.setState({ show: true });
+                        }}
+                        icon="pi pi-check"
+                        iconPos="left"
+                      />
+                    </div>
+                  </h5>
+                </div>
+              </div>
+            </div>
+          </Toolbar>
 
           <div className="clearfix" />
 
