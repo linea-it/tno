@@ -38,9 +38,9 @@ class FilterPointings extends React.Component {
     this.setState({ open: false });
   }
 
-  handleSelectDynclass = value => {
-    this.setState({ dynclass: value });
-  };
+  // handleSelectDynclass = value => {
+  //   this.setState({ dynclass: value });
+  // };
 
   handleSelectMV = value => {
     this.setState({ mv: value });
@@ -54,6 +54,7 @@ class FilterPointings extends React.Component {
     });
     this.setState({ colorAlert: 'danger' });
     this.setState({ open: true });
+    console.log('Não tá chegando');
   };
 
   ErroReset = () => {
@@ -72,6 +73,7 @@ class FilterPointings extends React.Component {
   };
 
   handlerSubmitFilter = () => {
+    console.log(this.state.dynclass);
     if (this.state.mv === '' && this.state.dynclass === '') {
       this.ErroEmpty();
     } else {
@@ -189,9 +191,10 @@ class FilterPointings extends React.Component {
                   <MultiSelect
                     value={this.state.dynclass}
                     options={dynclassValues}
-                    onChange={this.handleSelectDynclass}
+                    onChange={e => {
+                      this.setState({ dynclass: e.value });
+                    }}
                     filter={true}
-                    optionLabel="value"
                     placeholder="Select a dynamics class"
                     style={{ width: '200px' }}
                   />

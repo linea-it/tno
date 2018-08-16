@@ -160,7 +160,7 @@ class PointingsStats extends Component {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar barSize="20" dataKey="band" fill="#4B0082" />;
+                <Bar barSize={20} dataKey="band" fill="#4B0082" />;
               </BarChart>
             </Card>
           </div>
@@ -181,7 +181,7 @@ class PointingsStats extends Component {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar barSize="5" dataKey="exposure" fill="#1E90FF" />;
+                <Bar barSize={20} dataKey="exposure" fill="#1E90FF" />;
               </BarChart>
             </Card>
           </div>

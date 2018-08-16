@@ -3035,8 +3035,5 @@ body > .navbar-collapse[data-color="purple"]:after {
     -ms-overflow-style: -ms-autohiding-scrollbar;
     -webkit-overflow-scrolling: touch; } }
 
-[className*="costumize"] {
-  background: #566169 !important;
-  color: #fff;
-  font-size: 18px;
-  font-weight: 400; }
+.legend-chart {
+  bottom: .10em !important; }
