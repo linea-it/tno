@@ -9,6 +9,8 @@ import os
 import zipfile
 from django.conf import settings
 import urllib.parse
+
+
 class OrbitRunViewSet(viewsets.ModelViewSet):
     queryset = OrbitRun.objects.all()
     serializer_class = OrbitRunSerializer
@@ -87,7 +89,6 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
                 'msg': 'Failed to read asteroid %s log' % asteroid.name
             }))
 
-
     @list_route()
     def get_neighbors(self, request):
         id = request.query_params.get('asteroid_id', None)
@@ -109,14 +110,16 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
 
         next = None
         try:
-            next_model = RefinedAsteroid.objects.filter(orbit_run=asteroid.orbit_run).filter(id__gt=asteroid.id).order_by('name').first()
+            next_model = RefinedAsteroid.objects.filter(orbit_run=asteroid.orbit_run).exclude(status='failure').filter(
+                id__gt=asteroid.id).order_by('id').first()
             next = next_model.id
         except:
             pass
 
         prev = None
         try:
-            prev_model = RefinedAsteroid.objects.filter(orbit_run=asteroid.orbit_run).filter(id__lt=asteroid.id).order_by('name').first()
+            prev_model = RefinedAsteroid.objects.filter(orbit_run=asteroid.orbit_run).exclude(status='failure').filter(
+                id__lt=asteroid.id).order_by('-id').first()
             prev = prev_model.id
         except:
             pass
@@ -130,8 +133,6 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
     @list_route()
     def download_results(self, request):
         id = request.query_params.get('asteroid_id', None)
-
-        print("Download Results for %s" % id)
 
         asteroid = None
 
@@ -158,7 +159,6 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
                     'msg': "Asteroid with name %s and Orbit Run %s Not Found." % (name, run),
                 })
 
-
         results_path = asteroid.relative_path
 
         if not os.path.exists(results_path) and not os.path.isdir(results_path):
@@ -167,19 +167,14 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
                 'msg': 'Failed to find asteroid %s results' % asteroid.name
             }))
 
-
-
         zipname = "%s.zip" % asteroid.name.replace(" ", "_")
 
         zip_file = os.path.join(settings.MEDIA_TMP_DIR, zipname)
-
-        print("Zip directory: %s" % zip_file)
 
         with zipfile.ZipFile(zip_file, 'w') as ziphandle:
             for root, dirs, files in os.walk(results_path):
                 for file in files:
                     origin_file = os.path.join(root, file)
-                    print("Adding File: %s" % origin_file)
                     ziphandle.write(origin_file, arcname=file)
 
         ziphandle.close()
@@ -196,8 +191,6 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
             "success": True,
             "src": src
         }))
-
-
 
 
 class RefinedOrbitViewSet(viewsets.ModelViewSet):

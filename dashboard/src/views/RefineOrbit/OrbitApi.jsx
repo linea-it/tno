@@ -81,7 +81,7 @@ class OrbitApi {
 
   getAsteroidNeighbors = ({ asteroid_id }) => {
     const params = { asteroid_id: asteroid_id };
-    return axios.get(`${this.api}/refined_asteroid/download_results/`, {
+    return axios.get(`${this.api}/refined_asteroid/get_neighbors/`, {
       params: params,
     });
   };

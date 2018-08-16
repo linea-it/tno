@@ -13,6 +13,7 @@ import Lightbox from 'react-images';
 import { TreeTable } from 'primereact/treetable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
+import { Toolbar } from 'primereact/toolbar';
 
 class AsteroidDetail extends Component {
   state = this.initialState;
@@ -20,6 +21,7 @@ class AsteroidDetail extends Component {
 
   static propTypes = {
     match: PropTypes.object.isRequired,
+    history: PropTypes.any.isRequired,
   };
 
   get initialState() {
@@ -34,6 +36,8 @@ class AsteroidDetail extends Component {
       currentImage: 0,
       visible: false,
       imageId: [],
+      prev: null,
+      next: null,
     };
   }
 
@@ -85,17 +89,30 @@ class AsteroidDetail extends Component {
             },
           ];
 
-          this.setState({
-            id: parseInt(params.id, 10),
-            asteroid: asteroid,
-            files: files,
-            images: images,
-            tree_data: tree_data,
-          });
+          this.setState(
+            {
+              id: parseInt(params.id, 10),
+              asteroid: asteroid,
+              files: files,
+              images: images,
+              tree_data: tree_data,
+            },
+            this.getNeighbors(asteroid_id)
+          );
         });
       }
     });
   }
+
+  getNeighbors = asteroid_id => {
+    this.api.getAsteroidNeighbors({ asteroid_id }).then(res => {
+      const neighbors = res.data;
+      this.setState({
+        prev: neighbors.prev,
+        next: neighbors.next,
+      });
+    });
+  };
 
   // Methods for slide operation
   Slideshow = e => {
@@ -140,19 +157,64 @@ class AsteroidDetail extends Component {
   };
 
   onClickDownload = asteroid_id => {
-    console.log('onClickDownload(%o)', asteroid_id);
     this.api.getAsteroidDownloadLink({ asteroid_id }).then(res => {
       const data = res.data;
-      console.log(data);
       if (data.success) {
-        console.log('FUNCIONOU');
         const file_src = this.api.api + data.src;
-        console.log(file_src);
         window.open(file_src);
       } else {
         // TODO: Implementar notificacao de erro.
       }
     });
+  };
+
+  create_nav_bar = () => {
+    return (
+      <Toolbar>
+        <div className="ui-toolbar-group-left">
+          <Button
+            label="Back to Refine Orbit"
+            icon="fa fa-undo"
+            onClick={() =>
+              this.onClickBackToRefine(this.state.asteroid.orbit_run)
+            }
+          />
+        </div>
+        <div className="ui-toolbar-group-right">
+          <Button
+            label="Prev"
+            icon="fa fa-arrow-left"
+            disabled={this.state.prev ? false : true}
+            onClick={() => this.onClickPrev(this.state.prev)}
+          />
+          <Button
+            label="Next"
+            icon="fa fa-arrow-right"
+            iconPos="right"
+            disabled={this.state.next ? false : true}
+            onClick={() => this.onClickNext(this.state.next)}
+          />
+        </div>
+      </Toolbar>
+    );
+  };
+
+  onClickBackToRefine = orbit_run => {
+    const history = this.props.history;
+    history.push({ pathname: `/orbit_run_detail/${orbit_run}` });
+  };
+
+  onClickPrev = prev => {
+    const history = this.props.history;
+    history.push({ pathname: `${prev}` });
+    // TODO nao deveria usar reload aqui.
+    window.location.reload();
+  };
+
+  onClickNext = next => {
+    const history = this.props.history;
+    history.push({ pathname: `${next}` });
+    window.location.reload();
   };
 
   render() {
@@ -162,8 +224,10 @@ class AsteroidDetail extends Component {
     if (asteroid.number && asteroid.number !== '-') {
       title = title + ' - ' + asteroid.number;
     }
+
     return (
       <div className="content">
+        {this.create_nav_bar()}
         <div className="ui-g">
           <div className="ui-g-4">
             <Card
