@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col, Panel } from 'react-bootstrap';
+import { Grid, Row, Col } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
@@ -40,18 +40,18 @@ class SolarSystemsPanel extends Component {
           </Row>
           <Row>
             <Col md={12}>
-              <Panel bsStyle="info">
+              {/* <Panel bsStyle="info">
                 <Panel.Heading>
                   <Panel.Title componentClass="h1">
                     <strong>List with all skybot</strong>
                   </Panel.Title>
-                </Panel.Heading>
-                <Card
-                  title="SkyBot Output"
-                  category="complete list with all entries recorded in the database. can search for object name and number"
-                  content={<SkybotList />}
-                />
-              </Panel>
+                </Panel.Heading> */}
+              <Card
+                title="SkyBot Output"
+                category="complete list with all entries recorded in the database. can search for object name and number"
+                content={<SkybotList />}
+              />
+              {/* </Panel> */}
             </Col>
           </Row>
         </Grid>

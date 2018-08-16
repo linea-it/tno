@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import Card from 'components/Card/Card.jsx';
-import { ButtonToolbar, Button } from 'react-bootstrap';
+//import { ButtonToolbar, Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -11,6 +11,12 @@ import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
 import { formatColumnHeader, formatStatus } from 'utils';
 import ReactInterval from 'react-interval';
 import OrbitApi from './OrbitApi';
+
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { Button } from 'primereact/button';
+import { Toolbar } from 'primereact/toolbar';
 
 const columns = [
   {
@@ -189,17 +195,18 @@ class RefineOrbitHistory extends Component {
           category="Manage the completed NIMA rounds"
           content={
             <div>
-              <ButtonToolbar>
+              <Toolbar>
                 <Button
+                  label="Re-execute"
                   disabled={!selected_record}
                   onClick={this.handleOnRerun}
-                >
-                  Re-execute
-                </Button>
-                <Button disabled={!selected_record} onClick={this.details}>
-                  Detail
-                </Button>
-              </ButtonToolbar>
+                />
+                <Button
+                  label="Detail"
+                  disabled={!selected_record}
+                  onClick={this.details}
+                />
+              </Toolbar>
               <BootstrapTable
                 striped
                 hover

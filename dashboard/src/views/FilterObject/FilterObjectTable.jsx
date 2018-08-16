@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 import { ButtonToolbar } from 'react-bootstrap';
-import Button from 'elements/CustomButton/CustomButton.jsx';
+
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { Toolbar } from 'primereact/toolbar';
+import { Button } from 'primereact/button';
+
+
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
@@ -194,16 +201,14 @@ class FilterObjectTable extends Component {
 
     return (
       <div>
-        <ButtonToolbar>
+        <Toolbar>
           <Button
-            bsStyle="info"
-            fill
+            label="Save"
             disabled={!haveData}
             onClick={this.props.saveList}
-          >
-            Save
-          </Button>
-        </ButtonToolbar>
+            style={{ float: 'left', padding: '5px 25px' }}
+          />
+        </Toolbar>
         <BootstrapTable
           striped
           hover

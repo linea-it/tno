@@ -25,28 +25,29 @@ const appRoutes = [
     name: 'Dashboard',
     icon: 'fa fa-home',
     component: Dashboard,
-    helpText: 'texto1',
+    //helpText: '',
   },
   {
     path: '/registration',
     name: 'Registration',
     icon: '',
     component: Placeholder,
-    helpText: 'texto2',
+    // helpText: '',
   },
   {
     path: '/pointings',
     name: 'Pointings',
     // icon: 'pe-7s-target',
     component: PointingsPanel,
-    helpText: 'texto3',
+    helpText:
+      'Query the database and download the metadata telling, among others, pointing coordinates, date of observation, exposure time, band, and image location in database',
   },
   {
     path: '/solarsystem',
     name: 'Search SSSO',
     // icon: 'pe-7s-sun',
     component: SolarSystemsPanel,
-    helpText: 'texto4',
+    helpText: 'Identification of small solar system objects (SSSO) in all pointings using the SkyBoT service.',
   },
   // { path: '/skybot', name: 'SkyBoT', icon: 'pe-7s-science', component: SkyBot },
   {
@@ -54,7 +55,7 @@ const appRoutes = [
     name: 'Filter Objects',
     // icon: 'pe-7s-filter',
     component: FilterPanel,
-    helpText: 'texto5',
+    // helpText: 'Download of images which have observations of specific objects.',
   },
   {
     path: '/custom_list',
@@ -86,20 +87,19 @@ const appRoutes = [
     path: '/exposuredownload',
     name: 'Download',
     component: Placeholder,
-    helpText: 'texto7',
+    helpText: 'Download of images which have observations of specific objects.',
   },
   {
     path: '/astrometry',
     name: 'Astrometry',
     component: Praia,
-    helpText: 'texto8',
+    helpText: 'Astrometric reduction using PRAIA package and stellar catalogue Gaia like reference to detect and determine positions of objects from CCD frame.',
   },
   {
     path: '/orbit_run_detail/:id',
     name: 'Refine Orbit Detail',
     component: RefineRunOrbitDetail,
     hidden: true,
-    helpText: 'texto9',
   },
   {
     path: '/astrometry_run/:id',
@@ -111,7 +111,7 @@ const appRoutes = [
     path: '/refine_orbit',
     name: 'Refine Orbit',
     component: RefineOrbitPanel,
-    helpText: 'texto10',
+    helpText: 'Refinement of Orbits of specifics objects using NIMA code',
   },
   {
     path: '/refined_asteroid/:id',
@@ -123,7 +123,7 @@ const appRoutes = [
     path: '/prediction',
     name: 'Prediction of Occultations',
     component: Placeholder,
-    helpText: 'texto11',
+    helpText: 'Comparison of objects’ ephemeris and positions of stars to predict events of stellar occultation using Gaia catalogue like reference',
   },
   {
     path: '/post_results',

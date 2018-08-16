@@ -1,13 +1,7 @@
 import React, { Component } from 'react';
-import {
-  FormGroup,
-  FormControl,
-  InputGroup,
-  ButtonToolbar,
-} from 'react-bootstrap';
+
 import FilterSkybot from './FilterSkybot';
 import { withRouter } from 'react-router-dom';
-import Button from 'elements/CustomButton/CustomButton.jsx';
 import SkybotApi from './SkybotApi';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -16,6 +10,13 @@ import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { formatColumnHeader, coordinateFormater } from 'utils';
+
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+import { Toolbar } from 'primereact/toolbar';
 
 const skybot_columns = [
   {
@@ -60,15 +61,15 @@ const skybot_columns = [
     headerTitle: column => `${column.helpText}`,
   },
 
-  // {
-  //   text: 'Exposure',
-  //   dataField: 'expnum',
-  //   align: 'center',
-  //   width: 20,
-  //   headerStyle: formatColumnHeader,
-  //   helpText: 'Filter used to do the observation (u, g, r, i, z, Y).',
-  //   headerTitle: column => `${column.helpText}`,
-  // },
+  {
+    text: 'Exposure',
+    dataField: 'expnum',
+    align: 'center',
+    width: 20,
+    headerStyle: formatColumnHeader,
+    helpText: 'Filter used to do the observation (u, g, r, i, z, Y).',
+    headerTitle: column => `${column.helpText}`,
+  },
 
   {
     text: 'Dynamic class ',
@@ -200,10 +201,7 @@ class SkybotList extends Component {
     });
   };
 
-  showDetail = () => {
-    this.setState({ show: true });
-  };
-
+  
   onFilter = filter => {
     this.setState(
       { filtered: filter },
@@ -243,30 +241,48 @@ class SkybotList extends Component {
     return (
       <div className="content">
         <div>
-          <ButtonToolbar>
-            <FormGroup>
-              <InputGroup>
-                <InputGroup.Button>
-                  <Button onClick={this.showDetail}>Filter</Button>
-                </InputGroup.Button>
-                <FormControl
-                  type="text"
-                  placeholder="Search By name, number"
-                  value={search}
-                  onChange={this.onChangeSearch}
-                  onKeyPress={this.onKeyPress}
-                />
+            <Toolbar>
+            <div className="ui-toolbar">
+              <div className="ui-g ui-fluid">
+                <div className="ui-g-12">
+                  <h5>
+                    <div className="ui-g-10">
+                      <div className="ui-inputgroup">
+                        <InputText
+                          placeholder="Search By name, number"
+                          value={search}
+                          onChange={this.onChangeSearch}
+                          onKeyPress={this.onKeyPress}
+                        />
+                        <Button label="Search" onClick={this.handleSearch} />
+                      </div>
+                    </div>
 
-                <InputGroup.Button>
-                  <Button onClick={this.handleSearch}>Search</Button>
-                </InputGroup.Button>
-
-                <InputGroup.Button>
-                  <Button onClick={this.handlerClear}>Clear</Button>
-                </InputGroup.Button>
-              </InputGroup>
-            </FormGroup>
-          </ButtonToolbar>
+                    <div className="ui-g-1">
+                      <Button
+                        label="Clear"
+                        onClick={e => {
+                          this.handlerClear();
+                        }}
+                        icon="pi pi-check"
+                        iconPos="left"
+                      />
+                    </div>
+                    <div className="ui-g-1">
+                      <Button
+                        label="Filter"
+                        onClick={e => {
+                          this.setState({ show: true });
+                        }}
+                        icon="pi pi-check"
+                        iconPos="left"
+                      />
+                    </div>
+                  </h5>
+                </div>
+              </div>
+            </div>
+          </Toolbar>
 
           <div className="clearfix" />
 
