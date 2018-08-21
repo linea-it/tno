@@ -5,58 +5,11 @@ import 'primeicons/primeicons.css';
 import { Sidebar } from 'primereact/sidebar';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
+import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
+import { Alert } from 'react-bootstrap';
 
 import PropTypes from 'prop-types';
-import Select from 'react-select';
-
-const options = {
-  band: [
-    {
-      value: 'g',
-      label: 'g',
-    },
-    {
-      value: 'r',
-      label: 'r',
-    },
-    {
-      value: 'i',
-      label: 'i',
-    },
-    {
-      value: 'z',
-      label: 'z',
-    },
-    {
-      value: 'Y',
-      label: 'Y',
-    },
-    {
-      value: 'u',
-      label: 'u',
-    },
-  ],
-
-  valueTimes: [
-    {
-      value: '0, 100',
-      label: '0 - 100',
-    },
-    {
-      value: '100, 200',
-      label: '100 - 200',
-    },
-    {
-      value: '200, 300',
-      label: '200 - 300',
-    },
-    {
-      value: '300, 400',
-      label: '300 - 400',
-    },
-  ],
-};
 
 class FilterPointings extends React.Component {
   constructor(props) {
@@ -68,7 +21,7 @@ class FilterPointings extends React.Component {
   getInitialState = () => {
     const initialState = {
       band: '',
-      expTime: '',
+      exptime: '',
       dateObserInit: '',
       dateObserFinal: '',
       open: true,
@@ -148,7 +101,7 @@ class FilterPointings extends React.Component {
     const comp2 = new Date(dt2);
 
     if (
-      this.state.expTime === '' &&
+      this.state.exptime === '' &&
       this.state.band === '' &&
       this.state.dateObserInit === '' &&
       this.state.dateObserFinal === ''
@@ -164,13 +117,16 @@ class FilterPointings extends React.Component {
         const filter = [];
 
         if (this.state.band) {
-          filter.push({ property: 'band__in', value: this.state.band });
+          filter.push({
+            property: 'band__in',
+            value: this.state.band.toString(),
+          });
         }
 
-        if (this.state.expTime) {
+        if (this.state.exptime) {
           filter.push({
             property: 'exptime__range',
-            value: this.state.expTime.value,
+            value: this.state.exptime,
           });
         }
 
@@ -209,6 +165,53 @@ class FilterPointings extends React.Component {
 
   render() {
     const { show, onHide } = this.props;
+    console.log(this.state.exptime);
+
+    const band = [
+      {
+        value: 'g',
+        label: 'g',
+      },
+      {
+        value: 'r',
+        label: 'r',
+      },
+      {
+        value: 'i',
+        label: 'i',
+      },
+      {
+        value: 'z',
+        label: 'z',
+      },
+      {
+        value: 'Y',
+        label: 'Y',
+      },
+      {
+        value: 'u',
+        label: 'u',
+      },
+    ];
+
+    const valueTimes = [
+      {
+        value: '0, 100',
+        label: '0 - 100',
+      },
+      {
+        value: '100, 200',
+        label: '100 - 200',
+      },
+      {
+        value: '200, 300',
+        label: '200 - 300',
+      },
+      {
+        value: '300, 400',
+        label: '300 - 400',
+      },
+    ];
 
     return (
       <Sidebar
@@ -225,12 +228,12 @@ class FilterPointings extends React.Component {
                 <div className="ui-g-12">
                   <p> Exposure Time </p>
                   <Dropdown
-                    value={this.state.expTime}
-                    options={options.valueTimes}
+                    value={this.state.exptime}
+                    options={valueTimes}
                     onChange={e => {
                       this.setState({ exptime: e.value });
                     }}
-                    placeholder="Select a expTime"
+                    placeholder="Select a exposure time"
                     style={{ width: '200px' }}
                   />
                 </div>
@@ -242,42 +245,47 @@ class FilterPointings extends React.Component {
                   <Calendar
                     value={this.state.dateObserInit}
                     onChange={e => {
-                      const dt = Date(e.value);
-                      console.log(dt);
-                      // dt. ('yy-mm-dd')
-                      this.setState({ dateObserInit: e.value });
+                      const dateFormat = e.value
+                        .toJSON()
+                        .split('', 10)
+                        .join('');
+                      this.setState({ dateObserInit: dateFormat });
                     }}
                     showIcon={true}
                     monthNavigator={true}
                     yearNavigator={true}
                     yearRange="2010:2030"
-                    dateFormat="yy/mm/dd"
+                    dateFormat="yy-mm-dd"
                     showButtonBar={true}
                   />
                 </div>
-                {console.log(this.state.dateObserInit)}
                 <div className="ui-g-12">
                   <p>Date de Observation Final </p>
                   <Calendar
                     value={this.state.dateObserFinal}
-                    onChange={e => this.setState({ dateObserFinal: e.value })}
+                    onChange={e => {
+                      const dateFormat = e.value
+                        .toJSON()
+                        .split('', 10)
+                        .join('');
+                      this.setState({ dateObserFinal: dateFormat });
+                    }}
                     showIcon={true}
                     monthNavigator={true}
                     yearNavigator={true}
                     yearRange="2010:2030"
-                    dateFormat="yy/mm/dd"
+                    dateFormat="yy-mm-dd"
                     showButtonBar={true}
                   />
-                  {console.log(this.state.dateObserFinal)}
                 </div>
               </div>
 
               <div className="ui-g">
                 <div className="ui-g-12">
                   <p> Band </p>
-                  <Dropdown
+                  <MultiSelect
                     value={this.state.band}
-                    options={options.band}
+                    options={band}
                     onChange={e => {
                       this.setState({ band: e.value });
                     }}
@@ -289,7 +297,6 @@ class FilterPointings extends React.Component {
             </form>
           </div>
         </div>
-
         {/* <FormGroup
                   controlId="formValidationError2"
                   validationState={this.state.validation}
@@ -303,7 +310,6 @@ class FilterPointings extends React.Component {
                     clearable={false}
                   />
                 </FormGroup> */}
-
         {/* <Grid fluid>
           <Row>
             <Col md={12}>
@@ -377,9 +383,33 @@ class FilterPointings extends React.Component {
         </Grid> */}
         <div className="ui-g">
           <div className="ui-g-12">
-            <Button label="Filter" onClick={this.handlerSubmitFilter} />
-            <Button label="Clear" onClick={this.onClear} />
-            <Button label="Close" onClick={this.onClose} />
+            <Button
+              className="ui-button-success"
+              label="Filter"
+              onClick={this.handlerSubmitFilter}
+            />
+            <Button
+              style={{
+                border: '1px solid #0984e3',
+                backgroundColor: '#0984e3',
+              }}
+              label="Clear"
+              onClick={this.onClear}
+            />
+            <Button
+              style={{
+                border: ' 1px solid #636e72',
+                backgroundColor: '#636e72',
+              }}
+              label="Close"
+              onClick={this.onClose}
+            />
+          </div>
+          <div className="ui-g-12">
+            <Alert bsStyle={this.state.colorAlert}>
+              {this.state.errorMessage}
+            </Alert>
+            <br />
           </div>
         </div>
       </Sidebar>

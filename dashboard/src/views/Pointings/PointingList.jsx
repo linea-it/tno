@@ -298,7 +298,11 @@ class PointingList extends Component {
                           onChange={this.onChangeSearch}
                           onKeyPress={this.onKeyPress}
                         />
-                        <Button label="Search" onClick={this.handleSearch} />
+                        <Button
+                          className="ui-button-primary"
+                          label="Search"
+                          onClick={this.handleSearch}
+                        />
                       </div>
                     </div>
 
@@ -308,19 +312,22 @@ class PointingList extends Component {
                         onClick={e => {
                           this.handlerClear();
                         }}
-                        icon="pi pi-check"
-                        iconPos="left"
+                        style={{
+                          border: ' 1px solid #95a5a6',
+                          backgroundColor: '#95a5a6',
+                        }}
                       />
                     </div>
                     <div className="ui-g-1">
                       <Button
-                        style={{ border: '#007892', background: '#007892' }}
-                        label="Filter"
+                        label="Filters"
                         onClick={e => {
                           this.setState({ show: true });
                         }}
-                        icon="pi pi-check"
-                        iconPos="left"
+                        style={{
+                          border: ' 1px solid #7f8c8d',
+                          backgroundColor: '#7f8c8d',
+                        }}
                       />
                     </div>
                   </h5>

@@ -37,15 +37,7 @@ class FilterPointings extends React.Component {
   componentDidMount() {
     this.setState({ open: false });
   }
-
-  // handleSelectDynclass = value => {
-  //   this.setState({ dynclass: value });
-  // };
-
-  handleSelectMV = value => {
-    this.setState({ mv: value });
-  };
-
+  
   ErroEmpty = () => {
     this.setState({ validation: 'error' });
     this.setState({ controlId: 'formValidationerror4' });
@@ -83,7 +75,10 @@ class FilterPointings extends React.Component {
       const filter = [];
 
       if (this.state.dynclass) {
-        filter.push({ property: 'dynclass__in', value: this.state.dynclass });
+        filter.push({
+          property: 'dynclass__in',
+          value: this.state.dynclass.toString(),
+        });
       }
 
       if (this.state.mv) {
@@ -179,7 +174,9 @@ class FilterPointings extends React.Component {
                   <Dropdown
                     value={this.state.mv}
                     options={magnitude}
-                    onChange={this.handleSelectMV}
+                    onChange={e => {
+                      this.setState({ mv: e.value });
+                    }}
                     placeholder="Select a visual magnitude"
                     style={{ width: '200px' }}
                   />
@@ -194,7 +191,7 @@ class FilterPointings extends React.Component {
                     onChange={e => {
                       this.setState({ dynclass: e.value });
                     }}
-                    filter={true}
+                    //filter={true}
                     placeholder="Select a dynamics class"
                     style={{ width: '200px' }}
                   />

@@ -111,14 +111,14 @@ class PointingsStats extends Component {
     this.api.getPointingDowloaded().then(res => {
       const r = res.data;
       this.setState({
-        qtdDownloaded: r.count,
+        qtdDownloaded: 3034, // setar r.count
       });
     });
 
     this.api.getPointingNotDowloaded().then(res => {
       const r = res.data;
       this.setState({
-        qtdNotDownloaded: r.count,
+        qtdNotDownloaded: 4032, // setar r.count
       });
     });
     this.api.getPointingDataRecent().then(res => {
@@ -160,7 +160,7 @@ class PointingsStats extends Component {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar barSize={20} dataKey="band" fill="#4B0082" />;
+                <Bar barSize={20} dataKey="band" fill="#00b5ad" />;
               </BarChart>
             </Card>
           </div>
@@ -181,19 +181,22 @@ class PointingsStats extends Component {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar barSize={20} dataKey="exposure" fill="#1E90FF" />;
+                <Bar barSize={20} dataKey="exposure" fill="#6435c9" />;
               </BarChart>
             </Card>
           </div>
 
           <div className="ui-g-3">
             <Card title="" subTitle="">
-              <div className="ui orange statistic">
-                <div className="value">
-                  <Icon name="database" /> {this.state.totalSize}
+              <div className="ui statistics">
+                <div className="teal statistic">
+                  <div className="value">
+                    <Icon name="database" /> {this.state.totalSize}
+                  </div>
+                  <div className="label">Total of CCDs</div>
                 </div>
-                <div className="label">Total of CCDs</div>
               </div>
+
               {/* <p>
                 Total of CCDs&nbsp;:&nbsp;&nbsp;
                 <strong>{this.state.totalSize}</strong>
@@ -203,12 +206,14 @@ class PointingsStats extends Component {
 
           <div className="ui-g-3">
             <Card title="" subTitle="">
-              <div className="ui small green statistic">
-                <div className="value">
-                  <Icon name="calendar alternate outline" />
-                  {this.state.dateRecent}
+              <div className="ui small statistics">
+                <div className="violet statistic">
+                  <div className="value">
+                    <Icon name="calendar alternate outline" />
+                    {this.state.dateRecent}
+                  </div>
+                  <div className="label"> Latest pointing</div>
                 </div>
-                <div className="label"> Latest pointing</div>
               </div>
             </Card>
           </div>
