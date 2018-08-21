@@ -53,6 +53,15 @@ class AsteroidList extends Component {
               className="ui-button-success"
             />
           );
+        } else if (rowData.status === 'warning') {
+          return (
+            <Button
+              type="button"
+              icon="fa fa-exclamation"
+              className="ui-button-warning"
+              title={rowData.error_msg}
+            />
+          );
         } else {
           return (
             <Button
@@ -144,7 +153,7 @@ class AsteroidList extends Component {
     let btn_view = null;
     let btn_log = null;
 
-    if (rowData.status === 'success') {
+    if (rowData.status !== 'failure') {
       btn_view = (
         <Button
           type="button"
@@ -164,6 +173,7 @@ class AsteroidList extends Component {
         />
       );
     }
+
     return (
       <div>
         {btn_view}

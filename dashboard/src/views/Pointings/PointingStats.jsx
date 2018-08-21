@@ -111,14 +111,14 @@ class PointingsStats extends Component {
     this.api.getPointingDowloaded().then(res => {
       const r = res.data;
       this.setState({
-        qtdDownloaded: 3034, // setar r.count
+        qtdDownloaded: r.count,
       });
     });
 
     this.api.getPointingNotDowloaded().then(res => {
       const r = res.data;
       this.setState({
-        qtdNotDownloaded: 4032, // setar r.count
+        qtdNotDownloaded: r.count,
       });
     });
     this.api.getPointingDataRecent().then(res => {

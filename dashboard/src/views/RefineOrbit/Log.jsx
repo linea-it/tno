@@ -44,17 +44,18 @@ class Log extends Component {
           color: '#ffffff',
           backgroundColor: '#254356',
           width: 900 + 'px',
+          // overflowY: 'scroll !important',
         }}
       >
         <pre
           style={{
             color: '#ffffff',
             backgroundColor: '#254356',
-            // height: 800 + 'px',
             border: 'none',
+            // minHeight: '101%',
           }}
         >
-        {teste}
+          {teste}
         </pre>
       </Dialog>
     );

@@ -236,16 +236,15 @@ class GetObservations(DownloadParameters):
         )
 
     def get_file_path(self, name):
-
         f = self.get_latest(name)
 
         if not f:
-            return None
+            return None, None
 
         file_path = os.path.join(self.observations_dir, f.filename)
 
         if not os.path.exists(file_path):
-            file_path = None
+            file_path = None, None
 
         return file_path, f
 

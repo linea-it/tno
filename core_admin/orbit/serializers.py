@@ -1,4 +1,4 @@
-from orbit.models import OrbitRun, RefinedAsteroid, RefinedOrbit
+from orbit.models import OrbitRun, RefinedAsteroid, RefinedOrbit, RefinedOrbitInput
 from rest_framework import serializers
 from tno.models import Proccess, CustomList
 import humanize
@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.conf import settings
 import urllib.parse
 from django.db.models import Sum
+from datetime import datetime
 
 class OrbitRunSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
@@ -181,5 +182,26 @@ class RefinedOrbitSerializer(serializers.ModelSerializer):
         except:
             return None
 
+class RefinedOrbitInputSerializer(serializers.ModelSerializer):
+    asteroid = serializers.PrimaryKeyRelatedField(
+        queryset=RefinedAsteroid.objects.all(), many=False)
+
+    date_time = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RefinedOrbitInput
+        fields = (
+            'id',
+            'asteroid',
+            'input_type',
+            'source',
+            'date_time',
+            'filename',
+        )
 
 
+    def get_date_time(self, obj):
+        try:
+            return datetime.strftime(obj.date_time, "%Y-%m-%d %H:%M:%S")
+        except:
+            return None

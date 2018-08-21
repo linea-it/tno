@@ -14,7 +14,7 @@ import { TreeTable } from 'primereact/treetable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toolbar } from 'primereact/toolbar';
-
+import { DataTable } from 'primereact/datatable';
 class AsteroidDetail extends Component {
   state = this.initialState;
   api = new OrbitApi();
@@ -28,6 +28,7 @@ class AsteroidDetail extends Component {
     return {
       id: 0,
       asteroid: {},
+      inputs: [],
       files: [],
       images: [],
       tree_data: [],
@@ -40,6 +41,29 @@ class AsteroidDetail extends Component {
       next: null,
     };
   }
+
+  input_columns = [
+    {
+      field: 'input_type',
+      header: 'Input',
+      sortable: true,
+    },
+    {
+      field: 'source',
+      header: 'Source',
+      sortable: true,
+    },
+    {
+      field: 'date_time',
+      header: 'Date',
+      sortable: true,
+    },
+    {
+      field: 'filename',
+      header: 'Filename',
+      sortable: true,
+    },
+  ];
 
   componentDidMount() {
     const {
@@ -99,6 +123,14 @@ class AsteroidDetail extends Component {
             },
             this.getNeighbors(asteroid_id)
           );
+        });
+
+        // Recuperar os Inputs
+        this.api.getAsteroidInputs({ id: asteroid_id }).then(res => {
+          const inputs = res.data.results;
+          this.setState({
+            inputs: inputs,
+          });
         });
       }
     });
@@ -225,6 +257,19 @@ class AsteroidDetail extends Component {
       title = title + ' - ' + asteroid.number;
     }
 
+    const inp_columns = this.input_columns.map((col, i) => {
+      return (
+        <Column
+          key={i}
+          field={col.field}
+          header={col.header}
+          sortable={col.sortable}
+          style={col.style}
+          body={col.body}
+        />
+      );
+    });
+
     return (
       <div className="content">
         {this.create_nav_bar()}
@@ -270,7 +315,7 @@ class AsteroidDetail extends Component {
         <div className="ui-g">
           <div className="ui-g-4">
             <Card
-              title="Files"
+              title="Results"
               subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
             >
               <TreeTable value={this.state.tree_data} sortField={'filename'}>
@@ -290,15 +335,23 @@ class AsteroidDetail extends Component {
               </TreeTable>
             </Card>
           </div>
-          <div className="ui-g-4">
+          <div className="ui-g-6">
             <Card
-              title="Observations"
+              title="Inputs"
               subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
-            />
+            >
+              <DataTable
+                value={this.state.inputs}
+                sortField={'input_type'}
+                sortOrder={1}
+              >
+                {inp_columns}
+              </DataTable>
+            </Card>
           </div>
-          <div className="ui-g-4">
+          <div className="ui-g-6">
             <Card
-              title="Orbital Parameters"
+              title="Log"
               subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
             />
           </div>

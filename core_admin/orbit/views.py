@@ -6,8 +6,9 @@ from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 import os
-from .models import OrbitRun, RefinedAsteroid, RefinedOrbit
-from .serializers import OrbitRunSerializer, RefinedAsteroidSerializer, RefinedOrbitSerializer
+from .models import OrbitRun, RefinedAsteroid, RefinedOrbit, RefinedOrbitInput
+from .serializers import OrbitRunSerializer, RefinedAsteroidSerializer, RefinedOrbitSerializer, \
+    RefinedOrbitInputSerializer
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
@@ -27,7 +28,7 @@ class OrbitRunViewSet(viewsets.ModelViewSet):
 
     @list_route()
     def log_by_objects(self, request):
-        name =  request.query_params.get('name')
+        name = request.query_params.get('name')
         run = request.query_params.get('cod')
 
         try:
@@ -42,9 +43,9 @@ class OrbitRunViewSet(viewsets.ModelViewSet):
             log_file = os.path.join(obj_path, "nima.log")
             print(log_file)
             # Checar se o log existe
-            result  = dict({
-                'lines' : list(),
-                })
+            result = dict({
+                'lines': list(),
+            })
 
             if os.path.exists(log_file):
                 with open(log_file, 'r') as fp:
@@ -58,24 +59,22 @@ class OrbitRunViewSet(viewsets.ModelViewSet):
                     'success': False,
                     'msg': 'Deu Ruim'
                 }))
-            # else:
-            #     # retorna erro que nao existe
-            #     print("tá vazio")
+                # else:
+                #     # retorna erro que nao existe
+                #     print("tá vazio")
         except ObjectDoesNotExist:
             print("Either the entry or blog doesn't exist.")
 
             return Response({
-                'success' : False,
-                'msg' : "Nao encontrei ",
+                'success': False,
+                'msg': "Nao encontrei ",
             })
-    
 
     def perform_create(self, serializer):
         # Adiconar usuario logado
         if not self.request.user.pk:
             raise Exception('It is necessary an active login to perform this operation.')
         serializer.save(owner=self.request.user)
-        
 
 
 class RefinedAsteroidViewSet(viewsets.ModelViewSet):
@@ -244,13 +243,11 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
             "src": src
         }))
 
-
     @list_route()
     def get_orbital_parameters(self, request):
         id = request.query_params.get('asteroid_id', None)
 
         print("Orbital parameters: %s" % id)
-
 
         return Response(dict({
             "success": True,
@@ -263,3 +260,11 @@ class RefinedOrbitViewSet(viewsets.ModelViewSet):
     filter_fields = ('id', 'filename', 'asteroid')
     search_fields = ('id', 'filename')
     ordering = ('filename', 'file_type')
+
+
+class RefinedOrbitInputViewSet(viewsets.ModelViewSet):
+    queryset = RefinedOrbitInput.objects.all()
+    serializer_class = RefinedOrbitInputSerializer
+    filter_fields = ('id', 'asteroid', 'input_type', 'filename')
+    search_fields = ('id', 'filename')
+    ordering = ('input_type')

@@ -232,10 +232,13 @@ class GetOrbitalParameters(DownloadParameters):
 
         f = self.get_latest(name)
 
+        if not f:
+            return None, None
+
         file_path = os.path.join(self.orbital_parameters_dir, f.filename)
 
         if not os.path.exists(file_path):
-            file_path = None
+            file_path = None, None
 
         return file_path, f
 

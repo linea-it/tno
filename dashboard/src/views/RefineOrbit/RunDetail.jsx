@@ -8,6 +8,7 @@ import OrbitApi from './OrbitApi';
 import { withRouter } from 'react-router-dom';
 import AsteroidList from './AsteroidList';
 import PropTypes from 'prop-types';
+import { Card } from 'primereact/card';
 class RefineOrbitRunDetail extends Component {
   state = this.initialState;
   api = new OrbitApi();
@@ -49,10 +50,28 @@ class RefineOrbitRunDetail extends Component {
   render() {
     return (
       <div className="content">
-        <AsteroidList
-          orbit_run={this.state.id}
-          view_asteroid={this.onViewAsteroid}
-        />
+        <div className="ui-g">
+          <div className="ui-g-4">
+            <Card
+              title="Statistics"
+              subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
+            />
+          </div>
+          <div className="ui-g-4">
+            <Card title="" subTitle="" />
+          </div>
+          <div className="ui-g-4">
+            <Card title="" subTitle="" />
+          </div>
+        </div>
+        <div className="ui-g">
+          <div className="ui-g-12">
+            <AsteroidList
+              orbit_run={this.state.id}
+              view_asteroid={this.onViewAsteroid}
+            />
+          </div>
+        </div>
       </div>
     );
   }

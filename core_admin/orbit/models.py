@@ -66,6 +66,11 @@ class OrbitRun(models.Model):
         help_text='Number of failed objects',
         null=True, blank=True
     )
+    count_warning = models.PositiveIntegerField(
+        verbose_name='Count Warning',
+        help_text='Number of objects with status warning',
+        null=True, blank=True
+    )
 
     # Relation With Tno.CustomList
     input_list = models.ForeignKey(
@@ -257,6 +262,10 @@ class RefinedAsteroid(models.Model):
 
         OBS: Name nao pode ser uma ForeignKey por que name na skybot nao e unico.
     """
+
+    class Meta:
+        unique_together = ('orbit_run', 'name')
+
     # Relation With orbit.OrbitRun
     orbit_run = models.ForeignKey(
         OrbitRun, on_delete=models.CASCADE, verbose_name='Orbit Run',
@@ -266,7 +275,6 @@ class RefinedAsteroid(models.Model):
     name = models.CharField(
         verbose_name='Name',
         max_length=32,
-        unique=True,
         null=False, blank=False,
         help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).')
 
@@ -388,7 +396,7 @@ class RefinedOrbitInput(models.Model):
     source = models.CharField(
         verbose_name='Source',
         max_length=6,
-        null=False, blank=False,
+        null=True, blank=True,
         choices=(('MPC', 'MPC'), ('AstDys', 'AstDys'), ('JPL', 'JPL'))
     )
 

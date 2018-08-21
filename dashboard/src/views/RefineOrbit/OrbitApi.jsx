@@ -94,5 +94,14 @@ class OrbitApi {
       params: params,
     });
   };
+
+  getAsteroidInputs = ({ id }) => {
+    const params = {
+      asteroid: id,
+    };
+    return axios.get(`${this.api}/refined_input/`, {
+      params: params,
+    });
+  };
 }
 export default OrbitApi;
