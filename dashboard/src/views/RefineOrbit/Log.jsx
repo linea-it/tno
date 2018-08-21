@@ -23,18 +23,6 @@ class Log extends Component {
     }
   };
 
-  getLog = (name, cod) => {
-    const params = {
-      name: name,
-      cod: cod,
-    };
-
-    this.api.getDataLog(params).then(res => {
-      const r = res.data;
-      this.setState({ textLog: r.lines });
-    });
-  };
-
   render() {
     const { visible, onHide, id } = this.props;
     const teste = [];
