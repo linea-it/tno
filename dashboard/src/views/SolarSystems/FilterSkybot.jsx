@@ -46,6 +46,7 @@ class FilterPointings extends React.Component {
     });
     this.setState({ colorAlert: 'danger' });
     this.setState({ open: true });
+    console.log('Não tá chegando');
   };
 
   ErroReset = () => {
@@ -64,6 +65,7 @@ class FilterPointings extends React.Component {
   };
 
   handlerSubmitFilter = () => {
+    console.log(this.state.dynclass);
     if (this.state.mv === '' && this.state.dynclass === '') {
       this.ErroEmpty();
     } else {

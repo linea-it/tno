@@ -16,7 +16,8 @@ import Icons from 'views/Icons/Icons';
 import Notifications from 'views/Notifications/Notifications';
 import SkybotDetail from '../views/SolarSystems/SkybotDetail';
 import PointingsDetail from '../views/Pointings/PointingsDetail';
-import RefineOrbitDetail from '../views/RefineOrbit/Details';
+import RefineRunOrbitDetail from '../views/RefineOrbit/RunDetail';
+import AsteroidDetail from '../views/RefineOrbit/AsteroidDetail';
 
 const appRoutes = [
   {
@@ -95,9 +96,9 @@ const appRoutes = [
     helpText: 'Astrometric reduction using PRAIA package and stellar catalogue Gaia like reference to detect and determine positions of objects from CCD frame.',
   },
   {
-    path: '/details',
-    name: 'Details',
-    component: RefineOrbitDetail,
+    path: '/orbit_run_detail/:id',
+    name: 'Refine Orbit Detail',
+    component: RefineRunOrbitDetail,
     hidden: true,
   },
   {
@@ -111,6 +112,12 @@ const appRoutes = [
     name: 'Refine Orbit',
     component: RefineOrbitPanel,
     helpText: 'Refinement of Orbits of specifics objects using NIMA code',
+  },
+  {
+    path: '/refined_asteroid/:id',
+    name: 'Refined Asteroid',
+    hidden: true,
+    component: AsteroidDetail,
   },
   {
     path: '/prediction',

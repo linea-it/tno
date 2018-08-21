@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from django.conf.urls.static import static
+from django.conf import settings
 from django.conf.urls import url
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.routers import DefaultRouter
@@ -26,7 +27,7 @@ from tno.views import UserViewSet, PointingViewSet, SkybotOutputViewSet, ObjectC
     ProccessViewSet
 from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet
 
-from orbit.views import OrbitRunViewSet, RefinedAsteroidViewSet, RefinedOrbitViewSet
+from orbit.views import OrbitRunViewSet, RefinedAsteroidViewSet, RefinedOrbitViewSet, RefinedOrbitInputViewSet
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -36,6 +37,7 @@ router.register(r'skybotoutput', SkybotOutputViewSet)
 router.register(r'orbit_run', OrbitRunViewSet)
 router.register(r'refined_asteroid', RefinedAsteroidViewSet)
 router.register(r'refined_orbit', RefinedOrbitViewSet)
+router.register(r'refined_input', RefinedOrbitInputViewSet)
 
 # router.register(r'observation', ObservationViewSet)
 # router.register(r'orbital_parameter', OrbitalParameterViewSet)
@@ -51,4 +53,4 @@ urlpatterns += [
     path('admin/', admin.site.urls),
     url(r'^obtain-auth-token/$', csrf_exempt(obtain_auth_token)),
     url(r'^teste/', common_views.teste),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

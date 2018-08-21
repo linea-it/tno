@@ -6,6 +6,7 @@ from .models import OrbitalParameterFile
 from .models import BspJplFile
 from .models import RefinedAsteroid
 from .models import RefinedOrbit
+from .models import RefinedOrbitInput
 
 
 @admin.register(OrbitRun)
@@ -44,4 +45,10 @@ class RefinedAsteroidAdmin(admin.ModelAdmin):
 @admin.register(RefinedOrbit)
 class RefinedOrbitAdmin(admin.ModelAdmin):
     list_display = ('id', 'asteroid', 'filename', 'file_size', 'file_type', 'relative_path',)
-    search_fields = ('obj__name',)
+    search_fields = ('asteroid__name',)
+
+
+@admin.register(RefinedOrbitInput)
+class RefinedOrbitInputAdmin(admin.ModelAdmin):
+    list_display = ('id', 'asteroid', 'input_type', 'source', 'date_time', 'filename', 'relative_path',)
+    search_fields = ('asteroid__name',)

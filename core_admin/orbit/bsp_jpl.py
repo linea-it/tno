@@ -217,15 +217,24 @@ class BSPJPL(DownloadParameters):
             }
         )
 
-    def get_file_path(self, name, number):
+    def get_file_path(self, name):
 
-        name = name.replace(" ", "_")
+        f = self.get_latest(name)
 
-        filename = name + self.bsp_jpl_extension
+        if not f:
+            return None, None
 
-        file_path = os.path.join(self.bsp_jpl_dir, filename)
+        file_path = os.path.join(self.bsp_jpl_dir, f.filename)
 
         if not os.path.exists(file_path):
-            file_path = None
+            file_path = None, None
 
-        return file_path
+        return file_path, f
+
+    def get_latest(self, name):
+        try:
+            f = BspJplFile.objects.filter(name=name).order_by('-download_finish_time').first()
+            return f
+
+        except:
+            return None

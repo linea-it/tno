@@ -27,15 +27,79 @@ class OrbitApi {
       status: 'pending',
     });
 
+  getOrbitRunById = ({ id }) => axios.patch(`${this.api}/orbit_run/${id}/`);
+
   // dados na table do primereact
   getRefineOrbits = id => axios.get(`${this.api}/orbit_run/${id}`);
 
-  getLogRefineOrbits = () => axios.get(`${this.api}/orbit_run/log_by_objects/`);
+  getAsteroids = ({
+    page,
+    sizePerPage,
+    sortField,
+    sortOrder,
+    filters = [],
+  }) => {
+    let ordering = sortField;
+    if (sortOrder === -1) {
+      ordering = '-' + sortField;
+    }
 
-  getDataLog = ({ cod, name }) => {
-    const params = { name: name, cod: cod };
+    const params = { page: page, pageSize: sizePerPage, ordering: ordering };
+    filters.forEach(element => {
+      params[element.property] = element.value;
+    });
 
-    return axios.get(`${this.api}/orbit_run/log_by_objects/`, {
+    return axios.get(`${this.api}/refined_asteroid/`, {
+      params: params,
+    });
+  };
+
+  getAsteroidById = ({ id }) =>
+    axios.patch(`${this.api}/refined_asteroid/${id}/`);
+
+  getAsteroidLog = ({ asteroid_id, name, orbit_run }) => {
+    let params = { name: name, orbit_run: orbit_run };
+    if (asteroid_id) {
+      params = { asteroid_id: asteroid_id };
+    }
+
+    return axios.get(`${this.api}/refined_asteroid/get_log/`, {
+      params: params,
+    });
+  };
+
+  getAsteroidDownloadLink = ({ asteroid_id, name, orbit_run }) => {
+    let params = { name: name, orbit_run: orbit_run };
+    if (asteroid_id) {
+      params = { asteroid_id: asteroid_id };
+    }
+
+    return axios.get(`${this.api}/refined_asteroid/download_results/`, {
+      params: params,
+    });
+  };
+
+  getAsteroidNeighbors = ({ asteroid_id }) => {
+    const params = { asteroid_id: asteroid_id };
+    return axios.get(`${this.api}/refined_asteroid/get_neighbors/`, {
+      params: params,
+    });
+  };
+
+  getAsteroidFiles = ({ id }) => {
+    const params = {
+      asteroid: id,
+    };
+    return axios.get(`${this.api}/refined_orbit/`, {
+      params: params,
+    });
+  };
+
+  getAsteroidInputs = ({ id }) => {
+    const params = {
+      asteroid: id,
+    };
+    return axios.get(`${this.api}/refined_input/`, {
       params: params,
     });
   };

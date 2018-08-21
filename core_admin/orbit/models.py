@@ -66,6 +66,11 @@ class OrbitRun(models.Model):
         help_text='Number of failed objects',
         null=True, blank=True
     )
+    count_warning = models.PositiveIntegerField(
+        verbose_name='Count Warning',
+        help_text='Number of objects with status warning',
+        null=True, blank=True
+    )
 
     # Relation With Tno.CustomList
     input_list = models.ForeignKey(
@@ -257,6 +262,10 @@ class RefinedAsteroid(models.Model):
 
         OBS: Name nao pode ser uma ForeignKey por que name na skybot nao e unico.
     """
+
+    class Meta:
+        unique_together = ('orbit_run', 'name')
+
     # Relation With orbit.OrbitRun
     orbit_run = models.ForeignKey(
         OrbitRun, on_delete=models.CASCADE, verbose_name='Orbit Run',
@@ -266,7 +275,6 @@ class RefinedAsteroid(models.Model):
     name = models.CharField(
         verbose_name='Name',
         max_length=32,
-        unique=True,
         null=False, blank=False,
         help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).')
 
@@ -280,7 +288,7 @@ class RefinedAsteroid(models.Model):
         max_length=10,
         verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('error', 'Error'))
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'))
     )
 
     error_msg = models.CharField(
@@ -317,9 +325,9 @@ class RefinedAsteroid(models.Model):
         help_text='Absolute Path to refine orbit OBJECT directory.',
     )
 
-
     def __str__(self):
         return str(self.name)
+
 
 class RefinedOrbit(models.Model):
     """
@@ -357,8 +365,60 @@ class RefinedOrbit(models.Model):
         help_text='Path relative to file, this is the internal path in the proccess directory.',
     )
 
+    def __str__(self):
+        return str(self.filename)
+
+
+class RefinedOrbitInput(models.Model):
+    """
+        Este modelo representa os arquivos utilizados como INPUT pelo nima para cada Objeto.
+        Um Objeto deve ter 4 arquivos de entrada.
+        - Astrometry - Resultado da Etapa de Astrometria.
+        - Orbital Parameters - Arquivo baixado do MPC ou AstDys
+        - Observations - Arquivo baixado do MPC ou AstDys
+        - BSP_JPL - Arquivo baixado do JPL
+    """
+
+    asteroid = models.ForeignKey(
+        RefinedAsteroid, on_delete=models.CASCADE, verbose_name='Asteroid',
+        null=False, blank=False, related_name='input_file'
+    )
+
+    input_type = models.CharField(
+        max_length=60,
+        verbose_name='Input Type',
+        null=False, blank=False,
+        help_text="Description of the input type.",
+        choices=(('observations', 'Observations'), ('orbital_parameters', 'Orbital Parameters'), ('bsp_jpl', 'BSP JPL'),
+                 ('astrometry', 'Astrometry'))
+    )
+
+    source = models.CharField(
+        verbose_name='Source',
+        max_length=6,
+        null=True, blank=True,
+        choices=(('MPC', 'MPC'), ('AstDys', 'AstDys'), ('JPL', 'JPL'))
+    )
+
+    date_time = models.DateTimeField(
+        verbose_name='Date Time',
+        auto_now_add=False, null=True, blank=True)
+
+    filename = models.CharField(
+        max_length=256,
+        null=False, blank=False,
+        verbose_name='Filename',
+    )
+
+    relative_path = models.CharField(
+        max_length=1024,
+        verbose_name='Relative Path',
+        null=True, blank=True,
+        help_text='Path relative to file, this is the internal path in the proccess directory.',
+    )
 
     def __str__(self):
         return str(self.filename)
+
 
 from . import signals

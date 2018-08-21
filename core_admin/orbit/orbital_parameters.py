@@ -228,22 +228,24 @@ class GetOrbitalParameters(DownloadParameters):
             }
         )
 
-    def get_file_path(self, name, number):
+    def get_file_path(self, name):
 
-        name = name.replace(" ", "_")
+        f = self.get_latest(name)
 
-        astdys_filename = name + AstDys().orbital_parameters_extension
+        if not f:
+            return None, None
 
-        file_path = os.path.join(self.orbital_parameters_dir, astdys_filename)
+        file_path = os.path.join(self.orbital_parameters_dir, f.filename)
 
-        # Se o arquivo AstDys nao existir retornar o MPC
         if not os.path.exists(file_path):
-            mpc_filename = name + MPC().orbital_parameters_extension
+            file_path = None, None
 
-            file_path = os.path.join(self.orbital_parameters_dir, mpc_filename)
+        return file_path, f
 
-            # se o arquivo nao existir para o AstDys e MPC retorna None
-            if not os.path.exists(file_path):
-                file_path = None
+    def get_latest(self, name):
+        try:
+            f = OrbitalParameterFile.objects.filter(name=name).order_by('-download_finish_time').first()
+            return f
 
-        return file_path
+        except:
+            return None
