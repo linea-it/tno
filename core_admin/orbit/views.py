@@ -63,8 +63,6 @@ class OrbitRunViewSet(viewsets.ModelViewSet):
                 #     # retorna erro que nao existe
                 #     print("tá vazio")
         except ObjectDoesNotExist:
-            print("Either the entry or blog doesn't exist.")
-
             return Response({
                 'success': False,
                 'msg': "Nao encontrei ",
@@ -75,7 +73,36 @@ class OrbitRunViewSet(viewsets.ModelViewSet):
         if not self.request.user.pk:
             raise Exception('It is necessary an active login to perform this operation.')
         serializer.save(owner=self.request.user)
-        
+
+    @list_route()
+    def get_time_profile(self, request):
+
+        run = request.query_params.get('orbit_run', None)
+        if run is None:
+            return Response({
+                'success': False,
+                'msg': "orbit_run parameter is required",
+            })
+
+        try:
+            orbit_run = OrbitRun.objects.get(id=int(run))
+            print(orbit_run)
+
+            # Asteroids que nao falharam e ordenados pelo tempo de inicio
+            asteroids = orbit_run.asteroids.exclude(status='failure').order_by('start_time')
+
+            for a in asteroids:
+                print(a)
+
+            return Response({
+                'success': True
+            })
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "Record not found",
+            })
 
 
 class RefinedAsteroidViewSet(viewsets.ModelViewSet):

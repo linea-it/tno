@@ -5,10 +5,13 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 // Api Rest
 import OrbitApi from './OrbitApi';
+
 import { withRouter } from 'react-router-dom';
 import AsteroidList from './AsteroidList';
 import PropTypes from 'prop-types';
 import { Card } from 'primereact/card';
+import RefineOrbitTimeProfile from './TimeProfile';
+
 class RefineOrbitRunDetail extends Component {
   state = this.initialState;
   api = new OrbitApi();
@@ -61,7 +64,9 @@ class RefineOrbitRunDetail extends Component {
             <Card title="" subTitle="" />
           </div>
           <div className="ui-g-4">
-            <Card title="" subTitle="" />
+            <Card title="" subTitle="">
+              <RefineOrbitTimeProfile />
+            </Card>
           </div>
         </div>
         <div className="ui-g">
