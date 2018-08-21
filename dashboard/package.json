@@ -48,7 +48,8 @@
     "eject": "react-scripts eject",
     "lint": "eslint .",
     "lint-fix": "eslint . --fix",
-    "serve": "serve -s build -l 7000"
+    "serve": "serve -s build -l 7000",
+    "start-testing": "PORT=7000 npm-run-all -p watch-css start-js"
   },
   "devDependencies": {
     "eslint": "^3.19.0",

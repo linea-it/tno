@@ -235,22 +235,25 @@ class GetObservations(DownloadParameters):
             }
         )
 
-    def get_file_path(self, name, number):
+    def get_file_path(self, name):
+        f = self.get_latest(name)
 
-        name = name.replace(" ", "_")
+        if not f:
+            return None, None
 
-        astdys_filename = name + AstDys().observations_extension
+        file_path = os.path.join(self.observations_dir, f.filename)
 
-        file_path = os.path.join(self.observations_dir, astdys_filename)
-
-        # Se o arquivo AstDys nao existir retornar o MPC
         if not os.path.exists(file_path):
-            mpc_filename = name + MPC().observations_extension
+            file_path = None, None
 
-            file_path = os.path.join(self.observations_dir, mpc_filename)
+        return file_path, f
 
-            # se o arquivo nao existir para o AstDys e MPC retorna None
-            if not os.path.exists(file_path):
-                file_path = None
+    def get_latest(self, name):
+        try:
+            f = ObservationFile.objects.filter(name=name).order_by('-download_finish_time').first()
+            return f
 
-        return file_path
+        except:
+            return None
+
+

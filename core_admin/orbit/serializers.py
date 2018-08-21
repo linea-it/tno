@@ -1,9 +1,12 @@
-from orbit.models import OrbitRun, RefinedAsteroid, RefinedOrbit
+from orbit.models import OrbitRun, RefinedAsteroid, RefinedOrbit, RefinedOrbitInput
 from rest_framework import serializers
 from tno.models import Proccess, CustomList
 import humanize
 from django.utils import timezone
-
+from django.conf import settings
+import urllib.parse
+from django.db.models import Sum
+from datetime import datetime
 
 class OrbitRunSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
@@ -68,28 +71,45 @@ class OrbitRunSerializer(serializers.ModelSerializer):
             return None
 
     def get_start_time(self, obj):
-        return obj.start_time.strftime('%Y-%M-%d %H:%M:%S')
+        try:
+            return obj.start_time.strftime('%Y-%M-%d %H:%M:%S')
+        except:
+            return None
 
     def get_finish_time(self, obj):
-        return obj.finish_time.strftime('%Y-%M-%d %H:%M:%S')
+        try:
+            return obj.finish_time.strftime('%Y-%M-%d %H:%M:%S')
+        except:
+            return None
 
     def get_h_execution_time(self, obj):
-        return humanize.naturaldelta(obj.execution_time)
+        try:
+            return humanize.naturaldelta(obj.execution_time)
+        except:
+            return None
 
     def get_h_time(self, obj):
-        return humanize.naturaltime(timezone.now() - obj.start_time)
+        try:
+            return humanize.naturaltime(timezone.now() - obj.start_time)
+        except:
+            return None
 
 
 class RefinedAsteroidSerializer(serializers.ModelSerializer):
-
     orbit_run = serializers.PrimaryKeyRelatedField(
         queryset=OrbitRun.objects.all(), many=False)
+
+    h_time = serializers.SerializerMethodField()
+    h_execution_time = serializers.SerializerMethodField()
+    h_size = serializers.SerializerMethodField()
+    proccess_displayname = serializers.SerializerMethodField()
 
     class Meta:
         model = RefinedAsteroid
         fields = (
             'id',
             'orbit_run',
+            'proccess_displayname',
             'name',
             'number',
             'status',
@@ -97,14 +117,44 @@ class RefinedAsteroidSerializer(serializers.ModelSerializer):
             'start_time',
             'finish_time',
             'execution_time',
-            'relative_path',
+            'h_time',
+            'h_execution_time',
+            'h_size'
         )
 
+    def get_h_time(self, obj):
+        try:
+            return humanize.naturaltime(timezone.now() - obj.start_time)
+        except:
+            return None
+
+    def get_h_execution_time(self, obj):
+        try:
+            return humanize.naturaldelta(obj.execution_time)
+        except:
+            return None
+
+    def get_h_size(self, obj):
+        try:
+            total_size = obj.refined_orbit.aggregate(amount=Sum('file_size'))
+
+            return humanize.naturalsize(total_size["amount"])
+        except:
+            return None
+
+
+    def get_proccess_displayname(self, obj):
+        try:
+            return "%s - %s" % (obj.orbit_run.proccess.id, obj.orbit_run.input_list.displayname)
+        except:
+            return None
 
 class RefinedOrbitSerializer(serializers.ModelSerializer):
-
     asteroid = serializers.PrimaryKeyRelatedField(
         queryset=RefinedAsteroid.objects.all(), many=False)
+
+    src = serializers.SerializerMethodField()
+    h_size = serializers.SerializerMethodField()
 
     class Meta:
         model = RefinedOrbit
@@ -114,5 +164,44 @@ class RefinedOrbitSerializer(serializers.ModelSerializer):
             'filename',
             'file_size',
             'file_type',
-            'relative_path',
+            'src',
+            'h_size'
         )
+
+    def get_src(self, obj):
+        try:
+            media_url = settings.MEDIA_URL
+            src = urllib.parse.urljoin(media_url, obj.relative_path.strip('/'))
+            return src
+        except:
+            return None
+
+    def get_h_size(self, obj):
+        try:
+            return humanize.naturalsize(obj.file_size)
+        except:
+            return None
+
+class RefinedOrbitInputSerializer(serializers.ModelSerializer):
+    asteroid = serializers.PrimaryKeyRelatedField(
+        queryset=RefinedAsteroid.objects.all(), many=False)
+
+    date_time = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RefinedOrbitInput
+        fields = (
+            'id',
+            'asteroid',
+            'input_type',
+            'source',
+            'date_time',
+            'filename',
+        )
+
+
+    def get_date_time(self, obj):
+        try:
+            return datetime.strftime(obj.date_time, "%Y-%m-%d %H:%M:%S")
+        except:
+            return None

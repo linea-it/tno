@@ -11,19 +11,16 @@ class Log extends Component {
   static propTypes = {
     visible: PropTypes.bool.isRequired,
     onHide: PropTypes.func.isRequired,
-    id: PropTypes.any.isRequired,
+    id: PropTypes.number.isRequired,
   };
 
-  getLog = (name, cod) => {
-    const params = {
-      name: name,
-      cod: cod,
-    };
-
-    this.api.getDataLog(params).then(res => {
-      const r = res.data;
-      this.setState({ textLog: r.lines });
-    });
+  getLog = asteroid_id => {
+    if (asteroid_id > 0) {
+      this.api.getAsteroidLog({ asteroid_id: asteroid_id }).then(res => {
+        const r = res.data;
+        this.setState({ textLog: r.lines });
+      });
+    }
   };
 
   render() {
@@ -34,7 +31,7 @@ class Log extends Component {
       teste.push(<div>{line}</div>);
     });
     // console.log(id);
-    this.getLog(id.input_displayname, id.input_list);
+    this.getLog(id);
     return (
       <Dialog
         header={id.input_displayname}
@@ -47,17 +44,17 @@ class Log extends Component {
           color: '#ffffff',
           backgroundColor: '#254356',
           width: 900 + 'px',
+          // overflowY: 'scroll !important',
         }}
       >
         <pre
           style={{
             color: '#ffffff',
             backgroundColor: '#254356',
-            height: 800 + 'px',
             border: 'none',
+            // minHeight: '101%',
           }}
         >
-          Object: {id.input_displayname} id: {id.input_displayname}
           {teste}
         </pre>
       </Dialog>
