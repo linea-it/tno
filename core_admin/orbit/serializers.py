@@ -50,6 +50,7 @@ class OrbitRunSerializer(serializers.ModelSerializer):
             'count_not_executed',
             'count_success',
             'count_failed',
+            'count_warning',
         )
 
     def get_owner(self, obj):
