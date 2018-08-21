@@ -290,7 +290,7 @@ class SkybotStats extends Component {
                   fill="#007892"
                   stroke="#8884d8"
                 />
-                <Bar dataKey="observations" barSize={20} fill="#413ea0" />
+                <Bar dataKey="observations" barSize={20} fill="#6435c9" />
                 <Line type="monotone" dataKey="objects" stroke="#ff7300" />
               </ComposedChart>
             </Card>
@@ -312,10 +312,10 @@ class SkybotStats extends Component {
                 <Area
                   type="monotone"
                   dataKey=""
-                  fill="#8884d8"
-                  stroke="#8884d8"
+                  fill="#00b5ad"
+                  stroke="#00b5ad"
                 />
-                <Bar dataKey="objects" barSize={20} fill="#413ea0" />
+                <Bar dataKey="objects" barSize={20} fill="#6435c9" />
                 <Line type="monotone" dataKey="observations" stroke="#ff7300" />
               </ComposedChart>
             </Card>
@@ -324,7 +324,7 @@ class SkybotStats extends Component {
 
         <div className="ui-g-4">
           <Card title="" subTitle="">
-            <div className="ui horizontal orange statistic">
+            <div className="ui horizontal teal statistic">
               <div className="value">
                 <Icon name="database" /> {this.state.totalSize}
               </div>

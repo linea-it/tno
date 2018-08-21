@@ -7,6 +7,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
+import { Alert } from 'react-bootstrap';
 import moment from 'moment';
 
 import PropTypes from 'prop-types';
@@ -297,7 +298,6 @@ class FilterPointings extends React.Component {
             </form>
           </div>
         </div>
-
         {/* <FormGroup
                   controlId="formValidationError2"
                   validationState={this.state.validation}
@@ -311,7 +311,6 @@ class FilterPointings extends React.Component {
                     clearable={false}
                   />
                 </FormGroup> */}
-
         {/* <Grid fluid>
           <Row>
             <Col md={12}>
@@ -385,9 +384,33 @@ class FilterPointings extends React.Component {
         </Grid> */}
         <div className="ui-g">
           <div className="ui-g-12">
-            <Button label="Filter" onClick={this.handlerSubmitFilter} />
-            <Button label="Clear" onClick={this.onClear} />
-            <Button label="Close" onClick={this.onClose} />
+            <Button
+              className="ui-button-success"
+              label="Filter"
+              onClick={this.handlerSubmitFilter}
+            />
+            <Button
+              style={{
+                border: '1px solid #0984e3',
+                backgroundColor: '#0984e3',
+              }}
+              label="Clear"
+              onClick={this.onClear}
+            />
+            <Button
+              style={{
+                border: ' 1px solid #636e72',
+                backgroundColor: '#636e72',
+              }}
+              label="Close"
+              onClick={this.onClose}
+            />
+          </div>
+          <div className="ui-g-12">
+            <Alert bsStyle={this.state.colorAlert}>
+              {this.state.errorMessage}
+            </Alert>
+            <br />
           </div>
         </div>
       </Sidebar>
