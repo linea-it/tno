@@ -8,7 +8,6 @@ import { Calendar } from 'primereact/calendar';
 import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
 import { Alert } from 'react-bootstrap';
-import moment from 'moment';
 
 import PropTypes from 'prop-types';
 
