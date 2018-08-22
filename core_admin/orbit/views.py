@@ -86,16 +86,47 @@ class OrbitRunViewSet(viewsets.ModelViewSet):
 
         try:
             orbit_run = OrbitRun.objects.get(id=int(run))
-            print(orbit_run)
+
+            t0 = 0
+            t1 = orbit_run.execution_time.total_seconds()
 
             # Asteroids que nao falharam e ordenados pelo tempo de inicio
             asteroids = orbit_run.asteroids.exclude(status='failure').order_by('start_time')
 
-            for a in asteroids:
-                print(a)
+            data = []
+
+            for indx, asteroid in enumerate(asteroids):
+                indx += 1
+
+                # Diferenca do start do objeto com o start da execucao
+                d0 = asteroid.start_time - orbit_run.start_time
+                d0 = d0.total_seconds()
+
+                # Tempo inicial + o tempo de execucao.
+                d1 = d0 + asteroid.execution_time.total_seconds()
+
+                serie = dict({
+                    'name': asteroid.name,
+                    'status': asteroid.status,
+                    'duration': asteroid.execution_time.total_seconds(),
+                    'start_time': asteroid.start_time,
+                    'finish_time': asteroid.finish_time,
+                    'points': list([
+                        dict({
+                            'x': d0,
+                            'y': indx,
+                        }),
+                        dict({
+                            'x': d1,
+                            'y': indx
+                        })
+                    ])
+                })
+                data.append(serie)
 
             return Response({
-                'success': True
+                'success': True,
+                'data': data
             })
 
         except ObjectDoesNotExist:

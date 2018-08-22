@@ -225,8 +225,11 @@ class RefineOrbit():
 
         # ---------------------- Finish --------------------------------------------------------------------------------
 
+        instance.start_time = self.results["start_time"]
         finish_time = datetime.now()
         instance.finish_time = finish_time
+
+
 
         self.results["finish_time"] = finish_time.replace(microsecond=0).isoformat(' ')
         tdelta = finish_time - start_time

@@ -240,19 +240,13 @@ class AsteroidList extends Component {
         subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
       >
         <DataTable
-          // header={tb_header}
-          // footer={footer}
           value={this.state.data}
           resizableColumns={true}
           columnResizeMode="expand"
           reorderableColumns={false}
           reorderableRows={false}
           responsive={true}
-          // selectionMode="single"
-          // selection={this.state.selectedCar1}
-          // onSelectionChange={e => this.setState({ selectedCar1: e.data })}
           scrollable={true}
-          // scrollHeight="200px"
           loading={this.state.loading}
           totalRecords={this.state.totalSize}
           sortField={this.state.sortField}

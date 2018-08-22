@@ -25,6 +25,7 @@ class RefineOrbitRunDetail extends Component {
     return {
       id: 0,
       data: {},
+      time_profile: [],
     };
   }
 
@@ -42,6 +43,14 @@ class RefineOrbitRunDetail extends Component {
         id: parseInt(params.id, 10),
         data: data,
       });
+
+      if (data.status === 'success') {
+        this.api.getOrbitRunTimeProfile({ id: params.id }).then(res => {
+          this.setState({
+            time_profile: res.data.data,
+          });
+        });
+      }
     });
   }
 
@@ -65,7 +74,7 @@ class RefineOrbitRunDetail extends Component {
           </div>
           <div className="ui-g-4">
             <Card title="" subTitle="">
-              <RefineOrbitTimeProfile />
+              <RefineOrbitTimeProfile data={this.state.time_profile} />
             </Card>
           </div>
         </div>
