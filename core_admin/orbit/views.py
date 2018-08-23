@@ -63,8 +63,6 @@ class OrbitRunViewSet(viewsets.ModelViewSet):
                 #     # retorna erro que nao existe
                 #     print("tá vazio")
         except ObjectDoesNotExist:
-            print("Either the entry or blog doesn't exist.")
-
             return Response({
                 'success': False,
                 'msg': "Nao encontrei ",
@@ -75,7 +73,67 @@ class OrbitRunViewSet(viewsets.ModelViewSet):
         if not self.request.user.pk:
             raise Exception('It is necessary an active login to perform this operation.')
         serializer.save(owner=self.request.user)
-        
+
+    @list_route()
+    def get_time_profile(self, request):
+
+        run = request.query_params.get('orbit_run', None)
+        if run is None:
+            return Response({
+                'success': False,
+                'msg': "orbit_run parameter is required",
+            })
+
+        try:
+            orbit_run = OrbitRun.objects.get(id=int(run))
+
+            t0 = 0
+            t1 = orbit_run.execution_time.total_seconds()
+
+            # Asteroids que nao falharam e ordenados pelo tempo de inicio
+            asteroids = orbit_run.asteroids.exclude(status='failure').order_by('start_time')
+
+            data = []
+
+            for indx, asteroid in enumerate(asteroids):
+                indx += 1
+
+                # Diferenca do start do objeto com o start da execucao
+                d0 = asteroid.start_time - orbit_run.start_time
+                d0 = d0.total_seconds()
+
+                # Tempo inicial + o tempo de execucao.
+                d1 = d0 + asteroid.execution_time.total_seconds()
+
+                serie = dict({
+                    'name': asteroid.name,
+                    'status': asteroid.status,
+                    'duration': asteroid.execution_time.total_seconds(),
+                    'start_time': asteroid.start_time,
+                    'finish_time': asteroid.finish_time,
+                    'points': list([
+                        dict({
+                            'x': d0,
+                            'y': indx,
+                        }),
+                        dict({
+                            'x': d1,
+                            'y': indx
+                        })
+                    ])
+                })
+                data.append(serie)
+
+            return Response({
+                'success': True,
+                'data': data
+            })
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "Record not found",
+            })
 
 
 class RefinedAsteroidViewSet(viewsets.ModelViewSet):

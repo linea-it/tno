@@ -3,12 +3,15 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import OrbitApi from './OrbitApi';
+
 import { withRouter } from 'react-router-dom';
 import AsteroidList from './AsteroidList';
 import PropTypes from 'prop-types';
 import DonutStats from 'components/StatsCard/DonutStats.jsx';
 import ListStats from 'components/ListStats/ListStats.jsx';
 import StepStats from 'components/StepStats/StepStats.jsx';
+import { Card } from 'primereact/card';
+import RefineOrbitTimeProfile from './TimeProfile';
 
 class RefineOrbitRunDetail extends Component {
   state = this.initialState;
@@ -23,6 +26,7 @@ class RefineOrbitRunDetail extends Component {
     return {
       id: 0,
       data: {},
+      time_profile: [],
     };
   }
 
@@ -40,6 +44,14 @@ class RefineOrbitRunDetail extends Component {
         id: parseInt(params.id, 10),
         data: data,
       });
+
+      if (data.status === 'success') {
+        this.api.getOrbitRunTimeProfile({ id: params.id }).then(res => {
+          this.setState({
+            time_profile: res.data.data,
+          });
+        });
+      }
     });
   }
 
@@ -91,9 +103,10 @@ class RefineOrbitRunDetail extends Component {
               <StepStats title="My Stats" columns={stats2} />
             </div>
           </div>
-
-          <div className="ui-g-4 ui-md-4 ui-sm-1">
-            <ListStats Badge="STATUS" title="My Stats" data={stats} />
+          <div className="ui-g-4 ui-md-4">
+            <Card title="" subTitle="">
+              <RefineOrbitTimeProfile data={this.state.time_profile} />
+            </Card>
           </div>
         </div>
 
