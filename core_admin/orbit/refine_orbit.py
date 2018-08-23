@@ -18,6 +18,9 @@ from django.conf import settings
 import json
 from statistics import mean
 from .models import RefinedAsteroid, RefinedOrbit, RefinedOrbitInput
+from common.docker import calculate_cpu_percent2, calculate_cpu_percent, calculate_network_bytes, calculate_blkio_bytes, \
+    get_container_stats
+import json
 
 
 class RefineOrbit():
@@ -198,7 +201,6 @@ class RefineOrbit():
         # TODO: Essa etapa pode ser paralelizada com Parsl
         self.collect_inputs_by_objects(self.results["objects"], self.objects_dir)
 
-
         # ---------------------- Running NIMA --------------------------------------------------------------------------
         self.logger.info("Running NIMA for all objects")
         self.run_nima(self.results["objects"], self.objects_dir)
@@ -228,8 +230,6 @@ class RefineOrbit():
         instance.start_time = self.results["start_time"]
         finish_time = datetime.now()
         instance.finish_time = finish_time
-
-
 
         self.results["finish_time"] = finish_time.replace(microsecond=0).isoformat(' ')
         tdelta = finish_time - start_time
@@ -615,6 +615,7 @@ class RefineOrbit():
                 input_path = os.path.join(objects_path, alias)
 
                 nima_log = os.path.join(input_path, "nima.log")
+                container_stats = os.path.join(input_path, "container_stats.json")
 
                 self.nima_input_file(obj, input_path)
 
@@ -645,33 +646,41 @@ class RefineOrbit():
                         command=cmd,
                         detach=True,
                         name="nima_%s" % count,
-                        auto_remove=True,
+                        auto_remove=False,
                         mem_limit='1024m',
                         volumes=volumes
                     )
 
+                    # stats = list()
+                    # try:
+                    #     for stat in get_container_stats(container):
+                    #         # self.logger.debug("CPU: [ %s ] Memory: [ %s ]" % (stat["cpu_percent"], stat["mem_percent"]))
+                    #         stats.append(stat)
+                    #
+                    #     with open(container_stats, 'w') as fp:
+                    #         json.dump(stats, fp)
+                    # except Exception as e:
+                    #     self.logger.error(e)
+                    #     raise(e)
                     count += 1
 
                     log_data = ""
-                    # Logging
                     try:
                         for line in container.logs(stream=True):
-                            line = str(line.strip().decode("utf-8"))
+                            line = str(line.decode("utf-8"))
                             log_data += "%s\n" % line
-
                             # self.logger.debug(line)
-
-                        with open(nima_log, 'w') as f_nima_log:
-                            f_nima_log.write(log_data)
 
                     except Exception as e:
                         self.logger.error(e)
+
+                    container.stop()
+                    container.remove()
 
                     self.logger.debug("Finish Container NIMA")
 
                     running_t1 = datetime.now()
                     running_tdelta = running_t1 - running_t0
-
 
                     if log_data.find("SUCCESS") > -1:
                         status = "SUCCESS"
@@ -700,11 +709,21 @@ class RefineOrbit():
                     self.results["objects"][alias][
                         "error_msg"] = "Container NIMA failed"
 
+                    self.logger.error("PAROU 1")
+
+                    container.stop()
+                    container.remove()
+
                 except Exception as e:
                     self.logger.error(e)
                     self.results["count_failed"] += 1
                     self.results["objects"][alias]["status"] = "failure"
                     self.results["objects"][alias]["error_msg"] = e
+
+                    container.stop()
+                    container.remove()
+
+                    self.logger.error("PAROU 2")
 
                 tfinish = datetime.now()
                 tdelta = tfinish - tstart

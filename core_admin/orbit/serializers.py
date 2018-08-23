@@ -8,6 +8,7 @@ import urllib.parse
 from django.db.models import Sum
 from datetime import datetime
 
+
 class OrbitRunSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
 
@@ -26,6 +27,8 @@ class OrbitRunSerializer(serializers.ModelSerializer):
 
     h_execution_time = serializers.SerializerMethodField()
     h_time = serializers.SerializerMethodField()
+
+    execution_seconds = serializers.SerializerMethodField()
 
     class Meta:
         model = OrbitRun
@@ -51,6 +54,7 @@ class OrbitRunSerializer(serializers.ModelSerializer):
             'count_success',
             'count_failed',
             'count_warning',
+            'execution_seconds',
         )
 
     def get_owner(self, obj):
@@ -92,6 +96,12 @@ class OrbitRunSerializer(serializers.ModelSerializer):
     def get_h_time(self, obj):
         try:
             return humanize.naturaltime(timezone.now() - obj.start_time)
+        except:
+            return None
+
+    def get_execution_seconds(self, obj):
+        try:
+            return obj.execution_time.total_seconds()
         except:
             return None
 
@@ -143,12 +153,12 @@ class RefinedAsteroidSerializer(serializers.ModelSerializer):
         except:
             return None
 
-
     def get_proccess_displayname(self, obj):
         try:
             return "%s - %s" % (obj.orbit_run.proccess.id, obj.orbit_run.input_list.displayname)
         except:
             return None
+
 
 class RefinedOrbitSerializer(serializers.ModelSerializer):
     asteroid = serializers.PrimaryKeyRelatedField(
@@ -183,6 +193,7 @@ class RefinedOrbitSerializer(serializers.ModelSerializer):
         except:
             return None
 
+
 class RefinedOrbitInputSerializer(serializers.ModelSerializer):
     asteroid = serializers.PrimaryKeyRelatedField(
         queryset=RefinedAsteroid.objects.all(), many=False)
@@ -199,7 +210,6 @@ class RefinedOrbitInputSerializer(serializers.ModelSerializer):
             'date_time',
             'filename',
         )
-
 
     def get_date_time(self, obj):
         try:
