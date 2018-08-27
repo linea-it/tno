@@ -21,7 +21,7 @@
     "react-bootstrap-table-next": "^0.1.8",
     "react-bootstrap-table2-overlay": "^0.1.1",
     "react-bootstrap-table2-paginator": "^0.1.1",
-    "react-chartist": "^0.13.0",
+    "react-chartist": "^0.13.1",
     "react-dom": "^16.0.0",
     "react-images": "^0.5.19",
     "react-interval": "^2.0.2",

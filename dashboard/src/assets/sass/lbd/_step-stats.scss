@@ -1,0 +1,19 @@
+.step-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+
+    
+    > li {
+        color: $medium-dark-gray; 
+        font-size: $font-size-small
+    }
+
+    > li.number {
+        margin-left: 8px;
+        color: $black-bg;
+        font-size: $font-size-large;
+    }
+}
+
+
