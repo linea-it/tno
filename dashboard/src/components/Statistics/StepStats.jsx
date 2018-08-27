@@ -21,7 +21,7 @@ class StepStats extends Component {
 
     return (
       <div className="wrap">
-        <Card subTitle="EXECUTION" style={{ width: '450px' }}>
+        <Card subTitle={propSet.title} style={{ width: '450px' }}>
           <div className="ui-g">
             <div className="ui-md-6">
               <ul className="step-list">
@@ -52,7 +52,7 @@ class StepStats extends Component {
             />
             <ProgressBar
               id="inputId"
-              bsStyle=" progress-bar progress-bar-success"
+              bsStyle=" progress-bar progress-bar-success "
               now={35}
               key={1}
             />
@@ -64,7 +64,7 @@ class StepStats extends Component {
             />
             <ProgressBar
               id="inputId2"
-              bsStyle=" progress-bar progress-bar-danger"
+              bsStyle=" progress-bar progress-bar-danger "
               now={65}
               key={2}
             />

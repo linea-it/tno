@@ -7,9 +7,9 @@ import OrbitApi from './OrbitApi';
 import { withRouter } from 'react-router-dom';
 import AsteroidList from './AsteroidList';
 import PropTypes from 'prop-types';
-import DonutStats from 'components/StatsCard/DonutStats.jsx';
-import ListStats from 'components/ListStats/ListStats.jsx';
-import StepStats from 'components/StepStats/StepStats.jsx';
+import DonutStats from 'components/Statistics/DonutStats.jsx';
+import ListStats from 'components/Statistics/ListStats.jsx';
+import StepStats from 'components/Statistics/StepStats.jsx';
 import { Card } from 'primereact/card';
 import RefineOrbitTimeProfile from './TimeProfile';
 
@@ -62,7 +62,6 @@ class RefineOrbitRunDetail extends Component {
 
   render() {
     const stats = [
-      { name: 'STATUS', value: 400 },
       { name: 'Active Projects', value: 400 },
       { name: 'Open Tasks', value: 300 },
       { name: 'Support Tickets', value: 200 },
@@ -78,7 +77,7 @@ class RefineOrbitRunDetail extends Component {
     const data = [
       { name: 'Executado', value: 400 },
       { name: 'Warning', value: 300 },
-      { name: 'Não dfdff', value: 200 },
+      { name: 'Não executado', value: 200 },
       { name: 'Fail', value: 300 },
     ];
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
@@ -87,20 +86,21 @@ class RefineOrbitRunDetail extends Component {
       <div>
         <div className="ui-g">
           <div className="ui-g-4 ui-md-4 ui-sm-1">
-            <ListStats Badge="STATUS" title="My Stats" data={stats} />
+            <ListStats
+              statstext="warning"
+              status={true}
+              title="List Stats"
+              data={stats}
+            />
           </div>
 
           <div className="ui-g-4 ui-md-4 ui-sm-1">
             <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <DonutStats
-                subTitle="Statistics of executation"
-                data={data}
-                fill={colors}
-              />
+              <DonutStats title="Donut Stats" data={data} fill={colors} />
             </div>
 
             <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <StepStats title="My Stats" columns={stats2} />
+              <StepStats title="Step Stats" columns={stats2} />
             </div>
           </div>
           <div className="ui-g-4 ui-md-4">

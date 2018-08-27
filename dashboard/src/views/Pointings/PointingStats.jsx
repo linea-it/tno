@@ -160,7 +160,7 @@ class PointingsStats extends Component {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar barSize={20} dataKey="band" fill="#00b5ad" />;
+                <Bar barSize={20} dataKey="band" fill="#62388C" />;
               </BarChart>
             </Card>
           </div>
@@ -181,7 +181,7 @@ class PointingsStats extends Component {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar barSize={20} dataKey="exposure" fill="#6435c9" />;
+                <Bar barSize={20} dataKey="exposure" fill="#75BDEE" />;
               </BarChart>
             </Card>
           </div>
@@ -189,7 +189,7 @@ class PointingsStats extends Component {
           <div className="ui-g-3">
             <Card title="" subTitle="">
               <div className="ui statistics">
-                <div className="teal statistic">
+                <div className="plot-azul statistic">
                   <div className="value">
                     <Icon name="database" /> {this.state.totalSize}
                   </div>
@@ -227,7 +227,7 @@ class PointingsStats extends Component {
                 </Statistic>
                 {/* <p> Downloaded: {`${this.state.qtdDownloaded}`}</p> */}
                 <ProgressBar
-                  bsStyle="success"
+                  bsStyle="progress-h-6 progress-bar-success"
                   now={this.state.qtdDownloaded}
                   label={`${Math.round(
                     100 * this.state.qtdDownloaded / this.state.totalSize
@@ -255,7 +255,7 @@ class PointingsStats extends Component {
               </Statistic>
               {/* <p> Not downloaded: {`${this.state.qtdNotDownloaded}`}</p> */}
               <ProgressBar
-                bsStyle="danger"
+                bsStyle="progress-h-6 progress-bar progress-bar-danger"
                 now={this.state.qtdNotDownloaded}
                 label={`${Math.round(
                   100 * this.state.qtdNotDownloaded / this.state.totalSize
