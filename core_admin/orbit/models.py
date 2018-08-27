@@ -269,7 +269,7 @@ class RefinedAsteroid(models.Model):
     # Relation With orbit.OrbitRun
     orbit_run = models.ForeignKey(
         OrbitRun, on_delete=models.CASCADE, verbose_name='Orbit Run',
-        null=False, blank=False, default=None, related_name='orbit_run'
+        null=False, blank=False, default=None, related_name='asteroids'
     )
 
     name = models.CharField(

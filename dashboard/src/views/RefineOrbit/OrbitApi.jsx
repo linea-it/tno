@@ -32,6 +32,16 @@ class OrbitApi {
   // dados na table do primereact
   getRefineOrbits = id => axios.get(`${this.api}/orbit_run/${id}`);
 
+  // Time Profile
+  getOrbitRunTimeProfile = ({ id }) => {
+    const params = {
+      orbit_run: id,
+    };
+    return axios.get(`${this.api}/orbit_run/get_time_profile/`, {
+      params: params,
+    });
+  };
+
   getAsteroids = ({
     page,
     sizePerPage,
