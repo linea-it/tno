@@ -29,6 +29,8 @@ from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet
 
 from orbit.views import OrbitRunViewSet, RefinedAsteroidViewSet, RefinedOrbitViewSet, RefinedOrbitInputViewSet
 
+from predict.views import PredictRunViewSet, PredictAsteroidViewSet
+
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'pointing', PointingViewSet)
@@ -38,6 +40,9 @@ router.register(r'orbit_run', OrbitRunViewSet)
 router.register(r'refined_asteroid', RefinedAsteroidViewSet)
 router.register(r'refined_orbit', RefinedOrbitViewSet)
 router.register(r'refined_input', RefinedOrbitInputViewSet)
+
+router.register(r'predict_run', PredictRunViewSet)
+router.register(r'predict_asteroid', PredictAsteroidViewSet)
 
 # router.register(r'observation', ObservationViewSet)
 # router.register(r'orbital_parameter', OrbitalParameterViewSet)
@@ -50,7 +55,7 @@ router.register(r'praia_configuration', PraiaConfigurationViewSet)
 urlpatterns = router.urls
 
 urlpatterns += [
-    path('admin/', admin.site.urls),
-    url(r'^obtain-auth-token/$', csrf_exempt(obtain_auth_token)),
-    url(r'^teste/', common_views.teste),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                   path('admin/', admin.site.urls),
+                   url(r'^obtain-auth-token/$', csrf_exempt(obtain_auth_token)),
+                   url(r'^teste/', common_views.teste),
+               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
