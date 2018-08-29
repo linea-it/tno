@@ -7,11 +7,10 @@ import OrbitApi from 'views/Prediction/PredictionApi';
 import { withRouter } from 'react-router-dom';
 import AsteroidList from 'views/Prediction/AsteroidList';
 import PropTypes from 'prop-types';
-import DonutStats from 'components/StatsCard/DonutStats.jsx';
-import ListStats from 'components/ListStats/ListStats.jsx';
-import StepStats from 'components/StepStats/StepStats.jsx';
-import { Card } from 'primereact/card';
-import RefineOrbitTimeProfile from 'views/RefineOrbit/TimeProfile';
+import DonutStats from 'components/Statistics/DonutStats.jsx';
+import ListStats from 'components/Statistics/ListStats.jsx';
+import StepStats from 'components/Statistics/StepStats.jsx';
+import moment from 'moment';
 
 class PredictionDetail extends Component {
   state = this.initialState;
@@ -40,7 +39,6 @@ class PredictionDetail extends Component {
     this.api.getPredictionRunById({ id: params.id }).then(res => {
       const data = res.data;
 
-      console.log(data);
       this.setState({
         id: parseInt(params.id, 10),
         data: data,
@@ -64,7 +62,7 @@ class PredictionDetail extends Component {
   render() {
     const { data } = this.state;
 
-    if (data == {}) {
+    if (data === {}) {
       return <div />;
     }
 
@@ -77,10 +75,25 @@ class PredictionDetail extends Component {
       { name: 'Asteroids', value: data.count_objects },
     ];
 
-    const stats2 = [
-      { name: 'Active Projects', value: 400 },
-      { name: 'Active Projects', value: 400 },
-      { name: 'Active Projects', value: 400 },
+    const execute_time = [
+      {
+        text: 'Inputs',
+        number: Math.round(moment.duration(data.execution_time).asSeconds()),
+        colorIcon: 'info',
+        grid: ['3'],
+      },
+      {
+        text: 'Ephemeris',
+        number: 0,
+        colorIcon: 'info',
+        grid: ['3'],
+      },
+      {
+        text: 'Occultation',
+        number: 0,
+        colorIcon: 'success',
+        grid: ['3'],
+      },
     ];
 
     const stats_status = [
@@ -95,7 +108,11 @@ class PredictionDetail extends Component {
       <div>
         <div className="ui-g">
           <div className="ui-g-4 ui-md-4 ui-sm-1">
-            <ListStats Badge="STATUS" title={`Prediction Occultation - ${data.id}`} data={stats} />
+            <ListStats
+              Badge="STATUS"
+              title={`Prediction Occultation - ${data.id}`}
+              data={stats}
+            />
           </div>
 
           <div className="ui-g-4 ui-md-4 ui-sm-1">
@@ -108,7 +125,7 @@ class PredictionDetail extends Component {
             </div>
 
             <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <StepStats title="My Stats" columns={stats2} />
+              <StepStats title="My Stats" info={execute_time} />
             </div>
           </div>
           {/* <div className="ui-g-4 ui-md-4">

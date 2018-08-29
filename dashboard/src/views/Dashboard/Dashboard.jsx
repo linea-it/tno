@@ -3,7 +3,6 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import MiniCardStats from 'components/Statistics/MiniCardStats.jsx';
-import { Icon, Statistic } from 'semantic-ui-react';
 import { Card } from 'primereact/card';
 import plot1 from 'assets/img/plot1.png';
 import plot2 from 'assets/img/plot2.png';
@@ -11,14 +10,7 @@ import plot3 from 'assets/img/plot3.png';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import StepStats from 'components/Statistics/StepStats.jsx';
 import StepStatsGroup from 'components/Statistics/StepStatsGroup.jsx';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 class Dashboard extends Component {
   render() {
