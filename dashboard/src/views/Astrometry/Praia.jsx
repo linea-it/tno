@@ -30,27 +30,19 @@ class Praia extends Component {
     const { record } = this.state;
     return (
       <div className="content">
-        <Card
-          title="Astrometry"
-          category="DESCRIÇÃO SOBRE A ETAPA DE ASTROMETRY"
-          content={
-            <Grid fluid>
-              <Row>
-                <Col md={4}>
-                  <PraiaSubmit onCreateRun={this.onCreateRun} />
-                </Col>
-                <Col md={8}>
-                  <PraiaRunning record={record} />
-                </Col>
-              </Row>
-              <Row>
-                <Col md={12}>
-                  <PraiaHistory />
-                </Col>
-              </Row>
-            </Grid>
-          }
-        />
+        <div className="ui-g">
+          <div className="ui-g-4">
+            <PraiaSubmit onCreateRun={this.onCreateRun} />
+          </div>
+          <div className="ui-g-8">
+            <PraiaRunning record={record} />
+          </div>
+        </div>
+        <div className="ui-g">
+          <div className="ui-g-12">
+            <PraiaHistory />
+          </div>
+        </div>
       </div>
     );
   }

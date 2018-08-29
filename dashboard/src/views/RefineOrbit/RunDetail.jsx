@@ -3,7 +3,7 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import OrbitApi from './OrbitApi';
-
+import StepStats from 'components/Statistics/StepStats.jsx';
 import { withRouter } from 'react-router-dom';
 import AsteroidList from './AsteroidList';
 import PropTypes from 'prop-types';
@@ -11,7 +11,7 @@ import DonutStats from 'components/Statistics/DonutStats.jsx';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import { Card } from 'primereact/card';
 import RefineOrbitTimeProfile from './TimeProfile';
-
+import moment from 'moment';
 class RefineOrbitRunDetail extends Component {
   state = this.initialState;
   api = new OrbitApi();
@@ -83,6 +83,25 @@ class RefineOrbitRunDetail extends Component {
     ];
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
+    const execute_time = [
+      {
+        text: 'Download',
+        number: Math.round(
+          moment.duration(data.execution_download_time).asSeconds()
+        ),
+        colorIcon: 'info',
+        grid: ['6'],
+      },
+      {
+        text: 'NIMA',
+        number: Math.round(
+          moment.duration(data.execution_nima_time).asSeconds()
+        ),
+        colorIcon: 'success',
+        grid: ['6'],
+      },
+    ];
+
     return (
       <div>
         <div className="ui-g">
@@ -103,13 +122,12 @@ class RefineOrbitRunDetail extends Component {
                 fill={colors}
               />
             </div>
-
-            {/* <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <StepStats title="Step Stats" columns={stats2} />
-            </div> */}
+            <div className="ui-g-4 ui-md-12 ui-sm-1">
+              <StepStats title="Step Stats" info={execute_time} />
+            </div>
           </div>
           <div className="ui-g-4 ui-md-4">
-            <Card title="" subTitle="Time Profile">
+            <Card title="" subTitle="Execution Time">
               <RefineOrbitTimeProfile data={this.state.time_profile} />
             </Card>
           </div>

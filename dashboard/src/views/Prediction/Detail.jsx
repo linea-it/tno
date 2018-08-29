@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import DonutStats from 'components/Statistics/DonutStats.jsx';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import StepStats from 'components/Statistics/StepStats.jsx';
+import moment from 'moment';
 
 class PredictionDetail extends Component {
   state = this.initialState;
@@ -74,10 +75,25 @@ class PredictionDetail extends Component {
       { name: 'Asteroids', value: data.count_objects },
     ];
 
-    const stats2 = [
-      { name: 'Active Projects', value: 400 },
-      { name: 'Active Projects', value: 400 },
-      { name: 'Active Projects', value: 400 },
+    const execute_time = [
+      {
+        text: 'Inputs',
+        number: Math.round(moment.duration(data.execution_time).asSeconds()),
+        colorIcon: 'info',
+        grid: ['3'],
+      },
+      {
+        text: 'Ephemeris',
+        number: 0,
+        colorIcon: 'info',
+        grid: ['3'],
+      },
+      {
+        text: 'Occultation',
+        number: 0,
+        colorIcon: 'success',
+        grid: ['3'],
+      },
     ];
 
     const stats_status = [
@@ -109,7 +125,7 @@ class PredictionDetail extends Component {
             </div>
 
             <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <StepStats title="My Stats" columns={stats2} />
+              <StepStats title="My Stats" info={execute_time} />
             </div>
           </div>
           {/* <div className="ui-g-4 ui-md-4">
