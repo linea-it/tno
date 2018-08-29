@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { ProgressBar } from 'react-bootstrap';
-import { Table } from 'react-bootstrap';
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import { Card } from 'primereact/card';
@@ -18,10 +17,16 @@ class StepStats extends Component {
       data: array.isRequired,
       columns: any.isRequired,
     };
+    // Adaptação para Step com footer
+    const footer = (
+      <div>
+        <span>Footer</span>
+      </div>
+    );
 
     return (
       <div className="wrap">
-        <Card subTitle="EXECUTION" style={{ width: '450px' }}>
+        <Card footer={footer} subTitle={propSet.title} style={{ width: '535' }}>
           <div className="ui-g">
             <div className="ui-md-6">
               <ul className="step-list">
@@ -52,7 +57,7 @@ class StepStats extends Component {
             />
             <ProgressBar
               id="inputId"
-              bsStyle=" progress-bar progress-bar-success"
+              bsStyle=" progress-bar progress-bar-success "
               now={35}
               key={1}
             />
@@ -64,11 +69,12 @@ class StepStats extends Component {
             />
             <ProgressBar
               id="inputId2"
-              bsStyle=" progress-bar progress-bar-danger"
+              bsStyle=" progress-bar progress-bar-danger "
               now={65}
               key={2}
             />
           </ProgressBar>
+          <hr />
         </Card>
       </div>
     );
