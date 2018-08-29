@@ -235,10 +235,7 @@ class AsteroidList extends Component {
     });
 
     return (
-      <Card
-        title="Asteroids"
-        subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
-      >
+      <Card title="Asteroids" subTitle="">
         <DataTable
           value={this.state.data}
           resizableColumns={true}

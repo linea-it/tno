@@ -3,16 +3,15 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import OrbitApi from './OrbitApi';
-
+import StepStats from 'components/Statistics/StepStats.jsx';
 import { withRouter } from 'react-router-dom';
 import AsteroidList from './AsteroidList';
 import PropTypes from 'prop-types';
 import DonutStats from 'components/Statistics/DonutStats.jsx';
 import ListStats from 'components/Statistics/ListStats.jsx';
-import StepStats from 'components/Statistics/StepStats.jsx';
 import { Card } from 'primereact/card';
 import RefineOrbitTimeProfile from './TimeProfile';
-
+import moment from 'moment';
 class RefineOrbitRunDetail extends Component {
   state = this.initialState;
   api = new OrbitApi();
@@ -61,26 +60,47 @@ class RefineOrbitRunDetail extends Component {
   };
 
   render() {
+    const { data } = this.state;
+
+    if (data === {}) {
+      return <div />;
+    }
+
     const stats = [
-      { name: 'Active Projects', value: 400 },
-      { name: 'Open Tasks', value: 300 },
-      { name: 'Support Tickets', value: 200 },
-      { name: 'Active Timers', value: 300 },
+      { name: 'Status', value: data.status },
+      { name: 'Proccess', value: data.proccess_displayname },
+      { name: 'Owner', value: data.owner },
+      { name: 'Start', value: data.h_time },
+      { name: 'Execution', value: data.h_execution_time },
+      { name: 'Asteroids', value: data.count_objects },
     ];
 
-    const stats2 = [
-      { name: 'Active Projects', value: 400 },
-      { name: 'Active Projects', value: 400 },
-      { name: 'Active Projects', value: 400 },
-    ];
-
-    const data = [
-      { name: 'Executado', value: 400 },
-      { name: 'Warning', value: 300 },
-      { name: 'Não executado', value: 200 },
-      { name: 'Fail', value: 300 },
+    const stats_status = [
+      { name: 'Success', value: data.count_success },
+      { name: 'Warning', value: data.count_warning },
+      { name: 'Failure', value: data.count_failed },
+      { name: 'not Executed', value: data.count_not_executed },
     ];
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
+
+    const execute_time = [
+      {
+        text: 'Download',
+        number: Math.round(
+          moment.duration(data.execution_download_time).asSeconds()
+        ),
+        colorIcon: 'info',
+        grid: ['6'],
+      },
+      {
+        text: 'NIMA',
+        number: Math.round(
+          moment.duration(data.execution_nima_time).asSeconds()
+        ),
+        colorIcon: 'success',
+        grid: ['6'],
+      },
+    ];
 
     return (
       <div>
@@ -89,22 +109,25 @@ class RefineOrbitRunDetail extends Component {
             <ListStats
               statstext={this.state.data.status}
               status={true}
-              title="List Stats"
+              title={`Refine Orbit - ${data.id}`}
               data={stats}
             />
           </div>
 
           <div className="ui-g-4 ui-md-4 ui-sm-1">
             <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <DonutStats title="Donut Stats" data={data} fill={colors} />
+              <DonutStats
+                title="Execution Statistics"
+                data={stats_status}
+                fill={colors}
+              />
             </div>
-
             <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <StepStats title="Step Stats" columns={stats2} />
+              <StepStats title="Step Stats" info={execute_time} />
             </div>
           </div>
           <div className="ui-g-4 ui-md-4">
-            <Card title="" subTitle="">
+            <Card title="" subTitle="Execution Time">
               <RefineOrbitTimeProfile data={this.state.time_profile} />
             </Card>
           </div>

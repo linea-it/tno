@@ -146,7 +146,7 @@ class AsteroidList extends Component {
           icon="fa fa-search"
           className="ui-button-info"
           title="View"
-          onClick={() => this.onViewAsteroid(asteroid_id)}
+          // onClick={() => this.onViewAsteroid(asteroid_id)}
         />
       );
       btn_log = (

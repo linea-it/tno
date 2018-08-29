@@ -3,10 +3,9 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { Card } from 'primereact/card';
-import { Icon } from 'primereact/card';
 import PropTypes from 'prop-types';
 
-import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell } from 'recharts';
 
 class MiniCardStats extends Component {
   render() {
@@ -19,7 +18,7 @@ class MiniCardStats extends Component {
       fill: array.isRequired,
       name: string.isRequired,
     };
-    const RADIAN = Math.PI / 180;
+    // const RADIAN = Math.PI / 180;
 
     return (
       <div>

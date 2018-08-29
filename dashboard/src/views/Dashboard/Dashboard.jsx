@@ -3,7 +3,6 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import MiniCardStats from 'components/Statistics/MiniCardStats.jsx';
-import { Icon, Statistic } from 'semantic-ui-react';
 import { Card } from 'primereact/card';
 import plot1 from 'assets/img/plot1.png';
 import plot2 from 'assets/img/plot2.png';
@@ -11,7 +10,7 @@ import plot3 from 'assets/img/plot3.png';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import StepStats from 'components/Statistics/StepStats.jsx';
 import StepStatsGroup from 'components/Statistics/StepStatsGroup.jsx';
-import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 class Dashboard extends Component {
   render() {
@@ -45,36 +44,43 @@ class Dashboard extends Component {
     ];
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
+    const textInfo = [
+      { text: 'Download', number: 3232, colorIcon: 'success', grid: ['3'] },
+      { text: 'NotDownload', number: 333, colorIcon: 'danger', grid: ['4'] },
+      { text: 'NotDownload', number: 333, colorIcon: 'danger', grid: ['4'] },
+    ];
     return (
       <div>
         <div className="ui-g">
-          <div className="ui-md-4">
+          <div className="ui-md-4 ui-sm-6">
             <Card subTitle="Lorem Ipsum">
               <figure>
-                <img width="400" height="251" alt="text" src={plot1} />
+                <img width="300" height="151" alt="text" src={plot1} />
               </figure>
             </Card>
           </div>
-          <div className="ui-md-4">
+          <div className="ui-md-4 ui-sm-6">
             <Card subTitle="Lorem Ipsum">
-              <figure>
-                <img width="400" height="251" alt="text" src={plot3} />
-              </figure>
+              <ResponsiveContainer>
+                <figure>
+                  <img width="300" height="151" alt="text" src={plot3} />
+                </figure>
+              </ResponsiveContainer>
             </Card>
           </div>
 
-          <div className="ui-md-4">
+          <div className="ui-md-4 ui-sm-6">
             <ListStats statstext="running" title="List Stats" data={stats} />
           </div>
         </div>
 
         <div className="ui-g">
           <div className="ui-md-4">
-            <StepStats title="Step Stats" />
+            <StepStats title="Exposures" info={textInfo} />
           </div>
 
           <div className="ui-md-4">
-            <StepStats title="Step Stats" />
+            <StepStats title="Step Stats" info={textInfo} />
           </div>
 
           <div className="ui-md-4">
@@ -86,19 +92,18 @@ class Dashboard extends Component {
           <div className="ui-md-5">
             <Card subTitle="Lorem Ipsum">
               <figure>
-                <img width="500" height="351" alt="text" src={plot2} />
+                <img width="400" height="251" alt="text" src={plot2} />
               </figure>
             </Card>
           </div>
-          <div className="ui-md-6">
+          <div className="ui-md-4">
             <Card>
               <PieChart width={800} height={400} onMouseEnter={this.onPieEnter}>
                 <Pie
-                  data={data2}
+                  data={data}
                   cx={300}
                   cy={200}
                   labelLine={false}
-                  //label={renderCustomizedLabel}
                   outerRadius={80}
                   fill="#8884d8"
                 >
