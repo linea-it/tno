@@ -15,33 +15,11 @@ import {
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
-import { Icon, Statistic } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 // import Card from 'components/Card/Card.jsx';
 import { Card } from 'primereact/card';
 
 import SkybotApi from './SkybotApi';
-import plotPointings from 'assets/img/plotPointings.png';
-
-const statistics = {
-  classes: [
-    { label: 'Centaur', value: '1229' },
-    { label: 'Hungaria', value: '3232' },
-    { label: 'KBO', value: '3930' },
-    { label: 'Mars-Crosser', value: '332' },
-    { label: 'MB', value: '200' },
-    { label: 'NEA', value: '4232' },
-    { label: 'Trojan', value: '223' },
-  ],
-
-  band: [
-    { label: 'g', value: '365' },
-    { label: 'r', value: '4545' },
-    { label: 'Y', value: '567' },
-    { label: 'z', value: '3344' },
-    { label: 'i', value: '5466' },
-    { label: 'u', value: '889' },
-  ],
-};
 
 const band = [
   { name: 'g', objects: 590, observations: 800, amt: 1400 },

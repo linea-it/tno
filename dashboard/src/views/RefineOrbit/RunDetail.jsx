@@ -9,7 +9,6 @@ import AsteroidList from './AsteroidList';
 import PropTypes from 'prop-types';
 import DonutStats from 'components/Statistics/DonutStats.jsx';
 import ListStats from 'components/Statistics/ListStats.jsx';
-import StepStats from 'components/Statistics/StepStats.jsx';
 import { Card } from 'primereact/card';
 import RefineOrbitTimeProfile from './TimeProfile';
 
@@ -63,7 +62,7 @@ class RefineOrbitRunDetail extends Component {
   render() {
     const { data } = this.state;
 
-    if (data == {}) {
+    if (data === {}) {
       return <div />;
     }
 
@@ -74,12 +73,6 @@ class RefineOrbitRunDetail extends Component {
       { name: 'Start', value: data.h_time },
       { name: 'Execution', value: data.h_execution_time },
       { name: 'Asteroids', value: data.count_objects },
-    ];
-
-    const stats2 = [
-      { name: 'Active Projects', value: 400 },
-      { name: 'Active Projects', value: 400 },
-      { name: 'Active Projects', value: 400 },
     ];
 
     const stats_status = [

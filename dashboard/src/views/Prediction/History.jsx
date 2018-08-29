@@ -6,7 +6,6 @@ import 'primeicons/primeicons.css';
 // Api Rest
 import PredictionApi from './PredictionApi';
 // interface components
-import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { DataTable } from 'primereact/datatable';
 import { Paginator } from 'primereact/paginator';
@@ -193,7 +192,7 @@ class PredictionHistory extends Component {
   };
 
   onLog = id => {
-    console.log("on Log")
+    console.log('on Log');
   };
 
   render() {
