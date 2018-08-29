@@ -68,10 +68,22 @@ class RefineOrbitRunDetail extends Component {
       { name: 'Active Timers', value: 300 },
     ];
 
-    const stats2 = [
-      { name: 'Active Projects', value: 400 },
-      { name: 'Active Projects', value: 400 },
-      { name: 'Active Projects', value: 400 },
+   
+    const textInfo2 = [
+      {
+        legend: 'Downloaded',
+        label: '3232',
+        value: 1,
+        colorIcon: 'success',
+        grid: ['6'],
+      },
+      {
+        legend: 'Not Downloaded',
+        label: '333',
+        value: 2,
+        colorIcon: 'danger',
+        grid: ['6'],
+      },
     ];
 
     const data = [
@@ -100,7 +112,7 @@ class RefineOrbitRunDetail extends Component {
             </div>
 
             <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <StepStats title="Step Stats" columns={stats2} />
+              <StepStats title="Step Stats" columns={textInfo2} />
             </div>
           </div>
           <div className="ui-g-4 ui-md-4">

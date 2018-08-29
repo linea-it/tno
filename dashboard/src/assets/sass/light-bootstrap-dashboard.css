@@ -449,7 +449,7 @@ body > .navbar-collapse[data-color="purple"]:after {
   width: calc(100% - 260px); }
   .main-panel > .content {
     padding: 30px 15px;
-    min-height: calc(100% - 123px); }
+    min-height: 830px; }
   .main-panel > .footer {
     border-top: 1px solid #e7e7e7; }
   .main-panel .navbar {
@@ -467,10 +467,6 @@ body > .navbar-collapse[data-color="purple"]:after {
 
 .margin-top {
   margin-top: -65px; }
-
-img {
-  max-width: 100%;
-  height: 100%; }
 
 .btn {
   border-width: 2px;
@@ -1759,7 +1755,7 @@ img {
 .card {
   border-radius: 4px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(63, 63, 68, 0.1);
-  background-color: #A2A3A4 !important;
+  background-color: #FFFFFF !important;
   margin-bottom: 30px; }
   .card .image {
     width: 100%;
@@ -3106,6 +3102,10 @@ img {
 .step-text-left {
   float: left; }
 
+.false {
+  background-color: none;
+  border: none; }
+
 .badge {
   display: inline-block;
   min-width: 10px;
@@ -3228,7 +3228,8 @@ img {
 
 .mini-card-stats {
   width: 300px;
-  height: 110px; }
+  height: 110px;
+  border: none; }
 
 .plot {
   margin-top: -36px; }

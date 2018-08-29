@@ -3,13 +3,11 @@ import { ProgressBar } from 'react-bootstrap';
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import { Card } from 'primereact/card';
-import { Tooltip } from 'primereact/tooltip';
 import PropTypes from 'prop-types';
 
 class StepStats extends Component {
   render() {
     const propSet = this.props;
-    console.log(propSet);
     const { string, array, any } = PropTypes;
 
     StepStats.PropTypes = {
@@ -36,48 +34,40 @@ class StepStats extends Component {
                   propSet.info[i].colorIcon
                 }`}
               />
-              {propSet.info[i].text}
+              {propSet.info[i].legend}
             </li>
-            <li className="number">{propSet.info[i].number}</li>
+            <li className="number">{propSet.info[i].label}</li>
           </ul>
         </div>
+      );
+    });
+
+    const areaProgress = propSet.info.map((col, i) => {
+      // const percent = `${Math.round(
+      //   100 *
+      //     propSet.info[i].value /
+
+      // )}%`;
+      return (
+        <ProgressBar
+          id="inputId"
+          bsStyle={`progress-bar progress-bar-${propSet.info[i].colorIcon}`}
+          now={50}
+          key={i}
+        />
       );
     });
 
     return (
       <div className="wrap">
         <Card
+          className={`${propSet.disableCard}`}
           footer={footer}
           subTitle={propSet.title}
-          style={{ width: '535px' }}
+          style={{ maxWidth: '500px' }}
         >
           <div className="ui-g">{areaIcon}</div>
-          <ProgressBar>
-            <Tooltip
-              for="#inputId"
-              title="Enter your username"
-              tooltipPosition="bottom"
-              tooltipEvent="hover"
-            />
-            <ProgressBar
-              id="inputId"
-              bsStyle=" progress-bar progress-bar-success "
-              now={35}
-              key={1}
-            />
-            <Tooltip
-              for="#inputId2"
-              title="Enter your username"
-              tooltipPosition="bottom"
-              tooltipEvent="hover"
-            />
-            <ProgressBar
-              id="inputId2"
-              bsStyle=" progress-bar progress-bar-danger "
-              now={65}
-              key={2}
-            />
-          </ProgressBar>
+          <ProgressBar>{areaProgress}</ProgressBar>
           <hr />
         </Card>
       </div>

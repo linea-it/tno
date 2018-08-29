@@ -248,7 +248,7 @@ body > .navbar-collapse{
 
     > .content{
         padding: 30px 15px;
-        min-height: calc(100% - 123px);
+        min-height: 830px;//calc(100% - 123px);
     }
 
     > .footer{
@@ -275,7 +275,3 @@ body > .navbar-collapse{
     margin-top: -65px;
 }
 
-img{
-    max-width:100%;
-    height:100%;
-}
