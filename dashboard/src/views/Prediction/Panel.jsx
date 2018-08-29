@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-// import RefineOrbitSubmit from './Submit';
-// import RefineOrbitRunning from './Running';
-// import RefineOrbitHistory from './History';
 import PredictionHistory from './History';
 
 import PropTypes from 'prop-types';
