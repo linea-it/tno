@@ -27,7 +27,7 @@ class DonutStats extends Component {
 
     return (
       <ResponsiveContainer width={450} height="80%">
-        <Card subTitle={propSet.subTitle} style={{ height: '200px' }}>
+        <Card subTitle={propSet.title} style={{ height: '200px' }}>
           <PieChart width={450} height={150} onMouseEnter={this.onPieEnter}>
             <Pie
               data={propSet.data}
