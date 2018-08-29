@@ -443,7 +443,7 @@ body > .navbar-collapse[data-color="purple"]:after {
   background-size: 150% 150%; }
 
 .main-panel {
-  background: #4E5357 !important;
+  background: rgba(111, 109, 109, 0.59);
   position: relative;
   float: right;
   width: calc(100% - 260px); }

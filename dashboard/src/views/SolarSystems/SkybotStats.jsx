@@ -1,13 +1,4 @@
 import React, { Component } from 'react';
-import {
-  Grid,
-  Row,
-  Col,
-  Panel,
-  ListGroup,
-  ListGroupItem,
-  Image,
-} from 'react-bootstrap';
 
 import {
   ComposedChart,

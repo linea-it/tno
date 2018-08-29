@@ -61,11 +61,19 @@ class RefineOrbitRunDetail extends Component {
   };
 
   render() {
+    const { data } = this.state;
+
+    if (data == {}) {
+      return <div />;
+    }
+
     const stats = [
-      { name: 'Active Projects', value: 400 },
-      { name: 'Open Tasks', value: 300 },
-      { name: 'Support Tickets', value: 200 },
-      { name: 'Active Timers', value: 300 },
+      { name: 'Status', value: data.status },
+      { name: 'Proccess', value: data.proccess_displayname },
+      { name: 'Owner', value: data.owner },
+      { name: 'Start', value: data.h_time },
+      { name: 'Execution', value: data.h_execution_time },
+      { name: 'Asteroids', value: data.count_objects },
     ];
 
     const stats2 = [
@@ -74,11 +82,11 @@ class RefineOrbitRunDetail extends Component {
       { name: 'Active Projects', value: 400 },
     ];
 
-    const data = [
-      { name: 'Executado', value: 400 },
-      { name: 'Warning', value: 300 },
-      { name: 'Não executado', value: 200 },
-      { name: 'Fail', value: 300 },
+    const stats_status = [
+      { name: 'Success', value: data.count_success },
+      { name: 'Warning', value: data.count_warning },
+      { name: 'Failure', value: data.count_failed },
+      { name: 'not Executed', value: data.count_not_executed },
     ];
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
@@ -89,22 +97,26 @@ class RefineOrbitRunDetail extends Component {
             <ListStats
               statstext={this.state.data.status}
               status={true}
-              title="List Stats"
+              title={`Refine Orbit - ${data.id}`}
               data={stats}
             />
           </div>
 
           <div className="ui-g-4 ui-md-4 ui-sm-1">
             <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <DonutStats title="Donut Stats" data={data} fill={colors} />
+              <DonutStats
+                title="Execution Statistics"
+                data={stats_status}
+                fill={colors}
+              />
             </div>
 
-            <div className="ui-g-4 ui-md-12 ui-sm-1">
+            {/* <div className="ui-g-4 ui-md-12 ui-sm-1">
               <StepStats title="Step Stats" columns={stats2} />
-            </div>
+            </div> */}
           </div>
           <div className="ui-g-4 ui-md-4">
-            <Card title="" subTitle="">
+            <Card title="" subTitle="Time Profile">
               <RefineOrbitTimeProfile data={this.state.time_profile} />
             </Card>
           </div>

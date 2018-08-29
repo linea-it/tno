@@ -31,12 +31,15 @@ class PredictionPanel extends Component {
   };
 
   render() {
-    const { record } = this.state;
+    // const { record } = this.state;
     return (
       <div className="content">
         <div className="ui-g">
           <div className="ui-g-4">
-            <Card title="Prediction Occultation" subTitle={'Execute PRAIA Occultation'} />
+            <Card
+              title="Prediction Occultation"
+              subTitle={'Execute PRAIA Occultation'}
+            />
           </div>
           <div className="ui-g-8">
             <Card title=" " subTitle=" " />

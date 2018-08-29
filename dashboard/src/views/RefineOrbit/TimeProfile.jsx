@@ -9,6 +9,7 @@ import {
   Scatter,
   XAxis,
   YAxis,
+  ZAxis,
   CartesianGrid,
   Tooltip,
 } from 'recharts';
@@ -71,6 +72,7 @@ class RefineOrbitTimeProfile extends Component {
             name="Asteroids"
             tick={false}
           />
+          <ZAxis range={[10, 10]} />
           <Tooltip cursor={{ strokeDasharray: '3 3' }} />
           {data.map(function(asteroid, index) {
             return (
