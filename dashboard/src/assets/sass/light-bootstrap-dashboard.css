@@ -443,7 +443,7 @@ body > .navbar-collapse[data-color="purple"]:after {
   background-size: 150% 150%; }
 
 .main-panel {
-  background: rgba(203, 203, 210, 0.15);
+  background: #4E5357 !important;
   position: relative;
   float: right;
   width: calc(100% - 260px); }
@@ -3096,6 +3096,12 @@ body > .navbar-collapse[data-color="purple"]:after {
     color: rgba(30, 30, 30, 0.97);
     font-size: 18px; }
 
+.step-text-right {
+  float: right; }
+
+.step-text-left {
+  float: left; }
+
 .badge {
   display: inline-block;
   min-width: 10px;
@@ -3182,7 +3188,7 @@ body > .navbar-collapse[data-color="purple"]:after {
   .label.label-outline.label-brand-cerulean {
     color: #00A3E3;
     border-color: #00A3E3; }
-  .label.label-outline.label-gray-darker {
+  .label.label-outline.label-running {
     color: #262626;
     border-color: #262626; }
   .label.label-outline.label-gray-dark {
@@ -3217,7 +3223,23 @@ body > .navbar-collapse[data-color="purple"]:after {
   color: #D34A39; }
 
 .mini-card-stats {
-  width: 300px; }
+  width: 300px;
+  height: 110px; }
+
+.plot {
+  margin-top: -36px; }
+
+.title-statistics {
+  font-size: 1.3rem;
+  color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 400; }
+
+.number-statistics {
+  font-size: 2.2rem;
+  color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 500; }
 
 .blue {
   background-color: #75BDEE; }
@@ -3227,3 +3249,6 @@ body > .navbar-collapse[data-color="purple"]:after {
 
 .orange {
   background-color: #D34A39; }
+
+.green {
+  background-color: #28CA71; }

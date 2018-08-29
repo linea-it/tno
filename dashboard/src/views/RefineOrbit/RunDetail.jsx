@@ -87,7 +87,7 @@ class RefineOrbitRunDetail extends Component {
         <div className="ui-g">
           <div className="ui-g-4 ui-md-4 ui-sm-1">
             <ListStats
-              statstext="warning"
+              statstext={this.state.data.status}
               status={true}
               title="List Stats"
               data={stats}
