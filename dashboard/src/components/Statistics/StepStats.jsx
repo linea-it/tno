@@ -9,13 +9,15 @@ import PropTypes from 'prop-types';
 class StepStats extends Component {
   render() {
     const propSet = this.props;
-
+    console.log(propSet);
     const { string, array, any } = PropTypes;
 
     StepStats.PropTypes = {
       title: string.isRequired,
       data: array.isRequired,
       columns: any.isRequired,
+      info: array.isRequired,
+      grid: array,
     };
     // Adaptação para Step com footer
     const footer = (
@@ -24,30 +26,32 @@ class StepStats extends Component {
       </div>
     );
 
+    const areaIcon = propSet.info.map((col, i) => {
+      return (
+        <div className={`ui-md-${propSet.info[i].grid}`}>
+          <ul key={i} className="step-list">
+            <li key={i}>
+              <i
+                className={`fa fa-fw fa-circle text-${
+                  propSet.info[i].colorIcon
+                }`}
+              />
+              {propSet.info[i].text}
+            </li>
+            <li className="number">{propSet.info[i].number}</li>
+          </ul>
+        </div>
+      );
+    });
+
     return (
       <div className="wrap">
-        <Card footer={footer} subTitle={propSet.title} style={{ width: '535' }}>
-          <div className="ui-g">
-            <div className="ui-md-6">
-              <ul className="step-list">
-                <li>
-                  <i className="fa fa-fw fa-circle text-success" />
-                  Execution
-                </li>
-                <li className="number">3789</li>
-              </ul>
-            </div>
-            <div className="ui-md-6">
-              <ul className="step-list">
-                <li>
-                  <i className="fa fa-fw fa-circle text-danger" />
-                  Execution
-                </li>
-                <li className="number">5467</li>
-              </ul>
-            </div>
-          </div>
-
+        <Card
+          footer={footer}
+          subTitle={propSet.title}
+          style={{ width: '535px' }}
+        >
+          <div className="ui-g">{areaIcon}</div>
           <ProgressBar>
             <Tooltip
               for="#inputId"
