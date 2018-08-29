@@ -1,0 +1,55 @@
+import axios from 'axios';
+
+class PredictionApi {
+  constructor() {
+    this.api = process.env.REACT_APP_API;
+  }
+
+  getPredictionRuns = ({ page, pageSize, ordering, filters = [] }) => {
+    const params = { page: page, pageSize: pageSize, ordering: ordering };
+    filters.forEach(element => {
+      params[element.property] = element.value;
+    });
+
+    return axios.get(`${this.api}/predict_run/`, {
+      params: params,
+    });
+  };
+
+  getPredictionRunById = ({ id }) =>
+    axios.patch(`${this.api}/predict_run/${id}/`);
+
+  // createOrbitRun = ({ input_list, proccess }) =>
+  //   axios.post(`${this.api}/orbit_run/`, {
+  //     input_list: input_list,
+  //     proccess: proccess,
+  //   });
+
+  // orbitReRun = ({ id }) =>
+  //   axios.patch(`${this.api}/orbit_run/${id}/`, {
+  //     status: 'pending',
+  //   });
+
+  getAsteroids = ({
+    page,
+    sizePerPage,
+    sortField,
+    sortOrder,
+    filters = [],
+  }) => {
+    let ordering = sortField;
+    if (sortOrder === -1) {
+      ordering = '-' + sortField;
+    }
+
+    const params = { page: page, pageSize: sizePerPage, ordering: ordering };
+    filters.forEach(element => {
+      params[element.property] = element.value;
+    });
+
+    return axios.get(`${this.api}/predict_asteroid/`, {
+      params: params,
+    });
+  };
+}
+export default PredictionApi;
