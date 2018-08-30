@@ -112,6 +112,13 @@ class RefineOrbitRunDetail extends Component {
       },
     ];
 
+    const stats_status = [
+      { name: 'Success', value: data.count_success },
+      { name: 'Warning', value: data.count_warning },
+      { name: 'Failure', value: data.count_failed },
+      { name: 'not Executed', value: data.count_not_executed },
+    ];
+
     return (
       <div>
         <div className="ui-g">
