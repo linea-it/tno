@@ -17,6 +17,9 @@ docker-compose stop
 echo -e "${YELLOW}======= Building containers =======${NO_COLOR}"
 docker-compose build
 
+echo -e "${YELLOW}======= Update Images =======${NO_COLOR}"
+docker-compose pull nima
+
 echo -e "${YELLOW}======= Starting all containers =======${NO_COLOR}"
 docker-compose up -d
 
