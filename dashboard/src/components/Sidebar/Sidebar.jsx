@@ -5,9 +5,8 @@ import 'primereact/resources/primereact.min.css';
 import HeaderLinks from '../Header/HeaderLinks.jsx';
 
 import imagine from 'assets/img/sidebar-3.jpg';
-// import logo from 'assets/img/reactlogo.png';
 import logoLinea from 'assets/img/logo-header.png';
-import logoTNO from 'assets/img/logo2.png';
+//import logoTNO from 'assets/img/logo2.png';
 
 import appRoutes from 'routes/app.jsx';
 import { Tooltip } from 'primereact/tooltip';
@@ -46,7 +45,7 @@ class Sidebar extends Component {
             href="http://www.linea.gov.br/"
             className="simple-text logo-mini"
           >
-            <div className="logo-img">
+           <div className="logo-img">
               <img src={logoLinea} alt="logo_image" />
             </div>
           </a>
@@ -57,12 +56,12 @@ class Sidebar extends Component {
             className="simple-text logo-normal"
           >
             <div className="logo-img">
-              <img
+              {/* <img
                 className="margin-top"
                 src={logoTNO}
                 alt="logo_image"
                 width="60"
-              />
+              /> */}
             </div>
           </a>
           {/* </div> */}
