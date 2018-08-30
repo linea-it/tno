@@ -22,8 +22,38 @@ import {
   Legend,
 } from 'recharts';
 
+import DashboardApi from './DashboardApi';
+
 class Dashboard extends Component {
+  state = this.initialState;
+  api = new DashboardApi();
+
+  get initialState() {
+    return {
+      exposures: {
+        count_pointings: 0,
+        downloaded: 0,
+        not_downloaded: 0,
+        last: '',
+        first: '',
+        exposures: 0,
+      },
+    };
+  }
+
+  componentDidMount() {
+    this.api.getExposuresInfo().then(res => {
+      const exposures = res.data;
+
+      this.setState({
+        exposures: exposures,
+      });
+    });
+  }
+
   render() {
+    const { exposures } = this.state;
+
     const data = [
       { name: 'Executado', value: 400 },
       { name: 'Warning', value: 300 },
@@ -73,17 +103,17 @@ class Dashboard extends Component {
       },
     ];
 
-    const textInfo2 = [
+    const exposure_info = [
       {
-        legend: 'CCDs with objects',
-        label: '6473',
+        legend: 'Downloaded',
+        label: exposures.downloaded,
         value: 1,
         colorIcon: 'success',
         grid: ['6'],
       },
       {
-        legend: 'CCDs without objects',
-        label: '333',
+        legend: 'not Downloaded',
+        label: exposures.not_downloaded,
         value: 2,
         colorIcon: 'danger',
         grid: ['6'],
@@ -129,7 +159,7 @@ class Dashboard extends Component {
                   <StepStats
                     disableCard="false"
                     title=" CCDs with SSSO"
-                    info={textInfo2}
+                    info={exposure_info}
                     footer={
                       <div>
                         <ul className="step-format">
@@ -195,18 +225,18 @@ class Dashboard extends Component {
                   <StepStats
                     disableCard="false"
                     title=" CCDs frames downloaded"
-                    info={textInfo2}
+                    info={exposure_info}
                     footer={
                       <div>
                         <ul className="step-format">
                           <li>
-                            <i className="pi pi-cloud-download step-icon" />
-                            <a>Data do último update: 25/12/2018</a>
+                            <a>Pointings: {exposures.count_pointings}</a>
                           </li>
                           <li>
-                            <i className="pi pi-cloud-download step-icon">
-                              <a>Data do último update: 25/12/2018</a>
-                            </i>
+                            <a>most recent entry: {exposures.last}</a>
+                          </li>
+                          <li>
+                            <a>oldest record: {exposures.first}</a>
                           </li>
                         </ul>
                       </div>
