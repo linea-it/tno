@@ -54,6 +54,24 @@ class StepStats extends Component {
       );
     });
 
+    const areaIcon = propSet.info.map((col, i) => {
+      return (
+        <div className={`ui-md-${propSet.info[i].grid}`}>
+          <ul key={i} className="step-list">
+            <li key={i}>
+              <i
+                className={`fa fa-fw fa-circle text-${
+                  propSet.info[i].colorIcon
+                }`}
+              />
+              {propSet.info[i].text}
+            </li>
+            <li className="number">{propSet.info[i].number}</li>
+          </ul>
+        </div>
+      );
+    });
+
     return (
       <div className="wrap">
         <Card

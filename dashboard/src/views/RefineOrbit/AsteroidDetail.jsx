@@ -15,6 +15,7 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toolbar } from 'primereact/toolbar';
 import { DataTable } from 'primereact/datatable';
+import ListStats from 'components/Statistics/ListStats.jsx';
 class AsteroidDetail extends Component {
   state = this.initialState;
   api = new OrbitApi();
@@ -211,7 +212,14 @@ class AsteroidDetail extends Component {
               this.onClickBackToRefine(this.state.asteroid.orbit_run)
             }
           />
+          <Button
+            label="Download"
+            icon="pi pi-cloud-download"
+            className="ui-button-info"
+            onClick={() => this.onClickDownload(this.state.asteroid.id)}
+          />
         </div>
+
         <div className="ui-toolbar-group-right">
           <Button
             label="Prev"
@@ -257,6 +265,13 @@ class AsteroidDetail extends Component {
       title = title + ' - ' + asteroid.number;
     }
 
+    const stats = [
+      { name: 'Proccess', value: asteroid.proccess_displayname },
+      { name: 'Executed', value: asteroid.h_time },
+      { name: 'Execution Time', value: asteroid.h_execution_time },
+      { name: 'Size', value: asteroid.h_size },
+    ];
+
     const inp_columns = this.input_columns.map((col, i) => {
       return (
         <Column
@@ -275,23 +290,12 @@ class AsteroidDetail extends Component {
         {this.create_nav_bar()}
         <div className="ui-g">
           <div className="ui-g-4">
-            <Card
+            <ListStats
               title={title}
-              subTitle={
-                'this result refers to process ' + asteroid.proccess_displayname
-              }
-            >
-              <span>Status: {asteroid.status}</span> <br />
-              <span>executed: {asteroid.h_time}</span> <br />
-              <span>execution time: {asteroid.h_execution_time}</span> <br />
-              <span>Size: {asteroid.h_size}</span> <br />
-              <Button
-                label="Download"
-                icon="pi pi-cloud-download"
-                className="ui-button-info"
-                onClick={() => this.onClickDownload(asteroid.id)}
-              />
-            </Card>
+              statstext={asteroid.status}
+              status={true}
+              data={stats}
+            />
           </div>
         </div>
         <div className="ui-g">
@@ -349,12 +353,12 @@ class AsteroidDetail extends Component {
               </DataTable>
             </Card>
           </div>
-          <div className="ui-g-6">
+          {/* <div className="ui-g-6">
             <Card
               title="Log"
               subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
             />
-          </div>
+          </div> */}
         </div>
         <Lightbox
           images={this.state.images}

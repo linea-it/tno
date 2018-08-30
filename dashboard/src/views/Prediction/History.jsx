@@ -4,23 +4,22 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 // Api Rest
-import OrbitApi from './OrbitApi';
+import PredictionApi from './PredictionApi';
 // interface components
-import { Card } from 'primereact/card';
 import { Button } from 'primereact/button';
 import { DataTable } from 'primereact/datatable';
 import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
-import Log from 'views/RefineOrbit/Log.jsx';
+
 import PropTypes from 'prop-types';
 
-class AsteroidList extends Component {
+class PredictionHistory extends Component {
   state = this.initialState;
-  api = new OrbitApi();
+  api = new PredictionApi();
 
   static propTypes = {
     orbit_run: PropTypes.number.isRequired,
-    view_asteroid: PropTypes.func.isRequired,
+    view_prediction: PropTypes.func.isRequired,
   };
 
   get initialState() {
@@ -75,56 +74,36 @@ class AsteroidList extends Component {
       },
     },
     {
-      field: 'name',
-      header: 'Name',
+      field: 'proccess_displayname',
+      header: 'Proccess',
       sortable: true,
     },
     {
-      field: 'number',
-      header: 'Number',
+      field: 'h_time',
+      header: 'start',
       sortable: true,
-      body: rowData => {
-        if (rowData.number === '-') {
-          return '';
-        }
-        return rowData.number;
-      },
     },
     {
-      field: 'execution_time',
+      field: 'h_execution_time',
       header: 'Execution Time',
       sortable: true,
-      style: { textAlign: 'center' },
     },
-    // {
-    //   field: 'files',
-    //   header: 'Execution Time',
-    //   sortable: true,
-    // },
+    {
+      field: 'count_objects',
+      header: 'Asteroids',
+      sortable: true,
+    },
   ];
 
-  componentDidUpdate(prevProps) {
-    // Typical usage (don't forget to compare props):
-    if (this.props.orbit_run !== prevProps.orbit_run) {
-      this.fetchData({
-        orbit_run: this.props.orbit_run,
-        page: this.state.page,
-        sizePerPage: this.state.sizePerPage,
-      });
-    }
+  componentDidMount() {
+    this.fetchData(this.state.page, this.state.sizePerPage);
   }
 
-  fetchData = ({ orbit_run, page, sizePerPage, sortField, sortOrder }) => {
+  fetchData = ({ page, sizePerPage, sortField, sortOrder }) => {
     this.setState({ loading: true });
 
-    const filters = [];
-    filters.push({
-      property: 'orbit_run',
-      value: orbit_run,
-    });
-
     this.api
-      .getAsteroids({ filters, page, sizePerPage, sortField, sortOrder })
+      .getPredictionRuns({ page, sizePerPage, sortField, sortOrder })
       .then(res => {
         const r = res.data;
 
@@ -140,16 +119,8 @@ class AsteroidList extends Component {
       });
   };
 
-  showAsteroidLog = asteroid_id => {
-    this.setState({ asteroid_id, log_visible: true });
-  };
-
-  onViewAsteroid = asteroid_id => {
-    this.props.view_asteroid(asteroid_id);
-  };
-
   actionTemplate = rowData => {
-    const asteroid_id = rowData.id;
+    const id = rowData.id;
     let btn_view = null;
     let btn_log = null;
 
@@ -160,7 +131,7 @@ class AsteroidList extends Component {
           icon="fa fa-search"
           className="ui-button-info"
           title="View"
-          onClick={() => this.onViewAsteroid(asteroid_id)}
+          onClick={() => this.onView(id)}
         />
       );
       btn_log = (
@@ -169,7 +140,7 @@ class AsteroidList extends Component {
           icon="fa fa-file-text-o"
           className="ui-button-warning"
           title="Log"
-          onClick={() => this.showAsteroidLog(asteroid_id)}
+          onClick={() => this.onLog(id)}
         />
       );
     }
@@ -180,10 +151,6 @@ class AsteroidList extends Component {
         {btn_log}
       </div>
     );
-  };
-
-  onLogHide = () => {
-    this.setState({ log_visible: false, asteroid_id: 0 });
   };
 
   onPageChange = e => {
@@ -220,6 +187,14 @@ class AsteroidList extends Component {
     );
   };
 
+  onView = id => {
+    this.props.view_prediction(id);
+  };
+
+  onLog = id => {
+    console.log('on Log');
+  };
+
   render() {
     const columns = this.columns.map((col, i) => {
       return (
@@ -235,7 +210,7 @@ class AsteroidList extends Component {
     });
 
     return (
-      <Card title="Asteroids" subTitle="">
+      <div>
         <DataTable
           value={this.state.data}
           resizableColumns={true}
@@ -262,15 +237,9 @@ class AsteroidList extends Component {
           first={this.state.first}
           onPageChange={this.onPageChange}
         />
-
-        <Log
-          visible={this.state.log_visible}
-          onHide={this.onLogHide}
-          id={this.state.asteroid_id}
-        />
-      </Card>
+      </div>
     );
   }
 }
 
-export default AsteroidList;
+export default PredictionHistory;

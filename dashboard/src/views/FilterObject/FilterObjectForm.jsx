@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
 import { FormGroup, ControlLabel, Checkbox } from 'react-bootstrap';
 import NumericInput from 'react-numeric-input';
-
+import PropTypes from 'prop-types';
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
-import { Spinner } from 'primereact/spinner';
-// import { Checkbox } from 'primereact/checkbox';
-
-import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import PropTypes from 'prop-types';
 
 import Select from 'react-select';
 import 'react-select/dist/react-select.css';
@@ -76,8 +71,11 @@ class FilterObjectForm extends Component {
     this.handleSelectChange = this.handleSelectChange.bind(this);
   }
 
+  static propTypes = {
+    onFilter: PropTypes.func.isRequired,
+  };
+
   handleSelectChange(value) {
-    console.log(value);
     this.setState({ objectTable: value });
   }
 
@@ -153,7 +151,7 @@ class FilterObjectForm extends Component {
           onChange={this.handleNumberChange}
           min={0}
           max={55}
-        /> */} 
+        /> */}
         <FormGroup>
           <Checkbox inline onChange={this.handleChangeFilterMagnitude}>
             Magnitude "Visual Magnitude &#60;="
