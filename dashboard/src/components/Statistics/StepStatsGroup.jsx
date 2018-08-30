@@ -45,7 +45,11 @@ class StepStatsGroup extends Component {
 
     return (
       <div>
-        <Card subTitle={propSet.title}>
+        <Card
+          className={`step-title ${propSet.disableCard}`}
+          style={{ maxWidth: 'inherit' }}
+          subTitle={propSet.title}
+        >
           <Table hover responsive>
             {/* <tr>
                 <td className="text-white b-a-0">

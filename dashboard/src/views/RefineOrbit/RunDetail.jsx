@@ -74,12 +74,22 @@ class RefineOrbitRunDetail extends Component {
       { name: 'Execution', value: data.h_execution_time },
       { name: 'Asteroids', value: data.count_objects },
     ];
-
-    const stats_status = [
-      { name: 'Success', value: data.count_success },
-      { name: 'Warning', value: data.count_warning },
-      { name: 'Failure', value: data.count_failed },
-      { name: 'not Executed', value: data.count_not_executed },
+ 
+    const textInfo2 = [
+      {
+        legend: 'Downloaded',
+        label: '3232',
+        value: 1,
+        colorIcon: 'success',
+        grid: ['6'],
+      },
+      {
+        legend: 'Not Downloaded',
+        label: '333',
+        value: 2,
+        colorIcon: 'danger',
+        grid: ['6'],
+      },
     ];
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
@@ -123,7 +133,7 @@ class RefineOrbitRunDetail extends Component {
               />
             </div>
             <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <StepStats title="Step Stats" info={execute_time} />
+              <StepStats title="Step Stats" columns={textInfo2} />
             </div>
           </div>
           <div className="ui-g-4 ui-md-4">
