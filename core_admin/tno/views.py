@@ -11,6 +11,8 @@ from .models import Pointing, SkybotOutput, CustomList, Proccess
 from .serializers import UserSerializer, PointingSerializer, SkybotOutputSerializer, ObjectClassSerializer, \
     CustomListSerializer, ProccessSerializer
 from .skybotoutput import FilterObjects
+from .skybotoutput import SkybotOutput as SkybotOutputDB
+from .skybotoutput import Pointing as PointingDB
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -48,11 +50,30 @@ class PointingViewSet(viewsets.ModelViewSet):
     ordering_fields = ('id', 'expnum', 'date_obs', 'nite')
     ordering = ('-date_obs',)
 
+    @list_route()
+    def generate_statistics(self, request):
+        db = PointingDB()
+
+        pointings = db.count_pointings()
+        downloaded = db.count_downloaded()
+        not_downloaded = db.count_not_downloaded()
+        bands = db.counts_by_bands()
+        last = db.last()
+        print(last)
+
+        return Response({
+            'success': True,
+            'count_pointings': pointings,
+            'downloaded': downloaded,
+            'not_downloaded': not_downloaded,
+            'band': bands
+        })
+
 
 class SkybotOutputViewSet(viewsets.ModelViewSet):
     queryset = SkybotOutput.objects.select_related().all()
     serializer_class = SkybotOutputSerializer
-    filter_fields = ('id', 'name', 'expnum', 'dynclass','mv')
+    filter_fields = ('id', 'name', 'expnum', 'dynclass', 'mv')
     search_fields = ('name', 'dynclass', 'num')
 
     @list_route()
@@ -87,6 +108,18 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
             'success': True,
             "results": rows,
             "count": count
+        })
+
+    @list_route()
+    def generate_statistics(self, request):
+
+        ccds = SkybotOutputDB().count_asteroids()
+
+        print(ccds)
+
+        return Response({
+            'success': True,
+            'count_asteroids': ccds
         })
 
 
@@ -189,4 +222,3 @@ class ProccessViewSet(viewsets.ModelViewSet):
     serializer_class = ProccessSerializer
     filter_fields = ('id',)
     search_fields = ('id',)
-

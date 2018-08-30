@@ -357,3 +357,47 @@ class FilterObjects(DBBase):
         image_size = self.fetch_scalar(stm)
 
         return image_size
+
+
+class SkybotOutput(DBBase):
+    def count_asteroids(self):
+        tbl = self.get_table_skybot()
+        return self.get_count(tbl)
+
+
+class Pointing(DBBase):
+    def __init__(self):
+        super(Pointing, self).__init__()
+        self.tbl = self.get_table_pointing()
+
+    def count_pointings(self):
+        return self.get_count(self.tbl)
+
+    def count_downloaded(self):
+        stm = select([self.tbl]).where(and_(self.tbl.c.downloaded.is_(True)))
+
+        return self.stm_count(stm)
+
+    def count_not_downloaded(self):
+        stm = select([self.tbl]).where(and_(self.tbl.c.downloaded.isnot(True)))
+
+        return self.stm_count(stm)
+
+    def count_by_band(self, band):
+        stm = select([self.tbl]).where(and_(self.tbl.c.band.ilike(str(band))))
+
+        return self.stm_count(stm)
+
+    def counts_by_bands(self):
+        bands = ['u', 'g', 'r', 'i', 'z', 'Y']
+
+        results = list()
+        for band in bands:
+            results.append(dict({'band': band, 'count': self.count_by_band(band)}))
+
+        return results
+
+    def last(self):
+        stm = select([self.tbl]).order_by(self.tbl.c.date_obs).limit(1)
+
+        return self.fetch_one_dict(stm)

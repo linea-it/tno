@@ -236,6 +236,11 @@ class DBBase():
 
     # Tabelas principais gerenciadas pelo Django Models mais que eventualmente e necessario acessalas
     # pelo sqlAlchemy
+    def get_table_pointing(self):
+        schema = self.get_base_schema()
+        self.tbl_pointing = self.get_table('tno_pointing', schema)
+
+        return self.tbl_pointing
 
     def get_table_skybot(self):
         schema = self.get_base_schema()
