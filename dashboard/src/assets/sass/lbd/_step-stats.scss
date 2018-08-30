@@ -5,15 +5,49 @@
 
     
     > li {
-        color: $medium-dark-gray; 
-        font-size: $font-size-small
+        color: rgba(0,0,0,0.8) !important;
+        font-size: 12px;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     }
 
     > li.number {
-        margin-left: 8px;
+        margin-left: 18px;
         color: $black-bg;
-        font-size: $font-size-large;
+        font-size: $font-size-medium;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     }
+}
+
+.step-title {    
+    color: rgba(0,0,0,1) !important;
+    font-size: $font-size-medium;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+.step-icon {
+    font-size: 1.8em;
+    color: rgba(0,0,0,0.5) !important;
+    line-height: 1px;
+
+}
+
+
+.step-format {
+
+        list-style: none;
+        margin: 0;
+        padding: 0;  
+
+
+        > li a {
+            color: rgba(0,0,0,0.5) !important;
+            font-size: 14px;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-weight: 300;
+            margin-left: 10px;
+
+            
+
+        }
 }
 
 
@@ -29,6 +63,16 @@
     background-color: none;
     border: none;
 }
+
+
+.true {
+    background-color: none;
+    border: 1px solid #c6c6c6;
+    border-radius: 0px;
+
+}
+
+
 
 
 

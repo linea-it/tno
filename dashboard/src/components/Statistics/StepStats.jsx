@@ -18,11 +18,7 @@ class StepStats extends Component {
       grid: array,
     };
     // Adaptação para Step com footer
-    const footer = (
-      <div>
-        <span>Footer</span>
-      </div>
-    );
+    const footer = <span>{propSet.footer}</span>;
 
     const areaIcon = propSet.info.map((col, i) => {
       return (
@@ -61,14 +57,15 @@ class StepStats extends Component {
     return (
       <div className="wrap">
         <Card
-          className={`${propSet.disableCard}`}
-          footer={footer}
+          className={`step-title ${propSet.disableCard}`}
+          //footer={footer}
           subTitle={propSet.title}
-          style={{ maxWidth: '500px' }}
+          style={{ maxWidth: 'inherit' }}
         >
           <div className="ui-g">{areaIcon}</div>
           <ProgressBar>{areaProgress}</ProgressBar>
           <hr />
+          {footer}
         </Card>
       </div>
     );

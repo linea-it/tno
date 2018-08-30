@@ -443,7 +443,7 @@ body > .navbar-collapse[data-color="purple"]:after {
   background-size: 150% 150%; }
 
 .main-panel {
-  background: #898989 !important;
+  background: #eeeded !important;
   position: relative;
   float: right;
   width: calc(100% - 260px); }
@@ -3089,12 +3089,35 @@ body > .navbar-collapse[data-color="purple"]:after {
   margin: 0;
   padding: 0; }
   .step-list > li {
-    color: #AAAAAA;
-    font-size: 12px; }
+    color: rgba(0, 0, 0, 0.8) !important;
+    font-size: 12px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
   .step-list > li.number {
-    margin-left: 8px;
+    margin-left: 18px;
     color: rgba(30, 30, 30, 0.97);
-    font-size: 18px; }
+    font-size: 16px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
+
+.step-title {
+  color: black !important;
+  font-size: 16px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
+
+.step-icon {
+  font-size: 1.8em;
+  color: rgba(0, 0, 0, 0.5) !important;
+  line-height: 1px; }
+
+.step-format {
+  list-style: none;
+  margin: 0;
+  padding: 0; }
+  .step-format > li a {
+    color: rgba(0, 0, 0, 0.5) !important;
+    font-size: 14px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: 300;
+    margin-left: 10px; }
 
 .step-text-right {
   float: right; }
@@ -3105,6 +3128,11 @@ body > .navbar-collapse[data-color="purple"]:after {
 .false {
   background-color: none;
   border: none; }
+
+.true {
+  background-color: none;
+  border: 1px solid #c6c6c6;
+  border-radius: 0px; }
 
 .badge {
   display: inline-block;
@@ -3227,9 +3255,10 @@ body > .navbar-collapse[data-color="purple"]:after {
   color: #D34A39; }
 
 .mini-card-stats {
-  width: 300px;
+  width: 400px;
+  margin-left: 50px;
   height: 110px;
-  border: none; }
+  border: 2px solid #c6c6c6; }
 
 .plot {
   margin-top: -36px; }
@@ -3257,3 +3286,23 @@ body > .navbar-collapse[data-color="purple"]:after {
 
 .green {
   background-color: #28CA71; }
+
+.panel-content {
+  min-width: 500px;
+  min-height: none;
+  background: #ffffff !important;
+  border: 1.5px solid #575555;
+  border-radius: 1px; }
+  .panel-content .header {
+    border-bottom: 2px solid #575555;
+    background-color: #575555; }
+  .panel-content .title {
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #fff;
+    font-weight: bold;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
+
+.panel-hr {
+  background-color: #b8b4b4;
+  height: 1px; }
