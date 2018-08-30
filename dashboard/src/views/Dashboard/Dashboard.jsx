@@ -67,7 +67,7 @@ class Dashboard extends Component {
       {
         legend: 'Not Downloaded',
         label: '231',
-        value: 2,
+        value: 30,
         colorIcon: 'danger',
         grid: ['6'],
       },
@@ -90,11 +90,11 @@ class Dashboard extends Component {
       },
     ];
 
-    const textInfo = [
-      { text: 'Download', number: 3232, colorIcon: 'success', grid: ['3'] },
-      { text: 'NotDownload', number: 333, colorIcon: 'danger', grid: ['4'] },
-      { text: 'NotDownload', number: 333, colorIcon: 'danger', grid: ['4'] },
-    ];
+    // const textInfo = [
+    //   { text: 'Download', number: 3232, colorIcon: 'success', grid: ['3'] },
+    //   { text: 'NotDownload', number: 333, colorIcon: 'danger', grid: ['4'] },
+    //   { text: 'NotDownload', number: 333, colorIcon: 'danger', grid: ['4'] },
+    // ];
     return (
       <div>
         <div className="ui-g">
