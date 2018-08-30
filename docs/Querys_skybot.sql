@@ -81,3 +81,6 @@ select * from tno_pointing order by date_obs desc limit 1;
 -- Pointing mais antigo
 select * from tno_pointing order by date_obs asc limit 1;
 
+-- Unique exposures
+select count(distinct(expnum)) from tno_pointing;
+

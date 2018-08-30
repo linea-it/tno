@@ -59,14 +59,18 @@ class PointingViewSet(viewsets.ModelViewSet):
         not_downloaded = db.count_not_downloaded()
         bands = db.counts_by_bands()
         last = db.last()
-        print(last)
+        first = db.first()
+        exposures = db.count_unique_exposures()
 
         return Response({
             'success': True,
             'count_pointings': pointings,
             'downloaded': downloaded,
             'not_downloaded': not_downloaded,
-            'band': bands
+            'band': bands,
+            'last': last.get("nite"),
+            'first': first.get("nite"),
+            'exposures': exposures
         })
 
 

@@ -398,6 +398,16 @@ class Pointing(DBBase):
         return results
 
     def last(self):
+        stm = select([self.tbl]).order_by(self.tbl.c.date_obs.desc()).limit(1)
+
+        return self.fetch_one_dict(stm)
+
+    def first(self):
         stm = select([self.tbl]).order_by(self.tbl.c.date_obs).limit(1)
 
         return self.fetch_one_dict(stm)
+
+    def count_unique_exposures(self):
+        stm = select([func.count(func.distinct(self.tbl.c.expnum)).label('exposures')])
+
+        return self.fetch_scalar(stm)
