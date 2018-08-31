@@ -6,7 +6,11 @@ class DashboardApi {
   }
 
   getExposuresInfo = () => {
-    return axios.get(`${this.api}/pointing/generate_statistics/`);
+    return axios.get(`${this.api}/pointing/statistics/`);
+  };
+
+  getSkybotInfo = () => {
+    return axios.get(`${this.api}/skybotoutput/statistics/`);
   };
 }
 export default DashboardApi;

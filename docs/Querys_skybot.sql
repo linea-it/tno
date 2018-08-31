@@ -84,3 +84,14 @@ select * from tno_pointing order by date_obs asc limit 1;
 -- Unique exposures
 select count(distinct(expnum)) from tno_pointing;
 
+
+
+-- Skybot Querys para Histograma Heliocentric Distance (AU)
+select min(dhelio), max(dhelio) from tno_skybotoutput;
+
+select  floor(dhelio/10.) * 10 as dhelio_floor, count(*) as count from tno_skybotoutput  group by 1
+
+select count(*) from tno_skybotoutput where dhelio > 95
+
+
+

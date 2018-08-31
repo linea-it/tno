@@ -6,6 +6,7 @@ from rest_framework import viewsets, response, mixins
 from rest_framework.decorators import list_route
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from django.conf import settings
 
 from .models import Pointing, SkybotOutput, CustomList, Proccess
 from .serializers import UserSerializer, PointingSerializer, SkybotOutputSerializer, ObjectClassSerializer, \
@@ -13,7 +14,8 @@ from .serializers import UserSerializer, PointingSerializer, SkybotOutputSeriali
 from .skybotoutput import FilterObjects
 from .skybotoutput import SkybotOutput as SkybotOutputDB
 from .skybotoutput import Pointing as PointingDB
-
+from common.jsonfile import JsonFile
+import os
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -50,8 +52,7 @@ class PointingViewSet(viewsets.ModelViewSet):
     ordering_fields = ('id', 'expnum', 'date_obs', 'nite')
     ordering = ('-date_obs',)
 
-    @list_route()
-    def generate_statistics(self, request):
+    def generate_statistics(self):
         db = PointingDB()
 
         pointings = db.count_pointings()
@@ -62,19 +63,44 @@ class PointingViewSet(viewsets.ModelViewSet):
         first = db.first()
         exposures = db.count_unique_exposures()
 
-        return Response({
+        statistics = dict({
             'success': True,
             'count_pointings': pointings,
             'downloaded': downloaded,
             'not_downloaded': not_downloaded,
             'band': bands,
-            'last': last.get("nite"),
-            'first': first.get("nite"),
+            'last': last.get("nite").strftime('%Y-%M-%d'),
+            'first': first.get("nite").strftime('%Y-%M-%d'),
             'exposures': exposures,
             'updated': 'xxxx-xx-xx',
             'size': 'xx Gb'
         })
 
+        # Escrever o Arquivo de cache com as informações
+        temp_file = os.path.join(settings.MEDIA_TMP_DIR, 'pointings_statistics.json')
+        JsonFile().write(statistics, temp_file)
+
+        JsonFile().write(statistics, temp_file)
+
+        return statistics
+
+
+    @list_route()
+    def statistics(self, request):
+        refresh = request.query_params.get('refresh', False)
+
+        statistics = dict()
+        if refresh:
+            statistics = self.generate_statistics()
+
+        else:
+            temp_file = os.path.join(settings.MEDIA_TMP_DIR, 'pointings_statistics.json')
+            if (os.path.exists(temp_file)):
+                statistics = JsonFile().read(temp_file)
+            else:
+                statistics = self.generate_statistics()
+
+        return Response(statistics)
 
 class SkybotOutputViewSet(viewsets.ModelViewSet):
     queryset = SkybotOutput.objects.select_related().all()
@@ -116,17 +142,52 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
             "count": count
         })
 
-    @list_route()
-    def generate_statistics(self, request):
+    def generate_statistics(self):
 
-        ccds = SkybotOutputDB().count_asteroids()
+        db = SkybotOutputDB()
+        unique_ccds = db.count_unique_ccds()
+        asteroids = db.count_asteroids()
+        dynclass = db.distinct_dynclass()
+        asteroids_by_dynaclass = db.count_asteroids_by_dynclass()
+        asteroids_by_class = db.count_asteroids_by_class()
 
-        print(ccds)
+        histogram = db.histogram('dhelio', 10)
 
-        return Response({
+        statistics = dict({
             'success': True,
-            'count_asteroids': ccds
+            'unique_ccds': unique_ccds,
+            'count_asteroids': asteroids,
+            'dynclass': dynclass,
+            'asteroids_by_dynaclass': asteroids_by_dynaclass,
+            'asteroids_by_class': asteroids_by_class,
+            'histogram': histogram
         })
+
+
+        # Escrever o Arquivo de cache com as informações
+        temp_file = os.path.join(settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
+        JsonFile().write(statistics, temp_file)
+
+        JsonFile().write(statistics, temp_file)
+
+        return statistics
+
+    @list_route()
+    def statistics(self, request):
+        refresh = request.query_params.get('refresh', False)
+
+        statistics = dict()
+        if refresh:
+            statistics = self.generate_statistics()
+
+        else:
+            temp_file = os.path.join(settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
+            if (os.path.exists(temp_file)):
+                statistics = JsonFile().read(temp_file)
+            else:
+                statistics = self.generate_statistics()
+
+        return Response(statistics)
 
 
 class ObjectClassViewSet(viewsets.GenericViewSet,
