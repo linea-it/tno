@@ -6,6 +6,10 @@ import { Card } from 'primereact/card';
 import PropTypes from 'prop-types';
 
 class StepStats extends Component {
+  get_value = (value, total) => {
+    return 100 * value / total;
+  };
+
   render() {
     const propSet = this.props;
     const { string, array, any } = PropTypes;
@@ -38,12 +42,18 @@ class StepStats extends Component {
       );
     });
 
+    // Descobrindo o total
+    let total = 0;
+    propSet.info.map((col, i) => {
+      total += col.value;
+    });
+
     const areaProgress = propSet.info.map((col, i) => {
       return (
         <ProgressBar
           id="inputId"
           bsStyle={`progress-bar progress-bar-${propSet.info[i].colorIcon}`}
-          now={30}
+          now={this.get_value(col.value, total)}
           key={i}
         />
       );

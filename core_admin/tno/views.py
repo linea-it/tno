@@ -70,7 +70,9 @@ class PointingViewSet(viewsets.ModelViewSet):
             'band': bands,
             'last': last.get("nite"),
             'first': first.get("nite"),
-            'exposures': exposures
+            'exposures': exposures,
+            'updated': 'xxxx-xx-xx',
+            'size': 'xx Gb'
         })
 
 

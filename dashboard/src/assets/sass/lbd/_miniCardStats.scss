@@ -1,6 +1,6 @@
 .mini-card-stats {
-    width: 400px;
-    margin-left: 50px;
+    // width: 400px;
+    // margin-left: 50px;
     height: 110px;
     border: 2px solid #c6c6c6;
 
@@ -23,7 +23,7 @@
 
 }
 .blue {
-        background-color: #75BDEE;
+        background-color: $info-color
     }
 .yellow {
         background-color: #F6C54F;

@@ -6,12 +6,12 @@
     
     > li {
         color: rgba(0,0,0,0.8) !important;
-        font-size: 12px;
+        font-size: 11px;
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     }
 
     > li.number {
-        margin-left: 18px;
+        margin-left: 11px;
         color: $black-bg;
         font-size: $font-size-medium;
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
@@ -20,7 +20,7 @@
 
 .step-title {    
     color: rgba(0,0,0,1) !important;
-    font-size: $font-size-medium;
+    font-size: $font-size-small;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 .step-icon {
@@ -40,7 +40,7 @@
 
         > li a {
             color: rgba(0,0,0,0.5) !important;
-            font-size: 14px;
+            font-size: $font-size-small;
             font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
             font-weight: 300;
             margin-left: 10px;
