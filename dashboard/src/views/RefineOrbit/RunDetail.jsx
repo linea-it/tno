@@ -67,7 +67,6 @@ class RefineOrbitRunDetail extends Component {
     }
 
     const stats = [
-      { name: 'Status', value: data.status },
       { name: 'Proccess', value: data.proccess_displayname },
       { name: 'Owner', value: data.owner },
       { name: 'Start', value: data.h_time },
@@ -75,39 +74,26 @@ class RefineOrbitRunDetail extends Component {
       { name: 'Asteroids', value: data.count_objects },
     ];
  
-    const textInfo2 = [
-      {
-        legend: 'Downloaded',
-        label: '3232',
-        value: 1,
-        colorIcon: 'success',
-        grid: ['6'],
-      },
-      {
-        legend: 'Not Downloaded',
-        label: '333',
-        value: 2,
-        colorIcon: 'danger',
-        grid: ['6'],
-      },
-    ];
+
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
     const execute_time = [
       {
-        text: 'Download',
-        number: Math.round(
+        legend: 'Download',
+        label: data.execution_download_time,
+        value: Math.round(
           moment.duration(data.execution_download_time).asSeconds()
         ),
-        colorIcon: 'info',
+        colorIcon: 'primary',
         grid: ['6'],
       },
       {
-        text: 'NIMA',
-        number: Math.round(
+        legend: 'NIMA',
+        label: data.execution_nima_time,
+        value: Math.round(
           moment.duration(data.execution_nima_time).asSeconds()
         ),
-        colorIcon: 'success',
+        colorIcon: 'info',
         grid: ['6'],
       },
     ];
@@ -140,7 +126,7 @@ class RefineOrbitRunDetail extends Component {
               />
             </div>
             <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <StepStats title="Step Stats" columns={textInfo2} />
+              <StepStats title="Step Stats" info={execute_time} />
             </div>
           </div>
           <div className="ui-g-4 ui-md-4">
