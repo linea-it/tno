@@ -18,6 +18,8 @@ import SkybotDetail from '../views/SolarSystems/SkybotDetail';
 import PointingsDetail from '../views/Pointings/PointingsDetail';
 import RefineRunOrbitDetail from '../views/RefineOrbit/RunDetail';
 import AsteroidDetail from '../views/RefineOrbit/AsteroidDetail';
+import PredictionPanel from '../views/Prediction/Panel';
+import PredictionDetail from '../views/Prediction/Detail';
 
 const appRoutes = [
   {
@@ -122,8 +124,14 @@ const appRoutes = [
   {
     path: '/prediction',
     name: 'Prediction of Occultations',
-    component: Placeholder,
+    component: PredictionPanel,
     helpText: 'Comparison of objects’ ephemeris and positions of stars to predict events of stellar occultation using Gaia catalogue like reference',
+  },
+  {
+    path: '/prediction_detail/:id',
+    name: 'Prediction Occultation Detail',
+    component: PredictionDetail,
+    hidden: true,
   },
   {
     path: '/post_results',

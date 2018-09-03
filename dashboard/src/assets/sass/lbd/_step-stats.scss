@@ -6,12 +6,20 @@
     
     > li {
         color: rgba(0,0,0,0.8) !important;
+<<<<<<< HEAD
         font-size: 12px;
+=======
+        font-size: 11px;
+>>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     }
 
     > li.number {
+<<<<<<< HEAD
         margin-left: 18px;
+=======
+        margin-left: 11px;
+>>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
         color: $black-bg;
         font-size: $font-size-medium;
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
@@ -20,7 +28,11 @@
 
 .step-title {    
     color: rgba(0,0,0,1) !important;
+<<<<<<< HEAD
     font-size: $font-size-medium;
+=======
+    font-size: $font-size-small;
+>>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 .step-icon {
@@ -40,7 +52,11 @@
 
         > li a {
             color: rgba(0,0,0,0.5) !important;
+<<<<<<< HEAD
             font-size: 14px;
+=======
+            font-size: $font-size-small;
+>>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
             font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
             font-weight: 300;
             margin-left: 10px;

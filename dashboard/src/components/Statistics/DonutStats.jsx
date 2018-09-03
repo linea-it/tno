@@ -23,10 +23,10 @@ class DonutStats extends Component {
       fill: array.isRequired,
     };
 
-    const RADIAN = Math.PI / 180;
+    // const RADIAN = Math.PI / 180;
 
     return (
-      <ResponsiveContainer width={450} height="80%">
+      <ResponsiveContainer width="100%" height="80%">
         <Card subTitle={propSet.title} style={{ height: '200px' }}>
           <PieChart width={450} height={150} onMouseEnter={this.onPieEnter}>
             <Pie

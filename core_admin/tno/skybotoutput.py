@@ -1,6 +1,6 @@
 import os
 from .db import DBBase
-from sqlalchemy.sql import select, and_, or_, func, subquery
+from sqlalchemy.sql import select, and_, or_, func, subquery, text
 from sqlalchemy import create_engine, inspect, MetaData, func, Table, Column, Integer, String, Float, Boolean, \
     literal_column, null
 from django.utils import timezone
@@ -357,3 +357,109 @@ class FilterObjects(DBBase):
         image_size = self.fetch_scalar(stm)
 
         return image_size
+
+
+class SkybotOutput(DBBase):
+    def __init__(self):
+        super(SkybotOutput, self).__init__()
+        self.tbl = self.get_table_skybot()
+
+    def count_lines(self):
+        return self.get_count(self.tbl)
+
+    def count_unique_ccds(self):
+        stm = select([func.count(func.distinct(self.tbl.c.expnum, self.tbl.c.ccdnum)).label('unique_ccds')])
+
+        return self.fetch_scalar(stm)
+
+    def count_asteroids(self):
+        stm = select([func.count(func.distinct(self.tbl.c.name)).label('asteroids')])
+
+        return self.fetch_scalar(stm)
+
+    def distinct_dynclass(self):
+        stm = select([func.distinct(self.tbl.c.dynclass).label('dynclass')])
+
+        return self.fetch_all_dict(stm)
+
+    def count_asteroids_by_dynclass(self):
+        stm = select([self.tbl.c.dynclass, func.count(self.tbl.c.name).label('count')]).group_by(self.tbl.c.dynclass)
+
+        return self.fetch_all_dict(stm)
+
+    def count_asteroids_by_class(self):
+        cls = list(['KBO%', 'Centaur', 'Trojan', 'MB%', ])
+
+        results = list()
+        for c in cls:
+            stm = select([func.count(self.tbl.c.name).label('count')]).where(
+                and_(self.tbl.c.dynclass.ilike(c)))
+
+            count = self.fetch_scalar(stm)
+            results.append(dict({
+                'class_name': c.strip('%'),
+                'count': count
+            }))
+        return results
+
+    def histogram(self, column, bin):
+        """
+
+        :param column: Nome da coluna
+        :param bin: Intervalo que sera criado os grupos
+        :return:
+        """
+
+        stm = select([
+            (func.floor(self.tbl.c[column] / bin) * bin).label('bin'), func.count('*').label('count')
+        ]).group_by('1')
+
+        return self.fetch_all_dict(stm)
+
+
+class Pointing(DBBase):
+    def __init__(self):
+        super(Pointing, self).__init__()
+        self.tbl = self.get_table_pointing()
+
+    def count_pointings(self):
+        return self.get_count(self.tbl)
+
+    def count_downloaded(self):
+        stm = select().where(and_(self.tbl.c.downloaded.is_(True)))
+
+        return self.stm_count(stm)
+
+    def count_not_downloaded(self):
+        stm = select([self.tbl]).where(and_(self.tbl.c.downloaded.isnot(True)))
+
+        return self.stm_count(stm)
+
+    def count_by_band(self, band):
+        stm = select([self.tbl]).where(and_(self.tbl.c.band.ilike(str(band))))
+
+        return self.stm_count(stm)
+
+    def counts_by_bands(self):
+        bands = ['u', 'g', 'r', 'i', 'z', 'Y']
+
+        results = list()
+        for band in bands:
+            results.append(dict({'band': band, 'count': self.count_by_band(band)}))
+
+        return results
+
+    def last(self):
+        stm = select([self.tbl]).order_by(self.tbl.c.date_obs.desc()).limit(1)
+
+        return self.fetch_one_dict(stm)
+
+    def first(self):
+        stm = select([self.tbl]).order_by(self.tbl.c.date_obs).limit(1)
+
+        return self.fetch_one_dict(stm)
+
+    def count_unique_exposures(self):
+        stm = select([func.count(func.distinct(self.tbl.c.expnum)).label('exposures')])
+
+        return self.fetch_scalar(stm)

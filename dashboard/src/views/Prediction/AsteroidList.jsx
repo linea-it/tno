@@ -1,25 +1,20 @@
-// React e Prime React
 import React, { Component } from 'react';
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
-// Api Rest
-import OrbitApi from './OrbitApi';
-// interface components
-import { Card } from 'primereact/card';
+import PredictionApi from './PredictionApi';
 import { Button } from 'primereact/button';
 import { DataTable } from 'primereact/datatable';
 import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
-import Log from 'views/RefineOrbit/Log.jsx';
 import PropTypes from 'prop-types';
 
 class AsteroidList extends Component {
   state = this.initialState;
-  api = new OrbitApi();
+  api = new PredictionApi();
 
   static propTypes = {
-    orbit_run: PropTypes.number.isRequired,
+    predict_run: PropTypes.number.isRequired,
     view_asteroid: PropTypes.func.isRequired,
   };
 
@@ -96,31 +91,26 @@ class AsteroidList extends Component {
       sortable: true,
       style: { textAlign: 'center' },
     },
-    // {
-    //   field: 'files',
-    //   header: 'Execution Time',
-    //   sortable: true,
-    // },
   ];
 
   componentDidUpdate(prevProps) {
     // Typical usage (don't forget to compare props):
-    if (this.props.orbit_run !== prevProps.orbit_run) {
+    if (this.props.predict_run !== prevProps.predict_run) {
       this.fetchData({
-        orbit_run: this.props.orbit_run,
+        predict_run: this.props.predict_run,
         page: this.state.page,
         sizePerPage: this.state.sizePerPage,
       });
     }
   }
 
-  fetchData = ({ orbit_run, page, sizePerPage, sortField, sortOrder }) => {
+  fetchData = ({ predict_run, page, sizePerPage, sortField, sortOrder }) => {
     this.setState({ loading: true });
 
     const filters = [];
     filters.push({
-      property: 'orbit_run',
-      value: orbit_run,
+      property: 'predict_run',
+      value: predict_run,
     });
 
     this.api
@@ -140,10 +130,6 @@ class AsteroidList extends Component {
       });
   };
 
-  showAsteroidLog = asteroid_id => {
-    this.setState({ asteroid_id, log_visible: true });
-  };
-
   onViewAsteroid = asteroid_id => {
     this.props.view_asteroid(asteroid_id);
   };
@@ -160,7 +146,7 @@ class AsteroidList extends Component {
           icon="fa fa-search"
           className="ui-button-info"
           title="View"
-          onClick={() => this.onViewAsteroid(asteroid_id)}
+          // onClick={() => this.onViewAsteroid(asteroid_id)}
         />
       );
       btn_log = (
@@ -169,7 +155,6 @@ class AsteroidList extends Component {
           icon="fa fa-file-text-o"
           className="ui-button-warning"
           title="Log"
-          onClick={() => this.showAsteroidLog(asteroid_id)}
         />
       );
     }
@@ -182,10 +167,6 @@ class AsteroidList extends Component {
     );
   };
 
-  onLogHide = () => {
-    this.setState({ log_visible: false, asteroid_id: 0 });
-  };
-
   onPageChange = e => {
     const page = e.page + 1;
     this.setState(
@@ -195,7 +176,7 @@ class AsteroidList extends Component {
         sizePerPage: e.rows,
       },
       this.fetchData({
-        orbit_run: this.props.orbit_run,
+        orbit_run: this.props.predict_run,
         page: page,
         sizePerPage: e.rows,
         sortField: this.state.sortField,
@@ -211,7 +192,7 @@ class AsteroidList extends Component {
         sortOrder: e.sortOrder,
       },
       this.fetchData({
-        orbit_run: this.props.orbit_run,
+        orbit_run: this.props.predict_run,
         page: this.state.page,
         sizePerPage: this.state.sizePerPage,
         sortField: e.sortField,
@@ -235,7 +216,7 @@ class AsteroidList extends Component {
     });
 
     return (
-      <Card title="Asteroids" subTitle="">
+      <div>
         <DataTable
           value={this.state.data}
           resizableColumns={true}
@@ -262,13 +243,7 @@ class AsteroidList extends Component {
           first={this.state.first}
           onPageChange={this.onPageChange}
         />
-
-        <Log
-          visible={this.state.log_visible}
-          onHide={this.onLogHide}
-          id={this.state.asteroid_id}
-        />
-      </Card>
+      </div>
     );
   }
 }

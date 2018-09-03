@@ -2,13 +2,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import sizeMe from 'react-sizeme';
-import moment from 'moment';
 import { style } from 'variables/Variables.jsx';
 import {
   ScatterChart,
   Scatter,
   XAxis,
   YAxis,
+  ZAxis,
   CartesianGrid,
   Tooltip,
 } from 'recharts';
@@ -18,6 +18,7 @@ class RefineOrbitTimeProfile extends Component {
 
   static propTypes = {
     data: PropTypes.array.isRequired,
+    size: PropTypes.array,
   };
 
   get initialState() {
@@ -28,9 +29,10 @@ class RefineOrbitTimeProfile extends Component {
   }
 
   componentDidMount() {
-    let { width, height } = this.props.size;
+    const { width } = this.props.size;
+    let { height } = this.props.size;
 
-    if (height == 0) {
+    if (height === 0) {
       height = width / 2;
     }
     this.setState({
@@ -41,9 +43,6 @@ class RefineOrbitTimeProfile extends Component {
 
   render() {
     const { data } = this.props;
-
-    // Exemplo para convertar data de UTC para Local
-    // console.log(moment('2018-08-22T14:00:18Z').format('YYYY-MM-DD HH:mm:ss'));
 
     if (data === {}) {
       return <div />;
@@ -71,6 +70,7 @@ class RefineOrbitTimeProfile extends Component {
             name="Asteroids"
             tick={false}
           />
+          <ZAxis range={[10, 10]} />
           <Tooltip cursor={{ strokeDasharray: '3 3' }} />
           {data.map(function(asteroid, index) {
             return (

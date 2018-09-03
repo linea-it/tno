@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import RefineOrbitSubmit from './Submit';
 import RefineOrbitRunning from './Running';
 import RefineOrbitHistory from './History';
 import PropTypes from 'prop-types';
-import Card from 'components/Card/Card.jsx';
+
 class RefineOrbitPanel extends Component {
   state = this.initialState;
   static propTypes = {
@@ -28,27 +27,19 @@ class RefineOrbitPanel extends Component {
     const { record } = this.state;
     return (
       <div className="content">
-        <Card
-          title="Refine Orbit (NIMA)"
-          category="DESCRIÇÃO SOBRE A ETAPA"
-          content={
-            <Grid fluid>
-              <Row>
-                <Col md={4}>
-                  <RefineOrbitSubmit onCreateRun={this.onCreateRun} />
-                </Col>
-                <Col md={8}>
-                  <RefineOrbitRunning record={record} />
-                </Col>
-              </Row>
-              <Row>
-                <Col md={12}>
-                  <RefineOrbitHistory onRerun={this.onCreateRun} />
-                </Col>
-              </Row>
-            </Grid>
-          }
-        />
+        <div className="ui-g">
+          <div className="ui-g-4">
+            <RefineOrbitSubmit onCreateRun={this.onCreateRun} />
+          </div>
+          <div className="ui-g-8">
+            <RefineOrbitRunning record={record} />
+          </div>
+        </div>
+        <div className="ui-g">
+          <div className="ui-g-12">
+            <RefineOrbitHistory onRerun={this.onCreateRun} />
+          </div>
+        </div>
       </div>
     );
   }

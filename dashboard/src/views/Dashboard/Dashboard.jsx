@@ -20,10 +20,79 @@ import {
   YAxis,
   Tooltip,
   Legend,
+<<<<<<< HEAD
+} from 'recharts';
+=======
+  Label,
 } from 'recharts';
 
+import DashboardApi from './DashboardApi';
+>>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
+
 class Dashboard extends Component {
+  state = this.initialState;
+  api = new DashboardApi();
+
+  get initialState() {
+    return {
+      exposures: {
+        count_pointings: 0,
+        downloaded: 0,
+        not_downloaded: 0,
+        last: '',
+        first: '',
+        exposures: 0,
+        updated: '',
+        size: '',
+      },
+      ccds: {
+        count_asteroids: 0,
+        unique_ccds: 0,
+        asteroids_by_class: [
+          {
+            class_name: 'KBO',
+            count: 0,
+          },
+          {
+            class_name: 'Centaur',
+            count: 0,
+          },
+          {
+            class_name: 'Trojan',
+            count: 0,
+          },
+          {
+            class_name: 'MB',
+            count: 0,
+          },
+        ],
+        asteroids_by_dynaclass: [],
+        histogram: [],
+      },
+    };
+  }
+
+  componentDidMount() {
+    this.api.getExposuresInfo().then(res => {
+      const exposures = res.data;
+
+      this.setState({
+        exposures: exposures,
+      });
+
+      this.api.getSkybotInfo().then(res => {
+        const ccds = res.data;
+
+        this.setState({
+          ccds: ccds,
+        });
+      });
+    });
+  }
+
   render() {
+    const { exposures, ccds } = this.state;
+
     const data = [
       { name: 'Executado', value: 400 },
       { name: 'Warning', value: 300 },
@@ -31,156 +100,108 @@ class Dashboard extends Component {
       { name: 'Fail', value: 300 },
     ];
 
-    const stats = [
-      { name: 'Active Projects', value: 400 },
-      { name: 'Open Tasks', value: 300 },
-      { name: 'Support Tickets', value: 200 },
-      { name: 'Active Timers', value: 300 },
-    ];
-
-    const stats2 = [
-      { name: 'TNO', value: 400 },
-      { name: 'Centaur', value: 300 },
-      { name: 'Troian', value: 200 },
-      { name: 'KBO', value: 200 },
+    const proccess_stats = [
+      { name: 'Proccess', value: 'xxx - xxxxxxx xxxxx' },
+      { name: 'Owner', value: 'xxxxxxxxx' },
+      { name: 'Start', value: 'xxxx-xx-xx xx:xx:xx' },
+      { name: 'Asteroids', value: 'xxx' },
     ];
 
     const graph = [
-      { name: 'g', band: 1221 },
-      { name: 'r', band: 21323 },
-      { name: 'y', band: 5122 },
-      { name: 'z', band: 4221 },
-      { name: 'i', band: 1212 },
-      { name: 'u', band: 32121 },
+      { name: '2013', band: 2500 },
+      { name: '2014', band: 4500 },
+      { name: '2015', band: 3500 },
+      { name: '2016', band: 3000 },
     ];
 
     const colors = ['rgba(255,255,255,0.2)', '#ffffff', '#ffffff', '#ffffff'];
 
-    const textInfo = [
+    const exposure_info = [
       {
         legend: 'Downloaded',
-        label: '3232',
-        value: 1,
-        colorIcon: 'success',
+        label: exposures.downloaded,
+        value: exposures.downloaded,
+        colorIcon: 'primary',
         grid: ['6'],
       },
       {
-        legend: 'Not Downloaded',
-        label: '231',
-        value: 2,
-        colorIcon: 'danger',
+        legend: 'not Downloaded',
+        label: exposures.not_downloaded,
+        value: exposures.not_downloaded,
+        colorIcon: 'muted',
         grid: ['6'],
       },
     ];
 
-    const textInfo2 = [
-      {
-        legend: 'CCDs with objects',
-        label: '6473',
-        value: 1,
-        colorIcon: 'success',
-        grid: ['6'],
-      },
-      {
-        legend: 'CCDs without objects',
-        label: '333',
-        value: 2,
-        colorIcon: 'danger',
-        grid: ['6'],
-      },
-    ];
+    // const ccd_info = [
+    //   {
+    //     legend: 'With SSSO',
+    //     label: ccds.count_asteroids,
+    //     value: ccds.count_asteroids,
+    //     colorIcon: 'info',
+    //     grid: ['6'],
+    //   },
+    //   {
+    //     legend: 'Without',
+    //     label: '231',
+    //     value: 30,
+    //     colorIcon: 'danger',
+    //     grid: ['6'],
+    //   },
+    // ];
+
+    const ssso_class = [];
+
+    ccds.asteroids_by_class.map(record => {
+      ssso_class.push({
+        name: record.class_name,
+        value: record.count,
+        color: 'primary',
+      });
+    });
+
+    let heliocentric_histogram = null;
+    if (ccds.histogram.length > 0) {
+      heliocentric_histogram = (
+        <Card
+          subTitle="Histogram Asteroid-Sun distance"
+          className="step-title"
+          style={{ border: 'none' }}
+        >
+          <BarChart
+            width={350}
+            height={200}
+            data={ccds.histogram}
+            margin={{ top: 20, right: 20, left: 20, bottom: 5 }}
+          >
+            <Tooltip />
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="bin">
+              <Label
+                value="Heliocentric distance (AU)"
+                offset={0}
+                position="insideBottom"
+              />
+            </XAxis>
+            <YAxis dataKey="count" scale="pow">
+              <Label
+                value="N Asteroids"
+                offset={5}
+                angle={-90}
+                position="insideLeft"
+              />
+            </YAxis>
+            <Bar barSize={10} dataKey="count" fill="#3c1e7e" />
+          </BarChart>
+        </Card>
+      );
+    }
 
     return (
-      <div>
+      <div className="content">
         <div className="ui-g">
-          <div className="ui-md-4 ui-sm-2">
-            <PanelCostumize
-              colorHead="ds"
-              title="SKYBOT"
-              content={
-                <div>
-                  <StepStats
-                    disableCard="false"
-                    title=" CCDs frames downloaded"
-                    info={textInfo}
-                    footer={
-                      <div>
-                        <ul className="step-format">
-                          <li>
-                            <i className="pi pi-cloud-download step-icon" />
-                            <a>Data do último update: 25/12/2018</a>
-                          </li>
-                          <li>
-                            <i className="pi pi-cloud-download step-icon">
-                              <a>Data do último update: 25/12/2018</a>
-                            </i>
-                          </li>
-                        </ul>
-                      </div>
-                    }
-                  />
-                  <br />
-                  <hr className="panel-hr" />
-                  <StepStats
-                    disableCard="false"
-                    title=" CCDs with SSSO"
-                    info={textInfo2}
-                    footer={
-                      <div>
-                        <ul className="step-format">
-                          <li>
-                            <i className="pi pi-cloud-download step-icon" />
-                            <a>Data do último update: 25/12/2018</a>
-                          </li>
-                          <li>
-                            <i className="pi pi-cloud-download step-icon">
-                              <a>Data do último update: 25/12/2018</a>
-                            </i>
-                          </li>
-                        </ul>
-                      </div>
-                    }
-                  />
-                  <br />
-                  <hr className="panel-hr" />
-                  <StepStatsGroup
-                    disableCard="false"
-                    title="SSSO number per class"
-                    data={stats2}
-                  />
-                  <hr className="panel-hr" />
-                  <Card
-                    subTitle="Exposure per period (placeholder)"
-                    className="step-title"
-                    style={{ border: 'none' }}
-                  >
-                    <BarChart
-                      width={475}
-                      height={198}
-                      data={graph}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      {/* <Tooltip /> */}
-                      {/* <Legend /> */}
-                      <Bar barSize={10} dataKey="band" fill="#3c1e7e" />;
-                      <Bar barSize={10} dataKey="band" fill="#3c1e7e" />;
-                      <Bar barSize={10} dataKey="band" fill="#3c1e7e" />;
-                      <Bar barSize={10} dataKey="band" fill="#3c1e7e" />;
-                      <Bar barSize={10} dataKey="band" fill="#3c1e7e" />;
-                    </BarChart>
-                    {/* <figure>
-                      <img width="300" height="151" alt="text" src={plot2} />
-                    </figure> */}
-                  </Card>
-                </div>
-              }
-            />
-          </div>
-
-          <div className="ui-md-4 ui-sm-2">
+          {/* <div className="ui-g-4 ui-md-4 ui-sm-2"> */}
+          <div className="ui-g-4">
             <PanelCostumize
               colorHead="ds"
               title="EXPOSURE"
@@ -189,19 +210,28 @@ class Dashboard extends Component {
                   <br />
                   <StepStats
                     disableCard="false"
-                    title=" CCDs frames downloaded"
-                    info={textInfo2}
+                    // title=" CCDs frames downloaded"
+                    info={exposure_info}
                     footer={
                       <div>
                         <ul className="step-format">
                           <li>
-                            <i className="pi pi-cloud-download step-icon" />
-                            <a>Data do último update: 25/12/2018</a>
+                            <a>Pointings: {exposures.count_pointings}</a>
                           </li>
                           <li>
-                            <i className="pi pi-cloud-download step-icon">
-                              <a>Data do último update: 25/12/2018</a>
-                            </i>
+                            <a>Exposures: {exposures.exposures}</a>
+                          </li>
+                          <li>
+                            <a>
+                              Most recent: {exposures.last} Oldest:{' '}
+                              {exposures.first}
+                            </a>
+                          </li>
+                          <li>
+                            <a>Updated: {exposures.updated}</a>
+                          </li>
+                          <li>
+                            <a>Size: {exposures.size}</a>
                           </li>
                         </ul>
                       </div>
@@ -215,30 +245,98 @@ class Dashboard extends Component {
                     style={{ border: 'none' }}
                   >
                     <BarChart
-                      width={475}
-                      height={198}
+                      width={350}
+                      height={200}
                       data={graph}
                       margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
-                      <YAxis />
-                      {/* <Tooltip /> */}
-                      {/* <Legend /> */}
-                      <Bar barSize={10} dataKey="band" fill="#28CA71" />;
-                      <Bar barSize={10} dataKey="band" fill="#28CA71" />;
-                      <Bar barSize={10} dataKey="band" fill="#28CA71" />;
-                      <Bar barSize={10} dataKey="band" fill="#28CA71" />;
-                      <Bar barSize={10} dataKey="band" fill="#28CA71" />;
+                      <YAxis dataKey="band" />
+                      <Bar barSize={10} dataKey="band" fill="#3c1e7e" />;
                     </BarChart>
-                    {/* <figure>
-                      <img width="300" height="151" alt="text" src={plot2} />
-                    </figure> */}
                   </Card>
                 </div>
               }
             />
             {/* */}
+          </div>
+          <div className="ui-md-4 ui-sm-2">
+            <PanelCostumize
+              colorHead="ds"
+              title="SKYBOT"
+              content={
+                <div>
+                  {/* <StepStats
+                    disableCard="false"
+                    title=" CCDs with SSSO"
+                    info={exposure_info}
+                    footer={
+                      <div>
+                        <ul className="step-format">
+                          <li>
+                            <a>CCDs: {ccds.unique_ccds}</a>
+                          </li>
+                          <li>
+                            <a>Asteroids: {ccds.count_asteroids}</a>
+                          </li>
+                          <li>
+                            <a>Updated: xxxx-xx-xx</a>
+                          </li>
+                          <li>
+                            <a>Skybot Version: vx.x.x</a>
+                          </li>
+                        </ul>
+                      </div>
+                    }
+                  /> */}
+                  <div>
+                    <ul className="step-format">
+                      <li>
+                        <a>CCDs: {ccds.unique_ccds}</a>
+                      </li>
+                      <li>
+                        <a>Asteroids: {ccds.count_asteroids}</a>
+                      </li>
+                      <li>
+                        <a>Updated: xxxx-xx-xx</a>
+                      </li>
+                      <li>
+                        <a>Skybot Version: vx.x.x</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <br />
+                  <hr className="panel-hr" />
+                  <StepStatsGroup
+                    disableCard="false"
+                    title="SSSO number per class"
+                    data={ssso_class}
+                  />
+                  <hr className="panel-hr" />
+                  <Card
+                    subTitle="SSSO number per dynclass"
+                    className="step-title"
+                    style={{ border: 'none' }}
+                  >
+                    <BarChart
+                      width={350}
+                      height={200}
+                      data={ccds.asteroids_by_dynaclass}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <Tooltip />
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="dynclass" />
+                      <YAxis dataKey="count" />
+                      <Bar barSize={10} dataKey="count" fill="#3c1e7e" />;
+                    </BarChart>
+
+                    {heliocentric_histogram}
+                  </Card>
+                </div>
+              }
+            />
           </div>
 
           <div className="ui-md-4 ui-sm-2">
@@ -246,8 +344,10 @@ class Dashboard extends Component {
               <div className="ui-md-12">
                 <PanelCostumize
                   colorHead="ds"
-                  title="LIST STATS"
-                  content={<ListStats statstext="running" data={stats} />}
+                  title="Last Proccess Stats"
+                  content={
+                    <ListStats statstext="running" data={proccess_stats} />
+                  }
                 />
               </div>
               <div className="ui-md-12">
@@ -268,12 +368,12 @@ class Dashboard extends Component {
                             data={data}
                             fill={colors}
                             name="Memory"
-                            number="22 %"
+                            number="60 %"
                           />
                         </div>
                         <div className="ui-md-12">
                           <MiniCardStats
-                            color="green"
+                            color="blue"
                             bigIcon={<i className="pe-7s-graph1 text-danger" />}
                             statsText="Errors"
                             statsValue="23"
@@ -288,7 +388,7 @@ class Dashboard extends Component {
 
                         <div className="ui-md-12">
                           <MiniCardStats
-                            color="orange"
+                            color="blue"
                             bigIcon={<i className="pe-7s-graph1 text-danger" />}
                             statsText="Errors"
                             statsValue="23"
@@ -350,7 +450,7 @@ class Dashboard extends Component {
           </div>
         </div>
         <ListStats statstext="running" title="List Stats" data={stats} /> */}
-        <div className="ui-md-4" />
+        {/* <div className="ui-md-4" /> */}
       </div>
     );
   }

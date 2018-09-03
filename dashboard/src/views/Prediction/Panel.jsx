@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
-import PraiaApi from './PraiaApi';
-import PraiaSubmit from './PraiaSubmit';
-import PraiaHistory from './PraiaHistory';
-import PraiaRunning from './PraiaRunning';
+import PredictionHistory from './History';
+
 import PropTypes from 'prop-types';
-import Card from 'components/Card/Card.jsx';
-class Praia extends Component {
+import { Card } from 'primereact/card';
+class PredictionPanel extends Component {
   state = this.initialState;
-  api = new PraiaApi();
   static propTypes = {
     history: PropTypes.any.isRequired,
   };
@@ -23,24 +19,34 @@ class Praia extends Component {
 
   onCreateRun = record => {
     // Toda vez que cria um novo registro forca a execucao do metodo render()
-    this.setState(this.state);
+    this.setState({ record: record });
+  };
+
+  onViewPrediction = id => {
+    const history = this.props.history;
+    history.push({ pathname: `/prediction_detail/${id}` });
   };
 
   render() {
-    const { record } = this.state;
+    // const { record } = this.state;
     return (
       <div className="content">
         <div className="ui-g">
           <div className="ui-g-4">
-            <PraiaSubmit onCreateRun={this.onCreateRun} />
+            <Card
+              title="Prediction Occultation"
+              subTitle={'Execute PRAIA Occultation'}
+            />
           </div>
           <div className="ui-g-8">
-            <PraiaRunning record={record} />
+            <Card title=" " subTitle=" " />
           </div>
         </div>
         <div className="ui-g">
           <div className="ui-g-12">
-            <PraiaHistory />
+            <Card subTitle="Manage PRAIA Occultation rounds">
+              <PredictionHistory view_prediction={this.onViewPrediction} />
+            </Card>
           </div>
         </div>
       </div>
@@ -48,4 +54,4 @@ class Praia extends Component {
   }
 }
 
-export default withRouter(Praia);
+export default withRouter(PredictionPanel);

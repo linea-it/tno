@@ -1,7 +1,6 @@
 {
   "name": "LIneA-tno",
   "version": "1.1.0",
-  "homepage": "https://github.com/linea-it/tno",
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",

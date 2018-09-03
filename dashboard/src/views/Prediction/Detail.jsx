@@ -2,17 +2,17 @@ import React, { Component } from 'react';
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
-import OrbitApi from './OrbitApi';
-import StepStats from 'components/Statistics/StepStats.jsx';
+import OrbitApi from 'views/Prediction/PredictionApi';
+
 import { withRouter } from 'react-router-dom';
-import AsteroidList from './AsteroidList';
+import AsteroidList from 'views/Prediction/AsteroidList';
 import PropTypes from 'prop-types';
 import DonutStats from 'components/Statistics/DonutStats.jsx';
 import ListStats from 'components/Statistics/ListStats.jsx';
-import { Card } from 'primereact/card';
-import RefineOrbitTimeProfile from './TimeProfile';
+import StepStats from 'components/Statistics/StepStats.jsx';
 import moment from 'moment';
-class RefineOrbitRunDetail extends Component {
+
+class PredictionDetail extends Component {
   state = this.initialState;
   api = new OrbitApi();
 
@@ -36,7 +36,7 @@ class RefineOrbitRunDetail extends Component {
 
     // console.log('Orbit Run Id: %o', params.id);
 
-    this.api.getOrbitRunById({ id: params.id }).then(res => {
+    this.api.getPredictionRunById({ id: params.id }).then(res => {
       const data = res.data;
 
       this.setState({
@@ -44,13 +44,13 @@ class RefineOrbitRunDetail extends Component {
         data: data,
       });
 
-      if (data.status === 'success') {
-        this.api.getOrbitRunTimeProfile({ id: params.id }).then(res => {
-          this.setState({
-            time_profile: res.data.data,
-          });
-        });
-      }
+      // if (data.status === 'success') {
+      //   this.api.getOrbitRunTimeProfile({ id: params.id }).then(res => {
+      //     this.setState({
+      //       time_profile: res.data.data,
+      //     });
+      //   });
+      // }
     });
   }
 
@@ -67,51 +67,32 @@ class RefineOrbitRunDetail extends Component {
     }
 
     const stats = [
+      { name: 'Status', value: data.status },
       { name: 'Proccess', value: data.proccess_displayname },
       { name: 'Owner', value: data.owner },
       { name: 'Start', value: data.h_time },
       { name: 'Execution', value: data.h_execution_time },
       { name: 'Asteroids', value: data.count_objects },
     ];
- 
 
-    const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
-
-<<<<<<< HEAD
-   
-    const textInfo2 = [
-      {
-        legend: 'Downloaded',
-        label: '3232',
-        value: 1,
-        colorIcon: 'success',
-        grid: ['6'],
-      },
-      {
-        legend: 'Not Downloaded',
-        label: '333',
-        value: 2,
-        colorIcon: 'danger',
-=======
     const execute_time = [
       {
-        legend: 'Download',
-        label: data.execution_download_time,
-        value: Math.round(
-          moment.duration(data.execution_download_time).asSeconds()
-        ),
-        colorIcon: 'primary',
-        grid: ['6'],
+        text: 'Inputs',
+        number: Math.round(moment.duration(data.execution_time).asSeconds()),
+        colorIcon: 'info',
+        grid: ['3'],
       },
       {
-        legend: 'NIMA',
-        label: data.execution_nima_time,
-        value: Math.round(
-          moment.duration(data.execution_nima_time).asSeconds()
-        ),
+        text: 'Ephemeris',
+        number: 0,
         colorIcon: 'info',
->>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
-        grid: ['6'],
+        grid: ['3'],
+      },
+      {
+        text: 'Occultation',
+        number: 0,
+        colorIcon: 'success',
+        grid: ['3'],
       },
     ];
 
@@ -121,15 +102,15 @@ class RefineOrbitRunDetail extends Component {
       { name: 'Failure', value: data.count_failed },
       { name: 'not Executed', value: data.count_not_executed },
     ];
+    const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
     return (
       <div>
         <div className="ui-g">
           <div className="ui-g-4 ui-md-4 ui-sm-1">
             <ListStats
-              statstext={this.state.data.status}
-              status={true}
-              title={`Refine Orbit - ${data.id}`}
+              Badge="STATUS"
+              title={`Prediction Occultation - ${data.id}`}
               data={stats}
             />
           </div>
@@ -137,30 +118,27 @@ class RefineOrbitRunDetail extends Component {
           <div className="ui-g-4 ui-md-4 ui-sm-1">
             <div className="ui-g-4 ui-md-12 ui-sm-1">
               <DonutStats
-                title="Execution Statistics"
+                subTitle="Statistics of executation"
                 data={stats_status}
                 fill={colors}
               />
             </div>
+
             <div className="ui-g-4 ui-md-12 ui-sm-1">
-<<<<<<< HEAD
-              <StepStats title="Step Stats" columns={textInfo2} />
-=======
-              <StepStats title="Step Stats" info={execute_time} />
->>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
+              <StepStats title="My Stats" info={execute_time} />
             </div>
           </div>
-          <div className="ui-g-4 ui-md-4">
-            <Card title="" subTitle="Execution Time">
-              <RefineOrbitTimeProfile data={this.state.time_profile} />
-            </Card>
-          </div>
+          {/* <div className="ui-g-4 ui-md-4">
+              <Card title="" subTitle="">
+                <RefineOrbitTimeProfile data={this.state.time_profile} />
+              </Card>
+            </div> */}
         </div>
 
         <div className="ui-g">
           <div className="ui-g-12">
             <AsteroidList
-              orbit_run={this.state.id}
+              predict_run={this.state.id}
               view_asteroid={this.onViewAsteroid}
             />
           </div>
@@ -170,4 +148,4 @@ class RefineOrbitRunDetail extends Component {
   }
 }
 
-export default withRouter(RefineOrbitRunDetail);
+export default withRouter(PredictionDetail);

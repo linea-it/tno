@@ -7,6 +7,10 @@ import { ProgressBar } from 'react-bootstrap';
 
 import PropTypes from 'prop-types';
 class StepStatsGroup extends Component {
+  get_value = (value, total) => {
+    return 100 * value / total;
+  };
+
   render() {
     const propSet = this.props;
 
@@ -18,29 +22,10 @@ class StepStatsGroup extends Component {
       status: bool.isRequired,
     };
 
-    const colors = ['success', 'warning', 'danger', 'primary'];
-    const columns = propSet.data.map((col, i) => {
-      return (
-        <tbody>
-          <tr key={i}>
-            <div className="ui-g">
-              <div className="ui-md-6 step-text-left">
-                {propSet.data[i].name}
-              </div>
-              <div className="ui-md-6">
-                <span className="step-text-right">{propSet.data[i].value}</span>
-              </div>
-            </div>
-
-            <ProgressBar
-              id="inputId"
-              bsStyle={`progress-bar progress-bar-${colors[i]}`}
-              now={35}
-              key={1}
-            />
-          </tr>
-        </tbody>
-      );
+    // Descobrindo o total
+    let total = 0;
+    propSet.data.map(col => {
+      total += col.value;
     });
 
     return (
@@ -51,19 +36,31 @@ class StepStatsGroup extends Component {
           subTitle={propSet.title}
         >
           <Table hover responsive>
-            {/* <tr>
-                <td className="text-white b-a-0">
-                  <strong>Status</strong>
-                </td>
-                <td className="text-white b-a-0">
-                  <Badge
-                    className={`label label-outline label-${propSet.statstext}`}
-                  >
-                    {propSet.statstext}
-                  </Badge>
-                </td>
-              </tr> */}
-            {columns}
+            {propSet.data.map((col, i) => {
+              return (
+                <tbody>
+                  <tr key={i}>
+                    <div className="ui-g">
+                      <div className="ui-md-6 step-text-left">
+                        {propSet.data[i].name}
+                      </div>
+                      <div className="ui-md-6">
+                        <span className="step-text-right">
+                          {propSet.data[i].value}
+                        </span>
+                      </div>
+                    </div>
+
+                    <ProgressBar
+                      id="inputId"
+                      bsStyle={`progress-bar-${col.color}`}
+                      now={this.get_value(col.value, total)}
+                      key={1}
+                    />
+                  </tr>
+                </tbody>
+              );
+            })}
           </Table>
         </Card>
       </div>

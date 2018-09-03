@@ -70,7 +70,7 @@ h1 .subtitle{
 }
 
 .text-muted{
-    color: #9A9A9A;
+    color: $muted-color !important;
 }
 .text-primary, .text-primary:hover{
     color: #1D62F0 !important;
