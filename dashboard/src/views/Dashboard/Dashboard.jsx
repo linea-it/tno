@@ -20,14 +20,10 @@ import {
   YAxis,
   Tooltip,
   Legend,
-<<<<<<< HEAD
-} from 'recharts';
-=======
   Label,
 } from 'recharts';
 
 import DashboardApi from './DashboardApi';
->>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
 
 class Dashboard extends Component {
   state = this.initialState;
@@ -346,7 +342,11 @@ class Dashboard extends Component {
                   colorHead="ds"
                   title="Last Proccess Stats"
                   content={
-                    <ListStats statstext="running" data={proccess_stats} />
+                    <ListStats
+                      status={false}
+//                      statstext="running"
+                      data={proccess_stats}
+                    />
                   }
                 />
               </div>

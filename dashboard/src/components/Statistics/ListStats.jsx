@@ -18,31 +18,49 @@ class ListStats extends Component {
     };
 
     const columns = propSet.data.map((col, i) => {
-      return (
-        <tr key={i}>
-          <td className="text-white b-a-0">{propSet.data[i].name}</td>
-          <td className="text-white b-a-0">{propSet.data[i].value}</td>
+      if (propSet.badgeColumns) {
+        return (
+          <tr key={i}>
+            <td className="text-white b-a-0">{propSet.data[i].name}</td>
+            <td className="text-white b-a-0">
+              <Badge className={`label-list label-${propSet.statstext}`}>
+                {propSet.data[i].value}
+              </Badge>
+            </td>
+          </tr>
+        );
+      } else {
+        return (
+          <tr key={i}>
+            <td className="text-white b-a-0">{propSet.data[i].name}</td>
+            <td className="text-white b-a-0">{propSet.data[i].value}</td>
+          </tr>
+        );
+      }
+    });
+
+    const status = [];
+    if (propSet.status) {
+      status.push(
+        <tr>
+          <td className="text-white b-a-0">
+            <strong>Status</strong>
+          </td>
+          <td className="text-white b-a-0">
+            <Badge className={`label label-outline label-${propSet.statstext}`}>
+              {propSet.statstext}
+            </Badge>
+          </td>
         </tr>
       );
-    });
+    }
 
     return (
       <div>
         <Card subTitle={propSet.title}>
-          <Table hover responsive>
+          <Table responsive>
             <tbody>
-              <tr>
-                <td className="text-white b-a-0">
-                  <strong>Status</strong>
-                </td>
-                <td className="text-white b-a-0">
-                  <Badge
-                    className={`label label-outline label-${propSet.statstext}`}
-                  >
-                    {propSet.statstext}
-                  </Badge>
-                </td>
-              </tr>
+              {status}
               {columns}
             </tbody>
           </Table>

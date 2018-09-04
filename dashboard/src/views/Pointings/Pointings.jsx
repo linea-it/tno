@@ -9,9 +9,11 @@ import PointingApi from './PointingApi';
 import PointingStats from './PointingStats';
 import PointingList from './PointingList';
 import PropTypes from 'prop-types';
-import Card from 'components/Card/Card.jsx';
+// import Card from 'components/Card/Card.jsx';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+import PanelCostumize from 'components/Panel/PanelCostumize';
+import { Card } from 'primereact/card';
 
 class PointingsPanel extends Component {
   state = this.initialState;
@@ -34,37 +36,8 @@ class PointingsPanel extends Component {
   render() {
     return (
       <div className="content">
-        <Grid fluid>
-          <Row>
-            <Col md={12}>
-              {/* <Panel header="Statistics"> */}
-                <PointingStats />
-              {/* </Panel> */}
-            </Col>
-          </Row>
-          <br />
-          <Row>
-            <Col md={12}>
-              <Panel
-                // style={{ background: 'red' }}
-                className="costumize"
-                //bsStyle="info"
-                header="List with all pointings"
-              >
-                {/* <Panel.Heading>
-                  <Panel.Title componentClass="h1">
-                    <strong>List with all pointings</strong>
-                  </Panel.Title>
-                </Panel.Heading> */}
-                <Card
-                  //title="Pointings"
-                  category="complete list with all entries recorded in the database. can search for expnum and filename"
-                  content={<PointingList />}
-                />
-              </Panel>
-            </Col>
-          </Row>
-        </Grid>
+        <PointingStats />
+        <PointingList />
       </div>
     );
   }

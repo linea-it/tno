@@ -3093,28 +3093,17 @@ body > .navbar-collapse[data-color="purple"]:after {
   padding: 0; }
   .step-list > li {
     color: rgba(0, 0, 0, 0.8) !important;
-<<<<<<< HEAD
-    font-size: 12px;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
-  .step-list > li.number {
-    margin-left: 18px;
-=======
     font-size: 11px;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
   .step-list > li.number {
     margin-left: 11px;
->>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
     color: rgba(30, 30, 30, 0.97);
     font-size: 16px;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
 
 .step-title {
   color: black !important;
-<<<<<<< HEAD
-  font-size: 16px;
-=======
   font-size: 12px;
->>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
 
 .step-icon {
@@ -3128,11 +3117,7 @@ body > .navbar-collapse[data-color="purple"]:after {
   padding: 0; }
   .step-format > li a {
     color: rgba(0, 0, 0, 0.5) !important;
-<<<<<<< HEAD
-    font-size: 14px;
-=======
     font-size: 12px;
->>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-weight: 300;
     margin-left: 10px; }
@@ -3171,7 +3156,7 @@ body > .navbar-collapse[data-color="purple"]:after {
 
 .label {
   display: inline;
-  padding: .2em .6em .3em;
+  padding: .6em .6em .3em;
   font-size: 75%;
   font-weight: 700;
   line-height: 1;
@@ -3273,11 +3258,6 @@ body > .navbar-collapse[data-color="purple"]:after {
   color: #D34A39; }
 
 .mini-card-stats {
-<<<<<<< HEAD
-  width: 400px;
-  margin-left: 50px;
-=======
->>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
   height: 110px;
   border: 2px solid #c6c6c6; }
 
@@ -3309,10 +3289,6 @@ body > .navbar-collapse[data-color="purple"]:after {
   background-color: #28CA71; }
 
 .panel-content {
-<<<<<<< HEAD
-  min-width: 500px;
-=======
->>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
   min-height: none;
   background: #ffffff !important;
   border: 1.5px solid #575555;

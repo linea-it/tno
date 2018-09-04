@@ -8,7 +8,8 @@ import { Button } from 'primereact/button';
 import { Toolbar } from 'primereact/toolbar';
 
 import { withRouter } from 'react-router-dom';
-// import Button from 'elements/CustomButton/CustomButton.jsx';
+import PanelCostumize from 'components/Panel/PanelCostumize';
+import { Card } from 'primereact/card';
 import PointingApi from './PointingApi';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -254,110 +255,96 @@ class PointingList extends Component {
     };
 
     return (
-      <div className="content">
-        <div>
-          {/* <ButtonToolbar>
-            <FormGroup>
-              <InputGroup>
-                <InputGroup.Button>
-                  <Button onClick={this.showDetail}> Filters</Button>
-                </InputGroup.Button>
-                <FormControl
-                  type="text"
-                  placeholder="Search By expnum, filename"
-                  value={search}
-                  onChange={this.onChangeSearch}
-                  onKeyPress={this.onKeyPress}
-                />
-                <InputGroup.Button>
-                  <Button onClick={this.handleSearch}>Search</Button>
-                </InputGroup.Button>
+      <div className="ui-g">
+        <div className="ui-md-12">
+          <PanelCostumize
+            title="List with all pointings"
+            content={
+              <Card>
+                <div>
+                  <Toolbar>
+                    <div className="ui-toolbar">
+                      <div className="ui-g ui-fluid">
+                        <div className="ui-g-12">
+                          <h5>
+                            <div className="ui-g-10">
+                              <div className="ui-inputgroup">
+                                <InputText
+                                  placeholder="Search By expnum, filename"
+                                  value={search}
+                                  onChange={this.onChangeSearch}
+                                  onKeyPress={this.onKeyPress}
+                                />
+                                <Button
+                                  className="ui-button-primary"
+                                  label="Search"
+                                  onClick={this.handleSearch}
+                                />
+                              </div>
+                            </div>
 
-                <InputGroup.Button>
-                  <Button onClick={this.handlerClear}>Reload</Button>
-                </InputGroup.Button>
-              </InputGroup>
-            </FormGroup>
-          </ButtonToolbar> */}
-          <Toolbar>
-            <div className="ui-toolbar">
-              <div className="ui-g ui-fluid">
-                <div className="ui-g-12">
-                  <h5>
-                    <div className="ui-g-10">
-                      <div className="ui-inputgroup">
-                        <InputText
-                          placeholder="Search By expnum, filename"
-                          value={search}
-                          onChange={this.onChangeSearch}
-                          onKeyPress={this.onKeyPress}
-                        />
-                        <Button
-                          className="ui-button-primary"
-                          label="Search"
-                          onClick={this.handleSearch}
-                        />
+                            <div className="ui-g-1">
+                              <Button
+                                label="Clear"
+                                onClick={e => {
+                                  this.handlerClear();
+                                }}
+                                style={{
+                                  border: ' 1px solid #95a5a6',
+                                  backgroundColor: '#95a5a6',
+                                }}
+                              />
+                            </div>
+                            <div className="ui-g-1">
+                              <Button
+                                label="Filters"
+                                onClick={e => {
+                                  this.setState({ show: true });
+                                }}
+                                style={{
+                                  border: ' 1px solid #7f8c8d',
+                                  backgroundColor: '#7f8c8d',
+                                }}
+                              />
+                            </div>
+                          </h5>
+                        </div>
                       </div>
                     </div>
+                  </Toolbar>
 
-                    <div className="ui-g-1">
-                      <Button
-                        label="Clear"
-                        onClick={e => {
-                          this.handlerClear();
-                        }}
-                        style={{
-                          border: ' 1px solid #95a5a6',
-                          backgroundColor: '#95a5a6',
-                        }}
-                      />
-                    </div>
-                    <div className="ui-g-1">
-                      <Button
-                        label="Filters"
-                        onClick={e => {
-                          this.setState({ show: true });
-                        }}
-                        style={{
-                          border: ' 1px solid #7f8c8d',
-                          backgroundColor: '#7f8c8d',
-                        }}
-                      />
-                    </div>
-                  </h5>
+                  <div className="clearfix" />
+
+                  <BootstrapTable
+                    striped
+                    hover
+                    condensed
+                    remote
+                    bordered={false}
+                    keyField="id"
+                    noDataIndication="no results to display"
+                    data={data}
+                    columns={pointing_columns}
+                    pagination={pagination}
+                    onTableChange={this.handleTableChange}
+                    rowEvents={rowEvents}
+                    loading={loading}
+                    overlay={overlayFactory({
+                      spinner: true,
+
+                      background: 'rgba(192,192,192,0.3)',
+                    })}
+                  />
                 </div>
-              </div>
-            </div>
-          </Toolbar>
-
-          <div className="clearfix" />
-
-          <BootstrapTable
-            striped
-            hover
-            condensed
-            remote
-            bordered={false}
-            keyField="id"
-            noDataIndication="no results to display"
-            data={data}
-            columns={pointing_columns}
-            pagination={pagination}
-            onTableChange={this.handleTableChange}
-            rowEvents={rowEvents}
-            loading={loading}
-            overlay={overlayFactory({
-              spinner: true,
-
-              background: 'rgba(192,192,192,0.3)',
-            })}
+                <FilterPointings
+                  onFilter={this.onFilter}
+                  show={this.state.show}
+                  onHide={this.closeCreate}
+                />
+              </Card>
+            }
           />
         </div>
-        <FilterPointings
-          onFilter={this.onFilter}
-          show={this.state.show}
-          onHide={this.closeCreate}
-        />
       </div>
     );
   }

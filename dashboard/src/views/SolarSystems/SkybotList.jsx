@@ -10,6 +10,8 @@ import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { formatColumnHeader, coordinateFormater } from 'utils';
+import PanelCostumize from 'components/Panel/PanelCostumize';
+import { Card } from 'primereact/card';
 
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -201,7 +203,6 @@ class SkybotList extends Component {
     });
   };
 
-  
   onFilter = filter => {
     this.setState(
       { filtered: filter },
@@ -239,78 +240,89 @@ class SkybotList extends Component {
     };
 
     return (
-      <div className="content">
-        <div>
-            <Toolbar>
-            <div className="ui-toolbar">
-              <div className="ui-g ui-fluid">
-                <div className="ui-g-12">
-                  <h5>
-                    <div className="ui-g-10">
-                      <div className="ui-inputgroup">
-                        <InputText
-                          placeholder="Search By name, number"
-                          value={search}
-                          onChange={this.onChangeSearch}
-                          onKeyPress={this.onKeyPress}
-                        />
-                        <Button label="Search" onClick={this.handleSearch} />
+      <div className="ui-g">
+        <div className="ui-md-12">
+          <PanelCostumize
+            title="SkyBot Output"
+            content={
+              <Card subTitle="complete list with all entries recorded in the database. can search for object name and number">
+                <Toolbar>
+                  <div className="ui-toolbar">
+                    <div className="ui-g ui-fluid">
+                      <div className="ui-g-12">
+                        <h5>
+                          <div className="ui-g-10">
+                            <div className="ui-inputgroup">
+                              <InputText
+                                placeholder="Search By name, number"
+                                value={search}
+                                onChange={this.onChangeSearch}
+                                onKeyPress={this.onKeyPress}
+                              />
+                              <Button
+                                label="Search"
+                                onClick={this.handleSearch}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="ui-g-1">
+                            <Button
+                              label="Clear"
+                              onClick={e => {
+                                this.handlerClear();
+                              }}
+                              icon="pi pi-check"
+                              iconPos="left"
+                            />
+                          </div>
+                          <div className="ui-g-1">
+                            <Button
+                              label="Filter"
+                              onClick={e => {
+                                this.setState({ show: true });
+                              }}
+                              icon="pi pi-check"
+                              iconPos="left"
+                            />
+                          </div>
+                        </h5>
                       </div>
                     </div>
+                  </div>
+                </Toolbar>
 
-                    <div className="ui-g-1">
-                      <Button
-                        label="Clear"
-                        onClick={e => {
-                          this.handlerClear();
-                        }}
-                        icon="pi pi-check"
-                        iconPos="left"
-                      />
-                    </div>
-                    <div className="ui-g-1">
-                      <Button
-                        label="Filter"
-                        onClick={e => {
-                          this.setState({ show: true });
-                        }}
-                        icon="pi pi-check"
-                        iconPos="left"
-                      />
-                    </div>
-                  </h5>
-                </div>
-              </div>
-            </div>
-          </Toolbar>
+                <div className="clearfix" />
 
-          <div className="clearfix" />
+                <BootstrapTable
+                  striped
+                  hover
+                  condensed
+                  remote
+                  bordered={false}
+                  keyField="id"
+                  noDataIndication="no results to display"
+                  data={data}
+                  columns={skybot_columns}
+                  pagination={pagination}
+                  onTableChange={this.handleTableChange}
+                  rowEvents={rowEvents}
+                  loading={loading}
+                  overlay={overlayFactory({
+                    spinner: true,
+                    background: 'rgba(192,192,192,0.3)',
+                  })}
+                />
 
-          <BootstrapTable
-            striped
-            hover
-            condensed
-            remote
-            bordered={false}
-            keyField="id"
-            noDataIndication="no results to display"
-            data={data}
-            columns={skybot_columns}
-            pagination={pagination}
-            onTableChange={this.handleTableChange}
-            rowEvents={rowEvents}
-            loading={loading}
-            overlay={overlayFactory({
-              spinner: true,
-              background: 'rgba(192,192,192,0.3)',
-            })}
+                <FilterSkybot
+                  onFilter={this.onFilter}
+                  show={this.state.show}
+                  onHide={this.closeCreate}
+                />
+              </Card>
+            }
           />
         </div>
-        <FilterSkybot
-          onFilter={this.onFilter}
-          show={this.state.show}
-          onHide={this.closeCreate}
-        />
       </div>
     );
   }

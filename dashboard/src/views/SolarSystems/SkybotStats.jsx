@@ -16,8 +16,10 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { Icon } from 'semantic-ui-react';
+import PanelCostumize from 'components/Panel/PanelCostumize';
 // import Card from 'components/Card/Card.jsx';
 import { Card } from 'primereact/card';
+import { Table } from 'react-bootstrap';
 
 import SkybotApi from './SkybotApi';
 
@@ -72,174 +74,117 @@ class SkybotStats extends Component {
           value: 0,
         },
       ],
-      // band_u: 0,
-      // band_i: 0,
-      // band_z: 0,
-      // band_r: 0,
-      // band_g: 0,
-      // band_y: 0,
     };
-  }
-  componentDidMount() {
-    // for (let i = 0; i < statistics.band.length; i++) {
-    //   this.api.getPointingBand_u().then(res => {
-    //     const r = res.data;
-    //     this.setState({
-    //       ...this.state.bandValue[i] r.count);
-    //     console.log('value r', r);
-    //   });
-    // }
-
-    console.log('valor de band', this.state.bandValue);
-    // this.api.getPointingBand_u().then(res => {
-    //   const r = res.data;
-    //   this.setState({
-    //     band_u: r.count,
-    //   });
-    // });
-    // this.api.getPointingBand_y().then(res => {
-    //   const r = res.data;
-    //   this.setState({
-    //     band_y: r.count,
-    //   });
-    // });
-    // this.api.getPointingBand_g().then(res => {
-    //   const r = res.data;
-    //   this.setState({
-    //     band_g: r.count,
-    //   });
-    // });
-    // this.api.getPointingBand_i().then(res => {
-    //   const r = res.data;
-    //   this.setState({
-    //     band_i: r.count,
-    //   });
-    // });
-    // this.api.getPointingBand_z().then(res => {
-    //   const r = res.data;
-    //   this.setState({
-    //     band_z: r.count,
-    //   });
-    // });
-    // this.api.getPointingBand_r().then(res => {
-    //   const r = res.data;
-    //   this.setState({
-    //     band_r: r.count,
-    //   });
-    // });
   }
 
   render() {
-    // const ListClass = [];
-    // const ListBand = [];
+    const data = [
+      { name: 'Total of CCDs', value: this.state.totalSize, icon: 'database' },
+      {
+        name: 'Total number of observations',
+        value: this.state.totalSize,
+        icon: 'search',
+      },
+      {
+        name: ' object with the largest number of observations',
+        value: this.state.totalSize,
+        icon: 'flag checkered',
+      },
+    ];
 
-    //const tamanho = statistics.classes;
-
-    // for (let index = 0; index < statistics.classes.length; index++) {
-    //   ListClass.push([
-    //     <ListGroupItem key={index}>
-    //       {statistics.classes[index].label} :&nbsp;
-    //       <strong>{statistics.classes[index].value} </strong>
-    //     </ListGroupItem>,
-    //   ]);
-    // }
-
-    // for (let index = 0; index < statistics.band.length; index++) {
-    //   ListBand.push([
-    //     <ListGroupItem key={index}>
-    //       {statistics.classes[index].label} :&nbsp;
-    //       <strong> {statistics.band[index].value} </strong>
-    //     </ListGroupItem>,
-    //   ]);
-    // }
+    const columns = data.map((col, i) => {
+      return (
+        <tr key={i}>
+          <td>
+            <div className="ui mini horizontal violet statistic">
+              <div className="value">
+                <Icon name={`${data[i].icon}`} /> {data[i].value}
+              </div>
+              <div className="label">{data[i].name}</div>
+            </div>
+          </td>
+        </tr>
+      );
+    });
 
     return (
-      // <Panel bsStyle="info">
-      //   <Panel.Heading>
-      //     <Panel.Title componentClass="h1">
-      //       <strong>Statistics of skybot</strong>
-      //     </Panel.Title>
-      //   </Panel.Heading>
-      //   <Panel.Body>
-      //     <Grid fluid>
-      //       <Row>
-      //         <Col md={6}>
-      //           <ListGroupItem>
-      //             Total number of objects (and their observations) for each
-      //             principal dynamic class
-      //             <br />
-      //             <br />
-      //             <ListGroup>{ListClass}</ListGroup>
-      //           </ListGroupItem>
-      //           <ListGroupItem>
-      //             <h5>
-      //               Total number of objects (and observations) for each band (u,
-      //               g, r, i, z)
-      //               <br />
-      //               <br />
-      //               <ListGroup>{ListBand}</ListGroup>
-      //             </h5>
-      //           </ListGroupItem>
-      //         </Col>
-
-      //         <Col md={6}>
-      //           <ListGroup>
-      //             <ListGroupItem>
-      //               <h5>
-      //                 Total number of identified objects&nbsp;:&nbsp;&nbsp;
-      //                 <strong>11204</strong>
-      //               </h5>
-      //             </ListGroupItem>
-      //             {/* <ListGroupItem>
-      //               <h5>
-      //                 Number of CCDs in intervals of exposure time (seconds)
-      //                 <br />
-      //                 <br />
-      //                 <ListGroup>
-      //                   <ListGroupItem>
-      //                     between 0 and 100 :&nbsp;
-      //                     <strong>{this.state.exp1}</strong>
-      //                   </ListGroupItem>
-      //                   <ListGroupItem>
-      //                     between 100 and 200:&nbsp;
-      //                     <strong>{this.state.exp2}</strong>
-      //                   </ListGroupItem>
-      //                   <ListGroupItem>
-      //                     between 200 and 300:&nbsp;
-      //                     <strong>{this.state.exp3}</strong>
-      //                   </ListGroupItem>
-      //                   <ListGroupItem>
-      //                     between 300 and 400:&nbsp;
-      //                     <strong>{this.state.exp4}</strong>
-      //                   </ListGroupItem>
-      //                 </ListGroup>
-      //               </h5>
-      //             </ListGroupItem> */}
-      //             <ListGroupItem>
-      //               <h5>
-      //                 Total number of observations of all identified
-      //                 objects&nbsp;:&nbsp;&nbsp;
-      //                 <strong>11204</strong>
-      //               </h5>
-      //             </ListGroupItem>
-
-      //             <ListGroupItem>
-      //               <h5>
-      //                 <span>
-      //                   object with the largest number of
-      //                   observations&nbsp;:&nbsp;&nbsp;
-      //                 </span>
-      //                 <strong>11204</strong>
-      //               </h5>
-      //             </ListGroupItem>
-      //           </ListGroup>
-      //         </Col>
-      //       </Row>
-      //     </Grid>
-      //   </Panel.Body>
-      // </Panel>
       <div className="ui-g">
-        <div className="ui-g-12">
+        <div className="ui-md-4">
+          <PanelCostumize
+            content={
+              <div>
+                <Card className="table-overflow">
+                  <Table responsive>
+                    <tbody>{columns}</tbody>
+                  </Table>
+                </Card>
+              </div>
+            }
+          />
+        </div>
+        <div className="ui-md-4">
+          <PanelCostumize
+            content={
+              <Card subTitle="Total number of objects (and their observations) for each">
+                <ComposedChart
+                  width={400}
+                  height={200}
+                  data={objects}
+                  margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                >
+                  <CartesianGrid stroke="#f5f5f5" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend className="legend-chart" />
+                  {/* <Area
+                    type="monotone"
+                    dataKey="Media"
+                    fill="#007892"
+                    stroke="#8884d8"
+                  /> */}
+                  <Bar dataKey="observations" barSize={20} fill="#3c1e7e" />
+                  <Line type="monotone" dataKey="objects" stroke="#ff7300" />
+                </ComposedChart>
+              </Card>
+            }
+          />
+        </div>
+        <div className="ui-md-4">
+          <PanelCostumize
+            content={
+              <Card subTitle="Total number of objects (and observations) for each band (u,g, r, i, z)">
+                <ComposedChart
+                  width={400}
+                  height={200}
+                  data={band}
+                  margin={{ top: 20, right: 80, bottom: 20, left: 20 }}
+                >
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <CartesianGrid stroke="#f5f5f5" />
+                  {/* <Area
+                    type="monotone"
+                    dataKey=""
+                    fill="#00b5ad"
+                    stroke="#00b5ad"
+                  /> */}
+                  <Bar dataKey="objects" barSize={20} fill="#3c1e7e" />
+                  <Line
+                    type="monotone"
+                    dataKey="observations"
+                    stroke="#ff7300"
+                  />
+                </ComposedChart>
+              </Card>
+            }
+          />
+        </div>
+      </div>
+
+      /* <div className="ui-g-12">
           <div className="ui-g-6">
             <Card subTitle="Total number of objects (and their observations) for each">
               <ComposedChart
@@ -299,10 +244,6 @@ class SkybotStats extends Component {
               </div>
               <div className="label">Total of CCDs</div>
             </div>
-            {/* <p>
-                Total of CCDs&nbsp;:&nbsp;&nbsp;
-                <strong>{this.state.totalSize}</strong>
-              </p> */}
           </Card>
         </div>
 
@@ -335,8 +276,7 @@ class SkybotStats extends Component {
               </div>
             </div>
           </Card>
-        </div>
-      </div>
+        </div> */
     );
   }
 }

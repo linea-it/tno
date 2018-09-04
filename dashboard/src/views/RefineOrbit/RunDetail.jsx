@@ -77,22 +77,6 @@ class RefineOrbitRunDetail extends Component {
 
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
-<<<<<<< HEAD
-   
-    const textInfo2 = [
-      {
-        legend: 'Downloaded',
-        label: '3232',
-        value: 1,
-        colorIcon: 'success',
-        grid: ['6'],
-      },
-      {
-        legend: 'Not Downloaded',
-        label: '333',
-        value: 2,
-        colorIcon: 'danger',
-=======
     const execute_time = [
       {
         legend: 'Download',
@@ -110,7 +94,6 @@ class RefineOrbitRunDetail extends Component {
           moment.duration(data.execution_nima_time).asSeconds()
         ),
         colorIcon: 'info',
->>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
         grid: ['6'],
       },
     ];
@@ -143,11 +126,7 @@ class RefineOrbitRunDetail extends Component {
               />
             </div>
             <div className="ui-g-4 ui-md-12 ui-sm-1">
-<<<<<<< HEAD
-              <StepStats title="Step Stats" columns={textInfo2} />
-=======
               <StepStats title="Step Stats" info={execute_time} />
->>>>>>> d412abcd30ea2fccb6c9047910c864bd4a9f1bff
             </div>
           </div>
           <div className="ui-g-4 ui-md-4">
