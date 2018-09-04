@@ -4,13 +4,14 @@ import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
 import ObjectApi from '../ObjectList/ObjectApi';
 import PraiaApi from './PraiaApi';
-import Card from 'components/Card/Card.jsx';
+import { Card } from 'primereact/card';
 import PropTypes from 'prop-types';
 
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { Button } from 'primereact/button';
+import PanelCostumize from 'components/Panel/PanelCostumize';
 
 class PraiaSubmit extends Component {
   state = this.initialState;
@@ -89,11 +90,11 @@ class PraiaSubmit extends Component {
   render() {
     const { input, config } = this.state;
     return (
-      <Card
+      <PanelCostumize
         title="Execute"
-        category="DESCRIÇÃO SOBRE A EXECUÇÃO"
+        subTitle="Descrição sobre a execução"
         content={
-          <div className="content">
+          <Card className="none">
             <Form>
               <FormGroup>
                 <ControlLabel>Input</ControlLabel>
@@ -121,7 +122,7 @@ class PraiaSubmit extends Component {
               </FormGroup>
               <Button label="Submit" onClick={this.onClickSubmit} />
             </Form>
-          </div>
+          </Card>
         }
       />
     );

@@ -5,22 +5,43 @@
  border: 1.5px solid $panel-costumize-default;
  border-radius: 1px;
 
- .header {
+    .header {
      border-bottom: 2px solid $panel-costumize-default;
      background-color: $panel-costumize-default;
- }
+    }
 
- .title {
-     padding: 8px 16px;
+    .title {
+     padding: 4px 14px;
      font-size: 14px; 
      color: #fff;
      font-weight:bold;
-     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
- }
+     font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+     text-transform: uppercase;
+    }
+
+    .subTitle {
+     padding: 4px 14px;
+     font-size: 14px; 
+     color: $panel-costumize-default;
+     font-weight:500;
+     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+     margin-bottom: 0px;
+     
+    }
+}
+
+.none > .ui-card-body{
+    padding: 0 !important;
+    margin: 0 10px !important;
+}
+.none > Table > tbody, {
+    margin: 0 10px -10px !important;
+    padding: 0 !important;
 }
 
 
 .panel-hr {
     background-color: $panel-costumize-hr;
     height: 1px;
+    width: 100%;
 }

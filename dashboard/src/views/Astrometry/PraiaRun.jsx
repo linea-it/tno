@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import Card from 'components/Card/Card.jsx';
 import PropTypes from 'prop-types';
+import PanelCostumize from 'components/Panel/PanelCostumize';
+import { Card } from 'primereact/card';
+
 
 class PraiaRun extends Component {
   state = this.initialState;
@@ -28,13 +30,19 @@ class PraiaRun extends Component {
 
     const title = 'Astrometry Run ' + id;
     return (
-      <div className="content">
-        <Card
-          title={title}
-          category="MOSTRAR TODAS AS INFORMACOES SOBRE A EXECUCAO DA ASTROMETRIA"
-          content={<div />}
-        />
-      </div>
+      <PanelCostumize
+        content={
+          <div className="">
+            <Card
+              className="none"
+              title={title}
+              subTitle="MOSTRAR TODAS AS INFORMACOES SOBRE A EXECUCAO DA ASTROMETRIA"
+            >
+              <div />
+            </Card>
+          </div>
+        }
+      />
     );
   }
 }

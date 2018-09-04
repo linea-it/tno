@@ -241,7 +241,7 @@ class SkybotList extends Component {
 
     return (
       <div className="ui-g">
-        <div className="ui-md-12">
+        <div className="ui-lg-12 ui-md-12">
           <PanelCostumize
             title="SkyBot Output"
             content={

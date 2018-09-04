@@ -468,6 +468,12 @@ body > .navbar-collapse[data-color="purple"]:after {
 .margin-top {
   margin-top: -65px; }
 
+.wrap {
+  border-radius: 0px !important; }
+
+.none {
+  border: none !important; }
+
 .btn {
   border-width: 2px;
   background-color: transparent;
@@ -3288,6 +3294,11 @@ body > .navbar-collapse[data-color="purple"]:after {
 .green {
   background-color: #28CA71; }
 
+.ex-mini {
+  font-size: .8em !important; }
+  .ex-mini .icon {
+    font-size: .8em !important; }
+
 .panel-content {
   min-height: none;
   background: #ffffff !important;
@@ -3297,12 +3308,29 @@ body > .navbar-collapse[data-color="purple"]:after {
     border-bottom: 2px solid #575555;
     background-color: #575555; }
   .panel-content .title {
-    padding: 8px 16px;
+    padding: 4px 14px;
     font-size: 14px;
     color: #fff;
     font-weight: bold;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    text-transform: uppercase; }
+  .panel-content .subTitle {
+    padding: 4px 14px;
+    font-size: 14px;
+    color: #575555;
+    font-weight: 500;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    margin-bottom: 0px; }
+
+.none > .ui-card-body {
+  padding: 0 !important;
+  margin: 0 10px !important; }
+
+.none > Table > tbody {
+  margin: 0 10px -10px !important;
+  padding: 0 !important; }
 
 .panel-hr {
   background-color: #b8b4b4;
-  height: 1px; }
+  height: 1px;
+  width: 100%; }

@@ -96,9 +96,10 @@ class SkybotStats extends Component {
       return (
         <tr key={i}>
           <td>
-            <div className="ui mini horizontal violet statistic">
+            <div className="ui ex-mini horizontal violet statistic">
               <div className="value">
-                <Icon name={`${data[i].icon}`} /> {data[i].value}
+                <Icon className="icon" name={`${data[i].icon}`} />
+                <span className="icon">{data[i].value}</span>
               </div>
               <div className="label">{data[i].name}</div>
             </div>
@@ -109,11 +110,12 @@ class SkybotStats extends Component {
 
     return (
       <div className="ui-g">
-        <div className="ui-md-4">
+        <div className="ui-lg-4 ui-md-12 ui-sm-12">
           <PanelCostumize
+            className="panel"
             content={
               <div>
-                <Card className="table-overflow">
+                <Card className="none table-overflow ">
                   <Table responsive>
                     <tbody>{columns}</tbody>
                   </Table>
@@ -122,10 +124,13 @@ class SkybotStats extends Component {
             }
           />
         </div>
-        <div className="ui-md-4">
+        <div className="ui-lg-4 ui-md-12 ui-sm-12">
           <PanelCostumize
             content={
-              <Card subTitle="Total number of objects (and their observations) for each">
+              <Card
+                className="none"
+                subTitle="Total number of objects (and their observations) for each"
+              >
                 <ComposedChart
                   width={400}
                   height={200}
@@ -150,10 +155,13 @@ class SkybotStats extends Component {
             }
           />
         </div>
-        <div className="ui-md-4">
+        <div className="ui-lg-4 ui-md-12 ui-sm-12">
           <PanelCostumize
             content={
-              <Card subTitle="Total number of objects (and observations) for each band (u,g, r, i, z)">
+              <Card
+                className="none"
+                subTitle="Total number of objects (and observations) for each band (u,g, r, i, z)"
+              >
                 <ComposedChart
                   width={400}
                   height={200}
@@ -183,100 +191,6 @@ class SkybotStats extends Component {
           />
         </div>
       </div>
-
-      /* <div className="ui-g-12">
-          <div className="ui-g-6">
-            <Card subTitle="Total number of objects (and their observations) for each">
-              <ComposedChart
-                width={600}
-                height={400}
-                data={objects}
-                margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-              >
-                <CartesianGrid stroke="#f5f5f5" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend className="legend-chart" />
-                <Area
-                  type="monotone"
-                  dataKey="Media"
-                  fill="#007892"
-                  stroke="#8884d8"
-                />
-                <Bar dataKey="observations" barSize={20} fill="#6435c9" />
-                <Line type="monotone" dataKey="objects" stroke="#ff7300" />
-              </ComposedChart>
-            </Card>
-          </div>
-
-          <div className="ui-g-6">
-            <Card subTitle="Total number of objects (and observations) for each band (u,g, r, i, z)">
-              <ComposedChart
-                width={600}
-                height={400}
-                data={band}
-                margin={{ top: 20, right: 80, bottom: 20, left: 20 }}
-              >
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <CartesianGrid stroke="#f5f5f5" />
-                <Area
-                  type="monotone"
-                  dataKey=""
-                  fill="#00b5ad"
-                  stroke="#00b5ad"
-                />
-                <Bar dataKey="objects" barSize={20} fill="#6435c9" />
-                <Line type="monotone" dataKey="observations" stroke="#ff7300" />
-              </ComposedChart>
-            </Card>
-          </div>
-        </div>
-
-        <div className="ui-g-4">
-          <Card title="" subTitle="">
-            <div className="ui horizontal teal statistic">
-              <div className="value">
-                <Icon name="database" /> {this.state.totalSize}
-              </div>
-              <div className="label">Total of CCDs</div>
-            </div>
-          </Card>
-        </div>
-
-        <div className="ui-g-4">
-          <Card title="" subTitle="">
-            <div className="ui horizontal  violet statistic">
-              <div className="value">
-                <Icon name="search" />
-                {this.state.totalSize}
-              </div>
-              <div className="label">
-                Total number of observations <br /> of all identified object
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        <div className="ui-g-4">
-          <Card title="" subTitle="">
-            <div className="ui horizontal teal statistic">
-              <div className="value ">
-                <Icon
-                  name="flag checkered
-"
-                />
-                2013 RR98
-              </div>
-              <div className="label">
-                object with the largest <br /> number of observations
-              </div>
-            </div>
-          </Card>
-        </div> */
     );
   }
 }

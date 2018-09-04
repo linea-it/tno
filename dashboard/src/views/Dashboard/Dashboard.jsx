@@ -196,8 +196,7 @@ class Dashboard extends Component {
     return (
       <div className="content">
         <div className="ui-g">
-          {/* <div className="ui-g-4 ui-md-4 ui-sm-2"> */}
-          <div className="ui-g-4">
+          <div className="ui-lg-4 ui-md-12 ui-sm-12">
             <PanelCostumize
               colorHead="ds"
               title="EXPOSURE"
@@ -257,7 +256,7 @@ class Dashboard extends Component {
             />
             {/* */}
           </div>
-          <div className="ui-md-4 ui-sm-2">
+          <div className="ui-lg-4 ui-md-12 ui-sm-12">
             <PanelCostumize
               colorHead="ds"
               title="SKYBOT"
@@ -335,90 +334,82 @@ class Dashboard extends Component {
             />
           </div>
 
-          <div className="ui-md-4 ui-sm-2">
-            <div className="ui-g">
-              <div className="ui-md-12">
-                <PanelCostumize
-                  colorHead="ds"
-                  title="Last Proccess Stats"
-                  content={
-                    <ListStats
-                      status={false}
-//                      statstext="running"
-                      data={proccess_stats}
-                    />
-                  }
-                />
-              </div>
-              <div className="ui-md-12">
-                <PanelCostumize
-                  colorHead="ds"
-                  title="PROCESSING AND PERFORMANCE"
-                  content={
-                    <div>
-                      <div className="ui-g">
-                        <div className="ui-md-12">
-                          <MiniCardStats
-                            color="yellow"
-                            bigIcon={<i className="pe-7s-graph1 text-danger" />}
-                            statsText="Errors"
-                            statsValue="23"
-                            statsIcon={<i className="fa fa-clock-o" />}
-                            statsIconText="In the last hour"
-                            data={data}
-                            fill={colors}
-                            name="Memory"
-                            number="60 %"
-                          />
-                        </div>
-                        <div className="ui-md-12">
-                          <MiniCardStats
-                            color="blue"
-                            bigIcon={<i className="pe-7s-graph1 text-danger" />}
-                            statsText="Errors"
-                            statsValue="23"
-                            statsIcon={<i className="fa fa-clock-o" />}
-                            statsIconText="In the last hour"
-                            data={data}
-                            fill={colors}
-                            name="Traffic"
-                            number="2.4 KB"
-                          />
-                        </div>
+          <div className="ui-lg-4 ui-sm-12">
+            <div className="ui-lg-12 ui-md-12 ui-sm-12">
+              <PanelCostumize
+                colorHead="ds"
+                title="Last Proccess Stats"
+                content={<ListStats status={false} data={proccess_stats} />}
+              />
+            </div>
+            <div className="ui-lg-12 ui-md-12 ui-sm-12">
+              <PanelCostumize
+                colorHead="ds"
+                title="PROCESSING AND PERFORMANCE"
+                content={
+                  <div>
+                    <div className="ui-g">
+                      <div className="ui-lg-12 ui-md-6 ui-sm-12">
+                        <MiniCardStats
+                          color="yellow"
+                          bigIcon={<i className="pe-7s-graph1 text-danger" />}
+                          statsText="Errors"
+                          statsValue="23"
+                          statsIcon={<i className="fa fa-clock-o" />}
+                          statsIconText="In the last hour"
+                          data={data}
+                          fill={colors}
+                          name="Memory"
+                          number="60 %"
+                        />
+                      </div>
+                      <div className="ui-lg-12 ui-md-6 ui-sm-12">
+                        <MiniCardStats
+                          color="blue"
+                          bigIcon={<i className="pe-7s-graph1 text-danger" />}
+                          statsText="Errors"
+                          statsValue="23"
+                          statsIcon={<i className="fa fa-clock-o" />}
+                          statsIconText="In the last hour"
+                          data={data}
+                          fill={colors}
+                          name="Traffic"
+                          number="2.4 KB"
+                        />
+                      </div>
 
-                        <div className="ui-md-12">
-                          <MiniCardStats
-                            color="blue"
-                            bigIcon={<i className="pe-7s-graph1 text-danger" />}
-                            statsText="Errors"
-                            statsValue="23"
-                            statsIcon={<i className="fa fa-clock-o" />}
-                            statsIconText="In the last hour"
-                            data={data}
-                            fill={colors}
-                            name="Disk I/O"
-                            number="4.2 KB"
-                          />
-                        </div>
-                        <div className="ui-md-12">
-                          <MiniCardStats
-                            color="blue"
-                            bigIcon={<i className="pe-7s-graph1 text-danger" />}
-                            statsText="Errors"
-                            statsValue="23"
-                            statsIcon={<i className="fa fa-clock-o" />}
-                            statsIconText="In the last hour"
-                            data={data}
-                            fill={colors}
-                            name="Memory"
-                            number="5.2 KB"
-                          />
-                        </div>
+                      <div className="ui-lg-12 ui-md-6 ui-sm-12">
+                        <MiniCardStats
+                          color="blue"
+                          bigIcon={<i className="pe-7s-graph1 text-danger" />}
+                          statsText="Errors"
+                          statsValue="23"
+                          statsIcon={<i className="fa fa-clock-o" />}
+                          statsIconText="In the last hour"
+                          data={data}
+                          fill={colors}
+                          name="Disk I/O"
+                          number="4.2 KB"
+                        />
+                      </div>
+                      <div className="ui-lg-12 ui-md-6 ui-sm-12">
+                        <MiniCardStats
+                          color="blue"
+                          bigIcon={<i className="pe-7s-graph1 text-danger" />}
+                          statsText="Errors"
+                          statsValue="23"
+                          statsIcon={<i className="fa fa-clock-o" />}
+                          statsIconText="In the last hour"
+                          data={data}
+                          fill={colors}
+                          name="Memory"
+                          number="5.2 KB"
+                        />
                       </div>
                     </div>
-                  }
-                />
-              </div>
+                  </div>
+                }
+              />
             </div>
           </div>
         </div>

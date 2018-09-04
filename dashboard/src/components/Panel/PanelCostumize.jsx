@@ -8,6 +8,7 @@ class PanelCostumize extends Component {
         <div className={`header ${propSet.colorHead}`}>
           <p className="title">{propSet.title}</p>
         </div>
+        <p className="subTitle">{propSet.subTitle}</p>
         {propSet.content}
       </div>
     );

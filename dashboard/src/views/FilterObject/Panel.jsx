@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import FilterObject from './FilterObject';
@@ -19,18 +18,8 @@ class FilterPanel extends Component {
   render() {
     return (
       <div className="content">
-        <Grid fluid>
-          <Row>
-            <Col md={12}>
-              <FilterObject />
-            </Col>
-          </Row>
-          <Row>
-            <Col md={12}>
-              <CustomList />
-            </Col>
-          </Row>
-        </Grid>
+        <FilterObject />
+        <CustomList />
       </div>
     );
   }

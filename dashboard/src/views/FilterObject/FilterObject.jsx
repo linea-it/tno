@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Grid, Row, Col } from 'react-bootstrap';
-import Card from 'components/Card/Card.jsx';
+import { Card } from 'primereact/card';
 import { withRouter } from 'react-router-dom';
 import FilterObjectForm from './FilterObjectForm';
 import FilterObjectSearch from './FilterObjectSearch';
 import FilterObjectTable from './FilterObjectTable';
 import CreateListForm from './CreateListForm';
 import PropTypes from 'prop-types';
+import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 
 const api = process.env.REACT_APP_API;
 
@@ -87,44 +87,37 @@ class FilterObject extends Component {
   render() {
     const closeCreate = () => this.setState({ showCreate: false });
     return (
-      <div className="content">
-        <Card
-          title=""
-          category="Filter the objects and create a list with the result."
-          content={
-            <Grid fluid>
-              <Row>
-                <Col md={3}>
-                  <Row>
-                    <Card
-                      content={<FilterObjectSearch onSearch={this.onSearch} />}
-                    />
-                  </Row>
-                  <Row>
-                    <Card
-                      title=""
-                      category=""
-                      content={<FilterObjectForm onFilter={this.onFilter} />}
-                    />
-                  </Row>
-                </Col>
-                <Col md={9}>
-                  <Card
-                    title=""
-                    category=""
-                    content={
-                      <FilterObjectTable
-                        filters={this.state.filters}
-                        searchPattern={this.state.searchPattern}
-                        saveList={this.saveList}
-                      />
-                    }
-                  />
-                </Col>
-              </Row>
-            </Grid>
-          }
-        />
+      <div className="ui-g">
+        <div className="ui-lg-4 ui-md-6">
+          <PanelCostumize
+            title="Filter"
+            subTitle="Filter the objects and create a list with the result."
+            content={
+              <Card className="none card-costumize">
+                <Card className="none">
+                  <FilterObjectSearch onSearch={this.onSearch} />
+                </Card>
+                <hr className="panel-hr" />
+                <Card className="none">
+                  <FilterObjectForm onFilter={this.onFilter} />
+                </Card>
+              </Card>
+            }
+          />
+        </div>
+        <div className="ui-lg-8 ui-md-6">
+          <PanelCostumize
+            content={
+              <Card className="none" title="" category="">
+                <FilterObjectTable
+                  filters={this.state.filters}
+                  searchPattern={this.state.searchPattern}
+                  saveList={this.saveList}
+                />
+              </Card>
+            }
+          />
+        </div>
         <CreateListForm
           show={this.state.showCreate}
           onHide={closeCreate}

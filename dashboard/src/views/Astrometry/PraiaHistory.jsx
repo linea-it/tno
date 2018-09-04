@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import Card from 'components/Card/Card.jsx';
+import PanelCostumize from 'components/Panel/PanelCostumize';
+import { Card } from 'primereact/card';
 import PraiaApi from './PraiaApi';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -183,48 +184,50 @@ class PraiaHistory extends Component {
     };
 
     return (
-      <div>
-        <ReactInterval
-          timeout={reload_interval * 1000}
-          enabled={true}
-          callback={this.reload}
-        />
-        <Card
-          title=""
-          category="Manage the completed Astrometry rounds"
-          content={
-            <div>
-              <Toolbar>
-                <Button
-                  label="Re-execute"
-                  disabled={!selected_record}
-                  onClick={this.handleOnRerun}
+      <PanelCostumize
+      title="History"
+      subTitle="Manage the completed Astrometry rounds"
+        content={
+          <div>
+            <ReactInterval
+              timeout={reload_interval * 1000}
+              enabled={true}
+              callback={this.reload}
+            />
+            <Card className="none">
+              <div>
+                <Toolbar>
+                  <Button
+                    label="Re-execute"
+                    disabled={!selected_record}
+                    onClick={this.handleOnRerun}
+                  />
+                </Toolbar>
+                <BootstrapTable
+                  striped
+                  hover
+                  condensed
+                  remote
+                  bordered={false}
+                  keyField="id"
+                  noDataIndication="..."
+                  data={data}
+                  columns={columns}
+                  pagination={pagination}
+                  onTableChange={this.handleTableChange}
+                  loading={loading}
+                  overlay={overlayFactory({
+                    spinner: true,
+                    background: 'rgba(192,192,192,0.3)',
+                  })}
+                  rowEvents={rowEvents}
+                  selectRow={selectRow}
                 />
-              </Toolbar>
-              <BootstrapTable
-                striped
-                hover
-                condensed
-                remote
-                bordered={false}
-                keyField="id"
-                noDataIndication="..."
-                data={data}
-                columns={columns}
-                pagination={pagination}
-                onTableChange={this.handleTableChange}
-                loading={loading}
-                overlay={overlayFactory({
-                  spinner: true,
-                  background: 'rgba(192,192,192,0.3)',
-                })}
-                rowEvents={rowEvents}
-                selectRow={selectRow}
-              />
-            </div>
-          }
-        />
-      </div>
+              </div>
+            </Card>
+          </div>
+        }
+      />
     );
   }
 }

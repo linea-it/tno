@@ -60,7 +60,7 @@ class StepStats extends Component {
     });
 
     return (
-      <div className="wrap">
+      <div>
         <Card
           className={`step-title ${propSet.disableCard}`}
           //footer={footer}

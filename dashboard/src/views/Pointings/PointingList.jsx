@@ -256,86 +256,81 @@ class PointingList extends Component {
 
     return (
       <div className="ui-g">
-        <div className="ui-md-12">
+        <div className="ui-lg-12 ui-md-12 ui-sm-12">
           <PanelCostumize
             title="List with all pointings"
             content={
               <Card>
-                <div>
-                  <Toolbar>
-                    <div className="ui-toolbar">
-                      <div className="ui-g ui-fluid">
-                        <div className="ui-g-12">
-                          <h5>
-                            <div className="ui-g-10">
-                              <div className="ui-inputgroup">
-                                <InputText
-                                  placeholder="Search By expnum, filename"
-                                  value={search}
-                                  onChange={this.onChangeSearch}
-                                  onKeyPress={this.onKeyPress}
-                                />
-                                <Button
-                                  className="ui-button-primary"
-                                  label="Search"
-                                  onClick={this.handleSearch}
-                                />
-                              </div>
-                            </div>
-
-                            <div className="ui-g-1">
-                              <Button
-                                label="Clear"
-                                onClick={e => {
-                                  this.handlerClear();
-                                }}
-                                style={{
-                                  border: ' 1px solid #95a5a6',
-                                  backgroundColor: '#95a5a6',
-                                }}
-                              />
-                            </div>
-                            <div className="ui-g-1">
-                              <Button
-                                label="Filters"
-                                onClick={e => {
-                                  this.setState({ show: true });
-                                }}
-                                style={{
-                                  border: ' 1px solid #7f8c8d',
-                                  backgroundColor: '#7f8c8d',
-                                }}
-                              />
-                            </div>
-                          </h5>
+                <Toolbar>
+                  <div className="ui-toolbar">
+                    <div className="ui-g ui-fluid">
+                      <div className="ui-lg-8 ui-md-6">
+                        <div className="ui-inputgroup">
+                          <InputText
+                            placeholder="Search By expnum, filename"
+                            value={search}
+                            onChange={this.onChangeSearch}
+                            onKeyPress={this.onKeyPress}
+                          />
+                          <Button
+                            className="ui-button-primary"
+                            label="Search"
+                            onClick={this.handleSearch}
+                          />
+                        </div>
+                      </div>
+                      <div className="ui-lg-4 ui-md-6">
+                        <div>
+                          <Button
+                            label="Clear"
+                            onClick={e => {
+                              this.handlerClear();
+                            }}
+                            style={{
+                              border: ' 1px solid #95a5a6',
+                              backgroundColor: '#95a5a6',
+                              width: '100px',
+                            }}
+                          />
+                          <Button
+                            label="Filters"
+                            onClick={e => {
+                              this.setState({ show: true });
+                            }}
+                            style={{
+                              border: ' 1px solid #7f8c8d',
+                              backgroundColor: '#7f8c8d',
+                              width: '190px',
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
-                  </Toolbar>
+                  </div>
+                </Toolbar>
 
-                  <div className="clearfix" />
+                <div className="clearfix" />
+                <BootstrapTable
+                  striped
+                  hover
+                  condensed
+                  remote
+                  bordered={false}
+                  keyField="id"
+                  noDataIndication="no results to display"
+                  data={data}
+                  columns={pointing_columns}
+                  pagination={pagination}
+                  onTableChange={this.handleTableChange}
+                  rowEvents={rowEvents}
+                  loading={loading}
+                  overlay={overlayFactory({
+                    spinner: true,
 
-                  <BootstrapTable
-                    striped
-                    hover
-                    condensed
-                    remote
-                    bordered={false}
-                    keyField="id"
-                    noDataIndication="no results to display"
-                    data={data}
-                    columns={pointing_columns}
-                    pagination={pagination}
-                    onTableChange={this.handleTableChange}
-                    rowEvents={rowEvents}
-                    loading={loading}
-                    overlay={overlayFactory({
-                      spinner: true,
+                    background: 'rgba(192,192,192,0.3)',
+                  })}
+                />
 
-                      background: 'rgba(192,192,192,0.3)',
-                    })}
-                  />
-                </div>
                 <FilterPointings
                   onFilter={this.onFilter}
                   show={this.state.show}

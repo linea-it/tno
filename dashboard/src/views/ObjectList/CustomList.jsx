@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import Card from 'components/Card/Card.jsx';
+import { Card } from 'primereact/card';
 import ObjectApi from './ObjectApi';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -9,6 +9,7 @@ import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { formatDateUTC, formatColumnHeader, formatStatus } from 'utils';
+import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 
 const columns = [
   {
@@ -114,33 +115,39 @@ class CustomList extends Component {
     };
 
     return (
-      <Card
-        title="Custom Lists"
-        category="Lists all results saved by Filter Objects. click on a line to open the list of Objects."
-        content={
-          <div>
-            <BootstrapTable
-              striped
-              hover
-              condensed
-              remote
-              bordered={false}
-              keyField="id"
-              noDataIndication="no results to display"
-              data={data}
-              columns={columns}
-              pagination={pagination}
-              onTableChange={this.handleTableChange}
-              loading={loading}
-              overlay={overlayFactory({
-                spinner: true,
-                background: 'rgba(192,192,192,0.3)',
-              })}
-              rowEvents={rowEvents}
-            />
-          </div>
-        }
-      />
+      <div className="ui-g">
+        <div className="ui-lg-12 ui-md-12">
+          <PanelCostumize
+            title="Custom Lists"
+            subTitle="Lists all results saved by Filter Objects. click on a line to open the list of Objects."
+            content={
+              <Card>
+                <div>
+                  <BootstrapTable
+                    striped
+                    hover
+                    condensed
+                    remote
+                    bordered={false}
+                    keyField="id"
+                    noDataIndication="no results to display"
+                    data={data}
+                    columns={columns}
+                    pagination={pagination}
+                    onTableChange={this.handleTableChange}
+                    loading={loading}
+                    overlay={overlayFactory({
+                      spinner: true,
+                      background: 'rgba(192,192,192,0.3)',
+                    })}
+                    rowEvents={rowEvents}
+                  />
+                </div>
+              </Card>
+            }
+          />
+        </div>
+      </div>
     );
   }
 }

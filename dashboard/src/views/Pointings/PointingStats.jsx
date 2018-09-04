@@ -195,7 +195,7 @@ class PointingsStats extends Component {
 
     return (
       <div className="ui-g">
-        <div className="ui-md-6">
+        <div className="ui-lg-6 ui-md-12 ui-sm-12">
           <PanelCostumize
             title="Graphics"
             content={
@@ -270,7 +270,7 @@ class PointingsStats extends Component {
           />
         </div>
 
-        <div className="ui-md-6">
+        <div className="ui-lg-6 ui-md-12 ui-sm-12">
           <PanelCostumize
             title="Pointings in sky"
             content={
