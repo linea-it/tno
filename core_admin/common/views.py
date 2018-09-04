@@ -1,4 +1,3 @@
-
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -6,47 +5,40 @@ from rest_framework.decorators import api_view
 @api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
+        from tno.db import CatalogDB
+        from tno.models import Catalog
+        from sqlalchemy.sql import text
 
-        # # TODO esta parte do input deve ser separado, na submissao da rodada.
-        # # TODO o path deve ser do processo
-        # archive = settings.ARCHIVE_DIR
-        # output_path = os.path.join(archive, 'teste')
-        # input_file = os.path.join(output_path, 'objects.csv')
-        #
-        # # Id da Custom List
-        # id = request.GET.get("custom_list", None)
-        # if id is None:
-        #     raise Exception("is necessary the custom_list parameter")
-        #
-        # # print("Custom List ID: %s" % id)
-        #
-        # # Retrieve Custom List
-        # customlist = CustomList.objects.get(pk=id, status='success')
-        #
-        # # Recupera os objetos da tabela.
-        # rows, count = FilterObjects().list_distinct_objects_by_table(
-        #     customlist.tablename, customlist.schema, pageSize=5)
-        #
-        # if count > 0:
-        #     # Escrever o arquivo de input no diretorio de destino
-        #     with open(input_file, 'w') as csvfile:
-        #         fieldnames = ['name', 'num']
-        #         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';', extrasaction='ignore')
-        #
-        #         writer.writeheader()
-        #         writer.writerows(rows)
-        #
-        # BSPJPL().run(input_file, output_path)
-      
+        db = CatalogDB()
+
+        gaia = Catalog.objects.first()
+
+        print(gaia)
+
+        # select * from y1a1_coadd_stripe82.coadd_objects where q3c_radial_query(ra, "dec", 317.490884, -1.762072 , 0.005 );
+
+
+        # stm = text(
+        #     """select * from y1a1_coadd_stripe82.coadd_objects where q3c_radial_query(ra, "dec", 317.490884, -1.762072, 0.005);""")
+
+        ra = 317.490884
+        dec = -1.762072
+
+        rows = db.radial_query(
+            schema="y1a1_coadd_stripe82",
+            tablename="coadd_objects",
+            ra_property='ra',
+            dec_property='dec',
+            ra=ra,
+            dec=dec,
+            radius=0.005,
+            limit=2
+        )
+
         result = dict({
-            'status': "success",
-            'lines': list(),
+            'success': True,
+            'results': rows,
+            'count': len(rows)
         })
 
-
-        with open('/archive/proccess/2/objects/1999_RB216/nima.log', 'r') as fp:
-            lines = fp.readlines()
-            for line in lines:
-                result["lines"].append(line.strip())
-                
     return Response(result)

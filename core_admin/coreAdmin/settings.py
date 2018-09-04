@@ -27,7 +27,6 @@ ARCHIVE_DIR = "/archive"
 PROCCESS_DIR = "/proccess"
 CCD_IMAGES_DIR = "/ccd_images"
 
-
 # Sub diretorios que ficam dentro de /archive
 OBSERVATIONS_DIR = os.path.join(ARCHIVE_DIR, "observations")
 if not os.path.exists(OBSERVATIONS_DIR):
@@ -47,7 +46,6 @@ if not os.path.exists(ASTROMETRY_POSITIONS_DIR):
     os.mkdir(ASTROMETRY_POSITIONS_DIR)
     os.chmod(ASTROMETRY_POSITIONS_DIR, 0o775)
 
-
 MEDIA_ROOT = ARCHIVE_DIR
 MEDIA_URL = '/media/'
 
@@ -56,7 +54,6 @@ if not os.path.exists(MEDIA_TMP_DIR):
     os.mkdir(MEDIA_TMP_DIR)
 
 MEDIA_TMP_URL = urllib.parse.urljoin(MEDIA_URL, 'tmp/')
-
 
 # Emails
 # Notifications Email
@@ -142,13 +139,22 @@ DATABASES = {
         'PASSWORD': os.environ['DB_PASS'],
         'HOST': os.environ['DB_HOST'],
         'PORT': os.environ['DB_PORT'],
-    }
+    },
 }
 # caso o banco de dados tenha definido um schema
 if 'DB_SCHEMA' in os.environ:
     DATABASES['default']['OPTIONS'] = {
         'options': '-c search_path=%s,public' % os.environ['DB_SCHEMA']
     }
+
+CATALOG_DATABASE = {
+    'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    'NAME': os.environ['CATALOG_DB_NAME'],
+    'USER': os.environ['CATALOG_DB_USER'],
+    'PASSWORD': os.environ['CATALOG_DB_PASS'],
+    'HOST': os.environ['CATALOG_DB_HOST'],
+    'PORT': os.environ['CATALOG_DB_PORT'],
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators

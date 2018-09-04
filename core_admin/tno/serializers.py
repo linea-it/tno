@@ -2,7 +2,7 @@ import humanize
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Pointing, SkybotOutput, CustomList, Proccess
+from .models import Pointing, SkybotOutput, CustomList, Proccess, Catalog
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -160,4 +160,20 @@ class ProccessSerializer(serializers.ModelSerializer):
             'start_time',
             'finish_time',
             'status',
+        )
+
+
+class CatalogSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Catalog
+        fields = (
+            'id',
+            'display_name',
+            'database',
+            'schema',
+            'tablename',
+            'rows',
+            'columns',
+            'size'
         )
