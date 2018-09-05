@@ -301,7 +301,7 @@ class CatalogViewSet(viewsets.ModelViewSet):
     queryset = Catalog.objects.all()
     serializer_class = CatalogSerializer
     filter_fields = ('id', 'display_name', 'tablename',)
-    search_fields = ('display_name', 'tablename')
+    search_fields = ('name', 'display_name', 'tablename')
     authentication_classes = (SessionAuthentication, BasicAuthentication)
     permission_classes = (IsAuthenticated,)
 

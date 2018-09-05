@@ -5,7 +5,32 @@ DESCRIÇÂO A API
 Parametros
 
 ### Catalog
-Descrição
+Está API contem todos os catalogos registrados.
+
+```
+http://localhost:7001/catalog/
+```
+
+Exemplo do resultado:
+
+```
+{
+    "id": 2,
+    "name": "gaia_dr2",
+    "display_name": "GAIA DR2",
+    "schema": "gaia",
+    "tablename": "gaia_dr2",
+    "rows": null,
+    "columns": null,
+    "size": null
+},
+```
+Pode ser feita uma busca pelo nome do catalogo ou nome da tabela, utilizando o parametro 'search' 
+Exemplo: 
+```
+http://localhost:7001/catalog/?search=gaia
+```
+
 
 ### Radial Query
 Descrição 

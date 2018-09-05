@@ -36,12 +36,9 @@ class OrbitRunViewSet(viewsets.ModelViewSet):
 
             proccess = orbit_run.proccess
 
-            print(proccess.relative_path)
-
             obj_path = os.path.join(proccess.relative_path, "objects", name.replace(" ", "_"))
-            print(obj_path)
             log_file = os.path.join(obj_path, "nima.log")
-            print(log_file)
+
             # Checar se o log existe
             result = dict({
                 'lines': list(),
@@ -316,7 +313,7 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
 class RefinedOrbitViewSet(viewsets.ModelViewSet):
     queryset = RefinedOrbit.objects.all()
     serializer_class = RefinedOrbitSerializer
-    filter_fields = ('id', 'filename', 'asteroid')
+    filter_fields = ('id', 'filename', 'asteroid', 'file_type')
     search_fields = ('id', 'filename')
     ordering = ('filename', 'file_type')
 

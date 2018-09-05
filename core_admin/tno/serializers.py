@@ -169,8 +169,8 @@ class CatalogSerializer(serializers.ModelSerializer):
         model = Catalog
         fields = (
             'id',
+            'name',
             'display_name',
-            'database',
             'schema',
             'tablename',
             'rows',

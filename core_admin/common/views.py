@@ -5,40 +5,23 @@ from rest_framework.decorators import api_view
 @api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
-        from tno.db import CatalogDB
-        from tno.models import Catalog
-        from sqlalchemy.sql import text
+        from predict.stellar import StellarCatalog
+        from orbit.models import RefinedAsteroid
+        import os
 
-        db = CatalogDB()
+        refAsteroid = RefinedAsteroid.objects.get(pk=2)
 
-        gaia = Catalog.objects.first()
+        # ephemeris = os.path.join(refAsteroid.relative_path, 'teste.eph')
+        ephemeris = os.path.join(refAsteroid.relative_path, '1999RB216.eph')
 
-        print(gaia)
+        print(ephemeris)
 
-        # select * from y1a1_coadd_stripe82.coadd_objects where q3c_radial_query(ra, "dec", 317.490884, -1.762072 , 0.005 );
+        stc = StellarCatalog()
 
-
-        # stm = text(
-        #     """select * from y1a1_coadd_stripe82.coadd_objects where q3c_radial_query(ra, "dec", 317.490884, -1.762072, 0.005);""")
-
-        ra = 317.490884
-        dec = -1.762072
-
-        rows = db.radial_query(
-            schema="y1a1_coadd_stripe82",
-            tablename="coadd_objects",
-            ra_property='ra',
-            dec_property='dec',
-            ra=ra,
-            dec=dec,
-            radius=0.005,
-            limit=2
-        )
+        stc.generate_catalog(ephemeris=ephemeris, output_path=refAsteroid.relative_path)
 
         result = dict({
             'success': True,
-            'results': rows,
-            'count': len(rows)
         })
 
     return Response(result)
