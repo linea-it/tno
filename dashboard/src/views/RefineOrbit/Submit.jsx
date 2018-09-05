@@ -4,7 +4,8 @@ import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
 import PraiaApi from '../Astrometry/PraiaApi';
 import OrbitApi from './OrbitApi';
-import Card from 'components/Card/Card.jsx';
+import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
+import Content from 'components/CardContent/CardContent.jsx';
 import PropTypes from 'prop-types';
 
 import 'primereact/resources/themes/omega/theme.css';
@@ -93,33 +94,44 @@ class RefineOrbitSubmit extends Component {
   render() {
     const { input } = this.state;
     return (
-      <Card
-        title="Execute"
-        category="DESCRIÇÃO SOBRE A EXECUÇÃO"
-        content={
-          <div className="content">
-            <Form>
-              <FormGroup>
-                <ControlLabel>Input</ControlLabel>
-                <Async
-                  onChange={this.onSelectInput}
-                  value={input}
-                  cacheOptions
-                  valueKey="id"
-                  labelKey="proccess_displayname"
-                  defaultOptions
-                  loadOptions={this.loadInputs}
+      <div>
+        <PanelCostumize
+          title="Execute"
+          subTitle="Descrição sobre execução"
+          subLine={true}
+          content={
+            <div className="ui-g">
+              <div className="ui-lg-12">
+                <Content
+                  content={
+                    <div>
+                      <Form>
+                        <FormGroup>
+                          <ControlLabel>Input</ControlLabel>
+                          <Async
+                            onChange={this.onSelectInput}
+                            value={input}
+                            cacheOptions
+                            valueKey="id"
+                            labelKey="proccess_displayname"
+                            defaultOptions
+                            loadOptions={this.loadInputs}
+                          />
+                        </FormGroup>
+                        <Button
+                          label="Submit"
+                          onClick={this.onClickSubmit}
+                          style={{ float: 'right' }}
+                        />
+                      </Form>
+                    </div>
+                  }
                 />
-              </FormGroup>
-              <Button
-                label="Submit"
-                onClick={this.onClickSubmit}
-                style={{ float: 'right', padding: '5px 25px' }}
-              />
-            </Form>
-          </div>
-        }
-      />
+              </div>
+            </div>
+          }
+        />
+      </div>
     );
   }
 }

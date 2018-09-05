@@ -1,3 +1,5 @@
+// ListStats Component
+
 .badge {
     display: inline-block;
     min-width: 10px;
@@ -133,3 +135,36 @@
       border-color: #fff;
     }
   }
+
+
+  // ListStats Not Component (Adjusts in line)
+
+
+.list-stats {
+    border: none;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+.list-stats  > tr {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.list-stats  > tbody > tr > td {
+    border-top: 1px solid #c6c6c6;
+    border-collapse: collapse;
+}
+
+.list-stats  > th, td {
+    padding: 5px;
+    text-align: left;
+}
+
+// criar arquivo
+ 
+ .icon {
+  font-size: .6em !important;
+ }
+ 
+

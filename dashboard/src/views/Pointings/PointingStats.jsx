@@ -17,6 +17,7 @@ import PanelCostumize from 'components/Panel/PanelCostumize';
 import ListStats from 'components/Statistics/ListStats';
 import { Table } from 'react-bootstrap';
 import StepStats from 'components/Statistics/StepStats';
+import Content from 'components/CardContent/CardContent.jsx';
 
 import PointingApi from './PointingApi';
 import plotPointings from 'assets/img/plotPointings.png';
@@ -201,41 +202,51 @@ class PointingsStats extends Component {
             content={
               <div className="ui-g">
                 <div className="ui-md-6">
-                  <Card title="" subTitle="Number of CCDs for each band">
-                    <BarChart
-                      width={275}
-                      height={198}
-                      data={data}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar barSize={20} dataKey="band" fill="#62388C" />;
-                    </BarChart>
-                  </Card>
+                  <Content
+                    header={true}
+                    lineVertical="linha-vertical"
+                    title="Number of CCDs for each band"
+                    content={
+                      <div>
+                        <BarChart
+                          width={275}
+                          height={198}
+                          data={data}
+                          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Bar barSize={20} dataKey="band" fill="#62388C" />;
+                        </BarChart>
+                        <hr size="300" width="4" align="left" color="#000000" />
+                      </div>
+                    }
+                  />
                 </div>
+
                 <div className="ui-md-6">
-                  <Card
-                    title=""
-                    subTitle="Number of CCDs in intervals of exposure time [s]"
-                  >
-                    <BarChart
-                      width={275}
-                      height={198}
-                      data={exptime}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar barSize={20} dataKey="exposure" fill="#62388C" />;
-                    </BarChart>
-                  </Card>
+                  <Content
+                    header={true}
+                    title="Number of CCDs in intervals of exposure time [s]"
+                    content={
+                      <BarChart
+                        width={275}
+                        height={198}
+                        data={exptime}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar barSize={20} dataKey="exposure" fill="#62388C" />;
+                      </BarChart>
+                    }
+                  />
                 </div>
               </div>
             }
@@ -245,15 +256,17 @@ class PointingsStats extends Component {
             title="Stats"
             content={
               <div>
-                <Card>
-                  <Table responsive>
-                    <tbody>
-                      <tr>
-                        <div className="ui-g">{list}</div>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </Card>
+                <Content
+                  content={
+                    <Table responsive>
+                      <tbody>
+                        <tr>
+                          <div className="ui-g">{list}</div>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  }
+                />
                 {/* <ListStats
                   badgeColumns={false}
                   status={false}

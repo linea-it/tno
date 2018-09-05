@@ -115,10 +115,10 @@ class SkybotStats extends Component {
             className="panel"
             content={
               <div>
-                <Card className="none table-overflow ">
-                  <Table responsive>
+                <Card className="none">
+                  <table className="list-stats">
                     <tbody>{columns}</tbody>
-                  </Table>
+                  </table>
                 </Card>
               </div>
             }

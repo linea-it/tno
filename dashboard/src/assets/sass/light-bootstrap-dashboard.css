@@ -3248,6 +3248,26 @@ body > .navbar-collapse[data-color="purple"]:after {
     color: #fff;
     border-color: #fff; }
 
+.list-stats {
+  border: none;
+  border-collapse: collapse;
+  margin: 0; }
+
+.list-stats > tr {
+  border: 1px solid black;
+  border-collapse: collapse; }
+
+.list-stats > tbody > tr > td {
+  border-top: 1px solid #c6c6c6;
+  border-collapse: collapse; }
+
+.list-stats > th, td {
+  padding: 5px;
+  text-align: left; }
+
+.icon {
+  font-size: .6em !important; }
+
 .plot-roxo {
   color: #62388C; }
 
@@ -3294,21 +3314,16 @@ body > .navbar-collapse[data-color="purple"]:after {
 .green {
   background-color: #28CA71; }
 
-.ex-mini {
-  font-size: .8em !important; }
-  .ex-mini .icon {
-    font-size: .8em !important; }
-
 .panel-content {
   min-height: none;
   background: #ffffff !important;
-  border: 1.5px solid #575555;
+  border: 1.5px solid #717172;
   border-radius: 1px; }
   .panel-content .header {
-    border-bottom: 2px solid #575555;
-    background-color: #575555; }
+    border-bottom: 2px solid #717172;
+    background-color: #717172; }
   .panel-content .title {
-    padding: 4px 14px;
+    padding: 2px 14px;
     font-size: 14px;
     color: #fff;
     font-weight: bold;
@@ -3317,7 +3332,7 @@ body > .navbar-collapse[data-color="purple"]:after {
   .panel-content .subTitle {
     padding: 4px 14px;
     font-size: 14px;
-    color: #575555;
+    color: #717172;
     font-weight: 500;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     margin-bottom: 0px; }
@@ -3331,6 +3346,44 @@ body > .navbar-collapse[data-color="purple"]:after {
   padding: 0 !important; }
 
 .panel-hr {
-  background-color: #b8b4b4;
+  background-color: #717172;
   height: 1px;
-  width: 100%; }
+  width: 100%;
+  margin: 0;
+  padding: 0; }
+
+.hr-subTitle {
+  margin: 0 15px 0 10px;
+  height: 1px;
+  background-color: #c7c7c7 !important; }
+
+.content-main {
+  min-height: 20%;
+  background: #ffffff !important;
+  border-radius: 1px;
+  margin: 8px 0px 8px 5px; }
+  .content-main .content-header {
+    margin: 0; }
+  .content-main .content-title {
+    padding-left: 4px;
+    margin: 5px 5px;
+    font-size: 12px;
+    color: #717172;
+    font-weight: bold;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    text-transform: uppercase; }
+  .content-main .content-subtitle {
+    padding-left: 4px;
+    margin: 5px 5px !important;
+    font-size: 10px;
+    color: #717172;
+    font-weight: 500;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    margin: 0; }
+  .content-main .content-body {
+    background-color: inherit;
+    min-height: inherit; }
+
+.linha-vertical {
+  border-right: 1px solid #c6c6c6 !important;
+  /* Adiciona borda esquerda na div como ser fosse uma linha.*/ }

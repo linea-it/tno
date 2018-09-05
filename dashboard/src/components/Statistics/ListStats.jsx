@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, Badge } from 'react-bootstrap';
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
-import { Card } from 'primereact/card';
+import Content from 'components/CardContent/CardContent.jsx';
 import PropTypes from 'prop-types';
 
 class ListStats extends Component {
@@ -12,7 +12,7 @@ class ListStats extends Component {
     const { string, array, bool } = PropTypes;
 
     ListStats.PropTypes = {
-      title: string.isRequired,
+      //title: string.isRequired,
       data: array.isRequired,
       status: bool.isRequired,
     };
@@ -21,12 +21,14 @@ class ListStats extends Component {
       if (propSet.badgeColumns) {
         return (
           <tr key={i}>
-            <td className="text-white b-a-0">{propSet.data[i].name}</td>
-            <td className="text-white b-a-0">
-              <Badge className={`label-list label-${propSet.statstext}`}>
-                {propSet.data[i].value}
-              </Badge>
-            </td>
+            <div className="ui ex-mini horizontal violet statistic">
+              <td className="text-white b-a-0">{propSet.data[i].name}</td>
+              <td className="text-white b-a-0">
+                <Badge className={`label-list label-${propSet.statstext}`}>
+                  {propSet.data[i].value}
+                </Badge>
+              </td>
+            </div>
           </tr>
         );
       } else {
@@ -57,14 +59,16 @@ class ListStats extends Component {
 
     return (
       <div>
-        <Card subTitle={propSet.title}>
-          <Table responsive>
-            <tbody>
-              {status}
-              {columns}
-            </tbody>
-          </Table>
-        </Card>
+        <Content
+          content={
+            <Table responsive>
+              <tbody>
+                {status}
+                {columns}
+              </tbody>
+            </Table>
+          }
+        />
       </div>
     );
   }

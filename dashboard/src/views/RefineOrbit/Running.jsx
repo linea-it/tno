@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import Card from 'components/Card/Card.jsx';
+import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
+import Content from 'components/CardContent/CardContent.jsx';
 import PropTypes from 'prop-types';
 class RefineOrbitRunning extends Component {
   state = this.initialState;
@@ -24,14 +25,19 @@ class RefineOrbitRunning extends Component {
       id = record.id;
     }
     return (
-      <Card
+      <PanelCostumize
         title="Running"
-        category="Monitor the rounds NIMA"
+        subTitle="Monitor the rounds NIMA"
+        subLine={true}
         content={
-          <div className="content">
-            NIMA RUN ID: {id}
-            <br />Stream LOGs{' '}
-          </div>
+          <Content
+            content={
+              <div className="content">
+                NIMA RUN ID: {id}
+                <br />Stream LOGs{' '}
+              </div>
+            }
+          />
         }
       />
     );

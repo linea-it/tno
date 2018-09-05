@@ -11,7 +11,7 @@
     }
 
     .title {
-     padding: 4px 14px;
+     padding: 2px 14px;
      font-size: 14px; 
      color: #fff;
      font-weight:bold;
@@ -41,7 +41,15 @@
 
 
 .panel-hr {
-    background-color: $panel-costumize-hr;
+    background-color: $panel-costumize-default;
     height: 1px;
     width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.hr-subTitle {
+    margin: 0 15px 0 10px;
+    height: 1px;
+    background-color: #c7c7c7 !important;  
 }

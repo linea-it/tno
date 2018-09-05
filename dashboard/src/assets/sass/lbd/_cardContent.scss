@@ -1,0 +1,42 @@
+.content-main {
+    //  min-width: 500px;
+     min-height: 20%;
+     background: #ffffff !important;  
+     border-radius: 1px;
+     margin: 8px 0px 8px 5px;
+        .content-header {
+            margin: 0;
+        }
+        .content-title {
+         padding-left: 4px;
+         margin: 5px 5px;
+         font-size: 12px; 
+         color: $panel-costumize-default;
+         font-weight:bold;
+         font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+         text-transform: uppercase;
+         
+        }
+    
+        .content-subtitle {
+         padding-left: 4px;
+         margin: 5px 5px !important;
+         font-size: 10px; 
+         color: $panel-costumize-default;
+         font-weight:500;
+         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+         margin: 0;
+         
+        }
+
+        .content-body {
+            background-color:inherit;  
+            min-height: inherit;
+        }
+
+    }
+
+    .linha-vertical {
+        border-right: 1px solid #c6c6c6 !important;/* Adiciona borda esquerda na div como ser fosse uma linha.*/
+      }
+

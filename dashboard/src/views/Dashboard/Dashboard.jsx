@@ -4,6 +4,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import MiniCardStats from 'components/Statistics/MiniCardStats.jsx';
 import { Card } from 'primereact/card';
+import Content from 'components/CardContent/CardContent.jsx';
 import { Panel } from 'primereact/panel';
 import plot1 from 'assets/img/plot1.png';
 import plot2 from 'assets/img/plot2.png';
@@ -101,6 +102,14 @@ class Dashboard extends Component {
       { name: 'Owner', value: 'xxxxxxxxx' },
       { name: 'Start', value: 'xxxx-xx-xx xx:xx:xx' },
       { name: 'Asteroids', value: 'xxx' },
+    ];
+
+    const data_exposures= [
+      { name: 'Pointings', value: exposures.count_pointings },
+      { name: 'Exposures', value: exposures.exposures },
+      { name: 'Most recent', value: exposures.last },
+      { name: 'Updated', value: exposures.update },
+      { name: 'Size', value: exposures.size },
     ];
 
     const graph = [
@@ -202,55 +211,35 @@ class Dashboard extends Component {
               title="EXPOSURE"
               content={
                 <div>
-                  <br />
                   <StepStats
                     disableCard="false"
                     // title=" CCDs frames downloaded"
                     info={exposure_info}
                     footer={
                       <div>
-                        <ul className="step-format">
-                          <li>
-                            <a>Pointings: {exposures.count_pointings}</a>
-                          </li>
-                          <li>
-                            <a>Exposures: {exposures.exposures}</a>
-                          </li>
-                          <li>
-                            <a>
-                              Most recent: {exposures.last} Oldest:{' '}
-                              {exposures.first}
-                            </a>
-                          </li>
-                          <li>
-                            <a>Updated: {exposures.updated}</a>
-                          </li>
-                          <li>
-                            <a>Size: {exposures.size}</a>
-                          </li>
-                        </ul>
+                        <ListStats title="dfs" data={data_exposures} />
                       </div>
                     }
                   />
-                  <br />
                   <hr className="panel-hr" />
-                  <Card
-                    subTitle="Exposure per period (placeholder)"
+                  <Content
+                   header={true}
+                    title="Exposure per period (placeholder)"
                     className="step-title"
-                    style={{ border: 'none' }}
-                  >
-                    <BarChart
-                      width={350}
-                      height={200}
-                      data={graph}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis dataKey="band" />
-                      <Bar barSize={10} dataKey="band" fill="#3c1e7e" />;
-                    </BarChart>
-                  </Card>
+                    content={
+                      <BarChart
+                        width={350}
+                        height={200}
+                        data={graph}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis dataKey="band" />
+                        <Bar barSize={10} dataKey="band" fill="#3c1e7e" />;
+                      </BarChart>
+                    }
+                  />
                 </div>
               }
             />

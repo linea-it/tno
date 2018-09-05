@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { ProgressBar } from 'react-bootstrap';
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
-import { Card } from 'primereact/card';
+import Content from 'components/CardContent/CardContent.jsx';
 import PropTypes from 'prop-types';
 
 class StepStats extends Component {
@@ -22,7 +22,7 @@ class StepStats extends Component {
       grid: array,
     };
     // Adaptação para Step com footer
-    const footer = <span>{propSet.footer}</span>;
+    const footer = <div>{propSet.footer}</div>;
 
     const areaIcon = propSet.info.map((col, i) => {
       return (
@@ -61,17 +61,21 @@ class StepStats extends Component {
 
     return (
       <div>
-        <Card
+        <Content
           className={`step-title ${propSet.disableCard}`}
           //footer={footer}
           subTitle={propSet.title}
           style={{ maxWidth: 'inherit' }}
-        >
-          <div className="ui-g">{areaIcon}</div>
-          <ProgressBar>{areaProgress}</ProgressBar>
-          <hr />
-          {footer}
-        </Card>
+          content={
+            <div className="ui-g">
+              <div className="ui-lg-12">
+                <div className="ui-g">{areaIcon}</div>
+                <ProgressBar>{areaProgress}</ProgressBar>
+              </div>
+              <div className="ui-lg-12">{footer}</div>
+            </div>
+          }
+        />
       </div>
     );
   }
