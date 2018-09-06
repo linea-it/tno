@@ -289,10 +289,10 @@ class PointingsStats extends Component {
             content={
               <div>
                 <Card>
-                  <figure>
+                  <figure className="responsive-image">
                     <img
-                      width="600"
-                      height="451"
+                      // width="600"
+                      // height="451"
                       alt="text"
                       src={plotPointings}
                     />

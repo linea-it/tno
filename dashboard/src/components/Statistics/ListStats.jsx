@@ -21,21 +21,23 @@ class ListStats extends Component {
       if (propSet.badgeColumns) {
         return (
           <tr key={i}>
-            <div className="ui ex-mini horizontal violet statistic">
-              <td className="text-white b-a-0">{propSet.data[i].name}</td>
-              <td className="text-white b-a-0">
-                <Badge className={`label-list label-${propSet.statstext}`}>
-                  {propSet.data[i].value}
-                </Badge>
-              </td>
-            </div>
+            <td className="font-format">{propSet.data[i].name}</td>
+            <td>
+              <Badge className={`label-list label-${propSet.statstext}`}>
+                {propSet.data[i].value}
+              </Badge>
+            </td>
           </tr>
         );
       } else {
         return (
           <tr key={i}>
-            <td className="text-white b-a-0">{propSet.data[i].name}</td>
-            <td className="text-white b-a-0">{propSet.data[i].value}</td>
+            <td className="list-text">
+              <div>{propSet.data[i].name}:</div>
+            </td>
+            <td className="list-value">
+              <div>{propSet.data[i].value} </div>
+            </td>
           </tr>
         );
       }
@@ -45,10 +47,10 @@ class ListStats extends Component {
     if (propSet.status) {
       status.push(
         <tr>
-          <td className="text-white b-a-0">
+          <td className="list-text">
             <strong>Status</strong>
           </td>
-          <td className="text-white b-a-0">
+          <td className="list-value">
             <Badge className={`label label-outline label-${propSet.statstext}`}>
               {propSet.statstext}
             </Badge>
@@ -61,7 +63,7 @@ class ListStats extends Component {
       <div>
         <Content
           content={
-            <Table responsive>
+            <Table>
               <tbody>
                 {status}
                 {columns}

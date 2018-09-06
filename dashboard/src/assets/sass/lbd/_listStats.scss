@@ -161,10 +161,21 @@
     text-align: left;
 }
 
+.list-text {
+  font-family: $font-family-lato;
+  font-weight: 400;
+  color: $panel-costumize-default;
+}
+
+.list-value {
+  font-family: $font-family-lato;
+  font-weight: bold !important;
+  font-size: 16px !important;
+  color: $panel-costumize-default;
+}
 // criar arquivo
- 
+
  .icon {
   font-size: .6em !important;
  }
  
-

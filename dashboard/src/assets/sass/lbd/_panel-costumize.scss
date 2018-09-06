@@ -11,12 +11,13 @@
     }
 
     .title {
-     padding: 2px 14px;
-     font-size: 14px; 
+     line-height: 20px;
+     padding: 4px 14px;
+     font-size: 16px; 
      color: #fff;
-     font-weight:bold;
-     font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-     text-transform: uppercase;
+     font-weight:600;
+     font-family: $font-family-lato;
+     //text-transform: uppercase;
     }
 
     .subTitle {
@@ -24,7 +25,7 @@
      font-size: 14px; 
      color: $panel-costumize-default;
      font-weight:500;
-     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+     font-family:  $font-family-lato;
      margin-bottom: 0px;
      
     }

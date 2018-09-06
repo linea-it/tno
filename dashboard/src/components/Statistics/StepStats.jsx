@@ -68,11 +68,11 @@ class StepStats extends Component {
           style={{ maxWidth: 'inherit' }}
           content={
             <div className="ui-g">
-              <div className="ui-lg-12">
+              <div className="ui-lg-12 ui-md-12">
                 <div className="ui-g">{areaIcon}</div>
                 <ProgressBar>{areaProgress}</ProgressBar>
               </div>
-              <div className="ui-lg-12">{footer}</div>
+              <div className="ui-lg-12 ui-md-12">{footer}</div>
             </div>
           }
         />
