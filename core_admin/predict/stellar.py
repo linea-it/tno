@@ -5,17 +5,29 @@ from datetime import datetime
 from django.conf import settings
 import parsl
 from parsl import *
+from pprint import pprint
+import csv
+from common.jsonfile import JsonFile
+import shutil
 
 class StellarCatalog(CatalogDB):
-    def generate_catalog(self, ephemeris, output_path):
-        print("TESTE")
+    def __init__(self):
+        super(StellarCatalog, self).__init__()
 
-        print("Converte")
-        ra_hms = "10 25 34.3312"
-        dec_hms = "-00 27 44.998"
+        self.catalog = None
+        self.radius = 0.05
+        self.columns = []
+        self.output_path = None
 
-        print("RA: %s -> %s" % (ra_hms, (15 * sextodec(ra_hms))))
-        print("Dec: %s -> %s" % (dec_hms, sextodec(dec_hms)))
+        self.total_count = 0
+
+    def generate_catalog(self, catalog, ephemeris, output_path):
+
+        self.catalog = catalog
+        self.radius = 0.5
+        self.columns = ["source_id", "ra", "dec"]
+
+        self.output_path = output_path
 
         t0 = datetime.now()
 
@@ -23,48 +35,94 @@ class StellarCatalog(CatalogDB):
         if not os.path.exists(ephemeris):
             raise Exception("Ephemeris archive does not exist. [%s]" % ephemeris)
 
-
         # Configuracao do Parsl
         try:
             dfk = DataFlowKernel(config=dict(settings.PARSL_CONFIG))
+            # Configuracao do Parsl Log.
+            # parsl.set_file_logger(os.path.join(output_path, 'stellar_catalog_parsl.log'))
+
         except Exception as e:
             # self.logger.error(e)
             raise e
 
-        # # Configuracao do Parsl Log.
-        # parsl.set_file_logger(os.path.join(output_path, 'stellar_catalog_parsl.log'))
-        #
-        # # Declaracao do Parsl APP
-        # @App('python', dfk)
-        # def start_parsl_job(line):
-        #
-        #     result = self.read_ephemeris_line(line)
-        #
-        #     return result
-        #
-        # results = []
-        # count = 0
-        # with open(ephemeris) as fp:
-        #     for l in fp:
-        #         line = l.strip()
-        #         if line:
-        #             results.append(start_parsl_job(line))
-        #
-        #             count += 1
-        #
-        # # Espera o Resultado de todos os jobs.
-        # outputs = [i.result() for i in results]
-        #
-        # for i in results:
-        #     i.done()
-        #
-        # dfk.cleanup()
+        # Declaracao do Parsl APP
+        @App('python', dfk)
+        def start_parsl_job(line, id):
 
-        # t1 = datetime.now()
-        #
-        # tdelta = t1 - t0
-        # print("Count: %s" % count)
-        # print("Terminou: %s" % tdelta)
+            result = self.read_ephemeris_line(line)
+            if result is not None:
+
+                q_t0 = datetime.now()
+
+                rows = self.execute_query(result)
+
+                q_t1 = datetime.now()
+                q_delta = q_t1 - q_t0
+
+                w_t0 = datetime.now()
+
+                count = len(rows)
+                self.total_count += count
+
+                if count > 0:
+                    filename = self.writer_csv(os.path.join(self.output_path, "stellar_catalog_%s.csv" % id), rows)
+
+                w_t1 = datetime.now()
+                w_delta = w_t1 - w_t0
+
+                result.update({'id': id,
+                               'rows': count,
+                               'query_time': q_delta.total_seconds(),
+                               'writer_time': w_delta.total_seconds(),
+                               'filename': filename,
+                               'file_size': os.path.getsize(filename)
+                               })
+
+            return result
+
+        parsl_results = []
+        id = 0
+        with open(ephemeris) as fp:
+            for l in fp:
+                line = l.strip()
+                if line:
+                    parsl_results.append(start_parsl_job(line, id))
+                    id += 1
+
+        # Espera o Resultado de todos os jobs.
+        outputs = [i.result() for i in parsl_results]
+
+        for i in parsl_results:
+            i.done()
+
+        dfk.cleanup()
+
+
+        # Concat CSVs
+        stellar_catalog = self.concat_csvs(os.path.join(self.output_path, "stellar_catalog.csv"), outputs)
+
+        t1 = datetime.now()
+
+        tdelta = t1 - t0
+
+        json_log = dict({
+            'catalog_id': self.catalog.id,
+            'columns': self.columns,
+            'start_time': t0.strftime("%Y-%m-%d %H:%M:%S"),
+            'finish_time': t1.strftime("%Y-%m-%d %H:%M:%S"),
+            'execution_time': tdelta.total_seconds(),
+            'records': self.total_count,
+            'count_steps': len(outputs),
+            'steps_detail': outputs,
+            'filename': stellar_catalog,
+            'file_size': os.path.getsize(stellar_catalog)
+        })
+
+        JsonFile().write(json_log, os.path.join(self.output_path, 'stellar_log.json'))
+
+        print("Iteracoes: %s" % len(outputs))
+        print("Estrelas: %s" % self.total_count)
+        print("Terminou: %s" % tdelta)
 
     def read_ephemeris_line(self, line):
 
@@ -90,14 +148,48 @@ class StellarCatalog(CatalogDB):
                 "dec": sextodec(dec_hms),
             })
 
-            # print(result)
+            return result
+        else:
+            return None
 
-    def teste(self):
-        pass
+    def execute_query(self, position):
 
+        rows = self.radial_query(
+            tablename=self.catalog.tablename,
+            schema=self.catalog.schema,
+            ra_property=self.catalog.ra_property,
+            dec_property=self.catalog.dec_property,
+            ra=position.get("ra"),
+            dec=position.get("dec"),
+            radius=self.radius,
+            columns=self.columns,
+            limit=None)
 
-"""
-Tempo sem paralelismo
-Count: 525601
-Terminou: 0:00:05.584710
-"""
+        if len(self.columns) == 0 and len(rows) > 0:
+            self.columns = rows[0].keys()
+
+        return rows
+
+    def writer_csv(self, filename, rows):
+        with open(filename, 'w', newline='') as csvfile:
+            fieldnames = self.columns
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writerows(rows)
+
+        return filename
+
+    def concat_csvs(self, filename, results):
+        with open(filename, 'w', newline='') as csvfile:
+            fieldnames = self.columns
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+
+            for row in results:
+                if row is not None:
+                    with open(row.get("filename"), 'r') as readfile:
+                        shutil.copyfileobj(readfile, csvfile)
+
+                    os.remove(row.get("filename"))
+
+        return filename
+
