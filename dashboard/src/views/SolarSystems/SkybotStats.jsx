@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import {
   ComposedChart,
-  Area,
   Line,
   Bar,
   XAxis,
@@ -19,7 +18,6 @@ import { Icon } from 'semantic-ui-react';
 import PanelCostumize from 'components/Panel/PanelCostumize';
 // import Card from 'components/Card/Card.jsx';
 import { Card } from 'primereact/card';
-import { Table } from 'react-bootstrap';
 
 import SkybotApi from './SkybotApi';
 

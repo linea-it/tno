@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import { ProgressBar } from 'react-bootstrap';
-
 import {
   BarChart,
   Bar,
@@ -11,12 +9,10 @@ import {
   Legend,
 } from 'recharts';
 // import Card from 'components/Card/Card.jsx';
-import { Icon, Statistic } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 import { Card } from 'primereact/card';
 import PanelCostumize from 'components/Panel/PanelCostumize';
-import ListStats from 'components/Statistics/ListStats';
 import { Table } from 'react-bootstrap';
-import StepStats from 'components/Statistics/StepStats';
 import Content from 'components/CardContent/CardContent.jsx';
 
 import PointingApi from './PointingApi';
@@ -156,22 +152,22 @@ class PointingsStats extends Component {
     //   { name: 'Total Size', value: this.state.totalSize },
     // ];
 
-    const pointing_info = [
-      {
-        legend: 'Downloaded',
-        label: this.state.qtdDownloaded,
-        value: this.state.qtdDownloaded,
-        colorIcon: 'primary',
-        grid: ['6'],
-      },
-      {
-        legend: 'not Downloaded',
-        label: this.state.qtdNotDownloaded,
-        value: this.state.qtdNotDownloaded,
-        colorIcon: 'muted',
-        grid: ['6'],
-      },
-    ];
+    // const pointing_info = [
+    //   {
+    //     legend: 'Downloaded',
+    //     label: this.state.qtdDownloaded,
+    //     value: this.state.qtdDownloaded,
+    //     colorIcon: 'primary',
+    //     grid: ['6'],
+    //   },
+    //   {
+    //     legend: 'not Downloaded',
+    //     label: this.state.qtdNotDownloaded,
+    //     value: this.state.qtdNotDownloaded,
+    //     colorIcon: 'muted',
+    //     grid: ['6'],
+    //   },
+    // ];
 
     const stats = [
       { name: 'Data Recent', value: this.state.dateRecent, icon: 'database' },

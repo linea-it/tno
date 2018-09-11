@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import PraiaApi from './PraiaApi';
 import PraiaSubmit from './PraiaSubmit';
 import PraiaHistory from './PraiaHistory';
 import PraiaRunning from './PraiaRunning';
 import PropTypes from 'prop-types';
-import Card from 'components/Card/Card.jsx';
 class Praia extends Component {
   state = this.initialState;
   api = new PraiaApi();

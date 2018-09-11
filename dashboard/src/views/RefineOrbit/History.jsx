@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import Card from 'components/Card/Card.jsx';
-//import { ButtonToolbar, Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';

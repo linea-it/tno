@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PredictionHistory from './History';
-
+// import PredictionSubmit from './Submit';
+import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import PropTypes from 'prop-types';
 import { Card } from 'primereact/card';
 class PredictionPanel extends Component {
@@ -33,10 +34,7 @@ class PredictionPanel extends Component {
       <div className="content">
         <div className="ui-g">
           <div className="ui-g-4">
-            <Card
-              title="Prediction Occultation"
-              subTitle={'Execute PRAIA Occultation'}
-            />
+            <Card title=" " subTitle=" " />
           </div>
           <div className="ui-g-8">
             <Card title=" " subTitle=" " />

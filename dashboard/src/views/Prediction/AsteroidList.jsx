@@ -135,7 +135,7 @@ class AsteroidList extends Component {
   };
 
   actionTemplate = rowData => {
-    const asteroid_id = rowData.id;
+    // const asteroid_id = rowData.id;
     let btn_view = null;
     let btn_log = null;
 

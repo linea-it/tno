@@ -13,7 +13,6 @@ import { Card } from 'primereact/card';
 import RefineOrbitTimeProfile from './TimeProfile';
 import moment from 'moment';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
-import Content from 'components/CardContent/CardContent.jsx';
 class RefineOrbitRunDetail extends Component {
   state = this.initialState;
   api = new OrbitApi();

@@ -18,7 +18,7 @@ class PredictionHistory extends Component {
   api = new PredictionApi();
 
   static propTypes = {
-    orbit_run: PropTypes.number.isRequired,
+    // orbit_run: PropTypes.number.isRequired,
     view_prediction: PropTypes.func.isRequired,
   };
 
@@ -162,7 +162,7 @@ class PredictionHistory extends Component {
         sizePerPage: e.rows,
       },
       this.fetchData({
-        orbit_run: this.props.orbit_run,
+        // orbit_run: this.props.orbit_run,
         page: page,
         sizePerPage: e.rows,
         sortField: this.state.sortField,
@@ -178,7 +178,7 @@ class PredictionHistory extends Component {
         sortOrder: e.sortOrder,
       },
       this.fetchData({
-        orbit_run: this.props.orbit_run,
+        // orbit_run: this.props.orbit_run,
         page: this.state.page,
         sizePerPage: this.state.sizePerPage,
         sortField: e.sortField,
