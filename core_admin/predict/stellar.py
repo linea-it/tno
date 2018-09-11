@@ -10,6 +10,7 @@ import csv
 from common.jsonfile import JsonFile
 import shutil
 
+
 class StellarCatalog(CatalogDB):
     def __init__(self):
         super(StellarCatalog, self).__init__()
@@ -25,7 +26,11 @@ class StellarCatalog(CatalogDB):
 
         self.catalog = catalog
         self.radius = 0.5
-        self.columns = ["source_id", "ra", "dec"]
+        self.columns = ["source_id", "ra", "dec", "ra_error", "dec_error", "ref_epoch", "parallax", "parallax_error",
+                        "pmra", "pmra_error", "pmdec", "pmdec_error", "phot_g_mean_flux", "phot_g_mean_flux_error",
+                        "phot_g_mean_mag", "phot_bp_mean_flux", "phot_bp_mean_flux_error", "phot_rp_mean_flux",
+                        "phot_rp_mean_flux_error", "phot_rp_mean_mag", "radial_velocity", "radial_velocity_error",
+                        "astrometric_excess_noise", "astrometric_excess_noise_sig"]
 
         self.output_path = output_path
 
@@ -96,7 +101,6 @@ class StellarCatalog(CatalogDB):
             i.done()
 
         dfk.cleanup()
-
 
         # Concat CSVs
         stellar_catalog = self.concat_csvs(os.path.join(self.output_path, "stellar_catalog.csv"), outputs)
@@ -173,7 +177,7 @@ class StellarCatalog(CatalogDB):
     def writer_csv(self, filename, rows):
         with open(filename, 'w', newline='') as csvfile:
             fieldnames = self.columns
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames,delimiter=';')
             writer.writerows(rows)
 
         return filename
@@ -181,7 +185,7 @@ class StellarCatalog(CatalogDB):
     def concat_csvs(self, filename, results):
         with open(filename, 'w', newline='') as csvfile:
             fieldnames = self.columns
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
             writer.writeheader()
 
             for row in results:
@@ -192,4 +196,3 @@ class StellarCatalog(CatalogDB):
                     os.remove(row.get("filename"))
 
         return filename
-

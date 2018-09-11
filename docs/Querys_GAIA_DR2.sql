@@ -14,7 +14,7 @@ select distinct(source_id), ra, "dec" from gaia.gaia_dr2
 select COUNT(*) from gaia.gaia_dr2 where q3c_radial_query(ra, "dec", 30.415808749999997, 4.325122222222222, 0.05 );
 select COUNT(*) from gaia.gaia_dr2 where q3c_radial_query(ra, "dec", 30.411043749999997, 4.32621, 0.05 );
 
-SELECT count(*) FROM gaia.gaia_dr2 WHERE q3c_radial_query("ra", "dec", 30.415808749999997, 4.325122222222222, 0.5)
+SELECT * FROM gaia.gaia_dr2 WHERE q3c_radial_query("ra", "dec", 30.415808749999997, 4.325122222222222, 0.5)
 
 
 select ra, "dec" from y1a1_coadd_stripe82.coadd_objects limit 10
