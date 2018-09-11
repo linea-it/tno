@@ -90,6 +90,7 @@ const appRoutes = [
     name: 'Download',
     component: Placeholder,
     helpText: 'Download of images which have observations of specific objects.',
+    hidden: true,
   },
   {
     path: '/astrometry',

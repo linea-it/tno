@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import Card from 'components/Card/Card.jsx';
+import PanelCostumize from 'components/Panel/PanelCostumize';
+import { Card } from 'primereact/card';
 import PraiaApi from './PraiaApi';
 import PropTypes from 'prop-types';
 class PraiaRunning extends Component {
@@ -26,10 +27,16 @@ class PraiaRunning extends Component {
       id = record.id;
     }
     return (
-      <Card
+      <PanelCostumize
         title="Running"
-        category="Monitor the rounds Astrometry"
-        content={<div className="content">PRAIA RUN ID: {id}</div>}
+        subTitle="Monitor the rounds Astrometry"
+        content={
+          <div className="content">
+            <Card className="none">
+              <div className="content">PRAIA RUN ID: {id}</div>
+            </Card>
+          </div>
+        }
       />
     );
   }

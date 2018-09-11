@@ -11,6 +11,8 @@ import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
 import { formatColumnHeader, formatStatus } from 'utils';
 import ReactInterval from 'react-interval';
 import OrbitApi from './OrbitApi';
+import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
+import Content from 'components/CardContent/CardContent.jsx';
 
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -185,46 +187,55 @@ class RefineOrbitHistory extends Component {
 
     return (
       <div>
-        <ReactInterval
-          timeout={reload_interval * 1000}
-          enabled={true}
-          callback={this.reload}
-        />
-        <Card
-          title=""
-          category="Manage the completed NIMA rounds"
+        <PanelCostumize
+          title="History"
+          subTitle="Manage the completed NIMA rounds"
+          subLine={true}
           content={
             <div>
-              <Toolbar>
-                <Button
-                  label="Re-execute"
-                  disabled={!selected_record}
-                  onClick={this.handleOnRerun}
-                />
-                <Button
-                  label="Detail"
-                  disabled={!selected_record}
-                  onClick={this.details}
-                />
-              </Toolbar>
-              <BootstrapTable
-                striped
-                hover
-                condensed
-                remote
-                bordered={false}
-                keyField="id"
-                noDataIndication="..."
-                data={data}
-                columns={columns}
-                pagination={pagination}
-                onTableChange={this.handleTableChange}
-                loading={loading}
-                overlay={overlayFactory({
-                  spinner: true,
-                  background: 'rgba(192,192,192,0.3)',
-                })}
-                selectRow={selectRow}
+              <ReactInterval
+                timeout={reload_interval * 1000}
+                enabled={true}
+                callback={this.reload}
+              />
+              <Content
+                content={
+                  <div className="ui-g">
+                    <div className="ui-lg-12">
+                      <Toolbar>
+                        <Button
+                          label="Re-execute"
+                          disabled={!selected_record}
+                          onClick={this.handleOnRerun}
+                        />
+                        <Button
+                          label="Detail"
+                          disabled={!selected_record}
+                          onClick={this.details}
+                        />
+                      </Toolbar>
+                      <BootstrapTable
+                        striped
+                        hover
+                        condensed
+                        remote
+                        bordered={false}
+                        keyField="id"
+                        noDataIndication="..."
+                        data={data}
+                        columns={columns}
+                        pagination={pagination}
+                        onTableChange={this.handleTableChange}
+                        loading={loading}
+                        overlay={overlayFactory({
+                          spinner: true,
+                          background: 'rgba(192,192,192,0.3)',
+                        })}
+                        selectRow={selectRow}
+                      />
+                    </div>
+                  </div>
+                }
               />
             </div>
           }

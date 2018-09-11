@@ -5,6 +5,8 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
+import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
+
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table, Badge } from 'react-bootstrap';
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
-import { Card } from 'primereact/card';
+import Content from 'components/CardContent/CardContent.jsx';
 import PropTypes from 'prop-types';
 
 class ListStats extends Component {
@@ -12,41 +12,65 @@ class ListStats extends Component {
     const { string, array, bool } = PropTypes;
 
     ListStats.PropTypes = {
-      title: string.isRequired,
+      //title: string.isRequired,
       data: array.isRequired,
       status: bool.isRequired,
     };
 
     const columns = propSet.data.map((col, i) => {
-      return (
-        <tr key={i}>
-          <td className="text-white b-a-0">{propSet.data[i].name}</td>
-          <td className="text-white b-a-0">{propSet.data[i].value}</td>
+      if (propSet.badgeColumns) {
+        return (
+          <tr key={i}>
+            <td className="font-format">{propSet.data[i].name}</td>
+            <td>
+              <Badge className={`label-list label-${propSet.statstext}`}>
+                {propSet.data[i].value}
+              </Badge>
+            </td>
+          </tr>
+        );
+      } else {
+        return (
+          <tr key={i}>
+            <td className="list-text">
+              <div>{propSet.data[i].name}:</div>
+            </td>
+            <td className="list-value">
+              <div>{propSet.data[i].value} </div>
+            </td>
+          </tr>
+        );
+      }
+    });
+
+    const status = [];
+    if (propSet.status) {
+      status.push(
+        <tr>
+          <td className="list-text">
+            <strong>Status</strong>
+          </td>
+          <td className="list-value">
+            <Badge className={`label label-outline label-${propSet.statstext}`}>
+              {propSet.statstext}
+            </Badge>
+          </td>
         </tr>
       );
-    });
+    }
 
     return (
       <div>
-        <Card subTitle={propSet.title}>
-          <Table hover responsive>
-            <tbody>
-              <tr>
-                <td className="text-white b-a-0">
-                  <strong>Status</strong>
-                </td>
-                <td className="text-white b-a-0">
-                  <Badge
-                    className={`label label-outline label-${propSet.statstext}`}
-                  >
-                    {propSet.statstext}
-                  </Badge>
-                </td>
-              </tr>
-              {columns}
-            </tbody>
-          </Table>
-        </Card>
+        <Content
+          content={
+            <Table>
+              <tbody>
+                {status}
+                {columns}
+              </tbody>
+            </Table>
+          }
+        />
       </div>
     );
   }

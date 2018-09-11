@@ -12,6 +12,8 @@ import ListStats from 'components/Statistics/ListStats.jsx';
 import { Card } from 'primereact/card';
 import RefineOrbitTimeProfile from './TimeProfile';
 import moment from 'moment';
+import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
+import Content from 'components/CardContent/CardContent.jsx';
 class RefineOrbitRunDetail extends Component {
   state = this.initialState;
   api = new OrbitApi();
@@ -73,7 +75,6 @@ class RefineOrbitRunDetail extends Component {
       { name: 'Execution', value: data.h_execution_time },
       { name: 'Asteroids', value: data.count_objects },
     ];
- 
 
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
@@ -109,38 +110,55 @@ class RefineOrbitRunDetail extends Component {
       <div>
         <div className="ui-g">
           <div className="ui-g-4 ui-md-4 ui-sm-1">
-            <ListStats
-              statstext={this.state.data.status}
-              status={true}
+            <PanelCostumize
               title={`Refine Orbit - ${data.id}`}
-              data={stats}
+              content={
+                <ListStats
+                  statstext={this.state.data.status}
+                  status={true}
+                  //title={`Refine Orbit - ${data.id}`}
+                  data={stats}
+                />
+              }
             />
           </div>
 
           <div className="ui-g-4 ui-md-4 ui-sm-1">
             <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <DonutStats
+              <PanelCostumize
                 title="Execution Statistics"
-                data={stats_status}
-                fill={colors}
+                content={<DonutStats data={stats_status} fill={colors} />}
               />
             </div>
             <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <StepStats title="Step Stats" info={execute_time} />
+              <PanelCostumize
+                title="Step Stats"
+                content={<StepStats info={execute_time} />}
+              />
             </div>
           </div>
           <div className="ui-g-4 ui-md-4">
-            <Card title="" subTitle="Execution Time">
-              <RefineOrbitTimeProfile data={this.state.time_profile} />
-            </Card>
+            <PanelCostumize
+              title="Execution Time"
+              content={
+                <Card>
+                  <RefineOrbitTimeProfile data={this.state.time_profile} />
+                </Card>
+              }
+            />
           </div>
         </div>
 
         <div className="ui-g">
           <div className="ui-g-12">
-            <AsteroidList
-              orbit_run={this.state.id}
-              view_asteroid={this.onViewAsteroid}
+            <PanelCostumize
+              title="History"
+              content={
+                <AsteroidList
+                  orbit_run={this.state.id}
+                  view_asteroid={this.onViewAsteroid}
+                />
+              }
             />
           </div>
         </div>
