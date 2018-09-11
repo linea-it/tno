@@ -2,8 +2,9 @@ from django.db import models
 from current_user import get_current_user
 from django.conf import settings
 from praia.models import Run as PraiaRun
-class Pointing(models.Model):
 
+
+class Pointing(models.Model):
     pfw_attempt_id = models.BigIntegerField(
         verbose_name='Image Id', help_text='Unique identifier for each image (1 image is composed by 62 CCDs)')
 
@@ -19,7 +20,8 @@ class Pointing(models.Model):
     )
 
     expnum = models.BigIntegerField(
-        verbose_name='Exposure', help_text='Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)'
+        verbose_name='Exposure',
+        help_text='Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)'
     )
     ccdnum = models.IntegerField(
         verbose_name='CCD', help_text='CCD Number (1, 2, ..., 62)'
@@ -28,7 +30,7 @@ class Pointing(models.Model):
     band = models.CharField(
         max_length=1,
         verbose_name='Filter', help_text='Filter used to do the observation (u, g, r, i, z, Y).',
-        choices=(('u','u'),('g','g'),('r','r'),('i','i'),('z','z'),('Y','Y'))
+        choices=(('u', 'u'), ('g', 'g'), ('r', 'r'), ('i', 'i'), ('z', 'z'), ('Y', 'Y'))
     )
 
     exptime = models.FloatField(
@@ -161,6 +163,7 @@ class Pointing(models.Model):
 
     def __str__(self):
         return str(self.id)
+
 
 class SkybotOutput(models.Model):
     """
@@ -298,7 +301,8 @@ class SkybotOutput(models.Model):
     )
 
     expnum = models.BigIntegerField(
-        verbose_name='Exposure', help_text='Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
+        verbose_name='Exposure',
+        help_text='Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
         default=None, null=True, blank=True
     )
     ccdnum = models.IntegerField(
@@ -310,7 +314,7 @@ class SkybotOutput(models.Model):
         max_length=1,
         verbose_name='Filter', help_text='Filter used to do the observation (u, g, r, i, z, Y).',
         default=None, null=True, blank=True,
-        choices=(('u','u'),('g','g'),('r','r'),('i','i'),('z','z'),('Y','Y'))
+        choices=(('u', 'u'), ('g', 'g'), ('r', 'r'), ('i', 'i'), ('z', 'z'), ('Y', 'Y'))
     )
 
     class Meta:
@@ -328,6 +332,7 @@ class SkybotOutput(models.Model):
 
     def __str__(self):
         return str(self.id)
+
 
 class CcdImage(models.Model):
     """
@@ -352,11 +357,11 @@ class CcdImage(models.Model):
 
     download_start_time = models.DateTimeField(
         verbose_name='Download Start',
-        auto_now_add=True, null=True, blank=True )
+        auto_now_add=True, null=True, blank=True)
 
     download_finish_time = models.DateTimeField(
         verbose_name='Download finish',
-        auto_now_add=False, null=True, blank=True )
+        auto_now_add=False, null=True, blank=True)
 
     file_size = models.PositiveIntegerField(
         verbose_name='File Size',
@@ -366,9 +371,7 @@ class CcdImage(models.Model):
         return str(self.id)
 
 
-
 class CustomList(models.Model):
-
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE, default=None, verbose_name='Owner', null=True, blank=True)
@@ -398,7 +401,7 @@ class CustomList(models.Model):
 
     n_columns = models.PositiveIntegerField(
         verbose_name='Num of columns', null=True, blank=True)
-    
+
     columns = models.CharField(
         verbose_name='Columns',
         max_length=1024,
@@ -435,25 +438,25 @@ class CustomList(models.Model):
         max_length=32,
         verbose_name='Filter Name',
         help_text='Filter By Object name.',
-        null=True, blank=True 
+        null=True, blank=True
     )
 
     filter_dynclass = models.TextField(
         verbose_name='Filter Classification',
         help_text='Filter by Object class (TNO, Centaur, Trojan, etc.).',
-        null=True, blank=True 
+        null=True, blank=True
     )
 
     filter_magnitude = models.FloatField(
         verbose_name='Filter Magnitude',
-        help_text = 'Filter by Object Magnitude',
-        null=True, blank=True 
+        help_text='Filter by Object Magnitude',
+        null=True, blank=True
     )
 
     filter_diffdatenights = models.FloatField(
         verbose_name='Filter diff nights',
-        help_text= 'Filter by minimun difference time between observations',
-        null=True, blank=True 
+        help_text='Filter by minimun difference time between observations',
+        null=True, blank=True
     )
 
     filter_morefilter = models.BooleanField(
@@ -464,9 +467,9 @@ class CustomList(models.Model):
 
     status = models.CharField(
         max_length=10,
-        verbose_name='Status', 
+        verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending','Pending'),('running','Running'),('success','Success'),('error','Error'))
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('error', 'Error'))
     )
 
     error_msg = models.TextField(
@@ -477,8 +480,8 @@ class CustomList(models.Model):
     def __str__(self):
         return self.displayname
 
-class Proccess(models.Model):
 
+class Proccess(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE, default=None, verbose_name='Owner', null=True, blank=True)
@@ -513,9 +516,9 @@ class Proccess(models.Model):
 
     status = models.CharField(
         max_length=10,
-        verbose_name='Status', 
+        verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending','Pending'),('running','Running'),('success','Success'),('error','Error'))
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('error', 'Error'))
     )
 
     purged = models.BooleanField(
@@ -526,6 +529,7 @@ class Proccess(models.Model):
 
     def __str__(self):
         return str(self.id)
+
 
 # class Product(models.Model):
 #
@@ -568,3 +572,40 @@ class Proccess(models.Model):
 #
 #     def __str__(self):
 #         return str(self.id)
+
+
+
+class Catalog(models.Model):
+    name = models.CharField(
+        max_length=128, verbose_name='Internal Name')
+    display_name = models.CharField(
+        max_length=128, verbose_name='Display Name')
+    database = models.CharField(
+        max_length=128, verbose_name='Database', null=True, blank=True, help_text='Database identifier in settings',
+        default='catalog')
+    schema = models.CharField(
+        max_length=128, verbose_name='Schema name', null=True, blank=True)
+    tablename = models.CharField(
+        max_length=128, verbose_name='Tablename', help_text='Tablename without schema')
+
+    ra_property = models.CharField(
+        max_length=128, verbose_name='RA Property', help_text='name of the column that represents the RA in degrees',
+        default='ra')
+
+    dec_property = models.CharField(
+        max_length=128, verbose_name='Dec Property', help_text='name of the column that represents the Dec in degrees',
+        default='dec')
+
+    rows = models.PositiveIntegerField(
+        verbose_name='Num of rows', null=True, blank=True)
+    columns = models.PositiveIntegerField(
+        verbose_name='Num of columns', null=True, blank=True)
+    size = models.PositiveIntegerField(
+        verbose_name='Size in bytes', null=True, blank=True)
+
+    registration_date = models.DateTimeField(
+        verbose_name='Registration Date',
+        auto_now_add=True, null=True, blank=True)
+
+    def __str__(self):
+        return self.display_name

@@ -8,14 +8,21 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from django.conf import settings
 
-from .models import Pointing, SkybotOutput, CustomList, Proccess
+from .models import Pointing, SkybotOutput, CustomList, Proccess, Catalog
 from .serializers import UserSerializer, PointingSerializer, SkybotOutputSerializer, ObjectClassSerializer, \
-    CustomListSerializer, ProccessSerializer
+    CustomListSerializer, ProccessSerializer, CatalogSerializer
 from .skybotoutput import FilterObjects
 from .skybotoutput import SkybotOutput as SkybotOutputDB
 from .skybotoutput import Pointing as PointingDB
 from common.jsonfile import JsonFile
 import os
+from django.core.exceptions import ObjectDoesNotExist
+from tno.db import CatalogDB
+from tno.models import Catalog
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from django.http import HttpResponse
+import csv
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -84,7 +91,6 @@ class PointingViewSet(viewsets.ModelViewSet):
 
         return statistics
 
-
     @list_route()
     def statistics(self, request):
         refresh = request.query_params.get('refresh', False)
@@ -101,6 +107,7 @@ class PointingViewSet(viewsets.ModelViewSet):
                 statistics = self.generate_statistics()
 
         return Response(statistics)
+
 
 class SkybotOutputViewSet(viewsets.ModelViewSet):
     queryset = SkybotOutput.objects.select_related().all()
@@ -162,7 +169,6 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
             'asteroids_by_class': asteroids_by_class,
             'histogram': histogram
         })
-
 
         # Escrever o Arquivo de cache com as informações
         temp_file = os.path.join(settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
@@ -289,3 +295,94 @@ class ProccessViewSet(viewsets.ModelViewSet):
     serializer_class = ProccessSerializer
     filter_fields = ('id',)
     search_fields = ('id',)
+
+
+class CatalogViewSet(viewsets.ModelViewSet):
+    queryset = Catalog.objects.all()
+    serializer_class = CatalogSerializer
+    filter_fields = ('id', 'display_name', 'tablename',)
+    search_fields = ('name', 'display_name', 'tablename')
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+
+    @list_route()
+    def radial_query(self, request):
+
+        catalog = None
+
+        mime_type = request.query_params.get('mime_type', 'json')
+
+        try:
+            name = request.query_params.get('catalog', None)
+
+            if name:
+                catalog = Catalog.objects.get(name=name)
+
+            else:
+                schema = request.query_params.get('schema', None)
+                tablename = request.query_params.get('tablename', None)
+
+                catalog = Catalog.objects.get(schema=schema, tablename=tablename)
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "Catalog not found, use the catalog parameter to enter the catalog name or the schema and "
+                       "tablename parameters. "
+            })
+
+        ra = request.query_params.get('ra', None)
+        dec = request.query_params.get('dec', None)
+        radius = request.query_params.get('radius', 0.001)
+        limit = request.query_params.get('limit', None)
+        s_columns = request.query_params.get('columns', None)
+        columns = list()
+
+        if s_columns is not None:
+            l = s_columns.split(',')
+            for i in l:
+                columns.append(i.strip())
+
+        if ra is None or dec is None:
+            return Response({
+                'success': False,
+                'msg': "The ra and dec parameters are mandatory"
+            })
+
+        db = CatalogDB()
+
+        rows = db.radial_query(
+            schema=catalog.schema,
+            tablename=catalog.tablename,
+            ra_property=catalog.ra_property,
+            dec_property=catalog.dec_property,
+            ra=ra,
+            dec=dec,
+            radius=radius,
+            columns=columns,
+            limit=limit,
+        )
+
+        if mime_type == 'csv':
+            if len(rows) == 0:
+                response = HttpResponse(content_type='text/csv')
+
+            else:
+                headers = columns
+                if len(headers) == 0:
+                    first = rows[0]
+                    for prop in first:
+                        headers.append(prop.strip())
+
+                response = HttpResponse(content_type='text/csv')
+                # response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+                writer = csv.DictWriter(response, fieldnames=headers, extrasaction='ignore', delimiter=';')
+                writer.writeheader()
+                for row in rows:
+                    writer.writerow(row)
+            return response
+        else:
+            return Response({
+                'success': True,
+                'results': rows,
+                'count': len(rows)
+            })

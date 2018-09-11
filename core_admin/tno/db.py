@@ -13,8 +13,8 @@ import collections
 import os
 from django.conf import settings
 
-class DBBase():
 
+class DBBase():
     def __init__(self):
 
         self.engine = create_engine(self.get_db_uri(), use_batch_mode=True)
@@ -22,7 +22,6 @@ class DBBase():
         self.current_dialect = None
 
         self.inspect = inspect(self.engine)
-
 
     def get_db_uri(self):
         db_uri = ""
@@ -47,7 +46,7 @@ class DBBase():
         schema = None
         if 'DB_SCHEMA' in os.environ:
             schema = os.environ['DB_SCHEMA']
-        
+
         return schema
 
     def get_table(self, tablename, schema=None):
@@ -122,7 +121,6 @@ class DBBase():
         """
         return [value['name'] for value in self.inspect.get_columns(tablename, schema)]
 
-
     def get_table_status(self, tablename, schema):
         """
             This will return size information for table, in both raw bytes and "pretty" form.
@@ -153,23 +151,23 @@ class DBBase():
 
         stm = text(str(
             "SELECT *, pg_size_pretty(total_bytes) AS total" \
-                " , pg_size_pretty(index_bytes) AS INDEX" \
-                " , pg_size_pretty(toast_bytes) AS toast" \
-                " , pg_size_pretty(table_bytes) AS TABLE" \
+            " , pg_size_pretty(index_bytes) AS INDEX" \
+            " , pg_size_pretty(toast_bytes) AS toast" \
+            " , pg_size_pretty(table_bytes) AS TABLE" \
             " FROM (" \
-                " SELECT *, total_bytes-index_bytes-COALESCE(toast_bytes,0) AS table_bytes FROM (" \
-                " SELECT c.oid,nspname AS table_schema, relname AS TABLE_NAME" \
-                    " , c.reltuples AS row_estimate" \
-                    " , pg_total_relation_size(c.oid) AS total_bytes" \
-                    " , pg_indexes_size(c.oid) AS index_bytes" \
-                    " , pg_total_relation_size(reltoastrelid) AS toast_bytes" \
-                " FROM pg_class c" \
-                " LEFT JOIN pg_namespace n ON n.oid = c.relnamespace" \
-                " WHERE relkind = 'r'" \
-                    " %s AND relname = '%s'" \
+            " SELECT *, total_bytes-index_bytes-COALESCE(toast_bytes,0) AS table_bytes FROM (" \
+            " SELECT c.oid,nspname AS table_schema, relname AS TABLE_NAME" \
+            " , c.reltuples AS row_estimate" \
+            " , pg_total_relation_size(c.oid) AS total_bytes" \
+            " , pg_indexes_size(c.oid) AS index_bytes" \
+            " , pg_total_relation_size(reltoastrelid) AS toast_bytes" \
+            " FROM pg_class c" \
+            " LEFT JOIN pg_namespace n ON n.oid = c.relnamespace" \
+            " WHERE relkind = 'r'" \
+            " %s AND relname = '%s'" \
             " ) a" \
             " ) a;" % (and_schema, tablename)
-            ))
+        ))
 
         return self.fetch_one_dict(stm)
 
@@ -177,7 +175,6 @@ class DBBase():
         # TODO send debug to Log
 
         print(self.stm_to_str(stm, with_parameters))
-
 
     def stm_to_str(self, stm, with_parameters=False):
         sql = str(stm.compile(
@@ -212,7 +209,6 @@ class DBBase():
         if schema is not None and schema is not "":
             tablename = "%s.%s" % (schema, table)
 
-
         create_stm = self.CreateTableAs(tablename, stm, self.current_dialect)
 
         self.debug_query(create_stm, True)
@@ -231,8 +227,7 @@ class DBBase():
             except Exception as e:
                 trans.rollback()
                 trans.close()
-                raise(e)
-
+                raise (e)
 
     # Tabelas principais gerenciadas pelo Django Models mais que eventualmente e necessario acessalas
     # pelo sqlAlchemy
@@ -254,13 +249,11 @@ class DBBase():
 
         return self.tbl_ccdimage
 
-
     def get_table_observations_file(self):
         schema = self.get_base_schema()
         self.table_observations_file = self.get_table('orbit_observationfile', schema)
 
         return self.table_observations_file
-
 
     def get_table_orbital_parameters_file(self):
         schema = self.get_base_schema()
@@ -274,4 +267,44 @@ class DBBase():
 
         return self.table_bsp_jpl_file
 
+
+class CatalogDB(DBBase):
+    def __init__(self):
+        self.engine = create_engine(self.get_db_uri(), use_batch_mode=True)
+
+        self.current_dialect = None
+
+        self.inspect = inspect(self.engine)
+
+    def get_db_uri(self):
+        db_uri = ""
+
+        if 'CATALOG_DB_NAME' in os.environ:
+            # postgresql+psycopg2
+            db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
+                os.environ['CATALOG_DB_USER'], os.environ['CATALOG_DB_PASS'],
+                os.environ['CATALOG_DB_HOST'], os.environ['CATALOG_DB_PORT'], os.environ['CATALOG_DB_NAME'])
+
+            self.current_dialect = postgresql.dialect()
+
+        return db_uri
+
+
+    def radial_query(self, tablename, ra_property, dec_property, ra, dec, radius, schema=None, columns=None, limit=None):
+
+        s_columns = '*'
+        if columns is not None and len(columns) > 0:
+            s_columns = ', '.join(columns)
+
+        if schema is not None:
+            tablename = "%s.%s" %(schema, tablename)
+
+        s_limit = ''
+        if limit is not None:
+            s_limit = 'LIMIT %s' % limit
+
+        stm = """SELECT %s FROM %s WHERE q3c_radial_query("%s", "%s", %s, %s, %s) %s """ %(s_columns, tablename, ra_property,
+                                                                                        dec_property, ra, dec, radius, s_limit)
+
+        return self.fetch_all_dict(text(stm))
 
