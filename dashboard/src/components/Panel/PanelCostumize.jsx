@@ -5,7 +5,7 @@ class PanelCostumize extends Component {
     const propSet = this.props;
     if (propSet.subLine) {
       return (
-        <div className="panel-content">
+        <div className={`panel-content ${propSet.className}`}>
           <div className={`header ${propSet.colorHead}`}>
             <p className="title">{propSet.title}</p>
           </div>
@@ -16,7 +16,7 @@ class PanelCostumize extends Component {
       );
     } else {
       return (
-        <div className="panel-content">
+        <div className={`panel-content ${propSet.className}`}>
           <div className={`header ${propSet.colorHead}`}>
             <p className="title">{propSet.title}</p>
           </div>

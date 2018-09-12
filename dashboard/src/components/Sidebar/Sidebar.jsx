@@ -66,8 +66,7 @@ class Sidebar extends Component {
           </a>
           {/* </div> */}
           <br />
-        </div>
-
+        </div>   
         <div className="sidebar-wrapper">
           <ul className="nav">
             {this.state.width <= 991 ? <HeaderLinks /> : null}

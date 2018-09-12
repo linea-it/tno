@@ -4,10 +4,12 @@ import PredictionHistory from './History';
 
 import PropTypes from 'prop-types';
 import { Card } from 'primereact/card';
+import PredictionSelect from './PredictionSelect.jsx';
+
 class PredictionPanel extends Component {
   state = this.initialState;
   static propTypes = {
-    history: PropTypes.any.isRequired,
+    history: PropTypes.any,
   };
 
   get initialState() {
@@ -32,12 +34,7 @@ class PredictionPanel extends Component {
     return (
       <div className="content">
         <div className="ui-g">
-          <div className="ui-g-4">
-            <Card
-              title="Prediction Occultation"
-              subTitle={'Execute PRAIA Occultation'}
-            />
-          </div>
+          <div className="ui-g-4">{/* <PredictionSelect /> */}</div>
           <div className="ui-g-8">
             <Card title=" " subTitle=" " />
           </div>

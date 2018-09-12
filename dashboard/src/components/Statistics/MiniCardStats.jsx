@@ -22,7 +22,9 @@ class MiniCardStats extends Component {
 
     return (
       <div>
-        <Card className={`mini-card-stats ${propSet.color}`}>
+        <Card
+          className={`mini-card-stats ${propSet.color} ${propSet.className} `}
+        >
           <div className="ui-g">
             <div className="ui-md-6">
               <div className="title-statistics">{propSet.name}</div>
