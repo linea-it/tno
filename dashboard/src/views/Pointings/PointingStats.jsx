@@ -136,12 +136,12 @@ class PointingsStats extends Component {
 
   render() {
     const data = [
+      { name: 'u', band: this.state.band_u },
       { name: 'g', band: this.state.band_g },
       { name: 'r', band: this.state.band_r },
-      { name: 'y', band: this.state.band_y },
-      { name: 'z', band: this.state.band_z },
       { name: 'i', band: this.state.band_i },
-      { name: 'u', band: this.state.band_u },
+      { name: 'z', band: this.state.band_z },
+      { name: 'Y', band: this.state.band_y },
     ];
 
     const exptime = [
@@ -150,11 +150,6 @@ class PointingsStats extends Component {
       { name: '200-300', exposure: this.state.exp3 },
       { name: '300-400', exposure: this.state.exp4 },
     ];
-
-    // const proccess_stats = [
-    //   { name: 'Data Recent', value: this.state.dateRecent },
-    //   { name: 'Total Size', value: this.state.totalSize },
-    // ];
 
     const pointing_info = [
       {
@@ -180,9 +175,9 @@ class PointingsStats extends Component {
 
     const list = stats.map((col, i) => {
       return (
-        <div className="ui-md-6">
+        <div key={i} className="item grow-6">
           <td key={i}>
-            <div className="ui tiny horizontal violet statistic">
+            <div className="ui horizontal violet statistic">
               <div className="value">
                 <Icon name={`${stats[i].icon}`} />
                 {stats[i].value}
@@ -195,47 +190,22 @@ class PointingsStats extends Component {
     });
 
     return (
-      <div className="ui-g">
-        <div className="ui-lg-6 ui-md-12 ui-sm-12">
-          <PanelCostumize
-            title="Graphics"
-            content={
-              <div className="ui-g">
-                <div className="ui-md-6">
-                  <Content
-                    header={true}
-                    lineVertical="linha-vertical"
-                    title="Number of CCDs for each band"
-                    content={
-                      <div>
-                        <BarChart
-                          width={275}
-                          height={198}
-                          data={data}
-                          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="name" />
-                          <YAxis />
-                          <Tooltip />
-                          <Legend />
-                          <Bar barSize={20} dataKey="band" fill="#62388C" />;
-                        </BarChart>
-                        <hr size="300" width="4" align="left" color="#000000" />
-                      </div>
-                    }
-                  />
-                </div>
-
-                <div className="ui-md-6">
-                  <Content
-                    header={true}
-                    title="Number of CCDs in intervals of exposure time [s]"
-                    content={
+      <div className="flex-container flex-wrap">
+        <PanelCostumize
+          className="item grow-1"
+          title="CCDs x Band"
+          content={
+            <div className="flex-container">
+              <div className="item grow-1">
+                <Content
+                  header={true}
+                  title="Number of CCDs for each band"
+                  content={
+                    <div className="size-plot">
                       <BarChart
                         width={275}
                         height={198}
-                        data={exptime}
+                        data={data}
                         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                       >
                         <CartesianGrid strokeDasharray="3 3" />
@@ -243,52 +213,52 @@ class PointingsStats extends Component {
                         <YAxis />
                         <Tooltip />
                         <Legend />
-                        <Bar barSize={20} dataKey="exposure" fill="#62388C" />;
+                        <Bar barSize={20} dataKey="band" fill="#62388C" />;
                       </BarChart>
-                    }
-                  />
-                </div>
-              </div>
-            }
-          />
-          <br />
-          <PanelCostumize
-            title="Stats"
-            content={
-              <div>
-                <Content
-                  content={
-                    <Table responsive>
-                      <tbody>
-                        <tr>
-                          <div className="ui-g">{list}</div>
-                        </tr>
-                      </tbody>
-                    </Table>
+                    </div>
                   }
                 />
-                {/* <ListStats
-                  badgeColumns={false}
-                  status={false}
-                  statstext="success"
-                  data={proccess_stats}
-                /> */}
-                {/* <StepStats
-                  disableCard="false"
-                  // title=" CCDs frames downloaded"
-                  info={pointing_info}
-                /> */}
               </div>
-            }
-          />
-        </div>
+            </div>
+          }
+        />
+        <PanelCostumize
+          className="item grow-1"
+          title="CCDs x Esposure time"
+          content={
+            <div className="item grow-1">
+              <Content
+                header={true}
+                title="Number of CCDs in intervals of exposure time [s]"
+                content={
+                  <div className="size-plot">
+                    <BarChart
+                      width={275}
+                      height={198}
+                      data={exptime}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar barSize={20} dataKey="exposure" fill="#3CB1C6" />;
+                    </BarChart>
+                  </div>
+                }
+              />
+            </div>
+          }
+        />
 
-        <div className="ui-lg-6 ui-md-12 ui-sm-12">
-          <PanelCostumize
-            title="Pointings in sky"
-            content={
-              <div>
-                <Card>
+        <PanelCostumize
+          className="item grow-1"
+          title="Pointings in sky"
+          content={
+            <div>
+              <Content
+                content={
                   <figure className="responsive-image">
                     <img
                       // width="600"
@@ -297,127 +267,52 @@ class PointingsStats extends Component {
                       src={plotPointings}
                     />
                   </figure>
-                </Card>
-              </div>
-            }
-          />
-        </div>
-
-        {/* <div className="ui-g-8 ui-g-nopad">
-          <div className="ui-g-4">
-            <Card title="" subTitle="Number of CCDs for each band">
-              <BarChart
-                width={275}
-                height={198}
-                data={data}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar barSize={20} dataKey="band" fill="#62388C" />;
-              </BarChart>
-            </Card>
-          </div>
-
-          <div className="ui-g-5">
-            <Card
-              title=""
-              subTitle="Number of CCDs in intervals of exposure time (seconds)"
-            >
-              <BarChart
-                width={400}
-                height={198}
-                data={exptime}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar barSize={20} dataKey="exposure" fill="#75BDEE" />;
-              </BarChart>
-            </Card>
-          </div>
-
-          <div className="ui-g-3">
-            <Card title="" subTitle="">
-              <div className="ui statistics">
-                <div className="plot-azul statistic">
-                  <div className="value">
-                    <Icon name="database" /> {this.state.totalSize}
-                  </div>
-                  <div className="label">Total of CCDs</div>
-                </div>
-              </div>
-
-            </Card>
-          </div>
-
-          <div className="ui-g-3">
-            <Card title="" subTitle="">
-              <div className="ui small statistics">
-                <div className="violet statistic">
-                  <div className="value">
-                    <Icon name="calendar alternate outline" />
-                    {this.state.dateRecent}
-                  </div>
-                  <div className="label"> Latest pointing</div>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          <div className="ui-g-6">
-            <Card title="" subTitle="">
-              <div>
-                <Statistic horizontal>
-                  <Statistic.Value>{this.state.qtdDownloaded}</Statistic.Value>
-                  <Statistic.Label>Number of CCDs downloaded</Statistic.Label>
-                </Statistic>
-                <ProgressBar
-                  bsStyle="progress-h-6 progress-bar-success"
-                  now={this.state.qtdDownloaded}
-                  label={`${Math.round(
-                    100 * this.state.qtdDownloaded / this.state.totalSize
-                  )}%`}
-                  max={this.state.totalSize}
-                />
-              
-              </div>
-            </Card>
-          </div>
-
-          <div className="ui-g-6">
-            <Card title="" subTitle="">
-              <Statistic horizontal>
-                <Statistic.Value>{this.state.qtdNotDownloaded}</Statistic.Value>
-                <Statistic.Label>Number of CCDs not downloaded</Statistic.Label>
-              </Statistic>
-              <ProgressBar
-                bsStyle="progress-h-6 progress-bar progress-bar-danger"
-                now={this.state.qtdNotDownloaded}
-                label={`${Math.round(
-                  100 * this.state.qtdNotDownloaded / this.state.totalSize
-                )}%`}
-                max={this.state.totalSize}
+                }
               />
-            </Card>
-          </div>
-        </div>
+            </div>
+          }
+        />
 
-        <div className="ui-g-4">
-          <Card title=" Pointings in sky">
-            <br />
-            <figure>
-              <img width="400" height="251" alt="text" src={plotPointings} />
-            </figure>
-          </Card>
-        </div> */}
+        <PanelCostumize
+          className="item grow-1"
+          content={
+            <Content
+              content={<div className="flex-container flex wrap">{list}</div>}
+            />
+          }
+        />
+
+        {/* <PanelCostumize
+          className="item grow-1"
+          title="Stats"
+          content={
+            <div>
+              <Content
+                content={
+                  <Table responsive>
+                    <tbody>
+                      <div className="flex-container flex-wrap column">
+                        <tr>{list}</tr>
+                      </div>
+                    </tbody>
+                  </Table>
+                }
+              /> */}
+        {/* <ListStats
+                  badgeColumns={false}
+                  status={false}
+                  statstext="success"
+                  data={stats}
+                /> */}
+        {/* <StepStats
+                  disableCard="false"
+                  // title=" CCDs frames downloaded"
+                  info={pointing_info}
+                /> */}
       </div>
+      //   }
+      //   />
+      // </div>
     );
   }
 }

@@ -11,6 +11,7 @@
     background-size: cover;
     background-position: center center;
 
+
     .sidebar-wrapper{
         position: relative;
         height: calc(100vh - 75px);
@@ -28,8 +29,6 @@
         display: block;
         top: 0;
         left: 0;
-        background-size: cover;
-        background-position: center center;
     }
 
     .logo{
@@ -103,23 +102,23 @@
         li{
             > a{
                 color: #FFFFFF;
-                margin: 5px 15px;
+                margin: 0;
                 opacity: .86;
-                border-radius: 4px;
+                border-radius: 0px;
             }
 
             &:hover > a,
             &.open > a,
             &.open > a:focus,
             &.open > a:hover{
-                background: rgba(255,255,255,0.13);
+                background: rgba(0, 0, 0, 0.13); //rgba(255,255,255,0.13);
                 opacity: 1;
             }
 
             &.active > a{
                 color: #FFFFFF;
                 opacity: 1;
-                background: rgba(255,255,255,0.23);
+                background:rgba(0, 0, 0, 0.13);
 
             }
         }

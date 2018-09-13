@@ -255,92 +255,178 @@ class PointingList extends Component {
     };
 
     return (
-      <div className="ui-g">
-        <div className="ui-lg-12 ui-md-12 ui-sm-12">
-          <PanelCostumize
-            title="List with all pointings"
-            content={
-              <Card>
-                <Toolbar>
-                  <div className="ui-toolbar">
-                    <div className="ui-g ui-fluid">
-                      <div className="ui-lg-8 ui-md-6">
-                        <div className="ui-inputgroup">
-                          <InputText
-                            placeholder="Search By expnum, filename"
-                            value={search}
-                            onChange={this.onChangeSearch}
-                            onKeyPress={this.onKeyPress}
-                          />
-                          <Button
-                            className="ui-button-primary"
-                            label="Search"
-                            onClick={this.handleSearch}
-                          />
-                        </div>
+      <div className="flex-container flex-wrap">
+        <PanelCostumize
+          className="item grow1"
+          title="List with all pointings"
+          content={
+            <Card>
+              <Toolbar>
+                <div className="ui-toolbar">
+                  <div className="ui-g ui-fluid">
+                    <div className="ui-lg-8 ui-md-6">
+                      <div className="ui-inputgroup">
+                        <InputText
+                          placeholder="Search By expnum, filename"
+                          value={search}
+                          onChange={this.onChangeSearch}
+                          onKeyPress={this.onKeyPress}
+                        />
+                        <Button
+                          className="ui-button-primary"
+                          label="Search"
+                          onClick={this.handleSearch}
+                        />
                       </div>
-                      <div className="ui-lg-4 ui-md-6">
-                        <div>
-                          <Button
-                            label="Clear"
-                            onClick={e => {
-                              this.handlerClear();
-                            }}
-                            style={{
-                              border: ' 1px solid #95a5a6',
-                              backgroundColor: '#95a5a6',
-                              width: '100px',
-                            }}
-                          />
-                          <Button
-                            label="Filters"
-                            onClick={e => {
-                              this.setState({ show: true });
-                            }}
-                            style={{
-                              border: ' 1px solid #7f8c8d',
-                              backgroundColor: '#7f8c8d',
-                              width: '190px',
-                            }}
-                          />
-                        </div>
+                    </div>
+                    <div className="ui-lg-4 ui-md-6">
+                      <div>
+                        <Button
+                          label="Clear"
+                          onClick={e => {
+                            this.handlerClear();
+                          }}
+                          style={{
+                            border: ' 1px solid #95a5a6',
+                            backgroundColor: '#95a5a6',
+                            width: '100px',
+                          }}
+                        />
+                        <Button
+                          label="Filters"
+                          onClick={e => {
+                            this.setState({ show: true });
+                          }}
+                          style={{
+                            border: ' 1px solid #7f8c8d',
+                            backgroundColor: '#7f8c8d',
+                            width: '190px',
+                          }}
+                        />
                       </div>
                     </div>
                   </div>
-                </Toolbar>
+                </div>
+              </Toolbar>
 
-                <div className="clearfix" />
-                <BootstrapTable
-                  striped
-                  hover
-                  condensed
-                  remote
-                  bordered={false}
-                  keyField="id"
-                  noDataIndication="no results to display"
-                  data={data}
-                  columns={pointing_columns}
-                  pagination={pagination}
-                  onTableChange={this.handleTableChange}
-                  rowEvents={rowEvents}
-                  loading={loading}
-                  overlay={overlayFactory({
-                    spinner: true,
+              <div className="flex-container" />
+              <BootstrapTable
+                responsive
+                striped
+                hover
+                condensed
+                remote
+                bordered={false}
+                keyField="id"
+                noDataIndication="no results to display"
+                data={data}
+                columns={pointing_columns}
+                pagination={pagination}
+                onTableChange={this.handleTableChange}
+                rowEvents={rowEvents}
+                loading={loading}
+                overlay={overlayFactory({
+                  spinner: true,
 
-                    background: 'rgba(192,192,192,0.3)',
-                  })}
-                />
+                  background: 'rgba(192,192,192,0.3)',
+                })}
+              />
 
-                <FilterPointings
-                  onFilter={this.onFilter}
-                  show={this.state.show}
-                  onHide={this.closeCreate}
-                />
-              </Card>
-            }
-          />
-        </div>
+              <FilterPointings
+                onFilter={this.onFilter}
+                show={this.state.show}
+                onHide={this.closeCreate}
+              />
+            </Card>
+          }
+        />
       </div>
+      // <div className="ui-g">
+      //   <div className="ui-lg-12 ui-md-12 ui-sm-12">
+      //     <PanelCostumize
+      //       title="List with all pointings"
+      //       content={
+      //         <Card>
+      //           <Toolbar>
+      //             <div className="ui-toolbar">
+      //               <div className="ui-g ui-fluid">
+      //                 <div className="ui-lg-8 ui-md-6">
+      //                   <div className="ui-inputgroup">
+      //                     <InputText
+      //                       placeholder="Search By expnum, filename"
+      //                       value={search}
+      //                       onChange={this.onChangeSearch}
+      //                       onKeyPress={this.onKeyPress}
+      //                     />
+      //                     <Button
+      //                       className="ui-button-primary"
+      //                       label="Search"
+      //                       onClick={this.handleSearch}
+      //                     />
+      //                   </div>
+      //                 </div>
+      //                 <div className="ui-lg-4 ui-md-6">
+      //                   <div>
+      //                     <Button
+      //                       label="Clear"
+      //                       onClick={e => {
+      //                         this.handlerClear();
+      //                       }}
+      //                       style={{
+      //                         border: ' 1px solid #95a5a6',
+      //                         backgroundColor: '#95a5a6',
+      //                         width: '100px',
+      //                       }}
+      //                     />
+      //                     <Button
+      //                       label="Filters"
+      //                       onClick={e => {
+      //                         this.setState({ show: true });
+      //                       }}
+      //                       style={{
+      //                         border: ' 1px solid #7f8c8d',
+      //                         backgroundColor: '#7f8c8d',
+      //                         width: '190px',
+      //                       }}
+      //                     />
+      //                   </div>
+      //                 </div>
+      //               </div>
+      //             </div>
+      //           </Toolbar>
+
+      //           <div className="clearfix" />
+      //           <BootstrapTable
+      //             striped
+      //             hover
+      //             condensed
+      //             remote
+      //             bordered={false}
+      //             keyField="id"
+      //             noDataIndication="no results to display"
+      //             data={data}
+      //             columns={pointing_columns}
+      //             pagination={pagination}
+      //             onTableChange={this.handleTableChange}
+      //             rowEvents={rowEvents}
+      //             loading={loading}
+      //             overlay={overlayFactory({
+      //               spinner: true,
+
+      //               background: 'rgba(192,192,192,0.3)',
+      //             })}
+      //           />
+
+      //           <FilterPointings
+      //             onFilter={this.onFilter}
+      //             show={this.state.show}
+      //             onHide={this.closeCreate}
+      //           />
+      //         </Card>
+      //       }
+      //     />
+      //   </div>
+      // </div>
     );
   }
 }
