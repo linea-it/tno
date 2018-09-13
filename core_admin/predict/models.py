@@ -91,6 +91,70 @@ class PredictRun(models.Model):
     def __str__(self):
         return str(self.id)
 
+class LeapSeconds(models.Model):
+    name = models.CharField(
+        max_length=100,
+        verbose_name='Name',
+        help_text='Internal name',
+        null=True, blank=True
+    )
+
+    display_name = models.CharField(
+        max_length=100,
+        verbose_name='Display name',
+        help_text='Display Name.',
+        null=True, blank=True
+    )
+
+    url = models.URLField(
+        max_length=100,
+        verbose_name='URL',
+        help_text='URL of archives.',
+        null=True, blank=True
+    )
+
+    upload = models.FileField(
+        upload_to= settings.LEAP_ROOT,
+        verbose_name='file',
+        help_text='Upload of archives.',
+        null=True, blank=True
+    ) 
+
+    def __str__(self):
+        return str(self.name)
+
+class BspPlanetary(models.Model):
+    name = models.CharField(
+        max_length=100,
+        verbose_name='Name',
+        help_text='Internal name',
+        null=True, blank=True
+    )
+
+    display_name = models.CharField(
+        max_length=100,
+        verbose_name='Display name',
+        help_text='Display Name.',
+        null=True, blank=True
+    )
+
+    url = models.URLField(
+        max_length=100,
+        verbose_name='URL',
+        help_text='URL of archives.',
+        null=True, blank=True
+    )
+
+    upload = models.FileField(
+        upload_to= settings.BSP_PLA_ROOT,
+        verbose_name='file',
+        help_text='Upload of archives.',
+        null=True, blank=True
+    ) 
+
+    def __str__(self):
+        return str(self.name)
+       
 
 class PredictAsteroid(models.Model):
     """

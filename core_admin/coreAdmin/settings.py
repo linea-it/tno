@@ -40,6 +40,18 @@ BSP_JPL_DIR = os.path.join(ARCHIVE_DIR, "bsp_jpl")
 if not os.path.exists(BSP_JPL_DIR):
     os.mkdir(BSP_JPL_DIR)
 
+
+LEAP_ROOT = 'leap_seconds'
+LEAP_SECONDS = os.path.join(ARCHIVE_DIR, LEAP_ROOT)
+if not os.path.exists(LEAP_SECONDS):
+    os.mkdir(LEAP_SECONDS)
+
+BSP_PLA_ROOT = 'bsp_planetary'
+BSP_PLANETARY = os.path.join(ARCHIVE_DIR, BSP_PLA_ROOT)
+if not os.path.exists(BSP_PLANETARY):
+    os.mkdir(BSP_PLANETARY)
+
+
 # TODO:  Este diretorio e provisorio faz parte da simulacao do PRAIA.
 ASTROMETRY_POSITIONS_DIR = os.path.join(ARCHIVE_DIR, "astrometry_positions")
 if not os.path.exists(ASTROMETRY_POSITIONS_DIR):
