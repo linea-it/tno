@@ -5,10 +5,12 @@ import PredictionHistory from './History';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import PropTypes from 'prop-types';
 import { Card } from 'primereact/card';
+import PredictionSelect from './PredictionSelect.jsx';
+
 class PredictionPanel extends Component {
   state = this.initialState;
   static propTypes = {
-    history: PropTypes.any.isRequired,
+    history: PropTypes.any,
   };
 
   get initialState() {

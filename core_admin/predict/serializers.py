@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PredictRun, PredictAsteroid
+from .models import PredictRun, PredictAsteroid, LeapSeconds, BspPlanetary
 from tno.models import Proccess, CustomList
 from orbit.models import OrbitRun
 import humanize
@@ -152,3 +152,25 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
             return "%s - %s" % (obj.orbit_run.proccess.id, obj.orbit_run.input_list.displayname)
         except:
             return None
+
+class LeapSecondsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LeapSeconds
+        fields = (
+            'name',
+            'display_name',
+            'url',
+            'upload',
+        )
+
+class BspPlanetarySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BspPlanetary
+        fields = (
+            'name',
+            'display_name',
+            'url',
+            'upload',
+        )

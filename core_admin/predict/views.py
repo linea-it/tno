@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import PredictRun, PredictAsteroid
-from .serializers import PredictRunSerializer, PredictAsteroidSerializer
+from .models import PredictRun, PredictAsteroid, LeapSeconds, BspPlanetary
+from .serializers import PredictRunSerializer, PredictAsteroidSerializer, LeapSecondsSerializer, BspPlanetarySerializer
 
 
 class PredictRunViewSet(viewsets.ModelViewSet):
@@ -19,3 +19,19 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
     filter_fields = ('id', 'predict_run', 'name', 'number', 'status')
     search_fields = ('id', 'name', 'number',)
     ordering = ('name',)
+
+
+class LeapSecondsViewSet(viewsets.ModelViewSet):
+    queryset = LeapSeconds.objects.all()
+    serializer_class =  LeapSecondsSerializer
+    filter_fields = ('name', 'display_name', 'url', 'upload')
+    search_fields = ('name')
+    ordering = ('name',)
+
+class BspPlanetaryViewSet(viewsets.ModelViewSet):
+    queryset = BspPlanetary.objects.all()
+    serializer_class =  BspPlanetarySerializer
+    filter_fields = ('name', 'display_name', 'url', 'upload')
+    search_fields = ('name')
+    ordering = ('name',)
+

@@ -31,7 +31,7 @@ class PointingsPanel extends Component {
   }
   render() {
     return (
-      <div className="content">
+      <div className="flex-layout">
         <PointingStats />
         <PointingList />
       </div>
