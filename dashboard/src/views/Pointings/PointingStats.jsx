@@ -54,6 +54,10 @@ class PointingsStats extends Component {
         totalSize: r.count,
       });
     });
+    this.api.getPointingExptime().then(res => {
+      const r = res.data;
+      console.log(r);
+    });
     this.api.getPointingBand_u().then(res => {
       const r = res.data;
       this.setState({

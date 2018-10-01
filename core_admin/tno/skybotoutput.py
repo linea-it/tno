@@ -2,7 +2,8 @@ import os
 from .db import DBBase
 from sqlalchemy.sql import select, and_, or_, func, subquery, text
 from sqlalchemy import create_engine, inspect, MetaData, func, Table, Column, Integer, String, Float, Boolean, \
-    literal_column, null
+    literal_column, null, between
+
 from django.utils import timezone
 
 
@@ -463,3 +464,21 @@ class Pointing(DBBase):
         stm = select([func.count(func.distinct(self.tbl.c.expnum)).label('exposures')])
 
         return self.fetch_scalar(stm)
+
+    # Count por faixa das exposições
+    def count_range_exposures(self, start, end):
+        
+        stm = select([func.count()]).where(between(self.tbl.c.exptime, int(start.strip()), int(end.strip())))
+
+        return self.fetch_scalar(stm)
+
+    def counts_range_exposures(self):
+
+        exptimes = ['0, 100', '100, 200', '200, 300', '300, 400']
+
+        results = list()
+        for exptime in exptimes:
+            start, end = exptime.split(',')
+
+            results.append(dict({'range' : exptime, 'count' : self.count_range_exposures(start, end)}))
+        return results

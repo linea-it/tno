@@ -120,5 +120,9 @@ class PointingApi {
         pageSize: 1,
       },
     });
+
+    getPointingExptime = () =>
+    axios.get(`${this.api}/pointing/statistics`);
+    
 }
 export default PointingApi;

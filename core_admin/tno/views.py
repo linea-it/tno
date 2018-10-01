@@ -69,6 +69,7 @@ class PointingViewSet(viewsets.ModelViewSet):
         last = db.last()
         first = db.first()
         exposures = db.count_unique_exposures()
+        exp_range = db.counts_range_exposures()
 
         statistics = dict({
             'success': True,
@@ -80,7 +81,8 @@ class PointingViewSet(viewsets.ModelViewSet):
             'first': first.get("nite").strftime('%Y-%M-%d'),
             'exposures': exposures,
             'updated': 'xxxx-xx-xx',
-            'size': 'xx Gb'
+            'size': 'xx Gb',
+            'exp_range' : exp_range
         })
 
         # Escrever o Arquivo de cache com as informações
