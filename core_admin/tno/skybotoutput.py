@@ -446,7 +446,7 @@ class Pointing(DBBase):
 
         results = list()
         for band in bands:
-            results.append(dict({'band': band, 'count': self.count_by_band(band)}))
+            results.append(dict({'name': band, 'band': self.count_by_band(band)}))
 
         return results
 
@@ -480,5 +480,5 @@ class Pointing(DBBase):
         for exptime in exptimes:
             start, end = exptime.split(',')
 
-            results.append(dict({'range' : exptime, 'count' : self.count_range_exposures(start, end)}))
+            results.append(dict({'name' : exptime, 'exposure' : self.count_range_exposures(start, end)}))
         return results
