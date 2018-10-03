@@ -10,7 +10,6 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
-// import Card from 'components/Card/Card.jsx';
 import { Icon, Statistic } from 'semantic-ui-react';
 import { Card } from 'primereact/card';
 import PanelCostumize from 'components/Panel/PanelCostumize';
@@ -190,9 +189,9 @@ class PointingsStats extends Component {
     });
 
     return (
-      <div className="flex-container flex-wrap">
+      <div className="grid template grid-column stretch">
         <PanelCostumize
-          className="item grow-1"
+          className="plot-ccd-band"
           title="CCDs x Band"
           content={
             <div className="flex-container">
@@ -223,7 +222,7 @@ class PointingsStats extends Component {
           }
         />
         <PanelCostumize
-          className="item grow-1"
+          className="plot_ccd_band"
           title="CCDs x Esposure time"
           content={
             <div className="item grow-1">
@@ -253,7 +252,7 @@ class PointingsStats extends Component {
         />
 
         <PanelCostumize
-          className="item grow-1"
+          className="plot_sky"
           title="Pointings in sky"
           content={
             <div>
@@ -274,7 +273,7 @@ class PointingsStats extends Component {
         />
 
         <PanelCostumize
-          className="item grow-1"
+          className="list_stats"
           content={
             <Content
               content={<div className="flex-container flex wrap">{list}</div>}

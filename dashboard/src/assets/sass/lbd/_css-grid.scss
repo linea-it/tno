@@ -1,0 +1,88 @@
+.grid  {
+    display: grid;
+    margin: 1.25em;
+}
+
+// -------------  POINTINGS  --------------------------//
+
+// .grid-column .plot_sky {
+//     grid-column-start: 2;
+// 	grid-column-end: 3;
+// }
+
+// .stretch .plot_sky{
+// 	justify-self: stretch;
+// }
+
+.plot_ccd_band {
+    grid-area: plot_ccd_band;
+}
+
+.plot_ccd_exp {
+    grid-area: plot_ccd_exp;
+}
+
+
+.plot_sky {
+    grid-area: plot_sky;
+}
+
+.list_stats{
+    grid-area: list_stats;
+}
+
+
+.list_pointings{
+    grid-area: list_pointings;
+}
+
+
+/* laptops devices (laptops/desktops, 992px and up) */
+@media screen and (min-width: 1366px) {
+
+    .template {
+        grid-gap: 0.75rem;
+        grid-template-columns: repeat(3, minmax(12.5rem, 1fr));
+        grid-template-rows: auto; 
+        grid-template-areas: 
+        "plot_ccd_band plot_ccd_exp plot_sky"
+        "list_stats list_stats plot_sky"
+        "list_pointings list_pointings list_pointings"
+        ; 
+    }
+}
+
+/* Resolution Large devices and (laptops/desktops, 1200px and up) */
+@media screen and (min-width: 1200px) {
+    
+    .template {
+        grid-gap: 0.75rem;
+        grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+        grid-template-rows: auto; 
+        grid-template-areas: 
+        "plot_ccd_band plot_ccd_exp"
+        "list_stats  plot_sky"
+        "list_pointings list_pointings"
+        ; 
+    }
+
+}
+
+/* laptops devices (laptops/desktops, 1200px and up) */
+@media  screen and (max-width: 768px)  {
+    
+    .template {
+        grid-gap: 0.75rem;
+        grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+        grid-template-rows: auto; 
+        grid-template-areas: 
+        "plot_ccd_band plot_ccd_exp"
+        "list_stats list_stats"
+        "plot_sky plot_sky"
+        "list_pointings list_pointings"
+        ; 
+    }
+
+}
+
+// -------------------------------------------------//
