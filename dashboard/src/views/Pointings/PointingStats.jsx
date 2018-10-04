@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import { ProgressBar } from 'react-bootstrap';
-
 import {
   BarChart,
   Bar,
@@ -10,14 +8,10 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
-import { Icon, Statistic } from 'semantic-ui-react';
-import { Card } from 'primereact/card';
-import PanelCostumize from 'components/Panel/PanelCostumize';
-import ListStats from 'components/Statistics/ListStats';
-import { Table } from 'react-bootstrap';
-import StepStats from 'components/Statistics/StepStats';
-import Content from 'components/CardContent/CardContent.jsx';
 
+import { Icon } from 'semantic-ui-react';
+import PanelCostumize from 'components/Panel/PanelCostumize';
+import Content from 'components/CardContent/CardContent.jsx';
 import PointingApi from './PointingApi';
 import plotPointings from 'assets/img/plotPointings.png';
 
@@ -134,6 +128,9 @@ class PointingsStats extends Component {
   }
 
   render() {
+    const propSet = this.props;
+    console.log(propSet);
+
     const data = [
       { name: 'u', band: this.state.band_u },
       { name: 'g', band: this.state.band_g },
@@ -168,151 +165,126 @@ class PointingsStats extends Component {
     ];
 
     const stats = [
-      { name: 'Data Recent', value: this.state.dateRecent, icon: 'database' },
-      { name: 'Total Size', value: this.state.totalSize, icon: 'database' },
+      { name: 'Data Recent', value: this.state.dateRecent, icon: 'database', title: 'amount' },
+      { name: 'Total Size', value: this.state.totalSize, icon: 'database', title: 'amount' },
     ];
 
     const list = stats.map((col, i) => {
       return (
-        <div key={i} className="item grow-6">
-          <td key={i}>
-            <div className="ui horizontal violet statistic">
-              <div className="value">
-                <Icon name={`${stats[i].icon}`} />
-                {stats[i].value}
-              </div>
-              <div className="label">{stats[i].name}</div>
+        <div>        
+          {/* <hr className="hr-stats" /> */}
+          <div key={i} className="item">
+            <div className="label-stats">
+                {stats[i].name} 
             </div>
-          </td>
+              <div className="value-stats"> {stats[i].title}: {stats[i].value}</div>
+            </div>
         </div>
+
       );
     });
 
     return (
-      <div className="grid template grid-column stretch">
-        <PanelCostumize
-          className="plot-ccd-band"
-          title="CCDs x Band"
-          content={
-            <div className="flex-container">
-              <div className="item grow-1">
-                <Content
-                  header={true}
-                  title="Number of CCDs for each band"
-                  content={
-                    <div className="size-plot">
-                      <BarChart
-                        width={275}
-                        height={198}
-                        data={data}
-                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar barSize={20} dataKey="band" fill="#62388C" />;
-                      </BarChart>
-                    </div>
-                  }
-                />
-              </div>
-            </div>
-          }
-        />
-        <PanelCostumize
-          className="plot_ccd_band"
-          title="CCDs x Esposure time"
-          content={
-            <div className="item grow-1">
-              <Content
-                header={true}
-                title="Number of CCDs in intervals of exposure time [s]"
-                content={
-                  <div className="size-plot">
-                    <BarChart
-                      width={275}
-                      height={198}
-                      data={exptime}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar barSize={20} dataKey="exposure" fill="#3CB1C6" />;
-                    </BarChart>
-                  </div>
-                }
-              />
-            </div>
-          }
-        />
-
-        <PanelCostumize
-          className="plot_sky"
-          title="Pointings in sky"
-          content={
-            <div>
-              <Content
-                content={
-                  <figure className="responsive-image">
-                    <img
-                      // width="600"
-                      // height="451"
-                      alt="text"
-                      src={plotPointings}
+      <div className={`${propSet.className} section`}>
+      
+          <div className="grid template-pointigs">
+            <PanelCostumize
+              className="plot-ccd-band"
+              title="CCDs x Band"
+              content={
+                <div className="flex-container">
+                  <div className="item grow-1">
+                    <Content
+                      header={true}
+                      title="Number of CCDs for each band"
+                      content={
+                        <div className="size-plot">
+                          <BarChart
+                            width={275}
+                            height={198}
+                            data={data}
+                            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar barSize={20} dataKey="band" fill="#62388C" />;
+                          </BarChart>
+                        </div>
+                      }
                     />
-                  </figure>
-                }
-              />
-            </div>
-          }
-        />
-
-        <PanelCostumize
-          className="list_stats"
-          content={
-            <Content
-              content={<div className="flex-container flex wrap">{list}</div>}
+                  </div>
+                </div>
+              }
             />
-          }
-        />
-
-        {/* <PanelCostumize
-          className="item grow-1"
-          title="Stats"
-          content={
-            <div>
-              <Content
-                content={
-                  <Table responsive>
-                    <tbody>
-                      <div className="flex-container flex-wrap column">
-                        <tr>{list}</tr>
+            <PanelCostumize
+              className="plot_ccd_band"
+              title="CCDs x Esposure time"
+              content={
+                <div className="item grow-1">
+                  <Content
+                    header={true}
+                    title="Number of CCDs in intervals of exposure time [s]"
+                    content={
+                      <div className="size-plot">
+                        <BarChart
+                          width={275}
+                          height={198}
+                          data={exptime}
+                          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Bar barSize={20} dataKey="exposure" fill="#3CB1C6" />;
+                        </BarChart>
                       </div>
-                    </tbody>
-                  </Table>
-                }
-              /> */}
-        {/* <ListStats
-                  badgeColumns={false}
-                  status={false}
-                  statstext="success"
-                  data={stats}
-                /> */}
-        {/* <StepStats
-                  disableCard="false"
-                  // title=" CCDs frames downloaded"
-                  info={pointing_info}
-                /> */}
+                    }
+                  />
+                </div>
+              }
+            />
+
+            <PanelCostumize
+              className="plot_sky"
+              title="Pointings in sky"
+              content={
+                <div>
+                  <Content
+                    content={
+                      <figure className="responsive-image">
+                        <img
+                          // width="600"
+                          // height="451"
+                          alt="text"
+                          src={plotPointings}
+                        />
+                      </figure>
+                    }
+                  />
+                </div>
+              }
+            />
+
+            <PanelCostumize
+              className="list_stats"
+              content={
+                <Content
+                content={
+                  <div className="group-stats">
+                    {list}
+                  </div>
+              }
+              />
+              }
+            />
+          </div>
       </div>
-      //   }
-      //   />
-      // </div>
-    );
+      );
   }
 }
 

@@ -195,7 +195,7 @@ class FilterObjectForm extends Component {
         </FormGroup>
         <Button
           label="Filter"
-          style={{ float: 'right', padding: '5px 25px' }}
+          className="button-TNO"
           onClick={this.handleSubmit}
         />
         <div className="clearfix" />

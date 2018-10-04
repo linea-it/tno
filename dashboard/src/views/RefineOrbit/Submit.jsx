@@ -4,7 +4,6 @@ import { Async } from 'react-select';
 import 'react-select/dist/react-select.css';
 import PraiaApi from '../Astrometry/PraiaApi';
 import OrbitApi from './OrbitApi';
-import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import Content from 'components/CardContent/CardContent.jsx';
 import PropTypes from 'prop-types';
 
@@ -95,43 +94,33 @@ class RefineOrbitSubmit extends Component {
     const { input } = this.state;
     return (
       <div>
-        <PanelCostumize
-          title="Execute"
-          subTitle="Descrição sobre execução"
-          subLine={true}
-          content={
-            <div className="ui-g">
-              <div className="ui-lg-12">
-                <Content
-                  content={
-                    <div>
-                      <Form>
-                        <FormGroup>
-                          <ControlLabel>Input</ControlLabel>
-                          <Async
-                            onChange={this.onSelectInput}
-                            value={input}
-                            cacheOptions
-                            valueKey="id"
-                            labelKey="proccess_displayname"
-                            defaultOptions
-                            loadOptions={this.loadInputs}
-                          />
-                        </FormGroup>
-                        <Button
-                          label="Submit"
-                          onClick={this.onClickSubmit}
-                          style={{ float: 'right' }}
-                        />
-                      </Form>
-                    </div>
-                  }
-                />
+          <Content
+            content={
+              <div>
+                <Form>
+                  <FormGroup>
+                    <ControlLabel>Input</ControlLabel>
+                    <Async
+                      onChange={this.onSelectInput}
+                      value={input}
+                      cacheOptions
+                      valueKey="id"
+                      labelKey="proccess_displayname"
+                      defaultOptions
+                      loadOptions={this.loadInputs}
+                    />
+                  </FormGroup>
+                  <Button
+                    label="Submit"
+                    onClick={this.onClickSubmit}
+                    className="button-TNO"
+                  />
+                </Form>
               </div>
-            </div>
-          }
-        />
-      </div>
+            }
+          />
+       </div>
+           
     );
   }
 }

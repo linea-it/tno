@@ -44,7 +44,7 @@ class FilterObjectSearch extends Component {
             onChange={this.handleChange}
             style={{ width: '300px' }}
           />
-          <Button label="Search" onClick={this.handleSubmit} />
+          <Button className="button-TNO" label="Search" onClick={this.handleSubmit} />
         </div>
 
         <div className="clearfix" />

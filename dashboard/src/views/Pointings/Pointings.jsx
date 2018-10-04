@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
+
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
+
 import { withRouter } from 'react-router-dom';
 import PointingApi from './PointingApi';
 import PointingStats from './PointingStats';
 import PointingList from './PointingList';
+
 import PropTypes from 'prop-types';
-// import Card from 'components/Card/Card.jsx';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 
@@ -30,11 +32,11 @@ class PointingsPanel extends Component {
     };
   }
   render() {
-    return (
-      <div className="flex-layout">
-        <PointingStats />
-        <PointingList />
-      </div>
+    return (      
+       <div className="grid template-wrap-pointings">
+          <PointingStats class="pointings_stats" />
+          <PointingList className="pointings_list" />
+      </div> 
     );
   }
 }

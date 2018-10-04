@@ -260,6 +260,7 @@ class SkybotList extends Component {
                                 onKeyPress={this.onKeyPress}
                               />
                               <Button
+                                className="btn-TNO-color"
                                 label="Search"
                                 onClick={this.handleSearch}
                               />
@@ -268,22 +269,22 @@ class SkybotList extends Component {
 
                           <div className="ui-g-1">
                             <Button
+                              className="btn-TNO-color"
                               label="Clear"
                               onClick={e => {
                                 this.handlerClear();
                               }}
-                              icon="pi pi-check"
-                              iconPos="left"
+                            
                             />
                           </div>
                           <div className="ui-g-1">
                             <Button
+                              className="btn-TNO-color"
                               label="Filter"
                               onClick={e => {
                                 this.setState({ show: true });
                               }}
-                              icon="pi pi-check"
-                              iconPos="left"
+                           
                             />
                           </div>
                         </h5>

@@ -120,7 +120,7 @@ class PraiaSubmit extends Component {
                   loadOptions={this.loadConfigs}
                 />
               </FormGroup>
-              <Button label="Submit" onClick={this.onClickSubmit} />
+              <Button className="button-TNO"label="Submit" onClick={this.onClickSubmit} />
             </Form>
           </Card>
         }

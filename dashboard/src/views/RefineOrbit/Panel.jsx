@@ -4,6 +4,7 @@ import RefineOrbitSubmit from './Submit';
 import RefineOrbitRunning from './Running';
 import RefineOrbitHistory from './History';
 import PropTypes from 'prop-types';
+import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 
 class RefineOrbitPanel extends Component {
   state = this.initialState;
@@ -26,21 +27,36 @@ class RefineOrbitPanel extends Component {
   render() {
     const { record } = this.state;
     return (
-      <div className="content">
-        <div className="ui-g">
-          <div className="ui-g-4">
+    
+        <div className="grid template-refine-orbit">
+
+        <PanelCostumize
+          className="submit_refine"
+          title="Execute"
+          subTitle="Descrição sobre execução"
+          content={
             <RefineOrbitSubmit onCreateRun={this.onCreateRun} />
-          </div>
-          <div className="ui-g-8">
+          }
+        />
+
+        <PanelCostumize
+          className="running_refine"
+          title="Running"
+          subTitle="Monitor the rounds NIMA"
+          content={
             <RefineOrbitRunning record={record} />
-          </div>
-        </div>
-        <div className="ui-g">
-          <div className="ui-g-12">
+          }
+      />
+       <PanelCostumize
+          className="history_refine"
+          title="History"
+          subTitle="Manage the completed NIMA rounds"
+          content={
             <RefineOrbitHistory onRerun={this.onCreateRun} />
-          </div>
+          }
+        />
+
         </div>
-      </div>
     );
   }
 }
