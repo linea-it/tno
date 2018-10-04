@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import PredictRun, PredictAsteroid, LeapSeconds, BspPlanetary
+from .models import PredictRun, PredictAsteroid, LeapSecond, BspPlanetary
 from .serializers import PredictRunSerializer, PredictAsteroidSerializer, LeapSecondsSerializer, BspPlanetarySerializer
 
 
@@ -22,7 +22,7 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
 
 
 class LeapSecondsViewSet(viewsets.ModelViewSet):
-    queryset = LeapSeconds.objects.all()
+    queryset = LeapSecond.objects.all()
     serializer_class =  LeapSecondsSerializer
     filter_fields = ('name', 'display_name', 'url', 'upload')
     search_fields = ('name')

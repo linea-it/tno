@@ -45,7 +45,10 @@ class PredictionPanel extends Component {
         <div className="ui-g">
           <div className="ui-g-12">
             <Card subTitle="Manage PRAIA Occultation rounds">
-              <PredictionHistory view_prediction={this.onViewPrediction} />
+              <PredictionHistory
+                view_prediction={this.onViewPrediction}
+                onRerun={this.onCreateRun}
+              />
             </Card>
           </div>
         </div>

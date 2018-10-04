@@ -16,6 +16,11 @@ class PredictionApi {
     });
   };
 
+  predictReRun = ({ id }) =>
+    axios.patch(`${this.api}/predict_run/${id}/`, {
+      status: 'pending',
+    });
+
   getPredictionRunById = ({ id }) =>
     axios.patch(`${this.api}/predict_run/${id}/`);
 

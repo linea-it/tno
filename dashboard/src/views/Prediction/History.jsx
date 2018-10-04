@@ -10,7 +10,7 @@ import { Button } from 'primereact/button';
 import { DataTable } from 'primereact/datatable';
 import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
-
+import { Toolbar } from 'primereact/toolbar';
 import PropTypes from 'prop-types';
 
 class PredictionHistory extends Component {
@@ -18,8 +18,8 @@ class PredictionHistory extends Component {
   api = new PredictionApi();
 
   static propTypes = {
-    // orbit_run: PropTypes.number.isRequired,
     view_prediction: PropTypes.func.isRequired,
+    onRerun: PropTypes.func.isRequired,
   };
 
   get initialState() {
@@ -34,6 +34,7 @@ class PredictionHistory extends Component {
       sortOrder: 1,
       asteroid_id: 0,
       log_visible: false,
+      selected: null,
     };
   }
 
@@ -41,37 +42,8 @@ class PredictionHistory extends Component {
     {
       field: 'status',
       header: 'Status',
-      sortable: false,
+      sortable: true,
       style: { textAlign: 'center', width: '80' },
-      body: rowData => {
-        if (rowData.status === 'success') {
-          return (
-            <Button
-              type="button"
-              icon="fa fa-check"
-              className="ui-button-success"
-            />
-          );
-        } else if (rowData.status === 'warning') {
-          return (
-            <Button
-              type="button"
-              icon="fa fa-exclamation"
-              className="ui-button-warning"
-              title={rowData.error_msg}
-            />
-          );
-        } else {
-          return (
-            <Button
-              type="button"
-              icon="fa fa-times"
-              className="ui-button-danger"
-              title={rowData.error_msg}
-            />
-          );
-        }
-      },
     },
     {
       field: 'proccess_displayname',
@@ -191,8 +163,18 @@ class PredictionHistory extends Component {
     this.props.view_prediction(id);
   };
 
-  onLog = id => {
-    console.log('on Log');
+  handleOnRerun = () => {
+    console.log('handleOnRerun');
+    const { selected } = this.state;
+
+    this.api.predictReRun({ id: selected.id }).then(res => {
+      this.setState(
+        {
+          selected: null,
+        },
+        this.props.onRerun(res.data)
+      );
+    });
   };
 
   render() {
@@ -211,6 +193,19 @@ class PredictionHistory extends Component {
 
     return (
       <div>
+        <Toolbar>
+          <Button
+            label="Re-execute"
+            disabled={!this.state.selected}
+            onClick={this.handleOnRerun}
+          />
+          <Button
+            label="Detail"
+            disabled={!this.state.selected}
+            // onClick={this.stdetails}
+          />
+        </Toolbar>
+
         <DataTable
           value={this.state.data}
           resizableColumns={true}
@@ -224,6 +219,9 @@ class PredictionHistory extends Component {
           sortField={this.state.sortField}
           sortOrder={this.state.sortOrder}
           onSort={this.onSort}
+          selectionMode="single"
+          selection={this.state.selected}
+          onSelectionChange={e => this.setState({ selected: e.data })}
         >
           {columns}
           <Column
