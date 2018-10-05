@@ -77,6 +77,12 @@ class PredictRun(models.Model):
         null=True, blank=True, default=None, related_name='predict_run'
     )
 
+    # Relation With Catalog
+    catalog = models.ForeignKey(
+        'tno.Catalog', on_delete=models.CASCADE, verbose_name='Catalog',
+        null=True, blank=True, default=None
+    )
+
     # Relation With LeapSecond
     leap_second = models.ForeignKey(
         LeapSecond, on_delete=models.CASCADE, verbose_name='Leap Second',

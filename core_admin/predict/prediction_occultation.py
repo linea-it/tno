@@ -11,7 +11,8 @@ import parsl
 from parsl import *
 import json
 from statistics import mean
-
+from tno.db import CatalogDB
+from sqlalchemy.sql import text
 
 class PredictionOccultation():
     def __init__(self):
@@ -20,6 +21,7 @@ class PredictionOccultation():
         self.archive_dir = settings.ARCHIVE_DIR
         self.proccess = None
         self.input_list = None
+        self.catalog = None
         self.objects_dir = None
         self.relative_path = None
 
@@ -59,6 +61,11 @@ class PredictionOccultation():
 
         self.logger.debug("PROCCESS: %s" % self.proccess.id)
         self.logger.debug("PROCCESS DIR: %s" % self.proccess.relative_path)
+
+        # Recuperar a Instancia do Catalogo
+        self.catalog = instance.catalog
+        if not self.catalog:
+            raise "Catalog is required"
 
         # Diretorio onde ficam os inputs e resultados separados por objetos.
         self.objects_dir = os.path.join(self.proccess.relative_path, "objects")
@@ -165,13 +172,10 @@ class PredictionOccultation():
                 })
 
             # 5 - Generate Ephemeris -----------------------------------------------------------------------------------
-
-            self.results["objects"] = self.generate_ephemeris()
-
+            self.generate_ephemeris()
 
             # 6 - Generate Catalog Gaia --------------------------------------------------------------------------------
             self.generate_gaia_catalog()
-
 
             self.logger.debug(json.dumps(self.results))
 
@@ -476,6 +480,8 @@ class PredictionOccultation():
                 failure += 1
             average.append(row['execution_ephemeris'])
 
+            self.results['objects'][row['alias']] = row
+
         self.results['ephemeris_report'] = dict({
             'start_time': t0.replace(microsecond=0).isoformat(' '),
             'finish_time': t1.replace(microsecond=0).isoformat(' '),
@@ -488,8 +494,6 @@ class PredictionOccultation():
 
         self.logger.info(
             "Finished to generate the ephemeris, %s asteroids in %s" % (count, humanize.naturaldelta(tdelta)))
-
-        return outputs
 
     def run_generate_ephemeris(self, id, docker_client, docker_image, obj, logger):
         """
@@ -615,7 +619,6 @@ class PredictionOccultation():
             self.logger.error(e)
             raise e
 
-
     def generate_gaia_catalog(self):
 
         self.logger.info("Generating GAIA Catalog by object")
@@ -638,18 +641,20 @@ class PredictionOccultation():
         # Configuracao do Parsl Log.
         parsl.set_file_logger(os.path.join(self.relative_path, 'gaia_catalog_parsl.log'))
 
-
         # Declaracao do Parsl APP
         @App("python", dfk)
         def start_parsl_job(id, catalog, obj, logger):
 
-            logger.debug("TESTE: %s" % obj['name'])
+            # Read Positions file
+            positions = self.read_positions(
+                filename=os.path.join(obj['relative_path'], obj["inputs"]["positions"]))
+
+            self.run_gaia_catalog(id, catalog, positions, logger)
 
             return None
 
-
         # Retrive Gaia catalog
-        gaia = None
+        gaia = self.catalog
 
         # executa o app Parsl para cara registro em paralelo
         results = []
@@ -658,7 +663,6 @@ class PredictionOccultation():
             obj = self.results['objects'][alias]
 
             self.logger.debug("Running for object %s" % obj["name"])
-
 
             self.results["objects"][alias]["status"] = "running"
 
@@ -682,10 +686,76 @@ class PredictionOccultation():
 
         dfk.cleanup()
 
+    def read_positions(self, filename):
+        positions = []
+
+        with open(filename, 'r') as fp:
+            for line in fp:
+                a = line.strip().split('    ')
+                ra = float(a[0].strip())
+                dec = float(a[1].strip())
+
+                positions.append([ra, dec])
+
+        return positions
+
+    def run_gaia_catalog(self, id, catalog, positions, logger):
+        logger.debug("RUN GAIA CATALOG")
+
+        # Propriedades do GAIA http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=I/345/gaia2&-out.add=_r
+        # RA_ICRS = ra
+        # e_RA_ICRS = ra_error
+        # DE_ICRS = dec
+        # e_DE_ICRS = dec_error
+        # Plx = parallax
+        # pmRA = pmra
+        # e_pmRA = pmra_error
+        # pmDE = pmdec
+        # e_pmDE = pmdec_error
+        # Dup = duplicated_source
+        # FG = phot_g_mean_flux
+        # e_FG = phot_g_mean_flux_error
+        # Gmag = phot_g_mean_mag
+        # Var = phot_variable_flag
 
 
-    def run_gaia_catalog(self, catalog ):
+
+        try:
+            db = CatalogDB()
+
+            if catalog.schema is not None:
+                tablename = "%s.%s" % (catalog.schema, catalog.tablename)
+
+            radius = 0.15
+
+            clauses = []
+            for pos in positions:
+                clauses.append(
+                    'q3c_radial_query("%s", "%s", % s, % s, % s)' % (
+                        catalog.ra_property, catalog.dec_property, pos[0], pos[1], radius))
+
+            where = ' OR '.join(clauses)
+
+            stm = """SELECT * FROM %s WHERE %s """ % (tablename, where)
+
+
+            # logger.debug("QUERY: %s" % stm)
+
+            rows = db.fetch_all_dict(text(stm))
+
+            logger.debug("ROWS COUNT: %s" % len(rows))
+
+        except Exception as e:
+            logger.error(e)
+            raise e
+
         pass
 
     def on_error(self, msg):
         pass
+
+
+
+# Comando para gerar o plot no gnuplot
+# plot 'gaia.csv' u 1:2 notitle, '1999RB216.eph' u (15*($3+$4/60+$5/3600)):(($6+$7/60+$8/3600)) w l notitle
+
