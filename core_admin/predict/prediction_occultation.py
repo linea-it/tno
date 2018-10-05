@@ -9,6 +9,8 @@ import time
 from tno.proccess import ProccessManager
 import parsl
 from parsl import *
+import json
+from statistics import mean
 
 
 class PredictionOccultation():
@@ -38,7 +40,8 @@ class PredictionOccultation():
             "input_list": None,
             "proccess": None,
             "objects": dict(),
-            "dates_file_report": dict()
+            "dates_file_report": dict(),
+            "ephemeris_report": dict()
         })
 
         self.leap_second = None
@@ -147,24 +150,30 @@ class PredictionOccultation():
                     "relative_path": obj_relative_path,
                     "status": None,
                     "error_msg": None,
-                    "start_time": None,
-                    "finish_time": None,
-                    "execution_time": None,
+                    "start_ephemeris": None,
+                    "finish_ephemeris": None,
+                    "execution_ephemeris": None,
                     "absolute_path": None,
                     "inputs": dict({
                         "dates_file": dates_file,
                         "bsp_planetary": bsp_planetary,
                         "bsp_asteroid": '%s.bsp' % obj_name.replace('_', ''),
-                        "leap_second": leap_second
+                        "leap_second": leap_second,
+                        "positions": None
                     }),
                     "results": list()
                 })
 
             # 5 - Generate Ephemeris -----------------------------------------------------------------------------------
 
-            self.generate_ephemeris()
+            self.results["objects"] = self.generate_ephemeris()
 
 
+            # 6 - Generate Catalog Gaia --------------------------------------------------------------------------------
+            self.generate_gaia_catalog()
+
+
+            self.logger.debug(json.dumps(self.results))
 
         except Exception as e:
             self.logger.error(e)
@@ -374,6 +383,8 @@ class PredictionOccultation():
 
         self.logger.info("Generating ephemeris by object")
 
+        t0 = datetime.now()
+
         # Configuracao do Parsl
         try:
             dfk = DataFlowKernel(
@@ -388,17 +399,13 @@ class PredictionOccultation():
         self.logger.debug(settings.PARSL_CONFIG)
 
         # Configuracao do Parsl Log.
-        parsl.set_file_logger(os.path.join(self.relative_path, 'parsl.log'))
+        parsl.set_file_logger(os.path.join(self.relative_path, 'ephemeris_parsl.log'))
 
         # Declaracao do Parsl APP
         @App("python", dfk)
         def start_parsl_job(id, docker_client, docker_image, obj, logger):
 
-            t0 = datetime.now()
-
-            logger.debug("Object Path: %s" % obj['relative_path'])
-
-            self.run_generate_ephemeris(
+            result = self.run_generate_ephemeris(
                 id=id,
                 docker_client=docker_client,
                 docker_image=docker_image,
@@ -406,15 +413,16 @@ class PredictionOccultation():
                 logger=logger
             )
 
-            msg = "[ FAILURE ] - Object: %s " % obj['name']
-            # if os.path.exists()
-            #     msg = "Download [ SUCCESS ] - Object: %s File: %s Size: %s Time: %s seconds" % (
-            #         result.get('name'), result.get('filename'), humanize.naturalsize(result.get('file_size')),
-            #         result.get('download_time'))
-            #
-            # logger.info(msg)
+            if result['status'] == 'failure':
+                msg = "[ FAILURE ] - Object: %s " % obj['name']
 
-            return obj
+            else:
+                msg = "[ SUCCESS ] - Object: %s Time: %s " % (
+                    result['name'], humanize.naturaldelta(result['execution_ephemeris']))
+
+            logger.info(msg)
+
+            return result
 
         # Get docker Client Instance
         docker_client = docker.DockerClient(
@@ -456,7 +464,32 @@ class PredictionOccultation():
 
         dfk.cleanup()
 
-        self.logger.debug(outputs)
+        t1 = datetime.now()
+        tdelta = t1 - t0
+
+        count = len(outputs)
+        failure = 0
+        average = []
+
+        for row in outputs:
+            if row['status'] == "failure":
+                failure += 1
+            average.append(row['execution_ephemeris'])
+
+        self.results['ephemeris_report'] = dict({
+            'start_time': t0.replace(microsecond=0).isoformat(' '),
+            'finish_time': t1.replace(microsecond=0).isoformat(' '),
+            'execution_time': tdelta.total_seconds(),
+            'count_asteroids': count,
+            'count_success': count - failure,
+            'count_failed': failure,
+            'average_time': mean(average)
+        })
+
+        self.logger.info(
+            "Finished to generate the ephemeris, %s asteroids in %s" % (count, humanize.naturaldelta(tdelta)))
+
+        return outputs
 
     def run_generate_ephemeris(self, id, docker_client, docker_image, obj, logger):
         """
@@ -471,19 +504,22 @@ class PredictionOccultation():
             :param radec_filename:
             :return:
         """
+        t0 = datetime.now()
+
         container_name = "occultation_ephemeris_%s" % id
 
         filename = "%s.eph" % obj['alias'].replace('_', '')
         radec_filename = "radec.txt"
+        positions_filename = "positions.txt"
 
         # Path absoluto para o diretorio de dados que sera montado no container.
         absolute_archive_path = settings.HOST_ARCHIVE_DIR
         absolute_data_path = os.path.join(absolute_archive_path, obj['relative_path'].strip('/'))
 
         # Comando que sera executado dentro do container.
-        cmd = "python generate_ephemeris.py %s %s %s %s --leap_sec %s --radec_filename %s" % (
+        cmd = "python generate_ephemeris.py %s %s %s %s --leap_sec %s --radec_filename %s --positions_filename %s" % (
             obj['inputs']['dates_file'], obj['inputs']['bsp_asteroid'], obj['inputs']['bsp_planetary'], filename,
-            obj['inputs']['leap_second'], radec_filename)
+            obj['inputs']['leap_second'], radec_filename, positions_filename)
 
         logger.debug("[ %s ] CMD: %s" % (container_name, cmd))
 
@@ -513,17 +549,64 @@ class PredictionOccultation():
 
             ephemeris = os.path.join(obj['relative_path'], filename)
             radec = os.path.join(obj['relative_path'], radec_filename)
+            positions = os.path.join(obj['relative_path'], positions_filename)
 
             logger.debug("[ %s ] Ephemeris: %s" % (container_name, ephemeris))
             logger.debug("[ %s ] RADEC: %s" % (container_name, radec))
 
-            if os.path.isfile(ephemeris) and os.path.isfile(radec):
-                logger.debug("[ %s ] Success" % container_name)
+            status = "running"
+            error_msg = None
 
-            else:
-                logger.debug("[ %s ] Failure" % container_name)
+            if not os.path.isfile(ephemeris):
+                status = "failure"
+                error_msg = "Ephemeris file was not created"
 
-            # TODO retonar os resultados.
+            if not os.path.isfile(radec):
+                status = "failure"
+                error_msg = "RADEC file was not created"
+
+            if not os.path.isfile(positions):
+                status = "failure"
+                error_msg = "Positions file was not created"
+
+            if status == "running":
+                # Result Ephemeris
+                obj["results"].append(dict({
+                    "filename": filename,
+                    "file_size": os.path.getsize(ephemeris),
+                    "file_path": ephemeris,
+                    "file_type": os.path.splitext(ephemeris)[1]
+                }))
+
+                # Result RADEC
+                obj["results"].append(dict({
+                    "filename": radec_filename,
+                    "file_size": os.path.getsize(radec),
+                    "file_path": radec,
+                    "file_type": os.path.splitext(radec)[1]
+                }))
+
+                # Result Positions
+                obj["results"].append(dict({
+                    "filename": positions_filename,
+                    "file_size": os.path.getsize(positions),
+                    "file_path": positions,
+                    "file_type": os.path.splitext(positions)[1]
+                }))
+
+                # Positions e input para a proxima etapa
+                obj["inputs"]["positions"] = positions_filename
+
+            t1 = datetime.now()
+            tdelta = t1 - t0
+
+            obj["status"] = status
+            obj["error_msg"] = error_msg
+            obj["start_ephemeris"] = t0.replace(microsecond=0).isoformat(' ')
+            obj["finish_ephemeris"] = t1.replace(microsecond=0).isoformat(' ')
+            obj["execution_ephemeris"] = tdelta.total_seconds()
+
+            return obj
 
         except docker.errors.ContainerError as e:
             self.logger.error(e)
@@ -531,6 +614,78 @@ class PredictionOccultation():
         except Exception as e:
             self.logger.error(e)
             raise e
+
+
+    def generate_gaia_catalog(self):
+
+        self.logger.info("Generating GAIA Catalog by object")
+
+        t0 = datetime.now()
+
+        # Configuracao do Parsl
+        try:
+            dfk = DataFlowKernel(
+                config=dict(settings.PARSL_CONFIG))
+
+        except Exception as e:
+            self.logger.error(e)
+            raise e
+
+        self.logger.info("Configuring Parsl")
+        self.logger.debug("Parsl Config:")
+        self.logger.debug(settings.PARSL_CONFIG)
+
+        # Configuracao do Parsl Log.
+        parsl.set_file_logger(os.path.join(self.relative_path, 'gaia_catalog_parsl.log'))
+
+
+        # Declaracao do Parsl APP
+        @App("python", dfk)
+        def start_parsl_job(id, catalog, obj, logger):
+
+            logger.debug("TESTE: %s" % obj['name'])
+
+            return None
+
+
+        # Retrive Gaia catalog
+        gaia = None
+
+        # executa o app Parsl para cara registro em paralelo
+        results = []
+        id = 0
+        for alias in self.results['objects']:
+            obj = self.results['objects'][alias]
+
+            self.logger.debug("Running for object %s" % obj["name"])
+
+
+            self.results["objects"][alias]["status"] = "running"
+
+            result = start_parsl_job(
+                id=id,
+                catalog=gaia,
+                obj=obj,
+                logger=self.logger)
+
+            self.logger.debug(result)
+
+            results.append(result)
+
+            id += 1
+
+        # Espera o Resultado de todos os jobs.
+        outputs = [i.result() for i in results]
+
+        for i in results:
+            i.done()
+
+        dfk.cleanup()
+
+
+
+    def run_gaia_catalog(self, catalog ):
+        pass
 
     def on_error(self, msg):
         pass
