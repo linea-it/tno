@@ -113,7 +113,8 @@ class FilterObjectForm extends Component {
     return (
       <form>
         <FormGroup>
-          <ControlLabel>Object Table</ControlLabel>
+          <br />
+         <ControlLabel>Object Table</ControlLabel>
           <Select
             closeOnSelect={false}
             disabled={false}

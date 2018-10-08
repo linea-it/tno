@@ -781,7 +781,9 @@ body > .navbar-collapse[data-color="purple"]:after {
   font-size: 1rem;
   font-weight: 600;
   border: none !important;
-  background: #3CB1C6 !important; }
+  background: #3CB1C6 !important;
+  margin-bottom: 10px;
+  float: right; }
 
 .btn-TNO-color {
   background: #3CB1C6 !important;

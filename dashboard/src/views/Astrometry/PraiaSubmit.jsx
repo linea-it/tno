@@ -109,6 +109,7 @@ class PraiaSubmit extends Component {
                 />
               </FormGroup>
               <FormGroup>
+
                 <ControlLabel>Configuration</ControlLabel>
                 <Async
                   onChange={this.onSelectConfig}
@@ -119,8 +120,9 @@ class PraiaSubmit extends Component {
                   defaultOptions
                   loadOptions={this.loadConfigs}
                 />
+                <Button className="button-TNO"label="Submit" onClick={this.onClickSubmit} style={{margin: '20px !important'}}/>
+ 
               </FormGroup>
-              <Button className="button-TNO"label="Submit" onClick={this.onClickSubmit} />
             </Form>
           </Card>
         }
