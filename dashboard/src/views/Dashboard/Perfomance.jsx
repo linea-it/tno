@@ -19,65 +19,63 @@ class Performance extends Component {
           colorHead="ds"
           title="Processing and performance"
           content={
-            <div>
-              <div className="ui-g">
-                <div className="ui-lg-12 ui-md-6 ui-sm-12">
-                  <MiniCardStats
-                    color="yellow"
-                    bigIcon={<i className="pe-7s-graph1 text-danger" />}
-                    statsText="Errors"
-                    statsValue="23"
-                    statsIcon={<i className="fa fa-clock-o" />}
-                    statsIconText="In the last hour"
-                    data={propSet.data}
-                    fill={propSet.colors}
-                    name="Memory"
-                    number="60 %"
-                  />
-                </div>
-                <div className="ui-lg-12 ui-md-6 ui-sm-12">
-                  <MiniCardStats
-                    color="blue"
-                    bigIcon={<i className="pe-7s-graph1 text-danger" />}
-                    statsText="Errors"
-                    statsValue="23"
-                    statsIcon={<i className="fa fa-clock-o" />}
-                    statsIconText="In the last hour"
-                    data={propSet.data}
-                    fill={propSet.colors}
-                    name="Traffic"
-                    number="2.4 KB"
-                  />
-                </div>
+            <div className="flex-layout">
+              <div className="flex-container flex-wrap row">
+                <MiniCardStats
+                  className="item grow-1"
+                  color="blue"
+                  bigIcon={<i className="pe-7s-graph1 text-danger" />}
+                  statsText="Errors"
+                  statsValue="23"
+                  statsIcon={<i className="fa fa-clock-o" />}
+                  statsIconText="In the last hour"
+                  data={propSet.data}
+                  fill={propSet.colors}
+                  name="Memory"
+                  number="60 %"
+                />
+                <MiniCardStats
+                  className="item grow-1"
+                  color="blue"
+                  bigIcon={<i className="pe-7s-graph1 text-danger" />}
+                  statsText="Errors"
+                  statsValue="23"
+                  statsIcon={<i className="fa fa-clock-o" />}
+                  statsIconText="In the last hour"
+                  data={propSet.data}
+                  fill={propSet.colors}
+                  name="Traffic"
+                  number="2.4 KB"
+                />
+              </div>
+              <div className="flex-container flex-wrap row">
+                <MiniCardStats
+                  className="item grow-1"
+                  color="blue"
+                  bigIcon={<i className="pe-7s-graph1 text-danger" />}
+                  statsText="Errors"
+                  statsValue="23"
+                  statsIcon={<i className="fa fa-clock-o" />}
+                  statsIconText="In the last hour"
+                  data={propSet.data}
+                  fill={propSet.colors}
+                  name="Disk I/O"
+                  number="4.2 KB"
+                />
 
-                <div className="ui-lg-12 ui-md-6 ui-sm-12">
-                  <MiniCardStats
-                    color="blue"
-                    bigIcon={<i className="pe-7s-graph1 text-danger" />}
-                    statsText="Errors"
-                    statsValue="23"
-                    statsIcon={<i className="fa fa-clock-o" />}
-                    statsIconText="In the last hour"
-                    data={propSet.data}
-                    fill={propSet.colors}
-                    name="Disk I/O"
-                    number="4.2 KB"
-                  />
-                </div>
-                <div className="ui-lg-12 ui-md-6 ui-sm-12">
-                  <MiniCardStats
-                    color="blue"
-                    bigIcon={<i className="pe-7s-graph1 text-danger" />}
-                    statsText="Errors"
-                    statsValue="23"
-                    statsIcon={<i className="fa fa-clock-o" />}
-                    statsIconText="In the last hour"
-                    data={propSet.data}
-                    fill={propSet.colors}
-                    name="Memory"
-                    number="5.2 KB"
-                  />
-                </div>
+                <MiniCardStats
+                  className="item grow-1"
+                  color="blue"
+                  bigIcon={<i className="pe-7s-graph1 text-danger" />}
+                  statsText="Errors"
+                  statsValue="23"
+                  statsIcon={<i className="fa fa-clock-o" />}
+                  statsIconText="In the last hour"
+                  data={propSet.data}
+                  fill={propSet.colors}
+                  name="Memory"
+                  number="5.2 KB"
+                />
               </div>
             </div>
           }

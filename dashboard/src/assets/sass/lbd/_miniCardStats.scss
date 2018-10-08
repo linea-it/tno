@@ -1,5 +1,6 @@
 .mini-card-stats {
-    height: 110px;
+    min-height:none;
+    min-width: none;    
 }
 .plot {
     margin-top: -36px;
@@ -30,5 +31,9 @@
 }
 .green {
         background-color: #28CA71;
+}
+
+.blue {
+    background-color: #3CB1C6;
 }
 

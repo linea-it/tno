@@ -66,7 +66,7 @@ class Skybot extends Component {
                     position="insideLeft"
                   />
                 </YAxis>
-                <Bar barSize={10} dataKey="count" fill="#3c1e7e" />
+                <Bar barSize={10} dataKey="count" fill="#3CB1C6" />
               </BarChart>
             </div>
           }
