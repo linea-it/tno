@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PredictRun, PredictAsteroid, LeapSeconds, BspPlanetary
+from .models import PredictRun, PredictAsteroid, LeapSecond, BspPlanetary
 from tno.models import Proccess, CustomList
 from orbit.models import OrbitRun
 import humanize
@@ -156,7 +156,7 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
 class LeapSecondsSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = LeapSeconds
+        model = LeapSecond
         fields = (
             'name',
             'display_name',

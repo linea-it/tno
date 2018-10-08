@@ -1,7 +1,71 @@
 from django.db import models
 from django.conf import settings
 
-# Create your models here.
+class LeapSecond(models.Model):
+    name = models.CharField(
+        max_length=100,
+        verbose_name='Name',
+        help_text='Internal name',
+        null=True, blank=True
+    )
+
+    display_name = models.CharField(
+        max_length=100,
+        verbose_name='Display name',
+        help_text='Display Name.',
+        null=True, blank=True
+    )
+
+    url = models.URLField(
+        max_length=100,
+        verbose_name='URL',
+        help_text='URL of archives.',
+        null=True, blank=True
+    )
+
+    upload = models.FileField(
+        upload_to=settings.LEAP_ROOT,
+        verbose_name='file',
+        help_text='Upload of archives.',
+        null=True, blank=True
+    ) 
+
+    def __str__(self):
+        return str(self.name)
+
+class BspPlanetary(models.Model):
+    name = models.CharField(
+        max_length=100,
+        verbose_name='Name',
+        help_text='Internal name',
+        null=True, blank=True
+    )
+
+    display_name = models.CharField(
+        max_length=100,
+        verbose_name='Display name',
+        help_text='Display Name.',
+        null=True, blank=True
+    )
+
+    url = models.URLField(
+        max_length=100,
+        verbose_name='URL',
+        help_text='URL of archives.',
+        null=True, blank=True
+    )
+
+    upload = models.FileField(
+        upload_to= settings.BSP_PLA_ROOT,
+        verbose_name='file',
+        help_text='Upload of archives.',
+        null=True, blank=True
+    ) 
+
+    def __str__(self):
+        return str(self.name)
+
+
 class PredictRun(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -11,6 +75,24 @@ class PredictRun(models.Model):
     proccess = models.ForeignKey(
         'tno.Proccess', on_delete=models.CASCADE, verbose_name='Proccess',
         null=True, blank=True, default=None, related_name='predict_run'
+    )
+
+    # Relation With Catalog
+    catalog = models.ForeignKey(
+        'tno.Catalog', on_delete=models.CASCADE, verbose_name='Catalog',
+        null=True, blank=True, default=None
+    )
+
+    # Relation With LeapSecond
+    leap_second = models.ForeignKey(
+        LeapSecond, on_delete=models.CASCADE, verbose_name='Leap Second',
+        null=True, blank=True, default=None
+    )
+
+    # Relation With BspPlanetary
+    bsp_planetary = models.ForeignKey(
+        BspPlanetary, on_delete=models.CASCADE, verbose_name='BSP Planetary',
+        null=True, blank=True, default=None
     )
 
     start_time = models.DateTimeField(
@@ -91,71 +173,6 @@ class PredictRun(models.Model):
     def __str__(self):
         return str(self.id)
 
-class LeapSeconds(models.Model):
-    name = models.CharField(
-        max_length=100,
-        verbose_name='Name',
-        help_text='Internal name',
-        null=True, blank=True
-    )
-
-    display_name = models.CharField(
-        max_length=100,
-        verbose_name='Display name',
-        help_text='Display Name.',
-        null=True, blank=True
-    )
-
-    url = models.URLField(
-        max_length=100,
-        verbose_name='URL',
-        help_text='URL of archives.',
-        null=True, blank=True
-    )
-
-    upload = models.FileField(
-        upload_to= settings.LEAP_ROOT,
-        verbose_name='file',
-        help_text='Upload of archives.',
-        null=True, blank=True
-    ) 
-
-    def __str__(self):
-        return str(self.name)
-
-class BspPlanetary(models.Model):
-    name = models.CharField(
-        max_length=100,
-        verbose_name='Name',
-        help_text='Internal name',
-        null=True, blank=True
-    )
-
-    display_name = models.CharField(
-        max_length=100,
-        verbose_name='Display name',
-        help_text='Display Name.',
-        null=True, blank=True
-    )
-
-    url = models.URLField(
-        max_length=100,
-        verbose_name='URL',
-        help_text='URL of archives.',
-        null=True, blank=True
-    )
-
-    upload = models.FileField(
-        upload_to= settings.BSP_PLA_ROOT,
-        verbose_name='file',
-        help_text='Upload of archives.',
-        null=True, blank=True
-    ) 
-
-    def __str__(self):
-        return str(self.name)
-       
-
 class PredictAsteroid(models.Model):
     """
         Este modelo representa a lista de Objetos (Asteroids),
@@ -229,3 +246,6 @@ class PredictAsteroid(models.Model):
 
     def __str__(self):
         return str(self.name)
+
+
+from . import signals

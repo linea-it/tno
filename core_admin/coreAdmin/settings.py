@@ -293,7 +293,16 @@ LOGGING = {
             'backupCount': 5,
             'filename': os.path.join(LOG_DIR, 'refine_orbit.log'),
             'formatter': 'standard',
+        },
+        'predict_occultation': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'predict_occultation.log'),
+            'formatter': 'standard',
         }
+
     },
     'loggers': {
         'django': {
@@ -313,6 +322,11 @@ LOGGING = {
         },
         'refine_orbit': {
             'handlers': ['refine_orbit'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'predict_occultation': {
+            'handlers': ['predict_occultation'],
             'level': 'DEBUG',
             'propagate': True,
         },

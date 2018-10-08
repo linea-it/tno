@@ -35,7 +35,9 @@ class PredictionPanel extends Component {
     return (
       <div className="content">
         <div className="ui-g">
-          <div className="ui-g-4">{/* <PredictionSelect /> */}</div>
+          <div className="ui-g-4">
+            <Card title=" " subTitle=" " />
+          </div>
           <div className="ui-g-8">
             <Card title=" " subTitle=" " />
           </div>
@@ -43,7 +45,10 @@ class PredictionPanel extends Component {
         <div className="ui-g">
           <div className="ui-g-12">
             <Card subTitle="Manage PRAIA Occultation rounds">
-              <PredictionHistory view_prediction={this.onViewPrediction} />
+              <PredictionHistory
+                view_prediction={this.onViewPrediction}
+                onRerun={this.onCreateRun}
+              />
             </Card>
           </div>
         </div>

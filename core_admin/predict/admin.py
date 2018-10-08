@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PredictRun, PredictAsteroid, LeapSeconds, BspPlanetary
+from .models import PredictRun, PredictAsteroid, LeapSecond, BspPlanetary
 
 
 # Register your models here.
@@ -14,8 +14,8 @@ class PredictAsteroidAdmin(admin.ModelAdmin):
                     'start_time', 'finish_time', 'execution_time', 'status', 'error_msg',)
     search_fields = ('name', 'number')
 
-@admin.register(LeapSeconds)
-class LeapSecondsAdmin(admin.ModelAdmin):
+@admin.register(LeapSecond)
+class LeapSecondAdmin(admin.ModelAdmin):
     list_display = ('name', 'display_name', 'url', 'upload',)
     search_fields = ('name', 'display_name')
 
