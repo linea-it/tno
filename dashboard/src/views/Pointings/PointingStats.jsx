@@ -8,7 +8,6 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
-
 import { Icon } from 'semantic-ui-react';
 import PanelCostumize from 'components/Panel/PanelCostumize';
 import Content from 'components/CardContent/CardContent.jsx';
@@ -22,114 +21,31 @@ class PointingsStats extends Component {
   get initialState() {
     return {
       totalSize: 0,
-      qtdBits: 25,
-      qtdDownloaded: 0,
-      qtdNotDownloaded: 0,
-      band_u: 0,
-      band_i: 0,
-      band_z: 0,
-      band_r: 0,
-      band_g: 0,
-      band_y: 0,
-      exp1: 0,
-      exp2: 0,
-      exp3: 0,
-      exp4: 0,
-      dateConv: '',
+      exp: [],
+      band: [],
       dateRecent: '',
     };
   }
 
   componentDidMount() {
-    this.api.getPointingCount().then(res => {
+    this.api.getPointingStatistics().then(res => {
       const r = res.data;
-      this.setState({
-        totalSize: r.count,
-      });
-    });
-    this.api.getPointingBand_u().then(res => {
-      const r = res.data;
-      this.setState({
-        band_u: r.count,
-      });
-    });
-    this.api.getPointingBand_y().then(res => {
-      const r = res.data;
-      this.setState({
-        band_y: r.count,
-      });
-    });
-    this.api.getPointingBand_g().then(res => {
-      const r = res.data;
-      this.setState({
-        band_g: r.count,
-      });
-    });
-    this.api.getPointingBand_i().then(res => {
-      const r = res.data;
-      this.setState({
-        band_i: r.count,
-      });
-    });
-    this.api.getPointingBand_z().then(res => {
-      const r = res.data;
-      this.setState({
-        band_z: r.count,
-      });
-    });
-    this.api.getPointingBand_r().then(res => {
-      const r = res.data;
-      this.setState({
-        band_r: r.count,
-      });
-    });
-    this.api.getPointingBetween1().then(res => {
-      const r = res.data;
-      this.setState({
-        exp1: r.count,
-      });
-    });
-    this.api.getPointingBetween2().then(res => {
-      const r = res.data;
-      this.setState({
-        exp2: r.count,
-      });
-    });
-    this.api.getPointingBetween3().then(res => {
-      const r = res.data;
-      this.setState({
-        exp3: r.count,
-      });
-    });
-    this.api.getPointingBetween4().then(res => {
-      const r = res.data;
-      this.setState({
-        exp4: r.count,
-      });
-    });
-    this.api.getPointingDowloaded().then(res => {
-      const r = res.data;
-      this.setState({
-        qtdDownloaded: r.count,
-      });
-    });
+      const count = r.count_pointings;
+      const exp_range = r.exp_range;
+      const band = r.band;
+      const last = r.last;
 
-    this.api.getPointingNotDowloaded().then(res => {
-      const r = res.data;
       this.setState({
-        qtdNotDownloaded: r.count,
+        exp: exp_range,
+        band: band,
+        totalSize: count,
+        dateRecent: last,
       });
-    });
-    this.api.getPointingDataRecent().then(res => {
-      const r = res.data;
-      const result = r.results[0].date_obs;
-      this.setState({ dateRecent: result });
     });
   }
 
   render() {
     const propSet = this.props;
-    console.log(propSet);
 
     const data = [
       { name: 'u', band: this.state.band_u },
@@ -147,92 +63,53 @@ class PointingsStats extends Component {
       { name: '300-400', exposure: this.state.exp4 },
     ];
 
-    const pointing_info = [
-      {
-        legend: 'Downloaded',
-        label: this.state.qtdDownloaded,
-        value: this.state.qtdDownloaded,
-        colorIcon: 'primary',
-        grid: ['6'],
-      },
-      {
-        legend: 'not Downloaded',
-        label: this.state.qtdNotDownloaded,
-        value: this.state.qtdNotDownloaded,
-        colorIcon: 'muted',
-        grid: ['6'],
-      },
-    ];
-
     const stats = [
-      { name: 'Data Recent', value: this.state.dateRecent, icon: 'database', title: 'amount' },
-      { name: 'Total Size', value: this.state.totalSize, icon: 'database', title: 'amount' },
+      {
+        name: 'Data Recent',
+        value: this.state.dateRecent,
+        icon: 'database',
+        title: 'amount',
+      },
+      {
+        name: 'Total Size',
+        value: this.state.totalSize,
+        icon: 'database',
+        title: 'amount',
+      },
     ];
 
     const list = stats.map((col, i) => {
       return (
-        <div>        
-          {/* <hr className="hr-stats" /> */}
+        <div>
           <div key={i} className="item">
-            <div className="label-stats">
-                {stats[i].name} 
+            <div className="label-stats">{stats[i].name}</div>
+            <div className="value-stats">
+              {' '}
+              {stats[i].title}: {stats[i].value}
             </div>
-              <div className="value-stats"> {stats[i].title}: {stats[i].value}</div>
-            </div>
+          </div>
         </div>
-
       );
     });
 
     return (
       <div className={`${propSet.className} section`}>
-      
-          <div className="grid template-pointigs">
-            <PanelCostumize
-              className="plot-ccd-band"
-              title="CCDs x Band"
-              content={
-                <div className="flex-container">
-                  <div className="item grow-1">
-                    <Content
-                      header={true}
-                      title="Number of CCDs for each band"
-                      content={
-                        <div className="size-plot">
-                          <BarChart
-                            width={275}
-                            height={198}
-                            data={data}
-                            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                          >
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar barSize={20} dataKey="band" fill="#62388C" />;
-                          </BarChart>
-                        </div>
-                      }
-                    />
-                  </div>
-                </div>
-              }
-            />
-            <PanelCostumize
-              className="plot_ccd_band"
-              title="CCDs x Esposure time"
-              content={
+        <div className="grid template-pointigs">
+          <PanelCostumize
+            className="plot-ccd-band"
+            title="CCDs x Band"
+            content={
+              <div className="flex-container">
                 <div className="item grow-1">
                   <Content
                     header={true}
-                    title="Number of CCDs in intervals of exposure time [s]"
+                    title="Number of CCDs for each band"
                     content={
                       <div className="size-plot">
                         <BarChart
                           width={275}
                           height={198}
-                          data={exptime}
+                          data={data}
                           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                         >
                           <CartesianGrid strokeDasharray="3 3" />
@@ -240,51 +117,75 @@ class PointingsStats extends Component {
                           <YAxis />
                           <Tooltip />
                           <Legend />
-                          <Bar barSize={20} dataKey="exposure" fill="#3CB1C6" />;
+                          <Bar barSize={20} dataKey="band" fill="#62388C" />;
                         </BarChart>
                       </div>
                     }
                   />
                 </div>
-              }
-            />
-
-            <PanelCostumize
-              className="plot_sky"
-              title="Pointings in sky"
-              content={
-                <div>
-                  <Content
-                    content={
-                      <figure className="responsive-image">
-                        <img
-                          // width="600"
-                          // height="451"
-                          alt="text"
-                          src={plotPointings}
-                        />
-                      </figure>
-                    }
-                  />
-                </div>
-              }
-            />
-
-            <PanelCostumize
-              className="list_stats"
-              content={
+              </div>
+            }
+          />
+          <PanelCostumize
+            className="plot_ccd_band"
+            title="CCDs x Esposure time"
+            content={
+              <div className="item grow-1">
                 <Content
-                content={
-                  <div className="group-stats">
-                    {list}
-                  </div>
-              }
-              />
-              }
-            />
-          </div>
+                  header={true}
+                  title="Number of CCDs in intervals of exposure time [s]"
+                  content={
+                    <div className="size-plot">
+                      <BarChart
+                        width={275}
+                        height={198}
+                        data={exptime}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar barSize={20} dataKey="exposure" fill="#3CB1C6" />;
+                      </BarChart>
+                    </div>
+                  }
+                />
+              </div>
+            }
+          />
+
+          <PanelCostumize
+            className="plot_sky"
+            title="Pointings in sky"
+            content={
+              <div>
+                <Content
+                  content={
+                    <figure className="responsive-image">
+                      <img
+                        // width="600"
+                        // height="451"
+                        alt="text"
+                        src={plotPointings}
+                      />
+                    </figure>
+                  }
+                />
+              </div>
+            }
+          />
+
+          <PanelCostumize
+            className="list_stats"
+            content={
+              <Content content={<div className="group-stats">{list}</div>} />
+            }
+          />
+        </div>
       </div>
-      );
+    );
   }
 }
 
