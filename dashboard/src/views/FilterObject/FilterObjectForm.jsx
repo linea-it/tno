@@ -113,7 +113,8 @@ class FilterObjectForm extends Component {
     return (
       <form>
         <FormGroup>
-          <ControlLabel>Object Table</ControlLabel>
+          <br />
+         <ControlLabel>Object Table</ControlLabel>
           <Select
             closeOnSelect={false}
             disabled={false}
@@ -195,7 +196,7 @@ class FilterObjectForm extends Component {
         </FormGroup>
         <Button
           label="Filter"
-          style={{ float: 'right', padding: '5px 25px' }}
+          className="button-TNO"
           onClick={this.handleSubmit}
         />
         <div className="clearfix" />

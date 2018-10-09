@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 
 import {
-  ComposedChart,
-  Area,
+  BarChart,
   Line,
   Bar,
   XAxis,
@@ -17,9 +16,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { Icon } from 'semantic-ui-react';
 import PanelCostumize from 'components/Panel/PanelCostumize';
-// import Card from 'components/Card/Card.jsx';
-import { Card } from 'primereact/card';
-import { Table } from 'react-bootstrap';
+import Content from 'components/CardContent/CardContent.jsx';
 
 import SkybotApi from './SkybotApi';
 
@@ -79,118 +76,103 @@ class SkybotStats extends Component {
 
   render() {
     const data = [
-      { name: 'Total of CCDs', value: this.state.totalSize, icon: 'database' },
+      { name: 'Total of CCDs', value: this.state.totalSize, icon: 'database', title:'amount' },
       {
         name: 'Total number of observations',
         value: this.state.totalSize,
         icon: 'search',
+        title: 'amount'
       },
       {
         name: ' object with the largest number of observations',
-        value: this.state.totalSize,
+        value: 'KBO',
         icon: 'flag checkered',
+        title: 'name'
+
+      },
+      {
+        name: `Number of observations of object KBO`,
+        value: this.state.totalSize,
+        icon: 'search',
+        title: 'amount'
+
       },
     ];
 
-    const columns = data.map((col, i) => {
+    const list = data.map((col, i) => {
       return (
-        <tr key={i}>
-          <td>
-            <div className="ui ex-mini horizontal violet statistic">
-              <div className="value">
-                <Icon className="icon" name={`${data[i].icon}`} />
-                <span className="icon">{data[i].value}</span>
+        <div>
+          {/* <hr className="hr-stats" /> */}
+          <div className="item">
+            <div className="label-stats">
+                {data[i].name} 
               </div>
-              <div className="label">{data[i].name}</div>
-            </div>
-          </td>
-        </tr>
+                <div className="value-stats"> {data[i].title}: {data[i].value}</div>
+          </div>
+          </div>
       );
     });
 
     return (
-      <div className="ui-g">
-        <div className="ui-lg-4 ui-md-12 ui-sm-12">
+        <div className="grid template-skybot">
+
           <PanelCostumize
-            className="panel"
+            className="list_stats_skybot"
             content={
-              <div>
-                <Card className="none">
-                  <table className="list-stats">
-                    <tbody>{columns}</tbody>
-                  </table>
-                </Card>
-              </div>
+              <Content
+                  content={
+                    <div className="group-stats">
+                      {list}
+                    </div>
+                }
+                />
             }
           />
-        </div>
-        <div className="ui-lg-4 ui-md-12 ui-sm-12">
+
           <PanelCostumize
+            className="plot_dinamics"
             content={
-              <Card
-                className="none"
-                subTitle="Total number of objects (and their observations) for each"
-              >
-                <ComposedChart
-                  width={400}
-                  height={200}
-                  data={objects}
-                  margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-                >
-                  <CartesianGrid stroke="#f5f5f5" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend className="legend-chart" />
-                  {/* <Area
-                    type="monotone"
-                    dataKey="Media"
-                    fill="#007892"
-                    stroke="#8884d8"
-                  /> */}
-                  <Bar dataKey="observations" barSize={20} fill="#3c1e7e" />
-                  <Line type="monotone" dataKey="objects" stroke="#ff7300" />
-                </ComposedChart>
-              </Card>
-            }
-          />
-        </div>
-        <div className="ui-lg-4 ui-md-12 ui-sm-12">
-          <PanelCostumize
-            content={
-              <Card
-                className="none"
-                subTitle="Total number of objects (and observations) for each band (u,g, r, i, z)"
-              >
-                <ComposedChart
-                  width={400}
-                  height={200}
-                  data={band}
-                  margin={{ top: 20, right: 80, bottom: 20, left: 20 }}
-                >
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
+              <Content   
+                header={true}
+                title="Total number of objects (and their observations) for each" 
+                content={
+                  <BarChart width={400} height={200} data={band}
+                  margin={{top: 20, right: 30, left: 20, bottom: 5}}>
+                  <CartesianGrid strokeDasharray="3 3"/>
+                  <XAxis dataKey="name"/>
+                  <YAxis/>
+                  <Tooltip/>
                   <Legend />
-                  <CartesianGrid stroke="#f5f5f5" />
-                  {/* <Area
-                    type="monotone"
-                    dataKey=""
-                    fill="#00b5ad"
-                    stroke="#00b5ad"
-                  /> */}
-                  <Bar dataKey="objects" barSize={20} fill="#3c1e7e" />
-                  <Line
-                    type="monotone"
-                    dataKey="observations"
-                    stroke="#ff7300"
-                  />
-                </ComposedChart>
-              </Card>
+                  <Bar dataKey="observations" stackId="a" fill="#62388C" />
+                  <Bar dataKey="objects" stackId="a" fill="#3CB1C6" />
+                  </BarChart>
+                }
+              />
             }
           />
+
+          <PanelCostumize
+            className="plot_band"
+            content={
+              <Content   
+                header={true}
+                title="Total number of objects (and observations) for each band (u,g, r, i, z)" 
+                content={
+                  <BarChart width={500} height={200} data={objects}
+                  margin={{top: 20, right: 30, left: 20, bottom: 5}}>
+                  <CartesianGrid strokeDasharray="3 3"/>
+                  <XAxis dataKey="name"/>
+                  <YAxis/>
+                  <Tooltip/>
+                  <Legend />
+                  <Bar dataKey="observations" stackId="a" fill="#62388C" />
+                  <Bar dataKey="objects" stackId="a" fill="#3CB1C6" />
+                  </BarChart>
+                }
+              />
+             }
+          />
         </div>
-      </div>
     );
   }
 }

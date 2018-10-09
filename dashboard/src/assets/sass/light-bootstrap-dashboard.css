@@ -775,6 +775,22 @@ body > .navbar-collapse[data-color="purple"]:after {
   margin-top: -1px;
   right: 8px; }
 
+.button-TNO {
+  padding: 5px 25px;
+  border-radius: 1px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none !important;
+  background: #3CB1C6 !important;
+  margin-bottom: 10px;
+  float: right; }
+
+.btn-TNO-color {
+  background: #3CB1C6 !important;
+  border: none !important;
+  width: 100px   !important;
+  border-radius: 1px; }
+
 .form-control::-moz-placeholder {
   color: #DDDDDD;
   opacity: 1;
@@ -3374,7 +3390,7 @@ body > .navbar-collapse[data-color="purple"]:after {
   min-height: 20%;
   background: none;
   border-radius: 1px;
-  margin: 8px 0px 8px 5px; }
+  margin: 8px 0px 8px 0px; }
   .content-main .content-header {
     margin: 0; }
   .content-main .content-title {
@@ -3471,7 +3487,7 @@ body > .navbar-collapse[data-color="purple"]:after {
 
 .flex-container {
   width: 100%;
-  margin: 0px auto;
+  margin: 0;
   display: flex; }
 
 .flex-wrap {
@@ -3498,7 +3514,7 @@ body > .navbar-collapse[data-color="purple"]:after {
 .strech {
   align-content: stretch; }
 
-.item {
+.flex-item {
   margin: 10px 15px !important; }
 
 .grow-1 {
@@ -3536,3 +3552,164 @@ body > .navbar-collapse[data-color="purple"]:after {
 
 .grow-12 {
   flex-grow: 12; }
+
+.grid {
+  display: grid;
+  margin: 1.25em; }
+
+.section {
+  min-width: 100%; }
+
+.poitings_stats {
+  grid-area: poitings_stats; }
+
+.poitings_list {
+  grid-area: poitings_list; }
+
+.plot_ccd_band {
+  grid-area: plot_ccd_band; }
+
+.plot_ccd_exp {
+  grid-area: plot_ccd_exp; }
+
+.plot_sky {
+  grid-area: plot_sky; }
+
+.list_stats {
+  grid-area: list_stats; }
+
+.list_pointings {
+  grid-area: list_pointings; }
+
+.plot_dinamics {
+  grid-area: plot_dinamics; }
+
+.plot_band {
+  grid-area: plot_band; }
+
+.list_stats_skybot {
+  grid-area: list_stats_skybot; }
+
+.table_skybot {
+  grid-area: table_skybot; }
+
+.form_filter {
+  grid-area: form_filter; }
+
+.search_filter {
+  grid-area: search_filter; }
+
+.table_filter {
+  grid-area: table_filter; }
+
+.submit_refine {
+  grid-area: submit_refine; }
+
+.running_refine {
+  grid-area: running_refine; }
+
+.history_refine {
+  grid-area: history_refine; }
+
+@media screen and (min-width: 1366px) {
+  .template-wrap-pointings {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(1, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "poitings_stats" "pointings_list"; }
+  .template-pointigs {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(3, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "plot_ccd_band plot_ccd_exp plot_sky" "list_stats list_stats plot_sky" "list_pointings list_pointings list_pointings"; }
+  .template-skybot {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "plot_dinamics plot_band" "list_stats_skybot list_stats_skybot" "table_skybot table_skybot"; }
+  .template-filter-object {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "form_filter search_filter" "table_filter table_filter"; }
+  .template-refine-orbit {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "submit_refine running_refine" "history_refine history_refine"; } }
+
+@media screen and (max-width: 1366px) {
+  .template-wrap-pointings {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(1, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "poitings_stats" "pointings_list"; }
+  .template-pointigs {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "plot_ccd_band plot_ccd_exp" "list_stats list_stats" "plot_sky plot_sky" "list_pointings list_pointings"; }
+  .template-skybot {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "plot_dinamics plot_band" "list_stats_skybot list_stats_skybot" "table_skybot table_skybot"; }
+  .template-filter-object {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "form_filter form_filter" "search_filter search_filter"  "table_filter table_filter"; }
+  .template-refine-orbit {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(1, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "submit_refine" "running_refine" "history_refine"; } }
+
+@media screen and (max-width: 768px) {
+  .template-wrap-pointings {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(1, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "poitings_stats" "pointings_list"; }
+  .template-pointigs {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(1, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "plot_ccd_band" "plot_ccd_exp" "list_stats" "plot_sky" "list_pointings"; }
+  .template-skybot {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(1, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "plot_dinamics" "plot_band" "list_stats_skybot" "plot_sky" "table_skybot"; }
+  .template-filter-object {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "form_filter form_filter" "search_filter search_filter"  "table_filter table_filter"; }
+  .template-refine-orbit {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(1, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "submit_refine" "running_refine" "history_refine"; } }
+
+.group-stats {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin: 0 auto;
+  font-size: 1.375rem !important; }
+  .group-stats .item {
+    margin: 10px 40px !important;
+    min-width: 200px;
+    flex: 1; }
+  .group-stats .label-stats {
+    color: #252525; }
+  .group-stats .value-stats {
+    margin: 5px 0px;
+    color: #62388C; }
+
+.hr-stats {
+  padding: 0;
+  margin: 10px 0px;
+  background: #979797;
+  height: 1px; }

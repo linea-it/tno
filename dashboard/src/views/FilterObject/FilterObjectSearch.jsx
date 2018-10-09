@@ -36,17 +36,20 @@ class FilterObjectSearch extends Component {
 
   render() {
     return (
-      <form>
-        <div className="ui-inputgroup">
+      <form >
+        <div className="flex-container">
+        {/* <div className="ui-inputgroup"> */}
           <InputText
             value={this.state.search}
             placeholder="Search By Name"
             onChange={this.handleChange}
-            style={{ width: '300px' }}
+            style={{padding: '0px !important', height: '35px', width: '600px', margin: '0px !important' }}
           />
-          <Button label="Search" onClick={this.handleSubmit} />
-        </div>
+        {/* </div> */}
 
+       <Button className="button-TNO" label="Search" onClick={this.handleSubmit} />
+
+      </div>
         <div className="clearfix" />
       </form>
     );
