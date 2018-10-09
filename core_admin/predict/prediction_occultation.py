@@ -14,6 +14,7 @@ from statistics import mean
 from tno.db import CatalogDB
 from sqlalchemy.sql import text
 
+
 class PredictionOccultation():
     def __init__(self):
         self.logger = logging.getLogger("predict_occultation")
@@ -49,11 +50,17 @@ class PredictionOccultation():
         self.leap_second = None
         self.dates_file = None
 
+        self.gaia_properties = ["ra", "ra_error", "dec", "dec_error", "parallax", "pmra", "pmra_error", "pmdec",
+                                "pmdec_error", "duplicated_source", "phot_g_mean_flux", "phot_g_mean_flux_error",
+                                "phot_g_mean_mag", "phot_variable_flag"]
+
     def start_predict_occultation(self, instance):
         self.logger.debug("PREDICT RUN: %s" % instance.id)
 
         start_time = datetime.now()
         self.results["start_time"] = start_time.replace(microsecond=0).isoformat(' ')
+
+        instance.start_time = datetime.now()
 
         # Recuperar a Instancia do processo
         self.proccess = instance.proccess
@@ -95,6 +102,7 @@ class PredictionOccultation():
             start_date = "2018-JAN-01"
             end_date = "2018-DEC-31 23:59:01"
             step = 600
+            self.radius = 0.15
 
             dates_filename = "dates.txt"
             dates_file = self.run_generate_dates(
@@ -643,15 +651,58 @@ class PredictionOccultation():
 
         # Declaracao do Parsl APP
         @App("python", dfk)
-        def start_parsl_job(id, catalog, obj, logger):
+        def start_parsl_job(id, catalog, obj, radius, logger):
+
+            t0 = datetime.now()
 
             # Read Positions file
             positions = self.read_positions(
                 filename=os.path.join(obj['relative_path'], obj["inputs"]["positions"]))
 
-            self.run_gaia_catalog(id, catalog, positions, logger)
+            rows = self.run_gaia_catalog(id, catalog, positions, radius, logger)
 
-            return None
+            filename = self.write_gaia_catalog(rows, path=obj['relative_path'])
+
+            file_size = os.path.getsize(filename)
+
+            t1 = datetime.now()
+            tdelta = t1 - t0
+
+            # Result Catalog Gaia
+            obj["results"].append(dict({
+                "filename": os.path.basename(filename),
+                "file_size": file_size,
+                "file_path": filename,
+                "file_type": os.path.splitext(filename)[1]
+            }))
+
+            crows = len(rows)
+
+            if crows > 0 and filename:
+                status = 'success'
+                error_msg = None
+                msg = "[ SUCCESS ] - Object: %s  Rows: %s  Size: %s Time: %s " % (
+                    obj["name"], crows, humanize.naturalsize(file_size), humanize.naturaldelta(tdelta))
+
+            else:
+                status = 'failure'
+                error_msg = 'Failed to generate gaia catalog.'
+
+                msg = "[ FAILURE ] - Object: %s " % obj['name']
+
+            self.logger.info(msg)
+
+            # Gaia Catalog e input para a proxima etapa
+            obj["inputs"]["gaia_catalog"] = os.path.basename(filename)
+
+            obj["status"] = status
+            obj["error_msg"] = error_msg
+            obj["start_gaia_catalog"] = t0.replace(microsecond=0).isoformat(' ')
+            obj["finish_gaia_catalog"] = t1.replace(microsecond=0).isoformat(' ')
+            obj["execution_gaia_catalog"] = tdelta.total_seconds()
+            obj["gaia_rows"] = crows
+
+            return obj
 
         # Retrive Gaia catalog
         gaia = self.catalog
@@ -670,6 +721,7 @@ class PredictionOccultation():
                 id=id,
                 catalog=gaia,
                 obj=obj,
+                radius=self.radius,
                 logger=self.logger)
 
             self.logger.debug(result)
@@ -686,47 +738,59 @@ class PredictionOccultation():
 
         dfk.cleanup()
 
+        count = len(outputs)
+        failure = 0
+        average = []
+        crows = []
+        for row in outputs:
+            if row['status'] == "failure":
+                failure += 1
+            average.append(row['execution_gaia_catalog'])
+            crows.append(row['gaia_rows'])
+
+            self.results['objects'][row['alias']] = row
+
+        t1 = datetime.now()
+        tdelta = t1 - t0
+
+        self.results['gaia_catalog_report'] = dict({
+            'start_time': t0.replace(microsecond=0).isoformat(' '),
+            'finish_time': t1.replace(microsecond=0).isoformat(' '),
+            'execution_time': tdelta.total_seconds(),
+            'count_asteroids': count,
+            'count_success': count - failure,
+            'count_failed': failure,
+            'average_time': mean(average),
+            'average_rows': mean(crows)
+        })
+
+        self.logger.info(
+            "Finished to generate the gaia catalog, %s asteroids in %s" % (count, humanize.naturaldelta(tdelta)))
+
     def read_positions(self, filename):
         positions = []
 
         with open(filename, 'r') as fp:
             for line in fp:
-                a = line.strip().split('    ')
-                ra = float(a[0].strip())
-                dec = float(a[1].strip())
-
-                positions.append([ra, dec])
+                try:
+                    line.strip()
+                    a = line.split()
+                    ra = float(a[0].strip())
+                    dec = float(a[1].strip())
+                    positions.append([ra, dec])
+                except Exception as e:
+                    raise e
 
         return positions
 
-    def run_gaia_catalog(self, id, catalog, positions, logger):
-        logger.debug("RUN GAIA CATALOG")
-
-        # Propriedades do GAIA http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=I/345/gaia2&-out.add=_r
-        # RA_ICRS = ra
-        # e_RA_ICRS = ra_error
-        # DE_ICRS = dec
-        # e_DE_ICRS = dec_error
-        # Plx = parallax
-        # pmRA = pmra
-        # e_pmRA = pmra_error
-        # pmDE = pmdec
-        # e_pmDE = pmdec_error
-        # Dup = duplicated_source
-        # FG = phot_g_mean_flux
-        # e_FG = phot_g_mean_flux_error
-        # Gmag = phot_g_mean_mag
-        # Var = phot_variable_flag
-
-
-
+    def run_gaia_catalog(self, id, catalog, positions, radius, logger):
         try:
             db = CatalogDB()
 
             if catalog.schema is not None:
                 tablename = "%s.%s" % (catalog.schema, catalog.tablename)
 
-            radius = 0.15
+            columns = ", ".join(self.gaia_properties)
 
             clauses = []
             for pos in positions:
@@ -736,26 +800,77 @@ class PredictionOccultation():
 
             where = ' OR '.join(clauses)
 
-            stm = """SELECT * FROM %s WHERE %s """ % (tablename, where)
-
+            stm = """SELECT %s FROM %s WHERE %s LIMIT 20000""" % (columns, tablename, where)
 
             # logger.debug("QUERY: %s" % stm)
 
             rows = db.fetch_all_dict(text(stm))
 
-            logger.debug("ROWS COUNT: %s" % len(rows))
+            # logger.debug("ROWS COUNT: %s" % len(rows))
+
+            return rows
 
         except Exception as e:
             logger.error(e)
             raise e
 
-        pass
+    def write_gaia_catalog(self, rows, path):
+
+        # Propriedades do GAIA http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=I/345/gaia2&-out.add=_r
+        # RA_ICRS   = ra                     = 0
+        # e_RA_ICRS = ra_error               = 1
+        # DE_ICRS   = dec                    = 2
+        # e_DE_ICRS = dec_error              = 3
+        # Plx       = parallax               = 4
+        # pmRA      = pmra                   = 5
+        # e_pmRA    = pmra_error             = 6
+        # pmDE      = pmdec                  = 7
+        # e_pmDE    = pmdec_error            = 8
+        # Dup       = duplicated_source      = 9
+        # FG        = phot_g_mean_flux       = 10
+        # e_FG      = phot_g_mean_flux_error = 11
+        # Gmag      = phot_g_mean_mag        = 12
+        # Var       = phot_variable_flag     = 13
+
+        magJ, magH, magK = 99.000, 99.000, 99.000
+        JD = 15.0 * 365.25 + 2451545
+
+        filename = os.path.join(path, "gaia_catalog.txt")
+        with open(filename, 'w') as fp:
+            for row in rows:
+
+                # Converter os valores nulos para 0
+                for prop in row:
+                    if row[prop] is None:
+                        row[prop] = 0
+
+                fp.write(" ".ljust(64))
+                fp.write(("%.3f" % row['phot_g_mean_mag']).rjust(6))
+                fp.write(" ".ljust(7))
+                fp.write(" " + ("%.3f" % magJ).rjust(6))
+                fp.write(" " + ("%.3f" % magH).rjust(6))
+                fp.write(" " + ("%.3f" % magK).rjust(6))
+                fp.write(" ".rjust(35))
+                fp.write(" " + ("%.3f" % (row["pmra"] / 1000.0)).rjust(7))
+                fp.write(" " + ("%.3f" % (row["pmdec"] / 1000.0)).rjust(7))
+                fp.write(" " + ("%.3f" % (row["pmra_error"] / 1000.0)).rjust(7))
+                fp.write(" " + ("%.3f" % (row["pmdec_error"] / 1000.0)).rjust(7))
+                fp.write(" ".rjust(71))
+                fp.write(" " + ("%.9f" % (row["ra"] / 15.0)).rjust(13))
+                fp.write(" " + ("%.9f" % row["dec"]).rjust(13))
+                fp.write(" ".ljust(24))
+                fp.write(("%.8f" % JD).rjust(16))
+                fp.write(" ".ljust(119))
+                fp.write("  " + ("%.3f" % (row["ra_error"] / 1000.0)).rjust(6))
+                fp.write("  " + ("%.3f" % (row["dec_error"] / 1000.0)).rjust(6))
+                fp.write("\n")
+
+            fp.close()
+
+        return filename
 
     def on_error(self, msg):
         pass
 
-
-
 # Comando para gerar o plot no gnuplot
 # plot 'gaia.csv' u 1:2 notitle, '1999RB216.eph' u (15*($3+$4/60+$5/3600)):(($6+$7/60+$8/3600)) w l notitle
-

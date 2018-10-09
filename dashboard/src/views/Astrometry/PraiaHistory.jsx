@@ -199,6 +199,7 @@ class PraiaHistory extends Component {
                 <Toolbar>
                   <Button
                     label="Re-execute"
+                    className="btn-TNO-color"
                     disabled={!selected_record}
                     onClick={this.handleOnRerun}
                   />

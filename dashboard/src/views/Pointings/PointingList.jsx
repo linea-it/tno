@@ -236,6 +236,7 @@ class PointingList extends Component {
   };
 
   render() {
+    const propSet = this.props;
     const { data, sizePerPage, page, totalSize, loading, search } = this.state;
 
     const pagination = paginationFactory({
@@ -252,12 +253,14 @@ class PointingList extends Component {
       onDoubleClick: (e, row) => {
         history.push('/pointingsdetail/' + row.id);
       },
-    };
+    };  
+
+    console.log(propSet);
 
     return (
-      <div className="flex-container flex-wrap">
+      <div className={`${propSet.className} section`}>
         <PanelCostumize
-          className="item grow1"
+          className="list_pointings"
           title="List with all pointings"
           content={
             <Card>
@@ -273,7 +276,7 @@ class PointingList extends Component {
                           onKeyPress={this.onKeyPress}
                         />
                         <Button
-                          className="ui-button-primary"
+                          className="btn-TNO-color"
                           label="Search"
                           onClick={this.handleSearch}
                         />
@@ -286,22 +289,14 @@ class PointingList extends Component {
                           onClick={e => {
                             this.handlerClear();
                           }}
-                          style={{
-                            border: ' 1px solid #95a5a6',
-                            backgroundColor: '#95a5a6',
-                            width: '100px',
-                          }}
+                          className="btn-TNO-color"
                         />
                         <Button
                           label="Filters"
                           onClick={e => {
                             this.setState({ show: true });
                           }}
-                          style={{
-                            border: ' 1px solid #7f8c8d',
-                            backgroundColor: '#7f8c8d',
-                            width: '190px',
-                          }}
+                          className="btn-TNO-color"
                         />
                       </div>
                     </div>
@@ -426,7 +421,7 @@ class PointingList extends Component {
       //       }
       //     />
       //   </div>
-      // </div>
+      // </div> 
     );
   }
 }

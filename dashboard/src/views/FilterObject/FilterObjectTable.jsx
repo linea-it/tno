@@ -206,7 +206,7 @@ class FilterObjectTable extends Component {
             label="Save"
             disabled={!haveData}
             onClick={this.props.saveList}
-            style={{ float: 'left', padding: '5px 25px' }}
+            className="button-TNO"
           />
         </Toolbar>
         <BootstrapTable
