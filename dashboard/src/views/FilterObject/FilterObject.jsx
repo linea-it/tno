@@ -87,9 +87,9 @@ class FilterObject extends Component {
   render() {
     const closeCreate = () => this.setState({ showCreate: false });
     return (
-      <div className="ui-g">
-        <div className="ui-lg-4 ui-md-6">
+          <div className="grid template-filter-object">
           <PanelCostumize
+            className="form_filter"
             title="Filter"
             subTitle="Filter the objects and create a list with the result."
             content={
@@ -104,9 +104,9 @@ class FilterObject extends Component {
               </Card>
             }
           />
-        </div>
-        <div className="ui-lg-8 ui-md-6">
+    
           <PanelCostumize
+            className="search_filter"
             content={
               <Card className="none" title="" category="">
                 <FilterObjectTable
@@ -117,7 +117,6 @@ class FilterObject extends Component {
               </Card>
             }
           />
-        </div>
         <CreateListForm
           show={this.state.showCreate}
           onHide={closeCreate}
