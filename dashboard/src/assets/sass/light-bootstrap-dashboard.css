@@ -3390,7 +3390,7 @@ body > .navbar-collapse[data-color="purple"]:after {
   min-height: 20%;
   background: none;
   border-radius: 1px;
-  margin: 8px 0px 8px 0px; }
+  margin: 8px; }
   .content-main .content-header {
     margin: 0; }
   .content-main .content-title {
@@ -3611,6 +3611,36 @@ body > .navbar-collapse[data-color="purple"]:after {
 .history_refine {
   grid-area: history_refine; }
 
+.exec_astrometry {
+  grid-area: exec_astrometry; }
+
+.running_astrometry {
+  grid-area: running_astrometry; }
+
+.history_astrometry {
+  grid-area: history_astrometry; }
+
+.list_predict_occult {
+  grid-area: list_predict_occult; }
+
+.stats_predict_occult {
+  grid-area: stats_predict_occult; }
+
+.exec_predict_occult {
+  grid-area: exec_predict_occult; }
+
+.table_predict_occult {
+  grid-area: table_predict_occult; }
+
+.content1_predict_occult {
+  grid-area: content1_predict_occult; }
+
+.content2_predict_occult {
+  grid-area: content2_predict_occult; }
+
+.history_predict_occult {
+  grid-area: history_predict_occult; }
+
 @media screen and (min-width: 1366px) {
   .template-wrap-pointings {
     grid-gap: 0.75rem;
@@ -3636,7 +3666,22 @@ body > .navbar-collapse[data-color="purple"]:after {
     grid-gap: 0.75rem;
     grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
     grid-template-rows: auto;
-    grid-template-areas: "submit_refine running_refine" "history_refine history_refine"; } }
+    grid-template-areas: "submit_refine running_refine" "history_refine history_refine"; }
+  .template-predict-occult {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "list_predict_occult stats_predict_occult" "exec_predict_occult exec_predict_occult" "table_predict_occult table_predict_occult"; }
+  .template-predict-panel {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "content1_predict_occult content2_predict_occult" "history_predict_occult history_predict_occult"; }
+  .template-predict-astromery {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "exec_astrometry running_astrometry" "history_astrometry history_astrometry"; } }
 
 @media screen and (max-width: 1366px) {
   .template-wrap-pointings {
@@ -3663,7 +3708,17 @@ body > .navbar-collapse[data-color="purple"]:after {
     grid-gap: 0.75rem;
     grid-template-columns: repeat(1, minmax(12.5rem, 1fr));
     grid-template-rows: auto;
-    grid-template-areas: "submit_refine" "running_refine" "history_refine"; } }
+    grid-template-areas: "submit_refine" "running_refine" "history_refine"; }
+  .template-predict-panel {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "content1_predict_occult content2_predict_occult" "history_predict_occult history_predict_occult"; }
+  .template-predict-astromery {
+    grid-gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+    grid-template-rows: auto;
+    grid-template-areas: "exec_astrometry running_astrometry" "history_astrometry history_astrometry"; } }
 
 @media screen and (max-width: 768px) {
   .template-wrap-pointings {

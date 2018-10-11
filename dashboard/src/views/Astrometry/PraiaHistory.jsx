@@ -184,10 +184,6 @@ class PraiaHistory extends Component {
     };
 
     return (
-      <PanelCostumize
-      title="History"
-      subTitle="Manage the completed Astrometry rounds"
-        content={
           <div>
             <ReactInterval
               timeout={reload_interval * 1000}
@@ -227,8 +223,6 @@ class PraiaHistory extends Component {
               </div>
             </Card>
           </div>
-        }
-      />
     );
   }
 }

@@ -13,6 +13,7 @@ import { Column } from 'primereact/column';
 import { Toolbar } from 'primereact/toolbar';
 import PropTypes from 'prop-types';
 
+
 class PredictionHistory extends Component {
   state = this.initialState;
   api = new PredictionApi();
@@ -34,7 +35,7 @@ class PredictionHistory extends Component {
       sortOrder: 1,
       asteroid_id: 0,
       log_visible: false,
-      selected: null,
+      selected: '',
     };
   }
 
@@ -125,6 +126,39 @@ class PredictionHistory extends Component {
     );
   };
 
+  toolbarButton = el => {
+
+    let btn_view_toolbar = null;
+    let btn_reexecute = null;
+    const id = el.id;
+
+    btn_reexecute = (
+        <Button
+        label="Re-execute"
+        disabled={!this.state.selected}
+        onClick={this.handleOnRerun}
+       />
+      );
+    
+     btn_view_toolbar = (
+        <Button
+            label="Detail"
+            disabled={!this.state.selected}
+            // onClick={this.stdetails}
+            onClick={() => this.onView(id)}
+          />
+      );
+
+    return (
+        <Toolbar>
+          {btn_reexecute}
+          {btn_view_toolbar}
+        </Toolbar>
+      ); 
+};
+ 
+
+
   onPageChange = e => {
     const page = e.page + 1;
     this.setState(
@@ -178,6 +212,7 @@ class PredictionHistory extends Component {
   };
 
   render() {
+
     const columns = this.columns.map((col, i) => {
       return (
         <Column
@@ -190,11 +225,12 @@ class PredictionHistory extends Component {
         />
       );
     });
-
+    console.log(this.state.selected);
     return (
       <div>
-        <Toolbar>
-          <Button
+
+     { this.toolbarButton(this.state.selected) }
+          {/* <Button
             label="Re-execute"
             disabled={!this.state.selected}
             onClick={this.handleOnRerun}
@@ -203,8 +239,9 @@ class PredictionHistory extends Component {
             label="Detail"
             disabled={!this.state.selected}
             // onClick={this.stdetails}
-          />
-        </Toolbar>
+            onClick={this.onView(id)}
+
+          /> */}
 
         <DataTable
           value={this.state.data}

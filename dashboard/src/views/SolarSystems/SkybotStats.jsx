@@ -118,6 +118,7 @@ class SkybotStats extends Component {
       <div className="grid template-skybot">
         <PanelCostumize
           className="list_stats_skybot"
+          noHeader={true}
           content={
             <Content content={<div className="group-stats">{list}</div>} />
           }
@@ -125,6 +126,7 @@ class SkybotStats extends Component {
 
         <PanelCostumize
           className="plot_dinamics"
+          title="plot_dinamics"
           content={
             <Content
               header={true}
@@ -151,6 +153,7 @@ class SkybotStats extends Component {
 
         <PanelCostumize
           className="plot_band"
+          title="plot_band"
           content={
             <Content
               header={true}

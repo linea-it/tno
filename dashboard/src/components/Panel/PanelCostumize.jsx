@@ -3,14 +3,10 @@ import React, { Component } from 'react';
 class PanelCostumize extends Component {
   render() {
     const propSet = this.props;
-    if (propSet.subLine) {
+    if (propSet.noHeader) {
       return (
         <div className={`panel-content ${propSet.className}`}>
-          <div className={`header ${propSet.colorHead}`}>
-            <p className="title">{propSet.title}</p>
-          </div>
           <p className="subTitle">{propSet.subTitle}</p>
-          <hr className="hr-subTitle" />
           {propSet.content}
         </div>
       );

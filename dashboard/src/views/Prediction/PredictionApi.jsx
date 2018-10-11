@@ -5,6 +5,10 @@ class PredictionApi {
     this.api = process.env.REACT_APP_API;
   }
 
+  getPrediction = () => {
+    axios.get(`http://localhost:7001/refined_asteroid/?page=1&pageSize=100&orbit_run=1`)
+  };
+
   getPredictionRuns = ({ page, pageSize, ordering, filters = [] }) => {
     const params = { page: page, pageSize: pageSize, ordering: ordering };
     filters.forEach(element => {
@@ -52,7 +56,7 @@ class PredictionApi {
       params[element.property] = element.value;
     });
 
-    return axios.get(`${this.api}/predict_asteroid/`, {
+    return axios.get(`${this.api}/refined_asteroid/`, {
       params: params,
     });
   };

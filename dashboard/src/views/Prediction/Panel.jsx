@@ -33,25 +33,32 @@ class PredictionPanel extends Component {
   render() {
     // const { record } = this.state;
     return (
-      <div className="content">
-        <div className="ui-g">
-          <div className="ui-g-4">
-            <Card title=" " subTitle=" " />
-          </div>
-          <div className="ui-g-8">
-            <Card title=" " subTitle=" " />
-          </div>
-        </div>
-        <div className="ui-g">
-          <div className="ui-g-12">
-            <Card subTitle="Manage PRAIA Occultation rounds">
-              <PredictionHistory
-                view_prediction={this.onViewPrediction}
-                onRerun={this.onCreateRun}
-              />
-            </Card>
-          </div>
-        </div>
+      <div className="grid template-predict-panel">
+          <PanelCostumize 
+            className="content1_predict_occult"
+            content={
+              <Card title=" " subTitle=" " />
+            }
+          />
+
+          <PanelCostumize 
+            className="content2_predict_occult"
+            content={
+              <Card title=" " subTitle=" " />
+            }
+          />
+
+          <PanelCostumize 
+            className="history_predict_occult"
+            content={
+              <Card subTitle="Manage PRAIA Occultation rounds">
+                  <PredictionHistory
+                    view_prediction={this.onViewPrediction}
+                    onRerun={this.onCreateRun}
+                  />
+                </Card>
+            }
+          />
       </div>
     );
   }
