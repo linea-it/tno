@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
-import { Card } from 'primereact/card';
+// import { Card } from 'primereact/card';
+import Content from 'components/CardContent/CardContent.jsx';
 import PropTypes from 'prop-types';
 import {
   PieChart,
@@ -27,8 +28,9 @@ class DonutStats extends Component {
 
     return (
       <ResponsiveContainer width="100%" height="80%">
-        <Card subTitle={propSet.title} style={{ height: '200px' }}>
-          <PieChart width={450} height={150} onMouseEnter={this.onPieEnter}>
+        <Content 
+          content={
+            <PieChart width={450} height={150} onMouseEnter={this.onPieEnter}>
             <Pie
               data={propSet.data}
               cx={60}
@@ -53,7 +55,9 @@ class DonutStats extends Component {
               verticalAlign="middle"
             />
           </PieChart>
-        </Card>
+          }
+        />
+
       </ResponsiveContainer>
     );
   }

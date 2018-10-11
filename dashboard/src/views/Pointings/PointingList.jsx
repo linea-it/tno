@@ -259,6 +259,7 @@ class PointingList extends Component {
 
     return (
       <div className={`${propSet.className} section`}>
+       <div className="grid template-pointigs">
         <PanelCostumize
           className="list_pointings"
           title="List with all pointings"
@@ -335,6 +336,7 @@ class PointingList extends Component {
             </Card>
           }
         />
+      </div>
       </div>
       // <div className="ui-g">
       //   <div className="ui-lg-12 ui-md-12 ui-sm-12">

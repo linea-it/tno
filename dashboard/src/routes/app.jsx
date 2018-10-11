@@ -21,6 +21,11 @@ import AsteroidDetail from '../views/RefineOrbit/AsteroidDetail';
 import PredictionPanel from '../views/Prediction/Panel';
 import PredictionDetail from '../views/Prediction/Detail';
 
+import PlotPrediction from '../views/Prediction/Plot';
+
+import AsteroidDetailPrediction from '../views/Prediction/AsteroidDetail';
+
+
 const appRoutes = [
   {
     path: '/dashboard',
@@ -135,6 +140,12 @@ const appRoutes = [
     hidden: true,
   },
   {
+    path: '/predict_asteroid/:id',
+    name: 'Prediction Occultation Detail',
+    component: AsteroidDetailPrediction,
+    hidden: true,
+  },
+  {
     path: '/post_results',
     name: 'Post Results',
     component: Placeholder,
@@ -179,6 +190,14 @@ const appRoutes = [
     component: Notifications,
     hidden: true,
   },
+
+  {
+    path: '/plot',
+    name: 'plot',
+    component: PlotPrediction,
+    hidden: true,
+  },
+
   { redirect: true, path: '/', to: '/dashboard', name: 'Dashboard' },
 ];
 

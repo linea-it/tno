@@ -16,8 +16,6 @@ class StepStats extends Component {
 
     StepStats.PropTypes = {
       title: string.isRequired,
-      data: array.isRequired,
-      columns: any.isRequired,
       info: array.isRequired,
       grid: array,
     };

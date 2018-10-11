@@ -179,6 +179,7 @@ class PointingsStats extends Component {
 
           <PanelCostumize
             className="list_stats"
+            noHeader={true}
             content={
               <Content content={<div className="group-stats">{list}</div>} />
             }

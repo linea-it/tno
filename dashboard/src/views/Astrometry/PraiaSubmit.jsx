@@ -90,10 +90,7 @@ class PraiaSubmit extends Component {
   render() {
     const { input, config } = this.state;
     return (
-      <PanelCostumize
-        title="Execute"
-        subTitle="Descrição sobre a execução"
-        content={
+     
           <Card className="none">
             <Form>
               <FormGroup>
@@ -120,13 +117,12 @@ class PraiaSubmit extends Component {
                   defaultOptions
                   loadOptions={this.loadConfigs}
                 />
-                <Button className="button-TNO"label="Submit" onClick={this.onClickSubmit} style={{margin: '20px !important'}}/>
+                <br />
+                <Button className="button-TNO"label="Submit" onClick={this.onClickSubmit} style={{marginTop: '20px !important'}}/>
  
               </FormGroup>
             </Form>
           </Card>
-        }
-      />
     );
   }
 }
