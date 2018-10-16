@@ -158,6 +158,7 @@ class LeapSecondsSerializer(serializers.ModelSerializer):
     class Meta:
         model = LeapSecond
         fields = (
+            'id',
             'name',
             'display_name',
             'url',
@@ -169,6 +170,7 @@ class BspPlanetarySerializer(serializers.ModelSerializer):
     class Meta:
         model = BspPlanetary
         fields = (
+            'id',
             'name',
             'display_name',
             'url',

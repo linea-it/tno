@@ -3499,6 +3499,9 @@ body > .navbar-collapse[data-color="purple"]:after {
 .flex {
   display: flex; }
 
+.flex-end {
+  align-items: flex-end; }
+
 .space-around {
   justify-content: space-around; }
 
@@ -3552,6 +3555,15 @@ body > .navbar-collapse[data-color="purple"]:after {
 
 .grow-12 {
   flex-grow: 12; }
+
+.item-prediction {
+  margin: 10px 20px !important;
+  width: inherit !important; }
+
+.button-prediction {
+  margin: 10px 20px !important;
+  width: 20% !important;
+  float: right !important; }
 
 .grid {
   display: grid;

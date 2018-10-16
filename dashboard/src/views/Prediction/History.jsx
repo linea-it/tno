@@ -134,6 +134,7 @@ class PredictionHistory extends Component {
 
     btn_reexecute = (
         <Button
+        className="btn-TNO-color"
         label="Re-execute"
         disabled={!this.state.selected}
         onClick={this.handleOnRerun}
@@ -142,6 +143,7 @@ class PredictionHistory extends Component {
     
      btn_view_toolbar = (
         <Button
+            className="btn-TNO-color"
             label="Detail"
             disabled={!this.state.selected}
             // onClick={this.stdetails}

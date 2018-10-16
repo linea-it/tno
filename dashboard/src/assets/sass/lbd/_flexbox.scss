@@ -19,6 +19,9 @@
 .flex {
     display: flex;
 }
+.flex-end {
+    align-items: flex-end;
+}
 
 .space-around {
     justify-content: space-around;
@@ -93,3 +96,14 @@
     flex-grow: 12;
 }
 
+// Predicton ocultation
+
+.item-prediction {
+    margin: 10px 20px !important;
+    width: inherit !important;
+}
+.button-prediction {
+    margin: 10px 20px !important;
+    width: 20% !important;
+    float: right !important;
+}

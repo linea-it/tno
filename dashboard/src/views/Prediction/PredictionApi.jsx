@@ -6,8 +6,18 @@ class PredictionApi {
   }
 
   getPrediction = () => {
-    axios.get(`http://localhost:7001/refined_asteroid/?page=1&pageSize=100&orbit_run=1`)
+    return axios.get(`http://localhost:7001/orbit_run/?status=success`)
   };
+
+  getLeapSeconds = () => {
+    return axios.get(`http://localhost:7001/leap_seconds/`)
+  };
+
+  getBspPlanetary = () => {
+    return axios.get(`http://localhost:7001/bsp_planetary/`)
+  };
+
+
 
   getPredictionRuns = ({ page, pageSize, ordering, filters = [] }) => {
     const params = { page: page, pageSize: pageSize, ordering: ordering };
@@ -61,4 +71,5 @@ class PredictionApi {
     });
   };
 }
+
 export default PredictionApi;
