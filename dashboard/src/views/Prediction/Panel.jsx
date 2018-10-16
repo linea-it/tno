@@ -34,31 +34,27 @@ class PredictionPanel extends Component {
     // const { record } = this.state;
     return (
       <div className="grid template-predict-panel">
-          <PanelCostumize 
-            className="content1_predict_occult"
-            content={
-              <Card title=" " subTitle=" " />
-            }
-          />
+        <PanelCostumize
+          className="content1_predict_occult"
+          content={<Card title=" " subTitle=" " />}
+        />
 
-          <PanelCostumize 
-            className="content2_predict_occult"
-            content={
-              <Card title=" " subTitle=" " />
-            }
-          />
+        <PanelCostumize
+          className="content2_predict_occult"
+          content={<Card title=" " subTitle=" " />}
+        />
 
-          <PanelCostumize 
-            className="history_predict_occult"
-            content={
-              <Card subTitle="Manage PRAIA Occultation rounds">
-                  <PredictionHistory
-                    view_prediction={this.onViewPrediction}
-                    onRerun={this.onCreateRun}
-                  />
-                </Card>
-            }
-          />
+        <PanelCostumize
+          className="history_predict_occult"
+          content={
+            <Card subTitle="Manage PRAIA Occultation rounds">
+              <PredictionHistory
+                view_prediction={this.onViewPrediction}
+                onRerun={this.onCreateRun}
+              />
+            </Card>
+          }
+        />
       </div>
     );
   }

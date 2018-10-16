@@ -74,25 +74,51 @@ class PredictRun(models.Model):
     # Relation With Proccess
     proccess = models.ForeignKey(
         'tno.Proccess', on_delete=models.CASCADE, verbose_name='Proccess',
-        null=True, blank=True, default=None, related_name='predict_run'
+        null=True, blank=True, related_name='predict_run'
     )
 
     # Relation With Catalog
     catalog = models.ForeignKey(
         'tno.Catalog', on_delete=models.CASCADE, verbose_name='Catalog',
-        null=True, blank=True, default=None
+        null=True, blank=True
     )
 
     # Relation With LeapSecond
     leap_second = models.ForeignKey(
         LeapSecond, on_delete=models.CASCADE, verbose_name='Leap Second',
-        null=True, blank=True, default=None
+        null=True, blank=True
     )
 
     # Relation With BspPlanetary
     bsp_planetary = models.ForeignKey(
         BspPlanetary, on_delete=models.CASCADE, verbose_name='BSP Planetary',
-        null=True, blank=True, default=None
+        null=True, blank=True
+    )
+
+    # Data de Inicio da Ephemeris
+    ephemeris_start_date = models.DateField(
+        verbose_name='Ephemeris Start Date',
+        auto_now_add=False, null=True, blank=True,
+        help_text='Initial date to generate Ephemeris'
+    )
+
+    # Data de Termino da Ephemeris
+    ephemeris_end_date = models.DateTimeField(
+        verbose_name='Ephemers End Date',
+        auto_now_add=False, null=True, blank=True,
+        help_text='Final date to generate Ephemeris'
+    )
+
+    ephemeris_step = models.PositiveIntegerField(
+        verbose_name='Ephemeris Step',
+        null=False, blank=False, default=600,
+        help_text='Interval in seconds to generate Ephemeris'
+    )
+
+    catalog_radius = models.FloatField(
+        verbose_name='Catalog Radius',
+        null=False, blank=False, default=0.15,
+        help_text='Radius in degrees for the querys in the star catalog.'
     )
 
     start_time = models.DateTimeField(
