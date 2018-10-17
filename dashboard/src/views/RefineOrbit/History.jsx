@@ -7,7 +7,6 @@ import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { formatColumnHeader, formatStatus } from 'utils';
-import ReactInterval from 'react-interval';
 import OrbitApi from './OrbitApi';
 import Content from 'components/CardContent/CardContent.jsx';
 

@@ -8,7 +8,6 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
-import { Icon } from 'semantic-ui-react';
 import PanelCostumize from 'components/Panel/PanelCostumize';
 import Content from 'components/CardContent/CardContent.jsx';
 import PointingApi from './PointingApi';

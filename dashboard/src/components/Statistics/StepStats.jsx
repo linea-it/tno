@@ -12,7 +12,7 @@ class StepStats extends Component {
 
   render() {
     const propSet = this.props;
-    const { string, array, any } = PropTypes;
+    const { string, array } = PropTypes;
 
     StepStats.PropTypes = {
       title: string.isRequired,
@@ -43,7 +43,7 @@ class StepStats extends Component {
     // Descobrindo o total
     let total = 0;
     propSet.info.map((col, i) => {
-      total += col.value;
+     return total += col.value;
     });
 
     const areaProgress = propSet.info.map((col, i) => {

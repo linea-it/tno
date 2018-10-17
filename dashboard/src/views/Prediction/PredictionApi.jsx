@@ -5,6 +5,12 @@ class PredictionApi {
     this.api = process.env.REACT_APP_API;
   }
 
+  createPredictRun = ({ input_list, proccess }) =>
+    axios.post(`${this.api}/predict_run/`, {
+      input_list: input_list,
+      proccess: proccess,
+  });
+
   getPrediction = () => {
     return axios.get(`http://localhost:7001/orbit_run/?status=success`)
   };
@@ -16,8 +22,6 @@ class PredictionApi {
   getBspPlanetary = () => {
     return axios.get(`http://localhost:7001/bsp_planetary/`)
   };
-
-
 
   getPredictionRuns = ({ page, pageSize, ordering, filters = [] }) => {
     const params = { page: page, pageSize: pageSize, ordering: ordering };

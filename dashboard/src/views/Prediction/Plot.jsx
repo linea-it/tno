@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Plot from 'react-plotly.js';
+// import Plot from 'react-plotly.js';
 // import { rows } from './dataPredict.js';
 // import { gaia } from './dataPredict2.js';
 
