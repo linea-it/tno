@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 // import OrbitApi from 'RefineOrbit/OrbitApi';
 import PredictionApi from './PredictionApi';
+import {Calendar} from 'primereact/calendar';
+import {Slider} from 'primereact/slider';
+import {Spinner} from 'primereact/spinner';
 
 //primereact
 import 'primereact/resources/themes/omega/theme.css';
@@ -28,10 +31,13 @@ class PredicitionSelect extends Component {
       message: '',
       actionButton: '',
       record: null,
+      number: 0,
+      data1: '01/01/2018',
+      data2: '01/01/2018',
     };
   }
   componentDidMount() {
-  
+
     this.apiPrediction.getPrediction().then(res => {
       const r = res.data;
       this.setState({
@@ -52,9 +58,6 @@ class PredicitionSelect extends Component {
         bspPlaneraty: r.results
       });
     });
-
-    this.setState({ record : this.state.object });
-
   };
 
 
@@ -74,31 +77,36 @@ class PredicitionSelect extends Component {
       }
     };
 
-    onClickSubmit = () => {
-      this.onCheck();
+    onClick = () => {
+      this.setState({ record : this.state.object });
+
+      console.log("fui clicado");
+
       const { record } = this.state;
       if (!record) {
         // TODO: Implementar notifacao de parametro faltante
+        console.log("Não veio nada na requisição");
         return;
+      } else  {
+        console.log(this.state.record);
       }
   
-      this.orbit_api
+      this.apiPrediction
         .createPredictRun({
           input_list: record.input_list,
           proccess: record.proccess,
         })
         .then(res => {
-          console.log(res);
+          console.log("Eu sou a resposta do predict:", res);
           this.onCreateSuccess(res.data);
         })
-        .catch(this.onCreateFailure);
+        .catch(this.onCreateFailure("sim"));
     };
   
     onCreateSuccess = record => {
       console.log('onCreateSuccess(%o)', record);
       this.setState(this.initialState, this.props.onCreateRun(record));
     };
-  
     onCreateFailure = error => {
       // TODO: Criar uma Notificacao de falha.
       console.log('onCreateFailure(%o)', error);
@@ -144,29 +152,31 @@ class PredicitionSelect extends Component {
     const elementos = [];
     asteroid.map((el, i) => {
         elementos.push({ label: `el.proccess_displayname${i}`, value: el.id});
-        return console.log("elementos: ", elementos);
+        return;
     });
     
     let leap = this.state.leapSeconds;
     const el_leap = [];
     leap.map((fl, i) => {
       el_leap.push({ label: fl.display_name, value: fl.id});
-      return console.log("leap_second", el_leap);
+      return;
     });
 
     let bsp = this.state.bspPlaneraty;
     const el_bsp = [];
     bsp.map((gl, i) => {
       el_bsp.push({ label: gl.display_name, value: gl.id});
-      return console.log("el_bsp",el_bsp);
+      return;
     });
    
     return (
       <div>
-          <div className="flex-layout">
+          <div className="flex-row">
+          <div className="item-prediction">
+            <p className="label-prediction">Asteorid</p>
             <Dropdown
+              className="drop"
               key={1}
-              className="item-prediction"
               value={this.state.asteroid}
               options={elementos}
               onChange={e => { 
@@ -174,10 +184,10 @@ class PredicitionSelect extends Component {
               }}
               placeholder="Select a object"
             />
-
+            <p className="label-prediction">Leap</p>
             <Dropdown
+              className="drop"
               key={2}
-              className="item-prediction"
               value={this.state.obj_leap}
               options={el_leap}
               onChange={f => {
@@ -185,10 +195,10 @@ class PredicitionSelect extends Component {
               }}
               placeholder="Select a Leap"
             />
-
+            <p className="label-prediction">BSP Planetary</p>    
             <Dropdown
+              className="drop"
               key={3}
-              className="item-prediction"
               value={this.state.bsp_planeraty}
               options={el_bsp}
               onChange={g => {
@@ -198,12 +208,28 @@ class PredicitionSelect extends Component {
             />
           </div>
 
-          <Button label="Submit" disabled={this.state.actionButton} onClick={this.onClick} className=" button-TNO button-prediction" />
+          <div className="item-prediction drop">
+            <p className="label-prediction">BSP Planetary</p>    
+              <Spinner             
+                    value={this.state.number} onChange={(e) => this.setState({number: e.value})} min={0} max={5} step={0.15}/>
+              
+              <p className="label-prediction">BSP Planetary</p>          
+              <Calendar               
+                    value={this.state.date1} onChange={(e) => this.setState({date1: e.value})} yearRange="2018" placeholder="Select a BSP Planetary"/>
+
+              <p className="label-prediction">BSP Planetary</p>          
+              <Calendar               
+                    value={this.state.date2}  onChange={(e) => this.setState({date2: e.value})} yearRange="2018"/>
+          </div>
+  
+          </div>
+         
           <br />
+
+          <Button label="Submit" disabled={this.state.actionButton} onClick={this.onClick} className=" button-TNO button-prediction" />
           <p>{this.state.message}</p>
 
-        </div>
-     
+      </div>          
       );
     };
   }

@@ -913,6 +913,15 @@ body > .navbar-collapse[data-color="purple"]:after {
 .input-group-focus .input-group-addon {
   border-color: #9A9A9A; }
 
+.input-number {
+  background: #000 !important; }
+
+.drop {
+  width: 500px !important; }
+
+.label-prediction {
+  margin: 15px 0px 0px 0px; }
+
 .alert {
   border: 0;
   border-radius: 0;
@@ -3484,6 +3493,10 @@ body > .navbar-collapse[data-color="purple"]:after {
 .flex-layout {
   display: flex;
   flex-direction: column; }
+
+.flex-row {
+  display: flex;
+  flex-direction: row; }
 
 .flex-container {
   width: 100%;
