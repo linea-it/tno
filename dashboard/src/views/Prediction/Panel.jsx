@@ -4,7 +4,7 @@ import PredictionHistory from './History';
 // import PredictionSubmit from './Submit';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import PropTypes from 'prop-types';
-import  Content  from 'components/CardContent/CardContent.jsx';
+import Content from 'components/CardContent/CardContent.jsx';
 import PredictionSelect from './PredictionSelect.jsx';
 
 class PredictionPanel extends Component {
@@ -34,37 +34,32 @@ class PredictionPanel extends Component {
     // const { record } = this.state;
     return (
       <div className="grid template-predict-panel">
-          <PanelCostumize 
-            title="Prediction Occultation"
-            subTitle="Execute PRAIA Occultation"
-            className="content1_predict_occult"
-            content={
-              <Content title="" content={
-                <PredictionSelect/>
-              }/>
-            }
-          />
+        <PanelCostumize
+          title="Prediction Occultation"
+          subTitle="Execute PRAIA Occultation"
+          className="content1_predict_occult"
+          content={<Content title="" content={<PredictionSelect />} />}
+        />
 
-          <PanelCostumize 
-            className="content2_predict_occult"
-            content={
-              <Content title="" content={
-                <div></div>
-              }/>
-            }
-          />
+        <PanelCostumize
+          className="content2_predict_occult"
+          content={<Content title="" content={<div />} />}
+        />
 
-          <PanelCostumize 
-            className="history_predict_occult"
-            content={
-              <Content title="Manage PRAIA Occultation rounds" content={
+        <PanelCostumize
+          className="history_predict_occult"
+          content={
+            <Content
+              title="Manage PRAIA Occultation rounds"
+              content={
                 <PredictionHistory
-                view_prediction={this.onViewPrediction}
-                onRerun={this.onCreateRun}
-              />
-              }/>
-            }
-          />          
+                  view_prediction={this.onViewPrediction}
+                  onRerun={this.onCreateRun}
+                />
+              }
+            />
+          }
+        />
       </div>
     );
   }

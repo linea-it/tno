@@ -54,6 +54,12 @@ class PredictionOccultation():
                                 "pmdec_error", "duplicated_source", "phot_g_mean_flux", "phot_g_mean_flux_error",
                                 "phot_g_mean_mag", "phot_variable_flag"]
 
+        # Nomes dos outputs do PRAIA Occ Star Search
+        self.stars_catalog_mini = 'g4_micro_catalog_JOHNSTON_2018'
+        self.stars_catalog_xy = 'g4_occ_catalog_JOHNSTON_2018'
+        self.stars_parameters_of_occultation = 'g4_occ_data_JOHNSTON_2018'
+        self.stars_parameters_of_occultation_plot = 'g4_occ_data_JOHNSTON_2018_table'
+
     def start_predict_occultation(self, instance):
         self.logger.debug("PREDICT RUN: %s" % instance.id)
 
@@ -158,6 +164,21 @@ class PredictionOccultation():
 
                 shutil.copy2(self.leap_second, leap_second_path)
 
+                # Renomear BSP do JPL
+                bsp_name = "%s.bsp" % obj_name.replace('_', '')
+                bsp_jpl_name = "%s_JPL.bsp" % obj_name.replace('_', '')
+                if not os.path.exists(os.path.join(obj_relative_path, bsp_jpl_name)):
+                    os.rename(
+                        os.path.join(obj_relative_path, bsp_name),
+                        os.path.join(obj_relative_path, bsp_jpl_name))
+
+                # BSP gerada pelo NIMA
+                bsp_nima_name = '%s_%s_nima.bsp' % (obj.get("num"), obj_name.replace('_', ''))
+                if os.path.exists(os.path.join(obj_relative_path, bsp_nima_name)):
+                    os.rename(
+                        os.path.join(obj_relative_path, bsp_nima_name),
+                        os.path.join(obj_relative_path, bsp_name))
+
                 self.results["objects"][obj_name] = dict({
                     "name": obj.get("name"),
                     "number": obj.get("num"),
@@ -172,11 +193,23 @@ class PredictionOccultation():
                     "inputs": dict({
                         "dates_file": dates_file,
                         "bsp_planetary": bsp_planetary,
-                        "bsp_asteroid": '%s.bsp' % obj_name.replace('_', ''),
+                        "bsp_asteroid": bsp_name,
                         "leap_second": leap_second,
-                        "positions": None
+                        "positions": None,
+                        "ephemeris": None,
+                        "gaia_catalog": None,
+                        "praia_occ_data": None
                     }),
-                    "results": list()
+                    "results": dict({
+                        "ephemeris": None,
+                        "radec": None,
+                        "positions": None,
+                        "gaia_catalog": None,
+                        "stars_catalog_mini": None,
+                        "stars_catalog_xy": None,
+                        "stars_parameters_of_occultation": None,
+                        "stars_parameters_of_occultation_plot": None
+                    })
                 })
 
             # 5 - Generate Ephemeris -----------------------------------------------------------------------------------
@@ -185,7 +218,12 @@ class PredictionOccultation():
             # 6 - Generate Catalog Gaia --------------------------------------------------------------------------------
             self.generate_gaia_catalog()
 
+            # 7 - Run PRAIA OCC Star Search 12 -------------------------------------------------------------------------
+            self.search_candidate_stars()
+
             self.logger.debug(json.dumps(self.results))
+
+
 
         except Exception as e:
             self.logger.error(e)
@@ -451,8 +489,6 @@ class PredictionOccultation():
         for alias in self.results['objects']:
             obj = self.results['objects'][alias]
 
-            self.logger.debug("Running for object %s" % obj["name"])
-
             self.results["objects"][alias]["status"] = "running"
 
             result = start_parsl_job(
@@ -583,31 +619,34 @@ class PredictionOccultation():
 
             if status == "running":
                 # Result Ephemeris
-                obj["results"].append(dict({
+                obj["results"]["ephemeris"] = dict({
                     "filename": filename,
                     "file_size": os.path.getsize(ephemeris),
                     "file_path": ephemeris,
                     "file_type": os.path.splitext(ephemeris)[1]
-                }))
+                })
 
                 # Result RADEC
-                obj["results"].append(dict({
+                obj["results"]["radec"] = dict({
                     "filename": radec_filename,
                     "file_size": os.path.getsize(radec),
                     "file_path": radec,
                     "file_type": os.path.splitext(radec)[1]
-                }))
+                })
 
                 # Result Positions
-                obj["results"].append(dict({
+                obj["results"]["positions"] = dict({
                     "filename": positions_filename,
                     "file_size": os.path.getsize(positions),
                     "file_path": positions,
                     "file_type": os.path.splitext(positions)[1]
-                }))
+                })
 
                 # Positions e input para a proxima etapa
                 obj["inputs"]["positions"] = positions_filename
+
+                # Ephemeris e input para a proxima etapa
+                obj["inputs"]["ephemeris"] = os.path.basename(ephemeris)
 
             t1 = datetime.now()
             tdelta = t1 - t0
@@ -669,12 +708,12 @@ class PredictionOccultation():
             tdelta = t1 - t0
 
             # Result Catalog Gaia
-            obj["results"].append(dict({
+            obj["results"]["gaia_catalog"] = dict({
                 "filename": os.path.basename(filename),
                 "file_size": file_size,
                 "file_path": filename,
                 "file_type": os.path.splitext(filename)[1]
-            }))
+            })
 
             crows = len(rows)
 
@@ -712,8 +751,6 @@ class PredictionOccultation():
         id = 0
         for alias in self.results['objects']:
             obj = self.results['objects'][alias]
-
-            self.logger.debug("Running for object %s" % obj["name"])
 
             self.results["objects"][alias]["status"] = "running"
 
@@ -802,11 +839,7 @@ class PredictionOccultation():
 
             stm = """SELECT %s FROM %s WHERE %s LIMIT 20000""" % (columns, tablename, where)
 
-            # logger.debug("QUERY: %s" % stm)
-
             rows = db.fetch_all_dict(text(stm))
-
-            # logger.debug("ROWS COUNT: %s" % len(rows))
 
             return rows
 
@@ -835,7 +868,7 @@ class PredictionOccultation():
         magJ, magH, magK = 99.000, 99.000, 99.000
         JD = 15.0 * 365.25 + 2451545
 
-        filename = os.path.join(path, "gaia_catalog.txt")
+        filename = os.path.join(path, "gaia_catalog.cat")
         with open(filename, 'w') as fp:
             for row in rows:
 
@@ -868,6 +901,225 @@ class PredictionOccultation():
             fp.close()
 
         return filename
+
+    def search_candidate_stars(self):
+
+        self.logger.info("Generating the table with the candidate stars")
+
+        t0 = datetime.now()
+
+        # Configuracao do Parsl
+        try:
+            dfk = DataFlowKernel(
+                config=dict(settings.PARSL_CONFIG))
+
+        except Exception as e:
+            self.logger.error(e)
+            raise e
+
+        self.logger.info("Configuring Parsl")
+        self.logger.debug("Parsl Config:")
+        self.logger.debug(settings.PARSL_CONFIG)
+
+        # Configuracao do Parsl Log.
+        parsl.set_file_logger(os.path.join(self.relative_path, 'search_candidate_stars.log'))
+
+        # Declaracao do Parsl APP
+        @App("python", dfk)
+        def start_parsl_job(id, obj, logger):
+
+            t0 = datetime.now()
+
+            logger.info("TESTE parsl")
+
+            # Criar arquivo .dat baseado no template.
+            praia_occ_dat = self.praia_occ_input_file(obj)
+
+            logger.debug("PRAIA OCC DAT: %s" % praia_occ_dat)
+
+            result = self.run_search_candidate_stars(
+                obj['relative_path'], os.path.basename(praia_occ_dat)
+            )
+
+            logger.debug("RESULTADO : %s" % result)
+
+            t1 = datetime.now()
+            tdelta = t1 - t0
+
+            # obj["status"] = status
+            # obj["error_msg"] = error_msg
+            obj["start_search_candidate"] = t0.replace(microsecond=0).isoformat(' ')
+            obj["finish_search_candidate"] = t1.replace(microsecond=0).isoformat(' ')
+            obj["execution_search_candidate"] = tdelta.total_seconds()
+
+            return obj
+
+        # executa o app Parsl para cara registro em paralelo
+        results = []
+        id = 0
+        for alias in self.results['objects']:
+            obj = self.results['objects'][alias]
+
+            self.results["objects"][alias]["status"] = "running"
+
+            result = start_parsl_job(
+                id=id,
+                obj=obj,
+                logger=self.logger)
+
+            self.logger.debug(result)
+
+            results.append(result)
+
+            id += 1
+
+        # Espera o Resultado de todos os jobs.
+        outputs = [i.result() for i in results]
+
+        for i in results:
+            i.done()
+
+        dfk.cleanup()
+
+        count = len(outputs)
+        failure = 0
+        average = []
+        for row in outputs:
+            if row['status'] == "failure":
+                failure += 1
+            average.append(row['execution_search_candidate'])
+
+            self.results['objects'][row['alias']] = row
+
+        t1 = datetime.now()
+        tdelta = t1 - t0
+
+        self.results['search_candidate_report'] = dict({
+            'start_time': t0.replace(microsecond=0).isoformat(' '),
+            'finish_time': t1.replace(microsecond=0).isoformat(' '),
+            'execution_time': tdelta.total_seconds(),
+            'count_asteroids': count,
+            'count_success': count - failure,
+            'count_failed': failure,
+            'average_time': mean(average),
+        })
+
+        self.logger.info(
+            "Finished to generate the table with the candidate stars, %s asteroids in %s" % (
+                count, humanize.naturaldelta(tdelta)))
+
+    def praia_occ_input_file(self, obj):
+
+        # TODO: Precisa de um refactoring, os parametros podem vir da interface.
+        try:
+
+            input_file = os.path.join(obj['relative_path'], "praia_occ_star_search_12.dat")
+
+            with open("predict/praia_occ_input_template.txt") as file:
+
+                data = file.read()
+
+                name = "/data/%s" % obj['inputs']['gaia_catalog']
+                data = data.replace('{stellar_catalog}', name.ljust(50))
+
+                name = "/data/%s" % obj['inputs']['ephemeris']
+                data = data.replace('{object_ephemeris}', name.ljust(50))
+
+                name = "/data/%s" % self.stars_catalog_mini
+                data = data.replace('{stars_catalog_mini}', name.ljust(50))
+
+                name = "/data/%s" % self.stars_catalog_xy
+                data = data.replace('{stars_catalog_xy}', name.ljust(50))
+
+                name = "/data/%s" % self.stars_parameters_of_occultation
+                data = data.replace('{stars_parameters_of_occultation}', name.ljust(50))
+
+                name = "/data/%s" % self.stars_parameters_of_occultation_plot
+                data = data.replace('{stars_parameters_of_occultation_plot}', name.ljust(50))
+
+                with open(input_file, 'w') as new_file:
+                    new_file.write(data)
+
+            return input_file
+
+
+        except Exception as e:
+            self.logger.error(e)
+            raise (e)
+
+    def run_search_candidate_stars(self, data_path, input_file):
+        """
+            Cria uma instancia do container PRAIA_Occultation
+            e executa o comando search_candidate_stars.py
+        :param input_file:
+        :return:
+        """
+
+        t0 = datetime.now()
+        self.logger.info("Generating candidate start tables")
+
+        # Get docker Client Instance
+        self.logger.debug("Getting docker client")
+        docker_client = docker.DockerClient(
+            base_url=settings.DOCKER_HOST)
+
+        # Recupera a Imagem Docker
+        docker_image = self.get_docker_image(
+            docker_client=docker_client,
+            image_name="praia-occultation:latest")
+
+        # Path absoluto para o diretorio de dados que sera montado no container.
+        absolute_archive_path = settings.HOST_ARCHIVE_DIR
+        absolute_data_path = os.path.join(absolute_archive_path, data_path.strip('/'))
+        self.logger.debug("Absolute Data Path: %s" % absolute_data_path)
+
+        # Comando que sera executado dentro do container.
+        cmd = "python search_candidate_stars.py %s" % ("/data/%s" % input_file)
+        self.logger.debug("CMD: %s" % cmd)
+
+        # Definicao do Volume /data
+        volumes = dict({
+            absolute_data_path: dict({
+                'bind': '/data',
+                'mode': 'rw'
+            })
+        })
+
+        try:
+            self.logger.debug("Starting Container")
+            container = docker_client.containers.run(
+                docker_image,
+                command=cmd,
+                detach=True,
+                name="search_candidate",
+                auto_remove=True,
+                mem_limit='128m',
+                volumes=volumes,
+                user=os.getuid()
+            )
+
+            container.wait()
+            self.logger.debug("Finish Container")
+
+            t1 = datetime.now()
+            tdelta = t1 - t0
+
+            # dates_file = os.path.join(self.relative_path, )
+            if os.path.exists(os.path.join(data_path, self.stars_catalog_mini)) and os.path.exists(
+                os.path.join(data_path, self.stars_catalog_xy)) and os.path.exists(
+                os.path.join(data_path, self.stars_parameters_of_occultation)) and os.path.exists(
+                os.path.join(data_path, self.stars_parameters_of_occultation_plot)):
+
+                return True
+            else:
+                return False
+
+        except docker.errors.ContainerError as e:
+            self.logger.error(e)
+            raise e
+        except Exception as e:
+            self.logger.error(e)
+            raise e
 
     def on_error(self, msg):
         pass

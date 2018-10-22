@@ -13,7 +13,6 @@ import { Column } from 'primereact/column';
 import { Toolbar } from 'primereact/toolbar';
 import PropTypes from 'prop-types';
 
-
 class PredictionHistory extends Component {
   state = this.initialState;
   api = new PredictionApi();
@@ -35,7 +34,7 @@ class PredictionHistory extends Component {
       sortOrder: 1,
       asteroid_id: 0,
       log_visible: false,
-      selected: '',
+      selected: null,
     };
   }
 
@@ -127,39 +126,35 @@ class PredictionHistory extends Component {
   };
 
   toolbarButton = el => {
-
     let btn_view_toolbar = null;
     let btn_reexecute = null;
-    const id = el.id;
 
     btn_reexecute = (
-        <Button
+      <Button
         className="btn-TNO-color"
         label="Re-execute"
         disabled={!this.state.selected}
         onClick={this.handleOnRerun}
-       />
-      );
-    
-     btn_view_toolbar = (
-        <Button
-            className="btn-TNO-color"
-            label="Detail"
-            disabled={!this.state.selected}
-            // onClick={this.stdetails}
-            onClick={() => this.onView(id)}
-          />
-      );
+      />
+    );
+
+    btn_view_toolbar = (
+      <Button
+        className="btn-TNO-color"
+        label="Detail"
+        disabled={!this.state.selected}
+        // onClick={this.stdetails}
+        onClick={() => this.onView(el.id)}
+      />
+    );
 
     return (
-        <Toolbar>
-          {btn_reexecute}
-          {btn_view_toolbar}
-        </Toolbar>
-      ); 
-};
- 
-
+      <Toolbar>
+        {btn_reexecute}
+        {btn_view_toolbar}
+      </Toolbar>
+    );
+  };
 
   onPageChange = e => {
     const page = e.page + 1;
@@ -170,7 +165,6 @@ class PredictionHistory extends Component {
         sizePerPage: e.rows,
       },
       this.fetchData({
-        // orbit_run: this.props.orbit_run,
         page: page,
         sizePerPage: e.rows,
         sortField: this.state.sortField,
@@ -186,7 +180,6 @@ class PredictionHistory extends Component {
         sortOrder: e.sortOrder,
       },
       this.fetchData({
-        // orbit_run: this.props.orbit_run,
         page: this.state.page,
         sizePerPage: this.state.sizePerPage,
         sortField: e.sortField,
@@ -200,7 +193,6 @@ class PredictionHistory extends Component {
   };
 
   handleOnRerun = () => {
-    console.log('handleOnRerun');
     const { selected } = this.state;
 
     this.api.predictReRun({ id: selected.id }).then(res => {
@@ -214,7 +206,6 @@ class PredictionHistory extends Component {
   };
 
   render() {
-
     const columns = this.columns.map((col, i) => {
       return (
         <Column
@@ -227,23 +218,9 @@ class PredictionHistory extends Component {
         />
       );
     });
-    console.log(this.state.selected);
     return (
       <div>
-
-     { this.toolbarButton(this.state.selected) }
-          {/* <Button
-            label="Re-execute"
-            disabled={!this.state.selected}
-            onClick={this.handleOnRerun}
-          />
-          <Button
-            label="Detail"
-            disabled={!this.state.selected}
-            // onClick={this.stdetails}
-            onClick={this.onView(id)}
-
-          /> */}
+        {this.toolbarButton(this.state.selected)}
 
         <DataTable
           value={this.state.data}
