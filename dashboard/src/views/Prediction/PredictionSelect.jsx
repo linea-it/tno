@@ -4,6 +4,7 @@ import PredictionApi from './PredictionApi';
 import { Calendar } from 'primereact/calendar';
 import { Slider } from 'primereact/slider';
 import { Spinner } from 'primereact/spinner';
+import moment from 'moment';
 
 //primereact
 import 'primereact/resources/themes/omega/theme.css';
@@ -31,13 +32,13 @@ class PredicitionSelect extends Component {
       leap_second: null,
       bsps_planeraty: [],
       bsp_planeraty: null,
-
+      catalog_radius: 0.15,
       message: '',
       actionButton: '',
       record: null,
       number: 0,
-      data1: '01/01/2018',
-      data2: '01/01/2018',
+      ephemeris_initial_date: new Date(2018, 0, 1),
+      ephemeris_final_date: new Date(2018, 11, 31),
     };
   }
   componentDidMount() {
@@ -98,6 +99,11 @@ class PredicitionSelect extends Component {
         bsp_planeraty: bsp_planeraty,
       });
     });
+    // https://javascript.info/date
+    // year = Date().getFullYear()
+    // ephemeris_initial_date: new Date(year, 0, 1),
+    // ephemeris_final_date: new Date(year, 11, 31),
+
   }
 
   onCheck = () => {
@@ -274,6 +280,37 @@ class PredicitionSelect extends Component {
     );
   };
 
+  radiusInput = () => {
+    return (
+      <Spinner
+        value={this.state.catalog_radius}
+        onChange={e => this.setState({ catalog_radius: e.value })}
+        min={0}
+        max={2}
+        step={0.01}
+      />
+    );
+  };
+
+  ephemerisDate = () => {
+    return (
+      <div>
+        <Calendar
+          value={this.state.ephemeris_initial_date}
+          onChange={e => this.setState({ ephemeris_initial_date: e.value })}
+          placeholder="Initial Date"
+          dateFormat="yy-dd-mm"
+        />
+        <Calendar
+          value={this.state.ephemeris_final_date}
+          onChange={e => this.setState({ ephemeris_final_date: e.value })}
+          placeholder="Final Date"
+          // dateFormat="yy-mm-dd"
+        />
+      </div>
+    );
+  };
+
   render() {
     return (
       <div>
@@ -288,32 +325,14 @@ class PredicitionSelect extends Component {
             <p className="label-prediction">BSP Planetary</p>
             {this.bspPlanetaryDropdown()}
           </div>
-
-          {/* <div className="item-prediction drop">
-            <p className="label-prediction">BSP Planetary</p>
-            <Spinner
-              value={this.state.number}
-              onChange={e => this.setState({ number: e.value })}
-              min={0}
-              max={5}
-              step={0.15}
-            />
-
-            <p className="label-prediction">BSP Planetary</p>
-            <Calendar
-              value={this.state.date1}
-              onChange={e => this.setState({ date1: e.value })}
-              yearRange="2018"
-              placeholder="Select a BSP Planetary"
-            />
-
-            <p className="label-prediction">BSP Planetary</p>
-            <Calendar
-              value={this.state.date2}
-              onChange={e => this.setState({ date2: e.value })}
-              yearRange="2018"
-            />
-          </div> */}
+          <div className="item-prediction drop">
+            <p className="label-prediction">Catalog Radius</p>
+            {this.radiusInput()}
+            <p className="label-prediction">
+              Ephemeris Initial and final date.
+            </p>
+            {this.ephemerisDate()}
+          </div>
         </div>
 
         <br />

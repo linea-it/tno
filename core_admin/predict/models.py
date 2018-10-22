@@ -182,13 +182,6 @@ class PredictRun(models.Model):
         null=True, blank=True, default=None, related_name='predict_input_orbit_run'
     )
 
-    # Radius
-
-
-    # Initial Data
-
-    # Final Date
-
     relative_path = models.CharField(
         max_length=256,
         verbose_name='Relative Path',

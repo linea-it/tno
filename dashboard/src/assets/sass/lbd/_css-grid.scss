@@ -211,7 +211,7 @@
         grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
         grid-template-rows: auto; 
         grid-template-areas: 
-        "content1_predict_occult content2_predict_occult"
+        "content1_predict_occult content1_predict_occult"
         "history_predict_occult history_predict_occult"
         ; 
     }

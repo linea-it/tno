@@ -41,10 +41,10 @@ class PredictionPanel extends Component {
           content={<Content title="" content={<PredictionSelect />} />}
         />
 
-        <PanelCostumize
+        {/* <PanelCostumize
           className="content2_predict_occult"
           content={<Content title="" content={<div />} />}
-        />
+        /> */}
 
         <PanelCostumize
           className="history_predict_occult"
