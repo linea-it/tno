@@ -25,8 +25,10 @@ export class PredictionSubmit extends Component {
       return;
     }
 
+    console.log("record: %o", record);
+
     this.orbit_api
-      .createOrbitRun({
+      .createPredictRun({
         input_list: record.input_list,
         proccess: record.proccess,
       })

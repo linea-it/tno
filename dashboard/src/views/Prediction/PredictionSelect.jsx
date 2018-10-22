@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 // import OrbitApi from 'RefineOrbit/OrbitApi';
 import PredictionApi from './PredictionApi';
-import {Calendar} from 'primereact/calendar';
-import {Slider} from 'primereact/slider';
-import {Spinner} from 'primereact/spinner';
+import { Calendar } from 'primereact/calendar';
+import { Slider } from 'primereact/slider';
+import { Spinner } from 'primereact/spinner';
 
 //primereact
 import 'primereact/resources/themes/omega/theme.css';
@@ -17,17 +17,21 @@ import { Button } from 'primereact/button';
 class PredicitionSelect extends Component {
   state = this.initialState;
   // apiOrbit = new OrbitApi();
-   apiPrediction = new PredictionApi();
+  apiPrediction = new PredictionApi();
 
   get initialState() {
     return {
       dataOrbit: [],
       object: [],
-      leapSeconds: [],
-      bspPlaneraty: [],
-      atd: null,
-      obj_leap: null,
+      processes: [],
+      process: null,
+      catalogs: [],
+      catalog: null,
+      leap_seconds: [],
+      leap_second: null,
+      bsps_planeraty: [],
       bsp_planeraty: null,
+
       message: '',
       actionButton: '',
       record: null,
@@ -37,104 +41,120 @@ class PredicitionSelect extends Component {
     };
   }
   componentDidMount() {
-
+    // Processos
     this.apiPrediction.getPrediction().then(res => {
       const r = res.data;
       this.setState({
-        object: r.results
+        processes: r.results,
+      });
+    });
+
+    this.apiPrediction.getCatalogs().then(res => {
+      const catalogs = res.data.results;
+      let catalog = null;
+
+      if (catalogs.length > 0) {
+        catalog = {
+          label: catalogs[0].display_name,
+          value: catalogs[0].id,
+        };
+      }
+
+      this.setState({
+        catalogs: catalogs,
+        catalog: catalog,
       });
     });
 
     this.apiPrediction.getLeapSeconds().then(res => {
-      const r = res.data;
+      const leap_seconds = res.data.results;
+      let leap_second = null;
+
+      if (leap_seconds.length > 0) {
+        leap_second = {
+          label: leap_seconds[0].display_name,
+          value: leap_seconds[0].id,
+        };
+      }
       this.setState({
-        leapSeconds: r.results
+        leap_seconds: leap_seconds,
+        leap_second: leap_second,
       });
     });
 
     this.apiPrediction.getBspPlanetary().then(res => {
-      const r = res.data;
+      const bsps_planetary = res.data.results;
+      let bsp_planeraty = null;
+
+      if (bsps_planetary.length > 0) {
+        bsp_planeraty = {
+          label: bsps_planetary[0].display_name,
+          value: bsps_planetary[0].id,
+        };
+      }
+
       this.setState({
-        bspPlaneraty: r.results
+        bsps_planeraty: bsps_planetary,
+        bsp_planeraty: bsp_planeraty,
       });
     });
-  };
-
+  }
 
   onCheck = () => {
     if (
-      this.state.atd === null &&
+      this.state.proccess === null &&
       this.state.obj_leap === null &&
-      this.state.bsp_planeraty === null 
+      this.state.bsp_planeraty === null
     ) {
-     this.setState({ message : "Os Campos não foram preenchidos" });
+      this.setState({ message: 'Os Campos não foram preenchidos' });
     } else {
       if (
-        this.state.atd !== null &&
+        this.state.proccess !== null &&
         this.state.obj_leap !== null &&
-        this.state.bsp_planeraty !== null )
-        this.setState({ actionButton : true });
-      }
-    };
-
-    onClick = () => {
-      this.setState({ record : this.state.object });
-
-      console.log("fui clicado");
-
-      const { record } = this.state;
-      if (!record) {
-        // TODO: Implementar notifacao de parametro faltante
-        console.log("Não veio nada na requisição");
-        return;
-      } else  {
-        console.log(this.state.record);
-      }
-  
-      this.apiPrediction
-        .createPredictRun({
-          input_list: record.input_list,
-          proccess: record.proccess,
-        })
-        .then(res => {
-          console.log("Eu sou a resposta do predict:", res);
-          this.onCreateSuccess(res.data);
-        })
-        .catch(this.onCreateFailure("sim"));
-    };
-  
-    onCreateSuccess = record => {
-      console.log('onCreateSuccess(%o)', record);
-      this.setState(this.initialState, this.props.onCreateRun(record));
-    };
-    onCreateFailure = error => {
-      // TODO: Criar uma Notificacao de falha.
-      console.log('onCreateFailure(%o)', error);
-    };
-  
-
-  onChangeAsteorid = (value) => {
-    console.log("O campo object foi modificado, valor:", value);
-    if (value !== '') {
-      this.setState({ message : "O campo object foi modificado" });
-    } 
-    this.onCheck();
+        this.state.bsp_planeraty !== null
+      )
+        this.setState({ actionButton: true });
+    }
   };
 
-  onChangeLeap= (value) => {
-    if (value !== '') {
-      console.log("O campo Leap foi modificado, valor:", value);
-      this.setState({ message : "O campo Leap foi modificado" });
-    } 
-    this.onCheck();
+  onClick = () => {
+    const { proccess } = this.state;
+
+    this.apiPrediction
+      .createPredictRun({
+        proccess: proccess.value,
+        input_list: proccess.input_list,
+      })
+      .then(res => {
+        console.log('Eu sou a resposta do predict:', res);
+        this.onCreateSuccess(res.data);
+      })
+      .catch(this.onCreateFailure('sim'));
   };
 
-  onChangeBsp = (value) => {
-    if (value !== '') {
-      console.log("O campo Bsp fois modificado, valor:", value);
-      this.setState({ message : "O campo Bsp fois modificado" });
-    } 
-    this.onCheck();
+  onCreateSuccess = record => {
+    console.log('onCreateSuccess(%o)', record);
+    this.setState(this.initialState, this.props.onCreateRun(record));
+  };
+  onCreateFailure = error => {
+    // TODO: Criar uma Notificacao de falha.
+    console.log('onCreateFailure(%o)', error);
+  };
+
+  onChangeProcess = e => {
+    this.setState({ process: e.value }, this.onCheck());
+  };
+
+  onChangeCatalog = e => {
+    this.setState({ catalog: e.value }, this.onCheck());
+  };
+
+  onChangeLeap = e => {
+    this.setState({ leap_second: e.value }, this.onCheck());
+  };
+
+  onChangeBsp = e => {
+    this.setState({ bsp_planeraty: e.value }, this.onCheck());
   };
 
   OrbitName = () => {
@@ -146,92 +166,168 @@ class PredicitionSelect extends Component {
     });
   };
 
-  render() {
-    console.log("request", this.state.object);
-    let asteroid = this.state.object;
-    const elementos = [];
-    asteroid.map((el, i) => {
-        elementos.push({ label: `el.proccess_displayname${i}`, value: el.id});
-        return;
-    });
-    
-    let leap = this.state.leapSeconds;
-    const el_leap = [];
-    leap.map((fl, i) => {
-      el_leap.push({ label: fl.display_name, value: fl.id});
+  proccessDropdown = () => {
+    // Combobox Processos ( E as rodadas do Refine Orbit que tiveram sucesso )
+    const processes = this.state.processes;
+    const process_elements = [];
+    processes.map(el => {
+      process_elements.push({
+        label: el.proccess_displayname,
+        value: el.id,
+        input_list: el.input_list,
+      });
       return;
     });
 
-    let bsp = this.state.bspPlaneraty;
-    const el_bsp = [];
-    bsp.map((gl, i) => {
-      el_bsp.push({ label: gl.display_name, value: gl.id});
+    return (
+      <Dropdown
+        className="drop"
+        key={2}
+        value={this.state.process}
+        options={process_elements}
+        onChange={this.onChangeProcess}
+        placeholder="Select a Process"
+        optionLabel="label"
+      />
+    );
+  };
+
+  catalogDropdown = () => {
+    // Combobox Catalogs
+    const catalogs = this.state.catalogs;
+    const catalog_elements = [];
+
+    catalogs.map(el => {
+      catalog_elements.push({
+        label: el.display_name,
+        value: el.id,
+      });
       return;
     });
-   
+
+    return (
+      <Dropdown
+        className="drop"
+        key={2}
+        value={this.state.catalog}
+        options={catalog_elements}
+        onChange={this.onChangeCatalog}
+        placeholder="Select a Catalog"
+        optionLabel="label"
+      />
+    );
+  };
+
+  leapSecondDropdown = () => {
+    // Combobox LeapSecond
+    const leaps = this.state.leap_seconds;
+    const leaps_elements = [];
+
+    leaps.map(el => {
+      leaps_elements.push({
+        label: el.display_name,
+        value: el.id,
+      });
+      return;
+    });
+
     return (
       <div>
-          <div className="flex-row">
+        <Dropdown
+          className="drop"
+          key={2}
+          value={this.state.leap_second}
+          options={leaps_elements}
+          onChange={this.onChangeLeap}
+          placeholder="Select a Leap Second"
+          optionLabel="label"
+        />
+      </div>
+    );
+  };
+
+  bspPlanetaryDropdown = () => {
+    // Combobox BSP Planetary
+    const bsps = this.state.bsps_planeraty;
+    const bsp_elements = [];
+
+    bsps.map(el => {
+      bsp_elements.push({
+        label: el.display_name,
+        value: el.id,
+      });
+      return;
+    });
+
+    return (
+      <div>
+        <Dropdown
+          className="drop"
+          key={2}
+          value={this.state.bsp_planeraty}
+          options={bsp_elements}
+          onChange={this.onChangeBsp}
+          placeholder="Select a BSP Planetary"
+          optionLabel="label"
+        />
+      </div>
+    );
+  };
+
+  render() {
+    return (
+      <div>
+        <div className="flex-row">
           <div className="item-prediction">
-            <p className="label-prediction">Asteorid</p>
-            <Dropdown
-              className="drop"
-              key={1}
-              value={this.state.asteroid}
-              options={elementos}
-              onChange={e => { 
-                this.setState({asteroid: e.value },this.onChangeAsteorid(e.value));
-              }}
-              placeholder="Select a object"
+            <p className="label-prediction">Proccess</p>
+            {this.proccessDropdown()}
+            <p className="label-prediction">Catalog</p>
+            {this.catalogDropdown()}
+            <p className="label-prediction">Leap Seconds</p>
+            {this.leapSecondDropdown()}
+            <p className="label-prediction">BSP Planetary</p>
+            {this.bspPlanetaryDropdown()}
+          </div>
+
+          {/* <div className="item-prediction drop">
+            <p className="label-prediction">BSP Planetary</p>
+            <Spinner
+              value={this.state.number}
+              onChange={e => this.setState({ number: e.value })}
+              min={0}
+              max={5}
+              step={0.15}
             />
-            <p className="label-prediction">Leap</p>
-            <Dropdown
-              className="drop"
-              key={2}
-              value={this.state.obj_leap}
-              options={el_leap}
-              onChange={f => {
-                this.setState({ obj_leap: f.value }, this.onChangeLeap(f.value));
-              }}
-              placeholder="Select a Leap"
-            />
-            <p className="label-prediction">BSP Planetary</p>    
-            <Dropdown
-              className="drop"
-              key={3}
-              value={this.state.bsp_planeraty}
-              options={el_bsp}
-              onChange={g => {
-                this.setState({ bsp_planeraty: g.value }, this.onChangeBsp(g.value));
-              }}
+
+            <p className="label-prediction">BSP Planetary</p>
+            <Calendar
+              value={this.state.date1}
+              onChange={e => this.setState({ date1: e.value })}
+              yearRange="2018"
               placeholder="Select a BSP Planetary"
             />
-          </div>
 
-          <div className="item-prediction drop">
-            <p className="label-prediction">BSP Planetary</p>    
-              <Spinner             
-                    value={this.state.number} onChange={(e) => this.setState({number: e.value})} min={0} max={5} step={0.15}/>
-              
-              <p className="label-prediction">BSP Planetary</p>          
-              <Calendar               
-                    value={this.state.date1} onChange={(e) => this.setState({date1: e.value})} yearRange="2018" placeholder="Select a BSP Planetary"/>
+            <p className="label-prediction">BSP Planetary</p>
+            <Calendar
+              value={this.state.date2}
+              onChange={e => this.setState({ date2: e.value })}
+              yearRange="2018"
+            />
+          </div> */}
+        </div>
 
-              <p className="label-prediction">BSP Planetary</p>          
-              <Calendar               
-                    value={this.state.date2}  onChange={(e) => this.setState({date2: e.value})} yearRange="2018"/>
-          </div>
-  
-          </div>
-         
-          <br />
+        <br />
 
-          <Button label="Submit" disabled={this.state.actionButton} onClick={this.onClick} className=" button-TNO button-prediction" />
-          <p>{this.state.message}</p>
-
-      </div>          
-      );
-    };
+        <Button
+          label="Submit"
+          disabled={this.state.actionButton}
+          onClick={this.onClick}
+          className=" button-TNO button-prediction"
+        />
+        <p>{this.state.message}</p>
+      </div>
+    );
   }
+}
 
 export default PredicitionSelect;

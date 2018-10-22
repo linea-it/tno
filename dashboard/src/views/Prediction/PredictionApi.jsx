@@ -9,10 +9,14 @@ class PredictionApi {
     axios.post(`${this.api}/predict_run/`, {
       input_list: input_list,
       proccess: proccess,
-  });
+    });
 
   getPrediction = () => {
     return axios.get(`http://localhost:7001/orbit_run/?status=success`)
+  };
+
+  getCatalogs = () => {
+    return axios.get(`http://localhost:7001/catalog/`)
   };
 
   getLeapSeconds = () => {
