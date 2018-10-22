@@ -4,7 +4,7 @@ import PredictionApi from './PredictionApi';
 import { Calendar } from 'primereact/calendar';
 import { Slider } from 'primereact/slider';
 import { Spinner } from 'primereact/spinner';
-import moment from 'moment';
+import moment, { months } from 'moment';
 
 //primereact
 import 'primereact/resources/themes/omega/theme.css';
@@ -37,8 +37,8 @@ class PredicitionSelect extends Component {
       actionButton: '',
       record: null,
       number: 0,
-      ephemeris_initial_date: new Date(2018, 0, 1),
-      ephemeris_final_date: new Date(2018, 11, 31),
+      ephemeris_initial_date: null,
+      ephemeris_final_date: null,
     };
   }
   componentDidMount() {
@@ -100,10 +100,15 @@ class PredicitionSelect extends Component {
       });
     });
     // https://javascript.info/date
-    // year = Date().getFullYear()
-    // ephemeris_initial_date: new Date(year, 0, 1),
-    // ephemeris_final_date: new Date(year, 11, 31),
 
+    
+    const year = new Date().getFullYear();
+    const moth
+    // month of january is represented with ( 0 ) and moth of december represented with (11), this is a rule of javascript
+    const ephemeris_initial_date = new Date(year, 0, 1);
+    const ephemeris_final_date = new Date(year, 11, 31);
+    this.setState({ ephemeris_initial_date: ephemeris_initial_date});
+    this.setState({ ephemeris_initial_date: ephemeris_final_date});
   }
 
   onCheck = () => {
@@ -299,13 +304,13 @@ class PredicitionSelect extends Component {
           value={this.state.ephemeris_initial_date}
           onChange={e => this.setState({ ephemeris_initial_date: e.value })}
           placeholder="Initial Date"
-          dateFormat="yy-dd-mm"
+          dateFormat="yy-mm-dd"
         />
         <Calendar
           value={this.state.ephemeris_final_date}
           onChange={e => this.setState({ ephemeris_final_date: e.value })}
           placeholder="Final Date"
-          // dateFormat="yy-mm-dd"
+          
         />
       </div>
     );
