@@ -46,8 +46,13 @@ class PredictionHistory extends Component {
       style: { textAlign: 'center', width: '80' },
     },
     {
-      field: 'proccess_displayname',
+      field: 'process_displayname',
       header: 'Proccess',
+      sortable: true,
+    },
+    {
+      field: 'owner',
+      header: 'Owner',
       sortable: true,
     },
     {
@@ -131,6 +136,7 @@ class PredictionHistory extends Component {
 
     btn_reexecute = (
       <Button
+        className="btn-TNO-color"
         label="Re-execute"
         disabled={!this.state.selected}
         onClick={this.handleOnRerun}
@@ -139,8 +145,10 @@ class PredictionHistory extends Component {
 
     btn_view_toolbar = (
       <Button
+        className="btn-TNO-color"
         label="Detail"
         disabled={!this.state.selected}
+        // onClick={this.stdetails}
         onClick={() => this.onView(el.id)}
       />
     );

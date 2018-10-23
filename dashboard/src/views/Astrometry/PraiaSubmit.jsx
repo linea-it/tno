@@ -11,7 +11,6 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { Button } from 'primereact/button';
-import PanelCostumize from 'components/Panel/PanelCostumize';
 
 class PraiaSubmit extends Component {
   state = this.initialState;

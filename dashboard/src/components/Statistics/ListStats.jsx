@@ -9,7 +9,7 @@ class ListStats extends Component {
   render() {
     const propSet = this.props;
 
-    const { string, array, bool } = PropTypes;
+    const { array, bool } = PropTypes;
 
     ListStats.PropTypes = {
       //title: string.isRequired,

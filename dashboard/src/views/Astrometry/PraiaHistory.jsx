@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import PanelCostumize from 'components/Panel/PanelCostumize';
 import { Card } from 'primereact/card';
 import PraiaApi from './PraiaApi';
 import PropTypes from 'prop-types';

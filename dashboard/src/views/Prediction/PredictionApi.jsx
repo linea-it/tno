@@ -5,8 +5,45 @@ class PredictionApi {
     this.api = process.env.REACT_APP_API;
   }
 
+  createPredictRun = ({
+    process,
+    input_list,
+    input_orbit,
+    leap_second,
+    bsp_planetary,
+    catalog,
+    catalog_radius,
+    ephemeris_initial_date,
+    ephemeris_final_date,
+    ephemeris_step,
+  }) =>
+    axios.post(`${this.api}/predict_run/`, {
+      process: process,
+      input_list: input_list,
+      input_orbit: input_orbit,
+      leap_second: leap_second,
+      bsp_planetary: bsp_planetary,
+      catalog: catalog,
+      catalog_radius: catalog_radius,
+      ephemeris_initial_date: ephemeris_initial_date,
+      ephemeris_final_date: ephemeris_final_date,
+      ephemeris_step: ephemeris_step,
+    });
+
   getPrediction = () => {
-    axios.get(`http://localhost:7001/refined_asteroid/?page=1&pageSize=100&orbit_run=1`)
+    return axios.get(`http://localhost:7001/orbit_run/?status=success`);
+  };
+
+  getCatalogs = () => {
+    return axios.get(`http://localhost:7001/catalog/`);
+  };
+
+  getLeapSeconds = () => {
+    return axios.get(`http://localhost:7001/leap_seconds/`);
+  };
+
+  getBspPlanetary = () => {
+    return axios.get(`http://localhost:7001/bsp_planetary/`);
   };
 
   getPredictionRuns = ({ page, pageSize, ordering, filters = [] }) => {
@@ -61,4 +98,5 @@ class PredictionApi {
     });
   };
 }
+
 export default PredictionApi;

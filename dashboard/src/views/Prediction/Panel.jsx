@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PredictionHistory from './History';
-// import PredictionSubmit from './Submit';
+import PredictionSubmit from './Submit';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import PropTypes from 'prop-types';
-import { Card } from 'primereact/card';
-import PredictionSelect from './PredictionSelect.jsx';
+import Content from 'components/CardContent/CardContent.jsx';
+// import PredictionSelect from './PredictionSelect.jsx';
 
 class PredictionPanel extends Component {
   state = this.initialState;
@@ -35,24 +35,34 @@ class PredictionPanel extends Component {
     return (
       <div className="grid template-predict-panel">
         <PanelCostumize
+          title="Prediction Occultation"
+          subTitle="Execute PRAIA Occultation"
           className="content1_predict_occult"
-          content={<Card title=" " subTitle=" " />}
+          content={
+            <Content
+              title=""
+              content={<PredictionSubmit onCreateRun={this.onCreateRun} />}
+            />
+          }
         />
 
-        <PanelCostumize
+        {/* <PanelCostumize
           className="content2_predict_occult"
-          content={<Card title=" " subTitle=" " />}
-        />
+          content={<Content title="" content={<div />} />}
+        /> */}
 
         <PanelCostumize
           className="history_predict_occult"
           content={
-            <Card subTitle="Manage PRAIA Occultation rounds">
-              <PredictionHistory
-                view_prediction={this.onViewPrediction}
-                onRerun={this.onCreateRun}
-              />
-            </Card>
+            <Content
+              title="Manage PRAIA Occultation rounds"
+              content={
+                <PredictionHistory
+                  view_prediction={this.onViewPrediction}
+                  onRerun={this.onCreateRun}
+                />
+              }
+            />
           }
         />
       </div>

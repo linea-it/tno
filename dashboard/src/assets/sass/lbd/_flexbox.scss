@@ -3,6 +3,25 @@
     display: flex;
     flex-direction: column;
 }
+
+.fieldset_predict {
+    background: #c6c6c6;
+    display: flex;
+    flex-direction: row;  
+    width: 100%;
+    height: 500px;
+}
+
+.fieldset_predict_itens {
+    background: #6c6c6c;  
+    width: 50%;
+    height: 400px;
+    margin: 50px 20px;
+}
+
+.fieldset_predict_subitens {
+    width: 100% !important;
+}
 .flex-container {
     width: 100%;
     margin: 0;
@@ -18,6 +37,9 @@
 
 .flex {
     display: flex;
+}
+.flex-end {
+    align-items: flex-end;
 }
 
 .space-around {
@@ -93,3 +115,14 @@
     flex-grow: 12;
 }
 
+// Predicton ocultation
+
+.item-prediction {
+    margin: 10px 20px !important;
+    width: 500px !important;
+}
+.button-prediction {
+    margin: 10px 20px !important;
+    width: 20% !important;
+    float: right !important;
+}

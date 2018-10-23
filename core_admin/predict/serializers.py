@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import PredictRun, PredictAsteroid, LeapSecond, BspPlanetary
-from tno.models import Proccess, CustomList
+from tno.models import Proccess, CustomList, Catalog
 from orbit.models import OrbitRun
 import humanize
 from django.utils import timezone
@@ -13,10 +13,22 @@ class PredictRunSerializer(serializers.ModelSerializer):
 
     input_displayname = serializers.SerializerMethodField()
 
-    proccess = serializers.PrimaryKeyRelatedField(
+    process = serializers.PrimaryKeyRelatedField(
         queryset=Proccess.objects.all(), many=False)
 
-    proccess_displayname = serializers.SerializerMethodField()
+    process_displayname = serializers.SerializerMethodField()
+
+    catalog = serializers.PrimaryKeyRelatedField(
+        queryset=Catalog.objects.all(), many=False)
+
+    leap_second = serializers.PrimaryKeyRelatedField(
+        queryset=LeapSecond.objects.all(), many=False)
+
+    bsp_planetary = serializers.PrimaryKeyRelatedField(
+        queryset=BspPlanetary.objects.all(), many=False)
+
+    input_orbit = serializers.PrimaryKeyRelatedField(
+        queryset=OrbitRun.objects.all(), many=False)
 
     start_time = serializers.SerializerMethodField()
     finish_time = serializers.SerializerMethodField()
@@ -27,10 +39,19 @@ class PredictRunSerializer(serializers.ModelSerializer):
     execution_seconds = serializers.SerializerMethodField()
 
     class Meta:
-        model = OrbitRun
+        model = PredictRun
         fields = (
             'id',
             'owner',
+            'process',
+            'process_displayname',
+            'catalog',
+            'leap_second',
+            'bsp_planetary',
+            'ephemeris_initial_date',
+            'ephemeris_final_date',
+            'ephemeris_step',
+            'catalog_radius',
             'start_time',
             'finish_time',
             'execution_time',
@@ -38,10 +59,9 @@ class PredictRunSerializer(serializers.ModelSerializer):
             'h_time',
             'average_time',
             'input_list',
+            'input_orbit',
             'status',
             'input_displayname',
-            'proccess',
-            'proccess_displayname',
             'count_objects',
             'count_executed',
             'count_not_executed',
@@ -63,9 +83,9 @@ class PredictRunSerializer(serializers.ModelSerializer):
         except:
             return None
 
-    def get_proccess_displayname(self, obj):
+    def get_process_displayname(self, obj):
         try:
-            return "%s - %s" % (obj.proccess.id, obj.input_list.displayname)
+            return "%s - %s" % (obj.process.id, obj.input_list.displayname)
         except:
             return None
 
@@ -102,7 +122,7 @@ class PredictRunSerializer(serializers.ModelSerializer):
 
 class PredictAsteroidSerializer(serializers.ModelSerializer):
     predict_run = serializers.PrimaryKeyRelatedField(
-        queryset=OrbitRun.objects.all(), many=False)
+        queryset=PredictRun.objects.all(), many=False)
 
     h_time = serializers.SerializerMethodField()
     h_execution_time = serializers.SerializerMethodField()
@@ -158,6 +178,7 @@ class LeapSecondsSerializer(serializers.ModelSerializer):
     class Meta:
         model = LeapSecond
         fields = (
+            'id',
             'name',
             'display_name',
             'url',
@@ -169,6 +190,7 @@ class BspPlanetarySerializer(serializers.ModelSerializer):
     class Meta:
         model = BspPlanetary
         fields = (
+            'id',
             'name',
             'display_name',
             'url',
