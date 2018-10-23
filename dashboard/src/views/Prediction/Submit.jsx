@@ -220,7 +220,7 @@ export class PredictionSubmit extends Component {
 
     return (
       <Dropdown
-        className="drop"
+        className="fieldset_predict_subintens"
         key={2}
         value={this.state.process}
         options={process_elements}
@@ -246,7 +246,7 @@ export class PredictionSubmit extends Component {
 
     return (
       <Dropdown
-        className="drop"
+        className="fieldset_predict_subintens"
         key={2}
         value={this.state.catalog}
         options={catalog_elements}
@@ -273,7 +273,7 @@ export class PredictionSubmit extends Component {
     return (
       <div>
         <Dropdown
-          className="drop"
+          className="fieldset_predict_subintens"
           key={2}
           value={this.state.leap_second}
           options={leaps_elements}
@@ -301,7 +301,7 @@ export class PredictionSubmit extends Component {
     return (
       <div>
         <Dropdown
-          className="drop"
+          className="fieldset_predict_subintens"
           key={2}
           value={this.state.bsp_planeraty}
           options={bsp_elements}
@@ -329,6 +329,7 @@ export class PredictionSubmit extends Component {
     return (
       <div>
         <Calendar
+          className="fieldset_predict_subintens"
           value={this.state.ephemeris_initial_date}
           onChange={e => this.setState({ ephemeris_initial_date: e.value })}
           placeholder="Initial Date"
@@ -336,7 +337,9 @@ export class PredictionSubmit extends Component {
           showTime={true}
           showSeconds={true}
         />
+        <br />
         <Calendar
+          className="fieldset_predict_subintens"
           value={this.state.ephemeris_final_date}
           onChange={e => this.setState({ ephemeris_final_date: e.value })}
           placeholder="Final Date"
@@ -362,8 +365,9 @@ export class PredictionSubmit extends Component {
 
   render() {
     return (
-      <div>
-        <div className="flex-row">
+    <div>
+      <div className="fieldset_predict">
+        <div className="fieldset_predict_itens">
           <div className="item-prediction">
             <p className="label-prediction">Input</p>
             {this.processDropdown()}
@@ -374,7 +378,10 @@ export class PredictionSubmit extends Component {
             <p className="label-prediction">BSP Planetary</p>
             {this.bspPlanetaryDropdown()}
           </div>
-          <div className="item-prediction drop">
+        </div>
+        
+        <div className="fieldset_predict_itens">
+          <div className="item-prediction">
             <p className="label-prediction">Catalog Radius</p>
             {this.radiusInput()}
             <p className="label-prediction">
@@ -387,6 +394,7 @@ export class PredictionSubmit extends Component {
             {this.ephemerisStep()}
           </div>
         </div>
+      </div>
 
         <br />
 

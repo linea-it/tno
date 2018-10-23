@@ -916,7 +916,7 @@ body > .navbar-collapse[data-color="purple"]:after {
 .input-number {
   background: #000 !important; }
 
-.drop {
+.input_predict {
   width: 500px !important; }
 
 .label-prediction {
@@ -3494,9 +3494,21 @@ body > .navbar-collapse[data-color="purple"]:after {
   display: flex;
   flex-direction: column; }
 
-.flex-row {
+.fieldset_predict {
+  background: #c6c6c6;
   display: flex;
-  flex-direction: row; }
+  flex-direction: row;
+  width: 100%;
+  height: 500px; }
+
+.fieldset_predict_itens {
+  background: #6c6c6c;
+  width: 50%;
+  height: 400px;
+  margin: 50px 20px; }
+
+.fieldset_predict_subitens {
+  width: 100% !important; }
 
 .flex-container {
   width: 100%;
@@ -3571,7 +3583,7 @@ body > .navbar-collapse[data-color="purple"]:after {
 
 .item-prediction {
   margin: 10px 20px !important;
-  width: inherit !important; }
+  width: 500px !important; }
 
 .button-prediction {
   margin: 10px 20px !important;
@@ -3738,7 +3750,7 @@ body > .navbar-collapse[data-color="purple"]:after {
     grid-gap: 0.75rem;
     grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
     grid-template-rows: auto;
-    grid-template-areas: "content1_predict_occult content2_predict_occult" "history_predict_occult history_predict_occult"; }
+    grid-template-areas: "content1_predict_occult content1_predict_occult" "history_predict_occult history_predict_occult"; }
   .template-predict-astromery {
     grid-gap: 0.75rem;
     grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
