@@ -317,7 +317,21 @@ class AsteroidDetail extends Component {
           })}
         </div>
         <div className="ui-g">
-          <div className="ui-g-4">
+          <div className="ui-g-6">
+            <Card
+              title="Inputs"
+              subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
+            >
+              <DataTable
+                value={this.state.inputs}
+                sortField={'input_type'}
+                sortOrder={1}
+              >
+                {inp_columns}
+              </DataTable>
+            </Card>            
+          </div>
+          <div className="ui-g-6">
             <Card
               title="Results"
               subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
@@ -339,26 +353,6 @@ class AsteroidDetail extends Component {
               </TreeTable>
             </Card>
           </div>
-          <div className="ui-g-6">
-            <Card
-              title="Inputs"
-              subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
-            >
-              <DataTable
-                value={this.state.inputs}
-                sortField={'input_type'}
-                sortOrder={1}
-              >
-                {inp_columns}
-              </DataTable>
-            </Card>
-          </div>
-          {/* <div className="ui-g-6">
-            <Card
-              title="Log"
-              subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
-            />
-          </div> */}
         </div>
         <Lightbox
           images={this.state.images}

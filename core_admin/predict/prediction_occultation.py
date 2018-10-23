@@ -20,7 +20,7 @@ class PredictionOccultation():
         self.logger = logging.getLogger("predict_occultation")
 
         self.archive_dir = settings.ARCHIVE_DIR
-        self.proccess = None
+        self.process = None
         self.input_list = None
         self.catalog = None
         self.objects_dir = None
@@ -41,7 +41,7 @@ class PredictionOccultation():
             "average_time": 0,
             "objects_dir": None,
             "input_list": None,
-            "proccess": None,
+            "process": None,
             "objects": dict(),
             "dates_file_report": dict(),
             "ephemeris_report": dict()
@@ -69,11 +69,11 @@ class PredictionOccultation():
         instance.start_time = datetime.now()
 
         # Recuperar a Instancia do processo
-        self.proccess = instance.proccess
-        self.results["proccess"] = self.proccess.id
+        self.process = instance.process
+        self.results["process"] = self.process.id
 
-        self.logger.debug("PROCCESS: %s" % self.proccess.id)
-        self.logger.debug("PROCCESS DIR: %s" % self.proccess.relative_path)
+        self.logger.debug("PROCESS: %s" % self.process.id)
+        self.logger.debug("PROCESS DIR: %s" % self.process.relative_path)
 
         # Recuperar a Instancia do Catalogo
         self.catalog = instance.catalog
@@ -81,7 +81,7 @@ class PredictionOccultation():
             raise "Catalog is required"
 
         # Diretorio onde ficam os inputs e resultados separados por objetos.
-        self.objects_dir = os.path.join(self.proccess.relative_path, "objects")
+        self.objects_dir = os.path.join(self.process.relative_path, "objects")
 
         self.results["objects_dir"] = self.objects_dir
 
@@ -232,10 +232,10 @@ class PredictionOccultation():
 
     def create_directory(self, instance):
 
-        proccess = instance.proccess
+        process = instance.process
         # Criar um diretorio para a Predicao de Occultacao
         directory_name = "prediction_occultation_%s" % instance.id
-        directory = os.path.join(proccess.relative_path, directory_name)
+        directory = os.path.join(process.relative_path, directory_name)
 
         try:
             # Criar o Diretorio

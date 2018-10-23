@@ -46,8 +46,13 @@ class PredictionHistory extends Component {
       style: { textAlign: 'center', width: '80' },
     },
     {
-      field: 'proccess_displayname',
+      field: 'process_displayname',
       header: 'Proccess',
+      sortable: true,
+    },
+    {
+      field: 'owner',
+      header: 'Owner',
       sortable: true,
     },
     {
