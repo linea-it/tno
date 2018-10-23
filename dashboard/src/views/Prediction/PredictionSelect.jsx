@@ -101,14 +101,12 @@ class PredicitionSelect extends Component {
     });
     // https://javascript.info/date
 
-    
     const year = new Date().getFullYear();
-    const moth
     // month of january is represented with ( 0 ) and moth of december represented with (11), this is a rule of javascript
     const ephemeris_initial_date = new Date(year, 0, 1);
     const ephemeris_final_date = new Date(year, 11, 31);
-    this.setState({ ephemeris_initial_date: ephemeris_initial_date});
-    this.setState({ ephemeris_initial_date: ephemeris_final_date});
+    this.setState({ ephemeris_initial_date: ephemeris_initial_date });
+    this.setState({ ephemeris_initial_date: ephemeris_final_date });
   }
 
   onCheck = () => {
@@ -310,7 +308,6 @@ class PredicitionSelect extends Component {
           value={this.state.ephemeris_final_date}
           onChange={e => this.setState({ ephemeris_final_date: e.value })}
           placeholder="Final Date"
-          
         />
       </div>
     );

@@ -103,12 +103,10 @@ class PredictionOccultation():
             self.leap_second = self.copy_leap_seconds_file(instance)
 
             # 2 - Generate Dates ---------------------------------------------------------------------------------------
-
-            # TODO esses parametros devem vir da interface
-            start_date = "2018-JAN-01"
-            end_date = "2018-DEC-31 23:59:01"
-            step = 600
-            self.radius = 0.15
+            start_date = datetime.strftime(instance.ephemeris_initial_date, '%Y-%b-%d %H:%M:%S').upper()
+            end_date = datetime.strftime(instance.ephemeris_final_date, '%Y-%b-%d %H:%M:%S').upper()
+            step = instance.ephemeris_step
+            self.radius = instance.catalog_radius
 
             dates_filename = "dates.txt"
             dates_file = self.run_generate_dates(
@@ -220,6 +218,8 @@ class PredictionOccultation():
 
             # 7 - Run PRAIA OCC Star Search 12 -------------------------------------------------------------------------
             self.search_candidate_stars()
+
+            # 8 - Generate
 
             self.logger.debug(json.dumps(self.results))
 
@@ -941,13 +941,52 @@ class PredictionOccultation():
                 obj['relative_path'], os.path.basename(praia_occ_dat)
             )
 
-            logger.debug("RESULTADO : %s" % result)
+            status = 'failure'
+            error_msg = 'PRAIA Occultation did not generate result files.'
+
+            if result:
+                status = 'running'
+                error_msg = None
+
+                # TODO essa parte pode ficar funcao run_search_candidate_stars
+                file_path = os.path.join(obj['relative_path'], self.stars_catalog_mini)
+                obj['results']['stars_catalog_mini'] = dict({
+                    "filename": self.stars_catalog_mini,
+                    "file_size": os.path.getsize(file_path),
+                    "file_path": file_path,
+                    "file_type": os.path.splitext(file_path)[1]
+                })
+
+                file_path = os.path.join(obj['relative_path'], self.stars_catalog_xy)
+                obj['results']['stars_catalog_xy'] = dict({
+                    "filename": self.stars_catalog_xy,
+                    "file_size": os.path.getsize(file_path),
+                    "file_path": file_path,
+                    "file_type": os.path.splitext(file_path)[1]
+                })
+
+                file_path = os.path.join(obj['relative_path'], self.stars_parameters_of_occultation)
+                obj['results']['stars_parameters_of_occultation'] = dict({
+                    "filename": self.stars_catalog_xy,
+                    "file_size": os.path.getsize(file_path),
+                    "file_path": file_path,
+                    "file_type": os.path.splitext(file_path)[1]
+                })
+
+                file_path = os.path.join(obj['relative_path'], self.stars_parameters_of_occultation_plot)
+                obj['results']['stars_parameters_of_occultation_plot'] = dict({
+                    "filename": self.stars_catalog_xy,
+                    "file_size": os.path.getsize(file_path),
+                    "file_path": file_path,
+                    "file_type": os.path.splitext(file_path)[1]
+                })
+
 
             t1 = datetime.now()
             tdelta = t1 - t0
 
-            # obj["status"] = status
-            # obj["error_msg"] = error_msg
+            obj["status"] = status
+            obj["error_msg"] = error_msg
             obj["start_search_candidate"] = t0.replace(microsecond=0).isoformat(' ')
             obj["finish_search_candidate"] = t1.replace(microsecond=0).isoformat(' ')
             obj["execution_search_candidate"] = tdelta.total_seconds()
