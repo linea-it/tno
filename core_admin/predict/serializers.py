@@ -13,10 +13,10 @@ class PredictRunSerializer(serializers.ModelSerializer):
 
     input_displayname = serializers.SerializerMethodField()
 
-    proccess = serializers.PrimaryKeyRelatedField(
+    process = serializers.PrimaryKeyRelatedField(
         queryset=Proccess.objects.all(), many=False)
 
-    proccess_displayname = serializers.SerializerMethodField()
+    process_displayname = serializers.SerializerMethodField()
 
     catalog = serializers.PrimaryKeyRelatedField(
         queryset=Catalog.objects.all(), many=False)
@@ -43,13 +43,13 @@ class PredictRunSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'owner',
-            'proccess',
-            'proccess_displayname',
+            'process',
+            'process_displayname',
             'catalog',
             'leap_second',
             'bsp_planetary',
-            'ephemeris_start_date',
-            'ephemeris_end_date',
+            'ephemeris_initial_date',
+            'ephemeris_final_date',
             'ephemeris_step',
             'catalog_radius',
             'start_time',
@@ -83,9 +83,9 @@ class PredictRunSerializer(serializers.ModelSerializer):
         except:
             return None
 
-    def get_proccess_displayname(self, obj):
+    def get_process_displayname(self, obj):
         try:
-            return "%s - %s" % (obj.proccess.id, obj.input_list.displayname)
+            return "%s - %s" % (obj.process.id, obj.input_list.displayname)
         except:
             return None
 

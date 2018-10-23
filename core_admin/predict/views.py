@@ -12,6 +12,12 @@ class PredictRunViewSet(viewsets.ModelViewSet):
     ordering_fields = ('id', 'owner', 'status', 'start_time', 'finish_time')
     ordering = ('-start_time',)
 
+    def perform_create(self, serializer):
+        # Adiconar usuario logado
+        if not self.request.user.pk:
+            raise Exception('It is necessary an active login to perform this operation.')
+        serializer.save(owner=self.request.user)
+
 
 class PredictAsteroidViewSet(viewsets.ModelViewSet):
     queryset = PredictAsteroid.objects.all()

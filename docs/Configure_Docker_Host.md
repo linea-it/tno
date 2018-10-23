@@ -42,6 +42,11 @@ instalei a biblioteca docker.
 tem que descobrir qual o ip da maquina host, dentro do container. 
 nesse caso era: 172.19.0.1
 
+para descobrir use este comando com o container ligado
+```
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.Gateway}}{{end}}' <container_name_or_id>
+```
+
 ```
 pip install docker
 ```

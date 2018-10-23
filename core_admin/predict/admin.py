@@ -5,7 +5,7 @@ from .models import PredictRun, PredictAsteroid, LeapSecond, BspPlanetary
 # Register your models here.
 @admin.register(PredictRun)
 class PredictRunAdmin(admin.ModelAdmin):
-    list_display = ('id', 'owner', 'proccess', 'status', 'input_list', 'input_orbit', 'start_time', 'finish_time',)
+    list_display = ('id', 'owner', 'process', 'status', 'input_list', 'input_orbit', 'start_time', 'finish_time',)
 
 
 @admin.register(PredictAsteroid)

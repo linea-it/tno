@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PredictionHistory from './History';
-// import PredictionSubmit from './Submit';
+import PredictionSubmit from './Submit';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import PropTypes from 'prop-types';
 import Content from 'components/CardContent/CardContent.jsx';
-import PredictionSelect from './PredictionSelect.jsx';
+// import PredictionSelect from './PredictionSelect.jsx';
 
 class PredictionPanel extends Component {
   state = this.initialState;
@@ -38,7 +38,12 @@ class PredictionPanel extends Component {
           title="Prediction Occultation"
           subTitle="Execute PRAIA Occultation"
           className="content1_predict_occult"
-          content={<Content title="" content={<PredictionSelect />} />}
+          content={
+            <Content
+              title=""
+              content={<PredictionSubmit onCreateRun={this.onCreateRun} />}
+            />
+          }
         />
 
         {/* <PanelCostumize
