@@ -3322,6 +3322,22 @@ body > .navbar-collapse[data-color="purple"]:after {
 .plot-alaranjado {
   color: #D34A39; }
 
+.plot_predict_radius {
+  width: 637px;
+  height: 492px;
+  margin: 0px 175px; }
+  .plot_predict_radius > img {
+    width: 100%;
+    height: inherit; }
+
+.plot_predict_earth {
+  width: 411px;
+  height: 296px;
+  margin: 15px 60px; }
+  .plot_predict_earth > img {
+    width: 100%;
+    height: inherit; }
+
 .mini-card-stats {
   min-height: none;
   min-width: none; }
@@ -3372,6 +3388,19 @@ body > .navbar-collapse[data-color="purple"]:after {
     font-weight: 600;
     font-family: "Lato," Helvetica Neue ",Arial,Helvetica,sans-serif"; }
   .panel-content .subTitle {
+    padding: 4px 14px;
+    font-size: 14px;
+    color: #717172;
+    font-weight: 500;
+    font-family: "Lato," Helvetica Neue ",Arial,Helvetica,sans-serif";
+    margin-bottom: 0px; }
+
+.panel-content-noheader {
+  min-height: none;
+  background: #ffffff !important;
+  border: 1.5px solid #aaaaaa;
+  border-radius: 1px; }
+  .panel-content-noheader .subTitle {
     padding: 4px 14px;
     font-size: 14px;
     color: #717172;
