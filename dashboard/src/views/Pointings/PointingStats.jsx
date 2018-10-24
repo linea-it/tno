@@ -8,7 +8,6 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
-import { Icon } from 'semantic-ui-react';
 import PanelCostumize from 'components/Panel/PanelCostumize';
 import Content from 'components/CardContent/CardContent.jsx';
 import PointingApi from './PointingApi';
@@ -80,7 +79,7 @@ class PointingsStats extends Component {
 
     const list = stats.map((col, i) => {
       return (
-        <div>
+        <div key={i}>
           <div key={i} className="item">
             <div className="label-stats">{stats[i].name}</div>
             <div className="value-stats">
@@ -179,6 +178,7 @@ class PointingsStats extends Component {
 
           <PanelCostumize
             className="list_stats"
+            noHeader={true}
             content={
               <Content content={<div className="group-stats">{list}</div>} />
             }

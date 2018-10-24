@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import PredictRun, PredictAsteroid, LeapSeconds, BspPlanetary
+from .models import PredictRun, PredictAsteroid, LeapSecond, BspPlanetary
 from .serializers import PredictRunSerializer, PredictAsteroidSerializer, LeapSecondsSerializer, BspPlanetarySerializer
 
 
@@ -12,6 +12,12 @@ class PredictRunViewSet(viewsets.ModelViewSet):
     ordering_fields = ('id', 'owner', 'status', 'start_time', 'finish_time')
     ordering = ('-start_time',)
 
+    def perform_create(self, serializer):
+        # Adiconar usuario logado
+        if not self.request.user.pk:
+            raise Exception('It is necessary an active login to perform this operation.')
+        serializer.save(owner=self.request.user)
+
 
 class PredictAsteroidViewSet(viewsets.ModelViewSet):
     queryset = PredictAsteroid.objects.all()
@@ -22,7 +28,7 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
 
 
 class LeapSecondsViewSet(viewsets.ModelViewSet):
-    queryset = LeapSeconds.objects.all()
+    queryset = LeapSecond.objects.all()
     serializer_class =  LeapSecondsSerializer
     filter_fields = ('name', 'display_name', 'url', 'upload')
     search_fields = ('name')

@@ -19,7 +19,7 @@ import os
 from django.core.exceptions import ObjectDoesNotExist
 from tno.db import CatalogDB
 from tno.models import Catalog
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.http import HttpResponse
 import csv
@@ -304,8 +304,8 @@ class CatalogViewSet(viewsets.ModelViewSet):
     serializer_class = CatalogSerializer
     filter_fields = ('id', 'display_name', 'tablename',)
     search_fields = ('name', 'display_name', 'tablename')
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
-    permission_classes = (IsAuthenticated,)
+    # authentication_classes = (SessionAuthentication, BasicAuthentication)
+    # permission_classes = (IsAuthenticated,)
 
     @list_route()
     def radial_query(self, request):

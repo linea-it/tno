@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import {
   BarChart,
-  Line,
   Bar,
   XAxis,
   YAxis,
@@ -14,7 +13,6 @@ import {
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
-import { Icon } from 'semantic-ui-react';
 import PanelCostumize from 'components/Panel/PanelCostumize';
 import Content from 'components/CardContent/CardContent.jsx';
 
@@ -76,103 +74,110 @@ class SkybotStats extends Component {
 
   render() {
     const data = [
-      { name: 'Total of CCDs', value: this.state.totalSize, icon: 'database', title:'amount' },
+      {
+        name: 'Total of CCDs',
+        value: this.state.totalSize,
+        icon: 'database',
+        title: 'amount',
+      },
       {
         name: 'Total number of observations',
         value: this.state.totalSize,
         icon: 'search',
-        title: 'amount'
+        title: 'amount',
       },
       {
         name: ' object with the largest number of observations',
         value: 'KBO',
         icon: 'flag checkered',
-        title: 'name'
-
+        title: 'name',
       },
       {
         name: `Number of observations of object KBO`,
         value: this.state.totalSize,
         icon: 'search',
-        title: 'amount'
-
+        title: 'amount',
       },
     ];
 
     const list = data.map((col, i) => {
       return (
-        <div>
-          {/* <hr className="hr-stats" /> */}
+        <div key={i}>
           <div className="item">
-            <div className="label-stats">
-                {data[i].name} 
-              </div>
-                <div className="value-stats"> {data[i].title}: {data[i].value}</div>
+            <div className="label-stats">{data[i].name}</div>
+            <div className="value-stats">
+              {' '}
+              {data[i].title}: {data[i].value}
+            </div>
           </div>
-          </div>
+        </div>
       );
     });
 
     return (
-        <div className="grid template-skybot">
+      <div className="grid template-skybot">
+        <PanelCostumize
+          className="list_stats_skybot"
+          noHeader={true}
+          content={
+            <Content content={<div className="group-stats">{list}</div>} />
+          }
+        />
 
-          <PanelCostumize
-            className="list_stats_skybot"
-            content={
-              <Content
-                  content={
-                    <div className="group-stats">
-                      {list}
-                    </div>
-                }
-                />
-            }
-          />
-
-          <PanelCostumize
-            className="plot_dinamics"
-            content={
-              <Content   
-                header={true}
-                title="Total number of objects (and their observations) for each" 
-                content={
-                  <BarChart width={400} height={200} data={band}
-                  margin={{top: 20, right: 30, left: 20, bottom: 5}}>
-                  <CartesianGrid strokeDasharray="3 3"/>
-                  <XAxis dataKey="name"/>
-                  <YAxis/>
-                  <Tooltip/>
+        <PanelCostumize
+          className="plot_dinamics"
+          title="plot_dinamics"
+          content={
+            <Content
+              header={true}
+              title="Total number of objects (and their observations) for each"
+              content={
+                <BarChart
+                  width={400}
+                  height={200}
+                  data={band}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
                   <Legend />
                   <Bar dataKey="observations" stackId="a" fill="#62388C" />
                   <Bar dataKey="objects" stackId="a" fill="#3CB1C6" />
-                  </BarChart>
-                }
-              />
-            }
-          />
+                </BarChart>
+              }
+            />
+          }
+        />
 
-          <PanelCostumize
-            className="plot_band"
-            content={
-              <Content   
-                header={true}
-                title="Total number of objects (and observations) for each band (u,g, r, i, z)" 
-                content={
-                  <BarChart width={500} height={200} data={objects}
-                  margin={{top: 20, right: 30, left: 20, bottom: 5}}>
-                  <CartesianGrid strokeDasharray="3 3"/>
-                  <XAxis dataKey="name"/>
-                  <YAxis/>
-                  <Tooltip/>
+        <PanelCostumize
+          className="plot_band"
+          title="plot_band"
+          content={
+            <Content
+              header={true}
+              title="Total number of objects (and observations) for each band (u,g, r, i, z)"
+              content={
+                <BarChart
+                  width={500}
+                  height={200}
+                  data={objects}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
                   <Legend />
                   <Bar dataKey="observations" stackId="a" fill="#62388C" />
                   <Bar dataKey="objects" stackId="a" fill="#3CB1C6" />
-                  </BarChart>
-                }
-              />
-             }
-          />
-        </div>
+                </BarChart>
+              }
+            />
+          }
+        />
+      </div>
     );
   }
 }

@@ -139,3 +139,19 @@
 .input-group-focus .input-group-addon{
     border-color: $dark-gray;
 }
+
+.input-number {
+   background: #000 !important;
+}
+
+.input_predict {
+    width: 500px !important;
+}
+
+.label-prediction {
+    margin: 15px 0px 10px 5px;
+    font-size: 1rem;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    opacity: 0.8;
+    font-weight: 700;
+}

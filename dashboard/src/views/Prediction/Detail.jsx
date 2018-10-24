@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
+
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
+
 import OrbitApi from 'views/Prediction/PredictionApi';
 
 import { withRouter } from 'react-router-dom';
 import AsteroidList from 'views/Prediction/AsteroidList';
 import PropTypes from 'prop-types';
-import DonutStats from 'components/Statistics/DonutStats.jsx';
+import DonutStats from 'components/Statistics/DonutStats.jsx'
+import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import StepStats from 'components/Statistics/StepStats.jsx';
-import moment from 'moment';
 
 class PredictionDetail extends Component {
   state = this.initialState;
@@ -26,6 +28,7 @@ class PredictionDetail extends Component {
       id: 0,
       data: {},
       time_profile: [],
+      list: {},
     };
   }
 
@@ -33,6 +36,11 @@ class PredictionDetail extends Component {
     const {
       match: { params },
     } = this.props;
+
+    // this.api.Prediction().then(res => {
+    //   const r = res.data;
+    //   this.setState({ list: r });
+    // });
 
     // console.log('Orbit Run Id: %o', params.id);
 
@@ -56,93 +64,149 @@ class PredictionDetail extends Component {
 
   onViewAsteroid = asteroid_id => {
     const history = this.props.history;
-    history.push(`/refined_asteroid/${asteroid_id}`);
+    history.push(`/predict_asteroid/${asteroid_id}`);
   };
 
   render() {
     const { data } = this.state;
-
+    // console.log("eu sou o list", this.state.list);
     if (data === {}) {
       return <div />;
     }
 
     const stats = [
       { name: 'Status', value: data.status },
-      { name: 'Proccess', value: data.proccess_displayname },
+      { name: 'Proccess', value: data.process_displayname },
       { name: 'Owner', value: data.owner },
       { name: 'Start', value: data.h_time },
       { name: 'Execution', value: data.h_execution_time },
       { name: 'Asteroids', value: data.count_objects },
     ];
 
-    const execute_time = [
+  
+
+    // const executo_time = [
+    //   {
+    //     text: 'Inputs',
+    //     number: Math.round(moment.duration(data.execution_time).asSeconds()),
+    //     colorIcon: 'info',
+    //     grid: ['3'],
+    //   },
+    //   {
+    //     text: 'Ephemeris',
+    //     number: 43,
+    //     colorIcon: 'info',
+    //     grid: ['3'],
+    //   },
+    //   {
+    //     text: 'Occultation',
+    //     number: 54,
+    //     colorIcon: 'success',
+    //     grid: ['3'],
+    //   },
+    // ];
+
+    const executo_time = [
       {
-        text: 'Inputs',
-        number: Math.round(moment.duration(data.execution_time).asSeconds()),
-        colorIcon: 'info',
-        grid: ['3'],
+        legend: 'Dates',
+        // number: Math.round(moment.duration(data.execution_time).asSeconds()),
+        value: 33,
+        colorIcon: 'warning',
+        grid: ['2'],
       },
       {
-        text: 'Ephemeris',
-        number: 0,
+        legend: 'Ephemeris',
+        value: 33,
         colorIcon: 'info',
-        grid: ['3'],
+        grid: ['2'],
       },
       {
-        text: 'Occultation',
-        number: 0,
+        legend: 'Gaia',
+        value: 33,
         colorIcon: 'success',
-        grid: ['3'],
+        grid: ['2'],
+      },
+      {
+        legend: 'Maps',
+        value: 33,
+        colorIcon: 'warning',
+        grid: ['2'],
+      },
+      {
+        legend: 'Register',
+        value: 33,
+        colorIcon: 'success',
+        grid: ['2'],
       },
     ];
 
+    // const stats_status = [
+    //   { name: 'Success', value: data.count_success },
+    //   { name: 'Warning', value: data.count_warning },
+    //   { name: 'Failure', value: data.count_failed },
+    //   { name: 'not Executed', value: data.count_not_executed },
+    // ];
+
     const stats_status = [
-      { name: 'Success', value: data.count_success },
-      { name: 'Warning', value: data.count_warning },
-      { name: 'Failure', value: data.count_failed },
-      { name: 'not Executed', value: data.count_not_executed },
+      { name: 'Success', value: 3232 },
+      { name: 'Warning', value: 4 },
+      { name: 'Failure', value: 0 },
+      { name: 'not Executed', value: 0 },
     ];
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
     return (
-      <div>
-        <div className="ui-g">
-          <div className="ui-g-4 ui-md-4 ui-sm-1">
-            <ListStats
+      <div className="grid template-predict-occult">
+          <PanelCostumize
+            title="Execution of execution"
+            className="list_predict_occult"
+            content={
+              <ListStats
               Badge="STATUS"
               title={`Prediction Occultation - ${data.id}`}
               data={stats}
             />
-          </div>
+            } 
+          />
 
-          <div className="ui-g-4 ui-md-4 ui-sm-1">
-            <div className="ui-g-4 ui-md-12 ui-sm-1">
+           <PanelCostumize
+            title="Execution of execution"
+            className="stats_predict_occult"
+            content={
               <DonutStats
                 subTitle="Statistics of executation"
                 data={stats_status}
                 fill={colors}
               />
-            </div>
+            } 
+          />
 
-            <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <StepStats title="My Stats" info={execute_time} />
-            </div>
-          </div>
+           <PanelCostumize
+            title="Execution of execution"
+            noHeader={true}
+            className="exec_predict_occult"
+            content={
+              <StepStats title="My Stats" info={executo_time} />
+            } 
+          />
+
+           <PanelCostumize
+            title="Execution of execution"
+            className="table_predict_occult"
+            content={
+              <AsteroidList
+              predict_run={this.state.id}
+              // predict_run={this.state.data.id}
+              view_asteroid={this.onViewAsteroid}
+            />
+            } 
+          />
+    
           {/* <div className="ui-g-4 ui-md-4">
               <Card title="" subTitle="">
                 <RefineOrbitTimeProfile data={this.state.time_profile} />
               </Card>
             </div> */}
-        </div>
-
-        <div className="ui-g">
-          <div className="ui-g-12">
-            <AsteroidList
-              predict_run={this.state.id}
-              view_asteroid={this.onViewAsteroid}
-            />
-          </div>
-        </div>
       </div>
     );
   }
