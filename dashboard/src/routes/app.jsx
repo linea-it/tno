@@ -195,7 +195,7 @@ const appRoutes = [
     path: '/plot',
     name: 'plot',
     component: PlotPrediction,
-    hidden: true,
+    hidden: false,
   },
 
   { redirect: true, path: '/', to: '/dashboard', name: 'Dashboard' },
