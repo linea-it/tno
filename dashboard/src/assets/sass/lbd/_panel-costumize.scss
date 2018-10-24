@@ -31,6 +31,23 @@
     }
 }
 
+.panel-content-noheader {
+ min-height: none;
+ background: #ffffff !important;  
+ border: 1.5px solid #aaaaaa;
+ border-radius: 1px;
+
+    .subTitle {
+     padding: 4px 14px;
+     font-size: 14px; 
+     color: $panel-costumize-default;
+     font-weight:500;
+     font-family:  $font-family-lato;
+     margin-bottom: 0px;
+     
+    }
+}
+
 .none > .ui-card-body{
     padding: 0 !important;
     margin: 0 10px !important;

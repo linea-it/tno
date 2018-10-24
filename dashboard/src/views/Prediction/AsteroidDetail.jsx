@@ -9,13 +9,19 @@ import 'primeicons/primeicons.css';
 import OrbitApi from 'views/RefineOrbit/OrbitApi.jsx';
 // interface components
 import { Card } from 'primereact/card';
-import Lightbox from 'react-images';
+// import Content from 'components/CardContent/CardContent.jsx';
+// import Lightbox from 'react-images';
 import { TreeTable } from 'primereact/treetable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toolbar } from 'primereact/toolbar';
 import { DataTable } from 'primereact/datatable';
 import ListStats from 'components/Statistics/ListStats.jsx';
+import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
+import plot_prediction1 from 'assets/img/plot_prediction1.png';
+import plot1 from 'assets/img/plots_prediction/1.png';
+// import { ColumnGroup } from './components/columngroup/ColumGroup';
+// import { Row } from 'primereact/row';
 
 class AsteroidDetailPrediction extends Component {
   state = this.initialState;
@@ -209,9 +215,7 @@ class AsteroidDetailPrediction extends Component {
           <Button
             label="Back to Refine Orbit"
             icon="fa fa-undo"
-            onClick={() =>
-              this.onClickBackToRefine(this.state.asteroid.id)
-            }
+            onClick={() => this.onClickBackToRefine(this.state.asteroid.id)}
           />
           <Button
             label="Download"
@@ -261,10 +265,14 @@ class AsteroidDetailPrediction extends Component {
   render() {
     const asteroid = this.state.asteroid;
 
-    let title = asteroid.name;
-    if (asteroid.number && asteroid.number !== '-') {
-      title = title + ' - ' + asteroid.number;
-    }
+    const columns = [
+      { field: 'date', header: 'Date' },
+      { field: 'time', header: 'Time' },
+      { field: 'ra_candidate', header: 'ra_candidate' },
+      { field: 'dec_candidate', header: 'dec_candidate' },
+      { field: 'ra_target', header: 'ra_target' },
+      { field: 'dec_target', header: 'dec_target' },
+    ];
 
     const stats = [
       { name: 'Proccess', value: asteroid.proccess_displayname },
@@ -272,6 +280,76 @@ class AsteroidDetailPrediction extends Component {
       { name: 'Execution Time', value: asteroid.h_execution_time },
       { name: 'Size', value: asteroid.h_size },
     ];
+
+    const image = [
+      {
+        src: '',
+        filename: 'earth',
+      },
+    ];
+    // const headerGroup = (
+    //   <ColumnGroup>
+    //     <Row>
+    //       <Column header="Brand" rowSpan={3} />
+    //       <Column header="Sale Rate" colSpan={4} />
+    //     </Row>
+    //     <Row>
+    //       <Column header="Sales" colSpan={2} />
+    //       <Column header="Profits" colSpan={2} />
+    //     </Row>
+    //     <Row>
+    //       <Column header="Last Year" />
+    //       <Column header="This Year" />
+    //       <Column header="Last Year" />
+    //       <Column header="This Year" />
+    //     </Row>
+    //   </ColumnGroup>
+    // );
+
+    const dynamicColumns = columns.map((col, i) => {
+      return <Column key={col.field} field={col.field} header={col.header} />;
+    });
+
+    const map = columns.map((col, i) => {
+      return (
+        <div key={i}>
+          <PanelCostumize
+            noHeader={true}
+            content={
+              <div className="ui-g">
+                <div className="ui-md-6">
+                  {image.map((e, i) => {
+                    return (
+                      <div className="plot_predict_earth" key={i}>
+                        <img
+                          id={e.filename}
+                          src={plot_prediction1}
+                          alt={e.filename}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="ui-md-6">
+                  <ListStats
+                    title={title}
+                    statstext={this.state.asteroid.status}
+                    status={false}
+                    data={stats}
+                  />
+                </div>
+              </div>
+            }
+          />
+          <br />
+        </div>
+      );
+    });
+
+    let title = asteroid.name;
+    if (asteroid.number && asteroid.number !== '-') {
+      title = title + ' - ' + asteroid.number;
+    }
 
     const inp_columns = this.input_columns.map((col, i) => {
       return (
@@ -290,35 +368,62 @@ class AsteroidDetailPrediction extends Component {
       <div className="content">
         {this.create_nav_bar()}
         <div className="ui-g">
-          <div className="ui-g-4">
-            <ListStats
-              title={title}
-              statstext={asteroid.status}
-              status={true}
-              data={stats}
+          <div className="ui-md-12">
+            <PanelCostumize
+              title="Placeholder"
+              content={
+                <ListStats
+                  title={title}
+                  statstext={asteroid.status}
+                  status={true}
+                  data={stats}
+                />
+              }
             />
           </div>
         </div>
-        <div className="ui-g">
-          {this.state.images.map((e, i) => {
-            return (
-              <div className="ui-g-5" key={i}>
-                <Card subTitle={e.filename}>
-                  <img
-                    key={i}
-                    id={e.filename}
-                    onClick={this.Slideshow}
-                    width="100%"
-                    src={e.src}
-                    alt={e.filename}
-                  />
-                </Card>
-              </div>
-            );
-          })}
+        <div className="ui-md-12">
+          <PanelCostumize
+            title="Placeholder"
+            content={
+              <DataTable
+                value={this.state.asteroid}
+                // headerColumnGroup={headerGroup}
+              >
+                {dynamicColumns}
+              </DataTable>
+            }
+          />
         </div>
+        <div className="ui-md-12">{map}</div>
+
+        <div />
         <div className="ui-g">
-          <div className="ui-g-4">
+          <div className="ui-md-12">
+            <Card
+              title="Catalog"
+              subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
+            >
+              <div className="plot_predict_radius">
+                <img src={plot1} alt="radius" />
+              </div>
+            </Card>
+          </div>
+          <div className="ui-md-6">
+            <Card
+              title="Inputs"
+              subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
+            >
+              <DataTable
+                value={this.state.inputs}
+                sortField={'input_type'}
+                sortOrder={1}
+              >
+                {inp_columns}
+              </DataTable>
+            </Card>
+          </div>
+          <div className="ui-md-6">
             <Card
               title="Results"
               subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
@@ -340,37 +445,7 @@ class AsteroidDetailPrediction extends Component {
               </TreeTable>
             </Card>
           </div>
-          <div className="ui-g-6">
-            <Card
-              title="Inputs"
-              subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
-            >
-              <DataTable
-                value={this.state.inputs}
-                sortField={'input_type'}
-                sortOrder={1}
-              >
-                {inp_columns}
-              </DataTable>
-            </Card>
-          </div>
-          {/* <div className="ui-g-6">
-            <Card
-              title="Log"
-              subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
-            />
-          </div> */}
         </div>
-        <Lightbox
-          images={this.state.images}
-          isOpen={this.state.lightboxIsOpen}
-          onClickPrev={this.gotoPrevLightboxImage}
-          onClickNext={this.gotoNextLightboxImage}
-          onClose={this.CloseLightbox}
-          currentImage={this.state.currentImage}
-          onClickImage={this.handleClickImage}
-          onClickThumbnail={this.gotoImage}
-        />
       </div>
     );
   }

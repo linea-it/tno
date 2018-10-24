@@ -63,6 +63,7 @@ class ListStats extends Component {
       <div>
         <Content
           content={
+            // < style={{background}}>
             <Table>
               <tbody>
                 {status}
