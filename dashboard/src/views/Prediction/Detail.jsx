@@ -76,7 +76,7 @@ class PredictionDetail extends Component {
 
     const stats = [
       { name: 'Status', value: data.status },
-      { name: 'Proccess', value: data.proccess_displayname },
+      { name: 'Proccess', value: data.process_displayname },
       { name: 'Owner', value: data.owner },
       { name: 'Start', value: data.h_time },
       { name: 'Execution', value: data.h_execution_time },
@@ -108,23 +108,35 @@ class PredictionDetail extends Component {
 
     const executo_time = [
       {
-        legend: 'Inputs',
+        legend: 'Dates',
         // number: Math.round(moment.duration(data.execution_time).asSeconds()),
         value: 33,
         colorIcon: 'warning',
-        grid: ['3'],
+        grid: ['2'],
       },
       {
         legend: 'Ephemeris',
         value: 33,
         colorIcon: 'info',
-        grid: ['3'],
+        grid: ['2'],
       },
       {
-        legend: 'Occultation',
+        legend: 'Gaia',
         value: 33,
         colorIcon: 'success',
-        grid: ['3'],
+        grid: ['2'],
+      },
+      {
+        legend: 'Maps',
+        value: 33,
+        colorIcon: 'warning',
+        grid: ['2'],
+      },
+      {
+        legend: 'Register',
+        value: 33,
+        colorIcon: 'success',
+        grid: ['2'],
       },
     ];
 

@@ -332,7 +332,7 @@ class PredictionOccultation():
         # Recupera a Imagem Docker
         docker_image = self.get_docker_image(
             docker_client=docker_client,
-            image_name="praia-occultation:latest")
+            image_name="linea/praiaoccultation:latest")
 
         # Path absoluto para o diretorio de dados que sera montado no container.
         absolute_archive_path = settings.HOST_ARCHIVE_DIR
@@ -503,7 +503,7 @@ class PredictionOccultation():
         # Recupera a Imagem Docker
         docker_image = self.get_docker_image(
             docker_client=docker_client,
-            image_name="praia-occultation:latest")
+            image_name="linea/praiaoccultation:latest")
 
         # executa o app Parsl para cara registro em paralelo
         results = []
@@ -1127,7 +1127,7 @@ class PredictionOccultation():
         # Recupera a Imagem Docker
         docker_image = self.get_docker_image(
             docker_client=docker_client,
-            image_name="praia-occultation:latest")
+            image_name="linea/praiaoccultation:latest")
 
         # Path absoluto para o diretorio de dados que sera montado no container.
         absolute_archive_path = settings.HOST_ARCHIVE_DIR
@@ -1315,7 +1315,7 @@ class PredictionOccultation():
         # Recupera a Imagem Docker
         docker_image = self.get_docker_image(
             docker_client=docker_client,
-            image_name="praia-occultation:latest")
+            image_name="linea/praiaoccultation:latest")
 
         # Path absoluto para o diretorio de dados que sera montado no container.
         absolute_archive_path = settings.HOST_ARCHIVE_DIR

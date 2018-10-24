@@ -93,10 +93,13 @@ class PredictionApi {
       params[element.property] = element.value;
     });
 
-    return axios.get(`${this.api}/refined_asteroid/`, {
+    return axios.get(`${this.api}/predict_asteroid/`, {
       params: params,
     });
   };
+
+  getAsteroidById = ({ id }) =>
+    axios.patch(`${this.api}/predict_asteroid/${id}/`);  
 }
 
 export default PredictionApi;
