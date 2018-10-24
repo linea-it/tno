@@ -14,6 +14,8 @@ import { Button } from 'primereact/button';
 // APIs
 import OrbitApi from '../RefineOrbit/OrbitApi';
 import PredictionApi from './PredictionApi';
+import { AlertList, Alert } from 'react-bs-notifier';
+import Growl from 'views/Prediction/growl.jsx';
 
 export class PredictionSubmit extends Component {
   state = this.initialState;
@@ -114,10 +116,10 @@ export class PredictionSubmit extends Component {
     });
 
     // Ephemeris Initial and Final Date
-    const now = new Date();
+    const year = new Date();
     this.setState({
-      ephemeris_initial_date: new Date(now.getFullYear(), 0, 1),
-      ephemeris_final_date: new Date(now.getFullYear(), 11, 31, 23, 59, 59),
+      ephemeris_initial_date: new Date(year.getFullYear(), 0, 1),
+      ephemeris_final_date: new Date(year.getFullYear(), 11, 31, 23, 59, 59),
     });
   }
 
@@ -138,8 +140,8 @@ export class PredictionSubmit extends Component {
       });
     }
   };
-
   onClick = () => {
+    // this.showSucess();
     const {
       process,
       leap_second,
@@ -220,7 +222,7 @@ export class PredictionSubmit extends Component {
 
     return (
       <Dropdown
-        className="fieldset_predict_subintens"
+        autoWidth={false}
         key={2}
         value={this.state.process}
         options={process_elements}
@@ -246,7 +248,7 @@ export class PredictionSubmit extends Component {
 
     return (
       <Dropdown
-        className="fieldset_predict_subintens"
+        autoWidth={false}
         key={2}
         value={this.state.catalog}
         options={catalog_elements}
@@ -273,8 +275,8 @@ export class PredictionSubmit extends Component {
     return (
       <div>
         <Dropdown
-          className="fieldset_predict_subintens"
-          key={2}
+          autoWidth={false}
+          key={3}
           value={this.state.leap_second}
           options={leaps_elements}
           onChange={this.onChangeLeap}
@@ -301,8 +303,8 @@ export class PredictionSubmit extends Component {
     return (
       <div>
         <Dropdown
-          className="fieldset_predict_subintens"
-          key={2}
+          autoWidth={false}
+          key={4}
           value={this.state.bsp_planeraty}
           options={bsp_elements}
           onChange={this.onChangeBsp}
@@ -316,6 +318,7 @@ export class PredictionSubmit extends Component {
   radiusInput = () => {
     return (
       <Spinner
+        size={50}
         value={this.state.catalog_radius}
         onChange={e => this.setState({ catalog_radius: e.value })}
         min={0}
@@ -325,29 +328,33 @@ export class PredictionSubmit extends Component {
     );
   };
 
-  ephemerisDate = () => {
+  ephemerisDateInitial = () => {
     return (
-      <div>
-        <Calendar
-          className="fieldset_predict_subintens"
-          value={this.state.ephemeris_initial_date}
-          onChange={e => this.setState({ ephemeris_initial_date: e.value })}
-          placeholder="Initial Date"
-          dateFormat="yy-dd-mm"
-          showTime={true}
-          showSeconds={true}
-        />
-        <br />
-        <Calendar
-          className="fieldset_predict_subintens"
-          value={this.state.ephemeris_final_date}
-          onChange={e => this.setState({ ephemeris_final_date: e.value })}
-          placeholder="Final Date"
-          dateFormat="yy-mm-dd"
-          showTime={true}
-          showSeconds={true}
-        />
-      </div>
+      <Calendar
+        required
+        showIcon={true}
+        value={this.state.ephemeris_initial_date}
+        onChange={e => this.setState({ ephemeris_initial_date: e.value })}
+        placeholder="Initial Date"
+        dateFormat="yy-dd-mm"
+        showTime={true}
+        showSeconds={true}
+      />
+    );
+  };
+
+  ephemerisDateFinal = () => {
+    return (
+      <Calendar
+        required
+        showIcon={true}
+        value={this.state.ephemeris_final_date}
+        onChange={e => this.setState({ ephemeris_final_date: e.value })}
+        placeholder="Final Date"
+        dateFormat="yy-mm-dd"
+        showTime={true}
+        showSeconds={true}
+      />
     );
   };
 
@@ -365,46 +372,58 @@ export class PredictionSubmit extends Component {
 
   render() {
     return (
-    <div>
-      <div className="fieldset_predict">
-        <div className="fieldset_predict_itens">
-          <div className="item-prediction">
+      <div>
+        <div className="ui-g ui-fluid">
+          <div className="ui-md-6">
             <p className="label-prediction">Input</p>
             {this.processDropdown()}
-            <p className="label-prediction">Catalog</p>
-            {this.catalogDropdown()}
-            <p className="label-prediction">Leap Seconds</p>
-            {this.leapSecondDropdown()}
-            <p className="label-prediction">BSP Planetary</p>
-            {this.bspPlanetaryDropdown()}
           </div>
-        </div>
-        
-        <div className="fieldset_predict_itens">
-          <div className="item-prediction">
+          <div className="ui-md-6">
             <p className="label-prediction">Catalog Radius</p>
             {this.radiusInput()}
-            <p className="label-prediction">
-              Ephemeris Initial and final date.
-            </p>
-            {this.ephemerisDate()}
-            <p className="label-prediction">
-              Interval in seconds to generate Ephemeris
-            </p>
+          </div>
+          <div className="ui-md-6">
+            <p className="label-prediction">Catalog</p>
+            {this.catalogDropdown()}
+          </div>
+
+          <div className="ui-md-6">
+            <p className="label-prediction"> Ephemeris Step</p>
             {this.ephemerisStep()}
           </div>
         </div>
-      </div>
 
+        <div className="ui-g ui-fluid">
+          <div className="ui-md-6">
+            <p className="label-prediction"> Leap Seconds</p>
+
+            {this.leapSecondDropdown()}
+          </div>
+          <div className="ui-md-6">
+            <p className="label-prediction">Ephemeris Initial Initial</p>
+            {this.ephemerisDateInitial()}
+          </div>
+          <div className="ui-md-6">
+            <p className="label-prediction"> BSP Planetary</p>
+
+            {this.bspPlanetaryDropdown()}
+          </div>
+
+          <div className="ui-md-6">
+            <p className="label-prediction"> Ephemeris Initial Date </p>
+
+            {this.ephemerisDateFinal()}
+          </div>
+        </div>
+        {/* <Growl /> */}
         <br />
-
         <Button
           label="Submit"
           disabled={!this.state.actionButton}
           onClick={this.onClick}
           className=" button-TNO button-prediction"
         />
-        <p>{this.state.message}</p>
+        {/* <p>{this.state.message}</p> */}
       </div>
     );
   }
