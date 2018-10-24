@@ -13,7 +13,7 @@ import json
 from statistics import mean
 from tno.db import CatalogDB
 from sqlalchemy.sql import text
-
+from .models import PredictAsteroid
 
 class PredictionOccultation():
     def __init__(self):
@@ -44,7 +44,9 @@ class PredictionOccultation():
             "process": None,
             "objects": dict(),
             "dates_file_report": dict(),
-            "ephemeris_report": dict()
+            "ephemeris_report": dict(),
+            "maps_report": dict(),
+            "register_report": dict()
         })
 
         self.leap_second = None
@@ -177,10 +179,13 @@ class PredictionOccultation():
                         os.path.join(obj_relative_path, bsp_nima_name),
                         os.path.join(obj_relative_path, bsp_name))
 
+                # TODO atributo shade_diameter esta hardcoded e necessario um codigo para extrair esse atributo de um site
+
                 self.results["objects"][obj_name] = dict({
                     "name": obj.get("name"),
                     "number": obj.get("num"),
                     "alias": obj_name,
+                    "shade_diameter": 147,
                     "relative_path": obj_relative_path,
                     "status": None,
                     "error_msg": None,
@@ -219,10 +224,27 @@ class PredictionOccultation():
             # 7 - Run PRAIA OCC Star Search 12 -------------------------------------------------------------------------
             self.search_candidate_stars()
 
-            # 8 - Generate
+            # 8 - Generate Maps ----------------------------------------------------------------------------------------
+            self.generate_maps()
+
 
             self.logger.debug(json.dumps(self.results))
 
+
+            # ---------------------- Recording the results. ----------------------------------------------------------------
+
+            t_register_0 = datetime.now()
+            # Iterate over objects
+            for alias in self.results["objects"]:
+                obj = self.results["objects"][alias]
+
+                # TODO: Registrar os Asteroids e o Resultado.
+                self.register_asteroid(obj, instance)
+
+            t_register_1 = datetime.now()
+            t_register_delta = t_register_1 - t_register_0
+
+            self.results["execution_register_time"] = t_register_delta.total_seconds()
 
 
         except Exception as e:
@@ -951,7 +973,7 @@ class PredictionOccultation():
                 # TODO essa parte pode ficar funcao run_search_candidate_stars
                 file_path = os.path.join(obj['relative_path'], self.stars_catalog_mini)
                 obj['results']['stars_catalog_mini'] = dict({
-                    "filename": self.stars_catalog_mini,
+                    "filename": os.path.basename(file_path),
                     "file_size": os.path.getsize(file_path),
                     "file_path": file_path,
                     "file_type": os.path.splitext(file_path)[1]
@@ -959,7 +981,7 @@ class PredictionOccultation():
 
                 file_path = os.path.join(obj['relative_path'], self.stars_catalog_xy)
                 obj['results']['stars_catalog_xy'] = dict({
-                    "filename": self.stars_catalog_xy,
+                    "filename": os.path.basename(file_path),
                     "file_size": os.path.getsize(file_path),
                     "file_path": file_path,
                     "file_type": os.path.splitext(file_path)[1]
@@ -967,7 +989,7 @@ class PredictionOccultation():
 
                 file_path = os.path.join(obj['relative_path'], self.stars_parameters_of_occultation)
                 obj['results']['stars_parameters_of_occultation'] = dict({
-                    "filename": self.stars_catalog_xy,
+                    "filename": os.path.basename(file_path),
                     "file_size": os.path.getsize(file_path),
                     "file_path": file_path,
                     "file_type": os.path.splitext(file_path)[1]
@@ -975,7 +997,7 @@ class PredictionOccultation():
 
                 file_path = os.path.join(obj['relative_path'], self.stars_parameters_of_occultation_plot)
                 obj['results']['stars_parameters_of_occultation_plot'] = dict({
-                    "filename": self.stars_catalog_xy,
+                    "filename": os.path.basename(file_path),
                     "file_size": os.path.getsize(file_path),
                     "file_path": file_path,
                     "file_type": os.path.splitext(file_path)[1]
@@ -1160,8 +1182,280 @@ class PredictionOccultation():
             self.logger.error(e)
             raise e
 
+    def generate_maps(self):
+
+        self.logger.info("Generating Maps ")
+
+        t0 = datetime.now()
+
+        # Configuracao do Parsl
+        try:
+            dfk = DataFlowKernel(
+                config=dict(settings.PARSL_CONFIG))
+
+        except Exception as e:
+            self.logger.error(e)
+            raise e
+
+        self.logger.info("Configuring Parsl")
+        self.logger.debug("Parsl Config:")
+        self.logger.debug(settings.PARSL_CONFIG)
+
+        # Configuracao do Parsl Log.
+        parsl.set_file_logger(os.path.join(self.relative_path, 'generate_maps_parsl.log'))
+
+        # Declaracao do Parsl APP
+        @App("python", dfk)
+        def start_parsl_job(id, obj, logger):
+
+            t0 = datetime.now()
+
+
+            status = 'failure'
+            error_msg = 'Maps were not created'
+
+            result = self.run_generate_maps(id, obj)
+
+            if result:
+                status = 'running'
+                error_msg = None
+
+                # TODO: Criar um resultado para cada MAPA
+
+
+            t1 = datetime.now()
+            tdelta = t1 - t0
+
+            obj["status"] = status
+            obj["error_msg"] = error_msg
+            obj["start_maps"] = t0.replace(microsecond=0).isoformat(' ')
+            obj["finish_maps"] = t1.replace(microsecond=0).isoformat(' ')
+            obj["execution_maps"] = tdelta.total_seconds()
+
+            if result:
+                msg = "[ SUCCESS ] - Object: %s Time: %s " % (
+                    obj['name'], humanize.naturaldelta(obj['execution_maps']))
+            else:
+                msg = "[ FAILURE ] - Object: %s " % obj['name']
+
+            logger.debug(msg)
+
+            return obj
+
+        # executa o app Parsl para cara registro em paralelo
+        results = []
+        id = 0
+        for alias in self.results['objects']:
+            obj = self.results['objects'][alias]
+
+            self.results["objects"][alias]["status"] = "running"
+
+            result = start_parsl_job(
+                id=id,
+                obj=obj,
+                logger=self.logger)
+
+            self.logger.debug(result)
+
+            results.append(result)
+
+            id += 1
+
+        # Espera o Resultado de todos os jobs.
+        outputs = [i.result() for i in results]
+
+        for i in results:
+            i.done()
+
+        dfk.cleanup()
+
+        count = len(outputs)
+        failure = 0
+        average = []
+        for row in outputs:
+            if row['status'] == "failure":
+                failure += 1
+            average.append(row['execution_maps'])
+
+            self.results['objects'][row['alias']] = row
+
+        t1 = datetime.now()
+        tdelta = t1 - t0
+
+        self.results['maps_report'] = dict({
+            'start_time': t0.replace(microsecond=0).isoformat(' '),
+            'finish_time': t1.replace(microsecond=0).isoformat(' '),
+            'execution_time': tdelta.total_seconds(),
+            'count_asteroids': count,
+            'count_success': count - failure,
+            'count_failed': failure,
+            'average_time': mean(average),
+        })
+
+        self.logger.info(
+            "Finished to generate maps, %s asteroids in %s" % (
+                count, humanize.naturaldelta(tdelta)))
+
+    def run_generate_maps(self, id, obj):
+        """
+            Cria uma instancia do container PRAIA_Occultation
+            e executa o comando generate_maps.py
+        :param Objeto:
+        :return:
+        """
+        self.logger.info("Generating Maps")
+
+        data_path = obj['relative_path']
+
+        # Get docker Client Instance
+        self.logger.debug("Getting docker client")
+        docker_client = docker.DockerClient(
+            base_url=settings.DOCKER_HOST)
+
+        # Recupera a Imagem Docker
+        docker_image = self.get_docker_image(
+            docker_client=docker_client,
+            image_name="praia-occultation:latest")
+
+        # Path absoluto para o diretorio de dados que sera montado no container.
+        absolute_archive_path = settings.HOST_ARCHIVE_DIR
+        absolute_data_path = os.path.join(absolute_archive_path, data_path.strip('/'))
+        self.logger.debug("Absolute Data Path: %s" % absolute_data_path)
+
+        # Comando que sera executado dentro do container.
+        cmd = "python generate_maps.py %s %s %s" % (
+            obj['alias'].replace('_', ''),
+            obj['shade_diameter'],
+            obj['results']['stars_parameters_of_occultation_plot']['filename']
+        )
+        self.logger.debug("CMD: %s" % cmd)
+
+        # Definicao do Volume /data
+        volumes = dict({
+            absolute_data_path: dict({
+                'bind': '/data',
+                'mode': 'rw'
+            })
+        })
+
+        container_name = "occultation_maps_%s" % id
+
+        try:
+            self.logger.debug("[ %s ] Starting Container" % container_name)
+            container = docker_client.containers.run(
+                docker_image,
+                command=cmd,
+                detach=True,
+                name=container_name,
+                auto_remove=True,
+                mem_limit='4096m',
+                volumes=volumes,
+                user=os.getuid()
+            )
+
+            container.wait()
+            self.logger.debug("[ %s ] Finish Container" % container_name)
+
+            return self.check_map_results(obj)
+
+        except docker.errors.ContainerError as e:
+            self.logger.error(e)
+            raise e
+        except Exception as e:
+            self.logger.error(e)
+            raise e
+
+    def check_map_results(self, obj):
+        # TODO Criar uma funcao para verificar se os mapas foram criados corretamente,
+        # Precisa saber quantos mapas e qual o nome dos mapas que deveriam ter sido criados.
+        return True
+
+
+    def register_asteroid(self, obj, predict_run):
+
+        try:
+
+            # try:
+            #     t0 = datetime.strptime(obj.get("start_time"), '%Y-%m-%d %H:%M:%S')
+            #
+            # except:
+            #     t0 = None
+            # try:
+            #     t1 = datetime.strptime(obj.get("finish_time"), '%Y-%m-%d %H:%M:%S')
+            # except:
+            #     t1 = None
+            #
+            # if t0 is not None and t1 is not None:
+            #     t_delta = t1 - t0
+            # else:
+            #     t_delta = None
+
+            asteroid, created = PredictAsteroid.objects.update_or_create(
+                predict_run=predict_run,
+                name=obj.get("name"),
+                defaults={
+                    'number': obj.get("number"),
+                    'status': obj.get("status"),
+                    'error_msg': obj.get("error_msg"),
+                    # 'start_time': t0,
+                    # 'finish_time': t1,
+                    # 'execution_time': t_delta,
+                    'relative_path': obj.get("relative_path"),
+                    'absolute_path': obj.get("absolute_path")
+                })
+
+            asteroid.save()
+
+            l_created = "Created"
+
+            # # Apaga todas os resultados caso seja um update
+            # if not created:
+            #     l_created = "Updated"
+            #
+            #     for orbit in asteroid.refined_orbit.all():
+            #         orbit.delete()
+            #
+            # for f in obj.get("results"):
+            #     orbit, created = PredictAsteroid.objects.update_or_create(
+            #         asteroid=asteroid,
+            #         filename=f.get("filename"),
+            #         defaults={
+            #             'file_size': f.get("file_size"),
+            #             'file_type': f.get("file_type"),
+            #             'relative_path': f.get("file_path"),
+            #         }
+            #     )
+            #
+            #     orbit.save()
+
+            # # Registra os Inputs Utilizados
+            # for input_type in obj.get("inputs"):
+            #     inp = obj.get("inputs").get(input_type)
+            #
+            #     if inp is not None:
+            #         input_file, created = RefinedOrbitInput.objects.update_or_create(
+            #             asteroid=asteroid,
+            #             input_type=input_type,
+            #             defaults={
+            #                 'source': inp.get("source"),
+            #                 'date_time': inp.get("date_time"),
+            #                 'filename': inp.get("filename"),
+            #                 'relative_path': inp.get("file_path"),
+            #             }
+            #         )
+            #
+            #         input_file.save()
+
+            self.logger.info("Registered Object %s %s" % (obj.get("name"), l_created))
+
+        except Exception as e:
+            self.logger.error("Failed to Register Object %s Error: %s" % (obj.get("name"), e))
+
+
     def on_error(self, msg):
         pass
+
+
 
 # Comando para gerar o plot no gnuplot
 # plot 'gaia.csv' u 1:2 notitle, '1999RB216.eph' u (15*($3+$4/60+$5/3600)):(($6+$7/60+$8/3600)) w l notitle

@@ -14,8 +14,6 @@ import { Button } from 'primereact/button';
 // APIs
 import OrbitApi from '../RefineOrbit/OrbitApi';
 import PredictionApi from './PredictionApi';
-import { AlertList, Alert } from 'react-bs-notifier';
-import Growl from 'views/Prediction/growl.jsx';
 
 export class PredictionSubmit extends Component {
   state = this.initialState;
