@@ -5,7 +5,7 @@ class PanelCostumize extends Component {
     const propSet = this.props;
     if (propSet.noHeader) {
       return (
-        <div className={`panel-content ${propSet.className}`}>
+        <div className={`panel-content-noheader ${propSet.className}`}>
           <p className="subTitle">{propSet.subTitle}</p>
           {propSet.content}
         </div>
