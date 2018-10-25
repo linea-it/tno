@@ -1,0 +1,33 @@
+.main-validation {
+    width: 800px;
+    height: 40px;
+    background: rgb(116, 221, 172);
+    margin-right: 0px !important;
+    opacity: 0.8;
+    position: absolute;
+    border-radius: 3px; 
+    display: absolute;
+    transition: display 2s;
+
+    > p {
+        color :#fff;
+        margin: 10px 15px !important;
+        font-weight: 700; 
+    }
+
+    &.success {
+        background-color:rgb(52, 180, 121);
+    }
+
+    &.warning {
+        background-color:rgb(209, 216, 110);
+    }
+
+    &.danger {
+        background-color:rgb(235, 93, 93);
+    }
+
+    &.primary {
+        background-color:rgb(87, 213, 230);
+    }
+}

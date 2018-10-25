@@ -14,8 +14,10 @@ import { Button } from 'primereact/button';
 // APIs
 import OrbitApi from '../RefineOrbit/OrbitApi';
 import PredictionApi from './PredictionApi';
-import { AlertList, Alert } from 'react-bs-notifier';
-import Growl from 'views/Prediction/growl.jsx';
+import {
+  NotificationContainer,
+  NotificationManager,
+} from 'react-notifications';
 
 export class PredictionSubmit extends Component {
   state = this.initialState;
@@ -140,8 +142,34 @@ export class PredictionSubmit extends Component {
       });
     }
   };
+
+  createNotification = (type, message) => {
+    return () => {
+      switch (type) {
+      case 'info':
+        NotificationManager.info(`${message}`);
+        break;
+      case 'success':
+        NotificationManager.success('Success message', 'Title here');
+          break;
+      case 'warning':
+        NotificationManager.warning(
+            'Warning message',
+            'Close after 3000ms',
+            3000
+          );
+        break;
+      case 'error':
+        NotificationManager.error('Error message', 'Click me!', 5000, () => {
+            alert('callback');
+            });
+          break;
+      }
+    };
+  };
+
   onClick = () => {
-    // this.showSucess();
+    this.createNotification(el.type, el.message);
     const {
       process,
       leap_second,
@@ -223,7 +251,7 @@ export class PredictionSubmit extends Component {
     return (
       <Dropdown
         autoWidth={false}
-        key={2}
+        key={1}
         value={this.state.process}
         options={process_elements}
         onChange={this.onChangeProcess}
@@ -371,6 +399,13 @@ export class PredictionSubmit extends Component {
   };
 
   render() {
+    const dataSubmit = [
+      {
+        message: 'Seu campo foi validado com sucesso',
+        type: 'info',
+      },
+    ];
+
     return (
       <div>
         <div className="ui-g ui-fluid">
@@ -392,7 +427,6 @@ export class PredictionSubmit extends Component {
             {this.ephemerisStep()}
           </div>
         </div>
-
         <div className="ui-g ui-fluid">
           <div className="ui-md-6">
             <p className="label-prediction"> Leap Seconds</p>
@@ -415,14 +449,16 @@ export class PredictionSubmit extends Component {
             {this.ephemerisDateFinal()}
           </div>
         </div>
-        {/* <Growl /> */}
         <br />
+
         <Button
+          // key={i}
           label="Submit"
           disabled={!this.state.actionButton}
-          onClick={this.onClick}
+          onClick={this.onClick()}
           className=" button-TNO button-prediction"
         />
+        <NotificationContainer />
         {/* <p>{this.state.message}</p> */}
       </div>
     );

@@ -3610,7 +3610,6 @@ body > .navbar-collapse[data-color="purple"]:after {
   flex-grow: 12; }
 
 .item-prediction {
-  margin: 10px 20px !important;
   width: 500px !important; }
 
 .button-prediction {
@@ -3833,3 +3832,26 @@ body > .navbar-collapse[data-color="purple"]:after {
   margin: 10px 0px;
   background: #979797;
   height: 1px; }
+
+.main-validation {
+  width: 800px;
+  height: 40px;
+  background: #74ddac;
+  margin-right: 0px !important;
+  opacity: 0.8;
+  position: absolute;
+  border-radius: 3px;
+  display: absolute;
+  transition: display 2s; }
+  .main-validation > p {
+    color: #fff;
+    margin: 10px 15px !important;
+    font-weight: 700; }
+  .main-validation.success {
+    background-color: #34b479; }
+  .main-validation.warning {
+    background-color: #d1d86e; }
+  .main-validation.danger {
+    background-color: #eb5d5d; }
+  .main-validation.primary {
+    background-color: #57d5e6; }
