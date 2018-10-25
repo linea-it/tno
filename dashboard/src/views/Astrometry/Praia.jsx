@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { Grid, Row, Col } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import PraiaApi from './PraiaApi';
 import PraiaSubmit from './PraiaSubmit';
 import PraiaHistory from './PraiaHistory';
 import PraiaRunning from './PraiaRunning';
 import PropTypes from 'prop-types';
-import Card from 'components/Card/Card.jsx';
+import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 class Praia extends Component {
   state = this.initialState;
   api = new PraiaApi();
@@ -29,21 +28,34 @@ class Praia extends Component {
   render() {
     const { record } = this.state;
     return (
-      <div className="content">
-        <div className="ui-g">
-          <div className="ui-g-4">
-            <PraiaSubmit onCreateRun={this.onCreateRun} />
-          </div>
-          <div className="ui-g-8">
+      <div className="grid template-predict-astromery">
+         <PanelCostumize
+          className="exec_astrometry"
+          title="Execute"
+          subTitle="Descrição sobre a execução"
+          content={
+              <PraiaSubmit onCreateRun={this.onCreateRun} />
+          }
+        />
+         <PanelCostumize
+          title="Running"
+          className="running_astrometry"
+          subTitle="Monitor the rounds Astrometry"
+          content={
             <PraiaRunning record={record} />
-          </div>
-        </div>
-        <div className="ui-g">
-          <div className="ui-g-12">
-            <PraiaHistory />
-          </div>
-        </div>
+          }
+        />
+
+         <PanelCostumize
+          title="History"
+          className="history_astrometry"
+          subTitle="Manage the completed Astrometry rounds"
+          content={
+            <PraiaHistory />        
+          }
+        />
       </div>
+   
     );
   }
 }

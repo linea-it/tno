@@ -218,6 +218,8 @@ class GetObservations(DownloadParameters):
 
         return result
 
+
+
     def update_or_create_record(self, record):
         return ObservationFile.objects.update_or_create(
             name=record.get("name"),

@@ -22,7 +22,7 @@ def on_create_orbit_run(sender, instance, signal, created, **kwargs):
         if instance.status == "pending":
             logger.info("Re-execute the Refine Orbit step")
 
-            if os.path.exists(instance.relative_path):
+            if instance.relative_path and os.path.exists(instance.relative_path):
                 logger.info("Deleting directory from previous run")
 
                 logger.debug("Directory: %s" % instance.relative_path)

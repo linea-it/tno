@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-//import { ButtonToolbar, Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -8,7 +7,6 @@ import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import { formatColumnHeader, formatStatus } from 'utils';
-import ReactInterval from 'react-interval';
 import OrbitApi from './OrbitApi';
 import Content from 'components/CardContent/CardContent.jsx';
 

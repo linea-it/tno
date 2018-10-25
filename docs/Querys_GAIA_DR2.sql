@@ -20,3 +20,25 @@ SELECT * FROM gaia.gaia_dr2 WHERE q3c_radial_query("ra", "dec", 30.4158087499999
 select ra, "dec" from y1a1_coadd_stripe82.coadd_objects limit 10
 select * from y1a1_coadd_stripe82.coadd_objects where q3c_radial_query(ra, "dec", 317.490884, -1.762072 , 0.005 );
 
+
+select distinct(source_id), ra, "dec" from gaia.gaia_dr2 
+	where q3c_radial_query(ra, dec, 30.415808749999997, 4.325122222222222, 0.1 ) 
+	or q3c_radial_query(ra, dec, 30.415805, 4.325123055555555, 0.1 )
+	or q3c_radial_query(ra, "dec", 30.411043749999997, 4.32621, 0.1 );
+
+
+select distinct(source_id), ra, "dec" from gaia.gaia_dr2
+--select count(distinct(source_id)) from gaia.gaia_dr2
+	where q3c_radial_query(ra, dec, 30.41570042, 4.32503417, 0.1 )
+	
+	30.41570042, 4.32503417
+--	or q3c_radial_query(ra, dec, 30.45202833, 4.41841056, 0.1 )
+--	or q3c_radial_query(ra, dec, 30.53556667, 4.47381611, 0.1 )	      
+  
+	
+
+ 30.41580875    4.32512222
+ 30.45202833    4.41841056
+ 30.53556667    4.47381611
+	
+	

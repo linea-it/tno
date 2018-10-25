@@ -35,6 +35,7 @@ class AsteroidList extends Component {
       sortOrder: 1,
       asteroid_id: 0,
       log_visible: false,
+      selected: null,
     };
   }
 

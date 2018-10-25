@@ -6,9 +6,9 @@ class Content extends Component {
     const body = [];
 
     if (propSet.header) {
-      // body.map((e, i) => {
       body.push(
         <div
+          key={1}
           className={`content-main ${propSet.className} ${
             propSet.lineVertical
           }`}
@@ -21,15 +21,12 @@ class Content extends Component {
           <div className="content-body">{propSet.content}</div>
         </div>
       );
-      // });
     } else {
-      // body.map((e, i) => {
       body.push(
-        <div className={`content-main ${propSet.className}`}>
+        <div key={1} className={`content-main ${propSet.className}`}>
           <div className="content-body">{propSet.content}</div>
         </div>
       );
-      // });
     }
 
     return <div>{body}</div>;
