@@ -19,6 +19,7 @@ docker-compose build
 
 echo -e "${YELLOW}======= Update Images =======${NO_COLOR}"
 docker-compose pull nima
+docker-compose pull praia_occ
 
 echo -e "${YELLOW}======= Starting all containers =======${NO_COLOR}"
 docker-compose up -d
