@@ -3834,24 +3834,26 @@ body > .navbar-collapse[data-color="purple"]:after {
   height: 1px; }
 
 .main-validation {
-  width: 800px;
+  width: 900px;
   height: 40px;
-  background: #74ddac;
-  margin-right: 0px !important;
-  opacity: 0.8;
+  background-color: transparent;
+  margin-left: 10px !important;
   position: absolute;
-  border-radius: 3px;
-  display: absolute;
-  transition: display 2s; }
+  border-radius: 2px;
+  display: none;
+  transition-duration: display 0.5s;
+  animation-name: example;
+  animation-duration: 12s; }
   .main-validation > p {
-    color: #fff;
+    color: #4d4d4d;
+    background-color: none;
+    animation-name: example;
+    animation-duration: 12s;
     margin: 10px 15px !important;
     font-weight: 700; }
-  .main-validation.success {
-    background-color: #34b479; }
-  .main-validation.warning {
-    background-color: #d1d86e; }
   .main-validation.danger {
-    background-color: #eb5d5d; }
-  .main-validation.primary {
-    background-color: #57d5e6; }
+    background: #f8b7bd; }
+  .main-validation.block {
+    display: block; }
+  .main-validation.success {
+    background: #34b479; }

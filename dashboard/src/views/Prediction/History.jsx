@@ -12,6 +12,7 @@ import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
 import { Toolbar } from 'primereact/toolbar';
 import PropTypes from 'prop-types';
+import { formatColumnHeader, formatStatusPrime } from 'utils';
 
 class PredictionHistory extends Component {
   state = this.initialState;
@@ -43,31 +44,39 @@ class PredictionHistory extends Component {
       field: 'status',
       header: 'Status',
       sortable: true,
-      style: { textAlign: 'center', width: '80' },
+      style: {
+        textAlign: 'center',
+        width: '80',
+      },
     },
     {
       field: 'process_displayname',
       header: 'Proccess',
+      headerStyle: formatColumnHeader,
       sortable: true,
     },
     {
       field: 'owner',
       header: 'Owner',
+      headerStyle: formatColumnHeader,
       sortable: true,
     },
     {
       field: 'h_time',
       header: 'start',
+      headerStyle: formatColumnHeader,
       sortable: true,
     },
     {
       field: 'h_execution_time',
       header: 'Execution Time',
+      headerStyle: formatColumnHeader,
       sortable: true,
     },
     {
       field: 'count_objects',
       header: 'Asteroids',
+      headerStyle: formatColumnHeader,
       sortable: true,
     },
   ];
@@ -100,6 +109,21 @@ class PredictionHistory extends Component {
     const id = rowData.id;
     let btn_view = null;
     let btn_log = null;
+    let status = null;
+
+    if (rowData.status == 'running') {
+      return (status = (
+        <div
+          style={{
+            backgroundColor: 'green',
+            width: '100%',
+            margin: '0 !important',
+          }}
+        >
+          {rowData.status}
+        </div>
+      ));
+    }
 
     if (rowData.status !== 'failure') {
       btn_view = (
@@ -211,6 +235,8 @@ class PredictionHistory extends Component {
   };
 
   render() {
+    formatStatusPrime('', 'running');
+
     const columns = this.columns.map((col, i) => {
       return (
         <Column

@@ -1,33 +1,45 @@
 .main-validation {
-    width: 800px;
+    width: 900px;
     height: 40px;
-    background: rgb(116, 221, 172);
-    margin-right: 0px !important;
-    opacity: 0.8;
+    background-color: transparent;
+    margin-left: 10px !important;
+    // opacity: 0.8;
     position: absolute;
-    border-radius: 3px; 
-    display: absolute;
-    transition: display 2s;
+    border-radius: 2px; 
+    display: none;
+    transition-duration: display 0.5s;
+    animation-name: example;
+    animation-duration: 12s;
 
     > p {
-        color :#fff;
+        color: rgb(77, 77, 77);
+        background-color: none;
+        animation-name: example;
+        animation-duration: 12s;
         margin: 10px 15px !important;
         font-weight: 700; 
     }
 
-    &.success {
-        background-color:rgb(52, 180, 121);
-    }
-
-    &.warning {
-        background-color:rgb(209, 216, 110);
-    }
-
     &.danger {
-        background-color:rgb(235, 93, 93);
+        background: #f8b7bd;
+   
+   }
+
+    &.block {
+        display: block;
     }
 
-    &.primary {
-        background-color:rgb(87, 213, 230);
+   
+
+    // &.primary {
+    //     background-color:rgb(87, 213, 230);
+    // }
+
+    &.success {
+        background:rgb(52, 180, 121);
     }
+
+    // &.warning {
+    //     background-color:rgb(209, 216, 110);
+    // }
 }

@@ -40,3 +40,18 @@ export function formatStatus(cell, row) {
     return 'background-danger';
   }
 }
+
+export function formatStatusPrime(cell, row) {
+  if (row.status === 'pending') {
+    return 'background-muted';
+  }
+  if (row === 'running') {
+    return '$primary-bg';
+  }
+  if (row.status === 'success') {
+    return '$success-bg';
+  }
+  if (row.status === 'error') {
+    return 'danger-bg';
+  }
+}
