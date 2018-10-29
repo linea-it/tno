@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PredictRun, PredictAsteroid, LeapSecond, BspPlanetary
+from .models import PredictRun, PredictAsteroid, PredictInput, PredictOutput, LeapSecond, BspPlanetary
 from tno.models import Proccess, CustomList, Catalog
 from orbit.models import OrbitRun
 import humanize
@@ -62,9 +62,12 @@ class PredictRunSerializer(serializers.ModelSerializer):
             'input_orbit',
             'status',
             'input_displayname',
+            'execution_dates',
+            'execution_ephemeris',
+            'execution_catalog',
+            'execution_maps',
+            'execution_register',
             'count_objects',
-            'count_executed',
-            'count_not_executed',
             'count_success',
             'count_failed',
             'count_warning',
@@ -124,9 +127,7 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
     predict_run = serializers.PrimaryKeyRelatedField(
         queryset=PredictRun.objects.all(), many=False)
 
-    h_time = serializers.SerializerMethodField()
     h_execution_time = serializers.SerializerMethodField()
-    h_size = serializers.SerializerMethodField()
     proccess_displayname = serializers.SerializerMethodField()
 
     class Meta:
@@ -139,31 +140,25 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
             'number',
             'status',
             'error_msg',
-            'start_time',
-            'finish_time',
             'execution_time',
-            'h_time',
             'h_execution_time',
-            'h_size'
+            'start_ephemeris',
+            'finish_ephemeris',
+            'execution_ephemeris',
+            'start_catalog',
+            'finish_catalog',
+            'execution_catalog',
+            'start_search_candidate',
+            'finish_search_candidate',
+            'execution_search_candidate',
+            'start_maps',
+            'finish_maps',
+            'execution_maps',
         )
-
-    def get_h_time(self, obj):
-        try:
-            return humanize.naturaltime(timezone.now() - obj.start_time)
-        except:
-            return None
 
     def get_h_execution_time(self, obj):
         try:
             return humanize.naturaldelta(obj.execution_time)
-        except:
-            return None
-
-    def get_h_size(self, obj):
-        try:
-            total_size = obj.refined_orbit.aggregate(amount=Sum('file_size'))
-
-            return humanize.naturalsize(total_size["amount"])
         except:
             return None
 
@@ -172,6 +167,59 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
             return "%s - %s" % (obj.orbit_run.proccess.id, obj.orbit_run.input_list.displayname)
         except:
             return None
+
+
+class PredictInputSerializer(serializers.ModelSerializer):
+    asteroid = serializers.PrimaryKeyRelatedField(
+        queryset=PredictAsteroid.objects.all(), many=False)
+
+    h_size = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PredictInput
+        fields = (
+            'id',
+            'asteroid',
+            'input_type',
+            'filename',
+            'file_size',
+            'file_type',
+            'file_path',
+            'h_size',
+        )
+
+    def get_h_size(self, obj):
+        try:
+            return humanize.naturalsize(obj.file_size)
+        except:
+            return None
+
+
+class PredictOutputSerializer(serializers.ModelSerializer):
+    asteroid = serializers.PrimaryKeyRelatedField(
+        queryset=PredictAsteroid.objects.all(), many=False)
+
+    h_size = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PredictOutput
+        fields = (
+            'id',
+            'asteroid',
+            'type',
+            'filename',
+            'file_size',
+            'file_type',
+            'file_path',
+            'h_size'
+        )
+
+    def get_h_size(self, obj):
+        try:
+            return humanize.naturalsize(obj.file_size)
+        except:
+            return None
+
 
 class LeapSecondsSerializer(serializers.ModelSerializer):
 

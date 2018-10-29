@@ -29,7 +29,7 @@ from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet
 
 from orbit.views import OrbitRunViewSet, RefinedAsteroidViewSet, RefinedOrbitViewSet, RefinedOrbitInputViewSet
 
-from predict.views import PredictRunViewSet, PredictAsteroidViewSet, LeapSecondsViewSet, BspPlanetaryViewSet
+from predict.views import *
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -43,6 +43,8 @@ router.register(r'refined_input', RefinedOrbitInputViewSet)
 
 router.register(r'predict_run', PredictRunViewSet)
 router.register(r'predict_asteroid', PredictAsteroidViewSet)
+router.register(r'predict_input', PredictInputViewSet)
+router.register(r'predict_output', PredictOutputViewSet)
 router.register(r'leap_seconds', LeapSecondsViewSet)
 router.register(r'bsp_planetary', BspPlanetaryViewSet)
 

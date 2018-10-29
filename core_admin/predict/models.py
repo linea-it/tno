@@ -146,6 +146,27 @@ class PredictRun(models.Model):
         null=True, blank=True
     )
 
+    execution_dates = models.DurationField(
+        verbose_name='Execution Dates',
+        null=True, blank=True
+    )
+    execution_ephemeris = models.DurationField(
+        verbose_name='Execution Ephemeris',
+        null=True, blank=True
+    )
+    execution_catalog = models.DurationField(
+        verbose_name='Execution Catalog',
+        null=True, blank=True
+    )
+    execution_maps = models.DurationField(
+        verbose_name='Execution Maps',
+        null=True, blank=True
+    )
+    execution_register = models.DurationField(
+        verbose_name='Execution Register',
+        null=True, blank=True
+    )
+
     average_time = models.FloatField(
         verbose_name='Average Time',
         null=True, blank=True
@@ -154,16 +175,6 @@ class PredictRun(models.Model):
     count_objects = models.PositiveIntegerField(
         verbose_name='Num Objects',
         help_text='Number of objects received as input',
-        null=True, blank=True
-    )
-    count_executed = models.PositiveIntegerField(
-        verbose_name='Num Executed Objects',
-        help_text='Number of objects that were executed by Praia Occultation.',
-        null=True, blank=True
-    )
-    count_not_executed = models.PositiveIntegerField(
-        verbose_name='Num Not Executed Objects',
-        help_text='Number of objects that were NOT executed by Praia Occultation.',
         null=True, blank=True
     )
     count_success = models.PositiveIntegerField(
@@ -193,7 +204,7 @@ class PredictRun(models.Model):
         max_length=10,
         verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('error', 'Error'))
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'))
     )
 
     def __str__(self):
@@ -243,16 +254,66 @@ class PredictAsteroid(models.Model):
         null=True, blank=True,
     )
 
-    start_time = models.DateTimeField(
-        verbose_name='Start Time',
-        auto_now_add=False, null=True, blank=True)
+    catalog_rows = models.PositiveIntegerField(
+        verbose_name="Catalog Rows",
+        null=True, blank=True
+    )
 
-    finish_time = models.DateTimeField(
-        verbose_name='Finish Time',
-        auto_now_add=False, null=True, blank=True)
 
     execution_time = models.DurationField(
         verbose_name='Execution Time',
+        null=True, blank=True
+    )
+
+    start_ephemeris = models.DateTimeField(
+        verbose_name='Start Ephemeris',
+        auto_now_add=False, null=True, blank=True)
+
+    finish_ephemeris = models.DateTimeField(
+        verbose_name='Finish Ephemeris',
+        auto_now_add=False, null=True, blank=True)
+
+    execution_ephemeris = models.DurationField(
+        verbose_name='Execution Ephemeris',
+        null=True, blank=True
+    )
+
+    start_catalog = models.DateTimeField(
+        verbose_name='Start Catalog',
+        auto_now_add=False, null=True, blank=True)
+
+    finish_catalog = models.DateTimeField(
+        verbose_name='Finish Catalog',
+        auto_now_add=False, null=True, blank=True)
+
+    execution_catalog = models.DurationField(
+        verbose_name='Execution Catalog',
+        null=True, blank=True
+    )
+
+    start_search_candidate = models.DateTimeField(
+        verbose_name='Start Search Candidate',
+        auto_now_add=False, null=True, blank=True)
+
+    finish_search_candidate = models.DateTimeField(
+        verbose_name='Finish Search Candidate',
+        auto_now_add=False, null=True, blank=True)
+
+    execution_search_candidate = models.DurationField(
+        verbose_name='Execution Search Candidate',
+        null=True, blank=True
+    )
+
+    start_maps = models.DateTimeField(
+        verbose_name='Start Maps',
+        auto_now_add=False, null=True, blank=True)
+
+    finish_maps = models.DateTimeField(
+        verbose_name='Finish Maps',
+        auto_now_add=False, null=True, blank=True)
+
+    execution_maps = models.DurationField(
+        verbose_name='Execution Maps',
         null=True, blank=True
     )
 
@@ -263,15 +324,110 @@ class PredictAsteroid(models.Model):
         help_text='Path relative to the Prediction Occultation OBJECT directory, this is the internal path in the proccess directory.',
     )
 
-    absolute_path = models.CharField(
-        max_length=1024,
-        verbose_name='Absolute Path',
+    def __str__(self):
+        return str(self.name)
+
+
+class PredictInput(models.Model):
+
+    asteroid = models.ForeignKey(
+        PredictAsteroid, on_delete=models.CASCADE, verbose_name='Asteroid',
+        null=False, blank=False, related_name='input_file'
+    )
+
+    input_type = models.CharField(
+        max_length=60,
+        verbose_name='Input Type',
+        null=False, blank=False,
+        help_text="Description of the input type.",
+        choices=(('dates_file', 'Dates'), ('bsp_planetary', 'Planetary Ephemeris'), ('bsp_asteroid', 'Asteroid JPL Ephemeris'),
+                 ('leap_second', 'Leap Second'), ('positions', 'Positions'), ('ephemeris', 'Ephemeris'), ('catalog', 'Catalog'))
+    )
+
+    filename = models.CharField(
+        max_length=256,
+        null=False, blank=False,
+        verbose_name='Filename',
+    )
+
+    file_size = models.PositiveIntegerField(
+        verbose_name='File Size',
+        null=True, blank=True, help_text='File Size in bytes')
+
+    file_type = models.CharField(
+        max_length=10,
+        verbose_name='File Type',
         null=True, blank=True,
-        help_text='Absolute Path to Prediction Occultation OBJECT directory.',
+        help_text="File extension like '.txt'"
+    )
+
+    file_path = models.CharField(
+        max_length=1024,
+        verbose_name='File Path',
+        null=True, blank=True,
+        help_text='Path to file, this is the internal path in the proccess directory.',
     )
 
     def __str__(self):
-        return str(self.name)
+        return str(self.filename)
+
+
+class PredictOutput(models.Model):
+    """
+        Este modelo representa os arquivos gerados pelo nima para cada Objeto.
+        Um Objeto pode ter varios arquivos de resultado de tipos diferentes.
+    """
+
+    asteroid = models.ForeignKey(
+        PredictAsteroid, on_delete=models.CASCADE, verbose_name='Asteroid',
+        null=False, blank=False, related_name='predict_result'
+    )
+
+    type = models.CharField(
+        max_length=60,
+        verbose_name='Input Type',
+        null=False, blank=False,
+        help_text="Description of the result type.",
+        choices=(
+            ('ephemeris', 'Ephemeris'),
+            ('radec', 'RA Dec'),
+            ('positions', 'Positions'),
+            ('catalog', 'Catalog'),
+            ('star_catalog_mini', 'Star Catalog Mini'),
+            ('star_catalog_xy', 'Start Catalog XY'),
+            ('stars_parameters_of_occultation', 'Start Parameters of Occultation'),
+            ('stars_parameters_of_occultation_table', 'Start Parameters of Occultation Table'),
+        )
+    )
+
+    filename = models.CharField(
+        max_length=256,
+        null=False, blank=False,
+        verbose_name='Filename',
+        help_text='Filename is formed by name without space and separated by underline.'
+    )
+
+    file_size = models.PositiveIntegerField(
+        verbose_name='File Size',
+        null=False, blank=False, help_text='File Size in bytes')
+
+    file_type = models.CharField(
+        max_length=10,
+        verbose_name='File Type',
+        null=False, blank=False,
+        help_text="File extension like '.txt'"
+    )
+
+    file_path = models.CharField(
+        max_length=1024,
+        verbose_name='File Path',
+        null=True, blank=True,
+        help_text='Path to file, this is the internal path in the proccess directory.',
+    )
+
+    def __str__(self):
+        return str(self.filename)
+
 
 
 from . import signals

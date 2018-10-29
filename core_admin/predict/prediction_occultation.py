@@ -1,5 +1,6 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
+import pytimeparse
 import os, errno
 from django.conf import settings
 import shutil
@@ -13,7 +14,7 @@ import json
 from statistics import mean
 from tno.db import CatalogDB
 from sqlalchemy.sql import text
-from .models import PredictAsteroid
+from .models import PredictAsteroid, PredictInput, PredictOutput
 
 class PredictionOccultation():
     def __init__(self):
@@ -46,7 +47,6 @@ class PredictionOccultation():
             "dates_file_report": dict(),
             "ephemeris_report": dict(),
             "maps_report": dict(),
-            "register_report": dict()
         })
 
         self.leap_second = None
@@ -61,6 +61,9 @@ class PredictionOccultation():
         self.stars_catalog_xy = 'g4_occ_catalog_JOHNSTON_2018'
         self.stars_parameters_of_occultation = 'g4_occ_data_JOHNSTON_2018'
         self.stars_parameters_of_occultation_plot = 'g4_occ_data_JOHNSTON_2018_table'
+
+        # Lista de tempo de execucao de cada asteroid incluindo o tempo de espera.
+        self.execution_time = []
 
     def start_predict_occultation(self, instance):
         self.logger.debug("PREDICT RUN: %s" % instance.id)
@@ -200,8 +203,7 @@ class PredictionOccultation():
                         "leap_second": leap_second,
                         "positions": None,
                         "ephemeris": None,
-                        "gaia_catalog": None,
-                        "praia_occ_data": None
+                        "catalog": None,
                     }),
                     "results": dict({
                         "ephemeris": None,
@@ -228,10 +230,7 @@ class PredictionOccultation():
             self.generate_maps()
 
 
-            self.logger.debug(json.dumps(self.results))
-
-
-            # ---------------------- Recording the results. ----------------------------------------------------------------
+            # 9 - Recording the results. -------------------------------------------------------------------------------
 
             t_register_0 = datetime.now()
             # Iterate over objects
@@ -247,10 +246,54 @@ class PredictionOccultation():
             self.results["execution_register_time"] = t_register_delta.total_seconds()
 
 
+            # 10 - Finish ----------------------------------------------------------------------------------------------
+            instance.start_time = self.results["start_time"]
+            finish_time = datetime.now()
+            instance.finish_time = finish_time
+
+            self.results["finish_time"] = finish_time.replace(microsecond=0).isoformat(' ')
+            tdelta = finish_time - start_time
+            self.results["execution_time"] = tdelta.total_seconds()
+            # Average Time per object
+            average_time = mean(self.execution_time)
+            self.results["average_time"] = average_time
+
+            self.results["status"] = "success"
+
+            # Escrever os Resultados no results.json
+            result_file = os.path.join(instance.relative_path, "results.json")
+            with open(result_file, "w") as fp:
+                json.dump(self.results, fp)
+
+            instance.status = "success"
+            instance.execution_time = tdelta
+
+            instance.execution_dates = self.results["dates_file_report"]["execution_time"]
+            instance.execution_ephemeris = self.results["ephemeris_report"]["execution_time"]
+            instance.execution_catalog = self.results["gaia_catalog_report"]["execution_time"]
+            instance.execution_maps = self.results["maps_report"]["execution_time"]
+
+            instance.execution_register = str(t_register_delta)
+            instance.average_time = average_time
+            instance.count_objects = obj_count
+
+            instance.count_success = PredictAsteroid.objects.filter(status='success').count()
+            instance.count_failed = PredictAsteroid.objects.filter(status='failed').count()
+            instance.count_warning = PredictAsteroid.objects.filter(status='warning').count()
+
+            instance.save()
+
+            self.logger.info("Finish Prediction Occultation")
+
         except Exception as e:
             self.logger.error(e)
             self.logger.error("Failed to execute prediction occultation")
             # TODO chamar uma funcao para alterar o status para error.
+
+            instance.status = "failure"
+            raise(e)
+
+
 
     def create_directory(self, instance):
 
@@ -382,7 +425,7 @@ class PredictionOccultation():
                     'file_path': dates_file,
                     'start_time': t0.replace(microsecond=0).isoformat(' '),
                     'finish_time': t1.replace(microsecond=0).isoformat(' '),
-                    'execution_time': tdelta.total_seconds(),
+                    'execution_time': str(tdelta),
                 })
 
             else:
@@ -544,14 +587,15 @@ class PredictionOccultation():
         for row in outputs:
             if row['status'] == "failure":
                 failure += 1
-            average.append(row['execution_ephemeris'])
+            exec_tdelta = timedelta(seconds=pytimeparse.parse(row['execution_ephemeris']))
+            average.append(exec_tdelta.total_seconds())
 
             self.results['objects'][row['alias']] = row
 
         self.results['ephemeris_report'] = dict({
             'start_time': t0.replace(microsecond=0).isoformat(' '),
             'finish_time': t1.replace(microsecond=0).isoformat(' '),
-            'execution_time': tdelta.total_seconds(),
+            'execution_time': str(tdelta),
             'count_asteroids': count,
             'count_success': count - failure,
             'count_failed': failure,
@@ -677,7 +721,7 @@ class PredictionOccultation():
             obj["error_msg"] = error_msg
             obj["start_ephemeris"] = t0.replace(microsecond=0).isoformat(' ')
             obj["finish_ephemeris"] = t1.replace(microsecond=0).isoformat(' ')
-            obj["execution_ephemeris"] = tdelta.total_seconds()
+            obj["execution_ephemeris"] = str(tdelta)
 
             return obj
 
@@ -754,13 +798,13 @@ class PredictionOccultation():
             self.logger.info(msg)
 
             # Gaia Catalog e input para a proxima etapa
-            obj["inputs"]["gaia_catalog"] = os.path.basename(filename)
+            obj["inputs"]["catalog"] = os.path.basename(filename)
 
             obj["status"] = status
             obj["error_msg"] = error_msg
             obj["start_gaia_catalog"] = t0.replace(microsecond=0).isoformat(' ')
             obj["finish_gaia_catalog"] = t1.replace(microsecond=0).isoformat(' ')
-            obj["execution_gaia_catalog"] = tdelta.total_seconds()
+            obj["execution_gaia_catalog"] = str(tdelta)
             obj["gaia_rows"] = crows
 
             return obj
@@ -804,7 +848,10 @@ class PredictionOccultation():
         for row in outputs:
             if row['status'] == "failure":
                 failure += 1
-            average.append(row['execution_gaia_catalog'])
+
+            exec_tdelta = timedelta(seconds=pytimeparse.parse(row['execution_gaia_catalog']))
+            average.append(exec_tdelta.total_seconds())
+
             crows.append(row['gaia_rows'])
 
             self.results['objects'][row['alias']] = row
@@ -815,7 +862,7 @@ class PredictionOccultation():
         self.results['gaia_catalog_report'] = dict({
             'start_time': t0.replace(microsecond=0).isoformat(' '),
             'finish_time': t1.replace(microsecond=0).isoformat(' '),
-            'execution_time': tdelta.total_seconds(),
+            'execution_time': str(tdelta),
             'count_asteroids': count,
             'count_success': count - failure,
             'count_failed': failure,
@@ -851,23 +898,48 @@ class PredictionOccultation():
 
             columns = ", ".join(self.gaia_properties)
 
-            clauses = []
+            results = []
             for pos in positions:
-                clauses.append(
-                    'q3c_radial_query("%s", "%s", % s, % s, % s)' % (
-                        catalog.ra_property, catalog.dec_property, pos[0], pos[1], radius))
+                where = 'q3c_radial_query("%s", "%s", % s, % s, % s)' % (
+                        catalog.ra_property, catalog.dec_property, pos[0], pos[1], radius)
 
-            where = ' OR '.join(clauses)
+                stm = """SELECT %s FROM %s WHERE %s """ % (columns, tablename, where)
 
-            stm = """SELECT %s FROM %s WHERE %s LIMIT 20000""" % (columns, tablename, where)
+                rows = db.fetch_all_dict(text(stm))
 
-            rows = db.fetch_all_dict(text(stm))
+                results += rows
 
-            return rows
+            return results
 
         except Exception as e:
             logger.error(e)
             raise e
+
+        # try:
+        #     db = CatalogDB()
+        #
+        #     if catalog.schema is not None:
+        #         tablename = "%s.%s" % (catalog.schema, catalog.tablename)
+        #
+        #     columns = ", ".join(self.gaia_properties)
+        #
+        #     clauses = []
+        #     for pos in positions:
+        #         clauses.append(
+        #             'q3c_radial_query("%s", "%s", % s, % s, % s)' % (
+        #                 catalog.ra_property, catalog.dec_property, pos[0], pos[1], radius))
+        #
+        #     where = ' OR '.join(clauses)
+        #
+        #     stm = """SELECT %s FROM %s WHERE %s LIMIT 20000""" % (columns, tablename, where)
+        #
+        #     rows = db.fetch_all_dict(text(stm))
+        #
+        #     return rows
+        #
+        # except Exception as e:
+        #     logger.error(e)
+        #     raise e
 
     def write_gaia_catalog(self, rows, path):
 
@@ -1011,7 +1083,7 @@ class PredictionOccultation():
             obj["error_msg"] = error_msg
             obj["start_search_candidate"] = t0.replace(microsecond=0).isoformat(' ')
             obj["finish_search_candidate"] = t1.replace(microsecond=0).isoformat(' ')
-            obj["execution_search_candidate"] = tdelta.total_seconds()
+            obj["execution_search_candidate"] = str(tdelta)
 
             return obj
 
@@ -1048,7 +1120,9 @@ class PredictionOccultation():
         for row in outputs:
             if row['status'] == "failure":
                 failure += 1
-            average.append(row['execution_search_candidate'])
+
+            exec_tdelta = timedelta(seconds=pytimeparse.parse(row['execution_search_candidate']))
+            average.append(exec_tdelta.total_seconds())
 
             self.results['objects'][row['alias']] = row
 
@@ -1080,7 +1154,7 @@ class PredictionOccultation():
 
                 data = file.read()
 
-                name = "/data/%s" % obj['inputs']['gaia_catalog']
+                name = "/data/%s" % obj['inputs']['catalog']
                 data = data.replace('{stellar_catalog}', name.ljust(50))
 
                 name = "/data/%s" % obj['inputs']['ephemeris']
@@ -1217,7 +1291,7 @@ class PredictionOccultation():
             result = self.run_generate_maps(id, obj)
 
             if result:
-                status = 'running'
+                status = 'success'
                 error_msg = None
 
                 # TODO: Criar um resultado para cada MAPA
@@ -1230,11 +1304,11 @@ class PredictionOccultation():
             obj["error_msg"] = error_msg
             obj["start_maps"] = t0.replace(microsecond=0).isoformat(' ')
             obj["finish_maps"] = t1.replace(microsecond=0).isoformat(' ')
-            obj["execution_maps"] = tdelta.total_seconds()
+            obj["execution_maps"] = str(tdelta)
 
             if result:
                 msg = "[ SUCCESS ] - Object: %s Time: %s " % (
-                    obj['name'], humanize.naturaldelta(obj['execution_maps']))
+                    obj['name'], humanize.naturaldelta(tdelta))
             else:
                 msg = "[ FAILURE ] - Object: %s " % obj['name']
 
@@ -1275,7 +1349,9 @@ class PredictionOccultation():
         for row in outputs:
             if row['status'] == "failure":
                 failure += 1
-            average.append(row['execution_maps'])
+
+            exec_tdelta = timedelta(seconds=pytimeparse.parse(row['execution_maps']))
+            average.append(exec_tdelta.total_seconds())
 
             self.results['objects'][row['alias']] = row
 
@@ -1285,7 +1361,7 @@ class PredictionOccultation():
         self.results['maps_report'] = dict({
             'start_time': t0.replace(microsecond=0).isoformat(' '),
             'finish_time': t1.replace(microsecond=0).isoformat(' '),
-            'execution_time': tdelta.total_seconds(),
+            'execution_time': str(tdelta),
             'count_asteroids': count,
             'count_success': count - failure,
             'count_failed': failure,
@@ -1348,7 +1424,7 @@ class PredictionOccultation():
                 detach=True,
                 name=container_name,
                 auto_remove=True,
-                mem_limit='4096m',
+                # mem_limit='2096m',
                 volumes=volumes,
                 user=os.getuid()
             )
@@ -1375,20 +1451,24 @@ class PredictionOccultation():
 
         try:
 
-            # try:
-            #     t0 = datetime.strptime(obj.get("start_time"), '%Y-%m-%d %H:%M:%S')
-            #
-            # except:
-            #     t0 = None
-            # try:
-            #     t1 = datetime.strptime(obj.get("finish_time"), '%Y-%m-%d %H:%M:%S')
-            # except:
-            #     t1 = None
-            #
-            # if t0 is not None and t1 is not None:
-            #     t_delta = t1 - t0
-            # else:
-            #     t_delta = None
+            # Contador de Status
+            if obj['status'] == 'success':
+                self.results['count_success'] += 1
+            elif obj['status'] == 'warning':
+                self.results['count_warning'] += 1
+            else:
+                self.results['count_failed'] += 1
+
+            # Gerar o tempo medio para executar cada asteroid somando o tempo de cada etapa
+            t1 = pytimeparse.parse(obj.get("execution_ephemeris"))
+            t2 = pytimeparse.parse(obj.get("execution_gaia_catalog"))
+            t3 = pytimeparse.parse(obj.get("execution_search_candidate"))
+            t4 = pytimeparse.parse(obj.get("execution_maps"))
+            ttotal = (t1 + t2) + (t3 + t4)
+
+            self.execution_time.append(ttotal)
+
+            texecution = timedelta(seconds=ttotal)
 
             asteroid, created = PredictAsteroid.objects.update_or_create(
                 predict_run=predict_run,
@@ -1397,54 +1477,71 @@ class PredictionOccultation():
                     'number': obj.get("number"),
                     'status': obj.get("status"),
                     'error_msg': obj.get("error_msg"),
-                    # 'start_time': t0,
-                    # 'finish_time': t1,
-                    # 'execution_time': t_delta,
+                    'catalog_rows': obj.get("gaia_rows"),
+                    'execution_time': str(texecution),
+                    "start_ephemeris": obj.get("start_ephemeris"),
+                    "finish_ephemeris": obj.get("finish_ephemeris"),
+                    "execution_ephemeris": str(obj.get("execution_ephemeris")),
+                    "start_catalog": obj.get("start_gaia_catalog"),
+                    "finish_catalog": obj.get("finish_gaia_catalog"),
+                    "execution_catalog": str(obj.get("execution_gaia_catalog")),
+                    "start_search_candidate": obj.get("start_search_candidate"),
+                    "finish_search_candidate": obj.get("finish_search_candidate"),
+                    "execution_search_candidate": str(obj.get("execution_search_candidate")),
+                    "start_maps": obj.get("start_maps"),
+                    "finish_maps": obj.get("finish_maps"),
+                    "execution_maps": obj.get("execution_maps"),
                     'relative_path': obj.get("relative_path"),
-                    'absolute_path': obj.get("absolute_path")
                 })
 
             asteroid.save()
 
             l_created = "Created"
 
-            # # Apaga todas os resultados caso seja um update
-            # if not created:
-            #     l_created = "Updated"
-            #
-            #     for orbit in asteroid.refined_orbit.all():
-            #         orbit.delete()
-            #
-            # for f in obj.get("results"):
-            #     orbit, created = PredictAsteroid.objects.update_or_create(
-            #         asteroid=asteroid,
-            #         filename=f.get("filename"),
-            #         defaults={
-            #             'file_size': f.get("file_size"),
-            #             'file_type': f.get("file_type"),
-            #             'relative_path': f.get("file_path"),
-            #         }
-            #     )
-            #
-            #     orbit.save()
+            # Apaga todas os resultados  e os inputs caso seja um update
+            if not created:
+                l_created = "Updated"
 
-            # # Registra os Inputs Utilizados
-            # for input_type in obj.get("inputs"):
-            #     inp = obj.get("inputs").get(input_type)
-            #
-            #     if inp is not None:
-            #         input_file, created = RefinedOrbitInput.objects.update_or_create(
-            #             asteroid=asteroid,
-            #             input_type=input_type,
-            #             defaults={
-            #                 'source': inp.get("source"),
-            #                 'date_time': inp.get("date_time"),
-            #                 'filename': inp.get("filename"),
-            #                 'relative_path': inp.get("file_path"),
-            #             }
-            #         )
-            #
-            #         input_file.save()
+                for result_file in asteroid.predict_result.all():
+                    result_file.delete()
+
+                for input in asteroid.input_file.all():
+                    input.delete()
+
+            for ftype in obj.get("results"):
+                result = obj.get("results").get(ftype)
+                result_file, created = PredictOutput.objects.update_or_create(
+                    asteroid=asteroid,
+                    filename=result.get("filename"),
+                    defaults={
+                        'file_size': result.get("file_size"),
+                        'file_type': result.get("file_type"),
+                        'file_path': result.get("file_path"),
+                    }
+                )
+
+                result_file.save()
+
+            # Registra os Inputs Utilizados
+            for input_type in obj.get("inputs"):
+                inp = obj.get("inputs").get(input_type)
+
+                if inp is not None:
+                    file_path = os.path.join(obj['relative_path'], inp)
+
+                    input_file, created = PredictInput.objects.update_or_create(
+                        asteroid=asteroid,
+                        input_type=input_type,
+                        defaults={
+                            'filename': inp,
+                            'file_path': file_path,
+                            'file_size': os.path.getsize(file_path),
+                            'file_type': os.path.splitext(file_path)[1]
+                        },
+
+                    )
+
+                    input_file.save()
 
             self.logger.info("Registered Object %s %s" % (obj.get("name"), l_created))
 
