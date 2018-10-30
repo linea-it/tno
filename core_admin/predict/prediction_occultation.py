@@ -61,6 +61,7 @@ class PredictionOccultation():
         self.stars_catalog_xy = 'g4_occ_catalog_JOHNSTON_2018'
         self.stars_parameters_of_occultation = 'g4_occ_data_JOHNSTON_2018'
         self.stars_parameters_of_occultation_plot = 'g4_occ_data_JOHNSTON_2018_table'
+        self.occultation_table = 'occultation_table.csv'
 
         # Lista de tempo de execucao de cada asteroid incluindo o tempo de espera.
         self.execution_time = []
@@ -213,7 +214,8 @@ class PredictionOccultation():
                         "stars_catalog_mini": None,
                         "stars_catalog_xy": None,
                         "stars_parameters_of_occultation": None,
-                        "stars_parameters_of_occultation_plot": None
+                        "stars_parameters_of_occultation_plot": None,
+                        "occultation_table": None
                     })
                 })
 
@@ -587,6 +589,7 @@ class PredictionOccultation():
         for row in outputs:
             if row['status'] == "failure":
                 failure += 1
+                average.append(0)
             exec_tdelta = timedelta(seconds=pytimeparse.parse(row['execution_ephemeris']))
             average.append(exec_tdelta.total_seconds())
 
@@ -848,6 +851,7 @@ class PredictionOccultation():
         for row in outputs:
             if row['status'] == "failure":
                 failure += 1
+                average.append(0)
 
             exec_tdelta = timedelta(seconds=pytimeparse.parse(row['execution_gaia_catalog']))
             average.append(exec_tdelta.total_seconds())
@@ -1024,8 +1028,6 @@ class PredictionOccultation():
 
             t0 = datetime.now()
 
-            logger.info("TESTE parsl")
-
             # Criar arquivo .dat baseado no template.
             praia_occ_dat = self.praia_occ_input_file(obj)
 
@@ -1041,40 +1043,52 @@ class PredictionOccultation():
             if result:
                 status = 'running'
                 error_msg = None
+                try:
+                    # TODO essa parte pode ficar funcao run_search_candidate_stars
+                    file_path = os.path.join(obj['relative_path'], self.stars_catalog_mini)
+                    obj['results']['stars_catalog_mini'] = dict({
+                        "filename": os.path.basename(file_path),
+                        "file_size": os.path.getsize(file_path),
+                        "file_path": file_path,
+                        "file_type": os.path.splitext(file_path)[1]
+                    })
 
-                # TODO essa parte pode ficar funcao run_search_candidate_stars
-                file_path = os.path.join(obj['relative_path'], self.stars_catalog_mini)
-                obj['results']['stars_catalog_mini'] = dict({
-                    "filename": os.path.basename(file_path),
-                    "file_size": os.path.getsize(file_path),
-                    "file_path": file_path,
-                    "file_type": os.path.splitext(file_path)[1]
-                })
+                    file_path = os.path.join(obj['relative_path'], self.stars_catalog_xy)
+                    obj['results']['stars_catalog_xy'] = dict({
+                        "filename": os.path.basename(file_path),
+                        "file_size": os.path.getsize(file_path),
+                        "file_path": file_path,
+                        "file_type": os.path.splitext(file_path)[1]
+                    })
 
-                file_path = os.path.join(obj['relative_path'], self.stars_catalog_xy)
-                obj['results']['stars_catalog_xy'] = dict({
-                    "filename": os.path.basename(file_path),
-                    "file_size": os.path.getsize(file_path),
-                    "file_path": file_path,
-                    "file_type": os.path.splitext(file_path)[1]
-                })
+                    file_path = os.path.join(obj['relative_path'], self.stars_parameters_of_occultation)
+                    obj['results']['stars_parameters_of_occultation'] = dict({
+                        "filename": os.path.basename(file_path),
+                        "file_size": os.path.getsize(file_path),
+                        "file_path": file_path,
+                        "file_type": os.path.splitext(file_path)[1]
+                    })
 
-                file_path = os.path.join(obj['relative_path'], self.stars_parameters_of_occultation)
-                obj['results']['stars_parameters_of_occultation'] = dict({
-                    "filename": os.path.basename(file_path),
-                    "file_size": os.path.getsize(file_path),
-                    "file_path": file_path,
-                    "file_type": os.path.splitext(file_path)[1]
-                })
+                    file_path = os.path.join(obj['relative_path'], self.stars_parameters_of_occultation_plot)
+                    obj['results']['stars_parameters_of_occultation_plot'] = dict({
+                        "filename": os.path.basename(file_path),
+                        "file_size": os.path.getsize(file_path),
+                        "file_path": file_path,
+                        "file_type": os.path.splitext(file_path)[1]
+                    })
 
-                file_path = os.path.join(obj['relative_path'], self.stars_parameters_of_occultation_plot)
-                obj['results']['stars_parameters_of_occultation_plot'] = dict({
-                    "filename": os.path.basename(file_path),
-                    "file_size": os.path.getsize(file_path),
-                    "file_path": file_path,
-                    "file_type": os.path.splitext(file_path)[1]
-                })
+                    file_path = os.path.join(obj['relative_path'], self.occultation_table)
+                    obj['results']['occultation_table'] = dict({
+                        "filename": os.path.basename(file_path),
+                        "file_size": os.path.getsize(file_path),
+                        "file_path": file_path,
+                        "file_type": os.path.splitext(file_path)[1]
+                    })
 
+                except Exception as e:
+                    logger.error("Object [ %s ] Id [ %s ] %s" %(obj['name'], id, e))
+                    status = 'failure'
+                    error_msg = e
 
             t1 = datetime.now()
             tdelta = t1 - t0
@@ -1120,6 +1134,7 @@ class PredictionOccultation():
         for row in outputs:
             if row['status'] == "failure":
                 failure += 1
+                average.append(0)
 
             exec_tdelta = timedelta(seconds=pytimeparse.parse(row['execution_search_candidate']))
             average.append(exec_tdelta.total_seconds())
@@ -1322,16 +1337,15 @@ class PredictionOccultation():
         for alias in self.results['objects']:
             obj = self.results['objects'][alias]
 
-            self.results["objects"][alias]["status"] = "running"
+            if obj['status'] is not 'failure':
+                result = start_parsl_job(
+                    id=id,
+                    obj=obj,
+                    logger=self.logger)
 
-            result = start_parsl_job(
-                id=id,
-                obj=obj,
-                logger=self.logger)
+                self.logger.debug(result)
 
-            self.logger.debug(result)
-
-            results.append(result)
+                results.append(result)
 
             id += 1
 
@@ -1349,6 +1363,7 @@ class PredictionOccultation():
         for row in outputs:
             if row['status'] == "failure":
                 failure += 1
+                average.append(0)
 
             exec_tdelta = timedelta(seconds=pytimeparse.parse(row['execution_maps']))
             average.append(exec_tdelta.total_seconds())
@@ -1510,17 +1525,18 @@ class PredictionOccultation():
 
             for ftype in obj.get("results"):
                 result = obj.get("results").get(ftype)
-                result_file, created = PredictOutput.objects.update_or_create(
-                    asteroid=asteroid,
-                    filename=result.get("filename"),
-                    defaults={
-                        'file_size': result.get("file_size"),
-                        'file_type': result.get("file_type"),
-                        'file_path': result.get("file_path"),
-                    }
-                )
+                if result is not None:
+                    result_file, created = PredictOutput.objects.update_or_create(
+                        asteroid=asteroid,
+                        filename=result.get("filename"),
+                        defaults={
+                            'file_size': result.get("file_size"),
+                            'file_type': result.get("file_type"),
+                            'file_path': result.get("file_path"),
+                        }
+                    )
 
-                result_file.save()
+                    result_file.save()
 
             # Registra os Inputs Utilizados
             for input_type in obj.get("inputs"):

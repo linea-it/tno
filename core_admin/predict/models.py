@@ -397,6 +397,7 @@ class PredictOutput(models.Model):
             ('star_catalog_xy', 'Start Catalog XY'),
             ('stars_parameters_of_occultation', 'Start Parameters of Occultation'),
             ('stars_parameters_of_occultation_table', 'Start Parameters of Occultation Table'),
+            ('occultation_table', 'Occultation Table CSV')
         )
     )
 
