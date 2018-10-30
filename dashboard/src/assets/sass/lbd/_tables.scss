@@ -81,3 +81,25 @@
         background-color: $danger-color !important;
     }          
 }
+
+.status_table {
+    font-weight: 700;
+    color: #fff;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: center;
+    width: 80;  
+    
+    &.running {
+        background-color: $info-color !important;
+    }
+    &.success {
+        background-color: $success-color !important;
+    }
+    &.warning {
+        background-color: $warning-color !important;
+    }
+    &.failure {
+        background-color: $danger-color !important;
+    }
+}

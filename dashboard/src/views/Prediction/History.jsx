@@ -40,15 +40,15 @@ class PredictionHistory extends Component {
   }
 
   columns = [
-    {
-      field: 'status',
-      header: 'Status',
-      sortable: true,
-      style: {
-        textAlign: 'center',
-        width: '80',
-      },
-    },
+    // {
+    //   field: 'status',
+    //   header: 'Status',
+    //   sortable: true,
+    //   style: {
+    //     textAlign: 'center',
+    //     width: '80',
+    //   },
+    // },
     {
       field: 'process_displayname',
       header: 'Proccess',
@@ -109,21 +109,6 @@ class PredictionHistory extends Component {
     const id = rowData.id;
     let btn_view = null;
     let btn_log = null;
-    let status = null;
-
-    if (rowData.status == 'running') {
-      return (status = (
-        <div
-          style={{
-            backgroundColor: 'green',
-            width: '100%',
-            margin: '0 !important',
-          }}
-        >
-          {rowData.status}
-        </div>
-      ));
-    }
 
     if (rowData.status !== 'failure') {
       btn_view = (
@@ -152,6 +137,26 @@ class PredictionHistory extends Component {
         {btn_log}
       </div>
     );
+  };
+
+  status_table = rowData => {
+    const row = rowData.status;
+    const status = [
+      { state: 'running' },
+      { state: 'warning' },
+      { state: 'success' },
+      { state: 'failure' },
+    ];
+
+    return status.map((el, i) => {
+      if (row == el.state) {
+        return (
+          <div key={i} className={`status_table ${el.state}`}>
+            {row}
+          </div>
+        );
+      }
+    });
   };
 
   toolbarButton = el => {
@@ -235,8 +240,6 @@ class PredictionHistory extends Component {
   };
 
   render() {
-    formatStatusPrime('', 'running');
-
     const columns = this.columns.map((col, i) => {
       return (
         <Column
@@ -270,10 +273,15 @@ class PredictionHistory extends Component {
           selection={this.state.selected}
           onSelectionChange={e => this.setState({ selected: e.data })}
         >
+          <Column
+            header="Status"
+            body={this.status_table}
+            style={{ textAlign: 'center', width: '6em' }}
+          />
           {columns}
           <Column
             body={this.actionTemplate}
-            style={{ textAlign: 'center', width: '6em' }}
+            style={{ textAlign: 'center', width: '6em', color: '#fff' }}
           />
         </DataTable>
         <Paginator

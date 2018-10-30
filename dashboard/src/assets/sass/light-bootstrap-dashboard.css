@@ -1065,6 +1065,22 @@ body > .navbar-collapse[data-color="purple"]:after {
 .table .background-danger {
   background-color: #FF4A55 !important; }
 
+.status_table {
+  font-weight: 700;
+  color: #fff;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: center;
+  width: 80; }
+  .status_table.running {
+    background-color: #1DC7EA !important; }
+  .status_table.success {
+    background-color: #87CB16 !important; }
+  .status_table.warning {
+    background-color: #FF9500 !important; }
+  .status_table.failure {
+    background-color: #FF4A55 !important; }
+
 /*      Checkbox and radio         */
 .checkbox,
 .radio {
