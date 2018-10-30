@@ -12,7 +12,7 @@ import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
 import { Toolbar } from 'primereact/toolbar';
 import PropTypes from 'prop-types';
-import { formatColumnHeader, formatStatusPrime } from 'utils';
+import { formatColumnHeader } from 'utils';
 
 class PredictionHistory extends Component {
   state = this.initialState;
@@ -40,15 +40,6 @@ class PredictionHistory extends Component {
   }
 
   columns = [
-    // {
-    //   field: 'status',
-    //   header: 'Status',
-    //   sortable: true,
-    //   style: {
-    //     textAlign: 'center',
-    //     width: '80',
-    //   },
-    // },
     {
       field: 'process_displayname',
       header: 'Proccess',
@@ -110,7 +101,34 @@ class PredictionHistory extends Component {
     let btn_view = null;
     let btn_log = null;
 
-    if (rowData.status !== 'failure') {
+    if (rowData.status !== 'success') {
+      btn_view = (
+        <Button
+          type="button"
+          icon="fa fa-search"
+          className="ui-button-info"
+          disabled={true}
+          title="View"
+          onClick={() => this.onView(id)}
+        />
+      );
+      btn_log = (
+        <Button
+          type="button"
+          icon="fa fa-file-text-o"
+          className="ui-button-warning"
+          title="Log"
+          disabled={true}
+          onClick={() => this.onLog(id)}
+        />
+      );
+      return (
+        <div>
+          {btn_view}
+          {btn_log}
+        </div>
+      );
+    } else {
       btn_view = (
         <Button
           type="button"
@@ -129,14 +147,33 @@ class PredictionHistory extends Component {
           onClick={() => this.onLog(id)}
         />
       );
+      return (
+        <div>
+          {btn_view}
+          {btn_log}
+        </div>
+      );
     }
+  };
 
-    return (
-      <div>
-        {btn_view}
-        {btn_log}
-      </div>
-    );
+  status_table = rowData => {
+    const row = rowData.status;
+    const status = [
+      { state: 'running' },
+      { state: 'warning' },
+      { state: 'success' },
+      { state: 'failure' },
+    ];
+
+    return status.map((el, i) => {
+      if (row == el.state) {
+        return (
+          <div key={i} className={`status_table ${el.state}`}>
+            {row}
+          </div>
+        );
+      }
+    });
   };
 
   status_table = rowData => {
