@@ -216,7 +216,6 @@ class PredicitionSelect extends Component {
 
     return (
       <Dropdown
-        className="drop"
         key={2}
         value={this.state.catalog}
         options={catalog_elements}
@@ -243,7 +242,6 @@ class PredicitionSelect extends Component {
     return (
       <div>
         <Dropdown
-          className="drop"
           key={2}
           value={this.state.leap_second}
           options={leaps_elements}
@@ -271,7 +269,6 @@ class PredicitionSelect extends Component {
     return (
       <div>
         <Dropdown
-          className="drop"
           key={2}
           value={this.state.bsp_planeraty}
           options={bsp_elements}
@@ -327,7 +324,7 @@ class PredicitionSelect extends Component {
             <p className="label-prediction">BSP Planetary</p>
             {this.bspPlanetaryDropdown()}
           </div>
-          <div className="item-prediction drop">
+          <div className="item-prediction">
             <p className="label-prediction">Catalog Radius</p>
             {this.radiusInput()}
             <p className="label-prediction">
@@ -345,6 +342,8 @@ class PredicitionSelect extends Component {
           onClick={this.onClick}
           className=" button-TNO button-prediction"
         />
+      
+
         <p>{this.state.message}</p>
       </div>
     );

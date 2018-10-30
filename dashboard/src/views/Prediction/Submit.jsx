@@ -14,6 +14,7 @@ import { Button } from 'primereact/button';
 // APIs
 import OrbitApi from '../RefineOrbit/OrbitApi';
 import PredictionApi from './PredictionApi';
+import { FormValidation } from '../../components/FormValidation/FormValidation';
 
 export class PredictionSubmit extends Component {
   state = this.initialState;
@@ -39,9 +40,12 @@ export class PredictionSubmit extends Component {
       catalog_radius: 0.15,
       message: '',
       actionButton: false,
-      ephemeris_initial_date: null,
-      ephemeris_final_date: null,
+      ephemeris_initial_date: '',
+      ephemeris_final_date: '',
       ephemeris_step: 600,
+      validation_text: '',
+      validation_type: '',
+      validation_display: 'none',
     };
   }
   componentDidMount() {
@@ -121,58 +125,74 @@ export class PredictionSubmit extends Component {
     });
   }
 
-  onCheck = () => {
-    const msg = 'Os Campos não foram preenchidos';
-
-    if (
-      this.state.process !== null &&
-      this.state.catalog !== null &&
-      this.state.leap_second !== null &&
-      this.state.bsp_planeraty !== null
-    ) {
+  onCheck = value => {
+    if (this.state.process !== null) {
       this.setState({ actionButton: true });
-    } else {
-      this.setState({
-        message: msg,
-        actionButton: false,
-      });
+
+      if (value === 0) {
+        this.setState({
+          validation_display: 'block',
+          validation_text: 'Os Campos não foram preenchidos',
+          validation_type: 'danger',
+        });
+      }
     }
   };
-  onClick = () => {
-    // this.showSucess();
-    const {
-      process,
-      leap_second,
-      bsp_planeraty,
-      catalog,
-      catalog_radius,
-      ephemeris_initial_date,
-      ephemeris_final_date,
-      ephemeris_step,
-    } = this.state;
 
-    this.apiPrediction
-      .createPredictRun({
-        process: process.process,
-        input_list: process.input_list,
-        input_orbit: process.value,
-        catalog: catalog.value,
-        catalog_radius: catalog_radius,
-        leap_second: leap_second.value,
-        bsp_planetary: bsp_planeraty.value,
-        ephemeris_initial_date: ephemeris_initial_date,
-        ephemeris_final_date: ephemeris_final_date,
-        ephemeris_step: ephemeris_step,
-      })
-      .then(res => {
-        this.onCreateSuccess(res.data);
-      })
-      .catch(this.onCreateFailure('sim'));
+  onClear = () => {
+    this.setState({
+      validation_display: 'none',
+      validation_text: '',
+      validation_type: '',
+    });
+  };
+
+  onClick = () => {
+    if (
+      this.state.ephemeris_initial_date === '' ||
+      this.state.ephemeris_final_date === ''
+    ) {
+      const value = 0;
+      this.onCheck(value);
+    } else {
+      this.onClear;
+      const {
+        process,
+        leap_second,
+        bsp_planeraty,
+        catalog,
+        catalog_radius,
+        ephemeris_initial_date,
+        ephemeris_final_date,
+        ephemeris_step,
+      } = this.state;
+
+      this.apiPrediction
+        .createPredictRun({
+          process: process.process,
+          input_list: process.input_list,
+          input_orbit: process.value,
+          catalog: catalog.value,
+          catalog_radius: catalog_radius,
+          leap_second: leap_second.value,
+          bsp_planetary: bsp_planeraty.value,
+          ephemeris_initial_date: ephemeris_initial_date,
+          ephemeris_final_date: ephemeris_final_date,
+          ephemeris_step: ephemeris_step,
+        })
+        .then(res => {
+          this.onCreateSuccess(res.data);
+        })
+        .catch(this.onCreateFailure('sim'));
+    }
   };
 
   onCreateSuccess = record => {
     // console.log('onCreateSuccess(%o)', record);
     this.setState(this.initialState, this.props.onCreateRun(record));
+
+    // validation_text: 'Submissão realizada com sucesso',
+    //       validation_type: 'success',
   };
   onCreateFailure = error => {
     // TODO: Criar uma Notificacao de falha.
@@ -184,15 +204,15 @@ export class PredictionSubmit extends Component {
   };
 
   onChangeCatalog = e => {
-    this.setState({ catalog: e.value }, this.onCheck);
+    this.setState({ catalog: e.value });
   };
 
   onChangeLeap = e => {
-    this.setState({ leap_second: e.value }, this.onCheck);
+    this.setState({ leap_second: e.value });
   };
 
   onChangeBsp = e => {
-    this.setState({ bsp_planeraty: e.value }, this.onCheck);
+    this.setState({ bsp_planeraty: e.value });
   };
 
   OrbitName = () => {
@@ -221,7 +241,7 @@ export class PredictionSubmit extends Component {
     return (
       <Dropdown
         autoWidth={false}
-        key={2}
+        key={1}
         value={this.state.process}
         options={process_elements}
         onChange={this.onChangeProcess}
@@ -329,10 +349,13 @@ export class PredictionSubmit extends Component {
   ephemerisDateInitial = () => {
     return (
       <Calendar
-        required
+        // required
+        disabled={!this.state.actionButton}
         showIcon={true}
         value={this.state.ephemeris_initial_date}
-        onChange={e => this.setState({ ephemeris_initial_date: e.value })}
+        onChange={e =>
+          this.setState({ ephemeris_initial_date: e.value }, this.onCheck())
+        }
         placeholder="Initial Date"
         dateFormat="yy-dd-mm"
         showTime={true}
@@ -344,10 +367,13 @@ export class PredictionSubmit extends Component {
   ephemerisDateFinal = () => {
     return (
       <Calendar
-        required
+        // required
+        disabled={!this.state.actionButton}
         showIcon={true}
         value={this.state.ephemeris_final_date}
-        onChange={e => this.setState({ ephemeris_final_date: e.value })}
+        onChange={e =>
+          this.setState({ ephemeris_final_date: e.value }, this.onCheck())
+        }
         placeholder="Final Date"
         dateFormat="yy-mm-dd"
         showTime={true}
@@ -369,6 +395,8 @@ export class PredictionSubmit extends Component {
   };
 
   render() {
+    console.log(this.state.ephemeris_initial_date);
+    console.log(this.state.ephemeris_final_date);
     return (
       <div>
         <div className="ui-g ui-fluid">
@@ -390,7 +418,6 @@ export class PredictionSubmit extends Component {
             {this.ephemerisStep()}
           </div>
         </div>
-
         <div className="ui-g ui-fluid">
           <div className="ui-md-6">
             <p className="label-prediction"> Leap Seconds</p>
@@ -413,15 +440,19 @@ export class PredictionSubmit extends Component {
             {this.ephemerisDateFinal()}
           </div>
         </div>
-        {/* <Growl /> */}
         <br />
+        <FormValidation
+          text={this.state.validation_text}
+          type={this.state.validation_type}
+          display={this.state.validation_display}
+        />
         <Button
           label="Submit"
           disabled={!this.state.actionButton}
           onClick={this.onClick}
           className=" button-TNO button-prediction"
         />
-        {/* <p>{this.state.message}</p> */}
+        <NotificationContainer />
       </div>
     );
   }
