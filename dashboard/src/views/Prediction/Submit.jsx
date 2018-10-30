@@ -452,7 +452,6 @@ export class PredictionSubmit extends Component {
           onClick={this.onClick}
           className=" button-TNO button-prediction"
         />
-        <NotificationContainer />
       </div>
     );
   }
