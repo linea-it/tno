@@ -10,6 +10,7 @@ import 'primeicons/primeicons.css';
 //Components
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
+import { FormValidation } from 'components/FormValidation/FormValidation.jsx';
 
 // APIs
 import OrbitApi from '../RefineOrbit/OrbitApi';
@@ -131,9 +132,12 @@ export class PredictionSubmit extends Component {
       if (value === 0) {
         this.setState({
           validation_display: 'block',
-          validation_text: 'Os Campos não foram preenchidos',
+          validation_text:
+            'Fields can not be submitted in blank. Fill them out.',
           validation_type: 'danger',
         });
+      } else {
+        this.onClear();
       }
     }
   };
@@ -187,7 +191,7 @@ export class PredictionSubmit extends Component {
   };
 
   onCreateSuccess = record => {
-    // console.log('onCreateSuccess(%o)', record);
+    console.log('onCreateSuccess(%o)', record);
     this.setState(this.initialState, this.props.onCreateRun(record));
 
     // validation_text: 'Submissão realizada com sucesso',
@@ -338,7 +342,7 @@ export class PredictionSubmit extends Component {
         size={50}
         value={this.state.catalog_radius}
         onChange={e => this.setState({ catalog_radius: e.value })}
-        min={0}
+        min={0.15}
         max={2}
         step={0.01}
       />
@@ -440,11 +444,11 @@ export class PredictionSubmit extends Component {
           </div>
         </div>
         <br />
-        {/* <FormValidation
+        <FormValidation
           text={this.state.validation_text}
           type={this.state.validation_type}
           display={this.state.validation_display}
-        // /> */}
+        />
         <Button
           label="Submit"
           disabled={!this.state.actionButton}
