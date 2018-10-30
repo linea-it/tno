@@ -27,36 +27,27 @@ class RefineOrbitPanel extends Component {
   render() {
     const { record } = this.state;
     return (
-    
-        <div className="grid template-refine-orbit">
-
+      <div className="grid template-refine-orbit">
         <PanelCostumize
           className="submit_refine"
           title="Execute"
           subTitle="Descrição sobre execução"
-          content={
-            <RefineOrbitSubmit onCreateRun={this.onCreateRun} />
-          }
+          content={<RefineOrbitSubmit onCreateRun={this.onCreateRun} />}
         />
 
         <PanelCostumize
           className="running_refine"
           title="Running"
           subTitle="Monitor the rounds NIMA"
-          content={
-            <RefineOrbitRunning record={record} />
-          }
-      />
-       <PanelCostumize
+          content={<RefineOrbitRunning record={record} />}
+        />
+        <PanelCostumize
           className="history_refine"
           title="History"
           subTitle="Manage the completed NIMA rounds"
-          content={
-            <RefineOrbitHistory onRerun={this.onCreateRun} />
-          }
+          content={<RefineOrbitHistory onRerun={this.onCreateRun} />}
         />
-
-        </div>
+      </div>
     );
   }
 }
