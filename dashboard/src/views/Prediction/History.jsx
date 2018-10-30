@@ -12,6 +12,7 @@ import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
 import { Toolbar } from 'primereact/toolbar';
 import PropTypes from 'prop-types';
+import { formatColumnHeader, formatStatusPrime } from 'utils';
 
 class PredictionHistory extends Component {
   state = this.initialState;
@@ -39,35 +40,43 @@ class PredictionHistory extends Component {
   }
 
   columns = [
-    {
-      field: 'status',
-      header: 'Status',
-      sortable: true,
-      style: { textAlign: 'center', width: '80' },
-    },
+    // {
+    //   field: 'status',
+    //   header: 'Status',
+    //   sortable: true,
+    //   style: {
+    //     textAlign: 'center',
+    //     width: '80',
+    //   },
+    // },
     {
       field: 'process_displayname',
       header: 'Proccess',
+      headerStyle: formatColumnHeader,
       sortable: true,
     },
     {
       field: 'owner',
       header: 'Owner',
+      headerStyle: formatColumnHeader,
       sortable: true,
     },
     {
       field: 'h_time',
       header: 'start',
+      headerStyle: formatColumnHeader,
       sortable: true,
     },
     {
       field: 'h_execution_time',
       header: 'Execution Time',
+      headerStyle: formatColumnHeader,
       sortable: true,
     },
     {
       field: 'count_objects',
       header: 'Asteroids',
+      headerStyle: formatColumnHeader,
       sortable: true,
     },
   ];
@@ -128,6 +137,26 @@ class PredictionHistory extends Component {
         {btn_log}
       </div>
     );
+  };
+
+  status_table = rowData => {
+    const row = rowData.status;
+    const status = [
+      { state: 'running' },
+      { state: 'warning' },
+      { state: 'success' },
+      { state: 'failure' },
+    ];
+
+    return status.map((el, i) => {
+      if (row == el.state) {
+        return (
+          <div key={i} className={`status_table ${el.state}`}>
+            {row}
+          </div>
+        );
+      }
+    });
   };
 
   toolbarButton = el => {
@@ -244,10 +273,15 @@ class PredictionHistory extends Component {
           selection={this.state.selected}
           onSelectionChange={e => this.setState({ selected: e.data })}
         >
+          <Column
+            header="Status"
+            body={this.status_table}
+            style={{ textAlign: 'center', width: '6em' }}
+          />
           {columns}
           <Column
             body={this.actionTemplate}
-            style={{ textAlign: 'center', width: '6em' }}
+            style={{ textAlign: 'center', width: '6em', color: '#fff' }}
           />
         </DataTable>
         <Paginator

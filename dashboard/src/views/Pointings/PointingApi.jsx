@@ -20,8 +20,6 @@ class PointingApi {
 
   getPointingRecord = ({ id }) => axios.get(`${this.api}/pointing/${id}/`);
 
-    getPointingStatistics = () => 
-    axios.get(`${this.api}/pointing/statistics/`);
- 
+  getPointingStatistics = () => axios.get(`${this.api}/pointing/statistics/`);
 }
 export default PointingApi;

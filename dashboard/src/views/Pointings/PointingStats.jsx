@@ -46,21 +46,21 @@ class PointingsStats extends Component {
   render() {
     const propSet = this.props;
 
-    const data = [
-      { name: 'u', band: this.state.band_u },
-      { name: 'g', band: this.state.band_g },
-      { name: 'r', band: this.state.band_r },
-      { name: 'i', band: this.state.band_i },
-      { name: 'z', band: this.state.band_z },
-      { name: 'Y', band: this.state.band_y },
-    ];
+    const band = this.state.band.map((el, i) => {
+      const band = {
+        name: el.name,
+        band: el.band,
+      };
+      return band;
+    });
 
-    const exptime = [
-      { name: '0-100', exposure: this.state.exp1 },
-      { name: '100-200', exposure: this.state.exp2 },
-      { name: '200-300', exposure: this.state.exp3 },
-      { name: '300-400', exposure: this.state.exp4 },
-    ];
+    const exptime = this.state.exp.map((el, i) => {
+      const exptime = {
+        name: el.name,
+        exposure: el.exposure,
+      };
+      return exptime;
+    });
 
     const stats = [
       {
@@ -83,7 +83,6 @@ class PointingsStats extends Component {
           <div key={i} className="item">
             <div className="label-stats">{stats[i].name}</div>
             <div className="value-stats">
-              {' '}
               {stats[i].title}: {stats[i].value}
             </div>
           </div>
@@ -108,7 +107,7 @@ class PointingsStats extends Component {
                         <BarChart
                           width={275}
                           height={198}
-                          data={data}
+                          data={band}
                           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                         >
                           <CartesianGrid strokeDasharray="3 3" />
