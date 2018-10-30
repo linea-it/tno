@@ -12,6 +12,7 @@ import './assets/sass/light-bootstrap-dashboard.css';
 import './assets/css/demo.css';
 import './assets/css/pe-icon-7-stroke.css';
 import 'semantic-ui-css/semantic.min.css';
+import 'react-notifications/lib/notifications.css';
 
 
 import history from './history';

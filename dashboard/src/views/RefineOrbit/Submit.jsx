@@ -77,7 +77,7 @@ class RefineOrbitSubmit extends Component {
         console.log(res);
         this.onCreateSuccess(res.data);
       })
-      .catch(this.onCreateFailure("Deu ruim"));
+      .catch(this.onCreateFailure('Deu ruim'));
   };
 
   onCreateSuccess = record => {
@@ -94,33 +94,32 @@ class RefineOrbitSubmit extends Component {
     const { input } = this.state;
     return (
       <div>
-          <Content
-            content={
-              <div>
-                <Form>
-                  <FormGroup>
-                    <ControlLabel>Input</ControlLabel>
-                    <Async
-                      onChange={this.onSelectInput}
-                      value={input}
-                      cacheOptions
-                      valueKey="id"
-                      labelKey="proccess_displayname"
-                      defaultOptions
-                      loadOptions={this.loadInputs}
-                    />
-                  </FormGroup>
-                  <Button
-                    label="Submit"
-                    onClick={this.onClickSubmit}
-                    className="button-TNO"
+        <Content
+          content={
+            <div>
+              <Form>
+                <FormGroup>
+                  <ControlLabel>Input</ControlLabel>
+                  <Async
+                    onChange={this.onSelectInput}
+                    value={input}
+                    cacheOptions
+                    valueKey="id"
+                    labelKey="proccess_displayname"
+                    defaultOptions
+                    loadOptions={this.loadInputs}
                   />
-                </Form>
-              </div>
-            }
-          />
-       </div>
-           
+                </FormGroup>
+                <Button
+                  label="Submit"
+                  onClick={this.onClickSubmit}
+                  className="button-TNO"
+                />
+              </Form>
+            </div>
+          }
+        />
+      </div>
     );
   }
 }

@@ -18,11 +18,7 @@ import { Toolbar } from 'primereact/toolbar';
 import { DataTable } from 'primereact/datatable';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
-import map_010 from 'assets/img/plots_prediction/map_010.png';
-import plot1 from 'assets/img/plots_prediction/1.png';
-// import { ColumnGroup } from './components/columngroup/ColumGroup';
 // import { Row } from 'primereact/row';
-
 class AsteroidDetailPrediction extends Component {
   state = this.initialState;
   api = new PredictionApi();
@@ -84,7 +80,6 @@ class AsteroidDetailPrediction extends Component {
       const asteroid = res.data;
 
       if (asteroid.id) {
-
         this.setState({
           id: parseInt(params.id, 10),
           asteroid: asteroid,
@@ -116,7 +111,7 @@ class AsteroidDetailPrediction extends Component {
         //     });
         //   });
 
-          // Estrutura dos arquivos em forma de tree
+        // Estrutura dos arquivos em forma de tree
         //   const tree_data = [
         //     {
         //       data: {
@@ -221,7 +216,9 @@ class AsteroidDetailPrediction extends Component {
           <Button
             label="Back to Refine Orbit"
             icon="fa fa-undo"
-            onClick={() => this.onClickBackToRefine(this.state.asteroid.predict_run)}
+            onClick={() =>
+              this.onClickBackToRefine(this.state.asteroid.predict_run)
+            }
           />
           <Button
             label="Download"
@@ -302,6 +299,7 @@ class AsteroidDetailPrediction extends Component {
       { name: 'pmra', value: asteroid.h_size },
       { name: 'pmde', value: asteroid.h_size },
     ];
+    
     const image = [
       {
         src: '',
@@ -342,11 +340,7 @@ class AsteroidDetailPrediction extends Component {
                   {image.map((e, i) => {
                     return (
                       <div className="plot_predict_earth" key={i}>
-                        <img
-                          id={e.filename}
-                          src={map_010}
-                          alt={e.filename}
-                        />
+                        {/* <img id={e.filename} src={map_010} alt={e.filename} /> */}
                       </div>
                     );
                   })}
@@ -426,7 +420,7 @@ class AsteroidDetailPrediction extends Component {
               subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
             >
               <div className="plot_predict_radius">
-                <img src={plot1} alt="radius" />
+                {/* <img src={map_010} alt="radius" /> */}
               </div>
             </Card>
           </div>
