@@ -176,6 +176,26 @@ class PredictionHistory extends Component {
     });
   };
 
+  status_table = rowData => {
+    const row = rowData.status;
+    const status = [
+      { state: 'running' },
+      { state: 'warning' },
+      { state: 'success' },
+      { state: 'failure' },
+    ];
+
+    return status.map((el, i) => {
+      if (row == el.state) {
+        return (
+          <div key={i} className={`status_table ${el.state}`}>
+            {row}
+          </div>
+        );
+      }
+    });
+  };
+
   toolbarButton = el => {
     let btn_view_toolbar = null;
     let btn_reexecute = null;

@@ -14,6 +14,7 @@ import { Button } from 'primereact/button';
 // APIs
 import OrbitApi from '../RefineOrbit/OrbitApi';
 import PredictionApi from './PredictionApi';
+import { FormValidation } from '../../components/FormValidation/FormValidation';
 
 export class PredictionSubmit extends Component {
   state = this.initialState;
@@ -440,11 +441,11 @@ export class PredictionSubmit extends Component {
           </div>
         </div>
         <br />
-        {/* <FormValidation
+        <FormValidation
           text={this.state.validation_text}
           type={this.state.validation_type}
           display={this.state.validation_display}
-        // /> */}
+        />
         <Button
           label="Submit"
           disabled={!this.state.actionButton}
