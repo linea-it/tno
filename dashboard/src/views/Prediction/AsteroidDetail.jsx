@@ -299,6 +299,7 @@ class AsteroidDetailPrediction extends Component {
       { name: 'pmra', value: asteroid.h_size },
       { name: 'pmde', value: asteroid.h_size },
     ];
+    
     const image = [
       {
         src: '',
