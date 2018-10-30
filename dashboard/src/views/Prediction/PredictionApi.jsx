@@ -31,19 +31,19 @@ class PredictionApi {
     });
 
   getPrediction = () => {
-    return axios.get(`http://localhost:7001/orbit_run/?status=success`);
+    return axios.get(`${this.api}/orbit_run/?status=success`);
   };
 
   getCatalogs = () => {
-    return axios.get(`http://localhost:7001/catalog/`);
+    return axios.get(`${this.api}/catalog/`);
   };
 
   getLeapSeconds = () => {
-    return axios.get(`http://localhost:7001/leap_seconds/`);
+    return axios.get(`${this.api}/leap_seconds/`);
   };
 
   getBspPlanetary = () => {
-    return axios.get(`http://localhost:7001/bsp_planetary/`);
+    return axios.get(`${this.api}/bsp_planetary/`);
   };
 
   getPredictionRuns = ({ page, pageSize, ordering, filters = [] }) => {
@@ -93,10 +93,13 @@ class PredictionApi {
       params[element.property] = element.value;
     });
 
-    return axios.get(`${this.api}/refined_asteroid/`, {
+    return axios.get(`${this.api}/predict_asteroid/`, {
       params: params,
     });
   };
+
+  getAsteroidById = ({ id }) =>
+    axios.patch(`${this.api}/predict_asteroid/${id}/`);  
 }
 
 export default PredictionApi;

@@ -6,7 +6,7 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 // Api Rest
-import OrbitApi from 'views/RefineOrbit/OrbitApi.jsx';
+import PredictionApi from './PredictionApi';
 // interface components
 import { Card } from 'primereact/card';
 // import Content from 'components/CardContent/CardContent.jsx';
@@ -18,14 +18,14 @@ import { Toolbar } from 'primereact/toolbar';
 import { DataTable } from 'primereact/datatable';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
-import plot_prediction1 from 'assets/img/plot_prediction1.png';
+import map_010 from 'assets/img/plots_prediction/map_010.png';
 import plot1 from 'assets/img/plots_prediction/1.png';
 // import { ColumnGroup } from './components/columngroup/ColumGroup';
 // import { Row } from 'primereact/row';
 
 class AsteroidDetailPrediction extends Component {
   state = this.initialState;
-  api = new OrbitApi();
+  api = new PredictionApi();
 
   static propTypes = {
     match: PropTypes.object.isRequired,
@@ -84,62 +84,68 @@ class AsteroidDetailPrediction extends Component {
       const asteroid = res.data;
 
       if (asteroid.id) {
+
+        this.setState({
+          id: parseInt(params.id, 10),
+          asteroid: asteroid,
+        });
+
         // Recuperar os arquivos de resultados
-        this.api.getAsteroidFiles({ id: asteroid_id }).then(res => {
-          const files = res.data.results;
+        // this.api.getAsteroidFiles({ id: asteroid_id }).then(res => {
+        //   const files = res.data.results;
 
-          // Lista so com os arquivos que sao imagens
-          const excluded_images = ['diff_bsp-ni.png', 'omc_sep.png'];
-          const images = [];
+        //   // Lista so com os arquivos que sao imagens
+        //   const excluded_images = ['diff_bsp-ni.png', 'omc_sep.png'];
+        //   const images = [];
 
-          const childrens = [];
+        //   const childrens = [];
 
-          files.forEach(e => {
-            if (
-              e.file_type === '.png' &&
-              !excluded_images.includes(e.filename)
-            ) {
-              // O source deve apontar para o backend
-              e.src = this.api.api + e.src;
-              images.push(e);
-            }
+        //   files.forEach(e => {
+        //     if (
+        //       e.file_type === '.png' &&
+        //       !excluded_images.includes(e.filename)
+        //     ) {
+        //       // O source deve apontar para o backend
+        //       e.src = this.api.api + e.src;
+        //       images.push(e);
+        //     }
 
-            childrens.push({
-              data: e,
-              expanded: true,
-            });
-          });
+        //     childrens.push({
+        //       data: e,
+        //       expanded: true,
+        //     });
+        //   });
 
           // Estrutura dos arquivos em forma de tree
-          const tree_data = [
-            {
-              data: {
-                filename: asteroid.name,
-              },
-              children: childrens,
-              expanded: true,
-            },
-          ];
+        //   const tree_data = [
+        //     {
+        //       data: {
+        //         filename: asteroid.name,
+        //       },
+        //       children: childrens,
+        //       expanded: true,
+        //     },
+        //   ];
 
-          this.setState(
-            {
-              id: parseInt(params.id, 10),
-              asteroid: asteroid,
-              files: files,
-              images: images,
-              tree_data: tree_data,
-            },
-            this.getNeighbors(asteroid_id)
-          );
-        });
+        //   this.setState(
+        //     {
+        //       id: parseInt(params.id, 10),
+        //       asteroid: asteroid,
+        //       files: files,
+        //       images: images,
+        //       tree_data: tree_data,
+        //     },
+        //     this.getNeighbors(asteroid_id)
+        //   );
+        // });
 
-        // Recuperar os Inputs
-        this.api.getAsteroidInputs({ id: asteroid_id }).then(res => {
-          const inputs = res.data.results;
-          this.setState({
-            inputs: inputs,
-          });
-        });
+        // // Recuperar os Inputs
+        // this.api.getAsteroidInputs({ id: asteroid_id }).then(res => {
+        //   const inputs = res.data.results;
+        //   this.setState({
+        //     inputs: inputs,
+        //   });
+        // });
       }
     });
   }
@@ -215,7 +221,7 @@ class AsteroidDetailPrediction extends Component {
           <Button
             label="Back to Refine Orbit"
             icon="fa fa-undo"
-            onClick={() => this.onClickBackToRefine(this.state.asteroid.id)}
+            onClick={() => this.onClickBackToRefine(this.state.asteroid.predict_run)}
           />
           <Button
             label="Download"
@@ -266,21 +272,37 @@ class AsteroidDetailPrediction extends Component {
     const asteroid = this.state.asteroid;
 
     const columns = [
-      { field: 'date', header: 'Date' },
-      { field: 'time', header: 'Time' },
-      { field: 'ra_candidate', header: 'ra_candidate' },
-      { field: 'dec_candidate', header: 'dec_candidate' },
-      { field: 'ra_target', header: 'ra_target' },
-      { field: 'dec_target', header: 'dec_target' },
+      { field: 'date', header: 'Date Time' },
+      { field: 'ra_candidate', header: 'RA Candidate' },
+      { field: 'dec_candidate', header: 'Dec Candidate' },
+      { field: 'ra_target', header: 'RA Target' },
+      { field: 'dec_target', header: 'Dec Target' },
+      { field: 'ca', header: 'C/A' },
+      { field: 'pa', header: 'P/A' },
+      { field: 'g', header: 'G*' },
+      { field: 'j', header: 'J*' },
+      { field: 'H', header: 'H*' },
+      { field: 'K', header: 'K*' },
     ];
 
-    const stats = [
-      { name: 'Proccess', value: asteroid.proccess_displayname },
-      { name: 'Executed', value: asteroid.h_time },
+    const stats_asteroid = [
+      { name: 'Asteroid', value: asteroid.name },
+      { name: 'Number', value: asteroid.number },
       { name: 'Execution Time', value: asteroid.h_execution_time },
       { name: 'Size', value: asteroid.h_size },
     ];
 
+    const stats = [
+      { name: 'Date Time', value: asteroid.proccess_displayname },
+      { name: 'Candidate', value: asteroid.h_time },
+      { name: 'Target', value: asteroid.h_execution_time },
+      { name: 'vel', value: asteroid.h_size },
+      { name: 'Delta', value: asteroid.h_size },
+      { name: 'G*', value: asteroid.h_size },
+      { name: 'pmra', value: asteroid.h_size },
+      { name: 'pmde', value: asteroid.h_size },
+    ];
+    
     const image = [
       {
         src: '',
@@ -323,7 +345,7 @@ class AsteroidDetailPrediction extends Component {
                       <div className="plot_predict_earth" key={i}>
                         <img
                           id={e.filename}
-                          src={plot_prediction1}
+                          src={map_010}
                           alt={e.filename}
                         />
                       </div>
@@ -376,7 +398,7 @@ class AsteroidDetailPrediction extends Component {
                   title={title}
                   statstext={asteroid.status}
                   status={true}
-                  data={stats}
+                  data={stats_asteroid}
                 />
               }
             />

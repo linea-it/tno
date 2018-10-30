@@ -69,6 +69,12 @@ services:
     volumes:
       - ${PROCCESS_DIR}:/data
 
+  # Praia Occultation
+  praia_occ:
+    image: linea/praiaoccultation:latest
+    volumes:
+      - ${PROCCESS_DIR}:/data
+
 networks:
   backend:
 # Baseado neste exemplo

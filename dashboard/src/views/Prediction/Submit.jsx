@@ -14,10 +14,6 @@ import { Button } from 'primereact/button';
 // APIs
 import OrbitApi from '../RefineOrbit/OrbitApi';
 import PredictionApi from './PredictionApi';
-import {
-  NotificationContainer,
-  NotificationManager,
-} from 'react-notifications';
 import { FormValidation } from '../../components/FormValidation/FormValidation';
 
 export class PredictionSubmit extends Component {
