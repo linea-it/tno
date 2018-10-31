@@ -48,23 +48,33 @@ class AsteroidDetailPrediction extends Component {
 
   input_columns = [
     {
+      field: 'asteroid',
+      header: 'asteroid',
+      sortable: true,
+    },
+    {
       field: 'input_type',
       header: 'Input',
       sortable: true,
     },
     {
-      field: 'source',
-      header: 'Source',
-      sortable: true,
-    },
-    {
-      field: 'date_time',
-      header: 'Date',
-      sortable: true,
-    },
-    {
       field: 'filename',
       header: 'Filename',
+      sortable: true,
+    },
+    {
+      field: 'file_size',
+      header: 'File size',
+      sortable: true,
+    },
+    {
+      field: 'h_size',
+      header: 'h_size',
+      sortable: true,
+    },
+    {
+      field: 'file_path',
+      header: 'Path',
       sortable: true,
     },
   ];
@@ -134,13 +144,13 @@ class AsteroidDetailPrediction extends Component {
         //   );
         // });
 
-        // // Recuperar os Inputs
-        // this.api.getAsteroidInputs({ id: asteroid_id }).then(res => {
-        //   const inputs = res.data.results;
-        //   this.setState({
-        //     inputs: inputs,
-        //   });
-        // });
+        // Recuperar os Inputs
+        this.api.getAsteroidInputs({ id: asteroid_id }).then(res => {
+          const inputs = res.data.results;
+          this.setState({
+            inputs: inputs,
+          });
+        });
       }
     });
   }
@@ -299,7 +309,7 @@ class AsteroidDetailPrediction extends Component {
       { name: 'pmra', value: asteroid.h_size },
       { name: 'pmde', value: asteroid.h_size },
     ];
-    
+
     const image = [
       {
         src: '',
