@@ -85,6 +85,15 @@ class PredictionApi {
   //     status: 'pending',
   //   });
 
+  getAsteroidFiles = ({ id }) => {
+    const params = {
+      asteroid: id,
+    };
+    return axios.get(`${this.api}/predict_output/`, {
+      params: params,
+    });
+  };
+
   getAsteroids = ({
     page,
     sizePerPage,
@@ -107,8 +116,17 @@ class PredictionApi {
     });
   };
 
+  getAsteroidInputs = ({ id }) => {
+    const params = {
+      asteroid: id,
+    };
+    return axios.get(`${this.api}/predict_input/`, {
+      params: params,
+    });
+  };
+
   getAsteroidById = ({ id }) =>
-    axios.patch(`${this.api}/predict_asteroid/${id}/`);  
+    axios.patch(`${this.api}/predict_asteroid/${id}/`);
 }
 
 export default PredictionApi;

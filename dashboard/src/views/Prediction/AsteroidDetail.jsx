@@ -90,66 +90,57 @@ class AsteroidDetailPrediction extends Component {
       const asteroid = res.data;
 
       if (asteroid.id) {
-        this.setState({
-          id: parseInt(params.id, 10),
-          asteroid: asteroid,
-        });
-
-        // Recuperar os arquivos de resultados
-        // this.api.getAsteroidFiles({ id: asteroid_id }).then(res => {
-        //   const files = res.data.results;
-
-        //   // Lista so com os arquivos que sao imagens
-        //   const excluded_images = ['diff_bsp-ni.png', 'omc_sep.png'];
-        //   const images = [];
-
-        //   const childrens = [];
-
-        //   files.forEach(e => {
-        //     if (
-        //       e.file_type === '.png' &&
-        //       !excluded_images.includes(e.filename)
-        //     ) {
-        //       // O source deve apontar para o backend
-        //       e.src = this.api.api + e.src;
-        //       images.push(e);
-        //     }
-
-        //     childrens.push({
-        //       data: e,
-        //       expanded: true,
-        //     });
-        //   });
-
-        // Estrutura dos arquivos em forma de tree
-        //   const tree_data = [
-        //     {
-        //       data: {
-        //         filename: asteroid.name,
-        //       },
-        //       children: childrens,
-        //       expanded: true,
-        //     },
-        //   ];
-
-        //   this.setState(
-        //     {
-        //       id: parseInt(params.id, 10),
-        //       asteroid: asteroid,
-        //       files: files,
-        //       images: images,
-        //       tree_data: tree_data,
-        //     },
-        //     this.getNeighbors(asteroid_id)
-        //   );
+        // this.setState({
+        //   id: parseInt(params.id, 10),
+        //   asteroid: asteroid,
         // });
+        //Recuperar os arquivos de resultados
+        this.api.getAsteroidFiles({ id: asteroid_id }).then(res => {
+          const files = res.data.results;
 
-        // Recuperar os Inputs
-        this.api.getAsteroidInputs({ id: asteroid_id }).then(res => {
-          const inputs = res.data.results;
-          this.setState({
-            inputs: inputs,
+          // Lista so com os arquivos que sao imagens
+          const excluded_images = ['diff_bsp-ni.png', 'omc_sep.png'];
+          const images = [];
+
+          const childrens = [];
+
+          files.forEach(e => {
+            if (
+              e.file_type === '.png' &&
+              !excluded_images.includes(e.filename)
+            ) {
+              // O source deve apontar para o backend
+              e.src = this.api.api + e.src;
+              images.push(e);
+            }
+
+            childrens.push({
+              data: e,
+              expanded: true,
+            });
           });
+
+          //Estrutura dos arquivos em forma de tree
+          const tree_data = [
+            {
+              data: {
+                filename: asteroid.name,
+              },
+              children: childrens,
+              expanded: true,
+            },
+          ];
+
+          this.setState(
+            {
+              id: parseInt(params.id, 10),
+              asteroid: asteroid,
+              files: files,
+              images: images,
+              tree_data: tree_data,
+            }
+            // this.getNeighbors(asteroid_id)
+          );
         });
       }
     });
@@ -450,7 +441,7 @@ class AsteroidDetailPrediction extends Component {
           </div>
           <div className="ui-md-6">
             <Card
-              title="Results"
+              title="Output"
               subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
             >
               <TreeTable value={this.state.tree_data} sortField={'filename'}>
