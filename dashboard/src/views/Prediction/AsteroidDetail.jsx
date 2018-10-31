@@ -33,6 +33,7 @@ class AsteroidDetailPrediction extends Component {
       id: 0,
       asteroid: {},
       inputs: [],
+      occultation: [],
       files: [],
       images: [],
       tree_data: [],
@@ -85,6 +86,13 @@ class AsteroidDetailPrediction extends Component {
     } = this.props;
 
     const asteroid_id = params.id;
+
+    this.api.getOccultation().then(res => {
+      const occultation = res.data.results;
+      this.setState({
+        occultation: occultation,
+      });
+    });
 
     this.api.getAsteroidById({ id: asteroid_id }).then(res => {
       const asteroid = res.data;
@@ -268,6 +276,14 @@ class AsteroidDetailPrediction extends Component {
 
   render() {
     const asteroid = this.state.asteroid;
+    console.log(this.state.occultation);
+    const occultation = this.state.occultation;
+
+    // const columns = occultation.map((el, i) => {
+    //   return (columns = [
+    //     { field: occultation[i], header: occultation[i].value },
+    //   ]);
+    // });
 
     const columns = [
       { field: 'date', header: 'Date Time' },
@@ -326,7 +342,7 @@ class AsteroidDetailPrediction extends Component {
     //   </ColumnGroup>
     // );
 
-    const dynamicColumns = columns.map((col, i) => {
+    const dynamicColumns = occultation.map((col, i) => {
       return <Column key={col.field} field={col.field} header={col.header} />;
     });
 
