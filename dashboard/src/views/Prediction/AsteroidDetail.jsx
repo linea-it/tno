@@ -48,23 +48,33 @@ class AsteroidDetailPrediction extends Component {
 
   input_columns = [
     {
+      field: 'asteroid',
+      header: 'asteroid',
+      sortable: true,
+    },
+    {
       field: 'input_type',
       header: 'Input',
       sortable: true,
     },
     {
-      field: 'source',
-      header: 'Source',
-      sortable: true,
-    },
-    {
-      field: 'date_time',
-      header: 'Date',
-      sortable: true,
-    },
-    {
       field: 'filename',
       header: 'Filename',
+      sortable: true,
+    },
+    {
+      field: 'file_size',
+      header: 'File size',
+      sortable: true,
+    },
+    {
+      field: 'h_size',
+      header: 'h_size',
+      sortable: true,
+    },
+    {
+      field: 'file_path',
+      header: 'Path',
       sortable: true,
     },
   ];
@@ -84,7 +94,6 @@ class AsteroidDetailPrediction extends Component {
         //   id: parseInt(params.id, 10),
         //   asteroid: asteroid,
         // });
-
         //Recuperar os arquivos de resultados
         this.api.getAsteroidFiles({ id: asteroid_id }).then(res => {
           const files = res.data.results;

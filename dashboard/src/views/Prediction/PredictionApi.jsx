@@ -34,6 +34,15 @@ class PredictionApi {
     return axios.get(`${this.api}/orbit_run/?status=success`);
   };
 
+  getAsteroidInputs = ({ id }) => {
+    const params = {
+      asteroid: id,
+    };
+    return axios.get(`${this.api}/predict_input/`, {
+      params: params,
+    });
+  };
+
   getCatalogs = () => {
     return axios.get(`${this.api}/catalog/`);
   };
