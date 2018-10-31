@@ -14,7 +14,8 @@ import json
 from statistics import mean
 from tno.db import CatalogDB
 from sqlalchemy.sql import text
-from .models import PredictAsteroid, PredictInput, PredictOutput
+from .models import PredictAsteroid, PredictInput, PredictOutput, Occultation
+import csv
 
 class PredictionOccultation():
     def __init__(self):
@@ -1327,7 +1328,7 @@ class PredictionOccultation():
             else:
                 msg = "[ FAILURE ] - Object: %s " % obj['name']
 
-            logger.debug(msg)
+            logger.info(msg)
 
             return obj
 
@@ -1520,8 +1521,11 @@ class PredictionOccultation():
                 for result_file in asteroid.predict_result.all():
                     result_file.delete()
 
-                for input in asteroid.input_file.all():
-                    input.delete()
+                for obj_input in asteroid.input_file.all():
+                    obj_input.delete()
+
+                for occ in asteroid.occultation.all():
+                    occ.delete()
 
             for ftype in obj.get("results"):
                 result = obj.get("results").get(ftype)
@@ -1554,10 +1558,67 @@ class PredictionOccultation():
                             'file_size': os.path.getsize(file_path),
                             'file_type': os.path.splitext(file_path)[1]
                         },
-
                     )
 
                     input_file.save()
+
+            # Registrar as Ocultacoes
+            if obj['results']['occultation_table'] is not None:
+                table = obj['results']['occultation_table']['file_path']
+                self.logger.debug("Table Path: %s" % table)
+
+                with open(table) as csvfile:
+                    fieldnames = [
+                        'occultation_date', 'ra_star_candidate', 'dec_star_candidate','ra_object', 'dec_object', 
+                        'ca', 'pa', 'vel', 'delta', 'g', 'j', 'h', 'k', 'long', 'loc_t', 'off_ra', 'off_de', 
+                        'pm', 'ct', 'f', 'e_ra', 'e_de', 'pmra', 'pmde']
+
+                    reader = csv.DictReader(csvfile, fieldnames=fieldnames, delimiter=';', skipinitialspace=True)
+
+                    next(reader, None)
+
+                    for row in reader:
+
+                        dt = datetime.strptime(row['occultation_date'], '%Y-%m-%d %H:%M:%S')
+
+                        file_map = "%s_%s.000.png" % (obj['alias'].replace('_', ''), dt.isoformat())
+                        map_path = os.path.join(obj['relative_path'], file_map)
+
+                        if not os.path.exists(map_path):
+                            map_path = None
+
+                        occ, created = Occultation.objects.update_or_create(
+                            asteroid=asteroid,
+                            date_time=row['occultation_date'],
+                            defaults={
+                                'ra_star_candidate': row['ra_star_candidate'],
+                                'dec_star_candidate': row['dec_star_candidate'],
+                                'ra_target': row['ra_object'],
+                                'dec_target': row['dec_object'],
+                                'closest_approach': row['ca'],
+                                'position_angle': row['pa'],
+                                'velocity': row['vel'],
+                                'delta': row['delta'],
+                                'g': row['g'],
+                                'j': row['j'],
+                                'h': row['h'],
+                                'k': row['k'],
+                                'long': row['long'],
+                                'loc_t': row['loc_t'],
+                                'off_ra': row['off_ra'],
+                                'off_dec': row['off_de'],
+                                'proper_motion': row['pm'],
+                                'ct': row['ct'],
+                                'multiplicity_flag': row['f'],
+                                'e_ra': row['e_ra'],
+                                'e_dec': row['e_de'],
+                                'pmra': row['pmra'],
+                                'pmdec': row['pmde'],
+                                'file_path': map_path
+                            }
+                        )
+                        occ.save()
+
 
             self.logger.info("Registered Object %s %s" % (obj.get("name"), l_created))
 

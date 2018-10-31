@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import PredictRun, PredictAsteroid, PredictInput, PredictOutput, LeapSecond, BspPlanetary
+from .models import *
 from tno.models import Proccess, CustomList, Catalog
 from orbit.models import OrbitRun
 import humanize
@@ -212,6 +212,48 @@ class PredictOutputSerializer(serializers.ModelSerializer):
             'file_type',
             'file_path',
             'h_size'
+        )
+
+    def get_h_size(self, obj):
+        try:
+            return humanize.naturalsize(obj.file_size)
+        except:
+            return None
+
+class OccultationSerializer(serializers.ModelSerializer):
+    asteroid = serializers.PrimaryKeyRelatedField(
+        queryset=PredictAsteroid.objects.all(), many=False)
+
+    class Meta:
+        model = Occultation
+        fields = (
+            'id',
+            'asteroid',
+            'date_time',
+            'ra_star_candidate',
+            'dec_star_candidate',
+            'ra_target',
+            'dec_target',
+            'closest_approach',
+            'position_angle',
+            'velocity',
+            'delta',
+            'g',
+            'j',
+            'h',
+            'k',
+            'long',
+            'loc_t',
+            'off_ra',
+            'off_dec',
+            'proper_motion',
+            'ct',
+            'multiplicity_flag',
+            'e_ra',
+            'e_dec',
+            'pmra',
+            'pmdec',
+            'file_path'
         )
 
     def get_h_size(self, obj):
