@@ -139,23 +139,23 @@ class AsteroidList extends Component {
     let btn_view = null;
     let btn_log = null;
 
-      btn_view = (
-        <Button
-          type="button"
-          icon="fa fa-search"
-          className="ui-button-info"
-          title="View"
-          onClick={() => this.onViewAsteroid(asteroid_id)}
-        />
-      );
-      btn_log = (
-        <Button
-          type="button"
-          icon="fa fa-file-text-o"
-          className="ui-button-warning"
-          title="Log"
-        />
-      );
+    btn_view = (
+      <Button
+        type="button"
+        icon="fa fa-search"
+        className="ui-button-info"
+        title="View"
+        onClick={() => this.onViewAsteroid(asteroid_id)}
+      />
+    );
+    btn_log = (
+      <Button
+        type="button"
+        icon="fa fa-file-text-o"
+        className="ui-button-warning"
+        title="Log"
+      />
+    );
 
     return (
       <div>
@@ -200,7 +200,8 @@ class AsteroidList extends Component {
   };
 
   render() {
-    console.log("Esse aqui",this.state.data);
+    // console.log('Esse aqui', this.state.data);
+
     const columns = this.columns.map((col, i) => {
       return (
         <Column

@@ -3751,7 +3751,7 @@ body > .navbar-collapse[data-color="purple"]:after {
     grid-gap: 0.75rem;
     grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
     grid-template-rows: auto;
-    grid-template-areas: "list_predict_occult stats_predict_occult" "exec_predict_occult exec_predict_occult" "table_predict_occult table_predict_occult"; }
+    grid-template-areas: "navigation_predict_occult navigation_predict_occult" "list_predict_occult stats_predict_occult" "exec_predict_occult exec_predict_occult" "table_predict_occult table_predict_occult"; }
   .template-predict-panel {
     grid-gap: 0.75rem;
     grid-template-columns: repeat(2, minmax(12.5rem, 1fr));

@@ -15,7 +15,6 @@ import { FormValidation } from 'components/FormValidation/FormValidation.jsx';
 // APIs
 import OrbitApi from '../RefineOrbit/OrbitApi';
 import PredictionApi from './PredictionApi';
-import { FormValidation } from '../../components/FormValidation/FormValidation';
 
 export class PredictionSubmit extends Component {
   state = this.initialState;

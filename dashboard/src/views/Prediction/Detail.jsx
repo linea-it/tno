@@ -9,10 +9,12 @@ import OrbitApi from 'views/Prediction/PredictionApi';
 import { withRouter } from 'react-router-dom';
 import AsteroidList from 'views/Prediction/AsteroidList';
 import PropTypes from 'prop-types';
-import DonutStats from 'components/Statistics/DonutStats.jsx'
+import DonutStats from 'components/Statistics/DonutStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import StepStats from 'components/Statistics/StepStats.jsx';
+// import { Toolbar } from 'primereact/toolbar';
+import { Button } from 'primereact/button';
 
 class PredictionDetail extends Component {
   state = this.initialState;
@@ -61,10 +63,27 @@ class PredictionDetail extends Component {
       // }
     });
   }
+  onClickBackToPredictRun = () => {
+    const history = this.props.history;
+    history.push(`/prediction/`);
+  };
 
   onViewAsteroid = asteroid_id => {
     const history = this.props.history;
     history.push(`/predict_asteroid/${asteroid_id}`);
+  };
+  create_nav_bar = () => {
+    return (
+      // <Toolbar>
+      <div className="ui-toolbar">
+        <Button
+          label="Back to Predict Run"
+          icon="fa fa-undo"
+          onClick={() => this.onClickBackToPredictRun()}
+        />
+      </div>
+      // </Toolbar>
+    );
   };
 
   render() {
@@ -82,8 +101,6 @@ class PredictionDetail extends Component {
       { name: 'Execution', value: data.h_execution_time },
       { name: 'Asteroids', value: data.count_objects },
     ];
-
-  
 
     // const executo_time = [
     //   {
@@ -157,52 +174,52 @@ class PredictionDetail extends Component {
 
     return (
       <div className="grid template-predict-occult">
-          <PanelCostumize
-            title="Execution of execution"
-            className="list_predict_occult"
-            content={
-              <ListStats
+        <div className="navigation_predict_occult">{this.create_nav_bar()}</div>
+
+        <PanelCostumize
+          title="Execution of execution"
+          className="list_predict_occult"
+          content={
+            <ListStats
               Badge="STATUS"
               title={`Prediction Occultation - ${data.id}`}
               data={stats}
             />
-            } 
-          />
+          }
+        />
 
-           <PanelCostumize
-            title="Execution of execution"
-            className="stats_predict_occult"
-            content={
-              <DonutStats
-                subTitle="Statistics of executation"
-                data={stats_status}
-                fill={colors}
-              />
-            } 
-          />
+        <PanelCostumize
+          title="Execution of execution"
+          className="stats_predict_occult"
+          content={
+            <DonutStats
+              subTitle="Statistics of executation"
+              data={stats_status}
+              fill={colors}
+            />
+          }
+        />
 
-           <PanelCostumize
-            title="Execution of execution"
-            noHeader={true}
-            className="exec_predict_occult"
-            content={
-              <StepStats title="My Stats" info={executo_time} />
-            } 
-          />
+        <PanelCostumize
+          title="Execution of execution"
+          noHeader={true}
+          className="exec_predict_occult"
+          content={<StepStats title="My Stats" info={executo_time} />}
+        />
 
-           <PanelCostumize
-            title="Execution of execution"
-            className="table_predict_occult"
-            content={
-              <AsteroidList
+        <PanelCostumize
+          title="Execution of execution"
+          className="table_predict_occult"
+          content={
+            <AsteroidList
               predict_run={this.state.id}
               // predict_run={this.state.data.id}
               view_asteroid={this.onViewAsteroid}
             />
-            } 
-          />
-    
-          {/* <div className="ui-g-4 ui-md-4">
+          }
+        />
+
+        {/* <div className="ui-g-4 ui-md-4">
               <Card title="" subTitle="">
                 <RefineOrbitTimeProfile data={this.state.time_profile} />
               </Card>
