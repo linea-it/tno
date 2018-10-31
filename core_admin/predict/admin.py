@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PredictRun, PredictAsteroid, PredictInput, PredictOutput, LeapSecond, BspPlanetary
+from .models import PredictRun, PredictAsteroid, PredictInput, PredictOutput, LeapSecond, BspPlanetary, Occultation
 
 
 # Register your models here.
@@ -32,3 +32,9 @@ class LeapSecondAdmin(admin.ModelAdmin):
 class BspPlanetaryAdmin(admin.ModelAdmin):
     list_display = ('name', 'display_name', 'url', 'upload',)
     search_fields = ('name', 'display_name')
+
+@admin.register(Occultation)
+class OccultationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'asteroid', 'date_time', 'ra_star_candidate', 'dec_star_candidate', 'ra_target', 'dec_target',)
+    search_fields = ('asteroid', 'date_time', )
+

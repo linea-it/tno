@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import PredictRun, PredictAsteroid, PredictInput, PredictOutput, LeapSecond, BspPlanetary
+from .models import *
 from .serializers import *
 
 
@@ -40,6 +40,13 @@ class PredictOutputViewSet(viewsets.ModelViewSet):
     filter_fields = ('id', 'asteroid', 'type', 'filename',)
     search_fields = ('id', 'type', 'filename',)
     ordering = ('filename',)
+
+class OccultationViewSet(viewsets.ModelViewSet):
+    queryset = Occultation.objects.all()
+    serializer_class = OccultationSerializer
+    filter_fields = ('id', 'asteroid', 'date_time', )
+    search_fields = ('id', 'asteroid', 'date_time',)
+    ordering = ('-date_time',)
 
 
 class LeapSecondsViewSet(viewsets.ModelViewSet):

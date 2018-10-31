@@ -45,6 +45,7 @@ router.register(r'predict_run', PredictRunViewSet)
 router.register(r'predict_asteroid', PredictAsteroidViewSet)
 router.register(r'predict_input', PredictInputViewSet)
 router.register(r'predict_output', PredictOutputViewSet)
+router.register(r'occultation', OccultationViewSet)
 router.register(r'leap_seconds', LeapSecondsViewSet)
 router.register(r'bsp_planetary', BspPlanetaryViewSet)
 
