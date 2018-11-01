@@ -34,6 +34,10 @@ class PredictionApi {
     return axios.get(`${this.api}/orbit_run/?status=success`);
   };
 
+  getOccultation = () => {
+    return axios.get(`${this.api}/occultation/`);
+  };
+
   getAsteroidInputs = ({ id }) => {
     const params = {
       asteroid: id,
