@@ -34,19 +34,6 @@ class PredictionApi {
     return axios.get(`${this.api}/orbit_run/?status=success`);
   };
 
-  getOccultation = () => {
-    return axios.get(`${this.api}/occultation/`);
-  };
-
-  getAsteroidInputs = ({ id }) => {
-    const params = {
-      asteroid: id,
-    };
-    return axios.get(`${this.api}/predict_input/`, {
-      params: params,
-    });
-  };
-
   getCatalogs = () => {
     return axios.get(`${this.api}/catalog/`);
   };
@@ -89,15 +76,6 @@ class PredictionApi {
   //     status: 'pending',
   //   });
 
-  getAsteroidFiles = ({ id }) => {
-    const params = {
-      asteroid: id,
-    };
-    return axios.get(`${this.api}/predict_output/`, {
-      params: params,
-    });
-  };
-
   getAsteroids = ({
     page,
     sizePerPage,
@@ -120,6 +98,17 @@ class PredictionApi {
     });
   };
 
+  getAsteroidById = ({ id }) =>
+    axios.patch(`${this.api}/predict_asteroid/${id}/`);
+
+  // TODO
+  // getAsteroidNeighbors = ({ asteroid_id }) => {
+  //   const params = { asteroid_id: asteroid_id };
+  //   return axios.get(`${this.api}/refined_asteroid/get_neighbors/`, {
+  //     params: params,
+  //   });
+  // };
+
   getAsteroidInputs = ({ id }) => {
     const params = {
       asteroid: id,
@@ -129,8 +118,23 @@ class PredictionApi {
     });
   };
 
-  getAsteroidById = ({ id }) =>
-    axios.patch(`${this.api}/predict_asteroid/${id}/`);
+  getAsteroidOutputs = ({ id }) => {
+    const params = {
+      asteroid: id,
+    };
+    return axios.get(`${this.api}/predict_output/`, {
+      params: params,
+    });
+  };
+
+  getOccultations = ({ id }) => {
+    const params = {
+      asteroid: id,
+    };
+    return axios.get(`${this.api}/occultation/`, {
+      params: params,
+    });
+  };
 }
 
 export default PredictionApi;

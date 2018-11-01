@@ -4,7 +4,9 @@ from tno.models import Proccess, CustomList, Catalog
 from orbit.models import OrbitRun
 import humanize
 from django.utils import timezone
-
+from django.conf import settings
+import urllib.parse
+from datetime import datetime
 class PredictRunSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
 
@@ -224,6 +226,10 @@ class OccultationSerializer(serializers.ModelSerializer):
     asteroid = serializers.PrimaryKeyRelatedField(
         queryset=PredictAsteroid.objects.all(), many=False)
 
+    date_time = serializers.SerializerMethodField()
+    src = serializers.SerializerMethodField()
+    already_happened = serializers.SerializerMethodField()
+
     class Meta:
         model = Occultation
         fields = (
@@ -253,15 +259,27 @@ class OccultationSerializer(serializers.ModelSerializer):
             'e_dec',
             'pmra',
             'pmdec',
-            'file_path'
+            'src',
+            'already_happened'
         )
 
-    def get_h_size(self, obj):
+    def get_date_time(self, obj):
         try:
-            return humanize.naturalsize(obj.file_size)
+            return datetime.strftime(obj.date_time, "%Y-%m-%d %H:%M:%S")
         except:
             return None
 
+    def get_src(self, obj):
+        try:
+            return urllib.parse.urljoin(settings.MEDIA_URL, obj.file_path.strip('/'))
+        except:
+            return None
+    
+    def get_already_happened(self, obj):
+        a = obj.date_time
+        b = timezone.now()
+        c = (a < b)
+        return c
 
 class LeapSecondsSerializer(serializers.ModelSerializer):
 
