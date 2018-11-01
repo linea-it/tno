@@ -46,7 +46,7 @@ class OccultationViewSet(viewsets.ModelViewSet):
     serializer_class = OccultationSerializer
     filter_fields = ('id', 'asteroid', 'date_time', )
     search_fields = ('id', 'asteroid', 'date_time',)
-    ordering = ('-date_time',)
+    ordering = ('date_time',)
 
 
 class LeapSecondsViewSet(viewsets.ModelViewSet):

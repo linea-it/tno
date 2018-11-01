@@ -9,8 +9,8 @@ import 'primeicons/primeicons.css';
 import PredictionApi from './PredictionApi';
 // interface components
 import { Card } from 'primereact/card';
-// import Content from 'components/CardContent/CardContent.jsx';
-// import Lightbox from 'react-images';
+
+import Lightbox from 'react-images';
 import { TreeTable } from 'primereact/treetable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -18,7 +18,7 @@ import { Toolbar } from 'primereact/toolbar';
 import { DataTable } from 'primereact/datatable';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
-// import { Row } from 'primereact/row';
+
 class AsteroidDetailPrediction extends Component {
   state = this.initialState;
   api = new PredictionApi();
@@ -33,10 +33,9 @@ class AsteroidDetailPrediction extends Component {
       id: 0,
       asteroid: {},
       inputs: [],
-      occultation: [],
-      files: [],
+      occultations: [],
+      outputs: [],
       images: [],
-      tree_data: [],
       selected2: '',
       lightboxIsOpen: false,
       currentImage: 0,
@@ -47,39 +46,6 @@ class AsteroidDetailPrediction extends Component {
     };
   }
 
-  input_columns = [
-    {
-      field: 'asteroid',
-      header: 'asteroid',
-      sortable: true,
-    },
-    {
-      field: 'input_type',
-      header: 'Input',
-      sortable: true,
-    },
-    {
-      field: 'filename',
-      header: 'Filename',
-      sortable: true,
-    },
-    {
-      field: 'file_size',
-      header: 'File size',
-      sortable: true,
-    },
-    {
-      field: 'h_size',
-      header: 'h_size',
-      sortable: true,
-    },
-    {
-      field: 'file_path',
-      header: 'Path',
-      sortable: true,
-    },
-  ];
-
   componentDidMount() {
     const {
       match: { params },
@@ -87,72 +53,88 @@ class AsteroidDetailPrediction extends Component {
 
     const asteroid_id = params.id;
 
-    this.api.getOccultation().then(res => {
-      const occultation = res.data.results;
-      this.setState({
-        occultation: occultation,
-      });
-    });
-
     this.api.getAsteroidById({ id: asteroid_id }).then(res => {
       const asteroid = res.data;
 
       if (asteroid.id) {
-        // this.setState({
-        //   id: parseInt(params.id, 10),
-        //   asteroid: asteroid,
-        // });
-        //Recuperar os arquivos de resultados
-        this.api.getAsteroidFiles({ id: asteroid_id }).then(res => {
-          const files = res.data.results;
+        this.getinputs(asteroid);
 
-          // Lista so com os arquivos que sao imagens
-          const excluded_images = ['diff_bsp-ni.png', 'omc_sep.png'];
-          const images = [];
+        this.getOutputs(asteroid);
 
-          const childrens = [];
+        this.getOccultations(asteroid);
 
-          files.forEach(e => {
-            if (
-              e.file_type === '.png' &&
-              !excluded_images.includes(e.filename)
-            ) {
-              // O source deve apontar para o backend
-              e.src = this.api.api + e.src;
-              images.push(e);
-            }
+        // this.getNeighbors(asteroid);
 
-            childrens.push({
-              data: e,
-              expanded: true,
-            });
-          });
-
-          //Estrutura dos arquivos em forma de tree
-          const tree_data = [
-            {
-              data: {
-                filename: asteroid.name,
-              },
-              children: childrens,
-              expanded: true,
-            },
-          ];
-
-          this.setState(
-            {
-              id: parseInt(params.id, 10),
-              asteroid: asteroid,
-              files: files,
-              images: images,
-              tree_data: tree_data,
-            }
-            // this.getNeighbors(asteroid_id)
-          );
+        let title = asteroid.name;
+        if (asteroid.number && asteroid.number !== '-') {
+          title = title + ' - ' + asteroid.number;
+        }
+        this.setState({
+          asteroid: asteroid,
+          title: title,
         });
       }
     });
   }
+
+  getinputs = asteroid => {
+    // Recuperar os arquivos de entrada
+    this.api.getAsteroidInputs({ id: asteroid.id }).then(res => {
+      const inputs = res.data.results;
+
+      this.setState({
+        inputs: inputs,
+      });
+    });
+  };
+
+  getOutputs = asteroid => {
+    //Recuperar os arquivos de resultados
+    this.api.getAsteroidOutputs({ id: asteroid.id }).then(res => {
+      const files = res.data.results;
+      const childrens = [];
+
+      files.forEach(e => {
+        childrens.push({
+          data: e,
+          expanded: true,
+        });
+      });
+
+      //Estrutura dos arquivos em forma de tree
+      const tree_data = [
+        {
+          data: {
+            filename: asteroid.name,
+          },
+          children: childrens,
+          expanded: true,
+        },
+      ];
+
+      this.setState({
+        outputs: tree_data,
+      });
+    });
+  };
+
+  getOccultations = asteroid => {
+    this.api.getOccultations({ id: asteroid.id }).then(res => {
+      const data = res.data.results;
+
+      data.map((row, i) => {
+        const src = this.api.api + row.src;
+        row.src = src;
+        return row;
+      });
+
+      this.setState({
+        occultations: data,
+        count_occultations: res.data.count,
+        images: data,
+      });
+    });
+  };
 
   getNeighbors = asteroid_id => {
     this.api.getAsteroidNeighbors({ asteroid_id }).then(res => {
@@ -206,34 +188,17 @@ class AsteroidDetailPrediction extends Component {
     this.setState({ visible: false });
   };
 
-  onClickDownload = asteroid_id => {
-    this.api.getAsteroidDownloadLink({ asteroid_id }).then(res => {
-      const data = res.data;
-      if (data.success) {
-        const file_src = this.api.api + data.src;
-        window.open(file_src);
-      } else {
-        // TODO: Implementar notificacao de erro.
-      }
-    });
-  };
 
   create_nav_bar = () => {
     return (
       <Toolbar>
         <div className="ui-toolbar-group-left">
           <Button
-            label="Back to Refine Orbit"
+            label="Back"
             icon="fa fa-undo"
             onClick={() =>
-              this.onClickBackToRefine(this.state.asteroid.predict_run)
+              this.onClickBack(this.state.asteroid.predict_run)
             }
-          />
-          <Button
-            label="Download"
-            icon="pi pi-cloud-download"
-            className="ui-button-info"
-            onClick={() => this.onClickDownload(this.state.asteroid.id)}
           />
         </div>
 
@@ -256,7 +221,7 @@ class AsteroidDetailPrediction extends Component {
     );
   };
 
-  onClickBackToRefine = orbit_run => {
+  onClickBack = orbit_run => {
     const history = this.props.history;
     history.push({ pathname: `/prediction_detail/${orbit_run}` });
   };
@@ -274,116 +239,145 @@ class AsteroidDetailPrediction extends Component {
     window.location.reload();
   };
 
-  render() {
-    const asteroid = this.state.asteroid;
-    console.log(this.state.occultation);
-    const occultation = this.state.occultation;
-
-    // const columns = occultation.map((el, i) => {
-    //   return (columns = [
-    //     { field: occultation[i], header: occultation[i].value },
-    //   ]);
-    // });
-
-    const columns = [
-      { field: 'date', header: 'Date Time' },
-      { field: 'ra_candidate', header: 'RA Candidate' },
-      { field: 'dec_candidate', header: 'Dec Candidate' },
-      { field: 'ra_target', header: 'RA Target' },
-      { field: 'dec_target', header: 'Dec Target' },
-      { field: 'ca', header: 'C/A' },
-      { field: 'pa', header: 'P/A' },
-      { field: 'g', header: 'G*' },
-      { field: 'j', header: 'J*' },
-      { field: 'H', header: 'H*' },
-      { field: 'K', header: 'K*' },
-    ];
-
+  statsTable = asteroid => {
     const stats_asteroid = [
       { name: 'Asteroid', value: asteroid.name },
       { name: 'Number', value: asteroid.number },
       { name: 'Execution Time', value: asteroid.h_execution_time },
-      { name: 'Size', value: asteroid.h_size },
     ];
 
-    const stats = [
-      { name: 'Date Time', value: asteroid.proccess_displayname },
-      { name: 'Candidate', value: asteroid.h_time },
-      { name: 'Target', value: asteroid.h_execution_time },
-      { name: 'vel', value: asteroid.h_size },
-      { name: 'Delta', value: asteroid.h_size },
-      { name: 'G*', value: asteroid.h_size },
-      { name: 'pmra', value: asteroid.h_size },
-      { name: 'pmde', value: asteroid.h_size },
-    ];
+    return (
+      <ListStats
+        statstext={asteroid.status}
+        status={true}
+        data={stats_asteroid}
+      />
+    );
+  };
 
-    const image = [
+  occultationTable = occultations => {
+    const columns = [
       {
-        src: '',
-        filename: 'earth',
+        field: 'date_time',
+        header: 'Date Time',
+        style: { textAlign: 'center', width: '180px' },
+      },
+      {
+        field: 'ra_star_candidate',
+        header: 'RA Candidate',
+      },
+      { field: 'dec_star_candidate', header: 'Dec Candidate' },
+      { field: 'ra_target', header: 'RA Target' },
+      { field: 'dec_target', header: 'Dec Target' },
+      {
+        field: 'closest_approach',
+        header: 'C/A',
+        style: { textAlign: 'center', width: '80px' },
+      },
+      {
+        field: 'position_angle',
+        header: 'P/A',
+        style: { textAlign: 'center', width: '80px' },
+      },
+      {
+        field: 'g',
+        header: 'G*',
+        style: { textAlign: 'center', width: '60px' },
+      },
+      {
+        field: 'j',
+        header: 'J*',
+        style: { textAlign: 'center', width: '60px' },
+      },
+      {
+        field: 'h',
+        header: 'H*',
+        style: { textAlign: 'center', width: '60px' },
+      },
+      {
+        field: 'k',
+        header: 'K*',
+        style: { textAlign: 'center', width: '60px' },
       },
     ];
-    // const headerGroup = (
-    //   <ColumnGroup>
-    //     <Row>
-    //       <Column header="Brand" rowSpan={3} />
-    //       <Column header="Sale Rate" colSpan={4} />
-    //     </Row>
-    //     <Row>
-    //       <Column header="Sales" colSpan={2} />
-    //       <Column header="Profits" colSpan={2} />
-    //     </Row>
-    //     <Row>
-    //       <Column header="Last Year" />
-    //       <Column header="This Year" />
-    //       <Column header="Last Year" />
-    //       <Column header="This Year" />
-    //     </Row>
-    //   </ColumnGroup>
-    // );
 
-    const dynamicColumns = occultation.map((col, i) => {
-      return <Column key={col.field} field={col.field} header={col.header} />;
-    });
-
-    const map = columns.map((col, i) => {
+    const dynamicColumns = columns.map((col, i) => {
       return (
-        <div key={i}>
-          <PanelCostumize
-            noHeader={true}
-            content={
-              <div className="ui-g">
-                <div className="ui-md-6">
-                  {image.map((e, i) => {
-                    return (
-                      <div className="plot_predict_earth" key={i}>
-                        {/* <img id={e.filename} src={map_010} alt={e.filename} /> */}
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="ui-md-6">
-                  <ListStats
-                    title={title}
-                    statstext={this.state.asteroid.status}
-                    status={false}
-                    data={stats}
-                  />
-                </div>
-              </div>
-            }
-          />
-          <br />
-        </div>
+        <Column
+          key={col.field}
+          field={col.field}
+          header={col.header}
+          style={col.style}
+        />
       );
     });
 
-    let title = asteroid.name;
-    if (asteroid.number && asteroid.number !== '-') {
-      title = title + ' - ' + asteroid.number;
-    }
+    return (
+      <DataTable
+        value={occultations}
+        rowClassName={rowData => {
+          const already_happened = rowData.already_happened;
+          return { 'text-indianred': already_happened === true };
+        }}
+      >
+        {dynamicColumns}
+      </DataTable>
+    );
+  };
 
-    const inp_columns = this.input_columns.map((col, i) => {
+  occultationsCards = occultations => {
+    const cards = occultations.map((occ, i) => {
+      return (
+        <Card key={i} subTitle="">
+          <div className="ui-g">
+            {/* MAP */}
+            <div className="ui-md-6">
+              <img
+                key={i}
+                id={occ.filename}
+                onClick={this.Slideshow}
+                width="100%"
+                src={occ.src}
+                alt={occ.filename}
+              />
+            </div>
+            {/* Atributos */}
+            <div className="ui-md-6">
+              
+            </div>
+          </div>
+        </Card>
+      );
+    });
+
+    return <div>{cards}</div>;
+  };
+
+  inputsTable = inputs => {
+    const input_columns = [
+      {
+        field: 'input_type',
+        header: 'Input',
+        sortable: true,
+      },
+      {
+        field: 'filename',
+        header: 'Filename',
+        sortable: true,
+      },
+      {
+        field: 'file_size',
+        header: 'File size',
+        sortable: true,
+      },
+      {
+        field: 'h_size',
+        header: 'h_size',
+        sortable: true,
+      },
+    ];
+
+    const inp_columns = input_columns.map((col, i) => {
       return (
         <Column
           key={i}
@@ -397,37 +391,54 @@ class AsteroidDetailPrediction extends Component {
     });
 
     return (
+      <DataTable value={inputs} sortField={'input_type'} sortOrder={1}>
+        {inp_columns}
+      </DataTable>
+    );
+  };
+
+  outputsTable = outputs => {
+    return (
+      <TreeTable value={outputs} sortField={'filename'}>
+        <Column field="filename" header="Name" sortable={true} />
+        <Column
+          field="h_size"
+          header="Size"
+          sortable={true}
+          style={{ width: 100 }}
+        />
+        <Column
+          field="file_type"
+          header="Type"
+          style={{ textAlign: 'center', width: 80 }}
+          sortable={true}
+        />
+      </TreeTable>
+    );
+  };
+
+  render() {
+    const asteroid = this.state.asteroid;
+
+    return (
       <div className="content">
         {this.create_nav_bar()}
         <div className="ui-g">
-          <div className="ui-md-12">
+          <div className="ui-md-4">
             <PanelCostumize
-              title="Placeholder"
-              content={
-                <ListStats
-                  title={title}
-                  statstext={asteroid.status}
-                  status={true}
-                  data={stats_asteroid}
-                />
-              }
+              title={this.state.title}
+              content={this.statsTable(this.state.asteroid)}
             />
           </div>
         </div>
         <div className="ui-md-12">
-          <PanelCostumize
-            title="Placeholder"
-            content={
-              <DataTable
-                value={this.state.asteroid}
-                // headerColumnGroup={headerGroup}
-              >
-                {dynamicColumns}
-              </DataTable>
-            }
-          />
+          <Card title="Occultations" subTitle="">
+            {this.occultationTable(this.state.occultations)}
+          </Card>
         </div>
-        <div className="ui-md-12">{map}</div>
+        <div className="ui-md-12">
+          {this.occultationsCards(this.state.occultations)}
+        </div>
 
         <div />
         <div className="ui-g">
@@ -442,42 +453,26 @@ class AsteroidDetailPrediction extends Component {
             </Card>
           </div>
           <div className="ui-md-6">
-            <Card
-              title="Inputs"
-              subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
-            >
-              <DataTable
-                value={this.state.inputs}
-                sortField={'input_type'}
-                sortOrder={1}
-              >
-                {inp_columns}
-              </DataTable>
+            <Card title="Inputs" subTitle="">
+              {this.inputsTable(this.state.inputs)}
             </Card>
           </div>
           <div className="ui-md-6">
-            <Card
-              title="Output"
-              subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
-            >
-              <TreeTable value={this.state.tree_data} sortField={'filename'}>
-                <Column field="filename" header="Name" sortable={true} />
-                <Column
-                  field="h_size"
-                  header="Size"
-                  sortable={true}
-                  style={{ width: 100 }}
-                />
-                <Column
-                  field="file_type"
-                  header="Type"
-                  style={{ textAlign: 'center', width: 80 }}
-                  sortable={true}
-                />
-              </TreeTable>
+            <Card title="Output" subTitle="">
+              {this.outputsTable(this.state.outputs)}
             </Card>
           </div>
         </div>
+        <Lightbox
+          images={this.state.images}
+          isOpen={this.state.lightboxIsOpen}
+          onClickPrev={this.gotoPrevLightboxImage}
+          onClickNext={this.gotoNextLightboxImage}
+          onClose={this.CloseLightbox}
+          currentImage={this.state.currentImage}
+          onClickImage={this.handleClickImage}
+          onClickThumbnail={this.gotoImage}
+        />
       </div>
     );
   }
