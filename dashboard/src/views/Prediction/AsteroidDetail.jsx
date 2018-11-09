@@ -18,6 +18,9 @@ import { Toolbar } from 'primereact/toolbar';
 import { DataTable } from 'primereact/datatable';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
+import PlotPrediction from './Plot';
+
+import AladinPanel from 'components/Aladin/Panel';
 
 class AsteroidDetailPrediction extends Component {
   state = this.initialState;
@@ -36,6 +39,8 @@ class AsteroidDetailPrediction extends Component {
       occultations: [],
       outputs: [],
       images: [],
+      positions: [],
+      catalog_stars: [],
       selected2: '',
       lightboxIsOpen: false,
       currentImage: 0,
@@ -62,6 +67,8 @@ class AsteroidDetailPrediction extends Component {
         this.getOutputs(asteroid);
 
         this.getOccultations(asteroid);
+
+        this.getCatalogData(asteroid);
 
         // this.getNeighbors(asteroid);
 
@@ -136,6 +143,22 @@ class AsteroidDetailPrediction extends Component {
     });
   };
 
+  getCatalogData = asteroid => {
+    // Get Positions used in Catalog
+    this.api.getCatalogPositions({ id: asteroid.id }).then(res => {
+      const positions = res.data.results;
+
+      // Get Stars in Catalog
+      this.api.getCatalogStars({ id: asteroid.id }).then(res => {
+        const catalog_stars = res.data.results;
+        this.setState({
+          positions: positions,
+          catalog_stars: catalog_stars,
+        });
+      });
+    });
+  };
+
   getNeighbors = asteroid_id => {
     this.api.getAsteroidNeighbors({ asteroid_id }).then(res => {
       const neighbors = res.data;
@@ -188,7 +211,6 @@ class AsteroidDetailPrediction extends Component {
     this.setState({ visible: false });
   };
 
-
   create_nav_bar = () => {
     return (
       <Toolbar>
@@ -196,9 +218,7 @@ class AsteroidDetailPrediction extends Component {
           <Button
             label="Back"
             icon="fa fa-undo"
-            onClick={() =>
-              this.onClickBack(this.state.asteroid.predict_run)
-            }
+            onClick={() => this.onClickBack(this.state.asteroid.predict_run)}
           />
         </div>
 
@@ -244,6 +264,7 @@ class AsteroidDetailPrediction extends Component {
       { name: 'Asteroid', value: asteroid.name },
       { name: 'Number', value: asteroid.number },
       { name: 'Execution Time', value: asteroid.h_execution_time },
+      { name: 'Catalog', value: asteroid.catalog_rows },
     ];
 
     return (
@@ -342,9 +363,7 @@ class AsteroidDetailPrediction extends Component {
               />
             </div>
             {/* Atributos */}
-            <div className="ui-md-6">
-              
-            </div>
+            <div className="ui-md-6" />
           </div>
         </Card>
       );
@@ -397,6 +416,21 @@ class AsteroidDetailPrediction extends Component {
     );
   };
 
+  catalogPlot = (positions, catalog_stars) => {
+    if (positions.length > 0 && catalog_stars.length > 0) {
+      return (
+        <div className="plot_predict_radius">
+          <PlotPrediction
+            positions={this.state.positions}
+            stars={this.state.catalog_stars}
+          />
+        </div>
+      );
+    } else {
+      return <div className="plot_predict_radius" />;
+    }
+  };
+
   outputsTable = outputs => {
     return (
       <TreeTable value={outputs} sortField={'filename'}>
@@ -443,13 +477,8 @@ class AsteroidDetailPrediction extends Component {
         <div />
         <div className="ui-g">
           <div className="ui-md-12">
-            <Card
-              title="Catalog"
-              subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
-            >
-              <div className="plot_predict_radius">
-                {/* <img src={map_010} alt="radius" /> */}
-              </div>
+            <Card title="Catalog" subTitle="">
+              {this.catalogPlot(this.state.positions, this.state.catalog_stars)}
             </Card>
           </div>
           <div className="ui-md-6">

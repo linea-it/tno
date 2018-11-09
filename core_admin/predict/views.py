@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from rest_framework import viewsets
+from rest_framework.decorators import list_route
 from .models import *
 from .serializers import *
-
-
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.response import Response
+from django.conf import settings
+import os
 class PredictRunViewSet(viewsets.ModelViewSet):
     queryset = PredictRun.objects.all()
     serializer_class = PredictRunSerializer
@@ -26,6 +29,99 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
     search_fields = ('id', 'name', 'number',)
     ordering = ('name',)
 
+    @list_route()
+    def catalog_positions(self, request):
+        asteroid_id = request.query_params.get('asteroid', None)
+
+        if asteroid_id is None:
+            return Response({
+                'success': False,
+                'msg': "asteroid parameter is required",
+            })
+        try:
+            data = []
+
+            asteroid = PredictAsteroid.objects.get(pk=int(asteroid_id))
+            
+            input_position = asteroid.input_file.filter(input_type='positions').first()
+
+            if input_position is None or not os.path.exists(input_position.file_path):
+                return Response({
+                    'success': False,
+                    'msg': "File not found",
+                })                
+
+            data = self.read_positions(input_position.file_path)
+
+
+            return Response({
+                'success': True,
+                'results': data,
+                'count': len(data)
+            })
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "Record not found",
+            })
+
+    def read_positions(self, filename):
+        positions = []
+
+        with open(filename, 'r') as fp:
+            for line in fp:
+                try:
+                    line.strip()
+                    a = line.split()
+                    ra = float(a[0].strip())
+                    dec = float(a[1].strip())
+                    positions.append([ra, dec])
+                except Exception as e:
+                    raise e
+
+        return positions
+
+    @list_route()
+    def catalog_stars(self, request):
+        asteroid_id = request.query_params.get('asteroid', None)
+
+        if asteroid_id is None:
+            return Response({
+                'success': False,
+                'msg': "asteroid parameter is required",
+            })
+        try:
+            data = []
+
+            asteroid = PredictAsteroid.objects.get(pk=int(asteroid_id))
+            
+            catalog = asteroid.predict_result.filter(type='catalog_csv').first()
+
+            if catalog is None or not os.path.exists(catalog.file_path):
+                return Response({
+                    'success': False,
+                    'msg': "File not found",
+                })                
+
+            data = []
+            with open(catalog.file_path, 'r') as fp:
+                lines = fp.readlines()
+                for line in lines:
+                    data.append(line.strip().split(";"))
+
+
+            return Response({
+                'success': True,
+                'results': data,
+                'count': len(data)
+            })
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "Record not found",
+            })
 
 class PredictInputViewSet(viewsets.ModelViewSet):
     queryset = PredictInput.objects.all()
