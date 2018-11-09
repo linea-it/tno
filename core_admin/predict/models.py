@@ -341,7 +341,7 @@ class PredictInput(models.Model):
         null=False, blank=False,
         help_text="Description of the input type.",
         choices=(('dates_file', 'Dates'), ('bsp_planetary', 'Planetary Ephemeris'), ('bsp_asteroid', 'Asteroid JPL Ephemeris'),
-                 ('leap_second', 'Leap Second'), ('positions', 'Positions'), ('ephemeris', 'Ephemeris'), ('catalog', 'Catalog'))
+                 ('leap_second', 'Leap Second'), ('positions', 'Positions'), ('ephemeris', 'Ephemeris'), ('catalog', 'Catalog'), )
     )
 
     filename = models.CharField(
@@ -385,7 +385,7 @@ class PredictOutput(models.Model):
 
     type = models.CharField(
         max_length=60,
-        verbose_name='Input Type',
+        verbose_name='Type',
         null=False, blank=False,
         help_text="Description of the result type.",
         choices=(
@@ -393,10 +393,11 @@ class PredictOutput(models.Model):
             ('radec', 'RA Dec'),
             ('positions', 'Positions'),
             ('catalog', 'Catalog'),
-            ('star_catalog_mini', 'Star Catalog Mini'),
-            ('star_catalog_xy', 'Start Catalog XY'),
+            ('catalog_csv', 'Catalog CSV'),
+            ('stars_catalog_mini', 'Star Catalog Mini'),
+            ('stars_catalog_xy', 'Start Catalog XY'),
             ('stars_parameters_of_occultation', 'Start Parameters of Occultation'),
-            ('stars_parameters_of_occultation_table', 'Start Parameters of Occultation Table'),
+            ('stars_parameters_of_occultation_plot', 'Start Parameters of Occultation Table'),
             ('occultation_table', 'Occultation Table CSV')
         )
     )

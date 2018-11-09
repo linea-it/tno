@@ -135,6 +135,25 @@ class PredictionApi {
       params: params,
     });
   };
+
+  getCatalogPositions = ({ id }) => {
+    const params = {
+      asteroid: id,
+    };
+    return axios.get(`${this.api}/predict_asteroid/catalog_positions`, {
+      params: params,
+    });
+  };
+
+  getCatalogStars = ({ id }) => {
+    const params = {
+      asteroid: id,
+    };
+    return axios.get(`${this.api}/predict_asteroid/catalog_stars`, {
+      params: params,
+    });
+  };
+
 }
 
 export default PredictionApi;

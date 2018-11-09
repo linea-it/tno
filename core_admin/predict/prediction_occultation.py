@@ -211,7 +211,8 @@ class PredictionOccultation():
                         "ephemeris": None,
                         "radec": None,
                         "positions": None,
-                        "gaia_catalog": None,
+                        "catalog": None,
+                        "catalog_csv": None,
                         "stars_catalog_mini": None,
                         "stars_catalog_xy": None,
                         "stars_parameters_of_occultation": None,
@@ -774,16 +775,30 @@ class PredictionOccultation():
 
             file_size = os.path.getsize(filename)
 
-            t1 = datetime.now()
-            tdelta = t1 - t0
 
             # Result Catalog Gaia
-            obj["results"]["gaia_catalog"] = dict({
+            obj["results"]["catalog"] = dict({
                 "filename": os.path.basename(filename),
                 "file_size": file_size,
                 "file_path": filename,
                 "file_type": os.path.splitext(filename)[1]
             })
+
+            # Catalog in csv
+            filename_csv = self.write_gaia_catalog_csv(rows, path=obj['relative_path'])
+            file_size_csv = os.path.getsize(filename_csv)
+
+            # Result Catalog Gaia
+            obj["results"]["catalog_csv"] = dict({
+                "filename": os.path.basename(filename_csv),
+                "file_size": file_size_csv,
+                "file_path": filename_csv,
+                "file_type": os.path.splitext(filename_csv)[1]
+            })
+
+
+            t1 = datetime.now()
+            tdelta = t1 - t0
 
             crows = len(rows)
 
@@ -1000,6 +1015,24 @@ class PredictionOccultation():
             fp.close()
 
         return filename
+
+    def write_gaia_catalog_csv(self, rows, path):
+        filename = os.path.join(path, "gaia_catalog.csv")
+        with open(filename, 'w') as csvfile:
+            fieldnames = ['ra', 'dec']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
+            for row in rows:
+                ra = float(row["ra"])
+                ra = "%.9f" % ra
+                
+                dec = "%.9f" % row["dec"]
+
+                writer.writerow({'ra': ra, 'dec': dec})
+
+            csvfile.close()
+
+        return filename
+
 
     def search_candidate_stars(self):
 
@@ -1533,6 +1566,7 @@ class PredictionOccultation():
                     result_file, created = PredictOutput.objects.update_or_create(
                         asteroid=asteroid,
                         filename=result.get("filename"),
+                        type=ftype,
                         defaults={
                             'file_size': result.get("file_size"),
                             'file_type': result.get("file_type"),
@@ -1619,6 +1653,9 @@ class PredictionOccultation():
                         )
                         occ.save()
 
+
+            # TODO Mudar o Status do Asteroid caso nao tenha gerado todos os mapas
+            # Basta contar quantos ocultacoes estao com o campo file_path em branco.
 
             self.logger.info("Registered Object %s %s" % (obj.get("name"), l_created))
 
