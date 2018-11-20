@@ -171,6 +171,9 @@ class FilterObjects(DBBase):
 
             new_tbl = self.get_table(tablename, schema)
 
+            # Total de Objetos unicos na tabela
+            asteroids = self.count_distinct_objects(tablename, schema)
+
             # Total de linhas na nova tabela
             total_count = self.get_count(new_tbl)
 
@@ -191,6 +194,7 @@ class FilterObjects(DBBase):
                 "schema": schema,
                 "sql_content": self.stm_to_str(stm_content, True),
                 "sql_creation": create_stm,
+                "asteroids": asteroids,
                 "rows": total_count,
                 "n_columns": total_columns,
                 "columns": tbl_columns,
