@@ -73,14 +73,29 @@ class PredictionHistory extends Component {
   ];
 
   componentDidMount() {
-    this.fetchData(this.state.page, this.state.sizePerPage);
+    this.fetchData(
+      this.state.page,
+      this.state.sizePerPage
+      // this.state.sortField,
+      // this.state.sortOrder
+    );
   }
 
-  fetchData = ({ page, sizePerPage, sortField, sortOrder }) => {
+  componentWillReceiveProps() {
+    // Atualiza o Conteudo da datagrid toda vez que recebe uma propriedade
+    this.fetchData(
+      this.state.page,
+      this.state.sizePerPage,
+      this.state.sortField,
+      this.state.sortOrder
+    );
+  }
+
+  fetchData = (page, sizePerPage, sortField, sortOrder) => {
     this.setState({ loading: true });
 
     this.api
-      .getPredictionRuns({ page, sizePerPage, sortField, sortOrder })
+      .getPredictionRuns(page, sizePerPage, sortField, sortOrder)
       .then(res => {
         const r = res.data;
 
@@ -257,6 +272,7 @@ class PredictionHistory extends Component {
   };
 
   render() {
+    // window.setInterval(this.reload, 60000);
     const columns = this.columns.map((col, i) => {
       return (
         <Column

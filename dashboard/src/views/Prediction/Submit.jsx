@@ -150,7 +150,7 @@ export class PredictionSubmit extends Component {
     });
   };
 
-  onClick = () => {
+  onClickSubmit = () => {
     if (
       this.state.ephemeris_initial_date === '' ||
       this.state.ephemeris_final_date === ''
@@ -200,6 +200,8 @@ export class PredictionSubmit extends Component {
   onCreateFailure = error => {
     // TODO: Criar uma Notificacao de falha.
     console.log('onCreateFailure(%o)', error);
+    this.setState(this.initialState, this.props.onCreateRun({}));
+
   };
 
   onChangeProcess = e => {
@@ -452,7 +454,7 @@ export class PredictionSubmit extends Component {
         <Button
           label="Submit"
           disabled={!this.state.actionButton}
-          onClick={this.onClick}
+          onClick={this.onClickSubmit}
           className=" button-TNO button-prediction"
         />
       </div>
