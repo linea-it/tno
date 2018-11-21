@@ -6,6 +6,8 @@ import logging
 from orbit.refine_orbit import RefineOrbit, RefineOrbitDB
 import shutil
 from datetime import datetime
+import threading
+
 @receiver(post_save, sender=OrbitRun)
 def on_create_orbit_run(sender, instance, signal, created, **kwargs):
     """
@@ -16,7 +18,10 @@ def on_create_orbit_run(sender, instance, signal, created, **kwargs):
     if created:
         logger.info("Was Created a new record of Refine Orbit Run")
 
-        RefineOrbit().startRefineOrbitRun(instance)
+        # Start Thread to run.
+        thread = threading.Thread(target=run_refine, args=(instance.id, ))
+        thread.daemon = True 
+        thread.start()   
 
     else:
         if instance.status == "pending":
@@ -29,6 +34,13 @@ def on_create_orbit_run(sender, instance, signal, created, **kwargs):
                 shutil.rmtree(instance.relative_path)
 
 
-            RefineOrbit().startRefineOrbitRun(instance)
+            # Start Thread to run.
+            thread = threading.Thread(target=run_refine, args=(instance.id, ))
+            thread.daemon = True 
+            thread.start()   
 
+def run_refine(run_id):
+    logger = logging.getLogger("refine_orbit")
+    logger.info("Starting a thread to execute the refine orbit ID [%s]" % run_id)
 
+    RefineOrbit().startRefineOrbitRun(run_id)

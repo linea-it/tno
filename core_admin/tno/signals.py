@@ -45,6 +45,7 @@ def create_custom_list_table(sender, instance, signal, created, **kwargs):
             instance.creation_time = result.get('creation_time')
             instance.sql = result.get('sql_content')
             instance.sql_creation = result.get('sql_creation')
+            instance.asteroids = result.get('asteroids')
             instance.rows = result.get('rows')
             instance.n_columns = result.get('n_columns')
             instance.columns = ';'.join(result.get('columns'))

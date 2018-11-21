@@ -74,10 +74,11 @@ class RefineOrbitSubmit extends Component {
         proccess: record.proccess,
       })
       .then(res => {
-        console.log(res);
         this.onCreateSuccess(res.data);
       })
-      .catch(this.onCreateFailure('Deu ruim'));
+      .catch(error => {
+        this.onCreateFailure(error);
+      });
   };
 
   onCreateSuccess = record => {

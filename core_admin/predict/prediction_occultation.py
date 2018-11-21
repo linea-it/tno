@@ -14,7 +14,7 @@ import json
 from statistics import mean
 from tno.db import CatalogDB
 from sqlalchemy.sql import text
-from .models import PredictAsteroid, PredictInput, PredictOutput, Occultation
+from .models import PredictRun, PredictAsteroid, PredictInput, PredictOutput, Occultation
 import csv
 
 class PredictionOccultation():
@@ -67,8 +67,11 @@ class PredictionOccultation():
         # Lista de tempo de execucao de cada asteroid incluindo o tempo de espera.
         self.execution_time = []
 
-    def start_predict_occultation(self, instance):
-        self.logger.debug("PREDICT RUN: %s" % instance.id)
+    def start_predict_occultation(self, run_id):
+
+        self.logger.debug("PREDICT RUN: %s" % run_id)
+
+        instance = PredictRun.objects.get(pk=run_id)
 
         start_time = datetime.now()
         self.results["start_time"] = start_time.replace(microsecond=0).isoformat(' ')
@@ -99,6 +102,7 @@ class PredictionOccultation():
         self.results["input_list"] = self.input_list.id
 
         instance.status = 'running'
+        instance.count_objects = self.input_list.asteroids
         instance.save()
         self.logger.info("Status changed to Running")
 
@@ -292,9 +296,14 @@ class PredictionOccultation():
         except Exception as e:
             self.logger.error(e)
             self.logger.error("Failed to execute prediction occultation")
-            # TODO chamar uma funcao para alterar o status para error.
+
+            finish_time = datetime.now()
+            tdelta = finish_time - start_time
 
             instance.status = "failure"
+            instance.execution_time = tdelta
+            instance.save()
+
             raise(e)
 
 

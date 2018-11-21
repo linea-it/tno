@@ -166,13 +166,14 @@ class PredictionHistory extends Component {
     ];
 
     return status.map((el, i) => {
-      if (row == el.state) {
+      if (row === el.state) {
         return (
           <div key={i} className={`status_table ${el.state}`}>
             {row}
           </div>
         );
       }
+      return;
     });
   };
 

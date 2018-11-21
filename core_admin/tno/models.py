@@ -396,6 +396,9 @@ class CustomList(models.Model):
         max_length=128,
         verbose_name='Tablename', help_text='Tablename without schema')
 
+    asteroids = models.PositiveIntegerField(
+        verbose_name='Num of Asteroids', null=True, blank=True)
+
     rows = models.PositiveIntegerField(
         verbose_name='Num of rows', null=True, blank=True)
 

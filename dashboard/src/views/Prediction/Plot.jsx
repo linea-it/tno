@@ -19,12 +19,7 @@ class PlotPrediction extends Component {
     const positions = this.props.positions;
     const radius = [];
 
-    const radiusx0 = [];
-    const radiusy0 = [];
-    const radiusx1 = [];
-    const radiusy1 = [];
-
-    positions.map((row, i) => {
+    positions.map((row) => {
       if (row) {
         // pontos
         positions_ra.push(row[0]);
@@ -46,14 +41,16 @@ class PlotPrediction extends Component {
           },
         });
       }
+      return;
     });
 
     const stars = this.props.stars;
-    stars.map((row, i) => {
+    stars.map((row) => {
       if (row) {
         stars_ra.push(row[0]);
         stars_dec.push(row[1]);
       }
+      return;
     });
 
     return (

@@ -17,7 +17,7 @@ import docker
 from django.conf import settings
 import json
 from statistics import mean
-from .models import RefinedAsteroid, RefinedOrbit, RefinedOrbitInput
+from .models import OrbitRun, RefinedAsteroid, RefinedOrbit, RefinedOrbitInput
 from common.docker import calculate_cpu_percent2, calculate_cpu_percent, calculate_network_bytes, calculate_blkio_bytes, \
     get_container_stats
 import json
@@ -58,8 +58,10 @@ class RefineOrbit():
 
         self.execution_time = []
 
-    def startRefineOrbitRun(self, instance):
-        self.logger.debug("ORBIT RUN: %s" % instance.id)
+    def startRefineOrbitRun(self, run_id):
+        self.logger.debug("ORBIT RUN: %s" % run_id)
+
+        instance = OrbitRun.objects.get(pk=run_id)
 
         start_time = datetime.now()
         self.results["start_time"] = start_time.replace(microsecond=0).isoformat(' ')
