@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import RefineOrbitSubmit from './Submit';
-import RefineOrbitRunning from './Running';
 import RefineOrbitHistory from './History';
 import PropTypes from 'prop-types';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
@@ -33,13 +32,6 @@ class RefineOrbitPanel extends Component {
           title="Execute"
           subTitle="Descrição sobre execução"
           content={<RefineOrbitSubmit onCreateRun={this.onCreateRun} />}
-        />
-
-        <PanelCostumize
-          className="running_refine"
-          title="Running"
-          subTitle="Monitor the rounds NIMA"
-          content={<RefineOrbitRunning record={record} />}
         />
         <PanelCostumize
           className="history_refine"

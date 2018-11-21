@@ -14,7 +14,7 @@ import json
 from statistics import mean
 from tno.db import CatalogDB
 from sqlalchemy.sql import text
-from .models import PredictAsteroid, PredictInput, PredictOutput, Occultation
+from .models import PredictRun, PredictAsteroid, PredictInput, PredictOutput, Occultation
 import csv
 
 class PredictionOccultation():
@@ -67,8 +67,11 @@ class PredictionOccultation():
         # Lista de tempo de execucao de cada asteroid incluindo o tempo de espera.
         self.execution_time = []
 
-    def start_predict_occultation(self, instance):
-        self.logger.debug("PREDICT RUN: %s" % instance.id)
+    def start_predict_occultation(self, run_id):
+
+        self.logger.debug("PREDICT RUN: %s" % run_id)
+
+        instance = PredictRun.objects.get(pk=run_id)
 
         start_time = datetime.now()
         self.results["start_time"] = start_time.replace(microsecond=0).isoformat(' ')
@@ -99,6 +102,7 @@ class PredictionOccultation():
         self.results["input_list"] = self.input_list.id
 
         instance.status = 'running'
+        instance.count_objects = self.input_list.asteroids
         instance.save()
         self.logger.info("Status changed to Running")
 
@@ -211,7 +215,8 @@ class PredictionOccultation():
                         "ephemeris": None,
                         "radec": None,
                         "positions": None,
-                        "gaia_catalog": None,
+                        "catalog": None,
+                        "catalog_csv": None,
                         "stars_catalog_mini": None,
                         "stars_catalog_xy": None,
                         "stars_parameters_of_occultation": None,
@@ -291,9 +296,14 @@ class PredictionOccultation():
         except Exception as e:
             self.logger.error(e)
             self.logger.error("Failed to execute prediction occultation")
-            # TODO chamar uma funcao para alterar o status para error.
+
+            finish_time = datetime.now()
+            tdelta = finish_time - start_time
 
             instance.status = "failure"
+            instance.execution_time = tdelta
+            instance.save()
+
             raise(e)
 
 
@@ -774,16 +784,30 @@ class PredictionOccultation():
 
             file_size = os.path.getsize(filename)
 
-            t1 = datetime.now()
-            tdelta = t1 - t0
 
             # Result Catalog Gaia
-            obj["results"]["gaia_catalog"] = dict({
+            obj["results"]["catalog"] = dict({
                 "filename": os.path.basename(filename),
                 "file_size": file_size,
                 "file_path": filename,
                 "file_type": os.path.splitext(filename)[1]
             })
+
+            # Catalog in csv
+            filename_csv = self.write_gaia_catalog_csv(rows, path=obj['relative_path'])
+            file_size_csv = os.path.getsize(filename_csv)
+
+            # Result Catalog Gaia
+            obj["results"]["catalog_csv"] = dict({
+                "filename": os.path.basename(filename_csv),
+                "file_size": file_size_csv,
+                "file_path": filename_csv,
+                "file_type": os.path.splitext(filename_csv)[1]
+            })
+
+
+            t1 = datetime.now()
+            tdelta = t1 - t0
 
             crows = len(rows)
 
@@ -1000,6 +1024,24 @@ class PredictionOccultation():
             fp.close()
 
         return filename
+
+    def write_gaia_catalog_csv(self, rows, path):
+        filename = os.path.join(path, "gaia_catalog.csv")
+        with open(filename, 'w') as csvfile:
+            fieldnames = ['ra', 'dec']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
+            for row in rows:
+                ra = float(row["ra"])
+                ra = "%.9f" % ra
+                
+                dec = "%.9f" % row["dec"]
+
+                writer.writerow({'ra': ra, 'dec': dec})
+
+            csvfile.close()
+
+        return filename
+
 
     def search_candidate_stars(self):
 
@@ -1533,6 +1575,7 @@ class PredictionOccultation():
                     result_file, created = PredictOutput.objects.update_or_create(
                         asteroid=asteroid,
                         filename=result.get("filename"),
+                        type=ftype,
                         defaults={
                             'file_size': result.get("file_size"),
                             'file_type': result.get("file_type"),
@@ -1619,6 +1662,9 @@ class PredictionOccultation():
                         )
                         occ.save()
 
+
+            # TODO Mudar o Status do Asteroid caso nao tenha gerado todos os mapas
+            # Basta contar quantos ocultacoes estao com o campo file_path em branco.
 
             self.logger.info("Registered Object %s %s" % (obj.get("name"), l_created))
 

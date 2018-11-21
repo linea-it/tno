@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { Calendar } from 'primereact/calendar';
 import { Spinner } from 'primereact/spinner';
 import PropTypes from 'prop-types';
+
 //primereact
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
-
 //Components
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
@@ -32,6 +32,7 @@ export class PredictionSubmit extends Component {
       processes: [],
       process: null,
       catalogs: [],
+      show: true,
       catalog: null,
       leap_seconds: [],
       leap_second: null,
@@ -48,6 +49,19 @@ export class PredictionSubmit extends Component {
       validation_display: 'none',
     };
   }
+
+  get clearFormState() {
+    return {
+      catalog_radius: 0.15,
+      message: '',
+      actionButton: false,
+      ephemeris_step: 600,
+      validation_text: '',
+      validation_type: '',
+      validation_display: 'none',
+    };
+  }
+
   componentDidMount() {
     // Processos ( Rodadas da etapa anterior Refinamento de Orbita que tiveram sucesso )
     this.apiOrbit
@@ -149,7 +163,13 @@ export class PredictionSubmit extends Component {
       validation_type: '',
     });
   };
+  // handleDismiss = () => {
+  //   this.setState({ show: false });
+  // };
 
+  // handleShow = () => {
+  //   this.setState({ show: true });
+  // };
   onClickSubmit = () => {
     if (
       this.state.ephemeris_initial_date === '' ||
@@ -186,13 +206,16 @@ export class PredictionSubmit extends Component {
         .then(res => {
           this.onCreateSuccess(res.data);
         })
-        .catch(this.onCreateFailure('sim'));
+        .catch(error => {
+          alert('não foi concluido com sucesso');
+          this.onCreateFailure(error);
+        });
     }
   };
 
   onCreateSuccess = record => {
     console.log('onCreateSuccess(%o)', record);
-    this.setState(this.initialState, this.props.onCreateRun(record));
+    this.setState(this.clearFormState, this.props.onCreateRun(record));
 
     // validation_text: 'Submissão realizada com sucesso',
     //       validation_type: 'success',
@@ -201,7 +224,6 @@ export class PredictionSubmit extends Component {
     // TODO: Criar uma Notificacao de falha.
     console.log('onCreateFailure(%o)', error);
     this.setState(this.initialState, this.props.onCreateRun({}));
-
   };
 
   onChangeProcess = e => {
@@ -400,8 +422,6 @@ export class PredictionSubmit extends Component {
   };
 
   render() {
-    console.log(this.state.ephemeris_initial_date);
-    console.log(this.state.ephemeris_final_date);
     return (
       <div>
         <div className="ui-g ui-fluid">
