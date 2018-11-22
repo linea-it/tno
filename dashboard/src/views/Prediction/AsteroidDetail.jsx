@@ -526,7 +526,6 @@ class AsteroidDetailPrediction extends Component {
 
   render() {
     const asteroid = this.state;
-    console.log('Requisição occultations', this.state.occultations);
 
     return (
       <div className="content">
