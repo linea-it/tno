@@ -14,7 +14,6 @@ import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import moment from 'moment';
 import StepStats from 'components/Statistics/StepStats.jsx';
-// import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
 
 class PredictionDetail extends Component {
@@ -75,7 +74,6 @@ class PredictionDetail extends Component {
   };
   create_nav_bar = () => {
     return (
-      // <Toolbar>
       <div className="ui-toolbar">
         <Button
           label="Back to Predict Run"
@@ -83,14 +81,12 @@ class PredictionDetail extends Component {
           onClick={() => this.onClickBackToPredictRun()}
         />
       </div>
-      // </Toolbar>
     );
   };
 
   render() {
     console.log('dados do execute', this.state.data);
     const { data } = this.state;
-    // console.log("eu sou o list", this.state.list);
     if (data === {}) {
       return <div />;
     }
@@ -103,27 +99,6 @@ class PredictionDetail extends Component {
       { name: 'Execution', value: data.h_execution_time },
       { name: 'Asteroids', value: data.count_objects },
     ];
-
-    // const executo_time = [
-    //   {
-    //     text: 'Inputs',
-    //     number: Math.round(moment.duration(data.execution_time).asSeconds()),
-    //     colorIcon: 'info',
-    //     grid: ['3'],
-    //   },
-    //   {
-    //     text: 'Ephemeris',
-    //     number: 43,
-    //     colorIcon: 'info',
-    //     grid: ['3'],
-    //   },
-    //   {
-    //     text: 'Occultation',
-    //     number: 54,
-    //     colorIcon: 'success',
-    //     grid: ['3'],
-    //   },
-    // ];
 
     const executo_time = [
       {
@@ -159,47 +134,6 @@ class PredictionDetail extends Component {
       '#434343',
       '#430390',
     ];
-
-    // const executo_time = [
-    //   {
-    //     legend: 'Dates',
-    //     // number: Math.round(moment.duration(data.execution_time).asSeconds()),
-    //     value: 33,
-    //     colorIcon: 'warning',
-    //     grid: ['2'],
-    //   },
-    //   {
-    //     legend: 'Ephemeris',
-    //     value: 33,
-    //     colorIcon: 'info',
-    //     grid: ['2'],
-    //   },
-    //   {
-    //     legend: 'Gaia',
-    //     value: 33,
-    //     colorIcon: 'success',
-    //     grid: ['2'],
-    //   },
-    //   {
-    //     legend: 'Maps',
-    //     value: 33,
-    //     colorIcon: 'warning',
-    //     grid: ['2'],
-    //   },
-    //   {
-    //     legend: 'Register',
-    //     value: 33,
-    //     colorIcon: 'success',
-    //     grid: ['2'],
-    //   },
-    // ];
-
-    // const stats_status = [
-    //   { name: 'Success', value: data.count_success },
-    //   { name: 'Warning', value: data.count_warning },
-    //   { name: 'Failure', value: data.count_failed },
-    //   { name: 'not Executed', value: data.count_not_executed },
-    // ];
 
     const stats_status = [
       { name: 'Success', value: 3232 },
@@ -249,30 +183,17 @@ class PredictionDetail extends Component {
           }
         />
 
-        {/* <PanelCostumize
-          title="Execution of execution"
-          noHeader={true}
-          className="exec_predict_occult"
-          content={<StepStats title="My Stats" info={executo_time} />}
-        /> */}
-
         <PanelCostumize
           title="Execution of execution"
           className="table_predict_occult"
           content={
             <AsteroidList
               predict_run={this.state.id}
-              // predict_run={this.state.data.id}
               view_asteroid={this.onViewAsteroid}
             />
           }
         />
 
-        {/* <div className="ui-g-4 ui-md-4">
-              <Card title="" subTitle="">
-                <RefineOrbitTimeProfile data={this.state.time_profile} />
-              </Card>
-            </div> */}
       </div>
     );
   }
