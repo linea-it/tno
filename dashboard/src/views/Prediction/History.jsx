@@ -79,14 +79,10 @@ class PredictionHistory extends Component {
 
   ];
 
-  ///proccess/4/prediction_occultation_59
-
   componentDidMount() {
     this.fetchData(
       this.state.page,
       this.state.sizePerPage
-      // this.state.sortField,
-      // this.state.sortOrder
     );
   }
 
@@ -282,7 +278,6 @@ class PredictionHistory extends Component {
   };
 
   render() {
-    // window.setInterval(this.reload, 60000);
     const columns = this.columns.map((col, i) => {
       return (
         <Column
