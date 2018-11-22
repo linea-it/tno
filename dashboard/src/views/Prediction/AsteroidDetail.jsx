@@ -363,7 +363,80 @@ class AsteroidDetailPrediction extends Component {
               />
             </div>
             {/* Atributos */}
-            <div className="ui-md-6" />
+            <div className="ui-md-6">
+              <div className="flex-container row">
+                <p>already_happened</p>
+                <span>{occ.already_happened}</span>
+              </div>
+              <div className="flex-container row">
+                <p>asteroid :</p>
+                <span>{occ.asteroid}</span>
+              </div>
+              <div className="flex-container row">
+                <p>closest_approach :</p>
+                <span>{occ.closest_approach}</span>
+              </div>
+              <div className="flex-container row">
+                <p>ct :</p>
+                <span>{occ.ct}</span>
+              </div>
+              <div className="flex-container row">
+                <p>date_time :</p>
+                <span>{occ.date_time}</span>
+              </div>
+              <div className="flex-container row">
+                <p>dec_star_candidate :</p>
+                <span>{occ.dec_star_candidate}</span>
+              </div>
+              <div className="flex-container row">
+                <p>dec_star_candidate :</p>
+                <span>{occ.dec_star_candidate}</span>
+              </div>
+              <div className="flex-container row">
+                <p>dec_target :</p>
+                <span>{occ.dec_target}</span>
+              </div>
+              <div className="flex-container row">
+                <p>delta :</p>
+                <span>{occ.delta}</span>
+              </div>
+              <div className="flex-container row">
+                <p>e_dec :</p>
+                <span>{occ.delta}</span>
+              </div>
+              <div className="flex-container row">
+                <p>e_ra :</p>
+                <span>{occ.e_ra}</span>
+              </div>
+              <div className="flex-container row">
+                <p>g :</p>
+                <span>{occ.g}</span>
+              </div>
+              <div className="flex-container row">
+                <p>h :</p>
+                <span>{occ.h}</span>
+              </div>
+              <div className="flex-container row">
+                <p>id :</p>
+                <span>{occ.h}</span>
+              </div>
+              <div className="flex-container row">
+                <p>j :</p>
+                <span>{occ.h}</span>
+              </div>
+              <div className="flex-container row">
+                <p>k :</p>
+                <span>{occ.k}</span>
+              </div>
+              <div className="flex-container row">
+                <p>loc_t :</p>
+                <span>{occ.loc_t}</span>
+              </div>
+              <div className="flex-container row">
+                <p>multiplicity_flag :</p>
+                <span>{occ.multiplicity_flag}</span>
+              </div>
+            </div>
           </div>
         </Card>
       );
@@ -452,7 +525,7 @@ class AsteroidDetailPrediction extends Component {
   };
 
   render() {
-    const asteroid = this.state.asteroid;
+    const asteroid = this.state;
 
     return (
       <div className="content">

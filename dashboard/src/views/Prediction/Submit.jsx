@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
-
 //Components
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
@@ -33,6 +32,7 @@ export class PredictionSubmit extends Component {
       processes: [],
       process: null,
       catalogs: [],
+      show: true,
       catalog: null,
       leap_seconds: [],
       leap_second: null,
@@ -164,7 +164,7 @@ export class PredictionSubmit extends Component {
     });
   };
 
-  onClick = () => {
+  onClickSubmit = () => {
     if (
       this.state.ephemeris_initial_date === '' ||
       this.state.ephemeris_final_date === ''
@@ -201,6 +201,7 @@ export class PredictionSubmit extends Component {
           this.onCreateSuccess(res.data);
         })
         .catch(error => {
+          alert('não foi concluido com sucesso');
           this.onCreateFailure(error);
         });
     }
@@ -210,12 +211,12 @@ export class PredictionSubmit extends Component {
     console.log('onCreateSuccess(%o)', record);
     this.setState(this.clearFormState, this.props.onCreateRun(record));
 
-    // validation_text: 'Submissão realizada com sucesso',
-    //       validation_type: 'success',
+
   };
   onCreateFailure = error => {
     // TODO: Criar uma Notificacao de falha.
     console.log('onCreateFailure(%o)', error);
+    this.setState(this.initialState, this.props.onCreateRun({}));
   };
 
   onChangeProcess = e => {
@@ -466,7 +467,7 @@ export class PredictionSubmit extends Component {
         <Button
           label="Submit"
           disabled={!this.state.actionButton}
-          onClick={this.onClick}
+          onClick={this.onClickSubmit}
           className=" button-TNO button-prediction"
         />
       </div>
