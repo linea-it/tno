@@ -44,5 +44,5 @@ def run_predict(run_id):
     logger = logging.getLogger("predict_occultation")
     logger.info("Starting a thread to execute the prediction ID [%s]" % run_id)
 
-    PredictionOccultation().start_predict_occultation(run_id)
+    # PredictionOccultation().start_predict_occultation(run_id)
 
