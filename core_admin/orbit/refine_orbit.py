@@ -87,182 +87,200 @@ class RefineOrbit():
 
         instance.status = 'running'
         instance.save()
-        self.logger.info("Status changed to Running")
 
-        # Criar um diretorio para os arquivos do NIMA
-        instance = RefineOrbit().createRefienOrbitDirectory(instance)
+        try:
+            self.logger.info("Status changed to Running")
 
-        # Json file with step states:
-        self.logger.info("Writing status file")
-        steps = dict({
-            "observations": False,
-            "orbital_parameters": False,
-            "bsp_jpl": False
-        })
-        steps_file = os.path.join(instance.relative_path, 'steps.json')
-        JsonFile().write(steps, steps_file)
+            # Criar um diretorio para os arquivos do NIMA
+            instance = RefineOrbit().createRefienOrbitDirectory(instance)
 
-        # Tempo maximo de validade para os arquivos baixados em dias.
-        # TODO: pode vir como parametro da interface, None para atualizar todos.
-        max_age = 30
-
-        self.logger.info("Starting Download")
-
-        t_download_0 = datetime.now()
-        # ---------------------- Observations --------------------------------------------------------------------------
-
-        self.logger.debug(
-            "---------------------- Observations --------------------------------------------------------------------------")
-        # Pesquisando as observacoes que precisam ser baixadas
-        observations = RefineOrbitDB().get_observations(self.input_list.tablename, self.input_list.schema, max_age)
-
-        self.observations_input_file = os.path.join(instance.relative_path, 'observations.csv')
-
-        self.logger.info("Writing Observations Input File")
-        RefineOrbit().writer_refine_orbit_file_list(self.observations_input_file, observations)
-
-        # Download das Observations
-        self.getObservations(instance, self.observations_input_file, steps_file)
-
-        # ---------------------- Orbital Parameters --------------------------------------------------------------------
-        self.logger.debug(
-            "---------------------- Orbital Parameters --------------------------------------------------------------------")
-        # Pesquisando os parametros orbitais que precisam ser baixadas
-        orbital_parameters = RefineOrbitDB().get_orbital_parameters(self.input_list.tablename, self.input_list.schema,
-                                                                    max_age)
-
-        self.orbital_parameters_input_file = os.path.join(instance.relative_path, 'orbital_parameters.csv')
-
-        self.logger.info("Writing Orbital Parameters Input File")
-        self.writer_refine_orbit_file_list(self.orbital_parameters_input_file, orbital_parameters)
-
-        # Download dos parametros Orbitais
-        self.getOrbitalParameters(instance, self.orbital_parameters_input_file, steps_file)
-
-        # ---------------------- BSPs ----------------------------------------------------------------------------------
-        self.logger.debug(
-            "---------------------- BSPs ----------------------------------------------------------------------------------")
-        # Pesquisando os bsp_jpl que precisam ser baixadas
-        bsp_jpl = RefineOrbitDB().get_bsp_jpl(self.input_list.tablename, self.input_list.schema, max_age)
-
-        self.bsp_jpl_input_file = os.path.join(instance.relative_path, 'bsp_jpl.csv')
-
-        self.logger.info("Writing BSP JPL Input File")
-        RefineOrbit().writer_refine_orbit_file_list(self.bsp_jpl_input_file, bsp_jpl)
-
-        # Download dos BSP JPL
-        self.getBspJplFiles(instance, self.bsp_jpl_input_file, steps_file)
-
-        t_download_1 = datetime.now()
-        t_download_delta = t_download_1 - t_download_0
-
-        self.results["execution_download_time"] = t_download_delta.total_seconds()
-
-        self.logger.info("Download Finish in %s" % humanize.naturaldelta(t_download_delta))
-
-        # ---------------------- Objects -------------------------------------------------------------------------------
-
-        t_nima_0 = datetime.now()
-
-        # Recuperando os Objetos
-        objects, obj_count = ProccessManager().get_objects(tablename=self.input_list.tablename,
-                                                           schema=self.input_list.schema)
-
-        self.results["count_objects"] = obj_count
-
-        self.logger.debug("Objects: %s" % obj_count)
-
-        for obj in objects:
-            obj_name = obj.get("name").replace(" ", "_")
-            self.results["objects"][obj_name] = dict({
-                "name": obj.get("name"),
-                "number": obj.get("num"),
-                "alias": obj_name,
-                "relative_path": self.get_object_dir(obj.get("name"), self.objects_dir),
-                "status": None,
-                "error_msg": None,
-                "start_time": None,
-                "finish_time": None,
-                "execution_time": None,
-                "absolute_path": None,
-                "inputs": dict({
-                    "observations": None,
-                    "orbital_parameters": None,
-                    "bsp_jpl": None,
-                    "astrometry": None
-                }),
-                "results": list()
+            # Json file with step states:
+            self.logger.info("Writing status file")
+            steps = dict({
+                "observations": False,
+                "orbital_parameters": False,
+                "bsp_jpl": False
             })
+            steps_file = os.path.join(instance.relative_path, 'steps.json')
+            JsonFile().write(steps, steps_file)
 
-        # ---------------------- Inputs --------------------------------------------------------------------------------
-        self.logger.info("Collect Inputs by Objects")
+            # Tempo maximo de validade para os arquivos baixados em dias.
+            # TODO: pode vir como parametro da interface, None para atualizar todos.
+            max_age = 30
 
-        self.logger.debug("Objects Dir: %s" % self.objects_dir)
+            self.logger.info("Starting Download")
 
-        # Separa os inputs necessarios no diretorio individual de cada objeto.
-        # TODO: Essa etapa pode ser paralelizada com Parsl
-        self.collect_inputs_by_objects(self.results["objects"], self.objects_dir)
+            t_download_0 = datetime.now()
+            # ---------------------- Observations --------------------------------------------------------------------------
 
-        # ---------------------- Running NIMA --------------------------------------------------------------------------
-        self.logger.info("Running NIMA for all objects")
-        self.run_nima(self.results["objects"], self.objects_dir)
+            self.logger.debug(
+                "---------------------- Observations --------------------------------------------------------------------------")
+            # Pesquisando as observacoes que precisam ser baixadas
+            observations = RefineOrbitDB().get_observations(self.input_list.tablename, self.input_list.schema, max_age)
 
-        t_nima_1 = datetime.now()
-        t_nima_delta = t_nima_1 - t_nima_0
+            self.observations_input_file = os.path.join(instance.relative_path, 'observations.csv')
 
-        self.results["execution_nima_time"] = t_nima_delta.total_seconds()
+            self.logger.info("Writing Observations Input File")
+            RefineOrbit().writer_refine_orbit_file_list(self.observations_input_file, observations)
 
-        # ---------------------- Recording the results. ----------------------------------------------------------------
+            # Download das Observations
+            self.getObservations(instance, self.observations_input_file, steps_file)
 
-        t_register_0 = datetime.now()
-        # Iterate over objects
-        for alias in self.results["objects"]:
-            obj = self.results["objects"][alias]
+            # ---------------------- Orbital Parameters --------------------------------------------------------------------
+            self.logger.debug(
+                "---------------------- Orbital Parameters --------------------------------------------------------------------")
+            # Pesquisando os parametros orbitais que precisam ser baixadas
+            orbital_parameters = RefineOrbitDB().get_orbital_parameters(self.input_list.tablename, self.input_list.schema,
+                                                                        max_age)
 
-            # TODO: Registrar os Asteroids e o Resultado.
-            self.register_refined_asteroid(obj, instance)
+            self.orbital_parameters_input_file = os.path.join(instance.relative_path, 'orbital_parameters.csv')
 
-        t_register_1 = datetime.now()
-        t_register_delta = t_register_1 - t_register_0
+            self.logger.info("Writing Orbital Parameters Input File")
+            self.writer_refine_orbit_file_list(self.orbital_parameters_input_file, orbital_parameters)
 
-        self.results["execution_register_time"] = t_register_delta.total_seconds()
+            # Download dos parametros Orbitais
+            self.getOrbitalParameters(instance, self.orbital_parameters_input_file, steps_file)
 
-        # ---------------------- Finish --------------------------------------------------------------------------------
+            # ---------------------- BSPs ----------------------------------------------------------------------------------
+            self.logger.debug(
+                "---------------------- BSPs ----------------------------------------------------------------------------------")
+            # Pesquisando os bsp_jpl que precisam ser baixadas
+            bsp_jpl = RefineOrbitDB().get_bsp_jpl(self.input_list.tablename, self.input_list.schema, max_age)
 
-        instance.start_time = self.results["start_time"]
-        finish_time = datetime.now()
-        instance.finish_time = finish_time
+            self.bsp_jpl_input_file = os.path.join(instance.relative_path, 'bsp_jpl.csv')
 
-        self.results["finish_time"] = finish_time.replace(microsecond=0).isoformat(' ')
-        tdelta = finish_time - start_time
-        self.results["execution_time"] = tdelta.total_seconds()
-        # Average Time per object
-        average_time = mean(self.execution_time)
-        self.results["average_time"] = average_time
+            self.logger.info("Writing BSP JPL Input File")
+            RefineOrbit().writer_refine_orbit_file_list(self.bsp_jpl_input_file, bsp_jpl)
 
-        self.results["status"] = "success"
+            # Download dos BSP JPL
+            self.getBspJplFiles(instance, self.bsp_jpl_input_file, steps_file)
 
-        # Escrever os Resultados no results.json
-        result_file = os.path.join(instance.relative_path, "results.json")
-        with open(result_file, "w") as fp:
-            json.dump(self.results, fp)
+            t_download_1 = datetime.now()
+            t_download_delta = t_download_1 - t_download_0
 
-        instance.status = "success"
-        instance.execution_time = tdelta
-        instance.execution_download_time = t_download_delta
-        instance.execution_nima_time = t_nima_delta
-        instance.execution_register_time = t_register_delta
-        instance.average_time = average_time
-        instance.count_objects = obj_count
-        instance.count_executed = self.results["count_executed"]
-        instance.count_not_executed = self.results["count_not_executed"]
-        instance.count_success = self.results["count_success"]
-        instance.count_failed = self.results["count_failed"]
-        instance.count_warning = self.results["count_warning"]
+            self.results["execution_download_time"] = t_download_delta.total_seconds()
 
-        instance.save()
+            self.logger.info("Download Finish in %s" % humanize.naturaldelta(t_download_delta))
 
-        self.logger.info("Finish Refine Orbit")
+            # ---------------------- Objects -------------------------------------------------------------------------------
+
+            t_nima_0 = datetime.now()
+
+            # Recuperando os Objetos
+            objects, obj_count = ProccessManager().get_objects(tablename=self.input_list.tablename,
+                                                            schema=self.input_list.schema)
+
+            self.results["count_objects"] = obj_count
+
+            self.logger.debug("Objects: %s" % obj_count)
+
+            for obj in objects:
+                obj_name = obj.get("name").replace(" ", "_")
+                self.results["objects"][obj_name] = dict({
+                    "name": obj.get("name"),
+                    "number": obj.get("num"),
+                    "alias": obj_name,
+                    "relative_path": self.get_object_dir(obj.get("name"), self.objects_dir),
+                    "status": None,
+                    "error_msg": None,
+                    "start_time": None,
+                    "finish_time": None,
+                    "execution_time": None,
+                    "absolute_path": None,
+                    "inputs": dict({
+                        "observations": None,
+                        "orbital_parameters": None,
+                        "bsp_jpl": None,
+                        "astrometry": None
+                    }),
+                    "results": list()
+                })
+
+            # ---------------------- Inputs --------------------------------------------------------------------------------
+            self.logger.info("Collect Inputs by Objects")
+
+            self.logger.debug("Objects Dir: %s" % self.objects_dir)
+
+            # Separa os inputs necessarios no diretorio individual de cada objeto.
+            # TODO: Essa etapa pode ser paralelizada com Parsl
+            self.collect_inputs_by_objects(self.results["objects"], self.objects_dir)
+
+            # ---------------------- Running NIMA --------------------------------------------------------------------------
+            self.logger.info("Running NIMA for all objects")
+            self.run_nima(self.results["objects"], self.objects_dir)
+
+            t_nima_1 = datetime.now()
+            t_nima_delta = t_nima_1 - t_nima_0
+
+            self.results["execution_nima_time"] = t_nima_delta.total_seconds()
+
+            # ---------------------- Recording the results. ----------------------------------------------------------------
+
+            t_register_0 = datetime.now()
+            # Iterate over objects
+            for alias in self.results["objects"]:
+                obj = self.results["objects"][alias]
+
+                self.register_refined_asteroid(obj, instance)
+
+            t_register_1 = datetime.now()
+            t_register_delta = t_register_1 - t_register_0
+
+            self.results["execution_register_time"] = t_register_delta.total_seconds()
+
+            # ---------------------- Finish --------------------------------------------------------------------------------
+
+            instance.start_time = self.results["start_time"]
+            finish_time = datetime.now()
+            instance.finish_time = finish_time
+
+            self.results["finish_time"] = finish_time.replace(microsecond=0).isoformat(' ')
+            tdelta = finish_time - start_time
+            self.results["execution_time"] = tdelta.total_seconds()
+            # Average Time per object
+            average_time = mean(self.execution_time)
+            self.results["average_time"] = average_time
+
+            self.results["status"] = "success"
+
+            # Escrever os Resultados no results.json
+            result_file = os.path.join(instance.relative_path, "results.json")
+            with open(result_file, "w") as fp:
+                json.dump(self.results, fp)
+
+            # Se nao tiver nenhum resultado, marcar como falha
+            instance.status = "failure"
+            if self.results["count_success"] > 0:
+                instance.status = "success"
+
+            instance.execution_time = tdelta
+            instance.execution_download_time = t_download_delta
+            instance.execution_nima_time = t_nima_delta
+            instance.execution_register_time = t_register_delta
+            instance.average_time = average_time
+            instance.count_objects = obj_count
+            instance.count_executed = self.results["count_executed"]
+            instance.count_not_executed = self.results["count_not_executed"]
+            instance.count_success = self.results["count_success"]
+            instance.count_failed = self.results["count_failed"]
+            instance.count_warning = self.results["count_warning"]
+
+            instance.save()
+
+            self.logger.info("Finish Refine Orbit")
+
+        except Exception as e:
+            self.logger.error(e)
+            self.logger.error("Failed to execute Refine Orbit")
+
+            finish_time = datetime.now()
+            tdelta = finish_time - start_time
+
+            instance.status = "failure"
+            instance.execution_time = tdelta
+            instance.save()
+
+            raise(e)
 
     def getObservations(self, instance, input_file, step_file):
         """
@@ -746,6 +764,7 @@ class RefineOrbit():
 
 
             else:
+                self.execution_time.append(0)
                 self.logger.warning("Did not run NIMA for object %s" % obj["name"])
 
     def nima_input_file(self, obj, input_path):
