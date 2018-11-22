@@ -163,13 +163,7 @@ export class PredictionSubmit extends Component {
       validation_type: '',
     });
   };
-  // handleDismiss = () => {
-  //   this.setState({ show: false });
-  // };
 
-  // handleShow = () => {
-  //   this.setState({ show: true });
-  // };
   onClickSubmit = () => {
     if (
       this.state.ephemeris_initial_date === '' ||
@@ -217,8 +211,7 @@ export class PredictionSubmit extends Component {
     console.log('onCreateSuccess(%o)', record);
     this.setState(this.clearFormState, this.props.onCreateRun(record));
 
-    // validation_text: 'Submissão realizada com sucesso',
-    //       validation_type: 'success',
+
   };
   onCreateFailure = error => {
     // TODO: Criar uma Notificacao de falha.
