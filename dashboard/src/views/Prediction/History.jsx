@@ -70,17 +70,37 @@ class PredictionHistory extends Component {
       headerStyle: formatColumnHeader,
       sortable: true,
     },
+    {
+      field: 'Relative Path',
+      header: 'Relative Path',
+      headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+
   ];
 
   componentDidMount() {
-    this.fetchData(this.state.page, this.state.sizePerPage);
+    this.fetchData(
+      this.state.page,
+      this.state.sizePerPage
+    );
   }
 
-  fetchData = ({ page, sizePerPage, sortField, sortOrder }) => {
+  componentWillReceiveProps() {
+    // Atualiza o Conteudo da datagrid toda vez que recebe uma propriedade
+    this.fetchData(
+      this.state.page,
+      this.state.sizePerPage,
+      this.state.sortField,
+      this.state.sortOrder
+    );
+  }
+
+  fetchData = (page, sizePerPage, sortField, sortOrder) => {
     this.setState({ loading: true });
 
     this.api
-      .getPredictionRuns({ page, sizePerPage, sortField, sortOrder })
+      .getPredictionRuns(page, sizePerPage, sortField, sortOrder)
       .then(res => {
         const r = res.data;
 

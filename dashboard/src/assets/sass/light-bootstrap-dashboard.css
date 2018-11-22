@@ -3712,6 +3712,9 @@ body > .navbar-collapse[data-color="purple"]:after {
 .stats_predict_occult {
   grid-area: stats_predict_occult; }
 
+.stats_predict_occult2 {
+  grid-area: stats_predict_occult2; }
+
 .exec_predict_occult {
   grid-area: exec_predict_occult; }
 
@@ -3755,9 +3758,9 @@ body > .navbar-collapse[data-color="purple"]:after {
     grid-template-areas: "submit_refine running_refine" "history_refine history_refine"; }
   .template-predict-occult {
     grid-gap: 0.75rem;
-    grid-template-columns: repeat(2, minmax(12.5rem, 1fr));
+    grid-template-columns: repeat(3, minmax(12.5rem, 1fr));
     grid-template-rows: auto;
-    grid-template-areas: "navigation_predict_occult navigation_predict_occult" "list_predict_occult stats_predict_occult" "exec_predict_occult exec_predict_occult" "table_predict_occult table_predict_occult"; }
+    grid-template-areas: "navigation_predict_occult navigation_predict_occult navigation_predict_occult" "list_predict_occult stats_predict_occult stats_predict_occult2" "table_predict_occult table_predict_occult table_predict_occult"; }
   .template-predict-panel {
     grid-gap: 0.75rem;
     grid-template-columns: repeat(2, minmax(12.5rem, 1fr));

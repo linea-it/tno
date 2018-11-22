@@ -89,39 +89,41 @@ class PraiaSubmit extends Component {
   render() {
     const { input, config } = this.state;
     return (
-     
-          <Card className="none">
-            <Form>
-              <FormGroup>
-                <ControlLabel>Input</ControlLabel>
-                <Async
-                  onChange={this.onSelectInput}
-                  value={input}
-                  cacheOptions
-                  valueKey="id"
-                  labelKey="displayname"
-                  defaultOptions
-                  loadOptions={this.loadInputs}
-                />
-              </FormGroup>
-              <FormGroup>
-
-                <ControlLabel>Configuration</ControlLabel>
-                <Async
-                  onChange={this.onSelectConfig}
-                  value={config}
-                  cacheOptions
-                  valueKey="id"
-                  labelKey="displayname"
-                  defaultOptions
-                  loadOptions={this.loadConfigs}
-                />
-                <br />
-                <Button className="button-TNO"label="Submit" onClick={this.onClickSubmit} style={{marginTop: '20px !important'}}/>
- 
-              </FormGroup>
-            </Form>
-          </Card>
+      <Card className="none">
+        <Form>
+          <FormGroup>
+            <ControlLabel>Input</ControlLabel>
+            <Async
+              onChange={this.onSelectInput}
+              value={input}
+              cacheOptions
+              valueKey="id"
+              labelKey="displayname"
+              defaultOptions
+              loadOptions={this.loadInputs}
+            />
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>Configuration</ControlLabel>
+            <Async
+              onChange={this.onSelectConfig}
+              value={config}
+              cacheOptions
+              valueKey="id"
+              labelKey="displayname"
+              defaultOptions
+              loadOptions={this.loadConfigs}
+            />
+            <br />
+            <Button
+              className="button-TNO"
+              label="Submit"
+              onClick={this.onClickSubmit}
+              style={{ marginTop: '20px !important' }}
+            />
+          </FormGroup>
+        </Form>
+      </Card>
     );
   }
 }

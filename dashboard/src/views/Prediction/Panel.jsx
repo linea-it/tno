@@ -22,6 +22,7 @@ class PredictionPanel extends Component {
 
   onCreateRun = record => {
     // Toda vez que cria um novo registro forca a execucao do metodo render()
+    console.log('onCreateRun', record);
     this.setState({ record: record });
   };
 
@@ -31,7 +32,8 @@ class PredictionPanel extends Component {
   };
 
   render() {
-    // const { record } = this.state;
+    const { record } = this.state;
+
     return (
       <div className="grid template-predict-panel">
         <PanelCostumize
@@ -60,6 +62,7 @@ class PredictionPanel extends Component {
                 <PredictionHistory
                   view_prediction={this.onViewPrediction}
                   onRerun={this.onCreateRun}
+                  record={record}
                 />
               }
             />
