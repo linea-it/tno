@@ -30,13 +30,13 @@ class RefineOrbitPanel extends Component {
         <PanelCostumize
           className="submit_refine"
           title="Execute"
-          subTitle="Descrição sobre execução"
+          subTitle=""
           content={<RefineOrbitSubmit onCreateRun={this.onCreateRun} />}
         />
         <PanelCostumize
           className="history_refine"
           title="History"
-          subTitle="Manage the completed NIMA rounds"
+          subTitle=""
           content={<RefineOrbitHistory onRerun={this.onCreateRun} />}
         />
       </div>

@@ -165,7 +165,6 @@ class FilterPointings extends React.Component {
 
   render() {
     const { show, onHide } = this.props;
-    console.log(this.state.exptime);
 
     const band = [
       {
