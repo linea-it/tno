@@ -50,9 +50,6 @@ class RefineOrbit():
             "count_objects": 0,
             "count_executed": 0,
             "count_not_executed": 0,
-            "count_success": 0,
-            "count_failed": 0,
-            "count_warning": 0,
             "average_time": 0,
             "objects_dir": None,
             "input_list": None,
@@ -203,12 +200,22 @@ class RefineOrbit():
                     }),
                     "results": dict({
                         "bsp_nima": None,
-                        "omc_sep": None, 
-                        "omc_sep_all": None,
-                        "omc_sep_recent": None,
-                        "diff_nima_jpl_ra": None,
-                        "diff_nima_jpl_dec": None,
-                        "diff_bsp_ni": None,
+                        "residual_all_v2": None, 
+                        "residual_all_v1": None,
+                        "residual_recent": None,
+                        "comparison_nima_jpl_ra": None,
+                        "comparison_nima_jpl_dec": None,
+                        "comparison_bsp_integration": None,
+                        # Arquivos Opcionais
+                        "correl_mat": None,
+                        "sigyr_res": None,
+                        "offset_oth_obs": None,
+                        "ci_ast_dat": None,
+                        "offset_oth_dat": None,
+                        "ephemni_res": None,
+                        "omc_ast_res": None,
+                        "ephembsp_res": None,
+                        "cov_mat": None,
                     })
                 })
 
@@ -254,7 +261,10 @@ class RefineOrbit():
             tdelta = finish_time - start_time
             self.results["execution_time"] = tdelta.total_seconds()
             # Average Time per object
-            average_time = mean(self.execution_time)
+            average_time = 0
+            if len(self.execution_time) > 0:
+                average_time = mean(self.execution_time)
+
             self.results["average_time"] = average_time
 
             self.results["status"] = "success"
@@ -266,7 +276,7 @@ class RefineOrbit():
 
             # Se nao tiver nenhum resultado, marcar como falha
             instance.status = "failure"
-            if self.results["count_success"] > 0:
+            if self.results["nima_report"]["count_success"] > 0:
                 instance.status = "success"
 
             instance.execution_time = tdelta
@@ -277,9 +287,9 @@ class RefineOrbit():
             instance.count_objects = obj_count
             instance.count_executed = self.results["count_executed"]
             instance.count_not_executed = self.results["count_not_executed"]
-            instance.count_success = self.results["count_success"]
-            instance.count_failed = self.results["count_failed"]
-            instance.count_warning = self.results["count_warning"]
+            instance.count_success = self.results["nima_report"]["count_success"]
+            instance.count_failed = self.results["nima_report"]["count_failed"]
+            instance.count_warning = self.results["nima_report"]["count_warning"]
 
             instance.save()
 
@@ -661,13 +671,24 @@ class RefineOrbit():
             })
 
             # Results 
-            obj["results"]["bsp_nima"] = result["bsp_nima"]
-            obj["results"]["omc_sep"] = result["omc_sep"]
-            obj["results"]["omc_sep_all"] = result["omc_sep_all"]
-            obj["results"]["omc_sep_recent"] = result["omc_sep_recent"]
-            obj["results"]["diff_nima_jpl_ra"] = result["diff_nima_jpl_ra"]
-            obj["results"]["diff_nima_jpl_dec"] = result["diff_nima_jpl_dec"]
-            obj["results"]["diff_bsp_ni"] = result["diff_bsp_ni"]
+            if result['status'] != "failure":
+                obj["results"]["bsp_nima"] = result["bsp_nima"]
+                obj["results"]["residual_all_v2"] = result["residual_all_v2"]
+                obj["results"]["residual_all_v1"] = result["residual_all_v1"]
+                obj["results"]["residual_recent"] = result["residual_recent"]
+                obj["results"]["comparison_nima_jpl_ra"] = result["comparison_nima_jpl_ra"]
+                obj["results"]["comparison_nima_jpl_dec"] = result["comparison_nima_jpl_dec"]
+                obj["results"]["comparison_bsp_integration"] = result["comparison_bsp_integration"]
+                # Arquivos Opcionais                
+                obj["results"]["correl_mat"] = result["correl_mat"]
+                obj["results"]["sigyr_res"] = result["sigyr_res"]
+                obj["results"]["offset_oth_obs"] = result["offset_oth_obs"]
+                obj["results"]["ci_ast_dat"] = result["ci_ast_dat"]
+                obj["results"]["offset_oth_dat"] = result["offset_oth_dat"]
+                obj["results"]["ephemni_res"] = result["ephemni_res"]
+                obj["results"]["omc_ast_res"] = result["omc_ast_res"]
+                obj["results"]["ephembsp_res"] = result["ephembsp_res"]
+                obj["results"]["cov_mat"] = result["cov_mat"]
 
             if result['status'] == 'success':
                 msg = "[ SUCCESS ] - Object: %s Time: %s " % (
@@ -705,11 +726,14 @@ class RefineOrbit():
 
         count = len(outputs)
         failure = 0
+        warning = 0
         average = []
         for row in outputs:
             if row['status'] == "failure":
                 failure += 1
                 average.append(0)
+            elif row['status'] == "warning":
+                warning += 1
 
             exec_tdelta = timedelta(seconds=pytimeparse.parse(row['execution_nima']))
             average.append(exec_tdelta.total_seconds())
@@ -721,6 +745,10 @@ class RefineOrbit():
         t1 = datetime.now()
         tdelta = t1 - t0
 
+        maverage = 0
+        if len(average) > 0:
+            maverage = mean(average)
+
         self.results['nima_report'] = dict({
             'start_time': t0.replace(microsecond=0).isoformat(' '),
             'finish_time': t1.replace(microsecond=0).isoformat(' '),
@@ -728,154 +756,13 @@ class RefineOrbit():
             'count_asteroids': count,
             'count_success': count - failure,
             'count_failed': failure,
-            'average_time': mean(average),
+            'count_warning': warning,
+            'average_time': maverage,
         })
 
         self.logger.info(
             "Finished refine orbit, %s asteroids in %s" % (
                 count, humanize.naturaldelta(tdelta)))
- 
-
-
-            #     self.logger.debug("Running for object %s" % obj["name"])
-
-            #     self.results["objects"][alias]["status"] = "running"
-            #     tstart = datetime.now()
-
-            #     input_path = os.path.join(objects_path, alias)
-
-            #     nima_log = os.path.join(input_path, "nima.log")
-            #     container_stats = os.path.join(input_path, "container_stats.json")
-
-            #     self.nima_input_file(obj, input_path)
-
-            #     real_archive_path = settings.HOST_ARCHIVE_DIR
-
-            #     real_input_path = os.path.join(real_archive_path, input_path.strip('/'))
-
-            #     self.results["objects"][alias]["absolute_path"] = real_input_path
-
-            #     # TODO o command pode passar o nome e numero do objeto.
-            #     cmd = "python /app/run.py"
-
-            #     volumes = dict({})
-            #     volumes[real_input_path] = {
-            #         'bind': '/data',
-            #         'mode': 'rw'
-            #     }
-
-            #     status = "FAILURE"
-            #     try:
-
-            #         self.logger.debug("Starting Container NIMA")
-
-            #         running_t0 = datetime.now()
-
-            #         container = client.containers.run(
-            #             nima_image,
-            #             command=cmd,
-            #             detach=True,
-            #             name="nima_%s" % count,
-            #             auto_remove=False,
-            #             mem_limit='1024m',
-            #             volumes=volumes
-            #         )
-
-            #         # stats = list()
-            #         # try:
-            #         #     for stat in get_container_stats(container):
-            #         #         # self.logger.debug("CPU: [ %s ] Memory: [ %s ]" % (stat["cpu_percent"], stat["mem_percent"]))
-            #         #         stats.append(stat)
-            #         #
-            #         #     with open(container_stats, 'w') as fp:
-            #         #         json.dump(stats, fp)
-            #         # except Exception as e:
-            #         #     self.logger.error(e)
-            #         #     raise(e)
-            #         count += 1
-
-            #         log_data = ""
-            #         try:
-            #             for line in container.logs(stream=True):
-            #                 line = str(line.decode("utf-8"))
-            #                 log_data += "%s\n" % line
-            #                 # self.logger.debug(line)
-
-            #         except Exception as e:
-            #             self.logger.error(e)
-
-            #         container.stop()
-            #         container.remove()
-
-            #         self.logger.debug("Finish Container NIMA")
-
-            #         running_t1 = datetime.now()
-            #         running_tdelta = running_t1 - running_t0
-
-            #         if log_data.find("SUCCESS") > -1:
-            #             status = "SUCCESS"
-            #             self.results["objects"][alias]["status"] = "success"
-            #             self.results["count_success"] += 1
-
-
-            #         elif log_data.find("WARNING") > 0:
-            #             self.results["objects"][alias]["status"] = "warning"
-            #             self.results["objects"][alias][
-            #                 "error_msg"] = "NIMA did not return success, see log for more information"
-
-            #             self.results["count_warning"] += 1
-
-            #         else:
-            #             self.results["objects"][alias]["status"] = "failure"
-            #             self.results["objects"][alias][
-            #                 "error_msg"] = "NIMA did not return success, see log for more information"
-            #             self.results["count_failed"] += 1
-
-
-            #     except docker.errors.ContainerError as e:
-            #         self.logger.error(e)
-            #         self.results["count_failed"] += 1
-            #         self.results["objects"][alias]["status"] = "failure"
-            #         self.results["objects"][alias][
-            #             "error_msg"] = "Container NIMA failed"
-
-            #         self.logger.error("PAROU 1")
-
-            #         container.stop()
-            #         container.remove()
-
-            #     except Exception as e:
-            #         self.logger.error(e)
-            #         self.results["count_failed"] += 1
-            #         self.results["objects"][alias]["status"] = "failure"
-            #         self.results["objects"][alias]["error_msg"] = e
-
-            #         container.stop()
-            #         container.remove()
-
-            #         self.logger.error("PAROU 2")
-
-            #     tfinish = datetime.now()
-            #     tdelta = tfinish - tstart
-
-            #     self.execution_time.append(tdelta.total_seconds())
-
-            #     self.results["objects"][alias]["start_time"] = tstart.replace(microsecond=0).isoformat(' ')
-            #     self.results["objects"][alias]["finish_time"] = tfinish.replace(microsecond=0).isoformat(' ')
-            #     self.results["objects"][alias]["execution_time"] = tdelta.total_seconds()
-
-            #     self.results["count_executed"] += 1
-
-            #     self.results["objects"][alias]["results"] = self.nima_check_results(self.results["objects"][alias])
-
-            #     self.logger.info("NIMA Object [ %s ] STATUS [ %s ] Execution Time: %s" % (
-            #         obj["name"], status, humanize.naturaldelta(tdelta)))
-
-
-
-            # else:
-            #     self.execution_time.append(0)
-            #     self.logger.warning("Did not run NIMA for object %s" % obj["name"])
 
 
     def run_nima_container(self, id, obj):
@@ -922,7 +809,6 @@ class RefineOrbit():
                 docker_image,
                 command=cmd,
                 detach=True,
-                # name="nima_%s" % count,
                 auto_remove=True,
                 mem_limit='1024m',
                 volumes=volumes
@@ -938,14 +824,23 @@ class RefineOrbit():
             # file_nima_bsp = os.path.join(data_path, "%s_nima.bsp" % obj["alias"].replace('_', ''))
             file_nima_bsp = os.path.join(data_path, "%s_%s_nima.bsp" % (obj["number"], obj["alias"].replace('_', '')))
 
-
             omc_sep = os.path.join(data_path, "omc_sep.png")
             omc_sep_all = os.path.join(data_path, "omc_sep_all.png")
             omc_sep_recent = os.path.join(data_path, "omc_sep_recent.png")
             diff_nima_jpl_ra = os.path.join(data_path, "diff_nima_jpl_RA.png")
             diff_nima_jpl_dec = os.path.join(data_path, "diff_nima_jpl_Dec.png")
             diff_bsp_ni = os.path.join(data_path, "diff_bsp-ni.png")
-           
+            # Arquivos Opcionais
+            correl_mat = os.path.join(data_path, "correl.mat")
+            sigyr_res = os.path.join(data_path, "sigyr.res")
+            offset_oth_obs = os.path.join(data_path, "offset_oth.obs")
+            ci_ast_dat = os.path.join(data_path, "CI_ast.dat")
+            offset_oth_dat = os.path.join(data_path, "offset_oth.dat")
+            ephemni_res = os.path.join(data_path, "ephemni.res")
+            omc_ast_res = os.path.join(data_path, "omc_ast.res")
+            ephembsp_res = os.path.join(data_path, "ephembsp.res")
+            cov_mat = os.path.join(data_path, "cov.mat")
+
             if os.path.exists(file_nima_bsp):
                 status = "success"
 
@@ -957,6 +852,25 @@ class RefineOrbit():
                     status = "warning"
                     error_msg = "One or more of the diff nima jpl charts was not created"
                
+                if not os.path.exists(correl_mat):
+                    correl_mat = None
+                if not os.path.exists(sigyr_res):
+                    sigyr_res = None
+                if not os.path.exists(offset_oth_obs):
+                    offset_oth_obs = None
+                if not os.path.exists(ci_ast_dat):
+                    ci_ast_dat = None
+                if not os.path.exists(offset_oth_dat):
+                    offset_oth_dat = None
+                if not os.path.exists(ephemni_res):
+                    ephemni_res = None
+                if not os.path.exists(omc_ast_res):
+                    omc_ast_res = None
+                if not os.path.exists(ephembsp_res):
+                    ephembsp_res = None
+                if not os.path.exists(cov_mat):
+                    cov_mat = None
+
             else:
                 return dict({
                     "status": "failure",
@@ -968,12 +882,22 @@ class RefineOrbit():
                 "status": status,
                 "error_msg": error_msg,
                 "bsp_nima": file_nima_bsp,
-                "omc_sep": omc_sep, 
-                "omc_sep_all": omc_sep_all,
-                "omc_sep_recent": omc_sep_recent,
-                "diff_nima_jpl_ra": diff_nima_jpl_ra,
-                "diff_nima_jpl_dec": diff_nima_jpl_dec,
-                "diff_bsp_ni": diff_bsp_ni
+                "residual_all_v2": omc_sep, 
+                "residual_all_v1": omc_sep_all,
+                "residual_recent": omc_sep_recent,
+                "comparison_nima_jpl_ra": diff_nima_jpl_ra,
+                "comparison_nima_jpl_dec": diff_nima_jpl_dec,
+                "comparison_bsp_integration": diff_bsp_ni,
+                # Arquivos Opcionais
+                "correl_mat": correl_mat,
+                "sigyr_res": sigyr_res,
+                "offset_oth_obs": offset_oth_obs,
+                "ci_ast_dat": ci_ast_dat,
+                "offset_oth_dat": offset_oth_dat,
+                "ephemni_res": ephemni_res,
+                "omc_ast_res": omc_ast_res,
+                "ephembsp_res": ephembsp_res,
+                "cov_mat": cov_mat,
             })
 
             return result
@@ -987,7 +911,6 @@ class RefineOrbit():
                 "status": "failure",
                 "error_msg": "Container NIMA failed: %s" % e
             })
-
 
 
     def nima_input_file(self, obj):
@@ -1013,32 +936,10 @@ class RefineOrbit():
             self.logger.error(e)
             raise (e)
 
-    def nima_check_results(self, obj):
-
-        results = list()
-
-        inputs = list()
-        for i in obj["inputs"]:
-            f_input = obj["inputs"][i]
-            inputs.append(f_input["filename"])
-
-        files = os.listdir(obj["relative_path"])
-
-        for f in files:
-
-            if f not in inputs:
-                file_path = os.path.join(obj["relative_path"], f)
-
-                results.append(dict({
-                    "filename": f,
-                    "file_size": os.path.getsize(file_path),
-                    "file_path": file_path,
-                    "file_type": os.path.splitext(file_path)[1]
-                }))
-
-        return results
 
     def register_refined_asteroid(self, obj, orbit_run):
+
+        self.logger.debug("Registering Object %s" % obj.get("name"))
 
         try:
 
@@ -1092,6 +993,7 @@ class RefineOrbit():
                     orbit, created = RefinedOrbit.objects.update_or_create(
                         asteroid=asteroid,
                         filename=filename,
+                        type=ftype,
                         defaults={
                             'file_size': file_size,
                             'file_type': file_type,
