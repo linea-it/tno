@@ -137,7 +137,6 @@ class AsteroidList extends Component {
   actionTemplate = rowData => {
     const asteroid_id = rowData.id;
     let btn_view = null;
-    let btn_log = null;
 
     btn_view = (
       <Button
@@ -148,21 +147,8 @@ class AsteroidList extends Component {
         onClick={() => this.onViewAsteroid(asteroid_id)}
       />
     );
-    btn_log = (
-      <Button
-        type="button"
-        icon="fa fa-file-text-o"
-        className="ui-button-warning"
-        title="Log"
-      />
-    );
 
-    return (
-      <div>
-        {btn_view}
-        {btn_log}
-      </div>
-    );
+    return <div>{btn_view}</div>;
   };
 
   onPageChange = e => {

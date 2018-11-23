@@ -38,7 +38,7 @@ class PredictionPanel extends Component {
       <div className="grid template-predict-panel">
         <PanelCostumize
           title="Prediction Occultation"
-          subTitle="Execute PRAIA Occultation"
+          subTitle=""
           className="content1_predict_occult"
           content={
             <Content
@@ -55,9 +55,10 @@ class PredictionPanel extends Component {
 
         <PanelCostumize
           className="history_predict_occult"
+          title="History"
+          subTitle=""
           content={
             <Content
-              title="Manage PRAIA Occultation rounds"
               content={
                 <PredictionHistory
                   view_prediction={this.onViewPrediction}

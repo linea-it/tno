@@ -253,90 +253,88 @@ class PointingList extends Component {
       onDoubleClick: (e, row) => {
         history.push('/pointingsdetail/' + row.id);
       },
-    };  
-
-    console.log(propSet);
+    };
 
     return (
       <div className={`${propSet.className} section`}>
-       <div className="grid template-pointigs">
-        <PanelCostumize
-          className="list_pointings"
-          title="List with all pointings"
-          content={
-            <Card>
-              <Toolbar>
-                <div className="ui-toolbar">
-                  <div className="ui-g ui-fluid">
-                    <div className="ui-lg-8 ui-md-6">
-                      <div className="ui-inputgroup">
-                        <InputText
-                          placeholder="Search By expnum, filename"
-                          value={search}
-                          onChange={this.onChangeSearch}
-                          onKeyPress={this.onKeyPress}
-                        />
-                        <Button
-                          className="btn-TNO-color"
-                          label="Search"
-                          onClick={this.handleSearch}
-                        />
+        <div className="grid template-pointigs">
+          <PanelCostumize
+            className="list_pointings"
+            title="List with all pointings"
+            content={
+              <Card>
+                <Toolbar>
+                  <div className="ui-toolbar">
+                    <div className="ui-g ui-fluid">
+                      <div className="ui-lg-8 ui-md-6">
+                        <div className="ui-inputgroup">
+                          <InputText
+                            placeholder="Search By expnum, filename"
+                            value={search}
+                            onChange={this.onChangeSearch}
+                            onKeyPress={this.onKeyPress}
+                          />
+                          <Button
+                            className="btn-TNO-color"
+                            label="Search"
+                            onClick={this.handleSearch}
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="ui-lg-4 ui-md-6">
-                      <div>
-                        <Button
-                          label="Clear"
-                          onClick={e => {
-                            this.handlerClear();
-                          }}
-                          className="btn-TNO-color"
-                        />
-                        <Button
-                          label="Filters"
-                          onClick={e => {
-                            this.setState({ show: true });
-                          }}
-                          className="btn-TNO-color"
-                        />
+                      <div className="ui-lg-4 ui-md-6">
+                        <div>
+                          <Button
+                            label="Clear"
+                            onClick={e => {
+                              this.handlerClear();
+                            }}
+                            className="btn-TNO-color"
+                          />
+                          <Button
+                            label="Filters"
+                            onClick={e => {
+                              this.setState({ show: true });
+                            }}
+                            className="btn-TNO-color"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Toolbar>
+                </Toolbar>
 
-              <div className="flex-container" />
-              <BootstrapTable
-                responsive
-                striped
-                hover
-                condensed
-                remote
-                bordered={false}
-                keyField="id"
-                noDataIndication="no results to display"
-                data={data}
-                columns={pointing_columns}
-                pagination={pagination}
-                onTableChange={this.handleTableChange}
-                rowEvents={rowEvents}
-                loading={loading}
-                overlay={overlayFactory({
-                  spinner: true,
+                <div className="flex-container" />
+                <BootstrapTable
+                  responsive
+                  striped
+                  hover
+                  condensed
+                  remote
+                  bordered={false}
+                  keyField="id"
+                  noDataIndication="no results to display"
+                  data={data}
+                  columns={pointing_columns}
+                  pagination={pagination}
+                  onTableChange={this.handleTableChange}
+                  rowEvents={rowEvents}
+                  loading={loading}
+                  overlay={overlayFactory({
+                    spinner: true,
 
-                  background: 'rgba(192,192,192,0.3)',
-                })}
-              />
+                    background: 'rgba(192,192,192,0.3)',
+                  })}
+                />
 
-              <FilterPointings
-                onFilter={this.onFilter}
-                show={this.state.show}
-                onHide={this.closeCreate}
-              />
-            </Card>
-          }
-        />
-      </div>
+                <FilterPointings
+                  onFilter={this.onFilter}
+                  show={this.state.show}
+                  onHide={this.closeCreate}
+                />
+              </Card>
+            }
+          />
+        </div>
       </div>
       // <div className="ui-g">
       //   <div className="ui-lg-12 ui-md-12 ui-sm-12">
@@ -423,7 +421,7 @@ class PointingList extends Component {
       //       }
       //     />
       //   </div>
-      // </div> 
+      // </div>
     );
   }
 }

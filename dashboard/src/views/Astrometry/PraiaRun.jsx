@@ -32,15 +32,16 @@ class PraiaRun extends Component {
     return (
       <PanelCostumize
         content={
-          <div className="">
-            <Card
-              className="none"
-              title={title}
-              subTitle="MOSTRAR TODAS AS INFORMACOES SOBRE A EXECUCAO DA ASTROMETRIA"
-            >
-              <div />
-            </Card>
-          </div>
+          <div />
+          // <div className="">
+          //   <Card
+          //     className="none"
+          //     title={title}
+          //     subTitle="MOSTRAR TODAS AS INFORMACOES SOBRE A EXECUCAO DA ASTROMETRIA"
+          //   >
+          //     <div />
+          //   </Card>
+          // </div>
         }
       />
     );
