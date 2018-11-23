@@ -95,8 +95,8 @@ class Dashboard extends Component {
     ];
 
     const data_exposures = [
-      { name: 'Pointings', value: exposures.count_pointings },
       { name: 'Exposures', value: exposures.exposures },
+      { name: 'CCD Frames', value: exposures.count_pointings },
       { name: 'Most recent', value: exposures.last },
       { name: 'Updated', value: exposures.update },
       { name: 'Size', value: exposures.size },
