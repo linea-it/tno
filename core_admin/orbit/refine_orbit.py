@@ -820,9 +820,7 @@ class RefineOrbit():
             error_msg = None
 
             # Verificar se a Orbita foi gerada
-            # TODO alterar o nome do arquivo bsp.
-            # file_nima_bsp = os.path.join(data_path, "%s_nima.bsp" % obj["alias"].replace('_', ''))
-            file_nima_bsp = os.path.join(data_path, "%s_%s_nima.bsp" % (obj["number"], obj["alias"].replace('_', '')))
+            file_nima_bsp = os.path.join(data_path, "%s_nima.bsp" % obj["alias"].replace('_', ''))
 
             omc_sep = os.path.join(data_path, "omc_sep.png")
             omc_sep_all = os.path.join(data_path, "omc_sep_all.png")
