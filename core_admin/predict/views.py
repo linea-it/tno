@@ -123,6 +123,47 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
                 'msg': "Record not found",
             })
 
+    @list_route()
+    def get_neighbors(self, request):
+        id = request.query_params.get('asteroid_id', None)
+
+        if id is None:
+            return Response({
+                'success': False,
+                'msg': "Asteroid with id %s Not Found." % id,
+            })
+
+        try:
+            asteroid = PredictAsteroid.objects.get(id=int(id))
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "Asteroid with id %s Not Found." % id,
+            })
+
+        next = None
+        try:
+            next_model = PredictAsteroid.objects.filter(orbit_run=asteroid.predict_run).exclude(status='failure').filter(
+                id__gt=asteroid.id).order_by('id').first()
+            next = next_model.id
+        except:
+            pass
+
+        prev = None
+        try:
+            prev_model = PredictAsteroid.objects.filter(orbit_run=asteroid.predict_run).exclude(status='failure').filter(
+                id__lt=asteroid.id).order_by('-id').first()
+            prev = prev_model.id
+        except:
+            pass
+
+        return Response(dict({
+            "success": True,
+            "prev": prev,
+            "next": next
+        }))   
+
 class PredictInputViewSet(viewsets.ModelViewSet):
     queryset = PredictInput.objects.all()
     serializer_class = PredictInputSerializer

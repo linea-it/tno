@@ -154,6 +154,12 @@ class PredictionApi {
     });
   };
 
+  getAsteroidNeighbors = ({ asteroid_id }) => {
+    const params = { asteroid_id: asteroid_id };
+    return axios.get(`${this.api}/prediction_asteroid/get_neighbors/`, {
+      params: params,
+    });
+  };
 }
 
 export default PredictionApi;
