@@ -38,9 +38,9 @@ class Praia extends Component {
           }
         />
          <PanelCostumize
-          title="Running"
+          title="Run time monitor"
           className="running_astrometry"
-          subTitle="Monitor the rounds Astrometry"
+          subTitle=""
           content={
             <PraiaRunning record={record} />
           }

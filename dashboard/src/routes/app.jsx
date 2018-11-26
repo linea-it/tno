@@ -21,8 +21,6 @@ import AsteroidDetail from '../views/RefineOrbit/AsteroidDetail';
 import PredictionPanel from '../views/Prediction/Panel';
 import PredictionDetail from '../views/Prediction/Detail';
 
-import PlotPrediction from '../views/Prediction/Plot';
-
 import AsteroidDetailPrediction from '../views/Prediction/AsteroidDetail';
 
 
@@ -190,14 +188,6 @@ const appRoutes = [
     component: Notifications,
     hidden: true,
   },
-
-  {
-    path: '/plot',
-    name: 'plot',
-    component: PlotPrediction,
-    hidden: false,
-  },
-
   { redirect: true, path: '/', to: '/dashboard', name: 'Dashboard' },
 ];
 

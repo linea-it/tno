@@ -76,7 +76,7 @@ class PredictionDetail extends Component {
     return (
       <div className="ui-toolbar">
         <Button
-          label="Back to Predict Run"
+          label="Back"
           icon="fa fa-undo"
           onClick={() => this.onClickBackToPredictRun()}
         />
@@ -85,7 +85,6 @@ class PredictionDetail extends Component {
   };
 
   render() {
-    console.log('dados do execute', this.state.data);
     const { data } = this.state;
     if (data === {}) {
       return <div />;
@@ -148,7 +147,7 @@ class PredictionDetail extends Component {
         <div className="navigation_predict_occult">{this.create_nav_bar()}</div>
 
         <PanelCostumize
-          title="Execution of execution"
+          title="Summary"
           className="list_predict_occult"
           content={
             <ListStats
@@ -160,7 +159,7 @@ class PredictionDetail extends Component {
         />
 
         <PanelCostumize
-          title="Execution of execution"
+          title="Status"
           className="stats_predict_occult"
           content={
             <DonutStats
@@ -172,7 +171,7 @@ class PredictionDetail extends Component {
         />
 
         <PanelCostumize
-          title="Execution of execution"
+          title="Execution Time"
           className="stats_predict_occult2"
           content={
             <DonutStats
@@ -184,7 +183,7 @@ class PredictionDetail extends Component {
         />
 
         <PanelCostumize
-          title="Execution of execution"
+          title="Asteroids"
           className="table_predict_occult"
           content={
             <AsteroidList
@@ -193,7 +192,6 @@ class PredictionDetail extends Component {
             />
           }
         />
-
       </div>
     );
   }

@@ -318,10 +318,7 @@ class AsteroidDetail extends Component {
         </div>
         <div className="ui-g">
           <div className="ui-g-6">
-            <Card
-              title="Inputs"
-              subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
-            >
+            <Card title="Inputs" subTitle="">
               <DataTable
                 value={this.state.inputs}
                 sortField={'input_type'}
@@ -329,13 +326,10 @@ class AsteroidDetail extends Component {
               >
                 {inp_columns}
               </DataTable>
-            </Card>            
+            </Card>
           </div>
           <div className="ui-g-6">
-            <Card
-              title="Results"
-              subTitle="Curabitur id lacus est. Donec erat sapien, dignissim ut arcu sed."
-            >
+            <Card title="Results" subTitle="">
               <TreeTable value={this.state.tree_data} sortField={'filename'}>
                 <Column field="filename" header="Name" sortable={true} />
                 <Column
