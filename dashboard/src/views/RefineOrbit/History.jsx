@@ -15,6 +15,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { Button } from 'primereact/button';
 import { Toolbar } from 'primereact/toolbar';
+import ReactInterval from 'react-interval';
 
 const columns = [
   {
@@ -187,6 +188,11 @@ class RefineOrbitHistory extends Component {
           content={
             <div className="ui-g">
               <div className="ui-lg-12">
+                <ReactInterval
+                  timeout={this.state.reload_interval * 1000}
+                  enabled={true}
+                  callback={this.reload}
+                />
                 <Toolbar>
                   <Button
                     label="Re-execute"
