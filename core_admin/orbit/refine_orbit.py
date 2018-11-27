@@ -25,6 +25,7 @@ import pytimeparse
 import parsl
 from parsl import *
 from statistics import mean
+import time
 class RefineOrbit():
     def __init__(self):
         self.logger = logging.getLogger("refine_orbit")
@@ -78,8 +79,6 @@ class RefineOrbit():
         # Diretorio onde ficam os inputs e resultados separados por objetos.
         self.objects_dir = os.path.join(self.proccess.relative_path, "objects")
 
-        self.relative_path = instance.relative_path
-
         self.results["objects_dir"] = self.objects_dir
 
         # recuperar a Custom List usada como input
@@ -96,6 +95,8 @@ class RefineOrbit():
 
             # Criar um diretorio para os arquivos do NIMA
             instance = RefineOrbit().createRefienOrbitDirectory(instance)
+
+            self.relative_path = instance.relative_path
 
             # Json file with step states:
             self.logger.info("Writing status file")
@@ -274,9 +275,13 @@ class RefineOrbit():
             with open(result_file, "w") as fp:
                 json.dump(self.results, fp)
 
+            csuccess = instance.asteroids.filter(status='success').count()
+            cfailed = instance.asteroids.filter(status='failed').count()
+            cwarning = instance.asteroids.filter(status='warning').count()
+
             # Se nao tiver nenhum resultado, marcar como falha
             instance.status = "failure"
-            if self.results["nima_report"]["count_success"] > 0:
+            if csuccess > 0:
                 instance.status = "success"
 
             instance.execution_time = tdelta
@@ -287,9 +292,9 @@ class RefineOrbit():
             instance.count_objects = obj_count
             instance.count_executed = self.results["count_executed"]
             instance.count_not_executed = self.results["count_not_executed"]
-            instance.count_success = self.results["nima_report"]["count_success"]
-            instance.count_failed = self.results["nima_report"]["count_failed"]
-            instance.count_warning = self.results["nima_report"]["count_warning"]
+            instance.count_success = csuccess
+            instance.count_failed = cfailed
+            instance.count_warning = cwarning
 
             instance.save()
 
@@ -363,7 +368,7 @@ class RefineOrbit():
         try:
             # Criar o Diretorio
             os.makedirs(directory)
-
+            time.sleep(2)
             if os.path.exists(directory):
                 # Alterar a Permissao do Diretorio
                 os.chmod(directory, 0o775)
@@ -639,7 +644,6 @@ class RefineOrbit():
             self.logger.error(e)
             raise e
 
-
         # Configuracao do Parsl Log.
         parsl.set_file_logger(os.path.join(self.relative_path, 'nima_parsl.log'))
 
@@ -647,6 +651,7 @@ class RefineOrbit():
         @App("python", dfk)
         def start_parsl_job(id, obj, logger):
             t0 = datetime.now()
+
 
             # Criar o arquivo com parametros de entrada
             nima_config = self.nima_input_file(obj)
@@ -690,7 +695,7 @@ class RefineOrbit():
                 obj["results"]["ephembsp_res"] = result["ephembsp_res"]
                 obj["results"]["cov_mat"] = result["cov_mat"]
 
-            if result['status'] == 'success':
+            if result['status'] != 'failure':
                 msg = "[ SUCCESS ] - Object: %s Time: %s " % (
                     obj['name'], humanize.naturaldelta(tdelta))
             else:
@@ -842,13 +847,37 @@ class RefineOrbit():
             if os.path.exists(file_nima_bsp):
                 status = "success"
 
-                if not os.path.exists(omc_sep) or not os.path.exists(omc_sep_all) or not os.path.exists(omc_sep_recent):
+                if not os.path.exists(omc_sep):
                     status = "warning"
-                    error_msg = "One or more of the omc sep charts was not created"
+                    error_msg = "the residual all v2 chart was not created"
+                    omc_sep = None
 
-                if not os.path.exists(diff_nima_jpl_ra) or not os.path.exists(diff_nima_jpl_dec) or not os.path.exists(diff_bsp_ni):
+                if not os.path.exists(omc_sep_all):
                     status = "warning"
-                    error_msg = "One or more of the diff nima jpl charts was not created"
+                    error_msg = "the residual_all_v1 chart was not created"
+                    omc_sep_all = None
+
+                if not os.path.exists(omc_sep_recent):
+                    status = "warning"
+                    error_msg = "the residual recent charts was not created"
+                    omc_sep_recent = None
+
+
+                if not os.path.exists(diff_nima_jpl_ra):
+                    status = "warning"
+                    error_msg = "The comparison nima jpl RA chart was not created"
+                    diff_nima_jpl_ra = None
+                
+                if not os.path.exists(diff_nima_jpl_dec):
+                    status = "warning"
+                    error_msg = "The comparison nima jpl Dec chart was not created"
+                    diff_nima_jpl_dec = None
+                
+                if not os.path.exists(diff_bsp_ni):
+                    status = "warning"
+                    error_msg = "The comparison bsp integration chart was not created"
+                    diff_bsp_ni = None
+
                
                 if not os.path.exists(correl_mat):
                     correl_mat = None
@@ -921,9 +950,15 @@ class RefineOrbit():
 
                 data = file.read()
 
-                data = data.replace('{number}', obj.get("number"))
+                name = obj.get("name").replace('_', '').replace(' ', '')
 
-                data = data.replace('{name}', obj.get("name").replace('_', '').replace(' ', ''))
+                number = obj.get("number")
+                if number is None or number == '-':
+                    number = name
+
+                data = data.replace('{number}', number.ljust(66))
+
+                data = data.replace('{name}', name.ljust(66))
 
                 with open(input_file, 'w') as new_file:
                     new_file.write(data)
@@ -941,20 +976,21 @@ class RefineOrbit():
 
         try:
 
-            try:
-                t0 = datetime.strptime(obj.get("start_time"), '%Y-%m-%d %H:%M:%S')
+            # try:
+            #     t0 = datetime.strptime(obj.get("start_nima"), '%Y-%m-%d %H:%M:%S')
 
-            except:
-                t0 = None
-            try:
-                t1 = datetime.strptime(obj.get("finish_time"), '%Y-%m-%d %H:%M:%S')
-            except:
-                t1 = None
+            # except:
+            #     t0 = None
+            # try:
+            #     t1 = datetime.strptime(obj.get("finish_nima"), '%Y-%m-%d %H:%M:%S')
+            # except:
+            #     t1 = None
 
-            if t0 is not None and t1 is not None:
-                t_delta = t1 - t0
-            else:
-                t_delta = None
+
+            # if t0 is not None and t1 is not None:
+            #     t_delta = t1 - t0
+            # else:
+            #     t_delta = None
 
             asteroid, created = RefinedAsteroid.objects.update_or_create(
                 orbit_run=orbit_run,
@@ -963,9 +999,9 @@ class RefineOrbit():
                     'number': obj.get("number"),
                     'status': obj.get("status"),
                     'error_msg': obj.get("error_msg"),
-                    'start_time': t0,
-                    'finish_time': t1,
-                    'execution_time': t_delta,
+                    'start_time': obj.get("start_nima", None),
+                    'finish_time': obj.get("finish_nima", None),
+                    'execution_time': obj.get("execution_nima", None),
                     'relative_path': obj.get("relative_path"),
                     'absolute_path': obj.get("absolute_path")
                 })

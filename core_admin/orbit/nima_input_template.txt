@@ -3,8 +3,8 @@
 /data                                                             | Folder path where bsp files are stored
 /data                                                             | Path of observation files (AstDyS/MPC)
 /data                                                             | Path of orbital parameters files (AstDyS/MPC)
-{number}                                                          | Asteroid number or name if unnumbered (ex: 50000, 2007_JH43)
-{name}                                                            | Asteroid name (ex: Quaoar, 2007_JH43)
+{number}| Asteroid number or name if unnumbered (ex: 50000, 2007_JH43)
+{name}| Asteroid name (ex: Quaoar, 2007_JH43)
 0                                                                 | file to merge (0 for all files)
 30                                                                | Timing threshold in sec for doublons (default: 60s)
 2                                                                 | Type of merging (2: No merging, weight changed (default, v3)) 

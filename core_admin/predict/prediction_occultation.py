@@ -187,7 +187,7 @@ class PredictionOccultation():
                         os.path.join(obj_relative_path, bsp_jpl_name))
 
                 # BSP gerada pelo NIMA
-                bsp_nima_name = '%s_%s_nima.bsp' % (obj.get("num"), obj_name.replace('_', ''))
+                bsp_nima_name = '%s_nima.bsp' % obj_name.replace('_', '')
                 if os.path.exists(os.path.join(obj_relative_path, bsp_nima_name)):
                     os.rename(
                         os.path.join(obj_relative_path, bsp_nima_name),
@@ -276,10 +276,20 @@ class PredictionOccultation():
             tdelta = finish_time - start_time
             self.results["execution_time"] = tdelta.total_seconds()
             # Average Time per object
-            average_time = mean(self.execution_time)
+            average_time = 0
+            if len(self.execution_time) > 0:
+                average_time = mean(self.execution_time)
+
             self.results["average_time"] = average_time
 
+            csuccess = instance.asteroids.filter(status='success').count()
+            cfailed = instance.asteroids.filter(status='failed').count()
+            cwarning = instance.asteroids.filter(status='warning').count()
+
             self.results["status"] = "success"
+
+            if cfailed == obj_count:
+                self.results["status"] = "failure"
 
             # Escrever os Resultados no results.json
             result_file = os.path.join(instance.relative_path, "results.json")
@@ -298,9 +308,9 @@ class PredictionOccultation():
             instance.average_time = average_time
             instance.count_objects = obj_count
 
-            instance.count_success = PredictAsteroid.objects.filter(status='success').count()
-            instance.count_failed = PredictAsteroid.objects.filter(status='failed').count()
-            instance.count_warning = PredictAsteroid.objects.filter(status='warning').count()
+            instance.count_success = csuccess
+            instance.count_failed = cfailed
+            instance.count_warning = cwarning
 
             instance.save()
 
@@ -331,7 +341,7 @@ class PredictionOccultation():
         try:
             # Criar o Diretorio
             os.makedirs(directory)
-
+            time.sleep(2)
             if os.path.exists(directory):
                 # Alterar a Permissao do Diretorio
                 os.chmod(directory, 0o775)
@@ -610,6 +620,8 @@ class PredictionOccultation():
         failure = 0
         average = []
 
+        maverage = 0
+
         for row in outputs:
             if row['status'] == "failure":
                 failure += 1
@@ -619,6 +631,9 @@ class PredictionOccultation():
 
             self.results['objects'][row['alias']] = row
 
+        if len(average) > 0:
+            maverage = mean(average)
+
         self.results['ephemeris_report'] = dict({
             'start_time': t0.replace(microsecond=0).isoformat(' '),
             'finish_time': t1.replace(microsecond=0).isoformat(' '),
@@ -626,7 +641,7 @@ class PredictionOccultation():
             'count_asteroids': count,
             'count_success': count - failure,
             'count_failed': failure,
-            'average_time': mean(average)
+            'average_time': maverage
         })
 
         self.logger.info(
@@ -885,6 +900,8 @@ class PredictionOccultation():
         failure = 0
         average = []
         crows = []
+        maverage = 0
+        mcrows = 0
         for row in outputs:
             if row['status'] == "failure":
                 failure += 1
@@ -900,6 +917,12 @@ class PredictionOccultation():
         t1 = datetime.now()
         tdelta = t1 - t0
 
+        if len(average) > 0:
+            maverage = mean(average)
+
+        if len(crows) > 0:
+            mcrows = mean(crows)
+
         self.results['gaia_catalog_report'] = dict({
             'start_time': t0.replace(microsecond=0).isoformat(' '),
             'finish_time': t1.replace(microsecond=0).isoformat(' '),
@@ -907,8 +930,8 @@ class PredictionOccultation():
             'count_asteroids': count,
             'count_success': count - failure,
             'count_failed': failure,
-            'average_time': mean(average),
-            'average_rows': mean(crows)
+            'average_time': maverage,
+            'average_rows': mcrows
         })
 
         self.logger.info(
@@ -1185,6 +1208,8 @@ class PredictionOccultation():
         count = len(outputs)
         failure = 0
         average = []
+        maverage = 0
+
         for row in outputs:
             if row['status'] == "failure":
                 failure += 1
@@ -1198,6 +1223,9 @@ class PredictionOccultation():
         t1 = datetime.now()
         tdelta = t1 - t0
 
+        if len(average) > 0:
+            maverage = mean(average)
+
         self.results['search_candidate_report'] = dict({
             'start_time': t0.replace(microsecond=0).isoformat(' '),
             'finish_time': t1.replace(microsecond=0).isoformat(' '),
@@ -1205,7 +1233,7 @@ class PredictionOccultation():
             'count_asteroids': count,
             'count_success': count - failure,
             'count_failed': failure,
-            'average_time': mean(average),
+            'average_time': maverage,
         })
 
         self.logger.info(
@@ -1414,6 +1442,7 @@ class PredictionOccultation():
         count = len(outputs)
         failure = 0
         average = []
+        maverage = 0
         for row in outputs:
             if row['status'] == "failure":
                 failure += 1
@@ -1427,6 +1456,9 @@ class PredictionOccultation():
         t1 = datetime.now()
         tdelta = t1 - t0
 
+        if len(average) > 0:
+            maverage = mean(average)
+
         self.results['maps_report'] = dict({
             'start_time': t0.replace(microsecond=0).isoformat(' '),
             'finish_time': t1.replace(microsecond=0).isoformat(' '),
@@ -1434,7 +1466,7 @@ class PredictionOccultation():
             'count_asteroids': count,
             'count_success': count - failure,
             'count_failed': failure,
-            'average_time': mean(average),
+            'average_time': maverage,
         })
 
         self.logger.info(
