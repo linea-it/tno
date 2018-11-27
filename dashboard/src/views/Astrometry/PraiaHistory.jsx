@@ -183,45 +183,45 @@ class PraiaHistory extends Component {
     };
 
     return (
+      <div>
+        <ReactInterval
+          timeout={reload_interval * 1000}
+          enabled={true}
+          callback={this.reload}
+        />
+        <Card className="none">
           <div>
-            <ReactInterval
-              timeout={reload_interval * 1000}
-              enabled={true}
-              callback={this.reload}
+            <Toolbar>
+              <Button
+                label="Re-execute"
+                className="btn-TNO-color"
+                disabled={!selected_record}
+                onClick={this.handleOnRerun}
+              />
+            </Toolbar>
+            <BootstrapTable
+              striped
+              hover
+              condensed
+              remote
+              bordered={false}
+              keyField="id"
+              noDataIndication="..."
+              data={data}
+              columns={columns}
+              pagination={pagination}
+              onTableChange={this.handleTableChange}
+              loading={loading}
+              overlay={overlayFactory({
+                spinner: true,
+                background: 'rgba(192,192,192,0.3)',
+              })}
+              rowEvents={rowEvents}
+              selectRow={selectRow}
             />
-            <Card className="none">
-              <div>
-                <Toolbar>
-                  <Button
-                    label="Re-execute"
-                    className="btn-TNO-color"
-                    disabled={!selected_record}
-                    onClick={this.handleOnRerun}
-                  />
-                </Toolbar>
-                <BootstrapTable
-                  striped
-                  hover
-                  condensed
-                  remote
-                  bordered={false}
-                  keyField="id"
-                  noDataIndication="..."
-                  data={data}
-                  columns={columns}
-                  pagination={pagination}
-                  onTableChange={this.handleTableChange}
-                  loading={loading}
-                  overlay={overlayFactory({
-                    spinner: true,
-                    background: 'rgba(192,192,192,0.3)',
-                  })}
-                  rowEvents={rowEvents}
-                  selectRow={selectRow}
-                />
-              </div>
-            </Card>
           </div>
+        </Card>
+      </div>
     );
   }
 }

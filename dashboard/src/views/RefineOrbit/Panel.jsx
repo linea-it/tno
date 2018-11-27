@@ -23,6 +23,11 @@ class RefineOrbitPanel extends Component {
     this.setState({ record: record });
   };
 
+  onViewOrbit = id => {
+    const history = this.props.history;
+    history.push({ pathname: `/orbit_run_detail/${id}` });
+  };
+
   render() {
     const { record } = this.state;
     return (
@@ -37,7 +42,12 @@ class RefineOrbitPanel extends Component {
           className="history_refine"
           title="History"
           subTitle=""
-          content={<RefineOrbitHistory onRerun={this.onCreateRun} />}
+          content={
+            <RefineOrbitHistory
+              onRerun={this.onCreateRun}
+              view_orbit={this.onViewOrbit}
+            />
+          }
         />
       </div>
     );
