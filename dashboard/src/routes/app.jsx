@@ -20,6 +20,7 @@ import RefineRunOrbitDetail from '../views/RefineOrbit/RunDetail';
 import AsteroidDetail from '../views/RefineOrbit/AsteroidDetail';
 import PredictionPanel from '../views/Prediction/Panel';
 import PredictionDetail from '../views/Prediction/Detail';
+import OccultationsPanel from '../views/Occultations/Panel';
 
 import AsteroidDetailPrediction from '../views/Prediction/AsteroidDetail';
 
@@ -144,9 +145,9 @@ const appRoutes = [
     hidden: true,
   },
   {
-    path: '/post_results',
-    name: 'Post Results',
-    component: Placeholder,
+    path: '/occultations',
+    name: 'Occultations',
+    component: OccultationsPanel,
   },
   {
     path: '/light_curve',

@@ -13,7 +13,7 @@ import './assets/css/demo.css';
 import './assets/css/pe-icon-7-stroke.css';
 import 'semantic-ui-css/semantic.min.css';
 import 'react-notifications/lib/notifications.css';
-
+import 'primeflex/primeflex.css';
 
 import history from './history';
 
