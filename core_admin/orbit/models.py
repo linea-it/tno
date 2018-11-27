@@ -95,7 +95,7 @@ class OrbitRun(models.Model):
         max_length=10,
         verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('error', 'Error'))
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'))
     )
 
     def __str__(self):
@@ -288,7 +288,7 @@ class RefinedAsteroid(models.Model):
         max_length=10,
         verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'))
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'), ('warning', 'Warning'))
     )
 
     error_msg = models.CharField(
@@ -338,6 +338,39 @@ class RefinedOrbit(models.Model):
     asteroid = models.ForeignKey(
         RefinedAsteroid, on_delete=models.CASCADE, verbose_name='Asteroid',
         null=False, blank=False, related_name='refined_orbit'
+    )
+
+    # diff_nima_jpl_RA.png  --> comparison_nima_jpl_ra
+    # diff_nima_jpl_Dec.png --> comparison_nima_jpl_dec
+    # diff_bsp-ni.png --> comparison_bsp_integration
+    # omc_sep_all.png --> residual_all_v1
+    # omc_sep_recent.png --> residual_recent
+    # omc_sep.png --> residual_all_v2
+    
+    type = models.CharField(
+        max_length=60,
+        verbose_name='Type',
+        null=True, blank=True, default=None,
+        help_text="Description of the result type.",
+        choices=(
+            ('bsp_nima', 'BSP NIMA'),
+            ('residual_all_v1', 'Residual All v1'),
+            ('residual_all_v2', 'Residual All v2'),
+            ('residual_recent', 'Residual Recent'),
+            ('comparison_nima_jpl_ra', 'Comparison NIMA jpl RA'),
+            ('comparison_nima_jpl_dec', 'Comparison NIMA jpl Dec'),
+            ('comparison_bsp_integration', 'Comparison bsp integration'),
+            # Arquivos Opcionais
+            ('correl_mat', 'correl.mat'),
+            ('sigyr_res', 'sigyr.res'),
+            ('offset_oth_obs', 'offset_oth.obs'),
+            ('ci_ast_dat', 'CI_ast.dat'),
+            ('offset_oth_dat', 'offset_oth.dat'),
+            ('ephemni_res', 'ephemni.res'),
+            ('omc_ast_res', 'omc_ast.res'),
+            ('ephembsp_res', 'ephembsp.res'),
+            ('cov_mat', 'cov.mat'),
+        )
     )
 
     filename = models.CharField(

@@ -41,41 +41,6 @@ class AsteroidList extends Component {
 
   columns = [
     {
-      field: 'status',
-      header: 'Status',
-      sortable: false,
-      style: { textAlign: 'center', width: '80' },
-      body: rowData => {
-        if (rowData.status === 'success') {
-          return (
-            <Button
-              type="button"
-              icon="fa fa-check"
-              className="ui-button-success"
-            />
-          );
-        } else if (rowData.status === 'warning') {
-          return (
-            <Button
-              type="button"
-              icon="fa fa-exclamation"
-              className="ui-button-warning"
-              title={rowData.error_msg}
-            />
-          );
-        } else {
-          return (
-            <Button
-              type="button"
-              icon="fa fa-times"
-              className="ui-button-danger"
-              title={rowData.error_msg}
-            />
-          );
-        }
-      },
-    },
-    {
       field: 'name',
       header: 'Name',
       sortable: true,
@@ -183,6 +148,36 @@ class AsteroidList extends Component {
     );
   };
 
+  statusColumn = rowData => {
+    if (rowData.status === 'success') {
+      return (
+        <Button
+          type="button"
+          icon="fa fa-check"
+          className="ui-button-success"
+        />
+      );
+    } else if (rowData.status === 'warning') {
+      return (
+        <Button
+          type="button"
+          icon="fa fa-exclamation"
+          className="ui-button-warning"
+          title={rowData.error_msg}
+        />
+      );
+    } else {
+      return (
+        <Button
+          type="button"
+          icon="fa fa-times"
+          className="ui-button-danger"
+          title={rowData.error_msg}
+        />
+      );
+    }
+  }
+
   onLogHide = () => {
     this.setState({ log_visible: false, asteroid_id: 0 });
   };
@@ -236,7 +231,7 @@ class AsteroidList extends Component {
     });
 
     return (
-      <Card title="Asteroids" subTitle="">
+      <Card title="" subTitle="">
         <DataTable
           value={this.state.data}
           resizableColumns={true}
@@ -251,6 +246,11 @@ class AsteroidList extends Component {
           sortOrder={this.state.sortOrder}
           onSort={this.onSort}
         >
+          <Column
+            header="Status"
+            body={this.statusColumn}
+            style={{ textAlign: 'center', width: '6em' }}
+          />
           {columns}
           <Column
             body={this.actionTemplate}

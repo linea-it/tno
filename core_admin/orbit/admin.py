@@ -44,7 +44,7 @@ class RefinedAsteroidAdmin(admin.ModelAdmin):
 
 @admin.register(RefinedOrbit)
 class RefinedOrbitAdmin(admin.ModelAdmin):
-    list_display = ('id', 'asteroid', 'filename', 'file_size', 'file_type', 'relative_path',)
+    list_display = ('id', 'asteroid', 'type', 'filename', 'file_size', 'file_type', 'relative_path',)
     search_fields = ('asteroid__name',)
 
 

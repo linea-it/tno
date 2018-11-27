@@ -25,6 +25,13 @@ class AsteroidDetail extends Component {
     history: PropTypes.any.isRequired,
   };
 
+  plot_images_order = [
+    'comparison_nima_jpl_ra',
+    'comparison_nima_jpl_dec',
+    'residual_all_v1',
+    'residual_recent',
+  ];
+
   get initialState() {
     return {
       id: 0,
@@ -94,7 +101,12 @@ class AsteroidDetail extends Component {
             ) {
               // O source deve apontar para o backend
               e.src = this.api.api + e.src;
-              images.push(e);
+              // Saber em qual ordem deve ser exibida a imagem.
+              const idx = this.plot_images_order.indexOf(e.type);
+              console.log(idx)
+              if (idx > -1) {
+                images[idx] = e;
+              }
             }
 
             childrens.push({
@@ -206,7 +218,7 @@ class AsteroidDetail extends Component {
       <Toolbar>
         <div className="ui-toolbar-group-left">
           <Button
-            label="Back to Refine Orbit"
+            label="Back"
             icon="fa fa-undo"
             onClick={() =>
               this.onClickBackToRefine(this.state.asteroid.orbit_run)

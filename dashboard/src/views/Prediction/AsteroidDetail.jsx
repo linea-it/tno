@@ -490,7 +490,7 @@ class AsteroidDetailPrediction extends Component {
   };
 
   catalogPlot = (positions, catalog_stars) => {
-    if (positions.length > 0 && catalog_stars.length > 0) {
+    if (positions && positions.length > 0 && catalog_stars.length > 0) {
       return (
         <div className="plot_predict_radius">
           <PlotPrediction

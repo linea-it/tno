@@ -124,6 +124,8 @@ class Astrometry():
 
                 self.logger.debug("Object [ %s ] - COPY : %s -> %s" % (obj.get("name"), original_file, new_file))
 
+            time.sleep(2)
+
         # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
 
 
