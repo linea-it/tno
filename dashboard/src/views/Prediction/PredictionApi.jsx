@@ -147,7 +147,7 @@ class PredictionApi {
 
   getAsteroidNeighbors = ({ asteroid_id }) => {
     const params = { asteroid_id: asteroid_id };
-    return axios.get(`${this.api}/refined_asteroid/get_neighbors/`, {
+    return axios.get(`${this.api}/predict_asteroid/get_neighbors/`, {
       params: params,
     });
   };
