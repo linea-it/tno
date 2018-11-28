@@ -215,7 +215,7 @@ export class PredictionSubmit extends Component {
   onCreateFailure = error => {
     // TODO: Criar uma Notificacao de falha.
     console.log('onCreateFailure(%o)', error);
-    const msg = 'MENSAGEM DE ERRO';
+    const msg = 'An error has occurred';
     this.setState(this.initialState, this.props.onFailure(msg));
   };
 
