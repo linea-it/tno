@@ -1,66 +1,54 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import overlayFactory from 'react-bootstrap-table2-overlay';
-import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import { formatColumnHeader, formatStatus } from 'utils';
-import OrbitApi from './OrbitApi';
-import Content from 'components/CardContent/CardContent.jsx';
 
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
+
+import OrbitApi from './OrbitApi';
+
+import { DataTable } from 'primereact/datatable';
 import { Button } from 'primereact/button';
 import { Toolbar } from 'primereact/toolbar';
+import { Column } from 'primereact/column';
+import { Paginator } from 'primereact/paginator';
+
+import Content from 'components/CardContent/CardContent.jsx';
 import ReactInterval from 'react-interval';
 
 const columns = [
   {
-    text: 'Proccess',
-    dataField: 'proccess_displayname',
-    width: 300,
-    headerStyle: formatColumnHeader,
+    header: 'Proccess',
+    field: 'proccess_displayname',
   },
   {
-    text: 'Run Id',
-    dataField: 'id',
-    width: 60,
-    hidden: true,
-    headerStyle: formatColumnHeader,
+    header: 'Run Id',
+    field: 'id',
   },
   {
-    text: 'Owner',
-    dataField: 'owner',
-    width: 120,
-    headerStyle: formatColumnHeader,
+    header: 'Owner',
+    field: 'owner',
   },
   {
-    text: 'Start',
-    dataField: 'h_time',
+    header: 'Start',
+    field: 'h_time',
   },
   {
-    text: 'Execution Time',
-    dataField: 'h_execution_time',
+    header: 'Execution Time',
+    field: 'h_execution_time',
   },
   {
-    text: 'Asteroids',
-    dataField: 'count_objects',
+    header: 'Asteroids',
+    field: 'count_objects',
   },
-  // {
-  //   text: 'Finish',
-  //   dataField: 'finish_time',
-  //   // formatter: formatDateUTC,
-  // },
   {
-    text: 'Status',
+    header: 'Finish',
+    field: 'finish_time',
+  },
+  {
+    header: 'Status',
     dataField: 'status',
-    width: 80,
-    align: 'center',
-    headerStyle: formatColumnHeader,
-    classes: formatStatus,
   },
 ];
 
@@ -72,6 +60,7 @@ class RefineOrbitHistory extends Component {
     history: PropTypes.any.isRequired,
     loading: PropTypes.bool,
     onRerun: PropTypes.func.isRequired,
+    view_orbit: PropTypes.func.isRequired,
   };
 
   get initialState() {
@@ -79,6 +68,8 @@ class RefineOrbitHistory extends Component {
       data: [],
       page: 1,
       totalSize: 0,
+      first: 0,
+
       sizePerPage: 10,
       loading: false,
       // Tempo em segundos entre cada reload da lista
@@ -122,6 +113,138 @@ class RefineOrbitHistory extends Component {
     this.fetchData(this.state.page, this.state.sizePerPage);
   };
 
+  onPageChange = e => {
+    const page = e.page + 1;
+    this.setState(
+      {
+        first: e.first,
+        page: page,
+        sizePerPage: e.rows,
+      },
+      this.fetchData({
+        page: page,
+        sizePerPage: e.rows,
+        sortField: this.state.sortField,
+        sortOrder: this.state.sortOrder,
+      })
+    );
+  };
+
+  actionTemplate = rowData => {
+    const id = rowData.id;
+    let btn_view = null;
+    let btn_log = null;
+
+    if (rowData.status !== 'success') {
+      btn_view = (
+        <Button
+          type="button"
+          icon="fa fa-search"
+          className="ui-button-info"
+          disabled={true}
+          title="View"
+          onClick={() => this.onView(id)}
+        />
+      );
+      btn_log = (
+        <Button
+          type="button"
+          icon="fa fa-file-text-o"
+          className="ui-button-warning"
+          title="Log"
+          disabled={true}
+          onClick={() => this.onLog(id)}
+        />
+      );
+      return (
+        <div>
+          {btn_view}
+          {btn_log}
+        </div>
+      );
+    } else {
+      btn_view = (
+        <Button
+          type="button"
+          icon="fa fa-search"
+          className="ui-button-info"
+          title="View"
+          onClick={() => this.onView(id)}
+        />
+      );
+      btn_log = (
+        <Button
+          type="button"
+          icon="fa fa-file-text-o"
+          className="ui-button-warning"
+          title="Log"
+          onClick={() => this.onLog(id)}
+        />
+      );
+      return (
+        <div>
+          {btn_view}
+          {btn_log}
+        </div>
+      );
+    }
+  };
+
+  status_table = rowData => {
+    const row = rowData.status;
+    const status = [
+      { state: 'running' },
+      { state: 'warning' },
+      { state: 'success' },
+      { state: 'failure' },
+    ];
+
+    return status.map((el, i) => {
+      if (row === el.state) {
+        return (
+          <div key={i} className={`status_table ${el.state}`}>
+            {row}
+          </div>
+        );
+      }
+      // return;
+    });
+  };
+
+  toolbarButton = el => {
+    let btn_view_toolbar = null;
+    let btn_reexecute = null;
+
+    btn_reexecute = (
+      <Button
+        className="btn-TNO-color"
+        label="Re-execute"
+        disabled={!this.state.selected}
+        onClick={this.handleOnRerun}
+      />
+    );
+
+    btn_view_toolbar = (
+      <Button
+        className="btn-TNO-color"
+        label="Detail"
+        disabled={!this.state.selected}
+        onClick={() => this.onView(el.id)}
+      />
+    );
+
+    return (
+      <Toolbar>
+        {btn_reexecute}
+        {btn_view_toolbar}
+      </Toolbar>
+    );
+  };
+
+  onView = id => {
+    this.props.view_orbit(id);
+  };
+
   handleOnRerun = () => {
     const { selected_record } = this.state;
 
@@ -149,38 +272,10 @@ class RefineOrbitHistory extends Component {
     }
   };
 
-  details = () => {
-    const history = this.props.history;
-    const id = this.state.selected_record.id;
-    history.push({ pathname: `/orbit_run_detail/${id}` });
-  };
-
   render() {
-    const {
-      data,
-      sizePerPage,
-      page,
-      totalSize,
-      loading,
-      reload_interval,
-      selected,
-      selected_record,
-    } = this.state;
-
-    const pagination = paginationFactory({
-      page: page,
-      sizePerPage: sizePerPage,
-      totalSize: totalSize,
-      hidePageListOnlyOnePage: true,
-      showTotal: true,
+    const dynamicColumns = columns.map((col, i) => {
+      return <Column key={col.field} field={col.field} header={col.header} />;
     });
-
-    const selectRow = {
-      mode: 'radio',
-      clickToSelect: true,
-      onSelect: this.handleOnSelect,
-      selected: selected,
-    };
 
     return (
       <div>
@@ -193,38 +288,43 @@ class RefineOrbitHistory extends Component {
                   enabled={true}
                   callback={this.reload}
                 />
-                <Toolbar>
-                  <Button
-                    label="Re-execute"
-                    className="btn-TNO-color"
-                    disabled={!selected_record}
-                    onClick={this.handleOnRerun}
+
+                {this.toolbarButton(this.state.selected)}
+
+                <DataTable
+                  value={this.state.data}
+                  resizableColumns={true}
+                  columnResizeMode="expand"
+                  reorderableColumns={false}
+                  reorderableRows={false}
+                  responsive={true}
+                  scrollable={true}
+                  loading={this.state.loading}
+                  totalRecords={this.state.totalSize}
+                  sortField={this.state.sortField}
+                  sortOrder={this.state.sortOrder}
+                  onSort={this.onSort}
+                  selectionMode="single"
+                  selection={this.state.selected}
+                  onSelectionChange={e => this.setState({ selected: e.data })}
+                >
+                  <Column
+                    header="Status"
+                    body={this.status_table}
+                    style={{ textAlign: 'center', width: '6em' }}
                   />
-                  <Button
-                    label="Detail"
-                    className="btn-TNO-color"
-                    disabled={!selected_record}
-                    onClick={this.details}
+                  {dynamicColumns}
+
+                  <Column
+                    body={this.actionTemplate}
+                    style={{ textAlign: 'center', width: '6em', color: '#fff' }}
                   />
-                </Toolbar>
-                <BootstrapTable
-                  striped
-                  hover
-                  condensed
-                  remote
-                  bordered={false}
-                  keyField="id"
-                  noDataIndication="..."
-                  data={data}
-                  columns={columns}
-                  pagination={pagination}
-                  onTableChange={this.handleTableChange}
-                  loading={loading}
-                  overlay={overlayFactory({
-                    spinner: true,
-                    background: 'rgba(192,192,192,0.3)',
-                  })}
-                  selectRow={selectRow}
+                </DataTable>
+                <Paginator
+                  rows={this.state.sizePerPage}
+                  totalRecords={this.state.totalSize}
+                  first={this.state.first}
+                  onPageChange={this.onPageChange}
                 />
               </div>
             </div>
