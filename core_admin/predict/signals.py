@@ -3,7 +3,6 @@ from django.dispatch import receiver
 from predict.models import PredictRun
 import os
 import logging
-# from orbit.refine_orbit import RefineOrbit, RefineOrbitDB
 from predict.prediction_occultation import PredictionOccultation
 import shutil
 from datetime import datetime
