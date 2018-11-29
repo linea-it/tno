@@ -21,7 +21,7 @@ import AsteroidDetail from '../views/RefineOrbit/AsteroidDetail';
 import PredictionPanel from '../views/Prediction/Panel';
 import PredictionDetail from '../views/Prediction/Detail';
 import OccultationsPanel from '../views/Occultations/Panel';
-
+import OccultationDetail from '../views/Occultations/Detail';
 import AsteroidDetailPrediction from '../views/Prediction/AsteroidDetail';
 
 
@@ -149,6 +149,12 @@ const appRoutes = [
     name: 'Occultations',
     component: OccultationsPanel,
   },
+  {
+    path: '/occultation_detail/:id',
+    name: 'Occultation Detail',
+    hidden: true,
+    component: OccultationDetail,
+  },  
   {
     path: '/light_curve',
     name: 'Light Curve Analysis',

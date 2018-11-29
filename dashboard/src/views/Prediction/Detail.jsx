@@ -39,13 +39,6 @@ class PredictionDetail extends Component {
       match: { params },
     } = this.props;
 
-    // this.api.Prediction().then(res => {
-    //   const r = res.data;
-    //   this.setState({ list: r });
-    // });
-
-    // console.log('Orbit Run Id: %o', params.id);
-
     this.api.getPredictionRunById({ id: params.id }).then(res => {
       const data = res.data;
 
@@ -53,14 +46,6 @@ class PredictionDetail extends Component {
         id: parseInt(params.id, 10),
         data: data,
       });
-
-      // if (data.status === 'success') {
-      //   this.api.getOrbitRunTimeProfile({ id: params.id }).then(res => {
-      //     this.setState({
-      //       time_profile: res.data.data,
-      //     });
-      //   });
-      // }
     });
   }
   onClickBackToPredictRun = () => {

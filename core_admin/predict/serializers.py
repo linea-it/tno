@@ -229,12 +229,16 @@ class OccultationSerializer(serializers.ModelSerializer):
     date_time = serializers.SerializerMethodField()
     src = serializers.SerializerMethodField()
     already_happened = serializers.SerializerMethodField()
+    asteroid_name = serializers.SerializerMethodField()
+    asteroid_number = serializers.SerializerMethodField()
 
     class Meta:
         model = Occultation
         fields = (
             'id',
             'asteroid',
+            'asteroid_name',
+            'asteroid_number',
             'date_time',
             'ra_star_candidate',
             'dec_star_candidate',
@@ -260,7 +264,7 @@ class OccultationSerializer(serializers.ModelSerializer):
             'pmra',
             'pmdec',
             'src',
-            'already_happened'
+            'already_happened',
         )
 
     def get_date_time(self, obj):
@@ -275,6 +279,18 @@ class OccultationSerializer(serializers.ModelSerializer):
         except:
             return None
     
+    def get_asteroid_name(self, obj):
+        try:
+            return obj.asteroid.name
+        except:
+            return None
+
+    def get_asteroid_number(self, obj):
+        try:
+            return obj.asteroid.number
+        except:
+            return None
+
     def get_already_happened(self, obj):
         a = obj.date_time
         b = timezone.now()

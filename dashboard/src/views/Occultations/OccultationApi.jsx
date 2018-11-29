@@ -5,15 +5,16 @@ class OccultationApi {
     this.api = process.env.REACT_APP_API;
   }
 
-  getOccultations = ({ page, pageSize, ordering, filters = [] }) => {
-    const params = { page: page, pageSize: pageSize, ordering: ordering };
-    filters.forEach(element => {
-      params[element.property] = element.value;
-    });
+  getOccultations = (page, pageSize) => {
+    const params = { page: page, pageSize: pageSize };
+
     return axios.get(`${this.api}/occultation/`, {
       params: params,
     });
   };
+
+  getOccultationById = ({ id }) =>
+    axios.patch(`${this.api}/occultation/${id}/`);
 }
 
 export default OccultationApi;
