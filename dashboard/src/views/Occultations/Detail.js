@@ -12,44 +12,44 @@ import Circumstances from './Circumstances';
 import OccultedStar from './OccultedStar';
 import Asteroid from './Asteroid';
 import Skymap from './Skymap';
-import AladinPanel from 'components/Aladin/Panel';
+
 
 import moment from 'moment';
 
 // Exemplo de dados de uma occultacao
-const data = {
-  id: 173,
-  asteroid: 14,
-  asteroid_name: '1999 RB216',
-  asteroid_number: '137295',
-  date_time: '2018-02-01 08:39:09',
-  ra_star_candidate: '02 01 58.2708',
-  dec_star_candidate: '+04 26 49.184',
-  ra_target: '02 01 58.2866',
-  dec_target: '+04 26 48.827',
-  closest_approach: 0.428,
-  position_angle: 146.55,
-  velocity: 12.2,
-  delta: 33.91,
-  g: 18.4,
-  j: 50.0,
-  h: 50.0,
-  k: 50.0,
-  long: 129.0,
-  loc_t: '17:15:00',
-  off_ra: 0.0,
-  off_dec: 0.0,
-  proper_motion: 'ok',
-  ct: '--',
-  multiplicity_flag: '-',
-  e_ra: 0.0,
-  e_dec: 0.0,
-  pmra: 3.0,
-  pmdec: 2.0,
-  src:
-    '/media/proccess/67/objects/1999_RB216/1999RB216_2018-02-01T08:39:09.000.png',
-  already_happened: true,
-};
+// const data = {
+//   id: 173,
+//   asteroid: 14,
+//   asteroid_name: '1999 RB216',
+//   asteroid_number: '137295',
+//   date_time: '2018-02-01 08:39:09',
+//   ra_star_candidate: '02 01 58.2708',
+//   dec_star_candidate: '+04 26 49.184',
+//   ra_target: '02 01 58.2866',
+//   dec_target: '+04 26 48.827',
+//   closest_approach: 0.428,
+//   position_angle: 146.55,
+//   velocity: 12.2,
+//   delta: 33.91,
+//   g: 18.4,
+//   j: 50.0,
+//   h: 50.0,
+//   k: 50.0,
+//   long: 129.0,
+//   loc_t: '17:15:00',
+//   off_ra: 0.0,
+//   off_dec: 0.0,
+//   proper_motion: 'ok',
+//   ct: '--',
+//   multiplicity_flag: '-',
+//   e_ra: 0.0,
+//   e_dec: 0.0,
+//   pmra: 3.0,
+//   pmdec: 2.0,
+//   src:
+//     '/media/proccess/67/objects/1999_RB216/1999RB216_2018-02-01T08:39:09.000.png',
+//   already_happened: true,
+// };
 
 class OccultationDetail extends Component {
   state = this.initialState;
@@ -220,7 +220,7 @@ class OccultationDetail extends Component {
   contentSkymap = (ra, dec) => {
     return (
       <Card subTitle="Sky map (Aladin)">
-        <Skymap />
+        <Skymap ra={ra} dec={dec} />
       </Card>
     );
   };
@@ -239,7 +239,7 @@ class OccultationDetail extends Component {
             <div className="p-col-12">{this.contentOccCircumstances(null)}</div>
             <div className="p-col-12"> {this.contentOccStar(null)} </div>
             <div className="p-col-12"> {this.contentAsteroid(null)} </div>
-            <div className="p-col-12"> {this.contentSkymap(null, null)} </div>
+            <div className="p-col-12"> {this.contentSkymap(occultation.ra_star_candidate, occultation.dec_star_candidate)} </div>
           </div>
         </div>
       );

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { uniqueId } from 'lodash';
 import sizeMe from 'react-sizeme';
 import { desfootprint } from './DesFootprint';
+import PropTypes from 'prop-types';
+
 class AladinPanel extends Component {
   constructor(props) {
     super(props);
@@ -18,6 +20,12 @@ class AladinPanel extends Component {
       this.libA = window.A;
     }
   }
+
+  static propTypes = {
+    position: PropTypes.string,
+    fov: PropTypes.number,
+    desfootprint: PropTypes.bool,
+  };
 
   get initialState() {
     return {};
@@ -60,33 +68,45 @@ class AladinPanel extends Component {
 
   componentDidUpdate = () => {
     // console.log("Depois do componente ter atualizado")
-
     // // Load CCDs:
     // this.api.getExposures({}).then(res => {
     //   const r = res.data;
-
     //   this.plot_exposures(r.results);
     //   // this.aladin.gotoRaDec([r.results[0].radeg, r.results[0].decdeg]);
-
     //   // Draw CCds
     //   // this.api.getExposures({}).then(res => {
     //   //   const r = res.data;
     //   //   this.plot_ccds(r.results)
     //   // });
-
     //   this.aladin.gotoObject(r.results[0].radeg + ', ' + r.results[0].decdeg);
     // });
   };
 
   create_aladin = () => {
+    const options = this.aladinOptions;
+
+    console.log('Position: ', this.props.position);
+    if (this.props.position != null) {
+      options.target = this.props.position;
+    }
+
+    if (this.props.fov) {
+      options.fov = this.props.fov;
+    }
+
+    console.log('Options: ', options);
+
     this.aladin = this.libA.aladin(
       // Id da div que recebera o aladin
       '#' + this.id,
       // opcoes do aladin
-      this.aladinOptions
+      options
     );
 
-    this.footprint(desfootprint, 'DES Footprint', true);
+    // Desenha o Footprint do Des
+    if (this.props.desfootprint) {
+      this.footprint(desfootprint, 'DES Footprint', true);
+    }
 
     return this.aladin;
   };
