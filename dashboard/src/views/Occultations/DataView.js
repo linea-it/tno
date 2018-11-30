@@ -23,7 +23,7 @@ class OccultationsDataView extends Component {
       first: 0,
       pageSize: 10,
       totalSize: 0,
-      layout: 'list',
+      layout: 'grid',
       sortField: null,
       sortKey: null,
     };
@@ -118,7 +118,7 @@ class OccultationsDataView extends Component {
       row.asteroid_number != row.asteroid_name &&
       row.asteroid_number != null
     ) {
-      name = row.asteroid_name + ' - ' + row.asteroid_number;
+      name = '(' + row.asteroid_number + ') ' + row.asteroid_name;
     }
 
     const image = this.api.api + row.src;
@@ -127,7 +127,8 @@ class OccultationsDataView extends Component {
       <div style={{ padding: '.5em' }} className="p-col-12 p-md-3">
         <Panel header={name} style={{ textAlign: 'center' }}>
           <img src={image} alt="" style={{ width: '300px' }} />
-          <div className="car-detail">{row.date_time}</div>
+          <div>{row.date_time}</div>
+          <div>G mag* {row.g}</div>
           <hr className="ui-widget-content" style={{ borderTop: 0 }} />
           <Button
             icon="pi pi-search"
