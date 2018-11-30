@@ -21,24 +21,27 @@ class OccultationsDataView extends Component {
       data: [],
       loading: false,
       first: 0,
-      pageSize: 1000,
+      pageSize: 10,
       totalSize: 0,
       layout: 'list',
-      selected: null,
       sortField: null,
-      sortOrder: null,
       sortKey: null,
     };
   }
 
   componentDidMount() {
-    this.fetchData(this.state.page, this.state.pageSize, this.state.first);
+    this.fetchData(
+      this.state.page,
+      this.state.pageSize,
+      this.state.first,
+      this.state.sortField
+    );
   }
 
-  fetchData = (page, pageSize, first) => {
-    // this.setState({ loading: true });
+  fetchData = (page, pageSize, first, sortField) => {
+    this.setState({ loading: true });
 
-    this.api.getOccultations(page, pageSize).then(res => {
+    this.api.getOccultations(page, pageSize, sortField).then(res => {
       const r = res.data;
       this.setState({
         data: r.results,
@@ -46,29 +49,25 @@ class OccultationsDataView extends Component {
         pageSize: pageSize,
         loading: false,
         first: first,
-        // sortField: sortField,
-        // sortOrder: sortOrder,
+        sortField: sortField,
+        sortKey: sortField,
       });
     });
   };
 
-  // onSortChange = event => {
-  //   const value = event.value;
+  onSortChange = event => {
+    const value = event.value;
 
-  //   if (value.indexOf('!') === 0) {
-  //     this.setState({
-  //       sortOrder: -1,
-  //       sortField: value.substring(1, value.length),
-  //       sortKey: value,
-  //     });
-  //   } else {
-  //     this.setState({
-  //       sortOrder: 1,
-  //       sortField: value,
-  //       sortKey: value,
-  //     });
-  //   }
-  // };
+    this.setState(
+      { sortKey: value, sortField: value },
+      this.fetchData(
+        this.state.page,
+        this.state.pageSize,
+        this.state.first,
+        value
+      )
+    );
+  };
 
   renderListItem = row => {
     // console.log('renderListItem: ', row);
@@ -107,15 +106,6 @@ class OccultationsDataView extends Component {
             />
           </div>
         </div>
-        {/* <div
-          className="p-col-12 p-md-1 search-icon"
-          style={{ marginTop: '40px' }}
-        >
-          <Button
-            icon="pi pi-search"
-            onClick={e => console.log('Clicou no detalhe')}
-          />
-        </div> */}
       </div>
     );
   };
@@ -173,20 +163,19 @@ class OccultationsDataView extends Component {
 
   renderHeader = () => {
     const sortOptions = [
-      { label: 'Newest First', value: '!year' },
-      { label: 'Oldest First', value: 'year' },
-      { label: 'Brand', value: 'brand' },
+      { label: 'Newest First', value: '-date_time' },
+      { label: 'Oldest First', value: 'date_time' },
     ];
 
     return (
       <div className="p-grid">
         <div className="p-col-6" style={{ textAlign: 'left' }}>
-          {/* <Dropdown
+          <Dropdown
             options={sortOptions}
             value={this.state.sortKey}
             placeholder="Sort By"
             onChange={this.onSortChange}
-          /> */}
+          />
         </div>
         <div className="p-col-6" style={{ textAlign: 'right' }}>
           <DataViewLayoutOptions
