@@ -5,11 +5,10 @@ class OccultedStar extends Component {
     return (
       <div>
         <table
+          className="simple_property_table"
           style={{
             textAlign: 'center',
-            width: '640px',
-            fontSize: '1em',
-            color: '#333333',
+            width: '100%',
           }}
         >
           <tbody>

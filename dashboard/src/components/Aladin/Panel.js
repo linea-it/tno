@@ -36,7 +36,6 @@ class AladinPanel extends Component {
       // fov:8,
       fov: 100,
       // target: '02 23 11.851 -09 40 21.59',
-      // target: '06 12 46.187 -45 45 15.40',
       cooFrame: 'J2000',
       survey: 'P/DSS2/color',
       showReticle: true,
@@ -85,7 +84,6 @@ class AladinPanel extends Component {
   create_aladin = () => {
     const options = this.aladinOptions;
 
-    console.log('Position: ', this.props.position);
     if (this.props.position != null) {
       options.target = this.props.position;
     }
@@ -93,8 +91,6 @@ class AladinPanel extends Component {
     if (this.props.fov) {
       options.fov = this.props.fov;
     }
-
-    console.log('Options: ', options);
 
     this.aladin = this.libA.aladin(
       // Id da div que recebera o aladin
@@ -225,6 +221,12 @@ class AladinPanel extends Component {
     }
 
     return result;
+  };
+
+  markPosition = position => {
+    const cat = this.libA.catalog({ name: 'Target', sourceSize: 18 });
+    this.aladin.addCatalog(cat);
+    cat.addSources([this.libA.marker(position)]);
   };
 
   render() {

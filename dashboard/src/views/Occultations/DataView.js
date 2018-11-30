@@ -150,7 +150,6 @@ class OccultationsDataView extends Component {
   };
 
   itemTemplate = (row, layout) => {
-
     if (!row) {
       return null;
     }
@@ -159,47 +158,13 @@ class OccultationsDataView extends Component {
     else if (layout === 'grid') return this.renderGridItem(row);
   };
 
-  // renderCarDialogContent = () => {
-  //   if (this.state.selected) {
-  //     return (
-  //       <div
-  //         className="p-grid"
-  //         style={{ fontSize: '16px', textAlign: 'center', padding: '20px' }}
-  //       >
-  //         <div className="p-col-12" style={{ textAlign: 'center' }}>
-  //           <img
-  //             src={
-  //               'showcase/resources/demo/images/car/${this.state.selectedCar.brand}.png'
-  //             }
-  //             alt={this.state.selectedCar.brand}
-  //           />
-  //         </div>
-
-  //         <div className="p-col-4">Vin: </div>
-  //         <div className="p-col-8">{this.state.selected.vin}</div>
-
-  //         <div className="p-col-4">Year: </div>
-  //         <div className="p-col-8">{this.state.selected.year}</div>
-
-  //         <div className="p-col-4">Brand: </div>
-  //         <div className="p-col-8">{this.state.selected.brand}</div>
-
-  //         <div className="p-col-4">Color: </div>
-  //         <div className="p-col-8">{this.state.selected.color}</div>
-  //       </div>
-  //     );
-  //   } else {
-  //     return null;
-  //   }
-  // };
-
   onClickDetail = row => {
     this.props.onView(row);
-  }
+  };
 
   onPageChange = e => {
     const page = e.originalEvent.page + 1;
-    // Esse funciona 
+    // Esse funciona
     // this.setState({first: e.first, rows: e.rows}, )
 
     // Esse NAO
