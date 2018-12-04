@@ -13,6 +13,7 @@ import { Column } from 'primereact/column';
 import { Toolbar } from 'primereact/toolbar';
 import PropTypes from 'prop-types';
 import { formatColumnHeader } from 'utils';
+import ReactInterval from 'react-interval';
 
 class PredictionHistory extends Component {
   state = this.initialState;
@@ -35,6 +36,7 @@ class PredictionHistory extends Component {
       sortOrder: 1,
       asteroid_id: 0,
       log_visible: false,
+      reload_interval: 10,
       selected: null,
     };
   }
@@ -76,14 +78,10 @@ class PredictionHistory extends Component {
       headerStyle: formatColumnHeader,
       sortable: true,
     },
-
   ];
 
   componentDidMount() {
-    this.fetchData(
-      this.state.page,
-      this.state.sizePerPage
-    );
+    this.fetchData(this.state.page, this.state.sizePerPage);
   }
 
   componentWillReceiveProps() {
@@ -114,6 +112,10 @@ class PredictionHistory extends Component {
           sortOrder: sortOrder,
         });
       });
+  };
+
+  reload = () => {
+    this.fetchData(this.state.page, this.state.sizePerPage);
   };
 
   actionTemplate = rowData => {
@@ -292,6 +294,11 @@ class PredictionHistory extends Component {
     });
     return (
       <div>
+        <ReactInterval
+          timeout={this.state.reload_interval * 1000}
+          enabled={true}
+          callback={this.reload}
+        />
         {this.toolbarButton(this.state.selected)}
 
         <DataTable

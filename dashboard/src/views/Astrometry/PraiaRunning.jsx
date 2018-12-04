@@ -26,11 +26,11 @@ class PraiaRunning extends Component {
       id = record.id;
     }
     return (
-          <div className="content">
-            <Card className="none">
-              <div className="content">PRAIA RUN ID: {id}</div>
-            </Card>
-          </div>
+      <div className="content">
+        <Card className="none">
+          {/* <div className="content">PRAIA RUN ID: {id}</div> */}
+        </Card>
+      </div>
     );
   }
 }

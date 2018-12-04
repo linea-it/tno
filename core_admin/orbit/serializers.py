@@ -171,6 +171,7 @@ class RefinedOrbitSerializer(serializers.ModelSerializer):
         model = RefinedOrbit
         fields = (
             'id',
+            'type',            
             'asteroid',
             'filename',
             'file_size',

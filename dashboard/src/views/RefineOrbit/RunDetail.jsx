@@ -151,7 +151,7 @@ class RefineOrbitRunDetail extends Component {
         <div className="ui-g">
           <div className="ui-g-12">
             <PanelCostumize
-              title="History"
+              title="Asteroids"
               content={
                 <AsteroidList
                   orbit_run={this.state.id}

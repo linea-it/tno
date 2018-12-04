@@ -114,7 +114,7 @@ class FilterObjectForm extends Component {
       <form>
         <FormGroup>
           <br />
-         <ControlLabel>Object Table</ControlLabel>
+         <ControlLabel>Dynamical Class</ControlLabel>
           <Select
             closeOnSelect={false}
             disabled={false}

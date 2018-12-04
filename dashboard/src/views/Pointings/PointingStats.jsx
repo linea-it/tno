@@ -54,13 +54,17 @@ class PointingsStats extends Component {
       return band;
     });
 
-    const exptime = this.state.exp.map((el, i) => {
-      const exptime = {
-        name: el.name,
-        exposure: el.exposure,
-      };
-      return exptime;
-    });
+    let exptime = [];
+    if (this.state.exp && this.state.exp.length > 0) {
+      exptime = this.state.exp.map((el, i) => {
+        const exptime = {
+          name: el.name,
+          exposure: el.exposure,
+        };
+        return exptime;
+      });
+    }
+
 
     const stats = [
       {

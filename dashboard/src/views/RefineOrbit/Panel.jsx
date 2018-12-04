@@ -23,6 +23,11 @@ class RefineOrbitPanel extends Component {
     this.setState({ record: record });
   };
 
+  onViewOrbit = id => {
+    const history = this.props.history;
+    history.push({ pathname: `/orbit_run_detail/${id}` });
+  };
+
   render() {
     const { record } = this.state;
     return (
@@ -30,14 +35,19 @@ class RefineOrbitPanel extends Component {
         <PanelCostumize
           className="submit_refine"
           title="Execute"
-          subTitle="Descrição sobre execução"
+          subTitle=""
           content={<RefineOrbitSubmit onCreateRun={this.onCreateRun} />}
         />
         <PanelCostumize
           className="history_refine"
           title="History"
-          subTitle="Manage the completed NIMA rounds"
-          content={<RefineOrbitHistory onRerun={this.onCreateRun} />}
+          subTitle=""
+          content={
+            <RefineOrbitHistory
+              onRerun={this.onCreateRun}
+              view_orbit={this.onViewOrbit}
+            />
+          }
         />
       </div>
     );
