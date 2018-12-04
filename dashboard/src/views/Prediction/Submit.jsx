@@ -23,6 +23,7 @@ export class PredictionSubmit extends Component {
 
   static propTypes = {
     onCreateRun: PropTypes.func.isRequired,
+    onFailure: PropTypes.func.isRequired,
   };
 
   get initialState() {
@@ -46,6 +47,7 @@ export class PredictionSubmit extends Component {
       ephemeris_step: 600,
       validation_text: '',
       validation_type: '',
+      visible: false,
       validation_display: 'none',
     };
   }
@@ -201,7 +203,6 @@ export class PredictionSubmit extends Component {
           this.onCreateSuccess(res.data);
         })
         .catch(error => {
-          alert('não foi concluido com sucesso');
           this.onCreateFailure(error);
         });
     }
@@ -210,13 +211,12 @@ export class PredictionSubmit extends Component {
   onCreateSuccess = record => {
     console.log('onCreateSuccess(%o)', record);
     this.setState(this.clearFormState, this.props.onCreateRun(record));
-
-
   };
   onCreateFailure = error => {
     // TODO: Criar uma Notificacao de falha.
     console.log('onCreateFailure(%o)', error);
-    this.setState(this.initialState, this.props.onCreateRun({}));
+    const msg = 'An error has occurred';
+    this.setState(this.initialState, this.props.onFailure(msg));
   };
 
   onChangeProcess = e => {
@@ -464,6 +464,7 @@ export class PredictionSubmit extends Component {
           type={this.state.validation_type}
           display={this.state.validation_display}
         />
+
         <Button
           label="Submit"
           disabled={!this.state.actionButton}

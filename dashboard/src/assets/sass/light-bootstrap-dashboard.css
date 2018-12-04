@@ -993,13 +993,15 @@ body > .navbar-collapse[data-color="purple"]:after {
   background-color: #63d8f1; }
 
 .alert-success {
-  background-color: #a1e82c; }
+  background-color: #a1e82c !important;
+  border: #28CA71 !important; }
 
 .alert-warning {
   background-color: #ffbc67; }
 
 .alert-danger {
-  background-color: #fc727a; }
+  background-color: #fc727a !important;
+  border: #D34A39 !important; }
 
 .table .radio,
 .table .checkbox {
@@ -3128,7 +3130,7 @@ body > .navbar-collapse[data-color="purple"]:after {
   animation: progress-bar-stripes 2s linear infinite; }
 
 .progress-bar-success {
-  background-color: #28CA71; }
+  background-color: #28CA71 !important; }
 
 .progress-bar-info {
   background-color: #2dbda8; }
@@ -3137,10 +3139,13 @@ body > .navbar-collapse[data-color="purple"]:after {
   background-color: #e76d3b; }
 
 .progress-bar-danger {
-  background-color: #D34A39; }
+  background-color: #D34A39 !important; }
 
 .progress-bar-muted {
   background-color: #9A9A9A; }
+
+.snackbar {
+  background: #D34A39 !important; }
 
 .step-list {
   list-style-type: none;
