@@ -2,7 +2,7 @@ import humanize
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Pointing, SkybotOutput, CustomList, Proccess, Catalog
+from .models import Pointing, SkybotOutput, CustomList, Proccess, Catalog, JohnstonArchive
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -56,9 +56,10 @@ class PointingSerializer(serializers.ModelSerializer):
 
     def get_date_obs(self, obj):
         try:
-             return obj.date_obs.strftime('%Y/%m/%d')
+            return obj.date_obs.strftime('%Y/%m/%d')
         except:
             return None
+
 
 class SkybotOutputSerializer(serializers.ModelSerializer):
     pointing = serializers.PrimaryKeyRelatedField(
@@ -150,6 +151,7 @@ class CustomListSerializer(serializers.ModelSerializer):
         except:
             return None
 
+
 class ProccessSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -176,4 +178,31 @@ class CatalogSerializer(serializers.ModelSerializer):
             'rows',
             'columns',
             'size'
+        )
+
+
+class JohnstonArchiveSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = JohnstonArchive
+        fields = (
+            'id',
+            'number',
+            'name',
+            'provisional_designation',
+            'dynamical_class',
+            'a',
+            'e',
+            'perihelion_distance',
+            'aphelion_distance',
+            'i',
+            'diameter',
+            'diameter_flag',
+            'albedo',
+            'b_r_mag',
+            'taxon',
+            'density',
+            'known_components',
+            'discovery',
+            'updated',
         )

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Pointing, SkybotOutput, CcdImage, CustomList, Proccess, Catalog
+from .models import Pointing, SkybotOutput, CcdImage, CustomList, Proccess, Catalog, JohnstonArchive
 @admin.register(Pointing)
 class PointingAdmin(admin.ModelAdmin):
     list_display = ('id', 'date_obs', 'expnum', 'ccdnum', 'band', 'filename',)
@@ -45,4 +45,7 @@ class ProccessAdmin(admin.ModelAdmin):
 class CatalogAdmin(admin.ModelAdmin):
     list_display = ('id', 'display_name', 'database', 'schema', 'tablename', 'rows', 'columns', 'size')
 
+@admin.register(JohnstonArchive)
+class JohnstonArchiveAdmin(admin.ModelAdmin):
+    list_display = ('id', 'number', 'name', 'provisional_designation', 'dynamical_class', 'diameter', 'density', 'updated')
 
