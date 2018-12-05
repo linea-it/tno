@@ -22,8 +22,9 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated
 from django.http import HttpResponse
 import csv
-
-
+from .johnstons import JhonstonArchive
+from django.utils import timezone
+from datetime import datetime
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -414,6 +415,19 @@ class JohnstonArchiveViewSet(viewsets.ModelViewSet):
         Table includes TNOs, SDOs, and Centaurs listed by the MPC as of 7 October 2018, 
         plus other unusual asteroids with aphelion distances greater than 7.5 AU, 
         plus several additional reported objects without MPC designations.
+
+        To search for the object name use the 'search' attribute
+        example searches for chariklo object
+        /known_tnos_johnston/?search=chariklo
+
+        Any attribute can be used as a filter, just pass the property name as parameter and value.
+        example filter all objects with a diameter less than 100
+        /known_tnos_johnston/?diameter__lt=100
+
+        For details on how to make filters through the url. (https://github.com/miki725/django-url-filter)
+        
+        to update all the contents of the table, just access this url.
+
     """ 
     title = "List of Known Trans-Neptunian Objects from Johnston Archive"
     queryset = JohnstonArchive.objects.all()
@@ -442,6 +456,65 @@ class JohnstonArchiveViewSet(viewsets.ModelViewSet):
     @list_route()
     def update_list(self, request):
 
-        return Response({
-            'success': True,
-        })
+        ja = JhonstonArchive()
+
+        try:
+            rows = ja.get_table_data()
+
+            count_created = 0
+            count_updated = 0
+
+            if len(rows) > 0:
+
+                # Gera o CSV 
+                filename = ja.write_csv(rows)
+
+                # Update na tabela
+                for row in rows:
+
+                    discovery = None
+                    if row['discovery']:
+                        discovery = datetime.strptime(row['discovery'], '%Y-%m')
+
+                    record, created = JohnstonArchive.objects.update_or_create(
+                        provisional_designation=row['provisional_designation'],
+                        defaults={
+                            'number': row['number'],
+                            'name': row['name'],
+                            'dynamical_class': row['dynamical_class'],
+                            'a': row['a'],
+                            'e': row['e'],
+                            'perihelion_distance': row['perihelion_distance'],
+                            'aphelion_distance': row['aphelion_distance'],
+                            'i': row['i'],
+                            'diameter': row['diameter'],
+                            'diameter_flag': row['diameter_flag'],
+                            'albedo': row['albedo'],
+                            'b_r_mag': row['b_r_mag'],
+                            'taxon': row['taxon'],
+                            'density': row['density'],
+                            'known_components': row['known_components'],
+                            'discovery': discovery,
+                            'updated': timezone.now(),
+                        },
+                    )
+
+                    record.save()
+
+                    if created:
+                        count_created += 1
+                    else:
+                        count_updated += 1
+
+            return Response({
+                'success': True,
+                'count': len(rows),
+                # 'filename': filename,
+                'created': count_created,
+                'updated': count_updated
+            })
+
+        except Exception as e:
+            raise e
+
+

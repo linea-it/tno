@@ -51,6 +51,10 @@ BSP_PLANETARY = os.path.join(ARCHIVE_DIR, BSP_PLA_ROOT)
 if not os.path.exists(BSP_PLANETARY):
     os.mkdir(BSP_PLANETARY)
 
+JHONSTONS_ARCHIVE_ROOT = 'jhonstons_archive'
+JHONSTONS_ARCHIVE = os.path.join(ARCHIVE_DIR, JHONSTONS_ARCHIVE_ROOT)
+if not os.path.exists(JHONSTONS_ARCHIVE):
+    os.mkdir(JHONSTONS_ARCHIVE)
 
 # TODO:  Este diretorio e provisorio faz parte da simulacao do PRAIA.
 ASTROMETRY_POSITIONS_DIR = os.path.join(ARCHIVE_DIR, "astrometry_positions")
