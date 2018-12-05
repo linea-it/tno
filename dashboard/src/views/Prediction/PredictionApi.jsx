@@ -145,6 +145,14 @@ class PredictionApi {
     });
   };
 
+  getAsteroidNeighbors = ({ asteroid_id }) => {
+    const params = { asteroid_id: asteroid_id };
+    return axios.get(`${this.api}/predict_asteroid/get_neighbors/`, {
+      params: params,
+    });
+  };
+
+
   getCatalogStars = ({ id }) => {
     const params = {
       asteroid: id,
@@ -160,6 +168,7 @@ class PredictionApi {
       params: params,
     });
   };
+
 }
 
 export default PredictionApi;

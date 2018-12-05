@@ -50,7 +50,7 @@
   }
   
   .progress-bar-success {
-    background-color: #28CA71; //#84b547;
+    background-color: #28CA71 !important; //#84b547;
   }
 
   
@@ -65,9 +65,13 @@
   
 
   .progress-bar-danger {
-    background-color: #D34A39// #cc3e4a;
+    background-color: #D34A39 !important;// #cc3e4a;
   }
 
   .progress-bar-muted {
-    background-color: $muted-color
+    background-color: $muted-color;
   }
+
+.snackbar {
+  background: #D34A39 !important;
+}

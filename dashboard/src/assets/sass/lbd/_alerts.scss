@@ -77,11 +77,13 @@
      background-color: $azure-navbar;
 }
 .alert-success {
-    background-color: $green-navbar;
+    background-color: $green-navbar !important;
+    border: #28CA71 !important;
 }
 .alert-warning {
      background-color: $orange-navbar;
 }
 .alert-danger {
-     background-color: $red-navbar;
+     background-color: $red-navbar !important;
+     border: #D34A39 !important;
 }

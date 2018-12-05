@@ -3,7 +3,6 @@ from django.dispatch import receiver
 from predict.models import PredictRun
 import os
 import logging
-# from orbit.refine_orbit import RefineOrbit, RefineOrbitDB
 from predict.prediction_occultation import PredictionOccultation
 import shutil
 from datetime import datetime
@@ -44,5 +43,5 @@ def run_predict(run_id):
     logger = logging.getLogger("predict_occultation")
     logger.info("Starting a thread to execute the prediction ID [%s]" % run_id)
 
-    PredictionOccultation().start_predict_occultation(run_id)
+    # PredictionOccultation().start_predict_occultation(run_id)
 
