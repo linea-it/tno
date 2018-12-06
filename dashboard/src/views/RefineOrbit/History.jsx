@@ -75,7 +75,6 @@ class RefineOrbitHistory extends Component {
       // Tempo em segundos entre cada reload da lista
       reload_interval: 10,
       selected: [],
-      selected_record: null,
     };
   }
 
@@ -246,29 +245,14 @@ class RefineOrbitHistory extends Component {
   };
 
   handleOnRerun = () => {
-    const { selected_record } = this.state;
+    const { selected } = this.state;
 
-    this.api.orbitReRun({ id: selected_record.id }).then(res => {
-      const record = res.data;
+    if (selected) {
+      this.api.orbitReRun({ id: selected.id }).then(res => {
+        const record = res.data;
 
-      this.setState(
-        { selected: [], selected_record: null },
-        this.props.onRerun(record)
-      );
-    });
-  };
-
-  handleOnSelect = (row, isSelect) => {
-    if (isSelect) {
-      this.setState(() => ({
-        selected: [row.id],
-        selected_record: row,
-      }));
-    } else {
-      this.setState(() => ({
-        selected: [],
-        selected_record: null,
-      }));
+        this.setState({ selected: [] }, this.props.onRerun(record));
+      });
     }
   };
 
