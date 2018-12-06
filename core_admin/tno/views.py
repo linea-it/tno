@@ -427,6 +427,10 @@ class JohnstonArchiveViewSet(viewsets.ModelViewSet):
         For details on how to make filters through the url. (https://github.com/miki725/django-url-filter)
         
         to update all the contents of the table, just access this url.
+        http://localhost:7001/known_tnos_johnston/update_list/
+
+        use the format=json attribute to have the result in json.
+        example /known_tnos_johnston/?diameter__lt=100&format=json
 
     """ 
     title = "List of Known Trans-Neptunian Objects from Johnston Archive"
