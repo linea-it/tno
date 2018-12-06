@@ -240,6 +240,11 @@ class PredictAsteroid(models.Model):
         help_text='(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).'
     )
 
+    diameter = models.FloatField(
+        verbose_name='Diameter (Km)',
+        null=True, blank=True, default=None
+    )
+
     status = models.CharField(
         max_length=10,
         verbose_name='Status',

@@ -15,6 +15,8 @@ from statistics import mean
 from tno.db import CatalogDB
 from sqlalchemy.sql import text
 from .models import PredictRun, PredictAsteroid, PredictInput, PredictOutput, Occultation
+from tno.models import JohnstonArchive
+from django.db.models import Q
 import csv
 
 class PredictionOccultation():
@@ -193,13 +195,25 @@ class PredictionOccultation():
                         os.path.join(obj_relative_path, bsp_nima_name),
                         os.path.join(obj_relative_path, bsp_name))
 
-                # TODO atributo shade_diameter esta hardcoded e necessario um codigo para extrair esse atributo de um site
+                # Recuperar o Diametro dos asteroids usando os dados do Jhonston Archive
+                ja_queryset = JohnstonArchive.objects.filter(
+                    Q(name=obj.get("name")) | Q(provisional_designation=obj.get("name")) | Q(number=obj.get("num")))
+                
+                # TODO: Definir um valor padrao para o diametro do asteroid quando nao houver.
+                diameter = 147 
+                if ja_queryset.count() == 1:
+                    self.logger.debug("[ %s ] TEM DIAMETRO" % obj.get("name"))
+                    asteroid_data = ja_queryset.first()
+                    if asteroid_data.diameter and asteroid_data.diameter > 0:
+                        diameter = asteroid_data.diameter
+                else:
+                    self.logger.warning("[ %s ] has no Diameter" % obj.get("name"))
 
                 self.results["objects"][obj_name] = dict({
                     "name": obj.get("name"),
                     "number": obj.get("num"),
                     "alias": obj_name,
-                    "shade_diameter": 147,
+                    "diameter": diameter,
                     "relative_path": obj_relative_path,
                     "status": None,
                     "error_msg": None,
@@ -1502,7 +1516,7 @@ class PredictionOccultation():
         # Comando que sera executado dentro do container.
         cmd = "python generate_maps.py %s %s %s" % (
             obj['alias'].replace('_', ''),
-            obj['shade_diameter'],
+            obj['diameter'],
             obj['results']['stars_parameters_of_occultation_plot']['filename']
         )
         self.logger.debug("CMD: %s" % cmd)
@@ -1593,6 +1607,7 @@ class PredictionOccultation():
                 name=obj.get("name"),
                 defaults={
                     'number': obj.get("number"),
+                    'diameter': obj.get("diameter"),
                     'status': obj.get("status"),
                     'error_msg': obj.get("error_msg"),
                     'catalog_rows': obj.get("gaia_rows"),
