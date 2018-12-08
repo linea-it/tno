@@ -8,9 +8,8 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from django.conf import settings
 
-from .models import Pointing, SkybotOutput, CustomList, Proccess, Catalog
-from .serializers import UserSerializer, PointingSerializer, SkybotOutputSerializer, ObjectClassSerializer, \
-    CustomListSerializer, ProccessSerializer, CatalogSerializer
+from .models import *
+from .serializers import *
 from .skybotoutput import FilterObjects
 from .skybotoutput import SkybotOutput as SkybotOutputDB
 from .skybotoutput import Pointing as PointingDB
@@ -23,7 +22,9 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated
 from django.http import HttpResponse
 import csv
-
+from .johnstons import JhonstonArchive
+from django.utils import timezone
+from datetime import datetime
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -54,7 +55,8 @@ class UserViewSet(viewsets.ModelViewSet):
 class PointingViewSet(viewsets.ModelViewSet):
     queryset = Pointing.objects.all()
     serializer_class = PointingSerializer
-    filter_fields = ('id', 'desfile_id', 'expnum', 'band', 'exptime', 'date_obs', 'downloaded')
+    filter_fields = ('id', 'desfile_id', 'expnum', 'band',
+                     'exptime', 'date_obs', 'downloaded')
     search_fields = ('id', 'filename', 'desfile_id', 'expnum')
     ordering_fields = ('id', 'expnum', 'date_obs', 'nite')
     ordering = ('-date_obs',)
@@ -82,11 +84,12 @@ class PointingViewSet(viewsets.ModelViewSet):
             'exposures': exposures,
             'updated': 'xxxx-xx-xx',
             'size': 'xx Gb',
-            'exp_range' : exp_range
+            'exp_range': exp_range
         })
 
         # Escrever o Arquivo de cache com as informações
-        temp_file = os.path.join(settings.MEDIA_TMP_DIR, 'pointings_statistics.json')
+        temp_file = os.path.join(
+            settings.MEDIA_TMP_DIR, 'pointings_statistics.json')
         JsonFile().write(statistics, temp_file)
 
         JsonFile().write(statistics, temp_file)
@@ -102,7 +105,8 @@ class PointingViewSet(viewsets.ModelViewSet):
             statistics = self.generate_statistics()
 
         else:
-            temp_file = os.path.join(settings.MEDIA_TMP_DIR, 'pointings_statistics.json')
+            temp_file = os.path.join(
+                settings.MEDIA_TMP_DIR, 'pointings_statistics.json')
             if (os.path.exists(temp_file)):
                 statistics = JsonFile().read(temp_file)
             else:
@@ -139,7 +143,8 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
         moreFilter = request.query_params.get('moreFilter')
 
         page = request.query_params.get('page', 1)
-        pageSize = request.query_params.get('pageSize', self.pagination_class.page_size)
+        pageSize = request.query_params.get(
+            'pageSize', self.pagination_class.page_size)
 
         rows, count = FilterObjects().get_objects(
             name, objectTable, magnitude, diffDateNights,
@@ -173,7 +178,8 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
         })
 
         # Escrever o Arquivo de cache com as informações
-        temp_file = os.path.join(settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
+        temp_file = os.path.join(
+            settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
         JsonFile().write(statistics, temp_file)
 
         JsonFile().write(statistics, temp_file)
@@ -189,7 +195,8 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
             statistics = self.generate_statistics()
 
         else:
-            temp_file = os.path.join(settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
+            temp_file = os.path.join(
+                settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
             if (os.path.exists(temp_file)):
                 statistics = JsonFile().read(temp_file)
             else:
@@ -200,7 +207,8 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
 
 class ObjectClassViewSet(viewsets.GenericViewSet,
                          mixins.ListModelMixin):
-    queryset = SkybotOutput.objects.select_related().order_by('dynclass').distinct('dynclass')
+    queryset = SkybotOutput.objects.select_related().order_by(
+        'dynclass').distinct('dynclass')
     serializer_class = ObjectClassSerializer
     # Turn off pagination Class
     pagination_class = None
@@ -211,13 +219,15 @@ class CustomListViewSet(viewsets.ModelViewSet):
     serializer_class = CustomListSerializer
     filter_fields = ('id', 'displayname', 'tablename', 'status')
     search_fields = ('displayname', 'description',)
-    ordering_fields = ('id', 'displayname', 'tablename', 'status', 'creation_date')
+    ordering_fields = ('id', 'displayname', 'tablename',
+                       'status', 'creation_date')
     ordering = ('-creation_date',)
 
     def perform_create(self, serializer):
         # Adiconar usuario logado
         if not self.request.user.pk:
-            raise Exception('It is necessary an active login to perform this operation.')
+            raise Exception(
+                'It is necessary an active login to perform this operation.')
         serializer.save(owner=self.request.user)
 
     @list_route()
@@ -228,10 +238,12 @@ class CustomListViewSet(viewsets.ModelViewSet):
         # Retrive Params
         tablename = request.query_params.get('tablename')
         page = request.query_params.get('page', 1)
-        pageSize = request.query_params.get('pageSize', self.pagination_class.page_size)
+        pageSize = request.query_params.get(
+            'pageSize', self.pagination_class.page_size)
 
         # Retrieve Custom List
-        customlist = CustomList.objects.get(tablename=tablename, status='success')
+        customlist = CustomList.objects.get(
+            tablename=tablename, status='success')
 
         rows, count = FilterObjects().list_objects_by_table(
             customlist.tablename, customlist.schema, page, pageSize)
@@ -251,7 +263,8 @@ class CustomListViewSet(viewsets.ModelViewSet):
         # Retrieve Custom List by tablename
         customlist = None
         if tablename is not None:
-            customlist = CustomList.objects.get(tablename=tablename, status='success')
+            customlist = CustomList.objects.get(
+                tablename=tablename, status='success')
         elif id is not None:
             customlist = CustomList.objects.get(pk=id)
 
@@ -275,7 +288,8 @@ class CustomListViewSet(viewsets.ModelViewSet):
         size_ccdimages = FilterObjects().count_ccdimage_size(
             customlist.tablename, customlist.schema)
 
-        size_not_downloaded = (size_ccdimages / data.get("rows")) * not_downloaded
+        size_not_downloaded = (
+            size_ccdimages / data.get("rows")) * not_downloaded
 
         data.update({
             'distinct_objects': distinct_objects,
@@ -324,7 +338,8 @@ class CatalogViewSet(viewsets.ModelViewSet):
                 schema = request.query_params.get('schema', None)
                 tablename = request.query_params.get('tablename', None)
 
-                catalog = Catalog.objects.get(schema=schema, tablename=tablename)
+                catalog = Catalog.objects.get(
+                    schema=schema, tablename=tablename)
         except ObjectDoesNotExist:
             return Response({
                 'success': False,
@@ -377,7 +392,8 @@ class CatalogViewSet(viewsets.ModelViewSet):
 
                 response = HttpResponse(content_type='text/csv')
                 # response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
-                writer = csv.DictWriter(response, fieldnames=headers, extrasaction='ignore', delimiter=';')
+                writer = csv.DictWriter(
+                    response, fieldnames=headers, extrasaction='ignore', delimiter=';')
                 writer.writeheader()
                 for row in rows:
                     writer.writerow(row)
@@ -388,3 +404,121 @@ class CatalogViewSet(viewsets.ModelViewSet):
                 'results': rows,
                 'count': len(rows)
             })
+
+
+class JohnstonArchiveViewSet(viewsets.ModelViewSet):
+    """
+        List of Known Trans-Neptunian Objects and other outer solar system objects
+
+        Downloaded from: http://www.johnstonsarchive.net/astro/tnoslist.html
+
+        Table includes TNOs, SDOs, and Centaurs listed by the MPC as of 7 October 2018, 
+        plus other unusual asteroids with aphelion distances greater than 7.5 AU, 
+        plus several additional reported objects without MPC designations.
+
+        To search for the object name use the 'search' attribute
+        example searches for chariklo object
+        /known_tnos_johnston/?search=chariklo
+
+        Any attribute can be used as a filter, just pass the property name as parameter and value.
+        example filter all objects with a diameter less than 100
+        /known_tnos_johnston/?diameter__lt=100
+
+        For details on how to make filters through the url. (https://github.com/miki725/django-url-filter)
+        
+        to update all the contents of the table, just access this url.
+        http://localhost:7001/known_tnos_johnston/update_list/
+
+        use the format=json attribute to have the result in json.
+        example /known_tnos_johnston/?diameter__lt=100&format=json
+
+    """ 
+    title = "List of Known Trans-Neptunian Objects from Johnston Archive"
+    queryset = JohnstonArchive.objects.all()
+    serializer_class = JohnstonArchiveSerializer
+    filter_fields = ('id',
+                     'number',
+                     'name',
+                     'provisional_designation',
+                     'dynamical_class',
+                     'a',
+                     'e',
+                     'perihelion_distance',
+                     'aphelion_distance',
+                     'i',
+                     'diameter',
+                     'diameter_flag',
+                     'albedo',
+                     'b_r_mag',
+                     'taxon',
+                     'density',
+                     'known_components',
+                     'discovery',
+                     'updated')
+    search_fields = ('name', 'number', 'provisional_designation')
+
+    @list_route()
+    def update_list(self, request):
+
+        ja = JhonstonArchive()
+
+        try:
+            rows = ja.get_table_data()
+
+            count_created = 0
+            count_updated = 0
+
+            if len(rows) > 0:
+
+                # Gera o CSV 
+                filename = ja.write_csv(rows)
+
+                # Update na tabela
+                for row in rows:
+
+                    discovery = None
+                    if row['discovery']:
+                        discovery = datetime.strptime(row['discovery'], '%Y-%m')
+
+                    record, created = JohnstonArchive.objects.update_or_create(
+                        provisional_designation=row['provisional_designation'],
+                        defaults={
+                            'number': row['number'],
+                            'name': row['name'],
+                            'dynamical_class': row['dynamical_class'],
+                            'a': row['a'],
+                            'e': row['e'],
+                            'perihelion_distance': row['perihelion_distance'],
+                            'aphelion_distance': row['aphelion_distance'],
+                            'i': row['i'],
+                            'diameter': row['diameter'],
+                            'diameter_flag': row['diameter_flag'],
+                            'albedo': row['albedo'],
+                            'b_r_mag': row['b_r_mag'],
+                            'taxon': row['taxon'],
+                            'density': row['density'],
+                            'known_components': row['known_components'],
+                            'discovery': discovery,
+                            'updated': timezone.now(),
+                        },
+                    )
+
+                    record.save()
+
+                    if created:
+                        count_created += 1
+                    else:
+                        count_updated += 1
+
+            return Response({
+                'success': True,
+                'count': len(rows),
+                # 'filename': filename,
+                'created': count_created,
+                'updated': count_updated
+            })
+
+        except Exception as e:
+            raise e
+
+

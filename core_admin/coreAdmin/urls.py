@@ -24,7 +24,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from common import views as common_views
 
 from tno.views import UserViewSet, PointingViewSet, SkybotOutputViewSet, ObjectClassViewSet, CustomListViewSet, \
-    ProccessViewSet, CatalogViewSet
+    ProccessViewSet, CatalogViewSet, JohnstonArchiveViewSet
 from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet
 
 from orbit.views import OrbitRunViewSet, RefinedAsteroidViewSet, RefinedOrbitViewSet, RefinedOrbitInputViewSet
@@ -35,6 +35,8 @@ router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'pointing', PointingViewSet)
 router.register(r'skybotoutput', SkybotOutputViewSet)
+router.register(r'known_tnos_johnston', JohnstonArchiveViewSet)
+
 
 router.register(r'orbit_run', OrbitRunViewSet)
 router.register(r'refined_asteroid', RefinedAsteroidViewSet)
@@ -48,7 +50,6 @@ router.register(r'predict_output', PredictOutputViewSet)
 router.register(r'occultation', OccultationViewSet)
 router.register(r'leap_seconds', LeapSecondsViewSet)
 router.register(r'bsp_planetary', BspPlanetaryViewSet)
-
 
 
 # router.register(r'observation', ObservationViewSet)
@@ -66,7 +67,7 @@ router.register(r'catalog', CatalogViewSet)
 urlpatterns = router.urls
 
 urlpatterns += [
-                   path('admin/', admin.site.urls),
-                   url(r'^obtain-auth-token/$', csrf_exempt(obtain_auth_token)),
-                   url(r'^teste/', common_views.teste),
-               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('admin/', admin.site.urls),
+    url(r'^obtain-auth-token/$', csrf_exempt(obtain_auth_token)),
+    url(r'^teste/', common_views.teste),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
