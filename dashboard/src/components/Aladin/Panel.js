@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { uniqueId } from 'lodash';
 import sizeMe from 'react-sizeme';
 import { desfootprint } from './DesFootprint';
+import PropTypes from 'prop-types';
+
 class AladinPanel extends Component {
   constructor(props) {
     super(props);
@@ -19,6 +21,12 @@ class AladinPanel extends Component {
     }
   }
 
+  static propTypes = {
+    position: PropTypes.string,
+    fov: PropTypes.number,
+    desfootprint: PropTypes.bool,
+  };
+
   get initialState() {
     return {};
   }
@@ -28,7 +36,6 @@ class AladinPanel extends Component {
       // fov:8,
       fov: 100,
       // target: '02 23 11.851 -09 40 21.59',
-      // target: '06 12 46.187 -45 45 15.40',
       cooFrame: 'J2000',
       survey: 'P/DSS2/color',
       showReticle: true,
@@ -60,33 +67,42 @@ class AladinPanel extends Component {
 
   componentDidUpdate = () => {
     // console.log("Depois do componente ter atualizado")
-
     // // Load CCDs:
     // this.api.getExposures({}).then(res => {
     //   const r = res.data;
-
     //   this.plot_exposures(r.results);
     //   // this.aladin.gotoRaDec([r.results[0].radeg, r.results[0].decdeg]);
-
     //   // Draw CCds
     //   // this.api.getExposures({}).then(res => {
     //   //   const r = res.data;
     //   //   this.plot_ccds(r.results)
     //   // });
-
     //   this.aladin.gotoObject(r.results[0].radeg + ', ' + r.results[0].decdeg);
     // });
   };
 
   create_aladin = () => {
+    const options = this.aladinOptions;
+
+    if (this.props.position != null) {
+      options.target = this.props.position;
+    }
+
+    if (this.props.fov) {
+      options.fov = this.props.fov;
+    }
+
     this.aladin = this.libA.aladin(
       // Id da div que recebera o aladin
       '#' + this.id,
       // opcoes do aladin
-      this.aladinOptions
+      options
     );
 
-    this.footprint(desfootprint, 'DES Footprint', true);
+    // Desenha o Footprint do Des
+    if (this.props.desfootprint) {
+      this.footprint(desfootprint, 'DES Footprint', true);
+    }
 
     return this.aladin;
   };
@@ -205,6 +221,12 @@ class AladinPanel extends Component {
     }
 
     return result;
+  };
+
+  markPosition = position => {
+    const cat = this.libA.catalog({ name: 'Target', sourceSize: 18 });
+    this.aladin.addCatalog(cat);
+    cat.addSources([this.libA.marker(position)]);
   };
 
   render() {

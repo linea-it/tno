@@ -103,3 +103,19 @@
         background-color: $danger-color !important;
     }
 }
+
+.simple_property_table {
+
+    tbody > tr > td{
+        font-size: 14px;
+        white-space: nowrap; 
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: $custom_dark-gray;
+        // border-bottom: 1px solid #ddd;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+}

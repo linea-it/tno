@@ -5,6 +5,7 @@ from .models import *
 from .serializers import *
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.conf import settings
 import os
 class PredictRunViewSet(viewsets.ModelViewSet):
@@ -185,7 +186,10 @@ class OccultationViewSet(viewsets.ModelViewSet):
     serializer_class = OccultationSerializer
     filter_fields = ('id', 'asteroid', 'date_time', )
     search_fields = ('id', 'asteroid', 'date_time',)
+    ordering_fields = ('date_time', )
     ordering = ('date_time',)
+
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class LeapSecondsViewSet(viewsets.ModelViewSet):

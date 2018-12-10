@@ -20,8 +20,6 @@ import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import PlotPrediction from './Plot';
 
-import AladinPanel from 'components/Aladin/Panel';
-
 class AsteroidDetailPrediction extends Component {
   state = this.initialState;
   api = new PredictionApi();
@@ -525,8 +523,6 @@ class AsteroidDetailPrediction extends Component {
   };
 
   render() {
-    const asteroid = this.state;
-
     return (
       <div className="content">
         {this.create_nav_bar()}
