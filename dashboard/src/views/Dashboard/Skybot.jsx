@@ -114,7 +114,7 @@ class Skybot extends Component {
                     <BarChart
                       width={300}
                       height={150}
-                      data={propSet.ccds.asteroids_by_dynaclass}
+                      data={propSet.ccds.asteroids_by_dynclass}
                       margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                     >
                       <Tooltip />

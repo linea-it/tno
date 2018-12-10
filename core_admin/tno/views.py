@@ -162,7 +162,7 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
         unique_ccds = db.count_unique_ccds()
         asteroids = db.count_asteroids()
         dynclass = db.distinct_dynclass()
-        asteroids_by_dynaclass = db.count_asteroids_by_dynclass()
+        asteroids_by_dynclass = db.count_asteroids_by_dynclass()
         asteroids_by_class = db.count_asteroids_by_class()
 
         histogram = db.histogram('dhelio', 10)
@@ -172,7 +172,7 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
             'unique_ccds': unique_ccds,
             'count_asteroids': asteroids,
             'dynclass': dynclass,
-            'asteroids_by_dynaclass': asteroids_by_dynaclass,
+            'asteroids_by_dynclass': asteroids_by_dynclass,
             'asteroids_by_class': asteroids_by_class,
             'histogram': histogram
         })

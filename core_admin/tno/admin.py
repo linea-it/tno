@@ -11,7 +11,7 @@ class PointingAdmin(admin.ModelAdmin):
 class SkybotOutputAdmin(admin.ModelAdmin):
     list_display = ('id', 'pointing', 'name', 'dynclass', 'raj2000',
         'decj2000', 'expnum', 'ccdnum', 'band',)
-    search_fields = ('name', 'dynaclass', 'expnum')
+    search_fields = ('name', 'dynclass', 'expnum')
 
     # Retira do Formulario a campo de chave estrangeira "pointing"
     # que tem milhares de registros e causa tavamento da interface

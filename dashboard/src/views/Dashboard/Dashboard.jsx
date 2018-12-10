@@ -53,7 +53,7 @@ class Dashboard extends Component {
             count: 0,
           },
         ],
-        asteroids_by_dynaclass: [],
+        asteroids_by_dynclass: [],
         histogram: [],
       },
     };
