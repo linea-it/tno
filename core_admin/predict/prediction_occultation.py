@@ -202,7 +202,7 @@ class PredictionOccultation():
                 # TODO: Definir um valor padrao para o diametro do asteroid quando nao houver.
                 diameter = 147 
                 if ja_queryset.count() == 1:
-                    self.logger.debug("[ %s ] TEM DIAMETRO" % obj.get("name"))
+                    self.logger.debug("[ %s ] It has a diameter" % obj.get("name"))
                     asteroid_data = ja_queryset.first()
                     if asteroid_data.diameter and asteroid_data.diameter > 0:
                         diameter = asteroid_data.diameter
@@ -1457,6 +1457,7 @@ class PredictionOccultation():
         failure = 0
         average = []
         maverage = 0
+
         for row in outputs:
             if row['status'] == "failure":
                 failure += 1

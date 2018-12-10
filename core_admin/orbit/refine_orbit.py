@@ -847,11 +847,6 @@ class RefineOrbit():
             if os.path.exists(file_nima_bsp):
                 status = "success"
 
-                if not os.path.exists(omc_sep):
-                    status = "warning"
-                    error_msg = "the residual all v2 chart was not created"
-                    omc_sep = None
-
                 if not os.path.exists(omc_sep_all):
                     status = "warning"
                     error_msg = "the residual_all_v1 chart was not created"
@@ -872,11 +867,12 @@ class RefineOrbit():
                     status = "warning"
                     error_msg = "The comparison nima jpl Dec chart was not created"
                     diff_nima_jpl_dec = None
-                
-                if not os.path.exists(diff_bsp_ni):
-                    status = "warning"
-                    error_msg = "The comparison bsp integration chart was not created"
-                    diff_bsp_ni = None
+
+                # TODO: Usar novos scripts em python para gerar esse grafico
+                # if not os.path.exists(diff_bsp_ni):
+                #     status = "warning"
+                #     error_msg = "The comparison bsp integration chart was not created"
+                #     diff_bsp_ni = None
 
                
                 if not os.path.exists(correl_mat):
