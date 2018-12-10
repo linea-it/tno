@@ -46,10 +46,6 @@ const columns = [
     header: 'Finish',
     field: 'finish_time',
   },
-  {
-    header: 'Status',
-    dataField: 'status',
-  },
 ];
 
 class RefineOrbitHistory extends Component {

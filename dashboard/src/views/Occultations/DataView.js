@@ -6,6 +6,10 @@ import { Panel } from 'primereact/panel';
 import { DataView, DataViewLayoutOptions } from 'primereact/dataview';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
+import { Calendar } from 'primereact/calendar';
+import { Spinner } from 'primereact/spinner';
+import { Slider } from 'primereact/slider';
+import { InputText } from 'primereact/inputtext';
 import OccultationApi from './OccultationApi';
 
 class OccultationsDataView extends Component {
@@ -26,6 +30,15 @@ class OccultationsDataView extends Component {
       layout: 'grid',
       sortField: null,
       sortKey: null,
+
+      // Filter:
+      start_date: null,
+      end_date: null,
+      magnitude_range: [4, 18],
+      diameter_range: [0, 0],
+      dynamic_classes: null,
+      zone: null,
+      asteroid: null,
     };
   }
 
@@ -191,21 +204,141 @@ class OccultationsDataView extends Component {
   render() {
     const header = this.renderHeader();
 
+    const dynamic_classes = [
+      {
+        name: 'Centaurs',
+      },
+      {
+        name: 'KBOs',
+      },
+    ];
+
+    const zone_options = [
+      { name: 'East-Asia' },
+      { name: 'Europe & North Africa' },
+      { name: 'Oceania' },
+      { name: 'Southern Africa' },
+      { name: 'North America' },
+      { name: 'South America' },
+    ];
+
     return (
-      <DataView
-        value={this.state.data}
-        layout={this.state.layout}
-        header={header}
-        itemTemplate={this.itemTemplate}
-        paginatorPosition={'both'}
-        paginator={false}
-        rows={this.state.pageSize}
-        totalRecords={this.state.totalSize}
-        first={this.state.first}
-        // sortOrder={this.state.sortOrder}
-        // sortField={this.state.sortField}
-        onPage={this.onPageChange}
-      />
+      <div>
+        <Panel>
+          <div className="p-grid p-fluid">
+            <div className="p-col-6">
+              <p className="label-prediction">Date Filter</p>
+              <div className="p-grid p-fluid">
+                <div className="p-col">
+                  <Calendar
+                    value={this.state.start_date}
+                    onChange={e => this.setState({ start_date: e.value })}
+                    showButtonBar={true}
+                    placeholder="Start Date"
+                    showIcon={true}
+                  />
+                </div>
+                <div className="p-col">
+                  <Calendar
+                    value={this.state.end_date}
+                    onChange={e => this.setState({ end_date: e.value })}
+                    showButtonBar={true}
+                    placeholder="End Date"
+                    showIcon={true}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="p-col">
+              <p className="label-prediction">
+                Magnitude: {this.state.magnitude_range[0]},{' '}
+                {this.state.magnitude_range[1]}
+              </p>
+              <div className="p-inputgroup">
+                <Slider
+                  value={this.state.magnitude_range}
+                  onChange={e => this.setState({ magnitude_range: e.value })}
+                  range={true}
+                  style={{ width: '14em' }}
+                  min={4}
+                  max={23}
+                />
+              </div>
+            </div>
+            <div className="p-col">
+              <p className="label-prediction">
+                Diameter (Km): {this.state.diameter_range[0]},{' '}
+                {this.state.diameter_range[1]}
+              </p>
+              <Slider
+                value={this.state.diameter_range}
+                onChange={e => this.setState({ diameter_range: e.value })}
+                range={true}
+                style={{ width: '14em' }}
+                min={0}
+                max={5000}
+              />
+            </div>
+            {/* Fim da primeira linha */}
+            <div className="p-col-4">
+              <p className="label-prediction"> Object</p>
+              <div className="p-inputgroup">
+                <InputText
+                  placeholder="Object Number, name or designation"
+                  style={{ width: '280px' }}
+                  value={this.state.asteroid}
+                  onChange={e => {
+                    this.setState({ asteroid: e.value });
+                  }}
+                />
+                <Button icon="pi pi-search" />
+              </div>
+            </div>
+            <div className="p-col-4">
+              <p className="label-prediction"> Dynamic Class</p>
+              <Dropdown
+                optionLabel="name"
+                value={this.state.dynamic_class}
+                options={dynamic_classes}
+                onChange={e => {
+                  this.setState({ dynamic_class: e.value });
+                }}
+                placeholder="Select a Dynamic Class"
+                autoWidth={false}
+                style={{ width: '200px' }}
+              />
+            </div>
+            <div className="p-col-4">
+              <p className="label-prediction">Zone</p>
+              <Dropdown
+                optionLabel="name"
+                value={this.state.zone}
+                options={zone_options}
+                onChange={e => {
+                  this.setState({ zone: e.value });
+                }}
+                placeholder="Select a Zone"
+                autoWidth={false}
+                style={{ width: '200px' }}
+              />
+            </div>
+          </div>
+        </Panel>
+        <DataView
+          value={this.state.data}
+          layout={this.state.layout}
+          header={header}
+          itemTemplate={this.itemTemplate}
+          paginatorPosition={'both'}
+          paginator={false}
+          rows={this.state.pageSize}
+          totalRecords={this.state.totalSize}
+          first={this.state.first}
+          // sortOrder={this.state.sortOrder}
+          // sortField={this.state.sortField}
+          onPage={this.onPageChange}
+        />
+      </div>
     );
   }
 }
