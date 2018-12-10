@@ -29,7 +29,6 @@ class RefineOrbitPanel extends Component {
   };
 
   render() {
-    const { record } = this.state;
     return (
       <div className="grid template-refine-orbit">
         <PanelCostumize

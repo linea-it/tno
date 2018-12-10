@@ -3,8 +3,8 @@ from rest_framework import viewsets, response, mixins
 import humanize
 from django.contrib.auth.models import User
 from rest_framework import viewsets, response, mixins
-from rest_framework.decorators import list_route
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.decorators import list_route, permission_classes
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from django.conf import settings
 
@@ -319,7 +319,7 @@ class CatalogViewSet(viewsets.ModelViewSet):
     filter_fields = ('id', 'display_name', 'tablename',)
     search_fields = ('name', 'display_name', 'tablename')
     # authentication_classes = (SessionAuthentication, BasicAuthentication)
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     @list_route()
     def radial_query(self, request):
@@ -456,8 +456,10 @@ class JohnstonArchiveViewSet(viewsets.ModelViewSet):
                      'discovery',
                      'updated')
     search_fields = ('name', 'number', 'provisional_designation')
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
-    @list_route()
+    @list_route(permission_classes=(IsAuthenticated, ))
+    # @permission_classes((IsAuthenticated, ))
     def update_list(self, request):
 
         ja = JhonstonArchive()

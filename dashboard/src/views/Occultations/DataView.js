@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Dialog } from 'primereact/dialog';
 import { Panel } from 'primereact/panel';
 import { DataView, DataViewLayoutOptions } from 'primereact/dataview';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
-import { Spinner } from 'primereact/spinner';
 import { Slider } from 'primereact/slider';
 import { InputText } from 'primereact/inputtext';
 import OccultationApi from './OccultationApi';
@@ -38,7 +36,7 @@ class OccultationsDataView extends Component {
       diameter_range: [0, 0],
       dynamic_classes: null,
       zone: null,
-      asteroid: null,
+      asteroid: '',
     };
   }
 
@@ -87,9 +85,9 @@ class OccultationsDataView extends Component {
 
     let name = row.asteroid_name;
     if (
-      row.asteroid_number != '-' &&
-      row.asteroid_number != row.asteroid_name &&
-      row.asteroid_number != null
+      row.asteroid_number !== '-' &&
+      row.asteroid_number !== row.asteroid_name &&
+      row.asteroid_number !== null
     ) {
       name = row.asteroid_name + ' - ' + row.asteroid_number;
     }

@@ -32,40 +32,40 @@ class Asteroid extends Component {
             </tr>
             <tr>
               <td>
-                <b>Object astrometric position (ICRF)</b>{' '}
+                <b>Object astrometric position (ICRF)</b>
               </td>
               <td> 04 41 25.0209 -22 07 04.849 </td>
             </tr>
             <tr>
               <td>
-                <b>Object apparent position (date)</b>{' '}
+                <b>Object apparent position (date)</b>
               </td>
               <td> 04 42 12.3810 -22 05 06.004 </td>
             </tr>
             <tr>
               <td>
-                <b>Uncertainty in position</b>{' '}
+                <b>Uncertainty in position</b>
               </td>
               <td> RA* = 2047.3mas DEC = 979.5mas </td>
             </tr>
             <tr>
               <td>
-                <b>Apparent magnitude</b>{' '}
+                <b>Apparent magnitude</b>
               </td>
               <td> 22.6 </td>
             </tr>
             <tr>
               <td>
-                <b>Ephemeris</b>{' '}
+                <b>Ephemeris</b>
               </td>
               <td>
-                {' '}
-                <a
+                NIMAv1
+                {/* <a
                   href="http://lesia.obspm.fr/lucky-star/des/nima/"
                   target="_blank"
                 >
                   NIMAv1
-                </a>{' '}
+                </a> */}
               </td>
             </tr>
             <tr>

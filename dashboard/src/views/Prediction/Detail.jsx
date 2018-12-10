@@ -13,7 +13,6 @@ import DonutStats from 'components/Statistics/DonutStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import moment from 'moment';
-import StepStats from 'components/Statistics/StepStats.jsx';
 import { Button } from 'primereact/button';
 
 class PredictionDetail extends Component {

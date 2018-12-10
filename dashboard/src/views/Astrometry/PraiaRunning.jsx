@@ -19,12 +19,6 @@ class PraiaRunning extends Component {
   }
 
   render() {
-    const { record } = this.props;
-    let id = '';
-
-    if ('id' in record) {
-      id = record.id;
-    }
     return (
       <div className="content">
         <Card className="none">

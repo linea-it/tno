@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import PanelCostumize from 'components/Panel/PanelCostumize';
-import { Card } from 'primereact/card';
-
 
 class PraiaRun extends Component {
   state = this.initialState;
@@ -26,9 +24,7 @@ class PraiaRun extends Component {
   }
 
   render() {
-    const { id } = this.state;
 
-    const title = 'Astrometry Run ' + id;
     return (
       <PanelCostumize
         content={
