@@ -101,13 +101,12 @@ class PredictionApi {
   getAsteroidById = ({ id }) =>
     axios.patch(`${this.api}/predict_asteroid/${id}/`);
 
-  // TODO
-  // getAsteroidNeighbors = ({ asteroid_id }) => {
-  //   const params = { asteroid_id: asteroid_id };
-  //   return axios.get(`${this.api}/refined_asteroid/get_neighbors/`, {
-  //     params: params,
-  //   });
-  // };
+  getAsteroidNeighbors = ({ id }) => {
+    const params = { asteroid: id };
+    return axios.get(`${this.api}/predict_asteroid/get_neighbors/`, {
+      params: params,
+    });
+  };
 
   getAsteroidInputs = ({ id }) => {
     const params = {
@@ -145,14 +144,6 @@ class PredictionApi {
     });
   };
 
-  getAsteroidNeighbors = ({ asteroid_id }) => {
-    const params = { asteroid_id: asteroid_id };
-    return axios.get(`${this.api}/predict_asteroid/get_neighbors/`, {
-      params: params,
-    });
-  };
-
-
   getCatalogStars = ({ id }) => {
     const params = {
       asteroid: id,
@@ -161,14 +152,6 @@ class PredictionApi {
       params: params,
     });
   };
-
-  getAsteroidNeighbors = ({ asteroid_id }) => {
-    const params = { asteroid_id: asteroid_id };
-    return axios.get(`${this.api}/prediction_asteroid/get_neighbors/`, {
-      params: params,
-    });
-  };
-
 }
 
 export default PredictionApi;
