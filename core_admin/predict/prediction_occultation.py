@@ -453,7 +453,7 @@ class PredictionOccultation():
                 detach=True,
                 # name="occultation_dates",
                 auto_remove=True,
-                mem_limit='128m',
+                # mem_limit='128m',
                 volumes=volumes,
                 user=os.getuid()
             )
@@ -1339,7 +1339,7 @@ class PredictionOccultation():
                 detach=True,
                 # name="search_candidate",
                 auto_remove=True,
-                mem_limit='128m',
+                # mem_limit='128m',
                 volumes=volumes,
                 user=os.getuid()
             )
@@ -1530,10 +1530,8 @@ class PredictionOccultation():
             })
         })
 
-        container_name = "occultation_maps_%s" % id
-
         try:
-            self.logger.debug("[ %s ] Starting Container" % container_name)
+            self.logger.debug("[ %s ] Starting Container" % id)
             container = docker_client.containers.run(
                 docker_image,
                 command=cmd,
@@ -1546,7 +1544,7 @@ class PredictionOccultation():
             )
 
             container.wait()
-            self.logger.debug("[ %s ] Finish Container" % container_name)
+            self.logger.debug("[ %s ] Finish Container" % id)
 
             return self.check_map_results(obj)
 
