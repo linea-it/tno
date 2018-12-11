@@ -68,7 +68,7 @@ class AsteroidDetailPrediction extends Component {
 
         this.getCatalogData(asteroid);
 
-        // this.getNeighbors(asteroid);
+        this.getNeighbors(asteroid.id);
 
         let title = asteroid.name;
         if (asteroid.number && asteroid.number !== '-') {
@@ -157,8 +157,8 @@ class AsteroidDetailPrediction extends Component {
     });
   };
 
-  getNeighbors = asteroid_id => {
-    this.api.getAsteroidNeighbors({ asteroid_id }).then(res => {
+  getNeighbors = id => {
+    this.api.getAsteroidNeighbors({ id }).then(res => {
       const neighbors = res.data;
       this.setState({
         prev: neighbors.prev,
