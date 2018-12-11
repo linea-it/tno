@@ -199,8 +199,8 @@ class PredictionOccultation():
                 ja_queryset = JohnstonArchive.objects.filter(
                     Q(name=obj.get("name")) | Q(provisional_designation=obj.get("name")) | Q(number=obj.get("num")))
                 
-                # TODO: Definir um valor padrao para o diametro do asteroid quando nao houver.
-                diameter = 147 
+                # Definir um valor padrao para o diametro do asteroid quando nao houver (200km).
+                diameter = 200 
                 if ja_queryset.count() == 1:
                     self.logger.debug("[ %s ] It has a diameter" % obj.get("name"))
                     asteroid_data = ja_queryset.first()
@@ -272,7 +272,7 @@ class PredictionOccultation():
             for alias in self.results["objects"]:
                 obj = self.results["objects"][alias]
 
-                # TODO: Registrar os Asteroids e o Resultado.
+                # Registrar os Asteroids e o Resultado.
                 self.register_asteroid(obj, instance)
 
             t_register_1 = datetime.now()
@@ -316,6 +316,7 @@ class PredictionOccultation():
             instance.execution_dates = self.results["dates_file_report"]["execution_time"]
             instance.execution_ephemeris = self.results["ephemeris_report"]["execution_time"]
             instance.execution_catalog = self.results["gaia_catalog_report"]["execution_time"]
+            instance.execution_search_candidate = self.results["search_candidate_report"]["execution_time"]
             instance.execution_maps = self.results["maps_report"]["execution_time"]
 
             instance.execution_register = str(t_register_delta)
@@ -987,37 +988,16 @@ class PredictionOccultation():
 
                 results += rows
 
+            if len(results) >= 2100000:
+                self.logger.warning("Stellar Catalog too big")
+                # TODO marcar o status do Asteroid como warning.
+                # TODO implementar funcao para dividir o resutado em lista menores e executar em loop.
+
             return results
 
         except Exception as e:
             logger.error(e)
             raise e
-
-        # try:
-        #     db = CatalogDB()
-        #
-        #     if catalog.schema is not None:
-        #         tablename = "%s.%s" % (catalog.schema, catalog.tablename)
-        #
-        #     columns = ", ".join(self.gaia_properties)
-        #
-        #     clauses = []
-        #     for pos in positions:
-        #         clauses.append(
-        #             'q3c_radial_query("%s", "%s", % s, % s, % s)' % (
-        #                 catalog.ra_property, catalog.dec_property, pos[0], pos[1], radius))
-        #
-        #     where = ' OR '.join(clauses)
-        #
-        #     stm = """SELECT %s FROM %s WHERE %s LIMIT 20000""" % (columns, tablename, where)
-        #
-        #     rows = db.fetch_all_dict(text(stm))
-        #
-        #     return rows
-        #
-        # except Exception as e:
-        #     logger.error(e)
-        #     raise e
 
     def write_gaia_catalog(self, rows, path):
 
@@ -1243,7 +1223,7 @@ class PredictionOccultation():
         self.results['search_candidate_report'] = dict({
             'start_time': t0.replace(microsecond=0).isoformat(' '),
             'finish_time': t1.replace(microsecond=0).isoformat(' '),
-            'execution_time': tdelta.total_seconds(),
+            'execution_time': str(tdelta),
             'count_asteroids': count,
             'count_success': count - failure,
             'count_failed': failure,
@@ -1536,8 +1516,8 @@ class PredictionOccultation():
                 docker_image,
                 command=cmd,
                 detach=True,
-                # name=container_name,
                 auto_remove=True,
+                mem_limit='4096m',
                 # mem_limit='2096m',
                 volumes=volumes,
                 user=os.getuid()

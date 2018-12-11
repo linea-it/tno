@@ -262,7 +262,7 @@ class AsteroidDetailPrediction extends Component {
       { name: 'Asteroid', value: asteroid.name },
       { name: 'Number', value: asteroid.number },
       { name: 'Execution Time', value: asteroid.h_execution_time },
-      { name: 'Catalog', value: asteroid.catalog_rows },
+      { name: 'Occultations', value: asteroid.occultations },
     ];
 
     return (
@@ -272,6 +272,30 @@ class AsteroidDetailPrediction extends Component {
         data={stats_asteroid}
       />
     );
+  };
+
+  moreInfoTable = asteroid => {
+    const stats_asteroid = [
+
+      { name: 'Catalog', value: asteroid.catalog },
+      { name: 'Neighborhood Stars', value: asteroid.catalog_rows },
+      { name: 'Planetary Ephemeris', value: asteroid.planetary_ephemeris },
+      { name: 'Leap Seconds', value: asteroid.leap_second },
+      { name: 'Observations', value: "*TODO*" },
+    ];
+
+    return <ListStats status={false} data={stats_asteroid} />;
+  };
+
+  executionTimeTable = asteroid => {
+    const stats_asteroid = [
+      { name: 'Ephemeris', value: asteroid.execution_ephemeris },
+      { name: 'Catalog', value: asteroid.execution_catalog },
+      { name: 'Search Candidate', value: asteroid.execution_search_candidate },
+      { name: 'Maps', value: asteroid.execution_maps },
+    ];
+
+    return <ListStats status={false} data={stats_asteroid} />;
   };
 
   occultationTable = occultations => {
@@ -533,6 +557,18 @@ class AsteroidDetailPrediction extends Component {
               content={this.statsTable(this.state.asteroid)}
             />
           </div>
+          <div className="ui-md-4">
+            <PanelCostumize
+              title="Info"
+              content={this.moreInfoTable(this.state.asteroid)}
+            />
+          </div>
+          <div className="ui-md-4">
+            <PanelCostumize
+              title="Times"
+              content={this.executionTimeTable(this.state.asteroid)}
+            />
+          </div>          
         </div>
         <div className="ui-md-12">
           <Card title="Occultations" subTitle="">

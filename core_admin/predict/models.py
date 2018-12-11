@@ -158,6 +158,10 @@ class PredictRun(models.Model):
         verbose_name='Execution Catalog',
         null=True, blank=True
     )
+    execution_search_candidate = models.DurationField(
+        verbose_name='Execution Search Candidate',
+        null=True, blank=True
+    )
     execution_maps = models.DurationField(
         verbose_name='Execution Maps',
         null=True, blank=True
@@ -259,11 +263,10 @@ class PredictAsteroid(models.Model):
         null=True, blank=True,
     )
 
-    catalog_rows = models.PositiveIntegerField(
+    catalog_rows = models.BigIntegerField(
         verbose_name="Catalog Rows",
         null=True, blank=True
     )
-
 
     execution_time = models.DurationField(
         verbose_name='Execution Time',
@@ -355,7 +358,7 @@ class PredictInput(models.Model):
         verbose_name='Filename',
     )
 
-    file_size = models.PositiveIntegerField(
+    file_size = models.BigIntegerField(
         verbose_name='File Size',
         null=True, blank=True, help_text='File Size in bytes')
 
@@ -414,7 +417,7 @@ class PredictOutput(models.Model):
         help_text='Filename is formed by name without space and separated by underline.'
     )
 
-    file_size = models.PositiveIntegerField(
+    file_size = models.BigIntegerField(
         verbose_name='File Size',
         null=False, blank=False, help_text='File Size in bytes')
 

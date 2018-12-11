@@ -81,6 +81,7 @@ class PredictionDetail extends Component {
       { name: 'Start', value: data.h_time },
       { name: 'Execution', value: data.h_execution_time },
       { name: 'Asteroids', value: data.count_objects },
+      { name: 'Occultations', value: data.occultations },
     ];
 
     const executo_time = [
@@ -98,6 +99,12 @@ class PredictionDetail extends Component {
       {
         name: 'Gaia',
         value: Math.round(moment.duration(data.execution_catalog).asSeconds()),
+      },
+      {
+        name: 'Search Candidates',
+        value: Math.round(
+          moment.duration(data.execution_search_candidate).asSeconds()
+        ),
       },
       {
         name: 'Maps',
