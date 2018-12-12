@@ -126,7 +126,7 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
 
     @list_route()
     def get_neighbors(self, request):
-        id = request.query_params.get('asteroid_id', None)
+        id = request.query_params.get('asteroid', None)
 
         if id is None:
             return Response({
@@ -145,7 +145,7 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
 
         next = None
         try:
-            next_model = PredictAsteroid.objects.filter(orbit_run=asteroid.predict_run).exclude(status='failure').filter(              
+            next_model = PredictAsteroid.objects.filter(predict_run=asteroid.predict_run).exclude(status='failure').filter(              
                 id__gt=asteroid.id).order_by('id').first()
 
             next = next_model.id
@@ -154,7 +154,7 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
 
         prev = None
         try:
-            prev_model = PredictAsteroid.objects.filter(orbit_run=asteroid.predict_run).exclude(status='failure').filter(
+            prev_model = PredictAsteroid.objects.filter(predict_run=asteroid.predict_run).exclude(status='failure').filter(
                 id__lt=asteroid.id).order_by('-id').first()
                 
             prev = prev_model.id
