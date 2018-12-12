@@ -28,7 +28,7 @@ class StepStats extends Component {
           <ul key={i} className="step-list">
             <li key={i}>
               <i
-                className={`fa fa-fw fa-circle text-${
+                className={`fa fa-fw fa-circle progress-bar-${
                   propSet.info[i].colorIcon
                 }`}
               />
@@ -43,7 +43,7 @@ class StepStats extends Component {
     // Descobrindo o total
     let total = 0;
     propSet.info.map((col, i) => {
-     return total += col.value;
+      return (total += col.value);
     });
 
     const areaProgress = propSet.info.map((col, i) => {

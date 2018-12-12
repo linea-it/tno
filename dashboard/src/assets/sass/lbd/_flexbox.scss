@@ -125,5 +125,9 @@
 }
 
 .box-margin{ 
-    margin: 0 !important;
+    margin: 10px!important;
+ }
+
+.border-edit-right {
+    border-right: 2px solid $panel-costumize-default !important;
 }

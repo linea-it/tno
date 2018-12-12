@@ -12,6 +12,7 @@ import Process from './Process.jsx';
 import Skybot from './Skybot.jsx';
 import Performance from './Perfomance.jsx';
 import PlotImages from './PlotImages.jsx';
+import Histograms from './Histograms.jsx';
 
 //API
 import DashboardApi from './DashboardApi.jsx';
@@ -153,8 +154,8 @@ class Dashboard extends Component {
     // ];
 
     return (
-      <div className="p-grid p-dir-col">
-        <div className="p-col">
+      <div className="p-dir-col">
+        <div className="p-col-12">
           <div className="box box-margin">
             <Exposure
               exposure_info={exposure_info}
@@ -163,22 +164,27 @@ class Dashboard extends Component {
             />
           </div>
         </div>
-        <div className="p-col">
-          <div className="box box-margin">
-            <Process proccess_stats={proccess_stats} />
-          </div>
-        </div>
-        <div className="p-col">
-          <div className="box box-margin">
-            <PlotImages />
-          </div>
-        </div>
-        <div className="p-col">
+        <div className="p-col-12">
           <div className="box box-margin">
             <Skybot ccds={ccds} data={data_skybot} />
           </div>
         </div>
-        <div className="p-col">
+        <div className="p-col-12">
+          <div className="box box-margin">
+            <Histograms ccds={ccds} />
+          </div>
+        </div>
+        <div className="p-col-12">
+          <div className="box box-margin">
+            <Process proccess_stats={proccess_stats} />
+          </div>
+        </div>
+        <div className="p-col-12">
+          <div className="box box-margin">
+            <PlotImages />
+          </div>
+        </div>
+        <div className="p-col-12">
           <div className="box box-margin">
             <Performance data={data} colors={colors} />
           </div>
