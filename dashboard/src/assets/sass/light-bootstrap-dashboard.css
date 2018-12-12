@@ -3654,6 +3654,9 @@ body > .navbar-collapse[data-color="purple"]:after {
   width: 20% !important;
   float: right !important; }
 
+.box-margin {
+  margin: 0 !important; }
+
 .grid {
   display: grid;
   margin: 1.25em; }

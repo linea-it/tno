@@ -153,33 +153,64 @@ class Dashboard extends Component {
     // ];
 
     return (
-      <div className="content">
-        <div className="ui-g">
-          <div className="ui-lg-6 ui-md-12 ui-sm-12">
-            <div className="ui-lg-12 ui-md-12 ui-sm-12">
-              <Exposure
-                exposure_info={exposure_info}
-                data_exposures={data_exposures}
-                graph={graph}
-              />
-            </div>
-            <div className="ui-lg-12 ui-md-12 ui-sm-12">
-              <Process proccess_stats={proccess_stats} />
-            </div>
-            <div className="ui-lg-12 ui-md-12 ui-sm-12">
-              <PlotImages />
-            </div>
+      <div className="p-grid p-dir-col">
+        <div className="p-col">
+          <div className="box box-margin">
+            <Exposure
+              exposure_info={exposure_info}
+              data_exposures={data_exposures}
+              graph={graph}
+            />
           </div>
-          <div className="ui-lg-6 ui-md-12 ui-sm-12">
-            <div className="ui-lg-12 ui-md-12">
-              <Skybot ccds={ccds} data={data_skybot} />
-            </div>
-            <div className="ui-lg-12 ui-md-12 ui-sm-12">
-              <Performance data={data} colors={colors} />
-            </div>
+        </div>
+        <div className="p-col">
+          <div className="box box-margin">
+            <Process proccess_stats={proccess_stats} />
+          </div>
+        </div>
+        <div className="p-col">
+          <div className="box box-margin">
+            <PlotImages />
+          </div>
+        </div>
+        <div className="p-col">
+          <div className="box box-margin">
+            <Skybot ccds={ccds} data={data_skybot} />
+          </div>
+        </div>
+        <div className="p-col">
+          <div className="box box-margin">
+            <Performance data={data} colors={colors} />
           </div>
         </div>
       </div>
+      // <div className="content">
+      //   <div className="ui-g">
+      //     <div className="ui-lg-6 ui-md-12 ui-sm-12">
+      //       <div className="ui-lg-12 ui-md-12 ui-sm-12">
+      //         <Exposure
+      //           exposure_info={exposure_info}
+      //           data_exposures={data_exposures}
+      //           graph={graph}
+      //         />
+      //       </div>
+      //       <div className="ui-lg-12 ui-md-12 ui-sm-12">
+      //         <Process proccess_stats={proccess_stats} />
+      //       </div>
+      //       <div className="ui-lg-12 ui-md-12 ui-sm-12">
+      //         <PlotImages />
+      //       </div>
+      //     </div>
+      //     <div className="ui-lg-6 ui-md-12 ui-sm-12">
+      //       <div className="ui-lg-12 ui-md-12">
+      //         <Skybot ccds={ccds} data={data_skybot} />
+      //       </div>
+      //       <div className="ui-lg-12 ui-md-12 ui-sm-12">
+      //         <Performance data={data} colors={colors} />
+      //       </div>
+      //     </div>
+      //   </div>
+      // </div>
     );
   }
 }
