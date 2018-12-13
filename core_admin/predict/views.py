@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.conf import settings
 import os
+from datetime import datetime, timedelta
 class PredictRunViewSet(viewsets.ModelViewSet):
     queryset = PredictRun.objects.all()
     serializer_class = PredictRunSerializer
@@ -22,6 +23,91 @@ class PredictRunViewSet(viewsets.ModelViewSet):
             raise Exception('It is necessary an active login to perform this operation.')
         serializer.save(owner=self.request.user)
 
+    @list_route()
+    def get_time_profile(self, request):
+
+        run = request.query_params.get('id', None)
+        if run is None:
+            return Response({
+                'success': False,
+                'msg': "id parameter is required",
+            })
+
+        try:
+            predict_run = PredictRun.objects.get(id=int(run))
+
+            # Asteroids
+            asteroids = predict_run.asteroids.order_by('start_time')
+
+
+            start = predict_run.start_time
+
+
+            end = start + predict_run.execution_dates
+            # step_dates_finish = .timedelta(seconds=predict_run.execution_dates)
+
+            data = dict({
+                'dates': dict({
+                    'label': 'Generate Dates',
+                    'start': predict_run.start_time.strftime('%Y-%M-%d %H:%M:%S'),
+                    'duration': predict_run.execution_dates.total_seconds()
+                })
+            })            
+            # data = dict({
+            #     'dates': dict({
+            #         'points': [
+            #             dict({
+            #                 'x': predict_run.start_time.strftime('%Y-%M-%d %H:%M:%S'),
+            #                 'y': indx,
+            #             }),
+            #             dict({
+            #                 'x': step_dates_finish.strftime('%Y-%M-%d %H:%M:%S'),
+            #                 'y': indx,
+            #             }),
+            #         ]
+            #     })
+            # })
+
+
+            # for indx, asteroid in enumerate(asteroids):
+            #     indx += 1
+
+            #     # Diferenca do start do objeto com o start da execucao
+            #     d0 = asteroid.start_time - predict_run.start_time
+            #     d0 = d0.total_seconds()
+
+            #     # Tempo inicial + o tempo de execucao.
+            #     d1 = d0 + asteroid.execution_time.total_seconds()
+
+            #     serie = dict({
+            #         'name': asteroid.name,
+            #         'status': asteroid.status,
+            #         'duration': asteroid.execution_time.total_seconds(),
+            #         'start_time': asteroid.start_time,
+            #         'finish_time': asteroid.finish_time,
+            #         'points': list([
+            #             dict({
+            #                 'x': d0,
+            #                 'y': indx,
+            #             }),
+            #             dict({
+            #                 'x': d1,
+            #                 'y': indx
+            #             })
+            #         ])
+            #     })
+            #     data.append(serie)
+
+            return Response({
+                'success': True,
+                'data': data
+            })
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "Record not found",
+            })
 
 class PredictAsteroidViewSet(viewsets.ModelViewSet):
     queryset = PredictAsteroid.objects.all()

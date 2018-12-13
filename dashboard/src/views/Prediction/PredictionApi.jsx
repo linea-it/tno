@@ -65,16 +65,14 @@ class PredictionApi {
   getPredictionRunById = ({ id }) =>
     axios.patch(`${this.api}/predict_run/${id}/`);
 
-  // createOrbitRun = ({ input_list, proccess }) =>
-  //   axios.post(`${this.api}/orbit_run/`, {
-  //     input_list: input_list,
-  //     proccess: proccess,
-  //   });
-
-  // orbitReRun = ({ id }) =>
-  //   axios.patch(`${this.api}/orbit_run/${id}/`, {
-  //     status: 'pending',
-  //   });
+  getTimeProfile = ({ id }) => {
+    const params = {
+      id: id,
+    };
+    return axios.get(`${this.api}/predict_run/get_time_profile/`, {
+      params: params,
+    });
+  };
 
   getAsteroids = ({
     page,
