@@ -25,36 +25,31 @@
 
 // }
 
-// // Tablets +- 7 a 9 polegadas
-// @media only screen and (min-width: 640px)  {
-//     .size-plot {
-//         margin: 0;
-//     }
-   
-//     .size-plot > .recharts-wrapper > .recharts-surface {
-//         width: 300px !important;
-//         height: 200px !important;
-//     }
-//     .size-plot > .recharts-wrapper {
-//         width: inherit;
-//     }
+// Tablets +- 7 a 9 polegadas
+@media only screen and (min-width: 640px)  {
+    .size-plot {
+        margin: 0 45px;
+    }
 
+    .size-plot > .recharts-wrapper {
+        width: inherit;
+        // background: #000;
+    }
 
+.responsive-image {
+    width: 380px;
+    height: 280px;
+    margin: 0px 25px;
+    padding: 0px;
 
-//     .responsive-image {
-//         width: 550px;
-//         height: 450px;
-//         margin: 0px 80px;
-//         padding: 0px;
+    img {
+        width: inherit;
+        height: inherit;
+    }
 
-//         img {
-//             width: inherit;
-//             height: inherit;
-//         }
+}
 
-//     }
-
-// }
+}
 
 // /* Large devices (laptops/desktops, 992px and up) */
 // @media only screen and (min-width: 992px) {
@@ -86,27 +81,28 @@
 //     }
 // }
 
-// /* Extra large devices (large laptops and desktops, 1200px and up) */
-// @media only screen and (min-width: 1200px) {
-//         .size-plot {
-//             margin: 0 45px;
-//         }
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+        .size-plot {
+            margin: 0 45px;
+        }
 
-//         .size-plot > .recharts-wrapper {
-//             width: inherit;
-//         }
+        .size-plot > .recharts-wrapper {
+            width: inherit;
+            // background: #000;
+        }
 
-//     .responsive-image {
-//         width: 450px;
-//         height: 350px;
-//         margin: 0px 50px;
-//         padding: 0px;
+    .responsive-image {
+        width: 380px;
+        height: 280px;
+        margin: 0px 71px;
+        padding: 0px;
 
-//         img {
-//             width: inherit;
-//             height: inherit;
-//         }
+        img {
+            width: inherit;
+            height: inherit;
+        }
 
-//     }
+    }
 
-// }
+}

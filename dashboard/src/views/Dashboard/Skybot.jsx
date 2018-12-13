@@ -6,26 +6,8 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 
 //Custom
-import StepStatsGroup from 'components/Statistics/StepStatsGroup.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import ListStats from 'components/Statistics/ListStats.jsx';
-import Content from 'components/CardContent/CardContent.jsx';
-
-//Plot Rechart
-import {
-  BarChart,
-  Bar,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Label,
-  PieChart,
-  Pie,
-  Sector,
-  Legend,
-  Cell,
-} from 'recharts';
 import Piedyclass from './Piedyclass';
 
 class Skybot extends Component {
@@ -53,9 +35,8 @@ class Skybot extends Component {
     });
 
     return (
-      <div>
+      <div className="pie-content">
         <PanelCostumize
-          colorHead="ds"
           title="Skybot"
           content={
             <div className="p-grid p-dir-row">
@@ -63,7 +44,7 @@ class Skybot extends Component {
                 <ListStats data={propSet.data} />
               </div>
               <div className="p-col-6">
-                <Piedyclass data={ssso_class} colors={COLORS}/>
+                <Piedyclass data={ssso_class} colors={COLORS} />
               </div>
             </div>
           }

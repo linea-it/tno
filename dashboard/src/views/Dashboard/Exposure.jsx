@@ -45,15 +45,10 @@ class Void extends Component {
                   content={
                     // <div className="size-plot">
                     <BarChart
-                      width={350}
-                      height={200}
+                      width={450}
+                      height={250}
                       data={propSet.graph}
-                      margin={{
-                        top: 20,
-                        right: 30,
-                        left: 20,
-                        bottom: 5,
-                      }}
+                      margin={{ top: 60, right: 30, left: 30, bottom: 5 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />

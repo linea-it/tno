@@ -13,9 +13,9 @@ class SSSOdyclass extends Component {
         content={
           <div className="size-plot">
             <BarChart
-              width={300}
-              height={150}
-              data={propSet.data}
+              width={350}
+              height={200}
+              data={propSet.data.asteroids_by_class}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <Tooltip />

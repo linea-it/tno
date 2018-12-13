@@ -28,7 +28,7 @@ class StepStats extends Component {
           <ul key={i} className="step-list">
             <li key={i}>
               <i
-                className={`fa fa-fw fa-circle progress-bar-${
+                className={`fa fa-fw fa-circle text-${
                   propSet.info[i].colorIcon
                 }`}
               />

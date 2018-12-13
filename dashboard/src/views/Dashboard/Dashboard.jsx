@@ -135,24 +135,6 @@ class Dashboard extends Component {
         grid: ['6'],
       },
     ];
-
-    // const ccd_info = [
-    //   {
-    //     legend: 'With SSSO',
-    //     label: ccds.count_asteroids,
-    //     value: ccds.count_asteroids,
-    //     colorIcon: 'info',
-    //     grid: ['6'],
-    //   },
-    //   {
-    //     legend: 'Without',
-    //     label: '231',
-    //     value: 30,
-    //     colorIcon: 'danger',
-    //     grid: ['6'],
-    //   },
-    // ];
-
     return (
       <div className="p-dir-col">
         <div className="p-col-12">
@@ -175,48 +157,16 @@ class Dashboard extends Component {
           </div>
         </div>
         <div className="p-col-12">
-          <div className="box box-margin">
-            <Process proccess_stats={proccess_stats} />
-          </div>
-        </div>
-        <div className="p-col-12">
-          <div className="box box-margin">
-            <PlotImages />
-          </div>
-        </div>
-        <div className="p-col-12">
-          <div className="box box-margin">
-            <Performance data={data} colors={colors} />
+          <div className="p-grid">
+            <div className="p-col-6">
+              <Process proccess_stats={proccess_stats} />
+            </div>
+            <div className="p-col-6">
+              <PlotImages />
+            </div>
           </div>
         </div>
       </div>
-      // <div className="content">
-      //   <div className="ui-g">
-      //     <div className="ui-lg-6 ui-md-12 ui-sm-12">
-      //       <div className="ui-lg-12 ui-md-12 ui-sm-12">
-      //         <Exposure
-      //           exposure_info={exposure_info}
-      //           data_exposures={data_exposures}
-      //           graph={graph}
-      //         />
-      //       </div>
-      //       <div className="ui-lg-12 ui-md-12 ui-sm-12">
-      //         <Process proccess_stats={proccess_stats} />
-      //       </div>
-      //       <div className="ui-lg-12 ui-md-12 ui-sm-12">
-      //         <PlotImages />
-      //       </div>
-      //     </div>
-      //     <div className="ui-lg-6 ui-md-12 ui-sm-12">
-      //       <div className="ui-lg-12 ui-md-12">
-      //         <Skybot ccds={ccds} data={data_skybot} />
-      //       </div>
-      //       <div className="ui-lg-12 ui-md-12 ui-sm-12">
-      //         <Performance data={data} colors={colors} />
-      //       </div>
-      //     </div>
-      //   </div>
-      // </div>
     );
   }
 }

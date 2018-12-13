@@ -6,7 +6,6 @@ import SunDistance from './SunDistance';
 class Histograms extends Component {
   render() {
     const propSet = this.props;
-
     return (
       <div>
         <PanelCostumize
@@ -15,7 +14,7 @@ class Histograms extends Component {
           content={
             <div className="p-grid p-dir-row">
               <div className="p-col-6 border-edit-right">
-                <SSSOdyclass data={propSet.ccds.asteroids_by_dynclass} />
+                <SSSOdyclass data={propSet.ccds} />
               </div>
               <div className="p-col-6">
                 <SunDistance data={propSet.ccds.histogram} />
