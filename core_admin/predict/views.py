@@ -37,66 +37,86 @@ class PredictRunViewSet(viewsets.ModelViewSet):
             predict_run = PredictRun.objects.get(id=int(run))
 
             # Asteroids
-            asteroids = predict_run.asteroids.order_by('start_time')
+            asteroids = predict_run.asteroids.order_by('start_ephemeris')
 
 
-            start = predict_run.start_time
-
-
-            end = start + predict_run.execution_dates
-            # step_dates_finish = .timedelta(seconds=predict_run.execution_dates)
+            # Ultimo objeto a executar a geracao de mapas
+            a = predict_run.asteroids.order_by('finish_maps').last()
+            end_maps = a.finish_maps
 
             data = dict({
                 'dates': dict({
                     'label': 'Generate Dates',
-                    'start': predict_run.start_time.strftime('%Y-%M-%d %H:%M:%S'),
+                    'start': datetime.strftime(predict_run.start_time, "%Y-%m-%d %H:%M:%S"),
                     'duration': predict_run.execution_dates.total_seconds()
-                })
+                }),
+                'ephemeris': dict({
+                    'label': 'Ephemeris',
+                    'rows': []
+                }),
+                'catalog': dict({
+                    'label': 'Catalog',
+                    'rows': []
+                }),
+                'search': dict({
+                    'label': 'Search Candidates',
+                    'rows': []
+                }),                                                
+                'map': dict({
+                    'label': 'Maps',
+                    'rows': []
+                }), 
+                'register': dict({
+                    'label': 'Register',
+                    'start': datetime.strftime(end_maps, "%Y-%m-%d %H:%M:%S"),
+                    'duration': predict_run.execution_register.total_seconds()
+                }),                               
             })            
-            # data = dict({
-            #     'dates': dict({
-            #         'points': [
-            #             dict({
-            #                 'x': predict_run.start_time.strftime('%Y-%M-%d %H:%M:%S'),
-            #                 'y': indx,
-            #             }),
-            #             dict({
-            #                 'x': step_dates_finish.strftime('%Y-%M-%d %H:%M:%S'),
-            #                 'y': indx,
-            #             }),
-            #         ]
-            #     })
-            # })
 
+            # Ephemeris
+            for asteroid in asteroids:
 
-            # for indx, asteroid in enumerate(asteroids):
-            #     indx += 1
+                try:
+                    data['ephemeris']['rows'].append(dict({
+                        'id': asteroid.id,
+                        'name': asteroid.name,
+                        'start': datetime.strftime(asteroid.start_ephemeris, "%Y-%m-%d %H:%M:%S"),
+                        'finish': datetime.strftime(asteroid.finish_ephemeris, "%Y-%m-%d %H:%M:%S"),
+                        'duration': asteroid.execution_ephemeris.total_seconds()
+                    }))
+                    data['ephemeris']['rows'].append(dict({
+                        'id': asteroid.id,
+                        'name': asteroid.name,
+                        'start': datetime.strftime(asteroid.start_ephemeris, "%Y-%m-%d %H:%M:%S"), 
+                        'finish': datetime.strftime(asteroid.finish_ephemeris, "%Y-%m-%d %H:%M:%S"),
+                        'duration': asteroid.execution_ephemeris.total_seconds()
+                    }))
+                    data['catalog']['rows'].append(dict({
+                        'id': asteroid.id,
+                        'name': asteroid.name,
+                        'start': datetime.strftime(asteroid.start_catalog, "%Y-%m-%d %H:%M:%S"),
+                        'finish': datetime.strftime(asteroid.finish_catalog, "%Y-%m-%d %H:%M:%S"),
+                        'duration': asteroid.execution_catalog.total_seconds()
+                    }))
 
-            #     # Diferenca do start do objeto com o start da execucao
-            #     d0 = asteroid.start_time - predict_run.start_time
-            #     d0 = d0.total_seconds()
+                    data['search']['rows'].append(dict({
+                        'id': asteroid.id,
+                        'name': asteroid.name,
+                        'start': datetime.strftime(asteroid.start_search_candidate, "%Y-%m-%d %H:%M:%S"),
+                        'finish': datetime.strftime(asteroid.finish_search_candidate, "%Y-%m-%d %H:%M:%S"),
+                        'duration': asteroid.execution_search_candidate.total_seconds()
+                    }))
 
-            #     # Tempo inicial + o tempo de execucao.
-            #     d1 = d0 + asteroid.execution_time.total_seconds()
+                    data['map']['rows'].append(dict({
+                        'id': asteroid.id,
+                        'name': asteroid.name,
+                        'start': datetime.strftime(asteroid.start_maps, "%Y-%m-%d %H:%M:%S"),
+                        'finish': datetime.strftime(asteroid.finish_maps, "%Y-%m-%d %H:%M:%S"),
+                        'duration': asteroid.execution_maps.total_seconds()
+                    }))
 
-            #     serie = dict({
-            #         'name': asteroid.name,
-            #         'status': asteroid.status,
-            #         'duration': asteroid.execution_time.total_seconds(),
-            #         'start_time': asteroid.start_time,
-            #         'finish_time': asteroid.finish_time,
-            #         'points': list([
-            #             dict({
-            #                 'x': d0,
-            #                 'y': indx,
-            #             }),
-            #             dict({
-            #                 'x': d1,
-            #                 'y': indx
-            #             })
-            #         ])
-            #     })
-            #     data.append(serie)
+                except Exception as e:
+                    raise(e)
 
             return Response({
                 'success': True,
