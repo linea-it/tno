@@ -431,6 +431,7 @@ class RefineOrbit():
 
             # TODO: Essa etapa pode ser paralelizada com Parsl
             # Copiar os Arquivos de Observacoes
+            observations_file = None
             try:
                 observations_file = self.copy_observation_file(obj, obj_dir)
             except Exception as e:
@@ -438,6 +439,7 @@ class RefineOrbit():
                 self.logger.error(e)
 
             # Copiar os Arquivos de Orbital Parameters
+            orbital_parameters_file = None
             try:
                 orbital_parameters_file = self.copy_orbital_parameters_file(obj, obj_dir)
             except Exception as e:
@@ -445,6 +447,7 @@ class RefineOrbit():
                 self.logger.error(e)
 
             # Copiar os Arquivos de BSP_JPL
+            bsp_jpl_file = None
             try:
                 bsp_jpl_file = self.copy_bsp_jpl_file(obj, obj_dir)
             except Exception as e:
@@ -452,6 +455,7 @@ class RefineOrbit():
                 self.logger.error(e)
 
             # Verificar se o Arquivo do PRAIA (Astrometry position) existe no diretorio do objeto.
+            astrometry_position_file = None
             try:
                 astrometry_position_file = self.verify_astrometry_position_file(obj, obj_dir)
             except Exception as e:
