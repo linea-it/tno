@@ -819,7 +819,7 @@ class RefineOrbit():
                 command=cmd,
                 detach=True,
                 auto_remove=True,
-                mem_limit='1024m',
+                # mem_limit='1024m',
                 volumes=volumes
             )
             container.wait()
@@ -975,23 +975,6 @@ class RefineOrbit():
         self.logger.debug("Registering Object %s" % obj.get("name"))
 
         try:
-
-            # try:
-            #     t0 = datetime.strptime(obj.get("start_nima"), '%Y-%m-%d %H:%M:%S')
-
-            # except:
-            #     t0 = None
-            # try:
-            #     t1 = datetime.strptime(obj.get("finish_nima"), '%Y-%m-%d %H:%M:%S')
-            # except:
-            #     t1 = None
-
-
-            # if t0 is not None and t1 is not None:
-            #     t_delta = t1 - t0
-            # else:
-            #     t_delta = None
-
             asteroid, created = RefinedAsteroid.objects.update_or_create(
                 orbit_run=orbit_run,
                 name=obj.get("name"),

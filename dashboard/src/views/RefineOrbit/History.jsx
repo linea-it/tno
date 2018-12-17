@@ -128,8 +128,6 @@ class RefineOrbitHistory extends Component {
   actionTemplate = rowData => {
     const id = rowData.id;
     let btn_view = null;
-    let btn_log = null;
-
     if (rowData.status !== 'success') {
       btn_view = (
         <Button
@@ -141,22 +139,7 @@ class RefineOrbitHistory extends Component {
           onClick={() => this.onView(id)}
         />
       );
-      btn_log = (
-        <Button
-          type="button"
-          icon="fa fa-file-text-o"
-          className="ui-button-warning"
-          title="Log"
-          disabled={true}
-          onClick={() => this.onLog(id)}
-        />
-      );
-      return (
-        <div>
-          {btn_view}
-          {btn_log}
-        </div>
-      );
+      return <div>{btn_view}</div>;
     } else {
       btn_view = (
         <Button
@@ -167,21 +150,7 @@ class RefineOrbitHistory extends Component {
           onClick={() => this.onView(id)}
         />
       );
-      btn_log = (
-        <Button
-          type="button"
-          icon="fa fa-file-text-o"
-          className="ui-button-warning"
-          title="Log"
-          onClick={() => this.onLog(id)}
-        />
-      );
-      return (
-        <div>
-          {btn_view}
-          {btn_log}
-        </div>
-      );
+      return <div>{btn_view}</div>;
     }
   };
 

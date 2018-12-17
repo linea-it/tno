@@ -35,7 +35,6 @@ class PredictionHistory extends Component {
       sortField: 'name',
       sortOrder: 1,
       asteroid_id: 0,
-      log_visible: false,
       reload_interval: 10,
       selected: null,
     };
@@ -121,7 +120,6 @@ class PredictionHistory extends Component {
   actionTemplate = rowData => {
     const id = rowData.id;
     let btn_view = null;
-    let btn_log = null;
 
     if (rowData.status !== 'success') {
       btn_view = (
@@ -134,22 +132,7 @@ class PredictionHistory extends Component {
           onClick={() => this.onView(id)}
         />
       );
-      btn_log = (
-        <Button
-          type="button"
-          icon="fa fa-file-text-o"
-          className="ui-button-warning"
-          title="Log"
-          disabled={true}
-          onClick={() => this.onLog(id)}
-        />
-      );
-      return (
-        <div>
-          {btn_view}
-          {btn_log}
-        </div>
-      );
+      return <div>{btn_view}</div>;
     } else {
       btn_view = (
         <Button
@@ -160,21 +143,7 @@ class PredictionHistory extends Component {
           onClick={() => this.onView(id)}
         />
       );
-      btn_log = (
-        <Button
-          type="button"
-          icon="fa fa-file-text-o"
-          className="ui-button-warning"
-          title="Log"
-          onClick={() => this.onLog(id)}
-        />
-      );
-      return (
-        <div>
-          {btn_view}
-          {btn_log}
-        </div>
-      );
+      return <div>{btn_view}</div>;
     }
   };
 
