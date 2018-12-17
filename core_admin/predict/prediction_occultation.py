@@ -1725,9 +1725,12 @@ class PredictionOccultation():
                         )
                         occ.save()
 
-
-            # TODO Mudar o Status do Asteroid caso nao tenha gerado todos os mapas
+            # Mudar o Status do Asteroid caso nao tenha gerado todos os mapas
             # Basta contar quantos ocultacoes estao com o campo file_path em branco.
+            if asteroid.occultation.filter(file_path__isnull=True).count() > 0:
+                asteroid.status = "warning"
+                asteroid.save()
+
 
             self.logger.info("Registered Object %s %s" % (obj.get("name"), l_created))
 
