@@ -40,6 +40,8 @@ class PredictRunSerializer(serializers.ModelSerializer):
 
     execution_seconds = serializers.SerializerMethodField()
 
+    occultations = serializers.SerializerMethodField()
+
     class Meta:
         model = PredictRun
         fields = (
@@ -67,6 +69,7 @@ class PredictRunSerializer(serializers.ModelSerializer):
             'execution_dates',
             'execution_ephemeris',
             'execution_catalog',
+            'execution_search_candidate',
             'execution_maps',
             'execution_register',
             'count_objects',
@@ -74,6 +77,7 @@ class PredictRunSerializer(serializers.ModelSerializer):
             'count_failed',
             'count_warning',
             'execution_seconds',
+            'occultations'
         )
 
     def get_owner(self, obj):
@@ -124,6 +128,12 @@ class PredictRunSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    def get_occultations(self, obj):
+        try:
+            return Occultation.objects.filter(asteroid__predict_run=obj.pk).count()
+        except:
+            return None
+
 
 class PredictAsteroidSerializer(serializers.ModelSerializer):
     predict_run = serializers.PrimaryKeyRelatedField(
@@ -131,6 +141,11 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
 
     h_execution_time = serializers.SerializerMethodField()
     proccess_displayname = serializers.SerializerMethodField()
+
+    occultations = serializers.SerializerMethodField()
+    catalog = serializers.SerializerMethodField()
+    planetary_ephemeris = serializers.SerializerMethodField()
+    leap_second = serializers.SerializerMethodField()
 
     class Meta:
         model = PredictAsteroid
@@ -142,6 +157,7 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
             'number',
             'status',
             'error_msg',
+            'catalog_rows',
             'execution_time',
             'h_execution_time',
             'start_ephemeris',
@@ -156,6 +172,10 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
             'start_maps',
             'finish_maps',
             'execution_maps',
+            'occultations',
+            'catalog',
+            'planetary_ephemeris',
+            'leap_second',
         )
 
     def get_h_execution_time(self, obj):
@@ -170,6 +190,30 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    def get_occultations(self, obj):
+        try:
+            return obj.occultation.count()
+        except:
+            return None
+
+    def get_catalog(self, obj):
+        try:
+            return obj.predict_run.catalog.display_name
+        except:
+            return None
+
+    def get_planetary_ephemeris(self, obj):
+        try:
+            return obj.predict_run.bsp_planetary.display_name
+        except:
+            return None
+
+    def get_leap_second(self, obj):
+        try:
+            return obj.predict_run.leap_second.display_name
+        except:
+            return None
+            
 
 class PredictInputSerializer(serializers.ModelSerializer):
     asteroid = serializers.PrimaryKeyRelatedField(
