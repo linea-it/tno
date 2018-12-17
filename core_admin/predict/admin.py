@@ -35,6 +35,6 @@ class BspPlanetaryAdmin(admin.ModelAdmin):
 
 @admin.register(Occultation)
 class OccultationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'asteroid', 'date_time', 'ra_star_candidate', 'dec_star_candidate', 'ra_target', 'dec_target',)
+    list_display = ('id', 'asteroid', 'date_time', 'ra_star_candidate', 'dec_star_candidate', 'ra_target', 'dec_target', 'file_path')
     search_fields = ('asteroid', 'date_time', )
 
