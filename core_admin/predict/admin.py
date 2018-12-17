@@ -11,17 +11,17 @@ class PredictRunAdmin(admin.ModelAdmin):
 @admin.register(PredictAsteroid)
 class PredictAsteroidAdmin(admin.ModelAdmin):
     list_display = ('id', 'predict_run', 'name', 'number', 'execution_time', 'status', 'error_msg',)
-    search_fields = ('name', 'number')
+    search_fields = ('name__name', 'number')
 
 @admin.register(PredictInput)
 class PredictInputAdmin(admin.ModelAdmin):
     list_display = ('id', 'asteroid', 'input_type', 'filename', 'file_size', 'file_type', 'file_path',)
-    search_fields = ('asteroid', 'input_type', 'filename')
+    search_fields = ('asteroid__name', 'input_type', 'filename')
 
 @admin.register(PredictOutput)
 class PredictOutputAdmin(admin.ModelAdmin):
     list_display = ('id', 'asteroid', 'type', 'filename', 'file_size', 'file_type', 'file_path',)
-    search_fields = ('asteroid', 'type', 'filename')
+    search_fields = ('asteroid__name', 'type', 'filename')
 
 @admin.register(LeapSecond)
 class LeapSecondAdmin(admin.ModelAdmin):
@@ -36,5 +36,5 @@ class BspPlanetaryAdmin(admin.ModelAdmin):
 @admin.register(Occultation)
 class OccultationAdmin(admin.ModelAdmin):
     list_display = ('id', 'asteroid', 'date_time', 'ra_star_candidate', 'dec_star_candidate', 'ra_target', 'dec_target', 'file_path')
-    search_fields = ('asteroid', 'date_time', )
+    search_fields = ('asteroid__name', )
 
