@@ -135,7 +135,7 @@ class PredictRun(models.Model):
 
     start_time = models.DateTimeField(
         verbose_name='Start Time',
-        auto_now_add=True, null=True, blank=True)
+        auto_now_add=False, null=True, blank=True)
 
     finish_time = models.DateTimeField(
         verbose_name='Finish Time',

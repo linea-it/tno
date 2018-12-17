@@ -12,6 +12,7 @@ import PropTypes from 'prop-types';
 import DonutStats from 'components/Statistics/DonutStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import ListStats from 'components/Statistics/ListStats.jsx';
+import PredictionTimeProfile from './TimeProfile';
 import moment from 'moment';
 import { Button } from 'primereact/button';
 
@@ -28,7 +29,7 @@ class PredictionDetail extends Component {
     return {
       id: 0,
       data: {},
-      time_profile: [],
+      time_profile: {},
       list: {},
     };
   }
@@ -45,6 +46,14 @@ class PredictionDetail extends Component {
         id: parseInt(params.id, 10),
         data: data,
       });
+
+      if (data.status === 'success') {
+        this.api.getTimeProfile({ id: params.id }).then(res => {
+          this.setState({
+            time_profile: res.data.data,
+          });
+        });
+      }
     });
   }
   onClickBackToPredictRun = () => {
@@ -134,55 +143,74 @@ class PredictionDetail extends Component {
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
     return (
-      <div className="grid template-predict-occult">
-        <div className="navigation_predict_occult">{this.create_nav_bar()}</div>
+      <div className="content">
+        {this.create_nav_bar()}
 
-        <PanelCostumize
-          title="Summary"
-          className="list_predict_occult"
-          content={
-            <ListStats
-              Badge="STATUS"
-              title={`Prediction Occultation - ${data.id}`}
-              data={stats}
+        <div className="p-grid">
+          <div className="p-col-3">
+            <PanelCostumize
+              title="Summary"
+              className="list_predict_occult"
+              content={
+                <ListStats
+                  Badge="STATUS"
+                  title={`Prediction Occultation - ${data.id}`}
+                  data={stats}
+                />
+              }
             />
-          }
-        />
-
-        <PanelCostumize
-          title="Status"
-          className="stats_predict_occult"
-          content={
-            <DonutStats
-              subTitle="Statistics of executation"
-              data={stats_status}
-              fill={colors}
+          </div>
+          <div className="p-col-3">
+            <PanelCostumize
+              title="Status"
+              className="stats_predict_occult"
+              content={
+                <DonutStats
+                  subTitle="Statistics of executation"
+                  data={stats_status}
+                  fill={colors}
+                />
+              }
             />
-          }
-        />
-
-        <PanelCostumize
-          title="Execution Time"
-          className="stats_predict_occult2"
-          content={
-            <DonutStats
-              subTitle="Statistics of executation"
-              data={executo_time}
-              fill={colors_time}
+          </div>
+          <div className="p-col-3">
+            <PanelCostumize
+              title="Execution Time"
+              className="stats_predict_occult2"
+              content={
+                <DonutStats
+                  subTitle="Statistics of executation"
+                  data={executo_time}
+                  fill={colors_time}
+                />
+              }
             />
-          }
-        />
-
-        <PanelCostumize
-          title="Asteroids"
-          className="table_predict_occult"
-          content={
-            <AsteroidList
-              predict_run={this.state.id}
-              view_asteroid={this.onViewAsteroid}
+          </div>
+          <div className="p-col-12">
+            <PanelCostumize
+              title="Asteroids"
+              className="table_predict_occult"
+              content={
+                <AsteroidList
+                  predict_run={this.state.id}
+                  view_asteroid={this.onViewAsteroid}
+                />
+              }
             />
-          }
-        />
+          </div>
+        </div>
+        <div className="p-col-12">
+          <PanelCostumize
+            title="Time Profile"
+            content={
+              <PredictionTimeProfile
+                width={820}
+                height={480}
+                data={this.state.time_profile}
+              />
+            }
+          />
+        </div>
       </div>
     );
   }
