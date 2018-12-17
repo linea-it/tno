@@ -14,7 +14,7 @@
 1                                                                 | Bias correction (0:no; 1:yes (default)) for sc_fit
 6                                                                 | Maximum number of fitting steps  (default:6)
 1                                                                 | Rejection of outliers (0: threshold values; 1: flag astdys (default); 2: Khi2 rejection)
-0                                                                 | Plot of residuals (O-C) (0 = no (default); 1 = png file)
+1                                                                 | Plot of residuals (O-C) (0 = no (default); 1 = png file)
 0                                                                 | Center of ephemeris in JPL (0: SSB -default-, 1: Sun)
 1                                                                 | Planets perturbations (1: Me,V,EMB,Ma,J,S,U,N (default)) for sc_diffjplomc
 2                                                                 | Weighting process (0: computed rms; 1: constant rms; 2: rms astdys (default)) for sc_diffjplomc
@@ -27,7 +27,7 @@
 d                                                                 | Unit  (d/j : day; h: hour; m: min, s: sec) (default: d)
 2                                                                 | Date format (0: julian date; 1: year; 2: yyyy-mm-dd@hh:mm:ss (default))
 2013-01-01                                                        | Ephemeris. Date of beginning  (default:2013-01-01)
-2019-01-01                                                        | Date of end  (default:2019-01-01)
+2020-01-01                                                        | Date of end  (default:2019-01-01)
                                                                   | Scale for plot (R.A. and Dec. range). min R.A. in mas (default : automatic)
 1                                                                 | Planets perturbations (1: Me,V,EMB,Ma,J,S,U,N (default)) for sc_makebsp
 60                                                                | Computation of Chebychev polynomia. Length of each intervals (default:60days)
@@ -45,4 +45,4 @@ d                                                                 | Unit  (d/j :
 d                                                                 | Unit of step (d: day (default); h: hour; m: minute; s: second)
 2                                                                 | Date format (0: julian date; 1: year; 2: yyyy-mm-dd@hh:mm:ss (default))
 2018-01-01                                                        | Period of validity. Date of beginning  (default:2018-01-01)
-2019-01-01                                                        | Date of end  (default:2019-01-01)
+2020-01-01                                                        | Date of end  (default:2019-01-01)

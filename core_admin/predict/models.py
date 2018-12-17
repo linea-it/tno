@@ -196,6 +196,11 @@ class PredictRun(models.Model):
         help_text='Number of objects with status warning',
         null=True, blank=True
     )
+    count_not_executed = models.PositiveIntegerField(
+        verbose_name='Num Not Executed Objects',
+        help_text='Number of objects that were NOT executed.',
+        null=True, blank=True
+    )
 
     relative_path = models.CharField(
         max_length=256,
@@ -253,7 +258,7 @@ class PredictAsteroid(models.Model):
         max_length=10,
         verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'))
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
     )
 
     error_msg = models.CharField(

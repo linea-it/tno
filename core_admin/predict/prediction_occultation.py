@@ -151,7 +151,10 @@ class PredictionOccultation():
 
             self.logger.debug("Objects: %s" % obj_count)
 
+            orbit_run = instance.input_orbit
+
             for obj in objects:
+
                 obj_name = obj.get("name").replace(" ", "_")
 
                 obj_relative_path = os.path.join(self.get_object_dir(obj.get("name"), self.objects_dir))
@@ -208,6 +211,11 @@ class PredictionOccultation():
                         diameter = asteroid_data.diameter
                 else:
                     self.logger.warning("[ %s ] has no Diameter" % obj.get("name"))
+
+                status = None
+                orbit_run_asteroid = orbit_run.asteroids.get(name=obj.get("name"))
+                if orbit_run_asteroid is not None and orbit_run_asteroid.status == 'failure':
+                    status = 'not_executed'
 
                 self.results["objects"][obj_name] = dict({
                     "name": obj.get("name"),
@@ -299,6 +307,7 @@ class PredictionOccultation():
             csuccess = instance.asteroids.filter(status='success').count()
             cfailed = instance.asteroids.filter(status='failed').count()
             cwarning = instance.asteroids.filter(status='warning').count()
+            cnotexecuted = instance.asteroids.filter(status='not_executed').count()
 
             self.results["status"] = "success"
 
@@ -326,6 +335,7 @@ class PredictionOccultation():
             instance.count_success = csuccess
             instance.count_failed = cfailed
             instance.count_warning = cwarning
+            instance.count_not_executed = cnotexecuted
 
             instance.save()
 
@@ -605,20 +615,21 @@ class PredictionOccultation():
         for alias in self.results['objects']:
             obj = self.results['objects'][alias]
 
-            self.results["objects"][alias]["status"] = "running"
+            if obj['status'] is not 'failure' and obj['status'] is not 'not_executed':
+                self.results["objects"][alias]["status"] = "running"
 
-            result = start_parsl_job(
-                id=id,
-                docker_client=docker_client,
-                docker_image=docker_image,
-                obj=obj,
-                logger=self.logger)
+                result = start_parsl_job(
+                    id=id,
+                    docker_client=docker_client,
+                    docker_image=docker_image,
+                    obj=obj,
+                    logger=self.logger)
 
-            self.logger.debug(result)
+                self.logger.debug(result)
 
-            results.append(result)
+                results.append(result)
 
-            id += 1
+                id += 1
 
         # Espera o Resultado de todos os jobs.
         outputs = [i.result() for i in results]
@@ -889,7 +900,8 @@ class PredictionOccultation():
         for alias in self.results['objects']:
             obj = self.results['objects'][alias]
 
-            if obj['status'] is not 'failure':
+            if obj['status'] is not 'failure' and obj['status'] is not 'not_executed':
+
                 result = start_parsl_job(
                     id=id,
                     catalog=gaia,
@@ -1179,7 +1191,7 @@ class PredictionOccultation():
         for alias in self.results['objects']:
             obj = self.results['objects'][alias]
 
-            if obj['status'] is not 'failure':
+            if obj['status'] is not 'failure' and obj['status'] is not 'not_executed':
                 result = start_parsl_job(
                     id=id,
                     obj=obj,
@@ -1413,7 +1425,7 @@ class PredictionOccultation():
         for alias in self.results['objects']:
             obj = self.results['objects'][alias]
 
-            if obj['status'] is not 'failure':
+            if obj['status'] is not 'failure' and obj['status'] is not 'not_executed':
                 result = start_parsl_job(
                     id=id,
                     obj=obj,
@@ -1546,14 +1558,6 @@ class PredictionOccultation():
         self.logger.debug("Registered Object")
 
         try:
-
-            # Contador de Status
-            if obj['status'] == 'success':
-                self.results['count_success'] += 1
-            elif obj['status'] == 'warning':
-                self.results['count_warning'] += 1
-            else:
-                self.results['count_failed'] += 1
 
             # Gerar o tempo medio para executar cada asteroid somando o tempo de cada etapa
             t1 = pytimeparse.parse(obj.get("execution_ephemeris", "00:00:00"))
