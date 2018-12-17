@@ -58,7 +58,7 @@ class PredictionTimeProfile extends Component {
           duration: moment.duration(row.duration, 'seconds').humanize(),
           x: [row.start, row.finish],
           y: [this.idx, this.idx],
-          // legendgroup: 'ephemeris',
+          legendgroup: 'ephemeris',
           type: 'scatter',
           mode: 'lines+markers',
           marker: {
@@ -94,7 +94,7 @@ class PredictionTimeProfile extends Component {
           duration: moment.duration(row.duration, 'seconds').humanize(),
           x: [row.start, row.finish],
           y: [this.idx, this.idx],
-          // legendgroup: 'ephemeris',
+          legendgroup: 'catalog',
           type: 'scatter',
           mode: 'lines+markers',
           marker: {
@@ -130,7 +130,7 @@ class PredictionTimeProfile extends Component {
           duration: moment.duration(row.duration, 'seconds').humanize(),
           x: [row.start, row.finish],
           y: [this.idx, this.idx],
-          // legendgroup: 'ephemeris',
+          legendgroup: 'search',
           type: 'scatter',
           mode: 'lines+markers',
           marker: {
@@ -166,7 +166,7 @@ class PredictionTimeProfile extends Component {
           duration: moment.duration(row.duration, 'seconds').humanize(),
           x: [row.start, row.finish],
           y: [this.idx, this.idx],
-          // legendgroup: 'ephemeris',
+          legendgroup: 'maps',
           type: 'scatter',
           mode: 'lines+markers',
           marker: {
@@ -201,7 +201,7 @@ class PredictionTimeProfile extends Component {
               .add(dates.duration, 'seconds')
               .format('YYYY-MM-DD HH:mm:ss'),
           ],
-          y: [this.idx, this.idx],
+          y: [1, 1],
           type: 'line',
           mode: 'lines+markers',
           marker: {
@@ -237,6 +237,24 @@ class PredictionTimeProfile extends Component {
       rows.push(e);
       return;
     });
+    if (data.ephemeris) {
+      rows.push({
+        name: data.ephemeris.label,
+        x: [data.ephemeris.start, data.ephemeris.finish],
+        y: [1, 1],
+        legendgroup: 'ephemeris',
+        type: 'scatter',
+        mode: 'lines+markers',
+        marker: {
+          color: '#2196F3',
+        },
+        line: {
+          color: '#64B5F6',
+        },
+        showlegend: true,
+        hoverinfo: 'name',
+      });
+    }
 
     const catalogs = this.getCatalog(data.catalog);
     catalogs.map(e => {
@@ -244,17 +262,74 @@ class PredictionTimeProfile extends Component {
       return;
     });
 
+    if (data.catalog) {
+      rows.push({
+        name: data.catalog.label,
+        x: [data.catalog.start, data.catalog.finish],
+        y: [1, 1],
+        legendgroup: 'catalog',
+        type: 'scatter',
+        mode: 'lines+markers',
+        marker: {
+          color: '#009688',
+        },
+        line: {
+          color: '#4DB6AC',
+        },
+        showlegend: true,
+        hoverinfo: 'name',
+      });
+    }
+
     const searchs = this.getSearchs(data.search);
     searchs.map(e => {
       rows.push(e);
       return;
     });
 
+    if (data.search) {
+      rows.push({
+        name: data.search.label,
+        x: [data.search.start, data.search.finish],
+        y: [1, 1],
+        legendgroup: 'search',
+        type: 'scatter',
+        mode: 'lines+markers',
+        marker: {
+          color: '#8BC34A',
+        },
+        line: {
+          color: '#AED581',
+        },
+        showlegend: true,
+        hoverinfo: 'name',
+      });
+    }
+
     const maps = this.getMaps(data.map);
     maps.map(e => {
       rows.push(e);
       return;
     });
+
+    if (data.map) {
+      rows.push({
+        name: data.map.label,
+        x: [data.map.start, data.map.finish],
+        y: [1, 1],
+        legendgroup: 'maps',
+        type: 'scatter',
+        mode: 'lines+markers',
+        marker: {
+          color: '#9575CD',
+        },
+        line: {
+          color: '#673AB7',
+        },
+        showlegend: true,
+        hoverinfo: 'name',
+      });
+    }
 
     const register = this.getRegister(data.register);
     register.map(e => {

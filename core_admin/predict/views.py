@@ -44,26 +44,50 @@ class PredictRunViewSet(viewsets.ModelViewSet):
             a = predict_run.asteroids.order_by('finish_maps').last()
             end_maps = a.finish_maps
 
+            # Ephemeris Start + End
+            start_ephemeris = predict_run.asteroids.order_by('start_ephemeris').first().start_ephemeris
+            end_ephemeris = predict_run.asteroids.order_by('finish_ephemeris').last().finish_ephemeris
+
+            # Catalog Start + End
+            start_catalog = predict_run.asteroids.order_by('start_catalog').first().start_catalog
+            end_catalog = predict_run.asteroids.order_by('finish_catalog').last().finish_catalog
+
+            # Prediction Start + End
+            start_search = predict_run.asteroids.order_by('start_search_candidate').first().start_search_candidate
+            end_search = predict_run.asteroids.order_by('finish_search_candidate').last().finish_search_candidate
+
+            # Map Start End
+            start_maps = predict_run.asteroids.order_by('start_maps').first().start_maps
+            end_maps = predict_run.asteroids.order_by('finish_maps').last().finish_maps
+
             data = dict({
                 'dates': dict({
-                    'label': 'Generate Dates',
+                    'label': 'Generate dates',
                     'start': datetime.strftime(predict_run.start_time, "%Y-%m-%d %H:%M:%S"),
                     'duration': predict_run.execution_dates.total_seconds()
                 }),
                 'ephemeris': dict({
-                    'label': 'Ephemeris',
+                    'label': 'Generate efemerides',
+                    'start': datetime.strftime(start_ephemeris, "%Y-%m-%d %H:%M:%S"),
+                    'finish': datetime.strftime(end_ephemeris, "%Y-%m-%d %H:%M:%S"),
                     'rows': []
                 }),
                 'catalog': dict({
-                    'label': 'Catalog',
+                    'label': 'Get star positions from star catalogue',
+                    'start': datetime.strftime(start_catalog, "%Y-%m-%d %H:%M:%S"),
+                    'finish': datetime.strftime(end_catalog, "%Y-%m-%d %H:%M:%S"),
                     'rows': []
                 }),
                 'search': dict({
-                    'label': 'Search Candidates',
+                    'label': 'Prediction of stellar occultation',
+                    'start': datetime.strftime(start_search, "%Y-%m-%d %H:%M:%S"),
+                    'finish': datetime.strftime(end_search, "%Y-%m-%d %H:%M:%S"),                    
                     'rows': []
                 }),                                                
                 'map': dict({
-                    'label': 'Maps',
+                    'label': 'Make prediction maps',
+                    'start': datetime.strftime(start_maps, "%Y-%m-%d %H:%M:%S"),
+                    'finish': datetime.strftime(end_maps, "%Y-%m-%d %H:%M:%S"),                    
                     'rows': []
                 }), 
                 'register': dict({

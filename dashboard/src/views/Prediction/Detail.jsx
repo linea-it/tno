@@ -197,7 +197,7 @@ class PredictionDetail extends Component {
             title="Time Profile"
             content={
               <PredictionTimeProfile
-                width={640}
+                width={820}
                 height={480}
                 data={this.state.time_profile}
               />
