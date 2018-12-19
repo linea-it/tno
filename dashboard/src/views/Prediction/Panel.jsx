@@ -41,7 +41,8 @@ class PredictionPanel extends Component {
     // Toda vez que cria um novo registro forca a execucao do metodo render()
     console.log('onCreateRun', record);
     this.setState({
-      msg: 'Your registration has been successfully reviewed.',
+      msg:
+        'The task has been submitted and will be executed in the background..',
       type: 'alert-success',
     });
     this.onShow();

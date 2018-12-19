@@ -255,7 +255,7 @@ class PredictAsteroid(models.Model):
     )
 
     status = models.CharField(
-        max_length=10,
+        max_length=15,
         verbose_name='Status',
         default='pending', null=True, blank=True,
         choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
