@@ -281,7 +281,7 @@ class RefineOrbit():
 
             # Se nao tiver nenhum resultado, marcar como falha
             instance.status = "failure"
-            if csuccess > 0:
+            if csuccess > 0 or cfailed is not obj_count:
                 instance.status = "success"
 
             instance.execution_time = tdelta

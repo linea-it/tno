@@ -238,7 +238,7 @@ PARSL_CONFIG = {
             "execution": {
                 "executor": "threads",
                 "provider": None,
-                "maxThreads": int(os.environ.get('AVAILABLE_THREADS', 4))
+                "maxThreads": int(os.environ.get('AVAILABLE_THREADS', 8))
             }
         }
     ],
@@ -246,6 +246,9 @@ PARSL_CONFIG = {
         "lazyErrors": True,
     }
 }
+
+# MINIMUM THREADS 
+MINIMUM_THREADS = os.environ.get('MINIMUM_THREADS', 4)
 
 # DOCKER Configuration
 try:

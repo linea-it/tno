@@ -57,6 +57,15 @@ class AsteroidList extends Component {
               title={rowData.error_msg}
             />
           );
+        } else if (rowData.status === 'not_executed') {
+          return (
+            <Button
+              type="button"
+              icon="fa fa-times-circle"
+              className="btn-gray"
+              title={rowData.error_msg}
+            />
+          );
         } else {
           return (
             <Button
@@ -138,17 +147,21 @@ class AsteroidList extends Component {
     const asteroid_id = rowData.id;
     let btn_view = null;
 
-    btn_view = (
-      <Button
-        type="button"
-        icon="fa fa-search"
-        className="ui-button-info"
-        title="View"
-        onClick={() => this.onViewAsteroid(asteroid_id)}
-      />
-    );
+    if (rowData.status !== 'not_executed') {
+      btn_view = (
+        <Button
+          type="button"
+          icon="fa fa-search"
+          className="ui-button-info"
+          title="View"
+          onClick={() => this.onViewAsteroid(asteroid_id)}
+        />
+      );
 
-    return <div>{btn_view}</div>;
+      return <div>{btn_view}</div>;
+    } else {
+      return;
+    }
   };
 
   onPageChange = e => {

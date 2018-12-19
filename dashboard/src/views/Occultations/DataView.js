@@ -92,7 +92,7 @@ class OccultationsDataView extends Component {
       name = row.asteroid_name + ' - ' + row.asteroid_number;
     }
 
-    const image = this.api.api + row.src;
+    const image = row.src;
 
     return (
       <div className="p-grid" style={{ marginBottom: '7px' }}>
@@ -132,7 +132,7 @@ class OccultationsDataView extends Component {
       name = '(' + row.asteroid_number + ') ' + row.asteroid_name;
     }
 
-    const image = this.api.api + row.src;
+    const image = row.src;
 
     return (
       <div style={{ padding: '.5em' }} className="p-col-12 p-md-3">
