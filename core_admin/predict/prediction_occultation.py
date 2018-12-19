@@ -214,6 +214,9 @@ class PredictionOccultation():
 
                 status = None
                 orbit_run_asteroid = orbit_run.asteroids.get(name=obj.get("name"))
+                self.logger.debug("Orbit RUN Asteroid %s" % orbit_run_asteroid)
+                self.logger.debug("Orbit RUN Asteroid Status %s" % orbit_run_asteroid.status)
+
                 if orbit_run_asteroid is not None and orbit_run_asteroid.status == 'failure':
                     status = 'not_executed'
 
@@ -1370,7 +1373,7 @@ class PredictionOccultation():
             parsl_config = settings.PARSL_CONFIG
 
             # Diminuindo o numero de Treads por causa da limitacao de memoria
-            parsl_config["sites"][0]["execution"]["maxThreads"] = 2
+            parsl_config["sites"][0]["execution"]["maxThreads"] = settings.MINIMUM_THREADS
 
             dfk = DataFlowKernel(
                 config=dict(parsl_config))
@@ -1564,19 +1567,7 @@ class PredictionOccultation():
 
         try:
 
-            # Gerar o tempo medio para executar cada asteroid somando o tempo de cada etapa
-            t1 = pytimeparse.parse(obj.get("execution_ephemeris", "00:00:00"))
-            t2 = pytimeparse.parse(obj.get("execution_gaia_catalog", "00:00:00"))
-            t3 = pytimeparse.parse(obj.get("execution_search_candidate", "00:00:00"))
-            t4 = pytimeparse.parse(obj.get("execution_maps", "00:00:00"))
-            ttotal = (t1 + t2) + (t3 + t4)
-
-            self.execution_time.append(ttotal)
-
-            texecution = timedelta(seconds=ttotal)
-            # Fix for prevent invalid input syntax for type interval: "None"
-            if texecution:
-                texecution = str(texecution)
+            self.logger.debug("Object Status [%s]" % obj.get("status"))
 
             if obj.get("status") is 'not_executed':
                 asteroid, created = PredictAsteroid.objects.update_or_create(
@@ -1585,12 +1576,27 @@ class PredictionOccultation():
                     defaults={
                         'number': obj.get("number"),
                         'status': 'not_executed',
+                        'error_msg': 'Not executed because it failed to refine orbit.',
                     })
 
                 asteroid.save()
 
             else:
-                
+
+                # Gerar o tempo medio para executar cada asteroid somando o tempo de cada etapa
+                t1 = pytimeparse.parse(obj.get("execution_ephemeris", "00:00:00"))
+                t2 = pytimeparse.parse(obj.get("execution_gaia_catalog", "00:00:00"))
+                t3 = pytimeparse.parse(obj.get("execution_search_candidate", "00:00:00"))
+                t4 = pytimeparse.parse(obj.get("execution_maps", "00:00:00"))
+                ttotal = (t1 + t2) + (t3 + t4)
+
+                self.execution_time.append(ttotal)
+
+                texecution = timedelta(seconds=ttotal)
+                # Fix for prevent invalid input syntax for type interval: "None"
+                if texecution:
+                    texecution = str(texecution)
+
                 execution_ephemeris = None
                 if obj.get("execution_ephemeris"):
                     execution_ephemeris = str(obj.get("execution_ephemeris"))
@@ -1750,7 +1756,7 @@ class PredictionOccultation():
                     asteroid.save()
 
 
-            self.logger.info("Registered Object %s %s" % (obj.get("name"), l_created))
+            self.logger.info("Registered Object %s " % obj.get("name"))
 
         except Exception as e:
             self.logger.error("Failed to Register Object %s Error: %s" % (obj.get("name"), e))
