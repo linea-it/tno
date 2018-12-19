@@ -128,7 +128,7 @@ class AsteroidDetailPrediction extends Component {
       const data = res.data.results;
 
       data.map((row, i) => {
-        const src = this.api.api + row.src;
+        const src = row.src;
         row.src = src;
         return row;
       });

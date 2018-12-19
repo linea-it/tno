@@ -166,6 +166,15 @@ class AsteroidList extends Component {
           title={rowData.error_msg}
         />
       );
+    } else if (rowData.status === 'not_executed') {
+      return (
+        <Button
+          type="button"
+          icon="fa fa-exclamation"
+          className="ui-button-warning"
+          title={rowData.error_msg}
+        />
+      );
     } else {
       return (
         <Button
@@ -176,7 +185,7 @@ class AsteroidList extends Component {
         />
       );
     }
-  }
+  };
 
   onLogHide = () => {
     this.setState({ log_visible: false, asteroid_id: 0 });

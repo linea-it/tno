@@ -27,6 +27,8 @@ CCD_IMAGES_DIR=./archive/ccd_images
 
 # Parsl maxThreads (https://parsl.readthedocs.io/en/stable/userguide/configuring.html)
 AVAILABLE_THREADS=4
+# Quantidade de threads minimo, tambem usado para processos que consomen muita memoria. 
+MINIMUM_THREADS=2
 
 # Path para o diretorio de archive na maquina host, utilizado para montar os volumes dos 
 # dos containers em tempo de execucao.

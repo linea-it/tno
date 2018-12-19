@@ -33,6 +33,13 @@
 .btn-info    { @include btn-styles($info-color, $info-states-color); }
 .btn-warning { @include btn-styles($warning-color, $warning-states-color); }
 .btn-danger  { @include btn-styles($danger-color, $danger-states-color); }
+
+.btn-gray {
+    border: 1px solid #797b7d !important;
+    color: #FFFFFF !important;
+    background: #7f8182 !important;
+}
+
 .btn-neutral { 
     @include btn-styles($white-color, $white-color);
     
