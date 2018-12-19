@@ -351,7 +351,7 @@ class PredictionTimeProfile extends Component {
               title: 'Execution Time',
             },
             yaxis: {
-              title: 'Asteroids',
+              title: '',
             },
           }}
           config={{
