@@ -1373,7 +1373,7 @@ class PredictionOccultation():
             parsl_config = settings.PARSL_CONFIG
 
             # Diminuindo o numero de Treads por causa da limitacao de memoria
-            parsl_config["sites"][0]["execution"]["maxThreads"] = settings.MINIMUM_THREADS
+            parsl_config["sites"][0]["execution"]["maxThreads"] = int(settings.MINIMUM_THREADS)
 
             dfk = DataFlowKernel(
                 config=dict(parsl_config))
