@@ -271,7 +271,7 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
 
         next = None
         try:
-            next_model = PredictAsteroid.objects.filter(predict_run=asteroid.predict_run).exclude(status='failure').filter(              
+            next_model = PredictAsteroid.objects.filter(predict_run=asteroid.predict_run).exclude(status__in=['failure', 'not_executed']).filter(              
                 id__gt=asteroid.id).order_by('id').first()
 
             next = next_model.id
@@ -280,7 +280,7 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
 
         prev = None
         try:
-            prev_model = PredictAsteroid.objects.filter(predict_run=asteroid.predict_run).exclude(status='failure').filter(
+            prev_model = PredictAsteroid.objects.filter(predict_run=asteroid.predict_run).exclude(status__in=['failure', 'not_executed']).filter(
                 id__lt=asteroid.id).order_by('-id').first()
                 
             prev = prev_model.id
