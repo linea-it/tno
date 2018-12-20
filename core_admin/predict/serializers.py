@@ -76,6 +76,7 @@ class PredictRunSerializer(serializers.ModelSerializer):
             'count_success',
             'count_failed',
             'count_warning',
+            'count_not_executed',
             'execution_seconds',
             'occultations'
         )

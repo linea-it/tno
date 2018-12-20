@@ -135,10 +135,10 @@ class PredictionDetail extends Component {
     ];
 
     const stats_status = [
-      { name: 'Success', value: 3232 },
-      { name: 'Warning', value: 4 },
-      { name: 'Failure', value: 0 },
-      { name: 'not Executed', value: 0 },
+      { name: 'Success', value: data.count_success},
+      { name: 'Warning', value: data.count_warning },
+      { name: 'Failure', value: data.count_failed },
+      { name: 'not Executed', value: data.count_not_executed },
     ];
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 

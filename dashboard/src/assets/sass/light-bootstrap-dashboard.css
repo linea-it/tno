@@ -3467,7 +3467,7 @@ body > .navbar-collapse[data-color="purple"]:after {
 
 .content-main {
   min-height: 20%;
-  background: none;
+  background: white;
   border-radius: 1px;
   margin: 8px; }
   .content-main .content-header {
@@ -3494,6 +3494,35 @@ body > .navbar-collapse[data-color="purple"]:after {
 .linha-vertical {
   border-right: 1px solid #c6c6c6 !important;
   /* Adiciona borda esquerda na div como ser fosse uma linha.*/ }
+
+@media only screen and (min-width: 640px) {
+  .size-plot {
+    margin: 0 45px; }
+  .size-plot > .recharts-wrapper {
+    width: inherit; }
+  .responsive-image {
+    width: 380px;
+    height: 280px;
+    margin: 0px 25px;
+    padding: 0px; }
+    .responsive-image img {
+      width: inherit;
+      height: inherit; } }
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  .size-plot {
+    margin: 0 45px; }
+  .size-plot > .recharts-wrapper {
+    width: inherit; }
+  .responsive-image {
+    width: 380px;
+    height: 280px;
+    margin: 0px 71px;
+    padding: 0px; }
+    .responsive-image img {
+      width: inherit;
+      height: inherit; } }
 
 .flex-layout {
   display: flex;
@@ -3593,7 +3622,7 @@ body > .navbar-collapse[data-color="purple"]:after {
   margin: 10px !important; }
 
 .border-edit-right {
-  border-right: 2px solid #5e5e5e !important; }
+  border-right: 1px solid #5e5e5e !important; }
 
 .grid {
   display: grid;
@@ -3838,3 +3867,12 @@ body > .navbar-collapse[data-color="purple"]:after {
     display: block; }
   .main-validation.success {
     background: #34b479; }
+
+.pie-container {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 6px;
+  width: 800px;
+  height: 400px;
+  background-color: #fff; }
