@@ -15,13 +15,13 @@ class SSSOdyclass extends Component {
             <BarChart
               width={350}
               height={200}
-              data={propSet.data.asteroids_by_class}
+              data={propSet.data.asteroids_by_dynclass}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <Tooltip />
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="dynclass" />
-              <YAxis dataKey="count" />
+              <YAxis scale="log" dataKey="count" />
               <Bar barSize={10} dataKey="count" fill="#3c1e7e" />;
             </BarChart>
           </div>
