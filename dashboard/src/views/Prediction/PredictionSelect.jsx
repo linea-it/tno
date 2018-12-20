@@ -7,7 +7,7 @@ import { Spinner } from 'primereact/spinner';
 import moment, { months } from 'moment';
 
 //primereact
-import 'primereact/resources/themes/omega/theme.css';
+
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 
