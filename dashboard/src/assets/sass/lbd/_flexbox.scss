@@ -115,11 +115,18 @@
 // Predicton ocultation
 
 .item-prediction {
-    // margin: 10px 20px !important;
     width: 500px !important;
 }
 .button-prediction {
     margin: 10px 20px !important;
     width: 20% !important;
     float: right !important;
+}
+
+.box-margin{ 
+    margin: 10px!important;
+ }
+
+.border-edit-right {
+    border-right: 1px solid $panel-costumize-default !important;
 }

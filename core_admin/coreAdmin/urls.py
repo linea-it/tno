@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
@@ -64,10 +64,9 @@ router.register(r'praia_configuration', PraiaConfigurationViewSet)
 router.register(r'catalog', CatalogViewSet)
 
 
-urlpatterns = router.urls
-
-urlpatterns += [
+urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^obtain-auth-token/$', csrf_exempt(obtain_auth_token)),
-    url(r'^teste/', common_views.teste),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    url(r'^api/', include(router.urls)),
+    url(r'^api/obtain-auth-token/$', csrf_exempt(obtain_auth_token)),
+    url(r'^api/teste/', common_views.teste),
+] + static('api'+settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

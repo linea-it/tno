@@ -23,7 +23,7 @@ class OccultationsDataView extends Component {
       data: [],
       loading: false,
       first: 0,
-      pageSize: 10,
+      pageSize: 25,
       totalSize: 0,
       layout: 'grid',
       sortField: null,
@@ -96,7 +96,10 @@ class OccultationsDataView extends Component {
 
     return (
       <div className="p-grid" style={{ marginBottom: '7px' }}>
-        <div className="p-col-12 p-md-3">
+        <div
+          className="p-col-12 p-md-3"
+          style={{ minWidth: '300px', minHeight: '300px' }}
+        >
           <img src={image} alt="" style={{ width: '300px' }} />
         </div>
         <div className="p-col-12 p-md-8 car-data" style={{ color: '#333333' }}>
@@ -137,7 +140,9 @@ class OccultationsDataView extends Component {
     return (
       <div style={{ padding: '.5em' }} className="p-col-12 p-md-3">
         <Panel header={name} style={{ textAlign: 'center' }}>
-          <img src={image} alt="" style={{ width: '300px' }} />
+          <div style={{ minWidth: '300px', minHeight: '300px' }}>
+            <img src={image} alt="" style={{ width: '300px' }} />
+          </div>
           <div>{row.date_time}</div>
           <div>G mag* {row.g}</div>
           <hr className="ui-widget-content" style={{ borderTop: 0 }} />

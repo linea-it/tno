@@ -5,15 +5,14 @@
 
     
     > li {
-        color: rgba(0,0,0,0.8) !important;
+        // color: rgba(0,0,0,0.8) !important;
         font-size: 14px;
-        font-family:  $font-family-lato;
     }
 
     > li.number {
         margin-left: 20px;
         margin-top: 2px;
-        color: $black-bg;
+        // color: $black-bg;
         font-size: $font-size-medium;
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     }
@@ -30,7 +29,6 @@
     line-height: 1px;
 
 }
-
 
 .step-format {
 

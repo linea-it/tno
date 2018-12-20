@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Content from 'components/CardContent/CardContent.jsx';
 import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-// import { scaleLog } from 'd3-scale';
 
 class SSSOdyclass extends Component {
   render() {
@@ -31,5 +30,5 @@ class SSSOdyclass extends Component {
     );
   }
 }
-//alter
+
 export default SSSOdyclass;

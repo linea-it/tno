@@ -12,6 +12,7 @@ import Process from './Process.jsx';
 import Skybot from './Skybot.jsx';
 import Performance from './Perfomance.jsx';
 import PlotImages from './PlotImages.jsx';
+import Histograms from './Histograms.jsx';
 
 //API
 import DashboardApi from './DashboardApi.jsx';
@@ -134,48 +135,34 @@ class Dashboard extends Component {
         grid: ['6'],
       },
     ];
-
-    // const ccd_info = [
-    //   {
-    //     legend: 'With SSSO',
-    //     label: ccds.count_asteroids,
-    //     value: ccds.count_asteroids,
-    //     colorIcon: 'info',
-    //     grid: ['6'],
-    //   },
-    //   {
-    //     legend: 'Without',
-    //     label: '231',
-    //     value: 30,
-    //     colorIcon: 'danger',
-    //     grid: ['6'],
-    //   },
-    // ];
-
     return (
-      <div className="content">
-        <div className="ui-g">
-          <div className="ui-lg-6 ui-md-12 ui-sm-12">
-            <div className="ui-lg-12 ui-md-12 ui-sm-12">
-              <Exposure
-                exposure_info={exposure_info}
-                data_exposures={data_exposures}
-                graph={graph}
-              />
-            </div>
-            <div className="ui-lg-12 ui-md-12 ui-sm-12">
+      <div className="p-dir-col">
+        <div className="p-col-12">
+          <div className="box box-margin">
+            <Exposure
+              exposure_info={exposure_info}
+              data_exposures={data_exposures}
+              graph={graph}
+            />
+          </div>
+        </div>
+        <div className="p-col-12">
+          <div className="box box-margin">
+            <Skybot ccds={ccds} data={data_skybot} />
+          </div>
+        </div>
+        <div className="p-col-12">
+          <div className="box box-margin">
+            <Histograms ccds={ccds} />
+          </div>
+        </div>
+        <div className="p-col-12">
+          <div className="p-grid">
+            <div className="p-col-6">
               <Process proccess_stats={proccess_stats} />
             </div>
-            <div className="ui-lg-12 ui-md-12 ui-sm-12">
+            <div className="p-col-6">
               <PlotImages />
-            </div>
-          </div>
-          <div className="ui-lg-6 ui-md-12 ui-sm-12">
-            <div className="ui-lg-12 ui-md-12">
-              <Skybot ccds={ccds} data={data_skybot} />
-            </div>
-            <div className="ui-lg-12 ui-md-12 ui-sm-12">
-              <Performance data={data} colors={colors} />
             </div>
           </div>
         </div>

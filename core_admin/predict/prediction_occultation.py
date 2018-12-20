@@ -214,6 +214,9 @@ class PredictionOccultation():
 
                 status = None
                 orbit_run_asteroid = orbit_run.asteroids.get(name=obj.get("name"))
+                self.logger.debug("Orbit RUN Asteroid %s" % orbit_run_asteroid)
+                self.logger.debug("Orbit RUN Asteroid Status %s" % orbit_run_asteroid.status)
+
                 if orbit_run_asteroid is not None and orbit_run_asteroid.status == 'failure':
                     status = 'not_executed'
 
@@ -223,7 +226,7 @@ class PredictionOccultation():
                     "alias": obj_name,
                     "diameter": diameter,
                     "relative_path": obj_relative_path,
-                    "status": None,
+                    "status": status,
                     "error_msg": None,
                     "start_ephemeris": None,
                     "finish_ephemeris": None,
@@ -314,10 +317,10 @@ class PredictionOccultation():
             if cfailed == obj_count:
                 self.results["status"] = "failure"
 
-            # Escrever os Resultados no results.json
-            result_file = os.path.join(instance.relative_path, "results.json")
-            with open(result_file, "w") as fp:
-                json.dump(self.results, fp)
+            # # Escrever os Resultados no results.json
+            # result_file = os.path.join(instance.relative_path, "results.json")
+            # with open(result_file, "w") as fp:
+            #     json.dump(self.results, fp)
 
             instance.status = "success"
             instance.execution_time = tdelta
@@ -1367,8 +1370,13 @@ class PredictionOccultation():
 
         # Configuracao do Parsl
         try:
+            parsl_config = settings.PARSL_CONFIG
+
+            # Diminuindo o numero de Treads por causa da limitacao de memoria
+            parsl_config["sites"][0]["execution"]["maxThreads"] = int(settings.MINIMUM_THREADS)
+
             dfk = DataFlowKernel(
-                config=dict(settings.PARSL_CONFIG))
+                config=dict(parsl_config))
 
         except Exception as e:
             self.logger.error(e)
@@ -1559,180 +1567,209 @@ class PredictionOccultation():
 
         try:
 
-            # Gerar o tempo medio para executar cada asteroid somando o tempo de cada etapa
-            t1 = pytimeparse.parse(obj.get("execution_ephemeris", "00:00:00"))
-            t2 = pytimeparse.parse(obj.get("execution_gaia_catalog", "00:00:00"))
-            t3 = pytimeparse.parse(obj.get("execution_search_candidate", "00:00:00"))
-            t4 = pytimeparse.parse(obj.get("execution_maps", "00:00:00"))
-            ttotal = (t1 + t2) + (t3 + t4)
+            self.logger.debug("Object Status [%s]" % obj.get("status"))
 
-            self.execution_time.append(ttotal)
+            if obj.get("status") is 'not_executed':
+                asteroid, created = PredictAsteroid.objects.update_or_create(
+                    predict_run=predict_run,
+                    name=obj.get("name"),
+                    defaults={
+                        'number': obj.get("number"),
+                        'status': 'not_executed',
+                        'error_msg': 'Not executed because it failed to refine orbit.',
+                    })
 
-            texecution = timedelta(seconds=ttotal)
-            # Fix for prevent invalid input syntax for type interval: "None"
-            if texecution:
-                texecution = str(texecution)
-            
-            execution_ephemeris = None
-            if obj.get("execution_ephemeris"):
-                execution_ephemeris = str(obj.get("execution_ephemeris"))
+                asteroid.save()
 
-            execution_gaia_catalog = None
-            if obj.get("execution_gaia_catalog"):
-                execution_gaia_catalog = str(obj.get("execution_gaia_catalog"))
+            else:
 
-            execution_search_candidate = None
-            if obj.get("execution_search_candidate"):
-                execution_search_candidate = str(obj.get("execution_search_candidate"))
+                # Gerar o tempo medio para executar cada asteroid somando o tempo de cada etapa
+                t1 = pytimeparse.parse(obj.get("execution_ephemeris", "00:00:00"))
+                t2 = pytimeparse.parse(obj.get("execution_gaia_catalog", "00:00:00"))
+                t3 = pytimeparse.parse(obj.get("execution_search_candidate", "00:00:00"))
+                t4 = pytimeparse.parse(obj.get("execution_maps", "00:00:00"))
+                ttotal = (t1 + t2) + (t3 + t4)
 
+                self.execution_time.append(ttotal)
+
+                texecution = timedelta(seconds=ttotal)
+                # Fix for prevent invalid input syntax for type interval: "None"
+                if texecution:
+                    texecution = str(texecution)
+
+                execution_ephemeris = None
+                if obj.get("execution_ephemeris"):
+                    execution_ephemeris = str(obj.get("execution_ephemeris"))
+
+                execution_gaia_catalog = None
+                if obj.get("execution_gaia_catalog"):
+                    execution_gaia_catalog = str(obj.get("execution_gaia_catalog"))
+
+                execution_search_candidate = None
+                if obj.get("execution_search_candidate"):
+                    execution_search_candidate = str(obj.get("execution_search_candidate"))
+
+                asteroid, created = PredictAsteroid.objects.update_or_create(
+                    predict_run=predict_run,
+                    name=obj.get("name"),
+                    defaults={
+                        'number': obj.get("number"),
+                        'diameter': obj.get("diameter"),
+                        'status': obj.get("status"),
+                        'error_msg': obj.get("error_msg"),
+                        'catalog_rows': obj.get("gaia_rows"),
+                        'execution_time': texecution,
+                        "start_ephemeris": obj.get("start_ephemeris"),
+                        "finish_ephemeris": obj.get("finish_ephemeris"),
+                        "execution_ephemeris": obj.get("execution_ephemeris"),
+                        "start_catalog": obj.get("start_gaia_catalog"),
+                        "finish_catalog": obj.get("finish_gaia_catalog"),
+                        "execution_catalog": execution_gaia_catalog,
+                        "start_search_candidate": obj.get("start_search_candidate"),
+                        "finish_search_candidate": obj.get("finish_search_candidate"),
+                        "execution_search_candidate": execution_search_candidate,
+                        "start_maps": obj.get("start_maps"),
+                        "finish_maps": obj.get("finish_maps"),
+                        "execution_maps": obj.get("execution_maps"),
+                        'relative_path': obj.get("relative_path"),
+                    })
+
+                asteroid.save()
+
+                l_created = "Created"
+
+                # Apaga todas os resultados  e os inputs caso seja um update
+                if not created:
+                    l_created = "Updated"
+
+                    for result_file in asteroid.predict_result.all():
+                        result_file.delete()
+
+                    for obj_input in asteroid.input_file.all():
+                        obj_input.delete()
+
+                    for occ in asteroid.occultation.all():
+                        occ.delete()
+
+                for ftype in obj.get("results"):
+                    result = obj.get("results").get(ftype)
+                    if result is not None:
+                        result_file, created = PredictOutput.objects.update_or_create(
+                            asteroid=asteroid,
+                            filename=result.get("filename"),
+                            type=ftype,
+                            defaults={
+                                'file_size': result.get("file_size"),
+                                'file_type': result.get("file_type"),
+                                'file_path': result.get("file_path"),
+                            }
+                        )
+
+                        result_file.save()
+
+                # Registra os Inputs Utilizados
+                for input_type in obj.get("inputs"):
+                    inp = obj.get("inputs").get(input_type)
+
+                    if inp is not None:
+                        file_path = os.path.join(obj['relative_path'], inp)
+                        file_size = None
+                        file_type = None
+                        if os.path.exists(file_path):
+                            file_size = os.path.getsize(file_path)
+                            file_type = os.path.splitext(file_path)[1]
+
+                        input_file, created = PredictInput.objects.update_or_create(
+                            asteroid=asteroid,
+                            input_type=input_type,
+                            defaults={
+                                'filename': inp,
+                                'file_path': file_path,
+                                'file_size': file_size,
+                                'file_type': file_type
+                            },
+                        )
+
+                        input_file.save()
+
+                # Registrar as Ocultacoes
+                if obj['results']['occultation_table'] is not None:
+                    table = obj['results']['occultation_table']['file_path']
+                    self.logger.debug("Table Path: %s" % table)
+
+                    with open(table) as csvfile:
+                        fieldnames = [
+                            'occultation_date', 'ra_star_candidate', 'dec_star_candidate','ra_object', 'dec_object', 
+                            'ca', 'pa', 'vel', 'delta', 'g', 'j', 'h', 'k', 'long', 'loc_t', 'off_ra', 'off_de', 
+                            'pm', 'ct', 'f', 'e_ra', 'e_de', 'pmra', 'pmde']
+
+                        reader = csv.DictReader(csvfile, fieldnames=fieldnames, delimiter=';', skipinitialspace=True)
+
+                        next(reader, None)
+
+                        for row in reader:
+
+                            dt = datetime.strptime(row['occultation_date'], '%Y-%m-%d %H:%M:%S')
+
+                            file_map = "%s_%s.000.png" % (obj['alias'].replace('_', ''), dt.isoformat())
+                            map_path = os.path.join(obj['relative_path'], file_map)
+
+                            if not os.path.exists(map_path):
+                                map_path = None
+
+                            occ, created = Occultation.objects.update_or_create(
+                                asteroid=asteroid,
+                                date_time=row['occultation_date'],
+                                defaults={
+                                    'ra_star_candidate': row['ra_star_candidate'],
+                                    'dec_star_candidate': row['dec_star_candidate'],
+                                    'ra_target': row['ra_object'],
+                                    'dec_target': row['dec_object'],
+                                    'closest_approach': row['ca'],
+                                    'position_angle': row['pa'],
+                                    'velocity': row['vel'],
+                                    'delta': row['delta'],
+                                    'g': row['g'],
+                                    'j': row['j'],
+                                    'h': row['h'],
+                                    'k': row['k'],
+                                    'long': row['long'],
+                                    'loc_t': row['loc_t'],
+                                    'off_ra': row['off_ra'],
+                                    'off_dec': row['off_de'],
+                                    'proper_motion': row['pm'],
+                                    'ct': row['ct'],
+                                    'multiplicity_flag': row['f'],
+                                    'e_ra': row['e_ra'],
+                                    'e_dec': row['e_de'],
+                                    'pmra': row['pmra'],
+                                    'pmdec': row['pmde'],
+                                    'file_path': map_path
+                                }
+                            )
+                            occ.save()
+
+                # Mudar o Status do Asteroid caso nao tenha gerado todos os mapas
+                # Basta contar quantos ocultacoes estao com o campo file_path em branco.
+                if asteroid.occultation.filter(file_path__isnull=True).count() > 0:
+                    asteroid.status = "warning"
+                    asteroid.save()
+
+
+            self.logger.info("Registered Object %s " % obj.get("name"))
+
+        except Exception as e:
+            self.logger.error("Failed to Register Object %s Error: %s" % (obj.get("name"), e))
             asteroid, created = PredictAsteroid.objects.update_or_create(
                 predict_run=predict_run,
                 name=obj.get("name"),
                 defaults={
                     'number': obj.get("number"),
-                    'diameter': obj.get("diameter"),
-                    'status': obj.get("status"),
-                    'error_msg': obj.get("error_msg"),
-                    'catalog_rows': obj.get("gaia_rows"),
-                    'execution_time': texecution,
-                    "start_ephemeris": obj.get("start_ephemeris"),
-                    "finish_ephemeris": obj.get("finish_ephemeris"),
-                    "execution_ephemeris": obj.get("execution_ephemeris"),
-                    "start_catalog": obj.get("start_gaia_catalog"),
-                    "finish_catalog": obj.get("finish_gaia_catalog"),
-                    "execution_catalog": execution_gaia_catalog,
-                    "start_search_candidate": obj.get("start_search_candidate"),
-                    "finish_search_candidate": obj.get("finish_search_candidate"),
-                    "execution_search_candidate": execution_search_candidate,
-                    "start_maps": obj.get("start_maps"),
-                    "finish_maps": obj.get("finish_maps"),
-                    "execution_maps": obj.get("execution_maps"),
-                    'relative_path': obj.get("relative_path"),
+                    'status': 'failure',
+                    'error_msg': 'Failed to record results. error: %s' % e,
                 })
 
             asteroid.save()
-
-            l_created = "Created"
-
-            # Apaga todas os resultados  e os inputs caso seja um update
-            if not created:
-                l_created = "Updated"
-
-                for result_file in asteroid.predict_result.all():
-                    result_file.delete()
-
-                for obj_input in asteroid.input_file.all():
-                    obj_input.delete()
-
-                for occ in asteroid.occultation.all():
-                    occ.delete()
-
-            for ftype in obj.get("results"):
-                result = obj.get("results").get(ftype)
-                if result is not None:
-                    result_file, created = PredictOutput.objects.update_or_create(
-                        asteroid=asteroid,
-                        filename=result.get("filename"),
-                        type=ftype,
-                        defaults={
-                            'file_size': result.get("file_size"),
-                            'file_type': result.get("file_type"),
-                            'file_path': result.get("file_path"),
-                        }
-                    )
-
-                    result_file.save()
-
-            # Registra os Inputs Utilizados
-            for input_type in obj.get("inputs"):
-                inp = obj.get("inputs").get(input_type)
-
-                if inp is not None:
-                    file_path = os.path.join(obj['relative_path'], inp)
-                    file_size = None
-                    file_type = None
-                    if os.path.exists(file_path):
-                        file_size = os.path.getsize(file_path)
-                        file_type = os.path.splitext(file_path)[1]
-
-                    input_file, created = PredictInput.objects.update_or_create(
-                        asteroid=asteroid,
-                        input_type=input_type,
-                        defaults={
-                            'filename': inp,
-                            'file_path': file_path,
-                            'file_size': file_size,
-                            'file_type': file_type
-                        },
-                    )
-
-                    input_file.save()
-
-            # Registrar as Ocultacoes
-            if obj['results']['occultation_table'] is not None:
-                table = obj['results']['occultation_table']['file_path']
-                self.logger.debug("Table Path: %s" % table)
-
-                with open(table) as csvfile:
-                    fieldnames = [
-                        'occultation_date', 'ra_star_candidate', 'dec_star_candidate','ra_object', 'dec_object', 
-                        'ca', 'pa', 'vel', 'delta', 'g', 'j', 'h', 'k', 'long', 'loc_t', 'off_ra', 'off_de', 
-                        'pm', 'ct', 'f', 'e_ra', 'e_de', 'pmra', 'pmde']
-
-                    reader = csv.DictReader(csvfile, fieldnames=fieldnames, delimiter=';', skipinitialspace=True)
-
-                    next(reader, None)
-
-                    for row in reader:
-
-                        dt = datetime.strptime(row['occultation_date'], '%Y-%m-%d %H:%M:%S')
-
-                        file_map = "%s_%s.000.png" % (obj['alias'].replace('_', ''), dt.isoformat())
-                        map_path = os.path.join(obj['relative_path'], file_map)
-
-                        if not os.path.exists(map_path):
-                            map_path = None
-
-                        occ, created = Occultation.objects.update_or_create(
-                            asteroid=asteroid,
-                            date_time=row['occultation_date'],
-                            defaults={
-                                'ra_star_candidate': row['ra_star_candidate'],
-                                'dec_star_candidate': row['dec_star_candidate'],
-                                'ra_target': row['ra_object'],
-                                'dec_target': row['dec_object'],
-                                'closest_approach': row['ca'],
-                                'position_angle': row['pa'],
-                                'velocity': row['vel'],
-                                'delta': row['delta'],
-                                'g': row['g'],
-                                'j': row['j'],
-                                'h': row['h'],
-                                'k': row['k'],
-                                'long': row['long'],
-                                'loc_t': row['loc_t'],
-                                'off_ra': row['off_ra'],
-                                'off_dec': row['off_de'],
-                                'proper_motion': row['pm'],
-                                'ct': row['ct'],
-                                'multiplicity_flag': row['f'],
-                                'e_ra': row['e_ra'],
-                                'e_dec': row['e_de'],
-                                'pmra': row['pmra'],
-                                'pmdec': row['pmde'],
-                                'file_path': map_path
-                            }
-                        )
-                        occ.save()
-
-
-            # TODO Mudar o Status do Asteroid caso nao tenha gerado todos os mapas
-            # Basta contar quantos ocultacoes estao com o campo file_path em branco.
-
-            self.logger.info("Registered Object %s %s" % (obj.get("name"), l_created))
-
-        except Exception as e:
-            self.logger.error("Failed to Register Object %s Error: %s" % (obj.get("name"), e))
 
 
     def on_error(self, msg):

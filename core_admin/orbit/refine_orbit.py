@@ -281,7 +281,7 @@ class RefineOrbit():
 
             # Se nao tiver nenhum resultado, marcar como falha
             instance.status = "failure"
-            if csuccess > 0:
+            if csuccess > 0 or cfailed is not obj_count:
                 instance.status = "success"
 
             instance.execution_time = tdelta
@@ -431,6 +431,7 @@ class RefineOrbit():
 
             # TODO: Essa etapa pode ser paralelizada com Parsl
             # Copiar os Arquivos de Observacoes
+            observations_file = None
             try:
                 observations_file = self.copy_observation_file(obj, obj_dir)
             except Exception as e:
@@ -438,6 +439,7 @@ class RefineOrbit():
                 self.logger.error(e)
 
             # Copiar os Arquivos de Orbital Parameters
+            orbital_parameters_file = None
             try:
                 orbital_parameters_file = self.copy_orbital_parameters_file(obj, obj_dir)
             except Exception as e:
@@ -445,6 +447,7 @@ class RefineOrbit():
                 self.logger.error(e)
 
             # Copiar os Arquivos de BSP_JPL
+            bsp_jpl_file = None
             try:
                 bsp_jpl_file = self.copy_bsp_jpl_file(obj, obj_dir)
             except Exception as e:
@@ -452,6 +455,7 @@ class RefineOrbit():
                 self.logger.error(e)
 
             # Verificar se o Arquivo do PRAIA (Astrometry position) existe no diretorio do objeto.
+            astrometry_position_file = None
             try:
                 astrometry_position_file = self.verify_astrometry_position_file(obj, obj_dir)
             except Exception as e:
@@ -815,7 +819,7 @@ class RefineOrbit():
                 command=cmd,
                 detach=True,
                 auto_remove=True,
-                mem_limit='1024m',
+                # mem_limit='1024m',
                 volumes=volumes
             )
             container.wait()
@@ -971,23 +975,6 @@ class RefineOrbit():
         self.logger.debug("Registering Object %s" % obj.get("name"))
 
         try:
-
-            # try:
-            #     t0 = datetime.strptime(obj.get("start_nima"), '%Y-%m-%d %H:%M:%S')
-
-            # except:
-            #     t0 = None
-            # try:
-            #     t1 = datetime.strptime(obj.get("finish_nima"), '%Y-%m-%d %H:%M:%S')
-            # except:
-            #     t1 = None
-
-
-            # if t0 is not None and t1 is not None:
-            #     t_delta = t1 - t0
-            # else:
-            #     t_delta = None
-
             asteroid, created = RefinedAsteroid.objects.update_or_create(
                 orbit_run=orbit_run,
                 name=obj.get("name"),
