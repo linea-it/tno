@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 
@@ -32,11 +31,11 @@ class PointingsPanel extends Component {
     };
   }
   render() {
-    return (      
-       <div className="grid template-wrap-pointings">
-          <PointingStats class="pointings_stats" />
-          <PointingList className="pointings_list" />
-      </div> 
+    return (
+      <div className="grid template-wrap-pointings">
+        <PointingStats className="pointings_stats" />
+        <PointingList className="pointings_list" />
+      </div>
     );
   }
 }

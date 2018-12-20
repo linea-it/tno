@@ -23,43 +23,42 @@ class Void extends Component {
           colorHead="ds"
           title="Exposure"
           content={
-            <div>
-              <StepStats
-                disableCard="false"
-                // title=" CCDs frames downloaded"
-                info={propSet.exposure_info}
-                footer={
-                  <div>
-                    <ListStats title="dfs" data={propSet.data_exposures} />
-                  </div>
-                }
-              />
-              <hr className="panel-hr" />
-              <Content
-                header={true}
-                title="Exposure per period (placeholder)"
-                className="step-title"
-                content={
-                  <div className="size-plot">
+            <div className="p-grid p-dir-row">
+              <div className="p-col-6 border-edit-right">
+                <StepStats
+                  disableCard="false"
+                  // title=" CCDs frames downloaded"
+                  info={propSet.exposure_info}
+                  footer={
+                    <div>
+                      <ListStats title="dfs" data={propSet.data_exposures} />
+                    </div>
+                  }
+                />
+              </div>
+
+              <div className="p-col-6">
+                <Content
+                  header={true}
+                  title="Exposure per period (placeholder)"
+                  className="step-title"
+                  content={
+                    // <div className="size-plot">
                     <BarChart
-                      width={350}
-                      height={200}
+                      width={450}
+                      height={250}
                       data={propSet.graph}
-                      margin={{
-                        top: 20,
-                        right: 30,
-                        left: 20,
-                        bottom: 5,
-                      }}
+                      margin={{ top: 60, right: 30, left: 30, bottom: 5 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
                       <YAxis dataKey="band" />
                       <Bar barSize={10} dataKey="band" fill="#3c1e7e" />;
                     </BarChart>
-                  </div>
-                }
-              />
+                    // </div>
+                  }
+                />
+              </div>
             </div>
           }
         />

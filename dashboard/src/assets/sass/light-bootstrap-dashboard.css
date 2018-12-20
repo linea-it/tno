@@ -3167,13 +3167,10 @@ body > .navbar-collapse[data-color="purple"]:after {
   margin: 0;
   padding: 0; }
   .step-list > li {
-    color: rgba(0, 0, 0, 0.8) !important;
-    font-size: 14px;
-    font-family: "Lato," Helvetica Neue ",Arial,Helvetica,sans-serif"; }
+    font-size: 14px; }
   .step-list > li.number {
     margin-left: 20px;
     margin-top: 2px;
-    color: rgba(30, 30, 30, 0.97);
     font-size: 16px;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; }
 
@@ -3336,15 +3333,13 @@ body > .navbar-collapse[data-color="purple"]:after {
   text-align: left; }
 
 .list-text {
-  font-family: "Lato," Helvetica Neue ",Arial,Helvetica,sans-serif";
   font-weight: 400;
-  color: #717172; }
+  color: #000; }
 
 .list-value {
-  font-family: "Lato," Helvetica Neue ",Arial,Helvetica,sans-serif";
-  font-weight: bold !important;
+  font-weight: 500 !important;
   font-size: 16px !important;
-  color: #717172; }
+  color: #1b1b1b; }
 
 .icon {
   font-size: .6em !important; }
@@ -3417,11 +3412,11 @@ body > .navbar-collapse[data-color="purple"]:after {
 .panel-content {
   min-height: none;
   background: #ffffff !important;
-  border: 1.5px solid #717172;
+  border: 1.5px solid #5e5e5e;
   border-radius: 1px; }
   .panel-content .header {
-    border-bottom: 2px solid #717172;
-    background-color: #717172; }
+    border-bottom: 2px solid #5e5e5e;
+    background-color: #5e5e5e; }
   .panel-content .title {
     line-height: 20px;
     padding: 4px 14px;
@@ -3432,7 +3427,7 @@ body > .navbar-collapse[data-color="purple"]:after {
   .panel-content .subTitle {
     padding: 4px 14px;
     font-size: 14px;
-    color: #717172;
+    color: #5e5e5e;
     font-weight: 500;
     font-family: "Lato," Helvetica Neue ",Arial,Helvetica,sans-serif";
     margin-bottom: 0px; }
@@ -3445,7 +3440,7 @@ body > .navbar-collapse[data-color="purple"]:after {
   .panel-content-noheader .subTitle {
     padding: 4px 14px;
     font-size: 14px;
-    color: #717172;
+    color: #5e5e5e;
     font-weight: 500;
     font-family: "Lato," Helvetica Neue ",Arial,Helvetica,sans-serif";
     margin-bottom: 0px; }
@@ -3459,7 +3454,7 @@ body > .navbar-collapse[data-color="purple"]:after {
   padding: 0 !important; }
 
 .panel-hr {
-  background-color: #717172;
+  background-color: #5e5e5e;
   height: 1px;
   width: 100%;
   margin: 0;
@@ -3481,14 +3476,14 @@ body > .navbar-collapse[data-color="purple"]:after {
     padding-left: 4px;
     margin: 5px 5px;
     font-size: 14px;
-    color: #717172;
+    color: #5e5e5e;
     font-weight: bold;
     font-family: "Lato," Helvetica Neue ",Arial,Helvetica,sans-serif"; }
   .content-main .content-subtitle {
     padding-left: 4px;
     margin: 5px 5px !important;
     font-size: 10px;
-    color: #717172;
+    color: #5e5e5e;
     font-weight: 500;
     font-family: "Lato," Helvetica Neue ",Arial,Helvetica,sans-serif";
     margin: 0; }
@@ -3499,71 +3494,6 @@ body > .navbar-collapse[data-color="purple"]:after {
 .linha-vertical {
   border-right: 1px solid #c6c6c6 !important;
   /* Adiciona borda esquerda na div como ser fosse uma linha.*/ }
-
-@media only screen and (max-width: 780px) {
-  .size-plot {
-    margin: 0 5px; }
-  .size-plot > .recharts-wrapper > .recharts-surface {
-    width: 300px !important;
-    margin: 0; }
-  .responsive-image {
-    width: 280px;
-    height: 180px;
-    margin: 0px 5px;
-    padding: 0px; }
-    .responsive-image img {
-      width: inherit;
-      height: inherit; } }
-
-@media only screen and (min-width: 640px) {
-  .size-plot {
-    margin: 0; }
-  .size-plot > .recharts-wrapper > .recharts-surface {
-    width: 300px !important;
-    height: 200px !important; }
-  .size-plot > .recharts-wrapper {
-    width: inherit; }
-  .responsive-image {
-    width: 550px;
-    height: 450px;
-    margin: 0px 80px;
-    padding: 0px; }
-    .responsive-image img {
-      width: inherit;
-      height: inherit; } }
-
-/* Large devices (laptops/desktops, 992px and up) */
-@media only screen and (min-width: 992px) {
-  .size-plot {
-    margin: 0 160px; }
-  .size-plot > .recharts-wrapper > .recharts-surface {
-    width: 300px !important;
-    height: 200px !important; }
-  .size-plot > .recharts-wrapper {
-    width: inherit; }
-  .responsive-image {
-    width: 400px;
-    height: 300px;
-    margin: 0px 145px;
-    padding: 0px; }
-    .responsive-image img {
-      width: inherit;
-      height: inherit; } }
-
-/* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 1200px) {
-  .size-plot {
-    margin: 0 45px; }
-  .size-plot > .recharts-wrapper {
-    width: inherit; }
-  .responsive-image {
-    width: 450px;
-    height: 350px;
-    margin: 0px 50px;
-    padding: 0px; }
-    .responsive-image img {
-      width: inherit;
-      height: inherit; } }
 
 .flex-layout {
   display: flex;
@@ -3658,6 +3588,12 @@ body > .navbar-collapse[data-color="purple"]:after {
   margin: 10px 20px !important;
   width: 20% !important;
   float: right !important; }
+
+.box-margin {
+  margin: 10px !important; }
+
+.border-edit-right {
+  border-right: 2px solid #5e5e5e !important; }
 
 .grid {
   display: grid;

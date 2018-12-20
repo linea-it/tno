@@ -287,7 +287,6 @@ class AsteroidDetailPrediction extends Component {
   };
 
   executionTimeTable = asteroid => {
-
     const stats_asteroid = [
       {
         name: 'Ephemeris',
@@ -313,19 +312,29 @@ class AsteroidDetailPrediction extends Component {
       },
       {
         field: 'ra_star_candidate',
-        header: 'RA Candidate',
+        header: 'RA Candidate Star',
       },
-      { field: 'dec_star_candidate', header: 'Dec Candidate' },
-      { field: 'ra_target', header: 'RA Target' },
-      { field: 'dec_target', header: 'Dec Target' },
+      { field: 'dec_star_candidate', header: 'Dec Candidate Star' },
+      {
+        field: 'ra_target',
+        header: 'RA Target',
+      },
+      {
+        field: 'dec_target',
+        header: 'Dec Target',
+      },
+      {
+        field: 'velocity',
+        header: 'Velocity',
+      },
       {
         field: 'closest_approach',
-        header: 'C/A',
+        header: 'C/A [arcsec]',
         style: { textAlign: 'center', width: '80px' },
       },
       {
         field: 'position_angle',
-        header: 'P/A',
+        header: 'P/A [deg]',
         style: { textAlign: 'center', width: '80px' },
       },
       {

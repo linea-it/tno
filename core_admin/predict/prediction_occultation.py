@@ -317,10 +317,10 @@ class PredictionOccultation():
             if cfailed == obj_count:
                 self.results["status"] = "failure"
 
-            # Escrever os Resultados no results.json
-            result_file = os.path.join(instance.relative_path, "results.json")
-            with open(result_file, "w") as fp:
-                json.dump(self.results, fp)
+            # # Escrever os Resultados no results.json
+            # result_file = os.path.join(instance.relative_path, "results.json")
+            # with open(result_file, "w") as fp:
+            #     json.dump(self.results, fp)
 
             instance.status = "success"
             instance.execution_time = tdelta
