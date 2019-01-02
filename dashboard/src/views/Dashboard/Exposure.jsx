@@ -12,7 +12,7 @@ import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import Content from 'components/CardContent/CardContent.jsx';
 
 //Plot Rechart
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 
 class Void extends Component {
   render() {
@@ -53,6 +53,7 @@ class Void extends Component {
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
                       <YAxis dataKey="band" />
+                      <Tooltip />
                       <Bar barSize={10} dataKey="band" fill="#3c1e7e" />;
                     </BarChart>
                     // </div>
