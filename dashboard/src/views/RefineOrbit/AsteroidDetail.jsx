@@ -30,6 +30,7 @@ class AsteroidDetail extends Component {
     'comparison_nima_jpl_dec',
     'residual_all_v1',
     'residual_recent',
+    'comparison_bsp_integration',
   ];
 
   get initialState() {
@@ -89,7 +90,7 @@ class AsteroidDetail extends Component {
           const files = res.data.results;
 
           // Lista so com os arquivos que sao imagens
-          const excluded_images = ['diff_bsp-ni.png', 'omc_sep.png'];
+          const excluded_images = ['omc_sep.png'];
           const images = [];
 
           const childrens = [];
@@ -160,7 +161,7 @@ class AsteroidDetail extends Component {
   };
 
   // Methods for slide operation
-  
+
   openLightbox = (index, event) => {
     event.preventDefault();
     this.setState({

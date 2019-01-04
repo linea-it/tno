@@ -140,6 +140,7 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
     predict_run = serializers.PrimaryKeyRelatedField(
         queryset=PredictRun.objects.all(), many=False)
 
+    execution_time = serializers.SerializerMethodField()
     h_execution_time = serializers.SerializerMethodField()
     proccess_displayname = serializers.SerializerMethodField()
 
@@ -178,6 +179,12 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
             'planetary_ephemeris',
             'leap_second',
         )
+
+    def get_execution_time(self, obj):
+        try:
+            return obj.execution_time.total_seconds()
+        except:
+            return None
 
     def get_h_execution_time(self, obj):
         try:

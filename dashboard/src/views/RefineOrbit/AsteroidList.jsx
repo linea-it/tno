@@ -13,6 +13,7 @@ import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
 import Log from 'views/RefineOrbit/Log.jsx';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 class AsteroidList extends Component {
   state = this.initialState;
@@ -61,12 +62,14 @@ class AsteroidList extends Component {
       header: 'Execution Time',
       sortable: true,
       style: { textAlign: 'center' },
+      body: rowData => {
+        if (rowData.execution_time > 0) {
+          return moment.utc(rowData.execution_time * 1000).format('HH:mm:ss');
+        } else {
+          return;
+        }
+      },
     },
-    // {
-    //   field: 'files',
-    //   header: 'Execution Time',
-    //   sortable: true,
-    // },
   ];
 
   componentDidUpdate(prevProps) {

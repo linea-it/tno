@@ -54,6 +54,12 @@ class PredictionHistory extends Component {
       sortable: true,
     },
     {
+      field: 'start_time',
+      header: 'Date',
+      headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
       field: 'h_time',
       header: 'start',
       headerStyle: formatColumnHeader,
@@ -68,12 +74,6 @@ class PredictionHistory extends Component {
     {
       field: 'count_objects',
       header: 'Asteroids',
-      headerStyle: formatColumnHeader,
-      sortable: true,
-    },
-    {
-      field: 'Relative Path',
-      header: 'Relative Path',
       headerStyle: formatColumnHeader,
       sortable: true,
     },
@@ -121,19 +121,7 @@ class PredictionHistory extends Component {
     const id = rowData.id;
     let btn_view = null;
 
-    if (rowData.status !== 'success') {
-      btn_view = (
-        <Button
-          type="button"
-          icon="fa fa-search"
-          className="ui-button-info"
-          disabled={true}
-          title="View"
-          onClick={() => this.onView(id)}
-        />
-      );
-      return <div>{btn_view}</div>;
-    } else {
+    if (rowData.status === 'success') {
       btn_view = (
         <Button
           type="button"
@@ -181,12 +169,19 @@ class PredictionHistory extends Component {
       />
     );
 
+    var disabled = true;
+    if (
+      this.state.selected != null &&
+      this.state.selected.status === 'success'
+    ) {
+      disabled = false;
+    }
+
     btn_view_toolbar = (
       <Button
         className="btn-TNO-color"
         label="Detail"
-        disabled={!this.state.selected}
-        // onClick={this.stdetails}
+        disabled={disabled}
         onClick={() => this.onView(el.id)}
       />
     );

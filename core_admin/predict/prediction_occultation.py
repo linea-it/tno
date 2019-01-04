@@ -84,7 +84,7 @@ class PredictionOccultation():
         self.process = instance.process
         self.results["process"] = self.process.id
 
-        self.logger.debug("PROCESS: %s" % self.process.id)
+        self.logger.info("PROCESS: %s" % self.process.id)
         self.logger.debug("PROCESS DIR: %s" % self.process.relative_path)
 
         # Recuperar a Instancia do Catalogo
@@ -99,7 +99,7 @@ class PredictionOccultation():
 
         # recuperar a Custom List usada como input
         self.input_list = instance.input_list
-        self.logger.debug("CUSTOM LIST: %s - %s" % (self.input_list.id, self.input_list.displayname))
+        self.logger.info("CUSTOM LIST: %s - %s" % (self.input_list.id, self.input_list.displayname))
 
         self.results["input_list"] = self.input_list.id
 
@@ -115,7 +115,7 @@ class PredictionOccultation():
             # 1 - Leap Seconds -----------------------------------------------------------------------------------------
             self.leap_second = self.copy_leap_seconds_file(instance)
 
-            self.logger.info("Step 1")
+            self.logger.info("Step 1 - Leap Seconds")
 
             # 2 - Generate Dates ---------------------------------------------------------------------------------------
             start_date = datetime.strftime(instance.ephemeris_initial_date, '%Y-%b-%d %H:%M:%S').upper()
@@ -135,12 +135,12 @@ class PredictionOccultation():
             self.results["dates_file_report"] = dates_file
             self.dates_file = dates_file.get("file_path")
 
-            self.logger.info("Step 2")
+            self.logger.info("Step 2 - Generate Dates")
 
             # 3 - BSP Planetary ----------------------------------------------------------------------------------------
             self.bsp_planetary = self.copy_bsp_planetary(instance)
 
-            self.logger.info("Step 3")
+            self.logger.info("Step 3 - Generate Dates")
 
             # 4 - Objetos ----------------------------------------------------------------------------------------------
             # Recuperando os Objetos
@@ -149,7 +149,7 @@ class PredictionOccultation():
 
             self.results["count_objects"] = obj_count
 
-            self.logger.debug("Objects: %s" % obj_count)
+            self.logger.info("Objects: %s" % obj_count)
 
             orbit_run = instance.input_orbit
 
@@ -205,12 +205,14 @@ class PredictionOccultation():
                 # Definir um valor padrao para o diametro do asteroid quando nao houver (200km).
                 diameter = 200 
                 if ja_queryset.count() == 1:
-                    self.logger.debug("[ %s ] It has a diameter" % obj.get("name"))
+
                     asteroid_data = ja_queryset.first()
                     if asteroid_data.diameter and asteroid_data.diameter > 0:
                         diameter = asteroid_data.diameter
+
+                        self.logger.info("[ %s ] has Diameter [ %s ]" % (obj.get("name"), diameter))                        
                 else:
-                    self.logger.warning("[ %s ] has no Diameter" % obj.get("name"))
+                    self.logger.warning("[ %s ] has no diameter, using the default value." % obj.get("name"))
 
                 status = None
                 orbit_run_asteroid = orbit_run.asteroids.get(name=obj.get("name"))

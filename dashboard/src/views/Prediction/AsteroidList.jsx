@@ -8,6 +8,7 @@ import { DataTable } from 'primereact/datatable';
 import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 class AsteroidList extends Component {
   state = this.initialState;
@@ -30,6 +31,7 @@ class AsteroidList extends Component {
       sortOrder: 1,
       asteroid_id: 0,
       log_visible: false,
+      selected: null,
     };
   }
 
@@ -95,10 +97,32 @@ class AsteroidList extends Component {
       },
     },
     {
+      field: 'occultations',
+      header: 'Occultations',
+      sortable: true,
+      style: { textAlign: 'center' },
+      body: rowData => {
+        if (rowData.occultations > 0) {
+          return rowData.occultations;
+        }
+      },
+    },
+    {
       field: 'execution_time',
       header: 'Execution Time',
       sortable: true,
       style: { textAlign: 'center' },
+      body: rowData => {
+        if (rowData.execution_time > 0) {
+          // Need moment-duration-format https://momentjs.com/docs/#/plugins/duration-format/
+          // var duration = moment.duration(rowData.execution_time, 'seconds');
+          // var formatted = duration.format('hh:mm:ss');
+          // return formatted;
+          return moment.utc(rowData.execution_time * 1000).format('HH:mm:ss');
+        } else {
+          return;
+        }
+      },
     },
   ];
 
@@ -198,6 +222,8 @@ class AsteroidList extends Component {
     );
   };
 
+  o;
+
   render() {
     // console.log('Esse aqui', this.state.data);
 
@@ -229,6 +255,8 @@ class AsteroidList extends Component {
           sortField={this.state.sortField}
           sortOrder={this.state.sortOrder}
           onSort={this.onSort}
+          selectionMode="single"
+          onSelectionChange={e => this.setState({ selected: e.data })}
         >
           {columns}
           <Column

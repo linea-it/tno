@@ -9,7 +9,6 @@ import 'primeicons/primeicons.css';
 import PredictionApi from './PredictionApi';
 // interface components
 import { Card } from 'primereact/card';
-import moment from 'moment';
 import Lightbox from 'react-images';
 import { TreeTable } from 'primereact/treetable';
 import { Column } from 'primereact/column';
@@ -19,7 +18,7 @@ import { DataTable } from 'primereact/datatable';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import PlotPrediction from './Plot';
-
+import moment from 'moment';
 class AsteroidDetailPrediction extends Component {
   state = this.initialState;
   api = new PredictionApi();
@@ -261,8 +260,12 @@ class AsteroidDetailPrediction extends Component {
     const stats_asteroid = [
       { name: 'Asteroid', value: asteroid.name },
       { name: 'Number', value: asteroid.number },
-      { name: 'Execution Time', value: asteroid.h_execution_time },
       { name: 'Occultations', value: asteroid.occultations },
+      {
+        name: 'Date',
+        value: moment(asteroid.finish_maps).format('YYYY-MM-DD HH:mm:ss'),
+      },
+      { name: 'Execution Time', value: asteroid.h_execution_time },
     ];
 
     return (
@@ -286,18 +289,29 @@ class AsteroidDetailPrediction extends Component {
     return <ListStats status={false} data={stats_asteroid} />;
   };
 
+  format_execution_time = duration => {
+    var seconds = Math.round(moment.duration(duration).asSeconds());
+    return moment.utc(seconds * 1000).format('HH:mm:ss');
+  };
+
   executionTimeTable = asteroid => {
     const stats_asteroid = [
       {
         name: 'Ephemeris',
-        value: asteroid.execution_ephemeris,
+        value: this.format_execution_time(asteroid.execution_ephemeris),
       },
       {
         name: 'Catalog',
-        value: asteroid.execution_catalog,
+        value: this.format_execution_time(asteroid.execution_catalog),
       },
-      { name: 'Search Candidate', value: asteroid.execution_search_candidate },
-      { name: 'Maps', value: asteroid.execution_maps },
+      {
+        name: 'Search Candidate',
+        value: this.format_execution_time(asteroid.execution_search_candidate),
+      },
+      {
+        name: 'Maps',
+        value: this.format_execution_time(asteroid.execution_maps),
+      },
     ];
 
     return <ListStats status={false} data={stats_asteroid} />;
