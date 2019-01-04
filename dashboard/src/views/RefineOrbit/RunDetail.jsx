@@ -60,6 +60,11 @@ class RefineOrbitRunDetail extends Component {
     history.push(`/refined_asteroid/${asteroid_id}`);
   };
 
+  format_execution_time = duration => {
+    var seconds = Math.round(moment.duration(duration).asSeconds());
+    return moment.utc(seconds * 1000).format('HH:mm:ss');
+  };
+
   render() {
     const { data } = this.state;
 
@@ -80,7 +85,7 @@ class RefineOrbitRunDetail extends Component {
     const execute_time = [
       {
         legend: 'Download',
-        label: data.execution_download_time,
+        label: this.format_execution_time(data.execution_download_time),
         value: Math.round(
           moment.duration(data.execution_download_time).asSeconds()
         ),
@@ -89,7 +94,7 @@ class RefineOrbitRunDetail extends Component {
       },
       {
         legend: 'NIMA',
-        label: data.execution_nima_time,
+        label: this.format_execution_time(data.execution_nima_time),
         value: Math.round(
           moment.duration(data.execution_nima_time).asSeconds()
         ),

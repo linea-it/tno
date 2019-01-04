@@ -111,6 +111,7 @@ class RefinedAsteroidSerializer(serializers.ModelSerializer):
         queryset=OrbitRun.objects.all(), many=False)
 
     h_time = serializers.SerializerMethodField()
+    execution_time = serializers.SerializerMethodField()
     h_execution_time = serializers.SerializerMethodField()
     h_size = serializers.SerializerMethodField()
     proccess_displayname = serializers.SerializerMethodField()
@@ -136,6 +137,12 @@ class RefinedAsteroidSerializer(serializers.ModelSerializer):
     def get_h_time(self, obj):
         try:
             return humanize.naturaltime(timezone.now() - obj.start_time)
+        except:
+            return None
+            
+    def get_execution_time(self, obj):
+        try:
+            return obj.execution_time.total_seconds()
         except:
             return None
 

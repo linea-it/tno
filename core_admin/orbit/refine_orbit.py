@@ -872,12 +872,10 @@ class RefineOrbit():
                     error_msg = "The comparison nima jpl Dec chart was not created"
                     diff_nima_jpl_dec = None
 
-                # TODO: Usar novos scripts em python para gerar esse grafico
-                # if not os.path.exists(diff_bsp_ni):
-                #     status = "warning"
-                #     error_msg = "The comparison bsp integration chart was not created"
-                #     diff_bsp_ni = None
-
+                if not os.path.exists(diff_bsp_ni):
+                    status = "warning"
+                    error_msg = "The comparison bsp integration chart was not created"
+                    diff_bsp_ni = None
                
                 if not os.path.exists(correl_mat):
                     correl_mat = None
