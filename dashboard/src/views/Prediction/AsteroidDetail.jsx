@@ -326,9 +326,9 @@ class AsteroidDetailPrediction extends Component {
       },
       {
         field: 'ra_star_candidate',
-        header: 'RA Candidate Star',
+        header: 'RA Candidate Star (hms)',
       },
-      { field: 'dec_star_candidate', header: 'Dec Candidate Star' },
+      { field: 'dec_star_candidate', header: 'Dec Candidate Star (dms)' },
       {
         field: 'ra_target',
         header: 'RA Target',
@@ -339,7 +339,7 @@ class AsteroidDetailPrediction extends Component {
       },
       {
         field: 'velocity',
-        header: 'Velocity',
+        header: 'velocity in plane of sky',
       },
       {
         field: 'closest_approach',
