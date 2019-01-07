@@ -87,36 +87,36 @@ class FilterObject extends Component {
   render() {
     const closeCreate = () => this.setState({ showCreate: false });
     return (
-          <div className="grid template-filter-object">
-          <PanelCostumize
-            className="form_filter"
-            title="Filter"
-            subTitle="Filter the objects and create a list with the result."
-            content={
-              <Card className="none card-costumize">
-                <Card className="none">
-                  <FilterObjectSearch onSearch={this.onSearch} />
-                </Card>
-                <hr className="panel-hr" />
-                <Card className="none">
-                  <FilterObjectForm onFilter={this.onFilter} />
-                </Card>
+      <div className="grid template-filter-object">
+        <PanelCostumize
+          className="form_filter"
+          title="Filter"
+          subTitle="Filter the objects and create a list with the result."
+          content={
+            <Card className="none card-costumize">
+              <Card className="none">
+                <FilterObjectSearch onSearch={this.onSearch} />
               </Card>
-            }
-          />
-    
-          <PanelCostumize
-            className="search_filter"
-            content={
-              <Card className="none" title="" category="">
-                <FilterObjectTable
-                  filters={this.state.filters}
-                  searchPattern={this.state.searchPattern}
-                  saveList={this.saveList}
-                />
+              <hr className="panel-hr" />
+              <Card className="none">
+                <FilterObjectForm onFilter={this.onFilter} />
               </Card>
-            }
-          />
+            </Card>
+          }
+        />
+
+        <PanelCostumize
+          className="search_filter"
+          content={
+            <Card className="none" title="" category="">
+              <FilterObjectTable
+                filters={this.state.filters}
+                searchPattern={this.state.searchPattern}
+                saveList={this.saveList}
+              />
+            </Card>
+          }
+        />
         <CreateListForm
           show={this.state.showCreate}
           onHide={closeCreate}
