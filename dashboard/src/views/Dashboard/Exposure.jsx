@@ -10,13 +10,33 @@ import ListStats from 'components/Statistics/ListStats.jsx';
 import StepStats from 'components/Statistics/StepStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import Content from 'components/CardContent/CardContent.jsx';
+import Plot from 'react-plotly.js';
 
 //Plot Rechart
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+// import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 
 class Void extends Component {
+  state = {
+    x: [],
+    y: [],
+  };
   render() {
     const propSet = this.props;
+
+    // const eixos = propSet.data_histogram;
+
+    // let histogram_exposure = eixos.map(el => {
+    //   const x = [];
+    //   x.append(el.date);
+    //   this.setState({ x: x });
+
+    //   const y = [];
+    //   y.append(el.count);
+    //   this.setState({ y: y });
+
+    //   return;
+    // });
+
     return (
       <div>
         <PanelCostumize
@@ -43,19 +63,27 @@ class Void extends Component {
                   title="Exposure per period (placeholder)"
                   className="step-title"
                   content={
+                    <Plot
+                      data={[{ type: 'bar', x: this.state.x, y: this.state.y }]}
+                      layout={{
+                        width: 320,
+                        height: 240,
+                        title: 'A Fancy Plot',
+                      }}
+                    />
                     // <div className="size-plot">
-                    <BarChart
-                      width={450}
-                      height={250}
-                      data={propSet.graph}
-                      margin={{ top: 60, right: 30, left: 30, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis dataKey="band" />
-                      <Tooltip />
-                      <Bar barSize={10} dataKey="band" fill="#3c1e7e" />;
-                    </BarChart>
+                    // <BarChart
+                    //   width={450}
+                    //   height={250}
+                    //   data={propSet.graph}
+                    //   margin={{ top: 60, right: 30, left: 30, bottom: 5 }}
+                    // >
+                    //   <CartesianGrid strokeDasharray="3 3" />
+                    //   <XAxis dataKey="name" />
+                    //   <YAxis dataKey="band" />
+                    //   <Tooltip />
+                    //   <Bar barSize={10} dataKey="band" fill="#3c1e7e" />;
+                    // </BarChart>
                     // </div>
                   }
                 />

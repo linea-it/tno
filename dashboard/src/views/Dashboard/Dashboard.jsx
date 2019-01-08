@@ -56,6 +56,7 @@ class Dashboard extends Component {
         ],
         asteroids_by_dynclass: [],
         histogram: [],
+        histogram_exposure: [],
       },
     };
   }
@@ -75,8 +76,23 @@ class Dashboard extends Component {
           ccds: ccds,
         });
       });
+
+      this.get_histogram_exposure();
     });
   }
+
+  get_histogram_exposure = () => {
+    console.log('get_histogram_exposure');
+
+    this.api.getHistogramExposure().then(res => {
+      console.log(res.data);
+      if (res.data.success === true) {
+        this.setState({
+          histogram_exposure: res.data.data,
+        });
+      }
+    });
+  };
 
   render() {
     const { exposures, ccds } = this.state;
@@ -110,13 +126,6 @@ class Dashboard extends Component {
       { name: 'Skybot', value: 'vx.x.x' },
     ];
 
-    const graph = [
-      { name: '2013', band: 2500 },
-      { name: '2014', band: 4500 },
-      { name: '2015', band: 3500 },
-      { name: '2016', band: 3000 },
-    ];
-
     const colors = ['rgba(255,255,255,0.2)', '#ffffff', '#ffffff', '#ffffff'];
 
     const exposure_info = [
@@ -142,7 +151,7 @@ class Dashboard extends Component {
             <Exposure
               exposure_info={exposure_info}
               data_exposures={data_exposures}
-              graph={graph}
+              data_histogram={this.state.histogram_exposure}
             />
           </div>
         </div>
