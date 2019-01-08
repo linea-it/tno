@@ -15,52 +15,44 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { Button } from 'primereact/button';
+import { DataTable, Column } from 'primereact/datatable';
+import { Paginator } from 'primereact/paginator';
 import { Toolbar } from 'primereact/toolbar';
 
 const columns = [
   {
-    text: 'Proccess',
-    dataField: 'proccess_displayname',
-    width: 300,
-    headerStyle: formatColumnHeader,
+    header: 'Status',
+    field: 'status',
   },
   {
-    text: 'Run Id',
-    dataField: 'id',
-    width: 60,
-    headerStyle: formatColumnHeader,
+    header: 'Proccess',
+    field: 'proccess_displayname',
   },
   {
-    text: 'Owner',
-    dataField: 'owner',
-    width: 120,
-    headerStyle: formatColumnHeader,
-  },
-  {
-    text: 'Input',
-    dataField: 'input_displayname',
-  },
-  {
-    text: 'Configuration',
-    dataField: 'configuration_displayname',
-  },
-  {
-    text: 'Start',
-    dataField: 'start_time',
-    formatter: formatDateUTC,
-  },
-  {
-    text: 'Finish',
-    dataField: 'finish_time',
-    formatter: formatDateUTC,
-  },
-  {
-    text: 'Status',
-    dataField: 'status',
+    header: 'Run Id',
+    field: 'id',
     width: 80,
-    align: 'center',
-    headerStyle: formatColumnHeader,
-    classes: formatStatus,
+  },
+  {
+    header: 'Owner',
+    field: 'owner',
+  },
+  {
+    header: 'Input',
+    field: 'input_displayname',
+  },
+  {
+    header: 'Configuration',
+    field: 'configuration_displayname',
+  },
+  {
+    header: 'Start',
+    field: 'start_time',
+    width: 200,
+  },
+  {
+    header: 'Finish',
+    field: 'finish_time',
   },
 ];
 
@@ -85,6 +77,9 @@ class PraiaHistory extends Component {
       reload_interval: 10,
       selected: [],
       selected_record: null,
+      first: null,
+      sortField: null,
+      sortOrder: null,
     };
   }
 
@@ -148,6 +143,45 @@ class PraiaHistory extends Component {
       );
     });
   };
+
+  onPageChange = e => {
+    const page = e.page + 1;
+    this.setState(
+      {
+        first: e.first,
+        page: page,
+        sizePerPage: e.rows,
+      },
+      this.fetchData({
+        page: page,
+        sizePerPage: e.rows,
+        sortField: this.state.sortField,
+        sortOrder: this.state.sortOrder,
+      })
+    );
+  };
+
+  status_table = rowData => {
+    const row = rowData.status;
+    const status = [
+      { state: 'running' },
+      { state: 'warning' },
+      { state: 'success' },
+      { state: 'failure' },
+    ];
+
+    return status.map((el, i) => {
+      if (row === el.state) {
+        return (
+          <div key={i} className={`status_table ${el.state}`}>
+            {row}
+          </div>
+        );
+      }
+      // return;
+    });
+  };
+
   render() {
     const {
       data,
@@ -160,31 +194,57 @@ class PraiaHistory extends Component {
       selected_record,
     } = this.state;
 
-    const pagination = paginationFactory({
-      page: page,
-      sizePerPage: sizePerPage,
-      totalSize: totalSize,
-      hidePageListOnlyOnePage: true,
-      showTotal: true,
+    const AstrometyColumns = columns.map((col, i) => {
+      return (
+        <Column
+          key={col.field}
+          field={col.field}
+          header={col.header}
+          style={{ textAlign: 'center', width: col.width }}
+        />
+      );
     });
 
-    const history = this.props.history;
-    const rowEvents = {
-      onDoubleClick: (e, row) => {
-        history.push('/astrometry_run/' + row.id);
-      },
-    };
+    // const pagination = paginationFactory({
+    //   page: page,
+    //   sizePerPage: sizePerPage,
+    //   totalSize: totalSize,
+    //   hidePageListOnlyOnePage: true,
+    //   showTotal: true,
+    // });
 
-    const selectRow = {
-      mode: 'radio',
-      clickToSelect: true,
-      onSelect: this.handleOnSelect,
-      selected: selected,
-    };
+    // const history = this.props.history;
+    // const rowEvents = {
+    //   onDoubleClick: (e, row) => {
+    //     history.push('/astrometry_run/' + row.id);
+    //   },
+    // };
+
+    // const selectRow = {
+    //   mode: 'radio',
+    //   clickToSelect: true,
+    //   onSelect: this.handleOnSelect,
+    //   selected: selected,
+    // };
 
     return (
       <div>
-        <ReactInterval
+        <DataTable value={data}>
+          <Column
+            header="Status"
+            body={this.status_table}
+            style={{ textAlign: 'center', width: '6em' }}
+          />
+          {AstrometyColumns}
+        </DataTable>
+
+        <Paginator
+          rows={sizePerPage}
+          totalRecords={totalSize}
+          first={this.state.first}
+          onPageChange={this.onPageChange}
+        />
+        {/* <ReactInterval
           timeout={reload_interval * 1000}
           enabled={true}
           callback={this.reload}
@@ -220,7 +280,7 @@ class PraiaHistory extends Component {
               selectRow={selectRow}
             />
           </div>
-        </Card>
+        </Card> */}
       </div>
     );
   }
