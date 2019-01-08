@@ -35,7 +35,6 @@ class PredictionHistory extends Component {
       sortField: 'name',
       sortOrder: 1,
       asteroid_id: 0,
-      log_visible: false,
       reload_interval: 10,
       selected: null,
     };
@@ -55,6 +54,12 @@ class PredictionHistory extends Component {
       sortable: true,
     },
     {
+      field: 'start_time',
+      header: 'Date',
+      headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
       field: 'h_time',
       header: 'start',
       headerStyle: formatColumnHeader,
@@ -69,12 +74,6 @@ class PredictionHistory extends Component {
     {
       field: 'count_objects',
       header: 'Asteroids',
-      headerStyle: formatColumnHeader,
-      sortable: true,
-    },
-    {
-      field: 'Relative Path',
-      header: 'Relative Path',
       headerStyle: formatColumnHeader,
       sortable: true,
     },
@@ -121,36 +120,8 @@ class PredictionHistory extends Component {
   actionTemplate = rowData => {
     const id = rowData.id;
     let btn_view = null;
-    let btn_log = null;
 
-    if (rowData.status !== 'success') {
-      btn_view = (
-        <Button
-          type="button"
-          icon="fa fa-search"
-          className="ui-button-info"
-          disabled={true}
-          title="View"
-          onClick={() => this.onView(id)}
-        />
-      );
-      btn_log = (
-        <Button
-          type="button"
-          icon="fa fa-file-text-o"
-          className="ui-button-warning"
-          title="Log"
-          disabled={true}
-          onClick={() => this.onLog(id)}
-        />
-      );
-      return (
-        <div>
-          {btn_view}
-          {btn_log}
-        </div>
-      );
-    } else {
+    if (rowData.status === 'success') {
       btn_view = (
         <Button
           type="button"
@@ -160,21 +131,7 @@ class PredictionHistory extends Component {
           onClick={() => this.onView(id)}
         />
       );
-      btn_log = (
-        <Button
-          type="button"
-          icon="fa fa-file-text-o"
-          className="ui-button-warning"
-          title="Log"
-          onClick={() => this.onLog(id)}
-        />
-      );
-      return (
-        <div>
-          {btn_view}
-          {btn_log}
-        </div>
-      );
+      return <div>{btn_view}</div>;
     }
   };
 
@@ -212,12 +169,19 @@ class PredictionHistory extends Component {
       />
     );
 
+    var disabled = true;
+    if (
+      this.state.selected != null &&
+      this.state.selected.status === 'success'
+    ) {
+      disabled = false;
+    }
+
     btn_view_toolbar = (
       <Button
         className="btn-TNO-color"
         label="Detail"
-        disabled={!this.state.selected}
-        // onClick={this.stdetails}
+        disabled={disabled}
         onClick={() => this.onView(el.id)}
       />
     );

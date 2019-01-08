@@ -135,7 +135,7 @@ class PredictRun(models.Model):
 
     start_time = models.DateTimeField(
         verbose_name='Start Time',
-        auto_now_add=True, null=True, blank=True)
+        auto_now_add=False, null=True, blank=True)
 
     finish_time = models.DateTimeField(
         verbose_name='Finish Time',
@@ -156,6 +156,10 @@ class PredictRun(models.Model):
     )
     execution_catalog = models.DurationField(
         verbose_name='Execution Catalog',
+        null=True, blank=True
+    )
+    execution_search_candidate = models.DurationField(
+        verbose_name='Execution Search Candidate',
         null=True, blank=True
     )
     execution_maps = models.DurationField(
@@ -190,6 +194,11 @@ class PredictRun(models.Model):
     count_warning = models.PositiveIntegerField(
         verbose_name='Count Warning',
         help_text='Number of objects with status warning',
+        null=True, blank=True
+    )
+    count_not_executed = models.PositiveIntegerField(
+        verbose_name='Num Not Executed Objects',
+        help_text='Number of objects that were NOT executed.',
         null=True, blank=True
     )
 
@@ -246,10 +255,10 @@ class PredictAsteroid(models.Model):
     )
 
     status = models.CharField(
-        max_length=10,
+        max_length=15,
         verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'))
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
     )
 
     error_msg = models.CharField(
@@ -259,11 +268,10 @@ class PredictAsteroid(models.Model):
         null=True, blank=True,
     )
 
-    catalog_rows = models.PositiveIntegerField(
+    catalog_rows = models.BigIntegerField(
         verbose_name="Catalog Rows",
         null=True, blank=True
     )
-
 
     execution_time = models.DurationField(
         verbose_name='Execution Time',
@@ -355,7 +363,7 @@ class PredictInput(models.Model):
         verbose_name='Filename',
     )
 
-    file_size = models.PositiveIntegerField(
+    file_size = models.BigIntegerField(
         verbose_name='File Size',
         null=True, blank=True, help_text='File Size in bytes')
 
@@ -414,7 +422,7 @@ class PredictOutput(models.Model):
         help_text='Filename is formed by name without space and separated by underline.'
     )
 
-    file_size = models.PositiveIntegerField(
+    file_size = models.BigIntegerField(
         verbose_name='File Size',
         null=False, blank=False, help_text='File Size in bytes')
 

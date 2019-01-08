@@ -30,6 +30,7 @@ class AsteroidDetail extends Component {
     'comparison_nima_jpl_dec',
     'residual_all_v1',
     'residual_recent',
+    'comparison_bsp_integration',
   ];
 
   get initialState() {
@@ -89,7 +90,7 @@ class AsteroidDetail extends Component {
           const files = res.data.results;
 
           // Lista so com os arquivos que sao imagens
-          const excluded_images = ['diff_bsp-ni.png', 'omc_sep.png'];
+          const excluded_images = ['omc_sep.png'];
           const images = [];
 
           const childrens = [];
@@ -103,7 +104,7 @@ class AsteroidDetail extends Component {
               e.src = this.api.api + e.src;
               // Saber em qual ordem deve ser exibida a imagem.
               const idx = this.plot_images_order.indexOf(e.type);
-              console.log(idx)
+              console.log(idx);
               if (idx > -1) {
                 images[idx] = e;
               }
@@ -160,34 +161,41 @@ class AsteroidDetail extends Component {
   };
 
   // Methods for slide operation
-  Slideshow = e => {
-    //event.preventDefault();
+
+  openLightbox = (index, event) => {
+    event.preventDefault();
     this.setState({
+      currentImage: index,
       lightboxIsOpen: true,
     });
   };
-  gotoNextLightboxImage = () => {
+  closeLightbox = () => {
     this.setState({
-      currentImage: this.state.currentImage + 1,
+      currentImage: 0,
+      lightboxIsOpen: false,
     });
   };
-  gotoPrevLightboxImage = () => {
+  gotoPrevious = () => {
     this.setState({
       currentImage: this.state.currentImage - 1,
     });
   };
-  CloseLightbox = () => {
-    this.setState({ lightboxIsOpen: false });
+  gotoNext = () => {
+    this.setState({
+      currentImage: this.state.currentImage + 1,
+    });
   };
-  gotoImage(index) {
+  gotoImage = index => {
     this.setState({
       currentImage: index,
     });
-  }
-  handleClickImage = () => {
-    if (this.state.currentImage === this.state.images.length - 1) return;
-    this.gotoNextLightboxImage();
   };
+  handleClickImage = () => {
+    if (this.state.currentImage === this.images.length - 1) return;
+
+    this.gotoNext();
+  };
+
   onClick = () => {
     const row = this.state.selected2;
     if (!row) {
@@ -318,7 +326,7 @@ class AsteroidDetail extends Component {
                   <img
                     key={i}
                     id={e.filename}
-                    onClick={this.Slideshow}
+                    onClick={el => this.openLightbox(i, el)}
                     width="100%"
                     src={e.src}
                     alt={e.filename}
@@ -361,14 +369,14 @@ class AsteroidDetail extends Component {
           </div>
         </div>
         <Lightbox
+          currentImage={this.state.currentImage}
           images={this.state.images}
           isOpen={this.state.lightboxIsOpen}
-          onClickPrev={this.gotoPrevLightboxImage}
-          onClickNext={this.gotoNextLightboxImage}
-          onClose={this.CloseLightbox}
-          currentImage={this.state.currentImage}
           onClickImage={this.handleClickImage}
+          onClickNext={this.gotoNext}
+          onClickPrev={this.gotoPrevious}
           onClickThumbnail={this.gotoImage}
+          onClose={this.closeLightbox}
         />
       </div>
     );

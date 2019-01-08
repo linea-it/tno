@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.conf import settings
 import os
+from datetime import datetime, timedelta
 class PredictRunViewSet(viewsets.ModelViewSet):
     queryset = PredictRun.objects.all()
     serializer_class = PredictRunSerializer
@@ -22,6 +23,131 @@ class PredictRunViewSet(viewsets.ModelViewSet):
             raise Exception('It is necessary an active login to perform this operation.')
         serializer.save(owner=self.request.user)
 
+    @list_route()
+    def get_time_profile(self, request):
+
+        run = request.query_params.get('id', None)
+        if run is None:
+            return Response({
+                'success': False,
+                'msg': "id parameter is required",
+            })
+
+        try:
+            predict_run = PredictRun.objects.get(id=int(run))
+
+            # Asteroids
+            asteroids = predict_run.asteroids.order_by('start_ephemeris')
+
+
+            # Ultimo objeto a executar a geracao de mapas
+            a = predict_run.asteroids.order_by('finish_maps').last()
+            end_maps = a.finish_maps
+
+            # Ephemeris Start + End
+            start_ephemeris = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('start_ephemeris').first().start_ephemeris
+            end_ephemeris = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('finish_ephemeris').last().finish_ephemeris
+
+            # Catalog Start + End
+            start_catalog = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('start_catalog').first().start_catalog
+            end_catalog = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('finish_catalog').last().finish_catalog
+
+            # Prediction Start + End
+            start_search = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('start_search_candidate').first().start_search_candidate
+            end_search = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('finish_search_candidate').last().finish_search_candidate
+
+            # Map Start End
+            start_maps = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('start_maps').first().start_maps
+            end_maps = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('finish_maps').last().finish_maps
+
+            data = dict({
+                'dates': dict({
+                    'label': 'Generate dates',
+                    'start': datetime.strftime(predict_run.start_time, "%Y-%m-%d %H:%M:%S"),
+                    'duration': predict_run.execution_dates.total_seconds()
+                }),
+                'ephemeris': dict({
+                    'label': 'Generate efemerides',
+                    'start': datetime.strftime(start_ephemeris, "%Y-%m-%d %H:%M:%S"),
+                    'finish': datetime.strftime(end_ephemeris, "%Y-%m-%d %H:%M:%S"),
+                    'rows': []
+                }),
+                'catalog': dict({
+                    'label': 'Get star positions from star catalogue',
+                    'start': datetime.strftime(start_catalog, "%Y-%m-%d %H:%M:%S"),
+                    'finish': datetime.strftime(end_catalog, "%Y-%m-%d %H:%M:%S"),
+                    'rows': []
+                }),
+                'search': dict({
+                    'label': 'Prediction of stellar occultation',
+                    'start': datetime.strftime(start_search, "%Y-%m-%d %H:%M:%S"),
+                    'finish': datetime.strftime(end_search, "%Y-%m-%d %H:%M:%S"),                    
+                    'rows': []
+                }),                                                
+                'map': dict({
+                    'label': 'Make prediction maps',
+                    'start': datetime.strftime(start_maps, "%Y-%m-%d %H:%M:%S"),
+                    'finish': datetime.strftime(end_maps, "%Y-%m-%d %H:%M:%S"),                    
+                    'rows': []
+                }), 
+                'register': dict({
+                    'label': 'Register',
+                    'start': datetime.strftime(end_maps, "%Y-%m-%d %H:%M:%S"),
+                    'duration': predict_run.execution_register.total_seconds()
+                }),                               
+            })            
+
+            # Ephemeris
+            for asteroid in asteroids:
+
+                try:
+                    if asteroid.status is not 'not_executed' and asteroid.status is not 'failure':
+                        data['ephemeris']['rows'].append(dict({
+                            'id': asteroid.id,
+                            'name': asteroid.name,
+                            'start': datetime.strftime(asteroid.start_ephemeris, "%Y-%m-%d %H:%M:%S"),
+                            'finish': datetime.strftime(asteroid.finish_ephemeris, "%Y-%m-%d %H:%M:%S"),
+                            'duration': asteroid.execution_ephemeris.total_seconds()
+                        }))
+
+                        data['catalog']['rows'].append(dict({
+                            'id': asteroid.id,
+                            'name': asteroid.name,
+                            'start': datetime.strftime(asteroid.start_catalog, "%Y-%m-%d %H:%M:%S"),
+                            'finish': datetime.strftime(asteroid.finish_catalog, "%Y-%m-%d %H:%M:%S"),
+                            'duration': asteroid.execution_catalog.total_seconds()
+                        }))
+
+                        data['search']['rows'].append(dict({
+                            'id': asteroid.id,
+                            'name': asteroid.name,
+                            'start': datetime.strftime(asteroid.start_search_candidate, "%Y-%m-%d %H:%M:%S"),
+                            'finish': datetime.strftime(asteroid.finish_search_candidate, "%Y-%m-%d %H:%M:%S"),
+                            'duration': asteroid.execution_search_candidate.total_seconds()
+                        }))
+
+                        data['map']['rows'].append(dict({
+                            'id': asteroid.id,
+                            'name': asteroid.name,
+                            'start': datetime.strftime(asteroid.start_maps, "%Y-%m-%d %H:%M:%S"),
+                            'finish': datetime.strftime(asteroid.finish_maps, "%Y-%m-%d %H:%M:%S"),
+                            'duration': asteroid.execution_maps.total_seconds()
+                        }))
+
+                except Exception as e:
+                    print("Objetos que nao tem informacao da execucao")
+                    # raise(e)
+
+            return Response({
+                'success': True,
+                'data': data
+            })
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "Record not found",
+            })
 
 class PredictAsteroidViewSet(viewsets.ModelViewSet):
     queryset = PredictAsteroid.objects.all()
@@ -126,7 +252,7 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
 
     @list_route()
     def get_neighbors(self, request):
-        id = request.query_params.get('asteroid_id', None)
+        id = request.query_params.get('asteroid', None)
 
         if id is None:
             return Response({
@@ -145,7 +271,7 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
 
         next = None
         try:
-            next_model = PredictAsteroid.objects.filter(orbit_run=asteroid.predict_run).exclude(status='failure').filter(              
+            next_model = PredictAsteroid.objects.filter(predict_run=asteroid.predict_run).exclude(status__in=['failure', 'not_executed']).filter(              
                 id__gt=asteroid.id).order_by('id').first()
 
             next = next_model.id
@@ -154,7 +280,7 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
 
         prev = None
         try:
-            prev_model = PredictAsteroid.objects.filter(orbit_run=asteroid.predict_run).exclude(status='failure').filter(
+            prev_model = PredictAsteroid.objects.filter(predict_run=asteroid.predict_run).exclude(status__in=['failure', 'not_executed']).filter(
                 id__lt=asteroid.id).order_by('-id').first()
                 
             prev = prev_model.id

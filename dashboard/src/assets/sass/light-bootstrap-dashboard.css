@@ -681,6 +681,11 @@ body > .navbar-collapse[data-color="purple"]:after {
   .btn-danger .caret {
     border-top-color: #FF4A55; }
 
+.btn-gray {
+  border: 1px solid #797b7d !important;
+  color: #FFFFFF !important;
+  background: #7f8182 !important; }
+
 .btn-neutral {
   border-color: #FFFFFF;
   color: #FFFFFF; }

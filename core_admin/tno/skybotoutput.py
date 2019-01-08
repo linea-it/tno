@@ -63,7 +63,7 @@ class FilterObjects(DBBase):
         terms = list([])
 
         if name:
-            terms.append(cols.name.ilike("%" + name + "%"))
+            terms.append(cols.name.ilike(name))
 
         if objectTable:
             if objectTable.find(";"):

@@ -13,43 +13,51 @@ class FilterObjectSearch extends Component {
 
     this.state = { search: '' };
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    // this.handleChange = this.handleChange.bind(this);
+    // this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   static propTypes = {
     onSearch: PropTypes.func.isRequired,
   };
 
-  handleChange(event) {
+  handleChange = event => {
     this.setState({ search: event.target.value });
-  }
+  };
 
-  handleSubmit(event) {
+  handleSubmit = event => {
     event.preventDefault();
     // Apenas executa o metodo do component parent passando o termo que foi
     // usado na busca.
     if (this.state.search) {
       this.props.onSearch(this.state.search);
     }
-  }
+  };
 
   render() {
     return (
-      <form >
+      <form>
         <div className="flex-container">
-        {/* <div className="ui-inputgroup"> */}
+          {/* <div className="ui-inputgroup"> */}
           <InputText
             value={this.state.search}
             placeholder="Search By Name"
             onChange={this.handleChange}
-            style={{padding: '0px !important', height: '35px', width: '600px', margin: '0px !important' }}
+            style={{
+              padding: '0px !important',
+              height: '35px',
+              width: '600px',
+              margin: '0px !important',
+            }}
           />
-        {/* </div> */}
+          {/* </div> */}
 
-       <Button className="button-TNO" label="Search" onClick={this.handleSubmit} />
-
-      </div>
+          <Button
+            className="button-TNO"
+            label="Search"
+            onClick={this.handleSubmit}
+          />
+        </div>
         <div className="clearfix" />
       </form>
     );

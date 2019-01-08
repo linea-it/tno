@@ -22,14 +22,22 @@ const columns = [
     header: 'Proccess',
     field: 'proccess_displayname',
   },
-  {
-    header: 'Run Id',
-    field: 'id',
-  },
+  // {
+  //   header: 'Run Id',
+  //   field: 'id',
+  // },
   {
     header: 'Owner',
     field: 'owner',
   },
+  {
+    header: 'Date',
+    field: 'start_time',
+  },
+  // {
+  //   header: 'Finish',
+  //   field: 'finish_time',
+  // },
   {
     header: 'Start',
     field: 'h_time',
@@ -41,10 +49,6 @@ const columns = [
   {
     header: 'Asteroids',
     field: 'count_objects',
-  },
-  {
-    header: 'Finish',
-    field: 'finish_time',
   },
 ];
 
@@ -128,36 +132,7 @@ class RefineOrbitHistory extends Component {
   actionTemplate = rowData => {
     const id = rowData.id;
     let btn_view = null;
-    let btn_log = null;
-
-    if (rowData.status !== 'success') {
-      btn_view = (
-        <Button
-          type="button"
-          icon="fa fa-search"
-          className="ui-button-info"
-          disabled={true}
-          title="View"
-          onClick={() => this.onView(id)}
-        />
-      );
-      btn_log = (
-        <Button
-          type="button"
-          icon="fa fa-file-text-o"
-          className="ui-button-warning"
-          title="Log"
-          disabled={true}
-          onClick={() => this.onLog(id)}
-        />
-      );
-      return (
-        <div>
-          {btn_view}
-          {btn_log}
-        </div>
-      );
-    } else {
+    if (rowData.status === 'success') {
       btn_view = (
         <Button
           type="button"
@@ -167,21 +142,7 @@ class RefineOrbitHistory extends Component {
           onClick={() => this.onView(id)}
         />
       );
-      btn_log = (
-        <Button
-          type="button"
-          icon="fa fa-file-text-o"
-          className="ui-button-warning"
-          title="Log"
-          onClick={() => this.onLog(id)}
-        />
-      );
-      return (
-        <div>
-          {btn_view}
-          {btn_log}
-        </div>
-      );
+      return <div>{btn_view}</div>;
     }
   };
 
@@ -202,7 +163,7 @@ class RefineOrbitHistory extends Component {
           </div>
         );
       }
-      // return;
+      return;
     });
   };
 
@@ -219,11 +180,19 @@ class RefineOrbitHistory extends Component {
       />
     );
 
+    var disabled = true;
+    if (
+      this.state.selected != null &&
+      this.state.selected.status === 'success'
+    ) {
+      disabled = false;
+    }
+
     btn_view_toolbar = (
       <Button
         className="btn-TNO-color"
         label="Detail"
-        disabled={!this.state.selected}
+        disabled={disabled}
         onClick={() => this.onView(el.id)}
       />
     );
