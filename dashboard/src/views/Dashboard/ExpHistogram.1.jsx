@@ -12,8 +12,6 @@ import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import Content from 'components/CardContent/CardContent.jsx';
 import Plot from 'react-plotly.js';
 
-import ExpHistogram from './ExpHistogram';
-
 //Plot Rechart
 // import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 
@@ -60,12 +58,7 @@ class Void extends Component {
               </div>
 
               <div className="p-col-6">
-                <ExpHistogram
-                  data={this.props.data_histogram}
-                  width={640}
-                  height={480}
-                />
-                {/* <Content
+                <Content
                   header={true}
                   title="Exposure per period (placeholder)"
                   className="step-title"
@@ -93,7 +86,7 @@ class Void extends Component {
                     // </BarChart>
                     // </div>
                   }
-                /> */}
+                />
               </div>
             </div>
           }
