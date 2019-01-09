@@ -45,6 +45,7 @@ class AsteroidDetailPrediction extends Component {
       imageId: [],
       prev: null,
       next: null,
+      download_icon: 'fa fa-cloud-download',
     };
   }
 
@@ -208,6 +209,33 @@ class AsteroidDetailPrediction extends Component {
     this.setState({ visible: false });
   };
 
+  onClickDownload = async asteroid_id => {
+    // Alterar o Icone do botao para loading
+    this.setState({
+      download_icon: 'fa fa-circle-o-notch fa-spin fa-fw',
+    });
+
+    const download_link = await this.api.getAsteroidDownloadLink({
+      asteroid_id,
+    });
+
+    const data = download_link.data;
+
+    if (data.success) {
+      const file_src = this.api.api + data.src;
+
+      // window.location.href = file_src;
+      window.location.assign(file_src);
+    } else {
+      // TODO: Implementar notificacao de erro.
+    }
+
+    // Alterar o Icone do botao para downlaod
+    this.setState({
+      download_icon: 'fa fa-cloud-download',
+    });
+  };
+
   create_nav_bar = () => {
     return (
       <Toolbar>
@@ -216,6 +244,12 @@ class AsteroidDetailPrediction extends Component {
             label="Back"
             icon="fa fa-undo"
             onClick={() => this.onClickBack(this.state.asteroid.predict_run)}
+          />
+          <Button
+            label="Download"
+            icon={this.state.download_icon}
+            className="ui-button-info"
+            onClick={() => this.onClickDownload(this.state.asteroid.id)}
           />
         </div>
 

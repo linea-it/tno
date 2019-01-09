@@ -48,6 +48,7 @@ class AsteroidDetail extends Component {
       imageId: [],
       prev: null,
       next: null,
+      download_icon: 'fa fa-cloud-download',
     };
   }
 
@@ -104,7 +105,7 @@ class AsteroidDetail extends Component {
               e.src = this.api.api + e.src;
               // Saber em qual ordem deve ser exibida a imagem.
               const idx = this.plot_images_order.indexOf(e.type);
-              console.log(idx);
+
               if (idx > -1) {
                 images[idx] = e;
               }
@@ -209,15 +210,30 @@ class AsteroidDetail extends Component {
     this.setState({ visible: false });
   };
 
-  onClickDownload = asteroid_id => {
-    this.api.getAsteroidDownloadLink({ asteroid_id }).then(res => {
-      const data = res.data;
-      if (data.success) {
-        const file_src = this.api.api + data.src;
-        window.open(file_src);
-      } else {
-        // TODO: Implementar notificacao de erro.
-      }
+  onClickDownload = async asteroid_id => {
+    // Alterar o Icone do botao para loading
+    this.setState({
+      download_icon: 'fa fa-circle-o-notch fa-spin fa-fw',
+    });
+
+    const download_link = await this.api.getAsteroidDownloadLink({
+      asteroid_id,
+    });
+
+    const data = download_link.data;
+
+    if (data.success) {
+      const file_src = this.api.api + data.src;
+
+      // window.location.href = file_src;
+      window.location.assign(file_src);
+    } else {
+      // TODO: Implementar notificacao de erro.
+    }
+
+    // Alterar o Icone do botao para downlaod
+    this.setState({
+      download_icon: 'fa fa-cloud-download',
     });
   };
 
@@ -234,7 +250,7 @@ class AsteroidDetail extends Component {
           />
           <Button
             label="Download"
-            icon="pi pi-cloud-download"
+            icon={this.state.download_icon}
             className="ui-button-info"
             onClick={() => this.onClickDownload(this.state.asteroid.id)}
           />

@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.conf import settings
 import os
 from datetime import datetime, timedelta
+import zipfile
 class PredictRunViewSet(viewsets.ModelViewSet):
     queryset = PredictRun.objects.all()
     serializer_class = PredictRunSerializer
@@ -292,6 +293,68 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
             "prev": prev,
             "next": next
         })) 
+
+    @list_route()
+    def download_results(self, request):
+        id = request.query_params.get('asteroid_id', None)
+
+        asteroid = None
+
+        if id is not None:
+
+            try:
+                asteroid = PredictAsteroid.objects.get(id=int(id))
+
+            except ObjectDoesNotExist:
+                return Response({
+                    'success': False,
+                    'msg': "Asteroid with id %s Not Found." % id,
+                })
+
+        else:
+            name = request.query_params.get('name', None)
+            run = request.query_params.get('predict_run', None)
+
+            try:
+                asteroid = PredictAsteroid.objects.get(name=str(name), predict_run=int(run))
+            except ObjectDoesNotExist:
+                return Response({
+                    'success': False,
+                    'msg': "Asteroid with name %s and Predict Run %s Not Found." % (name, run),
+                })
+
+        results_path = asteroid.relative_path
+
+        if not os.path.exists(results_path) and not os.path.isdir(results_path):
+            return Response(dict({
+                'success': False,
+                'msg': 'Failed to find asteroid %s results' % asteroid.name
+            }))
+
+        zipname = "%s.zip" % asteroid.name.replace(" ", "_")
+
+        zip_file = os.path.join(settings.MEDIA_TMP_DIR, zipname)
+
+        with zipfile.ZipFile(zip_file, 'w') as ziphandle:
+            for root, dirs, files in os.walk(results_path):
+                for file in files:
+                    origin_file = os.path.join(root, file)
+                    ziphandle.write(origin_file, arcname=file)
+
+        ziphandle.close()
+
+        if not os.path.exists(zip_file):
+            return Response(dict({
+                'success': False,
+                'msg': 'Failed to create zip file'
+            }))
+
+        src = urllib.parse.urljoin(settings.MEDIA_TMP_URL, zipname)
+
+        return Response(dict({
+            "success": True,
+            "src": src
+        }))        
 
 class PredictInputViewSet(viewsets.ModelViewSet):
     queryset = PredictInput.objects.all()
