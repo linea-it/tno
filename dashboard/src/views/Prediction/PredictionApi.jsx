@@ -106,6 +106,17 @@ class PredictionApi {
     });
   };
 
+  getAsteroidDownloadLink = ({ asteroid_id, name, orbit_run }) => {
+    let params = { name: name, orbit_run: orbit_run };
+    if (asteroid_id) {
+      params = { asteroid_id: asteroid_id };
+    }
+
+    return axios.get(`${this.api}/predict_asteroid/download_results/`, {
+      params: params,
+    });
+  };
+
   getAsteroidInputs = ({ id }) => {
     const params = {
       asteroid: id,
