@@ -9,13 +9,8 @@ import 'primeicons/primeicons.css';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import StepStats from 'components/Statistics/StepStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
-import Content from 'components/CardContent/CardContent.jsx';
-import Plot from 'react-plotly.js';
 
 import ExpHistogram from './ExpHistogram';
-
-//Plot Rechart
-// import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 
 class Void extends Component {
   state = {
@@ -25,28 +20,18 @@ class Void extends Component {
   render() {
     const propSet = this.props;
 
-    // const eixos = propSet.data_histogram;
-
-    // let histogram_exposure = eixos.map(el => {
-    //   const x = [];
-    //   x.append(el.date);
-    //   this.setState({ x: x });
-
-    //   const y = [];
-    //   y.append(el.count);
-    //   this.setState({ y: y });
-
-    //   return;
-    // });
+    let gridCol = '';
+    window.innerWidth <= 998 ? (gridCol = '12') : (gridCol = '6');
 
     return (
       <div>
-        <PanelCostumize
-          colorHead="ds"
-          title="Exposure"
-          content={
-            <div className="p-grid p-dir-row">
-              <div className="p-col-6 border-edit-right">
+        <div className="p-grid p-dir-row">
+          <div className={`p-col-${gridCol}`}>
+
+            <PanelCostumize
+              colorHead="ds"
+              title="Data Exposure"
+              content={
                 <StepStats
                   disableCard="false"
                   // title=" CCDs frames downloaded"
@@ -57,47 +42,26 @@ class Void extends Component {
                     </div>
                   }
                 />
-              </div>
+              }
+            />
+          </div>
 
-              <div className="p-col-6">
+          <br />
+
+          <div className={`p-col-${gridCol}`}>
+            <PanelCostumize
+              colorHead="ds"
+              title="Plot exposure"
+              content={
                 <ExpHistogram
                   data={this.props.data_histogram}
-                  width={640}
-                  height={480}
+                  width={420}
+                  height={300}
                 />
-                {/* <Content
-                  header={true}
-                  title="Exposure per period (placeholder)"
-                  className="step-title"
-                  content={
-                    <Plot
-                      data={[{ type: 'bar', x: this.state.x, y: this.state.y }]}
-                      layout={{
-                        width: 320,
-                        height: 240,
-                        title: 'A Fancy Plot',
-                      }}
-                    />
-                    // <div className="size-plot">
-                    // <BarChart
-                    //   width={450}
-                    //   height={250}
-                    //   data={propSet.graph}
-                    //   margin={{ top: 60, right: 30, left: 30, bottom: 5 }}
-                    // >
-                    //   <CartesianGrid strokeDasharray="3 3" />
-                    //   <XAxis dataKey="name" />
-                    //   <YAxis dataKey="band" />
-                    //   <Tooltip />
-                    //   <Bar barSize={10} dataKey="band" fill="#3c1e7e" />;
-                    // </BarChart>
-                    // </div>
-                  }
-                /> */}
-              </div>
-            </div>
-          }
-        />
+              }
+            />
+          </div>
+        </div>
       </div>
     );
   }

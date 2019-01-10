@@ -234,6 +234,8 @@ class PraiaHistory extends Component {
             header="Status"
             body={this.status_table}
             style={{ textAlign: 'center', width: '6em' }}
+            selection={this.state.selected}
+            onSelectionChange={e => this.setState({ selected: e.data })}
           />
           {AstrometyColumns}
         </DataTable>
