@@ -30,17 +30,6 @@ services:
     depends_on:
       - database
 
-  # Dashboard
-  # frontend:
-  #   build: ./dashboard
-  #   image: tno-frontend
-  #   working_dir: /src/app
-  #   ports:
-  #     - 7000:7000
-  #   env_file:
-  #     - .env      
-  #   command: ./entrypoint.sh
-
   # NIMA
   nima:
     image: linea/nima:7
@@ -59,9 +48,7 @@ services:
       - 80:8080
     volumes:
       - ./nginx/nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro
-      # - ./frontend/build:/var/www/frontend
     cap_drop:
       - ALL
     depends_on:
-      # - frontend
       - backend
