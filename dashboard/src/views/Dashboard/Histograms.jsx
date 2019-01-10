@@ -6,6 +6,10 @@ import SunDistance from './SunDistance';
 class Histograms extends Component {
   render() {
     const propSet = this.props;
+
+    let gridCol = '';
+    window.innerWidth <= 998 ? (gridCol = '12') : (gridCol = '6');
+
     return (
       <div>
         <PanelCostumize
@@ -13,11 +17,11 @@ class Histograms extends Component {
           title="Skybot"
           content={
             <div className="p-grid p-dir-row">
-              <div className="p-col-6 border-edit-right">
+              <div className={`p-col-${gridCol} border-edit-right`}>
                 <SSSOdyclass data={propSet.ccds} />
               </div>
-              <div className="p-col-6">
-                <SunDistance data={propSet.ccds.histogram} />
+              <div className={`p-col-${gridCol}`}>
+                <SunDistance data={propSet.ccds} />
               </div>
             </div>
           }
