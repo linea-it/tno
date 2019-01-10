@@ -33,3 +33,6 @@ npm-debug.log
 
 # Develop Archive
 /archive
+
+# Nginx conf
+/nginx/nginx-proxy.conf
