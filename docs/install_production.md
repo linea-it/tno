@@ -25,7 +25,21 @@ cp env_template .env
 
 ```
 
+### Configure ngnix
+Create link to ngnix config
+```
+cd nginx
+ln -s development_template.conf nginx-proxy.conf
+cd ..
+```
+
 ### Build and Run Containers 
+
+Create link to docker-compose.yml
+```
+ln -s docker-compose-production-template.yml docker-compose.yml
+```
+
 ```
 docker-compose build
 ```
@@ -82,4 +96,3 @@ Stop all containers and run in background mode
 docker-compose up -d
 ```
 
-## Configure ngnix
