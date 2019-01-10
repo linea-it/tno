@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { style } from 'variables/Variables.jsx';
 import Plot from 'react-plotly.js';
-import moment from 'moment';
 
-class ExpHistogram extends Component {
+class SSSOHistogram extends Component {
   static propTypes = {
     data: PropTypes.object.isRequired,
     width: PropTypes.number,
@@ -15,12 +13,14 @@ class ExpHistogram extends Component {
     const { data, width, height } = this.props;
 
     if (typeof data !== 'undefined' && data.length > 0) {
+
       var x = [];
       var y = [];
 
       data.forEach(function(row) {
-        x.push(moment(row['date']).format('YYYY-MM'));
-        y.push(row.count);
+        x.push(row.dynclass);
+        const a = Math.log(row.count) / Math.LN10;
+        y.push(a.toExponential(4));
       });
 
       return (
@@ -32,19 +32,17 @@ class ExpHistogram extends Component {
                 y: y,
                 type: 'bar',
                 marker: {
-                  color: 'purple',
+                  color: '#3CB1C6',
                 },
               },
             ]}
             layout={{
               width: width,
               height: height,
-              title: 'Exposure per period (placeholder)',
-              xaxis: {
-                title: 'Period',
-              },
+              xaxis: {},
               yaxis: {
-                title: 'Exposures',
+                title: 'Exposures (scale exp)',
+                tickprefix: '10^',
               },
             }}
             config={{
@@ -58,4 +56,4 @@ class ExpHistogram extends Component {
     }
   }
 }
-export default ExpHistogram;
+export default SSSOHistogram;
