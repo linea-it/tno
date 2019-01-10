@@ -25,6 +25,11 @@ import csv
 from .johnstons import JhonstonArchive
 from django.utils import timezone
 from datetime import datetime
+
+from django.db.models import Count
+from django.db.models.functions import TruncMonth
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -61,6 +66,26 @@ class PointingViewSet(viewsets.ModelViewSet):
     ordering_fields = ('id', 'expnum', 'date_obs', 'nite')
     ordering = ('-date_obs',)
 
+    @list_route()
+    def histogram_exposure(self, request):
+
+        queryset = Pointing.objects.annotate(date=TruncMonth('date_obs')).values(
+            'date').annotate(count=Count('id')).values('date', 'count').order_by('date')
+
+        rows = list()
+        for row in queryset:
+            rows.append(dict({
+                'date': row['date'].strftime('%Y-%m-%d'),
+                'count': row['count']
+            }))
+
+        result = dict({
+            'success': True,
+            'data': rows
+        })
+
+        return Response(result)
+
     def generate_statistics(self):
         db = PointingDB()
 
@@ -84,7 +109,9 @@ class PointingViewSet(viewsets.ModelViewSet):
             'exposures': exposures,
             'updated': 'xxxx-xx-xx',
             'size': 'xx Gb',
-            'exp_range': exp_range
+            'exp_range': exp_range,
+            'histogram_exposure': self.histogram_exposure()
+
         })
 
         # Escrever o Arquivo de cache com as informações
@@ -425,14 +452,14 @@ class JohnstonArchiveViewSet(viewsets.ModelViewSet):
         /known_tnos_johnston/?diameter__lt=100
 
         For details on how to make filters through the url. (https://github.com/miki725/django-url-filter)
-        
+
         to update all the contents of the table, just access this url.
         http://localhost:7001/known_tnos_johnston/update_list/
 
         use the format=json attribute to have the result in json.
         example /known_tnos_johnston/?diameter__lt=100&format=json
 
-    """ 
+    """
     title = "List of Known Trans-Neptunian Objects from Johnston Archive"
     queryset = JohnstonArchive.objects.all()
     serializer_class = JohnstonArchiveSerializer
@@ -472,7 +499,7 @@ class JohnstonArchiveViewSet(viewsets.ModelViewSet):
 
             if len(rows) > 0:
 
-                # Gera o CSV 
+                # Gera o CSV
                 filename = ja.write_csv(rows)
 
                 # Update na tabela
@@ -480,7 +507,8 @@ class JohnstonArchiveViewSet(viewsets.ModelViewSet):
 
                     discovery = None
                     if row['discovery']:
-                        discovery = datetime.strptime(row['discovery'], '%Y-%m')
+                        discovery = datetime.strptime(
+                            row['discovery'], '%Y-%m')
 
                     record, created = JohnstonArchive.objects.update_or_create(
                         provisional_designation=row['provisional_designation'],
@@ -522,5 +550,3 @@ class JohnstonArchiveViewSet(viewsets.ModelViewSet):
 
         except Exception as e:
             raise e
-
-

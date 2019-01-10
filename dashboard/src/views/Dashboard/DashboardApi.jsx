@@ -9,6 +9,10 @@ class DashboardApi {
     return axios.get(`${this.api}/pointing/statistics/`);
   };
 
+  getHistogramExposure = () => {
+    return axios.get(`${this.api}/pointing/histogram_exposure/`);
+  };
+
   getSkybotInfo = () => {
     return axios.get(`${this.api}/skybotoutput/statistics/`);
   };
