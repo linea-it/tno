@@ -7,25 +7,49 @@ Clone this repository
 ```
 git clone https://github.com/linea-it/tno.git tno
 ```
-Run Clone repositories script, this script clone all repositories associated to TNO. 
-```
-./clone_repositories.sh
-```
 
 Copy env_template to .env setup variables and run
 ```
+cd tno
 cp env_template .env
 ```
 
+Create link to ngnix config
 ```
-docker-compose  -f docker-compose.development.yml up
+cd nginx
+ln -s development_template.conf nginx-proxy.conf
+```
+
+Create link to docker-compose.yml
+```
+cd ..
+ln -s docker-compose-development-template.yml docker-compose.yml
+```
+
+Build Containers
+```
+docker-compose build
+```
+
+Run Backend
+```
+docker-compose up
+```
+
+Run Frontend
+```
+cd dashboard
+yarn 
+yarn run start
 ```
 
 ### Test in brownser
 ```
 http://localhost:7000/
 ```
-Dashboard: 7000  
-Get Pointings: 7001  
-Solar System: 7002  
-Filter Objects: 7003  
+
+
+
+### More details about the installation are available at this link.
+
+https://github.com/linea-it/tno/blob/master/docs/install_production.md
