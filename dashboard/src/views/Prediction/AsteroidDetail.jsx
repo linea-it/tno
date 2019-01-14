@@ -176,33 +176,39 @@ class AsteroidDetailPrediction extends Component {
   };
 
   // Methods for slide operation
-  Slideshow = e => {
-    //event.preventDefault();
+
+  openLightbox = (index, event) => {
+    event.preventDefault();
     this.setState({
+      currentImage: index,
       lightboxIsOpen: true,
     });
   };
-  gotoNextLightboxImage = () => {
+  closeLightbox = () => {
     this.setState({
-      currentImage: this.state.currentImage + 1,
+      currentImage: 0,
+      lightboxIsOpen: false,
     });
   };
-  gotoPrevLightboxImage = () => {
+  gotoPrevious = () => {
     this.setState({
       currentImage: this.state.currentImage - 1,
     });
   };
-  CloseLightbox = () => {
-    this.setState({ lightboxIsOpen: false });
+  gotoNext = () => {
+    this.setState({
+      currentImage: this.state.currentImage + 1,
+    });
   };
-  gotoImage(index) {
+  gotoImage = index => {
     this.setState({
       currentImage: index,
     });
-  }
+  };
   handleClickImage = () => {
     if (this.state.currentImage === this.state.images.length - 1) return;
-    this.gotoNextLightboxImage();
+
+    this.gotoNext();
   };
   onClick = () => {
     const row = this.state.selected2;
@@ -448,11 +454,11 @@ class AsteroidDetailPrediction extends Component {
             <div className="ui-md-12 ui-lg-6 ui-xl-6">
               <img
                 key={i}
-                id={occ.filename}
-                onClick={this.Slideshow}
+                id={occ.id}
+                onClick={occ => this.openLightbox(i, occ)}
                 width="100%"
                 src={occ.src}
-                alt={occ.filename}
+                alt={occ.asteroid}
               />
             </div>
             {/* Atributos */}
@@ -681,14 +687,14 @@ class AsteroidDetailPrediction extends Component {
           </div>
         </div>
         <Lightbox
+          currentImage={this.state.currentImage}
           images={this.state.images}
           isOpen={this.state.lightboxIsOpen}
-          onClickPrev={this.gotoPrevLightboxImage}
-          onClickNext={this.gotoNextLightboxImage}
-          onClose={this.CloseLightbox}
-          currentImage={this.state.currentImage}
           onClickImage={this.handleClickImage}
+          onClickNext={this.gotoNext}
+          onClickPrev={this.gotoPrevious}
           onClickThumbnail={this.gotoImage}
+          onClose={this.closeLightbox}
         />
       </div>
     );
