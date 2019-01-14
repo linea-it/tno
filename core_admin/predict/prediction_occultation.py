@@ -1558,6 +1558,28 @@ class PredictionOccultation():
             )
 
             container.wait()
+
+
+            # Criar o plot de Ephemeris + Stars
+            cmd = "python plot_ephem_stars.py %s %s %s" % (
+                obj['inputs']['ephemeris'],
+                obj['inputs']['catalog'],
+                obj['inputs']['positions']
+            )
+            self.logger.debug("CMD: %s" % cmd)
+
+            container = docker_client.containers.run(
+                docker_image,
+                command=cmd,
+                detach=True,
+                auto_remove=True,
+                mem_limit='4096m',
+                volumes=volumes,
+                user=os.getuid()
+            )
+
+            container.wait()
+
             self.logger.debug("[ %s ] Finish Container" % id)
 
             return self.check_map_results(obj)
