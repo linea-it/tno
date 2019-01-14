@@ -438,7 +438,6 @@ class AsteroidDetailPrediction extends Component {
   };
 
   occultationsCards = occultations => {
-    console.log('occultation:', occultations);
     const cards = occultations.map((occ, i) => {
       return (
         <Card key={i} subTitle="">
