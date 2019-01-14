@@ -21,17 +21,8 @@ import { Toolbar } from 'primereact/toolbar';
 
 const columns = [
   {
-    header: 'Status',
-    field: 'status',
-  },
-  {
     header: 'Proccess',
     field: 'proccess_displayname',
-  },
-  {
-    header: 'Run Id',
-    field: 'id',
-    width: 80,
   },
   {
     header: 'Owner',
@@ -228,8 +219,13 @@ class PraiaHistory extends Component {
     // };
 
     return (
-      <div>
-        <DataTable value={data}>
+      <div style={{ margin: '14px' }}>
+        <DataTable
+          value={data}
+          selectionMode="single"
+          selection={this.state.selected}
+          onSelectionChange={e => this.setState({ selected: e.data })}
+        >
           <Column
             header="Status"
             body={this.status_table}
