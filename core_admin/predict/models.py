@@ -405,6 +405,7 @@ class PredictOutput(models.Model):
             ('ephemeris', 'Ephemeris'),
             ('radec', 'RA Dec'),
             ('positions', 'Positions'),
+            ('asteroid_orbit', 'Asteroid Orbit'),
             ('catalog', 'Catalog'),
             ('catalog_csv', 'Catalog CSV'),
             ('stars_catalog_mini', 'Star Catalog Mini'),

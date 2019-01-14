@@ -46,6 +46,7 @@ class AsteroidDetailPrediction extends Component {
       prev: null,
       next: null,
       download_icon: 'fa fa-cloud-download',
+      asteroid_orbit: null,
     };
   }
 
@@ -98,12 +99,19 @@ class AsteroidDetailPrediction extends Component {
     this.api.getAsteroidOutputs({ id: asteroid.id }).then(res => {
       const files = res.data.results;
       const childrens = [];
+      var asteroid_orbit = null;
 
       files.forEach(e => {
         childrens.push({
           data: e,
           expanded: true,
         });
+
+        if (e.type === 'asteroid_orbit') {
+          // TODO deve ser a url
+          asteroid_orbit = e.filename;
+        }
+
       });
 
       //Estrutura dos arquivos em forma de tree
@@ -119,6 +127,7 @@ class AsteroidDetailPrediction extends Component {
 
       this.setState({
         outputs: tree_data,
+        asteroid_orbit: asteroid_orbit,
       });
     });
   };
@@ -575,18 +584,20 @@ class AsteroidDetailPrediction extends Component {
   };
 
   catalogPlot = (positions, catalog_stars) => {
-    if (positions && positions.length > 0 && catalog_stars.length > 0) {
-      return (
-        <div className="plot_predict_radius">
-          <PlotPrediction
-            positions={this.state.positions}
-            stars={this.state.catalog_stars}
-          />
+
+    return (
+      <div className="plot_predict_radius">
+        <div className="ui-g">
+          <div className="ui-md-6">
+            {/* <PlotPrediction
+                positions={this.state.positions}
+                stars={this.state.catalog_stars}
+              /> */}
+          </div>
+          <div className="ui-md-6">TESTE</div>
         </div>
-      );
-    } else {
-      return <div className="plot_predict_radius" />;
-    }
+      </div>
+    );
   };
 
   outputsTable = outputs => {

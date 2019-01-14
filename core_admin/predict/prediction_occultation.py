@@ -247,6 +247,7 @@ class PredictionOccultation():
                         "ephemeris": None,
                         "radec": None,
                         "positions": None,
+                        "asteroid_orbit": None,
                         "catalog": None,
                         "catalog_csv": None,
                         "stars_catalog_mini": None,
@@ -704,8 +705,8 @@ class PredictionOccultation():
         absolute_data_path = os.path.join(absolute_archive_path, obj['relative_path'].strip('/'))
 
         # Comando que sera executado dentro do container.
-        cmd = "python generate_ephemeris.py %s %s %s %s --leap_sec %s --radec_filename %s --positions_filename %s" % (
-            obj['inputs']['dates_file'], obj['inputs']['bsp_asteroid'], obj['inputs']['bsp_planetary'], filename,
+        cmd = "python generate_ephemeris.py %s %s %s %s %s --leap_sec %s --radec_filename %s --positions_filename %s" % (
+            obj['name'], obj['inputs']['dates_file'], obj['inputs']['bsp_asteroid'], obj['inputs']['bsp_planetary'], filename,
             obj['inputs']['leap_second'], radec_filename, positions_filename)
 
         logger.debug("[ %s ] CMD: %s" % (container_name, cmd))
@@ -737,6 +738,9 @@ class PredictionOccultation():
             ephemeris = os.path.join(obj['relative_path'], filename)
             radec = os.path.join(obj['relative_path'], radec_filename)
             positions = os.path.join(obj['relative_path'], positions_filename)
+
+            orbit_filename = 'asteroid_orbit.png'
+            asteroid_orbit = os.path.join(obj['relative_path'], orbit_filename)
 
             logger.debug("[ %s ] Ephemeris: %s" % (container_name, ephemeris))
             logger.debug("[ %s ] RADEC: %s" % (container_name, radec))
@@ -779,6 +783,14 @@ class PredictionOccultation():
                     "file_size": os.path.getsize(positions),
                     "file_path": positions,
                     "file_type": os.path.splitext(positions)[1]
+                })
+
+                # Result Asteroid Orbit in Sky
+                obj["results"]["asteroid_orbit"] = dict({
+                    "filename": orbit_filename,
+                    "file_size": os.path.getsize(asteroid_orbit),
+                    "file_path": asteroid_orbit,
+                    "file_type": os.path.splitext(asteroid_orbit)[1]
                 })
 
                 # Positions e input para a proxima etapa
