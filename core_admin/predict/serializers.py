@@ -254,6 +254,7 @@ class PredictOutputSerializer(serializers.ModelSerializer):
         queryset=PredictAsteroid.objects.all(), many=False)
 
     h_size = serializers.SerializerMethodField()
+    src = serializers.SerializerMethodField()
 
     class Meta:
         model = PredictOutput
@@ -264,13 +265,20 @@ class PredictOutputSerializer(serializers.ModelSerializer):
             'filename',
             'file_size',
             'file_type',
-            'file_path',
-            'h_size'
+            # 'file_path',
+            'h_size',
+            'src'
         )
 
     def get_h_size(self, obj):
         try:
             return humanize.naturalsize(obj.file_size)
+        except:
+            return None
+
+    def get_src(self, obj):
+        try:
+            return urllib.parse.urljoin(settings.MEDIA_URL, obj.file_path.strip('/'))
         except:
             return None
 
