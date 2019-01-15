@@ -69,4 +69,5 @@ urlpatterns = [
     url(r'^api/', include(router.urls)),
     url(r'^api/obtain-auth-token/$', csrf_exempt(obtain_auth_token)),
     url(r'^api/teste/', common_views.teste),
+    url(r'^api/import-skybot', common_views.import_skybot),
 ] + static('api'+settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -28,6 +28,12 @@ PROCCESS_DIR = "/proccess"
 CCD_IMAGES_DIR = "/ccd_images"
 
 # Sub diretorios que ficam dentro de /archive
+
+SKYBOT_ROOT = 'skybot_output'
+SKYBOT_OUTPUT = os.path.join(ARCHIVE_DIR, SKYBOT_ROOT)
+if not os.path.exists(SKYBOT_OUTPUT):
+    os.mkdir(SKYBOT_OUTPUT)
+
 OBSERVATIONS_DIR = os.path.join(ARCHIVE_DIR, "observations")
 if not os.path.exists(OBSERVATIONS_DIR):
     os.mkdir(OBSERVATIONS_DIR)
@@ -308,8 +314,15 @@ LOGGING = {
             'backupCount': 5,
             'filename': os.path.join(LOG_DIR, 'predict_occultation.log'),
             'formatter': 'standard',
-        }
-
+        },
+        'skybot': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'skybot.log'),
+            'formatter': 'standard',
+        },
     },
     'loggers': {
         'django': {
@@ -337,5 +350,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'skybot': {
+            'handlers': ['skybot'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+
     },
 }

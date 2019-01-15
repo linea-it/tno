@@ -13,4 +13,4 @@ bs4
 docker==3.4.1
 pytimeparse
 lxml
-
+pandas
