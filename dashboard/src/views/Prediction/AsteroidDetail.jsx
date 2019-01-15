@@ -46,6 +46,8 @@ class AsteroidDetailPrediction extends Component {
       prev: null,
       next: null,
       download_icon: 'fa fa-cloud-download',
+      asteroid_orbit: null,
+      neighborhood_stars: null,
     };
   }
 
@@ -98,12 +100,24 @@ class AsteroidDetailPrediction extends Component {
     this.api.getAsteroidOutputs({ id: asteroid.id }).then(res => {
       const files = res.data.results;
       const childrens = [];
+      var asteroid_orbit = null;
+      var neighborhood_stars = null;
 
       files.forEach(e => {
         childrens.push({
           data: e,
           expanded: true,
         });
+
+        if (e.type === 'asteroid_orbit') {
+          const src = this.api.api + e.src;
+          asteroid_orbit = src;
+        }
+
+        if (e.type === 'neighborhood_stars') {
+          const src = this.api.api + e.src;
+          neighborhood_stars = src;
+        }
       });
 
       //Estrutura dos arquivos em forma de tree
@@ -119,6 +133,8 @@ class AsteroidDetailPrediction extends Component {
 
       this.setState({
         outputs: tree_data,
+        asteroid_orbit: asteroid_orbit,
+        neighborhood_stars: neighborhood_stars,
       });
     });
   };
@@ -443,7 +459,7 @@ class AsteroidDetailPrediction extends Component {
         <Card key={i} subTitle="">
           <div className="ui-g">
             {/* MAP */}
-            <div className="ui-md-6">
+            <div className="ui-md-12 ui-lg-6 ui-xl-6">
               <img
                 key={i}
                 id={occ.id}
@@ -454,7 +470,7 @@ class AsteroidDetailPrediction extends Component {
               />
             </div>
             {/* Atributos */}
-            <div className="ui-md-6">
+            <div className="ui-md-12 ui-lg-6 ui-xl-6">
               <div className="flex-container row">
                 <p>already_happened</p>
                 <span>{occ.already_happened}</span>
@@ -549,13 +565,8 @@ class AsteroidDetailPrediction extends Component {
         sortable: true,
       },
       {
-        field: 'file_size',
-        header: 'File size',
-        sortable: true,
-      },
-      {
         field: 'h_size',
-        header: 'h_size',
+        header: 'File size',
         sortable: true,
       },
     ];
@@ -580,19 +591,33 @@ class AsteroidDetailPrediction extends Component {
     );
   };
 
-  catalogPlot = (positions, catalog_stars) => {
-    if (positions && positions.length > 0 && catalog_stars.length > 0) {
-      return (
-        <div className="plot_predict_radius">
-          <PlotPrediction
-            positions={this.state.positions}
-            stars={this.state.catalog_stars}
-          />
+  catalogPlot = (neighborhood_stars, asteroid_orbit) => {
+    return (
+      <div>
+        <div className="p-grid">
+          <div className="p-md-12 p-lg-6 p-xl-6">
+            <Card subTitle="Neighborhood Stars">
+              <img
+                id="neighborhood_stars"
+                width="100%"
+                src={neighborhood_stars}
+                alt="Neighborhood Stars"
+              />
+            </Card>
+          </div>
+          <div className="p-md-12 p-lg-6 p-xl-6">
+            <Card subTitle="Asteroid Orbit">
+              <img
+                id="asteroid_orbit_in_sky"
+                width="100%"
+                src={asteroid_orbit}
+                alt="Asteroid Orbit in Sky"
+              />
+            </Card>
+          </div>
         </div>
-      );
-    } else {
-      return <div className="plot_predict_radius" />;
-    }
+      </div>
+    );
   };
 
   outputsTable = outputs => {
@@ -620,19 +645,19 @@ class AsteroidDetailPrediction extends Component {
       <div className="content">
         {this.create_nav_bar()}
         <div className="ui-g">
-          <div className="ui-md-4">
+          <div className="ui-md-6 ui-lg-4 ui-xl-4">
             <PanelCostumize
               title={this.state.title}
               content={this.statsTable(this.state.asteroid)}
             />
           </div>
-          <div className="ui-md-4">
+          <div className="ui-md-6 ui-lg-4 ui-xl-4">
             <PanelCostumize
               title="Info"
               content={this.moreInfoTable(this.state.asteroid)}
             />
           </div>
-          <div className="ui-md-4">
+          <div className="ui-md-6 ui-lg-4 ui-xl-4">
             <PanelCostumize
               title="Times"
               content={this.executionTimeTable(this.state.asteroid)}
@@ -652,15 +677,18 @@ class AsteroidDetailPrediction extends Component {
         <div className="ui-g">
           <div className="ui-md-12">
             <Card title="Catalog" subTitle="">
-              {this.catalogPlot(this.state.positions, this.state.catalog_stars)}
+              {this.catalogPlot(
+                this.state.neighborhood_stars,
+                this.state.asteroid_orbit
+              )}
             </Card>
           </div>
-          <div className="ui-md-6">
+          <div className="ui-md-12 ui-lg-6 ui-xl-6">
             <Card title="Inputs" subTitle="">
               {this.inputsTable(this.state.inputs)}
             </Card>
           </div>
-          <div className="ui-md-6">
+          <div className="ui-md-12 ui-lg-6 ui-xl-6">
             <Card title="Output" subTitle="">
               {this.outputsTable(this.state.outputs)}
             </Card>

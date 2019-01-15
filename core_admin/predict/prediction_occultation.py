@@ -66,6 +66,10 @@ class PredictionOccultation():
         self.stars_parameters_of_occultation_plot = 'g4_occ_data_JOHNSTON_2018_table'
         self.occultation_table = 'occultation_table.csv'
 
+        # Outros outputs
+        self.orbit_filename = 'asteroid_orbit.png'
+        self.neighborhood_stars = 'neighborhood_stars.png'
+
         # Lista de tempo de execucao de cada asteroid incluindo o tempo de espera.
         self.execution_time = []
 
@@ -247,6 +251,8 @@ class PredictionOccultation():
                         "ephemeris": None,
                         "radec": None,
                         "positions": None,
+                        "asteroid_orbit": None,
+                        "neighborhood_stars": None,
                         "catalog": None,
                         "catalog_csv": None,
                         "stars_catalog_mini": None,
@@ -704,8 +710,8 @@ class PredictionOccultation():
         absolute_data_path = os.path.join(absolute_archive_path, obj['relative_path'].strip('/'))
 
         # Comando que sera executado dentro do container.
-        cmd = "python generate_ephemeris.py %s %s %s %s --leap_sec %s --radec_filename %s --positions_filename %s" % (
-            obj['inputs']['dates_file'], obj['inputs']['bsp_asteroid'], obj['inputs']['bsp_planetary'], filename,
+        cmd = "python generate_ephemeris.py %s %s %s %s %s --leap_sec %s --radec_filename %s --positions_filename %s" % (
+            obj['name'], obj['inputs']['dates_file'], obj['inputs']['bsp_asteroid'], obj['inputs']['bsp_planetary'], filename,
             obj['inputs']['leap_second'], radec_filename, positions_filename)
 
         logger.debug("[ %s ] CMD: %s" % (container_name, cmd))
@@ -737,6 +743,9 @@ class PredictionOccultation():
             ephemeris = os.path.join(obj['relative_path'], filename)
             radec = os.path.join(obj['relative_path'], radec_filename)
             positions = os.path.join(obj['relative_path'], positions_filename)
+
+            orbit_filename = self.orbit_filename
+            asteroid_orbit = os.path.join(obj['relative_path'], orbit_filename)
 
             logger.debug("[ %s ] Ephemeris: %s" % (container_name, ephemeris))
             logger.debug("[ %s ] RADEC: %s" % (container_name, radec))
@@ -779,6 +788,14 @@ class PredictionOccultation():
                     "file_size": os.path.getsize(positions),
                     "file_path": positions,
                     "file_type": os.path.splitext(positions)[1]
+                })
+
+                # Result Asteroid Orbit in Sky
+                obj["results"]["asteroid_orbit"] = dict({
+                    "filename": orbit_filename,
+                    "file_size": os.path.getsize(asteroid_orbit),
+                    "file_path": asteroid_orbit,
+                    "file_type": os.path.splitext(asteroid_orbit)[1]
                 })
 
                 # Positions e input para a proxima etapa
@@ -1403,12 +1420,20 @@ class PredictionOccultation():
 
             result = self.run_generate_maps(id, obj)
 
+            # Resultado do plot de Ephemeris + Stars
+            neighborhood_stars = self.neighborhood_stars
+            file_path = os.path.join(obj['relative_path'], neighborhood_stars)
+            if os.path.exists(file_path):
+                obj['results']['neighborhood_stars'] = dict({
+                    "filename": os.path.basename(file_path),
+                    "file_size": os.path.getsize(file_path),
+                    "file_path": file_path,
+                    "file_type": os.path.splitext(file_path)[1]
+                })
+
             if result:
                 status = 'success'
                 error_msg = None
-
-                # TODO: Criar um resultado para cada MAPA
-
 
             t1 = datetime.now()
             tdelta = t1 - t0
@@ -1546,6 +1571,31 @@ class PredictionOccultation():
             )
 
             container.wait()
+
+
+            # Criar o plot de Ephemeris + Stars
+            cmd = "python plot_ephem_stars.py %s %s %s --filename %s" % (
+                obj['inputs']['ephemeris'],
+                obj["results"]["catalog_csv"]['filename'],
+                obj['inputs']['positions'],
+                self.neighborhood_stars,
+            )
+            self.logger.debug("CMD: %s" % cmd)
+
+            container = docker_client.containers.run(
+                docker_image,
+                command=cmd,
+                detach=True,
+                auto_remove=True,
+                mem_limit='4096m',
+                volumes=volumes,
+                user=os.getuid()
+            )
+
+            container.wait()
+
+
+
             self.logger.debug("[ %s ] Finish Container" % id)
 
             return self.check_map_results(obj)
