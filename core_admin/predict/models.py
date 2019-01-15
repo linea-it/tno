@@ -406,6 +406,7 @@ class PredictOutput(models.Model):
             ('radec', 'RA Dec'),
             ('positions', 'Positions'),
             ('asteroid_orbit', 'Asteroid Orbit'),
+            ('neighborhood_stars', 'Neighborhood Stars'),
             ('catalog', 'Catalog'),
             ('catalog_csv', 'Catalog CSV'),
             ('stars_catalog_mini', 'Star Catalog Mini'),

@@ -66,6 +66,10 @@ class PredictionOccultation():
         self.stars_parameters_of_occultation_plot = 'g4_occ_data_JOHNSTON_2018_table'
         self.occultation_table = 'occultation_table.csv'
 
+        # Outros outputs
+        self.orbit_filename = 'asteroid_orbit.png'
+        self.neighborhood_stars = 'neighborhood_stars.png'
+
         # Lista de tempo de execucao de cada asteroid incluindo o tempo de espera.
         self.execution_time = []
 
@@ -248,6 +252,7 @@ class PredictionOccultation():
                         "radec": None,
                         "positions": None,
                         "asteroid_orbit": None,
+                        "neighborhood_stars": None,
                         "catalog": None,
                         "catalog_csv": None,
                         "stars_catalog_mini": None,
@@ -739,7 +744,7 @@ class PredictionOccultation():
             radec = os.path.join(obj['relative_path'], radec_filename)
             positions = os.path.join(obj['relative_path'], positions_filename)
 
-            orbit_filename = 'asteroid_orbit.png'
+            orbit_filename = self.orbit_filename
             asteroid_orbit = os.path.join(obj['relative_path'], orbit_filename)
 
             logger.debug("[ %s ] Ephemeris: %s" % (container_name, ephemeris))
@@ -1415,12 +1420,20 @@ class PredictionOccultation():
 
             result = self.run_generate_maps(id, obj)
 
+            # Resultado do plot de Ephemeris + Stars
+            neighborhood_stars = self.neighborhood_stars
+            file_path = os.path.join(obj['relative_path'], neighborhood_stars)
+            if os.path.exists(file_path):
+                obj['results']['neighborhood_stars'] = dict({
+                    "filename": os.path.basename(file_path),
+                    "file_size": os.path.getsize(file_path),
+                    "file_path": file_path,
+                    "file_type": os.path.splitext(file_path)[1]
+                })
+
             if result:
                 status = 'success'
                 error_msg = None
-
-                # TODO: Criar um resultado para cada MAPA
-
 
             t1 = datetime.now()
             tdelta = t1 - t0
@@ -1561,10 +1574,11 @@ class PredictionOccultation():
 
 
             # Criar o plot de Ephemeris + Stars
-            cmd = "python plot_ephem_stars.py %s %s %s" % (
+            cmd = "python plot_ephem_stars.py %s %s %s --filename %s" % (
                 obj['inputs']['ephemeris'],
-                obj['inputs']['catalog'],
-                obj['inputs']['positions']
+                obj["results"]["catalog_csv"]['filename'],
+                obj['inputs']['positions'],
+                self.neighborhood_stars,
             )
             self.logger.debug("CMD: %s" % cmd)
 
@@ -1579,6 +1593,8 @@ class PredictionOccultation():
             )
 
             container.wait()
+
+
 
             self.logger.debug("[ %s ] Finish Container" % id)
 

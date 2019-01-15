@@ -47,6 +47,7 @@ class AsteroidDetailPrediction extends Component {
       next: null,
       download_icon: 'fa fa-cloud-download',
       asteroid_orbit: null,
+      neighborhood_stars: null,
     };
   }
 
@@ -100,6 +101,7 @@ class AsteroidDetailPrediction extends Component {
       const files = res.data.results;
       const childrens = [];
       var asteroid_orbit = null;
+      var neighborhood_stars = null;
 
       files.forEach(e => {
         childrens.push({
@@ -110,6 +112,11 @@ class AsteroidDetailPrediction extends Component {
         if (e.type === 'asteroid_orbit') {
           const src = this.api.api + e.src;
           asteroid_orbit = src;
+        }
+
+        if (e.type === 'neighborhood_stars') {
+          const src = this.api.api + e.src;
+          neighborhood_stars = src;
         }
       });
 
@@ -127,6 +134,7 @@ class AsteroidDetailPrediction extends Component {
       this.setState({
         outputs: tree_data,
         asteroid_orbit: asteroid_orbit,
+        neighborhood_stars: neighborhood_stars,
       });
     });
   };
@@ -583,7 +591,7 @@ class AsteroidDetailPrediction extends Component {
     );
   };
 
-  catalogPlot = (positions, asteroid_orbit) => {
+  catalogPlot = (neighborhood_stars, asteroid_orbit) => {
     return (
       <div>
         <div className="p-grid">
@@ -592,7 +600,7 @@ class AsteroidDetailPrediction extends Component {
               <img
                 id="neighborhood_stars"
                 width="100%"
-                // src={asteroid_orbit}
+                src={neighborhood_stars}
                 alt="Neighborhood Stars"
               />
             </Card>
@@ -670,7 +678,7 @@ class AsteroidDetailPrediction extends Component {
           <div className="ui-md-12">
             <Card title="Catalog" subTitle="">
               {this.catalogPlot(
-                this.state.positions,
+                this.state.neighborhood_stars,
                 this.state.asteroid_orbit
               )}
             </Card>
