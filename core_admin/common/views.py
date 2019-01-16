@@ -26,9 +26,7 @@ def import_skybot(request):
 
         # Funcão para registrar o Skybot output
         sk.register_skybot_output()
-
-            
-
+          
         result = dict( {
             'success': True,
         })

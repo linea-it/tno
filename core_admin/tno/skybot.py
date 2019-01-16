@@ -2,7 +2,8 @@ import logging
 import os
 import requests
 from tno.skybotoutput import Pointing as PointingDB
-from sqlalchemy.sql import select, and_
+from tno.skybotoutput import SkybotOutput as SkybotOutputDB
+from sqlalchemy.sql import select, and_, insert, desc
 from django.conf import settings
 import pandas as pd
 
@@ -25,6 +26,9 @@ class ImportSkybot():
 
         # Diretorio onde ficam os csv baixados do skybot
         self.skybot_output_path = settings.SKYBOT_OUTPUT
+
+        self.dbsk =  SkybotOutputDB()
+
 
     def import_skybot(self):
         self.logger.info("oi")
@@ -56,12 +60,12 @@ class ImportSkybot():
         cols = db.tbl.c
 
         # stm = select([cols.expnum, cols.date_obs, cols.radeg, cols.decdeg]).where(and_(cols.expnum == 149263)).group_by(cols.expnum, cols.date_obs, cols.radeg, cols.decdeg)
-        stm = select([cols.expnum, cols.date_obs, cols.radeg, cols.decdeg]).group_by(
-            cols.expnum, cols.date_obs, cols.radeg, cols.decdeg).order_by(cols.date_obs).limit(5)
+        stm = select([cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg]).group_by(
+            cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg).order_by(cols.date_obs).limit(5)
 
         rows = db.fetch_all_dict(stm)
 
-        self.logger.debug("Rows: [%s]" % rows)
+        self.logger.debug("Rows: [%s]" % len(rows))
 
         return rows
 
@@ -86,7 +90,7 @@ class ImportSkybot():
             '-filter': self.position_error,
         })
 
-        filename = "%s.csv" % pointing.get("expnum")
+        filename = "%s_%s.csv" % (pointing.get("expnum"), pointing.get("band"))
 
         file_path = os.path.join(self.skybot_output_path, filename)
 
@@ -113,22 +117,171 @@ class ImportSkybot():
                     os.path.join(self.skybot_output_path, filename)
                 )
 
-            break
-
     def read_skybot_output_csv(self, filepath):
 
         self.logger.info("Reading csv: [%s]" % filepath)
 
-        headers = ["num", "name", "ra", "dec", "class", "mv", "err", "d", "dra", "ddec",
+        name = os.path.splitext(os.path.basename(filepath))[0]
+        names = name.split('_')
+        expnum = names[0]
+        band = names[1]
+
+        self.logger.debug("Expnum: [%s] Band [%s] " % (expnum, band))
+
+        headers = ["num", "name", "ra", "dec", "dynclass", "mv", "errpos", "d", "dra", "ddec",
                    "dg", "dh", "phase", "sunelong", "x", "y", "z", "vx", "vy", "vz", "epoch"]
 
         df = pd.read_csv(filepath, skiprows=3, delimiter='|', names=headers)
 
-        for row in df.itertuples():
-            self.logger.debug("Asteroid Name: [%s]" % getattr(row, "name"))
+        last_id = self.get_last_id()
 
-        # self.logger.debug(df.head(5))
+
+        count_created = 0
+        count_updated = 0
+
+        # Para cada asteroid fazer o insert ou update
+        for row in df.itertuples():
+            next_id = last_id + 1
+
+            created = self.insert_or_update_asteroid(next_id,expnum, band, row)    
+
+            if created:
+                count_created += 1
+            else:
+                count_updated += 1
+
+        self.logger.info("CREATED [%s] UPDATED [ %s ]" % (count_created, count_updated))
+        self.logger.debug("fineshed")
+
+    def insert_or_update_asteroid(self, next_id, expnum, band, asteroid):
+        self.logger.debug("Asteroid Name: [%s] Dynclass [%s]" % (getattr(asteroid, "name"), getattr(asteroid, "dynclass")))
+       
+        db = self.dbsk
+        skybot_output = db.tbl
+       
+        num = str(getattr(asteroid, "num"))
+        num = num.strip()
+
+        name = getattr(asteroid, "name").strip()
+
+        stm_insert = skybot_output.insert().values(
+            id=next_id,
+            num=num,
+            name=name,
+            dynclass=getattr(asteroid, "dynclass").strip(),
+            ra=getattr(asteroid, "ra").strip(),
+            dec=getattr(asteroid, "dec").strip(),
+            # raj2000=getattr(asteroid, "raj2000"),
+            # decj2000=getattr(asteroid, "decj2000"),
+            raj2000=0,
+            decj2000=0,
+            mv=float(getattr(asteroid, "mv")),
+            errpos=float(getattr(asteroid, "errpos")),
+            d=float(getattr(asteroid, "d")),
+            dracosdec=float(getattr(asteroid, "dra")),
+            ddec=float(getattr(asteroid, "ddec")),
+            dgeo=float(getattr(asteroid, "dg")),
+            dhelio=float(getattr(asteroid, "dh")),
+            phase=float(getattr(asteroid, "phase")),
+            solelong=float(getattr(asteroid, "sunelong")),
+            px=float(getattr(asteroid, "x")),
+            py=float(getattr(asteroid, "y")),
+            pz=float(getattr(asteroid, "z")),
+            vx=float(getattr(asteroid, "vx")),
+            vy=float(getattr(asteroid, "vy")),
+            vz=float(getattr(asteroid, "vz")),
+            jdref=float(getattr(asteroid, "epoch")),
+            # externallink=getattr(asteroid, ""),
+            externallink="link",
+            expnum=expnum,
+            # ccdnum=
+            band=band
+        )
+        # self.debug_query(stm_insert)
+
+
+        created = False
+        try:
+            a = db.engine.execute(stm_insert)
+
+            self.logger.debug(a)
+
+            self.logger.info("CREATED Asteroid [ %s ]" % name)
+
+            created = True
+
+        except Exception as e:
+            self.logger.debug("UPDATE Asteroid.")
+
+            stm_update = skybot_output.update().where(
+                and_(
+                    db.tbl.c.num==num,
+                    db.tbl.c.name==name,
+                    db.tbl.c.expnum==expnum,
+                )
+            ).values(
+                dynclass=getattr(asteroid, "dynclass").strip(),
+                ra=getattr(asteroid, "ra").strip(),
+                dec=getattr(asteroid, "dec").strip(),
+                # raj2000=getattr(asteroid, "raj2000"),
+                # decj2000=getattr(asteroid, "decj2000"),
+                raj2000=0,
+                decj2000=0,
+                mv=float(getattr(asteroid, "mv")),
+                errpos=float(getattr(asteroid, "errpos")),
+                d=float(getattr(asteroid, "d")),
+                dracosdec=float(getattr(asteroid, "dra")),
+                ddec=float(getattr(asteroid, "ddec")),
+                dgeo=float(getattr(asteroid, "dg")),
+                dhelio=float(getattr(asteroid, "dh")),
+                phase=float(getattr(asteroid, "phase")),
+                solelong=float(getattr(asteroid, "sunelong")),
+                px=float(getattr(asteroid, "x")),
+                py=float(getattr(asteroid, "y")),
+                pz=float(getattr(asteroid, "z")),
+                vx=float(getattr(asteroid, "vx")),
+                vy=float(getattr(asteroid, "vy")),
+                vz=float(getattr(asteroid, "vz")),
+                jdref=float(getattr(asteroid, "epoch")),
+                # externallink=getattr(asteroid, ""),
+                externallink="link",
+            )
+
+            # self.debug_query(stm_update)
+
+            a = db.engine.execute(stm_update)
+
+            self.logger.debug(a)
+
+            self.logger.info("UPDATED Asteroid [ %s ]" % name)
+            created = False
+
+        return created
+
+    def get_last_id(self): 
+        
+        db = self.dbsk
+        cols = db.tbl.c
+           
+        stm = select([cols.id]).order_by(desc(cols.id)).limit(1)
+        self.debug_query(stm)
+        last_id =  db.fetch_scalar(stm)
+        self.logger.debug("Last ID: [ %s ]" % last_id)
+        
+        return last_id
 
     def debug_query(self, stm):
         self.logger.debug("Query: [ %s ]" %
                           PointingDB().stm_to_str(stm, False))
+
+
+# select expnum, band, date_obs, radeg, decdeg
+# from tno_pointing
+# where expnum = 149267
+# group by expnum, date_obs, radeg, decdeg
+# order by expnum
+
+
+# select * from tno_skybotoutput where expnum=149267
+# select * from tno_skybotoutput where expnum=149267 and num='81793'
+# select * from tno_skybotoutput where expnum=149267 and num='77962'
