@@ -50,13 +50,11 @@ docker-compose build
 docker-compose up database
 ```
 
-OBS: Se der erro de authenticação entrar no container do database e mudar a senha do usuario postgres. 
+OBS: Se der erro de authenticação entrar no container do database e mudar a senha do usuario postgres. neste exemplo a senha é 'postgres'.
 ```
-docker exec -it $(docker ps -q -f name=database) psql -h localhost -U postgres
+docker exec -it $(docker ps -q -f name=database) psql -h localhost -U postgres -c "ALTER USER postgres WITH PASSWORD 'postgres';"
 ```
-```
-ALTER USER postgres WITH PASSWORD 'postgres';
-```
+
 
 ### Create a superuser in Django
 Stop database container and up core-admin
@@ -69,6 +67,12 @@ run createsuperuser to create a admin user in Django.
 with the docker running open a new terminal and run this command.
 ```
  docker exec -it $(docker ps -q -f name=backend) python manage.py createsuperuser
+```
+
+### Table preparation for Q3C 
+run create_q3c_index for create indexes.
+```
+docker exec -it $(docker ps -q -f name=backend) python manage.py create_q3c_index
 ```
 
 ### Importar os csv para o banco de dados

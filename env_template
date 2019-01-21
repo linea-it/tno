@@ -15,9 +15,9 @@ CATALOG_DB_PASS=postgres
 CATALOG_DB_HOST=database
 CATALOG_DB_PORT=5432
 
-# Variaveis usadas apenas no container do postgres em desenvolvimento
-POSTGRES_PASSWORD=$DB_PASS
-POSTGRES_DB=$DB_NAME
+# Variaveis usadas apenas no container do postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=$DB_NAME=postgres
 
 # Diretorios externos aos containers
 LOG_DIR=./log
