@@ -2,7 +2,7 @@ version: "3.6"
 services:
   # Database
   database:
-    image: postgres:9.6
+    image: linea/postgresql_q3c:latest
     restart: always
     env_file:
       - .env
