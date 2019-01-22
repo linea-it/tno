@@ -22,11 +22,10 @@ def import_skybot(request):
         sk = ImportSkybot()
 
         # Funcao para consumir o servico skybot
-        # sk.import_skybot()
-
+        sk.import_skybot()
         # Funcão para registrar o Skybot output
-        sk.register_skybot_output()
-          
+        # sk.register_skybot_output()
+
         result = dict( {
             'success': True,
         })
