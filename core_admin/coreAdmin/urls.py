@@ -24,7 +24,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from common import views as common_views
 
 from tno.views import UserViewSet, PointingViewSet, SkybotOutputViewSet, ObjectClassViewSet, CustomListViewSet, \
-    ProccessViewSet, CatalogViewSet, JohnstonArchiveViewSet
+    ProccessViewSet, CatalogViewSet, JohnstonArchiveViewSet, SkybotRunViewSet
 from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet
 
 from orbit.views import OrbitRunViewSet, RefinedAsteroidViewSet, RefinedOrbitViewSet, RefinedOrbitInputViewSet
@@ -50,6 +50,9 @@ router.register(r'predict_output', PredictOutputViewSet)
 router.register(r'occultation', OccultationViewSet)
 router.register(r'leap_seconds', LeapSecondsViewSet)
 router.register(r'bsp_planetary', BspPlanetaryViewSet)
+router.register(r'skybot_run', SkybotRunViewSet)
+
+
 
 
 # router.register(r'observation', ObservationViewSet)

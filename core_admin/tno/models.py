@@ -713,3 +713,36 @@ class JohnstonArchive(models.Model):
     updated = models.DateTimeField(
         verbose_name='Updated',
         auto_now_add=True, null=True, blank=True)
+
+
+class SkybotRun(models.Model):
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE, default=None, verbose_name='Owner', null=True, blank=True, related_name='skybot_owner')
+
+    exposure = models.BigIntegerField(
+        verbose_name='Exposure',
+        null=True, 
+        blank=True
+    )
+
+    status = models.CharField(
+        max_length=15,
+        verbose_name='Status',
+        default='pending', null=True, blank=True,
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
+    )
+
+    start = models.DateTimeField(
+        verbose_name='Start',
+        auto_now_add=False, null=True, blank=True)
+
+    finish = models.DateTimeField(
+        verbose_name='Finish',
+        auto_now_add=False, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.id)
+
+    

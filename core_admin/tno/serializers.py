@@ -2,7 +2,7 @@ import humanize
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Pointing, SkybotOutput, CustomList, Proccess, Catalog, JohnstonArchive
+from .models import Pointing, SkybotOutput, CustomList, Proccess, Catalog, JohnstonArchive, SkybotRun
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -60,6 +60,24 @@ class PointingSerializer(serializers.ModelSerializer):
         except:
             return None
 
+class SkybotRunSerializer(serializers.ModelSerializer):
+    # date_obs = serializers.SerializerMethodField()
+
+    class Meta:
+        model = SkybotRun
+        fields = (
+            'owner',
+            'exposure',
+            'start',
+            'finish',
+            'status',
+        )
+
+    # def get_date_obs(self, obj):
+    #     try:
+    #         return obj.date_obs.strftime('%Y/%m/%d')
+    #     except:
+    #         return None
 
 class SkybotOutputSerializer(serializers.ModelSerializer):
     pointing = serializers.PrimaryKeyRelatedField(

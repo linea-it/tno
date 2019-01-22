@@ -118,7 +118,7 @@ class ImportSkybot():
             # self.logger.error("Erro: %s" % e)
 
         tf = datetime.now()
-        self.logger.debug("Tempo Final: [ %s ]" % tf
+        self.logger.debug("Tempo Final: [ %s ]" % tf)
         time_all = tf - ti
         self.stats[file_id]['time'] = time_all.total_seconds()
         self.logger.debug(self.stats)
@@ -173,6 +173,22 @@ class ImportSkybot():
         self.logger.info("CREATED [%s] UPDATED [ %s ]" % (count_created, count_updated))
         self.logger.debug("fineshed")
 
+    #convert ra e dec
+    def HMS2deg(self, ra='', dec=''):
+        RA, DEC, ds = '', '', 1
+        if dec:
+            D, M, S = [float(i) for i in dec.split()]
+            if str(D)[0] == '-':
+                ds, D = -1, abs(D)
+            DEC = ds*(D + M/60. + S/3600.)
+
+        if ra:
+            H, M, S = [float(i) for i in ra.split()]
+            RA = (H + M/60. + S/3600.)*15.
+
+        return RA, DEC
+
+
     def insert_or_update_asteroid(self, next_id, expnum, band, asteroid):
         self.logger.debug("Asteroid Name: [%s] Dynclass [%s]" % (getattr(asteroid, "name"), getattr(asteroid, "dynclass")))
        
@@ -181,7 +197,9 @@ class ImportSkybot():
        
         num = str(getattr(asteroid, "num"))
         num = num.strip()
-
+        self.logger.debug(getattr(asteroid, "ra"))
+        ra, dec = self.HMS2deg(ra=getattr(asteroid, "ra"), dec=getattr(asteroid, "dec"))
+        self.logger.debug(" %s" % ra)    
         name = getattr(asteroid, "name").strip()
 
         stm_insert = skybot_output.insert().values(
@@ -193,8 +211,8 @@ class ImportSkybot():
             dec=getattr(asteroid, "dec").strip(),
             # raj2000=getattr(asteroid, "raj2000"),
             # decj2000=getattr(asteroid, "decj2000"),
-            raj2000=0,
-            decj2000=0,
+            raj2000=ra,
+            decj2000=dec,
             mv=float(getattr(asteroid, "mv")),
             errpos=float(getattr(asteroid, "errpos")),
             d=float(getattr(asteroid, "d")),
@@ -292,7 +310,9 @@ class ImportSkybot():
 
     def debug_query(self, stm):
         self.logger.debug("Query: [ %s ]" %
-                          PointingDB().stm_to_str(stm, False))
+        PointingDB().stm_to_str(stm, False))
+
+
 
 
 # select expnum, band, date_obs, radeg, decdeg

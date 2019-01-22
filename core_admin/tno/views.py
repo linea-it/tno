@@ -333,6 +333,7 @@ class CustomListViewSet(viewsets.ModelViewSet):
         })
 
 
+
 class ProccessViewSet(viewsets.ModelViewSet):
     queryset = Proccess.objects.all()
     serializer_class = ProccessSerializer
@@ -550,3 +551,9 @@ class JohnstonArchiveViewSet(viewsets.ModelViewSet):
 
         except Exception as e:
             raise e
+
+class SkybotRunViewSet(viewsets.ModelViewSet):
+    queryset = SkybotRun.objects.all()
+    serializer_class = SkybotRunSerializer
+    filter_fields = ('id',)
+    search_fields = ('id',)
