@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class PanelCostumize extends Component {
   render() {
@@ -22,6 +23,15 @@ class PanelCostumize extends Component {
       );
     }
   }
+  //  Validation PropType
+  PropTypes = {
+    noHeader: PropTypes.bool,
+    className: PropTypes.string,
+    subTitle: PropTypes.string,
+    content: PropTypes.any,
+    title: PropTypes.string,
+    colorHead: PropTypes.string,
+  };
 }
 
 export default PanelCostumize;

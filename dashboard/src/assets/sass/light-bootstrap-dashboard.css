@@ -134,6 +134,9 @@ h1 .subtitle {
 .text-indianred {
   color: indianred; }
 
+.font-size-medium {
+  font-size: 16px; }
+
 /*     General overwrite     */
 body,
 .wrapper {
