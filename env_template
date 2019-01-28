@@ -17,7 +17,7 @@ CATALOG_DB_PORT=5432
 
 # Variaveis usadas apenas no container do postgres
 POSTGRES_PASSWORD=postgres
-POSTGRES_DB=$DB_NAME=postgres
+POSTGRES_DB=postgres
 
 # Diretorios externos aos containers
 LOG_DIR=./log
