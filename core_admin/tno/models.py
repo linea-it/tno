@@ -749,17 +749,24 @@ class SkybotRun(models.Model):
         choices=(('all', 'All'), ('period', 'Period'), ('circle', 'Circle'), ('square', 'Square'))
     )
 
+
+    ra_cent = models.FloatField(
+        verbose_name = 'Ra Cent',
+        null = True,
+        blank = True,
+    
+    )
+
     dec_cent = models.FloatField(
         verbose_name = 'Dec Cent',
         null = True,
         blank = True,
     )
 
-
-    ra_cent = models.FloatField(
-        verbose_name = 'Ra Cent',
+    radius = models.FloatField(
+        verbose_name= 'Radius',
         null = True,
-        blank = True,
+        blank= True,
     )
 
     date_initial = models.DateTimeField(

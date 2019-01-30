@@ -4,11 +4,29 @@ import requests
 from tno.skybotoutput import Pointing as PointingDB
 from tno.skybotoutput import SkybotOutput as SkybotOutputDB
 from sqlalchemy.sql import select, and_, insert, desc
-from sqlalchemy import cast, DATE
+from sqlalchemy import cast, DATE, func, text
 from django.conf import settings
 from datetime import datetime
 import pandas as pd
 from tno.models import SkybotRun
+
+
+from sqlalchemy.sql import expression
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.types import String
+
+
+# TODO investigar Custon Function no SQL ALCHEMY
+# class q3c_radial_query(expression.FunctionElement):
+#     type = String()
+
+
+# @compiles(q3c_radial_query, 'postgresql')
+# def pg_q3c_radial(element, compiler, **kw):
+
+#     # arg1, arg2 = list(element.clauses)
+
+#     return "q3c_radial_query('ra_cent', 'dec_cent', 37.133189, -8.416731, 2.5)"
 
 
 class ImportSkybotManagement():
@@ -23,28 +41,38 @@ class ImportSkybotManagement():
         current_run.status = 'running'
         current_run.save()
 
-        if current_run.type_run == 'all':
-            self.logger.info("Running for all Exposures")
+        try:
 
-            ImportSkybot().import_all_poitings()
+            if current_run.type_run == 'all':
+                self.logger.info("Running for all Exposures")
 
-        elif current_run.type_run == 'period':
-            self.logger.info("Running Exposures with date in Period")
+                ImportSkybot().import_all_poitings()
 
-            ImportSkybot().import_poitings_by_period(
-                date_initial=current_run.date_initial,
-                date_final=current_run.date_final,
-            )
+            elif current_run.type_run == 'period':
+                self.logger.info("Running Exposures with date in Period")
 
-        elif current_run.type_run == 'circle':
-            self.logger.info("Running Exposures in Cone search")
+                ImportSkybot().import_poitings_by_period(
+                    date_initial=current_run.date_initial,
+                    date_final=current_run.date_final,
+                )
 
-        elif current_run.type_run == 'square':
-            self.logger.info("Running Exposures inside a Square")
+            elif current_run.type_run == 'circle':
+                self.logger.info("Running Exposures in Cone search")
 
-        # TODO REMOVER
-        current_run.status = 'pending'
-        current_run.save()
+                ImportSkybot().import_pointings_by_radial_query(ra=current_run.ra_cent,
+                                                                dec=current_run.dec_cent, radius=current_run.radius)
+
+            elif current_run.type_run == 'square':
+                self.logger.info("Running Exposures inside a Square")
+
+            # TODO REMOVER
+            current_run.status = 'pending'
+            current_run.save()
+
+        except Exception as e:
+            # TODO REMOVER
+            current_run.status = 'pending'
+            current_run.save()
 
 
 class ImportSkybot():
@@ -104,21 +132,53 @@ class ImportSkybot():
 
         stm = select([cols.expnum, cols.band, cols.date_obs,
                       cols.radeg, cols.decdeg]) \
-        .where(and_(
-            cast(cols.date_obs, DATE) >= date_initial.strftime("%Y-%m-%d %H:%M:%S"),
-            cast(cols.date_obs, DATE) >= date_final.strftime("%Y-%m-%d %H:%M:%S")
-        )) \
-        .group_by(cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg) \
-        .order_by(cols.date_obs) \
-        # .limit(2)
+            .where(and_(
+                cast(cols.date_obs, DATE) >= date_initial.strftime("%Y-%m-%d"),
+                cast(cols.date_obs, DATE) >= date_final.strftime("%Y-%m-%d")
+            )) \
+            .group_by(cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg) \
+            .order_by(cols.date_obs) \
+            .limit(2)
 
         pointings = self.dbpt.fetch_all_dict(stm)
 
         self.logger.debug("Rows: [%s]" % len(pointings))
 
         # Fazer a busca no Skybot
-        # for pointing in pointings:
-        #     self.get_asteroids_from_skybot(pointing)
+        for pointing in pointings:
+            self.get_asteroids_from_skybot(pointing)
+
+    # query for circle
+    def import_pointings_by_radial_query(self, ra, dec, radius):
+
+        self.logger.info("Import pointing radial_query.Ra: [ %s ], Dec: [ %s ], Radius: [ %s ]" % (
+            ra, dec, radius))
+
+        count = self.dbpt.count_pointings()
+
+        self.logger.debug("Total de Pointings: %s" % count)
+
+        cols = self.dbpt.tbl.c
+
+        stm = select([cols.expnum, cols.band, cols.date_obs,
+                      cols.radeg, cols.decdeg]) \
+        .where(and_(
+                text("q3c_radial_query(\"ra_cent\", \"dec_cent\", 37.133189, -8.416731, 2.5)")
+            )
+        ) \
+        .group_by(cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg) \
+        .order_by(cols.date_obs) 
+        .limit(2)
+
+        self.logger.debug("Antes")
+        pointings = self.dbpt.fetch_all_dict(stm)
+        self.logger.debug("Depois")
+
+        self.logger.debug("Rows: [%s]" % len(pointings))
+
+        # Fazer a busca no Skybot
+        for pointing in pointings:
+            self.get_asteroids_from_skybot(pointing)
 
     def get_asteroids_from_skybot(self, pointing):
 
