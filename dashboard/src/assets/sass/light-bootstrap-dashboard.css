@@ -134,6 +134,9 @@ h1 .subtitle {
 .text-indianred {
   color: indianred; }
 
+.font-size-medium {
+  font-size: 16px; }
+
 /*     General overwrite     */
 body,
 .wrapper {
@@ -3464,6 +3467,9 @@ body > .navbar-collapse[data-color="purple"]:after {
   margin: 0 15px 0 10px;
   height: 1px;
   background-color: #c7c7c7 !important; }
+
+.margin-panel {
+  margin: 10px; }
 
 .content-main {
   min-height: 20%;

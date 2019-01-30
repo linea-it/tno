@@ -742,6 +742,41 @@ class SkybotRun(models.Model):
         verbose_name='Finish',
         auto_now_add=False, null=True, blank=True)
 
+    type_run = models.CharField(
+        max_length = 30,
+        verbose_name = 'Type',
+        default='all',
+        choices=(('all', 'All'), ('period', 'Period'), ('circle', 'Circle'), ('square', 'Square'))
+    )
+
+
+    ra_cent = models.FloatField(
+        verbose_name = 'Ra Cent',
+        null = True,
+        blank = True,
+    
+    )
+
+    dec_cent = models.FloatField(
+        verbose_name = 'Dec Cent',
+        null = True,
+        blank = True,
+    )
+
+    radius = models.FloatField(
+        verbose_name= 'Radius',
+        null = True,
+        blank= True,
+    )
+
+    date_initial = models.DateTimeField(
+        verbose_name='Date Initial',
+        auto_now_add=False, null=True, blank=True)
+
+    date_final = models.DateTimeField(
+        verbose_name='Date Final',
+        auto_now_add=False, null=True, blank=True)    
+
     def __str__(self):
         return str(self.id)
 

@@ -23,7 +23,9 @@ import PredictionDetail from '../views/Prediction/Detail';
 import OccultationsPanel from '../views/Occultations/Panel';
 import OccultationDetail from '../views/Occultations/Detail';
 import AsteroidDetailPrediction from '../views/Prediction/AsteroidDetail';
-import SkybotRun from '../views/SolarSystems/SkybotRun';
+import SkybotRun from '../views/SolarSystems/SkybotRun/SkybotRun';
+// import FormikTeste from '../views/SolarSystems/FormikTeste';
+
 
 const appRoutes = [
   {
@@ -205,6 +207,12 @@ const appRoutes = [
     component: Notifications,
     hidden: true,
   },
+  // {
+  //   path: '/formik',
+  //   name: 'Formik',
+  //   component: FormikTeste,
+  //   hidden: false,
+  // },
   { redirect: true, path: '/', to: '/dashboard', name: 'Dashboard' },
 ];
 

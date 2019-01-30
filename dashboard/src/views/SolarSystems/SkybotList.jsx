@@ -274,7 +274,6 @@ class SkybotList extends Component {
                               onClick={e => {
                                 this.handlerClear();
                               }}
-                            
                             />
                           </div>
                           <div className="ui-g-1">
@@ -284,7 +283,6 @@ class SkybotList extends Component {
                               onClick={e => {
                                 this.setState({ show: true });
                               }}
-                           
                             />
                           </div>
                         </h5>

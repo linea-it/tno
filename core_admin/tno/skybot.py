@@ -4,9 +4,75 @@ import requests
 from tno.skybotoutput import Pointing as PointingDB
 from tno.skybotoutput import SkybotOutput as SkybotOutputDB
 from sqlalchemy.sql import select, and_, insert, desc
+from sqlalchemy import cast, DATE, func, text
 from django.conf import settings
 from datetime import datetime
 import pandas as pd
+from tno.models import SkybotRun
+
+
+from sqlalchemy.sql import expression
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.types import String
+
+
+# TODO investigar Custon Function no SQL ALCHEMY
+# class q3c_radial_query(expression.FunctionElement):
+#     type = String()
+
+
+# @compiles(q3c_radial_query, 'postgresql')
+# def pg_q3c_radial(element, compiler, **kw):
+
+#     # arg1, arg2 = list(element.clauses)
+
+#     return "q3c_radial_query('ra_cent', 'dec_cent', 37.133189, -8.416731, 2.5)"
+
+
+class ImportSkybotManagement():
+    def __init__(self):
+        self.logger = logging.getLogger("skybot")
+
+    def start_import_skybot(self, run_id):
+        self.logger.info("Start Import Skybot Run Id [%s] " % run_id)
+
+        current_run = SkybotRun.objects.get(pk=run_id)
+
+        current_run.status = 'running'
+        current_run.save()
+
+        try:
+
+            if current_run.type_run == 'all':
+                self.logger.info("Running for all Exposures")
+
+                ImportSkybot().import_all_poitings()
+
+            elif current_run.type_run == 'period':
+                self.logger.info("Running Exposures with date in Period")
+
+                ImportSkybot().import_poitings_by_period(
+                    date_initial=current_run.date_initial,
+                    date_final=current_run.date_final,
+                )
+
+            elif current_run.type_run == 'circle':
+                self.logger.info("Running Exposures in Cone search")
+
+                ImportSkybot().import_pointings_by_radial_query(ra=current_run.ra_cent,
+                                                                dec=current_run.dec_cent, radius=current_run.radius)
+
+            elif current_run.type_run == 'square':
+                self.logger.info("Running Exposures inside a Square")
+
+            # TODO REMOVER
+            current_run.status = 'pending'
+            current_run.save()
+
+        except Exception as e:
+            # TODO REMOVER
+            current_run.status = 'pending'
+            current_run.save()
 
 
 class ImportSkybot():
@@ -28,52 +94,95 @@ class ImportSkybot():
         # Diretorio onde ficam os csv baixados do skybot
         self.skybot_output_path = settings.SKYBOT_OUTPUT
 
-        self.dbsk =  SkybotOutputDB()
+        self.dbsk = SkybotOutputDB()
+
+        self.dbpt = PointingDB()
 
         self.stats = dict()
 
-    def import_skybot(self):
-        self.logger.info("oi")
-
-        # Função principal
-
-        # Passo 1 - Saber as ocultações, tabela pointings
-        pointings = self.get_poitings()
-
-        # Passo 2 - Fazer a busca no Skybot
-        for pointing in pointings:
-            self.get_asteroids_from_skybot(pointing)
-     
-    def get_poitings(self):
+    def import_all_poitings(self):
         self.logger.info("Get Pointings")
 
-        # Conectar no banco
-        db = PointingDB()
-
-        count = db.count_pointings()
+        count = self.dbpt.count_pointings()
 
         self.logger.debug("Total de Pointings: %s" % count)
 
-        # select expnum, date_obs, radeg, decdeg
-        # from tno_pointing
-        # where expnum =149263
-        # group by expnum, date_obs, radeg, decdeg
-        # order by expnum;
-        cols = db.tbl.c
+        cols = self.dbpt.tbl.c
 
-        # stm = select([cols.expnum, cols.date_obs, cols.radeg, cols.decdeg]).where(and_(cols.expnum == 149263)).group_by(cols.expnum, cols.date_obs, cols.radeg, cols.decdeg)
         stm = select([cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg]).group_by(
             cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg).order_by(cols.date_obs).limit(2)
 
-        rows = db.fetch_all_dict(stm)
+        pointings = self.dbpt.fetch_all_dict(stm)
 
-        self.logger.debug("Rows: [%s]" % len(rows))
+        self.logger.debug("Rows: [%s]" % len(pointings))
 
-        return rows
+        # Fazer a busca no Skybot
+        for pointing in pointings:
+            self.get_asteroids_from_skybot(pointing)
+
+    def import_poitings_by_period(self, date_initial, date_final):
+        self.logger.info("Import pointing by period. Initial [%s] Final [ %s ]" % (
+            date_initial, date_final))
+
+        count = self.dbpt.count_pointings()
+
+        self.logger.debug("Total de Pointings: %s" % count)
+
+        cols = self.dbpt.tbl.c
+
+        stm = select([cols.expnum, cols.band, cols.date_obs,
+                      cols.radeg, cols.decdeg]) \
+            .where(and_(
+                cast(cols.date_obs, DATE) >= date_initial.strftime("%Y-%m-%d"),
+                cast(cols.date_obs, DATE) >= date_final.strftime("%Y-%m-%d")
+            )) \
+            .group_by(cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg) \
+            .order_by(cols.date_obs) \
+            .limit(2)
+
+        pointings = self.dbpt.fetch_all_dict(stm)
+
+        self.logger.debug("Rows: [%s]" % len(pointings))
+
+        # Fazer a busca no Skybot
+        for pointing in pointings:
+            self.get_asteroids_from_skybot(pointing)
+
+    # query for circle
+    def import_pointings_by_radial_query(self, ra, dec, radius):
+
+        self.logger.info("Import pointing radial_query.Ra: [ %s ], Dec: [ %s ], Radius: [ %s ]" % (
+            ra, dec, radius))
+
+        count = self.dbpt.count_pointings()
+
+        self.logger.debug("Total de Pointings: %s" % count)
+
+        cols = self.dbpt.tbl.c
+
+        stm = select([cols.expnum, cols.band, cols.date_obs,
+                      cols.radeg, cols.decdeg]) \
+        .where(and_(
+                text("q3c_radial_query(\"ra_cent\", \"dec_cent\", 37.133189, -8.416731, 2.5)")
+            )
+        ) \
+        .group_by(cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg) \
+        .order_by(cols.date_obs) 
+        .limit(2)
+
+        self.logger.debug("Antes")
+        pointings = self.dbpt.fetch_all_dict(stm)
+        self.logger.debug("Depois")
+
+        self.logger.debug("Rows: [%s]" % len(pointings))
+
+        # Fazer a busca no Skybot
+        for pointing in pointings:
+            self.get_asteroids_from_skybot(pointing)
 
     def get_asteroids_from_skybot(self, pointing):
 
-        try: 
+        try:
             ti = datetime.now()
             self.logger.debug("Tempo inicial: %s" % ti)
             # http://vo.imcce.fr/webservices/skybot/skybotconesearch_query.php?-ep=2012-11-10%2003:27:03&-ra=37.44875&-dec=-7.7992&-rd=1.1&-mime=text&-output=object&-loc=w84&-filter=0
@@ -107,7 +216,7 @@ class ImportSkybot():
                 self.logger.info("Skybot output success: [%s]" % file_path)
             else:
                 self.logger.error("Skybot output failed: [%s]" % file_path)
-            
+
             self.stats[file_id] = dict({
                 'success': True
             })
@@ -155,7 +264,6 @@ class ImportSkybot():
 
         last_id = self.get_last_id()
 
-
         count_created = 0
         count_updated = 0
 
@@ -163,17 +271,19 @@ class ImportSkybot():
         for row in df.itertuples():
             next_id = last_id + 1
 
-            created = self.insert_or_update_asteroid(next_id,expnum, band, row)    
+            created = self.insert_or_update_asteroid(
+                next_id, expnum, band, row)
 
             if created:
                 count_created += 1
             else:
                 count_updated += 1
 
-        self.logger.info("CREATED [%s] UPDATED [ %s ]" % (count_created, count_updated))
+        self.logger.info("CREATED [%s] UPDATED [ %s ]" %
+                         (count_created, count_updated))
         self.logger.debug("fineshed")
 
-    #convert ra e dec
+    # convert ra e dec
     def HMS2deg(self, ra='', dec=''):
         RA, DEC, ds = '', '', 1
         if dec:
@@ -188,18 +298,19 @@ class ImportSkybot():
 
         return RA, DEC
 
-
     def insert_or_update_asteroid(self, next_id, expnum, band, asteroid):
-        self.logger.debug("Asteroid Name: [%s] Dynclass [%s]" % (getattr(asteroid, "name"), getattr(asteroid, "dynclass")))
-       
+        self.logger.debug("Asteroid Name: [%s] Dynclass [%s]" % (
+            getattr(asteroid, "name"), getattr(asteroid, "dynclass")))
+
         db = self.dbsk
         skybot_output = db.tbl
-       
+
         num = str(getattr(asteroid, "num"))
         num = num.strip()
         self.logger.debug(getattr(asteroid, "ra"))
-        ra, dec = self.HMS2deg(ra=getattr(asteroid, "ra"), dec=getattr(asteroid, "dec"))
-        self.logger.debug(" %s" % ra)    
+        ra, dec = self.HMS2deg(ra=getattr(asteroid, "ra"),
+                               dec=getattr(asteroid, "dec"))
+        self.logger.debug(" %s" % ra)
         name = getattr(asteroid, "name").strip()
 
         stm_insert = skybot_output.insert().values(
@@ -237,7 +348,6 @@ class ImportSkybot():
         )
         # self.debug_query(stm_insert)
 
-
         created = False
         try:
             a = db.engine.execute(stm_insert)
@@ -253,9 +363,9 @@ class ImportSkybot():
 
             stm_update = skybot_output.update().where(
                 and_(
-                    db.tbl.c.num==num,
-                    db.tbl.c.name==name,
-                    db.tbl.c.expnum==expnum,
+                    db.tbl.c.num == num,
+                    db.tbl.c.name == name,
+                    db.tbl.c.expnum == expnum,
                 )
             ).values(
                 dynclass=getattr(asteroid, "dynclass").strip(),
@@ -296,23 +406,21 @@ class ImportSkybot():
 
         return created
 
-    def get_last_id(self): 
-        
+    def get_last_id(self):
+
         db = self.dbsk
         cols = db.tbl.c
-           
+
         stm = select([cols.id]).order_by(desc(cols.id)).limit(1)
         self.debug_query(stm)
-        last_id =  db.fetch_scalar(stm)
+        last_id = db.fetch_scalar(stm)
         self.logger.debug("Last ID: [ %s ]" % last_id)
-        
+
         return last_id
 
     def debug_query(self, stm):
         self.logger.debug("Query: [ %s ]" %
-        PointingDB().stm_to_str(stm, False))
-
-
+                          PointingDB().stm_to_str(stm, False))
 
 
 # select expnum, band, date_obs, radeg, decdeg

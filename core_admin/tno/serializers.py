@@ -71,6 +71,12 @@ class SkybotRunSerializer(serializers.ModelSerializer):
             'start',
             'finish',
             'status',
+            'dateInitial',
+            'dateFinal',
+            'typeRun',
+            'ra_cent',
+            'dec_cent',
+            'radius',
         )
 
     # def get_date_obs(self, obj):
