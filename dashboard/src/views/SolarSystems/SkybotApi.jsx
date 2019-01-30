@@ -5,6 +5,12 @@ class SkybotApi {
     this.api = process.env.REACT_APP_API;
   }
 
+  getSkybotRunList = ({ page, pageSize, search }) => {
+    const params = { page: page, pageSize: pageSize, search: search };
+
+    return axios.get(`${this.api}/skybot_run/`, { params: params });
+  };
+
   createSkybotRun = ({
     start,
     final,
