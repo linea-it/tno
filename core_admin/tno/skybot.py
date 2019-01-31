@@ -59,11 +59,14 @@ class ImportSkybotManagement():
             elif current_run.type_run == 'circle':
                 self.logger.info("Running Exposures in Cone search")
 
-                ImportSkybot().import_pointings_by_radial_query(ra=current_run.ra_cent,
-                                                                dec=current_run.dec_cent, radius=current_run.radius)
+                ImportSkybot().import_pointings_by_radial_query(ra=current_run.ra_cent, dec=current_run.dec_cent, radius=current_run.radius)
 
             elif current_run.type_run == 'square':
                 self.logger.info("Running Exposures inside a Square")
+
+                ImportSkybot().import_pointings_by_square_query(ra=current_run.ra_cent, dec=current_run.dec_cent, \
+                ra_ul=current_run.ra_ul, dec_ul=current_run.dec_ul, ra_ur=current_run.ra_ur,dec_ur=current_run.dec_ur, \
+                ra_lr=current_run.ra_lr, dec_lr=current_run.dec_lr, ra_ll=current_run.ra_ll, dec_ll=current_run.dec_ll)
 
             # TODO REMOVER
             current_run.status = 'pending'
@@ -167,7 +170,7 @@ class ImportSkybot():
             )
         ) \
         .group_by(cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg) \
-        .order_by(cols.date_obs) 
+        .order_by(cols.date_obs) \
         .limit(2)
 
         self.logger.debug("Antes")
@@ -179,6 +182,40 @@ class ImportSkybot():
         # Fazer a busca no Skybot
         for pointing in pointings:
             self.get_asteroids_from_skybot(pointing)
+
+     # query for square
+    def import_pointings_by_square_query(self, ra, dec, ra_ul, dec_ul, ra_ur, dec_ur, ra_lr, dec_lr, ra_ll, dec_ll):
+
+        self.logger.info("Import pointing poly_query - Ra: [ %s ], Dec: [ %s ]" % (
+            ra, dec))
+
+        count = self.dbpt.count_pointings()
+
+        self.logger.debug("Total de Pointings: %s" % count)
+
+        cols = self.dbpt.tbl.c
+
+        stm = select([cols.expnum, cols.band, cols.date_obs,
+                      cols.radeg, cols.decdeg]) \
+        .where(and_(
+                text("q3c_poly_query(\"ra_cent\", \"dec_cent\",'{149.007568, 1.231059, 151.094971, 1.231059, 151.094971, 3.172285, 149.007568, 3.172285}')")
+            )
+        ) \
+        .group_by(cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg) \
+        .order_by(cols.date_obs) \
+        .limit(5)
+
+        self.logger.debug("Antes")
+        pointings = self.dbpt.fetch_all_dict(stm)
+        self.logger.debug("Depois")
+
+        self.logger.debug("Rows: [%s]" % len(pointings))
+
+        # Fazer a busca no Skybot
+        for pointing in pointings:
+            self.get_asteroids_from_skybot(pointing)
+    
+    
 
     def get_asteroids_from_skybot(self, pointing):
 

@@ -749,12 +749,10 @@ class SkybotRun(models.Model):
         choices=(('all', 'All'), ('period', 'Period'), ('circle', 'Circle'), ('square', 'Square'))
     )
 
-
     ra_cent = models.FloatField(
         verbose_name = 'Ra Cent',
         null = True,
         blank = True,
-    
     )
 
     dec_cent = models.FloatField(
@@ -763,6 +761,56 @@ class SkybotRun(models.Model):
         blank = True,
     )
 
+    ra_ul = models.FloatField(
+        verbose_name= 'RA Upper Left',
+        null = True,
+        blank= True,
+    )
+
+    dec_ul = models.FloatField(
+        verbose_name= 'DEC Upper Left',
+        null = True,
+        blank= True,
+    )
+
+    ra_ur = models.FloatField(
+        verbose_name= 'RA Upper Right',
+        null = True,
+        blank= True,
+    )
+
+    dec_ur = models.FloatField(
+        verbose_name= 'DEC Upper Right',
+        null = True,
+        blank= True,
+    )
+
+
+    ra_lr = models.FloatField(
+        verbose_name= 'RA Lower Right',
+        null = True,
+        blank= True,
+    )
+
+    dec_lr = models.FloatField(
+        verbose_name= 'DEC Lower Right',
+        null = True,
+        blank= True,
+    )
+
+    
+    ra_ll = models.FloatField(
+        verbose_name= 'RA Lower Left',
+        null = True,
+        blank= True,
+    )
+
+    dec_ll = models.FloatField(
+        verbose_name= 'DEC Lower Left',
+        null = True,
+        blank= True,
+    )
+    
     radius = models.FloatField(
         verbose_name= 'Radius',
         null = True,

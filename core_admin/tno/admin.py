@@ -51,5 +51,6 @@ class JohnstonArchiveAdmin(admin.ModelAdmin):
 
 @admin.register(SkybotRun)
 class SkybotRunAdmin(admin.ModelAdmin):
-    list_display = ('id', 'owner', 'start', 'finish', 'status', 'exposure', 'date_initial', 'date_final','ra_cent', 'dec_cent', 'radius', 'type_run')
+    list_display = ('id', 'owner', 'start', 'finish', 'status', 'exposure', 'date_initial', 'date_final','ra_cent', 'dec_cent', 'radius', 'type_run', 'ra_ul', \
+    'dec_ul', 'ra_ur', 'dec_ur', 'ra_lr', 'dec_lr', 'ra_ll', 'dec_ll',)
 
