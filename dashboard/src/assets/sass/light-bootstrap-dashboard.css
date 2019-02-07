@@ -3471,6 +3471,9 @@ body > .navbar-collapse[data-color="purple"]:after {
 .margin-panel {
   margin: 10px; }
 
+.panel-height-fixed {
+  min-height: 200px; }
+
 .content-main {
   min-height: 20%;
   background: white;
