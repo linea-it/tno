@@ -7,9 +7,9 @@ class SkybotRun extends Component {
   render() {
     return (
       <div className="p-dir-row">
-        <div className="p-col-6">
+        <div className="p-col-4">
           <PanelCostumize
-            className="panel-height-fixed"
+            // className="panel-height-skybot"
             title="Skybot Run"
             content={<FormSkybot />}
           />

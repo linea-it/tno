@@ -73,7 +73,7 @@ class SkybotRunSerializer(serializers.ModelSerializer):
             'status',
             'dateInitial',
             'dateFinal',
-            'typeRun',
+            # 'typeRun',
             'ra_cent',
             'dec_cent',
         )
