@@ -67,15 +67,15 @@ class SkybotRunSerializer(serializers.ModelSerializer):
         model = SkybotRun
         fields = (
             'owner',
-            'exposure',
-            'start',
-            'finish',
-            'status',
-            'dateInitial',
-            'dateFinal',
-            # 'typeRun',
-            'ra_cent',
-            'dec_cent',
+            # 'exposure',
+            # 'start',
+            # 'finish',
+            # 'status',
+            # 'date_initial',
+            # 'date_final',
+            # 'type_run',
+            # 'ra_cent',
+            # 'dec_cent',
         )
 
     # def get_date_obs(self, obj):

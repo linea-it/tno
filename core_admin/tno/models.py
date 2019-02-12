@@ -742,9 +742,9 @@ class SkybotRun(models.Model):
         verbose_name='Finish',
         auto_now_add=False, null=True, blank=True)
 
-    typeRun = models.CharField(
+    type_run = models.CharField(
         max_length = 30,
-        verbose_name = 'Type',
+        verbose_name = 'Type Run',
         default='all',
         choices=(('all', 'All'), ('period', 'Period'), ('circle', 'Circle'), ('square', 'Square'))
     )
@@ -762,12 +762,12 @@ class SkybotRun(models.Model):
         blank = True,
     )
 
-    dateInitial = models.DateTimeField(
+    date_initial = models.DateTimeField(
         verbose_name='Date Initial',
         auto_now_add=False, null=True, blank=True)
 
-    dateFinal = models.DateTimeField(
-        verbose_name='Date Initial',
+    date_final = models.DateTimeField(
+        verbose_name='Date Final',
         auto_now_add=False, null=True, blank=True)    
 
     def __str__(self):
