@@ -755,7 +755,6 @@ class SkybotRun(models.Model):
         blank = True,
     )
 
-
     ra_cent = models.FloatField(
         verbose_name = 'Ra Cent',
         null = True,
@@ -769,6 +768,52 @@ class SkybotRun(models.Model):
     date_final = models.DateTimeField(
         verbose_name='Date Final',
         auto_now_add=False, null=True, blank=True)    
+
+    ra_ul = models.FloatField(
+        verbose_name = 'RA UL',
+        null=True,
+        blank = True,
+    )
+    
+    dec_ul = models.FloatField(
+        verbose_name = 'DEC UL',
+        null=True,
+        blank = True,
+    )
+    
+    ra_ur = models.FloatField(
+        verbose_name = 'RA UR',
+        null=True,
+        blank = True,
+    )
+    dec_ur = models.FloatField(
+        verbose_name = 'DEC UR',
+        null=True,
+        blank = True,
+    )
+
+    ra_lr = models.FloatField(
+        verbose_name = 'RA LR',
+        null=True,
+        blank = True,
+    )
+    dec_lr = models.FloatField(
+        verbose_name = 'DEC LR',
+        null=True,
+        blank = True,
+    )
+    
+    ra_ll = models.FloatField(
+        verbose_name = 'RA LL',
+        null=True,
+        blank = True,
+    )
+    
+    dec_ll = models.FloatField(
+        verbose_name = 'DEC LL',
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return str(self.id)

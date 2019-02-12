@@ -68,7 +68,7 @@ class HistoryRun extends Component {
       sortable: true,
     },
     {
-      field: 'typeRun',
+      field: 'type_run',
       header: 'Type',
       //   headerStyle: formatColumnHeader,
       sortable: true,
@@ -86,13 +86,13 @@ class HistoryRun extends Component {
       sortable: true,
     },
     {
-      field: 'dateInitial',
+      field: 'date_initial',
       header: 'Date Initial',
       //   headerStyle: formatColumnHeader,
       sortable: true,
     },
     {
-      field: 'dateFinal',
+      field: 'date_final',
       header: 'Date Final',
       //   headerStyle: formatColumnHeader,
       sortable: true,
@@ -134,7 +134,7 @@ class HistoryRun extends Component {
   };
 
   reload = () => {
-    // this.fetchData(this.state.page, this.state.sizePerPage);
+    this.fetchData(this.state.page, this.state.sizePerPage);
   };
 
   actionTemplate = rowData => {
@@ -308,10 +308,10 @@ class HistoryRun extends Component {
             style={{ textAlign: 'center', width: '6em' }}
           />
           {columns}
-          <Column
+          {/* <Column
             body={this.actionTemplate}
             style={{ textAlign: 'center', width: '6em', color: '#fff' }}
-          />
+          /> */}
         </DataTable>
         <Paginator
           rows={this.state.sizePerPage}
