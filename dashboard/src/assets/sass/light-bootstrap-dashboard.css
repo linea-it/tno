@@ -1096,6 +1096,8 @@ body > .navbar-collapse[data-color="purple"]:after {
     background-color: #FF9500 !important; }
   .status_table.failure {
     background-color: #FF4A55 !important; }
+  .status_table.pending {
+    background-color: #403f3f !important; }
 
 .simple_property_table tbody > tr > td {
   font-size: 14px;

@@ -102,6 +102,9 @@
     &.failure {
         background-color: $danger-color !important;
     }
+    &.pending {
+        background-color: $custom-dark-gray !important;
+    }
 }
 
 .simple_property_table {

@@ -1,38 +1,44 @@
 import React, { Component } from 'react';
 import { Calendar } from 'primereact/calendar';
 import { Button } from 'primereact/button';
-import { SelectButton } from 'primereact/selectbutton';
 import Content from 'components/CardContent/CardContent.jsx';
 import { InputText } from 'primereact/inputtext';
 import { Modal } from 'react-bootstrap';
+import { FormValidation } from 'components/FormValidation/FormValidation.jsx';
 import SkybotApi from '../SkybotApi';
 import { Dropdown } from 'primereact/dropdown';
 
 class FormSkybot extends Component {
   skybotApi = new SkybotApi();
-
   state = {
     visiblePeriod: false,
     visibleArea: false,
-    show: false,
+    show: true,
     area: null,
     value: null,
     start: null,
     final: null,
-    status: null,
     exposure: 0,
     date_initial: null,
     date_final: null,
     type_run: '',
     ra_cent: null,
     dec_cent: null,
+    ra_ul: null,
+    ra_ur: null,
+    ra_lr: null,
+    ra_ll: null,
+    dec_ul: null,
+    dec_ur: null,
+    dec_lr: null,
+    dec_ll: null,
   };
 
   options = [
     { label: 'Exposure', value: 'all' },
     { label: 'Period', value: 'period' },
-    { label: 'Square', value: 'Square' },
-    { label: 'Circle', value: 'Circle' },
+    { label: 'Square', value: 'square' },
+    { label: 'Circle', value: 'circle' },
   ];
 
   handleShow = () => {
@@ -54,7 +60,6 @@ class FormSkybot extends Component {
             value={this.state.date_initial}
             onChange={e => this.setState({ date_initial: e.value })}
           />{' '}
-          &nbsp&nbsp
           <Calendar
             placeholder="Select a date final"
             value={this.state.date_final}
@@ -72,60 +77,80 @@ class FormSkybot extends Component {
   getAreaFields = () => {
     const { type_run } = this.state;
     console.log(type_run);
-    if (type_run === 'Square' || type_run === 'Circle') {
+    if (type_run === 'square' || type_run === 'circle') {
       return (
-        <div>
-          <br />
-          {/* <SelectButton
-            value={type_run}
-            options={this.optArea}
-            style={{ fontSize: '1.2em' }}
-            onChange={e => this.setState({ type_run: e.value })}
-          />
-          <br /> */}
-          <label htmlFor="in">RA UL</label>
-          <br />
-          <InputText
-            id="in"
-            value={this.state.value}
-            onChange={e => this.setState({ value: e.target.value })}
-          />
-          <br /> <br />
-          <label htmlFor="in">DEC UL</label>
-          <br />
-          <InputText
-            id="in"
-            value={this.state.value}
-            onChange={e => this.setState({ value: e.target.value })}
-          />
-          <br />
-          <label htmlFor="in">RA UR</label>
-          <InputText
-            id="in"
-            value={this.state.value}
-            onChange={e => this.setState({ value: e.target.value })}
-          />
-          <br />
-          <label htmlFor="in">DEC UR</label>
-          <InputText
-            id="in"
-            value={this.state.value}
-            onChange={e => this.setState({ value: e.target.value })}
-          />
-          <br />
-          <label htmlFor="in">RA LR</label>
-          <InputText
-            id="in"
-            value={this.state.value}
-            onChange={e => this.setState({ value: e.target.value })}
-          />
-          <br />
-          <label htmlFor="in">DEC LR</label>
-          <InputText
-            value={this.state.value}
-            onChange={e => this.setState({ value: e.target.value })}
-          />
-          <label htmlFor="in">Username</label>
+        <div className="p-grid">
+          <div className="p-col-6">
+            <br />
+            <label htmlFor="in">RA UL</label>
+            <br />
+            <InputText
+              id="in"
+              value={this.state.ra_ul}
+              onChange={e => this.setState({ value: e.target.value })}
+            />
+            <br />
+            <br />
+            <label htmlFor="in">RA UR</label>
+            <br />
+            <InputText
+              id="in"
+              value={this.state.ra_ur}
+              onChange={e => this.setState({ value: e.target.value })}
+            />
+            <br />
+            <br />
+            <label htmlFor="in">RA LR</label>
+            <br />
+            <InputText
+              id="in"
+              value={this.state.ra_lr}
+              onChange={e => this.setState({ value: e.target.value })}
+            />
+            <br />
+            <br />
+            <label htmlFor="in">RA LL</label>
+            <br />
+            <InputText
+              id="in"
+              value={this.state.ra_ll}
+              onChange={e => this.setState({ value: e.target.value })}
+            />
+          </div>
+          <div className="p-col-6">
+            <br />
+            <label htmlFor="in">RA UL</label>
+            <br />
+            <InputText
+              id="in"
+              value={this.state.dec_ul}
+              onChange={e => this.setState({ value: e.target.value })}
+            />
+            <br />
+            <br />
+            <label htmlFor="in">DEC UR</label>
+            <br />
+            <InputText
+              value={this.state.dec_ur}
+              onChange={e => this.setState({ value: e.target.value })}
+            />
+            <br />
+            <br />
+            <label htmlFor="in">DEC LR</label>
+            <br />
+            <InputText
+              value={this.state.dec_lr}
+              onChange={e => this.setState({ value: e.target.value })}
+            />
+            <br />
+            <br />
+            <label htmlFor="in">DEC LL</label>
+            <br />
+            <InputText
+              value={this.state.dec_ll}
+              onChange={e => this.setState({ value: e.target.value })}
+            />
+          </div>
         </div>
       );
     } else {
@@ -140,38 +165,56 @@ class FormSkybot extends Component {
 
   onSubmit = () => {
     this.handleShow();
-    console.log('OnSubmit');
     const {
       start,
       final,
-      status,
       exposure,
       date_initial,
       date_final,
       type_run,
       ra_cent,
       dec_cent,
+      ra_ul,
+      ra_ur,
+      ra_lr,
+      ra_ll,
+      dec_ul,
+      dec_ur,
+      dec_lr,
+      dec_ll,
     } = this.state;
     this.skybotApi
       .createSkybotRun({
         start: start,
         final: final,
-        status: status,
         exposure: exposure,
         date_initial: date_initial,
         date_final: date_final,
         type_run: type_run,
         ra_cent: ra_cent,
         dec_cent: dec_cent,
+        ra_ul: ra_ul,
+        ra_ur: ra_ur,
+        ra_lr: ra_lr,
+        ra_ll: ra_ll,
+        dec_ul: dec_ul,
+        dec_ur: dec_ur,
+        dec_lr: dec_lr,
+        dec_ll: dec_ll,
       })
       .then(res => {
         this.props.insertHistory(res);
+        console.log('Then: ', res.data);
         alert('successful round');
       })
-      .catch(alert('round not done successfully'));
+      .catch(error => {
+        console.log('Catch: ', error);
+        alert('not successful round');
+      });
   };
 
   render() {
+    console.log('RA UL:', this.state.ra_ul);
     return (
       <Content
         title="Selected a configuration for option picked"
@@ -222,8 +265,8 @@ class FormSkybot extends Component {
                   />
                 </div>
               </div>
-            ) : this.state.type_run === 'Square' ||
-            this.state.type_run === 'Circle' ? (
+            ) : this.state.type_run === 'square' ||
+            this.state.type_run === 'circle' ? (
               <div>
                 <Modal
                   show={this.state.show}

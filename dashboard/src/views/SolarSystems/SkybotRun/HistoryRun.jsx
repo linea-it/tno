@@ -38,12 +38,6 @@ class HistoryRun extends Component {
 
   columns = [
     {
-      field: 'status',
-      header: 'Status',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
-    },
-    {
       field: 'owner',
       header: 'Owner',
       //   headerStyle: formatColumnHeader,
@@ -88,6 +82,36 @@ class HistoryRun extends Component {
     {
       field: 'date_initial',
       header: 'Date Initial',
+      //   headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
+      field: 'date_final',
+      header: 'Date Final',
+      //   headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
+      field: 'ra_ul',
+      header: 'RA UL',
+      //   headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
+      field: 'dec_ul',
+      header: 'DEC UL',
+      //   headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
+      field: 'date_final',
+      header: 'Date Final',
+      //   headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
+      field: 'date_final',
+      header: 'Date Final',
       //   headerStyle: formatColumnHeader,
       sortable: true,
     },
@@ -162,6 +186,7 @@ class HistoryRun extends Component {
       { state: 'warning' },
       { state: 'success' },
       { state: 'failure' },
+      { state: 'pending' },
     ];
 
     return status.map((el, i) => {

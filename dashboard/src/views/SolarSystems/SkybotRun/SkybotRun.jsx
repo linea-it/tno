@@ -8,7 +8,6 @@ class SkybotRun extends Component {
     data: [],
   };
   insertHistory = res => {
-    console.log('EU SOU O RES DO PAI', res);
     this.setState({ data: res.data });
   };
   render() {
@@ -17,7 +16,6 @@ class SkybotRun extends Component {
       <div className="p-dir-row">
         <div className="p-col-4">
           <PanelCostumize
-            // className="panel-height-skybot"
             title="Skybot Run"
             content={<FormSkybot insertHistory={this.insertHistory} />}
           />
