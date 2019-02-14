@@ -7,7 +7,7 @@ import { DataTable } from 'primereact/datatable';
 import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
 import { Toolbar } from 'primereact/toolbar';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import ReactInterval from 'react-interval';
 import SkybotApi from '../SkybotApi.jsx';
 
@@ -15,10 +15,10 @@ class HistoryRun extends Component {
   state = this.initialState;
   api = new SkybotApi();
 
-  static propTypes = {
-    view_prediction: PropTypes.func.isRequired,
-    onRerun: PropTypes.func.isRequired,
-  };
+  // static propTypes = {
+  //   view_prediction: PropTypes.func.isRequired,
+  //   onRerun: PropTypes.func.isRequired,
+  // };
 
   get initialState() {
     return {

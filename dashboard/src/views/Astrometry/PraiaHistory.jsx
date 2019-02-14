@@ -1,23 +1,16 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Card } from 'primereact/card';
 import PraiaApi from './PraiaApi';
 import PropTypes from 'prop-types';
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import overlayFactory from 'react-bootstrap-table2-overlay';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import { formatDateUTC, formatColumnHeader, formatStatus } from 'utils';
 import ReactInterval from 'react-interval';
 
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
-import { Button } from 'primereact/button';
 import { DataTable, Column } from 'primereact/datatable';
 import { Paginator } from 'primereact/paginator';
-import { Toolbar } from 'primereact/toolbar';
 
 const columns = [
   {
@@ -177,12 +170,12 @@ class PraiaHistory extends Component {
     const {
       data,
       sizePerPage,
-      page,
+      // page,
       totalSize,
-      loading,
+      // loading,
       reload_interval,
-      selected,
-      selected_record,
+      // selected,
+      // selected_record,
     } = this.state;
 
     const AstrometyColumns = columns.map((col, i) => {
@@ -242,43 +235,11 @@ class PraiaHistory extends Component {
           first={this.state.first}
           onPageChange={this.onPageChange}
         />
-        {/* <ReactInterval
+        <ReactInterval
           timeout={reload_interval * 1000}
           enabled={true}
           callback={this.reload}
         />
-        <Card className="none">
-          <div>
-            <Toolbar>
-              <Button
-                label="Re-execute"
-                className="btn-TNO-color"
-                disabled={!selected_record}
-                onClick={this.handleOnRerun}
-              />
-            </Toolbar>
-            <BootstrapTable
-              striped
-              hover
-              condensed
-              remote
-              bordered={false}
-              keyField="id"
-              noDataIndication="..."
-              data={data}
-              columns={columns}
-              pagination={pagination}
-              onTableChange={this.handleTableChange}
-              loading={loading}
-              overlay={overlayFactory({
-                spinner: true,
-                background: 'rgba(192,192,192,0.3)',
-              })}
-              rowEvents={rowEvents}
-              selectRow={selectRow}
-            />
-          </div>
-        </Card> */}
       </div>
     );
   }
