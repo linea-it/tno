@@ -26,14 +26,20 @@ class FormSkybot extends Component {
     type_run: '',
     ra_cent: null,
     dec_cent: null,
-    // ra_ul: null,
-    // ra_ur: null,
-    // ra_lr: null,
-    // ra_ll: null,
-    // dec_ul: null,
-    // dec_ur: null,
-    // dec_lr: null,
-    // dec_ll: null,
+    radec_ul: 0,
+    radec_ur: 0,
+    radec_ll: 0,
+    radec_lr: 0,
+  };
+
+  radec = (ur, ul, lr, ll) => {
+    console.log('caiu aqui', ur, ul, lr, ll);
+    this.setState(
+      { radec_ur: ur, radec_ul: ul, radec_lr: lr, radec_ll: ll },
+      () => {
+        this.onSubmit();
+      }
+    );
   };
 
   options = [
@@ -43,36 +49,52 @@ class FormSkybot extends Component {
     { label: 'Circle', value: 'circle' },
   ];
 
-  // Visible Modal
-  handleShow = () => {
-    this.setState({ show: true });
-  };
-
-  handleHide = () => {
-    this.setState({ show: false });
-  };
-
   // Methods with content modal
   getSquareFields = () => {
-    return <Square onVisible={this.state.show} onHide={this.state.show} />;
+    return (
+      <Square
+        show={this.state.show}
+        onHide={this.modalClose}
+        radec={this.radec}
+      />
+    );
   };
   getCircleFields = () => {
-    return <Circle onVisible={this.state.show} onHide={this.state.show} />;
+    return (
+      <Circle
+        show={this.state.show}
+        onHide={this.modalClose}
+        onSubmit={this.onSubmit}
+      />
+    );
   };
   getPeriodFields = () => {
-    return <Period onVisible={this.state.show} onHide={this.state.show} />;
+    return (
+      <Period
+        show={this.state.show}
+        onHide={this.modalClose}
+        onSubmit={this.onSubmit}
+      />
+    );
   };
 
   // Submit data with modal
+  modalClose = () => this.setState({ show: false });
+
+  modalOn = () => this.setState({ show: true });
+
   onSubmitModal = () => {
     if (this.state.type_run === 'exposure') {
-      return this.onSubmit();
-    } else {
-      if (this.state.type_run === 'period') {
-        this.handleShow();
-      } else {
-        this.handleShow();
-      }
+      this.onSubmit();
+    }
+    if (this.state.type_run === 'period') {
+      this.modalOn();
+    }
+    if (this.state.type_run === 'circle') {
+      this.modalOn();
+    }
+    if (this.state.type_run === 'square') {
+      this.modalOn();
     }
   };
 
@@ -95,58 +117,49 @@ class FormSkybot extends Component {
       />;
     }
   };
-  // submit the data
+  //ur, ul, lr, ll
   onSubmit = () => {
-    console.log(`submeti ${this.state.type_run}`);
+    console.log(this.state);
+    const {
+      start,
+      final,
+      exposure,
+      date_initial,
+      date_final,
+      type_run,
+      ra_cent,
+      dec_cent,
+      radec_ur,
+      radec_ul,
+      radec_lr,
+      radec_ll,
+    } = this.state;
+    this.skybotApi
+      .createSkybotRun({
+        start: start,
+        final: final,
+        exposure: exposure,
+        date_initial: date_initial,
+        date_final: date_final,
+        type_run: type_run,
+        ra_cent: ra_cent,
+        dec_cent: dec_cent,
+        ra_ur: radec_ur,
+        ra_ul: radec_ul,
+        ra_lr: radec_lr,
+        ra_ll: radec_ll,
+      })
+      .then(res => {
+        this.props.insertHistory(res);
+        console.log('Then: ', res.data);
+        alert('successful round');
+      })
+      .catch(error => {
+        console.log('Catch: ', error);
+        alert('not successful round');
+      });
+    this.modalClose();
   };
-  // onSubmit = () => {
-  //   const {
-  //     start,
-  //     final,
-  //     exposure,
-  //     date_initial,
-  //     date_final,
-  //     type_run,
-  //     ra_cent,
-  //     dec_cent,
-  //     ra_ul,
-  //     ra_ur,
-  //     ra_lr,
-  //     ra_ll,
-  //     dec_ul,
-  //     dec_ur,
-  //     dec_lr,
-  //     dec_ll,
-  //   } = this.state;
-  //   this.skybotApi
-  //     .createSkybotRun({
-  //       start: start,
-  //       final: final,
-  //       exposure: exposure,
-  //       date_initial: date_initial,
-  //       date_final: date_final,
-  //       type_run: type_run,
-  //       ra_cent: ra_cent,
-  //       dec_cent: dec_cent,
-  //       ra_ul: ra_ul,
-  //       ra_ur: ra_ur,
-  //       ra_lr: ra_lr,
-  //       ra_ll: ra_ll,
-  //       dec_ul: dec_ul,
-  //       dec_ur: dec_ur,
-  //       dec_lr: dec_lr,
-  //       dec_ll: dec_ll,
-  //     })
-  //     .then(res => {
-  //       this.props.insertHistory(res);
-  //       console.log('Then: ', res.data);
-  //       alert('successful round');
-  //     })
-  //     .catch(error => {
-  //       console.log('Catch: ', error);
-  //       alert('not successful round');
-  //     });
-  // };
 
   render() {
     return (

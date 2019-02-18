@@ -92,14 +92,26 @@ class HistoryRun extends Component {
       sortable: true,
     },
     {
+      field: 'ra_ur',
+      header: 'RA UR',
+      //   headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
       field: 'ra_ul',
       header: 'RA UL',
       //   headerStyle: formatColumnHeader,
       sortable: true,
     },
     {
-      field: 'dec_ul',
-      header: 'DEC UL',
+      field: 'ra_lr',
+      header: 'RA LR',
+      //   headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
+      field: 'ra_ll',
+      header: 'RA LL',
       //   headerStyle: formatColumnHeader,
       sortable: true,
     },

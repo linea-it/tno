@@ -21,6 +21,10 @@ class SkybotApi {
     type_run,
     ra_cent,
     dec_cent,
+    ra_ur,
+    ra_ul,
+    ra_lr,
+    ra_ll,
   }) =>
     axios.post(`${this.api}/skybot_run/`, {
       start: start,
@@ -32,6 +36,10 @@ class SkybotApi {
       type_run: type_run,
       ra_cent: ra_cent,
       dec_cent: dec_cent,
+      ra_ur: ra_ur,
+      ra_ul: ra_ul,
+      ra_lr: ra_lr,
+      ra_ll: ra_ll,
     });
 
   getSkybotLists = ({ page, pageSize, search, filters }) => {

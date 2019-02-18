@@ -1,16 +1,14 @@
 import React from 'react';
 import { InputText } from 'primereact/inputtext';
+import { Calendar } from 'primereact/calendar';
 import { Modal } from 'react-bootstrap';
 import { Button } from 'primereact/button';
 
 class Square extends React.Component {
   render() {
-    const { onVisible, onHide } = this.props;
-    console.log('modal:', onVisible);
     return (
       <Modal
-        show={onVisible}
-        onHide={onHide}
+        {...this.props}
         size="lg"
         backdrop="static"
         aria-labelledby="contained-modal-title-vcenter"
@@ -100,7 +98,7 @@ class Square extends React.Component {
           <Button
             label="OK"
             style={{ width: '120px' }}
-            onClick={this.onSubmit}
+            onClick={this.props.onHide}
           />
         </Modal.Footer>
       </Modal>
