@@ -5,6 +5,19 @@ import { Modal } from 'react-bootstrap';
 import { Button } from 'primereact/button';
 
 class Square extends React.Component {
+  state = {
+    dateInitial: '',
+    dateFinal: '',
+  };
+
+  onClick = () => {
+    this.props.dates(this.state.dateInitial, this.state.dateFinal);
+  };
+
+  onClear = () => {
+    this.setState({ dateInitial: '', dateFinal: '' });
+  };
+
   render() {
     return (
       <Modal
@@ -22,75 +35,22 @@ class Square extends React.Component {
         <Modal.Body>
           <div className="p-grid">
             <div className="p-col-6">
-              {/* <br />
-              <label htmlFor="in">RA UL</label>
               <br />
-              <InputText
-                id="in"
-                value={this.state.ra_ul}
-                onChange={e => this.setState({ value: e.target.value })}
-              />
+              <label htmlFor="in">Data Inital</label>
               <br />
-              <br />
-              <label htmlFor="in">RA UR</label>
-              <br />
-              <InputText
-                id="in"
-                value={this.state.ra_ur}
-                onChange={e => this.setState({ value: e.target.value })}
-              />
-              <br />
-              <br />
-              <label htmlFor="in">RA LR</label>
-              <br />
-              <InputText
-                id="in"
-                value={this.state.ra_lr}
-                onChange={e => this.setState({ value: e.target.value })}
-              />
-              <br />
-              <br />
-              <label htmlFor="in">RA LL</label>
-              <br />
-              <InputText
-                id="in"
-                value={this.state.ra_ll}
-                onChange={e => this.setState({ value: e.target.value })}
+              <Calendar
+                value={this.state.dateInitial}
+                onChange={e => this.setState({ dateInitial: e.value })}
               />
             </div>
             <div className="p-col-6">
               <br />
-              <label htmlFor="in">RA UL</label>
+              <label htmlFor="in">Data Final</label>
               <br />
-              <InputText
-                id="in"
-                value={this.state.dec_ul}
-                onChange={e => this.setState({ value: e.target.value })}
+              <Calendar
+                value={this.state.dateFinal}
+                onChange={e => this.setState({ dateFinal: e.value })}
               />
-              <br />
-              <br />
-              <label htmlFor="in">DEC UR</label>
-              <br />
-              <InputText
-                value={this.state.dec_ur}
-                onChange={e => this.setState({ value: e.target.value })}
-              />
-              <br />
-              <br />
-              <label htmlFor="in">DEC LR</label>
-              <br />
-              <InputText
-                value={this.state.dec_lr}
-                onChange={e => this.setState({ value: e.target.value })}
-              />
-              <br />
-              <br />
-              <label htmlFor="in">DEC LL</label>
-              <br />
-              <InputText
-                value={this.state.dec_ll}
-                onChange={e => this.setState({ value: e.target.value })}
-              /> */}
             </div>
           </div>
         </Modal.Body>
@@ -98,7 +58,7 @@ class Square extends React.Component {
           <Button
             label="OK"
             style={{ width: '120px' }}
-            onClick={this.props.onHide}
+            onClick={this.onClick}
           />
         </Modal.Footer>
       </Modal>

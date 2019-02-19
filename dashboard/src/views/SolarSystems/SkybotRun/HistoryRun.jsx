@@ -80,6 +80,12 @@ class HistoryRun extends Component {
       sortable: true,
     },
     {
+      field: 'radius',
+      header: 'Radius',
+      //   headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
       field: 'date_initial',
       header: 'Date Initial',
       //   headerStyle: formatColumnHeader,
@@ -112,24 +118,6 @@ class HistoryRun extends Component {
     {
       field: 'ra_ll',
       header: 'RA LL',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
-    },
-    {
-      field: 'date_final',
-      header: 'Date Final',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
-    },
-    {
-      field: 'date_final',
-      header: 'Date Final',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
-    },
-    {
-      field: 'date_final',
-      header: 'Date Final',
       //   headerStyle: formatColumnHeader,
       sortable: true,
     },

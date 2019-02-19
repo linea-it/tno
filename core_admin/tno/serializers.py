@@ -76,6 +76,7 @@ class SkybotRunSerializer(serializers.ModelSerializer):
             'type_run',
             'ra_cent',
             'dec_cent',
+            'radius',
             'ra_ul',
             'dec_ul',
             'ra_ur',

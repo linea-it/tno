@@ -154,7 +154,7 @@ export class PredictionSubmit extends Component {
         });
       } else {
         this.onClear();
-      }
+      } 
     }
   };
 

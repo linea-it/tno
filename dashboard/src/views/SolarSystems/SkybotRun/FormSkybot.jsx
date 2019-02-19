@@ -21,15 +21,16 @@ class FormSkybot extends Component {
     start: null,
     final: null,
     exposure: 0,
-    date_initial: null,
-    date_final: null,
+    date_initial: '',
+    date_final: '',
     type_run: '',
+    radius: 0,
     ra_cent: null,
     dec_cent: null,
-    radec_ul: 0,
-    radec_ur: 0,
-    radec_ll: 0,
-    radec_lr: 0,
+    radec_ul: '',
+    radec_ur: '',
+    radec_ll: '',
+    radec_lr: '',
   };
 
   radec = (ur, ul, lr, ll) => {
@@ -42,12 +43,36 @@ class FormSkybot extends Component {
     );
   };
 
+  circle = (ra_cent, dec_cent, radius) => {
+    console.log('caiu aqui', ra_cent, dec_cent, radius);
+    this.setState(
+      { ra_cent: ra_cent, dec_cent: dec_cent, radius: radius },
+      () => {
+        this.onSubmit();
+      }
+    );
+  };
+
+  dates = (date_initial, date_final) => {
+    console.log('caiu aqui', date_initial, date_final);
+    this.setState(
+      { date_initial: date_initial, date_final: date_final },
+      () => {
+        this.onSubmit();
+      }
+    );
+  };
+
   options = [
     { label: 'Exposure', value: 'all' },
     { label: 'Period', value: 'period' },
     { label: 'Square', value: 'square' },
     { label: 'Circle', value: 'circle' },
   ];
+
+  onClear = () => {
+    this.setState({ dateInitial: '', dateFinal: '' });
+  };
 
   // Methods with content modal
   getSquareFields = () => {
@@ -64,7 +89,7 @@ class FormSkybot extends Component {
       <Circle
         show={this.state.show}
         onHide={this.modalClose}
-        onSubmit={this.onSubmit}
+        circle={this.circle}
       />
     );
   };
@@ -73,7 +98,7 @@ class FormSkybot extends Component {
       <Period
         show={this.state.show}
         onHide={this.modalClose}
-        onSubmit={this.onSubmit}
+        dates={this.dates}
       />
     );
   };
@@ -119,6 +144,7 @@ class FormSkybot extends Component {
   };
   //ur, ul, lr, ll
   onSubmit = () => {
+    this.onClear();
     console.log(this.state);
     const {
       start,
@@ -128,6 +154,7 @@ class FormSkybot extends Component {
       date_final,
       type_run,
       ra_cent,
+      radius,
       dec_cent,
       radec_ur,
       radec_ul,
@@ -144,10 +171,15 @@ class FormSkybot extends Component {
         type_run: type_run,
         ra_cent: ra_cent,
         dec_cent: dec_cent,
+        radius: radius,
         ra_ur: radec_ur,
         ra_ul: radec_ul,
         ra_lr: radec_lr,
         ra_ll: radec_ll,
+        dec_ur: radec_ur,
+        dec_ul: radec_ul,
+        dec_lr: radec_lr,
+        dec_ll: radec_ll,
       })
       .then(res => {
         this.props.insertHistory(res);
@@ -162,6 +194,7 @@ class FormSkybot extends Component {
   };
 
   render() {
+    const radec = this.state;
     return (
       <Content
         title="Selected a configuration for option picked"

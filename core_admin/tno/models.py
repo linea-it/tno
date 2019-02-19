@@ -761,6 +761,12 @@ class SkybotRun(models.Model):
         blank = True,
     )
 
+    radius = models.FloatField(
+        verbose_name = 'Radius',
+        null = True,
+        blank = True,
+    )
+
     date_initial = models.DateTimeField(
         verbose_name='Date Initial',
         auto_now_add=False, null=True, blank=True)
@@ -769,7 +775,8 @@ class SkybotRun(models.Model):
         verbose_name='Date Final',
         auto_now_add=False, null=True, blank=True)    
 
-    ra_ul = models.FloatField(
+    ra_ul = models.CharField(
+        max_length = 30,
         verbose_name = 'RA UL',
         null=True,
         blank = True,
@@ -781,7 +788,8 @@ class SkybotRun(models.Model):
         blank = True,
     )
     
-    ra_ur = models.FloatField(
+    ra_ur = models.CharField(
+        max_length = 30,
         verbose_name = 'RA UR',
         null=True,
         blank = True,
@@ -792,7 +800,8 @@ class SkybotRun(models.Model):
         blank = True,
     )
 
-    ra_lr = models.FloatField(
+    ra_lr = models.CharField(
+        max_length = 30,
         verbose_name = 'RA LR',
         null=True,
         blank = True,
@@ -803,7 +812,8 @@ class SkybotRun(models.Model):
         blank = True,
     )
     
-    ra_ll = models.FloatField(
+    ra_ll = models.CharField(
+        max_length = 30,
         verbose_name = 'RA LL',
         null=True,
         blank = True,
