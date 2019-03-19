@@ -12,6 +12,8 @@ Testado no Ubuntu
 
 1. Create a file at /etc/systemd/system/docker.service.d/startup_options.conf with the below contents:
 
+OBS: The file SHOULD live at /etc/systemd/system/docker.service.d/ otherwise it won't work
+
 ```
 [Service]
 ExecStart=
