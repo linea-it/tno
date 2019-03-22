@@ -154,7 +154,7 @@ export class PredictionSubmit extends Component {
         });
       } else {
         this.onClear();
-      }
+      } 
     }
   };
 
@@ -255,7 +255,6 @@ export class PredictionSubmit extends Component {
         input_list: el.input_list, // Id da lista de objetos
         process: el.proccess, // Id do processo
       });
-      return;
     });
 
     return (
@@ -281,7 +280,6 @@ export class PredictionSubmit extends Component {
         label: el.display_name,
         value: el.id,
       });
-      return;
     });
 
     return (
@@ -307,7 +305,6 @@ export class PredictionSubmit extends Component {
         label: el.display_name,
         value: el.id,
       });
-      return;
     });
 
     return (

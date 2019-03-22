@@ -10,7 +10,6 @@ import sizeMe from 'react-sizeme';
 import Exposure from './Exposure.jsx';
 import Process from './Process.jsx';
 import Skybot from './Skybot.jsx';
-import Performance from './Perfomance.jsx';
 import PlotImages from './PlotImages.jsx';
 import Histograms from './Histograms.jsx';
 
@@ -82,10 +81,7 @@ class Dashboard extends Component {
   }
 
   get_histogram_exposure = () => {
-    console.log('get_histogram_exposure');
-
     this.api.getHistogramExposure().then(res => {
-      console.log(res.data);
       if (res.data.success === true) {
         this.setState({
           histogram_exposure: res.data.data,
@@ -97,12 +93,12 @@ class Dashboard extends Component {
   render() {
     const { exposures, ccds } = this.state;
 
-    const data = [
-      { name: 'Executado', value: 400 },
-      { name: 'Warning', value: 300 },
-      { name: 'Não executado', value: 200 },
-      { name: 'Fail', value: 300 },
-    ];
+    // const data = [
+    //   { name: 'Executado', value: 400 },
+    //   { name: 'Warning', value: 300 },
+    //   { name: 'Não executado', value: 200 },
+    //   { name: 'Fail', value: 300 },
+    // ];
 
     const proccess_stats = [
       { name: 'Proccess', value: 'xxx - xxxxxxx xxxxx' },
@@ -126,7 +122,7 @@ class Dashboard extends Component {
       { name: 'Skybot', value: 'vx.x.x' },
     ];
 
-    const colors = ['rgba(255,255,255,0.2)', '#ffffff', '#ffffff', '#ffffff'];
+    // const colors = ['rgba(255,255,255,0.2)', '#ffffff', '#ffffff', '#ffffff'];
 
     const exposure_info = [
       {

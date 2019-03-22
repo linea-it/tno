@@ -7,7 +7,7 @@ import { DataTable } from 'primereact/datatable';
 import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
 import { Toolbar } from 'primereact/toolbar';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import ReactInterval from 'react-interval';
 import SkybotApi from '../SkybotApi.jsx';
 
@@ -15,10 +15,10 @@ class HistoryRun extends Component {
   state = this.initialState;
   api = new SkybotApi();
 
-  static propTypes = {
-    view_prediction: PropTypes.func.isRequired,
-    onRerun: PropTypes.func.isRequired,
-  };
+  // static propTypes = {
+  //   view_prediction: PropTypes.func.isRequired,
+  //   onRerun: PropTypes.func.isRequired,
+  // };
 
   get initialState() {
     return {
@@ -37,12 +37,6 @@ class HistoryRun extends Component {
   }
 
   columns = [
-    {
-      field: 'status',
-      header: 'Status',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
-    },
     {
       field: 'owner',
       header: 'Owner',
@@ -68,7 +62,7 @@ class HistoryRun extends Component {
       sortable: true,
     },
     {
-      field: 'typeRun',
+      field: 'type_run',
       header: 'Type',
       //   headerStyle: formatColumnHeader,
       sortable: true,
@@ -86,14 +80,44 @@ class HistoryRun extends Component {
       sortable: true,
     },
     {
-      field: 'dateInitial',
+      field: 'radius',
+      header: 'Radius',
+      //   headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
+      field: 'date_initial',
       header: 'Date Initial',
       //   headerStyle: formatColumnHeader,
       sortable: true,
     },
     {
-      field: 'dateFinal',
+      field: 'date_final',
       header: 'Date Final',
+      //   headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
+      field: 'ra_ur',
+      header: 'RA UR',
+      //   headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
+      field: 'ra_ul',
+      header: 'RA UL',
+      //   headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
+      field: 'ra_lr',
+      header: 'RA LR',
+      //   headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
+      field: 'ra_ll',
+      header: 'RA LL',
       //   headerStyle: formatColumnHeader,
       sortable: true,
     },
@@ -134,7 +158,7 @@ class HistoryRun extends Component {
   };
 
   reload = () => {
-    // this.fetchData(this.state.page, this.state.sizePerPage);
+    this.fetchData(this.state.page, this.state.sizePerPage);
   };
 
   actionTemplate = rowData => {
@@ -162,6 +186,7 @@ class HistoryRun extends Component {
       { state: 'warning' },
       { state: 'success' },
       { state: 'failure' },
+      { state: 'pending' },
     ];
 
     return status.map((el, i) => {
@@ -308,10 +333,10 @@ class HistoryRun extends Component {
             style={{ textAlign: 'center', width: '6em' }}
           />
           {columns}
-          <Column
+          {/* <Column
             body={this.actionTemplate}
             style={{ textAlign: 'center', width: '6em', color: '#fff' }}
-          />
+          /> */}
         </DataTable>
         <Paginator
           rows={this.state.sizePerPage}

@@ -1096,6 +1096,8 @@ body > .navbar-collapse[data-color="purple"]:after {
     background-color: #FF9500 !important; }
   .status_table.failure {
     background-color: #FF4A55 !important; }
+  .status_table.pending {
+    background-color: #403f3f !important; }
 
 .simple_property_table tbody > tr > td {
   font-size: 14px;
@@ -3471,6 +3473,12 @@ body > .navbar-collapse[data-color="purple"]:after {
 .margin-panel {
   margin: 10px; }
 
+.panel-height-skybot {
+  min-height: 170px; }
+
+.panel-width-skybot {
+  min-width: 30%; }
+
 .content-main {
   min-height: 20%;
   background: white;
@@ -3500,6 +3508,9 @@ body > .navbar-collapse[data-color="purple"]:after {
 .linha-vertical {
   border-right: 1px solid #c6c6c6 !important;
   /* Adiciona borda esquerda na div como ser fosse uma linha.*/ }
+
+.content-skybot {
+  margin: 10px !important; }
 
 @media only screen and (min-width: 640px) {
   .size-plot {
