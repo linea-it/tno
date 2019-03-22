@@ -170,7 +170,7 @@ class OccultationsDataView extends Component {
   };
 
   onPageChange = e => {
-    const page = e.originalEvent.page + 1;
+    // const page = e.originalEvent.page + 1;
     // Esse funciona
     // this.setState({first: e.first, rows: e.rows}, )
 

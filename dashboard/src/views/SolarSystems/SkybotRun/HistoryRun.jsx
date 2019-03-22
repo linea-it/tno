@@ -197,7 +197,7 @@ class HistoryRun extends Component {
           </div>
         );
       }
-      return;
+      return null;
     });
   };
 

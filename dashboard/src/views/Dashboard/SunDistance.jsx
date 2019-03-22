@@ -1,16 +1,6 @@
 import React, { Component } from 'react';
 import Content from 'components/CardContent/CardContent.jsx';
 
-import {
-  BarChart,
-  Bar,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Label,
-  Tooltip,
-} from 'recharts';
-
 import SunDistanceHistogram from './SunDistanceHistogram';
 
 class SunDistance extends Component {

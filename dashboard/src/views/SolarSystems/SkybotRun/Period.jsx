@@ -1,5 +1,4 @@
 import React from 'react';
-import { InputText } from 'primereact/inputtext';
 import { Calendar } from 'primereact/calendar';
 import { Modal } from 'react-bootstrap';
 import { Button } from 'primereact/button';

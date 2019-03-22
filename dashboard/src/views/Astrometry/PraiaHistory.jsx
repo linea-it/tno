@@ -162,7 +162,7 @@ class PraiaHistory extends Component {
           </div>
         );
       }
-      // return;
+      return null;
     });
   };
 

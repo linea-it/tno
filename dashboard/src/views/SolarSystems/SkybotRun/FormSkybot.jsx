@@ -34,7 +34,6 @@ class FormSkybot extends Component {
   };
 
   radec = (ur, ul, lr, ll) => {
-    console.log('caiu aqui', ur, ul, lr, ll);
     this.setState(
       { radec_ur: ur, radec_ul: ul, radec_lr: lr, radec_ll: ll },
       () => {
@@ -44,7 +43,6 @@ class FormSkybot extends Component {
   };
 
   circle = (ra_cent, dec_cent, radius) => {
-    console.log('caiu aqui', ra_cent, dec_cent, radius);
     this.setState(
       { ra_cent: ra_cent, dec_cent: dec_cent, radius: radius },
       () => {
@@ -134,12 +132,14 @@ class FormSkybot extends Component {
         />
       );
     } else {
-      <Button
-        onClick={this.onSubmitModal}
-        disabled={!false}
-        style={{ width: '120px' }}
-        label="Run"
-      />;
+      return (
+        <Button
+          onClick={this.onSubmitModal}
+          disabled={!false}
+          style={{ width: '120px' }}
+          label="Run"
+        />
+      );
     }
   };
   //ur, ul, lr, ll
@@ -194,7 +194,6 @@ class FormSkybot extends Component {
   };
 
   render() {
-    const radec = this.state;
     return (
       <Content
         title="Selected a configuration for option picked"

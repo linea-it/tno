@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { style } from 'variables/Variables.jsx';
 import Plot from 'react-plotly.js';
 import moment from 'moment';
 

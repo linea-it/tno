@@ -32,6 +32,7 @@ class Skybot extends Component {
         value: record.count,
         color: 'primary',
       });
+      return record;
     });
 
     return (

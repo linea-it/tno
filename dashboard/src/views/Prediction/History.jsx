@@ -152,7 +152,7 @@ class PredictionHistory extends Component {
           </div>
         );
       }
-      return;
+      return null;
     });
   };
 

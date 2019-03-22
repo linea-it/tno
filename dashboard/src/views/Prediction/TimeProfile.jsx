@@ -1,9 +1,9 @@
 // React e Prime React
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { style } from 'variables/Variables.jsx';
 import Plot from 'react-plotly.js';
 import moment from 'moment';
+
 class PredictionTimeProfile extends Component {
   state = this.initialState;
 
@@ -73,7 +73,7 @@ class PredictionTimeProfile extends Component {
         this.idx++;
 
         rows.push(obj);
-        return;
+        return row;
       });
 
       return rows;
@@ -109,7 +109,7 @@ class PredictionTimeProfile extends Component {
         this.idx++;
 
         rows.push(obj);
-        return;
+        return row;
       });
 
       return rows;
@@ -145,7 +145,7 @@ class PredictionTimeProfile extends Component {
         this.idx++;
 
         rows.push(obj);
-        return;
+        return row;
       });
 
       return rows;
@@ -181,7 +181,7 @@ class PredictionTimeProfile extends Component {
         this.idx++;
 
         rows.push(obj);
-        return;
+        return row;
       });
 
       return rows;
@@ -229,13 +229,13 @@ class PredictionTimeProfile extends Component {
     const dates = this.getDates(data.dates);
     dates.map(e => {
       rows.push(e);
-      return;
+      return e;
     });
 
     const ephemeris = this.getEphemeris(data.ephemeris);
     ephemeris.map(e => {
       rows.push(e);
-      return;
+      return e;
     });
     if (data.ephemeris) {
       rows.push({
@@ -259,7 +259,7 @@ class PredictionTimeProfile extends Component {
     const catalogs = this.getCatalog(data.catalog);
     catalogs.map(e => {
       rows.push(e);
-      return;
+      return e;
     });
 
     if (data.catalog) {
@@ -284,7 +284,7 @@ class PredictionTimeProfile extends Component {
     const searchs = this.getSearchs(data.search);
     searchs.map(e => {
       rows.push(e);
-      return;
+      return e;
     });
 
     if (data.search) {
@@ -309,7 +309,7 @@ class PredictionTimeProfile extends Component {
     const maps = this.getMaps(data.map);
     maps.map(e => {
       rows.push(e);
-      return;
+      return e;
     });
 
     if (data.map) {
@@ -334,7 +334,7 @@ class PredictionTimeProfile extends Component {
     const register = this.getRegister(data.register);
     register.map(e => {
       rows.push(e);
-      return;
+      return e;
     });
 
     // console.log('Rows: ', rows);

@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 import Content from 'components/CardContent/CardContent.jsx';
-import Plot from 'react-plotly.js';
 import SSSOHistogram from './SSSOHistogram';
 
 class SSSOdyclass extends Component {
   render() {
     const propSet = this.props;
-    console.log(
-      'Asteroids by dynclass in SSSOdyClass:',
-      propSet.data.asteroids_by_dynaclass
-    );
+
     return (
       <Content
         header={true}
