@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from tno.models import SkybotRun
 
-from tno.skybot import ImportSkybotManagement
+from tno.skybot.skybot import ImportSkybotManagement
 
 class Command(BaseCommand):
     help = 'Check skybot runs table and execute tasks based on status.'

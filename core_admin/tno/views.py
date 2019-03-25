@@ -7,7 +7,7 @@ from rest_framework.decorators import list_route, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from django.conf import settings
-
+import pandas as pd
 from .models import *
 from .serializers import *
 from .skybotoutput import FilterObjects
@@ -557,3 +557,44 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
     serializer_class = SkybotRunSerializer
     filter_fields = ('id',)
     search_fields = ('id',)
+
+
+    @list_route()
+    def time_profile(self, request):
+        
+
+        run_id = request.query_params.get('run_id', None)
+
+        skybotrun = None
+        try:
+            skybotrun = SkybotRun.objects.get(pk=int(run_id))
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "SkybotRun not found. run_id %s" % run_id
+            })
+
+        # Diretorio onde ficam os csv baixados do skybot
+        self.base_path = settings.SKYBOT_OUTPUT
+
+        output_path = os.path.join(self.base_path, str(skybotrun.id))
+        if not os.path.exists(output_path):
+            os.mkdir(output_path)
+
+        time_profile = os.path.join(output_path, 'time_profile.csv')
+
+
+        headers = ["expnum", "operation", "start", "finish"]
+
+        df = pd.read_csv(time_profile, skiprows=1, delimiter=';', names=headers)
+
+        rows = list()
+        for row in df.itertuples():
+            rows.append([row[1], row[2], row[3], row[4]])
+
+        return Response({
+            'success': True,
+            'headers': headers,
+            'data': rows
+        })

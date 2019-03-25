@@ -26,8 +26,11 @@ class SkybotApi {
     ra_ul,
     ra_lr,
     ra_ll,
-  }) =>
-    axios.post(`${this.api}/skybot_run/`, {
+  }) => {
+    date_initial = date_initial !== '' ? date_initial : null;
+    date_final = date_final !== '' ? date_final : null;
+
+    return axios.post(`${this.api}/skybot_run/`, {
       start: start,
       final: final,
       status: status,
@@ -43,11 +46,12 @@ class SkybotApi {
       ra_lr: ra_lr,
       ra_ll: ra_ll,
     });
+  }
 
   getSkybotLists = ({ page, pageSize, search, filters }) => {
     const params = { page: page, pageSize: pageSize, search: search };
 
-    filters.forEach(function(el) {
+    filters.forEach(function (el) {
       params[el.property] = el.value;
     });
     return axios.get(`${this.api}/skybotoutput/`, { params: params });
