@@ -16,7 +16,7 @@ import humanize
 from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.types import String
-
+import traceback
 from .server import SkybotServer
 
 # TODO investigar Custon Function no SQL ALCHEMY
@@ -41,8 +41,8 @@ class ImportSkybotManagement():
 
         current_run = SkybotRun.objects.get(pk=run_id)
 
-        # current_run.status = 'running'
-        current_run.status = 'pending'
+        current_run.status = 'running'
+        current_run.start = datetime.now()
         current_run.save()
 
         try:
@@ -74,19 +74,28 @@ class ImportSkybotManagement():
                                                                                      ra_ul=current_run.ra_ul, dec_ul=current_run.dec_ul, ra_ur=current_run.ra_ur, dec_ur=current_run.dec_ur,
                                                                                      ra_lr=current_run.ra_lr, dec_lr=current_run.dec_lr, ra_ll=current_run.ra_ll, dec_ll=current_run.dec_ll)
 
-            # TODO REMOVER
-            current_run.status = 'pending'
-            current_run.save()
-
 
             t1 = datetime.now()
             tdelta = t1 - t0
             self.logger.info("Done in %s" % humanize.naturaldelta(tdelta))
 
-        except Exception as e:
-            # TODO REMOVER
-            current_run.status = 'pending'
+            current_run.status = 'success'
+            current_run.finish = t1
+            current_run.execution_time = tdelta
             current_run.save()
+
+        except Exception as e:
+            self.logger.error(e)
+
+            t1 = datetime.now()
+            tdelta = t1 - t0
+
+            current_run.status = 'failure'
+            current_run.finish = t1
+            current_run.execution_time = tdelta
+            current_run.error = traceback.format_exc()
+            current_run.save()
+            raise(e)
 
 
 

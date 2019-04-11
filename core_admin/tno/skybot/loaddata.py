@@ -12,6 +12,7 @@ from datetime import datetime
 import pandas as pd
 from tno.models import SkybotRun
 from concurrent import futures
+from tno.models import Pointing as PointingModel
 
 from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
@@ -20,7 +21,7 @@ from sqlalchemy.types import String
 class ImportSkybot():
 
     def __init__(self):
-        self.logger = logging.getLogger("skybot")
+        self.logger = logging.getLogger("skybot_load_data")
         self.dbsk = SkybotOutputDB()
 
     def read_skybot_output_csv(self, file_path):
@@ -105,50 +106,10 @@ class ImportSkybot():
 
         name = getattr(asteroid, "name").strip()
 
-        stm_insert = skybot_output.insert().values(
-            id=next_id,
-            num=num,
-            name=name,
-            dynclass=getattr(asteroid, "dynclass").strip(),
-            ra=getattr(asteroid, "ra").strip(),
-            dec=getattr(asteroid, "dec").strip(),
-            raj2000=ra,
-            decj2000=dec,
-            mv=float(getattr(asteroid, "mv")),
-            errpos=float(getattr(asteroid, "errpos")),
-            d=float(getattr(asteroid, "d")),
-            dracosdec=float(getattr(asteroid, "dra")),
-            ddec=float(getattr(asteroid, "ddec")),
-            dgeo=float(getattr(asteroid, "dg")),
-            dhelio=float(getattr(asteroid, "dh")),
-            phase=float(getattr(asteroid, "phase")),
-            solelong=float(getattr(asteroid, "sunelong")),
-            px=float(getattr(asteroid, "x")),
-            py=float(getattr(asteroid, "y")),
-            pz=float(getattr(asteroid, "z")),
-            vx=float(getattr(asteroid, "vx")),
-            vy=float(getattr(asteroid, "vy")),
-            vz=float(getattr(asteroid, "vz")),
-            jdref=float(getattr(asteroid, "epoch")),
-            # externallink=getattr(asteroid, ""),
-            externallink="link",
-            expnum=expnum,
-            # ccdnum=
-            band=band
-        )
-        # self.debug_query(stm_insert)
+        # Get Pointing
+        pointing = PointingModel.objects.get(expnum=232737)
 
-        created = False
         try:
-            a = db.engine.execute(stm_insert)
-
-            self.logger.debug("CREATED Asteroid [ %s ]" % name)
-
-            created = True
-
-        except Exception as e:
-            self.logger.debug("UPDATE Asteroid.")
-
             stm_update = skybot_output.update().where(
                 and_(
                     db.tbl.c.num == num,
@@ -156,13 +117,12 @@ class ImportSkybot():
                     db.tbl.c.expnum == expnum,
                 )
             ).values(
+                pointing_id=pointing.pk,
                 dynclass=getattr(asteroid, "dynclass").strip(),
                 ra=getattr(asteroid, "ra").strip(),
                 dec=getattr(asteroid, "dec").strip(),
-                # raj2000=getattr(asteroid, "raj2000"),
-                # decj2000=getattr(asteroid, "decj2000"),
-                raj2000=0,
-                decj2000=0,
+                raj2000=ra,
+                decj2000=dec,
                 mv=float(getattr(asteroid, "mv")),
                 errpos=float(getattr(asteroid, "errpos")),
                 d=float(getattr(asteroid, "d")),
@@ -181,14 +141,58 @@ class ImportSkybot():
                 jdref=float(getattr(asteroid, "epoch")),
                 # externallink=getattr(asteroid, ""),
                 externallink="link",
+                band=band
             )
 
             # self.debug_query(stm_update)
 
             a = db.engine.execute(stm_update)
 
-            self.logger.info("UPDATED Asteroid [ %s ]" % name)
             created = False
+
+            self.logger.info("UPDATED Asteroid [ %s ]" % name)
+
+        except Exception as e:
+            stm_insert = skybot_output.insert().values(
+                id=next_id,
+                num=num,
+                name=name,
+                pointing_id=pointing.pk,
+                dynclass=getattr(asteroid, "dynclass").strip(),
+                ra=getattr(asteroid, "ra").strip(),
+                dec=getattr(asteroid, "dec").strip(),
+                raj2000=ra,
+                decj2000=dec,
+                mv=float(getattr(asteroid, "mv")),
+                errpos=float(getattr(asteroid, "errpos")),
+                d=float(getattr(asteroid, "d")),
+                dracosdec=float(getattr(asteroid, "dra")),
+                ddec=float(getattr(asteroid, "ddec")),
+                dgeo=float(getattr(asteroid, "dg")),
+                dhelio=float(getattr(asteroid, "dh")),
+                phase=float(getattr(asteroid, "phase")),
+                solelong=float(getattr(asteroid, "sunelong")),
+                px=float(getattr(asteroid, "x")),
+                py=float(getattr(asteroid, "y")),
+                pz=float(getattr(asteroid, "z")),
+                vx=float(getattr(asteroid, "vx")),
+                vy=float(getattr(asteroid, "vy")),
+                vz=float(getattr(asteroid, "vz")),
+                jdref=float(getattr(asteroid, "epoch")),
+                # externallink=getattr(asteroid, ""),
+                externallink="link",
+                expnum=expnum,
+                # ccdnum=
+                band=band
+            )
+            # self.debug_query(stm_insert)
+
+            a = db.engine.execute(stm_insert)
+
+            created = True
+
+            self.logger.debug("CREATED Asteroid [ %s ]" % name)
+
 
         return created
 

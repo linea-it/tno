@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // React e Prime React
 import React, { Component } from 'react';
 
@@ -7,7 +8,7 @@ import { DataTable } from 'primereact/datatable';
 import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
 import { Toolbar } from 'primereact/toolbar';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import ReactInterval from 'react-interval';
 import SkybotApi from '../SkybotApi.jsx';
 
@@ -15,10 +16,11 @@ class HistoryRun extends Component {
   state = this.initialState;
   api = new SkybotApi();
 
-  // static propTypes = {
-  //   view_prediction: PropTypes.func.isRequired,
-  //   onRerun: PropTypes.func.isRequired,
-  // };
+  static propTypes = {
+    handleView: PropTypes.func.isRequired,
+    onRerun: PropTypes.func.isRequired,
+    handleCancel: PropTypes.func.isRequired,
+  };
 
   get initialState() {
     return {
@@ -28,8 +30,8 @@ class HistoryRun extends Component {
       first: 0,
       sizePerPage: 100,
       totalSize: 0,
-      sortField: 'name',
-      sortOrder: 1,
+      sortField: 'start',
+      sortOrder: 0,
       asteroid_id: 0,
       reload_interval: 10,
       selected: null,
@@ -38,88 +40,53 @@ class HistoryRun extends Component {
 
   columns = [
     {
-      field: 'owner',
-      header: 'Owner',
-      //   headerStyle: formatColumnHeader,
+      field: 'type_run',
+      header: 'Type',
       sortable: true,
-    },
-    {
-      field: 'exposure',
-      header: 'Exposure',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
+      body: rowData => {
+        let value = '';
+        switch (rowData.type_run) {
+          case 'all':
+            value = 'All Pointings';
+            break;
+          case 'period':
+            value = 'By Period';
+            break;
+          case 'square':
+            value = 'Region Selection';
+            break;
+          case 'circle':
+            value = 'Cone Search';
+            break;
+        }
+        return value;
+      },
     },
     {
       field: 'start',
       header: 'Start',
-      //   headerStyle: formatColumnHeader,
       sortable: true,
     },
     {
-      field: 'finish',
-      header: 'Finish',
-      //   headerStyle: formatColumnHeader,
+      field: 'h_execution_time',
+      header: 'Execution Time',
+      sortable: false,
+    },
+    {
+      field: 'exposure',
+      header: 'Pointings',
       sortable: true,
     },
     {
-      field: 'type_run',
-      header: 'Type',
-      //   headerStyle: formatColumnHeader,
+      field: 'rows',
+      header: 'Rows',
       sortable: true,
     },
+
     {
-      field: 'dec_cent',
-      header: 'Dec Cent',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
-    },
-    {
-      field: 'ra_cent',
-      header: 'Ra Cent',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
-    },
-    {
-      field: 'radius',
-      header: 'Radius',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
-    },
-    {
-      field: 'date_initial',
-      header: 'Date Initial',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
-    },
-    {
-      field: 'date_final',
-      header: 'Date Final',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
-    },
-    {
-      field: 'ra_ur',
-      header: 'RA UR',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
-    },
-    {
-      field: 'ra_ul',
-      header: 'RA UL',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
-    },
-    {
-      field: 'ra_lr',
-      header: 'RA LR',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
-    },
-    {
-      field: 'ra_ll',
-      header: 'RA LL',
-      //   headerStyle: formatColumnHeader,
-      sortable: true,
+      field: 'owner',
+      header: 'Owner',
+      sortable: false,
     },
   ];
 
@@ -187,6 +154,7 @@ class HistoryRun extends Component {
       { state: 'success' },
       { state: 'failure' },
       { state: 'pending' },
+      { state: 'canceled' },
     ];
 
     return status.map((el, i) => {
@@ -204,6 +172,7 @@ class HistoryRun extends Component {
   toolbarButton = el => {
     let btn_view_toolbar = null;
     let btn_reexecute = null;
+    let btn_cancel = null;
 
     btn_reexecute = (
       <Button
@@ -231,10 +200,30 @@ class HistoryRun extends Component {
       />
     );
 
+    let disabled_cancel = true;
+    if (
+      this.state.selected != null &&
+      this.state.selected.status !== 'success' &&
+      this.state.selected.status !== 'failed' &&
+      this.state.selected.status !== 'canceled'
+    ) {
+      disabled_cancel = false;
+    }
+
+    btn_cancel = (
+      <Button
+        className="btn-TNO-danger"
+        label="Cancel"
+        disabled={disabled_cancel}
+        onClick={() => this.handleCancel(el.id)}
+      />
+    );
+
     return (
       <Toolbar>
         {btn_reexecute}
         {btn_view_toolbar}
+        {btn_cancel}
       </Toolbar>
     );
   };
@@ -271,22 +260,41 @@ class HistoryRun extends Component {
     );
   };
 
-  // onView = id => {
-  //   this.props.view_prediction(id);
-  // };
+  onView = id => {
+    this.props.handleView(id);
+  };
 
-  // handleOnRerun = () => {
-  //   const { selected } = this.state;
+  handleOnRerun = () => {
+    const { selected } = this.state;
 
-  //   this.api.predictReRun({ id: selected.id }).then(res => {
-  //     this.setState(
-  //       {
-  //         selected: null,
-  //       },
-  //       this.props.onRerun(res.data)
-  //     );
-  //   });
-  // };
+    this.api.rerunSkybot(selected.id).then(res => {
+      this.setState(
+        {
+          selected: null,
+        },
+        () => {
+          this.reload();
+          this.props.onRerun(res.data);
+        }
+      );
+    });
+  };
+
+  handleCancel = () => {
+    const { selected } = this.state;
+
+    this.api.cancelSkybotRun(selected.id).then(res => {
+      this.setState(
+        {
+          selected: null,
+        },
+        () => {
+          this.reload();
+          this.props.handleCancel(res.data);
+        }
+      );
+    });
+  };
 
   render() {
     const columns = this.columns.map((col, i) => {

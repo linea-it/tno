@@ -18,9 +18,10 @@ from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.types import String
 
 from .loaddata import ImportSkybot
-
+from tno.models import SkybotRun
 
 impSkybot = ImportSkybot()
+
 
 def import_skybot_output(result):
 
@@ -66,10 +67,14 @@ class SkybotServer():
 
         self.dbpt = PointingDB()
 
-        self.statistics = dict()
+        self.stats = dict({
+            'tasks': 0,
+            'current': 0,
+            'rows': 0
+        })
 
-        self.statistics_json = os.path.join(
-            self.skybot_output_path, 'statistics.json')
+        self.stats_json = os.path.join(
+            self.skybot_output_path, 'stats.json')
 
         self.results_file = os.path.join(
             self.skybot_output_path, 'results.csv')
@@ -77,14 +82,15 @@ class SkybotServer():
         self.time_profile = os.path.join(
             self.skybot_output_path, 'time_profile.csv')
 
-        self.debug_limit = None
+        self.debug_limit = 50
 
-        self.heart_beat_interval = 5
+        self.heart_beat_interval = 10
 
-        self.max_workers = 4
+        self.max_workers = 2
 
         result_columns = ['expnum', 'band', 'skybot_downloaded', 'skybot_url', 'download_start', 'download_finish', 'download_time', 'filename',
-                          'file_size', 'file_path', 'import_start', 'import_finish', 'import_time', 'count_created', 'count_updated', 'count_rows', 'error']
+                          'file_size', 'file_path', 'import_start', 'import_finish', 'import_time', 'count_created', 'count_updated', 'count_rows', 
+                          'ccd_count', 'ccd_count_rows', 'ccd_start', 'ccd_finish', 'ccd_time', 'error']
 
         self.df_results = pd.DataFrame(
             columns=result_columns,
@@ -95,59 +101,74 @@ class SkybotServer():
             columns=time_profile_columns,
         )
 
-    # def write_stats(self):
+        self.pointings = []
 
-    #     with open(self.statistics_json, 'w') as outfile:
-    #         json.dump(self.statistics, outfile)
-
-    #     self.logger.info("Writing Statistics")
+        cols = self.dbpt.tbl.c
+        self.pointing_cols = [cols.expnum, cols.ccdnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg, cols.rac1, cols.decc1, cols.rac2, cols.decc2, cols.rac3, cols.decc3, cols.rac4, cols.decc4]
 
     def run_get_asteroids(self, pointings):
 
-        with futures.ProcessPoolExecutor(max_workers=self.max_workers) as ex:
-            self.logger.info("***************** Start ****************")
+        # TODO PARALELIZAR
+        # with futures.ProcessPoolExecutor(max_workers=self.max_workers) as ex:
+        heart_beat = 0
+        current = 1
 
-            heart_beat = 0
-            current = 1
-            for pointing in pointings:
-                self.logger.debug("Running  %s/%s" % (current, len(pointings)))
+        self.stats['tasks'] = len(pointings)
 
-                result = self.get_asteroids_from_skybot(pointing)
+        for pointing in pointings:
+            self.logger.info("Running  %s/%s" % (current, len(pointings)))
 
-                current += 1
+            self.stats['current'] = current
 
+            result = self.get_asteroids_from_skybot(pointing)
 
-                if heart_beat > self.heart_beat_interval:
-                    self.write_results()
-                    heart_beat = 0
+            current += 1
 
-                heart_beat +=1
+            # escrever em arquivo os resultados do download.
+            if heart_beat > self.heart_beat_interval:
+                self.write_results()
+                heart_beat = 0
 
-                if result['skybot_downloaded']:
-                    ex.submit(import_skybot_output, result).add_done_callback(
-                        self.register_result)
-                else:
-                    self.register_errors(result)
+            heart_beat += 1
+
+            if result['skybot_downloaded']:
+                # ex.submit(import_skybot_output, result).add_done_callback(
+                #     self.register_result)
+
+                import_result = impSkybot.read_skybot_output_csv(result['file_path'])
+                result.update(import_result)
+
+                associate_result = self.associate_ccd(result)
+                result.update(associate_result)
+
+                self.register_result(result)
+            else:
+                self.register_errors(result)
 
         self.write_results()
-
-        self.logger.info("***************** Done ****************")
 
     def write_results(self):
         # Escrever o csv com os resultados
         self.df_results.to_csv(
             path_or_buf=self.results_file, sep=";", index=False)
 
+        # Total de linhas alteradas ou criadas.
+        self.skybotrun.rows = self.df_results['count_rows'].sum()
+        self.skybotrun.save()
+
         # Escrever o arquivo de time profile
         self.df_time_profile.to_csv(
             path_or_buf=self.time_profile, sep=";", index=False)
 
-    def register_result(self, future):
-        # self.logger.debug("***** Futture: %s" % future.result())
-
-        result = future.result()
-
+    def register_result(self, result):
         self.df_results = self.df_results.append(result, ignore_index=True)
+
+        # Total de linhas alteradas ou criadas.
+        self.stats['rows'] = int(self.stats['rows']) + \
+            int(result['count_rows'])
+
+        # Escrever o arquivo de Status
+        self.write_stats()
 
         # Register time Download
         self.register_time_profile(
@@ -157,6 +178,15 @@ class SkybotServer():
         self.register_time_profile(
             result['expnum'], 2, result['import_start'], result['import_finish'])
 
+        # Register time Associate CCD
+        self.register_time_profile(
+            result['expnum'], 3, result['ccd_start'], result['ccd_finish'])
+
+
+    def write_stats(self):
+
+        with open(self.stats_json, 'w') as outfile:
+            json.dump(self.stats, outfile)
 
     def register_time_profile(self, expnum, operation, start, finish):
 
@@ -175,13 +205,19 @@ class SkybotServer():
         self.logger.debug("Total de Pointings: %s" % count)
 
         cols = self.dbpt.tbl.c
-
+        
         stm = select([cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg]).group_by(
             cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg).order_by(cols.date_obs).limit(self.debug_limit)
 
+        
         pointings = self.dbpt.fetch_all_dict(stm)
 
         self.logger.debug("Rows: [%s]" % len(pointings))
+
+        self.skybotrun.exposure = len(pointings)
+        self.skybotrun.save()
+
+        self.pointings = pointings
 
         # Fazer a busca no Skybot
         self.run_get_asteroids(pointings)
@@ -196,19 +232,23 @@ class SkybotServer():
 
         cols = self.dbpt.tbl.c
 
-        stm = select([cols.expnum, cols.band, cols.date_obs,
-                      cols.radeg, cols.decdeg]) \
+        stm = select([cols.expnum, cols.ccdnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg, cols.rac1, cols.decc1, cols.rac2, cols.decc2, cols.rac3, cols.decc3, cols.rac4, cols.decc4]) \
             .where(and_(
                 cast(cols.date_obs, DATE) >= date_initial.strftime("%Y-%m-%d"),
                 cast(cols.date_obs, DATE) >= date_final.strftime("%Y-%m-%d")
             )) \
-            .group_by(cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg) \
+            .group_by(cols.expnum, cols.ccdnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg, cols.rac1, cols.decc1, cols.rac2, cols.decc2, cols.rac3, cols.decc3, cols.rac4, cols.decc4) \
             .order_by(cols.date_obs) \
             .limit(self.debug_limit)
 
         pointings = self.dbpt.fetch_all_dict(stm)
 
         self.logger.debug("Rows: [%s]" % len(pointings))
+
+        self.skybotrun.exposure = len(pointings)
+        self.skybotrun.save()
+
+        self.pointings = pointings
 
         # Fazer a busca no Skybot
         for pointing in pointings:
@@ -224,20 +264,24 @@ class SkybotServer():
 
         cols = self.dbpt.tbl.c
 
-        stm = select([cols.expnum, cols.band, cols.date_obs,
-                      cols.radeg, cols.decdeg]) \
+        stm = select([cols.expnum, cols.ccdnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg, cols.rac1, cols.decc1, cols.rac2, cols.decc2, cols.rac3, cols.decc3, cols.rac4, cols.decc4]) \
             .where(and_(
                 text(
-                    "q3c_radial_query(\"ra_cent\", \"dec_cent\", 37.133189, -8.416731, 2.5)")
+                    "q3c_radial_query(\"ra_cent\", \"dec_cent\", %s, %s, %s)" % (ra, dec, radius))
             )
         ) \
-            .group_by(cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg) \
+            .group_by(cols.expnum, cols.ccdnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg, cols.rac1, cols.decc1, cols.rac2, cols.decc2, cols.rac3, cols.decc3, cols.rac4, cols.decc4) \
             .order_by(cols.date_obs) \
             .limit(self.debug_limit)
 
         pointings = self.dbpt.fetch_all_dict(stm)
 
         self.logger.debug("Total de Pointings: %s" % len(pointings))
+
+        self.skybotrun.exposure = len(pointings)
+        self.skybotrun.save()
+
+        self.pointings = pointings
 
         # Fazer a busca no Skybot
         self.run_get_asteroids(pointings)
@@ -254,22 +298,26 @@ class SkybotServer():
 
         cols = self.dbpt.tbl.c
 
-        stm = select([cols.expnum, cols.band, cols.date_obs,
-                      cols.radeg, cols.decdeg]) \
+        # TODO query com parametros hardcoded
+
+        stm = select([cols.expnum, cols.ccdnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg, cols.rac1, cols.decc1, cols.rac2, cols.decc2, cols.rac3, cols.decc3, cols.rac4, cols.decc4]) \
             .where(and_(
                 text(
                     "q3c_poly_query(\"ra_cent\", \"dec_cent\",'{149.007568, 1.231059, 151.094971, 1.231059, 151.094971, 3.172285, 149.007568, 3.172285}')")
             )
         ) \
-            .group_by(cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg) \
+            .group_by(cols.expnum, cols.ccdnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg, cols.rac1, cols.decc1, cols.rac2, cols.decc2, cols.rac3, cols.decc3, cols.rac4, cols.decc4) \
             .order_by(cols.date_obs) \
             .limit(self.debug_limit)
 
-        self.logger.debug("Antes")
         pointings = self.dbpt.fetch_all_dict(stm)
-        self.logger.debug("Depois")
 
         self.logger.debug("Rows: [%s]" % len(pointings))
+
+        self.skybotrun.exposure = len(pointings)
+        self.skybotrun.save()
+
+        self.pointings = pointings
 
         # Fazer a busca no Skybot
         for pointing in pointings:
@@ -313,6 +361,7 @@ class SkybotServer():
             if os.path.exists(file_path):
                 file_size = os.path.getsize(file_path)
 
+            self.logger.debug("Skybot URL: [ %s ]" % r.url)
         except Exception as e:
             self.logger.error(e)
             error = e
@@ -340,3 +389,75 @@ class SkybotServer():
             self.logger.error("Skybot output failed: [%s]" % file_path)
 
         return result
+
+    def get_ccds_by_expnum(self, expnum):
+
+        self.logger.info("Get CCDs for Expnum: [ %s ]" % expnum)
+
+        tbl = self.dbpt.tbl
+
+        stm = select(tbl.c).order_by(tbl.c.ccdnum).where(and_(tbl.c.expnum == expnum))
+        
+        ccds = self.dbpt.fetch_all_dict(stm)
+
+        self.logger.info("Total CCDS: [ %s ] for Expnum [ %s ]" % (len(ccds), expnum))
+
+        return ccds
+
+
+    def associate_ccd(self, poiting):
+        self.logger.info("Associate With CCDs")
+
+        self.logger.debug(poiting)
+        self.logger.debug("Expnum [ %s ] Band [ %s ]" % (poiting['expnum'], poiting['band']))
+
+        t0 = datetime.now() 
+
+        # Para cada exposicao buscar todos os ccds
+        ccds = self.get_ccds_by_expnum(poiting['expnum'])
+
+        count_updates = 0
+
+        for ccd in ccds:
+            self.logger.debug("CCD [ %s ]" % (ccd['ccdnum']))
+            self.logger.debug("RAC1 [ %s ] Decc1 [ %s ]" % (ccd['rac1'], ccd['decc1']))
+            self.logger.debug("RAC2 [ %s ] Decc2 [ %s ]" % (ccd['rac2'], ccd['decc2']))
+            self.logger.debug("RAC3 [ %s ] Decc3 [ %s ]" % (ccd['rac3'], ccd['decc3']))
+            self.logger.debug("RAC4 [ %s ] Decc4 [ %s ]" % (ccd['rac4'], ccd['decc4']))
+
+            cols = self.dbsk.tbl.c
+
+            stm = self.dbsk.tbl.update().\
+                    where(and_(
+                        text("q3c_poly_query(\"raj2000\", \"decj2000\", '{%s, %s, %s, %s, %s, %s, %s, %s}')" % (ccd['rac1'], ccd['decc1'], ccd['rac2'], ccd['decc2'], ccd['rac3'], ccd['decc3'],ccd['rac4'], ccd['decc4'])),
+                        cols.expnum == ccd['expnum'],
+                        cols.band == ccd['band']
+                        )).\
+                            values(ccdnum = ccd['ccdnum'])
+                    
+
+            self.logger.debug("SQL: %s" % str(stm))
+
+            asteroids = self.dbsk.engine.execute(stm)
+            
+            count = asteroids.rowcount
+
+            count_updates += count
+
+            self.logger.info("CCD [ %s ] Asteroids [ %s ]" % (ccd['ccdnum'], count))
+
+        t1 = datetime.now()
+        tdelta = t1 - t0
+
+        result_ccd = dict({
+            'ccd_count': len(ccds),
+            'ccd_count_rows': count_updates,
+            'ccd_start': t0.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3],
+            'ccd_finish': t1.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3],
+            'ccd_time': tdelta.total_seconds(),
+            })
+
+        self.logger.info("Expnum [ %s ] Skybot [ %s ] Asteroids in CCD [ %s ]" % (ccd['expnum'], poiting['count_rows'] , count_updates))
+
+        return result_ccd
+

@@ -727,12 +727,18 @@ class SkybotRun(models.Model):
         blank=True
     )
 
+    rows = models.BigIntegerField(
+        verbose_name='Rows',
+        null=True,
+        blank=True
+    )
+
     status = models.CharField(
         max_length=15,
         verbose_name='Status',
         default='pending', null=True, blank=True,
         choices=(('pending', 'Pending'), ('running', 'Running'), ('success',
-                                                                  'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
+                                                                  'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'), ('canceled', 'Canceled'))
     )
 
     start = models.DateTimeField(
@@ -742,6 +748,11 @@ class SkybotRun(models.Model):
     finish = models.DateTimeField(
         verbose_name='Finish',
         auto_now_add=False, null=True, blank=True)
+
+    execution_time = models.DurationField(
+        verbose_name='Execution Time',
+        null=True, blank=True
+    )
 
     type_run = models.CharField(
         max_length=30,
@@ -873,6 +884,12 @@ class SkybotRun(models.Model):
         verbose_name='DEC LL',
         null=True,
         blank=True,
+    )
+
+    error = models.TextField(
+        verbose_name="Error",
+        null=True, 
+        blank=True
     )
 
     def __str__(self):

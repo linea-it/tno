@@ -805,6 +805,12 @@ body > .navbar-collapse[data-color="purple"]:after {
   width: 100px   !important;
   border-radius: 1px; }
 
+.btn-TNO-danger {
+  background: #FF4A55 !important;
+  border: none !important;
+  width: 100px   !important;
+  border-radius: 1px; }
+
 .form-control::-moz-placeholder {
   color: #DDDDDD;
   opacity: 1;
@@ -1098,6 +1104,8 @@ body > .navbar-collapse[data-color="purple"]:after {
     background-color: #FF4A55 !important; }
   .status_table.pending {
     background-color: #403f3f !important; }
+  .status_table.canceled {
+    background-color: #FF4A55 !important; }
 
 .simple_property_table tbody > tr > td {
   font-size: 14px;

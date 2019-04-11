@@ -2,15 +2,23 @@ import React from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Modal } from 'react-bootstrap';
 import { Button } from 'primereact/button';
+import PropTypes from 'prop-types';
 
 class Square extends React.Component {
   state = {
-    ra_cent: '',
-    dec_cent: '',
-    radius: '',
+    ra_cent: '-8.41',
+    dec_cent: '37.13',
+    radius: '2.5',
   };
-  onClick = () => {
-    this.props.circle(
+
+  static propTypes = {
+    handleSubmit: PropTypes.func.isRequired,
+    show: PropTypes.bool.isRequired,
+    onHide: PropTypes.func.isRequired,
+  };
+
+  handleSubmit = () => {
+    this.props.handleSubmit(
       this.state.ra_cent,
       this.state.dec_cent,
       this.state.radius
@@ -19,7 +27,8 @@ class Square extends React.Component {
   render() {
     return (
       <Modal
-        {...this.props}
+        show={this.props.show}
+        onHide={this.props.onHide}
         size="lg"
         backdrop="static"
         aria-labelledby="contained-modal-title-vcenter"
@@ -27,14 +36,14 @@ class Square extends React.Component {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Fill in the fields of the coordinates
+            Query of all pointings within the circular region of the sky
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="p-grid">
             <div className="p-col-4">
               <br />
-              <label htmlFor="in">RA CENT</label>
+              <label htmlFor="in">RA (deg)</label>
               <br />
               <InputText
                 value={this.state.ra_cent}
@@ -43,7 +52,7 @@ class Square extends React.Component {
             </div>
             <div className="p-col-4">
               <br />
-              <label htmlFor="in">DEC CENT</label>
+              <label htmlFor="in">Dec (deg)</label>
               <br />
               <InputText
                 value={this.state.dec_cent}
@@ -52,7 +61,7 @@ class Square extends React.Component {
             </div>
             <div className="p-col-3">
               <br />
-              <label htmlFor="in">RADIUS</label>
+              <label htmlFor="in">RADIUS (deg)</label>
               <br />
               <InputText
                 value={this.state.radius}
@@ -63,9 +72,9 @@ class Square extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button
-            label="OK"
+            label="Submit"
             style={{ width: '120px' }}
-            onClick={this.onClick}
+            onClick={this.handleSubmit}
           />
         </Modal.Footer>
       </Modal>

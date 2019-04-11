@@ -105,6 +105,9 @@
     &.pending {
         background-color: $custom-dark-gray !important;
     }
+    &.canceled {
+        background-color: $danger-color !important;
+    }    
 }
 
 .simple_property_table {

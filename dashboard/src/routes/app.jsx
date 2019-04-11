@@ -24,7 +24,9 @@ import OccultationsPanel from '../views/Occultations/Panel';
 import OccultationDetail from '../views/Occultations/Detail';
 import AsteroidDetailPrediction from '../views/Prediction/AsteroidDetail';
 import SkybotRun from '../views/SolarSystems/SkybotRun/SkybotRun';
-// import FormikTeste from '../views/SolarSystems/FormikTeste';
+import SkybotRunDetail from '../views/SolarSystems/SkybotRun/Detail';
+import ExposureDetail from '../views/SolarSystems/SkybotRun/ExposureDetail';
+
 
 
 const appRoutes = [
@@ -64,7 +66,18 @@ const appRoutes = [
     name: 'Skybot Run',
     component: SkybotRun,
   },
-
+  {
+    path: '/skybotrun_detail/:id',
+    name: 'Skybot Run Detail',
+    component: SkybotRunDetail,
+    hidden: true,
+  },
+  {
+    path: '/skybotrun_exposure/:skybotrun/:expnum',
+    name: 'Skybot Run Exposure Detail',
+    component: ExposureDetail,
+    hidden: true,
+  },
   // { path: '/skybot', name: 'SkyBoT', icon: 'pe-7s-science', component: SkyBot },
   {
     path: '/filterobject',

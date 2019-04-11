@@ -2,6 +2,7 @@ import React from 'react';
 import { Calendar } from 'primereact/calendar';
 import { Modal } from 'react-bootstrap';
 import { Button } from 'primereact/button';
+import PropTypes from 'prop-types';
 
 class Square extends React.Component {
   state = {
@@ -9,8 +10,14 @@ class Square extends React.Component {
     dateFinal: '',
   };
 
-  onClick = () => {
-    this.props.dates(this.state.dateInitial, this.state.dateFinal);
+  static propTypes = {
+    handleSubmit: PropTypes.func.isRequired,
+    show: PropTypes.bool.isRequired,
+    onHide: PropTypes.func.isRequired,
+  };
+
+  handleSubmit = () => {
+    this.props.handleSubmit(this.state.dateInitial, this.state.dateFinal);
   };
 
   onClear = () => {
@@ -20,7 +27,8 @@ class Square extends React.Component {
   render() {
     return (
       <Modal
-        {...this.props}
+        show={this.props.show}
+        onHide={this.props.onHide}
         size="lg"
         backdrop="static"
         aria-labelledby="contained-modal-title-vcenter"
@@ -28,14 +36,14 @@ class Square extends React.Component {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Fill in the fields of the coordinates
+            Query of all pointings by Period
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="p-grid">
             <div className="p-col-6">
               <br />
-              <label htmlFor="in">Data Inital</label>
+              <label htmlFor="in">Initial Date</label>
               <br />
               <Calendar
                 value={this.state.dateInitial}
@@ -44,7 +52,7 @@ class Square extends React.Component {
             </div>
             <div className="p-col-6">
               <br />
-              <label htmlFor="in">Data Final</label>
+              <label htmlFor="in">Final Date</label>
               <br />
               <Calendar
                 value={this.state.dateFinal}
@@ -57,7 +65,7 @@ class Square extends React.Component {
           <Button
             label="OK"
             style={{ width: '120px' }}
-            onClick={this.onClick}
+            onClick={this.handleSubmit}
           />
         </Modal.Footer>
       </Modal>
