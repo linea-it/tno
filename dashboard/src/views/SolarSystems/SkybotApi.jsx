@@ -42,6 +42,11 @@ class SkybotApi {
     });
   };
 
+  getExposurePlot = (skybotrun, expnum) => {
+    return axios.get(`${this.api}/skybot_run/skybot_output_plot/`, {
+      params: { run_id: skybotrun, expnum: expnum },
+    });
+  };
   getStatistic = ({ id }) => {
     return axios.get(`${this.api}/skybot_run/statistic/`, {
       params: { run_id: id },

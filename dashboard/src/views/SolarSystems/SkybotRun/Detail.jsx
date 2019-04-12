@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import DonutStats from 'components/Statistics/DonutStats.jsx';
 import ListStats from 'components/Statistics/ListStats.jsx';
-import SkybotTimeProfile from './TimeProfile';
+// import SkybotTimeProfile from './TimeProfile';
 import { Button } from 'primereact/button';
 
 class SkybotRunDetail extends Component {
@@ -52,7 +52,7 @@ class SkybotRunDetail extends Component {
           data: data,
         },
         () => {
-          this.loadTimeProfile(params.id);
+          // this.loadTimeProfile(params.id);
           this.loadStatistic(params.id);
         }
       );
@@ -167,7 +167,7 @@ class SkybotRunDetail extends Component {
             />
           </div>
         </div>
-        <div className="p-col-12">
+        {/* <div className="p-col-12">
           <PanelCostumize
             title="Time Profile"
             content={
@@ -178,7 +178,7 @@ class SkybotRunDetail extends Component {
               />
             }
           />
-        </div>
+        </div> */}
       </div>
     );
   }

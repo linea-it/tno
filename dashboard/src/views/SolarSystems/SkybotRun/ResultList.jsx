@@ -88,6 +88,13 @@ class ResultList extends Component {
       field: 'band',
       header: 'Band',
       sortable: false,
+      width: 60,
+    },
+    {
+      field: 'date_obs',
+      header: 'Date Obs',
+      sortable: false,
+      width: 180,
     },
     {
       field: 'execution_time',

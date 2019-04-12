@@ -35,12 +35,12 @@ class ExposureDetail extends Component {
   columns = [
     {
       field: 'num',
-      header: 'Number',
+      header: 'Object Number',
       sortable: false,
     },
     {
       field: 'name',
-      header: 'Name',
+      header: 'Object Name',
       sortable: false,
     },
     {
@@ -65,7 +65,7 @@ class ExposureDetail extends Component {
     },
     {
       field: 'errpos',
-      header: 'errpos',
+      header: 'errpos (arcsec)',
       sortable: false,
     },
     {
@@ -89,82 +89,28 @@ class ExposureDetail extends Component {
 
     this.api.getSkybotResultByExposure(skybotrun, expnum).then(res => {
       const data = res.data;
-      console.log("Data: ", data)
-
       this.setState({
         skybotrun: skybotrun,
         expnum: expnum,
         skybotOutput: data.rows,
       });
-    })
+    });
 
-    // this.api.getAsteroidById({ id: asteroid_id }).then(res => {
-    //   const asteroid = res.data;
+    this.api.getExposurePlot(skybotrun, expnum).then(res => {
+      const data = res.data;
 
-    //   if (asteroid.id) {
-    //     // Recuperar os arquivos de resultados
-    //     this.api.getAsteroidFiles({ id: asteroid_id }).then(res => {
-    //       const files = res.data.results;
+      this.setState({
+        ccds: data.ccds,
+        plot_src: this.api.api + data.plot_src,
+        plot_filename: data.plot_filename,
+      })
 
-    //       // Lista so com os arquivos que sao imagens
-    //       const excluded_images = ['omc_sep.png'];
-    //       const images = [];
-
-    //       const childrens = [];
-
-    //       files.forEach(e => {
-    //         if (
-    //           e.file_type === '.png' &&
-    //           !excluded_images.includes(e.filename)
-    //         ) {
-    //           // O source deve apontar para o backend
-    //           e.src = this.api.api + e.src;
-    //           // Saber em qual ordem deve ser exibida a imagem.
-    //           const idx = this.plot_images_order.indexOf(e.type);
-
-    //           if (idx > -1) {
-    //             images[idx] = e;
-    //           }
-    //         }
-
-    //         childrens.push({
-    //           data: e,
-    //           expanded: true,
-    //         });
-    //       });
-
-    //       // Estrutura dos arquivos em forma de tree
-    //       const tree_data = [
-    //         {
-    //           data: {
-    //             filename: asteroid.name,
-    //           },
-    //           children: childrens,
-    //           expanded: true,
-    //         },
-    //       ];
-
-    //       this.setState(
-    //         {
-    //           id: parseInt(params.id, 10),
-    //           asteroid: asteroid,
-    //           files: files,
-    //           images: images,
-    //           tree_data: tree_data,
-    //         },
-    //         this.getNeighbors(asteroid_id)
-    //       );
-    //     });
-
-    //     // Recuperar os Inputs
-    //     this.api.getAsteroidInputs({ id: asteroid_id }).then(res => {
-    //       const inputs = res.data.results;
-    //       this.setState({
-    //         inputs: inputs,
-    //       });
-    //     });
-    //   }
-    // });
+      // this.setState({
+      //   skybotrun: skybotrun,
+      //   expnum: expnum,
+      //   skybotOutput: data.rows,
+      // });
+    });
   }
 
   create_nav_bar = () => {
@@ -194,7 +140,7 @@ class ExposureDetail extends Component {
   render() {
     // const asteroid = this.state.asteroid;
 
-    const { skybotOutput } = this.state;
+    const { skybotOutput, expnum, plot_src } = this.state;
 
     const columns = this.columns.map((col, i) => {
       return (
@@ -214,7 +160,14 @@ class ExposureDetail extends Component {
         {this.create_nav_bar()}
         <div className="ui-g">
           <div className="ui-g-4">
-            Teste
+            <Card subTitle={`Expnum: ${expnum}`}>
+                <img
+                  // id={e.filename}
+                  width="100%"
+                  src={plot_src}
+                  // alt={e.filename}
+                />
+            </Card>
           </div>
         </div>
         <div className="ui-g" />

@@ -25,10 +25,10 @@ import csv
 from .johnstons import JhonstonArchive
 from django.utils import timezone
 from datetime import datetime
-
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
-
+from tno.skybot.plot_ccds_objects import ccds_objects
+import urllib
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -601,7 +601,7 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
 
         results_file = os.path.join(output_path, 'results.csv')
 
-        headers = ['expnum', 'band', 'skybot_downloaded', 'skybot_url', 'download_start', 'download_finish', 'download_time', 'filename',
+        headers = ['expnum', 'band', 'date_obs', 'skybot_downloaded', 'skybot_url', 'download_start', 'download_finish', 'download_time', 'filename',
                    'file_size', 'file_path', 'import_start', 'import_finish', 'import_time', 'count_created', 'count_updated', 'count_rows',
                    'ccd_count', 'ccd_count_rows', 'ccd_start', 'ccd_finish', 'ccd_time', 'error']
 
@@ -706,9 +706,12 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
             elif getattr(row, "skybot_downloaded") is True and getattr(row, "count_rows") == 0:
                 status = 'warning'
 
+            date_obs = getattr(row, "date_obs")
+            
             rows.append(dict({
                 'expnum': getattr(row, "expnum"),
                 'band': getattr(row, "band"),
+                'date_obs': date_obs.split('.')[0],
                 'status': status,
                 'download_time': d_time,
                 'import_time': i_time,
@@ -798,3 +801,75 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
             'filepath': filepath,
             'rows': rows
         })
+
+    @list_route()
+    def skybot_output_plot(self, request):
+
+        run_id = int(request.query_params.get('run_id', None))
+        expnum = int(request.query_params.get('expnum', None))
+
+        skybotrun = None
+        try:
+            skybotrun = SkybotRun.objects.get(pk=int(run_id))
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "SkybotRun not found. run_id %s" % run_id
+            })
+
+        if expnum is None:
+            return Response({
+                'success': False,
+                'msg': "Expnum is required"
+            })
+
+        # lista de CCDs da exposicao
+        ccdModels = Pointing.objects.filter(expnum=expnum)
+        serializer = PointingSerializer(ccdModels, many=True)
+        ccds = serializer.data
+
+        # Exposure center
+        ra = ccds[0]['radeg']
+        dec = ccds[0]['decdeg']
+
+        # Objetos dentro de ccd.
+        mAsteroids = SkybotOutput.objects.filter(expnum=expnum, ccdnum__isnull=False)
+
+        # Objetos retornados skybot
+        df = self.read_result_csv(skybotrun)
+
+        # Pega o primeiro resultado da busca por expnum
+        first = df[df.expnum==expnum].iloc[0]
+
+        # Recupera o path para o arquivo de saida do skybot
+        filename = getattr(first, 'filename')
+        output_path = self.get_output_path(skybotrun)
+        skybot_output_file = os.path.join(output_path, filename)
+
+        # O arquivo de plot deve ficar no diretorio tmp, para ficar disponivel para as interfaces.
+        plot_filename = 'ccd_object_%s.png' % expnum
+        plot_file_path = os.path.join(settings.MEDIA_TMP_DIR, plot_filename)
+        plot_src = urllib.parse.urljoin(settings.MEDIA_TMP_URL, plot_filename)
+
+        plot = ccds_objects(
+            ra=ra, 
+            dec=dec,  
+            ccds=ccds, 
+            skybot_file=skybot_output_file, 
+            file_path=plot_file_path)
+
+        return Response({
+            'success': True,
+            'expnum': expnum,
+            'ccds': len(ccds),
+            'asteroids_ccd': len(mAsteroids),
+            'skybot_output_file': skybot_output_file,
+            'plot_file_path': plot_file_path,
+            'plot_src': plot_src,
+            'plot_filename': plot_filename,
+            # 'teste': ccds[0]
+        })
+
+
+

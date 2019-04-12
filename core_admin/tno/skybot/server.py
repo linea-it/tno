@@ -46,7 +46,7 @@ class SkybotServer():
         self.skybot_server = "http://srvskybot.linea.gov.br/webservices/skybot/skybotconesearch_query.php"
 
         # Cone search radius in Degres
-        self.cone_search_radius = 1.1
+        self.cone_search_radius = 1.2
 
         # Observer Code
         self.observer_location = 'w84'
@@ -82,13 +82,13 @@ class SkybotServer():
         self.time_profile = os.path.join(
             self.skybot_output_path, 'time_profile.csv')
 
-        self.debug_limit = 50
+        self.debug_limit = 2
 
         self.heart_beat_interval = 10
 
         self.max_workers = 2
 
-        result_columns = ['expnum', 'band', 'skybot_downloaded', 'skybot_url', 'download_start', 'download_finish', 'download_time', 'filename',
+        result_columns = ['expnum', 'band', 'date_obs', 'skybot_downloaded', 'skybot_url', 'download_start', 'download_finish', 'download_time', 'filename',
                           'file_size', 'file_path', 'import_start', 'import_finish', 'import_time', 'count_created', 'count_updated', 'count_rows', 
                           'ccd_count', 'ccd_count_rows', 'ccd_start', 'ccd_finish', 'ccd_time', 'error']
 
@@ -372,6 +372,7 @@ class SkybotServer():
         result = dict({
             'expnum': pointing.get("expnum"),
             'band': pointing.get("band"),
+            'date_obs': pointing.get("date_obs"),
             'skybot_downloaded': True,
             'skybot_url': r.url,
             'download_start': t0.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3],
