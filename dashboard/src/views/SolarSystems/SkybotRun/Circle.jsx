@@ -6,9 +6,9 @@ import PropTypes from 'prop-types';
 
 class Square extends React.Component {
   state = {
-    ra_cent: '-8.41',
-    dec_cent: '37.13',
-    radius: '2.5',
+    ra_cent: '',
+    dec_cent: '',
+    radius: '',
   };
 
   static propTypes = {

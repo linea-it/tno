@@ -871,5 +871,22 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
             # 'teste': ccds[0]
         })
 
+    @list_route()
+    def asteroids_ccd(self, request):
+        expnum = int(request.query_params.get('expnum', None))
 
+        if expnum is None:
+            return Response({
+                'success': False,
+                'msg': "Expnum is required"
+            })
 
+        asteroids = SkybotOutput.objects.filter(expnum=expnum, ccdnum__isnull=False).order_by('ccdnum')
+        serializer = SkybotOutputSerializer(asteroids, many=True)
+        rows = serializer.data
+
+        return Response({
+            'success': True,
+            'rows': rows,
+            'count': len(rows)
+        })

@@ -103,8 +103,6 @@ class SkybotServer():
 
         self.pointings = []
 
-        cols = self.dbpt.tbl.c
-        self.pointing_cols = [cols.expnum, cols.ccdnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg, cols.rac1, cols.decc1, cols.rac2, cols.decc2, cols.rac3, cols.decc3, cols.rac4, cols.decc4]
 
     def run_get_asteroids(self, pointings):
 
@@ -232,12 +230,12 @@ class SkybotServer():
 
         cols = self.dbpt.tbl.c
 
-        stm = select([cols.expnum, cols.ccdnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg, cols.rac1, cols.decc1, cols.rac2, cols.decc2, cols.rac3, cols.decc3, cols.rac4, cols.decc4]) \
+        stm = select([cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg]) \
             .where(and_(
                 cast(cols.date_obs, DATE) >= date_initial.strftime("%Y-%m-%d"),
                 cast(cols.date_obs, DATE) >= date_final.strftime("%Y-%m-%d")
             )) \
-            .group_by(cols.expnum, cols.ccdnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg, cols.rac1, cols.decc1, cols.rac2, cols.decc2, cols.rac3, cols.decc3, cols.rac4, cols.decc4) \
+            .group_by(cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg) \
             .order_by(cols.date_obs) \
             .limit(self.debug_limit)
 
@@ -264,13 +262,13 @@ class SkybotServer():
 
         cols = self.dbpt.tbl.c
 
-        stm = select([cols.expnum, cols.ccdnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg, cols.rac1, cols.decc1, cols.rac2, cols.decc2, cols.rac3, cols.decc3, cols.rac4, cols.decc4]) \
+        stm = select([cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg]) \
             .where(and_(
                 text(
                     "q3c_radial_query(\"ra_cent\", \"dec_cent\", %s, %s, %s)" % (ra, dec, radius))
             )
         ) \
-            .group_by(cols.expnum, cols.ccdnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg, cols.rac1, cols.decc1, cols.rac2, cols.decc2, cols.rac3, cols.decc3, cols.rac4, cols.decc4) \
+            .group_by(cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg) \
             .order_by(cols.date_obs) \
             .limit(self.debug_limit)
 
@@ -300,13 +298,14 @@ class SkybotServer():
 
         # TODO query com parametros hardcoded
 
-        stm = select([cols.expnum, cols.ccdnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg, cols.rac1, cols.decc1, cols.rac2, cols.decc2, cols.rac3, cols.decc3, cols.rac4, cols.decc4]) \
+        stm = select([cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg]) \
             .where(and_(
                 text(
-                    "q3c_poly_query(\"ra_cent\", \"dec_cent\",'{149.007568, 1.231059, 151.094971, 1.231059, 151.094971, 3.172285, 149.007568, 3.172285}')")
+                    "q3c_poly_query(\"ra_cent\", \"dec_cent\",'{%s, %s, %s, %s, %s, %s, %s, %s}')" %(
+                        ra_ul, dec_ul, ra_ur, dec_ur, ra_lr, dec_lr, ra_ll, dec_ll))
             )
         ) \
-            .group_by(cols.expnum, cols.ccdnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg, cols.rac1, cols.decc1, cols.rac2, cols.decc2, cols.rac3, cols.decc3, cols.rac4, cols.decc4) \
+            .group_by(cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg) \
             .order_by(cols.date_obs) \
             .limit(self.debug_limit)
 

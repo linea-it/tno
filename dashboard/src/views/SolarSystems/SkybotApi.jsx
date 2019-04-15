@@ -47,6 +47,12 @@ class SkybotApi {
       params: { run_id: skybotrun, expnum: expnum },
     });
   };
+  getAsteroidsInsideCCD = expnum => {
+    return axios.get(`${this.api}/skybot_run/asteroids_ccd/`, {
+      params: { expnum: expnum },
+    });
+  };
+
   getStatistic = ({ id }) => {
     return axios.get(`${this.api}/skybot_run/statistic/`, {
       params: { run_id: id },

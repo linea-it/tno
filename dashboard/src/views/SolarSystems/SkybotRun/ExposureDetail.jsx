@@ -9,14 +9,11 @@ import 'primeicons/primeicons.css';
 import SkybotApi from 'views/SolarSystems/SkybotApi';
 // interface components
 import { Card } from 'primereact/card';
-import Lightbox from 'react-images';
-import { TreeTable } from 'primereact/treetable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toolbar } from 'primereact/toolbar';
 import { DataTable } from 'primereact/datatable';
-import ListStats from 'components/Statistics/ListStats.jsx';
-
+import { InputSwitch } from 'primereact/inputswitch';
 class ExposureDetail extends Component {
   state = this.initialState;
   api = new SkybotApi();
@@ -30,6 +27,7 @@ class ExposureDetail extends Component {
     return {
       skybotrun: null,
       expnum: null,
+      showAllSkybot: false,
     };
   }
   columns = [
@@ -70,7 +68,7 @@ class ExposureDetail extends Component {
     },
     {
       field: 'd',
-      header: 'd',
+      header: 'd (arcsec)',
       sortable: false,
     },
     {
@@ -78,7 +76,7 @@ class ExposureDetail extends Component {
       header: 'epoch',
       sortable: false,
     },
-  ]
+  ];
   componentDidMount() {
     const {
       match: { params },
@@ -88,28 +86,25 @@ class ExposureDetail extends Component {
     const expnum = params.expnum;
 
     this.api.getSkybotResultByExposure(skybotrun, expnum).then(res => {
-      const data = res.data;
-      this.setState({
-        skybotrun: skybotrun,
-        expnum: expnum,
-        skybotOutput: data.rows,
+      const { rows } = res.data;
+
+      this.api.getExposurePlot(skybotrun, expnum).then(res => {
+        const { ccds, plot_src, plot_filename } = res.data;
+
+        this.api.getAsteroidsInsideCCD(expnum).then(res => {
+          const asteroidCcds = res.data.rows;
+
+          this.setState({
+            skybotrun: skybotrun,
+            expnum: expnum,
+            skybotOutput: rows,
+            asteroidCcds: asteroidCcds,
+            ccds: ccds,
+            plot_src: this.api.api + plot_src,
+            plot_filename: plot_filename,
+          });
+        });
       });
-    });
-
-    this.api.getExposurePlot(skybotrun, expnum).then(res => {
-      const data = res.data;
-
-      this.setState({
-        ccds: data.ccds,
-        plot_src: this.api.api + data.plot_src,
-        plot_filename: data.plot_filename,
-      })
-
-      // this.setState({
-      //   skybotrun: skybotrun,
-      //   expnum: expnum,
-      //   skybotOutput: data.rows,
-      // });
     });
   }
 
@@ -136,11 +131,16 @@ class ExposureDetail extends Component {
     history.push({ pathname: `/skybotrun_detail/${skybotrun}` });
   };
 
-
   render() {
     // const asteroid = this.state.asteroid;
 
-    const { skybotOutput, expnum, plot_src } = this.state;
+    const {
+      skybotOutput,
+      asteroidCcds,
+      expnum,
+      plot_src,
+      showAllSkybot,
+    } = this.state;
 
     const columns = this.columns.map((col, i) => {
       return (
@@ -155,36 +155,67 @@ class ExposureDetail extends Component {
       );
     });
 
+    const switchLabel =
+      showAllSkybot === true
+        ? 'All Skybot output'
+        : 'Only Asteroids inside CCD';
+
     return (
       <div className="content">
         {this.create_nav_bar()}
         <div className="ui-g">
           <div className="ui-g-4">
             <Card subTitle={`Expnum: ${expnum}`}>
-                <img
-                  // id={e.filename}
-                  width="100%"
-                  src={plot_src}
-                  // alt={e.filename}
-                />
+              <img
+                // id={e.filename}
+                width="100%"
+                src={plot_src}
+                // alt={e.filename}
+              />
             </Card>
           </div>
         </div>
         <div className="ui-g" />
         <div className="ui-g">
           <div className="ui-g-12">
-            <Card title="Skybot Outputs" subTitle="">
-              <DataTable
-                value={skybotOutput}
-                reorderableColumns={false}
-                reorderableRows={false}
-                responsive={true}
-                scrollable={true}
-              >
-                {columns}
-              </DataTable>
-            </Card>
+            <span className="p-float-label">
+              <InputSwitch
+                id="showAllSkybot"
+                checked={this.state.showAllSkybot}
+                onChange={e => this.setState({ showAllSkybot: e.value })}
+                onLabel=""
+                offLabel="Only Asteroids inside CCD"
+              />
+              <label htmlFor="showAllSkybot">{switchLabel}</label>
+            </span>
+
+            {showAllSkybot === true ? (
+              <Card title="Skybot Outputs" subTitle="">
+                <DataTable
+                  value={skybotOutput}
+                  reorderableColumns={false}
+                  reorderableRows={false}
+                  responsive={true}
+                  scrollable={true}
+                >
+                  {columns}
+                </DataTable>
+              </Card>
+            ) : (
+              <Card title="Asteroids Inside CCD" subTitle="">
+                <DataTable
+                  value={asteroidCcds}
+                  reorderableColumns={false}
+                  reorderableRows={false}
+                  responsive={true}
+                  scrollable={true}
+                >
+                  {columns}
+                </DataTable>
+              </Card>
+            )}
           </div>
+          <div className="ui-g-12" />
         </div>
       </div>
     );
