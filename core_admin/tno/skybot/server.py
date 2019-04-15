@@ -36,9 +36,15 @@ class SkybotServer():
 
     def __init__(self, skybotrun):
         self.logger = logging.getLogger("skybot")
-
         self.logger.info(
             "-------------------------- Skybot Run: %s --------------------------" % skybotrun.id)
+
+        try:
+            self.dbsk = SkybotOutputDB()
+
+            self.dbpt = PointingDB()
+        except Exception as e:
+            self.logger.error(e)
 
         self.skybotrun = skybotrun
 
@@ -63,9 +69,6 @@ class SkybotServer():
 
         self.skybot_output_path = output_path
 
-        self.dbsk = SkybotOutputDB()
-
-        self.dbpt = PointingDB()
 
         self.stats = dict({
             'tasks': 0,
@@ -89,8 +92,8 @@ class SkybotServer():
         self.max_workers = 2
 
         result_columns = ['expnum', 'band', 'date_obs', 'skybot_downloaded', 'skybot_url', 'download_start', 'download_finish', 'download_time', 'filename',
-                          'file_size', 'file_path', 'import_start', 'import_finish', 'import_time', 'count_created', 'count_updated', 'count_rows', 
-                          'ccd_count', 'ccd_count_rows', 'ccd_start', 'ccd_finish', 'ccd_time', 'error']
+                        'file_size', 'file_path', 'import_start', 'import_finish', 'import_time', 'count_created', 'count_updated', 'count_rows', 
+                        'ccd_count', 'ccd_count_rows', 'ccd_start', 'ccd_finish', 'ccd_time', 'error']
 
         self.df_results = pd.DataFrame(
             columns=result_columns,
@@ -102,6 +105,7 @@ class SkybotServer():
         )
 
         self.pointings = []
+
 
 
     def run_get_asteroids(self, pointings):

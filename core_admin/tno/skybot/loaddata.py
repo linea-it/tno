@@ -22,7 +22,10 @@ class ImportSkybot():
 
     def __init__(self):
         self.logger = logging.getLogger("skybot_load_data")
-        self.dbsk = SkybotOutputDB()
+        try:
+            self.dbsk = SkybotOutputDB()
+        except Exception as e:
+            self.logger.error(e)
 
     def read_skybot_output_csv(self, file_path):
 
