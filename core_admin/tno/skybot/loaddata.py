@@ -101,11 +101,14 @@ class ImportSkybot():
         db = self.dbsk
         skybot_output = db.tbl
 
+        # con = db.engine.connect()
+        # with con.begin():
+
         num = str(getattr(asteroid, "num"))
         num = num.strip()
 
         ra, dec = self.HMS2deg(ra=getattr(asteroid, "ra"),
-                               dec=getattr(asteroid, "dec"))
+                            dec=getattr(asteroid, "dec"))
 
         name = getattr(asteroid, "name").strip()
 
@@ -113,51 +116,8 @@ class ImportSkybot():
         pointing = PointingModel.objects.get(expnum=232737)
 
         try:
-            stm_update = skybot_output.update().where(
-                and_(
-                    db.tbl.c.num == num,
-                    db.tbl.c.name == name,
-                    db.tbl.c.expnum == expnum,
-                )
-            ).values(
-                pointing_id=pointing.pk,
-                dynclass=getattr(asteroid, "dynclass").strip(),
-                ra=getattr(asteroid, "ra").strip(),
-                dec=getattr(asteroid, "dec").strip(),
-                raj2000=ra,
-                decj2000=dec,
-                mv=float(getattr(asteroid, "mv")),
-                errpos=float(getattr(asteroid, "errpos")),
-                d=float(getattr(asteroid, "d")),
-                dracosdec=float(getattr(asteroid, "dra")),
-                ddec=float(getattr(asteroid, "ddec")),
-                dgeo=float(getattr(asteroid, "dg")),
-                dhelio=float(getattr(asteroid, "dh")),
-                phase=float(getattr(asteroid, "phase")),
-                solelong=float(getattr(asteroid, "sunelong")),
-                px=float(getattr(asteroid, "x")),
-                py=float(getattr(asteroid, "y")),
-                pz=float(getattr(asteroid, "z")),
-                vx=float(getattr(asteroid, "vx")),
-                vy=float(getattr(asteroid, "vy")),
-                vz=float(getattr(asteroid, "vz")),
-                jdref=float(getattr(asteroid, "epoch")),
-                # externallink=getattr(asteroid, ""),
-                externallink="link",
-                band=band
-            )
-
-            # self.debug_query(stm_update)
-
-            a = db.engine.execute(stm_update)
-
-            created = False
-
-            self.logger.info("UPDATED Asteroid [ %s ]" % name)
-
-        except Exception as e:
             stm_insert = skybot_output.insert().values(
-                id=next_id,
+                # id=next_id,
                 num=num,
                 name=name,
                 pointing_id=pointing.pk,
@@ -188,7 +148,7 @@ class ImportSkybot():
                 # ccdnum=
                 band=band
             )
-            # self.debug_query(stm_insert)
+            self.debug_query(stm_insert)
 
             a = db.engine.execute(stm_insert)
 
@@ -196,6 +156,55 @@ class ImportSkybot():
 
             self.logger.debug("CREATED Asteroid [ %s ]" % name)
 
+        except Exception as e:
+            try:
+                stm_update = skybot_output.update().where(
+                    and_(
+                        db.tbl.c.num == num,
+                        db.tbl.c.name == name,
+                        db.tbl.c.expnum == expnum,
+                    )
+                ).values(
+                    pointing_id=pointing.pk,
+                    dynclass=getattr(asteroid, "dynclass").strip(),
+                    ra=getattr(asteroid, "ra").strip(),
+                    dec=getattr(asteroid, "dec").strip(),
+                    raj2000=ra,
+                    decj2000=dec,
+                    mv=float(getattr(asteroid, "mv")),
+                    errpos=float(getattr(asteroid, "errpos")),
+                    d=float(getattr(asteroid, "d")),
+                    dracosdec=float(getattr(asteroid, "dra")),
+                    ddec=float(getattr(asteroid, "ddec")),
+                    dgeo=float(getattr(asteroid, "dg")),
+                    dhelio=float(getattr(asteroid, "dh")),
+                    phase=float(getattr(asteroid, "phase")),
+                    solelong=float(getattr(asteroid, "sunelong")),
+                    px=float(getattr(asteroid, "x")),
+                    py=float(getattr(asteroid, "y")),
+                    pz=float(getattr(asteroid, "z")),
+                    vx=float(getattr(asteroid, "vx")),
+                    vy=float(getattr(asteroid, "vy")),
+                    vz=float(getattr(asteroid, "vz")),
+                    jdref=float(getattr(asteroid, "epoch")),
+                    # externallink=getattr(asteroid, ""),
+                    externallink="link",
+                    band=band
+                )
+
+                self.debug_query(stm_update)
+
+                a = db.engine.execute(stm_update)
+                if a.rowcount == 1:
+                    created = False
+                    self.logger.info("UPDATED Asteroid [ %s ]" % name)
+                else:
+                    self.logger.warn("Update not affect correct row. Rowcount [%s]" % a.rowcount)
+                    created = False
+                    
+            except Exception as e:
+                self.logger.error(e)
+                raise e
 
         return created
 
@@ -210,6 +219,9 @@ class ImportSkybot():
         last_id = db.fetch_scalar(stm)
         self.logger.debug("Last ID: [ %s ]" % last_id)
 
+        if last_id is None:
+            return 1
+            
         return last_id
 
     def debug_query(self, stm):

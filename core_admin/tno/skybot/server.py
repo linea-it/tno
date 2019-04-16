@@ -85,7 +85,7 @@ class SkybotServer():
         self.time_profile = os.path.join(
             self.skybot_output_path, 'time_profile.csv')
 
-        self.debug_limit = 2
+        self.debug_limit = 1
 
         self.heart_beat_interval = 10
 
