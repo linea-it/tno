@@ -47,7 +47,9 @@ class Square extends React.Component {
               <br />
               <Calendar
                 value={this.state.dateInitial}
+                dateFormat="yy-mm-dd"
                 onChange={e => this.setState({ dateInitial: e.value })}
+                placeholder="yyyy-mm-dd"
               />
             </div>
             <div className="p-col-6">
@@ -56,7 +58,9 @@ class Square extends React.Component {
               <br />
               <Calendar
                 value={this.state.dateFinal}
+                dateFormat="yy-mm-dd"
                 onChange={e => this.setState({ dateFinal: e.value })}
+                placeholder="yyyy-mm-dd"
               />
             </div>
           </div>

@@ -18,6 +18,7 @@ from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.types import String
 
+
 class ImportSkybot():
 
     def __init__(self):
@@ -45,18 +46,14 @@ class ImportSkybot():
 
         df = pd.read_csv(file_path, skiprows=3, delimiter='|', names=headers)
 
-        last_id = self.get_last_id()
-
         count_created = 0
         count_updated = 0
         count_rows = df.shape[0]
 
         # Para cada asteroid fazer o insert ou update
         for row in df.itertuples():
-            next_id = last_id + 1
 
-            created = self.insert_or_update_asteroid(
-                next_id, expnum, band, row)
+            created = self.insert_or_update_asteroid(expnum, band, row)
 
             if created:
                 count_created += 1
@@ -65,7 +62,7 @@ class ImportSkybot():
 
         self.logger.info("CREATED [%s] UPDATED [ %s ]" %
                          (count_created, count_updated))
-        
+
         t1 = datetime.now()
         tdelta = t1 - t0
 
@@ -75,11 +72,11 @@ class ImportSkybot():
             'import_time': tdelta.total_seconds(),
             'count_created': count_created,
             'count_updated': count_updated,
-            'count_rows': count_rows 
+            'count_rows': count_rows
         })
 
-
     # convert ra e dec
+
     def HMS2deg(self, ra='', dec=''):
         RA, DEC, ds = '', '', 1
         if dec:
@@ -94,7 +91,7 @@ class ImportSkybot():
 
         return RA, DEC
 
-    def insert_or_update_asteroid(self, next_id, expnum, band, asteroid):
+    def insert_or_update_asteroid(self, expnum, band, asteroid):
         self.logger.debug("Asteroid Name: [%s] Dynclass [%s]" % (
             getattr(asteroid, "name"), getattr(asteroid, "dynclass")))
 
@@ -108,7 +105,7 @@ class ImportSkybot():
         num = num.strip()
 
         ra, dec = self.HMS2deg(ra=getattr(asteroid, "ra"),
-                            dec=getattr(asteroid, "dec"))
+                               dec=getattr(asteroid, "dec"))
 
         name = getattr(asteroid, "name").strip()
 
@@ -199,30 +196,15 @@ class ImportSkybot():
                     created = False
                     self.logger.info("UPDATED Asteroid [ %s ]" % name)
                 else:
-                    self.logger.warn("Update not affect correct row. Rowcount [%s]" % a.rowcount)
+                    self.logger.warn(
+                        "Update not affect correct row. Rowcount [%s]" % a.rowcount)
                     created = False
-                    
+
             except Exception as e:
                 self.logger.error(e)
                 raise e
 
         return created
-
-    def get_last_id(self):
-
-        db = self.dbsk
-        cols = db.tbl.c
-
-        stm = select([cols.id]).order_by(desc(cols.id)).limit(1)
-        # self.debug_query(stm)
-        
-        last_id = db.fetch_scalar(stm)
-        self.logger.debug("Last ID: [ %s ]" % last_id)
-
-        if last_id is None:
-            return 1
-            
-        return last_id
 
     def debug_query(self, stm):
         self.logger.debug("Query: [ %s ]" %

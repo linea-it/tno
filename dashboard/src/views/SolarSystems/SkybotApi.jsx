@@ -1,4 +1,5 @@
 import axios from 'axios';
+import moment from 'moment';
 
 class SkybotApi {
   constructor() {
@@ -71,8 +72,8 @@ class SkybotApi {
     ra_lr,
     ra_ll,
   }) => {
-    date_initial = date_initial !== '' ? date_initial : null;
-    date_final = date_final !== '' ? date_final : null;
+    date_initial = date_initial !== '' ? moment(date_initial).format('YYYY-MM-DD') : null;
+    date_final = date_final !== '' ? moment(date_final).format('YYYY-MM-DD') : null;
 
     return axios.post(`${this.api}/skybot_run/`, {
       type_run: type_run,

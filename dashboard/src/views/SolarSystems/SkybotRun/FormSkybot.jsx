@@ -20,7 +20,7 @@ class FormSkybot extends Component {
     value: null,
     date_initial: '',
     date_final: '',
-    type_run: 'all',
+    type_run: 'period',
     radius: null,
     ra_cent: null,
     dec_cent: null,

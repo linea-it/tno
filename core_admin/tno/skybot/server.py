@@ -39,6 +39,9 @@ class SkybotServer():
         self.logger.info(
             "-------------------------- Skybot Run: %s --------------------------" % skybotrun.id)
 
+        # DEBUG LIMIT 
+        self.debug_limit = None
+
         try:
             self.dbsk = SkybotOutputDB()
 
@@ -85,11 +88,10 @@ class SkybotServer():
         self.time_profile = os.path.join(
             self.skybot_output_path, 'time_profile.csv')
 
-        self.debug_limit = 1
 
         self.heart_beat_interval = 10
 
-        self.max_workers = 2
+        self.max_workers = 1
 
         result_columns = ['expnum', 'band', 'date_obs', 'skybot_downloaded', 'skybot_url', 'download_start', 'download_finish', 'download_time', 'filename',
                         'file_size', 'file_path', 'import_start', 'import_finish', 'import_time', 'count_created', 'count_updated', 'count_rows', 
@@ -237,7 +239,7 @@ class SkybotServer():
         stm = select([cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg]) \
             .where(and_(
                 cast(cols.date_obs, DATE) >= date_initial.strftime("%Y-%m-%d"),
-                cast(cols.date_obs, DATE) >= date_final.strftime("%Y-%m-%d")
+                cast(cols.date_obs, DATE) <= date_final.strftime("%Y-%m-%d")
             )) \
             .group_by(cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg) \
             .order_by(cols.date_obs) \
@@ -253,8 +255,7 @@ class SkybotServer():
         self.pointings = pointings
 
         # Fazer a busca no Skybot
-        for pointing in pointings:
-            self.get_asteroids_from_skybot(pointing)
+        self.run_get_asteroids(pointings)
 
     # query for circle
     def import_pointings_by_radial_query(self, ra, dec, radius):
@@ -323,8 +324,7 @@ class SkybotServer():
         self.pointings = pointings
 
         # Fazer a busca no Skybot
-        for pointing in pointings:
-            self.get_asteroids_from_skybot(pointing)
+        self.run_get_asteroids(pointings)
 
     def get_asteroids_from_skybot(self, pointing):
 

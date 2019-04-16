@@ -828,11 +828,11 @@ class SkybotRun(models.Model):
         blank=True,
     )
 
-    date_initial = models.DateTimeField(
+    date_initial = models.DateField(
         verbose_name='Date Initial',
         auto_now_add=False, null=True, blank=True)
 
-    date_final = models.DateTimeField(
+    date_final = models.DateField(
         verbose_name='Date Final',
         auto_now_add=False, null=True, blank=True)
 
