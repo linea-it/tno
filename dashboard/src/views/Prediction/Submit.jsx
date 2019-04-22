@@ -154,7 +154,7 @@ export class PredictionSubmit extends Component {
         });
       } else {
         this.onClear();
-      }
+      } 
     }
   };
 
@@ -174,7 +174,7 @@ export class PredictionSubmit extends Component {
       const value = 0;
       this.onCheck(value);
     } else {
-      this.onClear;
+      this.onClear();
       const {
         process,
         leap_second,
@@ -255,7 +255,7 @@ export class PredictionSubmit extends Component {
         input_list: el.input_list, // Id da lista de objetos
         process: el.proccess, // Id do processo
       });
-      return;
+      return el;
     });
 
     return (
@@ -281,7 +281,7 @@ export class PredictionSubmit extends Component {
         label: el.display_name,
         value: el.id,
       });
-      return;
+      return el;
     });
 
     return (
@@ -307,7 +307,7 @@ export class PredictionSubmit extends Component {
         label: el.display_name,
         value: el.id,
       });
-      return;
+      return el;
     });
 
     return (
@@ -335,7 +335,7 @@ export class PredictionSubmit extends Component {
         label: el.display_name,
         value: el.id,
       });
-      return;
+      return el;
     });
 
     return (

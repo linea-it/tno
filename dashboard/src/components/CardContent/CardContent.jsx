@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class Content extends Component {
   render() {
@@ -31,5 +32,15 @@ class Content extends Component {
 
     return <div>{body}</div>;
   }
+
+  //  Validation PropType
+  PropTypes = {
+    header: PropTypes.bool,
+    className: PropTypes.string,
+    subTitle: PropTypes.string,
+    content: PropTypes.any,
+    title: PropTypes.string,
+    lineVertical: PropTypes.string,
+  };
 }
 export default Content;

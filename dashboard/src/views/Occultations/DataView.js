@@ -128,9 +128,9 @@ class OccultationsDataView extends Component {
     // console.log('renderGridItem: ', row);
     let name = row.asteroid_name;
     if (
-      row.asteroid_number != '-' &&
-      row.asteroid_number != row.asteroid_name &&
-      row.asteroid_number != null
+      row.asteroid_number !== '-' &&
+      row.asteroid_number !== row.asteroid_name &&
+      row.asteroid_number !== null
     ) {
       name = '(' + row.asteroid_number + ') ' + row.asteroid_name;
     }
@@ -170,7 +170,7 @@ class OccultationsDataView extends Component {
   };
 
   onPageChange = e => {
-    const page = e.originalEvent.page + 1;
+    // const page = e.originalEvent.page + 1;
     // Esse funciona
     // this.setState({first: e.first, rows: e.rows}, )
 

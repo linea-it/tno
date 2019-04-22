@@ -354,8 +354,8 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
         return Response(dict({
             "success": True,
             "src": src
-        }))        
-
+        }))       
+        
 class PredictInputViewSet(viewsets.ModelViewSet):
     queryset = PredictInput.objects.all()
     serializer_class = PredictInputSerializer

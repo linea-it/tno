@@ -17,7 +17,6 @@ import { Toolbar } from 'primereact/toolbar';
 import { DataTable } from 'primereact/datatable';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
-import PlotPrediction from './Plot';
 import moment from 'moment';
 class AsteroidDetailPrediction extends Component {
   state = this.initialState;

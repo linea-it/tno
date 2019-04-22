@@ -163,7 +163,7 @@ class RefineOrbitHistory extends Component {
           </div>
         );
       }
-      return;
+      return null;
     });
   };
 

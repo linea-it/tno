@@ -23,6 +23,10 @@ import PredictionDetail from '../views/Prediction/Detail';
 import OccultationsPanel from '../views/Occultations/Panel';
 import OccultationDetail from '../views/Occultations/Detail';
 import AsteroidDetailPrediction from '../views/Prediction/AsteroidDetail';
+import SkybotRun from '../views/SolarSystems/SkybotRun/SkybotRun';
+import SkybotRunDetail from '../views/SolarSystems/SkybotRun/Detail';
+import ExposureDetail from '../views/SolarSystems/SkybotRun/ExposureDetail';
+
 
 
 const appRoutes = [
@@ -53,7 +57,26 @@ const appRoutes = [
     name: 'Search SSSO',
     // icon: 'pe-7s-sun',
     component: SolarSystemsPanel,
-    helpText: 'Identification of small solar system objects (SSSO) in all pointings using the SkyBoT service.',
+    helpText:
+      'Identification of small solar system objects (SSSO) in all pointings using the SkyBoT service.',
+  },
+
+  {
+    path: '/skybotrun',
+    name: 'Skybot Run',
+    component: SkybotRun,
+  },
+  {
+    path: '/skybotrun_detail/:id',
+    name: 'Skybot Run Detail',
+    component: SkybotRunDetail,
+    hidden: true,
+  },
+  {
+    path: '/skybotrun_exposure/:skybotrun/:expnum',
+    name: 'Skybot Run Exposure Detail',
+    component: ExposureDetail,
+    hidden: true,
   },
   // { path: '/skybot', name: 'SkyBoT', icon: 'pe-7s-science', component: SkyBot },
   {
@@ -100,7 +123,8 @@ const appRoutes = [
     path: '/astrometry',
     name: 'Astrometry',
     component: Praia,
-    helpText: 'Astrometric reduction using PRAIA package and stellar catalogue Gaia like reference to detect and determine positions of objects from CCD frame.',
+    helpText:
+      'Astrometric reduction using PRAIA package and stellar catalogue Gaia like reference to detect and determine positions of objects from CCD frame.',
   },
   {
     path: '/orbit_run_detail/:id',
@@ -130,7 +154,8 @@ const appRoutes = [
     path: '/prediction',
     name: 'Prediction of Occultations',
     component: PredictionPanel,
-    helpText: 'Comparison of objects’ ephemeris and positions of stars to predict events of stellar occultation using Gaia catalogue like reference',
+    helpText:
+      'Comparison of objects’ ephemeris and positions of stars to predict events of stellar occultation using Gaia catalogue like reference',
   },
   {
     path: '/prediction_detail/:id',
@@ -154,7 +179,7 @@ const appRoutes = [
     name: 'Occultation Detail',
     hidden: true,
     component: OccultationDetail,
-  },  
+  },
   {
     path: '/light_curve',
     name: 'Light Curve Analysis',
@@ -195,6 +220,12 @@ const appRoutes = [
     component: Notifications,
     hidden: true,
   },
+  // {
+  //   path: '/formik',
+  //   name: 'Formik',
+  //   component: FormikTeste,
+  //   hidden: false,
+  // },
   { redirect: true, path: '/', to: '/dashboard', name: 'Dashboard' },
 ];
 

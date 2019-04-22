@@ -2,7 +2,7 @@ import humanize
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Pointing, SkybotOutput, CustomList, Proccess, Catalog, JohnstonArchive
+from .models import Pointing, SkybotOutput, CustomList, Proccess, Catalog, JohnstonArchive, SkybotRun
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -60,6 +60,62 @@ class PointingSerializer(serializers.ModelSerializer):
         except:
             return None
 
+class SkybotRunSerializer(serializers.ModelSerializer):
+    
+    owner = serializers.SerializerMethodField()
+    h_execution_time = serializers.SerializerMethodField()
+    start = serializers.SerializerMethodField()
+    finish = serializers.SerializerMethodField()
+    class Meta:
+        model = SkybotRun
+        fields = (
+            'id',
+            'owner',
+            'exposure',
+            'rows',
+            'start',
+            'finish',
+            'status',
+            'date_initial',
+            'date_final',
+            'type_run',
+            'ra_cent',
+            'dec_cent',
+            'ra_ul',
+            'dec_ul',
+            'ra_ur',
+            'dec_ur',
+            'ra_lr',
+            'dec_lr',
+            'ra_ll',
+            'dec_ll',
+            'radius',
+            'h_execution_time',
+        )
+
+    def get_owner(self, obj):
+        try:
+            return obj.owner.username
+        except:
+            return None
+
+    def get_start(self, obj):
+        try:
+            return obj.start.strftime('%Y-%m-%d %H:%M:%S')
+        except:
+            return None
+
+    def get_finish(self, obj):
+        try:
+            return obj.finish.strftime('%Y-%m-%d %H:%M:%S')
+        except:
+            return None
+
+    def get_h_execution_time(self, obj):
+        try:
+            return humanize.naturaldelta(obj.execution_time)
+        except:
+            return None            
 
 class SkybotOutputSerializer(serializers.ModelSerializer):
     pointing = serializers.PrimaryKeyRelatedField(

@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import Content from 'components/CardContent/CardContent.jsx';
-import Plot from 'react-plotly.js';
 import SSSOHistogram from './SSSOHistogram';
 
 class SSSOdyclass extends Component {
   render() {
     const propSet = this.props;
+
     return (
       <Content
         header={true}

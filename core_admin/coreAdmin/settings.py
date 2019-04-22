@@ -28,6 +28,12 @@ PROCCESS_DIR = "/proccess"
 CCD_IMAGES_DIR = "/ccd_images"
 
 # Sub diretorios que ficam dentro de /archive
+
+SKYBOT_ROOT = 'skybot_output'
+SKYBOT_OUTPUT = os.path.join(ARCHIVE_DIR, SKYBOT_ROOT)
+if not os.path.exists(SKYBOT_OUTPUT):
+    os.mkdir(SKYBOT_OUTPUT)
+
 OBSERVATIONS_DIR = os.path.join(ARCHIVE_DIR, "observations")
 if not os.path.exists(OBSERVATIONS_DIR):
     os.mkdir(OBSERVATIONS_DIR)
@@ -261,6 +267,11 @@ try:
 except Exception as e:
     raise ("Environment variable HOST_ARCHIVE can not be null.")
 
+try:
+    LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
+except:
+    LOGGING_LEVEL = 'INFO'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -271,14 +282,14 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'DEBUG',
+            'level': LOGGING_LEVEL,
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(LOG_DIR, 'django.log'),
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 5,
         },
         'proccess': {
-            'level': 'DEBUG',
+            'level': LOGGING_LEVEL,
             'class': 'logging.handlers.RotatingFileHandler',
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 5,
@@ -286,7 +297,7 @@ LOGGING = {
             'formatter': 'standard',
         },
         'astrometry': {
-            'level': 'DEBUG',
+            'level': LOGGING_LEVEL,
             'class': 'logging.handlers.RotatingFileHandler',
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 5,
@@ -294,7 +305,7 @@ LOGGING = {
             'formatter': 'standard',
         },
         'refine_orbit': {
-            'level': 'DEBUG',
+            'level': LOGGING_LEVEL,
             'class': 'logging.handlers.RotatingFileHandler',
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 5,
@@ -302,40 +313,67 @@ LOGGING = {
             'formatter': 'standard',
         },
         'predict_occultation': {
-            'level': 'DEBUG',
+            'level': LOGGING_LEVEL,
             'class': 'logging.handlers.RotatingFileHandler',
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 5,
             'filename': os.path.join(LOG_DIR, 'predict_occultation.log'),
             'formatter': 'standard',
-        }
-
+        },
+        # Skybot Download
+        'skybot': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'skybot.log'),
+            'formatter': 'standard',
+        },
+        # Skybot Load data
+        'skybot_load_data': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'skybot_load_data.log'),
+            'formatter': 'standard',
+        },        
     },
     'loggers': {
         'django': {
             'handlers': ['file'],
-            'level': 'DEBUG',
+            'level': LOGGING_LEVEL,
             'propagate': True,
         },
         'proccess': {
             'handlers': ['proccess'],
-            'level': 'DEBUG',
+            'level': LOGGING_LEVEL,
             'propagate': True,
         },
         'astrometry': {
             'handlers': ['astrometry'],
-            'level': 'DEBUG',
+            'level': LOGGING_LEVEL,
             'propagate': True,
         },
         'refine_orbit': {
             'handlers': ['refine_orbit'],
-            'level': 'DEBUG',
+            'level': LOGGING_LEVEL,
             'propagate': True,
         },
         'predict_occultation': {
             'handlers': ['predict_occultation'],
-            'level': 'DEBUG',
+            'level': LOGGING_LEVEL,
             'propagate': True,
+        },
+        'skybot': {
+            'handlers': ['skybot'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+        },
+        'skybot_load_data': {
+            'handlers': ['skybot_load_data'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
         },
     },
 }

@@ -24,7 +24,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from common import views as common_views
 
 from tno.views import UserViewSet, PointingViewSet, SkybotOutputViewSet, ObjectClassViewSet, CustomListViewSet, \
-    ProccessViewSet, CatalogViewSet, JohnstonArchiveViewSet
+    ProccessViewSet, CatalogViewSet, JohnstonArchiveViewSet, SkybotRunViewSet
 from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet
 
 from orbit.views import OrbitRunViewSet, RefinedAsteroidViewSet, RefinedOrbitViewSet, RefinedOrbitInputViewSet
@@ -50,6 +50,9 @@ router.register(r'predict_output', PredictOutputViewSet)
 router.register(r'occultation', OccultationViewSet)
 router.register(r'leap_seconds', LeapSecondsViewSet)
 router.register(r'bsp_planetary', BspPlanetaryViewSet)
+router.register(r'skybot_run', SkybotRunViewSet)
+
+
 
 
 # router.register(r'observation', ObservationViewSet)
@@ -69,4 +72,5 @@ urlpatterns = [
     url(r'^api/', include(router.urls)),
     url(r'^api/obtain-auth-token/$', csrf_exempt(obtain_auth_token)),
     url(r'^api/teste/', common_views.teste),
+    url(r'^api/import-skybot', common_views.import_skybot),
 ] + static('api'+settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

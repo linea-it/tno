@@ -320,6 +320,8 @@ class SkybotOutput(models.Model):
     )
 
     class Meta:
+
+        unique_together = ('num', 'name', 'expnum')
         indexes = [
 
             models.Index(fields=['num']),
@@ -628,7 +630,7 @@ class JohnstonArchive(models.Model):
         plus several additional reported objects without MPC designations.
     """
     number = models.CharField(
-        max_length=6, 
+        max_length=6,
         verbose_name='Number',
         null=True, blank=True, default=None,
         help_text='(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).',
@@ -663,7 +665,7 @@ class JohnstonArchive(models.Model):
     )
     aphelion_distance = models.FloatField(
         verbose_name='aphelion distance',
-        help_text= 'Q (AU) aphelion distance',
+        help_text='Q (AU) aphelion distance',
         null=True, blank=True, default=None
     )
     i = models.FloatField(
@@ -711,3 +713,184 @@ class JohnstonArchive(models.Model):
     updated = models.DateTimeField(
         verbose_name='Updated',
         auto_now_add=True, null=True, blank=True)
+
+
+class SkybotRun(models.Model):
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE, default=None, verbose_name='Owner', null=True, blank=True, related_name='skybot_owner')
+
+    exposure = models.BigIntegerField(
+        verbose_name='Exposure',
+        null=True,
+        blank=True
+    )
+
+    rows = models.BigIntegerField(
+        verbose_name='Rows',
+        null=True,
+        blank=True
+    )
+
+    status = models.CharField(
+        max_length=15,
+        verbose_name='Status',
+        default='pending', null=True, blank=True,
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success',
+                                                                  'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'), ('canceled', 'Canceled'))
+    )
+
+    start = models.DateTimeField(
+        verbose_name='Start',
+        auto_now_add=False, null=True, blank=True)
+
+    finish = models.DateTimeField(
+        verbose_name='Finish',
+        auto_now_add=False, null=True, blank=True)
+
+    execution_time = models.DurationField(
+        verbose_name='Execution Time',
+        null=True, blank=True
+    )
+
+    type_run = models.CharField(
+        max_length=30,
+        verbose_name='Type Run',
+        default='all',
+        choices=(('all', 'All'), ('period', 'Period'),
+                 ('circle', 'Circle'), ('square', 'Square'))
+    )
+
+    ra_cent = models.FloatField(
+        verbose_name='Ra Cent',
+        null=True,
+        blank=True,
+    )
+
+    dec_cent = models.FloatField(
+        verbose_name='Dec Cent',
+        null=True,
+        blank=True,
+    )
+
+    ra_ul = models.FloatField(
+        verbose_name='RA Upper Left',
+        null=True,
+        blank=True,
+    )
+
+    dec_ul = models.FloatField(
+        verbose_name='DEC Upper Left',
+        null=True,
+        blank=True,
+    )
+
+    ra_ur = models.FloatField(
+        verbose_name='RA Upper Right',
+        null=True,
+        blank=True,
+    )
+
+    dec_ur = models.FloatField(
+        verbose_name='DEC Upper Right',
+        null=True,
+        blank=True,
+    )
+
+    ra_lr = models.FloatField(
+        verbose_name='RA Lower Right',
+        null=True,
+        blank=True,
+    )
+
+    dec_lr = models.FloatField(
+        verbose_name='DEC Lower Right',
+        null=True,
+        blank=True,
+    )
+
+    ra_ll = models.FloatField(
+        verbose_name='RA Lower Left',
+        null=True,
+        blank=True,
+    )
+
+    dec_ll = models.FloatField(
+        verbose_name='DEC Lower Left',
+        null=True,
+        blank=True,
+    )
+
+    radius = models.FloatField(
+        verbose_name='Radius',
+        null=True,
+        blank=True,
+    )
+
+    date_initial = models.DateField(
+        verbose_name='Date Initial',
+        auto_now_add=False, null=True, blank=True)
+
+    date_final = models.DateField(
+        verbose_name='Date Final',
+        auto_now_add=False, null=True, blank=True)
+
+    ra_ul = models.CharField(
+        max_length=30,
+        verbose_name='RA UL',
+        null=True,
+        blank=True,
+    )
+
+    dec_ul = models.FloatField(
+        verbose_name='DEC UL',
+        null=True,
+        blank=True,
+    )
+
+    ra_ur = models.CharField(
+        max_length=30,
+        verbose_name='RA UR',
+        null=True,
+        blank=True,
+    )
+    dec_ur = models.FloatField(
+        verbose_name='DEC UR',
+        null=True,
+        blank=True,
+    )
+
+    ra_lr = models.CharField(
+        max_length=30,
+        verbose_name='RA LR',
+        null=True,
+        blank=True,
+    )
+    dec_lr = models.FloatField(
+        verbose_name='DEC LR',
+        null=True,
+        blank=True,
+    )
+
+    ra_ll = models.CharField(
+        max_length=30,
+        verbose_name='RA LL',
+        null=True,
+        blank=True,
+    )
+
+    dec_ll = models.FloatField(
+        verbose_name='DEC LL',
+        null=True,
+        blank=True,
+    )
+
+    error = models.TextField(
+        verbose_name="Error",
+        null=True, 
+        blank=True
+    )
+
+    def __str__(self):
+        return str(self.id)

@@ -152,7 +152,7 @@ class PredictionHistory extends Component {
           </div>
         );
       }
-      return;
+      return null;
     });
   };
 
@@ -244,6 +244,8 @@ class PredictionHistory extends Component {
   };
 
   render() {
+    const propSet = this.props;
+    console.log('Sou o data recebido:', propSet.data);
     const columns = this.columns.map((col, i) => {
       return (
         <Column
