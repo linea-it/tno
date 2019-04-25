@@ -361,6 +361,8 @@ class FilterObjects(DBBase):
 
         image_size = self.fetch_scalar(stm)
 
+        if image_size is None:
+            image_size = 0
         return image_size
 
 
