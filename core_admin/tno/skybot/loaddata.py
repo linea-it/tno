@@ -110,7 +110,7 @@ class ImportSkybot():
         name = getattr(asteroid, "name").strip()
 
         # Get Pointing
-        pointing = PointingModel.objects.get(expnum=232737)
+        pointing = PointingModel.objects.filter(expnum=expnum).first()
 
         try:
             stm_insert = skybot_output.insert().values(

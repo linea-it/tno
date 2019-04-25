@@ -346,6 +346,15 @@ class SkybotServer():
         file_size = None
         error = None
 
+        result = dict({
+            'skybot_downloaded': False,
+            'skybot_url': None,
+            'error': None,
+            'filename': None,
+            'file_size': None,
+            'file_path': None,
+        })
+
         try:
             r = requests.get(self.skybot_server, params={
                 '-ep': date_obs,
@@ -364,27 +373,35 @@ class SkybotServer():
             if os.path.exists(file_path):
                 file_size = os.path.getsize(file_path)
 
+            result.update({
+                'skybot_downloaded': True,
+                'skybot_url': r.url,
+                'filename': filename,
+                'file_size': file_size,
+                'file_path': file_path,                
+            })
+
             self.logger.debug("Skybot URL: [ %s ]" % r.url)
         except Exception as e:
             self.logger.error(e)
             error = e
 
+            result.update({
+                'skybot_downloaded': False,
+                'skybot_url': None,
+                'error': error
+            })
+
         t1 = datetime.now()
         tdelta = t1 - t0
 
-        result = dict({
+        result.update({
             'expnum': pointing.get("expnum"),
             'band': pointing.get("band"),
             'date_obs': pointing.get("date_obs"),
-            'skybot_downloaded': True,
-            'skybot_url': r.url,
             'download_start': t0.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3],
             'download_finish': t1.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3],
             'download_time': tdelta.total_seconds(),
-            'filename': filename,
-            'file_size': file_size,
-            'file_path': file_path,
-            'error': error
         })
 
         if error is None:
