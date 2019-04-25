@@ -60,7 +60,7 @@ class Run(models.Model):
         max_length=10,
         verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('error', 'Error'))
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('error', 'Error'), ('reexecute', 'Reexecute'))
     )
 
     def __str__(self):

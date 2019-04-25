@@ -11,7 +11,8 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { DataTable, Column } from 'primereact/datatable';
 import { Paginator } from 'primereact/paginator';
-
+import { Button } from 'primereact/button';
+import { Toolbar } from 'primereact/toolbar';
 const columns = [
   {
     header: 'Proccess',
@@ -166,6 +167,44 @@ class PraiaHistory extends Component {
     });
   };
 
+
+  toolbarButton = el => {
+    let btn_view_toolbar = null;
+    let btn_reexecute = null;
+
+    btn_reexecute = (
+      <Button
+        className="btn-TNO-color"
+        label="Re-execute"
+        disabled={!this.state.selected}
+        onClick={this.handleOnRerun}
+      />
+    );
+
+    var disabled = true;
+    if (
+      this.state.selected != null &&
+      this.state.selected.status === 'success'
+    ) {
+      disabled = false;
+    }
+
+    btn_view_toolbar = (
+      <Button
+        className="btn-TNO-color"
+        label="Detail"
+        disabled={disabled}
+        onClick={() => this.onView(el.id)}
+      />
+    );
+
+    return (
+      <Toolbar>
+        {btn_reexecute}
+        {btn_view_toolbar}
+      </Toolbar>
+    );
+  };
   render() {
     const {
       data,
@@ -213,6 +252,8 @@ class PraiaHistory extends Component {
 
     return (
       <div style={{ margin: '14px' }}>
+        {this.toolbarButton(this.state.selected)}
+
         <DataTable
           value={data}
           selectionMode="single"

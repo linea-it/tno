@@ -8,7 +8,7 @@ from tno.skybotoutput import FilterObjects
 from tno.proccess import ProccessManager
 from django.conf import settings
 import shutil
-
+from praia.praia_astrometry import PraiaPipeline
 
 class Astrometry():
     def __init__(self):
@@ -22,7 +22,6 @@ class Astrometry():
         self.astrometry_positions_dir = settings.ASTROMETRY_POSITIONS_DIR
 
     def startAstrometryRun(self, instance):
-        self.logger.info("TESTE")
         instance.status = 'running'
         instance.save()
         self.logger.info("Status changed to Running")
@@ -106,33 +105,37 @@ class Astrometry():
         # TODO esta parte e uma simulacao do resultado do PRAIA.
         for obj in objects:
 
-            name = obj.get("name").replace(" ", "_")
-
-            filename = self.get_astrometry_position_filename(obj.get("name"))
-
-            original_file = os.path.join(self.astrometry_positions_dir, filename)
+            # Executar o Pipeline completo para cada objeto. 
+            PraiaPipeline.run(instance.id, obj)
 
 
-            # Rename object_name_obs.txt -> objectname.txt
-            filename = filename.replace('_obs', '').replace('_', '')
-            obj_dir = os.path.join(self.objects_dir, name)
-            new_file = os.path.join(obj_dir, filename)
+            # name = obj.get("name").replace(" ", "_")
 
-            # verificar se existe o arquivo para este objeto
-            if os.path.exists(original_file):
-                shutil.copy2(original_file, new_file)
+            # filename = self.get_astrometry_position_filename(obj.get("name"))
 
-                self.logger.debug("Object [ %s ] - COPY : %s -> %s" % (obj.get("name"), original_file, new_file))
+            # original_file = os.path.join(self.astrometry_positions_dir, filename)
 
-            time.sleep(2)
+
+            # # Rename object_name_obs.txt -> objectname.txt
+            # filename = filename.replace('_obs', '').replace('_', '')
+            # obj_dir = os.path.join(self.objects_dir, name)
+            # new_file = os.path.join(obj_dir, filename)
+
+            # # verificar se existe o arquivo para este objeto
+            # if os.path.exists(original_file):
+            #     shutil.copy2(original_file, new_file)
+
+            #     self.logger.debug("Object [ %s ] - COPY : %s -> %s" % (obj.get("name"), original_file, new_file))
+
+            # time.sleep(2)
 
         # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
 
 
         # Encerrar a Rodada do praia
-        instance.status = 'success'
-        instance.save()
-        self.logger.info("Status changed to Success")
+        # instance.status = 'success'
+        # instance.save()
+        # self.logger.info("Status changed to Success")
 
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"

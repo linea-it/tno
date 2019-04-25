@@ -23,7 +23,7 @@ def on_create_praia_run_signal(sender, instance, signal, created, **kwargs):
 
 
     else:
-        if instance.status == "pending":
+        if instance.status == "reexecute":
             logger.info("Re-execute the Astrometry step")
 
             if os.path.exists(instance.relative_path):
