@@ -1008,6 +1008,8 @@ class PredictionOccultation():
 
             if catalog.schema is not None:
                 tablename = "%s.%s" % (catalog.schema, catalog.tablename)
+            else:
+                tablename = catalog.tablename
 
             columns = ", ".join(self.gaia_properties)
 
