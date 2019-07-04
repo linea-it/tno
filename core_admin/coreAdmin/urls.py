@@ -25,7 +25,7 @@ from common import views as common_views
 
 from tno.views import UserViewSet, PointingViewSet, SkybotOutputViewSet, ObjectClassViewSet, CustomListViewSet, \
     ProccessViewSet, CatalogViewSet, JohnstonArchiveViewSet, SkybotRunViewSet
-from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet
+from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet, AstrometryAsteroidViewSet, AstrometryInputViewSet
 
 from orbit.views import OrbitRunViewSet, RefinedAsteroidViewSet, RefinedOrbitViewSet, RefinedOrbitInputViewSet
 
@@ -62,6 +62,8 @@ router.register(r'customlist', CustomListViewSet)
 router.register(r'proccess', ProccessViewSet)
 router.register(r'praia_run', PraiaRunViewSet)
 router.register(r'praia_configuration', PraiaConfigurationViewSet)
+router.register(r'astrometry_asteroids', AstrometryAsteroidViewSet)
+router.register(r'astrometry_input', AstrometryInputViewSet)
 
 
 router.register(r'catalog', CatalogViewSet)

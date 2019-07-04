@@ -13,6 +13,7 @@ import csv
 import traceback
 from concurrent.futures import ThreadPoolExecutor, wait, as_completed
 from orbit.bsp_jpl import BSPJPL
+from .models import AstrometryAsteroid
 
 def create_ccd_images_list(name, output):
     # Recuperar as exposicoes para cada objeto.
@@ -187,7 +188,6 @@ class Astrometry():
             
                 self.logger.info("Running %s / %s Object: [ %s ]" % (idx, obj_count, obj.get('name')))
 
-
                 # CCD Images 
                 name = obj.get("name").replace(" ", "_")
                 obj_dir = os.path.join(self.objects_dir, name)
@@ -220,103 +220,69 @@ class Astrometry():
             self.logger.error(tb)
 
 
-        # Query no catalogo GAIA 2
-        # TODO deve ter um parametro para escolher qual catalogo. 
-        pool = ThreadPoolExecutor()
-        futures = []        
-        idx = 1
-        try:
-            for obj in objects:           
-                self.logger.info("Generate GAIA DR2 Catalog %s / %s Object: [ %s ]" % (idx, obj_count, obj.get('name')))
+        # # Query no catalogo GAIA 2
+        # # TODO deve ter um parametro para escolher qual catalogo. 
+        # pool = ThreadPoolExecutor()
+        # futures = []        
+        # idx = 1
+        # try:
+        #     for obj in objects:           
+        #         self.logger.info("Generate GAIA DR2 Catalog %s / %s Object: [ %s ]" % (idx, obj_count, obj.get('name')))
 
-                name = obj.get("name").replace(" ", "_")
-                obj_dir = os.path.join(self.objects_dir, name)
-                gaia_dr2_csv = os.path.join(obj_dir, "gaia_dr2.csv")
-                ccd_images_file = os.path.join(obj_dir, "ccd_images.csv")
+        #         name = obj.get("name").replace(" ", "_")
+        #         obj_dir = os.path.join(self.objects_dir, name)
+        #         gaia_dr2_csv = os.path.join(obj_dir, "gaia_dr2.csv")
+        #         ccd_images_file = os.path.join(obj_dir, "ccd_images.csv")
 
-                futures.append(pool.submit(create_gaia_dr2_catalog, ccd_images_file, gaia_dr2_csv))
+        #         futures.append(pool.submit(create_gaia_dr2_catalog, ccd_images_file, gaia_dr2_csv))
 
-            # Esperar todas as execucoes.
-            wait(futures)
+        #     # Esperar todas as execucoes.
+        #     wait(futures)
 
-            outputs = []
-            for future in futures:
-                outputs.append(future.result())
+        #     outputs = []
+        #     for future in futures:
+        #         outputs.append(future.result())
 
-            self.logger.debug("OUTPUT : [ %s ]" % outputs)
+        #     self.logger.debug("OUTPUT : [ %s ]" % outputs)
 
-            wait(futures)
+        #     wait(futures)
 
-            idx += 1
+        #     idx += 1
 
-        except Exception as e:
-            tb = traceback.format_exc()
-            self.logger.error(e)
-            self.logger.error(tb)
-
-            # # Pesquisando os bsp_jpl que precisam ser baixadas
-            # bsp_jpl = RefineOrbitDB().get_bsp_jpl(self.input_list.tablename, self.input_list.schema, max_age)
-
-            # self.bsp_jpl_input_file = os.path.join(instance.relative_path, 'bsp_jpl.csv')
-
-            # self.logger.info("Writing BSP JPL Input File")
-            # RefineOrbit().writer_refine_orbit_file_list(self.bsp_jpl_input_file, bsp_jpl)
-
-            # # Download dos BSP JPL
-            # self.getBspJplFiles(instance, self.bsp_jpl_input_file, steps_file)
-
-            # t_download_1 = datetime.now()
-            # t_download_delta = t_download_1 - t_download_0
-
-            # self.results["execution_download_time"] = t_download_delta.total_seconds()
-
-            # self.logger.info("Download Finish in %s" % humanize.naturaldelta(t_download_delta))
+        # except Exception as e:
+        #     tb = traceback.format_exc()
+        #     self.logger.error(e)
+        #     self.logger.error(tb)
 
 
 
-            # Recuperar as exposicoes para cada objeto.
-            # ccds, ccds_count = FilterObjects().ccd_images_by_object(obj.get('name'))
-            # self.logger.debug("CCD Images: [ %s ]" % ccds_count)
+        # Submissao dos jobs no cluster
 
-            # name = obj.get("name").replace(" ", "_")
-            # obj_dir = os.path.join(self.objects_dir, name)
-            # ccd_images_file = os.path.join(obj_dir, "ccd_images.csv")
+        # Registro dos asteroids 
+        self.logger.debug("Register Objects")
+        for obj in objects:
 
-            # self.logger.debug("CCD Images CSV: [ %s ]" % ccd_images_file)
+            self.logger.debug("Register Object: %s" % obj.get("name"))
+            try:
+                asteroidModel, created = AstrometryAsteroid.objects.update_or_create(
+                    astrometry_run=instance,
+                    name=obj.get("name"),
+                    defaults={
+                        'number': obj.get("number"),
+                        'status': obj.get("status"),
+                        'error_msg': obj.get("error_msg"),
+                        'relative_path': obj.get("relative_path"),
+                    })
 
-            # with open(ccd_images_file, mode='w') as temp_file:
-            #     writer = csv.DictWriter(temp_file, delimiter=';')
+                asteroidModel.save()
+            except Exception as e:
+                self.logger.error(e)
+                raise(e)
 
-            #     writer.writerows(ccds)       
+        self.logger.debug("Register Objects End")
 
- 
-
-
-
-
-
-
-
-            # filename = self.get_astrometry_position_filename(obj.get("name"))
-
-            # original_file = os.path.join(self.astrometry_positions_dir, filename)
-
-
-            # # Rename object_name_obs.txt -> objectname.txt
-            # filename = filename.replace('_obs', '').replace('_', '')
-            # obj_dir = os.path.join(self.objects_dir, name)
-            # new_file = os.path.join(obj_dir, filename)
-
-            # # verificar se existe o arquivo para este objeto
-            # if os.path.exists(original_file):
-            #     shutil.copy2(original_file, new_file)
-
-            #     self.logger.debug("Object [ %s ] - COPY : %s -> %s" % (obj.get("name"), original_file, new_file))
-
-            # time.sleep(2)
 
         # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
-
 
         # Encerrar a Rodada do praia
         instance.status = 'success'
