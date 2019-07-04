@@ -65,3 +65,125 @@ class Run(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+
+class AstrometryAsteroid(models.Model):
+
+    """
+        Este modelo representa a lista de Objetos (Asteroids),
+        que foram passados como input para o PRAIA, neste modelo ficam
+        guardadas as informacoes sobre a execucao para um unico objeto.
+
+        OBS: Name nao pode ser uma ForeignKey por que name na skybot nao e unico.
+    """
+    class Meta:
+        unique_together = ('astrometry_run', 'name')
+
+    # Relation With orbit.OrbitRun
+    astrometry_run = models.ForeignKey(
+        Run, on_delete=models.CASCADE, verbose_name='Astrometry Run',
+        null=False, blank=False, default=None, related_name='asteroids'
+    )
+
+    name = models.CharField(
+        verbose_name='Name',
+        max_length=32,
+        null=False, blank=False,
+        help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).')
+
+    number = models.CharField(
+        max_length=6, default=None, null=True, blank=True,
+        verbose_name='Number',
+        help_text='(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).'
+    )
+
+    status = models.CharField(
+        max_length=15,
+        verbose_name='Status',
+        default='pending', null=True, blank=True,
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
+    )
+
+    error_msg = models.CharField(
+        max_length=256,
+        verbose_name="Error Message",
+        help_text="When the status is failure, this field should contain a message with the error.",
+        null=True, blank=True,
+    )
+
+    # catalog_rows = models.BigIntegerField(
+    #     verbose_name="Catalog Rows",
+    #     null=True, blank=True
+    # )
+
+    # execution_time = models.DurationField(
+    #     verbose_name='Execution Time',
+    #     null=True, blank=True
+    # )
+
+    # start_ephemeris = models.DateTimeField(
+    #     verbose_name='Start Ephemeris',
+    #     auto_now_add=False, null=True, blank=True)
+
+    # finish_ephemeris = models.DateTimeField(
+    #     verbose_name='Finish Ephemeris',
+    #     auto_now_add=False, null=True, blank=True)
+
+    # execution_ephemeris = models.DurationField(
+    #     verbose_name='Execution Ephemeris',
+    #     null=True, blank=True
+    # )
+
+    relative_path = models.CharField(
+        max_length=256,
+        verbose_name='Relative Path',
+        null=True, blank=True,
+        help_text='Path relative to the Astrometry OBJECT directory, this is the internal path in the proccess directory.',
+    )
+
+    def __str__(self):
+        return str(self.name)
+
+class AstrometryInput(models.Model):
+
+    asteroid = models.ForeignKey(
+        AstrometryAsteroid, on_delete=models.CASCADE, verbose_name='Asteroid',
+        null=False, blank=False, related_name='input_file'
+    )
+
+    input_type = models.CharField(
+        max_length=60,
+        verbose_name='Input Type',
+        null=False, blank=False,
+        help_text="Description of the input type.",
+        choices=(('dates_file', 'Dates'), ('bsp_planetary', 'Planetary Ephemeris'), ('bsp_asteroid', 'Asteroid JPL Ephemeris'),
+                 ('leap_second', 'Leap Second'), ('positions', 'Positions'), ('ephemeris', 'Ephemeris'), ('catalog', 'Catalog'), )
+    )
+
+    filename = models.CharField(
+        max_length=256,
+        null=False, blank=False,
+        verbose_name='Filename',
+    )
+
+    file_size = models.BigIntegerField(
+        verbose_name='File Size',
+        null=True, blank=True, help_text='File Size in bytes')
+
+    file_type = models.CharField(
+        max_length=10,
+        verbose_name='File Type',
+        null=True, blank=True,
+        help_text="File extension like '.txt'"
+    )
+
+    file_path = models.CharField(
+        max_length=1024,
+        verbose_name='File Path',
+        null=True, blank=True,
+        help_text='Path to file, this is the internal path in the proccess directory.',
+    )
+
+    def __str__(self):
+        return str(self.filename)
+

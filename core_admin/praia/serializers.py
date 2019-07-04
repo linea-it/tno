@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Run, Configuration
+from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput
 from tno.models import CustomList, Proccess
 
 
@@ -80,3 +80,36 @@ class ConfigurationSerializer(serializers.ModelSerializer):
             return obj.owner.username
         except:
             return None
+
+class AstrometryAsteroidSerializer(serializers.ModelSerializer):
+
+    astrometry_run = serializers.PrimaryKeyRelatedField(
+        queryset=Run.objects.all(), many=False)
+
+    class Meta:
+        model = AstrometryAsteroid
+        fields = (
+            'id',
+            'astrometry_run',
+            'name',
+            'number',
+            'status',
+            'error_msg',
+        )
+
+class AstrometryInputSerializer(serializers.ModelSerializer):
+
+    asteroid = serializers.PrimaryKeyRelatedField(
+        queryset=Run.objects.all(), many=False)
+
+    class Meta:
+        model = AstrometryInput
+        fields = (
+            'id',
+            'asteroid',
+            'input_type',
+            'filename',
+            'file_size',
+            'file_type',
+            'file_path',
+        )

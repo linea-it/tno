@@ -2,9 +2,9 @@ from django.shortcuts import render
 
 from rest_framework import viewsets 
 
-from .models import Run, Configuration
+from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput
 
-from .serializers import RunSerializer, ConfigurationSerializer
+from .serializers import RunSerializer, ConfigurationSerializer, AstrometryAsteroidSerializer, AstrometryInputSerializer
 
 from . import signals
 
@@ -36,3 +36,20 @@ class PraiaConfigurationViewSet(viewsets.ModelViewSet):
         if not self.request.user.pk:
             raise Exception('It is necessary an active login to perform this operation.')
         serializer.save(owner=self.request.user)
+
+
+class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
+    queryset = AstrometryAsteroid.objects.all()
+    serializer_class = AstrometryAsteroidSerializer
+    search_fields = ('name', 'number',)
+    filter_fields = ('id', 'astrometry_run', 'name', 'number', 'status',)
+    ordering_fields = ('id', 'name', 'number',)
+    ordering = ('name',)
+
+class AstrometryInputViewSet(viewsets.ModelViewSet):
+    queryset = AstrometryInput.objects.all()
+    serializer_class = AstrometryInputSerializer
+    search_fields = ('filename',)
+    filter_fields = ('id', 'asteroid', 'filename',)
+    ordering_fields = ('id', 'asteroid',)
+    ordering = ('asteroid',)

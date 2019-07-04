@@ -3,12 +3,94 @@ import os, errno
 import logging
 from random import randrange
 import time
-from tno.db import DBBase
+from tno.db import DBBase, CatalogDB
 from tno.skybotoutput import FilterObjects
 from tno.proccess import ProccessManager
 from django.conf import settings
 import shutil
 from praia.praia_astrometry import PraiaPipeline
+import csv
+import traceback
+from concurrent.futures import ThreadPoolExecutor, wait, as_completed
+from orbit.bsp_jpl import BSPJPL
+from .models import AstrometryAsteroid
+
+def create_ccd_images_list(name, output):
+    # Recuperar as exposicoes para cada objeto.
+
+    ccds, ccds_count = FilterObjects().ccd_images_by_object(name)
+
+    headers = ['id', 'pfw_attempt_id', 'desfile_id', 'nite', 'date_obs', 'expnum', 'ccdnum', 'band', 'exptime', 'cloud_apass', 'cloud_nomad', 't_eff', 'crossra0', 'radeg', 'decdeg', 'racmin', 'racmax', 'deccmin', 'deccmax', 'ra_cent', 'dec_cent', 'rac1', 'rac2', 'rac3', 'rac4', 'decc1', 'decc2', 'decc3', 'decc4', 'ra_size', 'dec_size', 'path', 'filename', 'compression', 'downloaded']
+
+    with open(output, mode='w') as temp_file:
+        writer = csv.DictWriter(temp_file, delimiter=';', fieldnames=headers)
+        writer.writeheader()
+        writer.writerows(ccds)
+
+    if os.path.exists(output):
+        return output
+    else:
+        return None
+
+def retrieve_bsp_jpl(name, output):
+
+    # verificar se ja existe bsp baixado dentro da validade.
+    rows = FilterObjects().check_bsp_jpl_by_object(name, 30)
+    if len(rows) == 1:
+        # Copiar o arquivo para o diretorio do objeto. 
+        original_file_path, bsp_file_record = BSPJPL().get_file_path(name)
+
+        bsp_file = os.path.basename(original_file_path)
+        f = os.path.join(output, bsp_file)
+
+        shutil.copy2(original_file_path, f)
+
+        if os.path.exists(f):
+            return f
+        else:
+            # TODO erro na copia de um bsp ja baixado
+            return None
+    else:
+        pass
+        # TODO implementar o Download do bsp
+
+        return None
+
+
+def create_gaia_dr2_catalog(ccd_images_file, output):
+
+    rows = []
+
+    with open(ccd_images_file, 'r') as cfile:
+        reader = csv.DictReader(cfile, delimiter=';')
+        for row in reader:
+
+            # Query no banco de catalogos 
+            coordinates = [
+                row['rac1'], row['decc1'], row['rac2'], row['decc2'], row['rac3'], row['decc3'], row['rac4'], row['decc4']]
+
+            resultset = CatalogDB().poly_query(
+                "gaia_dr2", "ra", "dec", coordinates, "gaia"
+            )
+
+            for row in resultset:
+                rows.append(row)
+
+    if len(rows) > 0:
+        headers = []
+        for head in rows[0]:
+            headers.append(head)
+
+        with open(output, 'w') as tempFile:
+            writer = csv.DictWriter(tempFile, delimiter=';', fieldnames=headers)
+            writer.writeheader()
+            writer.writerows(rows)
+
+    if os.path.exists(output):
+        return output
+    else:
+        return None
+
 
 class Astrometry():
     def __init__(self):
@@ -65,6 +147,8 @@ class Astrometry():
             # Criar o Diretorio
             os.makedirs(directory)
 
+            time.sleep(2)
+
             if os.path.exists(directory):
                 # Alterar a Permissao do Diretorio
                 os.chmod(directory, 0o775)
@@ -89,53 +173,126 @@ class Astrometry():
                 self.logger.error(e)
                 raise
 
-        # TODO este Sleep deve sair
-        # time.sleep(randrange(15))
-
-        # TODO: Importar a Classe responsavel por rodar a ASTROMETRIA
-
-
-        # TODO Copiar um arquivo de resultado do praia para o diretorio do Objeto
         # Recuperando os Objetos
         objects, obj_count = ProccessManager().get_objects(tablename=self.input_list.tablename,
                                                            schema=self.input_list.schema)
-        #
+
         self.logger.debug("Objects: %s" % obj_count)
 
-        # TODO esta parte e uma simulacao do resultado do PRAIA.
+        pool = ThreadPoolExecutor(max_workers=4)
+        futures = []        
+        idx = 1
+        try:
+            
+            for obj in objects:
+            
+                self.logger.info("Running %s / %s Object: [ %s ]" % (idx, obj_count, obj.get('name')))
+
+                # CCD Images 
+                name = obj.get("name").replace(" ", "_")
+                obj_dir = os.path.join(self.objects_dir, name)
+                ccd_images_file = os.path.join(obj_dir, "ccd_images.csv")
+
+                self.logger.debug("CCD Images CSV: [ %s ]" % ccd_images_file)
+   
+                futures.append(pool.submit(create_ccd_images_list, name, ccd_images_file))
+
+                # BSP JPL 
+                futures.append(pool.submit(retrieve_bsp_jpl, name, obj_dir))
+
+
+            # Esperar todas as execucoes.
+            wait(futures)
+
+            outputs = []
+            for future in futures:
+                outputs.append(future.result())
+
+            self.logger.debug("OUTPUT : [ %s ]" % outputs)
+
+            wait(futures)
+
+            idx += 1
+
+        except Exception as e:
+            tb = traceback.format_exc()
+            self.logger.error(e)
+            self.logger.error(tb)
+
+
+        # # Query no catalogo GAIA 2
+        # # TODO deve ter um parametro para escolher qual catalogo. 
+        # pool = ThreadPoolExecutor()
+        # futures = []        
+        # idx = 1
+        # try:
+        #     for obj in objects:           
+        #         self.logger.info("Generate GAIA DR2 Catalog %s / %s Object: [ %s ]" % (idx, obj_count, obj.get('name')))
+
+        #         name = obj.get("name").replace(" ", "_")
+        #         obj_dir = os.path.join(self.objects_dir, name)
+        #         gaia_dr2_csv = os.path.join(obj_dir, "gaia_dr2.csv")
+        #         ccd_images_file = os.path.join(obj_dir, "ccd_images.csv")
+
+        #         futures.append(pool.submit(create_gaia_dr2_catalog, ccd_images_file, gaia_dr2_csv))
+
+        #     # Esperar todas as execucoes.
+        #     wait(futures)
+
+        #     outputs = []
+        #     for future in futures:
+        #         outputs.append(future.result())
+
+        #     self.logger.debug("OUTPUT : [ %s ]" % outputs)
+
+        #     wait(futures)
+
+        #     idx += 1
+
+        # except Exception as e:
+        #     tb = traceback.format_exc()
+        #     self.logger.error(e)
+        #     self.logger.error(tb)
+
+
+
+        # Submissao dos jobs no cluster
+
+        # Registro dos asteroids 
+        self.logger.debug("Register Objects")
         for obj in objects:
 
-            # Executar o Pipeline completo para cada objeto. 
-            PraiaPipeline.run(instance.id, obj)
+            self.logger.debug("Register Object: %s" % obj.get("name"))
+            try:
+                asteroidModel, created = AstrometryAsteroid.objects.update_or_create(
+                    astrometry_run=instance,
+                    name=obj.get("name"),
+                    defaults={
+                        'number': obj.get("number"),
+                        'status': obj.get("status"),
+                        'error_msg': obj.get("error_msg"),
+                        'relative_path': obj.get("relative_path"),
+                    })
 
+                asteroidModel.save()
+            except Exception as e:
+                self.logger.error(e)
+                raise(e)
 
-            # name = obj.get("name").replace(" ", "_")
+        self.logger.debug("Register Objects End")
 
-            # filename = self.get_astrometry_position_filename(obj.get("name"))
-
-            # original_file = os.path.join(self.astrometry_positions_dir, filename)
-
-
-            # # Rename object_name_obs.txt -> objectname.txt
-            # filename = filename.replace('_obs', '').replace('_', '')
-            # obj_dir = os.path.join(self.objects_dir, name)
-            # new_file = os.path.join(obj_dir, filename)
-
-            # # verificar se existe o arquivo para este objeto
-            # if os.path.exists(original_file):
-            #     shutil.copy2(original_file, new_file)
-
-            #     self.logger.debug("Object [ %s ] - COPY : %s -> %s" % (obj.get("name"), original_file, new_file))
-
-            # time.sleep(2)
 
         # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
 
-
         # Encerrar a Rodada do praia
-        # instance.status = 'success'
-        # instance.save()
-        # self.logger.info("Status changed to Success")
+        instance.status = 'success'
+        instance.save()
+        self.logger.info("Status changed to Success")
 
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"
+
+
+
+
+
