@@ -1,28 +1,23 @@
 import React, { Component } from 'react';
-import 'primereact/resources/themes/omega/theme.css';
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
-import OrbitApi from './OrbitApi';
-import StepStats from 'components/Statistics/StepStats.jsx';
-import { withRouter } from 'react-router-dom';
-import AsteroidList from './AsteroidList';
-import PropTypes from 'prop-types';
-import DonutStats from 'components/Statistics/DonutStats.jsx';
-import ListStats from 'components/Statistics/ListStats.jsx';
-import { Card } from 'primereact/card';
-import RefineOrbitTimeProfile from './TimeProfile';
+import PraiaApi from './PraiaApi';
+import PanelCostumize from 'components/Panel/PanelCostumize';
+import ListStats from 'components/Statistics/ListStats';
+import { Button } from 'primereact/button';
+import DonutStats from 'components/Statistics/DonutStats';
+import StepStats from 'components/Statistics/StepStats';
 import moment from 'moment';
-import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
+import { Card } from 'primereact/card';
+import PraiaTimeProfile from './TimeProfile';
+import AsteroidList from './AsteroidList';
+import { withRouter } from 'react-router-dom';
 
 
-class RefineOrbitRunDetail extends Component {
+
+class PraiaDetail extends Component {
+
   state = this.initialState;
-  api = new OrbitApi();
+  api = new PraiaApi();
 
-  static propTypes = {
-    match: PropTypes.object.isRequired,
-    history: PropTypes.any.isRequired,
-  };
 
   get initialState() {
     return {
@@ -39,7 +34,7 @@ class RefineOrbitRunDetail extends Component {
 
     // console.log('Orbit Run Id: %o', params.id);
 
-    this.api.getOrbitRunById({ id: params.id }).then(res => {
+    this.api.getPraiaRunById({ id: params.id }).then(res => {
       const data = res.data;
 
       this.setState({
@@ -48,31 +43,71 @@ class RefineOrbitRunDetail extends Component {
       });
 
       if (data.status === 'success') {
-        this.api.getOrbitRunTimeProfile({ id: params.id }).then(res => {
+        this.api.getPraiaRunTimeProfile({ id: params.id }).then(res => {
+
           this.setState({
             time_profile: res.data.data,
           });
         });
+
       }
     });
   }
 
-  onViewAsteroid = asteroid_id => {
-    const history = this.props.history;
-    history.push(`/refined_asteroid/${asteroid_id}`);
-  };
+
+
+
+
 
   format_execution_time = duration => {
     var seconds = Math.round(moment.duration(duration).asSeconds());
     return moment.utc(seconds * 1000).format('HH:mm:ss');
   };
 
+  onClickBackToAstometry = () => {
+    const history = this.props.history;
+    history.push(`/astrometry/`);
+  };
+
+  create_nav_bar = () => {
+    return (
+      <div className="ui-toolbar">
+        <Button
+          label="Back"
+          icon="fa fa-undo"
+          onClick={() => this.onClickBackToAstometry()}
+        />
+      </div>
+    );
+  };
+
   render() {
+
     const { data } = this.state;
 
-    if (data === {}) {
-      return <div />;
-    }
+
+    const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
+
+    // const execute_time = [
+    //   {
+    //     legend: 'Download',
+    //     label: this.format_execution_time(data.execution_download_time),
+    //     value: Math.round(
+    //       moment.duration(data.execution_download_time).asSeconds()
+    //     ),
+    //     colorIcon: 'primary',
+    //     grid: ['6'],
+    //   },
+    //   {
+    //     legend: 'NIMA',
+    //     label: this.format_execution_time(data.execution_nima_time),
+    //     value: Math.round(
+    //       moment.duration(data.execution_nima_time).asSeconds()
+    //     ),
+    //     colorIcon: 'info',
+    //     grid: ['6'],
+    //   },
+    // ];
 
     const stats = [
       { name: 'Proccess', value: data.proccess_displayname },
@@ -80,29 +115,6 @@ class RefineOrbitRunDetail extends Component {
       { name: 'Start', value: data.h_time },
       { name: 'Execution', value: data.h_execution_time },
       { name: 'Asteroids', value: data.count_objects },
-    ];
-
-    const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
-
-    const execute_time = [
-      {
-        legend: 'Download',
-        label: this.format_execution_time(data.execution_download_time),
-        value: Math.round(
-          moment.duration(data.execution_download_time).asSeconds()
-        ),
-        colorIcon: 'primary',
-        grid: ['6'],
-      },
-      {
-        legend: 'NIMA',
-        label: this.format_execution_time(data.execution_nima_time),
-        value: Math.round(
-          moment.duration(data.execution_nima_time).asSeconds()
-        ),
-        colorIcon: 'info',
-        grid: ['6'],
-      },
     ];
 
     const stats_status = [
@@ -113,16 +125,19 @@ class RefineOrbitRunDetail extends Component {
     ];
 
     return (
-      <div>
-        <div className="ui-g">
+
+      < div >
+
+        {this.create_nav_bar()}
+        < div className="ui-g" >
           <div className="ui-g-4 ui-md-4 ui-sm-1">
             <PanelCostumize
-              title={`Refine Orbit - ${data.id}`}
+              title={`Astrometry - ${data.id}`}
               content={
                 <ListStats
                   statstext={this.state.data.status}
                   status={true}
-                  //title={`Refine Orbit - ${data.id}`}
+                  title={`Aastrometry - ${data.id}`}
                   data={stats}
                 />
               }
@@ -133,13 +148,13 @@ class RefineOrbitRunDetail extends Component {
             <div className="ui-g-4 ui-md-12 ui-sm-1">
               <PanelCostumize
                 title="Execution Statistics"
-                content={<DonutStats data={stats_status} fill={colors} />}
+              // content={<DonutStats data={stats_status} fill={colors} />}
               />
             </div>
             <div className="ui-g-4 ui-md-12 ui-sm-1">
               <PanelCostumize
                 title="Step Stats"
-                content={<StepStats info={execute_time} />}
+              // content={<StepStats info={execute_time} />}
               />
             </div>
           </div>
@@ -148,12 +163,12 @@ class RefineOrbitRunDetail extends Component {
               title="Execution Time"
               content={
                 <Card>
-                  <RefineOrbitTimeProfile data={this.state.time_profile} />
+                  {/* <RefineOrbitTimeProfile data={this.state.time_profile} /> */}
                 </Card>
               }
             />
           </div>
-        </div>
+        </div >
 
         <div className="ui-g">
           <div className="ui-g-12">
@@ -168,9 +183,12 @@ class RefineOrbitRunDetail extends Component {
             />
           </div>
         </div>
-      </div>
+      </div >
     );
   }
+
+
+
 }
 
-export default withRouter(RefineOrbitRunDetail);
+export default withRouter(PraiaDetail);

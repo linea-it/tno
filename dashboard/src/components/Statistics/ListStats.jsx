@@ -11,17 +11,18 @@ class ListStats extends Component {
 
     const { array, bool } = PropTypes;
 
-    ListStats.PropTypes = {
-      //title: string.isRequired,
-      data: array.isRequired,
-      status: bool.isRequired,
-    };
+    // ListStats.PropTypes = {
+    //   //title: string.isRequired,
+    //   data: array.isRequired,
+    //   status: bool.isRequired,
+    // };
 
     const columns = propSet.data.map((col, i) => {
       if (propSet.badgeColumns) {
         return (
           <tr key={i}>
             <td className="font-format">{propSet.data[i].name}</td>
+
             <td>
               <Badge className={`label-list label-${propSet.statstext}`}>
                 {propSet.data[i].value}
@@ -34,6 +35,7 @@ class ListStats extends Component {
           <tr key={i}>
             <td className="list-text">
               <div>{propSet.data[i].name}:</div>
+
             </td>
             <td className="list-value">
               <div>{propSet.data[i].value} </div>

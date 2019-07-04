@@ -146,6 +146,17 @@ class PraiaHistory extends Component {
     );
   };
 
+
+  onRerun = () => {
+    console.log("onRerun");
+  }
+
+  //Método que lê a requisição do botão de detalhe
+  onView = (id) => {
+    this.props.onViewDetail(id);
+
+  };
+
   status_table = rowData => {
     const row = rowData.status;
     const status = [
@@ -189,7 +200,13 @@ class PraiaHistory extends Component {
       disabled = false;
     }
 
+
+
+
+
     btn_view_toolbar = (
+
+      //BOTÂO DE DETALHE
       <Button
         className="btn-TNO-color"
         label="Detail"
@@ -202,10 +219,11 @@ class PraiaHistory extends Component {
       <Toolbar>
         {btn_reexecute}
         {btn_view_toolbar}
-      </Toolbar>
+      </Toolbar >
     );
   };
   render() {
+
     const {
       data,
       sizePerPage,
