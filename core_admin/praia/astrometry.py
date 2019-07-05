@@ -3,6 +3,8 @@ import os, errno
 import logging
 from random import randrange
 import time
+import humanize
+from datetime import datetime, timezone, timedelta
 from tno.db import DBBase, CatalogDB
 from tno.skybotoutput import FilterObjects
 from tno.proccess import ProccessManager
@@ -13,24 +15,58 @@ import csv
 import traceback
 from concurrent.futures import ThreadPoolExecutor, wait, as_completed
 from orbit.bsp_jpl import BSPJPL
-from .models import AstrometryAsteroid
+from .models import AstrometryAsteroid, AstrometryInput
 
-def create_ccd_images_list(name, output):
+def create_ccd_images_list(name, output_filepath):
     # Recuperar as exposicoes para cada objeto.
+    start = datetime.now(timezone.utc)
 
-    ccds, ccds_count = FilterObjects().ccd_images_by_object(name)
+    result = dict({
+        'asteroid': name,
+        'input_type': 'ccd_images_list',
+        'filename': os.path.basename(output_filepath),
+        'file_type': 'csv',
+        'file_size': None,
+        'file_path': output_filepath,
+        'ccds_count': None,
+        'error': None
+    })
 
-    headers = ['id', 'pfw_attempt_id', 'desfile_id', 'nite', 'date_obs', 'expnum', 'ccdnum', 'band', 'exptime', 'cloud_apass', 'cloud_nomad', 't_eff', 'crossra0', 'radeg', 'decdeg', 'racmin', 'racmax', 'deccmin', 'deccmax', 'ra_cent', 'dec_cent', 'rac1', 'rac2', 'rac3', 'rac4', 'decc1', 'decc2', 'decc3', 'decc4', 'ra_size', 'dec_size', 'path', 'filename', 'compression', 'downloaded']
+    try:
+        ccds, ccds_count = FilterObjects().ccd_images_by_object(name)
 
-    with open(output, mode='w') as temp_file:
-        writer = csv.DictWriter(temp_file, delimiter=';', fieldnames=headers)
-        writer.writeheader()
-        writer.writerows(ccds)
+        if ccds_count > 0:
 
-    if os.path.exists(output):
-        return output
-    else:
-        return None
+            headers = ['id', 'pfw_attempt_id', 'desfile_id', 'nite', 'date_obs', 'expnum', 'ccdnum', 'band', 'exptime', 'cloud_apass', 'cloud_nomad', 't_eff', 'crossra0', 'radeg', 'decdeg', 'racmin', 'racmax', 'deccmin', 'deccmax', 'ra_cent', 'dec_cent', 'rac1', 'rac2', 'rac3', 'rac4', 'decc1', 'decc2', 'decc3', 'decc4', 'ra_size', 'dec_size', 'path', 'filename', 'compression', 'downloaded']
+
+            with open(output_filepath, mode='w') as temp_file:
+                writer = csv.DictWriter(temp_file, delimiter=';', fieldnames=headers)
+                writer.writeheader()
+                writer.writerows(ccds)
+
+            result.update({
+                'file_size': os.path.getsize(output_filepath),
+                'ccds_count': ccds_count
+            })
+        else:
+            result.update({
+                'error': "No CCD Image found for this object.",
+            })
+
+    except Exception as e:
+        result.update({
+            'input_type': 'ccd_images_list',
+            'error': e
+        })
+
+    finish = datetime.now(timezone.utc)
+    result.update({
+        'start_time': start,
+        'finish_time': finish,
+        'execution_time': finish - start
+    })
+
+    return result
 
 def retrieve_bsp_jpl(name, output):
 
@@ -105,6 +141,7 @@ class Astrometry():
 
     def startAstrometryRun(self, instance):
         instance.status = 'running'
+        instance.start_time = datetime.now(timezone.utc)
         instance.save()
         self.logger.info("Status changed to Running")
 
@@ -140,8 +177,13 @@ class Astrometry():
         self.objects_dir = os.path.join(self.proccess.relative_path, "objects")
 
         # Criar um diretorio para os arquivos do PRAIA.
-        directory_name = "astrometry_%s" % instance.id
-        directory = os.path.join(proccess.relative_path, directory_name)
+        try:
+            directory_name = "astrometry_%s" % instance.id
+            directory = os.path.join(self.proccess.relative_path, directory_name)
+        except Exception as e:
+            self.on_error(instance, e)
+
+
 
         try:
             # Criar o Diretorio
@@ -166,58 +208,112 @@ class Astrometry():
                 raise Exception(msg)
 
         except OSError as e:
+            msg = "Failed to create astrometry directory [ %s ]" % directory
             instance.status = 'error'
+            instance.error_msg = msg
             instance.save()
-            self.logger.error("Failed to create astrometry directory [ %s ]" % directory)
+            self.logger.error(msg)
             if e.errno != errno.EEXIST:
-                self.logger.error(e)
-                raise
+                self.on_error(instance, e)
+
+
+
+        # Registro dos asteroids 
+        self.logger.info("Register Objects")
+
 
         # Recuperando os Objetos
         objects, obj_count = ProccessManager().get_objects(tablename=self.input_list.tablename,
                                                            schema=self.input_list.schema)
-
         self.logger.debug("Objects: %s" % obj_count)
+
+        # Guarda a quantidade de objetos recebido como input
+        instance.count_objects = obj_count
+        instance.save()
+
+        for obj in objects:
+            self.logger.debug("Register Object: %s" % obj.get("name"))
+            try:
+
+                obj_alias = obj.get("name").replace(" ", "_")
+                obj_relative_path = os.path.join(self.objects_dir, obj_alias)
+
+                asteroidModel, created = AstrometryAsteroid.objects.update_or_create(
+                    astrometry_run=instance,
+                    name=obj.get("name"),
+                    defaults={
+                        'number': obj.get("number"),
+                        'status': "pending",
+                        'relative_path': obj_relative_path,
+                    })
+
+                asteroidModel.save()
+
+            except Exception as e:
+                self.on_error(instance, e)                
+
+        # Lista com os Models referentes aos objetos. 
+        asteroids = AstrometryAsteroid.objects.filter(astrometry_run=instance.pk)
+
+        self.logger.info("Register Objects End. Count: [%s]" % asteroids.count())
+
 
         pool = ThreadPoolExecutor(max_workers=4)
         futures = []        
         idx = 1
         try:
             
-            for obj in objects:
+            for obj in asteroids:
             
-                self.logger.info("Running %s / %s Object: [ %s ]" % (idx, obj_count, obj.get('name')))
+                self.logger.info("Running [ %s / %s ] Object: [ %s ]" % (idx, obj_count, obj.name))
+
+                obj_dir = obj.relative_path
 
                 # CCD Images 
-                name = obj.get("name").replace(" ", "_")
-                obj_dir = os.path.join(self.objects_dir, name)
                 ccd_images_file = os.path.join(obj_dir, "ccd_images.csv")
 
                 self.logger.debug("CCD Images CSV: [ %s ]" % ccd_images_file)
    
-                futures.append(pool.submit(create_ccd_images_list, name, ccd_images_file))
+                futures.append(pool.submit(create_ccd_images_list, obj.name, ccd_images_file))
 
-                # BSP JPL 
-                futures.append(pool.submit(retrieve_bsp_jpl, name, obj_dir))
+                # # BSP JPL 
+                # futures.append(pool.submit(retrieve_bsp_jpl, name, obj_dir))
 
+                idx += 1
 
             # Esperar todas as execucoes.
             wait(futures)
 
-            outputs = []
+            results = []
             for future in futures:
-                outputs.append(future.result())
+                results.append(future.result())
 
-            self.logger.debug("OUTPUT : [ %s ]" % outputs)
+            self.logger.debug("Results:  %s " % results)
 
-            wait(futures)
+            # Registrar os inputs
+            self.logger.info("Register Inputs")
+            for result in results:
+                asteroid = asteroids.get(name=result["asteroid"])
 
-            idx += 1
+                self.logger.debug("Asteroid Name: %s" % asteroid.pk)
+
+                input_model, create = AstrometryInput.objects.update_or_create(
+                    asteroid=asteroid,
+                    input_type=result["input_type"],
+                    defaults={
+                        'filename': result["filename"],
+                        'file_size': result["file_size"],
+                        'file_type': result["file_type"],
+                        'file_path': result["file_path"],
+                        'error_msg': result["error"],
+                        'start_time': result["start_time"],
+                        'finish_time': result["finish_time"],
+                        'execution_time': result["execution_time"],
+                    })
+                input_model.save()
 
         except Exception as e:
-            tb = traceback.format_exc()
-            self.logger.error(e)
-            self.logger.error(tb)
+            self.on_error(instance, e)
 
 
         # # Query no catalogo GAIA 2
@@ -258,33 +354,10 @@ class Astrometry():
 
         # Submissao dos jobs no cluster
 
-        # Registro dos asteroids 
-        self.logger.debug("Register Objects")
-        for obj in objects:
-
-            self.logger.debug("Register Object: %s" % obj.get("name"))
-            try:
-                asteroidModel, created = AstrometryAsteroid.objects.update_or_create(
-                    astrometry_run=instance,
-                    name=obj.get("name"),
-                    defaults={
-                        'number': obj.get("number"),
-                        'status': obj.get("status"),
-                        'error_msg': obj.get("error_msg"),
-                        'relative_path': obj.get("relative_path"),
-                    })
-
-                asteroidModel.save()
-            except Exception as e:
-                self.logger.error(e)
-                raise(e)
-
-        self.logger.debug("Register Objects End")
-
-
         # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
 
-        # Encerrar a Rodada do praia
+        # Encerrar a Rodada de Astrometria
+        self.set_execution_time(instance)
         instance.status = 'success'
         instance.save()
         self.logger.info("Status changed to Success")
@@ -295,4 +368,26 @@ class Astrometry():
 
 
 
+    def on_error(self, instance, error):
+        trace = traceback.format_exc()
+        self.logger.error(error)
+        self.logger.error(trace)
 
+        self.set_execution_time(instance)
+
+        instance.error_msg = error
+        instance.error_traceback = trace
+        instance.status = 'failure'
+        instance.save()
+
+        raise(error)
+
+
+    def set_execution_time(self, instance):
+        start_time = instance.start_time
+        finish_time = datetime.now(timezone.utc)
+        tdelta = finish_time - start_time
+        instance.execution_time = tdelta
+        instance.save()
+        self.logger.info("Execution Time: %s" % humanize.naturaldelta(tdelta))
+    

@@ -1106,6 +1106,8 @@ body > .navbar-collapse[data-color="purple"]:after {
     background-color: #403f3f !important; }
   .status_table.canceled {
     background-color: #FF4A55 !important; }
+  .status_table.reexecute {
+    background-color: #777777 !important; }
 
 .simple_property_table tbody > tr > td {
   font-size: 14px;

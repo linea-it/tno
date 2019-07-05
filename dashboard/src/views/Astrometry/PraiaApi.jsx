@@ -34,7 +34,7 @@ class PraiaApi {
 
   praiaReRun = ({ id }) =>
     axios.patch(`${this.api}/praia_run/${id}/`, {
-      status: 'pending',
+      status: 'reexecute',
     });
 }
 

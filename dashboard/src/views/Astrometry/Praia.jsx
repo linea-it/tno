@@ -25,6 +25,10 @@ class Praia extends Component {
     this.setState(this.state);
   };
 
+  onRerun = record => {
+    console.log(record)
+  }
+
   render() {
     const { record } = this.state;
     return (
@@ -51,7 +55,7 @@ class Praia extends Component {
           className="history_astrometry"
           subTitle="Manage the completed Astrometry rounds"
           content={
-            <PraiaHistory />        
+            <PraiaHistory onRerun={this.onRerun}/>        
           }
         />
       </div>

@@ -37,6 +37,11 @@ class Run(models.Model):
         verbose_name='Finish Time',
         auto_now_add=False, null=True, blank=True)
 
+    execution_time = models.DurationField(
+        verbose_name='Execution Time',
+        null=True, blank=True
+    )
+
     # Relation With PraiaConfig
     configuration = models.ForeignKey(
         Configuration, on_delete=models.CASCADE, verbose_name='Configuration',
@@ -47,6 +52,12 @@ class Run(models.Model):
     input_list = models.ForeignKey(
         'tno.CustomList', on_delete=models.CASCADE, verbose_name='Input List',
         null=True, blank=True, default=None
+    )
+
+    count_objects = models.PositiveIntegerField(
+        verbose_name='Num Objects',
+        help_text='Number of objects received as input',
+        null=True, blank=True
     )
 
     relative_path = models.CharField(
@@ -61,6 +72,19 @@ class Run(models.Model):
         verbose_name='Status',
         default='pending', null=True, blank=True,
         choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('error', 'Error'), ('reexecute', 'Reexecute'))
+    )
+
+    error_msg = models.CharField(
+        max_length=256,
+        verbose_name="Error Message",
+        help_text="When the status is failure, this field should contain a message with the error.",
+        null=True, blank=True,
+    )
+
+    error_traceback = models.TextField(
+        verbose_name="Error Traceback",
+        null=True, 
+        blank=True
     )
 
     def __str__(self):
@@ -156,8 +180,7 @@ class AstrometryInput(models.Model):
         verbose_name='Input Type',
         null=False, blank=False,
         help_text="Description of the input type.",
-        choices=(('dates_file', 'Dates'), ('bsp_planetary', 'Planetary Ephemeris'), ('bsp_asteroid', 'Asteroid JPL Ephemeris'),
-                 ('leap_second', 'Leap Second'), ('positions', 'Positions'), ('ephemeris', 'Ephemeris'), ('catalog', 'Catalog'), )
+        choices=(('ccd_images_list', 'CCD Images List'), )
     )
 
     filename = models.CharField(
@@ -182,6 +205,26 @@ class AstrometryInput(models.Model):
         verbose_name='File Path',
         null=True, blank=True,
         help_text='Path to file, this is the internal path in the proccess directory.',
+    )
+
+    start_time = models.DateTimeField(
+        verbose_name='Start Time',
+        auto_now_add=False, null=True, blank=True)
+
+    finish_time = models.DateTimeField(
+        verbose_name='Finish Time',
+        auto_now_add=False, null=True, blank=True)
+
+    execution_time = models.DurationField(
+        verbose_name='Execution Time',
+        null=True, blank=True
+    )
+
+    error_msg = models.CharField(
+        max_length=256,
+        verbose_name="Error Message",
+        help_text="This field contains the error message that occurred during the creation of the Input.",
+        null=True, blank=True,
     )
 
     def __str__(self):

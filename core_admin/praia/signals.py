@@ -32,4 +32,4 @@ def on_create_praia_run_signal(sender, instance, signal, created, **kwargs):
                 logger.debug("Directory: %s" % instance.relative_path)
                 shutil.rmtree(instance.relative_path)
 
-            Astrometry().startRefineOrbitRun(instance)
+            Astrometry().startAstrometryRun(instance)
