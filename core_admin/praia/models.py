@@ -127,7 +127,13 @@ class AstrometryAsteroid(models.Model):
         verbose_name='Status',
         default='pending', null=True, blank=True,
         choices=(('pending', 'Pending'), ('running', 'Running'), ('success',
-                                                                  'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
+                'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
+    )
+
+    ccd_images = models.BigIntegerField(
+        verbose_name="CCD Images",
+        help_text='Number of CCDs for this asteroid.',
+        null=True, blank=True
     )
 
     error_msg = models.CharField(
@@ -173,6 +179,9 @@ class AstrometryAsteroid(models.Model):
 
 class AstrometryInput(models.Model):
 
+    class Meta:
+        unique_together = ('asteroid', 'input_type')
+
     asteroid = models.ForeignKey(
         AstrometryAsteroid, on_delete=models.CASCADE, verbose_name='Asteroid',
         null=False, blank=False, related_name='input_file'
@@ -183,7 +192,9 @@ class AstrometryInput(models.Model):
         verbose_name='Input Type',
         null=False, blank=False,
         help_text="Description of the input type.",
-        choices=(('ccd_images_list', 'CCD Images List'), )
+        choices=(
+            ('ccd_images_list', 'CCD Images List'), 
+            ('bsp_jpl', 'BSP JPL'))
     )
 
     filename = models.CharField(
