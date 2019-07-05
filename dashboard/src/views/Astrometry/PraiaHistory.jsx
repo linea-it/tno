@@ -144,7 +144,7 @@ class PraiaHistory extends Component {
 
   //Método que lê a requisição do botão de detalhe
   onView = (id) => {
-    this.props.onViewDetail(id);
+    this.props.handleOnViewDetail(id);
 
   };
 

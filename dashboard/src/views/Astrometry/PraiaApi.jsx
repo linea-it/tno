@@ -26,6 +26,28 @@ class PraiaApi {
       },
     });
 
+  getAsteroids = ({
+    page,
+    sizePerPage,
+    sortField,
+    sortOrder,
+    filters = [],
+  }) => {
+    let ordering = sortField;
+    if (sortOrder === -1) {
+      ordering = '-' + sortField;
+    }
+
+    const params = { page: page, pageSize: sizePerPage, ordering: ordering };
+    filters.forEach(element => {
+      params[element.property] = element.value;
+    });
+
+    return axios.get(`${this.api}/astrometry_asteroids/`, {
+      params: params,
+    });
+  };
+
   getPraiaRunById = ({ id }) => axios.get(`${this.api}/praia_run/${id}/`);
 
   // dados na table do primereacts

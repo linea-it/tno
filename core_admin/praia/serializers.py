@@ -20,6 +20,10 @@ class RunSerializer(serializers.ModelSerializer):
 
     input_displayname = serializers.SerializerMethodField()
 
+    execution_time = serializers.SerializerMethodField()
+
+    finish_time = serializers.SerializerMethodField()
+
     proccess = serializers.PrimaryKeyRelatedField(
         queryset=Proccess.objects.all(), many=False, required=False)
 
@@ -35,6 +39,7 @@ class RunSerializer(serializers.ModelSerializer):
             'owner',
             'start_time',
             'finish_time',
+            'execution_time',
             'configuration',
             'input_list',
             'status',
@@ -78,13 +83,25 @@ class RunSerializer(serializers.ModelSerializer):
 
     def get_h_execution_time(self, obj):
         try:
-            return humanize.naturaldelta(obj.execution_time)
+            return humanize.naturaldelta(obj.h_execution_time)
         except:
             return None
 
     def get_h_time(self, obj):
         try:
             return humanize.naturaltime(timezone.now() - obj.start_time)
+        except:
+            return None
+
+    def get_finish_time(self, obj):
+        try:
+            return humanize.naturaltime(obj.finish_time)
+        except:
+            return None
+
+    def get_execution_time(self, obj):
+        try:
+            return humanize.naturaltime(obj.execution_time)
         except:
             return None
 

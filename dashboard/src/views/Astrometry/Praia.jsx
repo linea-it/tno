@@ -59,7 +59,7 @@ class Praia extends Component {
           className="history_astrometry"
           subTitle="Manage the completed Astrometry rounds"
           content={
-            <PraiaHistory onRerun={this.onRerun} />
+            <PraiaHistory onRerun={this.onRerun} handleOnViewDetail={this.onViewDetail} />
           }
         />
 
