@@ -38,7 +38,7 @@ class PraiaApi {
     const params = {
       orbit_run: id,
     };
-    return axios.get(`${this.api}/orbit_run/get_time_profile/`, {
+    return axios.get(`${this.api}/praia_run/get_time_profile/`, {
       params: params,
     });
   };

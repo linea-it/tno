@@ -60,7 +60,8 @@ class Run(models.Model):
         max_length=10,
         verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('error', 'Error'), ('reexecute', 'Reexecute'))
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success',
+                                                                  'Success'), ('error', 'Error'), ('reexecute', 'Reexecute'))
     )
 
     def __str__(self):
@@ -101,7 +102,8 @@ class AstrometryAsteroid(models.Model):
         max_length=15,
         verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success',
+                                                                  'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
     )
 
     error_msg = models.CharField(
@@ -143,6 +145,7 @@ class AstrometryAsteroid(models.Model):
 
     def __str__(self):
         return str(self.name)
+
 
 class AstrometryInput(models.Model):
 
@@ -187,3 +190,64 @@ class AstrometryInput(models.Model):
     def __str__(self):
         return str(self.filename)
 
+
+class AstrometryOutput(models.Model):
+    """
+        Este modelo representa os arquivos gerados pelo nima para cada Objeto.
+        Um Objeto pode ter varios arquivos de resultado de tipos diferentes.
+    """
+
+    asteroid = models.ForeignKey(
+        AstrometryAsteroid, on_delete=models.CASCADE, verbose_name='Asteroid',
+        null=False, blank=False, related_name='astrometry_result'
+    )
+
+    type = models.CharField(
+        max_length=60,
+        verbose_name='Type',
+        null=False, blank=False,
+        help_text="Description of the result type.",
+        choices=(
+            ('ephemeris', 'Ephemeris'),
+            ('radec', 'RA Dec'),
+            ('positions', 'Positions'),
+            ('asteroid_orbit', 'Asteroid Orbit'),
+            ('neighborhood_stars', 'Neighborhood Stars'),
+            ('catalog', 'Catalog'),
+            ('catalog_csv', 'Catalog CSV'),
+            ('stars_catalog_mini', 'Star Catalog Mini'),
+            ('stars_catalog_xy', 'Start Catalog XY'),
+            ('stars_parameters_of_occultation', 'Start Parameters of Occultation'),
+            ('stars_parameters_of_occultation_plot',
+             'Start Parameters of Occultation Table'),
+            ('occultation_table', 'Occultation Table CSV')
+        )
+    )
+
+    filename = models.CharField(
+        max_length=256,
+        null=False, blank=False,
+        verbose_name='Filename',
+        help_text='Filename is formed by name without space and separated by underline.'
+    )
+
+    file_size = models.BigIntegerField(
+        verbose_name='File Size',
+        null=False, blank=False, help_text='File Size in bytes')
+
+    file_type = models.CharField(
+        max_length=10,
+        verbose_name='File Type',
+        null=False, blank=False,
+        help_text="File extension like '.txt'"
+    )
+
+    file_path = models.CharField(
+        max_length=1024,
+        verbose_name='File Path',
+        null=True, blank=True,
+        help_text='Path to file, this is the internal path in the proccess directory.',
+    )
+
+    def __str__(self):
+        return str(self.filename)

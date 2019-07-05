@@ -1,7 +1,8 @@
 from rest_framework import serializers
-
-from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput
+import humanize
+from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput, AstrometryOutput
 from tno.models import CustomList, Proccess
+from django.utils import timezone
 
 
 class RunSerializer(serializers.ModelSerializer):
@@ -13,6 +14,8 @@ class RunSerializer(serializers.ModelSerializer):
     input_list = serializers.PrimaryKeyRelatedField(
         queryset=CustomList.objects.all(), many=False)
 
+    start_time = serializers.SerializerMethodField()
+
     configuration_displayname = serializers.SerializerMethodField()
 
     input_displayname = serializers.SerializerMethodField()
@@ -21,6 +24,9 @@ class RunSerializer(serializers.ModelSerializer):
         queryset=Proccess.objects.all(), many=False, required=False)
 
     proccess_displayname = serializers.SerializerMethodField()
+
+    h_execution_time = serializers.SerializerMethodField()
+    h_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Run
@@ -32,6 +38,8 @@ class RunSerializer(serializers.ModelSerializer):
             'configuration',
             'input_list',
             'status',
+            'h_execution_time',
+            'h_time',
             'configuration_displayname',
             'input_displayname',
             'proccess',
@@ -62,6 +70,24 @@ class RunSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    def get_start_time(self, obj):
+        try:
+            return obj.start_time.strftime('%Y-%m-%d %H:%M:%S')
+        except:
+            return None
+
+    def get_h_execution_time(self, obj):
+        try:
+            return humanize.naturaldelta(obj.execution_time)
+        except:
+            return None
+
+    def get_h_time(self, obj):
+        try:
+            return humanize.naturaltime(timezone.now() - obj.start_time)
+        except:
+            return None
+
 
 class ConfigurationSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
@@ -81,6 +107,7 @@ class ConfigurationSerializer(serializers.ModelSerializer):
         except:
             return None
 
+
 class AstrometryAsteroidSerializer(serializers.ModelSerializer):
 
     astrometry_run = serializers.PrimaryKeyRelatedField(
@@ -97,10 +124,11 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
             'error_msg',
         )
 
+
 class AstrometryInputSerializer(serializers.ModelSerializer):
 
     asteroid = serializers.PrimaryKeyRelatedField(
-        queryset=Run.objects.all(), many=False)
+        queryset=AstrometryAsteroid.objects.all(), many=False)
 
     class Meta:
         model = AstrometryInput
@@ -108,6 +136,24 @@ class AstrometryInputSerializer(serializers.ModelSerializer):
             'id',
             'asteroid',
             'input_type',
+            'filename',
+            'file_size',
+            'file_type',
+            'file_path',
+        )
+
+
+class AstrometryOutputSerializer(serializers.ModelSerializer):
+
+    asteroid = serializers.PrimaryKeyRelatedField(
+        queryset=AstrometryAsteroid.objects.all(), many=False)
+
+    class Meta:
+        model = AstrometryOutput
+        fields = (
+            'id',
+            'asteroid',
+            'type',
             'filename',
             'file_size',
             'file_type',

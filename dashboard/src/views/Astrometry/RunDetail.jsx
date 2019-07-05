@@ -37,26 +37,22 @@ class PraiaDetail extends Component {
     this.api.getPraiaRunById({ id: params.id }).then(res => {
       const data = res.data;
 
+
       this.setState({
         id: parseInt(params.id, 10),
         data: data,
       });
 
-      if (data.status === 'success') {
-        this.api.getPraiaRunTimeProfile({ id: params.id }).then(res => {
+      // if (data.status === 'success') {
+      //   this.api.getPraiaRunTimeProfile({ id: params.id }).then(res => {
+      //     this.setState({
+      //       time_profile: res.data.data,
+      //     });
+      //   });
 
-          this.setState({
-            time_profile: res.data.data,
-          });
-        });
-
-      }
+      // }
     });
   }
-
-
-
-
 
 
   format_execution_time = duration => {
@@ -84,6 +80,7 @@ class PraiaDetail extends Component {
   render() {
 
     const { data } = this.state;
+    console.log(data);
 
 
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
@@ -127,7 +124,6 @@ class PraiaDetail extends Component {
     return (
 
       < div >
-
         {this.create_nav_bar()}
         < div className="ui-g" >
           <div className="ui-g-4 ui-md-4 ui-sm-1">

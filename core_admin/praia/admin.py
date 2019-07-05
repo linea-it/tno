@@ -1,10 +1,13 @@
 from django.contrib import admin
 
-from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput
+from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput, AstrometryOutput
+
 
 @admin.register(Run)
 class PraiaRunsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'owner', 'proccess', 'configuration', 'start_time', 'finish_time', )
+    list_display = ('id', 'owner', 'proccess', 'configuration',
+                    'start_time', 'finish_time', )
+
 
 @admin.register(Configuration)
 class PraiaConfigAdmin(admin.ModelAdmin):
@@ -16,8 +19,14 @@ class AstrometryAsteroidAdmin(admin.ModelAdmin):
     list_display = ('astrometry_run', 'name', 'number', 'status', 'error_msg',)
     search_fields = ('name',)
 
+
 @admin.register(AstrometryInput)
 class AstrometryInputAdmin(admin.ModelAdmin):
-    list_display = ('asteroid', 'input_type', 'filename', 'file_size', 'file_type', 'file_path',)
-#     search_fields = ('asteroid',)
+    list_display = ('asteroid', 'input_type', 'filename',
+                    'file_size', 'file_type', 'file_path',)
 
+
+@admin.register(AstrometryOutput)
+class AstrometryOutputAdmin(admin.ModelAdmin):
+    list_display = ('asteroid', 'type', 'filename',
+                    'file_size', 'file_type', 'file_path',)

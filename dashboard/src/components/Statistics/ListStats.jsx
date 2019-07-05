@@ -19,6 +19,7 @@ class ListStats extends Component {
 
     const columns = propSet.data.map((col, i) => {
       if (propSet.badgeColumns) {
+        console.log(i);
         return (
           <tr key={i}>
             <td className="font-format">{propSet.data[i].name}</td>
@@ -35,12 +36,11 @@ class ListStats extends Component {
           <tr key={i}>
             <td className="list-text">
               <div>{propSet.data[i].name}:</div>
-
             </td>
             <td className="list-value">
-              <div>{propSet.data[i].value} </div>
+              <div>{propSet.data[i].value}</div>
             </td>
-          </tr>
+          </tr >
         );
       }
     });
@@ -48,7 +48,7 @@ class ListStats extends Component {
     const status = [];
     if (propSet.status) {
       status.push(
-        <tr>
+        <tr key={status}>
           <td className="list-text">
             <strong>Status</strong>
           </td>
