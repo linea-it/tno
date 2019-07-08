@@ -127,7 +127,7 @@ class AsteroidList extends Component {
                     icon="fa fa-search"
                     className="ui-button-info"
                     title="View"
-                // onClick={() => this.onViewAsteroid(asteroid_id)}
+                    onClick={() => this.onViewAsteroid(asteroid_id)}
                 />
             );
             btn_log = (
@@ -150,7 +150,7 @@ class AsteroidList extends Component {
     };
 
     statusColumn = rowData => {
-
+        0
         if (rowData.status === 'success') {
             return (
                 <Button
@@ -238,6 +238,7 @@ class AsteroidList extends Component {
     };
 
     render() {
+
         const columns = this.columns.map((col, i) => {
             return (
                 <Column
@@ -283,6 +284,7 @@ class AsteroidList extends Component {
                     totalRecords={this.state.totalSize}
                     first={this.state.first}
                     onPageChange={this.onPageChange}
+
                 />
 
                 {/* <Log

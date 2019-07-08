@@ -5,6 +5,8 @@ class PraiaApi {
     this.api = process.env.REACT_APP_API;
   }
 
+
+
   getPraiaRuns = ({ page, pageSize, ordering, filters = [] }) => {
     const params = { page: page, pageSize: pageSize, ordering: ordering };
     filters.forEach(element => {
@@ -75,6 +77,10 @@ class PraiaApi {
     axios.patch(`${this.api}/praia_run/${id}/`, {
       status: 'reexecute',
     });
+
+  getAsteroidDetails = async (id) =>
+    await axios.get(`${this.api}/asteroid_run_details/${id}`);
+
 }
 
 export default PraiaApi;
