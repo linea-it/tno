@@ -97,7 +97,7 @@ class PredictionApi {
   };
 
   getAsteroidById = ({ id }) =>
-    axios.patch(`${this.api}/predict_asteroid/${id}/`);
+    axios.get(`${this.api}/predict_asteroid/${id}/`);
 
   getAsteroidNeighbors = ({ id }) => {
     const params = { asteroid: id };

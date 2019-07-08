@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import pytimeparse
 import os, errno
 from django.conf import settings
@@ -1008,6 +1008,8 @@ class PredictionOccultation():
 
             if catalog.schema is not None:
                 tablename = "%s.%s" % (catalog.schema, catalog.tablename)
+            else:
+                tablename = catalog.tablename
 
             columns = ", ".join(self.gaia_properties)
 

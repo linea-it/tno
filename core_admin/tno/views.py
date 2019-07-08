@@ -329,7 +329,7 @@ class CustomListViewSet(viewsets.ModelViewSet):
 
         return Response({
             'success': True,
-            'data': data
+            'data': data,
         })
 
 

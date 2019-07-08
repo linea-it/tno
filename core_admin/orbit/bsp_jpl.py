@@ -13,6 +13,7 @@ from orbit.models import BspJplFile
 import logging
 from common.jsonfile import JsonFile
 from .download_parameters import DownloadParameters
+import traceback
 
 
 class BSPJPL(DownloadParameters):
@@ -73,9 +74,18 @@ class BSPJPL(DownloadParameters):
             # executa de fato o download.
             check_call(args, stdout=DEVNULL, stderr=STDOUT)
 
-        except CalledProcessError:
-            # TODO aqui deve ser adicionar uma mensagem de erro no log.
+        except CalledProcessError as e:
+            logger.error(e)
+            trace = traceback.format_exc()
+            logger.error(trace)
             return None
+
+        except Exception as e:
+            logger.error(e)
+            trace = traceback.format_exc()
+            logger.error(trace)
+            return None
+
 
         finish = datetime.now()
         tdelta = finish - start
@@ -85,6 +95,7 @@ class BSPJPL(DownloadParameters):
             size = os.path.getsize(file_path)
 
             return dict({
+                "name": name,
                 "start_time": start,
                 "finish_time": finish,
                 "download_time": tdelta.total_seconds(),
@@ -103,8 +114,8 @@ class BSPJPL(DownloadParameters):
 
         t0 = datetime.now()
 
-        # Cria o path para o diretorio de saida e verifica se existe, se nao existir cria.
-        files_path = settings.BSP_JPL_DIR
+        # Recupera o base path para os arquivos BSP JPL
+        files_path = self.get_bsp_basepath()
 
         self.logger.debug("Files Path: %s" % files_path)
 
@@ -207,12 +218,23 @@ class BSPJPL(DownloadParameters):
         self.logger.info("Download BSP_JPL Completed in %s" % humanize.naturaldelta(tdelta))
 
     def update_or_create_record(self, record):
+
+        if "download_start_time" in record:
+            start_time = record.get("download_start_time")
+        else:
+            start_time = record.get("start_time")
+
+        if "download_finish_time" in record:
+            finish_time = record.get("download_finish_time")
+        else:
+            finish_time = record.get("finish_time")
+
         return BspJplFile.objects.update_or_create(
             name=record.get("name"),
             defaults={
                 'filename': record.get("filename"),
-                'download_start_time': record.get("download_start_time"),
-                'download_finish_time': record.get("download_finish_time"),
+                'download_start_time': start_time,
+                'download_finish_time': finish_time,
                 'file_size': record.get("file_size"),
             }
         )
@@ -238,3 +260,6 @@ class BSPJPL(DownloadParameters):
 
         except:
             return None
+
+    def get_bsp_basepath(self):
+        return settings.BSP_JPL_DIR

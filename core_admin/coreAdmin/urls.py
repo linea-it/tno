@@ -11,7 +11,7 @@ Class-based views
     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
 Including another URLconf
     1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))y
 """
 from django.contrib import admin
 from django.urls import path
@@ -25,7 +25,7 @@ from common import views as common_views
 
 from tno.views import UserViewSet, PointingViewSet, SkybotOutputViewSet, ObjectClassViewSet, CustomListViewSet, \
     ProccessViewSet, CatalogViewSet, JohnstonArchiveViewSet, SkybotRunViewSet
-from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet
+from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet, AstrometryAsteroidViewSet, AstrometryInputViewSet, AstrometryOutputViewSet
 
 from orbit.views import OrbitRunViewSet, RefinedAsteroidViewSet, RefinedOrbitViewSet, RefinedOrbitInputViewSet
 
@@ -53,8 +53,6 @@ router.register(r'bsp_planetary', BspPlanetaryViewSet)
 router.register(r'skybot_run', SkybotRunViewSet)
 
 
-
-
 # router.register(r'observation', ObservationViewSet)
 # router.register(r'orbital_parameter', OrbitalParameterViewSet)
 
@@ -62,6 +60,9 @@ router.register(r'customlist', CustomListViewSet)
 router.register(r'proccess', ProccessViewSet)
 router.register(r'praia_run', PraiaRunViewSet)
 router.register(r'praia_configuration', PraiaConfigurationViewSet)
+router.register(r'astrometry_asteroids', AstrometryAsteroidViewSet)
+router.register(r'astrometry_input', AstrometryInputViewSet)
+router.register(r'astrometry_output', AstrometryOutputViewSet)
 
 
 router.register(r'catalog', CatalogViewSet)
