@@ -16,14 +16,15 @@ class PraiaConfigAdmin(admin.ModelAdmin):
 
 @admin.register(AstrometryAsteroid)
 class AstrometryAsteroidAdmin(admin.ModelAdmin):
-    list_display = ('astrometry_run', 'name', 'number', 'status', 'error_msg',)
+    list_display = ('astrometry_run', 'name', 'number',
+                    'status', 'ccd_images', 'error_msg',)
     search_fields = ('name',)
 
 
 @admin.register(AstrometryInput)
 class AstrometryInputAdmin(admin.ModelAdmin):
     list_display = ('asteroid', 'input_type', 'filename',
-                    'file_size', 'file_type', 'file_path',)
+                    'file_size', 'file_type', 'file_path', 'execution_time', 'error_msg',)
 
 
 @admin.register(AstrometryOutput)

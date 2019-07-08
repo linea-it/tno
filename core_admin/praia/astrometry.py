@@ -1,5 +1,6 @@
 from tno.models import Proccess
-import os, errno
+import os
+import errno
 import logging
 from random import randrange
 import time
@@ -17,6 +18,7 @@ from concurrent.futures import ThreadPoolExecutor, wait, as_completed
 from orbit.bsp_jpl import BSPJPL
 from .models import AstrometryAsteroid, AstrometryInput
 
+
 def create_ccd_images_list(name, output_filepath):
     # Recuperar as exposicoes para cada objeto.
     start = datetime.now(timezone.utc)
@@ -29,18 +31,20 @@ def create_ccd_images_list(name, output_filepath):
         'file_size': None,
         'file_path': output_filepath,
         'ccds_count': None,
-        'error': None
+        'error_msg': None
     })
 
     try:
         ccds, ccds_count = FilterObjects().ccd_images_by_object(name)
 
-        if ccds_count > 0:
+        if ccds_count is not None and ccds_count > 0:
 
-            headers = ['id', 'pfw_attempt_id', 'desfile_id', 'nite', 'date_obs', 'expnum', 'ccdnum', 'band', 'exptime', 'cloud_apass', 'cloud_nomad', 't_eff', 'crossra0', 'radeg', 'decdeg', 'racmin', 'racmax', 'deccmin', 'deccmax', 'ra_cent', 'dec_cent', 'rac1', 'rac2', 'rac3', 'rac4', 'decc1', 'decc2', 'decc3', 'decc4', 'ra_size', 'dec_size', 'path', 'filename', 'compression', 'downloaded']
+            headers = ['id', 'pfw_attempt_id', 'desfile_id', 'nite', 'date_obs', 'expnum', 'ccdnum', 'band', 'exptime', 'cloud_apass', 'cloud_nomad', 't_eff', 'crossra0', 'radeg', 'decdeg', 'racmin',
+                       'racmax', 'deccmin', 'deccmax', 'ra_cent', 'dec_cent', 'rac1', 'rac2', 'rac3', 'rac4', 'decc1', 'decc2', 'decc3', 'decc4', 'ra_size', 'dec_size', 'path', 'filename', 'compression', 'downloaded']
 
             with open(output_filepath, mode='w') as temp_file:
-                writer = csv.DictWriter(temp_file, delimiter=';', fieldnames=headers)
+                writer = csv.DictWriter(
+                    temp_file, delimiter=';', fieldnames=headers)
                 writer.writeheader()
                 writer.writerows(ccds)
 
@@ -50,13 +54,12 @@ def create_ccd_images_list(name, output_filepath):
             })
         else:
             result.update({
-                'error': "No CCD Image found for this object.",
+                'error_msg': "No CCD Image found for this object.",
             })
 
     except Exception as e:
         result.update({
-            'input_type': 'ccd_images_list',
-            'error': e
+            'error_msg': e
         })
 
     finish = datetime.now(timezone.utc)
@@ -68,29 +71,95 @@ def create_ccd_images_list(name, output_filepath):
 
     return result
 
-def retrieve_bsp_jpl(name, output):
 
-    # verificar se ja existe bsp baixado dentro da validade.
-    rows = FilterObjects().check_bsp_jpl_by_object(name, 30)
-    if len(rows) == 1:
-        # Copiar o arquivo para o diretorio do objeto. 
-        original_file_path, bsp_file_record = BSPJPL().get_file_path(name)
+def retrieve_bsp_jpl(name, output_filepath):
+    """
+        Recupera o BSP JPL para um asteroid. 
+        verifica se o existe algum bsp ja baixado para o asteroid. 
+        se existir faz uma copia para o diretorio do objeto. 
+        se nao existir faz o download. 
+    """
+    start = datetime.now(timezone.utc)
+    filename = "%s.bsp" % name.replace(' ', '_')
+    logger = logging.getLogger("astrometry")
+    result = dict({
+        'asteroid': name,
+        'input_type': 'bsp_jpl',
+        'filename': filename,
+        'file_type': 'bsp',
+        'file_size': None,
+        'file_path': None,
+        'error_msg': None
+    })
+    try:
+        # verificar se ja existe bsp baixado dentro da validade.
+        rows = FilterObjects().check_bsp_jpl_by_object(name, 30)
+        if len(rows) == 1:
+            logger.debug(
+                "A valid BSP_JPL already exists for this asteroid. [ %s ]" % name)
+            # Copiar o arquivo para o diretorio do objeto.
+            original_file_path, bsp_model = BSPJPL().get_file_path(name)
 
-        bsp_file = os.path.basename(original_file_path)
-        f = os.path.join(output, bsp_file)
+            bsp_file = os.path.basename(original_file_path)
+            f = os.path.join(output_filepath, bsp_file)
 
-        shutil.copy2(original_file_path, f)
+            shutil.copy2(original_file_path, f)
 
-        if os.path.exists(f):
-            return f
+            if os.path.exists(f):
+                result.update({
+                    'file_path': f,
+                    'file_size': os.path.getsize(output_filepath),
+                })
+            else:
+                result.update({
+                    'error_msg': "Failed to copy the BSP JPL file. [ %s -> %s ]" % (original_file_path, f)
+                })
         else:
-            # TODO erro na copia de um bsp ja baixado
-            return None
-    else:
-        pass
-        # TODO implementar o Download do bsp
+            logger.debug(
+                "BSP JPL not have or is old, a new download will be executed. [ %s ]" % name)
+            bsp_path = BSPJPL().get_bsp_basepath()
 
-        return None
+            record = BSPJPL().download(name, filename, bsp_path, logger)
+
+            if record is not None:
+                bsp_model, created = BSPJPL().update_or_create_record(record)
+
+                # Copy bsp from BSP_JPL_DIR to Asteroid DIR
+                original_file_path = record.get("file_path")
+                bsp_file = os.path.join(output_filepath, filename)
+                shutil.copy2(original_file_path, bsp_file)
+
+                if os.path.exists(bsp_file):
+                    result.update({
+                        'file_path': bsp_file,
+                        'file_size': os.path.getsize(bsp_file),
+                    })
+                else:
+                    result.update({
+                        'error_msg': "Failed to copy the BSP JPL file. [ %s -> %s ]" % (original_file_path, bsp_file)
+                    })
+            else:
+                result.update({
+                    'error_msg': "Failed to download the BSP JPL file."
+                })
+
+    except Exception as e:
+        trace = traceback.format_exc()
+        logger.error(e)
+        logger.error(trace)
+
+        result.update({
+            'error_msg': e
+        })
+
+    finish = datetime.now(timezone.utc)
+    result.update({
+        'start_time': start,
+        'finish_time': finish,
+        'execution_time': finish - start
+    })
+
+    return result
 
 
 def create_gaia_dr2_catalog(ccd_images_file, output):
@@ -101,7 +170,7 @@ def create_gaia_dr2_catalog(ccd_images_file, output):
         reader = csv.DictReader(cfile, delimiter=';')
         for row in reader:
 
-            # Query no banco de catalogos 
+            # Query no banco de catalogos
             coordinates = [
                 row['rac1'], row['decc1'], row['rac2'], row['decc2'], row['rac3'], row['decc3'], row['rac4'], row['decc4']]
 
@@ -118,7 +187,8 @@ def create_gaia_dr2_catalog(ccd_images_file, output):
             headers.append(head)
 
         with open(output, 'w') as tempFile:
-            writer = csv.DictWriter(tempFile, delimiter=';', fieldnames=headers)
+            writer = csv.DictWriter(
+                tempFile, delimiter=';', fieldnames=headers)
             writer.writeheader()
             writer.writerows(rows)
 
@@ -135,6 +205,8 @@ class Astrometry():
         self.proccess = None
         self.input_list = None
         self.objects_dir = None
+        self.instance = None
+        self.asteroid = []
 
         # TODO: este diretorio e provisorio para simular a execucao do PRAIA
         self.astrometry_positions_dir = settings.ASTROMETRY_POSITIONS_DIR
@@ -143,6 +215,9 @@ class Astrometry():
         instance.status = 'running'
         instance.start_time = datetime.now(timezone.utc)
         instance.save()
+
+        self.instance = instance
+
         self.logger.info("Status changed to Running")
 
         self.logger.info("PRAIA RUN %s" % instance.id)
@@ -179,11 +254,10 @@ class Astrometry():
         # Criar um diretorio para os arquivos do PRAIA.
         try:
             directory_name = "astrometry_%s" % instance.id
-            directory = os.path.join(self.proccess.relative_path, directory_name)
+            directory = os.path.join(
+                self.proccess.relative_path, directory_name)
         except Exception as e:
             self.on_error(instance, e)
-
-
 
         try:
             # Criar o Diretorio
@@ -216,11 +290,8 @@ class Astrometry():
             if e.errno != errno.EEXIST:
                 self.on_error(instance, e)
 
-
-
-        # Registro dos asteroids 
+        # Registro dos asteroids
         self.logger.info("Register Objects")
-
 
         # Recuperando os Objetos
         objects, obj_count = ProccessManager().get_objects(tablename=self.input_list.tablename,
@@ -250,34 +321,41 @@ class Astrometry():
                 asteroidModel.save()
 
             except Exception as e:
-                self.on_error(instance, e)                
+                self.on_error(instance, e)
 
-        # Lista com os Models referentes aos objetos. 
-        asteroids = AstrometryAsteroid.objects.filter(astrometry_run=instance.pk)
+        # Lista com os Models referentes aos objetos.
+        self.asteroids = AstrometryAsteroid.objects.filter(
+            astrometry_run=instance.pk)
 
-        self.logger.info("Register Objects End. Count: [%s]" % asteroids.count())
+        self.logger.info(
+            "Register Objects. Asteroids Count: [%s]" % self.asteroids.count())
 
+        # ===================================================================================================
+        # CCD Images - List all ccd for every asteroid
+        # ===================================================================================================
+        self.logger.info(
+            "---------------------------------// CCD Images //---------------------------------")
+        ccd_images_start = datetime.now(timezone.utc)
 
         pool = ThreadPoolExecutor(max_workers=4)
-        futures = []        
+        futures = []
         idx = 1
         try:
-            
-            for obj in asteroids:
-            
-                self.logger.info("Running [ %s / %s ] Object: [ %s ]" % (idx, obj_count, obj.name))
+
+            for obj in self.asteroids:
+
+                self.logger.info(
+                    "Running CCD Images [ %s / %s ] Object: [ %s ]" % (idx, obj_count, obj.name))
 
                 obj_dir = obj.relative_path
 
-                # CCD Images 
+                # CCD Images
                 ccd_images_file = os.path.join(obj_dir, "ccd_images.csv")
 
                 self.logger.debug("CCD Images CSV: [ %s ]" % ccd_images_file)
-   
-                futures.append(pool.submit(create_ccd_images_list, obj.name, ccd_images_file))
 
-                # # BSP JPL 
-                # futures.append(pool.submit(retrieve_bsp_jpl, name, obj_dir))
+                futures.append(pool.submit(
+                    create_ccd_images_list, obj.name, ccd_images_file))
 
                 idx += 1
 
@@ -288,41 +366,133 @@ class Astrometry():
             for future in futures:
                 results.append(future.result())
 
-            self.logger.debug("Results:  %s " % results)
+            # self.logger.debug("Results:  %s " % results)
 
-            # Registrar os inputs
-            self.logger.info("Register Inputs")
+            self.logger.info("Register CCD Images Inputs")
             for result in results:
-                asteroid = asteroids.get(name=result["asteroid"])
+                self.register_input(result)
 
-                self.logger.debug("Asteroid Name: %s" % asteroid.pk)
+                # Registar a quantidade de CCDs para cada Asteroid
+                asteroid = self.asteroids.get(name=result['asteroid'])
 
-                input_model, create = AstrometryInput.objects.update_or_create(
-                    asteroid=asteroid,
-                    input_type=result["input_type"],
-                    defaults={
-                        'filename': result["filename"],
-                        'file_size': result["file_size"],
-                        'file_type': result["file_type"],
-                        'file_path': result["file_path"],
-                        'error_msg': result["error"],
-                        'start_time': result["start_time"],
-                        'finish_time': result["finish_time"],
-                        'execution_time': result["execution_time"],
-                    })
-                input_model.save()
+                if result["ccds_count"] is None or result["ccds_count"] == 0:
+                    # Asteroid nao tem CCD image associada a ele, marcar como falha.
+                    asteroid.status = 'not_executed'
+                    asteroid.error_msg = result['error_msg']
+                    asteroid.save()
+                    self.logger.warning(result)
+
+                asteroid.save()
 
         except Exception as e:
             self.on_error(instance, e)
 
+        ccd_images_finish = datetime.now(timezone.utc)
+        ccd_images_execution_time = ccd_images_finish - ccd_images_start
+
+        self.logger.info("Finished CCD Images list in %s" %
+                         humanize.naturaldelta(ccd_images_execution_time))
+
+        # ===================================================================================================
+        # BSP JPL - Retrieve BSP JPL  for every asteroid
+        # ===================================================================================================
+        self.logger.info(
+            "---------------------------------// BSP JPL //---------------------------------")
+        bsp_jpl_start = datetime.now(timezone.utc)
+
+        # Reload na lista de asteroids agora sem os que falharam na etapa anterior.
+        self.asteroids = AstrometryAsteroid.objects.filter(
+            astrometry_run=instance.pk).exclude(status__in=list(['failure', 'not_executed']))
+
+        pool = ThreadPoolExecutor(max_workers=4)
+        futures = []
+        idx = 1
+
+        try:
+            for obj in self.asteroids:
+
+                self.logger.info(
+                    "Running BSP JPL [ %s / %s ] Object: [ %s ]" % (idx, self.asteroids.count(), obj.name))
+
+                # BSP JPL
+                futures.append(pool.submit(retrieve_bsp_jpl,
+                                           obj.name, obj.relative_path))
+
+                idx += 1
+
+            # Esperar todas as execucoes.
+            wait(futures)
+
+            results = []
+            for future in futures:
+                results.append(future.result())
+
+            # self.logger.debug("Results:  %s " % results)
+
+            self.logger.info("Register BSP JPL Inputs")
+            for result in results:
+                self.register_input(result)
+
+                if result["file_path"] is None or result["error_msg"] is not None:
+                    # Asteroid nao tem BSP JPL ou nao foi possivel o download.
+                    asteroid.status = 'not_executed'
+                    asteroid.error_msg = result['error_msg']
+                    asteroid.save()
+                    self.logger.warning(result)
+
+                asteroid.save()
+
+        except Exception as e:
+            self.on_error(instance, e)
+
+        bsp_jpl_finish = datetime.now(timezone.utc)
+        bsp_jpl_execution_time = bsp_jpl_finish - bsp_jpl_start
+
+        self.logger.info("Finished BSP JPL in %s" %
+                         humanize.naturaldelta(bsp_jpl_execution_time))
+
+        # Reload na lista de asteroids agora sem os que falharam na etapa anterior.
+        self.asteroids = AstrometryAsteroid.objects.filter(
+            astrometry_run=instance.pk).exclude(status__in=list(['failure', 'not_executed']))
+
+        # FAKE RUN Copia os arquivos de resultados da Astrometria.
+        try:
+            for obj in self.asteroids:
+                name = obj.name.replace(" ", "_")
+
+                filename = self.get_astrometry_position_filename(obj.name)
+
+                original_file = os.path.join(
+                    self.astrometry_positions_dir, filename)
+
+                # Rename object_name_obs.txt -> objectname.txt
+                filename = filename.replace('_obs', '').replace('_', '')
+                # obj_dir = os.path.join(self.objects_dir, name)
+                new_file = os.path.join(obj.relative_path, filename)
+
+                # verificar se existe o arquivo para este objeto
+                if os.path.exists(original_file):
+                    shutil.copy2(original_file, new_file)
+
+                    self.logger.debug(
+                        "Object [ %s ] - COPY : %s -> %s" % (obj.name, original_file, new_file))
+
+                    obj.status = 'success'
+
+                else:
+                    obj.status = 'failure'
+
+                obj.save()
+        except Exception as e:
+            self.on_error(instance, e)
 
         # # Query no catalogo GAIA 2
-        # # TODO deve ter um parametro para escolher qual catalogo. 
+        # # TODO deve ter um parametro para escolher qual catalogo.
         # pool = ThreadPoolExecutor()
-        # futures = []        
+        # futures = []
         # idx = 1
         # try:
-        #     for obj in objects:           
+        #     for obj in objects:
         #         self.logger.info("Generate GAIA DR2 Catalog %s / %s Object: [ %s ]" % (idx, obj_count, obj.get('name')))
 
         #         name = obj.get("name").replace(" ", "_")
@@ -350,8 +520,6 @@ class Astrometry():
         #     self.logger.error(e)
         #     self.logger.error(tb)
 
-
-
         # Submissao dos jobs no cluster
 
         # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
@@ -365,8 +533,32 @@ class Astrometry():
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"
 
+    def register_input(self, asteroid_input):
+        try:
+            asteroid = self.asteroids.get(name=asteroid_input["asteroid"])
 
+            input_model, create = AstrometryInput.objects.update_or_create(
+                asteroid=asteroid,
+                input_type=asteroid_input["input_type"],
+                defaults={
+                    'filename': asteroid_input["filename"],
+                    'file_size': asteroid_input["file_size"],
+                    'file_type': asteroid_input["file_type"],
+                    'file_path': asteroid_input["file_path"],
+                    'error_msg': asteroid_input["error_msg"],
+                    'start_time': asteroid_input["start_time"],
+                    'finish_time': asteroid_input["finish_time"],
+                    'execution_time': asteroid_input["execution_time"],
+                })
+            input_model.save()
 
+            self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (
+                input_model.input_type, asteroid.name, input_model.file_path))
+
+            return input_model
+
+        except Exception as e:
+            self.on_error(self.instance, e)
 
     def on_error(self, instance, error):
         trace = traceback.format_exc()
@@ -374,7 +566,7 @@ class Astrometry():
         self.logger.error(trace)
 
         self.set_execution_time(instance)
-
+        instance.refresh_from_db()
         instance.error_msg = error
         instance.error_traceback = trace
         instance.status = 'failure'
@@ -382,12 +574,13 @@ class Astrometry():
 
         raise(error)
 
-
     def set_execution_time(self, instance):
         start_time = instance.start_time
         finish_time = datetime.now(timezone.utc)
         tdelta = finish_time - start_time
+
+        instance.refresh_from_db()
+        instance.finish_time = finish_time
         instance.execution_time = tdelta
         instance.save()
         self.logger.info("Execution Time: %s" % humanize.naturaldelta(tdelta))
-    
