@@ -472,7 +472,9 @@ class Astrometry():
 
                 obj.save()
 
-            time.sleep(2)
+            #     self.logger.debug("Object [ %s ] - COPY : %s -> %s" % (obj.get("name"), original_file, new_file))
+
+            # time.sleep(2)
 
 
         except Exception as e:
