@@ -5,9 +5,7 @@ import CustomList from 'views/ObjectList/CustomList';
 import ObjectList from 'views/ObjectList/ObjectList';
 import Praia from 'views/Astrometry/Praia';
 import RefineOrbitPanel from 'views/RefineOrbit/Panel';
-import PraiaRun from 'views/Astrometry/PraiaRun';
 import Placeholder from 'views/Placeholder';
-
 import Dashboard from 'views/Dashboard/Dashboard';
 import UserProfile from 'views/UserProfile/UserProfile';
 import TableList from 'views/TableList/TableList';
@@ -26,6 +24,8 @@ import AsteroidDetailPrediction from '../views/Prediction/AsteroidDetail';
 import SkybotRun from '../views/SolarSystems/SkybotRun/SkybotRun';
 import SkybotRunDetail from '../views/SolarSystems/SkybotRun/Detail';
 import ExposureDetail from '../views/SolarSystems/SkybotRun/ExposureDetail';
+import PraiaDetail from '../views/Astrometry/RunDetail';
+
 
 
 
@@ -136,7 +136,7 @@ const appRoutes = [
     path: '/astrometry_run/:id',
     name: 'Astrometry Run',
     hidden: true,
-    component: PraiaRun,
+    component: PraiaDetail,
   },
   {
     path: '/refine_orbit',
@@ -220,6 +220,8 @@ const appRoutes = [
     component: Notifications,
     hidden: true,
   },
+
+
   // {
   //   path: '/formik',
   //   name: 'Formik',
