@@ -1,8 +1,14 @@
 # Astrometry Pipeline
-- [ ] Para cada asteroid recuperar a lista de exposições. 
-- [ ] Para cada asteroid criar o arquivo de parametros. 
-- [ ] Para cada asteroid criar link para o Fits do CCD.
-- [ ] Para cada asteroid, varrer todas as exposições e criar o catalogo Gaia. 
-- [ ] instalar e configurar biblioteca condor.
-- [ ] execucar o container praia para cada asteroid. 
-
+- [x] Para cada asteroid recuperar a lista de exposições. 
+- [x] Para cada asteroid criar o arquivo de parametros. 
+- [x] Para cada asteroid criar link para o Fits do CCD.
+- [x] Para cada asteroid, varrer todas as exposições e criar o catalogo Gaia. 
+- [ ] Guardar informações dos inputs que foram gerados durante a execução. 4h
+- [ ] Implementar Download do BSP JPL para objetos que não tem ou tem mais de 30 dias. 6h
+- [ ] Implementar criação do catalogo gaia2 para os CCDs de cada objeto.  8h
+- [ ] Alterar o container tirar os inputs hardcoded. 8h
+- [ ] Instalar, Configurar e testar biblioteca pyCondor para submissão. ?
+- [ ] Execucar o container astrometria para cada asteroid no Condor.  ?
+- [ ] Gerenciar os errors em cada etapa. ?
+- [ ] Implementar interface para visualizar os resultados. 12h
+- [ ] Implementar função para Download dos CCDs que não foram baixados. ?

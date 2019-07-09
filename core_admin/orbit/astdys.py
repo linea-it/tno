@@ -8,7 +8,7 @@ class AstDys():
     def getObjectURL(self, name):
 
         temp_name = name.replace(' ', '+')
-        url_object = 'http://hamilton.dm.unipi.it/astdys2/index.php?pc=1.1.0&n=' + temp_name
+        url_object = 'https://newton.spacedys.com/astdys2/index.php?pc=1.1.0&n=' + temp_name
 
         return url_object
 
@@ -19,7 +19,7 @@ class AstDys():
         return self.getFileURL(name, number, "mpcobs", self.observations_extension)
 
     def getFileURL(self, name, number, key, ext):
-        base_url = "http://hamilton.dm.unipi.it/~astdys2/%s/" % key
+        base_url = "https://newton.spacedys.com/~astdys2/%s/" % key
 
         if number != "-" and number is not None:
             link2 = "numbered/" + str(int((int(number) / 1000))) + "/" + number + ext

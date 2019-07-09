@@ -26,6 +26,23 @@ class PraiaApi {
       },
     });
 
+  getPraiaRunById = ({ id }) => axios.get(`${this.api}/praia_run/${id}/`);
+
+  // dados na table do primereacts
+  getPraiaData = id => axios.get(`${this.api}/praia_run/${id}`);
+
+
+
+  // Time Profile
+  getPraiaRunTimeProfile = ({ id }) => {
+    const params = {
+      orbit_run: id,
+    };
+    return axios.get(`${this.api}/praia_run/get_time_profile/`, {
+      params: params,
+    });
+  };
+
   createPraiaRun = ({ input, config }) =>
     axios.post(`${this.api}/praia_run/`, {
       input_list: input,
@@ -34,7 +51,7 @@ class PraiaApi {
 
   praiaReRun = ({ id }) =>
     axios.patch(`${this.api}/praia_run/${id}/`, {
-      status: 'pending',
+      status: 'reexecute',
     });
 }
 
