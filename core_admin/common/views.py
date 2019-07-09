@@ -1,14 +1,15 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-
+from django.conf import settings
+import os
 
 @api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
-
+               
+        
         result = dict({
             'success': True,
-            'teste': sk.teste()
         })
 
     return Response(result)
@@ -30,3 +31,53 @@ def import_skybot(request):
             'success': True,
         })
     return Response(result)
+
+
+@api_view(['GET'])
+def read_file(request):
+    if request.method == 'GET':
+
+        # Recuperar o filepath do arquivo a ser lido dos parametros da url. 
+        filepath = request.query_params.get('filepath', None)
+
+        # Verificar se o parametro nao esta vazio, se estiver retorna mensagem avisando.
+        if filepath == None or filepath == '':
+            return Response(dict({
+                'success': False,
+                'message': 'filepath parameter obrigatory'
+            }))  
+
+        # Verificar se o arquivo existe, se nao existir retorna mensagem avisando. 
+        if not os.path.exists(filepath):
+            return Response(dict({
+                'success': False,
+                'message': 'filepath do not exist. (%s)' % filepath 
+            }))
+       
+        # Ler o arquivo.         
+        try:
+            rows = list()
+            with open(filepath) as fp:
+                lines = fp.readlines()
+                for line in lines:
+                    rows.append(line.replace('\n','').strip())
+
+            return Response(dict({
+                'success': True,
+                'rows': rows,
+                'filepath': filepath,
+            }))
+        except IOError as e:
+            return Response(dict({
+                'success': False,
+                'message': "I/O error({0}): {1}".format(e.errno, e.strerror)
+            }))
+
+
+
+
+    
+    
+        
+
+    return Response(result)     
