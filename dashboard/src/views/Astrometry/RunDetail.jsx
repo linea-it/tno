@@ -11,13 +11,10 @@ import PraiaTimeProfile from './TimeProfile';
 import AsteroidList from './AsteroidList';
 import { withRouter } from 'react-router-dom';
 
-
-
 class PraiaDetail extends Component {
 
   state = this.initialState;
   api = new PraiaApi();
-
 
   get initialState() {
     return {
@@ -37,6 +34,7 @@ class PraiaDetail extends Component {
     this.api.getPraiaRunById({ id: params.id }).then(res => {
       const data = res.data;
 
+      console.log(res.data);
 
       this.setState({
         id: parseInt(params.id, 10),
@@ -85,8 +83,6 @@ class PraiaDetail extends Component {
   render() {
 
     const { data } = this.state;
-
-
 
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
@@ -186,7 +182,6 @@ class PraiaDetail extends Component {
       </div >
     );
   }
-
 }
 
 export default withRouter(PraiaDetail);
