@@ -5,7 +5,7 @@ from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput, Ast
 
 @admin.register(Run)
 class PraiaRunsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'owner', 'proccess', 'configuration',
+    list_display = ('id', 'owner', 'proccess', 'catalog', 'configuration',
                     'start_time', 'finish_time', )
 
 
@@ -16,17 +16,17 @@ class PraiaConfigAdmin(admin.ModelAdmin):
 
 @admin.register(AstrometryAsteroid)
 class AstrometryAsteroidAdmin(admin.ModelAdmin):
-    list_display = ('astrometry_run', 'name', 'number', 'status', 'ccd_images', 'error_msg',)
+    list_display = ('id', 'astrometry_run', 'name', 'number', 'status', 'ccd_images', 'catalog_rows', 'execution_time', 'error_msg',)
     search_fields = ('name',)
 
 
 @admin.register(AstrometryInput)
 class AstrometryInputAdmin(admin.ModelAdmin):
-    list_display = ('asteroid', 'input_type', 'filename',
+    list_display = ('id', 'asteroid', 'input_type', 'filename',
                     'file_size', 'file_type', 'file_path', 'execution_time', 'error_msg',)
 
 
 @admin.register(AstrometryOutput)
 class AstrometryOutputAdmin(admin.ModelAdmin):
-    list_display = ('asteroid', 'type', 'filename',
+    list_display = ('id', 'asteroid', 'type', 'filename',
                     'file_size', 'file_type', 'file_path',)
