@@ -145,7 +145,6 @@ class PraiaHistory extends Component {
   //Método que lê a requisição do botão de detalhe
   onView = (id) => {
     this.props.handleOnViewDetail(id);
-
   };
 
   status_table = rowData => {
@@ -160,7 +159,7 @@ class PraiaHistory extends Component {
 
     return status.map((el, i) => {
       if (row === el.state) {
-        console.log(row, el.state)
+
         return (
           <div key={i} className={`status_table ${el.state}`}>
             {row}
@@ -191,8 +190,6 @@ class PraiaHistory extends Component {
     ) {
       disabled = false;
     }
-
-
 
 
 

@@ -147,6 +147,8 @@ class AstrometryInputSerializer(serializers.ModelSerializer):
     asteroid = serializers.PrimaryKeyRelatedField(
         queryset=AstrometryAsteroid.objects.all(), many=False)
 
+    h_file_size = serializers.SerializerMethodField()
+
     class Meta:
         model = AstrometryInput
         fields = (
@@ -157,7 +159,14 @@ class AstrometryInputSerializer(serializers.ModelSerializer):
             'file_size',
             'file_type',
             'file_path',
+            'h_file_size'
         )
+
+    def get_h_file_size(self, obj):
+        try:
+            return humanize.naturalsize(obj.file_size)
+        except:
+            return None
 
 
 class AstrometryOutputSerializer(serializers.ModelSerializer):

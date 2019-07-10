@@ -85,7 +85,7 @@ class AsteroidList extends Component {
 
     const filters = [];
     filters.push({
-      property: 'praia_run',
+      property: 'astrometry_run',
       value: praia_run,
     });
 

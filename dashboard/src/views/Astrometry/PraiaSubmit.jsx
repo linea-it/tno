@@ -19,7 +19,7 @@ class PraiaSubmit extends Component {
   praia_api = new PraiaApi();
 
   get initialState() {
-    return { input: null, config: null };
+    return { input: null, config: null, catalog: null };
   }
 
   static propTypes = {
@@ -48,15 +48,35 @@ class PraiaSubmit extends Component {
       .getConfigurations({ search: inputValue, ordering: '-creation_date' })
       .then(res => {
         const configs = res.data.results;
+
         return { options: configs };
       });
   };
+
+  loadCatalogs = inputValue => {
+    return this.praia_api
+      .getCatalogs({ search: inputValue })
+      .then(res => {
+        const catalogs = res.data.results;
+
+        return { options: catalogs };
+      });
+  };
+
 
   onSelectConfig = selected => {
     if (selected) {
       this.setState({ config: selected.id });
     } else {
       this.setState({ config: null });
+    }
+  };
+
+  onSelectCatalog = selected => {
+    if (selected) {
+      this.setState({ catalog: selected.id });
+    } else {
+      this.setState({ catalog: null });
     }
   };
 
@@ -87,7 +107,8 @@ class PraiaSubmit extends Component {
   };
 
   render() {
-    const { input, config } = this.state;
+
+    const { input, config, catalog } = this.state;
     return (
       <Card className="none">
         <Form>
@@ -114,6 +135,21 @@ class PraiaSubmit extends Component {
               defaultOptions
               loadOptions={this.loadConfigs}
             />
+
+          </FormGroup>
+
+          <FormGroup>
+            <ControlLabel>Catalog</ControlLabel>
+            <Async
+              onChange={this.onSelectCatalog}
+              value={catalog}
+              cacheOptions
+              valueKey="id"
+              labelKey="display_name"
+              defaultOptions
+              loadOptions={this.loadCatalogs}
+            />
+
             <br />
             <Button
               className="button-TNO"

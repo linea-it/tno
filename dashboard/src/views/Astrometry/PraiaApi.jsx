@@ -5,8 +5,6 @@ class PraiaApi {
     this.api = process.env.REACT_APP_API;
   }
 
-
-
   getPraiaRuns = ({ page, pageSize, ordering, filters = [] }) => {
     const params = { page: page, pageSize: pageSize, ordering: ordering };
     filters.forEach(element => {
@@ -25,6 +23,13 @@ class PraiaApi {
         pageSize: pageSize,
         search: search,
         ordering: ordering,
+      },
+    });
+
+  getCatalogs = ({ search }) =>
+    axios.get(`${this.api}/catalog/`, {
+      params: {
+        search: search,
       },
     });
 
@@ -78,9 +83,17 @@ class PraiaApi {
       status: 'reexecute',
     });
 
-  getAsteroidDetails = async (id) =>
-    await axios.get(`${this.api}/asteroid_run_details/${id}`);
 
+  getAsteroidById = async (id) =>
+    await axios.get(`${this.api}/astrometry_asteroids/${id}`);
+
+
+  getInputsByAsteroidId = ({ id }) =>
+    axios.get(`${this.api}/astrometry_input/`, {
+      params: {
+        asteroid: id
+      }
+    });
 }
 
 export default PraiaApi;
