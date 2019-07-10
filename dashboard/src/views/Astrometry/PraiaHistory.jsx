@@ -191,11 +191,9 @@ class PraiaHistory extends Component {
       disabled = false;
     }
 
-
-
     btn_view_toolbar = (
 
-      //BOTÂO DE DETALHE
+      //BOTAO DE DETALHE
       <Button
         className="btn-TNO-color"
         label="Detail"
