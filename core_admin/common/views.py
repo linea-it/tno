@@ -139,8 +139,7 @@ def read_csv(request):
             }))
 
         # Ler o arquivo.
-        filepath = '/archive/tmp/teste.csv'
-
+       
         with open(filepath, 'r') as csv_file: 
             reader = csv.DictReader(csv_file, delimiter=';')
             dict_list = []
