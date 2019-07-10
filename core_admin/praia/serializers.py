@@ -1,7 +1,7 @@
 from rest_framework import serializers
 import humanize
 from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput, AstrometryOutput
-from tno.models import CustomList, Proccess
+from tno.models import CustomList, Proccess, Catalog
 from django.utils import timezone
 
 
@@ -13,6 +13,9 @@ class RunSerializer(serializers.ModelSerializer):
 
     input_list = serializers.PrimaryKeyRelatedField(
         queryset=CustomList.objects.all(), many=False)
+
+    catalog = serializers.PrimaryKeyRelatedField(
+        queryset=Catalog.objects.all(), many=False)        
 
     start_time = serializers.SerializerMethodField()
 
@@ -36,6 +39,7 @@ class RunSerializer(serializers.ModelSerializer):
             'start_time',
             'finish_time',
             'configuration',
+            'catalog',
             'input_list',
             'status',
             'h_execution_time',
@@ -122,6 +126,9 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
             'number',
             'status',
             'error_msg',
+            'ccd_images',
+            'catalog_rows',
+            'execution_time'
         )
 
 

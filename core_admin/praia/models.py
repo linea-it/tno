@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 
-
 class Configuration(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -28,6 +27,9 @@ class Run(models.Model):
         'tno.Proccess', on_delete=models.CASCADE, verbose_name='Proccess',
         null=True, blank=True, default=None
     )
+    catalog = models.ForeignKey(
+        'tno.Catalog',
+        on_delete=models.CASCADE, default=None, verbose_name='Catalog', null=True, blank=True)
 
     start_time = models.DateTimeField(
         verbose_name='Start Time',
@@ -136,6 +138,11 @@ class AstrometryAsteroid(models.Model):
         null=True, blank=True
     )
 
+    catalog_rows = models.BigIntegerField(
+        verbose_name="Catalog Rows",
+        null=True, blank=True
+    )
+
     error_msg = models.CharField(
         max_length=256,
         verbose_name="Error Message",
@@ -143,15 +150,10 @@ class AstrometryAsteroid(models.Model):
         null=True, blank=True,
     )
 
-    # catalog_rows = models.BigIntegerField(
-    #     verbose_name="Catalog Rows",
-    #     null=True, blank=True
-    # )
-
-    # execution_time = models.DurationField(
-    #     verbose_name='Execution Time',
-    #     null=True, blank=True
-    # )
+    execution_time = models.DurationField(
+        verbose_name='Execution Time',
+        null=True, blank=True
+    )
 
     # start_ephemeris = models.DateTimeField(
     #     verbose_name='Start Ephemeris',
@@ -194,7 +196,8 @@ class AstrometryInput(models.Model):
         help_text="Description of the input type.",
         choices=(
             ('ccd_images_list', 'CCD Images List'), 
-            ('bsp_jpl', 'BSP JPL'))
+            ('bsp_jpl', 'BSP JPL'),
+            ('catalog', 'Catalog')),
     )
 
     filename = models.CharField(
@@ -242,7 +245,7 @@ class AstrometryInput(models.Model):
     )
 
     def __str__(self):
-        return str(self.filename)
+        return str(self.file_path)
 
 
 class AstrometryOutput(models.Model):
