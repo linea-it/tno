@@ -1,5 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+import os
+import csv
+
 @api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
@@ -75,7 +78,7 @@ def read_file(request):
             return Response(dict({
                 'success': False,
                 'message': 'filepath parameter obrigatory'
-            }))  
+            }))
 
         # Verificar se o arquivo existe, se nao existir retorna mensagem avisando. 
         if not os.path.exists(filepath):
@@ -111,3 +114,43 @@ def read_file(request):
         
 
     return Response(result)     
+
+
+@api_view(['GET'])
+def read_csv(request):
+    if request.method == 'GET':
+      
+        
+        # Recuperar o filepath do arquivo a ser lido dos parametros da url. 
+        filepath = request.query_params.get('filepath', None)
+
+        # Verificar se o parametro nao esta vazio, se estiver retorna mensagem avisando.
+        if filepath == None or filepath == '':
+            return Response(dict({
+                'success': False,
+                'message': 'filepath parameter obrigatory'
+            }))
+
+        # Verificar se o arquivo existe, se nao existir retorna mensagem avisando. 
+        if not os.path.exists(filepath):
+            return Response(dict({
+                'success': False,
+                'message': 'filepath do not exist. (%s)' % filepath 
+            }))
+
+        # Ler o arquivo.
+       
+        with open(filepath, 'r') as csv_file: 
+            reader = csv.DictReader(csv_file, delimiter=';')
+            dict_list = []
+            for row in reader:
+                dict_list.append(row)
+            
+
+        result = dict({
+            'success': True,
+            'rows': dict_list,
+            
+        })
+
+    return Response(result)
