@@ -142,7 +142,7 @@ class AsteroidList extends Component {
     return (
       <div>
         {btn_view}
-        {btn_log}
+        {/* {btn_log} */}
       </div>
     );
   };

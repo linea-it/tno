@@ -60,8 +60,6 @@ class PraiaApi {
   // dados na table do primereacts
   getPraiaData = id => axios.get(`${this.api}/praia_run/${id}`);
 
-
-
   // Time Profile
   getPraiaRunTimeProfile = ({ id }) => {
     const params = {
@@ -72,10 +70,11 @@ class PraiaApi {
     });
   };
 
-  createPraiaRun = ({ input, config }) =>
+  createPraiaRun = ({ input, config, catalog }) =>
     axios.post(`${this.api}/praia_run/`, {
       input_list: input,
       configuration: config,
+      catalog: catalog,
     });
 
   praiaReRun = ({ id }) =>
@@ -83,16 +82,14 @@ class PraiaApi {
       status: 'reexecute',
     });
 
-
-  getAsteroidById = async (id) =>
+  getAsteroidById = async id =>
     await axios.get(`${this.api}/astrometry_asteroids/${id}`);
-
 
   getInputsByAsteroidId = ({ id }) =>
     axios.get(`${this.api}/astrometry_input/`, {
       params: {
-        asteroid: id
-      }
+        asteroid: id,
+      },
     });
 }
 

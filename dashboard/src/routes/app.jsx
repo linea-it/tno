@@ -77,6 +77,7 @@ const appRoutes = [
     component: ExposureDetail,
     hidden: true,
   },
+
   // { path: '/skybot', name: 'SkyBoT', icon: 'pe-7s-science', component: SkyBot },
   {
     path: '/filterobject',
@@ -227,14 +228,6 @@ const appRoutes = [
     component: Notifications,
     hidden: true,
   },
-
-
-  // {
-  //   path: '/formik',
-  //   name: 'Formik',
-  //   component: FormikTeste,
-  //   hidden: false,
-  // },
   { redirect: true, path: '/', to: '/dashboard', name: 'Dashboard' },
 ];
 

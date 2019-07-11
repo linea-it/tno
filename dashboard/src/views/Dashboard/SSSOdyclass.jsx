@@ -5,7 +5,6 @@ import SSSOHistogram from './SSSOHistogram';
 class SSSOdyclass extends Component {
   render() {
     const propSet = this.props;
-
     return (
       <Content
         header={true}

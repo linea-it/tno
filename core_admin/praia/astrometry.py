@@ -16,7 +16,7 @@ import csv
 import traceback
 from concurrent.futures import ThreadPoolExecutor, wait, as_completed
 from orbit.bsp_jpl import BSPJPL
-from .models import AstrometryAsteroid, AstrometryInput
+from .models import Run, AstrometryAsteroid, AstrometryInput
 
 
 def create_ccd_images_list(name, output_filepath):
@@ -252,7 +252,10 @@ class Astrometry():
         # TODO: este diretorio e provisorio para simular a execucao do PRAIA
         self.astrometry_positions_dir = settings.ASTROMETRY_POSITIONS_DIR
 
-    def startAstrometryRun(self, instance):
+    def startAstrometryRun(self, run_id):
+
+        instance = Run.objects.get(pk=run_id)
+
         instance.status = 'running'
         instance.start_time = datetime.now(timezone.utc)
         instance.save()
@@ -430,8 +433,7 @@ class Astrometry():
                 else:
                     asteroid.ccd_images = result['ccds_count']
 
-                asteroid.execution_time = asteroid.execution_time + \
-                    result['execution_time']
+                asteroid.execution_time = result['execution_time']
                 asteroid.save()
 
         except Exception as e:
