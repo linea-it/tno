@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 
+
 class Configuration(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -86,7 +87,7 @@ class Run(models.Model):
 
     error_traceback = models.TextField(
         verbose_name="Error Traceback",
-        null=True, 
+        null=True,
         blank=True
     )
 
@@ -129,7 +130,7 @@ class AstrometryAsteroid(models.Model):
         verbose_name='Status',
         default='pending', null=True, blank=True,
         choices=(('pending', 'Pending'), ('running', 'Running'), ('success',
-                'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
+                                                                  'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
     )
 
     ccd_images = models.BigIntegerField(
@@ -195,7 +196,7 @@ class AstrometryInput(models.Model):
         null=False, blank=False,
         help_text="Description of the input type.",
         choices=(
-            ('ccd_images_list', 'CCD Images List'), 
+            ('ccd_images_list', 'CCD Images List'),
             ('bsp_jpl', 'BSP JPL'),
             ('catalog', 'Catalog')),
     )

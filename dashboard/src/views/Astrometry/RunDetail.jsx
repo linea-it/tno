@@ -11,13 +11,10 @@ import PraiaTimeProfile from './TimeProfile';
 import AsteroidList from './AsteroidList';
 import { withRouter } from 'react-router-dom';
 
-
-
 class PraiaDetail extends Component {
 
   state = this.initialState;
   api = new PraiaApi();
-
 
   get initialState() {
     return {
@@ -37,6 +34,7 @@ class PraiaDetail extends Component {
     this.api.getPraiaRunById({ id: params.id }).then(res => {
       const data = res.data;
 
+      console.log(res.data);
 
       this.setState({
         id: parseInt(params.id, 10),
@@ -60,6 +58,11 @@ class PraiaDetail extends Component {
     return moment.utc(seconds * 1000).format('HH:mm:ss');
   };
 
+  onViewAsteroid = asteroid_id => {
+    const history = this.props.history;
+    history.push(`/asteroid_run_detail/${asteroid_id}`);
+  };
+
   onClickBackToAstometry = () => {
     const history = this.props.history;
     history.push(`/astrometry/`);
@@ -80,8 +83,6 @@ class PraiaDetail extends Component {
   render() {
 
     const { data } = this.state;
-    console.log(data);
-
 
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
@@ -122,8 +123,7 @@ class PraiaDetail extends Component {
     ];
 
     return (
-
-      < div >
+      <div>
         {this.create_nav_bar()}
         < div className="ui-g" >
           <div className="ui-g-4 ui-md-4 ui-sm-1">
@@ -133,7 +133,7 @@ class PraiaDetail extends Component {
                 <ListStats
                   statstext={this.state.data.status}
                   status={true}
-                  title={`Aastrometry - ${data.id}`}
+                  title={`Astrometry - ${data.id}`}
                   data={stats}
                 />
               }
@@ -172,7 +172,7 @@ class PraiaDetail extends Component {
               title="Asteroids"
               content={
                 <AsteroidList
-                  orbit_run={this.state.id}
+                  praia_run={this.state.id}
                   view_asteroid={this.onViewAsteroid}
                 />
               }
@@ -182,9 +182,6 @@ class PraiaDetail extends Component {
       </div >
     );
   }
-
-
-
 }
 
 export default withRouter(PraiaDetail);
