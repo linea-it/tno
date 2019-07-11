@@ -25,8 +25,7 @@ import SkybotRun from '../views/SolarSystems/SkybotRun/SkybotRun';
 import SkybotRunDetail from '../views/SolarSystems/SkybotRun/Detail';
 import ExposureDetail from '../views/SolarSystems/SkybotRun/ExposureDetail';
 import PraiaDetail from '../views/Astrometry/RunDetail';
-
-
+import AsteroidRunDetail from '../views/Astrometry/AsteroidRunDetail';
 
 
 const appRoutes = [
@@ -138,6 +137,14 @@ const appRoutes = [
     hidden: true,
     component: PraiaDetail,
   },
+
+  {
+    path: '/asteroid_run_detail/:id',
+    name: 'Asteroid Astrometry Run',
+    hidden: true,
+    component: AsteroidRunDetail,
+  },
+
   {
     path: '/refine_orbit',
     name: 'Refine Orbit',

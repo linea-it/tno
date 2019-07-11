@@ -1,7 +1,7 @@
 from rest_framework import serializers
 import humanize
 from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput, AstrometryOutput
-from tno.models import CustomList, Proccess
+from tno.models import CustomList, Proccess, Catalog
 from django.utils import timezone
 
 
@@ -14,11 +14,20 @@ class RunSerializer(serializers.ModelSerializer):
     input_list = serializers.PrimaryKeyRelatedField(
         queryset=CustomList.objects.all(), many=False)
 
+    catalog = serializers.PrimaryKeyRelatedField(
+        queryset=Catalog.objects.all(), many=False)
+
     start_time = serializers.SerializerMethodField()
 
     configuration_displayname = serializers.SerializerMethodField()
 
     input_displayname = serializers.SerializerMethodField()
+
+    execution_time = serializers.SerializerMethodField()
+
+    finish_time = serializers.SerializerMethodField()
+
+    h_finish_time = serializers.SerializerMethodField()
 
     proccess = serializers.PrimaryKeyRelatedField(
         queryset=Proccess.objects.all(), many=False, required=False)
@@ -28,6 +37,8 @@ class RunSerializer(serializers.ModelSerializer):
     h_execution_time = serializers.SerializerMethodField()
     h_time = serializers.SerializerMethodField()
 
+    count_objects = serializers.SerializerMethodField()
+
     class Meta:
         model = Run
         fields = (
@@ -35,8 +46,12 @@ class RunSerializer(serializers.ModelSerializer):
             'owner',
             'start_time',
             'finish_time',
+            'h_finish_time',
+            'execution_time',
             'configuration',
+            'catalog',
             'input_list',
+            'count_objects',
             'status',
             'h_execution_time',
             'h_time',
@@ -78,13 +93,37 @@ class RunSerializer(serializers.ModelSerializer):
 
     def get_h_execution_time(self, obj):
         try:
-            return humanize.naturaldelta(obj.execution_time)
+            return humanize.naturaldelta(obj.h_execution_time)
         except:
             return None
 
     def get_h_time(self, obj):
         try:
             return humanize.naturaltime(timezone.now() - obj.start_time)
+        except:
+            return None
+
+    def get_finish_time(self, obj):
+        try:
+            return obj.finish_time
+        except:
+            return None
+
+    def get_h_finish_time(self, obj):
+        try:
+            return humanize.naturaltime(obj.finish_time)
+        except:
+            return None
+
+    def get_execution_time(self, obj):
+        try:
+            return humanize.naturaltime(obj.execution_time)
+        except:
+            return None
+
+    def get_count_objects(self, obj):
+        try:
+            return obj.count_objects
         except:
             return None
 
@@ -122,6 +161,9 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
             'number',
             'status',
             'error_msg',
+            'ccd_images',
+            'catalog_rows',
+            'execution_time'
         )
 
 
@@ -129,6 +171,8 @@ class AstrometryInputSerializer(serializers.ModelSerializer):
 
     asteroid = serializers.PrimaryKeyRelatedField(
         queryset=AstrometryAsteroid.objects.all(), many=False)
+
+    h_file_size = serializers.SerializerMethodField()
 
     class Meta:
         model = AstrometryInput
@@ -140,7 +184,14 @@ class AstrometryInputSerializer(serializers.ModelSerializer):
             'file_size',
             'file_type',
             'file_path',
+            'h_file_size'
         )
+
+    def get_h_file_size(self, obj):
+        try:
+            return humanize.naturalsize(obj.file_size)
+        except:
+            return None
 
 
 class AstrometryOutputSerializer(serializers.ModelSerializer):

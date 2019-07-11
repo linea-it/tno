@@ -28,6 +28,9 @@ class Run(models.Model):
         'tno.Proccess', on_delete=models.CASCADE, verbose_name='Proccess',
         null=True, blank=True, default=None
     )
+    catalog = models.ForeignKey(
+        'tno.Catalog',
+        on_delete=models.CASCADE, default=None, verbose_name='Catalog', null=True, blank=True)
 
     start_time = models.DateTimeField(
         verbose_name='Start Time',
@@ -84,7 +87,7 @@ class Run(models.Model):
 
     error_traceback = models.TextField(
         verbose_name="Error Traceback",
-        null=True, 
+        null=True,
         blank=True
     )
 
@@ -127,12 +130,17 @@ class AstrometryAsteroid(models.Model):
         verbose_name='Status',
         default='pending', null=True, blank=True,
         choices=(('pending', 'Pending'), ('running', 'Running'), ('success',
-                'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
+                                                                  'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
     )
 
     ccd_images = models.BigIntegerField(
         verbose_name="CCD Images",
         help_text='Number of CCDs for this asteroid.',
+        null=True, blank=True
+    )
+
+    catalog_rows = models.BigIntegerField(
+        verbose_name="Catalog Rows",
         null=True, blank=True
     )
 
@@ -143,15 +151,10 @@ class AstrometryAsteroid(models.Model):
         null=True, blank=True,
     )
 
-    # catalog_rows = models.BigIntegerField(
-    #     verbose_name="Catalog Rows",
-    #     null=True, blank=True
-    # )
-
-    # execution_time = models.DurationField(
-    #     verbose_name='Execution Time',
-    #     null=True, blank=True
-    # )
+    execution_time = models.DurationField(
+        verbose_name='Execution Time',
+        null=True, blank=True
+    )
 
     # start_ephemeris = models.DateTimeField(
     #     verbose_name='Start Ephemeris',
@@ -193,8 +196,9 @@ class AstrometryInput(models.Model):
         null=False, blank=False,
         help_text="Description of the input type.",
         choices=(
-            ('ccd_images_list', 'CCD Images List'), 
-            ('bsp_jpl', 'BSP JPL'))
+            ('ccd_images_list', 'CCD Images List'),
+            ('bsp_jpl', 'BSP JPL'),
+            ('catalog', 'Catalog')),
     )
 
     filename = models.CharField(
@@ -242,7 +246,7 @@ class AstrometryInput(models.Model):
     )
 
     def __str__(self):
-        return str(self.filename)
+        return str(self.file_path)
 
 
 class AstrometryOutput(models.Model):

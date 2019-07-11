@@ -150,12 +150,11 @@ def read_csv(request):
         columns = list()
         if len(dict_list) > 0:
             columns = dict_list[0].keys()
-
+          
         result = dict({
             'success': True,
             'rows': dict_list,
-            'columns': columns,
-            
+            'columns': columns,           
         })
 
     return Response(result)

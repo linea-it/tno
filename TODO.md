@@ -4,9 +4,9 @@
 - [x] Para cada asteroid criar link para o Fits do CCD.
 - [x] Para cada asteroid, varrer todas as exposições e criar o catalogo Gaia. 
 - [ ] Guardar informações dos inputs que foram gerados durante a execução. 4h
-- [ ] Implementar Download do BSP JPL para objetos que não tem ou tem mais de 30 dias. 6h
+- [x] Implementar Download do BSP JPL para objetos que não tem ou tem mais de 30 dias. 6h
 - [ ] Implementar criação do catalogo gaia2 para os CCDs de cada objeto.  8h
-- [ ] Alterar o container tirar os inputs hardcoded. 8h
+- [x] Alterar o container tirar os inputs hardcoded. 8h
 - [ ] Instalar, Configurar e testar biblioteca pyCondor para submissão. ?
 - [ ] Execucar o container astrometria para cada asteroid no Condor.  ?
 - [ ] Gerenciar os errors em cada etapa. ?
