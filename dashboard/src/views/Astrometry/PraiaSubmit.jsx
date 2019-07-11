@@ -19,7 +19,7 @@ class PraiaSubmit extends Component {
   praia_api = new PraiaApi();
 
   get initialState() {
-    return { input: null, config: null };
+    return { input: null, config: null, catalog: null };
   }
 
   static propTypes = {
@@ -48,8 +48,17 @@ class PraiaSubmit extends Component {
       .getConfigurations({ search: inputValue, ordering: '-creation_date' })
       .then(res => {
         const configs = res.data.results;
+
         return { options: configs };
       });
+  };
+
+  loadCatalogs = inputValue => {
+    return this.praia_api.getCatalogs({ search: inputValue }).then(res => {
+      const catalogs = res.data.results;
+
+      return { options: catalogs };
+    });
   };
 
   onSelectConfig = selected => {
@@ -60,24 +69,31 @@ class PraiaSubmit extends Component {
     }
   };
 
+  onSelectCatalog = selected => {
+    if (selected) {
+      this.setState({ catalog: selected.id });
+    } else {
+      this.setState({ catalog: null });
+    }
+  };
+
   onClickSubmit = () => {
-    const { input, config } = this.state;
-    if (!input || !config) {
-      console.log('Falta um parametro');
+    const { input, config, catalog } = this.state;
+    if (!input || !config || !catalog) {
       // TODO: Implementar notifacao de parametro faltante
       return;
     }
     this.praia_api
-      .createPraiaRun({ input: input, config: config })
+      .createPraiaRun({ input: input, config: config, catalog: catalog })
       .then(res => {
-        console.log(res);
         this.onCreateSuccess(res.data);
       })
-      .catch(this.onCreateFailure);
+      .catch(error => {
+        this.onCreateFailure(error);
+      });
   };
 
   onCreateSuccess = record => {
-    console.log('onCreateSuccess(%o)', record);
     this.setState(this.initialState, this.props.onCreateRun(record));
   };
 
@@ -87,7 +103,7 @@ class PraiaSubmit extends Component {
   };
 
   render() {
-    const { input, config } = this.state;
+    const { input, config, catalog } = this.state;
     return (
       <Card className="none">
         <Form>
@@ -104,6 +120,18 @@ class PraiaSubmit extends Component {
             />
           </FormGroup>
           <FormGroup>
+            <ControlLabel>Catalog</ControlLabel>
+            <Async
+              onChange={this.onSelectCatalog}
+              value={catalog}
+              cacheOptions
+              valueKey="id"
+              labelKey="display_name"
+              defaultOptions
+              loadOptions={this.loadCatalogs}
+            />
+          </FormGroup>
+          <FormGroup>
             <ControlLabel>Configuration</ControlLabel>
             <Async
               onChange={this.onSelectConfig}
@@ -114,14 +142,14 @@ class PraiaSubmit extends Component {
               defaultOptions
               loadOptions={this.loadConfigs}
             />
-            <br />
-            <Button
-              className="button-TNO"
-              label="Submit"
-              onClick={this.onClickSubmit}
-              style={{ marginTop: '20px !important' }}
-            />
           </FormGroup>
+          <br />
+          <Button
+            className="button-TNO"
+            label="Submit"
+            onClick={this.onClickSubmit}
+            style={{ marginTop: '20px !important' }}
+          />
         </Form>
       </Card>
     );

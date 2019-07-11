@@ -62,14 +62,26 @@ class PraiaHistory extends Component {
       sortable: true,
     },
     {
-      header: 'Start',
       field: 'start_time',
+      header: 'Date',
       headerStyle: formatColumnHeader,
       sortable: true,
     },
     {
-      header: 'Finish',
-      field: 'finish_time',
+      field: 'h_time',
+      header: 'start',
+      headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
+      field: 'h_execution_time',
+      header: 'Execution Time',
+      headerStyle: formatColumnHeader,
+      sortable: true,
+    },
+    {
+      field: 'count_objects',
+      header: 'Asteroids',
       headerStyle: formatColumnHeader,
       sortable: true,
     },
@@ -144,8 +156,7 @@ class PraiaHistory extends Component {
 
   //Método que lê a requisição do botão de detalhe
   onView = (id) => {
-    this.props.onViewDetail(id);
-
+    this.props.handleOnViewDetail(id);
   };
 
   status_table = rowData => {
@@ -160,7 +171,7 @@ class PraiaHistory extends Component {
 
     return status.map((el, i) => {
       if (row === el.state) {
-        console.log(row, el.state)
+
         return (
           <div key={i} className={`status_table ${el.state}`}>
             {row}

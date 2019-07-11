@@ -7,11 +7,9 @@ import PraiaRunning from './PraiaRunning';
 import PropTypes from 'prop-types';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 
-
 class Praia extends Component {
   state = this.initialState;
   api = new PraiaApi();
-
 
   static propTypes = {
     history: PropTypes.any.isRequired,
@@ -26,12 +24,12 @@ class Praia extends Component {
 
   onCreateRun = record => {
     // Toda vez que cria um novo registro forca a execucao do metodo render()
-    this.setState(this.state);
+    this.setState(record);
   };
 
   onRerun = record => {
-    console.log(record)
-  }
+    this.setState(record);
+  };
 
   render() {
     const { record } = this.state;
@@ -41,17 +39,13 @@ class Praia extends Component {
           className="exec_astrometry"
           title="Execute"
           subTitle="Descrição sobre a execução"
-          content={
-            <PraiaSubmit onCreateRun={this.onCreateRun} />
-          }
+          content={<PraiaSubmit onCreateRun={this.onCreateRun} />}
         />
         <PanelCostumize
           title="Run time monitor"
           className="running_astrometry"
           subTitle=""
-          content={
-            <PraiaRunning record={record} />
-          }
+          content={<PraiaRunning record={record} />}
         />
 
         <PanelCostumize
@@ -59,21 +53,20 @@ class Praia extends Component {
           className="history_astrometry"
           subTitle="Manage the completed Astrometry rounds"
           content={
-            <PraiaHistory onRerun={this.onRerun} />
+            <PraiaHistory
+              onRerun={this.onRerun}
+              handleOnViewDetail={this.onViewDetail}
+            />
           }
         />
-
       </div>
-
     );
   }
 
   onViewDetail = id => {
     const history = this.props.history;
     history.push({ pathname: `/astrometry_run/${id}` });
-  }
+  };
 }
-
-
 
 export default withRouter(Praia);

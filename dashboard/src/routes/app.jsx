@@ -25,8 +25,7 @@ import SkybotRun from '../views/SolarSystems/SkybotRun/SkybotRun';
 import SkybotRunDetail from '../views/SolarSystems/SkybotRun/Detail';
 import ExposureDetail from '../views/SolarSystems/SkybotRun/ExposureDetail';
 import PraiaDetail from '../views/Astrometry/RunDetail';
-
-
+import AsteroidRunDetail from '../views/Astrometry/AsteroidRunDetail';
 
 
 const appRoutes = [
@@ -78,6 +77,7 @@ const appRoutes = [
     component: ExposureDetail,
     hidden: true,
   },
+
   // { path: '/skybot', name: 'SkyBoT', icon: 'pe-7s-science', component: SkyBot },
   {
     path: '/filterobject',
@@ -138,6 +138,14 @@ const appRoutes = [
     hidden: true,
     component: PraiaDetail,
   },
+
+  {
+    path: '/asteroid_run_detail/:id',
+    name: 'Asteroid Astrometry Run',
+    hidden: true,
+    component: AsteroidRunDetail,
+  },
+
   {
     path: '/refine_orbit',
     name: 'Refine Orbit',
@@ -220,14 +228,6 @@ const appRoutes = [
     component: Notifications,
     hidden: true,
   },
-
-
-  // {
-  //   path: '/formik',
-  //   name: 'Formik',
-  //   component: FormikTeste,
-  //   hidden: false,
-  // },
   { redirect: true, path: '/', to: '/dashboard', name: 'Dashboard' },
 ];
 

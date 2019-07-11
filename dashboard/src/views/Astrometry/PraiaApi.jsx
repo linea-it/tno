@@ -26,12 +26,39 @@ class PraiaApi {
       },
     });
 
+  getCatalogs = ({ search }) =>
+    axios.get(`${this.api}/catalog/`, {
+      params: {
+        search: search,
+      },
+    });
+
+  getAsteroids = ({
+    page,
+    sizePerPage,
+    sortField,
+    sortOrder,
+    filters = [],
+  }) => {
+    let ordering = sortField;
+    if (sortOrder === -1) {
+      ordering = '-' + sortField;
+    }
+
+    const params = { page: page, pageSize: sizePerPage, ordering: ordering };
+    filters.forEach(element => {
+      params[element.property] = element.value;
+    });
+
+    return axios.get(`${this.api}/astrometry_asteroids/`, {
+      params: params,
+    });
+  };
+
   getPraiaRunById = ({ id }) => axios.get(`${this.api}/praia_run/${id}/`);
 
   // dados na table do primereacts
   getPraiaData = id => axios.get(`${this.api}/praia_run/${id}`);
-
-
 
   // Time Profile
   getPraiaRunTimeProfile = ({ id }) => {
@@ -43,15 +70,26 @@ class PraiaApi {
     });
   };
 
-  createPraiaRun = ({ input, config }) =>
+  createPraiaRun = ({ input, config, catalog }) =>
     axios.post(`${this.api}/praia_run/`, {
       input_list: input,
       configuration: config,
+      catalog: catalog,
     });
 
   praiaReRun = ({ id }) =>
     axios.patch(`${this.api}/praia_run/${id}/`, {
       status: 'reexecute',
+    });
+
+  getAsteroidById = async id =>
+    await axios.get(`${this.api}/astrometry_asteroids/${id}`);
+
+  getInputsByAsteroidId = ({ id }) =>
+    axios.get(`${this.api}/astrometry_input/`, {
+      params: {
+        asteroid: id,
+      },
     });
 }
 

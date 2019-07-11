@@ -16,7 +16,8 @@ class PraiaConfigAdmin(admin.ModelAdmin):
 
 @admin.register(AstrometryAsteroid)
 class AstrometryAsteroidAdmin(admin.ModelAdmin):
-    list_display = ('id', 'astrometry_run', 'name', 'number', 'status', 'ccd_images', 'catalog_rows', 'execution_time', 'error_msg',)
+    list_display = ('id', 'astrometry_run', 'name', 'number', 'status',
+                    'ccd_images', 'catalog_rows', 'execution_time', 'error_msg',)
     search_fields = ('name',)
 
 

@@ -15,9 +15,11 @@ class RunSerializer(serializers.ModelSerializer):
         queryset=CustomList.objects.all(), many=False)
 
     catalog = serializers.PrimaryKeyRelatedField(
-        queryset=Catalog.objects.all(), many=False)        
+        queryset=Catalog.objects.all(), many=False)
 
     start_time = serializers.SerializerMethodField()
+
+    finish_time = serializers.SerializerMethodField()
 
     configuration_displayname = serializers.SerializerMethodField()
 
@@ -29,6 +31,7 @@ class RunSerializer(serializers.ModelSerializer):
     proccess_displayname = serializers.SerializerMethodField()
 
     h_execution_time = serializers.SerializerMethodField()
+
     h_time = serializers.SerializerMethodField()
 
     class Meta:
@@ -38,9 +41,11 @@ class RunSerializer(serializers.ModelSerializer):
             'owner',
             'start_time',
             'finish_time',
+            'execution_time',
             'configuration',
             'catalog',
             'input_list',
+            'count_objects',
             'status',
             'h_execution_time',
             'h_time',
@@ -77,6 +82,12 @@ class RunSerializer(serializers.ModelSerializer):
     def get_start_time(self, obj):
         try:
             return obj.start_time.strftime('%Y-%m-%d %H:%M:%S')
+        except:
+            return None
+
+    def get_finish_time(self, obj):
+        try:
+            return obj.finish_time.strftime('%Y-%m-%d %H:%M:%S')
         except:
             return None
 
@@ -117,11 +128,14 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
     astrometry_run = serializers.PrimaryKeyRelatedField(
         queryset=Run.objects.all(), many=False)
 
+    proccess_displayname = serializers.SerializerMethodField()
+
     class Meta:
         model = AstrometryAsteroid
         fields = (
             'id',
             'astrometry_run',
+            'proccess_displayname',
             'name',
             'number',
             'status',
@@ -131,11 +145,18 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
             'execution_time'
         )
 
+    def get_proccess_displayname(self, obj):
+        try:
+            return "%s - %s" % (obj.astrometry_run.proccess.id, obj.astrometry_run.input_list.displayname)
+        except:
+            return None
 
 class AstrometryInputSerializer(serializers.ModelSerializer):
 
     asteroid = serializers.PrimaryKeyRelatedField(
         queryset=AstrometryAsteroid.objects.all(), many=False)
+
+    h_file_size = serializers.SerializerMethodField()
 
     class Meta:
         model = AstrometryInput
@@ -147,7 +168,14 @@ class AstrometryInputSerializer(serializers.ModelSerializer):
             'file_size',
             'file_type',
             'file_path',
+            'h_file_size'
         )
+
+    def get_h_file_size(self, obj):
+        try:
+            return humanize.naturalsize(obj.file_size)
+        except:
+            return None
 
 
 class AstrometryOutputSerializer(serializers.ModelSerializer):
