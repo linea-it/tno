@@ -18,13 +18,10 @@ class FormSkybot extends Component {
     show: false,
     area: null,
     value: null,
-    start: null,
-    final: null,
-    exposure: 0,
     date_initial: '',
     date_final: '',
-    type_run: '',
-    radius: 0,
+    type_run: 'period',
+    radius: null,
     ra_cent: null,
     dec_cent: null,
     radec_ul: '',
@@ -33,8 +30,7 @@ class FormSkybot extends Component {
     radec_lr: '',
   };
 
-  radec = (ur, ul, lr, ll) => {
-    console.log('caiu aqui', ur, ul, lr, ll);
+  handleSquare = (ur, ul, lr, ll) => {
     this.setState(
       { radec_ur: ur, radec_ul: ul, radec_lr: lr, radec_ll: ll },
       () => {
@@ -43,8 +39,7 @@ class FormSkybot extends Component {
     );
   };
 
-  circle = (ra_cent, dec_cent, radius) => {
-    console.log('caiu aqui', ra_cent, dec_cent, radius);
+  handleCircle = (ra_cent, dec_cent, radius) => {
     this.setState(
       { ra_cent: ra_cent, dec_cent: dec_cent, radius: radius },
       () => {
@@ -53,8 +48,7 @@ class FormSkybot extends Component {
     );
   };
 
-  dates = (date_initial, date_final) => {
-    console.log('caiu aqui', date_initial, date_final);
+  handlePeriod = (date_initial, date_final) => {
     this.setState(
       { date_initial: date_initial, date_final: date_final },
       () => {
@@ -64,10 +58,10 @@ class FormSkybot extends Component {
   };
 
   options = [
-    { label: 'Exposure', value: 'all' },
-    { label: 'Period', value: 'period' },
-    { label: 'Square', value: 'square' },
-    { label: 'Circle', value: 'circle' },
+    { label: 'All Pointings', value: 'all' },
+    { label: 'By Period', value: 'period' },
+    { label: 'Region Selection', value: 'square' },
+    { label: 'Cone Search ', value: 'circle' },
   ];
 
   onClear = () => {
@@ -80,7 +74,7 @@ class FormSkybot extends Component {
       <Square
         show={this.state.show}
         onHide={this.modalClose}
-        radec={this.radec}
+        handleSubmit={this.handleSquare}
       />
     );
   };
@@ -89,7 +83,7 @@ class FormSkybot extends Component {
       <Circle
         show={this.state.show}
         onHide={this.modalClose}
-        circle={this.circle}
+        handleSubmit={this.handleCircle}
       />
     );
   };
@@ -98,7 +92,7 @@ class FormSkybot extends Component {
       <Period
         show={this.state.show}
         onHide={this.modalClose}
-        dates={this.dates}
+        handleSubmit={this.handlePeriod}
       />
     );
   };
@@ -109,7 +103,7 @@ class FormSkybot extends Component {
   modalOn = () => this.setState({ show: true });
 
   onSubmitModal = () => {
-    if (this.state.type_run === 'exposure') {
+    if (this.state.type_run === 'all') {
       this.onSubmit();
     }
     if (this.state.type_run === 'period') {
@@ -134,22 +128,20 @@ class FormSkybot extends Component {
         />
       );
     } else {
-      <Button
-        onClick={this.onSubmitModal}
-        disabled={!false}
-        style={{ width: '120px' }}
-        label="Run"
-      />;
+      return (
+        <Button
+          onClick={this.onSubmitModal}
+          disabled={!false}
+          style={{ width: '120px' }}
+          label="Run"
+        />
+      );
     }
   };
   //ur, ul, lr, ll
   onSubmit = () => {
     this.onClear();
-    console.log(this.state);
     const {
-      start,
-      final,
-      exposure,
       date_initial,
       date_final,
       type_run,
@@ -163,12 +155,9 @@ class FormSkybot extends Component {
     } = this.state;
     this.skybotApi
       .createSkybotRun({
-        start: start,
-        final: final,
-        exposure: exposure,
+        type_run: type_run,
         date_initial: date_initial,
         date_final: date_final,
-        type_run: type_run,
         ra_cent: ra_cent,
         dec_cent: dec_cent,
         radius: radius,
@@ -183,34 +172,33 @@ class FormSkybot extends Component {
       })
       .then(res => {
         this.props.insertHistory(res);
-        console.log('Then: ', res.data);
-        alert('successful round');
       })
       .catch(error => {
         console.log('Catch: ', error);
-        alert('not successful round');
       });
     this.modalClose();
   };
 
   render() {
-    const radec = this.state;
     return (
       <Content
-        title="Selected a configuration for option picked"
+        title="Updates the Skybot outputs table."
         header={true}
         className="content-skybot"
         content={
           <div className="p-grid p-grid-row">
             <div className="p-col-6">
+              <label htmlFor="skubot_run_type">
+                Select the type of update.
+              </label>
               <Dropdown
+                id="skubot_run_type"
                 value={this.state.type_run}
                 options={this.options}
                 style={{ width: '200px' }}
                 onChange={e => {
                   this.setState({ type_run: e.value });
                 }}
-                placeholder="Select a option"
               />
             </div>
             <div className="p-col-6">{this.onVisibleSubmit()}</div>

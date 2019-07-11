@@ -308,3 +308,22 @@ class CatalogDB(DBBase):
 
         return self.fetch_all_dict(text(stm))
 
+    def poly_query(self, tablename, ra_property, dec_property, positions, schema=None, columns=None, limit=None):
+
+        s_columns = '*'
+        if columns is not None and len(columns) > 0:
+            s_columns = ', '.join(columns)
+
+        if schema is not None:
+            tablename = "%s.%s" %(schema, tablename)
+
+        s_limit = ''
+        if limit is not None:
+            s_limit = 'LIMIT %s' % limit
+
+        stm = """SELECT %s FROM %s WHERE q3c_poly_query("%s", "%s", '{%s}') %s """ %(s_columns, tablename, ra_property,
+                                                                                        dec_property, ", ".join(positions), s_limit)
+        return self.fetch_all_dict(text(stm))
+
+
+

@@ -42,12 +42,13 @@ services:
     volumes:
       - ${PROCCESS_DIR}:/data
 
-  nginx:
-    build: ./nginx
+  # Servidor Web NGINX
+  frontend:
+    build: ./frontend
     ports:
       - 80:8080
     volumes:
-      - ./nginx/nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./dashboard/nginx/development.conf:/etc/nginx/conf.d/default.conf:ro
     cap_drop:
       - ALL
     depends_on:

@@ -3,13 +3,15 @@ from django.db.models.signals import post_save, pre_delete
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
-from .models import CustomList, Proccess
+from .models import CustomList, Proccess, SkybotRun
 from .skybotoutput import FilterObjects
 from tno.proccess import ProccessManager
 import logging
-import os, errno
+import os
+import errno
 from django.conf import settings
-
+from tno.skybot.skybot import ImportSkybotManagement
+from concurrent import futures
 @receiver(post_save, sender=User)
 def init_new_user(sender, instance, signal, created, **kwargs):
     """
@@ -33,9 +35,9 @@ def create_custom_list_table(sender, instance, signal, created, **kwargs):
             result = FilterObjects().create_object_list(
                 tablename=instance.tablename,
                 name=instance.filter_name,
-                objectTable=instance.filter_dynclass, 
-                magnitude=instance.filter_magnitude, 
-                diffDateNights=instance.filter_diffdatenights, 
+                objectTable=instance.filter_dynclass,
+                magnitude=instance.filter_magnitude,
+                diffDateNights=instance.filter_diffdatenights,
                 moreFilter=instance.filter_morefilter
             )
 
@@ -58,7 +60,7 @@ def create_custom_list_table(sender, instance, signal, created, **kwargs):
             instance.status = 'error'
             instance.error_msg = e
             instance.save()
-            
+
             raise(e)
 
 
@@ -71,7 +73,8 @@ def create_proccess(sender, instance, signal, created, **kwargs):
     """
     logger = logging.getLogger("proccess")
     if created:
-        logger.info("A new process was created with ID: [%s] Owner: [ %s ]" % (instance.id, instance.owner))
+        logger.info("A new process was created with ID: [%s] Owner: [ %s ]" % (
+            instance.id, instance.owner))
 
         # primeira etapa criar um diretorio.
 
@@ -96,3 +99,23 @@ def delete_proccess(sender, instance, using, **kwargs):
     """
     if settings.DEBUG:
         instance = ProccessManager().purge(instance)
+
+
+
+def submit_skybot_run(skybotrun_id):
+    ImportSkybotManagement().start_import_skybot(skybotrun_id)
+
+@receiver(post_save, sender=SkybotRun)
+def create_skybotrun(sender, instance, signal, created, **kwargs):
+    """
+        Executada toda vez que um registro de SkybotRun e criado.
+    """
+    if created:
+        # Executa em background
+        with futures.ProcessPoolExecutor(max_workers=1) as ex:
+            ex.submit(submit_skybot_run, instance.pk)
+
+    elif instance.status == 'pending':
+        # Executa em background
+        with futures.ProcessPoolExecutor(max_workers=1) as ex:
+            ex.submit(submit_skybot_run, instance.pk)

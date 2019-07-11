@@ -13,6 +13,7 @@ node_modules
 Thumbs.db
 .node_history
 
+*.csv
 *.seed
 *.log
 *.out

@@ -139,7 +139,7 @@ class RefinedAsteroidSerializer(serializers.ModelSerializer):
             return humanize.naturaltime(timezone.now() - obj.start_time)
         except:
             return None
-            
+
     def get_execution_time(self, obj):
         try:
             return obj.execution_time.total_seconds()
@@ -178,7 +178,7 @@ class RefinedOrbitSerializer(serializers.ModelSerializer):
         model = RefinedOrbit
         fields = (
             'id',
-            'type',            
+            'type',
             'asteroid',
             'filename',
             'file_size',

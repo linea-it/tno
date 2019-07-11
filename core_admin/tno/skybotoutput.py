@@ -361,7 +361,48 @@ class FilterObjects(DBBase):
 
         image_size = self.fetch_scalar(stm)
 
+        if image_size is None:
+            image_size = 0
         return image_size
+
+    def ccd_images_by_object(self, name):
+        # select a.* from tno_pointing a inner join tno_skybotoutput b on (a.id = b.pointing_id) where b.name = 'Eris';
+        tbl = self.get_table_pointing()
+        tbl_skybot = self.get_table_skybot().alias('b')
+
+        stm_join = tbl.join(tbl_skybot, tbl.c.id == tbl_skybot.c.pointing_id, isouter=True)
+
+        stm = select(tbl.c).select_from(stm_join)
+
+        stm = stm.where(and_(tbl_skybot.c.name == name))
+
+        totalSize = self.stm_count(stm)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows, totalSize
+
+
+    def check_bsp_jpl_by_object(self, name, max_age):
+        """
+            Retorna o registro do bsl jpl para o objeto, 
+            se o download estiver acima da prazo maximo o 
+            resultado vai ser vazio. 
+        """
+        # select * from orbit_bspjplfile where "name"='Eris' and download_finish_time > (NOW() - INTERVAL '30 DAY');
+        tbl = self.get_table_bsp_jpl_file()
+
+        stm = select(tbl.c).where(
+            and_(
+                tbl.c.name == name,
+                tbl.c.download_finish_time > (
+                            func.now() - text('INTERVAL \'%s DAY\'' % int(max_age)))
+            )
+        )
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows
 
 
 class SkybotOutput(DBBase):

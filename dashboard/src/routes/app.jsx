@@ -5,9 +5,7 @@ import CustomList from 'views/ObjectList/CustomList';
 import ObjectList from 'views/ObjectList/ObjectList';
 import Praia from 'views/Astrometry/Praia';
 import RefineOrbitPanel from 'views/RefineOrbit/Panel';
-import PraiaRun from 'views/Astrometry/PraiaRun';
 import Placeholder from 'views/Placeholder';
-
 import Dashboard from 'views/Dashboard/Dashboard';
 import UserProfile from 'views/UserProfile/UserProfile';
 import TableList from 'views/TableList/TableList';
@@ -24,7 +22,10 @@ import OccultationsPanel from '../views/Occultations/Panel';
 import OccultationDetail from '../views/Occultations/Detail';
 import AsteroidDetailPrediction from '../views/Prediction/AsteroidDetail';
 import SkybotRun from '../views/SolarSystems/SkybotRun/SkybotRun';
-// import FormikTeste from '../views/SolarSystems/FormikTeste';
+import SkybotRunDetail from '../views/SolarSystems/SkybotRun/Detail';
+import ExposureDetail from '../views/SolarSystems/SkybotRun/ExposureDetail';
+import PraiaDetail from '../views/Astrometry/RunDetail';
+import AsteroidRunDetail from '../views/Astrometry/AsteroidRunDetail';
 
 
 const appRoutes = [
@@ -63,6 +64,18 @@ const appRoutes = [
     path: '/skybotrun',
     name: 'Skybot Run',
     component: SkybotRun,
+  },
+  {
+    path: '/skybotrun_detail/:id',
+    name: 'Skybot Run Detail',
+    component: SkybotRunDetail,
+    hidden: true,
+  },
+  {
+    path: '/skybotrun_exposure/:skybotrun/:expnum',
+    name: 'Skybot Run Exposure Detail',
+    component: ExposureDetail,
+    hidden: true,
   },
 
   // { path: '/skybot', name: 'SkyBoT', icon: 'pe-7s-science', component: SkyBot },
@@ -123,8 +136,16 @@ const appRoutes = [
     path: '/astrometry_run/:id',
     name: 'Astrometry Run',
     hidden: true,
-    component: PraiaRun,
+    component: PraiaDetail,
   },
+
+  {
+    path: '/asteroid_run_detail/:id',
+    name: 'Asteroid Astrometry Run',
+    hidden: true,
+    component: AsteroidRunDetail,
+  },
+
   {
     path: '/refine_orbit',
     name: 'Refine Orbit',
@@ -207,12 +228,6 @@ const appRoutes = [
     component: Notifications,
     hidden: true,
   },
-  // {
-  //   path: '/formik',
-  //   name: 'Formik',
-  //   component: FormikTeste,
-  //   hidden: false,
-  // },
   { redirect: true, path: '/', to: '/dashboard', name: 'Dashboard' },
 ];
 

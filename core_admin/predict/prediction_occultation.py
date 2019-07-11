@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import pytimeparse
 import os, errno
 from django.conf import settings
@@ -710,7 +710,7 @@ class PredictionOccultation():
         absolute_data_path = os.path.join(absolute_archive_path, obj['relative_path'].strip('/'))
 
         # Comando que sera executado dentro do container.
-        cmd = "python generate_ephemeris.py %s %s %s %s %s --leap_sec %s --radec_filename %s --positions_filename %s" % (
+        cmd = "python generate_ephemeris.py \"%s\" %s %s %s %s --leap_sec %s --radec_filename %s --positions_filename %s" % (
             obj['name'], obj['inputs']['dates_file'], obj['inputs']['bsp_asteroid'], obj['inputs']['bsp_planetary'], filename,
             obj['inputs']['leap_second'], radec_filename, positions_filename)
 
@@ -1008,6 +1008,8 @@ class PredictionOccultation():
 
             if catalog.schema is not None:
                 tablename = "%s.%s" % (catalog.schema, catalog.tablename)
+            else:
+                tablename = catalog.tablename
 
             columns = ", ".join(self.gaia_properties)
 

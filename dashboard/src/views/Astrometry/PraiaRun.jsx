@@ -42,6 +42,13 @@ class PraiaRun extends Component {
       />
     );
   }
+
+  static propTypes = {
+    //match: PropTypes.object.isRequired,
+    history: PropTypes.any.isRequired,
+  };
 }
+
+
 
 export default PraiaRun;

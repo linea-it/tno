@@ -7,7 +7,7 @@ from rest_framework.decorators import list_route, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from django.conf import settings
-
+import pandas as pd
 from .models import *
 from .serializers import *
 from .skybotoutput import FilterObjects
@@ -25,10 +25,10 @@ import csv
 from .johnstons import JhonstonArchive
 from django.utils import timezone
 from datetime import datetime
-
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
-
+from tno.skybot.plot_ccds_objects import ccds_objects
+import urllib
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -329,7 +329,7 @@ class CustomListViewSet(viewsets.ModelViewSet):
 
         return Response({
             'success': True,
-            'data': data
+            'data': data,
         })
 
 
@@ -556,4 +556,337 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
     queryset = SkybotRun.objects.all()
     serializer_class = SkybotRunSerializer
     filter_fields = ('id',)
-    search_fields = ('id',)
+    # search_fields = ('id',)
+    ordering_fields = ('id', 'type_run', 'start', 'exposure', 'rows',)
+    ordering = ('-start',)
+
+    def perform_create(self, serializer):
+        # Adiconar usuario logado
+        if not self.request.user.pk:
+            raise Exception(
+                'It is necessary an active login to perform this operation.')
+        serializer.save(
+            owner=self.request.user,
+            start=datetime.now()
+        )
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        if instance.status == 'pending':
+            instance.start = datetime.now()
+            instance.finish = None
+            instance.execution_time = None
+            instance.exposure = None
+            instance.rows = None
+            instance.error = None
+            instance.save()
+
+        if instance.status == 'cancel':
+            instance.finish = None
+            instance.save()
+
+    def get_output_path(self, skybotrun):
+        # Diretorio onde ficam os csv baixados do skybot
+        self.base_path = settings.SKYBOT_OUTPUT
+
+        output_path = os.path.join(self.base_path, str(skybotrun.id))
+        if not os.path.exists(output_path):
+            os.mkdir(output_path)
+
+        return output_path
+
+    def read_result_csv(self, skybotrun, page=1, pageSize=None):
+
+        output_path = self.get_output_path(skybotrun)
+
+        results_file = os.path.join(output_path, 'results.csv')
+
+        headers = ['expnum', 'band', 'date_obs', 'skybot_downloaded', 'skybot_url', 'download_start', 'download_finish', 'download_time', 'filename',
+                   'file_size', 'file_path', 'import_start', 'import_finish', 'import_time', 'count_created', 'count_updated', 'count_rows',
+                   'ccd_count', 'ccd_count_rows', 'ccd_start', 'ccd_finish', 'ccd_time', 'error']
+
+        if page == 1:
+            skiprows = 1
+        else:
+            skiprows = (page * pageSize) - pageSize
+
+        df = pd.read_csv(
+            results_file,
+            skiprows=skiprows,
+            delimiter=';',
+            names=headers,
+            nrows=pageSize)
+
+        return df
+
+    def read_skybotoutput_csv(self, filepath):
+
+        headers = ["num", "name", "ra", "dec", "dynclass", "mv", "errpos", "d", "dra", "ddec",
+                   "dg", "dh", "phase", "sunelong", "x", "y", "z", "vx", "vy", "vz", "epoch"]
+
+        df = pd.read_csv(filepath, skiprows=3, delimiter='|', names=headers)
+
+        rows = list()
+        for record in df.itertuples():
+            row = dict({})
+            for header in headers:
+                row[header] = getattr(record, header)
+
+            rows.append(row)
+            # rows.append(dict((y, x) for x, y in row))
+
+        return rows
+
+    @list_route()
+    def time_profile(self, request):
+
+        run_id = request.query_params.get('run_id', None)
+
+        skybotrun = None
+        try:
+            skybotrun = SkybotRun.objects.get(pk=int(run_id))
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "SkybotRun not found. run_id %s" % run_id
+            })
+
+        output_path = self.get_output_path(skybotrun)
+
+        time_profile = os.path.join(output_path, 'time_profile.csv')
+
+        headers = ["expnum", "operation", "start", "finish"]
+
+        df = pd.read_csv(time_profile, skiprows=1,
+                         delimiter=';', names=headers)
+
+        rows = list()
+        for row in df.itertuples():
+            rows.append([row[1], row[2], row[3], row[4]])
+
+        return Response({
+            'success': True,
+            'headers': headers,
+            'data': rows
+        })
+
+    @list_route()
+    def results(self, request):
+
+        run_id = int(request.query_params.get('run_id', None))
+        page = int(request.query_params.get('page', 1))
+        pageSize = int(request.query_params.get('pageSize', 100))
+
+        skybotrun = None
+        try:
+            skybotrun = SkybotRun.objects.get(pk=int(run_id))
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "SkybotRun not found. run_id %s" % run_id
+            })
+
+        df = self.read_result_csv(skybotrun, page, pageSize)
+
+        rows = list()
+        for row in df.itertuples():
+
+            d_time = float("{0:.2f}".format(getattr(row, "download_time")))
+            i_time = float("{0:.2f}".format(getattr(row, "import_time")))
+            a_time = float("{0:.2f}".format(getattr(row, "ccd_time")))
+
+            exec_time = float("{0:.2f}".format(d_time + i_time + a_time))
+
+            # Define status
+            status = 'failure'
+            if getattr(row, "skybot_downloaded") is True and getattr(row, "count_rows") > 0:
+                status = 'success'
+            elif getattr(row, "skybot_downloaded") is True and getattr(row, "count_rows") == 0:
+                status = 'warning'
+
+            date_obs = getattr(row, "date_obs")
+            
+            rows.append(dict({
+                'expnum': getattr(row, "expnum"),
+                'band': getattr(row, "band"),
+                'date_obs': date_obs.split('.')[0],
+                'status': status,
+                'download_time': d_time,
+                'import_time': i_time,
+                'ccd_time': a_time,
+                'created': getattr(row, "count_created"),
+                'updated': getattr(row, "count_updated"),
+                'count_rows': getattr(row, "count_rows"),
+                'ccd_count_rows': getattr(row, "ccd_count_rows"),
+                'execution_time': exec_time,
+                # 'error': getattr(row, "error", None),
+            }))
+
+        return Response({
+            'success': True,
+            'totalCount': skybotrun.exposure,
+            'data': rows
+        })
+
+    @list_route()
+    def statistic(self, request):
+
+        run_id = int(request.query_params.get('run_id', None))
+
+        skybotrun = None
+        try:
+            skybotrun = SkybotRun.objects.get(pk=int(run_id))
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "SkybotRun not found. run_id %s" % run_id
+            })
+
+        df = self.read_result_csv(skybotrun)
+
+        d_time = df['download_time'].sum()
+        i_time = df['import_time'].sum()
+        a_time = df['ccd_time'].sum()
+
+        return Response({
+            'success': True,
+            'download_time': d_time,
+            'import_time': i_time,
+            'ccd_time': a_time,
+            'created': df['count_created'].sum(),
+            'updated': df['count_updated'].sum(),
+            'h_download_time': humanize.naturaldelta(d_time),
+            'h_import_time': humanize.naturaldelta(i_time),
+            'rows': df['count_rows'].sum()
+        })
+
+    @list_route()
+    def skybot_output_by_exposure(self, request):
+
+        run_id = int(request.query_params.get('run_id', None))
+        expnum = int(request.query_params.get('expnum', None))
+
+        skybotrun = None
+        try:
+            skybotrun = SkybotRun.objects.get(pk=int(run_id))
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "SkybotRun not found. run_id %s" % run_id
+            })
+
+        if expnum is None:
+            return Response({
+                'success': False,
+                'msg': "Expnum is required"
+            })
+
+        df = self.read_result_csv(skybotrun)
+
+        # Pega o primeiro resultado da busca
+        first = df[df.expnum==expnum].iloc[0]
+
+        filename = getattr(first, 'filename')
+        output_path = self.get_output_path(skybotrun)
+        filepath = os.path.join(output_path, filename)
+
+        rows = self.read_skybotoutput_csv(filepath)
+
+        return Response({
+            'success': True,
+            'filepath': filepath,
+            'rows': rows
+        })
+
+    @list_route()
+    def skybot_output_plot(self, request):
+
+        run_id = int(request.query_params.get('run_id', None))
+        expnum = int(request.query_params.get('expnum', None))
+
+        skybotrun = None
+        try:
+            skybotrun = SkybotRun.objects.get(pk=int(run_id))
+
+        except ObjectDoesNotExist:
+            return Response({
+                'success': False,
+                'msg': "SkybotRun not found. run_id %s" % run_id
+            })
+
+        if expnum is None:
+            return Response({
+                'success': False,
+                'msg': "Expnum is required"
+            })
+
+        # lista de CCDs da exposicao
+        ccdModels = Pointing.objects.filter(expnum=expnum)
+        serializer = PointingSerializer(ccdModels, many=True)
+        ccds = serializer.data
+
+        # Exposure center
+        ra = ccds[0]['radeg']
+        dec = ccds[0]['decdeg']
+
+        # Objetos dentro de ccd.
+        mAsteroids = SkybotOutput.objects.filter(expnum=expnum, ccdnum__isnull=False)
+
+        # Objetos retornados skybot
+        df = self.read_result_csv(skybotrun)
+
+        # Pega o primeiro resultado da busca por expnum
+        first = df[df.expnum==expnum].iloc[0]
+
+        # Recupera o path para o arquivo de saida do skybot
+        filename = getattr(first, 'filename')
+        output_path = self.get_output_path(skybotrun)
+        skybot_output_file = os.path.join(output_path, filename)
+
+        # O arquivo de plot deve ficar no diretorio tmp, para ficar disponivel para as interfaces.
+        plot_filename = 'ccd_object_%s.png' % expnum
+        plot_file_path = os.path.join(settings.MEDIA_TMP_DIR, plot_filename)
+        plot_src = urllib.parse.urljoin(settings.MEDIA_TMP_URL, plot_filename)
+
+        plot = ccds_objects(
+            ra=ra, 
+            dec=dec,  
+            ccds=ccds, 
+            skybot_file=skybot_output_file, 
+            file_path=plot_file_path)
+
+        return Response({
+            'success': True,
+            'expnum': expnum,
+            'ccds': len(ccds),
+            'asteroids_ccd': len(mAsteroids),
+            'skybot_output_file': skybot_output_file,
+            'plot_file_path': plot_file_path,
+            'plot_src': plot_src,
+            'plot_filename': plot_filename,
+            # 'teste': ccds[0]
+        })
+
+    @list_route()
+    def asteroids_ccd(self, request):
+        expnum = int(request.query_params.get('expnum', None))
+
+        if expnum is None:
+            return Response({
+                'success': False,
+                'msg': "Expnum is required"
+            })
+
+        asteroids = SkybotOutput.objects.filter(expnum=expnum, ccdnum__isnull=False).order_by('ccdnum')
+        serializer = SkybotOutputSerializer(asteroids, many=True)
+        rows = serializer.data
+
+        return Response({
+            'success': True,
+            'rows': rows,
+            'count': len(rows)
+        })

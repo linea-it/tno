@@ -13,6 +13,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+
 class DonutStats extends Component {
   render() {
     const propSet = this.props;
@@ -28,33 +29,33 @@ class DonutStats extends Component {
 
     return (
       <ResponsiveContainer width="100%" height="80%">
-        <Content 
+        <Content
           content={
             <PieChart width={450} height={150} onMouseEnter={this.onPieEnter}>
-            <Pie
-              data={propSet.data}
-              cx={60}
-              cy={60}
-              innerRadius={30}
-              outerRadius={50}
-              paddingAngle={0}
-            >
-              {propSet.fill.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={propSet.fill[index % propSet.fill.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend
-              iconSize={10}
-              width={120}
-              height={100}
-              layout="vertical"
-              verticalAlign="middle"
-            />
-          </PieChart>
+              <Pie
+                data={propSet.data}
+                cx={60}
+                cy={60}
+                innerRadius={30}
+                outerRadius={50}
+                paddingAngle={0}
+              >
+                {propSet.fill.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={propSet.fill[index % propSet.fill.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend
+                iconSize={10}
+                width={120}
+                height={100}
+                layout="vertical"
+                verticalAlign="middle"
+              />
+            </PieChart>
           }
         />
 

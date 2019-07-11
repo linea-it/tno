@@ -61,13 +61,18 @@ class PointingSerializer(serializers.ModelSerializer):
             return None
 
 class SkybotRunSerializer(serializers.ModelSerializer):
-    # date_obs = serializers.SerializerMethodField()
-
+    
+    owner = serializers.SerializerMethodField()
+    h_execution_time = serializers.SerializerMethodField()
+    start = serializers.SerializerMethodField()
+    finish = serializers.SerializerMethodField()
     class Meta:
         model = SkybotRun
         fields = (
+            'id',
             'owner',
             'exposure',
+            'rows',
             'start',
             'finish',
             'status',
@@ -76,7 +81,6 @@ class SkybotRunSerializer(serializers.ModelSerializer):
             'type_run',
             'ra_cent',
             'dec_cent',
-            'radius',
             'ra_ul',
             'dec_ul',
             'ra_ur',
@@ -85,13 +89,33 @@ class SkybotRunSerializer(serializers.ModelSerializer):
             'dec_lr',
             'ra_ll',
             'dec_ll',
+            'radius',
+            'h_execution_time',
         )
 
-    # def get_date_obs(self, obj):
-    #     try:
-    #         return obj.date_obs.strftime('%Y/%m/%d')
-    #     except:
-    #         return None
+    def get_owner(self, obj):
+        try:
+            return obj.owner.username
+        except:
+            return None
+
+    def get_start(self, obj):
+        try:
+            return obj.start.strftime('%Y-%m-%d %H:%M:%S')
+        except:
+            return None
+
+    def get_finish(self, obj):
+        try:
+            return obj.finish.strftime('%Y-%m-%d %H:%M:%S')
+        except:
+            return None
+
+    def get_h_execution_time(self, obj):
+        try:
+            return humanize.naturaldelta(obj.execution_time)
+        except:
+            return None            
 
 class SkybotOutputSerializer(serializers.ModelSerializer):
     pointing = serializers.PrimaryKeyRelatedField(

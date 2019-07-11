@@ -44,7 +44,7 @@ class RefineOrbitSubmit extends Component {
       .then(res => {
         const configs = res.data.results;
 
-        configs.forEach(function(el) {
+        configs.forEach(function (el) {
           el['proccess_displayname'] =
             el.proccess + ' - ' + el.input_displayname;
         });

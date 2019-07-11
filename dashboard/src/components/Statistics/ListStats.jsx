@@ -11,17 +11,23 @@ class ListStats extends Component {
 
     const { array, bool } = PropTypes;
 
-    ListStats.PropTypes = {
-      //title: string.isRequired,
-      data: array.isRequired,
-      status: bool.isRequired,
-    };
+    // ListStats.PropTypes = {
+    //   //title: string.isRequired,
+    //   data: array.isRequired,
+    //   status: bool.isRequired,
+    // };
+
+    // console.log(propSet.data[0]);
+
 
     const columns = propSet.data.map((col, i) => {
+
       if (propSet.badgeColumns) {
+
         return (
           <tr key={i}>
             <td className="font-format">{propSet.data[i].name}</td>
+
             <td>
               <Badge className={`label-list label-${propSet.statstext}`}>
                 {propSet.data[i].value}
@@ -30,23 +36,52 @@ class ListStats extends Component {
           </tr>
         );
       } else {
+
         return (
           <tr key={i}>
             <td className="list-text">
               <div>{propSet.data[i].name}:</div>
             </td>
             <td className="list-value">
-              <div>{propSet.data[i].value} </div>
+              <div>{propSet.data[i].value}</div>
             </td>
-          </tr>
+          </tr >
         );
       }
     });
 
     const status = [];
-    if (propSet.status) {
+
+    //No código em AsteroidRunDetail, o status está sempre em true
+    // if (propSet.status) {
+    //   status.push(
+    //     <tr key={status}>
+    //       <td className="list-text">
+    //         <strong>Status</strong>
+    //       </td>
+    //       <td className="list-value">
+
+
+    //         {/* <Badge className={`label label-outline label-${propSet.statstext}`}>
+    //           {propSet.statstext}
+    //         </Badge> */}
+
+    //         <Badge className={`label label-outline label-${propSet.statstext}`}>
+    //           {propSet.statstext}
+    //         </Badge>
+
+    //       </td>
+    //     </tr>
+    //   );
+    // }
+
+
+
+
+
+    if (propSet.statstext == "success") {
       status.push(
-        <tr>
+        <tr key={status}>
           <td className="list-text">
             <strong>Status</strong>
           </td>
@@ -54,10 +89,26 @@ class ListStats extends Component {
             <Badge className={`label label-outline label-${propSet.statstext}`}>
               {propSet.statstext}
             </Badge>
+
+
+          </td>
+        </tr>
+      );
+    } else {
+      status.push(
+        <tr key={status}>
+          <td className="list-text">
+            <strong>Status</strong>
+          </td>
+          <td className="list-value">
+            <Badge variant="info">
+              {propSet.statstext}
+            </Badge>
           </td>
         </tr>
       );
     }
+
 
     return (
       <div>
