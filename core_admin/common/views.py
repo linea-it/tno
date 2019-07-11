@@ -105,11 +105,16 @@ def read_csv(request):
             dict_list = []
             for row in reader:
                 dict_list.append(row)
-            
+
+        # Saber a primeira linha 
+        columns = list()
+        if len(dict_list) > 0:
+            columns = dict_list[0].keys()
+        
         result = dict({
             'success': True,
             'rows': dict_list,
-            
+            'columns': columns,           
         })
 
     return Response(result)
