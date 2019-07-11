@@ -31,7 +31,6 @@ class AsteroidList extends Component {
       sortField: 'name',
       sortOrder: 1,
       asteroid_id: 0,
-      log_visible: false,
       selected: null,
     };
   }

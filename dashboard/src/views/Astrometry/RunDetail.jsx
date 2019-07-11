@@ -133,7 +133,7 @@ class PraiaDetail extends Component {
                 <ListStats
                   statstext={this.state.data.status}
                   status={true}
-                  title={`Aastrometry - ${data.id}`}
+                  title={`Astrometry - ${data.id}`}
                   data={stats}
                 />
               }

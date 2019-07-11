@@ -23,13 +23,7 @@ export default class AsteroidRunDetail extends Component {
       asteroid: {},
       inputs: [],
       files: [],
-      images: [],
-      tree_data: [],
       selected2: '',
-      lightboxIsOpen: false,
-      currentImage: 0,
-      visible: false,
-      imageId: [],
       prev: null,
       next: null,
       download_icon: 'fa fa-cloud-download',
@@ -131,6 +125,7 @@ export default class AsteroidRunDetail extends Component {
             label="Download"
             icon={this.state.download_icon}
             className="ui-button-info"
+            disabled="disabled"
           // onClick={() => this.onClickDownload(this.state.asteroid.id)}
           />
         </div>

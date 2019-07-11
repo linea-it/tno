@@ -251,6 +251,7 @@ class AsteroidDetail extends Component {
           <Button
             label="Download"
             icon={this.state.download_icon}
+
             className="ui-button-info"
             onClick={() => this.onClickDownload(this.state.asteroid.id)}
           />
