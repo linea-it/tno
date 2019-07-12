@@ -26,6 +26,7 @@ import SkybotRunDetail from '../views/SolarSystems/SkybotRun/Detail';
 import ExposureDetail from '../views/SolarSystems/SkybotRun/ExposureDetail';
 import PraiaDetail from '../views/Astrometry/RunDetail';
 import AsteroidRunDetail from '../views/Astrometry/AsteroidRunDetail';
+import ReadCSV from '../views/Astrometry/ReadCSV';
 
 
 const appRoutes = [
@@ -225,6 +226,14 @@ const appRoutes = [
     name: 'Notifications',
     icon: 'pe-7s-bell',
     component: Notifications,
+    hidden: true,
+  },
+
+  {
+    path: '/astrometry_read_csv/:filepath',
+    name: 'ReadCSV',
+    icon: 'pe-7s-science',
+    component: ReadCSV,
     hidden: true,
   },
 

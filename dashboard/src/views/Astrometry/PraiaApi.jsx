@@ -94,6 +94,11 @@ class PraiaApi {
         asteroid: id
       }
     });
+
+  getCSV = (filepath) => axios.get(`${this.api}/read_csv?filepath=${filepath}`);
+
+
+
 }
 
 export default PraiaApi;

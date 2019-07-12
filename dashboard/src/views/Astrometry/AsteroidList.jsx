@@ -91,6 +91,7 @@ class AsteroidList extends Component {
     this.api
       .getAsteroids({ filters, page, sizePerPage, sortField, sortOrder })
       .then(res => {
+
         const r = res.data;
         this.setState({
           data: r.results,
@@ -236,6 +237,7 @@ class AsteroidList extends Component {
   };
 
   render() {
+    const { data } = this.state;
 
     const columns = this.columns.map((col, i) => {
       return (
@@ -253,7 +255,7 @@ class AsteroidList extends Component {
     return (
       <Card title="" subTitle="">
         <DataTable
-          value={this.state.data}
+          value={data}
           resizableColumns={true}
           columnResizeMode="expand"
           reorderableColumns={false}

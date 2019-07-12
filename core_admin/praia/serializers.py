@@ -93,7 +93,7 @@ class RunSerializer(serializers.ModelSerializer):
 
     def get_h_execution_time(self, obj):
         try:
-            return humanize.naturaldelta(obj.h_execution_time)
+            return humanize.naturaldelta(obj.execution_time)
         except:
             return None
 
@@ -152,6 +152,9 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
     astrometry_run = serializers.PrimaryKeyRelatedField(
         queryset=Run.objects.all(), many=False)
 
+    number = serializers.SerializerMethodField()
+    execution_time = serializers.SerializerMethodField()
+
     class Meta:
         model = AstrometryAsteroid
         fields = (
@@ -166,6 +169,18 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
             'execution_time'
         )
 
+    def get_number(self, obj):
+        try:
+            return obj.number
+        except:
+            return None
+
+    def get_execution_time(self, obj):
+        try:
+            return obj.execution_time
+        except:
+            return None
+
 
 class AstrometryInputSerializer(serializers.ModelSerializer):
 
@@ -173,6 +188,8 @@ class AstrometryInputSerializer(serializers.ModelSerializer):
         queryset=AstrometryAsteroid.objects.all(), many=False)
 
     h_file_size = serializers.SerializerMethodField()
+
+    execution_time = serializers.SerializerMethodField()
 
     class Meta:
         model = AstrometryInput
@@ -184,12 +201,19 @@ class AstrometryInputSerializer(serializers.ModelSerializer):
             'file_size',
             'file_type',
             'file_path',
-            'h_file_size'
+            'h_file_size',
+            'execution_time',
         )
 
     def get_h_file_size(self, obj):
         try:
             return humanize.naturalsize(obj.file_size)
+        except:
+            return None
+
+    def get_execution_time(self, obj):
+        try:
+            return humanize.naturalsize(obj.execution_time)
         except:
             return None
 

@@ -48,11 +48,12 @@ export default class AsteroidRunDetail extends Component {
       header: 'Filename',
       sortable: true,
     },
+
+
   ];
 
 
   componentDidMount() {
-
     const {
       match: { params },
     } = this.props;
@@ -66,13 +67,11 @@ export default class AsteroidRunDetail extends Component {
     // Recuperar os Inputs
     this.api.getInputsByAsteroidId({ id: asteroid_id }).then(res => {
       const inputs = res.data.results;
+
       this.setState({
         inputs: inputs,
       });
     });
-
-
-
 
   }
 
@@ -163,6 +162,29 @@ export default class AsteroidRunDetail extends Component {
     window.location.reload();
   };
 
+  handleView = (rowData) => {
+    const history = this.props.history;
+    const filepath = encodeURIComponent(rowData.file_path);
+
+    history.push(`/astrometry_read_csv/${filepath}`);
+
+  }
+
+  actionTemplate = (rowData) => {
+
+    if (rowData.input_type === 'ccd_images_list') {
+      return (
+        <Button
+          type="button"
+          icon="fa fa-search"
+          className="ui-button-info"
+          title="View"
+
+          onClick={() => this.handleView(rowData)}
+        />
+      );
+    }
+  }
 
   render() {
     const { asteroid, inputs } = this.state;
@@ -206,7 +228,7 @@ export default class AsteroidRunDetail extends Component {
           </div>
         </div>
 
-        <div className="ui-g-6">
+        <div className="ui-g-8">
           <Card title="Inputs" subTitle="">
             <DataTable
               value={inputs}
@@ -214,6 +236,11 @@ export default class AsteroidRunDetail extends Component {
               sortOrder={1}
             >
               {inp_columns}
+              <Column
+                style={{ textAlign: 'center' }}
+                body={this.actionTemplate}
+              />
+
             </DataTable>
           </Card>
         </div>

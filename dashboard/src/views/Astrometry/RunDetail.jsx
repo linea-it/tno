@@ -34,8 +34,6 @@ class PraiaDetail extends Component {
     this.api.getPraiaRunById({ id: params.id }).then(res => {
       const data = res.data;
 
-      console.log(res.data);
-
       this.setState({
         id: parseInt(params.id, 10),
         data: data,
