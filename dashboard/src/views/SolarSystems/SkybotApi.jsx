@@ -16,7 +16,7 @@ class SkybotApi {
     const params = {
       page: page,
       pageSize: pageSize,
-      ordering: ordering
+      ordering: ordering,
     };
 
     return axios.get(`${this.api}/skybot_run/`, { params: params });

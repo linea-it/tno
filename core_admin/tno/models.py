@@ -320,7 +320,6 @@ class SkybotOutput(models.Model):
     )
 
     class Meta:
-
         unique_together = ('num', 'name', 'expnum')
         indexes = [
 

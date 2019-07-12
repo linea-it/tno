@@ -78,6 +78,7 @@ const appRoutes = [
     component: ExposureDetail,
     hidden: true,
   },
+
   // { path: '/skybot', name: 'SkyBoT', icon: 'pe-7s-science', component: SkyBot },
   {
     path: '/filterobject',

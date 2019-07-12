@@ -19,15 +19,11 @@ class RunSerializer(serializers.ModelSerializer):
 
     start_time = serializers.SerializerMethodField()
 
+    finish_time = serializers.SerializerMethodField()
+
     configuration_displayname = serializers.SerializerMethodField()
 
     input_displayname = serializers.SerializerMethodField()
-
-    execution_time = serializers.SerializerMethodField()
-
-    finish_time = serializers.SerializerMethodField()
-
-    h_finish_time = serializers.SerializerMethodField()
 
     proccess = serializers.PrimaryKeyRelatedField(
         queryset=Proccess.objects.all(), many=False, required=False)
@@ -35,9 +31,8 @@ class RunSerializer(serializers.ModelSerializer):
     proccess_displayname = serializers.SerializerMethodField()
 
     h_execution_time = serializers.SerializerMethodField()
-    h_time = serializers.SerializerMethodField()
 
-    count_objects = serializers.SerializerMethodField()
+    h_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Run
@@ -46,7 +41,6 @@ class RunSerializer(serializers.ModelSerializer):
             'owner',
             'start_time',
             'finish_time',
-            'h_finish_time',
             'execution_time',
             'configuration',
             'catalog',
@@ -91,6 +85,8 @@ class RunSerializer(serializers.ModelSerializer):
         except:
             return None
 
+
+<< << << < HEAD
     def get_h_execution_time(self, obj):
         try:
             return humanize.naturaldelta(obj.execution_time)
@@ -103,27 +99,23 @@ class RunSerializer(serializers.ModelSerializer):
         except:
             return None
 
+== == == =
+>>>>>> > bb598ecdfbd1f38cefdcbe5577b99ed1d1edaefd
     def get_finish_time(self, obj):
         try:
-            return obj.finish_time
+            return obj.finish_time.strftime('%Y-%m-%d %H:%M:%S')
         except:
             return None
 
-    def get_h_finish_time(self, obj):
+    def get_h_execution_time(self, obj):
         try:
-            return humanize.naturaltime(obj.finish_time)
+            return humanize.naturaldelta(obj.execution_time)
         except:
             return None
 
-    def get_execution_time(self, obj):
+    def get_h_time(self, obj):
         try:
-            return humanize.naturaltime(obj.execution_time)
-        except:
-            return None
-
-    def get_count_objects(self, obj):
-        try:
-            return obj.count_objects
+            return humanize.naturaltime(timezone.now() - obj.start_time)
         except:
             return None
 
@@ -152,14 +144,20 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
     astrometry_run = serializers.PrimaryKeyRelatedField(
         queryset=Run.objects.all(), many=False)
 
+
+<< << << < HEAD
     number = serializers.SerializerMethodField()
     execution_time = serializers.SerializerMethodField()
+== == == =
+    proccess_displayname = serializers.SerializerMethodField()
+>>>>>> > bb598ecdfbd1f38cefdcbe5577b99ed1d1edaefd
 
     class Meta:
         model = AstrometryAsteroid
         fields = (
             'id',
             'astrometry_run',
+            'proccess_displayname',
             'name',
             'number',
             'status',
@@ -169,15 +167,9 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
             'execution_time'
         )
 
-    def get_number(self, obj):
+    def get_proccess_displayname(self, obj):
         try:
-            return obj.number
-        except:
-            return None
-
-    def get_execution_time(self, obj):
-        try:
-            return obj.execution_time
+            return "%s - %s" % (obj.astrometry_run.proccess.id, obj.astrometry_run.input_list.displayname)
         except:
             return None
 
