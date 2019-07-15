@@ -64,7 +64,7 @@ class Run(models.Model):
     )
 
     relative_path = models.CharField(
-        max_length=256,
+        max_length=2048,
         verbose_name='Relative Path',
         null=True, blank=True,
         help_text='Path relative to the astrometry directory, this is the internal path in the proccess directory.',
@@ -79,7 +79,7 @@ class Run(models.Model):
     )
 
     error_msg = models.CharField(
-        max_length=256,
+        max_length=2048,
         verbose_name="Error Message",
         help_text="When the status is failure, this field should contain a message with the error.",
         null=True, blank=True,
@@ -145,7 +145,7 @@ class AstrometryAsteroid(models.Model):
     )
 
     error_msg = models.CharField(
-        max_length=256,
+        max_length=2048,
         verbose_name="Error Message",
         help_text="When the status is failure, this field should contain a message with the error.",
         null=True, blank=True,
@@ -170,7 +170,7 @@ class AstrometryAsteroid(models.Model):
     # )
 
     relative_path = models.CharField(
-        max_length=256,
+        max_length=1024,
         verbose_name='Relative Path',
         null=True, blank=True,
         help_text='Path relative to the Astrometry OBJECT directory, this is the internal path in the proccess directory.',
@@ -202,7 +202,7 @@ class AstrometryInput(models.Model):
     )
 
     filename = models.CharField(
-        max_length=256,
+        max_length=1024,
         null=False, blank=False,
         verbose_name='Filename',
     )
@@ -239,7 +239,7 @@ class AstrometryInput(models.Model):
     )
 
     error_msg = models.CharField(
-        max_length=256,
+        max_length=2048,
         verbose_name="Error Message",
         help_text="This field contains the error message that occurred during the creation of the Input.",
         null=True, blank=True,
@@ -283,7 +283,7 @@ class AstrometryOutput(models.Model):
     )
 
     filename = models.CharField(
-        max_length=256,
+        max_length=1024,
         null=False, blank=False,
         verbose_name='Filename',
         help_text='Filename is formed by name without space and separated by underline.'
