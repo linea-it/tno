@@ -160,6 +160,7 @@ class PraiaHistory extends Component {
   };
 
   status_table = rowData => {
+
     const row = rowData.status;
     const status = [
       { state: 'running' },

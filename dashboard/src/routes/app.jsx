@@ -26,6 +26,7 @@ import SkybotRunDetail from '../views/SolarSystems/SkybotRun/Detail';
 import ExposureDetail from '../views/SolarSystems/SkybotRun/ExposureDetail';
 import PraiaDetail from '../views/Astrometry/RunDetail';
 import AsteroidRunDetail from '../views/Astrometry/AsteroidRunDetail';
+import ReadCSV from '../views/Astrometry/ReadCSV';
 
 
 const appRoutes = [
@@ -228,6 +229,22 @@ const appRoutes = [
     component: Notifications,
     hidden: true,
   },
+
+  {
+    path: '/astrometry_read_csv/:filepath/:filename/:title?',
+    name: 'ReadCSV',
+    icon: 'pe-7s-science',
+    component: ReadCSV,
+    hidden: true,
+  },
+
+
+  // {
+  //   path: '/formik',
+  //   name: 'Formik',
+  //   component: FormikTeste,
+  //   hidden: false,
+  // },
   { redirect: true, path: '/', to: '/dashboard', name: 'Dashboard' },
 ];
 

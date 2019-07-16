@@ -4,6 +4,7 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import Content from 'components/CardContent/CardContent.jsx';
 import PropTypes from 'prop-types';
+import Card from 'primereact/card';
 
 class ListStats extends Component {
   render() {

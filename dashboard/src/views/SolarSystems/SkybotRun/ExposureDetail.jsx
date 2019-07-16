@@ -47,6 +47,11 @@ class ExposureDetail extends Component {
       sortable: false,
     },
     {
+      field: 'ccdnum',
+      header: 'CCD Num',
+      sortable: false,
+    },    
+    {
       field: 'ra',
       header: 'RA',
       sortable: false,

@@ -40,6 +40,24 @@ class HistoryRun extends Component {
 
   columns = [
     {
+      field: 'owner',
+      header: 'Owner',
+      sortable: false,
+    },
+
+    {
+      field: 'h_execution_time',
+      header: 'Execution Time',
+      sortable: false,
+    },
+
+    {
+      field: 'start',
+      header: 'Start',
+      sortable: true,
+    },
+
+    {
       field: 'type_run',
       header: 'Type',
       sortable: true,
@@ -62,32 +80,20 @@ class HistoryRun extends Component {
         return value;
       },
     },
+
+
     {
-      field: 'start',
-      header: 'Start',
+      field: 'rows',
+      header: 'Rows',
       sortable: true,
-    },
-    {
-      field: 'h_execution_time',
-      header: 'Execution Time',
-      sortable: false,
     },
     {
       field: 'exposure',
       header: 'Pointings',
       sortable: true,
     },
-    {
-      field: 'rows',
-      header: 'Rows',
-      sortable: true,
-    },
 
-    {
-      field: 'owner',
-      header: 'Owner',
-      sortable: false,
-    },
+
   ];
 
   componentDidMount() {
@@ -111,7 +117,7 @@ class HistoryRun extends Component {
       .getSkybotRunList(page, sizePerPage, sortField, sortOrder)
       .then(res => {
         const r = res.data;
-
+        console.log(r);
         this.setState({
           data: r.results,
           totalSize: r.count,
