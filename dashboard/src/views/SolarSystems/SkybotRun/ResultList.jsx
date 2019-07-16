@@ -121,12 +121,6 @@ class ResultList extends Component {
       header: 'Inside CCD',
       sortable: false,
     },
-
-    {
-      field: 'ccc_num',
-      header: 'CCD Num',
-      sortable: false,
-    },
   ];
 
   componentDidUpdate(prevProps) {
