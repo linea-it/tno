@@ -39,6 +39,10 @@ def import_skybot(request):
 
 @api_view(['GET'])
 def read_file(request):
+    """ 
+    Function to read .log file 
+    A filepath parameter is obrigatory to display the file. 
+    """   
     if request.method == 'GET':
 
         # Recuperar o filepath do arquivo a ser lido dos parametros da url. 
@@ -79,6 +83,10 @@ def read_file(request):
 
 @api_view(['GET'])
 def read_csv(request):
+    """ 
+    Function to read .csv file 
+    A filepath parameter is obrigatory to display the file. 
+    """    
     if request.method == 'GET':
      
         # Recuperar o filepath do arquivo a ser lido dos parametros da url. 

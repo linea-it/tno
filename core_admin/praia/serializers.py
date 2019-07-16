@@ -53,6 +53,10 @@ class RunSerializer(serializers.ModelSerializer):
             'input_displayname',
             'proccess',
             'proccess_displayname',
+            'count_success',
+            'count_failed',
+            'count_warning',
+            'count_not_executed',
         )
 
     def get_owner(self, obj):
