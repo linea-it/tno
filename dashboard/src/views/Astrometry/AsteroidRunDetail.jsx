@@ -175,7 +175,7 @@ export default class AsteroidRunDetail extends Component {
 
   actionTemplate = (rowData) => {
 
-    if (rowData.input_type === 'ccd_images_list') {
+    if (rowData.file_type === 'csv') {
       return (
         <Button
           type="button"
