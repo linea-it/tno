@@ -141,7 +141,7 @@ const appRoutes = [
   },
 
   {
-    path: '/asteroid_run_detail/:id',
+    path: '/asteroid_run_detail/:id/:proccess',
     name: 'Asteroid Astrometry Run',
     hidden: true,
     component: AsteroidRunDetail,

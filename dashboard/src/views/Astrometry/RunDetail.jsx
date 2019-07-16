@@ -57,9 +57,13 @@ class PraiaDetail extends Component {
     return moment.utc(seconds * 1000).format('HH:mm:ss');
   };
 
+
+  //history.push(`/astrometry_read_csv/${filepath}/${filename}/${title}`);
+
   onViewAsteroid = asteroid_id => {
+    const proccess = this.state.data.proccess_displayname;
     const history = this.props.history;
-    history.push(`/asteroid_run_detail/${asteroid_id}`);
+    history.push(`/asteroid_run_detail/${asteroid_id}/${proccess}`);
   };
 
   onClickBackToAstometry = () => {
@@ -84,8 +88,6 @@ class PraiaDetail extends Component {
   render() {
 
     const { data } = this.state;
-
-
 
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 

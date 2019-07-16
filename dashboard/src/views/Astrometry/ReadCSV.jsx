@@ -17,6 +17,7 @@ export default class ReadCSV extends Component {
     columns: [],
     data: [],
     filename: null,
+    filepath: null,
     title: null
   }
 
@@ -30,6 +31,7 @@ export default class ReadCSV extends Component {
     const title = decodeURIComponent(params.title);
 
     this.setState({ filename: filename });
+    this.setState({ filepath });
     this.setState({ title: title });
 
     this.api.getCSV(filepath).then(res => {
@@ -63,7 +65,7 @@ export default class ReadCSV extends Component {
 
   render() {
 
-    const { data, columns, title, filename } = this.state;
+    const { data, columns, title, filename, filepath } = this.state;
 
     const acolumns = columns.map((col) => {
       return (
@@ -78,11 +80,10 @@ export default class ReadCSV extends Component {
     });
 
 
-
     return (
       < div >
         {this.create_tool_bar()}
-        <Card title={title} subTitle={filename}>
+        <Card title={title} subTitle={filepath}>
           <DataTable
             value={data}
             sortField={''}

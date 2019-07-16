@@ -24,11 +24,11 @@ export default class AsteroidRunDetail extends Component {
       asteroid: {},
       inputs: [],
       files: [],
-      selected2: '',
       prev: null,
       next: null,
       download_icon: 'fa fa-cloud-download',
       praiaId: 0,
+      proccess: null,
     };
   }
 
@@ -59,6 +59,8 @@ export default class AsteroidRunDetail extends Component {
       match: { params },
     } = this.props;
 
+
+    this.setState({ proccess: params.proccess });
 
     const asteroid_id = params.id;
     this.api.getAsteroidById(asteroid_id).then(res => {
@@ -164,10 +166,12 @@ export default class AsteroidRunDetail extends Component {
   };
 
   handleView = (rowData) => {
+
+    const proccess = this.state.proccess;
+
     const filepath = encodeURIComponent(rowData.file_path);
     const filename = encodeURIComponent(rowData.filename);
-    const title = encodeURIComponent("CSV Reading");
-
+    const title = encodeURIComponent("File " + rowData.filename + " of the asteroid " + rowData.asteroid + ". \u00a0  Execution: " + proccess);
 
     const history = this.props.history;
     history.push(`/astrometry_read_csv/${filepath}/${filename}/${title}`);
