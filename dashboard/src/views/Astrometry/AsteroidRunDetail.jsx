@@ -7,7 +7,7 @@ import PraiaApi from './PraiaApi';
 import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
 import ListStats from 'components/Statistics/ListStats.jsx';
-
+import PanelCostumize from 'components/Panel/PanelCostumize';
 
 export default class AsteroidRunDetail extends Component {
   state = this.initialState;
@@ -171,7 +171,7 @@ export default class AsteroidRunDetail extends Component {
 
     const filepath = encodeURIComponent(rowData.file_path);
     const filename = encodeURIComponent(rowData.filename);
-    const title = encodeURIComponent("File " + rowData.filename + " of the asteroid " + rowData.asteroid + ". \u00a0  Execution: " + proccess);
+    const title = encodeURIComponent("Proccess: " + proccess + " of the asteroid " + rowData.asteroid + ". \u00a0 File: " + rowData.filename);
 
     const history = this.props.history;
     history.push(`/astrometry_read_csv/${filepath}/${filename}/${title}`);
@@ -233,22 +233,26 @@ export default class AsteroidRunDetail extends Component {
               data={stats}
             />
           </div>
-        </div>
+          <div className="ui-g-12">
+            <PanelCostumize
+              title="Inputs"
+              content={
+                <DataTable
+                  value={inputs}
+                  sortField={'input_type'}
+                  sortOrder={1}
+                >
+                  {inp_columns}
+                  <Column
+                    style={{ textAlign: 'center' }}
+                    body={this.actionTemplate}
+                  />
+                </DataTable>
+              }
+            />
+          </div>
 
-        <div className="ui-g-8">
-          <Card>
-            <DataTable
-              value={inputs}
-              sortField={'input_type'}
-              sortOrder={1}
-            >
-              {inp_columns}
-              <Column
-                style={{ textAlign: 'center' }}
-                body={this.actionTemplate}
-              />
-            </DataTable>
-          </Card>
+
         </div>
       </div>
     );
