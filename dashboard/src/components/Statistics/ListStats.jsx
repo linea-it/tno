@@ -22,7 +22,7 @@ class ListStats extends Component {
 
 
     const columns = propSet.data.map((col, i) => {
-      console.log(columns);
+
       if (propSet.badgeColumns) {
 
         return (
