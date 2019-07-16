@@ -17,7 +17,8 @@ import traceback
 from concurrent.futures import ThreadPoolExecutor, wait, as_completed
 from orbit.bsp_jpl import BSPJPL
 from .models import Run, AstrometryAsteroid, AstrometryInput
-
+import requests
+import json
 
 def create_ccd_images_list(name, output_filepath):
     # Recuperar as exposicoes para cada objeto.
@@ -526,6 +527,7 @@ class Astrometry():
 
         self.logger.info("Catalog: %s" % star_catalog.display_name)
 
+           
         if star_catalog.tablename is not None:
             self.logger.info("Generate %s Catalog for each asteroid" %
                              star_catalog.display_name)
@@ -604,50 +606,82 @@ class Astrometry():
             self.logger.info("Finished Star Catalog in %s" %
                              humanize.naturaldelta(catalog_execution_time))
 
+        # ===================================================================================================
+        # PRAIA Astrometry - Generate GAIA Catalog for each asteroids
+        # ===================================================================================================
         self.logger.info(
-            "---------------------------------// FAKE RUN //---------------------------------")
-        # FAKE RUN Copia os arquivos de resultados da Astrometria.
+            "---------------------------------// PRAIA ASTROMETRY //---------------------------------")
+        # Submissao dos jobs no cluster
 
         # Reload na lista de asteroids agora sem os que falharam na etapa anterior.
         self.asteroids = AstrometryAsteroid.objects.filter(
             astrometry_run=instance.pk).exclude(status__in=list(['failure', 'not_executed']))
 
-        try:
-            for obj in self.asteroids:
-                name = obj.name.replace(" ", "_")
+        # Nome do catalogo dentro do container e diferente
+        # TODO: Resolver isso no cotainer
+        if star_catalog.name == 'gaia_dr2':
+            catalog_name = 'gaia2'
+        elif star_catalog.name == 'gaia_dr1':
+            catalog_name = 'gaia1'
+        else: 
+            catalog_name = 'gaia1'
 
-                filename = self.get_astrometry_position_filename(obj.name)
+        condor_jobs = list()
 
-                original_file = os.path.join(
-                    self.astrometry_positions_dir, filename)
+        for obj in self.asteroids:
+            # para cada objeto fazer a submissao do job na API do condor. 
 
-                # Rename object_name_obs.txt -> objectname.txt
-                filename = filename.replace('_obs', '').replace('_', '')
-                # obj_dir = os.path.join(self.objects_dir, name)
-                new_file = os.path.join(obj.relative_path, filename)
+            self.logger.info(
+                        "Submit Astrometry Job [ %s / %s ] Object: [ %s ]" % (idx, self.asteroids.count(), obj.name))
 
-                # verificar se existe o arquivo para este objeto
-                if os.path.exists(original_file):
-                    shutil.copy2(original_file, new_file)
+            payload = dict({
+                "queues": 1,
+                "submit_params": {
+                    "Universe": "docker",
+                    "Docker_image": "linea/tno_astrometry:latest",
+                    "Should_transfer_files": "yes",
+                    "when_to_transfer_output": "on_exit",
+                    "+RequiresWholeMachine": "True",
+                    "+PreCmd": "docker",
+                    "PreArguments": "rmi linea/tno_astrometry:latest",
+                    "+PostCmd": "docker",
+                    "PostArguments": "rmi linea/tno_astrometry:latest",
+                    "Requirements": "Machine == 'apl16.ib0.cm.linea.gov.br'",
+                    "executable":"/app/run.py",
+                    # "arguments": "%s --path %s --catalog %s" % (obj.name, obj.relative_path, catalog_name),
+                    # "Log": os.path.join(instance.relative_path, "condor/astrometry-$(Process).log"),
+                    # "Output": os.path.join(instance.relative_path, "condor/astrometry-$(Process).out"),
+                    # "Error": os.path.join(instance.relative_path, "condor/astrometry-$(Process).err")
+                    "arguments": "Eris --path /proccess/4/objects/Eris --catalog gaia2",
+                    "Log": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).log",
+                    "Output": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).out",
+                    "Error": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).err"
+                }
+            })
+            self.logger.debug("payload: ")
+            self.logger.debug(payload)
+            try:
+                url = 'http://loginicx.linea.gov.br:5001/submit_job'
+                headers = {'Content-Type': 'application/json'}
 
-                    self.logger.debug(
-                        "Object [ %s ] - COPY : %s -> %s" % (obj.name, original_file, new_file))
+                r = requests.post(url, headers=headers, data=json.dumps(payload))
+                r.status_code
 
-                    obj.status = 'success'
+                response = r.json()
+                # TODO tratar errors durante o Post. 
+                self.logger.debug(r.status_code)
+                self.logger.debug("Result Status Code: [%s] Response: [ %s ]" % (r.status_code, response))
 
-                else:
-                    obj.status = 'failure'
+                if response['success'] is True:
+                    # Submetido com sucesso, Guardar o Id do Job para ser consultado
 
-                obj.save()
+                    # TODO Melhorar essa parte utilizando uma tabela
+                    pass
 
-            #     self.logger.debug("Object [ %s ] - COPY : %s -> %s" % (obj.get("name"), original_file, new_file))
+            except Exception as e:
+                # TODO Tratar erro na submissao de jobs
+                self.on_error(self.instance, e)
 
-            # time.sleep(2)
-
-        except Exception as e:
-            self.on_error(instance, e)
-
-        # Submissao dos jobs no cluster
 
         # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
 
@@ -655,7 +689,7 @@ class Astrometry():
         self.set_execution_time(instance)
 
         instance.refresh_from_db()
-        instance.status = 'success'
+        instance.status = 'running'
         instance.save()
         self.logger.info("Status changed to Success")
 
