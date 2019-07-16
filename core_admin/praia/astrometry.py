@@ -655,17 +655,17 @@ class Astrometry():
         self.set_execution_time(instance)
 
         # Acrescentar os totais de asteroids por status.
-        # csuccess = instance.asteroids.filter(status='success').count()
-        # cfailure = instance.asteroids.filter(status='failure').count()
-        # cwarning = instance.asteroids.filter(status='warning').count()
-        # cnotexecuted = instance.asteroids.filter(status='not_executed').count()
+        csuccess = instance.asteroids.filter(status='success').count()
+        cfailure = instance.asteroids.filter(status='failure').count()
+        cwarning = instance.asteroids.filter(status='warning').count()
+        cnotexecuted = instance.asteroids.filter(status='not_executed').count()
 
         instance.refresh_from_db()
         instance.status = 'success'
-        instance.count_success = 1
-        instance.count_failed = 2
-        instance.count_warning = 3
-        instance.count_not_executed = 4
+        instance.count_success = csuccess
+        instance.count_failed = cfailure
+        instance.count_warning = cwarning
+        instance.count_not_executed = cnotexecuted
         instance.save()
         self.logger.info("Status changed to Success")
 
