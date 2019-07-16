@@ -6,6 +6,8 @@ import PraiaHistory from './PraiaHistory';
 import PraiaRunning from './PraiaRunning';
 import PropTypes from 'prop-types';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
+import { Dialog } from 'primereact/dialog';
+import { Button } from 'semantic-ui-react';
 
 class Praia extends Component {
   state = this.initialState;
@@ -19,20 +21,54 @@ class Praia extends Component {
     return {
       // Praia Run recem criado e que esta em andamento ainda
       record: {},
+      msg: null,
+      msg_type: null,
+      dialogVisible: false,
     };
   }
 
   onCreateRun = record => {
     // Toda vez que cria um novo registro forca a execucao do metodo render()
-    this.setState(record);
+    this.setState({
+      msg: 'The task has been submitted and will be executed in the background...',
+      type: 'alert-succes',
+    });
+    this.onShow();
+    this.setState({ record });
+
+  };
+
+  onShow = () => {
+    this.setState({ dialogVisible: true });
   };
 
   onRerun = record => {
     this.setState(record);
   };
 
+
+  onHide = () => {
+    this.setState({ dialogVisible: false });
+  }
+
+
   render() {
-    const { record } = this.state;
+    const { record, dialogVisible, msg, msg_type } = this.state;
+
+
+    const footer = (
+      <div>
+        <Button
+          label="Ok"
+          className={msg_type}
+
+          onClick={this.onHide}
+        />
+
+      </div>
+    );
+
+
     return (
       <div className="grid template-predict-astromery">
         <PanelCostumize
@@ -59,7 +95,21 @@ class Praia extends Component {
             />
           }
         />
+
+        <Dialog
+          header="Astrometry Run"
+          visible={dialogVisible}
+          footer={footer}
+          minY={70}
+          modal={true}
+          onHide={this.onHide}
+        >
+
+        </Dialog>
       </div>
+
+
+
     );
   }
 

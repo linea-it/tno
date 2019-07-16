@@ -85,22 +85,6 @@ class RunSerializer(serializers.ModelSerializer):
         except:
             return None
 
-
-<< << << < HEAD
-    def get_h_execution_time(self, obj):
-        try:
-            return humanize.naturaldelta(obj.execution_time)
-        except:
-            return None
-
-    def get_h_time(self, obj):
-        try:
-            return humanize.naturaltime(timezone.now() - obj.start_time)
-        except:
-            return None
-
-== == == =
->>>>>> > bb598ecdfbd1f38cefdcbe5577b99ed1d1edaefd
     def get_finish_time(self, obj):
         try:
             return obj.finish_time.strftime('%Y-%m-%d %H:%M:%S')
@@ -144,13 +128,7 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
     astrometry_run = serializers.PrimaryKeyRelatedField(
         queryset=Run.objects.all(), many=False)
 
-
-<< << << < HEAD
-    number = serializers.SerializerMethodField()
-    execution_time = serializers.SerializerMethodField()
-== == == =
     proccess_displayname = serializers.SerializerMethodField()
->>>>>> > bb598ecdfbd1f38cefdcbe5577b99ed1d1edaefd
 
     class Meta:
         model = AstrometryAsteroid

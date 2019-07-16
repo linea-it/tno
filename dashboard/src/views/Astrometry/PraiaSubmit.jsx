@@ -6,7 +6,6 @@ import ObjectApi from '../ObjectList/ObjectApi';
 import PraiaApi from './PraiaApi';
 import { Card } from 'primereact/card';
 import PropTypes from 'prop-types';
-
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
@@ -25,6 +24,12 @@ class PraiaSubmit extends Component {
   static propTypes = {
     onCreateRun: PropTypes.func.isRequired,
   };
+
+
+
+  componentDidMount() {
+
+  }
 
   loadInputs = inputValue => {
     return this.object_api
@@ -48,7 +53,7 @@ class PraiaSubmit extends Component {
       .getConfigurations({ search: inputValue, ordering: '-creation_date' })
       .then(res => {
         const configs = res.data.results;
-
+        this.setState({ config: configs[0].id });
         return { options: configs };
       });
   };
@@ -56,7 +61,7 @@ class PraiaSubmit extends Component {
   loadCatalogs = inputValue => {
     return this.praia_api.getCatalogs({ search: inputValue }).then(res => {
       const catalogs = res.data.results;
-
+      this.setState({ catalog: catalogs[0].id });
       return { options: catalogs };
     });
   };
@@ -79,31 +84,42 @@ class PraiaSubmit extends Component {
 
   onClickSubmit = () => {
     const { input, config, catalog } = this.state;
+
     if (!input || !config || !catalog) {
       // TODO: Implementar notifacao de parametro faltante
+
       return;
     }
+
     this.praia_api
       .createPraiaRun({ input: input, config: config, catalog: catalog })
       .then(res => {
+
         this.onCreateSuccess(res.data);
+
       })
       .catch(error => {
+
         this.onCreateFailure(error);
       });
   };
 
   onCreateSuccess = record => {
+
     this.setState(this.initialState, this.props.onCreateRun(record));
+
   };
 
   onCreateFailure = error => {
     // TODO: Criar uma Notificacao de falha.
     console.log('onCreateFailure(%o)', error);
+
+
   };
 
   render() {
     const { input, config, catalog } = this.state;
+
     return (
       <Card className="none">
         <Form>

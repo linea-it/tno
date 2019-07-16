@@ -58,8 +58,8 @@ class AsteroidList extends Component {
       sortable: true,
       style: { textAlign: 'center' },
       body: rowData => {
-        if (rowData.execution_time > 0) {
-          return moment.utc(rowData.execution_time * 1000).format('HH:mm:ss');
+        if (rowData.execution_time !== "" && rowData.execution_time !== null) {
+          return moment(rowData.execution_time)._i;
         } else {
           return;
         }

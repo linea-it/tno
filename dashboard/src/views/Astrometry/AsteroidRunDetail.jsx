@@ -8,6 +8,7 @@ import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
 import ListStats from 'components/Statistics/ListStats.jsx';
 
+
 export default class AsteroidRunDetail extends Component {
   state = this.initialState;
   api = new PraiaApi();
@@ -163,11 +164,13 @@ export default class AsteroidRunDetail extends Component {
   };
 
   handleView = (rowData) => {
-    const history = this.props.history;
     const filepath = encodeURIComponent(rowData.file_path);
+    const filename = encodeURIComponent(rowData.filename);
+    const title = encodeURIComponent("CSV Reading");
 
-    history.push(`/astrometry_read_csv/${filepath}`);
 
+    const history = this.props.history;
+    history.push(`/astrometry_read_csv/${filepath}/${filename}/${title}`);
   }
 
   actionTemplate = (rowData) => {
@@ -229,7 +232,7 @@ export default class AsteroidRunDetail extends Component {
         </div>
 
         <div className="ui-g-8">
-          <Card title="Inputs" subTitle="">
+          <Card>
             <DataTable
               value={inputs}
               sortField={'input_type'}
@@ -240,7 +243,6 @@ export default class AsteroidRunDetail extends Component {
                 style={{ textAlign: 'center' }}
                 body={this.actionTemplate}
               />
-
             </DataTable>
           </Card>
         </div>

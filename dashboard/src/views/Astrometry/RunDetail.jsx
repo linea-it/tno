@@ -10,6 +10,7 @@ import { Card } from 'primereact/card';
 import PraiaTimeProfile from './TimeProfile';
 import AsteroidList from './AsteroidList';
 import { withRouter } from 'react-router-dom';
+import { Toolbar } from 'primereact/toolbar';
 
 class PraiaDetail extends Component {
 
@@ -68,19 +69,23 @@ class PraiaDetail extends Component {
 
   create_nav_bar = () => {
     return (
-      <div className="ui-toolbar">
-        <Button
-          label="Back"
-          icon="fa fa-undo"
-          onClick={() => this.onClickBackToAstometry()}
-        />
-      </div>
+      <Toolbar>
+        <div className="ui-toolbar">
+          <Button
+            label="Back"
+            icon="fa fa-undo"
+            onClick={() => this.onClickBackToAstometry()}
+          />
+        </div>
+      </Toolbar>
     );
   };
 
   render() {
 
     const { data } = this.state;
+
+
 
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 

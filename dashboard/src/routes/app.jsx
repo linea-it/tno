@@ -231,7 +231,7 @@ const appRoutes = [
   },
 
   {
-    path: '/astrometry_read_csv/:filepath',
+    path: '/astrometry_read_csv/:filepath/:filename/:title?',
     name: 'ReadCSV',
     icon: 'pe-7s-science',
     component: ReadCSV,
