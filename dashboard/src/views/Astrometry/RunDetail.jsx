@@ -14,7 +14,6 @@ import { Toolbar } from 'primereact/toolbar';
 import ReactInterval from 'react-interval';
 
 class PraiaDetail extends Component {
-
   state = this.initialState;
   api = new PraiaApi();
 
@@ -23,8 +22,9 @@ class PraiaDetail extends Component {
       id: 0,
       data: {},
       time_profile: [],
-      reload_interval: 1,
+      reload_interval: 3,
       interval_condition: false,
+      count: 0,
     };
   }
 
@@ -33,31 +33,30 @@ class PraiaDetail extends Component {
       match: { params },
     } = this.props;
 
+    this.setState(
+      {
+        id: parseInt(params.id, 10),
+      },
+      () => this.reload()
+    );
+
     // console.log('Orbit Run Id: %o', params.id);
 
-    this.api.getPraiaRunById({ id: params.id }).then(res => {
-      const data = res.data;
+    // this.api.getPraiaRunById({ id: params.id }).then(res => {
+    //   const data = res.data;
 
-      this.setState({
-        id: parseInt(params.id, 10),
-        data: data,
-
-      }, () => {
-
-        if (data.status === "running") {
-          this.setState({ interval_condition: true });
-        }
-      });
-
-    });
+    //   this.setState({
+    //     id: parseInt(params.id, 10),
+    //     data: data,
+    //     interval_condition: data.status === 'running' ? true : false,
+    //   });
+    // });
   }
-
 
   format_execution_time = duration => {
     var seconds = Math.round(moment.duration(duration).asSeconds());
     return moment.utc(seconds * 1000).format('HH:mm:ss');
   };
-
 
   //history.push(`/astrometry_read_csv/${filepath}/${filename}/${title}`);
 
@@ -86,37 +85,57 @@ class PraiaDetail extends Component {
     );
   };
 
+  // reload = () => {
+  //   if (this.state.data.status === 'success') {
+  //     this.setState({ id: '' });
+  //     this.setState({ id: this.state.data.id });
+  //     this.setState({ interval_condition: false });
+  //     this.setState({ reload_interval: 10 });
+  //     console.log('aqui');
+  //   } else {
+  //     const id = this.state.id;
+  //     this.api.getPraiaRunById({ id }).then(res => {
+  //       const data = res.data;
+
+  //       this.setState({
+  //         data: data,
+  //       });
+  //     });
+  //   }
+  // };
 
   reload = () => {
+    console.log('reload');
+    const { id } = this.state;
 
-    if (this.state.data.status === "success") {
+    this.api.getPraiaRunById({ id }).then(res => {
+      const data = res.data;
 
+      this.setState({
+        data: data,
+        interval_condition: data.status === 'running' ? true : false,
+      });
+    });
+  };
 
-      this.setState({ id: "" });
-      this.setState({ id: this.state.data.id });
-      this.setState({ interval_condition: false });
-      this.setState({ reload_interval: 10 });
-      console.log("aqui");
+  interval = () => {
+    console.log('Interval');
+    const { data, count } = this.state;
 
-
-    } else {
-      const id = this.state.id;
-      this.api.getPraiaRunById({ id }).then(res => {
-        const data = res.data;
-
-        this.setState({
-          data: data,
-
-        });
-      })
-
+    if (data.status === 'running') {
+      this.setState(
+        {
+          count: count + 1,
+        },
+        () => {
+          this.reload();
+        }
+      );
     }
   };
 
   render() {
-
     const { data, reload_interval, interval_condition } = this.state;
-
 
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
@@ -157,19 +176,15 @@ class PraiaDetail extends Component {
     ];
 
     return (
-
-
       <div>
-
         <ReactInterval
           timeout={reload_interval * 1000}
-          enabled={this.state.interval_condition}
-          callback={this.reload}
+          enabled={interval_condition}
+          callback={this.interval}
         />
 
-
         {this.create_nav_bar()}
-        < div className="ui-g" >
+        <div className="ui-g">
           <div className="ui-g-4 ui-md-4 ui-sm-1">
             <PanelCostumize
               title={`Astrometry - ${data.id}`}
@@ -188,13 +203,13 @@ class PraiaDetail extends Component {
             <div className="ui-g-4 ui-md-12 ui-sm-1">
               <PanelCostumize
                 title="Execution Statistics"
-              // content={<DonutStats data={stats_status} fill={colors} />}
+                // content={<DonutStats data={stats_status} fill={colors} />}
               />
             </div>
             <div className="ui-g-4 ui-md-12 ui-sm-1">
               <PanelCostumize
                 title="Step Stats"
-              // content={<StepStats info={execute_time} />}
+                // content={<StepStats info={execute_time} />}
               />
             </div>
           </div>
@@ -208,7 +223,7 @@ class PraiaDetail extends Component {
               }
             />
           </div>
-        </div >
+        </div>
 
         <div className="ui-g">
           <div className="ui-g-12">
@@ -223,7 +238,7 @@ class PraiaDetail extends Component {
             />
           </div>
         </div>
-      </div >
+      </div>
     );
   }
 }
