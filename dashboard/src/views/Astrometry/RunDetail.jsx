@@ -11,6 +11,7 @@ import PraiaTimeProfile from './TimeProfile';
 import AsteroidList from './AsteroidList';
 import { withRouter } from 'react-router-dom';
 import { Toolbar } from 'primereact/toolbar';
+import ReactInterval from 'react-interval';
 
 class PraiaDetail extends Component {
 
@@ -22,6 +23,8 @@ class PraiaDetail extends Component {
       id: 0,
       data: {},
       time_profile: [],
+      reload_interval: 1,
+      interval_condition: false,
     };
   }
 
@@ -38,16 +41,14 @@ class PraiaDetail extends Component {
       this.setState({
         id: parseInt(params.id, 10),
         data: data,
+
+      }, () => {
+
+        if (data.status === "running") {
+          this.setState({ interval_condition: true });
+        }
       });
 
-      // if (data.status === 'success') {
-      //   this.api.getPraiaRunTimeProfile({ id: params.id }).then(res => {
-      //     this.setState({
-      //       time_profile: res.data.data,
-      //     });
-      //   });
-
-      // }
     });
   }
 
@@ -85,9 +86,37 @@ class PraiaDetail extends Component {
     );
   };
 
+
+  reload = () => {
+
+    if (this.state.data.status === "success") {
+
+
+      this.setState({ id: "" });
+      this.setState({ id: this.state.data.id });
+      this.setState({ interval_condition: false });
+      this.setState({ reload_interval: 10 });
+      console.log("aqui");
+
+
+    } else {
+      const id = this.state.id;
+      this.api.getPraiaRunById({ id }).then(res => {
+        const data = res.data;
+
+        this.setState({
+          data: data,
+
+        });
+      })
+
+    }
+  };
+
   render() {
 
-    const { data } = this.state;
+    const { data, reload_interval, interval_condition } = this.state;
+
 
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
@@ -128,7 +157,17 @@ class PraiaDetail extends Component {
     ];
 
     return (
+
+
       <div>
+
+        <ReactInterval
+          timeout={reload_interval * 1000}
+          enabled={this.state.interval_condition}
+          callback={this.reload}
+        />
+
+
         {this.create_nav_bar()}
         < div className="ui-g" >
           <div className="ui-g-4 ui-md-4 ui-sm-1">

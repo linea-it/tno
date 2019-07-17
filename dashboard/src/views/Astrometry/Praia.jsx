@@ -30,12 +30,15 @@ class Praia extends Component {
   onCreateRun = record => {
     // Toda vez que cria um novo registro forca a execucao do metodo render()
 
+
+
     this.setState({
       msg: 'The task has been submitted and will be executed in the background...',
       msg_type: 'alert-success',
     });
-    this.onShow();
+
     this.setState({ record });
+    this.onShow();
 
   };
 
@@ -49,6 +52,8 @@ class Praia extends Component {
 
   onShow = () => {
     this.setState({ dialogVisible: true });
+    this.onViewDetail(this.state.record.id);
+
   };
 
   onRerun = record => {
@@ -119,6 +124,8 @@ class Praia extends Component {
     );
   }
 
+
+  //Method to open view detail screen
   onViewDetail = id => {
     const history = this.props.history;
     history.push({ pathname: `/astrometry_run/${id}` });
