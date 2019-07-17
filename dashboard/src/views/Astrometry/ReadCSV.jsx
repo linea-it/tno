@@ -18,17 +18,22 @@ export default class ReadCSV extends Component {
     data: [],
     filename: null,
     filepath: null,
+    loading: false,
     title: null
   }
 
   api = new PraiaApi();
 
   componentDidMount() {
+    this.setState({ loading: true });
+
     const { match: { params }, } = this.props;
 
     const filepath = decodeURIComponent(params.filepath);
     const filename = decodeURIComponent(params.filename);
     const title = decodeURIComponent(params.title);
+
+
 
     this.setState({ filename: filename });
     this.setState({ filepath });
@@ -37,10 +42,13 @@ export default class ReadCSV extends Component {
     this.api.getCSV(filepath).then(res => {
       this.setState({
         data: res.data.rows,
-        columns: res.data.columns
+        columns: res.data.columns,
+        loading: false,
       });
 
     });
+
+
 
   }
 
@@ -65,8 +73,7 @@ export default class ReadCSV extends Component {
 
   render() {
 
-    const { data, columns, title, filename, filepath } = this.state;
-
+    const { data, columns, title, filename, filepath, loading } = this.state;
 
     const acolumns = columns.map((col) => {
       return (
@@ -90,6 +97,7 @@ export default class ReadCSV extends Component {
             sortField={''}
             sortOrder={1}
             scrollable={true}
+            loading={loading}
             scrollHeight="500px"
             responsive={true}
           >
