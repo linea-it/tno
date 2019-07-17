@@ -222,6 +222,29 @@ class PraiaHistory extends Component {
       </Toolbar >
     );
   };
+
+  handleView = (el) => {
+
+    this.onView(el.id);
+
+  };
+
+
+  actionTemplate = (rowData) => {
+    if (rowData.status === "success") {
+      return (
+        <Button
+          type="button"
+          icon="fa fa-search"
+          className="ui-button-info"
+          title="View"
+          onClick={() => this.handleView(rowData)}
+        />
+      );
+    }
+  };
+
+
   render() {
 
     const {
@@ -281,6 +304,11 @@ class PraiaHistory extends Component {
             style={{ textAlign: 'center', width: '6em' }}
           />
           {columns}
+
+          <Column
+            style={{ textAlign: 'center', width: '6em' }}
+            body={this.actionTemplate}
+          />
         </DataTable>
 
         <Paginator
