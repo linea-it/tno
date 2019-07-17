@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 import humanize
 from tno.proccess import ProccessManager
 import shutil
-from praia.astrometry import Astrometry
+from praia.pipeline import AstrometryPipeline
 import docker
 from django.conf import settings
 import json
@@ -611,7 +611,7 @@ class RefineOrbit():
 
         # TODO: este metodo deveria estar dentro da classe de Astrometria
 
-        filename = Astrometry().get_astrometry_position_filename(obj.get("name"))
+        filename = AstrometryPipeline().get_astrometry_position_filename(obj.get("name"))
 
         filename = filename.replace('_obs', '').replace('_', '')
         file_path = os.path.join(obj_dir, filename)
