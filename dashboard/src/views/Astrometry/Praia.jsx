@@ -7,7 +7,7 @@ import PraiaRunning from './PraiaRunning';
 import PropTypes from 'prop-types';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
 import { Dialog } from 'primereact/dialog';
-import { Button } from 'semantic-ui-react';
+import { Button } from 'primereact/button';
 
 class Praia extends Component {
   state = this.initialState;
@@ -29,12 +29,21 @@ class Praia extends Component {
 
   onCreateRun = record => {
     // Toda vez que cria um novo registro forca a execucao do metodo render()
+
     this.setState({
       msg: 'The task has been submitted and will be executed in the background...',
-      type: 'alert-succes',
+      msg_type: 'alert-success',
     });
     this.onShow();
     this.setState({ record });
+
+  };
+
+  onMissingParameter = (option) => {
+
+    this.setState({ msg: `Select  ${option} option.   All execute options to be selected.` });
+    this.setState({ msg_type: "alert-danger" });
+    this.setState({ dialogVisible: true });
 
   };
 
@@ -55,13 +64,12 @@ class Praia extends Component {
   render() {
     const { record, dialogVisible, msg, msg_type } = this.state;
 
-
     const footer = (
       <div>
         <Button
           label="Ok"
           className={msg_type}
-
+          icon="pi pi-check"
           onClick={this.onHide}
         />
 
@@ -74,8 +82,8 @@ class Praia extends Component {
         <PanelCostumize
           className="exec_astrometry"
           title="Execute"
-          subTitle="Descrição sobre a execução"
-          content={<PraiaSubmit onCreateRun={this.onCreateRun} />}
+          subTitle="Description about execution"
+          content={<PraiaSubmit onMissingParameter={this.onMissingParameter} onCreateRun={this.onCreateRun} />}
         />
         <PanelCostumize
           title="Run time monitor"
@@ -104,11 +112,9 @@ class Praia extends Component {
           modal={true}
           onHide={this.onHide}
         >
-
+          {msg}
         </Dialog>
       </div>
-
-
 
     );
   }
