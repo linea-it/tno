@@ -7,6 +7,7 @@ import PraiaApi from './PraiaApi';
 import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
 import ListStats from 'components/Statistics/ListStats.jsx';
+import PanelCostumize from 'components/Panel/PanelCostumize';
 
 export default class AsteroidRunDetail extends Component {
   state = this.initialState;
@@ -23,11 +24,11 @@ export default class AsteroidRunDetail extends Component {
       asteroid: {},
       inputs: [],
       files: [],
-      selected2: '',
       prev: null,
       next: null,
       download_icon: 'fa fa-cloud-download',
       praiaId: 0,
+      proccess: null,
     };
   }
 
@@ -48,11 +49,12 @@ export default class AsteroidRunDetail extends Component {
       header: 'Filename',
       sortable: true,
     },
+
+
   ];
 
 
   componentDidMount() {
-
     const {
       match: { params },
     } = this.props;
@@ -60,19 +62,20 @@ export default class AsteroidRunDetail extends Component {
 
     const asteroid_id = params.id;
     this.api.getAsteroidById(asteroid_id).then(res => {
-      this.setState({ asteroid: res.data });
+      this.setState({
+        asteroid: res.data,
+        proccess: res.data.proccess_displayname,
+      });
     });
 
     // Recuperar os Inputs
     this.api.getInputsByAsteroidId({ id: asteroid_id }).then(res => {
       const inputs = res.data.results;
+
       this.setState({
         inputs: inputs,
       });
     });
-
-
-
 
   }
 
@@ -163,9 +166,39 @@ export default class AsteroidRunDetail extends Component {
     window.location.reload();
   };
 
+  handleView = (rowData) => {
+
+
+    const proccess = this.state.proccess;
+
+    const filepath = encodeURIComponent(rowData.file_path);
+    const filename = encodeURIComponent(rowData.filename);
+    const title = encodeURIComponent("Proccess: " + proccess + " of the asteroid " + rowData.asteroid + ". \u00a0 File: " + rowData.filename);
+
+    const history = this.props.history;
+    history.push(`/astrometry_read_csv/${filepath}/${filename}/${title}`);
+  }
+
+  actionTemplate = (rowData) => {
+
+    if (rowData.file_type === 'csv') {
+      return (
+        <Button
+          type="button"
+          icon="fa fa-search"
+          className="ui-button-info"
+          title="View"
+
+          onClick={() => this.handleView(rowData)}
+        />
+      );
+    }
+  }
 
   render() {
     const { asteroid, inputs } = this.state;
+    console.log(asteroid);
+
 
     const inp_columns = this.input_columns.map((col, i) => {
       return (
@@ -204,18 +237,26 @@ export default class AsteroidRunDetail extends Component {
               data={stats}
             />
           </div>
-        </div>
+          <div className="ui-g-12">
+            <PanelCostumize
+              title="Inputs"
+              content={
+                <DataTable
+                  value={inputs}
+                  sortField={'input_type'}
+                  sortOrder={1}
+                >
+                  {inp_columns}
+                  <Column
+                    style={{ textAlign: 'center' }}
+                    body={this.actionTemplate}
+                  />
+                </DataTable>
+              }
+            />
+          </div>
 
-        <div className="ui-g-6">
-          <Card title="Inputs" subTitle="">
-            <DataTable
-              value={inputs}
-              sortField={'input_type'}
-              sortOrder={1}
-            >
-              {inp_columns}
-            </DataTable>
-          </Card>
+
         </div>
       </div>
     );

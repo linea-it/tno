@@ -10,6 +10,7 @@ import { Card } from 'primereact/card';
 import PraiaTimeProfile from './TimeProfile';
 import AsteroidList from './AsteroidList';
 import { withRouter } from 'react-router-dom';
+import { Toolbar } from 'primereact/toolbar';
 
 class PraiaDetail extends Component {
 
@@ -34,8 +35,6 @@ class PraiaDetail extends Component {
     this.api.getPraiaRunById({ id: params.id }).then(res => {
       const data = res.data;
 
-      console.log(res.data);
-
       this.setState({
         id: parseInt(params.id, 10),
         data: data,
@@ -58,7 +57,11 @@ class PraiaDetail extends Component {
     return moment.utc(seconds * 1000).format('HH:mm:ss');
   };
 
+
+  //history.push(`/astrometry_read_csv/${filepath}/${filename}/${title}`);
+
   onViewAsteroid = asteroid_id => {
+    const proccess = this.state.data.proccess_displayname;
     const history = this.props.history;
     history.push(`/asteroid_run_detail/${asteroid_id}`);
   };
@@ -70,13 +73,15 @@ class PraiaDetail extends Component {
 
   create_nav_bar = () => {
     return (
-      <div className="ui-toolbar">
-        <Button
-          label="Back"
-          icon="fa fa-undo"
-          onClick={() => this.onClickBackToAstometry()}
-        />
-      </div>
+      <Toolbar>
+        <div className="ui-toolbar">
+          <Button
+            label="Back"
+            icon="fa fa-undo"
+            onClick={() => this.onClickBackToAstometry()}
+          />
+        </div>
+      </Toolbar>
     );
   };
 

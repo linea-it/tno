@@ -62,7 +62,26 @@ class Run(models.Model):
         help_text='Number of objects received as input',
         null=True, blank=True
     )
-
+    count_success = models.PositiveIntegerField(
+        verbose_name='Count Success',
+        help_text='Number of objects successfully executed',
+        null=True, blank=True
+    )
+    count_failed = models.PositiveIntegerField(
+        verbose_name='Count Failed',
+        help_text='Number of failed objects',
+        null=True, blank=True
+    )
+    count_warning = models.PositiveIntegerField(
+        verbose_name='Count Warning',
+        help_text='Number of objects with status warning',
+        null=True, blank=True
+    )
+    count_not_executed = models.PositiveIntegerField(
+        verbose_name='Num Not Executed Objects',
+        help_text='Number of objects that were NOT executed.',
+        null=True, blank=True
+    )
     relative_path = models.CharField(
         max_length=2048,
         verbose_name='Relative Path',
@@ -129,8 +148,8 @@ class AstrometryAsteroid(models.Model):
         max_length=15,
         verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success',
-                                                                  'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('warning', 'Warning'),
+                ('success', 'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
     )
 
     ccd_images = models.BigIntegerField(

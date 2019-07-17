@@ -6,6 +6,8 @@ import PraiaHistory from './PraiaHistory';
 import PraiaRunning from './PraiaRunning';
 import PropTypes from 'prop-types';
 import PanelCostumize from 'components/Panel/PanelCostumize.jsx';
+import { Dialog } from 'primereact/dialog';
+import { Button } from 'primereact/button';
 
 class Praia extends Component {
   state = this.initialState;
@@ -19,27 +21,69 @@ class Praia extends Component {
     return {
       // Praia Run recem criado e que esta em andamento ainda
       record: {},
+      msg: null,
+      msg_type: null,
+      dialogVisible: false,
     };
   }
 
   onCreateRun = record => {
     // Toda vez que cria um novo registro forca a execucao do metodo render()
-    this.setState(record);
+
+    this.setState({
+      msg: 'The task has been submitted and will be executed in the background...',
+      msg_type: 'alert-success',
+    });
+    this.onShow();
+    this.setState({ record });
+
+  };
+
+  onMissingParameter = (option) => {
+
+    this.setState({ msg: `Select  ${option} option.   All execute options to be selected.` });
+    this.setState({ msg_type: "alert-danger" });
+    this.setState({ dialogVisible: true });
+
+  };
+
+  onShow = () => {
+    this.setState({ dialogVisible: true });
   };
 
   onRerun = record => {
     this.setState(record);
   };
 
+
+  onHide = () => {
+    this.setState({ dialogVisible: false });
+  }
+
+
   render() {
-    const { record } = this.state;
+    const { record, dialogVisible, msg, msg_type } = this.state;
+
+    const footer = (
+      <div>
+        <Button
+          label="Ok"
+          className={msg_type}
+          icon="pi pi-check"
+          onClick={this.onHide}
+        />
+
+      </div>
+    );
+
+
     return (
       <div className="grid template-predict-astromery">
         <PanelCostumize
           className="exec_astrometry"
           title="Execute"
-          subTitle="Descrição sobre a execução"
-          content={<PraiaSubmit onCreateRun={this.onCreateRun} />}
+          subTitle="Description about execution"
+          content={<PraiaSubmit onMissingParameter={this.onMissingParameter} onCreateRun={this.onCreateRun} />}
         />
         <PanelCostumize
           title="Run time monitor"
@@ -59,7 +103,19 @@ class Praia extends Component {
             />
           }
         />
+
+        <Dialog
+          header="Astrometry Run"
+          visible={dialogVisible}
+          footer={footer}
+          minY={70}
+          modal={true}
+          onHide={this.onHide}
+        >
+          {msg}
+        </Dialog>
       </div>
+
     );
   }
 
