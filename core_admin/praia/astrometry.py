@@ -268,6 +268,8 @@ class Astrometry():
 
         self.logger.debug("Input List: %s" % instance.input_list.id)
 
+
+
         self.input_list = instance.input_list
 
         # No caso de uma re execucao o processo ja existe
@@ -384,6 +386,7 @@ class Astrometry():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// CCD Images //---------------------------------")
+
         ccd_images_start = datetime.now(timezone.utc)
 
         pool = ThreadPoolExecutor(max_workers=4)
@@ -442,10 +445,8 @@ class Astrometry():
         ccd_images_finish = datetime.now(timezone.utc)
         ccd_images_execution_time = ccd_images_finish - ccd_images_start
 
-         # Adicionar atributo que passe por cada etapa
-        # instance.status = 0    
-        # instance.save()
-
+        
+        
         self.logger.info("Finished CCD Images list in %s" %
                          humanize.naturaldelta(ccd_images_execution_time))
 
@@ -454,6 +455,9 @@ class Astrometry():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// BSP JPL //---------------------------------")
+        instance.steps = 1
+        instance.save()
+
         bsp_jpl_start = datetime.now(timezone.utc)
 
         # Reload na lista de asteroids agora sem os que falharam na etapa anterior.
@@ -509,10 +513,6 @@ class Astrometry():
         bsp_jpl_finish = datetime.now(timezone.utc)
         bsp_jpl_execution_time = bsp_jpl_finish - bsp_jpl_start
 
-         # Adicionar atributo que passe por cada etapa
-         # instance.status = 1   
-         # instance.save()
-
         self.logger.info("Finished BSP JPL in %s" %
                          humanize.naturaldelta(bsp_jpl_execution_time))
 
@@ -521,6 +521,8 @@ class Astrometry():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// GAIA CATALOG //---------------------------------")
+        instance.steps = 2
+        instance.save()
 
         # Verificar qual versao do catalogo esta sendo usada, no momento da criacao desta etapa apenas 2 catalogos
         # sao possiveis o gaia_dr1 em formato aquivo e o gaia_dr2 em banco de dados.
@@ -611,13 +613,12 @@ class Astrometry():
 
             self.logger.info("Finished Star Catalog in %s" %
                              humanize.naturaldelta(catalog_execution_time))
-
-         # Adicionar atributo que passe por cada etapa
-         # instance.status = 2    
-         # instance.save()                     
+                    
 
         self.logger.info(
             "---------------------------------// FAKE RUN //---------------------------------")
+        instance.steps = 3
+        instance.save()    
         # FAKE RUN Copia os arquivos de resultados da Astrometria.
 
         # Reload na lista de asteroids agora sem os que falharam na etapa anterior.
@@ -681,9 +682,6 @@ class Astrometry():
         instance.save()
         self.logger.info("Status changed to Success")
 
-         # Adicionar atributo que passe por cada etapa
-         # instance.status = 3    
-         # instance.save()
 
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"
@@ -739,7 +737,4 @@ class Astrometry():
         instance.execution_time = tdelta
         instance.save()
         self.logger.info("Execution Time: %s" % humanize.naturaldelta(tdelta))
-     
-     # Adicionar atributo que passe por cada etapa
-     # instance.status = 4    
-     # instance.save() 
+ 
