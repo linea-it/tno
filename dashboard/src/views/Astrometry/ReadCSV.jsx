@@ -17,8 +17,8 @@ export default class ReadCSV extends Component {
     columns: [],
     data: [],
     filename: null,
-    loading: false,
     filepath: null,
+    loading: false,
     title: null
   }
 
@@ -73,9 +73,7 @@ export default class ReadCSV extends Component {
 
   render() {
 
-    const { data, columns, title, filepath, loading } = this.state;
-
-    console.log(loading);
+    const { data, columns, title, filename, filepath, loading } = this.state;
 
     const acolumns = columns.map((col) => {
       return (
