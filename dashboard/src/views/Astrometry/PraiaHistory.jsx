@@ -222,6 +222,15 @@ class PraiaHistory extends Component {
       </Toolbar >
     );
   };
+
+
+  actionTemplate = (rowData) => {
+    if (rowData.status === "success") {
+      console.log("aqui");
+    }
+  };
+
+
   render() {
 
     const {
@@ -281,6 +290,10 @@ class PraiaHistory extends Component {
             style={{ textAlign: 'center', width: '6em' }}
           />
           {columns}
+
+          <Column
+            body={this.actionTemplate}
+          />
         </DataTable>
 
         <Paginator
