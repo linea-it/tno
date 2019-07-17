@@ -223,10 +223,24 @@ class PraiaHistory extends Component {
     );
   };
 
+  handleView = (el) => {
+
+    this.onView(el.id);
+
+  };
+
 
   actionTemplate = (rowData) => {
     if (rowData.status === "success") {
-      console.log("aqui");
+      return (
+        <Button
+          type="button"
+          icon="fa fa-search"
+          className="ui-button-info"
+          title="View"
+          onClick={() => this.handleView(rowData)}
+        />
+      );
     }
   };
 
@@ -292,6 +306,7 @@ class PraiaHistory extends Component {
           {columns}
 
           <Column
+            style={{ textAlign: 'center', width: '6em' }}
             body={this.actionTemplate}
           />
         </DataTable>
