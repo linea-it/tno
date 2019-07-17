@@ -82,10 +82,20 @@ class PraiaSubmit extends Component {
   };
 
   onClickSubmit = () => {
+
     const { input, config, catalog } = this.state;
 
     if (!input || !config || !catalog) {
       // TODO: Implementar notifacao de parametro faltante
+
+      if (!input)
+        this.props.onMissingParameter("Input");
+
+      if (!config)
+        this.props.onMissingParameter("Configuration");
+
+      if (!catalog)
+        this.props.onMissingParameter("Catalog");
 
       return;
     }
@@ -157,14 +167,15 @@ class PraiaSubmit extends Component {
               loadOptions={this.loadConfigs}
             />
           </FormGroup>
-          <br />
-          <Button
-            className="button-TNO"
-            label="Submit"
-            onClick={this.onClickSubmit}
-            style={{ marginTop: '20px !important' }}
-          />
+
+
         </Form>
+        <Button
+          className="button-TNO"
+          label="Submit"
+          onClick={this.onClickSubmit}
+          style={{ marginTop: '25px !important' }}
+        />
       </Card>
     );
   }
