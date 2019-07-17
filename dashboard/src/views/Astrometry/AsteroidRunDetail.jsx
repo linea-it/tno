@@ -60,11 +60,12 @@ export default class AsteroidRunDetail extends Component {
     } = this.props;
 
 
-    this.setState({ proccess: params.proccess });
-
     const asteroid_id = params.id;
     this.api.getAsteroidById(asteroid_id).then(res => {
-      this.setState({ asteroid: res.data });
+      this.setState({
+        asteroid: res.data,
+        proccess: res.data.proccess_displayname,
+      });
     });
 
     // Recuperar os Inputs
@@ -167,6 +168,7 @@ export default class AsteroidRunDetail extends Component {
 
   handleView = (rowData) => {
 
+
     const proccess = this.state.proccess;
 
     const filepath = encodeURIComponent(rowData.file_path);
@@ -195,6 +197,8 @@ export default class AsteroidRunDetail extends Component {
 
   render() {
     const { asteroid, inputs } = this.state;
+    console.log(asteroid);
+
 
     const inp_columns = this.input_columns.map((col, i) => {
       return (

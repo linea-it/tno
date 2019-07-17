@@ -63,7 +63,7 @@ class PraiaDetail extends Component {
   onViewAsteroid = asteroid_id => {
     const proccess = this.state.data.proccess_displayname;
     const history = this.props.history;
-    history.push(`/asteroid_run_detail/${asteroid_id}/${proccess}`);
+    history.push(`/asteroid_run_detail/${asteroid_id}`);
   };
 
   onClickBackToAstometry = () => {
