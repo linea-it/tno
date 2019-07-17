@@ -57,12 +57,7 @@ class RunSerializer(serializers.ModelSerializer):
             'count_failed',
             'count_warning',
             'count_not_executed',
-            #'ccd_images',
-            #'bsp_jpl',
-            #'gaia_catalog',
-            #'praia_astrometry',
-            #'registered',
-            
+           
         )
 
     def get_owner(self, obj):
