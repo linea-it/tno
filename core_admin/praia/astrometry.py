@@ -442,6 +442,10 @@ class Astrometry():
         ccd_images_finish = datetime.now(timezone.utc)
         ccd_images_execution_time = ccd_images_finish - ccd_images_start
 
+         # Adicionar atributo que passe por cada etapa
+        # instance.status = 0    
+        # instance.save()
+
         self.logger.info("Finished CCD Images list in %s" %
                          humanize.naturaldelta(ccd_images_execution_time))
 
@@ -504,6 +508,10 @@ class Astrometry():
 
         bsp_jpl_finish = datetime.now(timezone.utc)
         bsp_jpl_execution_time = bsp_jpl_finish - bsp_jpl_start
+
+         # Adicionar atributo que passe por cada etapa
+         # instance.status = 1   
+         # instance.save()
 
         self.logger.info("Finished BSP JPL in %s" %
                          humanize.naturaldelta(bsp_jpl_execution_time))
@@ -604,6 +612,10 @@ class Astrometry():
             self.logger.info("Finished Star Catalog in %s" %
                              humanize.naturaldelta(catalog_execution_time))
 
+         # Adicionar atributo que passe por cada etapa
+         # instance.status = 2    
+         # instance.save()                     
+
         self.logger.info(
             "---------------------------------// FAKE RUN //---------------------------------")
         # FAKE RUN Copia os arquivos de resultados da Astrometria.
@@ -611,7 +623,7 @@ class Astrometry():
         # Reload na lista de asteroids agora sem os que falharam na etapa anterior.
         self.asteroids = AstrometryAsteroid.objects.filter(
             astrometry_run=instance.pk).exclude(status__in=list(['failure', 'not_executed']))
-
+        
         try:
             for obj in self.asteroids:
                 name = obj.name.replace(" ", "_")
@@ -669,6 +681,10 @@ class Astrometry():
         instance.save()
         self.logger.info("Status changed to Success")
 
+         # Adicionar atributo que passe por cada etapa
+         # instance.status = 3    
+         # instance.save()
+
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"
 
@@ -723,3 +739,7 @@ class Astrometry():
         instance.execution_time = tdelta
         instance.save()
         self.logger.info("Execution Time: %s" % humanize.naturaldelta(tdelta))
+     
+     # Adicionar atributo que passe por cada etapa
+     # instance.status = 4    
+     # instance.save() 

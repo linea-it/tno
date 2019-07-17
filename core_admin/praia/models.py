@@ -93,8 +93,24 @@ class Run(models.Model):
         max_length=10,
         verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success',
-                                                                  'Success'), ('error', 'Error'), ('reexecute', 'Reexecute'))
+        choices=(
+            ('pending', 'Pending'), 
+            ('running', 'Running'), 
+            ('success', 'Success'), 
+            ('error', 'Error'), 
+            ('reexecute', 'Reexecute'))
+    )
+
+    steps = models.CharField(
+        max_length=10,
+        verbose_name='Steps',
+        default='0', null=True, blank=True,
+        choices=(
+            ('0','CCD Images'),
+            ('1','Bsp Jpl'),
+            ('2','Gaia Catalog'),
+            ('3','Praia Astrometry'),
+            ('4','Registered'))
     )
 
     error_msg = models.CharField(
