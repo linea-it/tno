@@ -20,7 +20,6 @@ class Praia extends Component {
   get initialState() {
     return {
       // Praia Run recem criado e que esta em andamento ainda
-      record: {},
       msg: null,
       msg_type: null,
       dialogVisible: false,
@@ -30,15 +29,13 @@ class Praia extends Component {
   onCreateRun = record => {
     // Toda vez que cria um novo registro forca a execucao do metodo render()
 
+    this.onViewDetail(record.id);
 
+  };
 
-    this.setState({
-      msg: 'The task has been submitted and will be executed in the background...',
-      msg_type: 'alert-success',
-    });
+  onCreateFailure = error => {
 
-    this.setState({ record });
-    this.onShow();
+    this.setState({ dialogVisible: true, msg: "Fail on run creation execution", msg_type: "alert-danger" });
 
   };
 
@@ -50,11 +47,6 @@ class Praia extends Component {
 
   };
 
-  onShow = () => {
-    this.setState({ dialogVisible: true });
-    this.onViewDetail(this.state.record.id);
-
-  };
 
   onRerun = record => {
     this.setState(record);
@@ -88,7 +80,7 @@ class Praia extends Component {
           className="exec_astrometry"
           title="Execute"
           subTitle="Description about execution"
-          content={<PraiaSubmit onMissingParameter={this.onMissingParameter} onCreateRun={this.onCreateRun} />}
+          content={<PraiaSubmit onMissingParameter={this.onMissingParameter} onCreateRun={this.onCreateRun} onCreateFailure={this.onCreateFailure} />}
         />
         <PanelCostumize
           title="Run time monitor"

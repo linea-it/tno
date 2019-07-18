@@ -40,17 +40,7 @@ class PraiaDetail extends Component {
       () => this.reload()
     );
 
-    // console.log('Orbit Run Id: %o', params.id);
 
-    // this.api.getPraiaRunById({ id: params.id }).then(res => {
-    //   const data = res.data;
-
-    //   this.setState({
-    //     id: parseInt(params.id, 10),
-    //     data: data,
-    //     interval_condition: data.status === 'running' ? true : false,
-    //   });
-    // });
   }
 
   format_execution_time = duration => {
@@ -58,7 +48,7 @@ class PraiaDetail extends Component {
     return moment.utc(seconds * 1000).format('HH:mm:ss');
   };
 
-  //history.push(`/astrometry_read_csv/${filepath}/${filename}/${title}`);
+
 
   onViewAsteroid = asteroid_id => {
     const proccess = this.state.data.proccess_displayname;
@@ -85,24 +75,7 @@ class PraiaDetail extends Component {
     );
   };
 
-  // reload = () => {
-  //   if (this.state.data.status === 'success') {
-  //     this.setState({ id: '' });
-  //     this.setState({ id: this.state.data.id });
-  //     this.setState({ interval_condition: false });
-  //     this.setState({ reload_interval: 10 });
-  //     console.log('aqui');
-  //   } else {
-  //     const id = this.state.id;
-  //     this.api.getPraiaRunById({ id }).then(res => {
-  //       const data = res.data;
 
-  //       this.setState({
-  //         data: data,
-  //       });
-  //     });
-  //   }
-  // };
 
   reload = () => {
     console.log('reload');
