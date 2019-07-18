@@ -57,6 +57,7 @@ class RunSerializer(serializers.ModelSerializer):
             'count_failed',
             'count_warning',
             'count_not_executed',
+            'step'
         )
 
     def get_owner(self, obj):
