@@ -1,1 +1,0 @@
-from .praia_pipeline import PraiaPipeline

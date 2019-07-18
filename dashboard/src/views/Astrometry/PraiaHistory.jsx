@@ -41,25 +41,25 @@ class PraiaHistory extends Component {
       header: 'Proccess',
       field: 'proccess_displayname',
       headerStyle: formatColumnHeader,
-      sortable: true,
+      sortable: false,
     },
     {
       header: 'Owner',
       field: 'owner',
       headerStyle: formatColumnHeader,
-      sortable: true,
+      sortable: false,
     },
     {
       header: 'Input',
       field: 'input_displayname',
       headerStyle: formatColumnHeader,
-      sortable: true,
+      sortable: false,
     },
     {
       header: 'Configuration',
       field: 'configuration_displayname',
       headerStyle: formatColumnHeader,
-      sortable: true,
+      sortable: false,
     },
     {
       field: 'start_time',
@@ -71,13 +71,13 @@ class PraiaHistory extends Component {
       field: 'h_time',
       header: 'start',
       headerStyle: formatColumnHeader,
-      sortable: true,
+      sortable: false,
     },
     {
       field: 'h_execution_time',
       header: 'Execution Time',
       headerStyle: formatColumnHeader,
-      sortable: true,
+      sortable: false,
     },
     {
       field: 'count_objects',
@@ -223,10 +223,24 @@ class PraiaHistory extends Component {
     );
   };
 
+  handleView = (el) => {
+
+    this.onView(el.id);
+
+  };
+
 
   actionTemplate = (rowData) => {
     if (rowData.status === "success") {
-      console.log("aqui");
+      return (
+        <Button
+          type="button"
+          icon="fa fa-search"
+          className="ui-button-info"
+          title="View"
+          onClick={() => this.handleView(rowData)}
+        />
+      );
     }
   };
 
@@ -292,6 +306,7 @@ class PraiaHistory extends Component {
           {columns}
 
           <Column
+            style={{ textAlign: 'center', width: '6em' }}
             body={this.actionTemplate}
           />
         </DataTable>

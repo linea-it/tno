@@ -347,10 +347,10 @@ class HistoryRun extends Component {
             style={{ textAlign: 'center', width: '6em' }}
           />
           {columns}
-          {/* <Column
+          <Column
             body={this.actionTemplate}
             style={{ textAlign: 'center', width: '6em', color: '#fff' }}
-          /> */}
+          />
         </DataTable>
         <Paginator
           rows={this.state.sizePerPage}

@@ -11,235 +11,17 @@ from tno.skybotoutput import FilterObjects
 from tno.proccess import ProccessManager
 from django.conf import settings
 import shutil
-from praia.praia_astrometry import PraiaPipeline
 import csv
 import traceback
 from concurrent.futures import ThreadPoolExecutor, wait, as_completed
 from orbit.bsp_jpl import BSPJPL
-from .models import Run, AstrometryAsteroid, AstrometryInput
+from praia.models import Run, AstrometryAsteroid, AstrometryInput
 
+from praia.pipeline.ccd_image import create_ccd_images_list
+from praia.pipeline.bsp_jpl import retrieve_bsp_jpl
+from praia.pipeline.star_catalog import create_star_catalog
 
-def create_ccd_images_list(name, output_filepath):
-    # Recuperar as exposicoes para cada objeto.
-    start = datetime.now(timezone.utc)
-
-    result = dict({
-        'asteroid': name,
-        'input_type': 'ccd_images_list',
-        'filename': os.path.basename(output_filepath),
-        'file_type': 'csv',
-        'file_size': None,
-        'file_path': output_filepath,
-        'ccds_count': None,
-        'error_msg': None
-    })
-
-    try:
-        ccds, ccds_count = FilterObjects().ccd_images_by_object(name)
-
-        if ccds_count is not None and ccds_count > 0:
-
-            headers = ['id', 'pfw_attempt_id', 'desfile_id', 'nite', 'date_obs', 'expnum', 'ccdnum', 'band', 'exptime', 'cloud_apass', 'cloud_nomad', 't_eff', 'crossra0', 'radeg', 'decdeg', 'racmin', 'racmax',
-                       'deccmin', 'deccmax', 'ra_cent', 'dec_cent', 'rac1', 'rac2', 'rac3', 'rac4', 'decc1', 'decc2', 'decc3', 'decc4', 'ra_size', 'dec_size', 'path', 'filename', 'compression', 'downloaded', ]
-
-            with open(output_filepath, mode='w') as temp_file:
-                writer = csv.DictWriter(
-                    temp_file, delimiter=';', fieldnames=headers)
-                writer.writeheader()
-                writer.writerows(ccds)
-
-            result.update({
-                'file_size': os.path.getsize(output_filepath),
-                'ccds_count': ccds_count
-            })
-        else:
-            result.update({
-                'error_msg': "No CCD Image found for this object.",
-            })
-
-    except Exception as e:
-        result.update({
-            'error_msg': e
-        })
-
-    finish = datetime.now(timezone.utc)
-    result.update({
-        'start_time': start,
-        'finish_time': finish,
-        'execution_time': finish - start
-    })
-
-    return result
-
-
-def retrieve_bsp_jpl(name, output_filepath):
-    """
-        Recupera o BSP JPL para um asteroid. 
-        verifica se o existe algum bsp ja baixado para o asteroid. 
-        se existir faz uma copia para o diretorio do objeto. 
-        se nao existir faz o download. 
-    """
-    start = datetime.now(timezone.utc)
-    filename = "%s.bsp" % name.replace(' ', '_')
-    logger = logging.getLogger("astrometry")
-    result = dict({
-        'asteroid': name,
-        'input_type': 'bsp_jpl',
-        'filename': filename,
-        'file_type': 'bsp',
-        'file_size': None,
-        'file_path': None,
-        'error_msg': None
-    })
-    try:
-        # verificar se ja existe bsp baixado dentro da validade.
-        rows = FilterObjects().check_bsp_jpl_by_object(name, 30)
-        if len(rows) == 1:
-            logger.debug(
-                "A valid BSP_JPL already exists for this asteroid. [ %s ]" % name)
-            # Copiar o arquivo para o diretorio do objeto.
-            original_file_path, bsp_model = BSPJPL().get_file_path(name)
-
-            bsp_file = os.path.basename(original_file_path)
-            f = os.path.join(output_filepath, bsp_file)
-
-            shutil.copy2(original_file_path, f)
-
-            if os.path.exists(f):
-                result.update({
-                    'file_path': f,
-                    'file_size': os.path.getsize(output_filepath),
-                })
-            else:
-                result.update({
-                    'error_msg': "Failed to copy the BSP JPL file. [ %s -> %s ]" % (original_file_path, f)
-                })
-        else:
-            logger.debug(
-                "BSP JPL not have or is old, a new download will be executed. [ %s ]" % name)
-            bsp_path = BSPJPL().get_bsp_basepath()
-
-            record = BSPJPL().download(name, filename, bsp_path, logger)
-
-            if record is not None:
-                bsp_model, created = BSPJPL().update_or_create_record(record)
-
-                # Copy bsp from BSP_JPL_DIR to Asteroid DIR
-                original_file_path = record.get("file_path")
-                bsp_file = os.path.join(output_filepath, filename)
-                shutil.copy2(original_file_path, bsp_file)
-
-                if os.path.exists(bsp_file):
-                    result.update({
-                        'file_path': bsp_file,
-                        'file_size': os.path.getsize(bsp_file),
-                    })
-                else:
-                    result.update({
-                        'error_msg': "Failed to copy the BSP JPL file. [ %s -> %s ]" % (original_file_path, bsp_file)
-                    })
-            else:
-                result.update({
-                    'error_msg': "Failed to download the BSP JPL file."
-                })
-
-    except Exception as e:
-        trace = traceback.format_exc()
-        logger.error(e)
-        logger.error(trace)
-
-        result.update({
-            'error_msg': e
-        })
-
-    finish = datetime.now(timezone.utc)
-    result.update({
-        'start_time': start,
-        'finish_time': finish,
-        'execution_time': finish - start
-    })
-
-    return result
-
-
-def create_star_catalog(name, ccd_images_file, output_filepath, schema, tablename, ra_property, dec_property):
-    # Criar um Catalogo de Estrelas para cada CCD do objeto
-    start = datetime.now(timezone.utc)
-
-    result = dict({
-        'asteroid': name,
-        'input_type': 'catalog',
-        'filename': os.path.basename(output_filepath),
-        'file_type': 'csv',
-        'file_size': None,
-        'file_path': output_filepath,
-        'catalog_count': None,
-        'error_msg': None
-    })
-
-    rows = []
-    try:
-        with open(ccd_images_file, 'r') as cfile:
-            reader = csv.DictReader(cfile, delimiter=';')
-            for row in reader:
-
-                # Query no banco de catalogos
-                coordinates = [
-                    row['rac1'], row['decc1'], row['rac2'], row['decc2'], row['rac3'], row['decc3'], row['rac4'], row['decc4']]
-
-                resultset = CatalogDB().poly_query(
-                    schema=schema,
-                    tablename=tablename,
-                    ra_property=ra_property,
-                    dec_property=dec_property,
-                    positions=coordinates,
-                )
-
-                for star in resultset:
-                    star.update({'ccd_id': row['id']})
-                    rows.append(star)
-
-        if len(rows) > 0:
-            headers = []
-            for head in rows[0]:
-                headers.append(head)
-
-            with open(output_filepath, 'w') as tempFile:
-                writer = csv.DictWriter(
-                    tempFile, delimiter=';', fieldnames=headers)
-                writer.writeheader()
-                writer.writerows(rows)
-
-            if os.path.exists(output_filepath):
-                result.update({
-                    'file_size': os.path.getsize(output_filepath),
-                    'catalog_count': len(rows)
-                })
-            else:
-                result.update({
-                    'error_msg': "Catalog file was not created",
-                })
-        else:
-            result.update({
-                'error_msg': "The query in the catalog did not return any results",
-            })
-
-    except Exception as e:
-        result.update({
-            'error_msg': e
-        })
-
-    finish = datetime.now(timezone.utc)
-    result.update({
-        'start_time': start,
-        'finish_time': finish,
-        'execution_time': finish - start
-    })
-
-    return result
-
-
-class Astrometry():
+class AstrometryPipeline():
     def __init__(self):
         self.logger = logging.getLogger("astrometry")
 
@@ -267,6 +49,8 @@ class Astrometry():
         self.logger.info("PRAIA RUN %s" % instance.id)
 
         self.logger.debug("Input List: %s" % instance.input_list.id)
+
+
 
         self.input_list = instance.input_list
 
@@ -384,6 +168,7 @@ class Astrometry():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// CCD Images //---------------------------------")
+
         ccd_images_start = datetime.now(timezone.utc)
 
         pool = ThreadPoolExecutor(max_workers=4)
@@ -442,6 +227,8 @@ class Astrometry():
         ccd_images_finish = datetime.now(timezone.utc)
         ccd_images_execution_time = ccd_images_finish - ccd_images_start
 
+        
+        
         self.logger.info("Finished CCD Images list in %s" %
                          humanize.naturaldelta(ccd_images_execution_time))
 
@@ -450,6 +237,9 @@ class Astrometry():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// BSP JPL //---------------------------------")
+        instance.step = 1
+        instance.save()
+
         bsp_jpl_start = datetime.now(timezone.utc)
 
         # Reload na lista de asteroids agora sem os que falharam na etapa anterior.
@@ -513,6 +303,8 @@ class Astrometry():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// GAIA CATALOG //---------------------------------")
+        instance.step = 2
+        instance.save()
 
         # Verificar qual versao do catalogo esta sendo usada, no momento da criacao desta etapa apenas 2 catalogos
         # sao possiveis o gaia_dr1 em formato aquivo e o gaia_dr2 em banco de dados.
@@ -603,15 +395,18 @@ class Astrometry():
 
             self.logger.info("Finished Star Catalog in %s" %
                              humanize.naturaldelta(catalog_execution_time))
+                    
 
         self.logger.info(
             "---------------------------------// FAKE RUN //---------------------------------")
+        instance.step = 3
+        instance.save()    
         # FAKE RUN Copia os arquivos de resultados da Astrometria.
 
         # Reload na lista de asteroids agora sem os que falharam na etapa anterior.
         self.asteroids = AstrometryAsteroid.objects.filter(
             astrometry_run=instance.pk).exclude(status__in=list(['failure', 'not_executed']))
-
+        
         try:
             for obj in self.asteroids:
                 name = obj.name.replace(" ", "_")
@@ -669,6 +464,7 @@ class Astrometry():
         instance.save()
         self.logger.info("Status changed to Success")
 
+
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"
 
@@ -723,3 +519,4 @@ class Astrometry():
         instance.execution_time = tdelta
         instance.save()
         self.logger.info("Execution Time: %s" % humanize.naturaldelta(tdelta))
+ 
