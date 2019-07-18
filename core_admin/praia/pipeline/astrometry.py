@@ -237,7 +237,7 @@ class AstrometryPipeline():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// BSP JPL //---------------------------------")
-        instance.steps = 1
+        instance.step = 1
         instance.save()
 
         bsp_jpl_start = datetime.now(timezone.utc)
@@ -303,7 +303,7 @@ class AstrometryPipeline():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// GAIA CATALOG //---------------------------------")
-        instance.steps = 2
+        instance.step = 2
         instance.save()
 
         # Verificar qual versao do catalogo esta sendo usada, no momento da criacao desta etapa apenas 2 catalogos
@@ -399,7 +399,7 @@ class AstrometryPipeline():
 
         self.logger.info(
             "---------------------------------// FAKE RUN //---------------------------------")
-        instance.steps = 3
+        instance.step = 3
         instance.save()    
         # FAKE RUN Copia os arquivos de resultados da Astrometria.
 

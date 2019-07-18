@@ -6,7 +6,7 @@ from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput, Ast
 @admin.register(Run)
 class PraiaRunsAdmin(admin.ModelAdmin):
     list_display = ('id', 'owner', 'proccess', 'catalog', 'configuration',
-                    'start_time', 'finish_time','count_success','count_failed','count_warning','count_not_executed', 'steps')
+                    'start_time', 'finish_time','count_objects', 'count_success','count_failed','count_warning','count_not_executed', 'step')
 
 
 @admin.register(Configuration)
