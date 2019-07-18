@@ -40,7 +40,6 @@ class PraiaDetail extends Component {
       () => this.reload()
     );
 
-
   }
 
   format_execution_time = duration => {
