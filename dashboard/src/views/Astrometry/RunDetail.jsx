@@ -114,6 +114,8 @@ class PraiaDetail extends Component {
       this.setState({
         data: data,
         interval_condition: data.status === 'running' ? true : false,
+        count: data.status === 'running' ? this.state.count + 1 : 0,
+
       });
     });
   };
@@ -203,13 +205,13 @@ class PraiaDetail extends Component {
             <div className="ui-g-4 ui-md-12 ui-sm-1">
               <PanelCostumize
                 title="Execution Statistics"
-                // content={<DonutStats data={stats_status} fill={colors} />}
+              // content={<DonutStats data={stats_status} fill={colors} />}
               />
             </div>
             <div className="ui-g-4 ui-md-12 ui-sm-1">
               <PanelCostumize
                 title="Step Stats"
-                // content={<StepStats info={execute_time} />}
+              // content={<StepStats info={execute_time} />}
               />
             </div>
           </div>
@@ -233,6 +235,7 @@ class PraiaDetail extends Component {
                 <AsteroidList
                   praia_run={this.state.id}
                   view_asteroid={this.onViewAsteroid}
+                  reload_flag={this.state.count}
                 />
               }
             />
