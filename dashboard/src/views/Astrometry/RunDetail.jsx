@@ -12,6 +12,12 @@ import AsteroidList from './AsteroidList';
 import { withRouter } from 'react-router-dom';
 import { Toolbar } from 'primereact/toolbar';
 import ReactInterval from 'react-interval';
+import { Steps } from 'primereact/steps';
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+
+import './Step.css'
 
 class PraiaDetail extends Component {
   state = this.initialState;
@@ -25,6 +31,7 @@ class PraiaDetail extends Component {
       reload_interval: 3,
       interval_condition: false,
       count: 0,
+      activeIndex: 0,
     };
   }
 
@@ -74,10 +81,8 @@ class PraiaDetail extends Component {
     );
   };
 
-
-
   reload = () => {
-    console.log('reload');
+
     const { id } = this.state;
 
     this.api.getPraiaRunById({ id }).then(res => {
@@ -86,14 +91,19 @@ class PraiaDetail extends Component {
       this.setState({
         data: data,
         interval_condition: data.status === 'running' ? true : false,
+
         count: data.status === 'running' ? this.state.count + 1 : 0,
+        activeIndex: data.step,
 
       });
+
     });
+
+
   };
 
   interval = () => {
-    console.log('Interval');
+
     const { data, count } = this.state;
 
     if (data.status === 'running') {
@@ -109,7 +119,7 @@ class PraiaDetail extends Component {
   };
 
   render() {
-    const { data, reload_interval, interval_condition } = this.state;
+    const { data, reload_interval, interval_condition, activeIndex } = this.state;
 
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
@@ -211,16 +221,11 @@ class PraiaDetail extends Component {
               }
             />
           </div>
-        </div>
 
+          <div className="ui-g-12">
+            <Steps model={items} activeIndex={activeIndex} className="astrometry-step steps-custom astrometry" />
+          </div>
 
-        {/* <Steps
-          model={items}
-          activeIndex={activeIndex}
-        /> */}
-
-
-        <div className="ui-g">
           <div className="ui-g-12">
             <PanelCostumize
               title="Asteroids"
