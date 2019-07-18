@@ -52,6 +52,13 @@ class AsteroidList extends Component {
         return rowData.number;
       },
     },
+
+    {
+      field: 'name',
+      header: 'Name',
+      sortable: true,
+    },
+
     {
       field: 'execution_time',
       header: 'Execution Time',
@@ -238,6 +245,8 @@ class AsteroidList extends Component {
 
   render() {
     const { data } = this.state;
+
+    console.log(data);
 
     const columns = this.columns.map((col, i) => {
       return (
