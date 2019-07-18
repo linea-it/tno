@@ -11,6 +11,9 @@ import PraiaTimeProfile from './TimeProfile';
 import AsteroidList from './AsteroidList';
 import { withRouter } from 'react-router-dom';
 import { Toolbar } from 'primereact/toolbar';
+import { Steps } from 'primereact/steps';
+
+
 
 class PraiaDetail extends Component {
 
@@ -22,6 +25,7 @@ class PraiaDetail extends Component {
       id: 0,
       data: {},
       time_profile: [],
+      activeIndex: 0,
     };
   }
 
@@ -87,7 +91,9 @@ class PraiaDetail extends Component {
 
   render() {
 
-    const { data } = this.state;
+    const { data, activeIndex } = this.state;
+
+    console.log(data);
 
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
@@ -125,6 +131,20 @@ class PraiaDetail extends Component {
       { name: 'Warning', value: data.count_warning },
       { name: 'Failure', value: data.count_failed },
       { name: 'not Executed', value: data.count_not_executed },
+    ];
+
+    // (0,'CCD Images'),
+    // (1,'Bsp Jpl'),
+    // (2,'Gaia Catalog'),
+    // (3,'Praia Astrometry'),
+    // (4,'Registered'))
+
+    const items = [
+      { label: 'CCD Images' },
+      { label: 'Bsp Jpl' },
+      { label: 'Gaia Catalog' },
+      { label: 'Praia Astrometry' },
+      { label: 'Registered' }
     ];
 
     return (
@@ -171,6 +191,13 @@ class PraiaDetail extends Component {
           </div>
         </div >
 
+
+        <Steps
+          model={items}
+          activeIndex={activeIndex}
+        />
+
+
         <div className="ui-g">
           <div className="ui-g-12">
             <PanelCostumize
@@ -184,6 +211,8 @@ class PraiaDetail extends Component {
             />
           </div>
         </div>
+
+
       </div >
     );
   }
