@@ -1,6 +1,12 @@
 from django.shortcuts import render
 
+from django.db.models import Count
+
 from rest_framework import viewsets
+
+from rest_framework.decorators import list_route, detail_route
+
+from rest_framework.response import Response
 
 from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput, AstrometryOutput
 
@@ -23,6 +29,28 @@ class PraiaRunViewSet(viewsets.ModelViewSet):
             raise Exception(
                 'It is necessary an active login to perform this operation.')
         serializer.save(owner=self.request.user)
+
+    @detail_route(methods=['GET'])
+    def count_asteroid_status(self, request, pk=None):
+
+        astrometry_run = self.get_object()
+        resultset = astrometry_run.asteroids.all().values(
+                'status').annotate(total=Count('status')).order_by('total')
+
+        result = dict({
+            'success': True,
+            'status': {
+                'success':0,
+                'failure' :0,
+                'warning' :0,
+                'not_executed':0,
+            }
+        })        
+
+        for status in resultset:
+            result['status'][status['status']] = status['total']
+
+        return Response(result)
 
 
 class PraiaConfigurationViewSet(viewsets.ModelViewSet):
