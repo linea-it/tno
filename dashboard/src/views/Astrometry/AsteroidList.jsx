@@ -52,6 +52,21 @@ class AsteroidList extends Component {
         return rowData.number;
       },
     },
+
+    {
+      field: 'ccd_images',
+      style: { textAlign: 'center' },
+      header: 'CCD Images',
+      sortable: false,
+    },
+
+    {
+      field: 'catalog_rows',
+      style: { textAlign: "center" },
+      header: 'Catalog Rows',
+      sortable: false,
+    },
+
     {
       field: 'execution_time',
       header: 'Execution Time',
