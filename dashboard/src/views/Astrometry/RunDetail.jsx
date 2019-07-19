@@ -85,15 +85,16 @@ class PraiaDetail extends Component {
 
       this.setState({
         data: data,
-        interval_condition: data.status === 'running' ? true : false,
+        // interval_condition: data.status === 'running' ? true : false,
 
-        count: data.status === 'running' ? this.state.count + 1 : 0,
+        interval_condition: data.status === 'running' ? true : data.status === 'pending' ? true : false,
+
+
         activeIndex: data.step,
 
       });
 
     });
-
 
   };
 
@@ -101,7 +102,7 @@ class PraiaDetail extends Component {
 
     const { data, count } = this.state;
 
-    if (data.status === 'running') {
+    if (data.status === 'running' || data.status === 'pending') {
       this.setState(
         {
           count: count + 1,
