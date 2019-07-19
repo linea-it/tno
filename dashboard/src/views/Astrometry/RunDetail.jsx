@@ -12,12 +12,7 @@ import AsteroidList from './AsteroidList';
 import { withRouter } from 'react-router-dom';
 import { Toolbar } from 'primereact/toolbar';
 import ReactInterval from 'react-interval';
-import { Steps } from 'primereact/steps';
-import 'primereact/resources/themes/omega/theme.css';
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
-
-import './Step.css'
+import Stepper from 'react-stepper-horizontal';
 
 class PraiaDetail extends Component {
   state = this.initialState;
@@ -166,11 +161,11 @@ class PraiaDetail extends Component {
     // (4,'Registered'))
 
     const items = [
-      { label: 'CCD Images' },
-      { label: 'Bsp Jpl' },
-      { label: 'Gaia Catalog' },
-      { label: 'Praia Astrometry' },
-      { label: 'Registered' }
+      { title: 'CCD Images' },
+      { title: 'Bsp Jpl' },
+      { title: 'Gaia Catalog' },
+      { title: 'Praia Astrometry' },
+      { title: 'Registered' }
     ];
 
     return (
@@ -223,7 +218,7 @@ class PraiaDetail extends Component {
           </div>
 
           <div className="ui-g-12">
-            <Steps model={items} activeIndex={activeIndex} className="astrometry-step steps-custom astrometry" />
+            <Stepper steps={items} activeStep={activeIndex} />
           </div>
 
           <div className="ui-g-12">
