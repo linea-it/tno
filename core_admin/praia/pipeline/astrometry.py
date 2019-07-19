@@ -50,6 +50,8 @@ class AstrometryPipeline():
 
         self.logger.debug("Input List: %s" % instance.input_list.id)
 
+
+
         self.input_list = instance.input_list
 
         # No caso de uma re execucao o processo ja existe
@@ -166,6 +168,7 @@ class AstrometryPipeline():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// CCD Images //---------------------------------")
+
         ccd_images_start = datetime.now(timezone.utc)
 
         pool = ThreadPoolExecutor(max_workers=4)
@@ -224,6 +227,8 @@ class AstrometryPipeline():
         ccd_images_finish = datetime.now(timezone.utc)
         ccd_images_execution_time = ccd_images_finish - ccd_images_start
 
+        
+        
         self.logger.info("Finished CCD Images list in %s" %
                          humanize.naturaldelta(ccd_images_execution_time))
 
@@ -232,6 +237,9 @@ class AstrometryPipeline():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// BSP JPL //---------------------------------")
+        instance.step = 1
+        instance.save()
+
         bsp_jpl_start = datetime.now(timezone.utc)
 
         # Reload na lista de asteroids agora sem os que falharam na etapa anterior.
@@ -295,6 +303,8 @@ class AstrometryPipeline():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// GAIA CATALOG //---------------------------------")
+        instance.step = 2
+        instance.save()
 
         # Verificar qual versao do catalogo esta sendo usada, no momento da criacao desta etapa apenas 2 catalogos
         # sao possiveis o gaia_dr1 em formato aquivo e o gaia_dr2 em banco de dados.
@@ -385,15 +395,18 @@ class AstrometryPipeline():
 
             self.logger.info("Finished Star Catalog in %s" %
                              humanize.naturaldelta(catalog_execution_time))
+                    
 
         self.logger.info(
             "---------------------------------// FAKE RUN //---------------------------------")
+        instance.step = 3
+        instance.save()    
         # FAKE RUN Copia os arquivos de resultados da Astrometria.
 
         # Reload na lista de asteroids agora sem os que falharam na etapa anterior.
         self.asteroids = AstrometryAsteroid.objects.filter(
             astrometry_run=instance.pk).exclude(status__in=list(['failure', 'not_executed']))
-
+        
         try:
             for obj in self.asteroids:
                 name = obj.name.replace(" ", "_")
@@ -451,6 +464,7 @@ class AstrometryPipeline():
         instance.save()
         self.logger.info("Status changed to Success")
 
+
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"
 
@@ -505,3 +519,4 @@ class AstrometryPipeline():
         instance.execution_time = tdelta
         instance.save()
         self.logger.info("Execution Time: %s" % humanize.naturaldelta(tdelta))
+ 

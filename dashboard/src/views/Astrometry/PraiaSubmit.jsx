@@ -121,7 +121,7 @@ class PraiaSubmit extends Component {
 
   onCreateFailure = error => {
     // TODO: Criar uma Notificacao de falha.
-    console.log('onCreateFailure(%o)', error);
+    this.props.onCreateFailure(error);
 
   };
 
