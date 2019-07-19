@@ -231,17 +231,17 @@ class PraiaHistory extends Component {
 
 
   actionTemplate = (rowData) => {
-    if (rowData.status === "success") {
-      return (
-        <Button
-          type="button"
-          icon="fa fa-search"
-          className="ui-button-info"
-          title="View"
-          onClick={() => this.handleView(rowData)}
-        />
-      );
-    }
+    // if (rowData.status === "success") {
+    return (
+      <Button
+        type="button"
+        icon="fa fa-search"
+        className="ui-button-info"
+        title="View"
+        onClick={() => this.handleView(rowData)}
+      />
+    );
+    // }
   };
 
 
