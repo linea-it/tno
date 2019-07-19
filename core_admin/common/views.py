@@ -1,3 +1,5 @@
+from praia.models import Run 
+from django.db.models import Count
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 import os
@@ -6,13 +8,42 @@ import csv
 @api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
+        
+        run_id = request.query_params.get('run_id', None)
+        
+        astrometry_run = Run.objects.get(pk=run_id)
+
+        resultset = astrometry_run.asteroids.all().values('status').annotate(total=Count('status')).order_by('total')
 
         result = dict( {
             'success': True,
+            'teste': resultset,
+            'status': {
+                'success':0,
+                'failure' :0,
+                'warning' :0,
+                'not_executed':0,
+            }
         })
+
+        for status in resultset:
+            result['status'][status['status']] = status['total']
 
     return Response(result)
 
+     #csuccess = astrometry_run.asteroids.filter(status='success').count()
+        #cfailure = astrometry_run.asteroids.filter(status='failure').count()
+        #cwarning = astrometry_run.asteroids.filter(status='warning').count()
+        #cnotexecuted = astrometry_run.asteroids.filter(status='not_executed').count()
+              
+    #    result = dict( {
+    #            'status': {
+    #            'success': csuccess,
+    #            'failure' : cfailure,
+    #            'warning' : cwarning,
+    #            'notexecuted': cnotexecuted,
+    #        }
+    #    })
 @api_view(['GET'])
 def import_skybot(request):
     """

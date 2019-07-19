@@ -54,9 +54,17 @@ class AsteroidList extends Component {
     },
 
     {
-      field: '',
-      header: 'Name',
-      sortable: true,
+      field: 'ccd_images',
+      style: { textAlign: 'center' },
+      header: 'CCD Images',
+      sortable: false,
+    },
+
+    {
+      field: 'catalog_rows',
+      style: { textAlign: 'center' },
+      header: 'Catalog Rows',
+      sortable: false,
     },
 
     {
@@ -65,7 +73,7 @@ class AsteroidList extends Component {
       sortable: true,
       style: { textAlign: 'center' },
       body: rowData => {
-        if (rowData.execution_time !== "" && rowData.execution_time !== null) {
+        if (rowData.execution_time !== '' && rowData.execution_time !== null) {
           return moment(rowData.execution_time)._i;
         } else {
           return;
@@ -76,8 +84,10 @@ class AsteroidList extends Component {
 
   componentDidUpdate(prevProps) {
     // Typical usage (don't forget to compare props):
-    if (this.props.praia_run !== prevProps.praia_run || this.props.reload_flag != prevProps.reload_flag) {
-
+    if (
+      this.props.praia_run !== prevProps.praia_run ||
+      this.props.reload_flag != prevProps.reload_flag
+    ) {
       this.fetchData({
         praia_run: this.props.praia_run,
         page: this.state.page,
@@ -98,7 +108,6 @@ class AsteroidList extends Component {
     this.api
       .getAsteroids({ filters, page, sizePerPage, sortField, sortOrder })
       .then(res => {
-
         const r = res.data;
         this.setState({
           data: r.results,
@@ -125,7 +134,6 @@ class AsteroidList extends Component {
     let btn_view = null;
     let btn_log = null;
 
-
     if (rowData.status !== 'failure') {
       btn_view = (
         <Button
@@ -142,7 +150,7 @@ class AsteroidList extends Component {
           icon="fa fa-file-text-o"
           className="ui-button-warning"
           title="Log"
-        // onClick={() => this.showAsteroidLog(asteroid_id)}
+          // onClick={() => this.showAsteroidLog(asteroid_id)}
         />
       );
     }
@@ -156,7 +164,7 @@ class AsteroidList extends Component {
   };
 
   statusColumn = rowData => {
-    0
+    0;
     if (rowData.status === 'success') {
       return (
         <Button
@@ -183,8 +191,7 @@ class AsteroidList extends Component {
           title={rowData.error_msg}
         />
       );
-    }
-    else if (rowData.status === 'not_executed') {
+    } else if (rowData.status === 'not_executed') {
       return (
         <Button
           type="button"
@@ -246,8 +253,6 @@ class AsteroidList extends Component {
   render() {
     const { data } = this.state;
 
-    console.log(data);
-
     const columns = this.columns.map((col, i) => {
       return (
         <Column
@@ -293,7 +298,6 @@ class AsteroidList extends Component {
           totalRecords={this.state.totalSize}
           first={this.state.first}
           onPageChange={this.onPageChange}
-
         />
 
         {/* <Log
@@ -304,8 +308,6 @@ class AsteroidList extends Component {
       </Card>
     );
   }
-
-
 }
 
 export default AsteroidList;
