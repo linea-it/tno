@@ -246,8 +246,6 @@ class AsteroidList extends Component {
   render() {
     const { data } = this.state;
 
-    console.log(data);
-
     const columns = this.columns.map((col, i) => {
       return (
         <Column
