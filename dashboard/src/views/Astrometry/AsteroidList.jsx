@@ -52,6 +52,13 @@ class AsteroidList extends Component {
         return rowData.number;
       },
     },
+
+    {
+      field: '',
+      header: 'Name',
+      sortable: true,
+    },
+
     {
       field: 'execution_time',
       header: 'Execution Time',
@@ -69,7 +76,7 @@ class AsteroidList extends Component {
 
   componentDidUpdate(prevProps) {
     // Typical usage (don't forget to compare props):
-    if (this.props.praia_run !== prevProps.praia_run) {
+    if (this.props.praia_run !== prevProps.praia_run || this.props.reload_flag != prevProps.reload_flag) {
 
       this.fetchData({
         praia_run: this.props.praia_run,
@@ -238,6 +245,8 @@ class AsteroidList extends Component {
 
   render() {
     const { data } = this.state;
+
+    console.log(data);
 
     const columns = this.columns.map((col, i) => {
       return (

@@ -16,6 +16,8 @@ import traceback
 from concurrent.futures import ThreadPoolExecutor, wait, as_completed
 from orbit.bsp_jpl import BSPJPL
 from praia.models import Run, AstrometryAsteroid, AstrometryInput
+import requests
+import json
 
 from praia.pipeline.ccd_image import create_ccd_images_list
 from praia.pipeline.bsp_jpl import retrieve_bsp_jpl
@@ -49,6 +51,8 @@ class AstrometryPipeline():
         self.logger.info("PRAIA RUN %s" % instance.id)
 
         self.logger.debug("Input List: %s" % instance.input_list.id)
+
+
 
         self.input_list = instance.input_list
 
@@ -166,6 +170,7 @@ class AstrometryPipeline():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// CCD Images //---------------------------------")
+
         ccd_images_start = datetime.now(timezone.utc)
 
         pool = ThreadPoolExecutor(max_workers=4)
@@ -174,6 +179,8 @@ class AstrometryPipeline():
         try:
 
             for obj in self.asteroids:
+                obj.status = 'running'
+                obj.save()
 
                 self.logger.info(
                     "Running CCD Images [ %s / %s ] Object: [ %s ]" % (idx, obj_count, obj.name))
@@ -213,6 +220,7 @@ class AstrometryPipeline():
                     asteroid.save()
                     self.logger.warning(result)
                 else:
+                    asteroid.status = 'pending'
                     asteroid.ccd_images = result['ccds_count']
 
                 asteroid.execution_time = result['execution_time']
@@ -224,6 +232,8 @@ class AstrometryPipeline():
         ccd_images_finish = datetime.now(timezone.utc)
         ccd_images_execution_time = ccd_images_finish - ccd_images_start
 
+        
+        
         self.logger.info("Finished CCD Images list in %s" %
                          humanize.naturaldelta(ccd_images_execution_time))
 
@@ -232,6 +242,9 @@ class AstrometryPipeline():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// BSP JPL //---------------------------------")
+        instance.step = 1
+        instance.save()
+
         bsp_jpl_start = datetime.now(timezone.utc)
 
         # Reload na lista de asteroids agora sem os que falharam na etapa anterior.
@@ -244,9 +257,11 @@ class AstrometryPipeline():
 
         try:
             for obj in self.asteroids:
-
                 self.logger.info(
                     "Running BSP JPL [ %s / %s ] Object: [ %s ]" % (idx, self.asteroids.count(), obj.name))
+
+                obj.status = 'running'
+                obj.save()
 
                 # BSP JPL
                 futures.append(pool.submit(retrieve_bsp_jpl,
@@ -279,6 +294,7 @@ class AstrometryPipeline():
 
                 asteroid.execution_time = asteroid.execution_time + \
                     result['execution_time']
+                obj.status = 'pending'
                 asteroid.save()
 
         except Exception as e:
@@ -295,6 +311,8 @@ class AstrometryPipeline():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// GAIA CATALOG //---------------------------------")
+        instance.step = 2
+        instance.save()
 
         # Verificar qual versao do catalogo esta sendo usada, no momento da criacao desta etapa apenas 2 catalogos
         # sao possiveis o gaia_dr1 em formato aquivo e o gaia_dr2 em banco de dados.
@@ -324,6 +342,9 @@ class AstrometryPipeline():
 
                     self.logger.info(
                         "Creating star catalog [ %s / %s ] Object: [ %s ]" % (idx, self.asteroids.count(), obj.name))
+
+                    obj.status = 'running'
+                    obj.save()
 
                     catalog_filename = "%s.csv" % star_catalog.name
                     catalog_filepath = os.path.join(
@@ -376,6 +397,7 @@ class AstrometryPipeline():
 
                     asteroid.execution_time = asteroid.execution_time + \
                         result['execution_time']
+                    obj.status = 'pending'
                     asteroid.save()
 
             except Exception as e:
@@ -386,6 +408,7 @@ class AstrometryPipeline():
 
             self.logger.info("Finished Star Catalog in %s" %
                              humanize.naturaldelta(catalog_execution_time))
+                    
 
         # ===================================================================================================
         # PRAIA Astrometry - Generate GAIA Catalog for each asteroids
@@ -393,6 +416,9 @@ class AstrometryPipeline():
         self.logger.info(
             "---------------------------------// PRAIA ASTROMETRY //---------------------------------")
         # Submissao dos jobs no cluster
+
+        instance.step = 3
+        instance.save()
 
         # Reload na lista de asteroids agora sem os que falharam na etapa anterior.
         self.asteroids = AstrometryAsteroid.objects.filter(
@@ -415,6 +441,9 @@ class AstrometryPipeline():
             self.logger.info(
                         "Submit Astrometry Job [ %s / %s ] Object: [ %s ]" % (idx, self.asteroids.count(), obj.name))
 
+            obj.status = 'running'
+            obj.save()                        
+
             payload = dict({
                 "queues": 1,
                 "submit_params": {
@@ -422,12 +451,8 @@ class AstrometryPipeline():
                     "Docker_image": "linea/tno_astrometry:latest",
                     "Should_transfer_files": "yes",
                     "when_to_transfer_output": "on_exit",
-                    "+RequiresWholeMachine": "True",
-                    "+PreCmd": "docker",
-                    "PreArguments": "rmi linea/tno_astrometry:latest",
-                    "+PostCmd": "docker",
-                    "PostArguments": "rmi linea/tno_astrometry:latest",
-                    "Requirements": "Machine == 'apl16.ib0.cm.linea.gov.br'",
+                    # "+RequiresWholeMachine": "True",
+	                "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
                     "executable":"/app/run.py",
                     # "arguments": "%s --path %s --catalog %s" % (obj.name, obj.relative_path, catalog_name),
                     # "Log": os.path.join(instance.relative_path, "condor/astrometry-$(Process).log"),
@@ -487,6 +512,7 @@ class AstrometryPipeline():
         instance.save()
         self.logger.info("Status changed to Success")
 
+
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"
 
@@ -541,3 +567,4 @@ class AstrometryPipeline():
         instance.execution_time = tdelta
         instance.save()
         self.logger.info("Execution Time: %s" % humanize.naturaldelta(tdelta))
+ 
