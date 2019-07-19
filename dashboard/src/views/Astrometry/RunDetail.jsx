@@ -11,9 +11,10 @@ import PraiaTimeProfile from './TimeProfile';
 import AsteroidList from './AsteroidList';
 import { withRouter } from 'react-router-dom';
 import { Toolbar } from 'primereact/toolbar';
+import ReactInterval from 'react-interval';
+import Stepper from 'react-stepper-horizontal';
 
 class PraiaDetail extends Component {
-
   state = this.initialState;
   api = new PraiaApi();
 
@@ -22,6 +23,10 @@ class PraiaDetail extends Component {
       id: 0,
       data: {},
       time_profile: [],
+      reload_interval: 3,
+      interval_condition: false,
+      count: 0,
+      activeIndex: 0,
     };
   }
 
@@ -30,27 +35,14 @@ class PraiaDetail extends Component {
       match: { params },
     } = this.props;
 
-    // console.log('Orbit Run Id: %o', params.id);
-
-    this.api.getPraiaRunById({ id: params.id }).then(res => {
-      const data = res.data;
-
-      this.setState({
+    this.setState(
+      {
         id: parseInt(params.id, 10),
-        data: data,
-      });
+      },
+      () => this.reload()
+    );
 
-      // if (data.status === 'success') {
-      //   this.api.getPraiaRunTimeProfile({ id: params.id }).then(res => {
-      //     this.setState({
-      //       time_profile: res.data.data,
-      //     });
-      //   });
-
-      // }
-    });
   }
-
 
   format_execution_time = duration => {
     var seconds = Math.round(moment.duration(duration).asSeconds());
@@ -58,7 +50,6 @@ class PraiaDetail extends Component {
   };
 
 
-  //history.push(`/astrometry_read_csv/${filepath}/${filename}/${title}`);
 
   onViewAsteroid = asteroid_id => {
     const proccess = this.state.data.proccess_displayname;
@@ -85,9 +76,46 @@ class PraiaDetail extends Component {
     );
   };
 
-  render() {
+  reload = () => {
 
-    const { data } = this.state;
+    const { id } = this.state;
+
+    this.api.getPraiaRunById({ id }).then(res => {
+      const data = res.data;
+
+      this.setState({
+        data: data,
+        // interval_condition: data.status === 'running' ? true : false,
+
+        interval_condition: data.status === 'running' ? true : data.status === 'pending' ? true : false,
+
+
+        activeIndex: data.step,
+
+      });
+
+    });
+
+  };
+
+  interval = () => {
+
+    const { data, count } = this.state;
+
+    if (data.status === 'running' || data.status === 'pending') {
+      this.setState(
+        {
+          count: count + 1,
+        },
+        () => {
+          this.reload();
+        }
+      );
+    }
+  };
+
+  render() {
+    const { data, reload_interval, interval_condition, activeIndex } = this.state;
 
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
@@ -127,10 +155,30 @@ class PraiaDetail extends Component {
       { name: 'not Executed', value: data.count_not_executed },
     ];
 
+    // (0,'CCD Images'),
+    // (1,'Bsp Jpl'),
+    // (2,'Gaia Catalog'),
+    // (3,'Praia Astrometry'),
+    // (4,'Registered'))
+
+    const items = [
+      { title: 'CCD Images' },
+      { title: 'Bsp Jpl' },
+      { title: 'Gaia Catalog' },
+      { title: 'Praia Astrometry' },
+      { title: 'Registered' }
+    ];
+
     return (
       <div>
+        <ReactInterval
+          timeout={reload_interval * 1000}
+          enabled={interval_condition}
+          callback={this.interval}
+        />
+
         {this.create_nav_bar()}
-        < div className="ui-g" >
+        <div className="ui-g">
           <div className="ui-g-4 ui-md-4 ui-sm-1">
             <PanelCostumize
               title={`Astrometry - ${data.id}`}
@@ -169,9 +217,11 @@ class PraiaDetail extends Component {
               }
             />
           </div>
-        </div >
 
-        <div className="ui-g">
+          <div className="ui-g-12">
+            <Stepper steps={items} activeStep={activeIndex} />
+          </div>
+
           <div className="ui-g-12">
             <PanelCostumize
               title="Asteroids"
@@ -179,12 +229,13 @@ class PraiaDetail extends Component {
                 <AsteroidList
                   praia_run={this.state.id}
                   view_asteroid={this.onViewAsteroid}
+                  reload_flag={this.state.count}
                 />
               }
             />
           </div>
         </div>
-      </div >
+      </div>
     );
   }
 }
