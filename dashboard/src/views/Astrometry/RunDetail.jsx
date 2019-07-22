@@ -12,6 +12,7 @@ import AsteroidList from './AsteroidList';
 import { withRouter } from 'react-router-dom';
 import { Toolbar } from 'primereact/toolbar';
 import ReactInterval from 'react-interval';
+import Stepper from 'react-stepper-horizontal';
 
 class PraiaDetail extends Component {
   state = this.initialState;
@@ -25,8 +26,8 @@ class PraiaDetail extends Component {
       reload_interval: 3,
       interval_condition: false,
       count: 0,
+      activeIndex: 0,
       status_data: null,
-      runDetailFlag: true,
     };
   }
 
@@ -76,8 +77,6 @@ class PraiaDetail extends Component {
     );
   };
 
-
-
   reload = () => {
 
     const { id } = this.state;
@@ -87,9 +86,15 @@ class PraiaDetail extends Component {
 
       this.setState({
         data: data,
-        interval_condition: data.status === 'running' ? true : false,
-        count: data.status === 'running' ? this.state.count + 1 : 0,
+        // interval_condition: data.status === 'running' ? true : false,
+
+        interval_condition: data.status === 'running' ? true : data.status === 'pending' ? true : false,
+
+
+        activeIndex: data.step,
+
       });
+
     });
 
     this.loadStatus(id);
@@ -142,7 +147,7 @@ class PraiaDetail extends Component {
 
     const { data, count } = this.state;
 
-    if (data.status === 'running') {
+    if (data.status === 'running' || data.status === 'pending') {
       this.setState(
         {
           count: count + 1,
@@ -159,7 +164,7 @@ class PraiaDetail extends Component {
 
 
   render() {
-    const { data, reload_interval, interval_condition } = this.state;
+    const { data, reload_interval, interval_condition, activeIndex } = this.state;
 
 
 
@@ -193,6 +198,20 @@ class PraiaDetail extends Component {
     ];
 
 
+
+    // (0,'CCD Images'),
+    // (1,'Bsp Jpl'),
+    // (2,'Gaia Catalog'),
+    // (3,'Praia Astrometry'),
+    // (4,'Registered'))
+
+    const items = [
+      { title: 'CCD Images' },
+      { title: 'Bsp Jpl' },
+      { title: 'Gaia Catalog' },
+      { title: 'Praia Astrometry' },
+      { title: 'Registered' }
+    ];
 
     return (
       <div>
@@ -243,9 +262,11 @@ class PraiaDetail extends Component {
               }
             />
           </div>
-        </div>
 
-        <div className="ui-g">
+          <div className="ui-g-12">
+            <Stepper steps={items} activeStep={activeIndex} />
+          </div>
+
           <div className="ui-g-12">
             <PanelCostumize
               title="Asteroids"

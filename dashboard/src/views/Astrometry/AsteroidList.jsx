@@ -55,9 +55,17 @@ class AsteroidList extends Component {
     },
 
     {
-      field: '',
-      header: 'Name',
-      sortable: true,
+      field: 'ccd_images',
+      style: { textAlign: 'center' },
+      header: 'CCD Images',
+      sortable: false,
+    },
+
+    {
+      field: 'catalog_rows',
+      style: { textAlign: 'center' },
+      header: 'Catalog Rows',
+      sortable: false,
     },
 
     {
@@ -66,7 +74,7 @@ class AsteroidList extends Component {
       sortable: true,
       style: { textAlign: 'center' },
       body: rowData => {
-        if (rowData.execution_time !== "" && rowData.execution_time !== null) {
+        if (rowData.execution_time !== '' && rowData.execution_time !== null) {
           return moment(rowData.execution_time)._i;
         } else {
           return;
@@ -77,8 +85,10 @@ class AsteroidList extends Component {
 
   componentDidUpdate(prevProps) {
     // Typical usage (don't forget to compare props):
-    if (this.props.praia_run !== prevProps.praia_run || this.props.reload_flag != prevProps.reload_flag) {
-
+    if (
+      this.props.praia_run !== prevProps.praia_run ||
+      this.props.reload_flag != prevProps.reload_flag
+    ) {
       this.fetchData({
         praia_run: this.props.praia_run,
         page: this.state.page,
@@ -99,7 +109,6 @@ class AsteroidList extends Component {
     this.api
       .getAsteroids({ filters, page, sizePerPage, sortField, sortOrder })
       .then(res => {
-
         const r = res.data;
         this.setState({
           data: r.results,
@@ -157,7 +166,7 @@ class AsteroidList extends Component {
   };
 
   statusColumn = rowData => {
-    0
+    0;
     if (rowData.status === 'success') {
       return (
         <Button
@@ -184,8 +193,7 @@ class AsteroidList extends Component {
           title={rowData.error_msg}
         />
       );
-    }
-    else if (rowData.status === 'not_executed') {
+    } else if (rowData.status === 'not_executed') {
       return (
         <Button
           type="button"
@@ -292,7 +300,6 @@ class AsteroidList extends Component {
           totalRecords={this.state.totalSize}
           first={this.state.first}
           onPageChange={this.onPageChange}
-
         />
 
         {/* <Log
@@ -303,8 +310,6 @@ class AsteroidList extends Component {
       </Card>
     );
   }
-
-
 }
 
 export default AsteroidList;
