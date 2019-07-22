@@ -23,6 +23,8 @@ from praia.pipeline.ccd_image import create_ccd_images_list
 from praia.pipeline.bsp_jpl import retrieve_bsp_jpl
 from praia.pipeline.star_catalog import create_star_catalog
 
+from praia.pipeline.register import register_condor_job
+
 class AstrometryPipeline():
     def __init__(self):
         self.logger = logging.getLogger("astrometry")
@@ -36,17 +38,32 @@ class AstrometryPipeline():
         # TODO: este diretorio e provisorio para simular a execucao do PRAIA
         self.astrometry_positions_dir = settings.ASTROMETRY_POSITIONS_DIR
 
-    def startAstrometryRun(self, run_id):
-
+    def initialize_model_run(self, run_id):
         instance = Run.objects.get(pk=run_id)
 
         instance.status = 'running'
-        instance.step = 0
         instance.start_time = datetime.now(timezone.utc)
+        instance.finish_time = None
+        instance.execution_time = None
+        instance.count_objects = None
+        instance.count_success = None
+        instance.count_failed = None
+        instance.count_warning = None
+        instance.count_not_executed = None
+        instance.step = 0
+        instance.error_msg = None
+        instance.error_traceback = None
+
         instance.save()
 
         self.instance = instance
 
+        return instance
+
+    def startAstrometryRun(self, run_id):
+      
+        instance = self.initialize_model_run(run_id)
+ 
         self.logger.info("Status changed to Running")
 
         self.logger.info("PRAIA RUN %s" % instance.id)
@@ -62,16 +79,22 @@ class AstrometryPipeline():
             # Como a Astrometria e a primeira etapa ela fica responsavel por iniciar o processo.
             self.logger.info("Creating a Process")
 
-            proccess = Proccess.objects.create(
-                owner=instance.owner,
-                input_list=instance.input_list
-            )
+            try: 
 
-            proccess.save()
-            self.logger.info("Process Created with ID [ %s ]" % proccess.id)
+                proccess = Proccess.objects.create(
+                    owner=instance.owner,
+                    input_list=instance.input_list
+                )
 
-            instance.proccess = proccess
-            instance.save()
+                proccess.save()
+                self.logger.info("Process Created with ID [ %s ]" % proccess.id)
+
+                instance.proccess = proccess
+                instance.save()
+
+            except Exception as e:
+                self.on_error(self.instance, e)
+
 
         self.proccess = instance.proccess
 
@@ -194,7 +217,7 @@ class AstrometryPipeline():
                 self.logger.debug("CCD Images CSV: [ %s ]" % ccd_images_file)
 
                 futures.append(pool.submit(
-                    create_ccd_images_list, obj.name, ccd_images_file))
+                    create_ccd_images_list, instance.pk, obj.name, ccd_images_file))
 
                 idx += 1
 
@@ -205,12 +228,7 @@ class AstrometryPipeline():
             for future in futures:
                 results.append(future.result())
 
-            # self.logger.debug("Results:  %s " % results)
-
-            self.logger.info("Register CCD Images Inputs")
             for result in results:
-                self.register_input(result)
-
                 # Registar a quantidade de CCDs para cada Asteroid
                 asteroid = self.asteroids.get(name=result['asteroid'])
 
@@ -219,22 +237,23 @@ class AstrometryPipeline():
                     asteroid.status = 'not_executed'
                     asteroid.error_msg = result['error_msg']
                     asteroid.save()
-                    self.logger.warning(result)
+                    self.logger.warning("Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
                 else:
-                    asteroid.status = 'pending'
+                    asteroid.status = 'idle'
                     asteroid.ccd_images = result['ccds_count']
+
+                    self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (result['input_type'], asteroid.name, result['file_path']))
 
                 asteroid.execution_time = result['execution_time']
                 asteroid.save()
+
 
         except Exception as e:
             self.on_error(instance, e)
 
         ccd_images_finish = datetime.now(timezone.utc)
         ccd_images_execution_time = ccd_images_finish - ccd_images_start
-
-        
-        
+              
         self.logger.info("Finished CCD Images list in %s" %
                          humanize.naturaldelta(ccd_images_execution_time))
 
@@ -265,7 +284,7 @@ class AstrometryPipeline():
                 obj.save()
 
                 # BSP JPL
-                futures.append(pool.submit(retrieve_bsp_jpl,
+                futures.append(pool.submit(retrieve_bsp_jpl, run_id,
                                            obj.name, obj.relative_path))
 
                 idx += 1
@@ -277,12 +296,7 @@ class AstrometryPipeline():
             for future in futures:
                 results.append(future.result())
 
-            # self.logger.debug("Results:  %s " % results)
-
-            self.logger.info("Register BSP JPL Inputs")
             for result in results:
-                self.register_input(result)
-
                 # Registar a quantidade de CCDs para cada Asteroid
                 asteroid = self.asteroids.get(name=result['asteroid'])
 
@@ -291,11 +305,14 @@ class AstrometryPipeline():
                     asteroid.status = 'not_executed'
                     asteroid.error_msg = result['error_msg']
                     asteroid.save()
-                    self.logger.warning(result)
+                    self.logger.warning("Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
+
+                else:
+                    obj.status = 'idle'
+                    self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (result['input_type'], asteroid.name, result['file_path']))
 
                 asteroid.execution_time = asteroid.execution_time + \
                     result['execution_time']
-                obj.status = 'pending'
                 asteroid.save()
 
         except Exception as e:
@@ -360,6 +377,7 @@ class AstrometryPipeline():
 
                     futures.append(pool.submit(
                         create_star_catalog,
+                        run_id,
                         obj.name,
                         ccd_images_path,
                         catalog_filepath,
@@ -377,12 +395,7 @@ class AstrometryPipeline():
                 for future in futures:
                     results.append(future.result())
 
-                # self.logger.debug("Results:  %s " % results)
-
-                self.logger.info("Register Catalog Inputs")
                 for result in results:
-                    self.register_input(result)
-
                     # Registar a quantidade de CCDs para cada Asteroid
                     asteroid = self.asteroids.get(name=result['asteroid'])
 
@@ -390,15 +403,16 @@ class AstrometryPipeline():
                         asteroid.status = 'not_executed'
                         asteroid.error_msg = result['error_msg']
 
-                        self.logger.warning(result)
+                        self.logger.warning("Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
                     else:
                         asteroid.catalog_rows = int(result['catalog_count'])
-                        self.logger.debug("Catalog Rows: %s" %
-                                          result['catalog_count'])
+                        obj.status = 'idle'
+
+                        self.logger.info("Registered %s Input for Asteroid [ %s ] Catalog Rows: [ %s ] File: [%s] " % (result['input_type'], asteroid.name, result['catalog_count'], result['file_path']))
 
                     asteroid.execution_time = asteroid.execution_time + \
                         result['execution_time']
-                    obj.status = 'pending'
+
                     asteroid.save()
 
             except Exception as e:
@@ -411,8 +425,11 @@ class AstrometryPipeline():
                              humanize.naturaldelta(catalog_execution_time))
                     
 
+        # Fim da geracao dos inputs. 
+
+
         # ===================================================================================================
-        # PRAIA Astrometry - Generate GAIA Catalog for each asteroids
+        # PRAIA Astrometry - Run PRAIA programns for each asteroid. 
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// PRAIA ASTROMETRY //---------------------------------")
@@ -481,9 +498,13 @@ class AstrometryPipeline():
 
                 if response['success'] is True:
                     # Submetido com sucesso, Guardar o Id do Job para ser consultado
+                    for job in response['jobs']:
+                        self.logger.debug(job)
 
-                    # TODO Melhorar essa parte utilizando uma tabela
-                    pass
+                        condorJob = register_condor_job(
+                            instance, obj, job['ClusterId'], job['ProcId'], job['JobStatus'])
+
+                        self.logger.info("Job in Condor was created. ClusterId [ %s ] ProcId [ %s ]" % (condorJob.clusterid, condorJob.procid))
 
             except Exception as e:
                 # TODO Tratar erro na submissao de jobs
@@ -493,56 +514,58 @@ class AstrometryPipeline():
         # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
 
         # Encerrar a Rodada de Astrometria
-        self.set_execution_time(instance)
+        # self.set_execution_time(instance)
 
         # Acrescentar os totais de asteroids por status.
-        csuccess = instance.asteroids.filter(status='success').count()
-        cfailure = instance.asteroids.filter(status='failure').count()
-        cwarning = instance.asteroids.filter(status='warning').count()
+        # csuccess = instance.asteroids.filter(status='success').count()
+        # cfailure = instance.asteroids.filter(status='failure').count()
+        # cwarning = instance.asteroids.filter(status='warning').count()
         cnotexecuted = instance.asteroids.filter(status='not_executed').count()
 
         # Salvar os totais e mudar o status para sucesso.
         # TODO: essa etapa quando executada com o condor deve ficar na 
         # funcao que vai registrar os resutados.
         instance.refresh_from_db()
-        instance.status = 'success'
-        instance.count_success = csuccess
-        instance.count_failed = cfailure
-        instance.count_warning = cwarning
+        instance.status = 'running'
+        # instance.count_success = csuccess
+        # instance.count_failed = cfailure
+        # instance.count_warning = cwarning
         instance.count_not_executed = cnotexecuted
         instance.save()
-        self.logger.info("Status changed to Success")
+        # self.logger.info("Status changed to Success")
+
+        self.logger.info("Finish")
 
 
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"
 
-    def register_input(self, asteroid_input):
-        try:
-            asteroid = self.asteroids.get(name=asteroid_input["asteroid"])
+    # def register_input(self, asteroid_input):
+    #     try:
+    #         asteroid = self.asteroids.get(name=asteroid_input["asteroid"])
 
-            input_model, create = AstrometryInput.objects.update_or_create(
-                asteroid=asteroid,
-                input_type=asteroid_input["input_type"],
-                defaults={
-                    'filename': asteroid_input["filename"],
-                    'file_size': asteroid_input["file_size"],
-                    'file_type': asteroid_input["file_type"],
-                    'file_path': asteroid_input["file_path"],
-                    'error_msg': asteroid_input["error_msg"],
-                    'start_time': asteroid_input["start_time"],
-                    'finish_time': asteroid_input["finish_time"],
-                    'execution_time': asteroid_input["execution_time"],
-                })
-            input_model.save()
+    #         input_model, create = AstrometryInput.objects.update_or_create(
+    #             asteroid=asteroid,
+    #             input_type=asteroid_input["input_type"],
+    #             defaults={
+    #                 'filename': asteroid_input["filename"],
+    #                 'file_size': asteroid_input["file_size"],
+    #                 'file_type': asteroid_input["file_type"],
+    #                 'file_path': asteroid_input["file_path"],
+    #                 'error_msg': asteroid_input["error_msg"],
+    #                 'start_time': asteroid_input["start_time"],
+    #                 'finish_time': asteroid_input["finish_time"],
+    #                 'execution_time': asteroid_input["execution_time"],
+    #             })
+    #         input_model.save()
 
-            self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (
-                input_model.input_type, asteroid.name, input_model.file_path))
+    #         self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (
+    #             input_model.input_type, asteroid.name, input_model.file_path))
 
-            return input_model
+    #         return input_model
 
-        except Exception as e:
-            self.on_error(self.instance, e)
+    #     except Exception as e:
+    #         self.on_error(self.instance, e)
 
     def on_error(self, instance, error):
         trace = traceback.format_exc()

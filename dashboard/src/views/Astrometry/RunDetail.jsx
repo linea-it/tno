@@ -23,7 +23,7 @@ class PraiaDetail extends Component {
       id: 0,
       data: {},
       time_profile: [],
-      reload_interval: 3,
+      reload_interval: 1,
       interval_condition: false,
       count: 0,
       activeIndex: 0,
