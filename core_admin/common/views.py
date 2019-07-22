@@ -31,19 +31,6 @@ def teste(request):
 
     return Response(result)
 
-     #csuccess = astrometry_run.asteroids.filter(status='success').count()
-        #cfailure = astrometry_run.asteroids.filter(status='failure').count()
-        #cwarning = astrometry_run.asteroids.filter(status='warning').count()
-        #cnotexecuted = astrometry_run.asteroids.filter(status='not_executed').count()
-              
-    #    result = dict( {
-    #            'status': {
-    #            'success': csuccess,
-    #            'failure' : cfailure,
-    #            'warning' : cwarning,
-    #            'notexecuted': cnotexecuted,
-    #        }
-    #    })
 @api_view(['GET'])
 def import_skybot(request):
     """

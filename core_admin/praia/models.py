@@ -45,6 +45,22 @@ class Run(models.Model):
         null=True, blank=True
     )
 
+    execution_ccd_images = models.DurationField(
+        verbose_name='Execution CCD Images',
+        null=True, blank=True
+    )
+
+    execution_bsp_jpl = models.DurationField(
+        verbose_name='Execution BSP JPL',
+        null=True, blank=True
+    )
+
+    execution_catalog = models.DurationField(
+        verbose_name='Execution Catalog',
+        null=True, blank=True
+    )
+
+
     # Relation With PraiaConfig
     configuration = models.ForeignKey(
         Configuration, on_delete=models.CASCADE, verbose_name='Configuration',
