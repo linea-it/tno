@@ -10,6 +10,7 @@ import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import './runDetailStyle.css';
 
 class AsteroidList extends Component {
   state = this.initialState;
@@ -126,7 +127,7 @@ class AsteroidList extends Component {
     let btn_log = null;
 
 
-    if (rowData.status !== 'failure') {
+    if (rowData.status !== 'failure' && rowData.status != "not_executed") {
       btn_view = (
         <Button
           type="button"
@@ -189,7 +190,7 @@ class AsteroidList extends Component {
         <Button
           type="button"
           icon="fa fa-exclamation"
-          className="ui-button-warning"
+          className="ui-button-secondary"
           title={rowData.error_msg}
         />
       );
@@ -245,8 +246,6 @@ class AsteroidList extends Component {
 
   render() {
     const { data } = this.state;
-
-    console.log(data);
 
     const columns = this.columns.map((col, i) => {
       return (
