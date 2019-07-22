@@ -2,6 +2,7 @@ from praia.models import Run
 from django.db.models import Count
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+import humanize
 import os
 import csv
 
@@ -13,22 +14,17 @@ def teste(request):
         
         astrometry_run = Run.objects.get(pk=run_id)
 
-        resultset = astrometry_run.asteroids.all().values('status').annotate(total=Count('status')).order_by('total')
+#       resultset = astrometry_run.asteroids.all().values('status').annotate(total=Count('status')).order_by('total')
 
         result = dict( {
             'success': True,
-            'teste': resultset,
-            'status': {
-                'success':0,
-                'failure' :0,
-                'warning' :0,
-                'not_executed':0,
+            'execution_time': {
+                'execution_ccd_images': astrometry_run.execution_ccd_images,
+                'execution_bsp_jpl': astrometry_run.execution_bsp_jpl,
+                'execution_catalog': astrometry_run.execution_catalog,
             }
         })
-
-        for status in resultset:
-            result['status'][status['status']] = status['total']
-
+    
     return Response(result)
 
 @api_view(['GET'])
