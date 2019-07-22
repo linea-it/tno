@@ -39,6 +39,7 @@ class AstrometryPipeline():
         instance = Run.objects.get(pk=run_id)
 
         instance.status = 'running'
+        instance.step = 0
         instance.start_time = datetime.now(timezone.utc)
         instance.save()
 
