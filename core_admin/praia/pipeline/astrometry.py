@@ -462,6 +462,11 @@ class AstrometryPipeline():
             obj.status = 'idle'
             obj.save()                        
 
+            # Criar o diretorio de log para condor
+            log_dir = os.path.join(obj.relative_path, 'condor')
+            os.makedirs(log_dir)
+            os.chmod(log_dir, 0o775)
+
             payload = dict({
                 "queues": 1,
                 "submit_params": {
@@ -473,9 +478,9 @@ class AstrometryPipeline():
 	                "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
                     "executable":"/app/run.py",
                     "arguments": "%s --path %s --catalog %s" % (obj.name, obj.relative_path, catalog_name),
-                    "Log": os.path.join(instance.relative_path, "condor/astrometry-$(Process).log"),
-                    "Output": os.path.join(instance.relative_path, "condor/astrometry-$(Process).out"),
-                    "Error": os.path.join(instance.relative_path, "condor/astrometry-$(Process).err")
+                    "Log": os.path.join(log_dir, "astrometry.log"),
+                    "Output": os.path.join(log_dir, "astrometry.out"),
+                    "Error": os.path.join(log_dir, "astrometry.err")
                     # "arguments": "Eris --path /proccess/4/objects/Eris --catalog gaia2",
                     # "Log": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).log",
                     # "Output": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).out",
