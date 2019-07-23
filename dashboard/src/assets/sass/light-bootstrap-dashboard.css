@@ -1109,6 +1109,9 @@ body > .navbar-collapse[data-color="purple"]:after {
   .status_table.reexecute {
     background-color: #777777 !important; }
 
+.status_button_label {
+  width: 100px; }
+
 .simple_property_table tbody > tr > td {
   font-size: 14px;
   white-space: nowrap;

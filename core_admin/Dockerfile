@@ -9,6 +9,7 @@ ENV APP_PATH=/app
 
 #RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN apt-get update && apt-get install -y  \
+                vim \
                 expect \
                 telnet \
                 ftp \

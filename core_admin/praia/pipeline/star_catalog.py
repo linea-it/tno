@@ -3,7 +3,9 @@ import csv
 from datetime import datetime, timezone, timedelta
 from tno.db import CatalogDB
 
-def create_star_catalog(name, ccd_images_file, output_filepath, schema, tablename, ra_property, dec_property):
+from praia.pipeline.register import register_input
+
+def create_star_catalog(run_id, name, ccd_images_file, output_filepath, schema, tablename, ra_property, dec_property):
     # Criar um Catalogo de Estrelas para cada CCD do objeto
     start = datetime.now(timezone.utc)
 
@@ -76,5 +78,7 @@ def create_star_catalog(name, ccd_images_file, output_filepath, schema, tablenam
         'finish_time': finish,
         'execution_time': finish - start
     })
+
+    register_input(run_id, name, result)
 
     return result

@@ -92,6 +92,10 @@ class PraiaApi {
       },
     });
 
+  getAsteroidStatus = ({ id }) =>
+    axios.get(`${this.api}/praia_run/${id}/count_asteroid_status/`);
+
+
   getCSV = (filepath) => axios.get(`${this.api}/read_csv?filepath=${filepath}`);
 
 }
