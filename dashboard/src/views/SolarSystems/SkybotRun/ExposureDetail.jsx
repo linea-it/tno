@@ -50,7 +50,7 @@ class ExposureDetail extends Component {
       field: 'ccdnum',
       header: 'CCD Num',
       sortable: false,
-    },    
+    },
     {
       field: 'ra',
       header: 'RA',
@@ -70,11 +70,17 @@ class ExposureDetail extends Component {
       field: 'errpos',
       header: 'errpos (arcsec)',
       sortable: false,
+      body: rowData => {
+        return rowData.errpos.toFixed(3)
+      }
     },
     {
       field: 'd',
       header: 'd (arcsec)',
       sortable: false,
+      body: rowData => {
+        return rowData.errpos.toFixed(2)
+      }
     },
     {
       field: 'epoch',
@@ -107,6 +113,8 @@ class ExposureDetail extends Component {
             ccds: ccds,
             plot_src: this.api.api + plot_src,
             plot_filename: plot_filename,
+          }, () => {
+            console.log(this.state.skybotOutput);
           });
         });
       });
@@ -139,6 +147,8 @@ class ExposureDetail extends Component {
   render() {
     // const asteroid = this.state.asteroid;
 
+
+
     const {
       skybotOutput,
       asteroidCcds,
@@ -146,6 +156,10 @@ class ExposureDetail extends Component {
       plot_src,
       showAllSkybot,
     } = this.state;
+
+
+
+
 
     const columns = this.columns.map((col, i) => {
       return (
@@ -175,7 +189,7 @@ class ExposureDetail extends Component {
                 // id={e.filename}
                 width="100%"
                 src={plot_src}
-                // alt={e.filename}
+              // alt={e.filename}
               />
             </Card>
           </div>
@@ -207,18 +221,18 @@ class ExposureDetail extends Component {
                 </DataTable>
               </Card>
             ) : (
-              <Card title="Asteroids Inside CCD" subTitle="">
-                <DataTable
-                  value={asteroidCcds}
-                  reorderableColumns={false}
-                  reorderableRows={false}
-                  responsive={true}
-                  scrollable={true}
-                >
-                  {columns}
-                </DataTable>
-              </Card>
-            )}
+                <Card title="Asteroids Inside CCD" subTitle="">
+                  <DataTable
+                    value={asteroidCcds}
+                    reorderableColumns={false}
+                    reorderableRows={false}
+                    responsive={true}
+                    scrollable={true}
+                  >
+                    {columns}
+                  </DataTable>
+                </Card>
+              )}
           </div>
           <div className="ui-g-12" />
         </div>

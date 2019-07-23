@@ -453,9 +453,13 @@ class AstrometryPipeline():
 
         condor_jobs = list()
 
+        # Condor precisa do path absoluto para escrever os arquivos de log.
+        absolute_archive_path = os.getenv("ARCHIVE_DIR", None)
+        if absolute_archive_path is None:
+            raise Exception("absolute path to archive directory is required. This path must be declared in the ARCHIVE_DIR environment variable.")
+
         for obj in self.asteroids:
             # para cada objeto fazer a submissao do job na API do condor. 
-
             self.logger.info(
                         "Submit Astrometry Job [ %s / %s ] Object: [ %s ]" % (idx, self.asteroids.count(), obj.name))
 
@@ -463,9 +467,11 @@ class AstrometryPipeline():
             obj.save()                        
 
             # Criar o diretorio de log para condor
-            log_dir = os.path.join(obj.relative_path, 'condor')
-            os.makedirs(log_dir)
-            os.chmod(log_dir, 0o775)
+            obj_absolute_path = os.path.join(absolute_archive_path, obj.relative_path.strip('/'))
+            log_dir = os.path.join(obj_absolute_path, 'condor')
+            if not os.path.exists(log_dir):
+                os.makedirs(log_dir)
+            os.chmod(log_dir, 1777)
 
             payload = dict({
                 "queues": 1,
