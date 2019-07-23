@@ -471,7 +471,7 @@ class AstrometryPipeline():
             log_dir = os.path.join(obj_absolute_path, 'condor')
             if not os.path.exists(log_dir):
                 os.makedirs(log_dir)
-                os.chmod(log_dir, 0o775)
+            os.chmod(log_dir, 1777)
 
             payload = dict({
                 "queues": 1,
