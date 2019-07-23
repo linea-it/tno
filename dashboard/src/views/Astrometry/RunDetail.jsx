@@ -27,6 +27,7 @@ class PraiaDetail extends Component {
       interval_condition: false,
       count: 0,
       activeIndex: 0,
+      catalogName: null,
       status_data: null,
     };
   }
@@ -36,9 +37,11 @@ class PraiaDetail extends Component {
       match: { params },
     } = this.props;
 
+
     this.setState(
       {
         id: parseInt(params.id, 10),
+
       },
       () => this.reload()
     );
@@ -84,6 +87,9 @@ class PraiaDetail extends Component {
         data: data,
         // interval_condition: data.status === 'running' ? true : false,
 
+
+        catalogName: data.catalog !== null ? this.loadCatalogName(data.catalog) : "Not availabe name",
+
         interval_condition:
           data.status === 'running'
             ? true
@@ -106,6 +112,18 @@ class PraiaDetail extends Component {
     });
   };
 
+
+
+
+
+  loadCatalogName = (id) => {
+
+    this.api.getCatalogById({ id }).then(res => {
+      const catalog = res.data.results[0].display_name;
+      this.setState({ catalogName: catalog });
+    });
+
+  }
   renderStatus = () => {
     const { status_data } = this.state;
 
@@ -175,9 +193,6 @@ class PraiaDetail extends Component {
     }
   };
 
-
-
-
   render() {
     const {
       data,
@@ -213,6 +228,7 @@ class PraiaDetail extends Component {
       { name: 'Start', value: data.h_time },
       { name: 'Execution', value: data.h_execution_time },
       { name: 'Asteroids', value: data.count_objects },
+      { name: 'Catalog', value: this.state.catalogName },
     ];
 
     // (0,'CCD Images'),
@@ -263,7 +279,7 @@ class PraiaDetail extends Component {
             <div className="ui-g-4 ui-md-12 ui-sm-1">
               <PanelCostumize
                 title="Step Stats"
-                // content={<StepStats info={execute_time} />}
+              // content={<StepStats info={execute_time} />}
               />
             </div>
           </div>
@@ -298,7 +314,7 @@ class PraiaDetail extends Component {
         </div>
       </div>
     );
-  }
+  };
 }
 
 export default withRouter(PraiaDetail);

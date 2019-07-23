@@ -150,7 +150,9 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
             'ccd_images',
             'catalog_rows',
             'execution_time',
-            'catalog_name'
+            'catalog_name',
+
+
         )
 
     def get_proccess_displayname(self, obj):
@@ -165,7 +167,8 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
 
         except:
             return None
-            
+
+
 class AstrometryInputSerializer(serializers.ModelSerializer):
 
     asteroid = serializers.PrimaryKeyRelatedField(
