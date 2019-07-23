@@ -27,6 +27,7 @@ class PraiaDetail extends Component {
       interval_condition: false,
       count: 0,
       activeIndex: 0,
+      catalogName: null,
     };
   }
 
@@ -35,9 +36,11 @@ class PraiaDetail extends Component {
       match: { params },
     } = this.props;
 
+
     this.setState(
       {
         id: parseInt(params.id, 10),
+
       },
       () => this.reload()
     );
@@ -89,13 +92,23 @@ class PraiaDetail extends Component {
 
         interval_condition: data.status === 'running' ? true : data.status === 'pending' ? true : false,
 
-
         activeIndex: data.step,
+
+        catalogName: data.catalog !== null ? this.loadCatalogName(data.catalog) : "Not availabe name"
 
       });
 
     });
 
+
+  };
+
+  loadCatalogName = (id) => {
+
+    this.api.getCatalogById({ id }).then(res => {
+      const catalog = res.data.results[0].display_name;
+      this.setState({ catalogName: catalog });
+    });
   };
 
   interval = () => {
@@ -116,6 +129,8 @@ class PraiaDetail extends Component {
 
   render() {
     const { data, reload_interval, interval_condition, activeIndex } = this.state;
+
+
 
     const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
 
@@ -146,6 +161,7 @@ class PraiaDetail extends Component {
       { name: 'Start', value: data.h_time },
       { name: 'Execution', value: data.h_execution_time },
       { name: 'Asteroids', value: data.count_objects },
+      { name: 'Catalog', value: this.state.catalogName },
     ];
 
     const stats_status = [
