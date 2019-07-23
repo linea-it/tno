@@ -33,6 +33,15 @@ class PraiaApi {
       },
     });
 
+
+  getCatalogById = ({ id }) =>
+    axios.get(`${this.api}/catalog/`, {
+      params: {
+        id: id,
+      },
+    });
+
+
   getAsteroids = ({
     page,
     sizePerPage,
