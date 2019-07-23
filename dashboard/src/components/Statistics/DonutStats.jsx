@@ -15,11 +15,16 @@ import {
 
 
 class DonutStats extends Component {
+
+
+
   render() {
+
+
     const propSet = this.props;
     const { string, array } = PropTypes;
 
-    DonutStats.PropTypes = {
+    DonutStats.propTypes = {
       subTitle: string.isRequired,
       data: array.isRequired,
       fill: array.isRequired,
@@ -34,18 +39,22 @@ class DonutStats extends Component {
             <PieChart width={450} height={150} onMouseEnter={this.onPieEnter}>
               <Pie
                 data={propSet.data}
+
                 cx={60}
                 cy={60}
                 innerRadius={30}
                 outerRadius={50}
                 paddingAngle={0}
               >
-                {propSet.fill.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={propSet.fill[index % propSet.fill.length]}
-                  />
-                ))}
+                {propSet.fill.map((entry, index) => {
+
+                  return (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={propSet.fill[index % propSet.fill.length]}
+                    />
+                  )
+                })}
               </Pie>
               <Tooltip />
               <Legend

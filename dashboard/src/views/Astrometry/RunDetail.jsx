@@ -27,6 +27,7 @@ class PraiaDetail extends Component {
       interval_condition: false,
       count: 0,
       activeIndex: 0,
+      status_data: null,
     };
   }
 
@@ -96,7 +97,51 @@ class PraiaDetail extends Component {
 
     });
 
+    this.loadStatus(id);
+
   };
+
+  loadStatus = (id) => {
+    // Get asteroids status
+    this.api.getAsteroidStatus({ id }).then(res => {
+      const statusData = res.data;
+      this.setState({ status_data: statusData.status });
+    });
+  }
+
+
+
+  renderStatus = () => {
+
+    const { status_data } = this.state;
+
+    const colors = ['#4cae4c', '#FFD700', '#d43f3a', '#7d7d7d', '#3598e5'];
+
+
+    const stats_status = [
+      { name: 'Success', value: status_data !== null ? status_data.success : 0 },
+      { name: 'Warning', value: status_data !== null ? status_data.warning : 0 },
+      { name: 'Failure', value: status_data !== null ? status_data.failure : 0 },
+      { name: 'Not Executed', value: status_data !== null ? status_data.not_executed : 0 },
+      { name: 'Pending', value: status_data !== null ? status_data.pending : 0 },
+    ];
+
+    return (
+
+      <DonutStats
+        data={stats_status}
+        fill={colors}
+
+      />
+
+    );
+
+  };
+
+  reloadPie = () => {
+    this.renderStatus();
+  };
+
 
   interval = () => {
 
@@ -109,15 +154,19 @@ class PraiaDetail extends Component {
         },
         () => {
           this.reload();
+
         }
       );
     }
   };
 
+
+
+
   render() {
     const { data, reload_interval, interval_condition, activeIndex } = this.state;
 
-    const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
+
 
     // const execute_time = [
     //   {
@@ -148,12 +197,7 @@ class PraiaDetail extends Component {
       { name: 'Asteroids', value: data.count_objects },
     ];
 
-    const stats_status = [
-      { name: 'Success', value: data.count_success },
-      { name: 'Warning', value: data.count_warning },
-      { name: 'Failure', value: data.count_failed },
-      { name: 'not Executed', value: data.count_not_executed },
-    ];
+
 
     // (0,'CCD Images'),
     // (1,'Bsp Jpl'),
@@ -197,7 +241,8 @@ class PraiaDetail extends Component {
             <div className="ui-g-4 ui-md-12 ui-sm-1">
               <PanelCostumize
                 title="Execution Statistics"
-              // content={<DonutStats data={stats_status} fill={colors} />}
+                content={this.renderStatus()}
+
               />
             </div>
             <div className="ui-g-4 ui-md-12 ui-sm-1">
@@ -230,6 +275,7 @@ class PraiaDetail extends Component {
                   praia_run={this.state.id}
                   view_asteroid={this.onViewAsteroid}
                   reload_flag={this.state.count}
+
                 />
               }
             />
