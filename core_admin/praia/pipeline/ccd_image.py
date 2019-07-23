@@ -2,8 +2,9 @@ import os
 import csv
 from datetime import datetime, timezone, timedelta
 from tno.skybotoutput import FilterObjects
+from praia.pipeline.register import register_input
 
-def create_ccd_images_list(name, output_filepath):
+def create_ccd_images_list(run_id, name, output_filepath):
     # Recuperar as exposicoes para cada objeto.
     start = datetime.now(timezone.utc)
 
@@ -52,5 +53,7 @@ def create_ccd_images_list(name, output_filepath):
         'finish_time': finish,
         'execution_time': finish - start
     })
+
+    register_input(run_id, name, result)
 
     return result

@@ -34,6 +34,10 @@ def on_create_praia_run_signal(sender, instance, signal, created, **kwargs):
                 logger.debug("Directory: %s" % instance.relative_path)
                 shutil.rmtree(instance.relative_path)
 
+                # apaga o registro dos asteroids 
+                instance.asteroids.all().delete()
+                instance.condor_jobs.all().delete()
+
             # Start Thread to run.
             thread = threading.Thread(target=run_astrometry, args=(instance.id, ))
             thread.daemon = True 

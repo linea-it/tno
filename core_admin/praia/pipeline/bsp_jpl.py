@@ -6,8 +6,9 @@ import logging
 import traceback
 from tno.skybotoutput import FilterObjects
 from orbit.bsp_jpl import BSPJPL
+from praia.pipeline.register import register_input
 
-def retrieve_bsp_jpl(name, output_filepath):
+def retrieve_bsp_jpl(run_id, name, output_filepath):
     """
         Recupera o BSP JPL para um asteroid. 
         verifica se o existe algum bsp ja baixado para o asteroid. 
@@ -93,5 +94,7 @@ def retrieve_bsp_jpl(name, output_filepath):
         'finish_time': finish,
         'execution_time': finish - start
     })
+
+    register_input(run_id, name, result)
 
     return result
