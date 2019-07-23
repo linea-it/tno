@@ -27,11 +27,8 @@ class PraiaDetail extends Component {
       interval_condition: false,
       count: 0,
       activeIndex: 0,
-<<<<<<< HEAD
       catalogName: null,
-=======
       status_data: null,
->>>>>>> ddf2cd1ee51bfbd807c552165cf442ade0cb2588
     };
   }
 
@@ -90,14 +87,9 @@ class PraiaDetail extends Component {
         data: data,
         // interval_condition: data.status === 'running' ? true : false,
 
-<<<<<<< HEAD
-        interval_condition: data.status === 'running' ? true : data.status === 'pending' ? true : false,
 
-        activeIndex: data.step,
+        catalogName: data.catalog !== null ? this.loadCatalogName(data.catalog) : "Not availabe name",
 
-        catalogName: data.catalog !== null ? this.loadCatalogName(data.catalog) : "Not availabe name"
-
-=======
         interval_condition:
           data.status === 'running'
             ? true
@@ -106,7 +98,6 @@ class PraiaDetail extends Component {
               : false,
 
         activeIndex: data.step,
->>>>>>> ddf2cd1ee51bfbd807c552165cf442ade0cb2588
       });
     });
 
@@ -121,9 +112,9 @@ class PraiaDetail extends Component {
     });
   };
 
-<<<<<<< HEAD
 
-  };
+
+
 
   loadCatalogName = (id) => {
 
@@ -131,7 +122,8 @@ class PraiaDetail extends Component {
       const catalog = res.data.results[0].display_name;
       this.setState({ catalogName: catalog });
     });
-=======
+
+  }
   renderStatus = () => {
     const { status_data } = this.state;
 
@@ -179,7 +171,6 @@ class PraiaDetail extends Component {
     ];
 
     return <DonutStats data={stats_status} fill={colors} />;
->>>>>>> ddf2cd1ee51bfbd807c552165cf442ade0cb2588
   };
 
   reloadPie = () => {
@@ -202,12 +193,6 @@ class PraiaDetail extends Component {
     }
   };
 
-
-
-
-<<<<<<< HEAD
-    const colors = ['#1D3747', '#305D78', '#89C8F7', '#A8D7FF'];
-=======
   render() {
     const {
       data,
@@ -215,7 +200,6 @@ class PraiaDetail extends Component {
       interval_condition,
       activeIndex,
     } = this.state;
->>>>>>> ddf2cd1ee51bfbd807c552165cf442ade0cb2588
 
     // const execute_time = [
     //   {
@@ -295,7 +279,7 @@ class PraiaDetail extends Component {
             <div className="ui-g-4 ui-md-12 ui-sm-1">
               <PanelCostumize
                 title="Step Stats"
-                // content={<StepStats info={execute_time} />}
+              // content={<StepStats info={execute_time} />}
               />
             </div>
           </div>
@@ -330,7 +314,7 @@ class PraiaDetail extends Component {
         </div>
       </div>
     );
-  }
+  };
 }
 
 export default withRouter(PraiaDetail);
