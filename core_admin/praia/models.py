@@ -141,7 +141,7 @@ class AstrometryAsteroid(models.Model):
     class Meta:
         unique_together = ('astrometry_run', 'name')
 
-    # Relation With orbit.OrbitRun
+    # Relation With praia.Run
     astrometry_run = models.ForeignKey(
         Run, on_delete=models.CASCADE, verbose_name='Astrometry Run',
         null=False, blank=False, default=None, related_name='asteroids'
@@ -163,8 +163,15 @@ class AstrometryAsteroid(models.Model):
         max_length=15,
         verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('warning', 'Warning'),
-                ('success', 'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'))
+        choices=(
+            ('pending', 'Pending'), 
+            ('running', 'Running'), 
+            ('warning', 'Warning'),
+            ('success', 'Success'), 
+            ('failure', 'Failure'), 
+            ('not_executed', 'Not Executed'),
+            ('idle', 'Idle'),
+            )
     )
 
     ccd_images = models.BigIntegerField(
@@ -343,3 +350,57 @@ class AstrometryOutput(models.Model):
 
     def __str__(self):
         return str(self.filename)
+
+
+
+class AstrometryJob(models.Model):
+
+    """
+
+    """
+
+    # Relation With praia.Run
+    astrometry_run = models.ForeignKey(
+        Run, on_delete=models.CASCADE, verbose_name='Astrometry Run',
+        null=False, blank=False, default=None, related_name='condor_jobs'
+    )
+
+    # Relation with praia.AstrometryAsteroid
+    asteroid = models.ForeignKey(
+        AstrometryAsteroid, on_delete=models.CASCADE, verbose_name='Asteroid',
+        null=False, blank=False, related_name='condor_job'
+    )
+
+    clusterid = models.BigIntegerField(
+        verbose_name='Cluster Id',
+        null=True, blank=True )
+
+    procid = models.IntegerField(
+        verbose_name='Proc Id',
+        null=True, blank=True )
+    
+    job_status = models.IntegerField(
+        verbose_name='Job Status',
+        null=True, blank=True,
+        choices=(
+            (0, 'Unexpanded'), 
+            (1, 'Idle'), 
+            (2, 'Running'), 
+            (3, 'Removed'), 
+            (4, 'Completed'), 
+            (5, 'Held'), 
+            (6, 'Submission')
+        ))
+
+    start_time = models.DateTimeField(
+        verbose_name='Start Time',
+        auto_now_add=False, null=True, blank=True)
+
+    finish_time = models.DateTimeField(
+        verbose_name='Finish Time',
+        auto_now_add=False, null=True, blank=True)
+
+    execution_time = models.DurationField(
+        verbose_name='Execution Time',
+        null=True, blank=True
+    )
