@@ -169,14 +169,10 @@ class PraiaDetail extends Component {
         },
         () => {
           this.reload();
-
         }
       );
     }
   };
-
-
-
 
   render() {
     const {
@@ -290,7 +286,6 @@ class PraiaDetail extends Component {
                   praia_run={this.state.id}
                   view_asteroid={this.onViewAsteroid}
                   reload_flag={this.state.count}
-
                 />
               }
             />
