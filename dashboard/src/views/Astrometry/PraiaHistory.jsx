@@ -187,6 +187,14 @@ class PraiaHistory extends Component {
     let btn_view_toolbar = null;
     let btn_reexecute = null;
 
+    // var disabled = true;
+    // if (
+    //   this.state.selected != null &&
+    //   this.state.selected.status === 'success'
+    // ) {
+    //   disabled = false;
+    // }
+
     btn_reexecute = (
       <Button
         className="btn-TNO-color"
@@ -196,21 +204,13 @@ class PraiaHistory extends Component {
       />
     );
 
-    var disabled = true;
-    if (
-      this.state.selected != null &&
-      this.state.selected.status === 'success'
-    ) {
-      disabled = false;
-    }
-
     btn_view_toolbar = (
 
       //BOTAO DE DETALHE
       <Button
         className="btn-TNO-color"
         label="Detail"
-        disabled={disabled}
+        disabled={!this.state.selected}
         onClick={() => this.onView(el.id)}
       />
     );

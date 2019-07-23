@@ -135,6 +135,8 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
 
     proccess_displayname = serializers.SerializerMethodField()
 
+    catalog_name = serializers.SerializerMethodField()
+
     class Meta:
         model = AstrometryAsteroid
         fields = (
@@ -147,7 +149,8 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
             'error_msg',
             'ccd_images',
             'catalog_rows',
-            'execution_time'
+            'execution_time',
+            'catalog_name'
         )
 
     def get_proccess_displayname(self, obj):
@@ -156,7 +159,13 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    def get_catalog_name(self, obj):
+        try:
+            return obj.astrometry_run.catalog.display_name
 
+        except:
+            return None
+            
 class AstrometryInputSerializer(serializers.ModelSerializer):
 
     asteroid = serializers.PrimaryKeyRelatedField(

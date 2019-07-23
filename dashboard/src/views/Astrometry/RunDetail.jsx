@@ -42,15 +42,12 @@ class PraiaDetail extends Component {
       },
       () => this.reload()
     );
-
   }
 
   format_execution_time = duration => {
     var seconds = Math.round(moment.duration(duration).asSeconds());
     return moment.utc(seconds * 1000).format('HH:mm:ss');
   };
-
-
 
   onViewAsteroid = asteroid_id => {
     const proccess = this.state.data.proccess_displayname;
@@ -78,7 +75,6 @@ class PraiaDetail extends Component {
   };
 
   reload = () => {
-
     const { id } = this.state;
 
     this.api.getPraiaRunById({ id }).then(res => {
@@ -88,63 +84,82 @@ class PraiaDetail extends Component {
         data: data,
         // interval_condition: data.status === 'running' ? true : false,
 
-        interval_condition: data.status === 'running' ? true : data.status === 'pending' ? true : false,
-
+        interval_condition:
+          data.status === 'running'
+            ? true
+            : data.status === 'pending'
+              ? true
+              : false,
 
         activeIndex: data.step,
-
       });
-
     });
 
     this.loadStatus(id);
-
   };
 
-  loadStatus = (id) => {
+  loadStatus = id => {
     // Get asteroids status
     this.api.getAsteroidStatus({ id }).then(res => {
       const statusData = res.data;
       this.setState({ status_data: statusData.status });
     });
-  }
-
-
+  };
 
   renderStatus = () => {
-
     const { status_data } = this.state;
 
-    const colors = ['#4cae4c', '#FFD700', '#d43f3a', '#7d7d7d', '#3598e5'];
-
-
-    const stats_status = [
-      { name: 'Success', value: status_data !== null ? status_data.success : 0 },
-      { name: 'Warning', value: status_data !== null ? status_data.warning : 0 },
-      { name: 'Failure', value: status_data !== null ? status_data.failure : 0 },
-      { name: 'Not Executed', value: status_data !== null ? status_data.not_executed : 0 },
-      { name: 'Pending', value: status_data !== null ? status_data.pending : 0 },
+    const colors = [
+      '#4cae4c',
+      '#FFD700',
+      '#d43f3a',
+      '#7d7d7d',
+      '#3598e5',
+      '#3598e5',
+      '#3598e5',
     ];
 
-    return (
+    let sum_p_r_i = 0;
+    if (status_data !== null && status_data.pending) {
+      sum_p_r_i += status_data.pending;
+    }
+    if (status_data !== null && status_data.running) {
+      sum_p_r_i += status_data.running;
+    }
+    if (status_data !== null && status_data.idle) {
+      sum_p_r_i += status_data.idle;
+    }
+    const stats_status = [
+      {
+        name: 'Success',
+        value: status_data !== null ? status_data.success : 0,
+      },
+      {
+        name: 'Warning',
+        value: status_data !== null ? status_data.warning : 0,
+      },
+      {
+        name: 'Failure',
+        value: status_data !== null ? status_data.failure : 0,
+      },
+      {
+        name: 'Not Executed',
+        value: status_data !== null ? status_data.not_executed : 0,
+      },
+      {
+        name: 'Running/Idle',
+        value: status_data !== null ? sum_p_r_i : 0,
+      },
+    ];
 
-      <DonutStats
-        data={stats_status}
-        fill={colors}
-
-      />
-
-    );
-
+    return <DonutStats data={stats_status} fill={colors} />;
   };
 
   reloadPie = () => {
     this.renderStatus();
   };
 
-
   interval = () => {
-
     const { data, count } = this.state;
 
     if (data.status === 'running' || data.status === 'pending') {
@@ -164,9 +179,12 @@ class PraiaDetail extends Component {
 
 
   render() {
-    const { data, reload_interval, interval_condition, activeIndex } = this.state;
-
-
+    const {
+      data,
+      reload_interval,
+      interval_condition,
+      activeIndex,
+    } = this.state;
 
     // const execute_time = [
     //   {
@@ -197,8 +215,6 @@ class PraiaDetail extends Component {
       { name: 'Asteroids', value: data.count_objects },
     ];
 
-
-
     // (0,'CCD Images'),
     // (1,'Bsp Jpl'),
     // (2,'Gaia Catalog'),
@@ -210,7 +226,7 @@ class PraiaDetail extends Component {
       { title: 'Bsp Jpl' },
       { title: 'Gaia Catalog' },
       { title: 'Praia Astrometry' },
-      { title: 'Registered' }
+      { title: 'Registered' },
     ];
 
     return (
@@ -242,13 +258,12 @@ class PraiaDetail extends Component {
               <PanelCostumize
                 title="Execution Statistics"
                 content={this.renderStatus()}
-
               />
             </div>
             <div className="ui-g-4 ui-md-12 ui-sm-1">
               <PanelCostumize
                 title="Step Stats"
-              // content={<StepStats info={execute_time} />}
+                // content={<StepStats info={execute_time} />}
               />
             </div>
           </div>

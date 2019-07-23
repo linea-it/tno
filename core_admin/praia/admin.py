@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput, AstrometryOutput
+from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput, AstrometryOutput, AstrometryJob 
 
 
 @admin.register(Run)
@@ -31,3 +31,9 @@ class AstrometryInputAdmin(admin.ModelAdmin):
 class AstrometryOutputAdmin(admin.ModelAdmin):
     list_display = ('id', 'asteroid', 'type', 'filename',
                     'file_size', 'file_type', 'file_path',)
+
+
+@admin.register(AstrometryJob)
+class AstrometryJobs(admin.ModelAdmin):
+    list_display = ('id', 'astrometry_run', 'asteroid', 'clusterid',
+                    'procid', 'job_status', 'start_time', 'finish_time', 'execution_time')
