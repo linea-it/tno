@@ -239,7 +239,7 @@ class AstrometryPipeline():
                     asteroid.save()
                     self.logger.warning("Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
                 else:
-                    asteroid.status = 'idle'
+                    asteroid.status = 'running'
                     asteroid.ccd_images = result['ccds_count']
 
                     self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (result['input_type'], asteroid.name, result['file_path']))
@@ -308,7 +308,7 @@ class AstrometryPipeline():
                     self.logger.warning("Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
 
                 else:
-                    obj.status = 'idle'
+                    obj.status = 'running'
                     self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (result['input_type'], asteroid.name, result['file_path']))
 
                 asteroid.execution_time = asteroid.execution_time + \
@@ -406,7 +406,7 @@ class AstrometryPipeline():
                         self.logger.warning("Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
                     else:
                         asteroid.catalog_rows = int(result['catalog_count'])
-                        obj.status = 'idle'
+                        obj.status = 'running'
 
                         self.logger.info("Registered %s Input for Asteroid [ %s ] Catalog Rows: [ %s ] File: [%s] " % (result['input_type'], asteroid.name, result['catalog_count'], result['file_path']))
 
@@ -459,7 +459,7 @@ class AstrometryPipeline():
             self.logger.info(
                         "Submit Astrometry Job [ %s / %s ] Object: [ %s ]" % (idx, self.asteroids.count(), obj.name))
 
-            obj.status = 'running'
+            obj.status = 'idle'
             obj.save()                        
 
             payload = dict({
@@ -467,19 +467,19 @@ class AstrometryPipeline():
                 "submit_params": {
                     "Universe": "docker",
                     "Docker_image": "linea/tno_astrometry:latest",
-                    "Should_transfer_files": "yes",
-                    "when_to_transfer_output": "on_exit",
+                    # "Should_transfer_files": "yes",
+                    # "when_to_transfer_output": "on_exit",
                     # "+RequiresWholeMachine": "True",
 	                "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
                     "executable":"/app/run.py",
-                    # "arguments": "%s --path %s --catalog %s" % (obj.name, obj.relative_path, catalog_name),
-                    # "Log": os.path.join(instance.relative_path, "condor/astrometry-$(Process).log"),
-                    # "Output": os.path.join(instance.relative_path, "condor/astrometry-$(Process).out"),
-                    # "Error": os.path.join(instance.relative_path, "condor/astrometry-$(Process).err")
-                    "arguments": "Eris --path /proccess/4/objects/Eris --catalog gaia2",
-                    "Log": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).log",
-                    "Output": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).out",
-                    "Error": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).err"
+                    "arguments": "%s --path %s --catalog %s" % (obj.name, obj.relative_path, catalog_name),
+                    "Log": os.path.join(instance.relative_path, "condor/astrometry-$(Process).log"),
+                    "Output": os.path.join(instance.relative_path, "condor/astrometry-$(Process).out"),
+                    "Error": os.path.join(instance.relative_path, "condor/astrometry-$(Process).err")
+                    # "arguments": "Eris --path /proccess/4/objects/Eris --catalog gaia2",
+                    # "Log": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).log",
+                    # "Output": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).out",
+                    # "Error": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).err"
                 }
             })
             self.logger.debug("payload: ")

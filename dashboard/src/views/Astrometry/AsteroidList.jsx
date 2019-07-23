@@ -135,8 +135,7 @@ class AsteroidList extends Component {
     let btn_view = null;
     let btn_log = null;
 
-
-    if (rowData.status !== 'failure' && rowData.status != "not_executed") {
+    if (rowData.status !== 'failure' && rowData.status != 'not_executed') {
       btn_view = (
         <Button
           type="button"
@@ -152,7 +151,7 @@ class AsteroidList extends Component {
           icon="fa fa-file-text-o"
           className="ui-button-warning"
           title="Log"
-        // onClick={() => this.showAsteroidLog(asteroid_id)}
+          // onClick={() => this.showAsteroidLog(asteroid_id)}
         />
       );
     }
@@ -166,13 +165,23 @@ class AsteroidList extends Component {
   };
 
   statusColumn = rowData => {
-    0;
     if (rowData.status === 'success') {
       return (
         <Button
           type="button"
           icon="fa fa-check"
-          className="ui-button-success"
+          className="ui-button-success status_button_label"
+          label="Success"
+        />
+      );
+    } else if (rowData.status === 'running') {
+      return (
+        <Button
+          type="button"
+          icon="fa fa-circle-o-notch fa-spin"
+          className="ui-button-pending status_button_label"
+          title={rowData.error_msg}
+          label="Running"
         />
       );
     } else if (rowData.status === 'warning') {
@@ -180,35 +189,49 @@ class AsteroidList extends Component {
         <Button
           type="button"
           icon="fa fa-exclamation"
-          className="ui-button-warning"
+          className="ui-button-warning status_button_label"
           title={rowData.error_msg}
+          label="Warning"
         />
       );
     } else if (rowData.status === 'pending') {
       return (
         <Button
           type="button"
-          icon="fa fa-exclamation"
-          className="ui-button-pending"
+          icon="fa fa-hourglass-start"
+          className="ui-button-pending status_button_label"
           title={rowData.error_msg}
+          label="Pending"
         />
       );
     } else if (rowData.status === 'not_executed') {
       return (
         <Button
           type="button"
-          icon="fa fa-exclamation"
-          className="ui-button-secondary"
+          icon="fa fa-ban"
+          className="ui-button-secondary status_button_label"
           title={rowData.error_msg}
+          label="Ignored"
         />
       );
-    } else {
+    } else if (rowData.status === 'idle') {
+      return (
+        <Button
+          type="button"
+          icon="fa fa-spin fa-hourglass "
+          className="ui-button-pending status_button_label"
+          title={rowData.error_msg}
+          label="Idle"
+        />
+      );
+    } else if (rowData.status === 'failure') {
       return (
         <Button
           type="button"
           icon="fa fa-times"
-          className="ui-button-danger"
+          className="ui-button-danger status_button_label"
           title={rowData.error_msg}
+          label="Failed"
         />
       );
     }
@@ -287,7 +310,7 @@ class AsteroidList extends Component {
           <Column
             header="Status"
             body={this.statusColumn}
-            style={{ textAlign: 'center', width: '6em' }}
+            style={{ textAlign: 'center', width: '10em' }}
           />
           {columns}
           <Column
