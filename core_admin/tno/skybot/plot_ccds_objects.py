@@ -13,7 +13,7 @@ def hh2degrees(hhmmss):
 def dd2degrees(ddmmss):
     d, m, s = ddmmss.split()
     deg = abs(int(d)) + int(m)/60.0 + float(s)/3600.0
-    if int(d) < 0:
+    if d[0] == '-':
         deg = -deg
     return deg
 
