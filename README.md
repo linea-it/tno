@@ -14,16 +14,16 @@ cd tno
 cp env_template .env
 ```
 
-Create link to ngnix config
+Copy ngnix config
 ```
 cd nginx
-ln -s development_template.conf nginx-proxy.conf
+cp dashboard/nginx/development.conf ./nginx-proxy.conf
 ```
 
-Create link to docker-compose.yml
+Copy docker-compose.yml
 ```
 cd ..
-ln -s docker-compose-development-template.yml docker-compose.yml
+cp docker-compose-development-template.yml docker-compose.yml
 ```
 
 Build Containers
