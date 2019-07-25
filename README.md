@@ -72,6 +72,53 @@ docker-compose stop
 docker-compose up
 ```
 
+### dabase data
+Unzip the csv files with data to the database.
+you have to do it before doing the build and up of the container, because the directory will be mounted in the postgres image.
+```
+cd database_subset
+unzip tno_database.subset.zip
+cd ..
+```
+
+### Create a superuser in Django
+run createsuperuser to create a admin user in Django.
+with the docker running open a new terminal and run this command.
+```
+ docker exec -it $(docker ps -q -f name=backend) python manage.py createsuperuser
+```
+
+### Table preparation for Q3C 
+run create_q3c_index for create indexes.
+```
+docker exec -it $(docker ps -q -f name=backend) python manage.py create_q3c_index
+```
+
+### Importar os csv para o banco de dados
+Com o Container Database rodando, verificar se o diretorio com os csv está montado como volume no container. 
+executar os comando do psql para importar as tabelas. nos exemplos o diretorio com os CSVs esta montado em /data.
+
+#### Pointings
+```
+docker exec -it $(docker ps -q -f name=database) psql -h localhost -U postgres -c "\\copy tno_pointing from '/data/tno_pointings.csv' DELIMITER ';' CSV HEADER"
+```
+
+#### CCD Images
+```
+docker exec -it $(docker ps -q -f name=database) psql -h localhost -U postgres -c "\\copy tno_ccdimage from '/data/tno_ccdimage.csv' DELIMITER ';' CSV HEADER"
+```
+
+#### Skybot Output
+```
+docker exec -it $(docker ps -q -f name=database) psql -h localhost -U postgres -c "\\copy tno_skybotoutput from '/data/tno_skybotoutput.csv' DELIMITER ';' CSV HEADER"
+```
+
+### Run 
+Stop all containers and run in background mode
+```
+docker-compose up -d
+```
+
 Run Frontend
 ```
 cd dashboard
@@ -89,3 +136,4 @@ http://localhost:7000/
 ### More details about the installation are available at this link.
 
 https://github.com/linea-it/tno/blob/master/docs/install_production.md
+
