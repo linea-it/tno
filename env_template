@@ -43,4 +43,4 @@ HOST_ARCHIVE=/home/<user>/tno/archive
 # docker inspect <container_id>
 # O IP do Host aparece no atributo "Network"->"Gateway": "172.19.0.1",
 # A porta tem que ser a definida no arquivo: /etc/systemd/system/docker.service.d/startup_options.conf
-DOCKER_HOST=tcp://0.0.0.0:2376
+#DOCKER_HOST=tcp://0.0.0.0:2376

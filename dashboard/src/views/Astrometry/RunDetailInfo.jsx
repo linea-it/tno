@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
-import Marked from 'marked';
+
 
 
 class RunDetailInfo extends Component {
