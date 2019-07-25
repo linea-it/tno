@@ -53,6 +53,16 @@ in admin interface:
   url: https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de435.bsp
   file: Download file fron this url and upload in this field
   ```
+- Home › Tno › Catalogs › Add catalog - Register Gaia Reference Catalog (**Temporary**)
+  ```
+  name: gaia_dr2
+  display name: GAIA DR2
+  database: catalog
+  schema: gaia
+  tablename: gaia_dr2
+
+  ```
+
 
 ### Update Johnston Known Tnos
 Access api ```http://<HOST>/api/known_tnos_johnston/update_list ``` wait response with counts. like this:
