@@ -2,16 +2,28 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
+import MarkDown from 'react-markdown';
+import runHelp from '../Astrometry/docs/run_detail_info.md';
+import PanelCostumize from 'components/Panel/PanelCostumize';
+import { Card } from 'primereact/card';
+import image from './docs/run_detail_image.png';
+
 
 
 
 class RunDetailInfo extends Component {
 
 
+  state = {
+    terms: null,
+  }
+
 
   componentDidMount() {
 
-    // const readmePath = require("./Readme.md");
+    fetch(runHelp).then((response) => response.text()).then((text) => {
+      this.setState({ terms: text })
+    })
   };
 
 
@@ -41,11 +53,17 @@ class RunDetailInfo extends Component {
   };
 
   render() {
+
+    console.log(image);
     return (
 
       <div>
         {this.create_nav_bar()}
-        <h3>Help Page</h3>
+        <div className="content">
+          <Card>
+            <MarkDown source={this.state.terms} />
+          </Card>
+        </div>
       </div>
     );
   }
