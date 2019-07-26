@@ -27,6 +27,7 @@ import ExposureDetail from '../views/SolarSystems/SkybotRun/ExposureDetail';
 import PraiaDetail from '../views/Astrometry/RunDetail';
 import AsteroidRunDetail from '../views/Astrometry/AsteroidRunDetail';
 import ReadCSV from '../views/Astrometry/ReadCSV';
+import OccultationCalendar from '../views/Prediction/OccultationCalendar';
 
 
 const appRoutes = [
@@ -189,6 +190,14 @@ const appRoutes = [
     hidden: true,
     component: OccultationDetail,
   },
+
+  {
+    path: '/occultation_calendar',
+    name: 'Occultation Calendar',
+    hidden: true,
+    component: OccultationCalendar,
+  },
+
   {
     path: '/light_curve',
     name: 'Light Curve Analysis',
