@@ -3,9 +3,8 @@ ___
 
 ### Astrometry   
 
-  ![Run Detail Screen]()
 
-  >Status: Indicates the status of the ............
+>Status: Indicates the status of the ............
 >
 >Proccess :
 >
