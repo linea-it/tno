@@ -656,7 +656,7 @@ class AsteroidDetailPrediction extends Component {
 
   handleCalendar = () => {
     const history = this.props.history;
-    history.push(`/occultation_calendar`);
+    history.push({ pathname: `/occultation_calendar` });
 
   };
 
