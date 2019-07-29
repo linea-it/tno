@@ -33,6 +33,15 @@ class PraiaApi {
       },
     });
 
+
+  getCatalogById = ({ id }) =>
+    axios.get(`${this.api}/catalog/`, {
+      params: {
+        id: id,
+      },
+    });
+
+
   getAsteroids = ({
     page,
     sizePerPage,
@@ -91,6 +100,10 @@ class PraiaApi {
         asteroid: id,
       },
     });
+
+  getAsteroidStatus = ({ id }) =>
+    axios.get(`${this.api}/praia_run/${id}/count_asteroid_status/`);
+
 
   getCSV = (filepath) => axios.get(`${this.api}/read_csv?filepath=${filepath}`);
 

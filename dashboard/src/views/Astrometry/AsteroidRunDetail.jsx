@@ -29,6 +29,7 @@ export default class AsteroidRunDetail extends Component {
       download_icon: 'fa fa-cloud-download',
       praiaId: 0,
       proccess: null,
+      catalogName: null,
     };
   }
 
@@ -65,7 +66,8 @@ export default class AsteroidRunDetail extends Component {
       this.setState({
         asteroid: res.data,
         proccess: res.data.proccess_displayname,
-      });
+        catalogName: res.data.catalog_name,
+      })
     });
 
     // Recuperar os Inputs
@@ -197,8 +199,6 @@ export default class AsteroidRunDetail extends Component {
 
   render() {
     const { asteroid, inputs } = this.state;
-    console.log(asteroid);
-
 
     const inp_columns = this.input_columns.map((col, i) => {
       return (
@@ -223,6 +223,7 @@ export default class AsteroidRunDetail extends Component {
       { name: 'Executed', value: asteroid.h_time },
       { name: 'Execution Time', value: asteroid.h_execution_time },
       { name: 'Size', value: asteroid.h_size },
+      { name: 'Catalog', value: this.state.catalogName },
     ];
 
     return (
