@@ -125,7 +125,6 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
 
         return Response(dict({
             "success": True,
-            "name": asteroid.name,
             "prev": prev_id, 
             "next": next_id, 
         }))

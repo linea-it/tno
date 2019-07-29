@@ -86,6 +86,12 @@ def read_csv(request):
     """ 
     Function to read .csv file 
     A filepath parameter is obrigatory to display the file. 
+    this view can be paginated, with page and pageSize parameters. 
+
+    eg: http://localhost/api/read_csv?filepath=/proccess/78/objects/Eris/gaia_dr2.csv&page=2&pageSize=5&format=json
+
+    for this exemple will be returned 5 rows for page 2.
+
     """    
     if request.method == 'GET':
     
