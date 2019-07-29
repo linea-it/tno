@@ -108,7 +108,7 @@ class ProccessManager():
         except Exception as e:
             self.logger.error("Failed to remove process directory [ %s ]" % directory)
             self.logger.error(e)
-            raise
+            # raise
 
     def get_objects(self, tablename, schema=None):
         return FilterObjects().list_distinct_objects_by_table(tablename, schema)

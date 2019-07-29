@@ -27,7 +27,6 @@ class PraiaDetail extends Component {
       interval_condition: false,
       count: 0,
       activeIndex: 0,
-      catalogName: null,
       status_data: null,
     };
   }
@@ -85,11 +84,6 @@ class PraiaDetail extends Component {
 
       this.setState({
         data: data,
-        // interval_condition: data.status === 'running' ? true : false,
-
-
-        catalogName: data.catalog !== null ? this.loadCatalogName(data.catalog) : "Not availabe name",
-
         interval_condition:
           data.status === 'running'
             ? true
@@ -105,25 +99,13 @@ class PraiaDetail extends Component {
   };
 
   loadStatus = id => {
-    // Get asteroids status
+    // Get asteroids status Counts
     this.api.getAsteroidStatus({ id }).then(res => {
       const statusData = res.data;
       this.setState({ status_data: statusData.status });
     });
   };
 
-
-
-
-
-  loadCatalogName = (id) => {
-
-    this.api.getCatalogById({ id }).then(res => {
-      const catalog = res.data.results[0].display_name;
-      this.setState({ catalogName: catalog });
-    });
-
-  }
   renderStatus = () => {
     const { status_data } = this.state;
 
@@ -227,7 +209,7 @@ class PraiaDetail extends Component {
       { name: 'Start', value: data.h_time },
       { name: 'Execution', value: data.h_execution_time },
       { name: 'Asteroids', value: data.count_objects },
-      { name: 'Catalog', value: this.state.catalogName },
+      { name: 'Catalog', value: data.catalog_name },
     ];
 
     // (0,'CCD Images'),

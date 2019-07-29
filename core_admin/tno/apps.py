@@ -6,3 +6,8 @@ class TnoConfig(AppConfig):
 
     def ready(self):
         from . import signals
+        
+        print("Ready")
+
+        from tno import condor 
+        condor.start_check_jobs()

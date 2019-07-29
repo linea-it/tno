@@ -1,5 +1,6 @@
 from tno.models import Proccess
 import os
+import stat
 import errno
 import logging
 from random import randrange
@@ -24,6 +25,7 @@ from praia.pipeline.bsp_jpl import retrieve_bsp_jpl
 from praia.pipeline.star_catalog import create_star_catalog
 
 from praia.pipeline.register import register_condor_job
+
 
 class AstrometryPipeline():
     def __init__(self):
@@ -61,16 +63,14 @@ class AstrometryPipeline():
         return instance
 
     def startAstrometryRun(self, run_id):
-      
+
         instance = self.initialize_model_run(run_id)
- 
+
         self.logger.info("Status changed to Running")
 
         self.logger.info("PRAIA RUN %s" % instance.id)
 
         self.logger.debug("Input List: %s" % instance.input_list.id)
-
-
 
         self.input_list = instance.input_list
 
@@ -79,7 +79,7 @@ class AstrometryPipeline():
             # Como a Astrometria e a primeira etapa ela fica responsavel por iniciar o processo.
             self.logger.info("Creating a Process")
 
-            try: 
+            try:
 
                 proccess = Proccess.objects.create(
                     owner=instance.owner,
@@ -87,14 +87,14 @@ class AstrometryPipeline():
                 )
 
                 proccess.save()
-                self.logger.info("Process Created with ID [ %s ]" % proccess.id)
+                self.logger.info(
+                    "Process Created with ID [ %s ]" % proccess.id)
 
                 instance.proccess = proccess
                 instance.save()
 
             except Exception as e:
                 self.on_error(self.instance, e)
-
 
         self.proccess = instance.proccess
 
@@ -121,7 +121,7 @@ class AstrometryPipeline():
 
             if os.path.exists(directory):
                 # Alterar a Permissao do Diretorio
-                os.chmod(directory, 0o775)
+                os.chmod(directory, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
 
                 self.logger.info("Astrometry directory created")
                 self.logger.debug("Directory: %s" % directory)
@@ -168,11 +168,22 @@ class AstrometryPipeline():
                 obj_alias = obj.get("name").replace(" ", "_")
                 obj_relative_path = os.path.join(self.objects_dir, obj_alias)
 
+                try:
+                    if not os.path.exists(obj_relative_path):
+                        os.makedirs(obj_relative_path)
+                        time.sleep(2)
+                    os.chmod(obj_relative_path, stat.S_IRWXU |
+                             stat.S_IRWXG | stat.S_IRWXO)
+                except OSError as e:
+                    msg = "Failed to create Asteroid directory [ %s ]" % obj_relative_path
+                    self.logger.error(msg)
+                    self.on_error(instance, e)
+
                 asteroidModel, created = AstrometryAsteroid.objects.update_or_create(
                     astrometry_run=instance,
                     name=obj.get("name"),
                     defaults={
-                        'number': obj.get("number"),
+                        'number': obj.get("num"),
                         'status': "pending",
                         'relative_path': obj_relative_path,
                     })
@@ -237,23 +248,24 @@ class AstrometryPipeline():
                     asteroid.status = 'not_executed'
                     asteroid.error_msg = result['error_msg']
                     asteroid.save()
-                    self.logger.warning("Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
+                    self.logger.warning(
+                        "Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
                 else:
                     asteroid.status = 'running'
                     asteroid.ccd_images = result['ccds_count']
 
-                    self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (result['input_type'], asteroid.name, result['file_path']))
+                    self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (
+                        result['input_type'], asteroid.name, result['file_path']))
 
                 asteroid.execution_time = result['execution_time']
                 asteroid.save()
-
 
         except Exception as e:
             self.on_error(instance, e)
 
         ccd_images_finish = datetime.now(timezone.utc)
         ccd_images_execution_time = ccd_images_finish - ccd_images_start
-              
+
         self.logger.info("Finished CCD Images list in %s" %
                          humanize.naturaldelta(ccd_images_execution_time))
 
@@ -305,11 +317,13 @@ class AstrometryPipeline():
                     asteroid.status = 'not_executed'
                     asteroid.error_msg = result['error_msg']
                     asteroid.save()
-                    self.logger.warning("Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
+                    self.logger.warning(
+                        "Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
 
                 else:
                     obj.status = 'running'
-                    self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (result['input_type'], asteroid.name, result['file_path']))
+                    self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (
+                        result['input_type'], asteroid.name, result['file_path']))
 
                 asteroid.execution_time = asteroid.execution_time + \
                     result['execution_time']
@@ -344,7 +358,6 @@ class AstrometryPipeline():
 
         self.logger.info("Catalog: %s" % star_catalog.display_name)
 
-           
         if star_catalog.tablename is not None:
             self.logger.info("Generate %s Catalog for each asteroid" %
                              star_catalog.display_name)
@@ -403,12 +416,14 @@ class AstrometryPipeline():
                         asteroid.status = 'not_executed'
                         asteroid.error_msg = result['error_msg']
 
-                        self.logger.warning("Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
+                        self.logger.warning(
+                            "Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
                     else:
                         asteroid.catalog_rows = int(result['catalog_count'])
                         obj.status = 'running'
 
-                        self.logger.info("Registered %s Input for Asteroid [ %s ] Catalog Rows: [ %s ] File: [%s] " % (result['input_type'], asteroid.name, result['catalog_count'], result['file_path']))
+                        self.logger.info("Registered %s Input for Asteroid [ %s ] Catalog Rows: [ %s ] File: [%s] " % (
+                            result['input_type'], asteroid.name, result['catalog_count'], result['file_path']))
 
                     asteroid.execution_time = asteroid.execution_time + \
                         result['execution_time']
@@ -423,13 +438,11 @@ class AstrometryPipeline():
 
             self.logger.info("Finished Star Catalog in %s" %
                              humanize.naturaldelta(catalog_execution_time))
-                    
 
-        # Fim da geracao dos inputs. 
-
+        # Fim da geracao dos inputs.
 
         # ===================================================================================================
-        # PRAIA Astrometry - Run PRAIA programns for each asteroid. 
+        # PRAIA Astrometry - Run PRAIA programns for each asteroid.
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// PRAIA ASTROMETRY //---------------------------------")
@@ -448,7 +461,7 @@ class AstrometryPipeline():
             catalog_name = 'gaia2'
         elif star_catalog.name == 'gaia_dr1':
             catalog_name = 'gaia1'
-        else: 
+        else:
             catalog_name = 'gaia1'
 
         condor_jobs = list()
@@ -456,22 +469,33 @@ class AstrometryPipeline():
         # Condor precisa do path absoluto para escrever os arquivos de log.
         absolute_archive_path = os.getenv("ARCHIVE_DIR", None)
         if absolute_archive_path is None:
-            raise Exception("absolute path to archive directory is required. This path must be declared in the ARCHIVE_DIR environment variable.")
+            raise Exception(
+                "absolute path to archive directory is required. This path must be declared in the ARCHIVE_DIR environment variable.")
 
         for obj in self.asteroids:
-            # para cada objeto fazer a submissao do job na API do condor. 
+            # para cada objeto fazer a submissao do job na API do condor.
             self.logger.info(
-                        "Submit Astrometry Job [ %s / %s ] Object: [ %s ]" % (idx, self.asteroids.count(), obj.name))
+                "Submit Astrometry Job [ %s / %s ] Object: [ %s ]" % (idx, self.asteroids.count(), obj.name))
 
             obj.status = 'idle'
-            obj.save()                        
+            obj.save()
 
             # Criar o diretorio de log para condor
-            obj_absolute_path = os.path.join(absolute_archive_path, obj.relative_path.strip('/'))
+            relative_condor_dir = os.path.join(obj.relative_path, 'condor')
+            if not os.path.exists(relative_condor_dir):
+                os.makedirs(relative_condor_dir)
+                time.sleep(2)
+                os.chmod(relative_condor_dir, stat.S_IRWXU |
+                         stat.S_IRWXG | stat.S_IRWXO)
+
+            if not os.path.exists(relative_condor_dir):
+                raise Exception("Failed to create condor log directory.")
+
+            obj_absolute_path = os.path.join(
+                absolute_archive_path, obj.relative_path.strip('/'))
             log_dir = os.path.join(obj_absolute_path, 'condor')
-            if not os.path.exists(log_dir):
-                os.makedirs(log_dir)
-            os.chmod(log_dir, 1777)
+            self.logger.info(
+                "Trying to create condor log directory. [ %s ]" % log_dir)
 
             payload = dict({
                 "queues": 1,
@@ -481,8 +505,8 @@ class AstrometryPipeline():
                     # "Should_transfer_files": "yes",
                     # "when_to_transfer_output": "on_exit",
                     # "+RequiresWholeMachine": "True",
-	                "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
-                    "executable":"/app/run.py",
+                    "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
+                    "executable": "/app/run.py",
                     "arguments": "%s --path %s --catalog %s" % (obj.name, obj.relative_path, catalog_name),
                     "Log": os.path.join(log_dir, "astrometry.log"),
                     "Output": os.path.join(log_dir, "astrometry.out"),
@@ -499,13 +523,15 @@ class AstrometryPipeline():
                 url = 'http://loginicx.linea.gov.br:5001/submit_job'
                 headers = {'Content-Type': 'application/json'}
 
-                r = requests.post(url, headers=headers, data=json.dumps(payload))
+                r = requests.post(url, headers=headers,
+                                  data=json.dumps(payload))
                 r.status_code
 
                 response = r.json()
-                # TODO tratar errors durante o Post. 
+                # TODO tratar errors durante o Post.
                 self.logger.debug(r.status_code)
-                self.logger.debug("Result Status Code: [%s] Response: [ %s ]" % (r.status_code, response))
+                self.logger.debug("Result Status Code: [%s] Response: [ %s ]" % (
+                    r.status_code, response))
 
                 if response['success'] is True:
                     # Submetido com sucesso, Guardar o Id do Job para ser consultado
@@ -515,12 +541,12 @@ class AstrometryPipeline():
                         condorJob = register_condor_job(
                             instance, obj, job['ClusterId'], job['ProcId'], job['JobStatus'])
 
-                        self.logger.info("Job in Condor was created. ClusterId [ %s ] ProcId [ %s ]" % (condorJob.clusterid, condorJob.procid))
+                        self.logger.info("Job in Condor was created. ClusterId [ %s ] ProcId [ %s ]" % (
+                            condorJob.clusterid, condorJob.procid))
 
             except Exception as e:
                 # TODO Tratar erro na submissao de jobs
                 self.on_error(self.instance, e)
-
 
         # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
 
@@ -534,7 +560,7 @@ class AstrometryPipeline():
         cnotexecuted = instance.asteroids.filter(status='not_executed').count()
 
         # Salvar os totais e mudar o status para sucesso.
-        # TODO: essa etapa quando executada com o condor deve ficar na 
+        # TODO: essa etapa quando executada com o condor deve ficar na
         # funcao que vai registrar os resutados.
         instance.refresh_from_db()
         instance.status = 'running'
@@ -546,7 +572,6 @@ class AstrometryPipeline():
         # self.logger.info("Status changed to Success")
 
         self.logger.info("Finish")
-
 
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"
@@ -602,4 +627,3 @@ class AstrometryPipeline():
         instance.execution_time = tdelta
         instance.save()
         self.logger.info("Execution Time: %s" % humanize.naturaldelta(tdelta))
- 
