@@ -8,6 +8,7 @@ import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize';
+import { Tree } from 'primereact/tree';
 
 export default class AsteroidRunDetail extends Component {
   state = this.initialState;
@@ -200,6 +201,8 @@ export default class AsteroidRunDetail extends Component {
   render() {
     const { asteroid, inputs } = this.state;
 
+    console.log(inputs);
+
     const inp_columns = this.input_columns.map((col, i) => {
       return (
         <Column
@@ -254,6 +257,16 @@ export default class AsteroidRunDetail extends Component {
                   />
                 </DataTable>
               }
+            />
+          </div >
+
+          <div className="ui-g-12">
+            <PanelCostumize
+              title="Outputs"
+              // content={
+              TREE
+
+            // }
             />
           </div>
 

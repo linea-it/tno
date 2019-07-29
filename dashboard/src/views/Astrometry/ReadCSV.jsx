@@ -75,7 +75,6 @@ export default class ReadCSV extends Component {
 
     const { data, columns, title, filepath, loading } = this.state;
 
-    console.log(loading);
 
     const acolumns = columns.map((col) => {
       return (
