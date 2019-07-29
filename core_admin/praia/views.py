@@ -53,6 +53,25 @@ class PraiaRunViewSet(viewsets.ModelViewSet):
         return Response(result)
 
 
+    @detail_route(methods=['GET'])
+    def step_execution_time(self, request, pk=None):
+        """
+            Retorna o tempo de execucao de cada etapa do pipeline
+        """
+        astrometry_run = self.get_object()
+
+        result = dict( {
+            'success': True,
+            'execution_time': {
+                'ccd_images': astrometry_run.execution_ccd_images,
+                'bsp_jpl': astrometry_run.execution_bsp_jpl,
+                'catalog': astrometry_run.execution_catalog,
+                'astrometry': 0
+            }
+        })
+
+        return Response(result)
+
 class PraiaConfigurationViewSet(viewsets.ModelViewSet):
     queryset = Configuration.objects.all()
     serializer_class = ConfigurationSerializer

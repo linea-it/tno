@@ -10,30 +10,15 @@ import csv
 @api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
-        
-        run_id = request.query_params.get('run_id', None)
-        
-        astrometry_run = Run.objects.get(pk=run_id)
-
-#coletar o tempo de execucao de cada etapa do pipeline e fazer um endpoint pra retornar os tempos
         result = dict( {
             'success': True,
-            'execution_time': {
-                'execution_ccd_images': astrometry_run.execution_ccd_images,
-                'execution_bsp_jpl': astrometry_run.execution_bsp_jpl,
-                'execution_catalog': astrometry_run.execution_catalog,
-            }
         })
 
-#       resultset = astrometry_run.asteroids.all().values('status').annotate(total=Count('status')).order_by('total')     
     return Response(result)
 
 @api_view(['GET'])
 def import_skybot(request):
     """
-        TESTE
-
-        teste documentação
     """
     if request.method == 'GET':
 
@@ -134,7 +119,10 @@ def read_csv(request):
         columns = list()
         for col in df_temp.columns: 
             columns.append(col)
+
+        count = df_temp.shape[0]
         del df_temp
+
 
         # Ler o arquivo.
         df = pd.read_csv(
@@ -154,22 +142,13 @@ def read_csv(request):
                 row[header] = getattr(record, header)
 
             rows.append(row)
-        
-        # Saber a primeira linha 
-        # columns = list()
-        # if len(dict_list) > 0:
-        #     columns = dict_list[0].keys()
-        
+               
         result = dict({
             'success': True,
             'filepath': filepath,
-            'page': page,
-            'pageSize': pageSize,
-            'skiprows': skiprows,
             'columns': columns,
             'rows': rows,
-            # 'rows': dict_list,
-            # 'columns': columns,           
+            'count': count
         })
 
     return Response(result)

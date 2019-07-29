@@ -253,12 +253,8 @@ class AstrometryPipeline():
 
         ccd_images_finish = datetime.now(timezone.utc)
         ccd_images_execution_time = ccd_images_finish - ccd_images_start
-<<<<<<< HEAD
 
        
-=======
-              
->>>>>>> 0095aa73a6e6fcc01e3ee3775a3665c5a62efc11
         self.logger.info("Finished CCD Images list in %s" %
                          humanize.naturaldelta(ccd_images_execution_time))
 
