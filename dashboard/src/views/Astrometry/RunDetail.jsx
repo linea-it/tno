@@ -66,18 +66,36 @@ class PraiaDetail extends Component {
     return (
       <Toolbar>
         <div className="ui-toolbar">
-          <Button
-            label="Back"
-            icon="fa fa-undo"
-            onClick={() => this.onClickBackToAstometry()}
-          />
+          <div style={{ float: "left" }}>
+            <Button
+              label="Back"
+              icon="fa fa-undo"
+              onClick={() => this.onClickBackToAstometry()}
+            />
+          </div>
+          <div style={{ float: "right" }}>
+            <Button
+              label="Help"
+              className="p-button-raised"
+              icon="fa fa-info-circle"
+              iconPos="right"
+              tooltip="info"
+              onClick={this.info}
+            />
+          </div>
         </div>
       </Toolbar>
     );
   };
 
+  info = () => {
+    const history = this.props.history;
+    history.push({ pathname: `/astrometry_info/` });
+  };
+
   reload = () => {
     const { id } = this.state;
+
 
     this.api.getPraiaRunById({ id }).then(res => {
       const data = res.data;
@@ -181,6 +199,7 @@ class PraiaDetail extends Component {
       interval_condition,
       activeIndex,
     } = this.state;
+
 
     // const execute_time = [
     //   {

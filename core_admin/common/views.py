@@ -2,54 +2,23 @@ from praia.models import Run
 from django.db.models import Count
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+import pandas as pd
+import humanize
 import os
 import csv
 
 @api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
-        
-        run_id = request.query_params.get('run_id', None)
-        
-        astrometry_run = Run.objects.get(pk=run_id)
-
-        resultset = astrometry_run.asteroids.all().values('status').annotate(total=Count('status')).order_by('total')
-
         result = dict( {
             'success': True,
-            'teste': resultset,
-            'status': {
-                'success':0,
-                'failure' :0,
-                'warning' :0,
-                'not_executed':0,
-            }
         })
-
-        for status in resultset:
-            result['status'][status['status']] = status['total']
 
     return Response(result)
 
-     #csuccess = astrometry_run.asteroids.filter(status='success').count()
-        #cfailure = astrometry_run.asteroids.filter(status='failure').count()
-        #cwarning = astrometry_run.asteroids.filter(status='warning').count()
-        #cnotexecuted = astrometry_run.asteroids.filter(status='not_executed').count()
-              
-    #    result = dict( {
-    #            'status': {
-    #            'success': csuccess,
-    #            'failure' : cfailure,
-    #            'warning' : cwarning,
-    #            'notexecuted': cnotexecuted,
-    #        }
-    #    })
 @api_view(['GET'])
 def import_skybot(request):
     """
-        TESTE
-
-        teste documentação
     """
     if request.method == 'GET':
 
@@ -117,11 +86,21 @@ def read_csv(request):
     """ 
     Function to read .csv file 
     A filepath parameter is obrigatory to display the file. 
+    this view can be paginated, with page and pageSize parameters. 
+
+    eg: http://localhost/api/read_csv?filepath=/proccess/78/objects/Eris/gaia_dr2.csv&page=2&pageSize=5&format=json
+
+    for this exemple will be returned 5 rows for page 2.
+
     """    
     if request.method == 'GET':
-     
+    
         # Recuperar o filepath do arquivo a ser lido dos parametros da url. 
         filepath = request.query_params.get('filepath', None)
+        page = int(request.query_params.get('page', 1))
+        pageSize = int(request.query_params.get(
+            'pageSize', 100))
+    
 
         # Verificar se o parametro nao esta vazio, se estiver retorna mensagem avisando.
         if filepath == None or filepath == '':
@@ -136,24 +115,46 @@ def read_csv(request):
                 'success': False,
                 'message': 'filepath do not exist. (%s)' % filepath 
             }))
+                #    implementar paginacao na funcao csv
+        if page == 1:
+            skiprows = 1
+        else:
+            skiprows = (page * pageSize) - pageSize
+
+        df_temp = pd.read_csv(filepath, delimiter=';')
+        columns = list()
+        for col in df_temp.columns: 
+            columns.append(col)
+
+        count = df_temp.shape[0]
+        del df_temp
+
 
         # Ler o arquivo.
-       
-        with open(filepath, 'r') as csv_file: 
-            reader = csv.DictReader(csv_file, delimiter=';')
-            dict_list = []
-            for row in reader:
-                dict_list.append(row)
+        df = pd.read_csv(
+            filepath,
+            names=columns,
+            delimiter=';',
+            skiprows=skiprows,            
+            nrows=pageSize)
 
-        # Saber a primeira linha 
-        columns = list()
-        if len(dict_list) > 0:
-            columns = dict_list[0].keys()
-        
+        df = df.fillna(0)
+
+        rows = list()
+        for record in df.itertuples():
+            row = dict({})
+           
+            for header in columns:
+                row[header] = getattr(record, header)
+
+            rows.append(row)
+               
         result = dict({
             'success': True,
-            'rows': dict_list,
-            'columns': columns,           
+            'filepath': filepath,
+            'columns': columns,
+            'rows': rows,
+            'count': count
         })
 
     return Response(result)

@@ -61,6 +61,8 @@ class Praia extends Component {
   render() {
     const { record, dialogVisible, msg, msg_type } = this.state;
 
+    // console.log(record);
+
     const footer = (
       <div>
         <Button
