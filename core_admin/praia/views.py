@@ -53,6 +53,25 @@ class PraiaRunViewSet(viewsets.ModelViewSet):
         return Response(result)
 
 
+    @detail_route(methods=['GET'])
+    def step_execution_time(self, request, pk=None):
+        """
+            Retorna o tempo de execucao de cada etapa do pipeline
+        """
+        astrometry_run = self.get_object()
+
+        result = dict( {
+            'success': True,
+            'execution_time': {
+                'ccd_images': astrometry_run.execution_ccd_images,
+                'bsp_jpl': astrometry_run.execution_bsp_jpl,
+                'catalog': astrometry_run.execution_catalog,
+                'astrometry': 0
+            }
+        })
+
+        return Response(result)
+
 class PraiaConfigurationViewSet(viewsets.ModelViewSet):
     queryset = Configuration.objects.all()
     serializer_class = ConfigurationSerializer
@@ -76,6 +95,39 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
     filter_fields = ('id', 'astrometry_run', 'name', 'number', 'status',)
     ordering_fields = ('id', 'name', 'number',)
     ordering = ('name',)
+
+    @detail_route(methods=['GET'])
+    def get_neighbors(self, request, pk=None):  
+
+        # Saber qual e o Asteroid
+        asteroid = self.get_object()
+
+        # Saber todos os asteroids que estao na mesma rodada deste asteroid. 
+        # Filtrando a lista de asteroids pelo astrometry_run == asteroid.astrometry_run
+        aAsteroids = AstrometryAsteroid.objects.filter(astrometry_run=asteroid.astrometry_run)
+           
+        # Fazer a query para saber qual asteroid esta antes deste. 
+        # ordernar a lista de asteroids pelo id, e pegar o primeiro asteroid com id menor que id deste asteroid.
+        prev_id = None
+        try:
+            prev_model = aAsteroids.filter(id__lt=asteroid.id).order_by('-id').first()
+            prev_id = prev_model.id
+        except:
+            pass
+        # Fazer a query para saber qual asteroid esta depois. 
+        # Ordenar a lista pelo id, e pega o primeiro asteroid com id maior que este asteroid.
+        next_id = None
+        try:
+            next_model = aAsteroids.filter(id__gt=asteroid.id).order_by('id').first()
+            next_id = next_model.id
+        except:
+            pass       
+
+        return Response(dict({
+            "success": True,
+            "prev": prev_id, 
+            "next": next_id, 
+        }))
 
 
 class AstrometryInputViewSet(viewsets.ModelViewSet):
