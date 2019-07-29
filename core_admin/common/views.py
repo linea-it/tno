@@ -2,6 +2,7 @@ from praia.models import Run
 from django.db.models import Count
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+import pandas as pd
 import humanize
 import os
 import csv
@@ -14,8 +15,7 @@ def teste(request):
         
         astrometry_run = Run.objects.get(pk=run_id)
 
-#       resultset = astrometry_run.asteroids.all().values('status').annotate(total=Count('status')).order_by('total')
-
+#coletar o tempo de execucao de cada etapa do pipeline e fazer um endpoint pra retornar os tempos
         result = dict( {
             'success': True,
             'execution_time': {
@@ -24,7 +24,8 @@ def teste(request):
                 'execution_catalog': astrometry_run.execution_catalog,
             }
         })
-    
+
+#       resultset = astrometry_run.asteroids.all().values('status').annotate(total=Count('status')).order_by('total')     
     return Response(result)
 
 @api_view(['GET'])
@@ -102,9 +103,13 @@ def read_csv(request):
     A filepath parameter is obrigatory to display the file. 
     """    
     if request.method == 'GET':
-     
+    
         # Recuperar o filepath do arquivo a ser lido dos parametros da url. 
         filepath = request.query_params.get('filepath', None)
+        page = int(request.query_params.get('page', 1))
+        pageSize = int(request.query_params.get(
+            'pageSize', 100))
+    
 
         # Verificar se o parametro nao esta vazio, se estiver retorna mensagem avisando.
         if filepath == None or filepath == '':
@@ -119,24 +124,52 @@ def read_csv(request):
                 'success': False,
                 'message': 'filepath do not exist. (%s)' % filepath 
             }))
+                #    implementar paginacao na funcao csv
+        if page == 1:
+            skiprows = 1
+        else:
+            skiprows = (page * pageSize) - pageSize
+
+        df_temp = pd.read_csv(filepath, delimiter=';')
+        columns = list()
+        for col in df_temp.columns: 
+            columns.append(col)
+        del df_temp
 
         # Ler o arquivo.
-       
-        with open(filepath, 'r') as csv_file: 
-            reader = csv.DictReader(csv_file, delimiter=';')
-            dict_list = []
-            for row in reader:
-                dict_list.append(row)
+        df = pd.read_csv(
+            filepath,
+            names=columns,
+            delimiter=';',
+            skiprows=skiprows,            
+            nrows=pageSize)
 
+        df = df.fillna(0)
+
+        rows = list()
+        for record in df.itertuples():
+            row = dict({})
+           
+            for header in columns:
+                row[header] = getattr(record, header)
+
+            rows.append(row)
+        
         # Saber a primeira linha 
-        columns = list()
-        if len(dict_list) > 0:
-            columns = dict_list[0].keys()
+        # columns = list()
+        # if len(dict_list) > 0:
+        #     columns = dict_list[0].keys()
         
         result = dict({
             'success': True,
-            'rows': dict_list,
-            'columns': columns,           
+            'filepath': filepath,
+            'page': page,
+            'pageSize': pageSize,
+            'skiprows': skiprows,
+            'columns': columns,
+            'rows': rows,
+            # 'rows': dict_list,
+            # 'columns': columns,           
         })
 
     return Response(result)
