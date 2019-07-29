@@ -132,7 +132,7 @@ class PraiaSubmit extends Component {
       <Card className="none">
         <Form>
           <FormGroup>
-            <ControlLabel>Input</ControlLabel>
+            <ControlLabel>Input Object List</ControlLabel>
             <Async
               onChange={this.onSelectInput}
               value={input}
@@ -144,7 +144,7 @@ class PraiaSubmit extends Component {
             />
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Catalog</ControlLabel>
+            <ControlLabel>Reference Catalog</ControlLabel>
             <Async
               onChange={this.onSelectCatalog}
               value={catalog}
