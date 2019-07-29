@@ -98,7 +98,7 @@ class AstrometryPipeline():
 
         self.proccess = instance.proccess
 
-        # TODO Confirmar o por que o diretorio de astrometria informa ser criado mais as vezes nao e.
+        # TODO Confirmar o por que o diretorio de astrometria informa ser criado mas as vezes nao e.
         # Esperar o diretorio de processo ser criado.
         time.sleep(2)
 
@@ -253,10 +253,13 @@ class AstrometryPipeline():
 
         ccd_images_finish = datetime.now(timezone.utc)
         ccd_images_execution_time = ccd_images_finish - ccd_images_start
-              
+
+       
         self.logger.info("Finished CCD Images list in %s" %
                          humanize.naturaldelta(ccd_images_execution_time))
 
+        instance.execution_ccd_images = ccd_images_execution_time 
+        
         # ===================================================================================================
         # BSP JPL - Retrieve BSP JPL  for every asteroid
         # ===================================================================================================
@@ -323,6 +326,8 @@ class AstrometryPipeline():
 
         self.logger.info("Finished BSP JPL in %s" %
                          humanize.naturaldelta(bsp_jpl_execution_time))
+
+        instance.execution_bsp_jpl = bsp_jpl_execution_time
 
         # ===================================================================================================
         # GAIA Catalog - Generate GAIA Catalog for each asteroids
@@ -423,7 +428,8 @@ class AstrometryPipeline():
 
             self.logger.info("Finished Star Catalog in %s" %
                              humanize.naturaldelta(catalog_execution_time))
-                    
+
+        instance.execution_catalog = catalog_execution_time    
 
         # Fim da geracao dos inputs. 
 
