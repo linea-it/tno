@@ -51,6 +51,9 @@ class AstrometryPipeline():
         instance.count_failed = None
         instance.count_warning = None
         instance.count_not_executed = None
+        instance.execution_ccd_images = None
+        instance.execution_bsp_jpl = None
+        instance.execution_catalog = None
         instance.step = 0
         instance.error_msg = None
         instance.error_traceback = None
