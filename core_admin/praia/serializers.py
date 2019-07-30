@@ -36,6 +36,8 @@ class RunSerializer(serializers.ModelSerializer):
 
     h_time = serializers.SerializerMethodField()
 
+
+
     class Meta:
         model = Run
         fields = (
@@ -84,6 +86,12 @@ class RunSerializer(serializers.ModelSerializer):
     def get_proccess_displayname(self, obj):
         try:
             return "%s - %s" % (obj.proccess.id, obj.input_list.displayname)
+        except:
+            return None
+
+    def get_catalog_name(self, obj):
+        try:
+            return obj.catalog.display_name
         except:
             return None
 

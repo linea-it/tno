@@ -28,7 +28,6 @@ class PraiaDetail extends Component {
       interval_condition: false,
       count: 0,
       activeIndex: 0,
-      catalogName: null,
       status_data: null,
       data_execution_time: null,
     };
@@ -118,7 +117,7 @@ class PraiaDetail extends Component {
   };
 
   loadStatus = id => {
-    // Get asteroids status
+    // Get asteroids status Counts
     this.api.getAsteroidStatus({ id }).then(res => {
       const statusData = res.data;
       this.setState({ status_data: statusData.status });

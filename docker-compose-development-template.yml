@@ -30,6 +30,13 @@ services:
     depends_on:
       - database
 
+  # Praia Astrometry
+  praia_astrometry:
+    image: linea/tno_astrometry:latest
+    volumes:
+      - ${PROCCESS_DIR}:/data
+
+
   # NIMA
   nima:
     image: linea/nima:7
