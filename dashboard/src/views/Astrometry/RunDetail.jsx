@@ -67,14 +67,31 @@ class PraiaDetail extends Component {
     return (
       <Toolbar>
         <div className="ui-toolbar">
-          <Button
-            label="Back"
-            icon="fa fa-undo"
-            onClick={() => this.onClickBackToAstometry()}
-          />
+          <div style={{ float: 'left' }}>
+            <Button
+              label="Back"
+              icon="fa fa-undo"
+              onClick={() => this.onClickBackToAstometry()}
+            />
+          </div>
+          <div style={{ float: 'right' }}>
+            <Button
+              label="Help"
+              className="p-button-raised"
+              icon="fa fa-info-circle"
+              iconPos="right"
+              tooltip="info"
+              onClick={this.info}
+            />
+          </div>
         </div>
       </Toolbar>
     );
+  };
+
+  info = () => {
+    const history = this.props.history;
+    history.push({ pathname: `/astrometry_info/` });
   };
 
   reload = () => {
@@ -85,13 +102,6 @@ class PraiaDetail extends Component {
 
       this.setState({
         data: data,
-        // interval_condition: data.status === 'running' ? true : false,
-
-        catalogName:
-          data.catalog !== null
-            ? this.loadCatalogName(data.catalog)
-            : 'Not availabe name',
-
         interval_condition:
           data.status === 'running'
             ? true
@@ -123,12 +133,6 @@ class PraiaDetail extends Component {
     });
   };
 
-  loadCatalogName = id => {
-    this.api.getCatalogById({ id }).then(res => {
-      const catalog = res.data.results[0].display_name;
-      this.setState({ catalogName: catalog });
-    });
-  };
   renderStatus = () => {
     const { status_data } = this.state;
 
@@ -241,7 +245,7 @@ class PraiaDetail extends Component {
       { name: 'Start', value: data.h_time },
       { name: 'Execution', value: data.h_execution_time },
       { name: 'Asteroids', value: data.count_objects },
-      { name: 'Catalog', value: this.state.catalogName },
+      { name: 'Reference Catalog', value: data.catalog_name },
     ];
 
     const items = [

@@ -44,7 +44,7 @@ services:
 
   # Servidor Web NGINX
   frontend:
-    build: ./frontend
+    build: ./dashboard
     ports:
       - 80:8080
     volumes:

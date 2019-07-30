@@ -17,6 +17,8 @@ class RunSerializer(serializers.ModelSerializer):
     catalog = serializers.PrimaryKeyRelatedField(
         queryset=Catalog.objects.all(), many=False)
 
+    catalog_name = serializers.SerializerMethodField()
+
     start_time = serializers.SerializerMethodField()
 
     finish_time = serializers.SerializerMethodField()
@@ -44,6 +46,7 @@ class RunSerializer(serializers.ModelSerializer):
             'execution_time',
             'configuration',
             'catalog',
+            'catalog_name',
             'input_list',
             'count_objects',
             'status',
@@ -108,6 +111,12 @@ class RunSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    def get_catalog_name(self, obj):
+        try:
+            return obj.catalog.display_name
+
+        except:
+            return None
 
 class ConfigurationSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()

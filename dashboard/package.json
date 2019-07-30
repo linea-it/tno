@@ -31,6 +31,7 @@
     "react-images": "^0.5.19",
     "react-interval": "^2.0.2",
     "react-lightbox-component": "^1.2.1",
+    "react-markdown": "^4.1.0",
     "react-notification-system": "^0.2.15",
     "react-notifications": "^1.4.3",
     "react-numeric-input": "^2.2.3",
