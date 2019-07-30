@@ -13,6 +13,7 @@ import { withRouter } from 'react-router-dom';
 import { Toolbar } from 'primereact/toolbar';
 import ReactInterval from 'react-interval';
 import Stepper from 'react-stepper-horizontal';
+import AstrometryTimeProfile from './TimeProfile';
 
 class PraiaDetail extends Component {
   state = this.initialState;
@@ -28,6 +29,7 @@ class PraiaDetail extends Component {
       count: 0,
       activeIndex: 0,
       status_data: null,
+      data_execution_time: null,
     };
   }
 
@@ -36,11 +38,9 @@ class PraiaDetail extends Component {
       match: { params },
     } = this.props;
 
-
     this.setState(
       {
         id: parseInt(params.id, 10),
-
       },
       () => this.reload()
     );
@@ -66,14 +66,14 @@ class PraiaDetail extends Component {
     return (
       <Toolbar>
         <div className="ui-toolbar">
-          <div style={{ float: "left" }}>
+          <div style={{ float: 'left' }}>
             <Button
               label="Back"
               icon="fa fa-undo"
               onClick={() => this.onClickBackToAstometry()}
             />
           </div>
-          <div style={{ float: "right" }}>
+          <div style={{ float: 'right' }}>
             <Button
               label="Help"
               className="p-button-raised"
@@ -96,7 +96,6 @@ class PraiaDetail extends Component {
   reload = () => {
     const { id } = this.state;
 
-
     this.api.getPraiaRunById({ id }).then(res => {
       const data = res.data;
 
@@ -114,6 +113,7 @@ class PraiaDetail extends Component {
     });
 
     this.loadStatus(id);
+    this.loadExecutionTime(id);
   };
 
   loadStatus = id => {
@@ -121,6 +121,14 @@ class PraiaDetail extends Component {
     this.api.getAsteroidStatus({ id }).then(res => {
       const statusData = res.data;
       this.setState({ status_data: statusData.status });
+    });
+  };
+
+  loadExecutionTime = id => {
+    //Request for execution time
+    this.api.getExecutionTimeById({ id }).then(res => {
+      const execution_data = res.data.execution_time;
+      this.setState({ data_execution_time: execution_data });
     });
   };
 
@@ -173,9 +181,10 @@ class PraiaDetail extends Component {
     return <DonutStats data={stats_status} fill={colors} />;
   };
 
-  reloadPie = () => {
-    this.renderStatus();
-  };
+  // reloadPie = () => {
+  //   this.renderStatus();
+
+  // };
 
   interval = () => {
     const { data, count } = this.state;
@@ -192,6 +201,35 @@ class PraiaDetail extends Component {
     }
   };
 
+  renderExecutionTime = () => {
+    const execution_time = this.state.data_execution_time;
+
+    const colors = ['#64b5f6', '#1e88e5', '#3949ab', '#311b92'];
+
+    const stats_status = [
+      {
+        name: 'Ccd Images',
+        value:
+          execution_time !== null ? Math.ceil(execution_time.ccd_images) : 0,
+      },
+      {
+        name: 'Bsp_Jpl',
+        value: execution_time !== null ? Math.ceil(execution_time.bsp_jpl) : 0,
+      },
+      {
+        name: 'Catalog',
+        value: execution_time !== null ? Math.ceil(execution_time.catalog) : 0,
+      },
+      {
+        name: 'Astrometry',
+        value:
+          execution_time !== null ? Math.ceil(execution_time.astrometry) : 0,
+      },
+    ];
+
+    return <DonutStats data={stats_status} fill={colors} />;
+  };
+
   render() {
     const {
       data,
@@ -200,42 +238,14 @@ class PraiaDetail extends Component {
       activeIndex,
     } = this.state;
 
-
-    // const execute_time = [
-    //   {
-    //     legend: 'Download',
-    //     label: this.format_execution_time(data.execution_download_time),
-    //     value: Math.round(
-    //       moment.duration(data.execution_download_time).asSeconds()
-    //     ),
-    //     colorIcon: 'primary',
-    //     grid: ['6'],
-    //   },
-    //   {
-    //     legend: 'NIMA',
-    //     label: this.format_execution_time(data.execution_nima_time),
-    //     value: Math.round(
-    //       moment.duration(data.execution_nima_time).asSeconds()
-    //     ),
-    //     colorIcon: 'info',
-    //     grid: ['6'],
-    //   },
-    // ];
-
     const stats = [
       { name: 'Proccess', value: data.proccess_displayname },
       { name: 'Owner', value: data.owner },
       { name: 'Start', value: data.h_time },
       { name: 'Execution', value: data.h_execution_time },
       { name: 'Asteroids', value: data.count_objects },
-      { name: 'Catalog', value: data.catalog_name },
+      { name: 'Reference Catalog', value: data.catalog_name },
     ];
-
-    // (0,'CCD Images'),
-    // (1,'Bsp Jpl'),
-    // (2,'Gaia Catalog'),
-    // (3,'Praia Astrometry'),
-    // (4,'Registered'))
 
     const items = [
       { title: 'CCD Images' },
@@ -279,21 +289,19 @@ class PraiaDetail extends Component {
             <div className="ui-g-4 ui-md-12 ui-sm-1">
               <PanelCostumize
                 title="Step Stats"
-              // content={<StepStats info={execute_time} />}
+                // content={<StepStats info={execute_time} />}
               />
             </div>
           </div>
-          <div className="ui-g-4 ui-md-4">
-            <PanelCostumize
-              title="Execution Time"
-              content={
-                <Card>
-                  {/* <RefineOrbitTimeProfile data={this.state.time_profile} /> */}
-                </Card>
-              }
-            />
-          </div>
 
+          <div className="ui-g-4 ui-md-4 ui-sm-1">
+            <div className="ui-g-4 ui-md-12 ui-sm-1">
+              <PanelCostumize
+                title="Execution Time"
+                content={this.renderExecutionTime()}
+              />
+            </div>
+          </div>
           <div className="ui-g-12">
             <Stepper steps={items} activeStep={activeIndex} />
           </div>
@@ -313,7 +321,7 @@ class PraiaDetail extends Component {
         </div>
       </div>
     );
-  };
+  }
 }
 
 export default withRouter(PraiaDetail);

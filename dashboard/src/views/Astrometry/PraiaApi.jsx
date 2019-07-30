@@ -66,6 +66,10 @@ class PraiaApi {
 
   getPraiaRunById = ({ id }) => axios.get(`${this.api}/praia_run/${id}/`);
 
+  getExecutionTimeById = ({ id }) => {
+    return axios.get(`${this.api}/praia_run/${id}/step_execution_time/`);
+  }
+
   // dados na table do primereacts
   getPraiaData = id => axios.get(`${this.api}/praia_run/${id}`);
 
