@@ -506,6 +506,7 @@ class AstrometryPipeline():
             self.logger.info(
                 "Trying to create condor log directory. [ %s ]" % log_dir)
 
+            asteroid_alias = obj.name.replace(' ', '')
             payload = dict({
                 "queues": 1,
                 "submit_params": {
@@ -516,7 +517,7 @@ class AstrometryPipeline():
                     # "+RequiresWholeMachine": "True",
                     "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
                     "executable": "/app/run.py",
-                    "arguments": "%s --path %s --catalog %s" % (obj.name, obj.relative_path, catalog_name),
+                    "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
                     "Log": os.path.join(log_dir, "astrometry.log"),
                     "Output": os.path.join(log_dir, "astrometry.out"),
                     "Error": os.path.join(log_dir, "astrometry.err")
