@@ -1,5 +1,6 @@
 from tno.models import Proccess
 import os
+import stat
 import errno
 import logging
 from random import randrange
@@ -51,6 +52,9 @@ class AstrometryPipeline():
         instance.count_failed = None
         instance.count_warning = None
         instance.count_not_executed = None
+        instance.execution_ccd_images = None
+        instance.execution_bsp_jpl = None
+        instance.execution_catalog = None
         instance.step = 0
         instance.error_msg = None
         instance.error_traceback = None
@@ -120,7 +124,7 @@ class AstrometryPipeline():
 
             if os.path.exists(directory):
                 # Alterar a Permissao do Diretorio
-                os.chmod(directory, 0o775)
+                os.chmod(directory, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
 
                 self.logger.info("Astrometry directory created")
                 self.logger.debug("Directory: %s" % directory)
@@ -166,6 +170,17 @@ class AstrometryPipeline():
 
                 obj_alias = obj.get("name").replace(" ", "_")
                 obj_relative_path = os.path.join(self.objects_dir, obj_alias)
+
+                try:
+                    if not os.path.exists(obj_relative_path):
+                        os.makedirs(obj_relative_path)
+                        time.sleep(2)
+                    os.chmod(obj_relative_path, stat.S_IRWXU |
+                             stat.S_IRWXG | stat.S_IRWXO)
+                except OSError as e:
+                    msg = "Failed to create Asteroid directory [ %s ]" % obj_relative_path
+                    self.logger.error(msg)
+                    self.on_error(instance, e)
 
                 asteroidModel, created = AstrometryAsteroid.objects.update_or_create(
                     astrometry_run=instance,
@@ -475,13 +490,23 @@ class AstrometryPipeline():
             obj.save()
 
             # Criar o diretorio de log para condor
+            relative_condor_dir = os.path.join(obj.relative_path, 'condor')
+            if not os.path.exists(relative_condor_dir):
+                os.makedirs(relative_condor_dir)
+                time.sleep(2)
+                os.chmod(relative_condor_dir, stat.S_IRWXU |
+                         stat.S_IRWXG | stat.S_IRWXO)
+
+            if not os.path.exists(relative_condor_dir):
+                raise Exception("Failed to create condor log directory.")
+
             obj_absolute_path = os.path.join(
                 absolute_archive_path, obj.relative_path.strip('/'))
             log_dir = os.path.join(obj_absolute_path, 'condor')
-            if not os.path.exists(log_dir):
-                os.makedirs(log_dir)
-            os.chmod(log_dir, 1777)
+            self.logger.info(
+                "Trying to create condor log directory. [ %s ]" % log_dir)
 
+            asteroid_alias = obj.name.replace(' ', '')
             payload = dict({
                 "queues": 1,
                 "submit_params": {
@@ -492,7 +517,7 @@ class AstrometryPipeline():
                     # "+RequiresWholeMachine": "True",
                     "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
                     "executable": "/app/run.py",
-                    "arguments": "%s --path %s --catalog %s" % (obj.name, obj.relative_path, catalog_name),
+                    "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
                     "Log": os.path.join(log_dir, "astrometry.log"),
                     "Output": os.path.join(log_dir, "astrometry.out"),
                     "Error": os.path.join(log_dir, "astrometry.err")
