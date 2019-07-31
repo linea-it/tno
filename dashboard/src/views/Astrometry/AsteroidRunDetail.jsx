@@ -8,6 +8,11 @@ import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize';
+import jsonData from '../Astrometry/Astrometry_Json/test_Json.json';
+import treeNodeJson from '../Astrometry/Astrometry_Json/treeNodeJson.json';
+import { TreeTable } from 'primereact/treetable';
+import humanize from 'humanize';
+
 
 export default class AsteroidRunDetail extends Component {
   state = this.initialState;
@@ -30,6 +35,8 @@ export default class AsteroidRunDetail extends Component {
       praiaId: 0,
       proccess: null,
       catalogName: null,
+
+
     };
   }
 
@@ -38,22 +45,37 @@ export default class AsteroidRunDetail extends Component {
       field: 'input_type',
       header: 'Input Type',
       sortable: true,
+
     },
     {
       field: 'h_file_size',
       header: 'File Size',
       sortable: true,
+      style: { textAlign: 'center' }
     },
 
     {
       field: 'filename',
       header: 'Filename',
       sortable: true,
+      style: { textAlign: 'center' }
     },
 
 
   ];
 
+
+  componentWillMount() {
+    //Read JSON File hardcoded
+    this.json_file = JSON.parse(JSON.stringify(jsonData));
+    // this.setState({ jsonFile: JSON.parse(JSON.stringify(jsonData)) });
+
+
+
+    this.treeNode = JSON.parse(JSON.stringify(treeNodeJson));
+
+
+  };
 
   componentDidMount() {
     const {
@@ -197,8 +219,66 @@ export default class AsteroidRunDetail extends Component {
     }
   }
 
+
+
+  actionTemplateTree = (rowData) => {
+    return <Button
+      type="button"
+      icon="pi pi-search"
+      className="p-button-success"
+      style={{ marginRight: '.5em' }}>
+    </Button>
+
+  }
+
+  format_ccd = (ccd_name) => {
+    let arr = ccd_name.split("_");
+    console.log(arr[0]);
+
+    return arr[0] + " " + arr[1];
+  };
+
   render() {
     const { asteroid, inputs } = this.state;
+
+
+
+    let a = []
+    let outputs = this.json_file.outputs
+
+    Object.keys(outputs).forEach((ccd_name, index) => {
+
+      let a_childrens = []
+      if (outputs[ccd_name].length > 0) {
+        outputs[ccd_name].forEach((file, idx) => {
+          let children = {
+            data: {
+              filename: file.filename,
+              catalog: file.catalog,
+              filepath: file.filepath,
+              file_size: humanize.filesize(file.file_size),
+              extension: file.extension,
+
+            },
+            children: []
+          }
+          a_childrens.push(children);
+        })
+      }
+
+      let ccd = {
+        data: {
+          // filename: ccd_name.split("_", [2]) + ' ( ' + a_childrens.length + ' files)'
+          filename: this.format_ccd(ccd_name) + ' ( ' + a_childrens.length + ' files)'
+
+        },
+        children: a_childrens
+      }
+
+      a.push(ccd);
+    })
+
+
 
     const inp_columns = this.input_columns.map((col, i) => {
       return (
@@ -223,7 +303,7 @@ export default class AsteroidRunDetail extends Component {
       { name: 'Executed', value: asteroid.h_time },
       { name: 'Execution Time', value: asteroid.h_execution_time },
       { name: 'Size', value: asteroid.h_size },
-      { name: 'Catalog', value: this.state.catalogName },
+      { name: 'Reference Catalog', value: this.state.catalogName },
     ];
 
     return (
@@ -248,13 +328,32 @@ export default class AsteroidRunDetail extends Component {
                   sortOrder={1}
                 >
                   {inp_columns}
-                  <Column
+                  {/* <Column
                     style={{ textAlign: 'center' }}
                     body={this.actionTemplate}
-                  />
+                  /> */}
                 </DataTable>
               }
             />
+          </div>
+
+
+
+          <div className="ui-g-12">
+            <PanelCostumize
+              title="Outputs"
+              content={
+                <TreeTable value={a} resizableColumns={true} scrollable scrollHeight="200px" columnResizeMode="expand">
+                  <Column field="filename" header="Filename" expander style={{ width: '30%' }} ></Column>
+                  <Column field="catalog" header="Catalog" style={{ textAlign: 'center' }}></Column>
+                  <Column field="file_size" header="Size" style={{ textAlign: 'center' }}></Column>
+                  <Column field="extension" header="Type" style={{ textAlign: 'center' }}></Column>
+                  <Column body={this.actionTemplateTree}></Column>
+                </TreeTable>
+
+              }
+            />
+
           </div>
 
 
