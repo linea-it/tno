@@ -13,6 +13,10 @@ import treeNodeJson from '../Astrometry/Astrometry_Json/treeNodeJson.json';
 import { TreeTable } from 'primereact/treetable';
 import humanize from 'humanize';
 
+import 'primereact/resources/themes/nova-light/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+
 
 export default class AsteroidRunDetail extends Component {
   state = this.initialState;
@@ -35,6 +39,8 @@ export default class AsteroidRunDetail extends Component {
       praiaId: 0,
       proccess: null,
       catalogName: null,
+      selectedNodeKey: null,
+
 
 
     };
@@ -233,9 +239,13 @@ export default class AsteroidRunDetail extends Component {
 
   format_ccd = (ccd_name) => {
     let arr = ccd_name.split("_");
-    console.log(arr[0]);
 
     return arr[0] + " " + arr[1];
+  };
+
+
+  handleTreeRowClick = (row) => {
+    console.log(row);
   };
 
   render() {
@@ -268,7 +278,7 @@ export default class AsteroidRunDetail extends Component {
 
       let ccd = {
         data: {
-          // filename: ccd_name.split("_", [2]) + ' ( ' + a_childrens.length + ' files)'
+
           filename: this.format_ccd(ccd_name) + ' ( ' + a_childrens.length + ' files)'
 
         },
@@ -338,12 +348,11 @@ export default class AsteroidRunDetail extends Component {
           </div>
 
 
-
           <div className="ui-g-12">
             <PanelCostumize
               title="Outputs"
               content={
-                <TreeTable value={a} resizableColumns={true} scrollable scrollHeight="200px" columnResizeMode="expand">
+                <TreeTable value={a} selectionMode="single" onRowClick={this.handleTreeRowClick} selectionKeys={this.state.selectedNodeKey} onSelectionChange={e => this.setState({ selectedNodeKey: e.value })} resizableColumns={true} scrollable scrollHeight="200px" columnResizeMode="expand" >
                   <Column field="filename" header="Filename" expander style={{ width: '30%' }} ></Column>
                   <Column field="catalog" header="Catalog" style={{ textAlign: 'center' }}></Column>
                   <Column field="file_size" header="Size" style={{ textAlign: 'center' }}></Column>
