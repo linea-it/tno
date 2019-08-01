@@ -517,14 +517,14 @@ class AstrometryPipeline():
                     # "+RequiresWholeMachine": "True",
                     "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
                     "executable": "/app/run.py",
-                    "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
-                    "Log": os.path.join(log_dir, "astrometry.log"),
-                    "Output": os.path.join(log_dir, "astrometry.out"),
-                    "Error": os.path.join(log_dir, "astrometry.err")
-                    # "arguments": "Eris --path /proccess/4/objects/Eris --catalog gaia2",
-                    # "Log": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).log",
-                    # "Output": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).out",
-                    # "Error": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).err"
+                    # "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
+                    # "Log": os.path.join(log_dir, "astrometry.log"),
+                    # "Output": os.path.join(log_dir, "astrometry.out"),
+                    # "Error": os.path.join(log_dir, "astrometry.err")
+                    "arguments": "Eris --path /proccess/4/objects/Eris --catalog gaia2",
+                    "Log": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).log",
+                    "Output": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).out",
+                    "Error": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).err"
                 }
             })
             self.logger.debug("payload: ")
@@ -583,35 +583,10 @@ class AstrometryPipeline():
 
         self.logger.info("Finish")
 
+
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"
 
-    # def register_input(self, asteroid_input):
-    #     try:
-    #         asteroid = self.asteroids.get(name=asteroid_input["asteroid"])
-
-    #         input_model, create = AstrometryInput.objects.update_or_create(
-    #             asteroid=asteroid,
-    #             input_type=asteroid_input["input_type"],
-    #             defaults={
-    #                 'filename': asteroid_input["filename"],
-    #                 'file_size': asteroid_input["file_size"],
-    #                 'file_type': asteroid_input["file_type"],
-    #                 'file_path': asteroid_input["file_path"],
-    #                 'error_msg': asteroid_input["error_msg"],
-    #                 'start_time': asteroid_input["start_time"],
-    #                 'finish_time': asteroid_input["finish_time"],
-    #                 'execution_time': asteroid_input["execution_time"],
-    #             })
-    #         input_model.save()
-
-    #         self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (
-    #             input_model.input_type, asteroid.name, input_model.file_path))
-
-    #         return input_model
-
-    #     except Exception as e:
-    #         self.on_error(self.instance, e)
 
     def on_error(self, instance, error):
         trace = traceback.format_exc()

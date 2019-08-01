@@ -38,3 +38,4 @@ def register_condor_job(astrometryRun, asteroid, clusterid, procid, job_status):
     job.save()
 
     return job
+
