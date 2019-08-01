@@ -203,6 +203,84 @@ export default class AsteroidRunDetail extends Component {
      return arr[0] + " " + arr[1];
   };
 
+  teste = e => {
+    console.log("teste")
+    return (<div>TESTE</div>)
+  }
+
+  renderOutputTreeTable = outputs => {
+    const columns = [
+      {
+        field: 'filename',
+        header: 'Filename',
+        style: {width: '30%'},
+        expander: true,
+        sortable: true,
+      },
+      {
+        field: 'catalog',
+        header: 'Reference Catalog',
+        sortable: true,
+      },
+      {
+        field: 'file_size',
+        header: 'File size',
+        sortable: false,
+      },
+      {
+        field: 'extension',
+        header: 'File type',
+        sortable: true,
+      },
+      {
+        field: 'actionBtn',
+        style: {
+          textAlign: 'center',
+          width: 80,
+        }
+      }
+    ];
+
+    const elColumns = columns.map((col, i) => {
+      return (
+        <Column
+          key={col.field}
+          field={col.field}
+          header={col.header}
+          sortable={col.sortable}
+          style={col.style}
+          expander={col.expander ? true : false}
+        />
+      );
+    });
+    return (
+      <TreeTable
+      value={outputs}
+      resizableColumns={true}
+      scrollable
+      scrollHeight="200px"
+      columnResizeMode="expand"
+    >
+    {elColumns}
+    </TreeTable>      
+    );
+
+  }
+
+  openFileBtn = record => {
+    return (
+      <Button
+        label="Back"
+        icon="fa fa-undo"
+        onClick={() => this.handleClickOutput(record)}
+      />
+    )
+  }
+
+  handleClickOutput = record => {
+    console.log("handleClickOutput(%o)", record);
+  }
+
   render() {
     const { asteroid, inputs } = this.state;
 
@@ -220,6 +298,7 @@ export default class AsteroidRunDetail extends Component {
               filepath: file.filepath,
               // file_size: humanize.filesize(file.file_size),
               extension: file.extension,
+              actionBtn: this.openFileBtn(file),
             },
             children: [],
           };
@@ -295,42 +374,10 @@ export default class AsteroidRunDetail extends Component {
             />
           </div>
           <div className="ui-g-12">
-            <TreeTable
-              value={a}
-              selectionMode="single"
-              onRowClick={this.handleTreeRowClick}
-              selectionKeys={this.state.selectedNodeKey}
-              onSelectionChange={e =>
-                this.setState({ selectedNodeKey: e.value })
-              }
-              resizableColumns={true}
-              scrollable
-              scrollHeight="200px"
-              columnResizeMode="expand"
-            >
-              <Column
-                field="filename"
-                header="Filename"
-                expander
-                style={{ width: '30%' }}
-              />
-              <Column
-                field="catalog"
-                header="Catalog"
-                style={{ textAlign: 'center' }}
-              />
-              <Column
-                field="file_size"
-                header="Size"
-                style={{ textAlign: 'center' }}
-              />
-              <Column
-                field="extension"
-                header="Type"
-                style={{ textAlign: 'center' }}
-              />
-              <Column body={this.actionTemplateTree} />
-            </TreeTable>
+            <PanelCostumize
+              title="Inputs"
+              content={this.renderOutputTreeTable(a)}
+            />
           </div>
         </div>
       </div>
