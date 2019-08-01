@@ -10,7 +10,7 @@ import {
   Legend,
 } from 'recharts';
 
-import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import PanelCostumize from 'components/Panel/PanelCostumize';

@@ -13,7 +13,7 @@ import { formatColumnHeader, coordinateFormater } from 'utils';
 import PanelCostumize from 'components/Panel/PanelCostumize';
 import { Card } from 'primereact/card';
 
-import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { InputText } from 'primereact/inputtext';

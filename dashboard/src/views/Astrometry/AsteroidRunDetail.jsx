@@ -349,10 +349,36 @@ export default class AsteroidRunDetail extends Component {
 
 
           <div className="ui-g-12">
-            <PanelCostumize
+            <TreeTable 
+                value={a} 
+                selectionMode="single" 
+                onRowClick={this.handleTreeRowClick} 
+                selectionKeys={this.state.selectedNodeKey} 
+                onSelectionChange={e => this.setState({ selectedNodeKey: e.value })} 
+                resizableColumns={true} 
+                scrollable 
+                scrollHeight="200px" 
+                columnResizeMode="expand" 
+            >
+                <Column field="filename" header="Filename" expander style={{ width: '30%' }} ></Column>
+                <Column field="catalog" header="Catalog" style={{ textAlign: 'center' }}></Column>
+                <Column field="file_size" header="Size" style={{ textAlign: 'center' }}></Column>
+                <Column field="extension" header="Type" style={{ textAlign: 'center' }}></Column>
+                <Column body={this.actionTemplateTree}></Column>
+            </TreeTable>          
+            {/* <PanelCostumize
               title="Outputs"
               content={
-                <TreeTable value={a} selectionMode="single" onRowClick={this.handleTreeRowClick} selectionKeys={this.state.selectedNodeKey} onSelectionChange={e => this.setState({ selectedNodeKey: e.value })} resizableColumns={true} scrollable scrollHeight="200px" columnResizeMode="expand" >
+                <TreeTable 
+                  value={a} 
+                  selectionMode="single" 
+                  onRowClick={this.handleTreeRowClick} 
+                  selectionKeys={this.state.selectedNodeKey} 
+                  onSelectionChange={e => this.setState({ selectedNodeKey: e.value })} 
+                  resizableColumns={true} 
+                  scrollable 
+                  scrollHeight="200px" 
+                  columnResizeMode="expand" >
                   <Column field="filename" header="Filename" expander style={{ width: '30%' }} ></Column>
                   <Column field="catalog" header="Catalog" style={{ textAlign: 'center' }}></Column>
                   <Column field="file_size" header="Size" style={{ textAlign: 'center' }}></Column>
@@ -361,7 +387,7 @@ export default class AsteroidRunDetail extends Component {
                 </TreeTable>
 
               }
-            />
+            /> */}
 
           </div>
 

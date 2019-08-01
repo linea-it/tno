@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { FormGroup, ControlLabel, Checkbox } from 'react-bootstrap';
 import NumericInput from 'react-numeric-input';
 import PropTypes from 'prop-types';
-import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { Button } from 'primereact/button';
