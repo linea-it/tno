@@ -12,7 +12,8 @@ from praia.models import Run
 import logging
 import requests
 from tno.condor import check_condor_job
-
+from datetime import datetime
+from praia.pipeline.register import register_astrometry_outputs
 logger = logging.getLogger("astrometry")
 
 
@@ -39,12 +40,70 @@ logger = logging.getLogger("astrometry")
 #     except Exception as e:
 #         logger.error(e)
 #         raise
+def update_status(job, condor_job):
+    """
+        Condor status
+        0 - 'Unexpanded'
+        1 - 'Idle'
+        2 - 'Running'
+        3 - 'Removed' 
+        4 - 'Completed' 
+        5 - 'Held' 
+        6 - 'Submission'
+
+    """
+    logger.debug("Condor Job Status: %s " % condor_job['JobStatus'])
+
+    job.global_job_id = condor_job['GlobalJobId']
+    job.cluster_name = condor_job['ClusterName']
+    job.job_status = int(condor_job['JobStatus'])
+
+    try:
+        job.remote_host = condor_job['RemoteHost']
+        job.args = condor_job['Args']
+        job.start_time = datetime.fromtimestamp(int(condor_job['JobStartDate']))
+    except Exception as e:
+        logger.warning(e)
+
+
+    if condor_job['JobStatus'] == '1':
+        logger.debug("Job in Idle")
+
+        job.asteroid.status = 'idle'
+        job.asteroid.save()
+
+    elif condor_job['JobStatus'] == '2':
+        logger.debug("Job Running")
+        job.asteroid.status = 'running'
+        job.asteroid.save()
+
+    elif condor_job['JobStatus'] == '4':
+        logger.debug("Job Completed")
+
+        # TODO chamar a funcao que registra os resultados.
+        register_astrometry_outputs(job.astrometry_run.pk, job.asteroid.name)
+
+    elif condor_job['JobStatus'] == '5':
+        logger.debug("Job Hold")
+        job.asteroid.status('failure')
+        job.asteroid.error_msg(
+            "Condor job has a Hold status and has not been executed. Check the condor log for more details.")
+        job.asteroid.save()
+
+    else:
+        logger.debug("Job with untreated status. JobStatus [%s] " % condor_job['JobStatus'])
+        job.asteroid.status('failure')
+        job.asteroid.error_msg(
+            "job in the condor returned a status not handled by the application. Check the condor log for more details.")
+
+
+    job.save()
 
 
 @api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
-
+        logger.debug("------------------------------------")
         # Saber as Rodadas de Astrometria que estão com status running.
         runs = Run.objects.filter(status='running')
 
@@ -52,7 +111,7 @@ def teste(request):
         # Para cada running recupera os jobs
         for astrometry_run in runs:
 
-            jobs = astrometry_run.condor_jobs.all()
+            jobs = astrometry_run.condor_jobs.all().exclude(job_status__gt=2)
 
             # Para cada Job verifica o status no Cluster
             for job in jobs:
@@ -62,12 +121,22 @@ def teste(request):
                 logger.debug(result)
                 if result is None:
                     logger.debug("Parece que acabou")
+                    # TODO chamar a funcao que registra os resultados.
+
+                    # Change Job Status to 4 - Complete
+                    job.job_status = 4 
+                    job.save()
+
+                    register_astrometry_outputs(job.astrometry_run.pk, job.asteroid.name)
+
+                    # job.asteroid.status = 'success'
+                    # job.asteroid.save()                    
                 else:
                     if result['JobStatus'] != job.job_status:
                         logger.debug("Status Diferente fazer alguma coisa")
+                        update_status(job, result)
 
-                    
-
+        logger.debug("------------------------------------")
 
         result = dict({
             'success': True,

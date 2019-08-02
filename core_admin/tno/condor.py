@@ -3,35 +3,19 @@ import logging
 from datetime import datetime
 import requests
 
-def teste():
-    logger = logging.getLogger("condor")
-
-    msg = "Teste Check Jobs: %s" % datetime.now()
-    logger.debug(msg)
-    print(msg)
-
-    from praia.models import Run
-
-    running_process = Run.objects.filter(status='running')
-
-    for process in running_process:
-        pass
-        # asteroids = 
-
-    logger.debug(len(running_proccess))
-
-
 def start_check_jobs():
 
     # print("Start Check Jobs")
     
     logger = logging.getLogger("condor")
 
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(teste, 'interval', minutes=1)
-    scheduler.start()
+    # scheduler = BackgroundScheduler()
+    # scheduler.add_job(teste, 'interval', minutes=1)
+    # scheduler.start()
 
     # logger.debug("Start Check Jobs")
+
+    pass
 
 
 

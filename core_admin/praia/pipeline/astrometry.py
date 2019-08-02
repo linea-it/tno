@@ -486,9 +486,6 @@ class AstrometryPipeline():
             self.logger.info(
                 "Submit Astrometry Job [ %s / %s ] Object: [ %s ]" % (idx, self.asteroids.count(), obj.name))
 
-            obj.status = 'idle'
-            obj.save()
-
             # Criar o diretorio de log para condor
             relative_condor_dir = os.path.join(obj.relative_path, 'condor')
             if not os.path.exists(relative_condor_dir):
@@ -554,9 +551,16 @@ class AstrometryPipeline():
                         self.logger.info("Job in Condor was created. ClusterId [ %s ] ProcId [ %s ]" % (
                             condorJob.clusterid, condorJob.procid))
 
+                    obj.status = 'pending'
+                    obj.save()
+
             except Exception as e:
                 # TODO Tratar erro na submissao de jobs
-                self.on_error(self.instance, e)
+                obj.status = 'failure'
+                obj.error_msg("Job submission failed. Error: %s" % e)
+                obj.save()                
+                # self.on_error(self.instance, e)
+
 
         # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
 
