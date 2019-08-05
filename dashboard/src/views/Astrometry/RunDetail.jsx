@@ -114,6 +114,11 @@ class PraiaDetail extends Component {
 
     this.loadStatus(id);
     this.loadExecutionTime(id);
+
+
+    // TODO deve sair daqui, so para testes
+    this.api.checkJobStatus()
+
   };
 
   loadStatus = id => {

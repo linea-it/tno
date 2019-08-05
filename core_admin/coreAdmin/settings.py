@@ -337,6 +337,14 @@ LOGGING = {
             'backupCount': 5,
             'filename': os.path.join(LOG_DIR, 'skybot_load_data.log'),
             'formatter': 'standard',
+        },
+        'condor': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'condor.log'),
+            'formatter': 'standard',
         },        
     },
     'loggers': {
@@ -375,5 +383,10 @@ LOGGING = {
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
+        'condor': {
+            'handlers': ['condor'],
+            'level': LOGGING_LEVEL,
+            'propagate': True,
+        },        
     },
 }
