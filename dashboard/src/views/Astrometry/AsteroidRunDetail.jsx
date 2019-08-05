@@ -201,8 +201,6 @@ export default class AsteroidRunDetail extends Component {
   render() {
     const { asteroid, inputs } = this.state;
 
-    console.log(inputs);
-
     const inp_columns = this.input_columns.map((col, i) => {
       return (
         <Column

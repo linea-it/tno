@@ -105,7 +105,14 @@ class PraiaApi {
     axios.get(`${this.api}/praia_run/${id}/count_asteroid_status/`);
 
 
-  getCSV = (filepath) => axios.get(`${this.api}/read_csv?filepath=${filepath}`);
+
+  // getCSV = (filepath) => axios.get(`${this.api}/read_csv?filepath=${filepath}`);
+  getCSV = (filepath, page, pageSize) => {
+
+    return axios.get(`${this.api}/read_csv?filepath=${filepath}&page=${page}&pageSize=${pageSize}`);
+  }
+
+
 
 }
 
