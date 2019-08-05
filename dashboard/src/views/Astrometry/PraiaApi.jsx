@@ -106,9 +106,17 @@ class PraiaApi {
   getAsteroidStatus = ({ id }) =>
     axios.get(`${this.api}/praia_run/${id}/count_asteroid_status/`);
 
+  checkJobStatus = () => axios.get(`${this.api}/teste/`);
+
   getCSV = filepath => axios.get(`${this.api}/read_csv?filepath=${filepath}`);
 
-  checkJobStatus = () => axios.get(`${this.api}/teste/`);
+  readOutputFile = (filepath) => {
+    const replaced_filepath = filepath.replace("/data", "");
+
+
+    return axios.get(`${this.api}/read_file?filepath=${replaced_filepath}`);
+  }
+
 }
 
 export default PraiaApi;

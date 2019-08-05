@@ -514,14 +514,15 @@ class AstrometryPipeline():
                     # "+RequiresWholeMachine": "True",
                     "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
                     "executable": "/app/run.py",
-                    # "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
-                    # "Log": os.path.join(log_dir, "astrometry.log"),
-                    # "Output": os.path.join(log_dir, "astrometry.out"),
-                    # "Error": os.path.join(log_dir, "astrometry.err")
-                    "arguments": "Eris --path /proccess/4/objects/Eris --catalog gaia2",
-                    "Log": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).log",
-                    "Output": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).out",
-                    "Error": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).err"
+                    "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
+                    "Log": os.path.join(log_dir, "astrometry.log"),
+                    "Output": os.path.join(log_dir, "astrometry.out"),
+                    "Error": os.path.join(log_dir, "astrometry.err")
+
+                    # "arguments": "Eris --path /proccess/4/objects/Eris --catalog gaia2",
+                    # "Log": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).log",
+                    # "Output": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).out",
+                    # "Error": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).err"
                 }
             })
             self.logger.debug("payload: ")
