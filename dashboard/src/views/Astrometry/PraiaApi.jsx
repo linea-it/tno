@@ -111,6 +111,13 @@ class PraiaApi {
 
   getCSV = (filepath) => axios.get(`${this.api}/read_csv?filepath=${filepath}`);
 
+  readOutputFile = (filepath) => {
+    const replaced_filepath = filepath.replace("/data", "");
+
+
+    return axios.get(`${this.api}/read_file?filepath=${replaced_filepath}`);
+  }
+
 }
 
 export default PraiaApi;

@@ -38,6 +38,7 @@ class Log extends Component {
         visible={visible}
         width="650px"
         modal={true}
+        blockScroll={false}
         //e => this.setState({ visible: false })
         onHide={onHide}
         style={{
