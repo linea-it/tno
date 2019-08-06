@@ -108,15 +108,19 @@ class PraiaApi {
 
   checkJobStatus = () => axios.get(`${this.api}/teste/`);
 
-  getCSV = filepath => axios.get(`${this.api}/read_csv?filepath=${filepath}`);
+  getCSV = (filepath, page, pageSize) => {
+    return axios.get(
+      `${
+        this.api
+      }/read_csv?filepath=${filepath}&page=${page}&pageSize=${pageSize}`
+    );
+  };
 
-  readOutputFile = (filepath) => {
-    const replaced_filepath = filepath.replace("/data", "");
-
+  readOutputFile = filepath => {
+    const replaced_filepath = filepath.replace('/data', '');
 
     return axios.get(`${this.api}/read_file?filepath=${replaced_filepath}`);
-  }
-
+  };
 }
 
 export default PraiaApi;

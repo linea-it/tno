@@ -11,7 +11,260 @@ import PanelCostumize from 'components/Panel/PanelCostumize';
 import { TreeTable } from 'primereact/treetable';
 import Log from './Log';
 
-const outputs = { "D00512549_z_c51_r2379p01_immasked": [], "D00512548_z_c54_r2379p01_immasked": [], "D00512547_i_c55_r2379p01_immasked": [], "D00507395_z_c23_r2379p01_immasked": [], "D00507394_z_c55_r2379p01_immasked": [], "D00507393_i_c48_r2379p01_immasked": [], "D00364726_g_c56_r2166p01_immasked": [{ "catalog": null, "filename": "D00364726_g_c56_r2166p01_immasked.mes", "filepath": "/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.mes", "file_size": 0, "extension": ".mes" }, { "catalog": null, "filename": "D00364726_g_c56_r2166p01_immasked.reg", "filepath": "/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.reg", "file_size": 25492, "extension": ".reg" }, { "catalog": "gaia1", "filename": "D00364726_g_c56_r2166p01_immasked.gaia1.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia1.rad.xy", "file_size": 301378, "extension": ".xy" }, { "catalog": "gaia2", "filename": "D00364726_g_c56_r2166p01_immasked.gaia2.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia2.rad.xy", "file_size": 301378, "extension": ".xy" }, { "catalog": "gaia3", "filename": "D00364726_g_c56_r2166p01_immasked.gaia3.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia3.rad.xy", "file_size": 301378, "extension": ".xy" }, { "catalog": "gaia4", "filename": "D00364726_g_c56_r2166p01_immasked.gaia4.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia4.rad.xy", "file_size": 301378, "extension": ".xy" }, { "catalog": "gaia5", "filename": "D00364726_g_c56_r2166p01_immasked.gaia5.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia5.rad.xy", "file_size": 301378, "extension": ".xy" }, { "catalog": "gaia6", "filename": "D00364726_g_c56_r2166p01_immasked.gaia6.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia6.rad.xy", "file_size": 301378, "extension": ".xy" }, { "catalog": "gaia7", "filename": "D00364726_g_c56_r2166p01_immasked.gaia7.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia7.rad.xy", "file_size": 301378, "extension": ".xy" }, { "catalog": "ucac4", "filename": "D00364726_g_c56_r2166p01_immasked.ucac4.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.ucac4.rad.xy", "file_size": 301378, "extension": ".xy" }, { "catalog": "ucac5", "filename": "D00364726_g_c56_r2166p01_immasked.ucac5.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.ucac5.rad.xy", "file_size": 301378, "extension": ".xy" }, { "catalog": "gaia_dr2", "filename": "D00364726_g_c56_r2166p01_immasked.gaia_dr2.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia_dr2.rad.xy", "file_size": 301378, "extension": ".xy" }], "D00503010_z_c30_r2378p01_immasked": [{ "catalog": null, "filename": "D00503010_z_c30_r2378p01_immasked.mes", "filepath": "/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.mes", "file_size": 0, "extension": ".mes" }, { "catalog": null, "filename": "D00503010_z_c30_r2378p01_immasked.reg", "filepath": "/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.reg", "file_size": 33857, "extension": ".reg" }, { "catalog": "gaia1", "filename": "D00503010_z_c30_r2378p01_immasked.gaia1.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia1.rad.xy", "file_size": 401280, "extension": ".xy" }, { "catalog": "gaia2", "filename": "D00503010_z_c30_r2378p01_immasked.gaia2.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia2.rad.xy", "file_size": 401280, "extension": ".xy" }, { "catalog": "gaia3", "filename": "D00503010_z_c30_r2378p01_immasked.gaia3.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia3.rad.xy", "file_size": 401280, "extension": ".xy" }, { "catalog": "gaia4", "filename": "D00503010_z_c30_r2378p01_immasked.gaia4.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia4.rad.xy", "file_size": 401280, "extension": ".xy" }, { "catalog": "gaia5", "filename": "D00503010_z_c30_r2378p01_immasked.gaia5.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia5.rad.xy", "file_size": 401280, "extension": ".xy" }, { "catalog": "gaia6", "filename": "D00503010_z_c30_r2378p01_immasked.gaia6.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia6.rad.xy", "file_size": 401280, "extension": ".xy" }, { "catalog": "gaia7", "filename": "D00503010_z_c30_r2378p01_immasked.gaia7.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia7.rad.xy", "file_size": 401280, "extension": ".xy" }, { "catalog": "ucac4", "filename": "D00503010_z_c30_r2378p01_immasked.ucac4.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.ucac4.rad.xy", "file_size": 401280, "extension": ".xy" }, { "catalog": "ucac5", "filename": "D00503010_z_c30_r2378p01_immasked.ucac5.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.ucac5.rad.xy", "file_size": 401280, "extension": ".xy" }, { "catalog": "gaia_dr2", "filename": "D00503010_z_c30_r2378p01_immasked.gaia_dr2.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia_dr2.rad.xy", "file_size": 401280, "extension": ".xy" }], "D00506424_z_c35_r2379p01_immasked": [{ "catalog": null, "filename": "D00506424_z_c35_r2379p01_immasked.mes", "filepath": "/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.mes", "file_size": 0, "extension": ".mes" }, { "catalog": null, "filename": "D00506424_z_c35_r2379p01_immasked.reg", "filepath": "/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.reg", "file_size": 28677, "extension": ".reg" }, { "catalog": "gaia1", "filename": "D00506424_z_c35_r2379p01_immasked.gaia1.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.gaia1.rad.xy", "file_size": 339416, "extension": ".xy" }, { "catalog": "gaia2", "filename": "D00506424_z_c35_r2379p01_immasked.gaia2.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.gaia2.rad.xy", "file_size": 339416, "extension": ".xy" }, { "catalog": "gaia3", "filename": "D00506424_z_c35_r2379p01_immasked.gaia3.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.gaia3.rad.xy", "file_size": 339416, "extension": ".xy" }, { "catalog": "gaia4", "filename": "D00506424_z_c35_r2379p01_immasked.gaia4.rad.xy", "filepath": "/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.gaia4.rad.xy", "file_size": 339416, "extension": ".xy" }] };
+const outputs = {
+  D00512549_z_c51_r2379p01_immasked: [],
+  D00512548_z_c54_r2379p01_immasked: [],
+  D00512547_i_c55_r2379p01_immasked: [],
+  D00507395_z_c23_r2379p01_immasked: [],
+  D00507394_z_c55_r2379p01_immasked: [],
+  D00507393_i_c48_r2379p01_immasked: [],
+  D00364726_g_c56_r2166p01_immasked: [
+    {
+      catalog: null,
+      filename: 'D00364726_g_c56_r2166p01_immasked.mes',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.mes',
+      file_size: 0,
+      extension: '.mes',
+    },
+    {
+      catalog: null,
+      filename: 'D00364726_g_c56_r2166p01_immasked.reg',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.reg',
+      file_size: 25492,
+      extension: '.reg',
+    },
+    {
+      catalog: 'gaia1',
+      filename: 'D00364726_g_c56_r2166p01_immasked.gaia1.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia1.rad.xy',
+      file_size: 301378,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia2',
+      filename: 'D00364726_g_c56_r2166p01_immasked.gaia2.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia2.rad.xy',
+      file_size: 301378,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia3',
+      filename: 'D00364726_g_c56_r2166p01_immasked.gaia3.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia3.rad.xy',
+      file_size: 301378,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia4',
+      filename: 'D00364726_g_c56_r2166p01_immasked.gaia4.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia4.rad.xy',
+      file_size: 301378,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia5',
+      filename: 'D00364726_g_c56_r2166p01_immasked.gaia5.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia5.rad.xy',
+      file_size: 301378,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia6',
+      filename: 'D00364726_g_c56_r2166p01_immasked.gaia6.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia6.rad.xy',
+      file_size: 301378,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia7',
+      filename: 'D00364726_g_c56_r2166p01_immasked.gaia7.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia7.rad.xy',
+      file_size: 301378,
+      extension: '.xy',
+    },
+    {
+      catalog: 'ucac4',
+      filename: 'D00364726_g_c56_r2166p01_immasked.ucac4.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.ucac4.rad.xy',
+      file_size: 301378,
+      extension: '.xy',
+    },
+    {
+      catalog: 'ucac5',
+      filename: 'D00364726_g_c56_r2166p01_immasked.ucac5.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.ucac5.rad.xy',
+      file_size: 301378,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia_dr2',
+      filename: 'D00364726_g_c56_r2166p01_immasked.gaia_dr2.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia_dr2.rad.xy',
+      file_size: 301378,
+      extension: '.xy',
+    },
+  ],
+  D00503010_z_c30_r2378p01_immasked: [
+    {
+      catalog: null,
+      filename: 'D00503010_z_c30_r2378p01_immasked.mes',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.mes',
+      file_size: 0,
+      extension: '.mes',
+    },
+    {
+      catalog: null,
+      filename: 'D00503010_z_c30_r2378p01_immasked.reg',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.reg',
+      file_size: 33857,
+      extension: '.reg',
+    },
+    {
+      catalog: 'gaia1',
+      filename: 'D00503010_z_c30_r2378p01_immasked.gaia1.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia1.rad.xy',
+      file_size: 401280,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia2',
+      filename: 'D00503010_z_c30_r2378p01_immasked.gaia2.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia2.rad.xy',
+      file_size: 401280,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia3',
+      filename: 'D00503010_z_c30_r2378p01_immasked.gaia3.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia3.rad.xy',
+      file_size: 401280,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia4',
+      filename: 'D00503010_z_c30_r2378p01_immasked.gaia4.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia4.rad.xy',
+      file_size: 401280,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia5',
+      filename: 'D00503010_z_c30_r2378p01_immasked.gaia5.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia5.rad.xy',
+      file_size: 401280,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia6',
+      filename: 'D00503010_z_c30_r2378p01_immasked.gaia6.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia6.rad.xy',
+      file_size: 401280,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia7',
+      filename: 'D00503010_z_c30_r2378p01_immasked.gaia7.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia7.rad.xy',
+      file_size: 401280,
+      extension: '.xy',
+    },
+    {
+      catalog: 'ucac4',
+      filename: 'D00503010_z_c30_r2378p01_immasked.ucac4.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.ucac4.rad.xy',
+      file_size: 401280,
+      extension: '.xy',
+    },
+    {
+      catalog: 'ucac5',
+      filename: 'D00503010_z_c30_r2378p01_immasked.ucac5.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.ucac5.rad.xy',
+      file_size: 401280,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia_dr2',
+      filename: 'D00503010_z_c30_r2378p01_immasked.gaia_dr2.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia_dr2.rad.xy',
+      file_size: 401280,
+      extension: '.xy',
+    },
+  ],
+  D00506424_z_c35_r2379p01_immasked: [
+    {
+      catalog: null,
+      filename: 'D00506424_z_c35_r2379p01_immasked.mes',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.mes',
+      file_size: 0,
+      extension: '.mes',
+    },
+    {
+      catalog: null,
+      filename: 'D00506424_z_c35_r2379p01_immasked.reg',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.reg',
+      file_size: 28677,
+      extension: '.reg',
+    },
+    {
+      catalog: 'gaia1',
+      filename: 'D00506424_z_c35_r2379p01_immasked.gaia1.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.gaia1.rad.xy',
+      file_size: 339416,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia2',
+      filename: 'D00506424_z_c35_r2379p01_immasked.gaia2.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.gaia2.rad.xy',
+      file_size: 339416,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia3',
+      filename: 'D00506424_z_c35_r2379p01_immasked.gaia3.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.gaia3.rad.xy',
+      file_size: 339416,
+      extension: '.xy',
+    },
+    {
+      catalog: 'gaia4',
+      filename: 'D00506424_z_c35_r2379p01_immasked.gaia4.rad.xy',
+      filepath:
+        '/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.gaia4.rad.xy',
+      file_size: 339416,
+      extension: '.xy',
+    },
+  ],
+};
 
 export default class AsteroidRunDetail extends Component {
   state = this.initialState;
@@ -38,7 +291,7 @@ export default class AsteroidRunDetail extends Component {
       log_visible: false,
       header: null,
       selectedNodeKey1: [],
-      expandedKeys: []
+      expandedKeys: [],
     };
   }
 
@@ -90,33 +343,6 @@ export default class AsteroidRunDetail extends Component {
     history.push({ pathname: `/astrometry_run/${praia_run}` });
   };
 
-  // onClickDownload = async asteroid_id => {
-  //     // Alterar o Icone do botao para loading
-  //     this.setState({
-  //         download_icon: 'fa fa-circle-o-notch fa-spin fa-fw',
-  //     });
-
-  //     const download_link = await this.api.getAsteroidDownloadLink({
-  //         asteroid_id,
-  //     });
-
-  //     const data = download_link.data;
-
-  //     if (data.success) {
-  //         const file_src = this.api.api + data.src;
-
-  //         // window.location.href = file_src;
-  //         window.location.assign(file_src);
-  //     } else {
-  //         // TODO: Implementar notificacao de erro.
-  //     }
-
-  //     // Alterar o Icone do botao para downlaod
-  //     this.setState({
-  //         download_icon: 'fa fa-cloud-download',
-  //     });
-  // };
-
   create_nav_bar = () => {
     return (
       <Toolbar>
@@ -135,7 +361,7 @@ export default class AsteroidRunDetail extends Component {
             icon={this.state.download_icon}
             className="ui-button-info"
             disabled="disabled"
-          // onClick={() => this.onClickDownload(this.state.asteroid.id)}
+            // onClick={() => this.onClickDownload(this.state.asteroid.id)}
           />
         </div>
 
@@ -178,11 +404,11 @@ export default class AsteroidRunDetail extends Component {
     const filename = encodeURIComponent(rowData.filename);
     const title = encodeURIComponent(
       'Proccess: ' +
-      proccess +
-      ' of the asteroid ' +
-      rowData.asteroid +
-      '. \u00a0 File: ' +
-      rowData.filename
+        proccess +
+        ' of the asteroid ' +
+        rowData.asteroid +
+        '. \u00a0 File: ' +
+        rowData.filename
     );
 
     const history = this.props.history;
@@ -203,12 +429,11 @@ export default class AsteroidRunDetail extends Component {
     }
   };
 
-  format_ccd = (ccd_name) => {
-    let arr = ccd_name.split("_");
+  format_ccd = ccd_name => {
+    const arr = ccd_name.split('_');
 
-    return arr[0] + " " + arr[1];
+    return arr[0] + ' ' + arr[1];
   };
-
 
   renderOutputTreeTable = outputs => {
     const columns = [
@@ -224,7 +449,7 @@ export default class AsteroidRunDetail extends Component {
         header: 'Ref. Catalog',
         style: {
           width: '15%',
-          textAlign: 'center'
+          textAlign: 'center',
         },
         sortable: true,
       },
@@ -240,15 +465,15 @@ export default class AsteroidRunDetail extends Component {
         style: {
           width: '10%',
           textAlign: 'center',
-        }
+        },
       },
       {
         field: 'actionBtn',
         style: {
           textAlign: 'center',
           width: '10%',
-        }
-      }
+        },
+      },
     ];
 
     const elColumns = columns.map((col, i) => {
@@ -270,29 +495,24 @@ export default class AsteroidRunDetail extends Component {
         scrollable
         scrollHeight="200px"
         columnResizeMode="expand"
-        expandedKeys={this.state.expandedKeys}
-        onToggle={e => {
-          console.log(e)
-          this.setState({ expandedKeys: e.value })
-        }}
+        // expandedKeys={this.state.expandedKeys}
+        // onToggle={e => {
+        //   this.setState({ expandedKeys: e.value })
+        // }}
 
-      //Component treeTable was updated but primereact documentation doesnt.
-      //TODO: Check previous documentation to try to solve the problem
-      // selectionMode="single"
-      // selectionKeys={this.state.selectedNodeKey1}
-      // selectionChange={e => this.setState({ selectedNodeKey1: e }, () => {
-      //   console.log(this.state.selectedNodeKey1);
-      // })}
-
-
-
+        //Component treeTable was updated but primereact documentation doesnt.
+        //TODO: Check previous documentation to try to solve the problem
+        // selectionMode="single"
+        // selectionKeys={this.state.selectedNodeKey1}
+        // selectionChange={e => this.setState({ selectedNodeKey1: e }, () => {
+        //   console.log(this.state.selectedNodeKey1);
+        // })}
       >
         {elColumns}
-        < Column />
-      </ TreeTable>
+        <Column />
+      </TreeTable>
     );
-
-  }
+  };
 
   openFileBtn = record => {
     return (
@@ -301,27 +521,22 @@ export default class AsteroidRunDetail extends Component {
         icon="fa fa-file-text-o"
         onClick={() => this.handleClickOutput(record)}
       />
-    )
-  }
-
+    );
+  };
 
   //Go from here
   handleClickOutput = record => {
-
     this.api.readOutputFile(record.filepath).then(res => {
       const output = res.data.rows;
       this.setState({
         output_content: output,
         log_visible: true,
-        header: record.filename
+        header: record.filename,
       });
     });
-
-  }
-
+  };
 
   onLogHide = () => {
-
     this.setState({ log_visible: false, output_content: null });
   };
 
@@ -329,7 +544,6 @@ export default class AsteroidRunDetail extends Component {
     const { asteroid, inputs } = this.state;
 
     const a = [];
-
 
     Object.keys(outputs).forEach((ccd_name, index) => {
       const a_childrens = [];
@@ -344,7 +558,7 @@ export default class AsteroidRunDetail extends Component {
               extension: file.extension,
               actionBtn: this.openFileBtn(file),
               selectable: true,
-              leaf: true
+              leaf: true,
             },
             children: [],
           };
@@ -417,6 +631,16 @@ export default class AsteroidRunDetail extends Component {
                   />
                 </DataTable>
               }
+            />
+          </div>
+
+          <div className="ui-g-12">
+            <PanelCostumize
+              title="Outputs"
+              // content={
+              TREE
+
+              // }
             />
           </div>
           <div className="ui-g-12">
