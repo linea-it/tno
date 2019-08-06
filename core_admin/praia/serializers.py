@@ -154,6 +154,8 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
 
     catalog_name = serializers.SerializerMethodField()
 
+    h_execution_time = serializers.SerializerMethodField()
+
     class Meta:
         model = AstrometryAsteroid
         fields = (
@@ -168,8 +170,7 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
             'catalog_rows',
             'execution_time',
             'catalog_name',
-
-
+            'h_execution_time',
         )
 
     def get_proccess_displayname(self, obj):
@@ -184,6 +185,13 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
 
         except:
             return None
+
+    def get_h_execution_time(self, obj):
+        try:
+            return humanize.naturaldelta(obj.execution_time)
+        except:
+            return None
+
 
 
 class AstrometryInputSerializer(serializers.ModelSerializer):
@@ -217,7 +225,7 @@ class AstrometryInputSerializer(serializers.ModelSerializer):
 
     def get_execution_time(self, obj):
         try:
-            return humanize.naturalsize(obj.execution_time)
+            return humanize.naturaldelta(obj.execution_time)
         except:
             return None
 
