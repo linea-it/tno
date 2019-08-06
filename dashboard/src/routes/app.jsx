@@ -29,6 +29,7 @@ import AsteroidRunDetail from '../views/Astrometry/AsteroidRunDetail';
 import ReadCSV from '../views/Astrometry/ReadCSV';
 import OccultationCalendar from '../views/Prediction/OccultationCalendar';
 import RunDetailInfo from '../views/Astrometry/RunDetailInfo';
+import PredictionCalendar from '../views/PredictionCalendar';
 
 
 const appRoutes = [
@@ -54,6 +55,17 @@ const appRoutes = [
     helpText:
       'Query the database and download the metadata telling, among others, pointing coordinates, date of observation, exposure time, band, and image location in database',
   },
+
+
+  {
+    path: '/prediction_calendar',
+    name: 'Prediction Calendar',
+    // icon: 'pe-7s-target',
+    component: PredictionCalendar,
+    helpText:
+      'Calendar containing all the predictions',
+  },
+
   {
     path: '/solarsystem',
     name: 'Search SSSO',
