@@ -597,10 +597,11 @@ export default class AsteroidRunDetail extends Component {
 
     const stats = [
       { name: 'Proccess', value: asteroid.proccess_displayname },
-      { name: 'Executed', value: asteroid.h_time },
+      { name: 'Asteroid', value: asteroid.name},
       { name: 'Execution Time', value: asteroid.h_execution_time },
-      { name: 'Size', value: asteroid.h_size },
-      { name: 'Catalog', value: this.state.catalogName },
+      { name: 'CCDs', value: asteroid.ccd_images },
+      { name: 'Reference Catalog', value: this.state.catalogName },
+      { name: 'Catalog Rows', value: asteroid.catalog_rows },
     ];
 
     return (
