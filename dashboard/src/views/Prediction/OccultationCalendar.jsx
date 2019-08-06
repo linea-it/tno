@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
 // import { Calendar } from '@fullcalendar/core';
-import { FullCalendar } from 'primereact/fullcalendar';
+// import { FullCalendar } from 'primereact/fullcalendar';
 
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
