@@ -33,14 +33,12 @@ class PraiaApi {
       },
     });
 
-
   getCatalogById = ({ id }) =>
     axios.get(`${this.api}/catalog/`, {
       params: {
         id: id,
       },
     });
-
 
   getAsteroids = ({
     page,
@@ -65,6 +63,10 @@ class PraiaApi {
   };
 
   getPraiaRunById = ({ id }) => axios.get(`${this.api}/praia_run/${id}/`);
+
+  getExecutionTimeById = ({ id }) => {
+    return axios.get(`${this.api}/praia_run/${id}/step_execution_time/`);
+  };
 
   // dados na table do primereacts
   getPraiaData = id => axios.get(`${this.api}/praia_run/${id}`);
@@ -104,8 +106,16 @@ class PraiaApi {
   getAsteroidStatus = ({ id }) =>
     axios.get(`${this.api}/praia_run/${id}/count_asteroid_status/`);
 
+  checkJobStatus = () => axios.get(`${this.api}/teste/`);
 
-  getCSV = (filepath) => axios.get(`${this.api}/read_csv?filepath=${filepath}`);
+  getCSV = filepath => axios.get(`${this.api}/read_csv?filepath=${filepath}`);
+
+  readOutputFile = (filepath) => {
+    const replaced_filepath = filepath.replace("/data", "");
+
+
+    return axios.get(`${this.api}/read_file?filepath=${replaced_filepath}`);
+  }
 
 }
 

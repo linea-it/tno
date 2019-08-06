@@ -69,7 +69,7 @@ class PraiaHistory extends Component {
     },
     {
       field: 'h_time',
-      header: 'start',
+      header: 'Start',
       headerStyle: formatColumnHeader,
       sortable: false,
     },
@@ -122,15 +122,26 @@ class PraiaHistory extends Component {
     this.fetchData(this.state.page, this.state.sizePerPage);
   };
 
-  handleOnRerun = () => {
-    const { selected } = this.state;
+  // handleOnRerun = () => {
+  //   const { selected } = this.state;
 
-    this.api.praiaReRun({ id: selected.id }).then(res => {
-      const record = res.data;
+  //   // this.onRerun(selected.id);
+  //   console.log(selected);
+  // };
 
-      this.setState({ selected: null }, this.props.onRerun(record));
-    });
-  };
+  onRerun = (el) => {
+
+    const id = el.id;
+
+    if (id) {
+
+      this.api.praiaReRun({ id }).then(res => {
+        const record = res.data;
+
+        this.props.handleOnViewDetail(record.id);
+      });
+    }
+  }
 
   onPageChange = e => {
     const page = e.page + 1;
@@ -150,13 +161,13 @@ class PraiaHistory extends Component {
   };
 
 
-  onRerun = () => {
-    console.log("onRerun");
-  }
+
 
   //Método que lê a requisição do botão de detalhe
   onView = (id) => {
     this.props.handleOnViewDetail(id);
+
+
   };
 
   status_table = rowData => {
@@ -184,6 +195,7 @@ class PraiaHistory extends Component {
   };
 
   toolbarButton = el => {
+
     let btn_view_toolbar = null;
     let btn_reexecute = null;
 
@@ -200,7 +212,7 @@ class PraiaHistory extends Component {
         className="btn-TNO-color"
         label="Re-execute"
         disabled={!this.state.selected}
-        onClick={this.handleOnRerun}
+        onClick={() => this.onRerun(el)}
       />
     );
 

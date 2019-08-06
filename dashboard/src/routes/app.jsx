@@ -28,6 +28,7 @@ import PraiaDetail from '../views/Astrometry/RunDetail';
 import AsteroidRunDetail from '../views/Astrometry/AsteroidRunDetail';
 import ReadCSV from '../views/Astrometry/ReadCSV';
 import OccultationCalendar from '../views/Prediction/OccultationCalendar';
+import RunDetailInfo from '../views/Astrometry/RunDetailInfo';
 
 
 const appRoutes = [
@@ -244,6 +245,14 @@ const appRoutes = [
     name: 'ReadCSV',
     icon: 'pe-7s-science',
     component: ReadCSV,
+    hidden: true,
+  },
+
+  {
+    path: '/astrometry_info',
+    name: 'RunDetailInfo',
+    icon: 'pe-7s-science',
+    component: RunDetailInfo,
     hidden: true,
   },
 

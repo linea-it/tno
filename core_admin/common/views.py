@@ -1,59 +1,157 @@
-from praia.models import Run 
+from praia.models import Run
 from django.db.models import Count
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+import pandas as pd
+import humanize
 import os
 import csv
+
+
+from praia.models import Run
+import logging
+import requests
+from tno.condor import check_condor_job
+from datetime import datetime
+from praia.pipeline.register import register_astrometry_outputs
+logger = logging.getLogger("astrometry")
+
+
+# def check_condor_job(cluster_id, proc_id):
+#     logger.debug("check_condor_job: ClusterId: [%s]" % cluster_id)
+
+#     try:
+#         r = requests.get('http://loginicx.linea.gov.br:5000/jobs', params={
+#             'ClusterId': cluster_id,
+#             'ProcId': proc_id
+#         })
+
+#         if r.status_code == requests.codes.ok:
+#             logger.debug(r.json())
+#             rows = r.json()
+#             if len(rows) == 1:
+#                 return rows[0]
+#             else:
+#                 return None
+#         else:
+#             # TODO tratar falha na requisicao
+#             logger.error("Falha na requisicao")
+
+#     except Exception as e:
+#         logger.error(e)
+#         raise
+def update_status(job, condor_job):
+    """
+        Condor status
+        0 - 'Unexpanded'
+        1 - 'Idle'
+        2 - 'Running'
+        3 - 'Removed' 
+        4 - 'Completed' 
+        5 - 'Held' 
+        6 - 'Submission'
+
+    """
+    logger.debug("Condor Job Status: %s " % condor_job['JobStatus'])
+
+    job.global_job_id = condor_job['GlobalJobId']
+    job.cluster_name = condor_job['ClusterName']
+    job.job_status = int(condor_job['JobStatus'])
+
+    try:
+        job.remote_host = condor_job['RemoteHost']
+        job.args = condor_job['Args']
+        job.start_time = datetime.fromtimestamp(int(condor_job['JobStartDate']))
+    except Exception as e:
+        logger.warning(e)
+
+
+    if condor_job['JobStatus'] == '1':
+        logger.debug("Job in Idle")
+
+        job.asteroid.status = 'idle'
+        job.asteroid.save()
+
+    elif condor_job['JobStatus'] == '2':
+        logger.debug("Job Running")
+        job.asteroid.status = 'running'
+        job.asteroid.save()
+
+    elif condor_job['JobStatus'] == '4':
+        logger.debug("Job Completed")
+
+        # TODO chamar a funcao que registra os resultados.
+        register_astrometry_outputs(job.astrometry_run.pk, job.asteroid.name)
+
+    elif condor_job['JobStatus'] == '5':
+        logger.debug("Job Hold")
+        job.asteroid.status('failure')
+        job.asteroid.error_msg(
+            "Condor job has a Hold status and has not been executed. Check the condor log for more details.")
+        job.asteroid.save()
+
+    else:
+        logger.debug("Job with untreated status. JobStatus [%s] " % condor_job['JobStatus'])
+        job.asteroid.status('failure')
+        job.asteroid.error_msg(
+            "job in the condor returned a status not handled by the application. Check the condor log for more details.")
+
+
+    job.save()
+
 
 @api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
-        
-        run_id = request.query_params.get('run_id', None)
-        
-        astrometry_run = Run.objects.get(pk=run_id)
+        logger.debug("------------------------------------")
+        # Saber as Rodadas de Astrometria que estão com status running.
+        runs = Run.objects.filter(status='running')
 
-        resultset = astrometry_run.asteroids.all().values('status').annotate(total=Count('status')).order_by('total')
+        logger.debug(runs)
+        # Para cada running recupera os jobs
+        for astrometry_run in runs:
 
-        result = dict( {
+            jobs = astrometry_run.condor_jobs.all().exclude(job_status__gt=2)
+
+            # Para cada Job verifica o status no Cluster
+            for job in jobs:
+                logger.debug(job)
+                result = check_condor_job(job.clusterid, job.procid)
+
+                logger.debug(result)
+                if result is None:
+                    logger.debug("Parece que acabou")
+                    # TODO chamar a funcao que registra os resultados.
+
+                    # Change Job Status to 4 - Complete
+                    job.job_status = 4 
+                    job.save()
+
+                    register_astrometry_outputs(job.astrometry_run.pk, job.asteroid.name)
+
+                    # job.asteroid.status = 'success'
+                    # job.asteroid.save()                    
+                else:
+                    if result['JobStatus'] != job.job_status:
+                        logger.debug("Status Diferente fazer alguma coisa")
+                        update_status(job, result)
+
+        logger.debug("------------------------------------")
+
+        result = dict({
             'success': True,
-            'teste': resultset,
-            'status': {
-                'success':0,
-                'failure' :0,
-                'warning' :0,
-                'not_executed':0,
-            }
         })
-
-        for status in resultset:
-            result['status'][status['status']] = status['total']
 
     return Response(result)
 
-     #csuccess = astrometry_run.asteroids.filter(status='success').count()
-        #cfailure = astrometry_run.asteroids.filter(status='failure').count()
-        #cwarning = astrometry_run.asteroids.filter(status='warning').count()
-        #cnotexecuted = astrometry_run.asteroids.filter(status='not_executed').count()
-              
-    #    result = dict( {
-    #            'status': {
-    #            'success': csuccess,
-    #            'failure' : cfailure,
-    #            'warning' : cwarning,
-    #            'notexecuted': cnotexecuted,
-    #        }
-    #    })
+
 @api_view(['GET'])
 def import_skybot(request):
     """
-        TESTE
-
-        teste documentação
     """
     if request.method == 'GET':
 
-        from tno.skybot import  ImportSkybot
+        from tno.skybot import ImportSkybot
 
         sk = ImportSkybot()
 
@@ -62,7 +160,7 @@ def import_skybot(request):
         # Funcão para registrar o Skybot output
         sk.register_skybot_output()
 
-        result = dict( {
+        result = dict({
             'success': True,
         })
     return Response(result)
@@ -73,10 +171,10 @@ def read_file(request):
     """ 
     Function to read .log file 
     A filepath parameter is obrigatory to display the file. 
-    """   
+    """
     if request.method == 'GET':
 
-        # Recuperar o filepath do arquivo a ser lido dos parametros da url. 
+        # Recuperar o filepath do arquivo a ser lido dos parametros da url.
         filepath = request.query_params.get('filepath', None)
 
         # Verificar se o parametro nao esta vazio, se estiver retorna mensagem avisando.
@@ -86,20 +184,20 @@ def read_file(request):
                 'message': 'filepath parameter obrigatory'
             }))
 
-        # Verificar se o arquivo existe, se nao existir retorna mensagem avisando. 
+        # Verificar se o arquivo existe, se nao existir retorna mensagem avisando.
         if not os.path.exists(filepath):
             return Response(dict({
                 'success': False,
-                'message': 'filepath do not exist. (%s)' % filepath 
+                'message': 'filepath do not exist. (%s)' % filepath
             }))
-       
-        # Ler o arquivo.         
+
+        # Ler o arquivo.
         try:
             rows = list()
             with open(filepath) as fp:
                 lines = fp.readlines()
                 for line in lines:
-                    rows.append(line.replace('\n','').strip())
+                    rows.append(line.replace('\n', '').strip())
 
             return Response(dict({
                 'success': True,
@@ -112,16 +210,26 @@ def read_file(request):
                 'message': "I/O error({0}): {1}".format(e.errno, e.strerror)
             }))
 
+
 @api_view(['GET'])
 def read_csv(request):
     """ 
     Function to read .csv file 
     A filepath parameter is obrigatory to display the file. 
-    """    
+    this view can be paginated, with page and pageSize parameters. 
+
+    eg: http://localhost/api/read_csv?filepath=/proccess/78/objects/Eris/gaia_dr2.csv&page=2&pageSize=5&format=json
+
+    for this exemple will be returned 5 rows for page 2.
+
+    """
     if request.method == 'GET':
-     
-        # Recuperar o filepath do arquivo a ser lido dos parametros da url. 
+
+        # Recuperar o filepath do arquivo a ser lido dos parametros da url.
         filepath = request.query_params.get('filepath', None)
+        page = int(request.query_params.get('page', 1))
+        pageSize = int(request.query_params.get(
+            'pageSize', 100))
 
         # Verificar se o parametro nao esta vazio, se estiver retorna mensagem avisando.
         if filepath == None or filepath == '':
@@ -130,30 +238,51 @@ def read_csv(request):
                 'message': 'filepath parameter obrigatory'
             }))
 
-        # Verificar se o arquivo existe, se nao existir retorna mensagem avisando. 
+        # Verificar se o arquivo existe, se nao existir retorna mensagem avisando.
         if not os.path.exists(filepath):
             return Response(dict({
                 'success': False,
-                'message': 'filepath do not exist. (%s)' % filepath 
+                'message': 'filepath do not exist. (%s)' % filepath
             }))
+            #    implementar paginacao na funcao csv
+        if page == 1:
+            skiprows = 1
+        else:
+            skiprows = (page * pageSize) - pageSize
+
+        df_temp = pd.read_csv(filepath, delimiter=';')
+        columns = list()
+        for col in df_temp.columns:
+            columns.append(col)
+
+        count = df_temp.shape[0]
+        del df_temp
 
         # Ler o arquivo.
-       
-        with open(filepath, 'r') as csv_file: 
-            reader = csv.DictReader(csv_file, delimiter=';')
-            dict_list = []
-            for row in reader:
-                dict_list.append(row)
+        df = pd.read_csv(
+            filepath,
+            names=columns,
+            delimiter=';',
+            skiprows=skiprows,
+            nrows=pageSize)
 
-        # Saber a primeira linha 
-        columns = list()
-        if len(dict_list) > 0:
-            columns = dict_list[0].keys()
-        
+        df = df.fillna(0)
+
+        rows = list()
+        for record in df.itertuples():
+            row = dict({})
+
+            for header in columns:
+                row[header] = getattr(record, header)
+
+            rows.append(row)
+
         result = dict({
             'success': True,
-            'rows': dict_list,
-            'columns': columns,           
+            'filepath': filepath,
+            'columns': columns,
+            'rows': rows,
+            'count': count
         })
 
     return Response(result)

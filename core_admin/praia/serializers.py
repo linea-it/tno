@@ -17,6 +17,8 @@ class RunSerializer(serializers.ModelSerializer):
     catalog = serializers.PrimaryKeyRelatedField(
         queryset=Catalog.objects.all(), many=False)
 
+    catalog_name = serializers.SerializerMethodField()
+
     start_time = serializers.SerializerMethodField()
 
     finish_time = serializers.SerializerMethodField()
@@ -34,6 +36,8 @@ class RunSerializer(serializers.ModelSerializer):
 
     h_time = serializers.SerializerMethodField()
 
+
+
     class Meta:
         model = Run
         fields = (
@@ -44,6 +48,7 @@ class RunSerializer(serializers.ModelSerializer):
             'execution_time',
             'configuration',
             'catalog',
+            'catalog_name',
             'input_list',
             'count_objects',
             'status',
@@ -84,6 +89,12 @@ class RunSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    def get_catalog_name(self, obj):
+        try:
+            return obj.catalog.display_name
+        except:
+            return None
+
     def get_start_time(self, obj):
         try:
             return obj.start_time.strftime('%Y-%m-%d %H:%M:%S')
@@ -108,6 +119,12 @@ class RunSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    def get_catalog_name(self, obj):
+        try:
+            return obj.catalog.display_name
+
+        except:
+            return None
 
 class ConfigurationSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()

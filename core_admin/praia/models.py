@@ -45,6 +45,22 @@ class Run(models.Model):
         null=True, blank=True
     )
 
+    execution_ccd_images = models.DurationField(
+        verbose_name='Execution CCD Images',
+        null=True, blank=True
+    )
+
+    execution_bsp_jpl = models.DurationField(
+        verbose_name='Execution BSP JPL',
+        null=True, blank=True
+    )
+
+    execution_catalog = models.DurationField(
+        verbose_name='Execution Catalog',
+        null=True, blank=True
+    )
+
+
     # Relation With PraiaConfig
     configuration = models.ForeignKey(
         Configuration, on_delete=models.CASCADE, verbose_name='Configuration',
@@ -379,6 +395,12 @@ class AstrometryJob(models.Model):
         verbose_name='Proc Id',
         null=True, blank=True )
     
+    global_job_id = models.CharField(
+        max_length=2000,
+        verbose_name='Global Job Id',
+        null=True, blank=True
+    )
+
     job_status = models.IntegerField(
         verbose_name='Job Status',
         null=True, blank=True,
@@ -391,6 +413,29 @@ class AstrometryJob(models.Model):
             (5, 'Held'), 
             (6, 'Submission')
         ))
+
+    cluster_name = models.CharField(
+        max_length=256,
+        verbose_name='Cluster Name',
+        null=True, blank=True
+    )    
+
+    remote_host = models.CharField(
+        max_length=2000,
+        verbose_name='Remote Host',
+        null=True, blank=True
+    )
+
+    args = models.CharField(
+        max_length=2000,
+        verbose_name='Args',
+        null=True, blank=True
+    )
+
+    submit_time = models.DateTimeField(
+        verbose_name='Submit Time',
+        auto_now_add=False, null=True, blank=True)
+
 
     start_time = models.DateTimeField(
         verbose_name='Start Time',
