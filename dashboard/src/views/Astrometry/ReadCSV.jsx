@@ -20,7 +20,7 @@ export default class ReadCSV extends Component {
     filepath: null,
     loading: false,
     title: null,
-    sizePerPage: 16,
+    sizePerPage: 10,
     totalSize: 0,
     firstPage: 0,
     page: 1,
@@ -45,10 +45,9 @@ export default class ReadCSV extends Component {
     //filepath param comes from props.params(router) but page and sizePerPage are local ones
     this.api.getCSV(this.state.filepath, this.state.page, this.state.sizePerPage)
       .then(res => {
-        console.log(res.data.rows[0].solution_id);
-        let rows = this.checkArray(res.data.rows);
+
         this.setState({
-          data: rows,
+          data: res.data.rows,
           columns: res.data.columns,
           loading: false,
           totalSize: res.data.count,
@@ -57,20 +56,10 @@ export default class ReadCSV extends Component {
   };
 
 
-  //This function(checkArray) prevents a bug. When the paginator comes back to the first position 
-  // it repeats the title at the first position of the array. 
-  //The solution was to delete the first position of the field solution_id
-  // case its type is string instead numbers.  
-
-  checkArray = (rows) => {
-    if (typeof rows[0].solution_id === "string") {
-      rows.shift();
-    }
-    return rows;
-  };
 
   onPageChange = e => {
-    this.setState({ page: e.page, firstPage: e.first }, () => {
+
+    this.setState({ page: (e.page + 1), firstPage: e.first, sizePerPage: e.rows }, () => {
       this.fetchData();
     });
   };
@@ -118,14 +107,14 @@ export default class ReadCSV extends Component {
     return (
       < div >
         {this.create_tool_bar()}
-        <Card title={title} subTitle={filepath}>
+        <Card style={{ height: "100%" }} title={title} subTitle={filepath}>
           <DataTable
             value={data}
             sortField={''}
             sortOrder={1}
             scrollable={true}
             loading={loading}
-            scrollHeight="500px"
+            scrollHeight="600px"
             responsive={true}
           >
             {acolumns}
@@ -136,6 +125,7 @@ export default class ReadCSV extends Component {
           totalRecords={totalSize}
           first={firstPage}
           onPageChange={this.onPageChange}
+          rowsPerPageOptions={[10, 20, 30]}
         />
 
       </div >
