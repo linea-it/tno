@@ -6,3 +6,4 @@ class PraiaConfig(AppConfig):
 
     def ready(self):
         from . import signals
+
