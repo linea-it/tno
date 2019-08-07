@@ -57,6 +57,8 @@ class AsteroidDetailPrediction extends Component {
 
     const asteroid_id = params.id;
 
+
+
     this.api.getAsteroidById({ id: asteroid_id }).then(res => {
       const asteroid = res.data;
 

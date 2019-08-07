@@ -29,7 +29,7 @@ import AsteroidRunDetail from '../views/Astrometry/AsteroidRunDetail';
 import ReadCSV from '../views/Astrometry/ReadCSV';
 import OccultationCalendar from '../views/Prediction/OccultationCalendar';
 import RunDetailInfo from '../views/Astrometry/RunDetailInfo';
-import PredictionCalendar from '../views/PredictionCalendar';
+import PredictionCalendar from '../views/Prediction/PredictionCalendar';
 
 
 const appRoutes = [
