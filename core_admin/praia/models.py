@@ -395,6 +395,12 @@ class AstrometryJob(models.Model):
         verbose_name='Proc Id',
         null=True, blank=True )
     
+    global_job_id = models.CharField(
+        max_length=2000,
+        verbose_name='Global Job Id',
+        null=True, blank=True
+    )
+
     job_status = models.IntegerField(
         verbose_name='Job Status',
         null=True, blank=True,
@@ -407,6 +413,29 @@ class AstrometryJob(models.Model):
             (5, 'Held'), 
             (6, 'Submission')
         ))
+
+    cluster_name = models.CharField(
+        max_length=256,
+        verbose_name='Cluster Name',
+        null=True, blank=True
+    )    
+
+    remote_host = models.CharField(
+        max_length=2000,
+        verbose_name='Remote Host',
+        null=True, blank=True
+    )
+
+    args = models.CharField(
+        max_length=2000,
+        verbose_name='Args',
+        null=True, blank=True
+    )
+
+    submit_time = models.DateTimeField(
+        verbose_name='Submit Time',
+        auto_now_add=False, null=True, blank=True)
+
 
     start_time = models.DateTimeField(
         verbose_name='Start Time',

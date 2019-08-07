@@ -486,9 +486,6 @@ class AstrometryPipeline():
             self.logger.info(
                 "Submit Astrometry Job [ %s / %s ] Object: [ %s ]" % (idx, self.asteroids.count(), obj.name))
 
-            obj.status = 'idle'
-            obj.save()
-
             # Criar o diretorio de log para condor
             relative_condor_dir = os.path.join(obj.relative_path, 'condor')
             if not os.path.exists(relative_condor_dir):
@@ -521,6 +518,7 @@ class AstrometryPipeline():
                     "Log": os.path.join(log_dir, "astrometry.log"),
                     "Output": os.path.join(log_dir, "astrometry.out"),
                     "Error": os.path.join(log_dir, "astrometry.err")
+
                     # "arguments": "Eris --path /proccess/4/objects/Eris --catalog gaia2",
                     # "Log": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).log",
                     # "Output": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).out",
@@ -554,9 +552,16 @@ class AstrometryPipeline():
                         self.logger.info("Job in Condor was created. ClusterId [ %s ] ProcId [ %s ]" % (
                             condorJob.clusterid, condorJob.procid))
 
+                    obj.status = 'pending'
+                    obj.save()
+
             except Exception as e:
                 # TODO Tratar erro na submissao de jobs
-                self.on_error(self.instance, e)
+                obj.status = 'failure'
+                obj.error_msg("Job submission failed. Error: %s" % e)
+                obj.save()                
+                # self.on_error(self.instance, e)
+
 
         # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
 
@@ -583,35 +588,10 @@ class AstrometryPipeline():
 
         self.logger.info("Finish")
 
+
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"
 
-    # def register_input(self, asteroid_input):
-    #     try:
-    #         asteroid = self.asteroids.get(name=asteroid_input["asteroid"])
-
-    #         input_model, create = AstrometryInput.objects.update_or_create(
-    #             asteroid=asteroid,
-    #             input_type=asteroid_input["input_type"],
-    #             defaults={
-    #                 'filename': asteroid_input["filename"],
-    #                 'file_size': asteroid_input["file_size"],
-    #                 'file_type': asteroid_input["file_type"],
-    #                 'file_path': asteroid_input["file_path"],
-    #                 'error_msg': asteroid_input["error_msg"],
-    #                 'start_time': asteroid_input["start_time"],
-    #                 'finish_time': asteroid_input["finish_time"],
-    #                 'execution_time': asteroid_input["execution_time"],
-    #             })
-    #         input_model.save()
-
-    #         self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (
-    #             input_model.input_type, asteroid.name, input_model.file_path))
-
-    #         return input_model
-
-    #     except Exception as e:
-    #         self.on_error(self.instance, e)
 
     def on_error(self, instance, error):
         trace = traceback.format_exc()
