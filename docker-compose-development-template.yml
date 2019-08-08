@@ -30,6 +30,13 @@ services:
     depends_on:
       - database
 
+  # Praia Astrometry
+  praia_astrometry:
+    image: linea/tno_astrometry:latest
+    volumes:
+      - ${PROCCESS_DIR}:/data
+
+
   # NIMA
   nima:
     image: linea/nima:7
@@ -44,7 +51,7 @@ services:
 
   # Servidor Web NGINX
   frontend:
-    build: ./frontend
+    build: ./dashboard
     ports:
       - 80:8080
     volumes:

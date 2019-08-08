@@ -58,29 +58,35 @@ class AsteroidList extends Component {
       field: 'ccd_images',
       style: { textAlign: 'center' },
       header: 'CCD Images',
-      sortable: false,
+      sortable: true,
     },
 
     {
       field: 'catalog_rows',
       style: { textAlign: 'center' },
       header: 'Catalog Rows',
+      sortable: true,
+    },
+    {
+      field: 'h_execution_time',
+      // style: { textAlign: 'center' },
+      header: 'Execution Time',
       sortable: false,
     },
 
-    {
-      field: 'execution_time',
-      header: 'Execution Time',
-      sortable: true,
-      style: { textAlign: 'center' },
-      body: rowData => {
-        if (rowData.execution_time !== '' && rowData.execution_time !== null) {
-          return moment(rowData.execution_time)._i;
-        } else {
-          return;
-        }
-      },
-    },
+    // {
+    //   field: 'execution_time',
+    //   header: 'Execution Time',
+    //   sortable: true,
+    //   style: { textAlign: 'center' },
+    //   body: rowData => {
+    //     if (rowData.execution_time !== '' && rowData.execution_time !== null) {
+    //       return moment(rowData.execution_time)._i;
+    //     } else {
+    //       return;
+    //     }
+    //   },
+    // },
   ];
 
   componentDidUpdate(prevProps) {

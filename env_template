@@ -32,6 +32,12 @@ AVAILABLE_THREADS=4
 # Quantidade de threads minimo, tambem usado para processos que consomen muita memoria. 
 MINIMUM_THREADS=2
 
+# CONDOR API SETTINGS 
+CONDOR_API=http://condorapi.linea.gov.br
+CONDOR_CLUSTER=icex
+CONDOR_MACHINE=apl16.ib0.cm.linea.gov.br
+
+
 # Path para o diretorio de archive na maquina host, utilizado para montar os volumes dos 
 # dos containers em tempo de execucao.
 # OBS: para developers o diretorio onde a aplicacao foi instalada. ex: /home/user/tno/archive
@@ -43,4 +49,4 @@ HOST_ARCHIVE=/home/<user>/tno/archive
 # docker inspect <container_id>
 # O IP do Host aparece no atributo "Network"->"Gateway": "172.19.0.1",
 # A porta tem que ser a definida no arquivo: /etc/systemd/system/docker.service.d/startup_options.conf
-DOCKER_HOST=tcp://0.0.0.0:2376
+#DOCKER_HOST=tcp://0.0.0.0:2376

@@ -267,6 +267,15 @@ try:
 except Exception as e:
     raise ("Environment variable HOST_ARCHIVE can not be null.")
 
+
+# CONDOR API 
+try:
+    CONDOR_API = os.environ["CONDOR_API"]
+    CONDOR_CLUSTER = os.environ["CONDOR_CLUSTER"]
+    CONDOR_MACHINE = os.environ["CONDOR_MACHINE"]
+except Exception as e:
+    raise ("Condor API access settings are required in .env file")
+
 try:
     LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
 except:
@@ -337,6 +346,14 @@ LOGGING = {
             'backupCount': 5,
             'filename': os.path.join(LOG_DIR, 'skybot_load_data.log'),
             'formatter': 'standard',
+        },
+        'condor': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'condor.log'),
+            'formatter': 'standard',
         },        
     },
     'loggers': {
@@ -375,5 +392,10 @@ LOGGING = {
             'level': LOGGING_LEVEL,
             'propagate': False,
         },
+        'condor': {
+            'handlers': ['condor'],
+            'level': LOGGING_LEVEL,
+            'propagate': True,
+        },        
     },
 }

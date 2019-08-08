@@ -1,5 +1,6 @@
 from praia.models import Run, AstrometryAsteroid, AstrometryInput, AstrometryJob
 from datetime import datetime, timezone
+import logging
 
 def register_input(run_id, name, asteroid_input):
     # try:
@@ -33,8 +34,22 @@ def register_condor_job(astrometryRun, asteroid, clusterid, procid, job_status):
         clusterid=clusterid,
         procid=procid,
         job_status=job_status,
-        start_time=datetime.now(timezone.utc)
+        # start_time=datetime.now(timezone.utc)
+        submit_time=datetime.now(timezone.utc)
     )
     job.save()
 
     return job
+
+
+def register_astrometry_outputs(astrometry_run, asteroid):
+
+    asteroid = AstrometryAsteroid.objects.get(
+        astrometry_run=astrometry_run, name=asteroid)
+
+    logger = logging.getLogger("astrometry")
+
+    logger.info("Register outputs for Astrometry Run [ %s ] Asteroid [ %s ]" % (astrometry_run, asteroid)) 
+
+    asteroid.status = 'success'
+    asteroid.save()
