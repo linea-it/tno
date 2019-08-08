@@ -267,6 +267,15 @@ try:
 except Exception as e:
     raise ("Environment variable HOST_ARCHIVE can not be null.")
 
+
+# CONDOR API 
+try:
+    CONDOR_API = os.environ["CONDOR_API"]
+    CONDOR_CLUSTER = os.environ["CONDOR_CLUSTER"]
+    CONDOR_MACHINE = os.environ["CONDOR_MACHINE"]
+except Exception as e:
+    raise ("Condor API access settings are required in .env file")
+
 try:
     LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
 except:
