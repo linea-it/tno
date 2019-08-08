@@ -266,6 +266,13 @@ def read_csv(request):
 
 @api_view(['GET'])
 def download_file(request):
+    """
+    Function to download a file and zip.
+
+    http://localhost:7001/api/teste/?filepath=/archive/tmp/teste.csv
+
+    When the file is bigger than 1Mb, the file is zipped. 
+    """     
     if request.method == 'GET':
         # Funcao para fazer download de um arquivo 
 
@@ -273,7 +280,7 @@ def download_file(request):
         filepath = request.query_params.get('filepath', None)
 
         if not os.path.exists(filepath):
-            raise Exception("Arquivo não existe")
+            raise Exception("File do not exist")
 
         # Checar o tamanho do arquivo
         size = os.path.getsize(filepath) # zipsize = os.stat(filename).st_size
