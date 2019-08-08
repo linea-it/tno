@@ -6,15 +6,23 @@ import pandas as pd
 import humanize
 import os
 import csv
+import requests
+import logging
+from django.conf import settings
+import zlib
+import zipfile
+from django.conf import settings
+from django.http import HttpResponse
+
 
 @api_view(['GET'])
 def teste(request):
-    if request.method == 'GET':
+    
         result = dict( {
             'success': True,
         })
-
     return Response(result)
+
 
 @api_view(['GET'])
 def import_skybot(request):
@@ -158,3 +166,55 @@ def read_csv(request):
         })
 
     return Response(result)
+
+@api_view(['GET'])
+def download_file(request):
+    if request.method == 'GET':
+        logger = logging.getLogger('django')
+
+        # Funcao para fazer download de um arquivo 
+        logger.info("------------------------ TESTE ----------------------------")
+
+
+        import os
+
+        # Recuperar o filepath do arquivo a ser lido dos parametros da url. 
+        filepath = request.query_params.get('filepath', None)
+
+        if not os.path.exists(filepath):
+            raise Exception("Arquivo não existe")
+
+        # Checar o tamanho do arquivo
+        size = os.path.getsize(filepath) # zipsize = os.stat(filename).st_size
+        logger.info("size: %s" % size)
+
+        maxSize = 1000000
+
+        # Se o arquivo for maior que x
+        if size > maxSize:
+            logger.info("Arquivo maior que o maximo")
+
+            # criar uma nova variavel com o path para o arquivo zip 
+            filename = os.path.basename(filepath)
+            filename = filename + '.zip'
+            logger.info("Filename: %s" % filename)
+            new_file = os.path.join(settings.MEDIA_TMP_DIR, filename)
+
+            # Comprime o arquivo e retorna o arquivo comprimido
+            with zipfile.ZipFile(new_file,'w') as myzip:
+                myzip.write(filepath, compress_type=zipfile.ZIP_DEFLATED)
+                logger.info("Arquivo zipado")
+
+            #Retornar o arquivo zipado 
+            with open(new_file, 'rb') as fh:
+                response = HttpResponse(fh.read(), content_type="application/octet-stream")
+                response['Content-Disposition'] = 'inline; filename=' + os.path.basename(new_file) 
+                return response
+        else:
+            logger.info("Arquivo MENOR que o maximo")
+
+            with open(filepath, 'rb') as fh:
+                response = HttpResponse(fh.read(), content_type="application/octet-stream")
+                response['Content-Disposition'] = 'inline; filename=' + os.path.basename(filepath)
+                return response
+
