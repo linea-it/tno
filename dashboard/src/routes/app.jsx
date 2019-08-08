@@ -57,14 +57,6 @@ const appRoutes = [
   },
 
 
-  {
-    path: '/prediction_calendar',
-    name: 'Prediction Calendar',
-    // icon: 'pe-7s-target',
-    component: PredictionCalendar,
-    helpText:
-      'Calendar containing all the predictions',
-  },
 
   {
     path: '/solarsystem',
@@ -204,11 +196,20 @@ const appRoutes = [
     component: OccultationDetail,
   },
 
+
+  // {
+  //   path: '/occultation_calendar',
+  //   name: 'Occultation Calendar',
+  //   hidden: true,
+  //   component: OccultationCalendar,
+  // },
   {
-    path: '/occultation_calendar',
+    path: '/prediction_calendar',
     name: 'Occultation Calendar',
-    hidden: true,
-    component: OccultationCalendar,
+    // icon: 'pe-7s-target',
+    component: PredictionCalendar,
+    helpText:
+      'Calendar containing all the occultations',
   },
 
   {
@@ -252,6 +253,8 @@ const appRoutes = [
     hidden: true,
   },
 
+
+
   {
     path: '/astrometry_read_csv/:filepath/:filename/:title?',
     name: 'ReadCSV',
@@ -267,6 +270,8 @@ const appRoutes = [
     component: RunDetailInfo,
     hidden: true,
   },
+
+
 
 
   // {
