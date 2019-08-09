@@ -60,7 +60,11 @@ class Run(models.Model):
         null=True, blank=True
     )
 
-
+    execution_astrometry = models.DurationField(
+        verbose_name='Execution Astrometry',
+        null=True, blank=True
+    )
+    
     # Relation With PraiaConfig
     configuration = models.ForeignKey(
         Configuration, on_delete=models.CASCADE, verbose_name='Configuration',
@@ -113,8 +117,10 @@ class Run(models.Model):
             ('pending', 'Pending'), 
             ('running', 'Running'), 
             ('success', 'Success'), 
+            ('warning', 'Warning'), 
             ('error', 'Error'), 
-            ('reexecute', 'Reexecute'))
+            ('reexecute', 'Reexecute'),
+            ('failure', 'Failure'))
     )
 
     step = models.IntegerField(
@@ -122,10 +128,10 @@ class Run(models.Model):
         default=0, null=True, blank=True,
         choices=(
             (0,'CCD Images'),
-            (1,'Bsp Jpl'),
-            (2,'Gaia Catalog'),
+            (1,'Bsp JPL'),
+            (2,'Reference Catalog'),
             (3,'Praia Astrometry'),
-            (4,'Registered'))
+            (4,'Register'))
     )
 
     error_msg = models.CharField(
@@ -190,10 +196,18 @@ class AstrometryAsteroid(models.Model):
             )
     )
 
-    ccd_images = models.BigIntegerField(
+    ccd_images = models.IntegerField(
         verbose_name="CCD Images",
         help_text='Number of CCDs for this asteroid.',
-        null=True, blank=True
+        null=True, blank=True,
+        default=0
+    )
+
+    processed_ccd_image = models.IntegerField(
+        verbose_name="Processed CCD Images",
+        help_text='Number of CCDs that were processed for this asteroid',
+        null=True, blank=True,
+        default=0
     )
 
     catalog_rows = models.BigIntegerField(
@@ -213,18 +227,6 @@ class AstrometryAsteroid(models.Model):
         null=True, blank=True
     )
 
-    # start_ephemeris = models.DateTimeField(
-    #     verbose_name='Start Ephemeris',
-    #     auto_now_add=False, null=True, blank=True)
-
-    # finish_ephemeris = models.DateTimeField(
-    #     verbose_name='Finish Ephemeris',
-    #     auto_now_add=False, null=True, blank=True)
-
-    # execution_ephemeris = models.DurationField(
-    #     verbose_name='Execution Ephemeris',
-    #     null=True, blank=True
-    # )
 
     relative_path = models.CharField(
         max_length=1024,
@@ -386,7 +388,7 @@ class AstrometryJob(models.Model):
     )
 
     # Relation with praia.AstrometryAsteroid
-    asteroid = models.ForeignKey(
+    asteroid = models.OneToOneField(
         AstrometryAsteroid, on_delete=models.CASCADE, verbose_name='Asteroid',
         null=False, blank=False, related_name='condor_job'
     )

@@ -1,12 +1,13 @@
 from django.contrib import admin
 
-from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput, AstrometryOutput, AstrometryJob 
+from .models import (AstrometryAsteroid, AstrometryInput, AstrometryJob,
+                     AstrometryOutput, Configuration, Run)
 
 
 @admin.register(Run)
 class PraiaRunsAdmin(admin.ModelAdmin):
     list_display = ('id', 'owner', 'proccess', 'catalog', 'configuration',
-                    'start_time', 'finish_time','count_objects', 'count_success','count_failed','count_warning','count_not_executed', 'step')
+                    'start_time', 'finish_time', 'count_objects', 'count_success', 'count_failed', 'count_warning', 'count_not_executed', 'step')
 
 
 @admin.register(Configuration)
@@ -36,4 +37,4 @@ class AstrometryOutputAdmin(admin.ModelAdmin):
 @admin.register(AstrometryJob)
 class AstrometryJobs(admin.ModelAdmin):
     list_display = ('id', 'astrometry_run', 'asteroid', 'clusterid',
-                    'procid', 'job_status', 'start_time', 'finish_time', 'execution_time')
+                    'procid', 'job_status', 'submit_time', 'start_time', 'finish_time', 'execution_time')

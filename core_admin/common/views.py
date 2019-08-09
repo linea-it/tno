@@ -14,7 +14,7 @@ import logging
 import requests
 from tno.condor import check_condor_job, check_job_history
 from datetime import datetime
-from praia.pipeline.register import register_astrometry_outputs
+from praia.pipeline.register import register_astrometry_outputs, finish_astrometry_run
 logger = logging.getLogger("astrometry")
 
 
@@ -91,10 +91,10 @@ def update_status(job, condor_job):
 @permission_classes([AllowAny])
 def teste_register(request):
     if request.method == 'GET':
-        logger.debug("------------------------------------")
-        logger.debug("TESTE DE REGISTRO RESULTADOS")
 
-        register_astrometry_outputs(80, 'Eris')
+        # register_astrometry_outputs(80, 'Eris')
+
+        # finish_astrometry_run(80)
 
         result = dict({
             'success': True,
@@ -107,31 +107,36 @@ def teste_register(request):
 def teste(request):
     if request.method == 'GET':
         logger.debug("------------------------------------")
-        # Saber as Rodadas de Astrometria que estão com status running.
-        runs = Run.objects.filter(status='running')
+        # Saber as Rodadas de Astrometria que estão com status running e que estejam no Step Astrometry.
+        runs = Run.objects.filter(status='running', step=3)
 
         logger.debug(runs)
+
         # Para cada running recupera os jobs
         for astrometry_run in runs:
 
             jobs = astrometry_run.condor_jobs.all().exclude(job_status__gt=2)
 
-            # Para cada Job verifica o status no Cluster
-            for job in jobs:
-                logger.debug(job)
-                result = check_condor_job(job.clusterid, job.procid)
+            if jobs.count() > 0:
+                # Para cada Job verifica o status no Cluster
+                for job in jobs:
+                    logger.debug(job)
+                    result = check_condor_job(job.clusterid, job.procid)
 
-                if result is None:
-                    # Busca informacao do job no history do condor
-                    jobHistory = check_job_history(job.clusterid, job.procid)
-                    
-                    update_status(job, jobHistory)
-
-
-                else:
-                    if int(result['JobStatus']) != int(job.job_status):
-                        logger.debug("Status Diferente fazer alguma coisa")
-                        update_status(job, result)
+                    if result is None:
+                        # Busca informacao do job no history do condor
+                        jobHistory = check_job_history(job.clusterid, job.procid)
+                        
+                        update_status(job, jobHistory)
+                    else:
+                        if int(result['JobStatus']) != int(job.job_status):
+                            update_status(job, result)
+            else:
+                # Registra o Final da execucao.
+                # TODO condicao para o final da execucao esta errado
+                # Cai no else antes dos jobs iniciarem
+                # finish_astrometry_run(astrometry_run.pk)
+                pass
 
         logger.debug("------------------------------------")
 
