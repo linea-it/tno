@@ -161,6 +161,19 @@ class PredictionApi {
       params: params,
     });
   };
+
+
+
+  // getPredictionEvent = ({ asteroidId }) => {
+  //   return axios.get(`${this.api}/occultation/?asteroid=${asteroidId}`);
+  // };
+
+  getPredictionEvent = ({ asteroidId }) => {
+    return axios.get(`http://tno-testing.linea.gov.br/api/occultation/?asteroid=${asteroidId}`);
+  };
+
 }
+
+
 
 export default PredictionApi;

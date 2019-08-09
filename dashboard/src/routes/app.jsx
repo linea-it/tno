@@ -27,7 +27,9 @@ import ExposureDetail from '../views/SolarSystems/SkybotRun/ExposureDetail';
 import PraiaDetail from '../views/Astrometry/RunDetail';
 import AsteroidRunDetail from '../views/Astrometry/AsteroidRunDetail';
 import ReadCSV from '../views/Astrometry/ReadCSV';
-import RunDetailInfo from '../views/Astrometry/RunDetailInfo'
+import OccultationCalendar from '../views/Prediction/OccultationCalendar';
+import RunDetailInfo from '../views/Astrometry/RunDetailInfo';
+import PredictionCalendar from '../views/Prediction/PredictionCalendar';
 
 
 const appRoutes = [
@@ -53,6 +55,9 @@ const appRoutes = [
     helpText:
       'Query the database and download the metadata telling, among others, pointing coordinates, date of observation, exposure time, band, and image location in database',
   },
+
+
+
   {
     path: '/solarsystem',
     name: 'Search SSSO',
@@ -190,6 +195,23 @@ const appRoutes = [
     hidden: true,
     component: OccultationDetail,
   },
+
+
+  // {
+  //   path: '/occultation_calendar',
+  //   name: 'Occultation Calendar',
+  //   hidden: true,
+  //   component: OccultationCalendar,
+  // },
+  {
+    path: '/prediction_calendar',
+    name: 'Occultation Calendar',
+    // icon: 'pe-7s-target',
+    component: PredictionCalendar,
+    helpText:
+      'Calendar containing all the occultations',
+  },
+
   {
     path: '/light_curve',
     name: 'Light Curve Analysis',
@@ -231,6 +253,8 @@ const appRoutes = [
     hidden: true,
   },
 
+
+
   {
     path: '/astrometry_read_csv/:filepath/:filename/:title?',
     name: 'ReadCSV',
@@ -246,6 +270,8 @@ const appRoutes = [
     component: RunDetailInfo,
     hidden: true,
   },
+
+
 
 
   // {
