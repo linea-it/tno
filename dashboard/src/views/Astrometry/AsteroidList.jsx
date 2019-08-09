@@ -10,7 +10,7 @@ import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import './runDetailStyle.css';
+import '../Astrometry/assets/runDetailStyle.css';
 
 class AsteroidList extends Component {
   state = this.initialState;
@@ -157,7 +157,7 @@ class AsteroidList extends Component {
           icon="fa fa-file-text-o"
           className="ui-button-warning"
           title="Log"
-          // onClick={() => this.showAsteroidLog(asteroid_id)}
+        // onClick={() => this.showAsteroidLog(asteroid_id)}
         />
       );
     }

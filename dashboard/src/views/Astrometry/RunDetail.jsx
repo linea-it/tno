@@ -109,6 +109,7 @@ class PraiaDetail extends Component {
               : false,
 
         activeIndex: data.step,
+        reload_interval: this.state.count < 8 ? 1 : 3,
       });
     });
 
@@ -294,7 +295,7 @@ class PraiaDetail extends Component {
             <div className="ui-g-4 ui-md-12 ui-sm-1">
               <PanelCostumize
                 title="Step Stats"
-                // content={<StepStats info={execute_time} />}
+              // content={<StepStats info={execute_time} />}
               />
             </div>
           </div>

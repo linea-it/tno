@@ -34,7 +34,8 @@ def register_condor_job(astrometryRun, asteroid, clusterid, procid, job_status):
         clusterid=clusterid,
         procid=procid,
         job_status=job_status,
-        start_time=datetime.now(timezone.utc)
+        # start_time=datetime.now(timezone.utc)
+        submit_time=datetime.now(timezone.utc)
     )
     job.save()
 

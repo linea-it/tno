@@ -26,6 +26,8 @@ from praia.pipeline.star_catalog import create_star_catalog
 
 from praia.pipeline.register import register_condor_job
 
+from tno.condor import submit_condor_job
+
 
 class AstrometryPipeline():
     def __init__(self):
@@ -514,12 +516,14 @@ class AstrometryPipeline():
                     # "+RequiresWholeMachine": "True",
                     "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
                     "executable": "/app/run.py",
-                    "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
+                    # "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
+                    "initialdir": obj_absolute_path,
                     "Log": os.path.join(log_dir, "astrometry.log"),
                     "Output": os.path.join(log_dir, "astrometry.out"),
                     "Error": os.path.join(log_dir, "astrometry.err")
 
                     # "arguments": "Eris --path /proccess/4/objects/Eris --catalog gaia2",
+                    # "initialdir": "/archive/des/tno/testing/proccess/4/objects/Eris",
                     # "Log": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).log",
                     # "Output": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).out",
                     # "Error": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).err"
@@ -527,40 +531,65 @@ class AstrometryPipeline():
             })
             self.logger.debug("payload: ")
             self.logger.debug(payload)
+
             try:
-                url = 'http://loginicx.linea.gov.br:5001/submit_job'
-                headers = {'Content-Type': 'application/json'}
-
-                r = requests.post(url, headers=headers,
-                                  data=json.dumps(payload))
-                r.status_code
-
-                response = r.json()
-                # TODO tratar errors durante o Post.
-                self.logger.debug(r.status_code)
-                self.logger.debug("Result Status Code: [%s] Response: [ %s ]" % (
-                    r.status_code, response))
-
+                response = submit_condor_job(payload)
                 if response['success'] is True:
                     # Submetido com sucesso, Guardar o Id do Job para ser consultado
                     for job in response['jobs']:
                         self.logger.debug(job)
 
+                        # TODO guardar o momento da submissao 
+                        # condorJob.submit_time
                         condorJob = register_condor_job(
                             instance, obj, job['ClusterId'], job['ProcId'], job['JobStatus'])
 
                         self.logger.info("Job in Condor was created. ClusterId [ %s ] ProcId [ %s ]" % (
                             condorJob.clusterid, condorJob.procid))
 
+                
                     obj.status = 'pending'
                     obj.save()
 
             except Exception as e:
-                # TODO Tratar erro na submissao de jobs
                 obj.status = 'failure'
                 obj.error_msg("Job submission failed. Error: %s" % e)
-                obj.save()                
-                # self.on_error(self.instance, e)
+                obj.save()        
+
+            # try:
+            #     url = 'http://loginicx.linea.gov.br:5001/submit_job'
+            #     headers = {'Content-Type': 'application/json'}
+
+            #     r = requests.post(url, headers=headers,
+            #                       data=json.dumps(payload))
+            #     r.status_code
+
+            #     response = r.json()
+            #     # TODO tratar errors durante o Post.
+            #     self.logger.debug(r.status_code)
+            #     self.logger.debug("Result Status Code: [%s] Response: [ %s ]" % (
+            #         r.status_code, response))
+
+            #     if response['success'] is True:
+            #         # Submetido com sucesso, Guardar o Id do Job para ser consultado
+            #         for job in response['jobs']:
+            #             self.logger.debug(job)
+
+            #             condorJob = register_condor_job(
+            #                 instance, obj, job['ClusterId'], job['ProcId'], job['JobStatus'])
+
+            #             self.logger.info("Job in Condor was created. ClusterId [ %s ] ProcId [ %s ]" % (
+            #                 condorJob.clusterid, condorJob.procid))
+
+            #         obj.status = 'pending'
+            #         obj.save()
+
+            # except Exception as e:
+            #     # TODO Tratar erro na submissao de jobs
+            #     obj.status = 'failure'
+            #     obj.error_msg("Job submission failed. Error: %s" % e)
+            #     obj.save()                
+            #     # self.on_error(self.instance, e)
 
 
         # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
