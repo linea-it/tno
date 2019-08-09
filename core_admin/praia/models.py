@@ -323,27 +323,31 @@ class AstrometryOutput(models.Model):
         null=False, blank=False,
         help_text="Description of the result type.",
         choices=(
-            ('ephemeris', 'Ephemeris'),
-            ('radec', 'RA Dec'),
-            ('positions', 'Positions'),
-            ('asteroid_orbit', 'Asteroid Orbit'),
-            ('neighborhood_stars', 'Neighborhood Stars'),
-            ('catalog', 'Catalog'),
-            ('catalog_csv', 'Catalog CSV'),
-            ('stars_catalog_mini', 'Star Catalog Mini'),
-            ('stars_catalog_xy', 'Start Catalog XY'),
-            ('stars_parameters_of_occultation', 'Start Parameters of Occultation'),
-            ('stars_parameters_of_occultation_plot',
-             'Start Parameters of Occultation Table'),
-            ('occultation_table', 'Occultation Table CSV')
+            ('astrometry', 'Astrometry'),
+            ('target_offset', 'Target Offset'),
+            ('targets', 'Targets'),
+            ('astrometric_results', 'Astrometric Results (xy)'),
+            ('saoimage_region_file', 'SAOimage region file'),
+            ('mes', 'mes'),
         )
+    )
+    catalog = models.CharField(
+        max_length=1024,
+        null=True, blank=True,
+        verbose_name='Reference Catalog',
+        default=None
+    )
+    ccd_image = models.CharField(
+        max_length=1024,
+        null=True, blank=True,
+        verbose_name='CCD Image',
+        default=None
     )
 
     filename = models.CharField(
         max_length=1024,
         null=False, blank=False,
         verbose_name='Filename',
-        help_text='Filename is formed by name without space and separated by underline.'
     )
 
     file_size = models.BigIntegerField(

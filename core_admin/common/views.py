@@ -1,7 +1,8 @@
 from praia.models import Run
 from django.db.models import Count
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 import pandas as pd
 import humanize
 import os
@@ -17,29 +18,6 @@ from praia.pipeline.register import register_astrometry_outputs
 logger = logging.getLogger("astrometry")
 
 
-# def check_condor_job(cluster_id, proc_id):
-#     logger.debug("check_condor_job: ClusterId: [%s]" % cluster_id)
-
-#     try:
-#         r = requests.get('http://loginicx.linea.gov.br:5000/jobs', params={
-#             'ClusterId': cluster_id,
-#             'ProcId': proc_id
-#         })
-
-#         if r.status_code == requests.codes.ok:
-#             logger.debug(r.json())
-#             rows = r.json()
-#             if len(rows) == 1:
-#                 return rows[0]
-#             else:
-#                 return None
-#         else:
-#             # TODO tratar falha na requisicao
-#             logger.error("Falha na requisicao")
-
-#     except Exception as e:
-#         logger.error(e)
-#         raise
 def update_status(job, condor_job):
     """
         Condor status
@@ -106,6 +84,23 @@ def update_status(job, condor_job):
 
 
     job.save()
+
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def teste_register(request):
+    if request.method == 'GET':
+        logger.debug("------------------------------------")
+        logger.debug("TESTE DE REGISTRO RESULTADOS")
+
+        register_astrometry_outputs(80, 'Eris')
+
+        result = dict({
+            'success': True,
+        })
+
+    return Response(result)
 
 
 @api_view(['GET'])

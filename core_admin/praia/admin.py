@@ -29,7 +29,7 @@ class AstrometryInputAdmin(admin.ModelAdmin):
 
 @admin.register(AstrometryOutput)
 class AstrometryOutputAdmin(admin.ModelAdmin):
-    list_display = ('id', 'asteroid', 'type', 'filename',
+    list_display = ('id', 'asteroid', 'type', 'catalog', 'ccd_image', 'filename',
                     'file_size', 'file_type', 'file_path',)
 
 
