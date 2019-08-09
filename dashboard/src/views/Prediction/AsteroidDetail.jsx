@@ -57,6 +57,8 @@ class AsteroidDetailPrediction extends Component {
 
     const asteroid_id = params.id;
 
+
+
     this.api.getAsteroidById({ id: asteroid_id }).then(res => {
       const asteroid = res.data;
 
@@ -272,6 +274,7 @@ class AsteroidDetailPrediction extends Component {
             className="ui-button-info"
             onClick={() => this.onClickDownload(this.state.asteroid.id)}
           />
+
         </div>
 
         <div className="ui-toolbar-group-right">
@@ -639,6 +642,26 @@ class AsteroidDetailPrediction extends Component {
     );
   };
 
+
+  //CALENDAR WITH ALL OCCULTATIONS
+  calendar = () => {
+
+    return (
+      <Button
+        label="Calendar"
+        tooltip="Calendar with all occultations"
+        icon="pi pi-calendar"
+        onClick={this.handleCalendar}
+      />
+    );
+  };
+
+  handleCalendar = () => {
+    const history = this.props.history;
+    history.push({ pathname: `/occultation_calendar` });
+
+  };
+
   render() {
     return (
       <div className="content">
@@ -664,7 +687,7 @@ class AsteroidDetailPrediction extends Component {
           </div>
         </div>
         <div className="ui-md-12">
-          <Card title="Occultations" subTitle="">
+          <Card title="Occultations" subTitle={this.calendar()}>
             {this.occultationTable(this.state.occultations)}
           </Card>
         </div>

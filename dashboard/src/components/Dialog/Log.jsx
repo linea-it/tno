@@ -52,7 +52,6 @@ export default class Log extends Component {
                     {arrayLines}
                 </pre>
 
-
             </Dialog >
 
         );
