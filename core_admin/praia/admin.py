@@ -6,7 +6,7 @@ from .models import (AstrometryAsteroid, AstrometryInput, AstrometryJob,
 
 @admin.register(Run)
 class PraiaRunsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'owner', 'proccess', 'catalog', 'configuration',
+    list_display = ('id', 'status', 'owner', 'proccess', 'catalog', 'configuration',
                     'start_time', 'finish_time', 'count_objects', 'count_success', 'count_failed', 'count_warning', 'count_not_executed', 'step')
 
 
@@ -36,5 +36,5 @@ class AstrometryOutputAdmin(admin.ModelAdmin):
 
 @admin.register(AstrometryJob)
 class AstrometryJobs(admin.ModelAdmin):
-    list_display = ('id', 'astrometry_run', 'asteroid', 'clusterid',
-                    'procid', 'job_status', 'submit_time', 'start_time', 'finish_time', 'execution_time')
+    list_display = ('id', 'astrometry_run', 'asteroid', 'job_status', 'clusterid',
+                    'procid', 'submit_time', 'start_time', 'finish_time', 'execution_time')

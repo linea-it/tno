@@ -8,6 +8,7 @@ import humanize
 
 from praia.models import (AstrometryAsteroid, AstrometryInput, AstrometryJob,
                           AstrometryOutput, Run)
+from tno.condor import check_condor_job, check_job_history
 
 
 def register_input(run_id, name, asteroid_input):
@@ -46,6 +47,90 @@ def register_condor_job(astrometryRun, asteroid, clusterid, procid, job_status):
     job.save()
 
     return job
+
+
+def update_job_status(job, condor_job):
+    """
+        Condor status
+        0 - 'Unexpanded'
+        1 - 'Idle'
+        2 - 'Running'
+        3 - 'Removed' 
+        4 - 'Completed' 
+        5 - 'Held' 
+        6 - 'Submission'
+
+    """
+    logger = logging.getLogger("astrometry")
+
+    job.global_job_id = condor_job['GlobalJobId']
+    job.job_status = int(condor_job['JobStatus'])
+
+    if 'ClusterName' in condor_job:
+        job.cluster_name = condor_job['ClusterName']
+
+    if 'RemoteHost' in condor_job:
+        job.remote_host = condor_job['RemoteHost']
+
+    if 'Args' in condor_job:
+        job.args = condor_job['Args']
+
+    if 'JobStartDate' in condor_job:
+        job.start_time = datetime.fromtimestamp(
+            int(condor_job['JobStartDate']))
+
+    if condor_job['JobStatus'] == '1':
+        logger.debug("Job in Idle")
+
+        job.asteroid.status = 'idle'
+        job.asteroid.save()
+
+        job.save()
+
+    elif condor_job['JobStatus'] == '2':
+        logger.debug("Job Running")
+        job.asteroid.status = 'running'
+        job.asteroid.save()
+
+        job.save()
+
+    elif condor_job['JobStatus'] == '4':
+        logger.debug("Job Completed")
+
+        finish_time = datetime.fromtimestamp(int(condor_job['CompletionDate']))
+        job.finish_time = finish_time
+        job.execution_time = finish_time - job.start_time
+
+        job.save()
+
+        register_astrometry_outputs(job.astrometry_run.pk, job.asteroid.name)
+
+    elif condor_job['JobStatus'] == '5':
+        logger.debug("Job Hold")
+        job.asteroid.status = 'failure'
+        job.asteroid.error_msg = "Condor job has a Hold status and has not been executed. Check the condor log for more details."
+        job.asteroid.save()
+
+        job.finish_time = finish_time
+        job.execution_time = finish_time - job.start_time
+
+        job.save()
+
+        # TODO Remover do Condor jobs em Hold
+
+    else:
+        logger.debug(
+            "Job with untreated status. JobStatus [%s] " % condor_job['JobStatus'])
+        job.asteroid.status = 'failure'
+        job.asteroid.error_msg = "job in the condor returned a status not handled by the application. Check the condor log for more details."
+
+        job.finish_time = finish_time
+        job.execution_time = finish_time - job.start_time
+
+        job.save()
+
+    logger.info("Update Condor Job ClusterId [ %s ] ProcId [ %s ] Status: [ %s ] " % (
+        job.clusterid, job.clusterid.procid, condor_job['JobStatus']))
 
 
 def register_astrometry_outputs(astrometry_run, asteroid):
@@ -139,6 +224,7 @@ def register_astrometry_outputs(astrometry_run, asteroid):
         logger.info("Registered [ %s ] outputs for Astrometry Run [ %s ] Asteroid [ %s ] in %s" % (
             count, astrometry_run, asteroid, humanize.naturaldelta(tdelta)))
 
+
     except Exception as e:
         trace = traceback.format_exc()
         logger.error(e)
@@ -222,13 +308,17 @@ def finish_astrometry_run(astrometry_run):
         instance.count_warning = cwarning
         instance.count_not_executed = cnotexecuted
 
-        if csuccess == 0:
-            instance.status = 'warning'
-            instance.error_msg = "Successfully executed but no Asteroid successfully completed."
-        else:
-            instance.status = 'success'
-            instance.error_msg = None
-            instance.error_traceback = None
+        # if csuccess == 0:
+        #     instance.status = 'warning'
+        #     instance.error_msg = "Successfully executed but no Asteroid successfully completed."
+        # else:
+        #     instance.status = 'success'
+        #     instance.error_msg = None
+        #     instance.error_traceback = None
+
+        instance.status = 'success'
+        instance.error_msg = None
+        instance.error_traceback = None
 
         start_time = instance.start_time
         finish_time = datetime.now(timezone.utc)
@@ -252,3 +342,43 @@ def finish_astrometry_run(astrometry_run):
         instance.error_msg = 'Failed to register execution status. Error: %s' % e
         instance.error_traceback = trace
         instance.save()
+
+
+def check_astrometry_running():
+    logger = logging.getLogger("astrometry")
+    runs = Run.objects.filter(status='running', step=3)
+
+    # Para cada running recupera os jobs
+    for astrometry_run in runs:
+
+        jobs = astrometry_run.condor_jobs.all().exclude(job_status__gt=2)
+
+        if jobs.count() > 0:
+            # Para cada Job verifica o status no Cluster
+            for job in jobs:
+                logger.debug(job)
+                result = check_condor_job(job.clusterid, job.procid)
+
+                if result is None:
+                    # Busca informacao do job no history do condor
+                    jobHistory = check_job_history(job.clusterid, job.procid)
+
+                    update_job_status(job, jobHistory)
+                else:
+                    if int(result['JobStatus']) != int(job.job_status):
+                        update_job_status(job, result)
+        else:
+            # Registra o Final da execucao.
+            if not check_jobs_wait_to_run(astrometry_run):
+                # Se todos os objetos ja foram executados finaliza o processo.
+                finish_astrometry_run(astrometry_run.pk)
+
+def check_jobs_wait_to_run(astrometry_run):
+    # Verificar se nao tem nenhum objeto esperando para ser executado.
+    a = astrometry_run.asteroids.filter(
+        status__in=['pending', 'running', 'idle'])
+
+    if a.count() == 0:
+        return False
+    else:
+        return True

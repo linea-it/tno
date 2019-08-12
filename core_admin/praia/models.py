@@ -64,7 +64,7 @@ class Run(models.Model):
         verbose_name='Execution Astrometry',
         null=True, blank=True
     )
-    
+
     # Relation With PraiaConfig
     configuration = models.ForeignKey(
         Configuration, on_delete=models.CASCADE, verbose_name='Configuration',
@@ -114,11 +114,11 @@ class Run(models.Model):
         verbose_name='Status',
         default='pending', null=True, blank=True,
         choices=(
-            ('pending', 'Pending'), 
-            ('running', 'Running'), 
-            ('success', 'Success'), 
-            ('warning', 'Warning'), 
-            ('error', 'Error'), 
+            ('pending', 'Pending'),
+            ('running', 'Running'),
+            ('success', 'Success'),
+            ('warning', 'Warning'),
+            ('error', 'Error'),
             ('reexecute', 'Reexecute'),
             ('failure', 'Failure'))
     )
@@ -127,11 +127,11 @@ class Run(models.Model):
         verbose_name='Current Step',
         default=0, null=True, blank=True,
         choices=(
-            (0,'CCD Images'),
-            (1,'Bsp JPL'),
-            (2,'Reference Catalog'),
-            (3,'Praia Astrometry'),
-            (4,'Register'))
+            (0, 'CCD Images'),
+            (1, 'Bsp JPL'),
+            (2, 'Reference Catalog'),
+            (3, 'Praia Astrometry'),
+            (4, 'Register'))
     )
 
     error_msg = models.CharField(
@@ -186,14 +186,14 @@ class AstrometryAsteroid(models.Model):
         verbose_name='Status',
         default='pending', null=True, blank=True,
         choices=(
-            ('pending', 'Pending'), 
-            ('running', 'Running'), 
+            ('pending', 'Pending'),
+            ('running', 'Running'),
             ('warning', 'Warning'),
-            ('success', 'Success'), 
-            ('failure', 'Failure'), 
+            ('success', 'Success'),
+            ('failure', 'Failure'),
             ('not_executed', 'Not Executed'),
             ('idle', 'Idle'),
-            )
+        )
     )
 
     ccd_images = models.IntegerField(
@@ -226,7 +226,6 @@ class AstrometryAsteroid(models.Model):
         verbose_name='Execution Time',
         null=True, blank=True
     )
-
 
     relative_path = models.CharField(
         max_length=1024,
@@ -374,7 +373,6 @@ class AstrometryOutput(models.Model):
         return str(self.filename)
 
 
-
 class AstrometryJob(models.Model):
 
     """
@@ -395,12 +393,12 @@ class AstrometryJob(models.Model):
 
     clusterid = models.BigIntegerField(
         verbose_name='Cluster Id',
-        null=True, blank=True )
+        null=True, blank=True)
 
     procid = models.IntegerField(
         verbose_name='Proc Id',
-        null=True, blank=True )
-    
+        null=True, blank=True)
+
     global_job_id = models.CharField(
         max_length=2000,
         verbose_name='Global Job Id',
@@ -411,12 +409,12 @@ class AstrometryJob(models.Model):
         verbose_name='Job Status',
         null=True, blank=True,
         choices=(
-            (0, 'Unexpanded'), 
-            (1, 'Idle'), 
-            (2, 'Running'), 
-            (3, 'Removed'), 
-            (4, 'Completed'), 
-            (5, 'Held'), 
+            (0, 'Unexpanded'),
+            (1, 'Idle'),
+            (2, 'Running'),
+            (3, 'Removed'),
+            (4, 'Completed'),
+            (5, 'Held'),
             (6, 'Submission')
         ))
 
@@ -424,7 +422,7 @@ class AstrometryJob(models.Model):
         max_length=256,
         verbose_name='Cluster Name',
         null=True, blank=True
-    )    
+    )
 
     remote_host = models.CharField(
         max_length=2000,
@@ -441,7 +439,6 @@ class AstrometryJob(models.Model):
     submit_time = models.DateTimeField(
         verbose_name='Submit Time',
         auto_now_add=False, null=True, blank=True)
-
 
     start_time = models.DateTimeField(
         verbose_name='Start Time',

@@ -21,8 +21,8 @@ def on_create_praia_run_signal(sender, instance, signal, created, **kwargs):
 
         # Start Thread to run.
         thread = threading.Thread(target=run_astrometry, args=(instance.id, ))
-        thread.daemon = True 
-        thread.start()   
+        thread.daemon = True
+        thread.start()
 
     else:
         if instance.status == "reexecute":
@@ -34,14 +34,16 @@ def on_create_praia_run_signal(sender, instance, signal, created, **kwargs):
                 logger.debug("Directory: %s" % instance.relative_path)
                 shutil.rmtree(instance.relative_path)
 
-                # apaga o registro dos asteroids 
+                # apaga o registro dos asteroids
                 instance.asteroids.all().delete()
                 instance.condor_jobs.all().delete()
 
             # Start Thread to run.
-            thread = threading.Thread(target=run_astrometry, args=(instance.id, ))
-            thread.daemon = True 
-            thread.start()   
+            thread = threading.Thread(
+                target=run_astrometry, args=(instance.id, ))
+            thread.daemon = True
+            thread.start()
+
 
 def run_astrometry(run_id):
     logger = logging.getLogger("Run Astrometry")

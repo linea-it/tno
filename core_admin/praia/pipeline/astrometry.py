@@ -553,27 +553,13 @@ class AstrometryPipeline():
 
         # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
 
-        # Encerrar a Rodada de Astrometria
-        # self.set_execution_time(instance)
-
         # Acrescentar os totais de asteroids por status.
-        # csuccess = instance.asteroids.filter(status='success').count()
-        # cfailure = instance.asteroids.filter(status='failure').count()
-        # cwarning = instance.asteroids.filter(status='warning').count()
         cnotexecuted = instance.asteroids.filter(status='not_executed').count()
 
-        # Salvar os totais e mudar o status para sucesso.
-        # TODO: essa etapa quando executada com o condor deve ficar na
-        # funcao que vai registrar os resutados.
         instance.refresh_from_db()
         instance.status = 'running'
-        # instance.count_success = csuccess
-        # instance.count_failed = cfailure
-        # instance.count_warning = cwarning
         instance.count_not_executed = cnotexecuted
         instance.save()
-        # self.logger.info("Status changed to Success")
-
         self.logger.info("Completed Submission to condor From now on the pipeline runs asynchronously.")
 
     def get_astrometry_position_filename(self, name):
