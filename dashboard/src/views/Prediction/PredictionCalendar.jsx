@@ -17,104 +17,204 @@ import json from '../Prediction/assets/Prediction.json';
 
 export default class PredictionCalendar extends Component {
 
-    api = new PredictionApi();
+  api = new PredictionApi();
+
+  calendarRef = React.createRef();
 
 
-    state = {
-        defaultDate: new Date(),
-        defaultView: 'dayGridMonth',
-        predictionEvents: null,
-        log_visible: false,
-        calendar_content: null,
+  state = {
+    defaultDate: new Date(),
+    defaultView: 'dayGridMonth',
+    predictionEvents: null,
+    log_visible: false,
+    calendar_content: null,
+    calendarApi: null,
+
+  }
+
+  handleDateClick = (e) => {
+
+    console.log(e);
+  };
+
+  handleEvent = (e) => {
+    let id = e.event.id;
+
+
+
+    // const history = this.props.history;
+    // history.push({ pathname: `/occultation_detail/${id}` });
+
+  };
+
+
+
+
+  componentDidMount() {
+
+    this.setState({ calendarApi: this.calendarRef.current.getApi() });
+    // console.log(calendarApi);
+  }
+
+
+  componentWillMount() {
+    this.fetchData();
+
+  };
+
+
+
+
+  fetchData = () => {
+
+    let arrayEvents = []
+    let result = [];
+
+    let keys = Object.keys(json);
+
+    keys.forEach(function (key) {
+      result.push(json[key]);
+    });
+    result[3].map((res, idx) => {
+
+      arrayEvents.push({ id: res.id, title: res.asteroid_name, date: res.date_time, textColor: 'white' });
+    });
+
+    // this.setState({ predictionEvents: arrayEvents });
+
+  };
+
+
+
+
+  reload_calender = (start_date, end_date) => {
+    console.log("Inittial: ", start_date);
+    console.log("Final: ", end_date);
+  };
+
+
+
+  //Control when change the header buttons.
+  handleDateRender = (arg) => {
+
+    // console.log("Start: ", arg.view.currentStart);
+    // console.log("End: ", arg.view.currentEnd);
+
+    let start_date = arg.view.currentStart;
+    let end_date = arg.view.currentEnd;
+
+
+    if (this.state.calendarApi !== null) {
+      // console.log(this.state.calendarApi.view);
+
+      this.reload_calender(start_date, end_date);
+
     }
 
-    handleDateClick = (e) => {
-        console.log(e);
 
-    };
-
-    handleEvent = (e) => {
-        let id = e.event.id;
-
-        const history = this.props.history;
-        history.push({ pathname: `/occultation_detail/${id}` });
-
-    };
-
-    componentWillMount() {
-        this.fetchData();
-    };
+  }
 
 
-    fetchData = () => {
 
-        let arrayEvents = []
-        let result = [];
-
-        let keys = Object.keys(json);
-
-        keys.forEach(function (key) {
-            result.push(json[key]);
-        });
-        result[3].map((res, idx) => {
-
-            arrayEvents.push({ id: res.id, title: res.asteroid_name, date: res.date_time, textColor: 'white' });
-        });
-
-        this.setState({ predictionEvents: arrayEvents });
+  handleEventRender = (event) => {
+    // if (event.icon) {
+    //   // element.find(".fc-title").prepend("<i class='fa fa-"+event.icon+"'></i>");
+    //   
+    // }
 
 
-    };
+
+    console.log(event);
 
 
-    render() {
-        const { defaultDate, defaultView, predictionEvents, } = this.state;
-
-        // const events =
-        //     [
-        //         { title: "2004 DA62", date: '2019-08-10 11:32:00', textColor: 'white' },
-        //         { title: 'Evento2', date: '2019-08-12 17:30:00', textColor: 'white' },
-        //     ]
+  };
 
 
-        const header = {
-            center: 'title',
-            right: 'prev,next',
-            month: 'month',
-            listYear: 'Year',
-            left: 'dayGridDay,dayGridWeek,dayGridMonth,listYear',
-
-        }
-
-        const buttonText = {
-            listYear: 'year',
-            listMonth: 'list month',
-            month: 'month'
-
-        }
 
 
-        return (
-            <div>
-                <Card>
-                    <FullCalendar
-                        header={header}
-                        buttonText={buttonText}
-                        defaultDate={this.state.defaultDate}
-                        themeSystem={"standard"}
-                        events={predictionEvents}
-                        eventClick={this.handleEvent}
-                        defaultView={defaultView}
-                        plugins={[bootstrapPlugin, dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin]}
-                        dateClick={this.handleDateClick}
-                        weekNumbers={true}
-                    />
-
-                </Card>
+  render() {
+    const { defaultDate, defaultView, predictionEvents, } = this.state;
 
 
-            </div >
-        );
+
+    // if (this.calendarRef.current !== null) {
+    //   console.log(this.calendarRef.current.props.header);
+    // }
+
+
+
+    const events =
+      [
+        { title: "2004 DA62 ", date: '2019-08-10 11:32:00', textColor: 'white', className: 'a', },
+        { title: 'Evento2', date: '2019-08-12 17:30:00', textColor: 'white', backgroundColor: "green", icon: "asterisk" },
+      ]
+
+
+
+
+    const header = {
+      center: 'title',
+      right: 'prev,next, myFirstCustomButton, mySecondCustomButton',
+      month: 'month',
+      listYear: 'Year',
+      left: 'dayGridDay,dayGridWeek,dayGridMonth,listYear',
+
     }
+
+
+    //Variable used to change to specific button name
+    const buttonText = {
+      listYear: 'year',
+      month: 'month',
+
+    }
+
+
+    return (
+      <div>
+        <Card>
+          <FullCalendar
+
+            header={header}
+            buttonText={buttonText}
+            defaultDate={this.state.defaultDate}
+            themeSystem={"standard"}
+            // events={predictionEvents}
+            events={events}
+
+            eventClick={this.handleEvent}
+            defaultView={defaultView}
+            plugins={[bootstrapPlugin, dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin]}
+            dateClick={this.handleDateClick}
+            weekNumbers={true}
+            datesRender={this.handleDateRender}
+
+            ref={this.calendarRef}
+
+            eventRender={this.handleEventRender}
+
+          // customButtons={{
+          //   myFirstCustomButton: {
+          //     text: 'custom1', click: function () {
+          //       alert("Clicked");
+          //     }
+          //   },
+          //   mySecondCustomButton: {
+          //     text: 'custom2', click: function () {
+          //       alert("Clicked");
+          //     }
+          //   },
+
+          // }}
+
+
+          />
+
+        </Card>
+
+
+      </div >
+    );
+  }
 
 }

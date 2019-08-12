@@ -102,9 +102,11 @@ class OccultationDetail extends Component {
 
   onPrev = prev => {
     const history = this.props.history;
-    history.push({ pathname: `${prev}` });
-    // TODO nao deveria usar reload aqui.
-    window.location.reload();
+    // history.push({ pathname: `${prev}` });
+    // // TODO nao deveria usar reload aqui.
+    // window.location.reload();
+
+    history.goBack();
   };
 
   onNext = next => {
@@ -160,7 +162,7 @@ class OccultationDetail extends Component {
   contentOccCircumstances = data => {
     return (
       <Card subTitle="Occultation circumstances">
-        <Circumstances data={data}/>
+        <Circumstances data={data} />
       </Card>
     );
   };
