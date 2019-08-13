@@ -167,6 +167,7 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
             'status',
             'error_msg',
             'ccd_images',
+            'processed_ccd_image',
             'catalog_rows',
             'execution_time',
             'catalog_name',

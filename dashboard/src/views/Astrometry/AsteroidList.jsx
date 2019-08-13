@@ -60,7 +60,12 @@ class AsteroidList extends Component {
       header: 'CCD Images',
       sortable: true,
     },
-
+    {
+      field: 'processed_ccd_image',
+      style: { textAlign: 'center' },
+      header: 'Processed CCDs',
+      sortable: true,
+    },
     {
       field: 'catalog_rows',
       style: { textAlign: 'center' },
