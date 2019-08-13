@@ -131,7 +131,7 @@ class Run(models.Model):
             (1, 'Bsp JPL'),
             (2, 'Reference Catalog'),
             (3, 'Praia Astrometry'),
-            (4, 'Register'))
+            (4, 'Done'))
     )
 
     error_msg = models.CharField(
