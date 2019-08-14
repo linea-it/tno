@@ -482,6 +482,7 @@ class AstrometryPipeline():
             raise Exception(
                 "absolute path to archive directory is required. This path must be declared in the ARCHIVE_DIR environment variable.")
 
+        idx = 1
         for obj in self.asteroids:
             # para cada objeto fazer a submissao do job na API do condor.
             self.logger.info(
