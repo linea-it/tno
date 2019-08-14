@@ -149,80 +149,86 @@ def register_astrometry_outputs(astrometry_run, asteroid):
 
         # Se nao existir marca o asteroid como falha
         if not os.path.exists(result_json):
-            logger.debug("Arquivo Output NAO existe")
 
-            asteroid.status = 'failed'
+            asteroid.status = 'failure'
             asteroid.error_msg = 'Asteroid was processed but the outputs file was not created.'
+
+            t1 = datetime.now(timezone.utc)
+            tdelta = t1 - t0
+            asteroid.execution_time += tdelta
+
             asteroid.save()
 
-            return
+            logger.warning("Asteroid [ %s ] was processed but the outputs file was not created." % (asteroid.name))
 
-        results = read_astrometry_json(result_json)
-
-        # Astrometry File
-        astrometry = results.get('astrometry')
-        if not astrometry.get('file_size') > 0:
-            # Se o arquivo de Astrometria estiver vazio, muda o status para warning
-            asteroid.status = 'warning'
-            asteroid.error_msg = 'Astrometry file is empty.'
-
-        update_create_astrometry_output(
-            asteroid, 'astrometry', astrometry.get('filename'), astrometry.get(
-                'file_size'), astrometry.get('extension')
-        )
-
-        # Target Offset
-        output = results.get('target_offset')
-        update_create_astrometry_output(
-            asteroid, 'target_offset', output.get('filename'), output.get(
-                'file_size'), output.get('extension')
-        )
-
-        # Targets File
-        output = results.get('targets_file')
-        update_create_astrometry_output(
-            asteroid, 'targets', output.get('filename'), output.get(
-                'file_size'), output.get('extension')
-        )
-
-        # Arquivos XY gerados para cada ccd e varios catalogos de referencia
-        count = 0
-        count_ccds = 0
-        outputs = results.get('outputs')
-        for ccd in outputs:
-            a_files = outputs[ccd]
-            count_ccds += 1
-
-            for output in a_files:
-                f_type = get_type_by_extension(output.get('extension'))
-
-                update_create_astrometry_output(
-                    asteroid, f_type, output.get('filename'), output.get('file_size'), output.get('extension'), output.get('catalog'), ccd)
-
-                count += 1
-
-        logger.debug(
-            "Registered outputs [ %s ] for [ %s ] CCDs" % (count, len(ccd)))
-
-        # Registrar Contadores
-        asteroid.processed_ccd_image = results.get('processed_images')
-        asteroid.execution_time += asteroid.condor_job.execution_time
-
-        if int(asteroid.processed_ccd_image) != int(asteroid.ccd_images):
-            asteroid.status = 'warning'
-            asteroid.error_msg = 'Some CCDs were not processed.'
         else:
-            asteroid.status = 'success'
-            asteroid.error_msg = None
 
-        t1 = datetime.now(timezone.utc)
-        tdelta = t1 - t0
-        asteroid.execution_time += tdelta
+            results = read_astrometry_json(result_json)
 
-        asteroid.save()
+            # Astrometry File
+            astrometry = results.get('astrometry')
+            if not astrometry.get('file_size') > 0:
+                # Se o arquivo de Astrometria estiver vazio, muda o status para warning
+                asteroid.status = 'warning'
+                asteroid.error_msg = 'Astrometry file is empty.'
 
-        logger.info("Registered [ %s ] outputs for Astrometry Run [ %s ] Asteroid [ %s ] in %s" % (
-            count, astrometry_run, asteroid, humanize.naturaldelta(tdelta)))
+            update_create_astrometry_output(
+                asteroid, 'astrometry', astrometry.get('filename'), astrometry.get(
+                    'file_size'), astrometry.get('extension')
+            )
+
+            # Target Offset
+            output = results.get('target_offset')
+            update_create_astrometry_output(
+                asteroid, 'target_offset', output.get('filename'), output.get(
+                    'file_size'), output.get('extension')
+            )
+
+            # Targets File
+            output = results.get('targets_file')
+            update_create_astrometry_output(
+                asteroid, 'targets', output.get('filename'), output.get(
+                    'file_size'), output.get('extension')
+            )
+
+            # Arquivos XY gerados para cada ccd e varios catalogos de referencia
+            count = 0
+            count_ccds = 0
+            outputs = results.get('outputs')
+            for ccd in outputs:
+                a_files = outputs[ccd]
+                count_ccds += 1
+
+                for output in a_files:
+                    f_type = get_type_by_extension(output.get('extension'))
+
+                    update_create_astrometry_output(
+                        asteroid, f_type, output.get('filename'), output.get('file_size'), output.get('extension'), output.get('catalog'), ccd)
+
+                    count += 1
+
+            logger.debug(
+                "Registered outputs [ %s ] for [ %s ] CCDs" % (count, len(ccd)))
+
+            # Registrar Contadores
+            asteroid.processed_ccd_image = results.get('processed_images')
+            asteroid.execution_time += asteroid.condor_job.execution_time
+
+            if int(asteroid.processed_ccd_image) != int(asteroid.ccd_images):
+                asteroid.status = 'warning'
+                asteroid.error_msg = 'Some CCDs were not processed.'
+            else:
+                asteroid.status = 'success'
+                asteroid.error_msg = None
+
+            t1 = datetime.now(timezone.utc)
+            tdelta = t1 - t0
+            asteroid.execution_time += tdelta
+
+            asteroid.save()
+
+            logger.info("Registered [ %s ] outputs for Astrometry Run [ %s ] Asteroid [ %s ] in %s" % (
+                count, astrometry_run, asteroid, humanize.naturaldelta(tdelta)))
 
 
     except Exception as e:
