@@ -13,6 +13,7 @@ import "@fullcalendar/timegrid/main.css";
 import '@fullcalendar/list/main.css';
 import PredictionApi from './PredictionApi';
 import json from '../Prediction/assets/Prediction.json';
+// import { back_cookie, read_cookie, delete_cookie, bake_cookie } from 'sfcookies';
 
 
 
@@ -24,64 +25,74 @@ export default class PredictionCalendar extends Component {
 
 
   state = {
+    id: null,
     defaultDate: new Date(),
     defaultView: 'dayGridMonth',
     predictionEvents: null,
     log_visible: false,
     calendar_content: null,
     calendarApi: null,
+    cookie_key: null,
 
   }
-
-  handleDateClick = (e) => {
-
-    console.log(e);
-  };
-
-  handleEvent = (e) => {
-    let id = e.event.id;
-
-    //  console.log(e.event.setProp("title", "<em>oi<em>"));
-
-
-    //console.log(e.event.setProp("classNames", "<i class=fa fa-undo></i>"));
-
-    // console.log(e.event.setProp(e.el.innerHTML, <i className='fa fa-undo'></i>));
-
-    // console.log(e.event.setProp(e.el.innerHTML));
-
-
-
-
-    console.log(this.state.calendarApi);
-
-
-
-    // console.log(e.event.setProp("title", parse.transform(<i class='fa fa-undo'></i>)));
-
-
-
-
-
-    const history = this.props.history;
-    history.push({ pathname: `/occultation_detail/${id}` });
-
-  };
-
-
-
 
   componentDidMount() {
 
-    this.setState({ calendarApi: this.calendarRef.current.getApi() });
+    // this.setState({ calendarApi: this.calendarRef.current.getApi() });
     // console.log(calendarApi);
+
+
+
   }
+
 
 
   componentWillMount() {
     this.fetchData();
 
-  };
+    const { match: { params } } = this.props;
+
+    if (params.id) {
+
+      let id = params.id;
+      let date = new Date(params.default_date);
+
+
+      this.setState({
+        id: id,
+        defaultDate: date,
+      });
+    }
+    else {
+      console.log("Not yet");
+    }
+
+  }
+
+
+
+
+
+  //COOKIE AREA
+  // //Check if cookies are set
+
+  // if (read_cookie('cookie_id')) {
+  //   console.log("Cookie id: ", read_cookie('cookie_id'));
+  //   console.log("Cookie date: ", read_cookie('cookie_date'));
+
+
+  //   //Set a new default Date
+  //   this.setState({ defaultDate: read_cookie('cookie_date') });
+
+  // } else {
+  //   console.log("not defined");
+  // }
+  //---------------------------------------
+
+
+
+
+
 
 
 
@@ -108,27 +119,102 @@ export default class PredictionCalendar extends Component {
 
 
 
-  reload_calender = (start_date, end_date) => {
+  reloadCalender = (start_date, end_date) => {
     console.log("Inittial: ", start_date);
     console.log("Final: ", end_date);
+
   };
 
 
 
-  //Control when change the header buttons.
-  handleDateRender = (arg) => {
 
-    // console.log("Start: ", arg.view.currentStart);
-    // console.log("End: ", arg.view.currentEnd);
+  //Controls when click the date area not the event. The event is handleEvent
+  handleDateClick = (e) => {
+
+    console.log(e);
+  };
+
+
+
+  //Controls when the event date/other is select
+  handleEvent = (e) => {
+    let id = e.event.id;
+    let date = e.event.start;
+    let view = null;//To do 
+    let flag = "calendar";
+
+
+
+    const history = this.props.history;
+    history.push(`/test_occultation/${id}/${date}/${flag}`);
+
+
+
+
+
+
+
+
+    // //COOKIE MANAGEMENT AREA
+    // //create a cookie key
+    // const cookie_id = 'cookie_id';
+    // const cookie_date = 'cookie_date';
+    // const cookie_view = 'cookie_view';
+
+    // bake_cookie(cookie_id, id);
+    // bake_cookie(cookie_date, date);
+    // bake_cookie(cookie_view, view);
+
+    // //----------------------------
+
+
+
+
+
+    //  console.log(e.event.setProp("title", "<em>oi<em>"));
+
+    //console.log(e.event.setProp("classNames", "<i class=fa fa-undo></i>"));
+
+    // console.log(e.event.setProp(e.el.innerHTML, <i className='fa fa-undo'></i>));
+
+    // console.log(e.event.setProp(e.el.innerHTML));
+
+    // console.log(this.state.calendarApi);
+
+    // console.log(e.event.setProp("title", parse.transform(<i class='fa fa-undo'></i>)));
+
+
+    // const history = this.props.history;
+    // history.push({ pathname: `/occultation_detail/${id}` });
+
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //Control when change the header buttons(day, week, month, year. prev,next).
+  handleDateRender = (arg) => {
 
     let start_date = arg.view.currentStart;
     let end_date = arg.view.currentEnd;
 
 
+
     if (this.state.calendarApi !== null) {
       // console.log(this.state.calendarApi.view);
 
-      this.reload_calender(start_date, end_date);
+      this.reloadCalender(start_date, end_date);
 
     }
 
@@ -137,6 +223,7 @@ export default class PredictionCalendar extends Component {
 
 
 
+  //It controls when event is being rendering 
   handleEventRender = (event) => {
     // if (event.icon) {
     //   // element.find(".fc-title").prepend("<i class='fa fa-"+event.icon+"'></i>");
@@ -156,7 +243,7 @@ export default class PredictionCalendar extends Component {
 
     // }
 
-    console.log(event);
+    // console.log(event);
 
     // console.log(event.event.setProp(event.el.innerText, "<em>oi<em>"));
 
@@ -170,6 +257,8 @@ export default class PredictionCalendar extends Component {
 
   render() {
     const { defaultDate, defaultView, predictionEvents, } = this.state;
+
+    console.log(defaultDate);
 
 
 
@@ -206,6 +295,10 @@ export default class PredictionCalendar extends Component {
     }
 
 
+
+
+
+
     return (
       <div>
         <Card>
@@ -213,7 +306,7 @@ export default class PredictionCalendar extends Component {
 
             header={header}
             buttonText={buttonText}
-            defaultDate={this.state.defaultDate}
+            defaultDate={defaultDate}
             themeSystem={"standard"}
             events={predictionEvents}
             // events={events}
