@@ -15,6 +15,7 @@ import PredictionApi from './PredictionApi';
 import json from '../Prediction/assets/Prediction.json';
 
 
+
 export default class PredictionCalendar extends Component {
 
   api = new PredictionApi();
@@ -40,10 +41,30 @@ export default class PredictionCalendar extends Component {
   handleEvent = (e) => {
     let id = e.event.id;
 
+    //  console.log(e.event.setProp("title", "<em>oi<em>"));
 
 
-    // const history = this.props.history;
-    // history.push({ pathname: `/occultation_detail/${id}` });
+    //console.log(e.event.setProp("classNames", "<i class=fa fa-undo></i>"));
+
+    // console.log(e.event.setProp(e.el.innerHTML, <i className='fa fa-undo'></i>));
+
+    // console.log(e.event.setProp(e.el.innerHTML));
+
+
+
+
+    console.log(this.state.calendarApi);
+
+
+
+    // console.log(e.event.setProp("title", parse.transform(<i class='fa fa-undo'></i>)));
+
+
+
+
+
+    const history = this.props.history;
+    history.push({ pathname: `/occultation_detail/${id}` });
 
   };
 
@@ -80,7 +101,7 @@ export default class PredictionCalendar extends Component {
       arrayEvents.push({ id: res.id, title: res.asteroid_name, date: res.date_time, textColor: 'white' });
     });
 
-    // this.setState({ predictionEvents: arrayEvents });
+    this.setState({ predictionEvents: arrayEvents });
 
   };
 
@@ -122,10 +143,25 @@ export default class PredictionCalendar extends Component {
     //   
     // }
 
+    // console.log(event);
 
+    // event.el.classList.(<i class='fa-undo'></i>);
+
+
+    // if (event) {
+    //   // console.log(event.event.setProp(event.el.innerHTML, "<div class='fc-content'><span class='fc-time'>11:32a</span> <span class='fc-title'>2004 DA62 uy</span></div>"));
+    //   // console.log(event.el.setProp("innerHTML", "red"));
+
+    //   console.log(event);
+
+    // }
 
     console.log(event);
 
+    // console.log(event.event.setProp(event.el.innerText, "<em>oi<em>"));
+
+    //console.log(event.el.innerHTML);
+    // event.event.setProp(event.event.title, "opa");
 
   };
 
@@ -145,8 +181,8 @@ export default class PredictionCalendar extends Component {
 
     const events =
       [
-        { title: "2004 DA62 ", date: '2019-08-10 11:32:00', textColor: 'white', className: 'a', },
-        { title: 'Evento2', date: '2019-08-12 17:30:00', textColor: 'white', backgroundColor: "green", icon: "asterisk" },
+        { title: "2004 DA62 ", date: '2019-08-10 11:32:00', textColor: 'white', },
+        { id: 'a', title: "oi", date: '2019-08-12 17:30:00', textColor: 'white', backgroundColor: "green", },
       ]
 
 
@@ -179,8 +215,8 @@ export default class PredictionCalendar extends Component {
             buttonText={buttonText}
             defaultDate={this.state.defaultDate}
             themeSystem={"standard"}
-            // events={predictionEvents}
-            events={events}
+            events={predictionEvents}
+            // events={events}
 
             eventClick={this.handleEvent}
             defaultView={defaultView}
