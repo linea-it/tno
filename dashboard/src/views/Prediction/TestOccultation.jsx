@@ -34,7 +34,7 @@ class TestOccultation extends Component {
 
 
         if (this.state.flag === "calendar") {
-            console.log("Back to calendar");
+
 
             let id = this.state.id;
             let defaultDate = this.state.defaultDate;

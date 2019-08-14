@@ -38,7 +38,7 @@ export default class PredictionCalendar extends Component {
 
   componentDidMount() {
 
-    // this.setState({ calendarApi: this.calendarRef.current.getApi() });
+    this.setState({ calendarApi: this.calendarRef.current.getApi() });
     // console.log(calendarApi);
 
 
@@ -211,6 +211,7 @@ export default class PredictionCalendar extends Component {
 
 
 
+
     if (this.state.calendarApi !== null) {
       // console.log(this.state.calendarApi.view);
 
@@ -257,8 +258,6 @@ export default class PredictionCalendar extends Component {
 
   render() {
     const { defaultDate, defaultView, predictionEvents, } = this.state;
-
-    console.log(defaultDate);
 
 
 
