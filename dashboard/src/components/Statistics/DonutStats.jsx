@@ -36,7 +36,7 @@ class DonutStats extends Component {
       <ResponsiveContainer width="100%" height="80%">
         <Content
           content={
-            <PieChart width={450} height={150} onMouseEnter={this.onPieEnter}>
+            <PieChart width={390} height={150} onMouseEnter={this.onPieEnter}>
               <Pie
                 data={propSet.data}
 

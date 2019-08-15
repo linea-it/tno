@@ -271,7 +271,7 @@ class PraiaDetail extends Component {
 
         {this.create_nav_bar()}
         <div className="ui-g">
-          <div className="ui-g-4 ui-md-4 ui-sm-1">
+          <div className="ui-sm-3 ui-md-4 ui-lg-4 ui-xl-3">
             <PanelCostumize
               title={`Astrometry - ${data.id}`}
               content={
@@ -285,29 +285,40 @@ class PraiaDetail extends Component {
             />
           </div>
 
-          <div className="ui-g-4 ui-md-4 ui-sm-1">
-            <div className="ui-g-4 ui-md-12 ui-sm-1">
+          <div className="ui-sm-3 ui-md-4 ui-lg-4 ui-xl-3">
+
+            <div>
               <PanelCostumize
                 title="Execution Statistics"
                 content={this.renderStatus()}
               />
             </div>
-            <div className="ui-g-4 ui-md-12 ui-sm-1">
+
+            <br></br>
+
+            <div>
+              <div>
+                <PanelCostumize
+                  title="Execution Time"
+                  content={this.renderExecutionTime()}
+                />
+              </div>
+            </div>
+
+
+          </div>
+
+          {/* <div className="ui-g-4 ui-md-12 ui-sm-1">
               <PanelCostumize
                 title="Step Stats"
               // content={<StepStats info={execute_time} />}
               />
-            </div>
-          </div>
+            </div> */}
 
-          <div className="ui-g-4 ui-md-4 ui-sm-1">
-            <div className="ui-g-4 ui-md-12 ui-sm-1">
-              <PanelCostumize
-                title="Execution Time"
-                content={this.renderExecutionTime()}
-              />
-            </div>
-          </div>
+
+
+
+
           <div className="ui-g-12">
             <Stepper steps={items} activeStep={activeIndex} />
           </div>

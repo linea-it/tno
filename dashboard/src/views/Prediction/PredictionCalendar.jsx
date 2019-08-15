@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 import { Card } from 'primereact/card';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -32,8 +33,6 @@ export default class PredictionCalendar extends Component {
     log_visible: false,
     calendar_content: null,
     calendarApi: null,
-
-
 
   }
 
@@ -72,10 +71,6 @@ export default class PredictionCalendar extends Component {
         defaultView: view,
       });
     }
-    else {
-      console.log("Not yet");
-    }
-
   }
 
 
@@ -259,6 +254,8 @@ export default class PredictionCalendar extends Component {
     //console.log(event.el.innerHTML);
     // event.event.setProp(event.event.title, "opa");
 
+
+
   };
 
 
@@ -278,7 +275,7 @@ export default class PredictionCalendar extends Component {
     const events =
       [
         { title: "2004 DA62 ", date: '2019-08-10 11:32:00', textColor: 'white', },
-        { id: 'a', title: "oi", date: '2019-08-12 17:30:00', textColor: 'white', backgroundColor: "green", },
+        { title: "oi", date: '2019-08-12 17:30:00', textColor: 'white', backgroundColor: "green", icon: "asterisk" },
       ]
 
 
@@ -315,10 +312,10 @@ export default class PredictionCalendar extends Component {
             buttonText={buttonText}
             defaultDate={defaultDate}
             themeSystem={"standard"}
-            events={predictionEvents}
-            // events={events}
+            // events={predictionEvents}
+            events={events}
 
-            eventClick={this.handleEvent}
+            // eventClick={this.handleEvent}
             defaultView={defaultView}
             plugins={[bootstrapPlugin, dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin]}
             dateClick={this.handleDateClick}
