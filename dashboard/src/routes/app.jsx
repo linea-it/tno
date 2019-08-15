@@ -197,14 +197,14 @@ const appRoutes = [
   },
 
   {
-    path: '/test_occultation/:id/:defaultDate/:flag',
+    path: '/test_occultation/:id/:defaultDate/:flag/:view',
     name: 'Occultation Page Test',
     hidden: true,
     component: TestOccultation,
   },
 
   {
-    path: '/prediction_calendar_back/:id/:default_date',
+    path: '/prediction_calendar_back/:id/:default_date/:view',
     name: 'Occultation Calendar',
     hidden: true,
     component: PredictionCalendar,

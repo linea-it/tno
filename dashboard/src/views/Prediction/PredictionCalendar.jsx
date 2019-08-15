@@ -32,7 +32,8 @@ export default class PredictionCalendar extends Component {
     log_visible: false,
     calendar_content: null,
     calendarApi: null,
-    cookie_key: null,
+
+
 
   }
 
@@ -41,8 +42,6 @@ export default class PredictionCalendar extends Component {
     this.setState({ calendarApi: this.calendarRef.current.getApi() });
     // console.log(calendarApi);
 
-
-
   }
 
 
@@ -50,17 +49,27 @@ export default class PredictionCalendar extends Component {
   componentWillMount() {
     this.fetchData();
 
+
+    //These params come from occultation/x/. When is sent the id and the back button is hit.
+    //Fullcalendar needs the information ready when component mount. That's the reason to write
+    //the code here.
+
     const { match: { params } } = this.props;
+
+
 
     if (params.id) {
 
       let id = params.id;
       let date = new Date(params.default_date);
+      let view = params.view;
 
 
       this.setState({
         id: id,
         defaultDate: date,
+        view: view,
+        defaultView: view,
       });
     }
     else {
@@ -136,17 +145,16 @@ export default class PredictionCalendar extends Component {
 
 
 
-  //Controls when the event date/other is select
+  //Controls when the event is selected
   handleEvent = (e) => {
     let id = e.event.id;
     let date = e.event.start;
-    let view = null;//To do 
+    let view = e.view.type;
     let flag = "calendar";
 
 
-
     const history = this.props.history;
-    history.push(`/test_occultation/${id}/${date}/${flag}`);
+    history.push(`/test_occultation/${id}/${date}/${flag}/${view}`);
 
 
 
