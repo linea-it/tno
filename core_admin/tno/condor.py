@@ -1,4 +1,3 @@
-from apscheduler.schedulers.background import BackgroundScheduler
 import logging
 from datetime import datetime
 import requests
@@ -8,22 +7,6 @@ import json
 
 def get_condor_api_host():
     return "%s/%s/" % (settings.CONDOR_API.strip('/'), settings.CONDOR_CLUSTER.strip('/'))
-
-
-def start_check_jobs():
-
-    # print("Start Check Jobs")
-
-    logger = logging.getLogger("condor")
-
-    # scheduler = BackgroundScheduler()
-    # scheduler.add_job(teste, 'interval', minutes=1)
-    # scheduler.start()
-
-    # logger.debug("Start Check Jobs")
-
-    pass
-
 
 def check_condor_job(cluster_id, proc_id):
     logger = logging.getLogger("condor")
@@ -64,7 +47,7 @@ def check_job_history(cluster_id, proc_id):
             get_condor_api_host().strip('/'),  'history')
 
         # projection  = ','.join([
-        #         'ClusterId', 'ProcId', 'GlobalJobId', 'JobStatus', 'JobStartDate', 'EnteredCurrentStatus', 
+        #         'ClusterId', 'ProcId', 'GlobalJobId', 'JobStatus', 'JobStartDate', 'EnteredCurrentStatus',
         #         'Args', 'Owner', 'RemoteHost', 'RequestCpus', 'RequiresWholeMachine', 'Out', 'UserLog'])
 
         r = requests.get(condor_api_jobs, params={
