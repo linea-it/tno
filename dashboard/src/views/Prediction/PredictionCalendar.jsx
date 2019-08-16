@@ -152,9 +152,7 @@ export default class PredictionCalendar extends Component {
     history.push(`/test_occultation/${id}/${date}/${flag}/${view}`);
 
 
-
-
-
+    console.log(e);
 
 
 
@@ -191,10 +189,6 @@ export default class PredictionCalendar extends Component {
     // history.push({ pathname: `/occultation_detail/${id}` });
 
   };
-
-
-
-
 
 
 
@@ -312,10 +306,10 @@ export default class PredictionCalendar extends Component {
             buttonText={buttonText}
             defaultDate={defaultDate}
             themeSystem={"standard"}
-            // events={predictionEvents}
-            events={events}
+            events={predictionEvents}
+            // events={events}
 
-            // eventClick={this.handleEvent}
+            eventClick={this.handleEvent}
             defaultView={defaultView}
             plugins={[bootstrapPlugin, dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin]}
             dateClick={this.handleDateClick}
