@@ -258,7 +258,7 @@ class PraiaDetail extends Component {
       { title: 'Bsp Jpl' },
       { title: 'Gaia Catalog' },
       { title: 'Praia Astrometry' },
-      { title: 'Registered' },
+      { title: 'Done' },
     ];
 
     return (

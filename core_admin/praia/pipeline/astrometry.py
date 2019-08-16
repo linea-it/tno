@@ -1,32 +1,31 @@
-from tno.models import Proccess
-import os
-import stat
-import errno
-import logging
-from random import randrange
-import time
-import humanize
-from datetime import datetime, timezone, timedelta
-from tno.db import DBBase, CatalogDB
-from tno.skybotoutput import FilterObjects
-from tno.proccess import ProccessManager
-from django.conf import settings
-import shutil
 import csv
-import traceback
-from concurrent.futures import ThreadPoolExecutor, wait, as_completed
-from orbit.bsp_jpl import BSPJPL
-from praia.models import Run, AstrometryAsteroid, AstrometryInput
-import requests
+import errno
 import json
+import logging
+import os
+import shutil
+import stat
+import time
+import traceback
+from concurrent.futures import ThreadPoolExecutor, as_completed, wait
+from datetime import datetime, timedelta, timezone
+from random import randrange
 
-from praia.pipeline.ccd_image import create_ccd_images_list
+import humanize
+import requests
+from django.conf import settings
+
+from orbit.bsp_jpl import BSPJPL
+from praia.models import AstrometryAsteroid, AstrometryInput, Run
 from praia.pipeline.bsp_jpl import retrieve_bsp_jpl
-from praia.pipeline.star_catalog import create_star_catalog
-
+from praia.pipeline.ccd_image import create_ccd_images_list
 from praia.pipeline.register import register_condor_job
-
+from praia.pipeline.star_catalog import create_star_catalog
 from tno.condor import submit_condor_job
+from tno.db import CatalogDB, DBBase
+from tno.models import Proccess
+from tno.proccess import ProccessManager
+from tno.skybotoutput import FilterObjects
 
 
 class AstrometryPipeline():
@@ -134,7 +133,7 @@ class AstrometryPipeline():
                 instance.relative_path = directory
                 instance.save()
             else:
-                instance.status = 'error'
+                instance.status = 'failure'
                 instance.save()
                 msg = "Failed to create astrometry directory [ %s ]" % directory
                 self.logger.error(msg)
@@ -142,7 +141,7 @@ class AstrometryPipeline():
 
         except OSError as e:
             msg = "Failed to create astrometry directory [ %s ]" % directory
-            instance.status = 'error'
+            instance.status = 'failure'
             instance.error_msg = msg
             instance.save()
             self.logger.error(msg)
@@ -274,8 +273,8 @@ class AstrometryPipeline():
         self.logger.info("Finished CCD Images list in %s" %
                          humanize.naturaldelta(ccd_images_execution_time))
 
-        instance.execution_ccd_images = ccd_images_execution_time 
-        
+        instance.execution_ccd_images = ccd_images_execution_time
+
         # ===================================================================================================
         # BSP JPL - Retrieve BSP JPL  for every asteroid
         # ===================================================================================================
@@ -448,9 +447,9 @@ class AstrometryPipeline():
             self.logger.info("Finished Star Catalog in %s" %
                              humanize.naturaldelta(catalog_execution_time))
 
-        instance.execution_catalog = catalog_execution_time    
+        instance.execution_catalog = catalog_execution_time
 
-        # Fim da geracao dos inputs. 
+        # Fim da geracao dos inputs.
 
         # ===================================================================================================
         # PRAIA Astrometry - Run PRAIA programns for each asteroid.
@@ -516,7 +515,8 @@ class AstrometryPipeline():
                     # "+RequiresWholeMachine": "True",
                     "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
                     "executable": "/app/run.py",
-                    # "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
+
+                    "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
                     "initialdir": obj_absolute_path,
                     "Log": os.path.join(log_dir, "astrometry.log"),
                     "Output": os.path.join(log_dir, "astrometry.out"),
@@ -537,90 +537,33 @@ class AstrometryPipeline():
                 if response['success'] is True:
                     # Submetido com sucesso, Guardar o Id do Job para ser consultado
                     for job in response['jobs']:
-                        self.logger.debug(job)
-
-                        # TODO guardar o momento da submissao 
-                        # condorJob.submit_time
                         condorJob = register_condor_job(
                             instance, obj, job['ClusterId'], job['ProcId'], job['JobStatus'])
 
                         self.logger.info("Job in Condor was created. ClusterId [ %s ] ProcId [ %s ]" % (
                             condorJob.clusterid, condorJob.procid))
 
-                
                     obj.status = 'pending'
                     obj.save()
 
             except Exception as e:
                 obj.status = 'failure'
                 obj.error_msg("Job submission failed. Error: %s" % e)
-                obj.save()        
-
-            # try:
-            #     url = 'http://loginicx.linea.gov.br:5001/submit_job'
-            #     headers = {'Content-Type': 'application/json'}
-
-            #     r = requests.post(url, headers=headers,
-            #                       data=json.dumps(payload))
-            #     r.status_code
-
-            #     response = r.json()
-            #     # TODO tratar errors durante o Post.
-            #     self.logger.debug(r.status_code)
-            #     self.logger.debug("Result Status Code: [%s] Response: [ %s ]" % (
-            #         r.status_code, response))
-
-            #     if response['success'] is True:
-            #         # Submetido com sucesso, Guardar o Id do Job para ser consultado
-            #         for job in response['jobs']:
-            #             self.logger.debug(job)
-
-            #             condorJob = register_condor_job(
-            #                 instance, obj, job['ClusterId'], job['ProcId'], job['JobStatus'])
-
-            #             self.logger.info("Job in Condor was created. ClusterId [ %s ] ProcId [ %s ]" % (
-            #                 condorJob.clusterid, condorJob.procid))
-
-            #         obj.status = 'pending'
-            #         obj.save()
-
-            # except Exception as e:
-            #     # TODO Tratar erro na submissao de jobs
-            #     obj.status = 'failure'
-            #     obj.error_msg("Job submission failed. Error: %s" % e)
-            #     obj.save()                
-            #     # self.on_error(self.instance, e)
-
+                obj.save()
 
         # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
 
-        # Encerrar a Rodada de Astrometria
-        # self.set_execution_time(instance)
-
         # Acrescentar os totais de asteroids por status.
-        # csuccess = instance.asteroids.filter(status='success').count()
-        # cfailure = instance.asteroids.filter(status='failure').count()
-        # cwarning = instance.asteroids.filter(status='warning').count()
         cnotexecuted = instance.asteroids.filter(status='not_executed').count()
 
-        # Salvar os totais e mudar o status para sucesso.
-        # TODO: essa etapa quando executada com o condor deve ficar na
-        # funcao que vai registrar os resutados.
         instance.refresh_from_db()
         instance.status = 'running'
-        # instance.count_success = csuccess
-        # instance.count_failed = cfailure
-        # instance.count_warning = cwarning
         instance.count_not_executed = cnotexecuted
         instance.save()
-        # self.logger.info("Status changed to Success")
-
-        self.logger.info("Finish")
-
+        self.logger.info("Completed Submission to condor From now on the pipeline runs asynchronously.")
 
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"
-
 
     def on_error(self, instance, error):
         trace = traceback.format_exc()

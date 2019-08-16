@@ -1,12 +1,13 @@
 from django.contrib import admin
 
-from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput, AstrometryOutput, AstrometryJob 
+from .models import (AstrometryAsteroid, AstrometryInput, AstrometryJob,
+                     AstrometryOutput, Configuration, Run)
 
 
 @admin.register(Run)
 class PraiaRunsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'owner', 'proccess', 'catalog', 'configuration',
-                    'start_time', 'finish_time','count_objects', 'count_success','count_failed','count_warning','count_not_executed', 'step')
+    list_display = ('id', 'status', 'owner', 'proccess', 'catalog', 'configuration',
+                    'start_time', 'finish_time', 'count_objects', 'count_success', 'count_failed', 'count_warning', 'count_not_executed', 'step')
 
 
 @admin.register(Configuration)
@@ -29,11 +30,11 @@ class AstrometryInputAdmin(admin.ModelAdmin):
 
 @admin.register(AstrometryOutput)
 class AstrometryOutputAdmin(admin.ModelAdmin):
-    list_display = ('id', 'asteroid', 'type', 'filename',
+    list_display = ('id', 'asteroid', 'type', 'catalog', 'ccd_image', 'filename',
                     'file_size', 'file_type', 'file_path',)
 
 
 @admin.register(AstrometryJob)
 class AstrometryJobs(admin.ModelAdmin):
-    list_display = ('id', 'astrometry_run', 'asteroid', 'clusterid',
-                    'procid', 'job_status', 'start_time', 'finish_time', 'execution_time')
+    list_display = ('id', 'astrometry_run', 'asteroid', 'job_status', 'clusterid',
+                    'procid', 'submit_time', 'start_time', 'finish_time', 'execution_time')
