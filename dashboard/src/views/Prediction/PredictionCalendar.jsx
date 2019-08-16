@@ -14,6 +14,7 @@ import "@fullcalendar/timegrid/main.css";
 import '@fullcalendar/list/main.css';
 import PredictionApi from './PredictionApi';
 import json from '../Prediction/assets/Prediction.json';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import { back_cookie, read_cookie, delete_cookie, bake_cookie } from 'sfcookies';
 
 
@@ -249,8 +250,9 @@ export default class PredictionCalendar extends Component {
     // event.event.setProp(event.event.title, "opa");
 
 
+    event.el.innerHTML = event.el.innerHTML + "<i class='fa fa-moon-o'></i>";
+  }
 
-  };
 
 
 
@@ -269,7 +271,7 @@ export default class PredictionCalendar extends Component {
     const events =
       [
         { title: "2004 DA62 ", date: '2019-08-10 11:32:00', textColor: 'white', },
-        { title: "oi", date: '2019-08-12 17:30:00', textColor: 'white', backgroundColor: "green", icon: "asterisk" },
+        { title: "oi", date: '2019-08-12 17:30:00', textColor: 'white', backgroundColor: "green", img: "fa fa-undo" },
       ]
 
 
@@ -285,7 +287,7 @@ export default class PredictionCalendar extends Component {
     }
 
 
-    //Variable used to change to specific button name
+    //Variable used to change specific button name
     const buttonText = {
       listYear: 'year',
       month: 'month',
