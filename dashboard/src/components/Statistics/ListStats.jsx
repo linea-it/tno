@@ -10,6 +10,7 @@ class ListStats extends Component {
   render() {
     const propSet = this.props;
 
+
     const { array, bool } = PropTypes;
 
     // ListStats.PropTypes = {
@@ -35,6 +36,7 @@ class ListStats extends Component {
               </Badge>
             </td>
           </tr>
+
         );
       } else {
 
