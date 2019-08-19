@@ -10,7 +10,7 @@ import { Paginator } from 'primereact/paginator';
 import { Column } from 'primereact/column';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import './runDetailStyle.css';
+import '../Astrometry/assets/runDetailStyle.css';
 
 class AsteroidList extends Component {
   state = this.initialState;
@@ -60,7 +60,12 @@ class AsteroidList extends Component {
       header: 'CCD Images',
       sortable: true,
     },
-
+    {
+      field: 'processed_ccd_image',
+      style: { textAlign: 'center' },
+      header: 'Processed CCDs',
+      sortable: true,
+    },
     {
       field: 'catalog_rows',
       style: { textAlign: 'center' },
@@ -141,26 +146,26 @@ class AsteroidList extends Component {
     let btn_view = null;
     let btn_log = null;
 
-    if (rowData.status !== 'failure' && rowData.status != 'not_executed') {
-      btn_view = (
-        <Button
-          type="button"
-          icon="fa fa-search"
-          className="ui-button-info"
-          title="View"
-          onClick={() => this.onViewAsteroid(asteroid_id)}
-        />
-      );
-      btn_log = (
-        <Button
-          type="button"
-          icon="fa fa-file-text-o"
-          className="ui-button-warning"
-          title="Log"
-          // onClick={() => this.showAsteroidLog(asteroid_id)}
-        />
-      );
-    }
+    // if (rowData.status !== 'failure' && rowData.status != 'not_executed') {
+    btn_view = (
+      <Button
+        type="button"
+        icon="fa fa-search"
+        className="ui-button-info"
+        title="View"
+        onClick={() => this.onViewAsteroid(asteroid_id)}
+      />
+    );
+    btn_log = (
+      <Button
+        type="button"
+        icon="fa fa-file-text-o"
+        className="ui-button-warning"
+        title="Log"
+      // onClick={() => this.showAsteroidLog(asteroid_id)}
+      />
+    );
+    // }
 
     return (
       <div>

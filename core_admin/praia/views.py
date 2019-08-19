@@ -72,7 +72,7 @@ class PraiaRunViewSet(viewsets.ModelViewSet):
                 'ccd_images': astrometry_run.execution_ccd_images,
                 'bsp_jpl': astrometry_run.execution_bsp_jpl,
                 'catalog': astrometry_run.execution_catalog,
-                'astrometry': 0
+                'astrometry': astrometry_run.execution_astrometry
             }
         })
 

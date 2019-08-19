@@ -9,7 +9,7 @@ import { Button } from 'primereact/button';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize';
 import { TreeTable } from 'primereact/treetable';
-import Log from './Log';
+import Log from '../../components/Dialog/Log';
 
 const outputs = {
   D00512549_z_c51_r2379p01_immasked: [],
@@ -361,7 +361,7 @@ export default class AsteroidRunDetail extends Component {
             icon={this.state.download_icon}
             className="ui-button-info"
             disabled="disabled"
-            // onClick={() => this.onClickDownload(this.state.asteroid.id)}
+          // onClick={() => this.onClickDownload(this.state.asteroid.id)}
           />
         </div>
 
@@ -404,11 +404,11 @@ export default class AsteroidRunDetail extends Component {
     const filename = encodeURIComponent(rowData.filename);
     const title = encodeURIComponent(
       'Proccess: ' +
-        proccess +
-        ' of the asteroid ' +
-        rowData.asteroid +
-        '. \u00a0 File: ' +
-        rowData.filename
+      proccess +
+      ' of the asteroid ' +
+      rowData.asteroid +
+      '. \u00a0 File: ' +
+      rowData.filename
     );
 
     const history = this.props.history;
@@ -495,18 +495,18 @@ export default class AsteroidRunDetail extends Component {
         scrollable
         scrollHeight="200px"
         columnResizeMode="expand"
-        // expandedKeys={this.state.expandedKeys}
-        // onToggle={e => {
-        //   this.setState({ expandedKeys: e.value })
-        // }}
+      // expandedKeys={this.state.expandedKeys}
+      // onToggle={e => {
+      //   this.setState({ expandedKeys: e.value })
+      // }}
 
-        //Component treeTable was updated but primereact documentation doesnt.
-        //TODO: Check previous documentation to try to solve the problem
-        // selectionMode="single"
-        // selectionKeys={this.state.selectedNodeKey1}
-        // selectionChange={e => this.setState({ selectedNodeKey1: e }, () => {
-        //   console.log(this.state.selectedNodeKey1);
-        // })}
+      //Component treeTable was updated but primereact documentation doesnt.
+      //TODO: Check previous documentation to try to solve the problem
+      // selectionMode="single"
+      // selectionKeys={this.state.selectedNodeKey1}
+      // selectionChange={e => this.setState({ selectedNodeKey1: e }, () => {
+      //   console.log(this.state.selectedNodeKey1);
+      // })}
       >
         {elColumns}
         <Column />
@@ -597,7 +597,7 @@ export default class AsteroidRunDetail extends Component {
 
     const stats = [
       { name: 'Proccess', value: asteroid.proccess_displayname },
-      { name: 'Asteroid', value: asteroid.name},
+      { name: 'Asteroid', value: asteroid.name },
       { name: 'Execution Time', value: asteroid.h_execution_time },
       { name: 'CCDs', value: asteroid.ccd_images },
       { name: 'Reference Catalog', value: this.state.catalogName },
@@ -635,15 +635,7 @@ export default class AsteroidRunDetail extends Component {
             />
           </div>
 
-          <div className="ui-g-12">
-            <PanelCostumize
-              title="Outputs"
-              // content={
-              TREE
 
-              // }
-            />
-          </div>
           <div className="ui-g-12">
             <PanelCostumize
               title="Outputs"
