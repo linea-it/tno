@@ -16,7 +16,7 @@ def retrieve_bsp_jpl(run_id, name, output_filepath):
         se nao existir faz o download. 
     """
     start = datetime.now(timezone.utc)
-    filename = "%s.bsp" % name.replace(' ', '_')
+    filename = "%s.bsp" % name.replace(' ', '')
     logger = logging.getLogger("astrometry")
     result = dict({
         'asteroid': name,
