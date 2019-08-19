@@ -104,7 +104,7 @@ class ListStats extends Component {
             <strong>Status</strong>
           </td>
           <td className="list-value">
-            <Badge variant="info">
+            <Badge className={'label label-outline label-primary'} variant="info">
               {propSet.statstext}
             </Badge>
           </td>
