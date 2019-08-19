@@ -84,12 +84,12 @@ class Praia extends Component {
           subTitle="Description about execution"
           content={<PraiaSubmit onMissingParameter={this.onMissingParameter} onCreateRun={this.onCreateRun} onCreateFailure={this.onCreateFailure} />}
         />
-        <PanelCostumize
+        {/* <PanelCostumize
           title="Run time monitor"
           className="running_astrometry"
           subTitle=""
           content={<PraiaRunning record={record} />}
-        />
+        /> */}
 
         <PanelCostumize
           title="History"

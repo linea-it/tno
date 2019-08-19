@@ -499,6 +499,9 @@ class AstrometryPipeline():
             if not os.path.exists(relative_condor_dir):
                 raise Exception("Failed to create condor log directory.")
 
+            obj.condor_relative_path = relative_condor_dir
+            obj.save()
+
             obj_absolute_path = os.path.join(
                 absolute_archive_path, obj.relative_path.strip('/'))
             log_dir = os.path.join(obj_absolute_path, 'condor')
@@ -518,6 +521,7 @@ class AstrometryPipeline():
 
                     # "request_memory": "4 GB",
                     # "request_cpus": "10",
+
                     "executable": "/app/run.py",
                     "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
                     "initialdir": obj_absolute_path,

@@ -3,7 +3,7 @@ import humanize
 from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput, AstrometryOutput
 from tno.models import CustomList, Proccess, Catalog
 from django.utils import timezone
-
+import os
 
 class RunSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
@@ -156,6 +156,12 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
 
     h_execution_time = serializers.SerializerMethodField()
 
+    astrometry_log = serializers.SerializerMethodField()
+
+    condor_out_log = serializers.SerializerMethodField()
+    condor_err_log = serializers.SerializerMethodField()
+    condor_log = serializers.SerializerMethodField()
+
     class Meta:
         model = AstrometryAsteroid
         fields = (
@@ -172,6 +178,10 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
             'execution_time',
             'catalog_name',
             'h_execution_time',
+            'astrometry_log',
+            'condor_out_log',
+            'condor_err_log',
+            'condor_log'
         )
 
     def get_proccess_displayname(self, obj):
@@ -193,6 +203,45 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    def get_astrometry_log(self, obj):
+        try:
+            log = os.path.join(obj.relative_path, 'astrometry.log')
+            if os.path.exists(log):
+                return log
+            else:
+                return None
+        except:
+            return None
+
+    def get_condor_out_log(self, obj):
+        try:
+            log = os.path.join(obj.condor_relative_path, 'astrometry.out')
+            if os.path.exists(log):
+                return log
+            else:
+                return None
+        except:
+            return None
+
+    def get_condor_err_log(self, obj):
+        try:
+            log = os.path.join(obj.condor_relative_path, 'astrometry.err')
+            if os.path.exists(log):
+                return log
+            else:
+                return None
+        except:
+            return None
+
+    def get_condor_log(self, obj):
+        try:
+            log = os.path.join(obj.condor_relative_path, 'astrometry.log')
+            if os.path.exists(log):
+                return log
+            else:
+                return None
+        except:
+            return None
 
 
 class AstrometryInputSerializer(serializers.ModelSerializer):

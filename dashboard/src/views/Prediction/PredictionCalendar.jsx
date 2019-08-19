@@ -36,7 +36,6 @@ export default class PredictionCalendar extends Component {
     calendar_content: null,
     calendarApi: null,
 
-
   }
 
   componentDidMount() {
@@ -72,7 +71,6 @@ export default class PredictionCalendar extends Component {
         defaultDate: date,
         view: view,
         defaultView: view,
-
       });
     }
   }
@@ -270,14 +268,11 @@ export default class PredictionCalendar extends Component {
     //   console.log(this.calendarRef.current.props.header);
     // }
 
-
     const events =
       [
         { title: "2004 DA62 ", date: '2019-08-10 11:32:00', textColor: 'white', },
-        { title: "oi", date: '2019-08-12 17:30:00', textColor: 'white', backgroundColor: "green", img: "fa fa-undo" },
+        { title: "oi", date: '2019-08-12 17:30:00', textColor: 'white', backgroundColor: "green", icon: "asterisk" },
       ]
-
-
 
 
     const header = {
