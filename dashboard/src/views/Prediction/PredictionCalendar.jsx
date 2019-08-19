@@ -14,6 +14,8 @@ import "@fullcalendar/timegrid/main.css";
 import '@fullcalendar/list/main.css';
 import PredictionApi from './PredictionApi';
 import json from '../Prediction/assets/Prediction.json';
+import '../Prediction/assets/PredictionCalendar.css';
+import { SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS } from 'constants';
 // import { back_cookie, read_cookie, delete_cookie, bake_cookie } from 'sfcookies';
 
 
@@ -33,6 +35,7 @@ export default class PredictionCalendar extends Component {
     log_visible: false,
     calendar_content: null,
     calendarApi: null,
+
 
   }
 
@@ -69,6 +72,7 @@ export default class PredictionCalendar extends Component {
         defaultDate: date,
         view: view,
         defaultView: view,
+
       });
     }
   }
@@ -249,9 +253,11 @@ export default class PredictionCalendar extends Component {
     // event.event.setProp(event.event.title, "opa");
 
 
+    event.el.innerHTML = event.el.innerHTML + "<span  id='sol_lua' class='fa fa-moon-o ' ></span>";
 
-  };
 
+
+  }
 
 
 
@@ -265,11 +271,10 @@ export default class PredictionCalendar extends Component {
     // }
 
 
-
     const events =
       [
         { title: "2004 DA62 ", date: '2019-08-10 11:32:00', textColor: 'white', },
-        { title: "oi", date: '2019-08-12 17:30:00', textColor: 'white', backgroundColor: "green", icon: "asterisk" },
+        { title: "oi", date: '2019-08-12 17:30:00', textColor: 'white', backgroundColor: "green", img: "fa fa-undo" },
       ]
 
 
@@ -285,7 +290,7 @@ export default class PredictionCalendar extends Component {
     }
 
 
-    //Variable used to change to specific button name
+    //Variable used to change specific button name
     const buttonText = {
       listYear: 'year',
       month: 'month',
