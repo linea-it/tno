@@ -270,6 +270,8 @@ class PraiaDetail extends Component {
         />
 
         {this.create_nav_bar()}
+
+
         <div className="ui-g">
           <div className="ui-g-4 ui-md-4 ui-sm-1">
             <PanelCostumize

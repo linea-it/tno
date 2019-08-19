@@ -11,6 +11,8 @@ import { Column } from 'primereact/column';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import '../Astrometry/assets/runDetailStyle.css';
+import Toolbar from 'primereact/toolbar';
+
 
 class AsteroidList extends Component {
   state = this.initialState;
@@ -286,6 +288,25 @@ class AsteroidList extends Component {
     );
   };
 
+
+  renderAsteroidMenuBar = () => {
+    return (
+      <Toolbar>
+        <div className="ui-toolbar">
+          <div style={{ float: 'right' }}>
+            <Button
+              label="lista"
+              icon="fa fa-undo"
+            // onClick={}
+            />
+          </div>
+        </div>
+
+      </Toolbar>
+    );
+
+  };
+
   render() {
     const { data } = this.state;
 
@@ -303,7 +324,11 @@ class AsteroidList extends Component {
     });
 
     return (
-      <Card title="" subTitle="">
+
+
+
+      < Card title="" subTitle="" >
+
         <DataTable
           value={data}
           resizableColumns={true}
@@ -341,8 +366,11 @@ class AsteroidList extends Component {
                     onHide={this.onLogHide}
                     id={this.state.asteroid_id}
                 /> */}
-      </Card>
+      </Card >
     );
+
+
+
   }
 }
 
