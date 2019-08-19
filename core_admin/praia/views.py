@@ -14,6 +14,12 @@ from .serializers import RunSerializer, ConfigurationSerializer, AstrometryAster
 
 from . import signals
 
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+from django.conf import settings
+
+# import numpy as np
 
 class PraiaRunViewSet(viewsets.ModelViewSet):
     queryset = Run.objects.all()
@@ -60,7 +66,7 @@ class PraiaRunViewSet(viewsets.ModelViewSet):
         """
         astrometry_run = self.get_object()
 
-        result = dict( {
+        result = dict({
             'success': True,
             'execution_time': {
                 'ccd_images': astrometry_run.execution_ccd_images,
@@ -128,6 +134,91 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
             "prev": prev_id, 
             "next": next_id, 
         }))
+
+    # def plotStarsCCD(self, ccd, stars, output):
+    #     try:
+    #         xx = np.concatenate((ccd[1:5], [ccd[1]]))
+    #         yy = np.concatenate((ccd[5:9], [ccd[5]]))
+
+    #         print("----------- XX ------------")
+    #         print(xx)
+    #         print("----------- YY ------------")
+    #         print(yy)
+
+    #         data = filter(lambda x: int(x[2])==int(ccd[0]), stars)
+
+    #         ra = [x[0] for x in data]
+    #         dec = [x[1] for x in data]
+
+    #         print("----------- RA ------------")
+    #         print(ra)
+    #         print("----------- DEC ------------")
+    #         print(dec)
+
+    #         plt.figure()
+
+    #         plt.plot(xx, yy, 'k')
+    #         plt.plot(ra, dec, '.r')
+
+            # plt.axes().set_aspect('equal', 'datalim')
+            # plt.savefig(output)
+            # plt.close()
+
+        # except Exception as e:
+        #     raise
+        # ​plt.plot(xx,yy, 'k')
+        # plt.plot(ra,dec, '.r')
+        # plt.axes().set_aspect('equal', 'datalim')
+        # ​plt.savefig(outFile)
+        # plt.close()
+
+
+    # @detail_route(methods=['GET'])
+    # def plot_ccd_star(self, request, pk=None):  
+
+    #     # Recuperar a instancia do Asteroid
+    #     asteroid = self.get_object()
+        
+    #     # Descobrir o path para o input do tipo catalog
+    #     catalog = asteroid.input_file.get(input_type='catalog')        
+
+    #     # Descobrir o path para o input ccd_images
+    #     ccd_image_list = asteroid.input_file.get(input_type='ccd_images_list')
+
+    #     # Executar a funcao que cria o plot, salvar a imagem no dir /archive/tmp
+    #     stars = np.loadtxt(catalog.file_path, usecols=(5,7,94), skiprows=1, delimiter=';')
+
+    #     ccds = np.loadtxt(ccd_image_list.file_path, usecols=(0,21,22,23,24,25,26,27,28), skiprows=1, delimiter=';')
+
+    #     ccd = ccds[0]
+
+    #     plot_filename = 'ccd_object.png'
+
+    #     plot_file_path = os.path.join(settings.MEDIA_TMP_DIR, plot_filename)
+
+    #     self.plotStarsCCD(ccd, stars, plot_file_path)
+
+    #     # plot_filename = 'ccd_object_%s.png' % expnum
+    #     # plot_file_path = os.path.join(settings.MEDIA_TMP_DIR, plot_filename)
+    #     # # retornar a url para o plot. 
+    #     # plot_src = urllib.parse.urljoin(settings.MEDIA_TMP_URL, plot_filename)
+
+    #     # plot = ccds_objects(
+    #     #     file_path=plot_file_path,
+    #     #     )
+  
+    #     result = dict({
+    #         'success': True,
+    #         'asteroid': asteroid.name,
+    #         'teste': ccd_image_list.file_path,
+    #         'teste2': catalog.file_path,
+    #         'teste3': plot_file_path
+    #         # 'plot_file_path': plot_file_path,
+    #         # 'plot_src': plot_src,
+    #         # 'plot_filename': plot_filename
+    #         })
+            
+    #     return Response(result)        
 
 
 class AstrometryInputViewSet(viewsets.ModelViewSet):

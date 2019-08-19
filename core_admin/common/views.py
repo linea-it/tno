@@ -1,12 +1,16 @@
 import csv
 import logging
 import os
+import zipfile
+import zlib
 from datetime import datetime
 
 import humanize
 import pandas as pd
 import requests
+from django.conf import settings
 from django.db.models import Count
+from django.http import HttpResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -18,30 +22,13 @@ logger = logging.getLogger("astrometry")
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
-def teste_register(request):
-    if request.method == 'GET':
-
-        # register_astrometry_outputs(80, 'Eris')
-
-        # finish_astrometry_run(80)
-
-        result = dict({
-            'success': True,
-        })
-
-    return Response(result)
-
-
-@api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
-        # check_astrometry_running()
+        check_astrometry_running()
 
         result = dict({
             'success': True,
         })
-
     return Response(result)
 
 
@@ -186,3 +173,54 @@ def read_csv(request):
         })
 
     return Response(result)
+
+
+@api_view(['GET'])
+def download_file(request):
+    """
+    Function to download a file and zip.
+
+    http://localhost:7001/api/teste/?filepath=/archive/tmp/teste.csv
+
+    When the file is bigger than 1Mb, the file is zipped. 
+    """
+    if request.method == 'GET':
+        # Funcao para fazer download de um arquivo
+
+        # Recuperar o filepath do arquivo a ser lido dos parametros da url.
+        filepath = request.query_params.get('filepath', None)
+
+        if not os.path.exists(filepath):
+            raise Exception("File do not exist")
+
+        # Checar o tamanho do arquivo
+        size = os.path.getsize(filepath)
+
+        maxSize = 1000000
+
+        # Se o arquivo for maior que x
+        if size > maxSize:
+            # criar uma nova variavel com o path para o arquivo zip
+            filename = os.path.basename(filepath)
+            filename = filename + '.zip'
+            new_file = os.path.join(settings.MEDIA_TMP_DIR, filename)
+
+            # Comprime o arquivo e retorna o arquivo comprimido
+            with zipfile.ZipFile(new_file, 'w') as myzip:
+                myzip.write(filepath, compress_type=zipfile.ZIP_DEFLATED)
+
+            # Retornar o arquivo zipado
+            with open(new_file, 'rb') as fh:
+                response = HttpResponse(
+                    fh.read(), content_type="application/octet-stream")
+                response['Content-Disposition'] = 'inline; filename=' + \
+                    os.path.basename(new_file)
+                return response
+        else:
+
+            with open(filepath, 'rb') as fh:
+                response = HttpResponse(
+                    fh.read(), content_type="application/octet-stream")
+                response['Content-Disposition'] = 'inline; filename=' + \
+                    os.path.basename(filepath)
+                return response

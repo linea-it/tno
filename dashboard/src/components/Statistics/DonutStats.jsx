@@ -42,7 +42,7 @@ class DonutStats extends Component {
     if (this.props.flag == "execution_time") {
       const seconds = (moment.duration(value));
 
-      const finalTime = moment.utc(seconds * 1000).format('HH:mm:ss.SS');
+      const finalTime = moment.utc(seconds * 1000).format('HH:mm:ss');
 
       return finalTime;
     } else {
