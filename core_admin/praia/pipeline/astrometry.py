@@ -482,6 +482,7 @@ class AstrometryPipeline():
             raise Exception(
                 "absolute path to archive directory is required. This path must be declared in the ARCHIVE_DIR environment variable.")
 
+        idx = 1
         for obj in self.asteroids:
             # para cada objeto fazer a submissao do job na API do condor.
             self.logger.info(
@@ -512,16 +513,19 @@ class AstrometryPipeline():
                     "Docker_image": "linea/tno_astrometry:latest",
                     # "Should_transfer_files": "yes",
                     # "when_to_transfer_output": "on_exit",
-                    # "+RequiresWholeMachine": "True",
+                    "+RequiresWholeMachine": "True",
                     "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
-                    "executable": "/app/run.py",
 
+                    # "request_memory": "4 GB",
+                    # "request_cpus": "10",
+                    "executable": "/app/run.py",
                     "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
                     "initialdir": obj_absolute_path,
                     "Log": os.path.join(log_dir, "astrometry.log"),
                     "Output": os.path.join(log_dir, "astrometry.out"),
                     "Error": os.path.join(log_dir, "astrometry.err")
 
+                    # "executable": "/app/run.py",
                     # "arguments": "Eris --path /proccess/4/objects/Eris --catalog gaia2",
                     # "initialdir": "/archive/des/tno/testing/proccess/4/objects/Eris",
                     # "Log": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).log",

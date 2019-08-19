@@ -8,7 +8,7 @@ import humanize
 
 from praia.models import (AstrometryAsteroid, AstrometryInput, AstrometryJob,
                           AstrometryOutput, Run)
-from tno.condor import check_condor_job, check_job_history
+from tno.condor import check_condor_job, check_job_history, remove_job, get_job_by_id
 
 
 def register_input(run_id, name, asteroid_input):
@@ -94,6 +94,22 @@ def update_job_status(job, condor_job):
 
         job.save()
 
+    elif condor_job['JobStatus'] == '3':
+        logger.debug("Job Removed")
+
+        job.asteroid.status = 'failure'
+        job.asteroid.error_msg = "Condor job has a Removed status and has not been executed. Check the condor log for more details."
+        job.asteroid.save()
+
+        finish_time = datetime.now()
+        job.finish_time = finish_time
+        job.execution_time = finish_time - job.start_time
+
+
+        job.save()
+
+        register_astrometry_outputs(job.astrometry_run.pk, job.asteroid.name)
+
     elif condor_job['JobStatus'] == '4':
         logger.debug("Job Completed")
 
@@ -107,16 +123,16 @@ def update_job_status(job, condor_job):
 
     elif condor_job['JobStatus'] == '5':
         logger.debug("Job Hold")
-        job.asteroid.status = 'failure'
-        job.asteroid.error_msg = "Condor job has a Hold status and has not been executed. Check the condor log for more details."
-        job.asteroid.save()
-
-        job.finish_time = finish_time
-        job.execution_time = finish_time - job.start_time
 
         job.save()
 
-        # TODO Remover do Condor jobs em Hold
+        # Remover o job do condor 
+        try:
+            remove_job(job.clusterid, job.procid)
+        except Exception as e:
+            logger.error(e)
+
+        logger.debug("Teste")
 
     else:
         logger.debug(
@@ -124,6 +140,7 @@ def update_job_status(job, condor_job):
         job.asteroid.status = 'failure'
         job.asteroid.error_msg = "job in the condor returned a status not handled by the application. Check the condor log for more details."
 
+        finish_time = datetime.fromtimestamp(int(condor_job['CompletionDate']))
         job.finish_time = finish_time
         job.execution_time = finish_time - job.start_time
 
@@ -149,80 +166,88 @@ def register_astrometry_outputs(astrometry_run, asteroid):
 
         # Se nao existir marca o asteroid como falha
         if not os.path.exists(result_json):
-            logger.debug("Arquivo Output NAO existe")
 
-            asteroid.status = 'failed'
-            asteroid.error_msg = 'Asteroid was processed but the outputs file was not created.'
+            if asteroid.status != 'failure':
+                asteroid.status = 'failure'
+                asteroid.error_msg = 'Asteroid was processed but the outputs file was not created.'
+
+            t1 = datetime.now(timezone.utc)
+            tdelta = t1 - t0
+            asteroid.execution_time += tdelta
+
             asteroid.save()
 
-            return
+            logger.warning("Asteroid [ %s ] was processed but the outputs file was not created." % (asteroid.name))
 
-        results = read_astrometry_json(result_json)
-
-        # Astrometry File
-        astrometry = results.get('astrometry')
-        if not astrometry.get('file_size') > 0:
-            # Se o arquivo de Astrometria estiver vazio, muda o status para warning
-            asteroid.status = 'warning'
-            asteroid.error_msg = 'Astrometry file is empty.'
-
-        update_create_astrometry_output(
-            asteroid, 'astrometry', astrometry.get('filename'), astrometry.get(
-                'file_size'), astrometry.get('extension')
-        )
-
-        # Target Offset
-        output = results.get('target_offset')
-        update_create_astrometry_output(
-            asteroid, 'target_offset', output.get('filename'), output.get(
-                'file_size'), output.get('extension')
-        )
-
-        # Targets File
-        output = results.get('targets_file')
-        update_create_astrometry_output(
-            asteroid, 'targets', output.get('filename'), output.get(
-                'file_size'), output.get('extension')
-        )
-
-        # Arquivos XY gerados para cada ccd e varios catalogos de referencia
-        count = 0
-        count_ccds = 0
-        outputs = results.get('outputs')
-        for ccd in outputs:
-            a_files = outputs[ccd]
-            count_ccds += 1
-
-            for output in a_files:
-                f_type = get_type_by_extension(output.get('extension'))
-
-                update_create_astrometry_output(
-                    asteroid, f_type, output.get('filename'), output.get('file_size'), output.get('extension'), output.get('catalog'), ccd)
-
-                count += 1
-
-        logger.debug(
-            "Registered outputs [ %s ] for [ %s ] CCDs" % (count, len(ccd)))
-
-        # Registrar Contadores
-        asteroid.processed_ccd_image = results.get('processed_images')
-        asteroid.execution_time += asteroid.condor_job.execution_time
-
-        if int(asteroid.processed_ccd_image) != int(asteroid.ccd_images):
-            asteroid.status = 'warning'
-            asteroid.error_msg = 'Some CCDs were not processed.'
         else:
-            asteroid.status = 'success'
-            asteroid.error_msg = None
 
-        t1 = datetime.now(timezone.utc)
-        tdelta = t1 - t0
-        asteroid.execution_time += tdelta
+            results = read_astrometry_json(result_json)
 
-        asteroid.save()
+            # Astrometry File
+            astrometry = results.get('astrometry')
+            if not astrometry.get('file_size') > 0 and asteroid.status != 'failure':
+                # Se o arquivo de Astrometria estiver vazio, muda o status para warning
+                asteroid.status = 'warning'
+                asteroid.error_msg = 'Astrometry file is empty.'
 
-        logger.info("Registered [ %s ] outputs for Astrometry Run [ %s ] Asteroid [ %s ] in %s" % (
-            count, astrometry_run, asteroid, humanize.naturaldelta(tdelta)))
+            update_create_astrometry_output(
+                asteroid, 'astrometry', astrometry.get('filename'), astrometry.get(
+                    'file_size'), astrometry.get('extension')
+            )
+
+            # Target Offset
+            output = results.get('target_offset')
+            update_create_astrometry_output(
+                asteroid, 'target_offset', output.get('filename'), output.get(
+                    'file_size'), output.get('extension')
+            )
+
+            # Targets File
+            output = results.get('targets_file')
+            update_create_astrometry_output(
+                asteroid, 'targets', output.get('filename'), output.get(
+                    'file_size'), output.get('extension')
+            )
+
+            # Arquivos XY gerados para cada ccd e varios catalogos de referencia
+            count = 0
+            count_ccds = 0
+            outputs = results.get('outputs')
+            for ccd in outputs:
+                a_files = outputs[ccd]
+                count_ccds += 1
+
+                for output in a_files:
+                    f_type = get_type_by_extension(output.get('extension'))
+
+                    update_create_astrometry_output(
+                        asteroid, f_type, output.get('filename'), output.get('file_size'), output.get('extension'), output.get('catalog'), ccd)
+
+                    count += 1
+
+            logger.debug(
+                "Registered outputs [ %s ] for [ %s ] CCDs" % (count, len(ccd)))
+
+            # Registrar Contadores
+            asteroid.processed_ccd_image = results.get('processed_images')
+            asteroid.execution_time += asteroid.condor_job.execution_time
+
+            if asteroid.status != 'failure':
+                if int(asteroid.processed_ccd_image) != int(asteroid.ccd_images) and asteroid.status != 'failure':
+                    asteroid.status = 'warning'
+                    asteroid.error_msg = 'Some CCDs were not processed.'
+                else:
+                    asteroid.status = 'success'
+                    asteroid.error_msg = None
+
+            t1 = datetime.now(timezone.utc)
+            tdelta = t1 - t0
+            asteroid.execution_time += tdelta
+
+            asteroid.save()
+
+            logger.info("Registered [ %s ] outputs for Astrometry Run [ %s ] Asteroid [ %s ] in %s" % (
+                count, astrometry_run, asteroid, humanize.naturaldelta(tdelta)))
 
 
     except Exception as e:
@@ -291,10 +316,16 @@ def finish_astrometry_run(astrometry_run):
         # Recupera o submit_time do primeiro job de astrometria e o ultimo finish time
         first_job = instance.condor_jobs.order_by('submit_time').first()
         last_job = instance.condor_jobs.order_by('-finish_time').first()
+
         at0 = first_job.submit_time
-        at1 = last_job.finish_time
+        try:
+            at1 = last_job.finish_time
+        except:
+            at1 = datetime.now(timezone.utc)
+
         atDelta = at1 - at0
 
+            
         instance.execution_astrometry = atDelta
 
         # Acrescentar os totais de asteroids por status.
@@ -308,13 +339,6 @@ def finish_astrometry_run(astrometry_run):
         instance.count_warning = cwarning
         instance.count_not_executed = cnotexecuted
 
-        # if csuccess == 0:
-        #     instance.status = 'warning'
-        #     instance.error_msg = "Successfully executed but no Asteroid successfully completed."
-        # else:
-        #     instance.status = 'success'
-        #     instance.error_msg = None
-        #     instance.error_traceback = None
 
         instance.status = 'success'
         instance.error_msg = None
@@ -346,28 +370,42 @@ def finish_astrometry_run(astrometry_run):
 
 def check_astrometry_running():
     logger = logging.getLogger("astrometry")
+
     runs = Run.objects.filter(status='running', step=3)
+
+    logger.debug("Astrometry Runs: %s"  % runs)
 
     # Para cada running recupera os jobs
     for astrometry_run in runs:
 
-        jobs = astrometry_run.condor_jobs.all().exclude(job_status__gt=2)
+        # Lista todos os jobs que nao estejam em Idle ou Running
+        jobs = astrometry_run.condor_jobs.all().exclude(job_status__in=[3, 4])
 
         if jobs.count() > 0:
             # Para cada Job verifica o status no Cluster
             for job in jobs:
-                logger.debug(job)
-                result = check_condor_job(job.clusterid, job.procid)
 
-                if result is None:
-                    # Busca informacao do job no history do condor
-                    jobHistory = check_job_history(job.clusterid, job.procid)
+                result = get_job_by_id(job.clusterid, job.procid)
 
-                    update_job_status(job, jobHistory)
-                else:
-                    if int(result['JobStatus']) != int(job.job_status):
-                        update_job_status(job, result)
+                logger.info("Check Status. Asteroid: [%s] Old Status: [%s] Current Status: [%s] ClusterId: [ %s ] " % (job.asteroid.name, job.job_status, result['JobStatus'], job.clusterid))
+
+
+                if int(result['JobStatus']) != int(job.job_status):
+                    logger.debug("STATUS Diferente")
+                    update_job_status(job, result)
+
+                # result = check_condor_job(job.clusterid, job.procid)
+                # logger.debug(result)
+                # if result is None:
+                #     # Busca informacao do job no history do condor
+                #     jobHistory = check_job_history(job.clusterid, job.procid)
+
+                #     update_job_status(job, jobHistory)
+                # else:
+                #     if int(result['JobStatus']) != int(job.job_status):
+                #         update_job_status(job, result)
         else:
+
             # Registra o Final da execucao.
             if not check_jobs_wait_to_run(astrometry_run):
                 # Se todos os objetos ja foram executados finaliza o processo.
@@ -378,7 +416,11 @@ def check_jobs_wait_to_run(astrometry_run):
     a = astrometry_run.asteroids.filter(
         status__in=['pending', 'running', 'idle'])
 
-    if a.count() == 0:
-        return False
-    else:
+    if a.count() > 0:
         return True
+    else:
+        return False
+
+
+# def get_jobs_in_hold(astrometry_run):
+#     return astrometry_run.condor_jobs.filter(job_status=5)

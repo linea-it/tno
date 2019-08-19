@@ -37,6 +37,7 @@ def on_create_praia_run_signal(sender, instance, signal, created, **kwargs):
                 # apaga o registro dos asteroids
                 instance.asteroids.all().delete()
                 instance.condor_jobs.all().delete()
+                instance.condor_jobs.all().delete()
 
             # Start Thread to run.
             thread = threading.Thread(
