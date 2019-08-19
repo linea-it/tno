@@ -14,7 +14,6 @@ import "@fullcalendar/timegrid/main.css";
 import '@fullcalendar/list/main.css';
 import PredictionApi from './PredictionApi';
 import json from '../Prediction/assets/Prediction.json';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import '../Prediction/assets/PredictionCalendar.css';
 import { SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS } from 'constants';
 // import { back_cookie, read_cookie, delete_cookie, bake_cookie } from 'sfcookies';
@@ -312,8 +311,8 @@ export default class PredictionCalendar extends Component {
             buttonText={buttonText}
             defaultDate={defaultDate}
             themeSystem={"standard"}
-            // events={predictionEvents}
-            events={events}
+            events={predictionEvents}
+            // events={events}
 
             eventClick={this.handleEvent}
             defaultView={defaultView}
