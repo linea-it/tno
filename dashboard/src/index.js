@@ -23,7 +23,8 @@ import history from './history';
 import { isAuthenticated } from './auth';
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
-  <Route
+
+  < Route
     {...rest}
     render={props => {
       if (isAuthenticated()) {
