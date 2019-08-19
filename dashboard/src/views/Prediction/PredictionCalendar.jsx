@@ -15,6 +15,8 @@ import '@fullcalendar/list/main.css';
 import PredictionApi from './PredictionApi';
 import json from '../Prediction/assets/Prediction.json';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import '../Prediction/assets/PredictionCalendar.css';
+import { SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS } from 'constants';
 // import { back_cookie, read_cookie, delete_cookie, bake_cookie } from 'sfcookies';
 
 
@@ -34,6 +36,7 @@ export default class PredictionCalendar extends Component {
     log_visible: false,
     calendar_content: null,
     calendarApi: null,
+
 
   }
 
@@ -70,6 +73,7 @@ export default class PredictionCalendar extends Component {
         defaultDate: date,
         view: view,
         defaultView: view,
+
       });
     }
   }
@@ -250,10 +254,11 @@ export default class PredictionCalendar extends Component {
     // event.event.setProp(event.event.title, "opa");
 
 
-    event.el.innerHTML = event.el.innerHTML + "<i class='fa fa-moon-o'></i>";
+    event.el.innerHTML = event.el.innerHTML + "<span  id='sol_lua' class='fa fa-moon-o ' ></span>";
+
+
+
   }
-
-
 
 
 
@@ -265,7 +270,6 @@ export default class PredictionCalendar extends Component {
     // if (this.calendarRef.current !== null) {
     //   console.log(this.calendarRef.current.props.header);
     // }
-
 
 
     const events =
@@ -308,8 +312,8 @@ export default class PredictionCalendar extends Component {
             buttonText={buttonText}
             defaultDate={defaultDate}
             themeSystem={"standard"}
-            events={predictionEvents}
-            // events={events}
+            // events={predictionEvents}
+            events={events}
 
             eventClick={this.handleEvent}
             defaultView={defaultView}
