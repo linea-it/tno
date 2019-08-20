@@ -33,17 +33,17 @@ def ccds_objects(ra, dec, ccds, skybot_file, file_path ):
     
     try:
         # DEcam Field of View (diameter = 2.2 degrees)
-        x0, y0 = translationRA(0.0), 0.0
+        x0, y0 = translationRA(ra), dec
         rho = 1.2   
 
         fig = plt.figure(figsize=(8,8),dpi=90)
 
         #plot circle used in SkyBoT query
         phi = np.linspace(0, 2*np.pi, 100)
-        xx = x0 + ra + rho*np.cos(phi)
-        yy = y0 + dec + rho*np.sin(phi)
+        xx = x0 + rho*np.cos(phi)
+        yy = y0 + rho*np.sin(phi)
 
-        plt.plot(translationRA(xx), yy, 'k')
+        plt.plot(xx, yy, 'k')
 
         # Plot CCDs
         idx = 0
@@ -75,6 +75,8 @@ def ccds_objects(ra, dec, ccds, skybot_file, file_path ):
         labels0, locations = plt.xticks()
         labels1 = [360 - abs(alpha) if alpha < 0 else alpha for alpha in labels0]
         plt.xticks(labels0, labels1)
+
+        plt.axes().set_aspect('equal', 'datalim')
 
         plt.savefig(file_path, bbox_inches='tight')
 

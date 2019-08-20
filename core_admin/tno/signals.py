@@ -115,7 +115,8 @@ def create_skybotrun(sender, instance, signal, created, **kwargs):
         with futures.ProcessPoolExecutor(max_workers=1) as ex:
             ex.submit(submit_skybot_run, instance.pk)
 
-    elif instance.status == 'pending':
-        # Executa em background
-        with futures.ProcessPoolExecutor(max_workers=1) as ex:
-            ex.submit(submit_skybot_run, instance.pk)
+    # else:
+    #     if instance.status == 'pending':
+    #         # Executa em background
+    #         with futures.ProcessPoolExecutor(max_workers=1) as ex:
+    #             ex.submit(submit_skybot_run, instance.pk)

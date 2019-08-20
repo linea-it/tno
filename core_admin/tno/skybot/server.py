@@ -19,7 +19,7 @@ from sqlalchemy.types import String
 
 from .loaddata import ImportSkybot
 from tno.models import SkybotRun
-
+import humanize
 impSkybot = ImportSkybot()
 
 
@@ -40,7 +40,7 @@ class SkybotServer():
             "-------------------------- Skybot Run: %s --------------------------" % skybotrun.id)
 
         # DEBUG LIMIT 
-        self.debug_limit = 1
+        self.debug_limit = 2
 
         try:
             self.dbsk = SkybotOutputDB()
@@ -413,21 +413,25 @@ class SkybotServer():
 
     def get_ccds_by_expnum(self, expnum):
 
-        self.logger.info("Get CCDs for Expnum: [ %s ]" % expnum)
+        self.logger.debug("Get CCDs for Expnum: [ %s ]" % expnum)
 
+        t0 = datetime.now()
         tbl = self.dbpt.tbl
 
         stm = select(tbl.c).order_by(tbl.c.ccdnum).where(and_(tbl.c.expnum == expnum))
         
         ccds = self.dbpt.fetch_all_dict(stm)
 
-        self.logger.info("Total CCDS: [ %s ] for Expnum [ %s ]" % (len(ccds), expnum))
+        t1 = datetime.now()
+        tdelta = t1 - t0
+
+        self.logger.info("Found [ %s ] CCDs for Expnum [ %s ] in %s" % (len(ccds), expnum, humanize.naturaldelta(tdelta)))
 
         return ccds
 
 
     def associate_ccd(self, poiting):
-        self.logger.info("Associate With CCDs")
+        self.logger.debug("Associate With CCDs")
 
         self.logger.debug(poiting)
         self.logger.debug("Expnum [ %s ] Band [ %s ]" % (poiting['expnum'], poiting['band']))
@@ -440,6 +444,7 @@ class SkybotServer():
         count_updates = 0
 
         for ccd in ccds:
+            tt0 = datetime.now()
             self.logger.debug("CCD [ %s ]" % (ccd['ccdnum']))
             self.logger.debug("RAC1 [ %s ] Decc1 [ %s ]" % (ccd['rac1'], ccd['decc1']))
             self.logger.debug("RAC2 [ %s ] Decc2 [ %s ]" % (ccd['rac2'], ccd['decc2']))
@@ -465,7 +470,10 @@ class SkybotServer():
 
             count_updates += count
 
-            self.logger.info("CCD [ %s ] Asteroids [ %s ]" % (ccd['ccdnum'], count))
+            tt1 = datetime.now()
+            ttdelta = tt1 - tt0
+
+            self.logger.debug("Exposure [ %s ] CCD [ %s ] had [ %s ] Asteroids  associated in %s" % (poiting['expnum'], ccd['ccdnum'], count, humanize.naturaldelta(ttdelta)))
 
         t1 = datetime.now()
         tdelta = t1 - t0
@@ -478,7 +486,7 @@ class SkybotServer():
             'ccd_time': tdelta.total_seconds(),
             })
 
-        self.logger.info("Expnum [ %s ] Skybot [ %s ] Asteroids in CCD [ %s ]" % (ccd['expnum'], poiting['count_rows'] , count_updates))
+        self.logger.info("Expnum [ %s ] Skybot Output: [ %s ] Asteroids inside CCD: [ %s ] in %s " % (ccd['expnum'], poiting['count_rows'] , count_updates, humanize.naturaldelta(tdelta)))
 
         return result_ccd
 
