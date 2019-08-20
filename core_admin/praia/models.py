@@ -234,6 +234,12 @@ class AstrometryAsteroid(models.Model):
         help_text='Path relative to the Astrometry OBJECT directory, this is the internal path in the proccess directory.',
     )
 
+    condor_relative_path = models.CharField(
+        max_length=1024,
+        verbose_name='Condor Relative Path',
+        null=True, blank=True,
+    )
+
     def __str__(self):
         return str(self.name)
 

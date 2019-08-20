@@ -73,7 +73,6 @@ urlpatterns = [
     url(r'^api/', include(router.urls)),
     url(r'^api/obtain-auth-token/$', csrf_exempt(obtain_auth_token)),
     url(r'^api/teste/', common_views.teste),
-    url(r'^api/teste_register/', common_views.teste_register),
     url(r'^api/import-skybot', common_views.import_skybot),
     url(r'^api/read_file', common_views.read_file),
     url(r'^api/read_csv', common_views.read_csv)
