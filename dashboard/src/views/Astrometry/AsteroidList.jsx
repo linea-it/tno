@@ -11,7 +11,7 @@ import { Column } from 'primereact/column';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import '../Astrometry/assets/runDetailStyle.css';
-import Toolbar from 'primereact/toolbar';
+import { Toolbar } from 'primereact/toolbar';
 
 
 class AsteroidList extends Component {
@@ -35,66 +35,13 @@ class AsteroidList extends Component {
       sortOrder: 1,
       asteroid_id: 0,
       selected: null,
+      columns: null,
+      error_list_visibility: "hidden",
+
     };
   }
 
-  columns = [
-    {
-      field: 'name',
-      header: 'Name',
-      sortable: true,
-    },
-    {
-      field: 'number',
-      header: 'Number',
-      sortable: true,
-      body: rowData => {
-        if (rowData.number === '-') {
-          return '';
-        }
-        return rowData.number;
-      },
-    },
 
-    {
-      field: 'ccd_images',
-      style: { textAlign: 'center' },
-      header: 'CCD Images',
-      sortable: true,
-    },
-    {
-      field: 'processed_ccd_image',
-      style: { textAlign: 'center' },
-      header: 'Processed CCDs',
-      sortable: true,
-    },
-    {
-      field: 'catalog_rows',
-      style: { textAlign: 'center' },
-      header: 'Catalog Rows',
-      sortable: true,
-    },
-    {
-      field: 'h_execution_time',
-      // style: { textAlign: 'center' },
-      header: 'Execution Time',
-      sortable: false,
-    },
-
-    // {
-    //   field: 'execution_time',
-    //   header: 'Execution Time',
-    //   sortable: true,
-    //   style: { textAlign: 'center' },
-    //   body: rowData => {
-    //     if (rowData.execution_time !== '' && rowData.execution_time !== null) {
-    //       return moment(rowData.execution_time)._i;
-    //     } else {
-    //       return;
-    //     }
-    //   },
-    // },
-  ];
 
   componentDidUpdate(prevProps) {
     // Typical usage (don't forget to compare props):
@@ -108,6 +55,122 @@ class AsteroidList extends Component {
         sizePerPage: this.state.sizePerPage,
       });
     }
+  }
+
+
+  componentWillMount() {
+
+    this.loadMainColumns();
+
+
+  }
+
+
+
+  loadMainColumns = () => {
+    this.setState({
+      columns: [
+        {
+          field: 'name',
+          header: 'Name',
+          sortable: true,
+        },
+        {
+          field: 'number',
+          header: 'Number',
+          sortable: true,
+          body: rowData => {
+            if (rowData.number === '-') {
+              return '';
+            }
+            return rowData.number;
+          },
+        },
+
+        {
+          field: 'ccd_images',
+          style: { textAlign: 'center' },
+          header: 'CCD Images',
+          sortable: true,
+        },
+        {
+          field: 'processed_ccd_image',
+          style: { textAlign: 'center' },
+          header: 'Processed CCDs',
+          sortable: true,
+        },
+        {
+          field: 'catalog_rows',
+          style: { textAlign: 'center' },
+          header: 'Catalog Rows',
+          sortable: true,
+        },
+        {
+          field: 'h_execution_time',
+          // style: { textAlign: 'center' },
+          header: 'Execution Time',
+          sortable: false,
+        },
+
+        // {
+        //   field: 'execution_time',
+        //   header: 'Execution Time',
+        //   sortable: true,
+        //   style: { textAlign: 'center' },
+        //   body: rowData => {
+        //     if (rowData.execution_time !== '' && rowData.execution_time !== null) {
+        //       return moment(rowData.execution_time)._i;
+        //     } else {
+        //       return;
+        //     }
+        //   },
+        // },
+      ]
+    });
+
+  }
+
+
+  loadErrorMessageColumns = () => {
+    this.setState({
+      columns: [
+        {
+          field: 'name',
+          header: 'Name',
+          sortable: true,
+        },
+        {
+          field: 'number',
+          header: 'Number',
+          sortable: true,
+          body: rowData => {
+            if (rowData.number === '-') {
+              return '';
+            }
+            return rowData.number;
+          },
+        },
+
+
+
+
+        // {
+        //   field: 'execution_time',
+        //   header: 'Execution Time',
+        //   sortable: true,
+        //   style: { textAlign: 'center' },
+        //   body: rowData => {
+        //     if (rowData.execution_time !== '' && rowData.execution_time !== null) {
+        //       return moment(rowData.execution_time)._i;
+        //     } else {
+        //       return;
+        //     }
+        //   },
+        // },
+      ]
+    });
+
+
   }
 
   fetchData = ({ praia_run, page, sizePerPage, sortField, sortOrder }) => {
@@ -289,16 +352,32 @@ class AsteroidList extends Component {
   };
 
 
+
+  handleErrorList = () => {
+    this.loadErrorMessageColumns();
+  };
+
+  handleMainList = () => {
+    this.loadMainColumns();
+  };
+
   renderAsteroidMenuBar = () => {
+
     return (
       <Toolbar>
         <div className="ui-toolbar">
           <div style={{ float: 'right' }}>
             <Button
-              label="lista"
-              icon="fa fa-undo"
-            // onClick={}
+              icon="fa fa-navicon"
+              className="p-button-info"
+              onClick={this.handleMainList}
             />
+            <Button
+              icon="fa fa-exclamation"
+              className="p-button-info"
+              onClick={this.handleErrorList}
+            />
+
           </div>
         </div>
 
@@ -307,10 +386,14 @@ class AsteroidList extends Component {
 
   };
 
-  render() {
-    const { data } = this.state;
 
-    const columns = this.columns.map((col, i) => {
+
+
+
+  render() {
+    const { data, error_list_visibility } = this.state;
+
+    const columns = this.state.columns.map((col, i) => {
       return (
         <Column
           key={i}
@@ -323,55 +406,73 @@ class AsteroidList extends Component {
       );
     });
 
+
+
     return (
 
 
+      <div>
 
-      < Card title="" subTitle="" >
+        {this.renderAsteroidMenuBar()}
 
-        <DataTable
-          value={data}
-          resizableColumns={true}
-          columnResizeMode="expand"
-          reorderableColumns={false}
-          reorderableRows={false}
-          responsive={true}
-          scrollable={true}
-          loading={this.state.loading}
-          totalRecords={this.state.totalSize}
-          sortField={this.state.sortField}
-          sortOrder={this.state.sortOrder}
-          onSort={this.onSort}
-        >
-          <Column
-            header="Status"
-            body={this.statusColumn}
-            style={{ textAlign: 'center', width: '10em' }}
+        < Card title="" subTitle="" >
+
+          <DataTable
+            value={data}
+            resizableColumns={true}
+            columnResizeMode="expand"
+            reorderableColumns={false}
+            reorderableRows={false}
+            responsive={true}
+            scrollable={true}
+            loading={this.state.loading}
+            totalRecords={this.state.totalSize}
+            sortField={this.state.sortField}
+            sortOrder={this.state.sortOrder}
+            onSort={this.onSort}
+          >
+            <Column
+              header="Status"
+              body={this.statusColumn}
+              style={{ textAlign: 'center', width: '10em' }}
+            />
+            {columns}
+
+
+            Only appears if error list is active
+            <Column
+              body={this.renderErrorMessageList}
+              style={{ visibility: error_list_visibility }}
+            />
+
+
+            <Column
+              body={this.actionTemplate}
+              style={{ textAlign: 'center', width: '6em' }}
+            />
+          </DataTable>
+          <Paginator
+            rows={this.state.sizePerPage}
+            totalRecords={this.state.totalSize}
+            first={this.state.first}
+            onPageChange={this.onPageChange}
           />
-          {columns}
-          <Column
-            body={this.actionTemplate}
-            style={{ textAlign: 'center', width: '6em' }}
-          />
-        </DataTable>
-        <Paginator
-          rows={this.state.sizePerPage}
-          totalRecords={this.state.totalSize}
-          first={this.state.first}
-          onPageChange={this.onPageChange}
-        />
 
-        {/* <Log
+          {/* <Log
                     visible={this.state.log_visible}
                     onHide={this.onLogHide}
                     id={this.state.asteroid_id}
                 /> */}
-      </Card >
+        </Card >
+
+      </div>
     );
 
 
 
   }
+
+
 }
 
 export default AsteroidList;
