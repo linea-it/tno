@@ -14,6 +14,7 @@ import '../Astrometry/assets/runDetailStyle.css';
 import { Toolbar } from 'primereact/toolbar';
 
 
+
 class AsteroidList extends Component {
   state = this.initialState;
   api = new PraiaApi();
@@ -36,7 +37,11 @@ class AsteroidList extends Component {
       asteroid_id: 0,
       selected: null,
       columns: null,
-      error_list_visibility: "hidden",
+      checked: false,
+      main_background: "#186BA0",
+      main_color: "#fff",
+      error_background: "#FFFAF0",
+      error_color: "#555555",
 
     };
   }
@@ -67,111 +72,6 @@ class AsteroidList extends Component {
 
 
 
-  loadMainColumns = () => {
-    this.setState({
-      columns: [
-        {
-          field: 'name',
-          header: 'Name',
-          sortable: true,
-        },
-        {
-          field: 'number',
-          header: 'Number',
-          sortable: true,
-          body: rowData => {
-            if (rowData.number === '-') {
-              return '';
-            }
-            return rowData.number;
-          },
-        },
-
-        {
-          field: 'ccd_images',
-          style: { textAlign: 'center' },
-          header: 'CCD Images',
-          sortable: true,
-        },
-        {
-          field: 'processed_ccd_image',
-          style: { textAlign: 'center' },
-          header: 'Processed CCDs',
-          sortable: true,
-        },
-        {
-          field: 'catalog_rows',
-          style: { textAlign: 'center' },
-          header: 'Catalog Rows',
-          sortable: true,
-        },
-        {
-          field: 'h_execution_time',
-          // style: { textAlign: 'center' },
-          header: 'Execution Time',
-          sortable: false,
-        },
-
-        // {
-        //   field: 'execution_time',
-        //   header: 'Execution Time',
-        //   sortable: true,
-        //   style: { textAlign: 'center' },
-        //   body: rowData => {
-        //     if (rowData.execution_time !== '' && rowData.execution_time !== null) {
-        //       return moment(rowData.execution_time)._i;
-        //     } else {
-        //       return;
-        //     }
-        //   },
-        // },
-      ]
-    });
-
-  }
-
-
-  loadErrorMessageColumns = () => {
-    this.setState({
-      columns: [
-        {
-          field: 'name',
-          header: 'Name',
-          sortable: true,
-        },
-        {
-          field: 'number',
-          header: 'Number',
-          sortable: true,
-          body: rowData => {
-            if (rowData.number === '-') {
-              return '';
-            }
-            return rowData.number;
-          },
-        },
-
-
-
-
-        // {
-        //   field: 'execution_time',
-        //   header: 'Execution Time',
-        //   sortable: true,
-        //   style: { textAlign: 'center' },
-        //   body: rowData => {
-        //     if (rowData.execution_time !== '' && rowData.execution_time !== null) {
-        //       return moment(rowData.execution_time)._i;
-        //     } else {
-        //       return;
-        //     }
-        //   },
-        // },
-      ]
-    });
-
-
-  }
 
   fetchData = ({ praia_run, page, sizePerPage, sortField, sortOrder }) => {
     this.setState({ loading: true });
@@ -241,6 +141,9 @@ class AsteroidList extends Component {
   };
 
   statusColumn = rowData => {
+
+
+
     if (rowData.status === 'success') {
       return (
         <Button
@@ -353,13 +256,244 @@ class AsteroidList extends Component {
 
 
 
-  handleErrorList = () => {
-    this.loadErrorMessageColumns();
+  // handleList = (e) => {
+
+  //   this.setState({ checked: e.value }, () => {
+  //     e.value ? this.loadErrorMessageColumns() : this.loadMainColumns();
+
+  //   });
+
+  //   this.state.error_list_visibility === 'hidden' ?
+  //     this.setState({ error_list_visibility: 'visible' })
+  //     : this.setState({ error_list_visibility: 'hidden' });
+
+  // };
+
+
+
+
+
+  loadMainColumns = () => {
+
+    this.setState({
+      columns: [
+        {
+          field: 'name',
+          header: 'Name',
+          style: { textAlign: 'center', width: "8%" },
+          sortable: true,
+        },
+        {
+          field: 'number',
+          header: 'Number',
+          style: { textAlign: 'center', width: "10%" },
+          sortable: true,
+          body: rowData => {
+            if (rowData.number === '-') {
+              return '';
+            }
+            return rowData.number;
+          },
+        },
+
+        {
+          field: 'ccd_images',
+          style: { textAlign: 'center' },
+          header: 'CCD Images',
+          sortable: true,
+        },
+        {
+          field: 'processed_ccd_image',
+          style: { textAlign: 'center' },
+          header: 'Processed CCDs',
+          sortable: true,
+        },
+        {
+          field: 'catalog_rows',
+          style: { textAlign: 'center' },
+          header: 'Catalog Rows',
+          sortable: true,
+        },
+        {
+          field: 'h_execution_time',
+          style: { textAlign: 'center' },
+          header: 'Execution Time',
+          sortable: false,
+        },
+
+        // {
+        //   field: 'execution_time',
+        //   header: 'Execution Time',
+        //   sortable: true,
+        //   style: { textAlign: 'center' },
+        //   body: rowData => {
+        //     if (rowData.execution_time !== '' && rowData.execution_time !== null) {
+        //       return moment(rowData.execution_time)._i;
+        //     } else {
+        //       return;
+        //     }
+        //   },
+        // },
+      ]
+    });
+
+  }
+
+
+  openLog = () => {
+
+    console.log("okay");
   };
 
-  handleMainList = () => {
-    this.loadMainColumns();
+  handleCondorButton = () => {
+
+    return (
+
+      <Button
+        className="ui-button-warning"
+        icon="fa fa-file-text-o"
+        onClick={this.openLog()}
+      />
+
+    );
   };
+
+  handleCondorError = () => {
+
+    return (
+
+      <Button
+        className="ui-button-warning"
+        icon="fa fa-file-text-o"
+        onClick={this.openLog()}
+      />
+
+    );
+
+  };
+
+
+  handleCondorOutput = () => {
+
+    return (
+
+      <Button
+        className="ui-button-warning"
+        icon="fa fa-file-text-o"
+        onClick={this.openLog()}
+      />
+
+    );
+
+  };
+
+
+
+
+  loadErrorMessageColumns = rowData => {
+
+
+    this.setState({
+      columns: [
+        {
+          field: 'name',
+          header: 'Name',
+          style: { textAlign: 'center', width: "8%" },
+          sortable: true,
+        },
+        {
+          field: 'number',
+          header: 'Number',
+          style: { textAlign: 'center', width: "10%" },
+          sortable: true,
+          body: rowData => {
+            if (rowData.number === '-') {
+              return '';
+            }
+            return rowData.number;
+          },
+        },
+
+        {
+          field: 'error_msg',
+          header: 'Error',
+          style: { textAlign: 'center', width: "40%" },
+          sortable: false,
+        },
+
+        {
+          field: 'CONDOR',
+          header: 'Condor',
+          style: { textAlign: 'center', width: "7%" },
+          body: this.handleCondorButton,
+          sortable: false,
+        },
+
+        {
+          field: 'CONDOR_ERROR',
+          header: 'Condor Error',
+          body: this.handleCondorError,
+          style: { textAlign: 'center', width: "11%" },
+
+          sortable: false,
+        },
+
+        {
+          field: 'CONDOR_OUTPUT',
+          header: 'Condor Output',
+          body: this.handleCondorOutput,
+          style: { textAlign: 'center', width: "12%" },
+          sortable: false,
+        },
+      ]
+    });
+
+
+  }
+
+  handleList = (button) => {
+
+    if (button == "main") {
+      console.log("oi");
+
+    } else {
+
+    }
+
+
+  };
+
+
+  // main_background: "#186BA0",
+  // main_color: "#fff",
+  // error_background: "#FFFAF0",
+  // error_color: "#555555",
+
+  handleListMain = () => {
+
+    this.loadMainColumns();
+    this.setState({
+      main_background: "#186BA0",
+      main_color: "#fff",
+      error_background: "#FFFAF0",
+      error_color: "#555555",
+    });
+  };
+
+  handleErrorList = () => {
+
+    this.loadErrorMessageColumns();
+    this.setState({
+      main_background: "#FFFAF0",
+      main_color: "#555555",
+      error_background: "#186BA0",
+      error_color: "#fff",
+    });
+
+  }
+
+
+
 
   renderAsteroidMenuBar = () => {
 
@@ -367,16 +501,37 @@ class AsteroidList extends Component {
       <Toolbar>
         <div className="ui-toolbar">
           <div style={{ float: 'right' }}>
+            {/* <ToggleButton
+              style={{ width: '50px' }}
+              onIcon='fa fa-undo'
+              className="ui-button-info"
+              onLabel='Main'
+              offLabel='Errors'
+              checked={this.state.checked}
+              onChange={e => this.handleList(e)}
+
+            /> */}
             <Button
               icon="fa fa-navicon"
-              className="p-button-info"
-              onClick={this.handleMainList}
+
+              style={{
+                backgroundColor: this.state.main_background,
+                color: this.state.main_color,
+                border: "none"
+              }}
+
+              onClick={this.handleListMain}
             />
             <Button
-              icon="fa fa-exclamation"
-              className="p-button-info"
+              style={{
+                backgroundColor: this.state.error_background,
+                color: this.state.error_color,
+                border: "none"
+              }}
+              icon="fa fa-bug"
               onClick={this.handleErrorList}
             />
+
 
           </div>
         </div>
@@ -391,7 +546,10 @@ class AsteroidList extends Component {
 
 
   render() {
-    const { data, error_list_visibility } = this.state;
+    const { data, } = this.state;
+
+    console.log(data);
+
 
     const columns = this.state.columns.map((col, i) => {
       return (
@@ -405,6 +563,7 @@ class AsteroidList extends Component {
         />
       );
     });
+
 
 
 
@@ -434,16 +593,9 @@ class AsteroidList extends Component {
             <Column
               header="Status"
               body={this.statusColumn}
-              style={{ textAlign: 'center', width: '10em' }}
+              style={{ textAlign: 'center', width: "12%" }}
             />
             {columns}
-
-
-            Only appears if error list is active
-            <Column
-              body={this.renderErrorMessageList}
-              style={{ visibility: error_list_visibility }}
-            />
 
 
             <Column
