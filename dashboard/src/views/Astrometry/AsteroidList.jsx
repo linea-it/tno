@@ -12,6 +12,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import '../Astrometry/assets/runDetailStyle.css';
 import { Toolbar } from 'primereact/toolbar';
+import Log from '../../components/Dialog/Log';
 
 
 
@@ -37,7 +38,12 @@ class AsteroidList extends Component {
       asteroid_id: 0,
       selected: null,
       columns: null,
-      checked: false,
+
+      log: {
+        visible: false,
+        content: null,
+      },
+
       main_background: "#186BA0",
       main_color: "#fff",
       error_background: "#FFFAF0",
@@ -85,6 +91,7 @@ class AsteroidList extends Component {
     this.api
       .getAsteroids({ filters, page, sizePerPage, sortField, sortOrder })
       .then(res => {
+
         const r = res.data;
         this.setState({
           data: r.results,
@@ -271,8 +278,6 @@ class AsteroidList extends Component {
 
 
 
-
-
   loadMainColumns = () => {
 
     this.setState({
@@ -342,7 +347,7 @@ class AsteroidList extends Component {
 
   openLog = () => {
 
-    console.log("okay");
+
   };
 
   handleCondorButton = () => {
@@ -352,7 +357,7 @@ class AsteroidList extends Component {
       <Button
         className="ui-button-warning"
         icon="fa fa-file-text-o"
-        onClick={this.openLog()}
+        onClick={this.openLog}
       />
 
     );
@@ -365,7 +370,7 @@ class AsteroidList extends Component {
       <Button
         className="ui-button-warning"
         icon="fa fa-file-text-o"
-        onClick={this.openLog()}
+        onClick={this.openLog}
       />
 
     );
@@ -386,7 +391,6 @@ class AsteroidList extends Component {
     );
 
   };
-
 
 
 
@@ -422,27 +426,27 @@ class AsteroidList extends Component {
         },
 
         {
-          field: 'CONDOR',
-          header: 'Condor',
+          field: 'condor_log',
+          header: 'Log',
           style: { textAlign: 'center', width: "7%" },
           body: this.handleCondorButton,
           sortable: false,
         },
 
         {
-          field: 'CONDOR_ERROR',
-          header: 'Condor Error',
+          field: 'condor_err_log',
+          header: 'Error',
           body: this.handleCondorError,
-          style: { textAlign: 'center', width: "11%" },
+          style: { textAlign: 'center', width: "7%" },
 
           sortable: false,
         },
 
         {
-          field: 'CONDOR_OUTPUT',
-          header: 'Condor Output',
+          field: 'condor_out_log',
+          header: 'Output',
           body: this.handleCondorOutput,
-          style: { textAlign: 'center', width: "12%" },
+          style: { textAlign: 'center', width: "8%" },
           sortable: false,
         },
       ]
@@ -542,11 +546,14 @@ class AsteroidList extends Component {
   };
 
 
-
+  onLogHide = () => {
+    // this.setState(state => ({ log: Object.assign({}, state.log, { visible: false }) }));;
+    this.setState({ ...this.state.log, visible: false });
+  };
 
 
   render() {
-    const { data, } = this.state;
+    const { data, log } = this.state;
 
     console.log(data);
 
@@ -593,7 +600,7 @@ class AsteroidList extends Component {
             <Column
               header="Status"
               body={this.statusColumn}
-              style={{ textAlign: 'center', width: "12%" }}
+              style={{ textAlign: 'center', width: "13%" }}
             />
             {columns}
 
@@ -610,11 +617,11 @@ class AsteroidList extends Component {
             onPageChange={this.onPageChange}
           />
 
-          {/* <Log
-                    visible={this.state.log_visible}
-                    onHide={this.onLogHide}
-                    id={this.state.asteroid_id}
-                /> */}
+          <Log
+            visible={log.visible}
+            onHide={this.onLogHide}
+          // id={this.state.asteroid_id}
+          />
         </Card >
 
       </div>
