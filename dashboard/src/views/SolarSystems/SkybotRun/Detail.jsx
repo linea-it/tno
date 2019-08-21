@@ -120,14 +120,17 @@ class SkybotRunDetail extends Component {
     const execution_time = [
       {
         name: 'Download ',
+
         value: statistic.download_time,
       },
       {
         name: 'Import',
         value: statistic.import_time,
+
       },
       {
         name: 'Associate CCD',
+
         value: statistic.ccd_time,
       },
     ];
@@ -159,7 +162,7 @@ class SkybotRunDetail extends Component {
               title="Execution Time"
               className="stats_predict_occult"
               content={
-                <DonutStats subTitle="" data={execution_time} fill={colors} />
+                <DonutStats flag={"execution_time"} subTitle="" data={execution_time} fill={colors} />
               }
             />
           </div>
