@@ -322,7 +322,7 @@ class HistoryRun extends Component {
           enabled={true}
           callback={this.reload}
         />
-        {this.toolbarButton(this.state.selected)}
+        {/* {this.toolbarButton(this.state.selected)} */}
 
         <DataTable
           value={this.state.data}

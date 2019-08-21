@@ -41,6 +41,9 @@ class ImportSkybot():
 
         self.logger.debug("Expnum: [%s] Band [%s] " % (expnum, band))
 
+        # Get Pointing
+        pointing = PointingModel.objects.filter(expnum=expnum).first()
+
         headers = ["num", "name", "ra", "dec", "dynclass", "mv", "errpos", "d", "dra", "ddec",
                    "dg", "dh", "phase", "sunelong", "x", "y", "z", "vx", "vy", "vz", "epoch"]
 
@@ -53,7 +56,7 @@ class ImportSkybot():
         # Para cada asteroid fazer o insert ou update
         for row in df.itertuples():
 
-            created = self.insert_or_update_asteroid(expnum, band, row)
+            created = self.insert_or_update_asteroid(expnum, band, pointing, row)
 
             if created:
                 count_created += 1
@@ -91,7 +94,7 @@ class ImportSkybot():
 
         return RA, DEC
 
-    def insert_or_update_asteroid(self, expnum, band, asteroid):
+    def insert_or_update_asteroid(self, expnum, band, pointing, asteroid):
         self.logger.debug("Asteroid Name: [%s] Dynclass [%s]" % (
             getattr(asteroid, "name"), getattr(asteroid, "dynclass")))
 
@@ -109,8 +112,8 @@ class ImportSkybot():
 
         name = getattr(asteroid, "name").strip()
 
-        # Get Pointing
-        pointing = PointingModel.objects.filter(expnum=expnum).first()
+        # # Get Pointing
+        # pointing = PointingModel.objects.filter(expnum=expnum).first()
 
         try:
             stm_insert = skybot_output.insert().values(

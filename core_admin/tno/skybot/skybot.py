@@ -1,22 +1,24 @@
+import json
 import logging
 import os
-import requests
-import json
+import traceback
+from concurrent import futures
+from datetime import datetime
 from time import sleep
+
+import humanize
+import pandas as pd
+import requests
+from django.conf import settings
+from sqlalchemy import DATE, cast, func, text
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.sql import and_, desc, expression, insert, select
+from sqlalchemy.types import String
+
+from tno.models import SkybotRun
 from tno.skybotoutput import Pointing as PointingDB
 from tno.skybotoutput import SkybotOutput as SkybotOutputDB
-from sqlalchemy.sql import select, and_, insert, desc
-from sqlalchemy import cast, DATE, func, text
-from django.conf import settings
-from datetime import datetime
-import pandas as pd
-from tno.models import SkybotRun
-from concurrent import futures
-import humanize
-from sqlalchemy.sql import expression
-from sqlalchemy.ext.compiler import compiles
-from sqlalchemy.types import String
-import traceback
+
 from .server import SkybotServer
 
 # TODO investigar Custon Function no SQL ALCHEMY
@@ -74,17 +76,19 @@ class ImportSkybotManagement():
                                                                                      ra_ul=current_run.ra_ul, dec_ul=current_run.dec_ul, ra_ur=current_run.ra_ur, dec_ur=current_run.dec_ur,
                                                                                      ra_lr=current_run.ra_lr, dec_lr=current_run.dec_lr, ra_ll=current_run.ra_ll, dec_ll=current_run.dec_ll)
 
-
             t1 = datetime.now()
             tdelta = t1 - t0
             self.logger.info("Done in %s" % humanize.naturaldelta(tdelta))
 
+            current_run.refresh_from_db()
             current_run.status = 'success'
             current_run.finish = t1
             current_run.execution_time = tdelta
             current_run.save()
 
         except Exception as e:
+            trace = traceback.format_exc()
+            self.logger.error(trace)
             self.logger.error(e)
 
             t1 = datetime.now()
@@ -93,10 +97,9 @@ class ImportSkybotManagement():
             current_run.status = 'failure'
             current_run.finish = t1
             current_run.execution_time = tdelta
-            current_run.error = traceback.format_exc()
+            current_run.error = trace
             current_run.save()
             raise(e)
-
 
 
 # select expnum, band, date_obs, radeg, decdeg

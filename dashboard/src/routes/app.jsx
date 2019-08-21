@@ -27,9 +27,9 @@ import ExposureDetail from '../views/SolarSystems/SkybotRun/ExposureDetail';
 import PraiaDetail from '../views/Astrometry/RunDetail';
 import AsteroidRunDetail from '../views/Astrometry/AsteroidRunDetail';
 import ReadCSV from '../views/Astrometry/ReadCSV';
-import OccultationCalendar from '../views/Prediction/OccultationCalendar';
 import RunDetailInfo from '../views/Astrometry/RunDetailInfo';
 import PredictionCalendar from '../views/Prediction/PredictionCalendar';
+import TestOccultation from '../views/Prediction/TestOccultation';
 
 
 const appRoutes = [
@@ -196,13 +196,19 @@ const appRoutes = [
     component: OccultationDetail,
   },
 
+  {
+    path: '/test_occultation/:id/:defaultDate/:flag/:view',
+    name: 'Occultation Page Test',
+    hidden: true,
+    component: TestOccultation,
+  },
 
-  // {
-  //   path: '/occultation_calendar',
-  //   name: 'Occultation Calendar',
-  //   hidden: true,
-  //   component: OccultationCalendar,
-  // },
+  {
+    path: '/prediction_calendar_back/:id/:default_date/:view',
+    name: 'Occultation Calendar',
+    hidden: true,
+    component: PredictionCalendar,
+  },
   {
     path: '/prediction_calendar',
     name: 'Occultation Calendar',

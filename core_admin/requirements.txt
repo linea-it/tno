@@ -14,6 +14,6 @@ docker==3.4.1
 pytimeparse
 lxml
 pandas
-matplotlib
-numpy
+matplotlib==3.1.1
+numpy==1.17.0
 apscheduler
