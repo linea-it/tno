@@ -345,8 +345,13 @@ class AsteroidList extends Component {
   }
 
 
-  openLog = () => {
+  openLog = (button) => {
 
+    if (button) {
+      console.log(button);
+
+
+    }
 
   };
 
@@ -357,7 +362,7 @@ class AsteroidList extends Component {
       <Button
         className="ui-button-warning"
         icon="fa fa-file-text-o"
-        onClick={this.openLog}
+        onClick={() => this.openLog("log")}
       />
 
     );
@@ -370,7 +375,7 @@ class AsteroidList extends Component {
       <Button
         className="ui-button-warning"
         icon="fa fa-file-text-o"
-        onClick={this.openLog}
+        onClick={() => this.openLog("error")}
       />
 
     );
@@ -385,7 +390,7 @@ class AsteroidList extends Component {
       <Button
         className="ui-button-warning"
         icon="fa fa-file-text-o"
-        onClick={this.openLog()}
+        onClick={() => this.openLog("output")}
       />
 
     );
@@ -555,9 +560,6 @@ class AsteroidList extends Component {
   render() {
     const { data, log } = this.state;
 
-    console.log(data);
-
-
     const columns = this.state.columns.map((col, i) => {
       return (
         <Column
@@ -626,7 +628,6 @@ class AsteroidList extends Component {
 
       </div>
     );
-
 
 
   }
