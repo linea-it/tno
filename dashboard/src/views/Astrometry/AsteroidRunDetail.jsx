@@ -10,6 +10,9 @@ import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize';
 import { TreeTable } from 'primereact/treetable';
 import Log from '../../components/Dialog/Log';
+import tableContent from '../Astrometry/assets/astrometry_table_content.json';
+
+
 
 const outputs = {
   D00512549_z_c51_r2379p01_immasked: [],
@@ -266,9 +269,18 @@ const outputs = {
   ],
 };
 
+
+
+
+
+
+
 export default class AsteroidRunDetail extends Component {
   state = this.initialState;
   api = new PraiaApi();
+
+
+
 
   // static propTypes = {
   //     match: PropTypes.object.isRequired,
@@ -292,6 +304,7 @@ export default class AsteroidRunDetail extends Component {
       header: null,
       selectedNodeKey1: [],
       expandedKeys: [],
+      astrometryTable: tableContent,
     };
   }
 
@@ -403,7 +416,7 @@ export default class AsteroidRunDetail extends Component {
     const filepath = encodeURIComponent(rowData.file_path);
     const filename = encodeURIComponent(rowData.filename);
     const title = encodeURIComponent(
-      'Proccess: ' +
+      'Process: ' +
       proccess +
       ' of the asteroid ' +
       rowData.asteroid +
@@ -540,8 +553,52 @@ export default class AsteroidRunDetail extends Component {
     this.setState({ log_visible: false, output_content: null });
   };
 
+
+  astrometry_columns = [
+    {
+      field: 'ra',
+      header: "Ra",
+      sortable: false,
+      style: { textAlign: "center" }
+    },
+    {
+      field: 'dec',
+      header: "Dec",
+      sortable: false,
+      style: { textAlign: "center" }
+    },
+    {
+      field: 'mag',
+      header: "Mag",
+      sortable: false,
+      style: { textAlign: "center" }
+    },
+    {
+      field: 'julian_date',
+      header: "Julian Date",
+      sortable: false,
+      style: { textAlign: "center" }
+    },
+    {
+      field: 'cod_obs',
+      header: "Obs. Code",
+      sortable: false,
+      style: { textAlign: "center" }
+    },
+
+    {
+      field: 'catalog_code',
+      header: "Catalog Code",
+      sortable: false,
+      style: { textAlign: "center" }
+    },
+  ]
+
+
+
   render() {
     const { asteroid, inputs } = this.state;
+
 
     const a = [];
 
@@ -596,7 +653,7 @@ export default class AsteroidRunDetail extends Component {
     }
 
     const stats = [
-      { name: 'Proccess', value: asteroid.proccess_displayname },
+      { name: 'Process', value: asteroid.proccess_displayname },
       { name: 'Asteroid', value: asteroid.name },
       { name: 'Execution Time', value: asteroid.h_execution_time },
       { name: 'CCDs', value: asteroid.ccd_images },
@@ -604,11 +661,28 @@ export default class AsteroidRunDetail extends Component {
       { name: 'Catalog Rows', value: asteroid.catalog_rows },
     ];
 
+
+    const astrometry_cols = this.astrometry_columns.map((col, i) => {
+      return (
+        <Column
+          key={i}
+          field={col.field}
+          header={col.header}
+          sortable={col.sortable}
+          style={col.style}
+          body={col.body}
+        />
+      );
+    });
+
+
     return (
       <div>
         {this.create_nav_bar()}
         <div className="ui-g">
-          <div className="ui-g-4">
+
+
+          <div className="ui-lg-4 ui-xl-3">
             <ListStats
               title={title}
               statstext={asteroid.status}
@@ -616,9 +690,33 @@ export default class AsteroidRunDetail extends Component {
               data={stats}
             />
           </div>
+
           <div className="ui-g-12">
             <PanelCostumize
-              title="Inputs"
+              title="Astrometry"
+              content={
+                <DataTable
+                  scrollable={true}
+                  scrollHeight="200px"
+                  value={tableContent}
+                // sortField={""}
+                // sortOrder={""}
+                >
+
+                  {astrometry_cols}
+
+                  {/* <Column
+              style={{}}
+              body={"TO DO ACTION TEMPLATE - MAYBE"}
+            /> */}
+                </DataTable>
+              }
+            />
+          </div>
+
+          <div className="ui-g-12">
+            <PanelCostumize
+              title="Input"
               content={
                 <DataTable
                   value={inputs}
@@ -638,7 +736,7 @@ export default class AsteroidRunDetail extends Component {
 
           <div className="ui-g-12">
             <PanelCostumize
-              title="Outputs"
+              title="Output"
               content={this.renderOutputTreeTable(a)}
             />
           </div>

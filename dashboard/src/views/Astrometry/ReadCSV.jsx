@@ -20,7 +20,7 @@ export default class ReadCSV extends Component {
     filepath: null,
     loading: false,
     title: null,
-    sizePerPage: 10,
+    sizePerPage: 30,
     totalSize: 0,
     firstPage: 0,
     page: 1,
@@ -114,7 +114,7 @@ export default class ReadCSV extends Component {
             sortOrder={1}
             scrollable={true}
             loading={loading}
-            scrollHeight="600px"
+            scrollHeight="700px"
             responsive={true}
           >
             {acolumns}
@@ -125,7 +125,7 @@ export default class ReadCSV extends Component {
           totalRecords={totalSize}
           first={firstPage}
           onPageChange={this.onPageChange}
-          rowsPerPageOptions={[10, 20, 30]}
+          rowsPerPageOptions={[30, 40, 50]}
         />
 
       </div >
