@@ -77,8 +77,6 @@ class AsteroidList extends Component {
   }
 
 
-
-
   fetchData = ({ praia_run, page, sizePerPage, sortField, sortOrder }) => {
     this.setState({ loading: true });
 
@@ -148,7 +146,6 @@ class AsteroidList extends Component {
   };
 
   statusColumn = rowData => {
-
 
 
     if (rowData.status === 'success') {
@@ -345,17 +342,73 @@ class AsteroidList extends Component {
   }
 
 
+
+
+
+
+
+  loadLogContent = file => {
+
+    this.api.readCondorFile(file).then(res => {
+
+      const logContent = res.data;
+
+      this.setState(state => ({
+        log: Object.assign({},
+          state.log, { content: logContent, visible: true })
+      }));
+
+    });
+
+
+  };
+
+
+  // condor_log: null
+  // condor_err_log: null
+  // condor_out_log: null
+
   openLog = (button) => {
 
+
+    //button is which button was clicked to call the condor log
+
+    const log = this.state.data[0].condor_log;
+    const error = this.state.data[0].condor_err_log;
+    const output = this.state.data[0].condor_out_log;
+
+
     if (button) {
-      console.log(button);
+      // console.log(button);
+
+      //To call API and receive the answer to show on screen the result of reading file
+
+      switch (button) {
+
+        case "log":
+
+          this.loadLogContent(log);
 
 
+          break;
+
+        case "error":
+
+          this.loadLogContent(error);
+          break;
+
+        case "output":
+
+          this.loadLogContent(output);
+
+          break;
+
+      }
     }
 
   };
 
-  handleCondorButton = () => {
+  handleCondorButton = (condor_log) => {
 
     return (
 
@@ -552,8 +605,8 @@ class AsteroidList extends Component {
 
 
   onLogHide = () => {
-    // this.setState(state => ({ log: Object.assign({}, state.log, { visible: false }) }));;
-    this.setState({ ...this.state.log, visible: false });
+    this.setState(state => ({ log: Object.assign({}, state.log, { visible: false }) }));;
+
   };
 
 
