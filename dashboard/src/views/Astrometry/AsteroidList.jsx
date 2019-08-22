@@ -346,7 +346,6 @@ class AsteroidList extends Component {
 
 
 
-
   loadLogContent = file => {
 
     this.api.readCondorFile(file).then(res => {
@@ -364,9 +363,6 @@ class AsteroidList extends Component {
   };
 
 
-  // condor_log: null
-  // condor_err_log: null
-  // condor_out_log: null
 
   openLog = (button) => {
 
@@ -408,7 +404,7 @@ class AsteroidList extends Component {
 
   };
 
-  handleCondorButton = (condor_log) => {
+  handleCondorButton = () => {
 
     return (
 
