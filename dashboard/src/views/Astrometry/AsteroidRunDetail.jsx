@@ -697,7 +697,7 @@ export default class AsteroidRunDetail extends Component {
               content={
                 <DataTable
                   scrollable={true}
-                  scrollHeight="200px"
+                  scrollHeight="300px"
                   value={tableContent}
                 // sortField={""}
                 // sortOrder={""}
