@@ -18,8 +18,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 from django.conf import settings
+import pandas as pd
+import logging
+
 
 # import numpy as np
+
 
 class PraiaRunViewSet(viewsets.ModelViewSet):
     queryset = Run.objects.all()
@@ -41,23 +45,22 @@ class PraiaRunViewSet(viewsets.ModelViewSet):
 
         astrometry_run = self.get_object()
         resultset = astrometry_run.asteroids.all().values(
-                'status').annotate(total=Count('status')).order_by('total')
+            'status').annotate(total=Count('status')).order_by('total')
 
         result = dict({
             'success': True,
             'status': {
-                'success':0,
-                'failure' :0,
-                'warning' :0,
-                'not_executed':0,
+                'success': 0,
+                'failure': 0,
+                'warning': 0,
+                'not_executed': 0,
             }
-        })        
+        })
 
         for status in resultset:
             result['status'][status['status']] = status['total']
 
         return Response(result)
-
 
     @detail_route(methods=['GET'])
     def step_execution_time(self, request, pk=None):
@@ -77,6 +80,7 @@ class PraiaRunViewSet(viewsets.ModelViewSet):
         })
 
         return Response(result)
+
 
 class PraiaConfigurationViewSet(viewsets.ModelViewSet):
     queryset = Configuration.objects.all()
@@ -103,36 +107,39 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
     ordering = ('name',)
 
     @detail_route(methods=['GET'])
-    def get_neighbors(self, request, pk=None):  
+    def get_neighbors(self, request, pk=None):
 
         # Saber qual e o Asteroid
         asteroid = self.get_object()
 
-        # Saber todos os asteroids que estao na mesma rodada deste asteroid. 
+        # Saber todos os asteroids que estao na mesma rodada deste asteroid.
         # Filtrando a lista de asteroids pelo astrometry_run == asteroid.astrometry_run
-        aAsteroids = AstrometryAsteroid.objects.filter(astrometry_run=asteroid.astrometry_run)
-           
-        # Fazer a query para saber qual asteroid esta antes deste. 
+        aAsteroids = AstrometryAsteroid.objects.filter(
+            astrometry_run=asteroid.astrometry_run)
+
+        # Fazer a query para saber qual asteroid esta antes deste.
         # ordernar a lista de asteroids pelo id, e pegar o primeiro asteroid com id menor que id deste asteroid.
         prev_id = None
         try:
-            prev_model = aAsteroids.filter(id__lt=asteroid.id).order_by('-id').first()
+            prev_model = aAsteroids.filter(
+                id__lt=asteroid.id).order_by('-id').first()
             prev_id = prev_model.id
         except:
             pass
-        # Fazer a query para saber qual asteroid esta depois. 
+        # Fazer a query para saber qual asteroid esta depois.
         # Ordenar a lista pelo id, e pega o primeiro asteroid com id maior que este asteroid.
         next_id = None
         try:
-            next_model = aAsteroids.filter(id__gt=asteroid.id).order_by('id').first()
+            next_model = aAsteroids.filter(
+                id__gt=asteroid.id).order_by('id').first()
             next_id = next_model.id
         except:
-            pass       
+            pass
 
         return Response(dict({
             "success": True,
-            "prev": prev_id, 
-            "next": next_id, 
+            "prev": prev_id,
+            "next": next_id,
         }))
 
     def plotStarsCCD(self, ccd, stars, output):
@@ -140,7 +147,7 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
             xx = np.concatenate((ccd[1:5], [ccd[1]]))
             yy = np.concatenate((ccd[5:9], [ccd[5]]))
 
-            data = list(filter(lambda x: int(x[2])==int(ccd[0]), stars))
+            data = list(filter(lambda x: int(x[2]) == int(ccd[0]), stars))
             ra = [x[0] for x in data]
             dec = [x[1] for x in data]
 
@@ -161,21 +168,23 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
             raise e
 
     @detail_route(methods=['GET'])
-    def plot_ccd_star(self, request, pk=None):  
+    def plot_ccd_star(self, request, pk=None):
 
         # Recuperar a instancia do Asteroid
         asteroid = self.get_object()
-        
+
         # Descobrir o path para o input do tipo catalog
-        catalog = asteroid.input_file.get(input_type='catalog')        
+        catalog = asteroid.input_file.get(input_type='catalog')
 
         # Descobrir o path para o input ccd_images
         ccd_image_list = asteroid.input_file.get(input_type='ccd_images_list')
 
         # Executar a funcao que cria o plot, salvar a imagem no dir /archive/tmp
-        stars = np.loadtxt(catalog.file_path, usecols=(5,7,94), skiprows=1, delimiter=';')
+        stars = np.loadtxt(catalog.file_path, usecols=(
+            5, 7, 94), skiprows=1, delimiter=';')
 
-        ccds = np.loadtxt(ccd_image_list.file_path, usecols=(0,21,22,23,24,25,26,27,28), skiprows=1, delimiter=';')
+        ccds = np.loadtxt(ccd_image_list.file_path, usecols=(
+            0, 21, 22, 23, 24, 25, 26, 27, 28), skiprows=1, delimiter=';')
 
         ccd = ccds[0]
 
@@ -187,13 +196,13 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
 
         # plot_filename = 'ccd_object_%s.png' % expnum
         # plot_file_path = os.path.join(settings.MEDIA_TMP_DIR, plot_filename)
-        # # retornar a url para o plot. 
+        # # retornar a url para o plot.
         # plot_src = urllib.parse.urljoin(settings.MEDIA_TMP_URL, plot_filename)
 
         # plot = ccds_objects(
         #     file_path=plot_file_path,
         #     )
-  
+
         result = dict({
             'success': True,
             'asteroid': asteroid.name,
@@ -203,9 +212,45 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
             # 'plot_file_path': plot_file_path,
             # 'plot_src': plot_src,
             # 'plot_filename': plot_filename
-            })
+        })
+
+        return Response(result)
+
+    @detail_route(methods=['GET'])
+    def eris_astrometry(self, request, pk=None):   
+        print ('Read Eris')
+
+
+        df = pd.read_csv('/archive/tmp/Eris.txt',
+            header=None,
+            delim_whitespace=True,
+            )
+
+        a = df.iloc[0]
+
+        rows = list()
+        for record in df.itertuples():
+
+            ra = "%s %s %s" % (int(record[1]), int(record[2]), float(record[3]))
+            dec =  "%s %s %s" % (int(record[4]), int(record[5]), float(record[6]))
             
-        return Response(result)        
+            row = dict({
+                'ra': ra, 
+                'dec': dec, 
+                'mag': record[7], 
+                'julian_date': record[8] ,
+                'obs_code': record[9],
+                'catalog_code': record[10] 
+            })
+
+            rows.append(row)
+
+        result = dict({
+            'success': True,
+            'rows': rows,
+        })
+
+        return Response(result)
 
 
 class AstrometryInputViewSet(viewsets.ModelViewSet):
