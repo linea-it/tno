@@ -27,7 +27,7 @@
     "plotly.js": "^1.41.3",
     "primeflex": "^1.0.0-rc.1",
     "primeicons": "^1.0.0-beta.10",
-    "primereact": "^2.0.0-beta.1",
+    "primereact": "^3.1.8",
     "prop-types": "^15.6.1",
     "rc-slider": "^8.6.1",
     "react": "^16.0.0",
