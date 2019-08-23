@@ -125,7 +125,7 @@ export default class ReadCSV extends Component {
           totalRecords={totalSize}
           first={firstPage}
           onPageChange={this.onPageChange}
-          rowsPerPageOptions={[30, 40, 50]}
+          rowsPerPageOptions={[30, 50, 100]}
         />
 
       </div >
