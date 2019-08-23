@@ -270,6 +270,8 @@ class AsteroidList extends Component {
     );
   };
 
+
+
   onSort = e => {
     this.setState(
       {
