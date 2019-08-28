@@ -37,11 +37,12 @@ class PraiaHistory extends Component {
 
   columns = [
     {
-      header: 'Proccess',
+      header: 'Process',
       field: 'proccess_displayname',
       headerStyle: formatColumnHeader,
       sortable: false,
     },
+
     {
       header: 'Owner',
       field: 'owner',
@@ -293,6 +294,7 @@ class PraiaHistory extends Component {
         {this.toolbarButton(this.state.selected)}
 
         <DataTable
+          autoLayout={true}
           value={this.state.data}
           resizableColumns={true}
           columnResizeMode="expand"

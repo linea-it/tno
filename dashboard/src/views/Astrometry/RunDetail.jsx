@@ -266,7 +266,7 @@ class PraiaDetail extends Component {
     } = this.state;
 
     const stats = [
-      { name: 'Proccess', value: data.proccess_displayname },
+      { name: 'Process', value: data.proccess_displayname },
       { name: 'Owner', value: data.owner },
       { name: 'Start', value: data.h_time },
       { name: 'Execution', value: data.h_execution_time },
@@ -291,6 +291,8 @@ class PraiaDetail extends Component {
         />
 
         {this.create_nav_bar()}
+
+
         <div className="ui-g">
           <div className="ui-sm-3 ui-md-4 ui-lg-4 ui-xl-3">
             <PanelCostumize
@@ -317,15 +319,15 @@ class PraiaDetail extends Component {
 
             <br></br>
 
-            <div>
-              <div>
-                <PanelCostumize
-                  title="Execution Time"
-                  content={this.renderExecutionTime()}
 
-                />
-              </div>
+            <div>
+              <PanelCostumize
+                title="Execution Time"
+                content={this.renderExecutionTime()}
+
+              />
             </div>
+
 
 
           </div>

@@ -98,7 +98,7 @@ def update_job_status(job, condor_job):
         logger.debug("Job Removed")
 
         job.asteroid.status = 'failure'
-        job.asteroid.error_msg = "Condor job has a Removed status and has not been executed. Check the condor log for more details."
+        job.asteroid.error_msg = "Condor job has a Removed status and has not been executed. Check condor log for details."
         job.asteroid.save()
 
         finish_time = datetime.now()
