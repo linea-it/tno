@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { makeStyles, Grid, CardHeader, Card, CardContent } from '@material-ui/core';
+import clsx from 'clsx';
 
 
 
@@ -25,9 +26,7 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: 5,
   },
 
-  globeCard: {
-    // marginRight: 'none',
-  },
+ 
 
 }));
 
@@ -92,7 +91,7 @@ export default function PredictAsteroid() {
 
         <Grid container  >
           <Grid item lg={6} xl={6} >
-            <Card className={classes.globeCard}>
+            <Card className={clsx(classes.card, classes.globeCard)}>
 
               <CardContent>
                 Globe Image with coordinates
@@ -102,7 +101,7 @@ export default function PredictAsteroid() {
           </Grid>
 
           <Grid item lg={6} xl={6} >
-            <Card className={classes.globeCard}>
+            <Card className={classes.card}>
 
               <CardContent>
                 Description of the globe
