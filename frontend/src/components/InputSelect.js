@@ -71,7 +71,6 @@ export default function SimpleSelect(props) {
 
   const { formControl, } = useStyles(props);
 
-  console.log(props.title.length);
 
   return (
 

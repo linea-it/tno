@@ -25,6 +25,9 @@ import PredictionOccultation from './components/PredictionOccultation';
 import PredictionDetail from './components/PredictionDetail';
 import Footer from './Footer';
 import OrbitRunDetail from './components/OrbitRunDetail';
+import PredictAsteroid from './components/Predict_Asteroid';
+
+import { createBrowserHistory } from 'history';
 
 
 const drawerWidth = 240;
@@ -180,7 +183,7 @@ function MiniDrawer() {
 
   return (
     <div className={classes.root}>
-      <Router>
+      <Router history = {createBrowserHistory}>
         <CssBaseline />
         <AppBar
           position="fixed"
@@ -384,6 +387,7 @@ function MiniDrawer() {
             <Route exact path="/prediction-of-occultation" component={PredictionOccultation} />
             <Route exact path="/prediction-detail" component={PredictionDetail} />
             <Route exact path="/orbit-run-detail" component={OrbitRunDetail} />
+            <Route exact path="/predict-asteroid" component={PredictAsteroid} />
           </main>
           <Footer drawerOpen={open} />
         </div>

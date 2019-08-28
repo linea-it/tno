@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+import { Grid, Toolbar, makeStyles, Card, CardHeader, Button } from '@material-ui/core';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackRounded';
+import { withRouter } from 'react-router-dom';
 
 
 
@@ -16,7 +15,7 @@ const useStyles = makeStyles(theme => ({
     },
     headerTitle: {
         color: '#34465d',
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: 'bold',
 
     },
@@ -28,18 +27,32 @@ const useStyles = makeStyles(theme => ({
 
     },
 
+    arrowBack: {
+        fontSize: 14,
+    },
+
 
 }));
 
 
 
-function PredictionDetail() {
+function PredictionDetail(props) {
 
     const classes = useStyles();
+
+    const handleBackButtonClick = () => {
+        console.log("Go Back");
+        console.log(props.history);
+        // console.log(props.history.goBack());
+    };
 
     return (
 
         <div>
+            <Toolbar>
+                <ArrowBackIosIcon className={classes.arrowBack}> </ArrowBackIosIcon>
+                <Button onClick={handleBackButtonClick} > Back </Button>
+            </Toolbar>
             <div className={classes.div}>
                 <Grid container spacing={2}>
                     <Grid item sm={3} xs={3} lg={3} xl={2}>
@@ -111,4 +124,4 @@ function PredictionDetail() {
     );
 }
 
-export default PredictionDetail;
+export default withRouter(PredictionDetail);

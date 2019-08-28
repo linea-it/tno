@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
   },
   headerTitle: {
     color: '#34465d',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   iconList: {
