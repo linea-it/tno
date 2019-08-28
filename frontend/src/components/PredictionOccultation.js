@@ -101,6 +101,10 @@ function PredictionOccultation() {
             )}
             className={classes.cardHeader}
           />
+          <CardContent>
+            History of prediction occultation
+          </CardContent>
+
         </Card>
       </div>
 

@@ -59,8 +59,12 @@ function RefineOrbits() {
             )}
             className={classes.cardHeader}
           />
-          <InputSelect title="Input" width='100%' marginTop={20} className={classes.input} />
-          <Button variant="contained" color="primary" className={classes.button}> Submit </Button>
+
+          <CardContent>
+            <InputSelect title="Input" width='100%' marginTop={20} className={classes.input} />
+            <Button variant="contained" color="primary" className={classes.button}> Submit </Button>
+          </CardContent>
+
         </Card>
       </div>
 
@@ -75,6 +79,10 @@ function RefineOrbits() {
             )}
             className={classes.cardHeader}
           />
+
+          <CardContent>
+            Refine orbit History
+          </CardContent>
         </Card>
       </div>
 

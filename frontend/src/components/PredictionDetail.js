@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Toolbar, makeStyles, Card, CardHeader, Button } from '@material-ui/core';
+import { Grid, Toolbar, makeStyles, Card, CardHeader, CardContent, Button } from '@material-ui/core';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackRounded';
 import { withRouter } from 'react-router-dom';
 
@@ -8,7 +8,7 @@ import { withRouter } from 'react-router-dom';
 const useStyles = makeStyles(theme => ({
 
     div: {
-        marginTop: '20px',
+        marginTop: 20,
     },
     card: {
         marginBottom: 20,
@@ -55,33 +55,42 @@ function PredictionDetail(props) {
             </Toolbar>
             <div className={classes.div}>
                 <Grid container spacing={2}>
-                    <Grid item sm={3} xs={3} lg={3} xl={2}>
+                    <Grid item lg={4} xl={3}>
                         <Card className={classes.card}>
                             <CardHeader
                                 title={(
                                     <span className={classes.headerTitle}>Summary</span>)}
                                 className={classes.cardHeader}
                             />
+                            <CardContent>
+                                Summary
+                            </CardContent>
                         </Card>
 
                     </Grid>
-                    <Grid item sm={3} xs={3} lg={3} xl={2}>
+                    <Grid item lg={4} xl={3}>
                         <Card className={classes.card}>
                             <CardHeader
                                 title={(
                                     <span className={classes.headerTitle}>Status</span>)}
                                 className={classes.cardHeader}
                             />
+                            <CardContent>
+                                Status
+                            </CardContent>
                         </Card>
 
                     </Grid>
-                    <Grid item sm={3} xs={3} lg={3} xl={2}>
+                    <Grid item lg={4} xl={3}>
                         <Card className={classes.card}>
                             <CardHeader
                                 title={(
                                     <span className={classes.headerTitle}>Execution Time</span>)}
                                 className={classes.cardHeader}
                             />
+                            <CardContent>
+                                Execution Time
+                            </CardContent>
                         </Card>
 
                     </Grid>
@@ -94,6 +103,9 @@ function PredictionDetail(props) {
                                 title={(<span className={classes.headerTitle}>Asteroids</span>)}
                                 className={classes.cardHeader}
                             />
+                            <CardContent>
+                                Asteroids details list (TABLE)
+                            </CardContent>
                         </Card>
                     </Grid>
                 </Grid>
@@ -105,21 +117,17 @@ function PredictionDetail(props) {
                                 title={(<span className={classes.headerTitle}>Time Profile</span>)}
                                 className={classes.cardHeader}
                             />
+
+                            <CardContent>
+                                Time Profile
+                            </CardContent>
                         </Card>
                     </Grid>
                 </Grid>
 
             </div>
 
-            <div>
 
-
-            </div>
-
-            <div>
-
-
-            </div>
         </div >
     );
 }
