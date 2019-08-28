@@ -111,7 +111,7 @@ class PraiaApi {
   getCSV = (filepath, page, pageSize) => {
     return axios.get(
       `${
-        this.api
+      this.api
       }/read_csv?filepath=${filepath}&page=${page}&pageSize=${pageSize}`
     );
   };
@@ -121,6 +121,12 @@ class PraiaApi {
 
     return axios.get(`${this.api}/read_file?filepath=${replaced_filepath}`);
   };
+
+  readCondorFile = filepath => {
+
+    return axios.get(`${this.api}/read_file?filepath=${filepath}`);
+  };
+
 }
 
 export default PraiaApi;

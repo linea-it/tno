@@ -135,12 +135,12 @@ class AstrometryPipeline():
             else:
                 instance.status = 'failure'
                 instance.save()
-                msg = "Failed to create astrometry directory [ %s ]" % directory
+                msg = "Fail on creating astrometry directory [ %s ]" % directory
                 self.logger.error(msg)
                 raise Exception(msg)
 
         except OSError as e:
-            msg = "Failed to create astrometry directory [ %s ]" % directory
+            msg = "Fail on creating astrometry directory [ %s ]" % directory
             instance.status = 'failure'
             instance.error_msg = msg
             instance.save()
@@ -179,7 +179,7 @@ class AstrometryPipeline():
                     os.chmod(obj_relative_path, stat.S_IRWXU |
                              stat.S_IRWXG | stat.S_IRWXO)
                 except OSError as e:
-                    msg = "Failed to create Asteroid directory [ %s ]" % obj_relative_path
+                    msg = "Fail on creating Asteroid directory [ %s ]" % obj_relative_path
                     self.logger.error(msg)
                     self.on_error(instance, e)
 
@@ -480,7 +480,7 @@ class AstrometryPipeline():
         absolute_archive_path = os.getenv("ARCHIVE_DIR", None)
         if absolute_archive_path is None:
             raise Exception(
-                "absolute path to archive directory is required. This path must be declared in the ARCHIVE_DIR environment variable.")
+                "absolute path to archive directory is required. This path must be declared in ARCHIVE_DIR environment variable.")
 
         idx = 1
         for obj in self.asteroids:
@@ -497,7 +497,7 @@ class AstrometryPipeline():
                          stat.S_IRWXG | stat.S_IRWXO)
 
             if not os.path.exists(relative_condor_dir):
-                raise Exception("Failed to create condor log directory.")
+                raise Exception("Fail on creating condor log directory.")
 
             obj.condor_relative_path = relative_condor_dir
             obj.save()
@@ -548,7 +548,7 @@ class AstrometryPipeline():
                         condorJob = register_condor_job(
                             instance, obj, job['ClusterId'], job['ProcId'], job['JobStatus'])
 
-                        self.logger.info("Job in Condor was created. ClusterId [ %s ] ProcId [ %s ]" % (
+                        self.logger.info("Job created in Condor. ClusterId [ %s ] ProcId [ %s ]" % (
                             condorJob.clusterid, condorJob.procid))
 
                     obj.status = 'pending'
@@ -568,7 +568,7 @@ class AstrometryPipeline():
         instance.status = 'running'
         instance.count_not_executed = cnotexecuted
         instance.save()
-        self.logger.info("Completed Submission to condor From now on the pipeline runs asynchronously.")
+        self.logger.info("Submission to condor completed. Now pipeline runs asynchronously.")
 
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"

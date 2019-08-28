@@ -69,7 +69,7 @@ class SkybotRunDetail extends Component {
 
   loadStatistic = id => {
     this.api.getStatistic({ id: id }).then(res => {
-
+      console.log(res.data);
       this.setState({
         statistic: res.data,
       });
@@ -101,6 +101,10 @@ class SkybotRunDetail extends Component {
 
   render() {
     const { data, statistic } = this.state;
+
+
+
+
     if (data === {}) {
       return <div />;
     }
@@ -116,14 +120,17 @@ class SkybotRunDetail extends Component {
     const execution_time = [
       {
         name: 'Download ',
+
         value: statistic.download_time,
       },
       {
         name: 'Import',
         value: statistic.import_time,
+
       },
       {
         name: 'Associate CCD',
+
         value: statistic.ccd_time,
       },
     ];
@@ -134,8 +141,8 @@ class SkybotRunDetail extends Component {
       <div className="content">
         {this.create_nav_bar()}
 
-        <div className="p-grid">
-          <div className="p-col-3">
+        <div className="ui-g">
+          <div className="ui-lg-4 ui-xl-3">
             <PanelCostumize
               title="Summary"
               className="list_predict_occult"
@@ -150,12 +157,12 @@ class SkybotRunDetail extends Component {
               }
             />
           </div>
-          <div className="p-col-3">
+          <div className="ui-lg-4 ui-xl-3">
             <PanelCostumize
               title="Execution Time"
               className="stats_predict_occult"
               content={
-                <DonutStats subTitle="" data={execution_time} fill={colors} />
+                <DonutStats flag={"execution_time"} subTitle="" data={execution_time} fill={colors} />
               }
             />
           </div>
