@@ -8627,10 +8627,9 @@ primeicons@^1.0.0-beta.10:
   version "1.0.0-beta.10"
   resolved "https://registry.yarnpkg.com/primeicons/-/primeicons-1.0.0-beta.10.tgz#b1a27a8a279c0b28d4bd537a29709b39cfebbd9f"
 
-primereact@^3.1.8:
-  version "3.1.8"
-  resolved "https://registry.yarnpkg.com/primereact/-/primereact-3.1.8.tgz#db43f09397a996f7f1a8a72133b23daf1353637a"
-  integrity sha512-HpQvZo/rv4TdiMGx8XkGOpRtRICmIv8p7LP9+TB9APZub4JZYpF1gyKuBXkJl2L6jpKReu+FMV+cbcHb1YRMbg==
+primereact@^2.0.0-beta.1:
+  version "2.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/primereact/-/primereact-2.0.0-beta.1.tgz#bc08083b98627da65f85a188219bc625bfb1198b"
 
 private@^0.1.6, private@^0.1.7:
   version "0.1.8"
