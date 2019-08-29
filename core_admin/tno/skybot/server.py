@@ -40,7 +40,7 @@ class SkybotServer():
             "-------------------------- Skybot Run: %s --------------------------" % skybotrun.id)
 
         # DEBUG LIMIT 
-        self.debug_limit = None
+        self.debug_limit = 50
 
         try:
             self.dbsk = SkybotOutputDB()
@@ -51,8 +51,8 @@ class SkybotServer():
 
         self.skybotrun = skybotrun
 
-        # self.skybot_server = "http://vo.imcce.fr/webservices/skybot/skybotconesearch_query.php"
-        self.skybot_server = "http://srvskybot.linea.gov.br/webservices/skybot/skybotconesearch_query.php"
+        self.skybot_server = "http://vo.imcce.fr/webservices/skybot/skybotconesearch_query.php"
+        # self.skybot_server = "http://srvskybot.linea.gov.br/webservices/skybot/skybotconesearch_query.php"
 
         # Cone search radius in Degres
         self.cone_search_radius = 1.2
