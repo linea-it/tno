@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Grid, Card, makeStyles, CardHeader, CardContent } from '@material-ui/core';
+import React from 'react';
+import {
+  Grid, Card, makeStyles, CardHeader, CardContent,
+} from '@material-ui/core';
 import List from './ListStats';
 
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   div: {
     marginTop: '20px',
   },
@@ -20,30 +22,26 @@ const useStyles = makeStyles(theme => ({
     borderBottom: '1px solid rgb(227, 230, 240)',
     paddingTop: 5,
     paddingBottom: 5,
-
-  }
-
-}));
+  },
+});
 
 
 export default function OrbitRunDetail() {
-
   const classes = useStyles();
 
   const listStats = [
 
-    //note: This string "classes.xxx" is related to the classname.
-    //Itś being passed by props to the listStats component. 
-    //classes.xxx means the object classes that is a class style on
-    //ListStats component
+    // note: This string "classes.xxx" is related to the classname.
+    // Itś being passed by props to the listStats component.
+    // classes.xxx means the object classes that is a class style on
+    // ListStats component
+    { name: 'Process', value: 'xxxxxxxx', className: 'classes.firstListText' },
+    { name: 'Owner', value: 'xxxxxxxx', className: 'classes.secondListText' },
+    { name: 'Start', value: 'xxxxxxxx', className: 'classes.thirdListText' },
+    { name: 'Execution', value: 'xxxxxxxx', className: 'classes.forthListText' },
+    { name: 'Asteroids', value: 'xxxxxxxx', className: 'classes.fifthListText' },
 
-    { name: 'Process', value: "xxxxxxxx", className: "classes.firstListText" },
-    { name: 'Owner', value: "xxxxxxxx", className: "classes.secondListText" },
-    { name: 'Start', value: "xxxxxxxx", className: "classes.thirdListText" },
-    { name: 'Execution', value: "xxxxxxxx", className: "classes.forthListText" },
-    { name: 'Asteroids', value: "xxxxxxxx", className: "classes.fifthListText" },
-
-  ]
+  ];
 
 
   return (
@@ -52,16 +50,19 @@ export default function OrbitRunDetail() {
         <Grid container spacing={2}>
           <Grid item lg={4} xl={3}>
             <Card className={classes.card}>
-              <CardHeader className={classes.CardHeader}
+              <CardHeader
+                className={classes.CardHeader}
                 title={(
-                  <span className={classes.headerTitle} >
-                    Refine Orbit {/* Be sure: Here put the number of the run*/}
+                  <span className={classes.headerTitle}>
+                    Refine Orbit
+                    {' '}
+                    {/* Be sure: Here put the number of the run */}
                   </span>
                 )}
               />
 
               <CardContent>
-                <List status={"Good"} data={listStats} />
+                <List status="Good" data={listStats} />
               </CardContent>
             </Card>
           </Grid>
@@ -69,21 +70,23 @@ export default function OrbitRunDetail() {
 
           <Grid item lg={4} xl={3}>
             <Card className={classes.card}>
-              <CardHeader className={classes.CardHeader}
+              <CardHeader
+                className={classes.CardHeader}
                 title={(
-                  <span className={classes.headerTitle} >
+                  <span className={classes.headerTitle}>
                     Execution Statistics
-                                    </span>
+                  </span>
                 )}
               />
             </Card>
 
             <Card className={classes.card}>
-              <CardHeader className={classes.CardHeader}
+              <CardHeader
+                className={classes.CardHeader}
                 title={(
-                  <span className={classes.headerTitle} >
+                  <span className={classes.headerTitle}>
                     Step Stats
-                                    </span>
+                  </span>
                 )}
               />
             </Card>
@@ -91,11 +94,12 @@ export default function OrbitRunDetail() {
 
           <Grid item lg={4} xl={3}>
             <Card className={classes.card}>
-              <CardHeader className={classes.CardHeader}
+              <CardHeader
+                className={classes.CardHeader}
                 title={(
-                  <span className={classes.headerTitle} >
+                  <span className={classes.headerTitle}>
                     Execution Time
-                                    </span>
+                  </span>
                 )}
               />
             </Card>
@@ -106,14 +110,15 @@ export default function OrbitRunDetail() {
 
         </Grid>
 
-        <Grid container >
+        <Grid container>
           <Grid item lg={12} xl={12}>
             <Card className={classes.card}>
-              <CardHeader className={classes.CardHeader}
+              <CardHeader
+                className={classes.CardHeader}
                 title={(
                   <span className={classes.headerTitle}>
                     Asteroids
-                                     </span>
+                  </span>
                 )}
               />
 

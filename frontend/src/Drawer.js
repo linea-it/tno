@@ -19,15 +19,14 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Icon from '@material-ui/core/Icon';
+import { createBrowserHistory } from 'history';
 import Logo from './assets/img/linea.png';
 import RefineOrbits from './components/RefineOrbits';
 import PredictionOccultation from './components/PredictionOccultation';
 import PredictionDetail from './components/PredictionDetail';
 import Footer from './Footer';
 import OrbitRunDetail from './components/OrbitRunDetail';
-import PredictAsteroid from './components/Predict_Asteroid';
-
-import { createBrowserHistory } from 'history';
+import PredictAsteroid from './components/PredictAsteroid';
 
 
 const drawerWidth = 240;

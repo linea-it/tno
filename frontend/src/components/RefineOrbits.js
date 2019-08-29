@@ -4,12 +4,11 @@ import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import { makeStyles } from '@material-ui/core/styles';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import Button from '@material-ui/core/Button';
 import InputSelect from './InputSelect';
 
-import Button from '@material-ui/core/Button';
 
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   card: {
     minHeight: 80,
   },
@@ -41,12 +40,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-
-
 function RefineOrbits() {
-
   const classes = useStyles();
-
 
 
   return (
@@ -61,13 +56,12 @@ function RefineOrbits() {
           />
 
           <CardContent>
-            <InputSelect title="Input" width='100%' marginTop={20} className={classes.input} />
+            <InputSelect title="Input" width="100%" marginTop={20} className={classes.input} />
             <Button variant="contained" color="primary" className={classes.button}> Submit </Button>
           </CardContent>
 
         </Card>
       </div>
-
 
 
       <div className={classes.div}>

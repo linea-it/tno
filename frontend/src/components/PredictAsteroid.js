@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { makeStyles, Grid, CardHeader, Card, CardContent } from '@material-ui/core';
+import React from 'react';
+import {
+  makeStyles, Grid, CardHeader, Card, CardContent,
+} from '@material-ui/core';
 import clsx from 'clsx';
 
-
-
-
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   div: {
     marginTop: 20,
   },
@@ -17,7 +15,7 @@ const useStyles = makeStyles(theme => ({
 
   },
   card: {
-    marginBottom: 20
+    marginBottom: 20,
   },
   cardHeader: {
     backgroundColor: 'rgb(248, 249, 252)',
@@ -25,24 +23,20 @@ const useStyles = makeStyles(theme => ({
     paddingTop: 5,
     paddingBottom: 5,
   },
-
-
-
-}));
+});
 
 
 export default function PredictAsteroid() {
-
-
   const classes = useStyles();
 
   return (
     <div>
       <div className={classes.div}>
         <Grid container spacing={2}>
-          <Grid item lg={4} xl={3} >
+          <Grid item lg={4} xl={3}>
             <Card className={classes.card}>
-              <CardHeader className={classes.cardHeader}
+              <CardHeader
+                className={classes.cardHeader}
                 title={(<span className={classes.headerTitle}>Asteroid Name - Number</span>)}
               />
               <CardContent>
@@ -51,9 +45,10 @@ export default function PredictAsteroid() {
             </Card>
           </Grid>
 
-          <Grid item lg={4} xl={3} >
+          <Grid item lg={4} xl={3}>
             <Card className={classes.card}>
-              <CardHeader className={classes.cardHeader}
+              <CardHeader
+                className={classes.cardHeader}
                 title={(<span className={classes.headerTitle}>Info</span>)}
               />
               <CardContent>
@@ -62,9 +57,10 @@ export default function PredictAsteroid() {
             </Card>
           </Grid>
 
-          <Grid item lg={4} xl={3} >
+          <Grid item lg={4} xl={3}>
             <Card className={classes.card}>
-              <CardHeader className={classes.cardHeader}
+              <CardHeader
+                className={classes.cardHeader}
                 title={(<span className={classes.headerTitle}>Times</span>)}
               />
               <CardContent>
@@ -75,9 +71,10 @@ export default function PredictAsteroid() {
         </Grid>
 
         <Grid container>
-          <Grid item lg={12} xl={12} >
+          <Grid item lg={12} xl={12}>
             <Card className={classes.card}>
-              <CardHeader className={classes.cardHeader}
+              <CardHeader
+                className={classes.cardHeader}
                 title={(<span className={classes.headerTitle}>Occultations</span>)}
               />
               <CardContent>
@@ -89,8 +86,8 @@ export default function PredictAsteroid() {
         </Grid>
 
 
-        <Grid container  >
-          <Grid item lg={6} xl={6} >
+        <Grid container>
+          <Grid item lg={6} xl={6}>
             <Card className={clsx(classes.card, classes.globeCard)}>
 
               <CardContent>
@@ -100,7 +97,7 @@ export default function PredictAsteroid() {
             </Card>
           </Grid>
 
-          <Grid item lg={6} xl={6} >
+          <Grid item lg={6} xl={6}>
             <Card className={classes.card}>
 
               <CardContent>
@@ -112,13 +109,11 @@ export default function PredictAsteroid() {
         </Grid>
 
 
-
-
-
         <Grid container>
-          <Grid item lg={12} xl={12} >
+          <Grid item lg={12} xl={12}>
             <Card className={classes.card}>
-              <CardHeader className={classes.cardHeader}
+              <CardHeader
+                className={classes.cardHeader}
                 title={(<span className={classes.headerTitle}>Catalog</span>)}
               />
               <CardContent>
@@ -130,5 +125,4 @@ export default function PredictAsteroid() {
       </div>
     </div>
   );
-
-};
+}

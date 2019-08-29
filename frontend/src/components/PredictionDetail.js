@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Grid, Toolbar, makeStyles, Card, CardHeader, CardContent, Button } from '@material-ui/core';
+import React from 'react';
+import {
+  Grid, Toolbar, makeStyles, Card, CardHeader, CardContent, Button,
+} from '@material-ui/core';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import { withRouter } from 'react-router-dom';
 import List from './ListStats';
 
-
-
-
-const useStyles = makeStyles(theme => ({
-
+const useStyles = makeStyles({
   div: {
     marginTop: 0,
   },
@@ -28,45 +26,35 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: 5,
 
   },
-
   arrowBack: {
     fontSize: 9,
   },
-
-
-}));
-
-
+});
 
 function PredictionDetail(props) {
-
   const classes = useStyles();
 
-  const handleBackButtonClick = () => {
-    console.log("Go Back");
-    console.log(props.history);
-    // console.log(props.history.goBack());
-  };
-
+  const handleBackButtonClick = () => props.history;
+  // console.log('Go Back');
+  // console.log(props.history)
 
 
   const listStats = [
-    { name: 'Process', value: "xxxxxxxx", className: "classes.firstListText" },
-    { name: 'Owner', value: "xxxxxxxx", className: "classes.secondListText" },
-    { name: 'Start', value: "xxxxxxxx", className: "classes.thirdListText" },
-    { name: 'Execution', value: "xxxxxxxx", className: "classes.forthListText" },
-    { name: 'Asteroids', value: "xxxxxxxx", className: "classes.fifthListText" },
-    { name: 'Occultations', value: "xxxxxxxx", className: "classes.sixthListText" },
-  ]
+    { name: 'Process', value: 'xxxxxxxx', className: 'classes.firstListText' },
+    { name: 'Owner', value: 'xxxxxxxx', className: 'classes.secondListText' },
+    { name: 'Start', value: 'xxxxxxxx', className: 'classes.thirdListText' },
+    { name: 'Execution', value: 'xxxxxxxx', className: 'classes.forthListText' },
+    { name: 'Asteroids', value: 'xxxxxxxx', className: 'classes.fifthListText' },
+    { name: 'Occultations', value: 'xxxxxxxx', className: 'classes.sixthListText' },
+  ];
 
   return (
-
     <div>
       <Toolbar>
-        <Button onClick={handleBackButtonClick} >
+        <Button onClick={handleBackButtonClick}>
           <ArrowBackIosIcon className={classes.arrowBack}> </ArrowBackIosIcon>
           Back
-                </Button>
+        </Button>
       </Toolbar>
       <div className={classes.div}>
         <Grid container spacing={2}>
@@ -78,7 +66,7 @@ function PredictionDetail(props) {
                 className={classes.cardHeader}
               />
               <CardContent>
-                <List status={"TOP"} data={listStats} />
+                <List status="TOP" data={listStats} />
               </CardContent>
             </Card>
 
@@ -92,7 +80,7 @@ function PredictionDetail(props) {
               />
               <CardContent>
                 Status
-                            </CardContent>
+              </CardContent>
             </Card>
 
           </Grid>
@@ -105,13 +93,13 @@ function PredictionDetail(props) {
               />
               <CardContent>
                 Execution Time
-                            </CardContent>
+              </CardContent>
             </Card>
 
           </Grid>
         </Grid>
 
-        <Grid container >
+        <Grid container>
           <Grid item lg={12} xl={12}>
             <Card className={classes.card}>
               <CardHeader
@@ -120,12 +108,12 @@ function PredictionDetail(props) {
               />
               <CardContent>
                 Asteroids details list (TABLE)
-                            </CardContent>
+              </CardContent>
             </Card>
           </Grid>
         </Grid>
 
-        <Grid container >
+        <Grid container>
           <Grid item lg={12} xl={12}>
             <Card>
               <CardHeader
@@ -135,15 +123,12 @@ function PredictionDetail(props) {
 
               <CardContent>
                 Time Profile
-                            </CardContent>
+              </CardContent>
             </Card>
           </Grid>
         </Grid>
-
       </div>
-
-
-    </div >
+    </div>
   );
 }
 
