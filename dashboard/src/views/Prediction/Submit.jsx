@@ -154,7 +154,7 @@ export class PredictionSubmit extends Component {
         });
       } else {
         this.onClear();
-      } 
+      }
     }
   };
 
@@ -443,7 +443,7 @@ export class PredictionSubmit extends Component {
             {this.leapSecondDropdown()}
           </div>
           <div className="ui-md-6">
-            <p className="label-prediction">Ephemeris Initial Initial</p>
+            <p className="label-prediction">Ephemeris Initial Date</p>
             {this.ephemerisDateInitial()}
           </div>
           <div className="ui-md-6">
@@ -453,7 +453,7 @@ export class PredictionSubmit extends Component {
           </div>
 
           <div className="ui-md-6">
-            <p className="label-prediction"> Ephemeris Initial Date </p>
+            <p className="label-prediction"> Ephemeris Final Date </p>
 
             {this.ephemerisDateFinal()}
           </div>

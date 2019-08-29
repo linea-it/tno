@@ -183,7 +183,7 @@ function MiniDrawer() {
 
   return (
     <div className={classes.root}>
-      <Router history = {createBrowserHistory}>
+      <Router history={createBrowserHistory}>
         <CssBaseline />
         <AppBar
           position="fixed"
@@ -385,8 +385,8 @@ function MiniDrawer() {
           <main className={classes.content}>
             <Route exact path="/refine-orbits" component={RefineOrbits} />
             <Route exact path="/prediction-of-occultation" component={PredictionOccultation} />
-            <Route exact path="/prediction-detail" component={PredictionDetail} />
-            <Route exact path="/orbit-run-detail" component={OrbitRunDetail} />
+            <Route exact path="/prediction-detail/:id" component={PredictionDetail} />
+            <Route exact path="/orbit-run-detail/:id" component={OrbitRunDetail} />
             <Route exact path="/predict-asteroid" component={PredictAsteroid} />
           </main>
           <Footer drawerOpen={open} />

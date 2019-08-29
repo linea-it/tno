@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
   },
   div: {
 
-    marginTop: '20px',
+    marginTop: 5,
   },
   cardHeader: {
     backgroundColor: 'rgb(248, 249, 252)',
@@ -81,8 +81,8 @@ function PredictionOccultation() {
             <Grid item sm={6} xs={6} xl={6} lg={6}>
               <InputNumber type="number" placeholder={"    Catalog Radius"} className={classes.inputNumber} />
               <InputNumber type="number" placeholder={"    Ephemeris Step"} className={classes.inputNumber} />
-              <DateTime label="Ephemeris Initial" />
-              <DateTime label="Ephemeris Initial Date" width="90%" />
+              <DateTime label="Ephemeris Initial Date" />
+              <DateTime label="Ephemeris Final Date" width="90%" />
               <Button variant="contained" color="primary" className={classes.button} >Submit</Button>
             </Grid>
           </Grid>

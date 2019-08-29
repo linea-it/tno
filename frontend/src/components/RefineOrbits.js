@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
     minHeight: 80,
   },
   div: {
-    marginTop: '20px',
+    marginTop: 5,
   },
   cardHeader: {
     backgroundColor: 'rgb(248, 249, 252)',
