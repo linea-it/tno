@@ -814,6 +814,39 @@
   resolved "https://registry.yarnpkg.com/@csstools/normalize.css/-/normalize.css-9.0.1.tgz#c27b391d8457d1e893f1eddeaf5e5412d12ffbb5"
   integrity sha512-6It2EVfGskxZCQhuykrfnALg7oVeiI6KclWSmGDqB0AiInVrTGB9Jp9i4/Ad21u9Jde/voVQz6eFX/eSg/UsPA==
 
+"@devexpress/dx-core@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@devexpress/dx-core/-/dx-core-2.0.3.tgz#6404957c50acb32dddae96cd09db35ffa750aa4e"
+  integrity sha512-VZR8SoFZihvNIzx1P5BTGcRhazCXuxVPji4wR+75KJldAqZRaQuaJtbYPxk63IXqsyk66m5LPFBjkUytdgqYsg==
+
+"@devexpress/dx-grid-core@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@devexpress/dx-grid-core/-/dx-grid-core-2.0.3.tgz#c81990173117e94cfd259358a4bd36abffa8614a"
+  integrity sha512-iV9RAVC3ROHoKU7zuADY65QcU551tdM0D5vpLLfxnHQpbn0BFVbaYFdqX4wCOjKlMDfV3gKFJgh8ypntiavlFg==
+
+"@devexpress/dx-react-core@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@devexpress/dx-react-core/-/dx-react-core-2.0.3.tgz#6f222d7e1643289ef9bf9ea1d12bd27f4fefbb69"
+  integrity sha512-vlNMYqlyi7y0TEJt7kC65LoFiD85P/adYe/DIthufiLHiEt5yPj3ZmfQi8WT12z49Zzs22sG8F7hiGcoInRd6Q==
+  dependencies:
+    "@devexpress/dx-core" "2.0.3"
+    prop-types "^15.7.2"
+
+"@devexpress/dx-react-grid-material-ui@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@devexpress/dx-react-grid-material-ui/-/dx-react-grid-material-ui-2.0.3.tgz#09c0b0ab5c2e4e83279480d60c4b80424dfa8f64"
+  integrity sha512-MxymhliNYkbooYCeSE5I8IrrR8CEsRh3kx8KH6y0IpWyLP/1pvwTJBV+COzNW2ivn/kwFLzU5eXvvFO8hfHYqA==
+  dependencies:
+    classnames "^2.2.6"
+    prop-types "^15.7.2"
+
+"@devexpress/dx-react-grid@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@devexpress/dx-react-grid/-/dx-react-grid-2.0.3.tgz#68f849cde66ba9efe813ad4f9ab1b8f5d314afa0"
+  integrity sha512-L4QgFzK/mXvhnSqcqedfdGYqYoIE24MC1USElGmCPRTQruu5aBS4tpnGDcQcNqp4EpSoQ+FsA2kWQNjAXI+k1A==
+  dependencies:
+    "@devexpress/dx-grid-core" "2.0.3"
+
 "@emotion/hash@^0.7.1":
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.7.2.tgz#53211e564604beb9befa7a4400ebf8147473eeef"
@@ -2455,6 +2488,11 @@ class-utils@^0.3.5:
     define-property "^0.2.5"
     isobject "^3.0.0"
     static-extend "^0.1.1"
+
+classnames@^2.2.6:
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.6.tgz#43935bffdd291f326dad0a205309b38d00f650ce"
+  integrity sha512-JR/iSQOSt+LQIWwrwEzJ9uk0xfN3mTVYMwt1Ir5mUcSN6pU+V4zQFFaJsclJbPuAUQH+yfWef6tm7l1quW3C8Q==
 
 clean-css@4.2.x:
   version "4.2.1"
