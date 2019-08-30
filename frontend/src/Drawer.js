@@ -19,12 +19,14 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Icon from '@material-ui/core/Icon';
+import { createBrowserHistory } from 'history';
 import Logo from './assets/img/linea.png';
 import RefineOrbits from './components/RefineOrbits';
 import PredictionOccultation from './components/PredictionOccultation';
 import PredictionDetail from './components/PredictionDetail';
 import Footer from './Footer';
 import OrbitRunDetail from './components/OrbitRunDetail';
+import PredictAsteroid from './components/PredictAsteroid';
 
 
 const drawerWidth = 240;
@@ -180,7 +182,7 @@ function MiniDrawer() {
 
   return (
     <div className={classes.root}>
-      <Router>
+      <Router history={createBrowserHistory}>
         <CssBaseline />
         <AppBar
           position="fixed"
@@ -382,8 +384,9 @@ function MiniDrawer() {
           <main className={classes.content}>
             <Route exact path="/refine-orbits" component={RefineOrbits} />
             <Route exact path="/prediction-of-occultation" component={PredictionOccultation} />
-            <Route exact path="/prediction-detail" component={PredictionDetail} />
-            <Route exact path="/orbit-run-detail" component={OrbitRunDetail} />
+            <Route exact path="/prediction-detail/:id" component={PredictionDetail} />
+            <Route exact path="/orbit-run-detail/:id" component={OrbitRunDetail} />
+            <Route exact path="/predict-asteroid" component={PredictAsteroid} />
           </main>
           <Footer drawerOpen={open} />
         </div>

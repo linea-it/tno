@@ -4,17 +4,16 @@ import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import { makeStyles } from '@material-ui/core/styles';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import Button from '@material-ui/core/Button';
 import InputSelect from './InputSelect';
 
-import Button from '@material-ui/core/Button';
 
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   card: {
     minHeight: 80,
   },
   div: {
-    marginTop: '20px',
+    marginTop: 5,
   },
   cardHeader: {
     backgroundColor: 'rgb(248, 249, 252)',
@@ -24,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   },
   headerTitle: {
     color: '#34465d',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   iconList: {
@@ -41,12 +40,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-
-
 function RefineOrbits() {
-
   const classes = useStyles();
-
 
 
   return (
@@ -59,11 +54,14 @@ function RefineOrbits() {
             )}
             className={classes.cardHeader}
           />
-          <InputSelect title="Input" width='100%' marginTop={20} className={classes.input} />
-          <Button variant="contained" color="primary" className={classes.button}> Submit </Button>
+
+          <CardContent>
+            <InputSelect title="Input" width="100%" marginTop={20} className={classes.input} />
+            <Button variant="contained" color="primary" className={classes.button}> Submit </Button>
+          </CardContent>
+
         </Card>
       </div>
-
 
 
       <div className={classes.div}>
@@ -75,6 +73,10 @@ function RefineOrbits() {
             )}
             className={classes.cardHeader}
           />
+
+          <CardContent>
+            Refine orbit History
+          </CardContent>
         </Card>
       </div>
 
