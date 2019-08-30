@@ -49,8 +49,6 @@ class PraiaDetail extends Component {
   format_execution_time = duration => {
     var seconds = Math.round(moment.duration(duration).asSeconds());
     // return moment.utc(seconds * 1000).format('HH:mm:ss');
-
-    console.log(duration);
   };
 
   onViewAsteroid = asteroid_id => {
@@ -262,8 +260,6 @@ class PraiaDetail extends Component {
       interval_condition,
       activeIndex,
     } = this.state;
-
-    console.log(data);
 
     const stats = [
       { name: 'Process', value: data.id },

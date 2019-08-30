@@ -14,8 +14,6 @@ import '../Astrometry/assets/runDetailStyle.css';
 import { Toolbar } from 'primereact/toolbar';
 import Log from '../../components/Dialog/Log';
 
-
-
 class AsteroidList extends Component {
   state = this.initialState;
   api = new PraiaApi();
@@ -38,21 +36,19 @@ class AsteroidList extends Component {
       asteroid_id: 0,
       selected: null,
       columns: null,
+      execution_time: null,
 
       log: {
         visible: false,
         content: null,
       },
 
-      main_background: "#186BA0",
-      main_color: "#fff",
-      error_background: "#FFFAF0",
-      error_color: "#555555",
-
+      main_background: '#186BA0',
+      main_color: '#fff',
+      error_background: '#FFFAF0',
+      error_color: '#555555',
     };
   }
-
-
 
   componentDidUpdate(prevProps) {
     // Typical usage (don't forget to compare props):
@@ -68,14 +64,9 @@ class AsteroidList extends Component {
     }
   }
 
-
   componentWillMount() {
-
     this.loadMainColumns();
-
-
   }
-
 
   fetchData = ({ praia_run, page, sizePerPage, sortField, sortOrder }) => {
     this.setState({ loading: true });
@@ -89,8 +80,8 @@ class AsteroidList extends Component {
     this.api
       .getAsteroids({ filters, page, sizePerPage, sortField, sortOrder })
       .then(res => {
-
         const r = res.data;
+
         this.setState({
           data: r.results,
           totalSize: r.count,
@@ -99,6 +90,7 @@ class AsteroidList extends Component {
           loading: false,
           sortField: sortField,
           sortOrder: sortOrder,
+          execution_time: r.results[0].execution_time,
         });
       });
   };
@@ -132,7 +124,7 @@ class AsteroidList extends Component {
         icon="fa fa-file-text-o"
         className="ui-button-warning"
         title="Log"
-      // onClick={() => this.showAsteroidLog(asteroid_id)}
+        // onClick={() => this.showAsteroidLog(asteroid_id)}
       />
     );
     // }
@@ -146,8 +138,6 @@ class AsteroidList extends Component {
   };
 
   statusColumn = rowData => {
-
-
     if (rowData.status === 'success') {
       return (
         <Button
@@ -242,8 +232,6 @@ class AsteroidList extends Component {
     );
   };
 
-
-
   onSort = e => {
     this.setState(
       {
@@ -260,8 +248,6 @@ class AsteroidList extends Component {
     );
   };
 
-
-
   // handleList = (e) => {
 
   //   this.setState({ checked: e.value }, () => {
@@ -275,22 +261,19 @@ class AsteroidList extends Component {
 
   // };
 
-
-
   loadMainColumns = () => {
-
     this.setState({
       columns: [
         {
           field: 'name',
           header: 'Name',
-          style: { textAlign: 'center', width: "8%" },
+          style: { textAlign: 'center', width: '8%' },
           sortable: true,
         },
         {
           field: 'number',
           header: 'Number',
-          style: { textAlign: 'center', width: "10%" },
+          style: { textAlign: 'center', width: '10%' },
           sortable: true,
           body: rowData => {
             if (rowData.number === '-') {
@@ -319,10 +302,13 @@ class AsteroidList extends Component {
           sortable: true,
         },
         {
-          field: 'h_execution_time',
+          field: 'execution_time',
           style: { textAlign: 'center' },
           header: 'Execution Time',
           sortable: false,
+          body: () => {
+            return this.state.execution_time.substring(1, 8);
+          },
         },
 
         // {
@@ -338,43 +324,29 @@ class AsteroidList extends Component {
         //     }
         //   },
         // },
-      ]
+      ],
     });
-
-  }
-
-
-
-
-
+  };
 
   loadLogContent = file => {
-
     this.api.readCondorFile(file).then(res => {
-
       const logContent = res.data;
 
       this.setState(state => ({
-        log: Object.assign({},
-          state.log, { content: logContent, visible: true })
+        log: Object.assign({}, state.log, {
+          content: logContent,
+          visible: true,
+        }),
       }));
-
     });
-
-
   };
 
-
-
-  openLog = (button) => {
-
-
+  openLog = button => {
     //button is which button was clicked to call the condor log
 
     const log = this.state.data[0].condor_log;
     const error = this.state.data[0].condor_err_log;
     const output = this.state.data[0].condor_out_log;
-
 
     if (button) {
       // console.log(button);
@@ -382,89 +354,66 @@ class AsteroidList extends Component {
       //To call API and receive the answer to show on screen the result of reading file
 
       switch (button) {
+      case 'log':
+        this.loadLogContent(log);
 
-        case "log":
+        break;
 
-          this.loadLogContent(log);
+      case 'error':
+        this.loadLogContent(error);
+        break;
 
+      case 'output':
+        this.loadLogContent(output);
 
-          break;
-
-        case "error":
-
-          this.loadLogContent(error);
-          break;
-
-        case "output":
-
-          this.loadLogContent(output);
-
-          break;
-
+        break;
       }
     }
-
   };
 
   handleCondorButton = () => {
-
     return (
-
       <Button
         className="ui-button-warning"
         icon="fa fa-file-text-o"
-        onClick={() => this.openLog("log")}
+        onClick={() => this.openLog('log')}
       />
-
     );
   };
 
   handleCondorError = () => {
-
     return (
-
       <Button
         className="ui-button-warning"
         icon="fa fa-file-text-o"
-        onClick={() => this.openLog("error")}
+        onClick={() => this.openLog('error')}
       />
-
     );
-
   };
-
 
   handleCondorOutput = () => {
-
     return (
-
       <Button
         className="ui-button-warning"
         icon="fa fa-file-text-o"
-        onClick={() => this.openLog("output")}
+        onClick={() => this.openLog('output')}
       />
-
     );
-
   };
 
-
-
   loadErrorMessageColumns = rowData => {
-
-
     this.setState({
       columns: [
         {
           field: 'name',
           header: 'Name',
-          style: { textAlign: 'center', width: "8%" },
+          style: { textAlign: 'center', width: '8%' },
           sortable: true,
         },
         {
           field: 'number',
           header: 'Number',
-          style: { textAlign: 'center', width: "10%" },
+          style: { textAlign: 'center', width: '10%' },
           sortable: true,
           body: rowData => {
             if (rowData.number === '-') {
@@ -477,14 +426,14 @@ class AsteroidList extends Component {
         {
           field: 'error_msg',
           header: 'Error',
-          style: { textAlign: 'center', width: "40%" },
+          style: { textAlign: 'center', width: '40%' },
           sortable: false,
         },
 
         {
           field: 'condor_log',
           header: 'Log',
-          style: { textAlign: 'center', width: "7%" },
+          style: { textAlign: 'center', width: '7%' },
           body: this.handleCondorButton,
           sortable: false,
         },
@@ -493,7 +442,7 @@ class AsteroidList extends Component {
           field: 'condor_err_log',
           header: 'Error',
           body: this.handleCondorError,
-          style: { textAlign: 'center', width: "7%" },
+          style: { textAlign: 'center', width: '7%' },
 
           sortable: false,
         },
@@ -502,27 +451,19 @@ class AsteroidList extends Component {
           field: 'condor_out_log',
           header: 'Output',
           body: this.handleCondorOutput,
-          style: { textAlign: 'center', width: "8%" },
+          style: { textAlign: 'center', width: '8%' },
           sortable: false,
         },
-      ]
+      ],
     });
-
-
-  }
-
-  handleList = (button) => {
-
-    if (button == "main") {
-      console.log("oi");
-
-    } else {
-
-    }
-
-
   };
 
+  handleList = button => {
+    if (button == 'main') {
+      console.log('oi');
+    } else {
+    }
+  };
 
   // main_background: "#186BA0",
   // main_color: "#fff",
@@ -530,33 +471,26 @@ class AsteroidList extends Component {
   // error_color: "#555555",
 
   handleListMain = () => {
-
     this.loadMainColumns();
     this.setState({
-      main_background: "#186BA0",
-      main_color: "#fff",
-      error_background: "#FFFAF0",
-      error_color: "#555555",
+      main_background: '#186BA0',
+      main_color: '#fff',
+      error_background: '#FFFAF0',
+      error_color: '#555555',
     });
   };
 
   handleErrorList = () => {
-
     this.loadErrorMessageColumns();
     this.setState({
-      main_background: "#FFFAF0",
-      main_color: "#555555",
-      error_background: "#186BA0",
-      error_color: "#fff",
+      main_background: '#FFFAF0',
+      main_color: '#555555',
+      error_background: '#186BA0',
+      error_color: '#fff',
     });
-
-  }
-
-
-
+  };
 
   renderAsteroidMenuBar = () => {
-
     return (
       <Toolbar>
         <div className="ui-toolbar">
@@ -573,40 +507,33 @@ class AsteroidList extends Component {
             /> */}
             <Button
               icon="fa fa-navicon"
-
               style={{
                 backgroundColor: this.state.main_background,
                 color: this.state.main_color,
-                border: "none"
+                border: 'none',
               }}
-
               onClick={this.handleListMain}
             />
             <Button
               style={{
                 backgroundColor: this.state.error_background,
                 color: this.state.error_color,
-                border: "none"
+                border: 'none',
               }}
               icon="fa fa-bug"
               onClick={this.handleErrorList}
             />
-
-
           </div>
         </div>
-
       </Toolbar>
     );
-
   };
-
 
   onLogHide = () => {
-    this.setState(state => ({ log: Object.assign({}, state.log, { visible: false }) }));;
-
+    this.setState(state => ({
+      log: Object.assign({}, state.log, { visible: false }),
+    }));
   };
-
 
   render() {
     const { data, log } = this.state;
@@ -624,18 +551,13 @@ class AsteroidList extends Component {
       );
     });
 
-
-
+    console.log(data);
 
     return (
-
-
       <div>
-
         {this.renderAsteroidMenuBar()}
 
-        < Card title="" subTitle="" >
-
+        <Card title="" subTitle="">
           <DataTable
             value={data}
             resizableColumns={true}
@@ -653,10 +575,9 @@ class AsteroidList extends Component {
             <Column
               header="Status"
               body={this.statusColumn}
-              style={{ textAlign: 'center', width: "13%" }}
+              style={{ textAlign: 'center', width: '13%' }}
             />
             {columns}
-
 
             <Column
               body={this.actionTemplate}
@@ -673,17 +594,12 @@ class AsteroidList extends Component {
           <Log
             visible={log.visible}
             onHide={this.onLogHide}
-          // id={this.state.asteroid_id}
+            // id={this.state.asteroid_id}
           />
-        </Card >
-
+        </Card>
       </div>
     );
-
-
   }
-
-
 }
 
 export default AsteroidList;
