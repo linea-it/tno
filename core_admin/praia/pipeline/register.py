@@ -169,7 +169,7 @@ def register_astrometry_outputs(astrometry_run, asteroid):
 
             if asteroid.status != 'failure':
                 asteroid.status = 'failure'
-                asteroid.error_msg = 'Asteroid was processed but the outputs file was not created.'
+                asteroid.error_msg = 'Asteroid was processed but the output file was not created.'
 
             t1 = datetime.now(timezone.utc)
             tdelta = t1 - t0
@@ -177,7 +177,7 @@ def register_astrometry_outputs(astrometry_run, asteroid):
 
             asteroid.save()
 
-            logger.warning("Asteroid [ %s ] was processed but the outputs file was not created." % (asteroid.name))
+            logger.warning("Asteroid [ %s ] was processed but the output file was not created." % (asteroid.name))
 
         else:
 
@@ -235,7 +235,7 @@ def register_astrometry_outputs(astrometry_run, asteroid):
             if asteroid.status != 'failure':
                 if int(asteroid.processed_ccd_image) != int(asteroid.ccd_images) and asteroid.status != 'failure':
                     asteroid.status = 'warning'
-                    asteroid.error_msg = 'Some CCDs were not processed.'
+                    asteroid.error_msg = 'Some CCDs are not available.'
                 else:
                     asteroid.status = 'success'
                     asteroid.error_msg = None
