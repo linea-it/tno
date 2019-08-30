@@ -31,10 +31,11 @@ const useStyles = makeStyles({
   },
 });
 
-function PredictionDetail(props) {
+function PredictionDetail() {
   const classes = useStyles();
 
-  const handleBackButtonClick = () => props.history;
+  const handleBackButtonClick = () => 'back';
+  // const handleBackButtonClick = () => props.history;
   // console.log('Go Back');
   // console.log(props.history)
 
