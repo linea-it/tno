@@ -551,8 +551,6 @@ class AsteroidList extends Component {
       );
     });
 
-    console.log(data);
-
     return (
       <div>
         {this.renderAsteroidMenuBar()}
