@@ -16,7 +16,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from praia.models import Run
-from praia.pipeline.register import check_astrometry_running
+from praia.pipeline.register import check_astrometry_running, register_astrometry_outputs
 
 logger = logging.getLogger("astrometry")
 
@@ -24,7 +24,9 @@ logger = logging.getLogger("astrometry")
 @api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
-        check_astrometry_running()
+        # check_astrometry_running()
+
+        register_astrometry_outputs(80, 'Eris')
 
         result = dict({
             'success': True,
