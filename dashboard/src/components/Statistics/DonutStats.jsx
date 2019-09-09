@@ -14,13 +14,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-
 class DonutStats extends Component {
-
-
-
-
-
   // onPieEnter = () => {
   //   this.props.controlInterval();
 
@@ -31,16 +25,11 @@ class DonutStats extends Component {
   //   this.props.controlInterval();
   // };
 
-
-
-
-
-  format = (value) => {
-
+  format = value => {
     //If who called the chart was execution time, convert to time
     //Else: use numbers.
-    if (this.props.flag == "execution_time") {
-      const seconds = (moment.duration(value));
+    if (this.props.flag == 'execution_time') {
+      const seconds = moment.duration(value);
 
       const finalTime = moment.utc(seconds * 1000).format('HH:mm:ss');
 
@@ -48,18 +37,10 @@ class DonutStats extends Component {
     } else {
       return value;
     }
-
-
-
-
   };
 
-
   render() {
-
-
     const propSet = this.props;
-
 
     const { string, array } = PropTypes;
 
@@ -75,10 +56,9 @@ class DonutStats extends Component {
       <ResponsiveContainer width="100%" height="80%">
         <Content
           content={
-            <PieChart width={450} height={130}  >
+            <PieChart width={450} height={130}>
               <Pie
                 data={propSet.data}
-
                 cx={60}
                 cy={60}
                 innerRadius={30}
@@ -86,16 +66,15 @@ class DonutStats extends Component {
                 paddingAngle={0}
               >
                 {propSet.fill.map((entry, index) => {
-
                   return (
                     <Cell
                       key={`cell-${index}`}
                       fill={propSet.fill[index % propSet.fill.length]}
                     />
-                  )
+                  );
                 })}
               </Pie>
-              <Tooltip formatter={(value) => this.format(value)} />
+              <Tooltip formatter={value => this.format(value)} />
               <Legend
                 iconSize={10}
                 width={120}
@@ -106,7 +85,6 @@ class DonutStats extends Component {
             </PieChart>
           }
         />
-
       </ResponsiveContainer>
     );
   }
