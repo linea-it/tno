@@ -61,10 +61,10 @@ const SortLabel = ({
   );
 };
 
-const CustomTableHeaderRowCell = () => (
+const CustomTableHeaderRowCell = (props) => (
   <TableHeaderRow
     cellComponent={TableHeaderRowCell}
-    showSortingControls
+    showSortingControls={!!props.hasSorting}
     sortLabelComponent={SortLabel}
   />
 );
@@ -85,6 +85,10 @@ SortLabel.propTypes = {
 
 SortLabel.defaultProps = {
   direction: null,
+};
+
+CustomTableHeaderRowCell.propTypes = {
+  hasSorting: PropTypes.bool.isRequired,
 };
 
 export default CustomTableHeaderRowCell;
