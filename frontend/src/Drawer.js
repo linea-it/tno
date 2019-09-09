@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -21,11 +21,12 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import Icon from '@material-ui/core/Icon';
 import { createBrowserHistory } from 'history';
 import Logo from './assets/img/linea.png';
-import RefineOrbits from './components/RefineOrbits';
 import PredictionOccultation from './components/PredictionOccultation';
 import PredictionDetail from './components/PredictionDetail';
 import Footer from './Footer';
-import OrbitRunDetail from './components/OrbitRunDetail';
+import RefineOrbit from './components/RefineOrbit';
+import RefineOrbitDetail from './components/RefineOrbitDetail';
+import RefineOrbitAsteroid from './components/RefineOrbitAsteroid';
 import PredictAsteroid from './components/PredictAsteroid';
 
 
@@ -170,15 +171,10 @@ const useStyles = makeStyles((theme) => ({
 
 function MiniDrawer() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState(true);
+  const [title, setTitle] = useState('Dashboard');
 
-  function handleDrawerOpen() {
-    setOpen(true);
-  }
-
-  function handleDrawerClose() {
-    setOpen(false);
-  }
+  const handleDrawerClick = () => setOpen(!open);
 
   return (
     <div className={classes.root}>
@@ -192,7 +188,7 @@ function MiniDrawer() {
         >
           <Toolbar>
             <Typography variant="h6" component="h1">
-              Dashboard
+              {title}
             </Typography>
           </Toolbar>
         </AppBar>
@@ -310,13 +306,13 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/refine-orbits" className={classes.invisibleLink}>
+            <Link to="/refine-orbit" className={classes.invisibleLink}>
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-globe-americas', classes.iconAltixDrawer)} />
                 </ListItemIcon>
                 <ListItemText
-                  primary="Refine Orbits"
+                  primary="Refine Orbit"
                   className={classes.textDrawer}
                 />
               </ListItem>
@@ -373,7 +369,7 @@ function MiniDrawer() {
           </List>
           <div className={classes.drawerControlWrapper}>
             <IconButton
-              onClick={open ? handleDrawerClose : handleDrawerOpen}
+              onClick={handleDrawerClick}
               className={clsx(classes.ListIconDrawer, classes.ListIconControlDrawer)}
             >
               {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
@@ -382,11 +378,12 @@ function MiniDrawer() {
         </Drawer>
         <div className={classes.bodyWrapper}>
           <main className={classes.content}>
-            <Route exact path="/refine-orbits" component={RefineOrbits} />
-            <Route exact path="/prediction-of-occultation" component={PredictionOccultation} />
-            <Route exact path="/prediction-detail/:id" component={PredictionDetail} />
-            <Route exact path="/orbit-run-detail/:id" component={OrbitRunDetail} />
-            <Route exact path="/predict-asteroid" component={PredictAsteroid} />
+            <Route exact path="/refine-orbit" render={(props) => <RefineOrbit {...props} setTitle={setTitle} />} />
+            <Route exact path="/refine-orbit/:id" render={(props) => <RefineOrbitDetail {...props} setTitle={setTitle} />} />
+            <Route exact path="/refine-orbit/asteroid/:id" render={(props) => <RefineOrbitAsteroid {...props} setTitle={setTitle} />} />
+            <Route exact path="/prediction-of-occultation" render={(props) => <PredictionOccultation {...props} setTitle={setTitle} />} />
+            <Route exact path="/prediction-detail/:id" render={(props) => <PredictionDetail {...props} setTitle={setTitle} />} />
+            <Route exact path="/predict-asteroid" render={(props) => <PredictAsteroid {...props} setTitle={setTitle} />} />
           </main>
           <Footer drawerOpen={open} />
         </div>

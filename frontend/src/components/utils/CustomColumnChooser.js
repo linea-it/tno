@@ -20,6 +20,7 @@ class CustomColumnChooser extends Component {
   constructor(props) {
     super(props);
     this.state = { chooserAllChecked: true };
+    this.containerComponent = this.containerComponent.bind(this);
   }
 
   containerComponent(columns) {

@@ -5,24 +5,7 @@ import {
 import clsx from 'clsx';
 
 const useStyles = makeStyles({
-  div: {
-    marginTop: 20,
-  },
-  headerTitle: {
-    color: '#34465d',
-    fontSize: 16,
-    fontWeight: 'bold',
 
-  },
-  card: {
-    marginBottom: 20,
-  },
-  cardHeader: {
-    backgroundColor: 'rgb(248, 249, 252)',
-    borderBottom: '1px solid rgb(227, 230, 240)',
-    paddingTop: 5,
-    paddingBottom: 5,
-  },
 });
 
 

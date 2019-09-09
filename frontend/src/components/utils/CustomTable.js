@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import Paper from '@material-ui/core/Paper';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -13,6 +12,10 @@ import {
   CustomPaging,
   SearchState,
   SelectionState,
+  GroupingState,
+  IntegratedSorting,
+  IntegratedPaging,
+  IntegratedGrouping,
 } from '@devexpress/dx-react-grid';
 import {
   Grid,
@@ -23,6 +26,7 @@ import {
   SearchPanel,
   TableSelection,
   TableColumnVisibility,
+  TableGroupRow,
 } from '@devexpress/dx-react-grid-material-ui';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
@@ -64,29 +68,41 @@ function CustomTable(props) {
     width: !column.width ? 120 : column.width,
   }));
 
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(props.data);
+  const [totalCount, setTotalCount] = useState(0);
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sorting, setSorting] = useState([
     {
-      columnName: 'processes_process_id',
+      columnName: props.columns[0].name,
       direction: 'desc',
     },
   ]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [after, setAfter] = useState(true);
-  const [pageSize, setPageSize] = useState(10);
+  const [after, setAfter] = useState('');
+  const [pageSize, setPageSize] = useState(props.pageSize);
   const [filter, setFilter] = useState('all');
   const [searchValue, setSearchValue] = useState('');
   const [selection, setSelection] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
   const [modalContent, setModalContent] = useState('');
 
   const classes = useStyles();
 
   useEffect(() => {
-    props.loadData(sorting, pageSize, after, filter, searchValue);
-  }, [sorting, currentPage, after, pageSize, filter, searchValue]);
+    if (props.remote === true) {
+      props.loadData({
+        sorting, pageSize, currentPage, after, filter, searchValue,
+      });
+    }
+    // console.log(props.data);
+  }, [sorting, currentPage, currentPage, pageSize, filter, searchValue]);
+
+  useEffect(() => {
+    if ('columnName' in props.defaultSorting[0] && 'direction' in props.defaultSorting[0]) {
+      setSorting(props.defaultSorting);
+    }
+    console.log('sfdsasdsda', props.defaultExpandedGroups);
+  }, []);
 
   const clearData = () => {
     setData([]);
@@ -96,24 +112,31 @@ function CustomTable(props) {
   };
 
   useEffect(() => {
-    clearData();
     setData(props.data);
     setTotalCount(props.totalCount);
-  }, [props.data]);
+    setLoading(false);
+    console.log(props.defaultExpandedGroups);
+  }, [props.data, props.reload, props.defaultExpandedGroups]);
+
 
   useEffect(() => {
     setModalContent(props.modalContent);
   }, [props.modalContent]);
 
   const changeSorting = (value) => {
-    setLoading(true);
+    if (props.remote === true) {
+      clearData();
+      setLoading(true);
+    }
     setSorting(value);
   };
 
   const changeCurrentPage = (value) => {
     const offset = value * pageSize;
     const next = window.btoa(`arrayconnection:${offset - 1}`);
-    setLoading(true);
+    if (props.remote === true) {
+      setLoading(true);
+    }
     setCurrentPage(value);
     setAfter(next);
   };
@@ -121,14 +144,18 @@ function CustomTable(props) {
   const changePageSize = (value) => {
     const totalPages = Math.ceil(totalCount / value);
     const theCurrentPage = Math.min(currentPage, totalPages - 1);
-    setLoading(true);
+    if (props.remote === true) {
+      setLoading(true);
+    }
     setCurrentPage(theCurrentPage);
     setPageSize(value);
   };
 
   const changeSearchValue = (value) => {
-    clearData();
-    setLoading(true);
+    if (props.remote === true) {
+      clearData();
+      setLoading(true);
+    }
     setSearchValue(value);
   };
 
@@ -144,7 +171,10 @@ function CustomTable(props) {
   };
 
   const handleChangeFilter = (evt) => {
-    clearData();
+    if (props.remote === true) {
+      clearData();
+      setLoading(true);
+    }
     setFilter(evt.target.value);
   };
 
@@ -162,7 +192,7 @@ function CustomTable(props) {
         position: 'absolute',
         top: '50%',
         left: '50%',
-        margin: '-30px 0 0 -20px',
+        marginTop: 'translateY(-50%)',
         zIndex: '99',
       }}
     />
@@ -187,44 +217,140 @@ function CustomTable(props) {
   );
 
   const onClickAction = (column, row) => {
-    setModalContent('');
-    setVisible(true);
+    if (props.modalContent !== null) {
+      setModalContent('');
+      setVisible(true);
+    }
     column.action(row);
   };
 
-  const renderTable = (rows) => (
-    <>
-      <Grid rows={rows} columns={columns}>
-        <SearchState onValueChange={changeSearchValue} />
-        <SortingState sorting={sorting} onSortingChange={changeSorting} />
-        <PagingState
-          currentPage={currentPage}
-          onCurrentPageChange={changeCurrentPage}
-          pageSize={pageSize}
-          onPageSizeChange={changePageSize}
-        />
-        <CustomPaging totalCount={totalCount} />
-        <SelectionState
-          selection={selection}
-          onSelectionChange={changeSelection}
-        />
-        <Table columnExtensions={columnExtensions} />
-        <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
-        <CustomTableHeaderRowCell />
-        <TableColumnVisibility />
-        <TableSelection
-          selectByRowClick
-          highlightRow
-          showSelectionColumn={false}
-        />
-        <PagingPanel pageSizes={props.pageSizes} />
-        <Toolbar />
-        <SearchPanel />
-        <CustomColumnChooser />
-      </Grid>
-      {renderModal()}
-    </>
-  );
+  const renderTable = (rows) => {
+    if (props.remote === true) {
+      return (
+        <>
+          <Grid rows={rows} columns={columns}>
+            {props.hasSearching ? <SearchState onValueChange={changeSearchValue} /> : null}
+            {props.hasSorting ? <SortingState sorting={sorting} onSortingChange={changeSorting} /> : null }
+            {props.hasPagination
+              ? (
+                <PagingState
+                  currentPage={currentPage}
+                  onCurrentPageChange={changeCurrentPage}
+                  pageSize={pageSize}
+                  onPageSizeChange={changePageSize}
+                />
+              ) : null}
+            {props.hasPagination
+              ? <CustomPaging totalCount={totalCount} />
+              : null}
+            {props.hasSelection ? (
+              <SelectionState
+                selection={selection}
+                onSelectionChange={changeSelection}
+              />
+            )
+              : null}
+            {props.hasGrouping ? (
+              <GroupingState
+                grouping={props.grouping}
+                defaultExpandedGroups={props.defaultExpandedGroups}
+
+              />
+            )
+              : null}
+            {props.hasGrouping ? <IntegratedGrouping /> : null}
+            <Table columnExtensions={columnExtensions} />
+            {props.hasSelection ? (
+              <TableSelection
+                selectByRowClick
+                highlightRow
+                showSelectionColumn={false}
+              />
+            ) : null }
+            {props.hasResizing ? <TableColumnResizing defaultColumnWidths={defaultColumnWidths} /> : null}
+            <CustomTableHeaderRowCell hasSorting={props.hasSorting} />
+            {props.hasGrouping ? (
+              <TableGroupRow />
+            )
+              : null}
+            {props.hasPagination ? <PagingPanel pageSizes={props.pageSizes} /> : null}
+            {props.hasToolbar ? <Toolbar /> : null}
+            {props.hasSearching ? <SearchPanel /> : null}
+            {props.hasColumnVisibility
+              ? (<TableColumnVisibility />)
+              : null}
+            {props.hasColumnVisibility
+              ? (<CustomColumnChooser />)
+              : null}
+          </Grid>
+          {renderModal()}
+        </>
+      );
+    }
+    return (
+      <>
+        <Grid rows={rows} columns={columns}>
+          {props.hasSearching ? <SearchState /> : null}
+          {props.hasSorting
+            ? <SortingState sorting={sorting} onSortingChange={changeSorting} />
+            : null }
+          {props.hasSorting ? <IntegratedSorting /> : null }
+          {props.hasPagination
+            ? (
+              <PagingState
+                currentPage={currentPage}
+                onCurrentPageChange={setCurrentPage}
+                onPageSizeChange={setPageSize}
+                pageSize={pageSize}
+              />
+            ) : null}
+          {props.hasPagination
+            ? (
+              <IntegratedPaging />
+            ) : null}
+          {props.hasSelection ? (
+            <SelectionState
+              selection={selection}
+              onSelectionChange={changeSelection}
+            />
+          )
+            : null}
+          {props.hasGrouping ? (
+            <GroupingState
+              grouping={props.grouping}
+              defaultExpandedGroups={props.defaultExpandedGroups}
+            />
+          )
+            : null}
+          {props.hasGrouping ? <IntegratedGrouping /> : null}
+          <Table columnExtensions={columnExtensions} />
+          {props.hasSelection ? (
+            <TableSelection
+              selectByRowClick
+              highlightRow
+              showSelectionColumn={false}
+            />
+          ) : null }
+          {props.hasResizing ? <TableColumnResizing defaultColumnWidths={defaultColumnWidths} /> : null}
+          <CustomTableHeaderRowCell hasSorting={props.hasSorting} remote={props.remote} />
+          {props.hasGrouping ? (
+            <TableGroupRow />
+          )
+            : null}
+          {props.hasPagination ? <PagingPanel pageSizes={props.pageSizes} /> : null}
+          {props.hasToolbar ? <Toolbar /> : null}
+          {props.hasSearching ? <SearchPanel /> : null}
+          {props.hasColumnVisibility
+            ? (<TableColumnVisibility />)
+            : null}
+          {props.hasColumnVisibility
+            ? (<CustomColumnChooser />)
+            : null}
+        </Grid>
+        {renderModal()}
+      </>
+    );
+  };
 
   const rows = data.map((row) => {
     const line = {};
@@ -270,26 +396,62 @@ function CustomTable(props) {
   });
 
   return (
-    <Paper className={classes.wrapPaper}>
-      {renderFilter()}
+    <>
+      {props.hasFiltering ? renderFilter() : null}
       {renderTable(rows)}
       {loading && renderLoading()}
-    </Paper>
+    </>
   );
 }
 
 CustomTable.defaultProps = {
+  loadData: () => null,
+  pageSize: 10,
   pageSizes: [5, 10, 15],
+  modalContent: null,
+  hasFiltering: false,
+  hasSearching: true,
+  hasSorting: true,
+  hasResizing: true,
+  hasSelection: true,
+  hasColumnVisibility: true,
+  hasPagination: true,
+  hasGrouping: false,
+  hasToolbar: true,
+  showColumnsWhenGrouped: false,
+  defaultExpandedGroups: [''],
+  defaultSorting: [{}],
+  totalCount: 0,
+  reload: false,
+  remote: true,
+  grouping: [{}],
 };
+
 
 CustomTable.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
-  loadData: PropTypes.func.isRequired,
+  loadData: PropTypes.func,
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
-  totalCount: PropTypes.number.isRequired,
-  modalContent: PropTypes.symbol.isRequired,
+  modalContent: PropTypes.symbol,
+  defaultSorting: PropTypes.arrayOf(PropTypes.object),
   // eslint-disable-next-line react/no-unused-prop-types
+  pageSize: PropTypes.number,
   pageSizes: PropTypes.arrayOf(PropTypes.number),
+  hasFiltering: PropTypes.bool,
+  hasSearching: PropTypes.bool,
+  hasSorting: PropTypes.bool,
+  hasResizing: PropTypes.bool,
+  hasSelection: PropTypes.bool,
+  hasColumnVisibility: PropTypes.bool,
+  hasGrouping: PropTypes.bool,
+  hasPagination: PropTypes.bool,
+  hasToolbar: PropTypes.bool,
+  showColumnsWhenGrouped: PropTypes.bool,
+  defaultExpandedGroups: PropTypes.arrayOf(PropTypes.string),
+  totalCount: PropTypes.number,
+  reload: PropTypes.bool,
+  remote: PropTypes.bool,
+  grouping: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default CustomTable;

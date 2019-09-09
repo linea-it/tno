@@ -4,28 +4,9 @@ import {
 } from '@material-ui/core';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import { withRouter } from 'react-router-dom';
-import List from './ListStats';
+import CustomList from './utils/CustomList';
 
 const useStyles = makeStyles({
-  div: {
-    marginTop: 0,
-  },
-  card: {
-    marginBottom: 20,
-  },
-  headerTitle: {
-    color: '#34465d',
-    fontSize: 16,
-    fontWeight: 'bold',
-
-  },
-  cardHeader: {
-    backgroundColor: 'rgb(248, 249, 252)',
-    borderBottom: '1px solid rgb(227, 230, 240)',
-    paddingTop: 5,
-    paddingBottom: 5,
-
-  },
   arrowBack: {
     fontSize: 9,
   },
@@ -40,14 +21,14 @@ function PredictionDetail() {
   // console.log(props.history)
 
 
-  const listStats = [
-    { name: 'Process', value: 'xxxxxxxx', className: 'classes.firstListText' },
-    { name: 'Owner', value: 'xxxxxxxx', className: 'classes.secondListText' },
-    { name: 'Start', value: 'xxxxxxxx', className: 'classes.thirdListText' },
-    { name: 'Execution', value: 'xxxxxxxx', className: 'classes.forthListText' },
-    { name: 'Asteroids', value: 'xxxxxxxx', className: 'classes.fifthListText' },
-    { name: 'Occultations', value: 'xxxxxxxx', className: 'classes.sixthListText' },
-  ];
+  // const listStats = [
+  //   { name: 'Process', value: 'xxxxxxxx', className: 'classes.firstListText' },
+  //   { name: 'Owner', value: 'xxxxxxxx', className: 'classes.secondListText' },
+  //   { name: 'Start', value: 'xxxxxxxx', className: 'classes.thirdListText' },
+  //   { name: 'Execution', value: 'xxxxxxxx', className: 'classes.forthListText' },
+  //   { name: 'Asteroids', value: 'xxxxxxxx', className: 'classes.fifthListText' },
+  //   { name: 'Occultations', value: 'xxxxxxxx', className: 'classes.sixthListText' },
+  // ];
 
   return (
     <div>
@@ -67,7 +48,7 @@ function PredictionDetail() {
                 className={classes.cardHeader}
               />
               <CardContent>
-                <List status="TOP" data={listStats} />
+                {/* <List status="TOP" data={listStats} /> */}
               </CardContent>
             </Card>
 
