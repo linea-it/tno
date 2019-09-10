@@ -37,6 +37,8 @@ export default function SimpleSelect(props) {
     name: '',
   });
 
+  const [defaultValue, setDefaultValue] = useState(0);
+
   function handleChange(event) {
     /*
     A linha abaixo quer dizer:
@@ -47,24 +49,59 @@ export default function SimpleSelect(props) {
     Neste caso está alterando o valor de
     [event.target.name] para o valor que foi selecionado no select.
     */
+
     setValues((oldValues) => ({ ...oldValues, [event.target.name]: event.target.value }));
+
+    setDefaultValue(event.target.value);
+
+    console.log(event.currentTarget.id);
   }
 
   const { formControl } = useStyles(props);
   const { title } = props;
+
+  const loadMenuItems = () => {
+    // Receive the data from PredictionOccultation props.
+    const generalArray = props.data;
+    const { display } = props;
+    const { value } = props;
+
+
+    // Create a map function to define(return) the MenuItems.
+
+
+    if (generalArray && generalArray.length > 0) {
+      return generalArray.map((el, i) => (
+        <MenuItem
+          key={i}
+          id={el.id}
+          className={classes.MenuItem}
+          value={i}
+        >
+          {eval(display)}
+        </MenuItem>
+      ));
+    }
+  };
+
 
   return (
     <form className={classes.root} autoComplete="off">
       <FormControl className={`${formControl}`}>
         <InputLabel htmlFor="input">{title}</InputLabel>
         <Select
-          value={values.input}
+          // value={values.input}
+          value={defaultValue}
           onChange={handleChange}
           inputProps={{ name: 'input', id: 'input-simple' }}
+          displayEmpty
         >
-          <MenuItem className={classes.MenuItem} value={10}>Ten</MenuItem>
-          <MenuItem className={classes.MenuItem} value={20}>Twenty</MenuItem>
-          <MenuItem className={classes.MenuItem} value={30}>Thirty</MenuItem>
+
+
+          Sets the defaulValue each SELECT
+
+          {/* Load here the menuItems automatically */}
+          {loadMenuItems()}
         </Select>
       </FormControl>
     </form>

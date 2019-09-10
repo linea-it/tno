@@ -1,0 +1,25 @@
+  // ***** Values referring to Refine Orbit run. Only success ones ****//
+    //  process - processId
+    //  input_list_id - input id from object list
+    //  input_orbit_id - orbit run id
+
+    //* * Other values**/
+    // leap_second
+    // bsp_planetary,
+    // catalog,
+    // catalog_radius
+    // ephemeris_initial_date
+    // ephemeris_final_date
+    // ephemeris_step
+
+
+
+    process: null,
+    input_list_id: null,
+    input_orbit_id: null,
+    bsp_planetary: null,
+    catalog: null,
+    catalog_radius: null,
+    ephemeris_initial_date: null,
+    ephemeris_final_date: null,
+    ephemeris_step: null,
