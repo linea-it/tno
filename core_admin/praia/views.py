@@ -217,40 +217,52 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
         return Response(result)
 
     @detail_route(methods=['GET'])
-    def eris_astrometry(self, request, pk=None):   
-        print ('Read Eris')
+    def astrometry_table(self, request, pk=None):
+        # Recuperar a instancia do Asteroid
+        asteroid = self.get_object()
 
+        try:
+            # Recuperar o filepath para o arquivo de Astrometria, um dos resultados do pipeline
+            output = asteroid.ast_outputs.get(type='astrometry')
+            filepath = os.path.join(asteroid.relative_path, output.filename)
 
-        df = pd.read_csv('/archive/tmp/Eris.txt',
-            header=None,
-            delim_whitespace=True,
-            )
+            # Ler o arquivo
+            df = pd.read_csv(filepath,
+                             header=None,
+                             delim_whitespace=True,
+                             )
 
-        a = df.iloc[0]
+            rows = list()
+            for record in df.itertuples():
+                ra = "%s : %s : %s" % (int(record[1]), int(
+                    record[2]), float("{0:.3f}".format(record[3])))
+                dec = "%s : %s : %s" % (int(record[4]), int(
+                    record[5]), float("{0:.3f}".format(record[6])))
 
-        rows = list()
-        for record in df.itertuples():
+                row = dict({
+                    'ra': ra,
+                    'dec': dec,
+                    'mag': float("{0:.3f}".format(record[7])),
+                    'julian_date': record[8],
+                    'obs_code': record[9],
+                    'catalog_code': record[10]
+                })
 
-            ra = "%s %s %s" % (int(record[1]), int(record[2]), float(record[3]))
-            dec =  "%s %s %s" % (int(record[4]), int(record[5]), float(record[6]))
-            
-            row = dict({
-                'ra': ra, 
-                'dec': dec, 
-                'mag': record[7], 
-                'julian_date': record[8] ,
-                'obs_code': record[9],
-                'catalog_code': record[10] 
+                rows.append(row)
+
+            result = dict({
+                'success': True,
+                'rows': rows,
             })
 
-            rows.append(row)
+            return Response(result)
 
-        result = dict({
-            'success': True,
-            'rows': rows,
-        })
-
-        return Response(result)
+        except AstrometryOutput.DoesNotExist as e:
+            return Response(dict({
+                'success': False,
+                'rows': [],
+                'msg': 'There is no Astrometry result for this asteroid.',
+            }))
 
 
 class AstrometryInputViewSet(viewsets.ModelViewSet):

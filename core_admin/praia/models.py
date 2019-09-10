@@ -360,7 +360,7 @@ class AstrometryOutput(models.Model):
 
     asteroid = models.ForeignKey(
         AstrometryAsteroid, on_delete=models.CASCADE, verbose_name='Asteroid',
-        null=False, blank=False, related_name='astrometry_result'
+        null=False, blank=False, related_name='ast_outputs'
     )
 
     type = models.CharField(

@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Card } from 'primereact/card';
-import moment from 'moment';
 import PraiaApi from './PraiaApi';
 import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
@@ -10,7 +8,6 @@ import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize';
 import { TreeTable } from 'primereact/treetable';
 import Log from '../../components/Dialog/Log';
-import tableContent from '../Astrometry/assets/astrometry_table_content.json';
 
 const outputs = {
   D00512549_z_c51_r2379p01_immasked: [],
@@ -293,7 +290,7 @@ export default class AsteroidRunDetail extends Component {
       header: null,
       selectedNodeKey1: [],
       expandedKeys: [],
-      astrometryTable: tableContent,
+      astrometryTable: [],
     };
   }
 
@@ -322,6 +319,12 @@ export default class AsteroidRunDetail extends Component {
     } = this.props;
 
     const asteroid_id = params.id;
+
+    this.setState({ id: asteroid_id }, () => this.loadData(asteroid_id));
+
+  }
+
+  loadData = asteroid_id => {
     this.api.getAsteroidById(asteroid_id).then(res => {
       this.setState({
         asteroid: res.data,
@@ -338,6 +341,15 @@ export default class AsteroidRunDetail extends Component {
         inputs: inputs,
       });
     });
+
+
+    this.api.read_astrometry_table(asteroid_id).then(res => {
+      const rows = res.data.rows;
+      this.setState({
+        astrometryTable: rows
+      })
+    })
+
   }
 
   onClickBackToAstrometryRun = praia_run => {
@@ -363,7 +375,7 @@ export default class AsteroidRunDetail extends Component {
             icon={this.state.download_icon}
             className="ui-button-info"
             disabled="disabled"
-            // onClick={() => this.onClickDownload(this.state.asteroid.id)}
+          // onClick={() => this.onClickDownload(this.state.asteroid.id)}
           />
         </div>
 
@@ -406,11 +418,11 @@ export default class AsteroidRunDetail extends Component {
     const filename = encodeURIComponent(rowData.filename);
     const title = encodeURIComponent(
       'Process: ' +
-        proccess +
-        ' of the asteroid ' +
-        rowData.asteroid +
-        '. \u00a0 File: ' +
-        rowData.filename
+      proccess +
+      ' of the asteroid ' +
+      rowData.asteroid +
+      '. \u00a0 File: ' +
+      rowData.filename
     );
 
     const history = this.props.history;
@@ -497,18 +509,18 @@ export default class AsteroidRunDetail extends Component {
         scrollable
         scrollHeight="200px"
         columnResizeMode="expand"
-        // expandedKeys={this.state.expandedKeys}
-        // onToggle={e => {
-        //   this.setState({ expandedKeys: e.value })
-        // }}
+      // expandedKeys={this.state.expandedKeys}
+      // onToggle={e => {
+      //   this.setState({ expandedKeys: e.value })
+      // }}
 
-        //Component treeTable was updated but primereact documentation doesnt.
-        //TODO: Check previous documentation to try to solve the problem
-        // selectionMode="single"
-        // selectionKeys={this.state.selectedNodeKey1}
-        // selectionChange={e => this.setState({ selectedNodeKey1: e }, () => {
-        //   console.log(this.state.selectedNodeKey1);
-        // })}
+      //Component treeTable was updated but primereact documentation doesnt.
+      //TODO: Check previous documentation to try to solve the problem
+      // selectionMode="single"
+      // selectionKeys={this.state.selectedNodeKey1}
+      // selectionChange={e => this.setState({ selectedNodeKey1: e }, () => {
+      //   console.log(this.state.selectedNodeKey1);
+      // })}
       >
         {elColumns}
         <Column />
@@ -545,30 +557,26 @@ export default class AsteroidRunDetail extends Component {
   astrometry_columns = [
     {
       field: 'ra',
-      header: 'Ra',
+      header: 'RA',
       sortable: false,
-      style: { textAlign: 'center' },
     },
     {
       field: 'dec',
       header: 'Dec',
       sortable: false,
-      style: { textAlign: 'center' },
     },
     {
       field: 'mag',
-      header: 'Mag',
-      sortable: false,
-      style: { textAlign: 'center' },
+      header: 'mag',
+      sortable: true,
     },
     {
       field: 'julian_date',
       header: 'Julian Date',
-      sortable: false,
-      style: { textAlign: 'center' },
+      sortable: true,
     },
     {
-      field: 'cod_obs',
+      field: 'obs_code',
       header: 'Obs. Code',
       sortable: false,
       style: { textAlign: 'center' },
@@ -583,7 +591,7 @@ export default class AsteroidRunDetail extends Component {
   ];
 
   render() {
-    const { asteroid, inputs } = this.state;
+    const { asteroid, inputs, astrometryTable } = this.state;
 
     const a = [];
 
@@ -679,16 +687,11 @@ export default class AsteroidRunDetail extends Component {
                 <DataTable
                   scrollable={true}
                   scrollHeight="300px"
-                  value={tableContent}
-                  // sortField={""}
-                  // sortOrder={""}
+                  value={astrometryTable}
+                  paginator={true}
+                  rows={10}
                 >
                   {astrometry_cols}
-
-                  {/* <Column
-              style={{}}
-              body={"TO DO ACTION TEMPLATE - MAYBE"}
-            /> */}
                 </DataTable>
               }
             />

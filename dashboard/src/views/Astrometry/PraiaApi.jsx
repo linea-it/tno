@@ -108,6 +108,9 @@ class PraiaApi {
 
   checkJobStatus = () => axios.get(`${this.api}/teste/`);
 
+  read_astrometry_table = id =>
+    axios.get(`${this.api}/astrometry_asteroids/${id}/astrometry_table/`);
+
   getCSV = (filepath, page, pageSize) => {
     return axios.get(
       `${
@@ -123,10 +126,8 @@ class PraiaApi {
   };
 
   readCondorFile = filepath => {
-
     return axios.get(`${this.api}/read_file?filepath=${filepath}`);
   };
-
 }
 
 export default PraiaApi;
