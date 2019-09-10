@@ -26,7 +26,7 @@ def teste(request):
     if request.method == 'GET':
         # check_astrometry_running()
 
-        register_astrometry_outputs(80, 'Eris')
+        # register_astrometry_outputs(80, 'Eris')
 
         result = dict({
             'success': True,
