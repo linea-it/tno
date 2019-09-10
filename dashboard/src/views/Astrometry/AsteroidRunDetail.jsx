@@ -441,7 +441,7 @@ export default class AsteroidRunDetail extends Component {
     const columns = [
       {
         field: 'filename',
-        header: 'Filename',
+        header: 'CCD Filename',
         style: { width: '40%' },
         expander: true,
         sortable: true,
