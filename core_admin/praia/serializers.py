@@ -5,6 +5,7 @@ from tno.models import CustomList, Proccess, Catalog
 from django.utils import timezone
 import os
 
+
 class RunSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
 
@@ -35,8 +36,6 @@ class RunSerializer(serializers.ModelSerializer):
     h_execution_time = serializers.SerializerMethodField()
 
     h_time = serializers.SerializerMethodField()
-
-
 
     class Meta:
         model = Run
@@ -125,6 +124,7 @@ class RunSerializer(serializers.ModelSerializer):
 
         except:
             return None
+
 
 class ConfigurationSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
@@ -253,12 +253,15 @@ class AstrometryInputSerializer(serializers.ModelSerializer):
 
     execution_time = serializers.SerializerMethodField()
 
+    type_name = serializers.SerializerMethodField()
+
     class Meta:
         model = AstrometryInput
         fields = (
             'id',
             'asteroid',
             'input_type',
+            'type_name',
             'filename',
             'file_size',
             'file_type',
@@ -279,11 +282,16 @@ class AstrometryInputSerializer(serializers.ModelSerializer):
         except:
             return None
 
+    def get_type_name(self, obj):
+        return obj.get_input_type_display()
+
 
 class AstrometryOutputSerializer(serializers.ModelSerializer):
 
     asteroid = serializers.PrimaryKeyRelatedField(
         queryset=AstrometryAsteroid.objects.all(), many=False)
+
+    type_name = serializers.SerializerMethodField()
 
     class Meta:
         model = AstrometryOutput
@@ -291,8 +299,14 @@ class AstrometryOutputSerializer(serializers.ModelSerializer):
             'id',
             'asteroid',
             'type',
+            'type_name',
+            'catalog',
+            'ccd_image',
             'filename',
             'file_size',
             'file_type',
             'file_path',
         )
+
+    def get_type_name(self, obj):
+        return obj.get_type_display()

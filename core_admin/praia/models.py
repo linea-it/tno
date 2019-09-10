@@ -301,7 +301,7 @@ class AstrometryInput(models.Model):
         choices=(
             ('ccd_images_list', 'CCD Images List'),
             ('bsp_jpl', 'BSP JPL'),
-            ('catalog', 'Catalog')),
+            ('catalog', 'Reference Catalog')),
     )
 
     filename = models.CharField(
@@ -393,7 +393,7 @@ class AstrometryOutput(models.Model):
     ccd_image = models.CharField(
         max_length=1024,
         null=True, blank=True,
-        verbose_name='CCD Image',
+        verbose_name='ID for Pointing',
         default=None
     )
 
@@ -427,6 +427,8 @@ class AstrometryOutput(models.Model):
             models.Index(fields=['ccd_image']),
             models.Index(fields=['file_type']),
         ]
+
+        ordering = ['ccd_image', 'type', 'catalog']
 
     def __str__(self):
         return str(self.filename)
