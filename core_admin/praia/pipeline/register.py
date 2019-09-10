@@ -2,7 +2,7 @@ import json
 import logging
 import os
 import traceback
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 import humanize
 
@@ -105,7 +105,6 @@ def update_job_status(job, condor_job):
         job.finish_time = finish_time
         job.execution_time = finish_time - job.start_time
 
-
         job.save()
 
         register_astrometry_outputs(job.astrometry_run.pk, job.asteroid.name)
@@ -126,7 +125,7 @@ def update_job_status(job, condor_job):
 
         job.save()
 
-        # Remover o job do condor 
+        # Remover o job do condor
         try:
             remove_job(job.clusterid, job.procid)
         except Exception as e:
@@ -177,7 +176,8 @@ def register_astrometry_outputs(astrometry_run, asteroid):
 
             asteroid.save()
 
-            logger.warning("Asteroid [ %s ] was processed but the output file was not created." % (asteroid.name))
+            logger.warning(
+              "Asteroid [ %s ] was processed but the output file was not created." % (asteroid.name))
 
         else:
 
@@ -209,19 +209,28 @@ def register_astrometry_outputs(astrometry_run, asteroid):
                     'file_size'), output.get('extension')
             )
 
-            # Arquivos XY gerados para cada ccd e varios catalogos de referencia
+            # Header Extraction
+            output = results.get('header_extraction')
+            update_create_astrometry_output(
+                asteroid, 'header_extraction', output.get('filename'), output.get(
+                    'file_size'), output.get('extension')
+            )
+
+            # Outputs gerados para cada CCD
             count = 0
             count_ccds = 0
             outputs = results.get('outputs')
-            for ccd in outputs:
-                a_files = outputs[ccd]
+
+            for ccd_id in outputs:
+                ccd = outputs[ccd_id]
+                a_files = ccd.get('files')
                 count_ccds += 1
 
                 for output in a_files:
-                    f_type = get_type_by_extension(output.get('extension'))
+                    f_type = get_output_type(output)
 
                     update_create_astrometry_output(
-                        asteroid, f_type, output.get('filename'), output.get('file_size'), output.get('extension'), output.get('catalog'), ccd)
+                        asteroid, f_type, output.get('filename'), output.get('file_size'), output.get('extension'), output.get('catalog'), ccd['ccd_id'])
 
                     count += 1
 
@@ -229,8 +238,44 @@ def register_astrometry_outputs(astrometry_run, asteroid):
                 "Registered outputs [ %s ] for [ %s ] CCDs" % (count, len(ccd)))
 
             # Registrar Contadores
+            asteroid.available_ccd_image = results.get('available_images')
             asteroid.processed_ccd_image = results.get('processed_images')
-            asteroid.execution_time += asteroid.condor_job.execution_time
+            asteroid.outputs = count
+
+            try:
+                # Execution Time for Praia Header Extraction
+                etime = results.get(
+                    'header_extraction').get('execution_time', 0)
+                asteroid.execution_header = timedelta(
+                    seconds=etime)
+
+                # Execution Time for Praia Astrometry
+                etime = results.get(
+                    'praia_astrometry').get('execution_time', 0)
+                asteroid.execution_astrometry = timedelta(
+                    seconds=etime)
+
+                # Execution Time for Praia Targets
+                etime = results.get(
+                    'praia_targets').get('execution_time', 0)
+                asteroid.execution_targets = timedelta(
+                    seconds=etime)
+
+                # Execution Time for Plots
+                etime = results.get(
+                    'plots').get('execution_time', 0)
+                asteroid.execution_plots = timedelta(
+                    seconds=etime)
+
+            except Exception as e:
+                logger.warning("Failed to register execution times. %s" % e)
+
+            try:
+                # Adicionar ao tempo de execucao total do asteroid o tempo do condor Job
+                asteroid.execution_time += asteroid.condor_job.execution_time
+            except Exception as e:
+                logger.warning(
+                    "Failed to register condor job execution time. %s" % e)
 
             if asteroid.status != 'failure':
                 if int(asteroid.processed_ccd_image) != int(asteroid.ccd_images) and asteroid.status != 'failure':
@@ -240,15 +285,21 @@ def register_astrometry_outputs(astrometry_run, asteroid):
                     asteroid.status = 'success'
                     asteroid.error_msg = None
 
+            # TODO rever essa regra de falha
+            if results.get('error') is not None:
+                asteroid.status = 'warning'
+                asteroid.error_msg = results.get('error')
+
+            # Execution Time Registry outputs
             t1 = datetime.now(timezone.utc)
             tdelta = t1 - t0
+            asteroid.execution_registry = tdelta
             asteroid.execution_time += tdelta
 
             asteroid.save()
 
             logger.info("Registered [ %s ] outputs for Astrometry Run [ %s ] Asteroid [ %s ] in %s" % (
                 count, astrometry_run, asteroid, humanize.naturaldelta(tdelta)))
-
 
     except Exception as e:
         trace = traceback.format_exc()
@@ -290,15 +341,27 @@ def update_create_astrometry_output(
     return record
 
 
-def get_type_by_extension(extension):
-    if extension == '.xy':
+def get_output_type(output):
+    if output.get('extension') == '.xy':
         return 'astrometric_results'
 
-    elif extension == '.mes':
+    elif output.get('extension') == '.mes':
         return 'mes'
 
-    elif extension == '.reg':
+    elif output.get('extension') == '.reg':
         return 'saoimage_region_file'
+
+    elif output.get('extension') == '.txt':
+        return output.get('filename').split('.')[1]
+
+    elif output.get('extension') == '.dat':
+        return 'astrometry_params'
+
+    elif output.get('extension') == '.log':
+        return 'astrometry_log'
+
+    elif output.get('extension') == '.png':
+        return 'astrometry_plot'
 
     else:
         return None
@@ -325,7 +388,6 @@ def finish_astrometry_run(astrometry_run):
 
         atDelta = at1 - at0
 
-            
         instance.execution_astrometry = atDelta
 
         # Acrescentar os totais de asteroids por status.
@@ -338,7 +400,6 @@ def finish_astrometry_run(astrometry_run):
         instance.count_failed = cfailure
         instance.count_warning = cwarning
         instance.count_not_executed = cnotexecuted
-
 
         instance.status = 'success'
         instance.error_msg = None
@@ -373,7 +434,7 @@ def check_astrometry_running():
 
     runs = Run.objects.filter(status='running', step=3)
 
-    logger.debug("Astrometry Runs: %s"  % runs)
+    logger.debug("Astrometry Runs: %s" % runs)
 
     # Para cada running recupera os jobs
     for astrometry_run in runs:
@@ -387,8 +448,8 @@ def check_astrometry_running():
 
                 result = get_job_by_id(job.clusterid, job.procid)
 
-                logger.info("Check Status. Asteroid: [%s] Old Status: [%s] Current Status: [%s] ClusterId: [ %s ] " % (job.asteroid.name, job.job_status, result['JobStatus'], job.clusterid))
-
+                logger.info("Check Status. Asteroid: [%s] Old Status: [%s] Current Status: [%s] ClusterId: [ %s ] " % (
+                    job.asteroid.name, job.job_status, result['JobStatus'], job.clusterid))
 
                 if int(result['JobStatus']) != int(job.job_status):
                     logger.debug("STATUS Diferente")
@@ -410,6 +471,7 @@ def check_astrometry_running():
             if not check_jobs_wait_to_run(astrometry_run):
                 # Se todos os objetos ja foram executados finaliza o processo.
                 finish_astrometry_run(astrometry_run.pk)
+
 
 def check_jobs_wait_to_run(astrometry_run):
     # Verificar se nao tem nenhum objeto esperando para ser executado.

@@ -11,24 +11,6 @@ import DateTime from './DateTimePrediction';
 import InputSelect from './InputSelect';
 
 const useStyles = makeStyles((theme) => ({
-  card: {
-    minHeight: 230,
-  },
-  div: {
-
-    marginTop: 5,
-  },
-  cardHeader: {
-    backgroundColor: 'rgb(248, 249, 252)',
-    borderBottom: '1px solid rgb(227, 230, 240)',
-    paddingTop: 5,
-    paddingBottom: 5,
-  },
-  headerTitle: {
-    color: '#34465d',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   iconList: {
     fontSize: 24,
     cursor: 'pointer',

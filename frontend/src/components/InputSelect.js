@@ -55,7 +55,7 @@ export default function SimpleSelect(props) {
 
   return (
     <form className={classes.root} autoComplete="off">
-      <FormControl variant="outlined" className={`${formControl}`}>
+      <FormControl className={`${formControl}`}>
         <InputLabel htmlFor="input">{title}</InputLabel>
         <Select
           value={values.input}

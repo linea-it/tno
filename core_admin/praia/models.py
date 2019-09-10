@@ -203,6 +203,13 @@ class AstrometryAsteroid(models.Model):
         default=0
     )
 
+    available_ccd_image = models.IntegerField(
+        verbose_name="Available CCD Images",
+        help_text='Number of CCDs that were available for this asteroid',
+        null=True, blank=True,
+        default=0
+    )
+
     processed_ccd_image = models.IntegerField(
         verbose_name="Processed CCD Images",
         help_text='Number of CCDs that were processed for this asteroid',
@@ -222,9 +229,41 @@ class AstrometryAsteroid(models.Model):
         null=True, blank=True,
     )
 
+    execution_header = models.DurationField(
+        verbose_name='Execution Header Extraction',
+        null=True, blank=True
+    )
+
+    execution_astrometry = models.DurationField(
+        verbose_name='Execution PRAIA Astrometry',
+        null=True, blank=True
+    )
+
+    execution_targets = models.DurationField(
+        verbose_name='Execution PRAIA Targets',
+        null=True, blank=True
+    )
+
+    execution_plots = models.DurationField(
+        verbose_name='Execution Plots',
+        null=True, blank=True
+    )
+
+    execution_registry = models.DurationField(
+        verbose_name='Execution Registry',
+        null=True, blank=True
+    )
+
     execution_time = models.DurationField(
         verbose_name='Execution Time',
         null=True, blank=True
+    )
+
+    outputs = models.IntegerField(
+        verbose_name="Outputs",
+        help_text='Total outputs generated for this asteroid.',
+        null=True, blank=True,
+        default=0
     )
 
     relative_path = models.CharField(
@@ -334,8 +373,15 @@ class AstrometryOutput(models.Model):
             ('target_offset', 'Target Offset'),
             ('targets', 'Targets'),
             ('astrometric_results', 'Astrometric Results (xy)'),
-            ('saoimage_region_file', 'SAOimage region file'),
+            ('saoimage_region_file', 'SAO image region file'),
             ('mes', 'mes'),
+            ('header_extraction', 'Header Extraction'),
+            ('ast_reduction', 'Astrometry Reduction'),
+            ('ast_photometry', 'Astrometry Photometry'),
+            ('astrometry_input', 'Astrometry Input'),
+            ('astrometry_params', 'Astrometry Parameters'),
+            ('astrometry_log', 'PRAIA Astrometry Log'),
+            ('astrometry_plot', 'Plot'),
         )
     )
     catalog = models.CharField(
@@ -374,6 +420,13 @@ class AstrometryOutput(models.Model):
         null=True, blank=True,
         help_text='Path to file, this is the internal path in the proccess directory.',
     )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['type']),
+            models.Index(fields=['ccd_image']),
+            models.Index(fields=['file_type']),
+        ]
 
     def __str__(self):
         return str(self.filename)
