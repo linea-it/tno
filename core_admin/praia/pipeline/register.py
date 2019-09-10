@@ -177,7 +177,7 @@ def register_astrometry_outputs(astrometry_run, asteroid):
             asteroid.save()
 
             logger.warning(
-              "Asteroid [ %s ] was processed but the output file was not created." % (asteroid.name))
+                "Asteroid [ %s ] was processed but the output file was not created." % (asteroid.name))
 
         else:
 
