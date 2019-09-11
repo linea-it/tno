@@ -1,26 +1,25 @@
-from django.shortcuts import render
-
-from django.db.models import Count
-
-from rest_framework import viewsets
-
-from rest_framework.decorators import list_route, detail_route
-
-from rest_framework.response import Response
-
-from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput, AstrometryOutput
-
-from .serializers import RunSerializer, ConfigurationSerializer, AstrometryAsteroidSerializer, AstrometryInputSerializer, AstrometryOutputSerializer
-
-from . import signals
+import logging
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
-import os
-from django.conf import settings
 import pandas as pd
-import logging
+from django.conf import settings
+from django.db.models import Count
+from django.shortcuts import render
+from rest_framework import viewsets
+from rest_framework.decorators import detail_route, list_route
+from rest_framework.response import Response
 
+from tno.models import Pointing
+
+from . import signals
+from .models import (AstrometryAsteroid, AstrometryInput, AstrometryOutput,
+                     Configuration, Run)
+from .serializers import (AstrometryAsteroidSerializer,
+                          AstrometryInputSerializer,
+                          AstrometryOutputSerializer, ConfigurationSerializer,
+                          RunSerializer)
 
 # import numpy as np
 
@@ -217,37 +216,120 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
         return Response(result)
 
     @detail_route(methods=['GET'])
-    def eris_astrometry(self, request, pk=None):   
-        print ('Read Eris')
+    def astrometry_table(self, request, pk=None):
+        # Recuperar a instancia do Asteroid
+        asteroid = self.get_object()
 
+        try:
+            # Recuperar o filepath para o arquivo de Astrometria, um dos resultados do pipeline
+            output = asteroid.ast_outputs.get(type='astrometry')
+            filepath = os.path.join(asteroid.relative_path, output.filename)
 
-        df = pd.read_csv('/archive/tmp/Eris.txt',
-            header=None,
-            delim_whitespace=True,
-            )
+            # Ler o arquivo
+            df = pd.read_csv(filepath,
+                             header=None,
+                             delim_whitespace=True,
+                             )
 
-        a = df.iloc[0]
+            rows = list()
+            for record in df.itertuples():
+                ra = "%s:%s:%s" % (
+                    "{:02d}".format(int(record[1])),
+                    "{:02d}".format(int(record[2])),
+                    "{0:.3f}".format(float(record[3])))
 
-        rows = list()
-        for record in df.itertuples():
+                dec = "%s:%s:%s" % (
+                    "{:02d}".format(int(record[4])),
+                    "{:02d}".format(int(record[5])),
+                    "{0:.3f}".format(float(record[6])))
 
-            ra = "%s %s %s" % (int(record[1]), int(record[2]), float(record[3]))
-            dec =  "%s %s %s" % (int(record[4]), int(record[5]), float(record[6]))
-            
-            row = dict({
-                'ra': ra, 
-                'dec': dec, 
-                'mag': record[7], 
-                'julian_date': record[8] ,
-                'obs_code': record[9],
-                'catalog_code': record[10] 
+                row = dict({
+                    'ra': ra,
+                    'dec': dec,
+                    'mag': float("{0:.3f}".format(record[7])),
+                    'julian_date': record[8],
+                    'obs_code': record[9],
+                    'catalog_code': record[10]
+                })
+
+                rows.append(row)
+
+            result = dict({
+                'success': True,
+                'rows': rows,
             })
 
-            rows.append(row)
+            return Response(result)
+
+        except AstrometryOutput.DoesNotExist as e:
+            return Response(dict({
+                'success': False,
+                'rows': [],
+                'msg': 'There is no Astrometry result for this asteroid.',
+            }))
+
+    @detail_route(methods=['GET'])
+    def outputs_by_ccd(self, request, pk=None):
+        # Recuperar a instancia do Asteroid
+        asteroid = self.get_object()
+
+        # Parametro tree indica se o resultado vai ser retornado em tabela, ou arvore
+        # no caso de arvore, os outputs estao agrupados por ccd.
+        tree = bool(request.query_params.get('tree', False))
+
+        # Recuperar o filepath para o arquivo de Astrometria, um dos resultados do pipeline
+        queryset = asteroid.ast_outputs.filter(ccd_image__isnull=False)
+
+        # Recuperar informacao do ccd.
+        # TODO: o campo ccd_image e o id da tabela pointing,
+        # talvez seja melhor fazer uma chave estrangeira nesta coluna ou usar expnum,ccd_num, band
+
+        # Todos os diferentes apontamentos (CCDs)
+        distinct_ids = queryset.values_list(
+            'ccd_image', flat=True).distinct('ccd_image')
+
+        # converter os ids para inteiro
+        distinct_ids = [int(x) for x in distinct_ids]
+
+        # Recuperar na tabela pointings todos os apontamentos.
+        pointings = Pointing.objects.filter(id__in=distinct_ids)
+
+        data = list()
+        if tree:
+            for pointing in pointings:
+                outputs = queryset.filter(ccd_image=pointing.pk)
+                serializer = AstrometryOutputSerializer(outputs, many=True)
+                node = dict({
+                    'pointing_id': pointing.pk,
+                    'ccd_filename': pointing.filename,
+                    'expnum': pointing.expnum,
+                    'ccd_num': pointing.ccdnum,
+                    'band': pointing.band,
+                    'count_outputs': outputs.count(),
+                    'outputs': serializer.data
+                })
+
+                data.append(node)
+
+        else:
+            serializer = AstrometryOutputSerializer(queryset, many=True)
+
+            rows = serializer.data
+
+            # Adicionar o pointing filename a cada output
+            for row in rows:
+                pointing = pointings.get(pk=int(row.get('ccd_image')))
+                row.update({
+                    'ccd_filename': pointing.filename
+                })
+
+            data = rows
 
         result = dict({
             'success': True,
-            'rows': rows,
+            'rows': data,
+            'count_ccds': pointings.count(),
+            'count_outputs': queryset.count()
         })
 
         return Response(result)
