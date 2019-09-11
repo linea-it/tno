@@ -292,7 +292,7 @@ class PraiaHistory extends Component {
           callback={this.reload}
         />
 
-        {this.toolbarButton(this.state.selected)}
+        {/* {this.toolbarButton(this.state.selected)} */}
 
         <DataTable
           autoLayout={true}

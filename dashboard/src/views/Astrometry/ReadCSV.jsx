@@ -31,7 +31,9 @@ export default class ReadCSV extends Component {
   componentDidMount() {
     this.setState({ loading: true });
 
-    const { match: { params }, } = this.props;
+    const {
+      match: { params },
+    } = this.props;
     const filepath = decodeURIComponent(params.filepath);
     const filename = decodeURIComponent(params.filename);
     const title = decodeURIComponent(params.title);
@@ -98,7 +100,10 @@ export default class ReadCSV extends Component {
           field={col}
           header={col}
           sortable={true}
-          style={{ width: '295px', textAlign: 'center' }}
+          style={{
+            width: '200px',
+            // textAlign: 'center' 
+          }}
         />
       );
     });
@@ -116,6 +121,8 @@ export default class ReadCSV extends Component {
             loading={loading}
             scrollHeight="700px"
             responsive={true}
+            resizableColumns={true}
+            columnResizeMode="fit"
           >
             {acolumns}
           </DataTable>

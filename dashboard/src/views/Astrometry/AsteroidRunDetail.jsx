@@ -5,11 +5,15 @@ import { Column } from 'primereact/column';
 import PraiaApi from './PraiaApi';
 import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
+import { DataView } from 'primereact/dataview';
+import Lightbox from 'react-images';
+import { Panel } from 'primereact/panel';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize';
 import { TreeTable } from 'primereact/treetable';
 import Log from '../../components/Dialog/Log';
 import filesize from 'filesize';
+import { findIndex } from 'lodash';
 
 export default class AsteroidRunDetail extends Component {
   state = this.initialState;
@@ -38,6 +42,10 @@ export default class AsteroidRunDetail extends Component {
       selectedNodeKey1: [],
       astrometryTable: [],
       outputCcdsTree: [],
+      plots: [],
+      currentPlot: 0,
+      lightboxIsOpen: false,
+      lightboxImages: [],
     };
   }
 
@@ -49,7 +57,6 @@ export default class AsteroidRunDetail extends Component {
     const asteroid_id = params.id;
 
     this.setState({ id: asteroid_id }, () => this.loadData(asteroid_id));
-
   }
 
   loadData = asteroid_id => {
@@ -74,19 +81,39 @@ export default class AsteroidRunDetail extends Component {
     this.api.read_astrometry_table(asteroid_id).then(res => {
       const rows = res.data.rows;
       this.setState({
-        astrometryTable: rows
-      })
-    })
+        astrometryTable: rows,
+      });
+    });
 
     // Outputs do pipeline por ccd
     this.api.getAsteroidOutputsTree(asteroid_id).then(res => {
       const rows = res.data.rows;
       this.setState({
-        outputCcdsTree: rows
-      })
-    })
+        outputCcdsTree: rows,
+      });
+    });
 
-  }
+    // Plots gerados pelo pipeline
+    this.api.getAstrometryPlots(asteroid_id).then(res => {
+      const rows = res.data.rows;
+      rows.map(row => {
+        row.src = this.api.api + row.src;
+        return row;
+      });
+      const images = rows.map(r => {
+        return {
+          src: r.src,
+          thumbnail: r.src,
+          title: r.ccd_filename,
+        };
+      });
+
+      this.setState({
+        plots: rows,
+        lightboxImages: images,
+      });
+    });
+  };
 
   onClickBackToAstrometryRun = praia_run => {
     const history = this.props.history;
@@ -152,14 +179,7 @@ export default class AsteroidRunDetail extends Component {
 
     const filepath = encodeURIComponent(rowData.file_path);
     const filename = encodeURIComponent(rowData.filename);
-    const title = encodeURIComponent(
-      'Process: ' +
-      proccess +
-      ' of the asteroid ' +
-      rowData.asteroid +
-      '. \u00a0 File: ' +
-      rowData.filename
-    );
+    const title = encodeURIComponent('File: ' + rowData.filename);
 
     const history = this.props.history;
     history.push(`/astrometry_read_csv/${filepath}/${filename}/${title}`);
@@ -334,7 +354,7 @@ export default class AsteroidRunDetail extends Component {
         columnResizeMode="expand"
       >
         {elColumns}
-        < Column />
+        <Column />
       </TreeTable>
     );
   };
@@ -380,19 +400,16 @@ export default class AsteroidRunDetail extends Component {
     });
 
     return (
-      <DataTable
-        value={inputs}
-        sortField={'type_name'}
-        sortOrder={1}
-      >
+      <DataTable value={inputs} sortField={'type_name'} sortOrder={1}>
         {elColumns}
         <Column
           style={{ width: '60px', textAlign: 'center' }}
           body={this.actionTemplate}
         />
         <Column />
-      </DataTable>);
-  }
+      </DataTable>
+    );
+  };
 
   openFileBtn = record => {
     return (
@@ -456,10 +473,97 @@ export default class AsteroidRunDetail extends Component {
     },
   ];
 
+  templateGridItem = record => {
+    if (record) {
+      return (
+        <div style={{ padding: '.5em' }} className="p-col-12 p-md-3">
+          <Panel header={record.ccd_filename} style={{ textAlign: 'center' }}>
+            <img
+              src={record.src}
+              alt={record.ccd_filename}
+              width={320}
+              height={240}
+              onClick={e => this.openLightbox(record, e)}
+            />
+            {/* <hr className="ui-widget-content" style={{ borderTop: 0 }} />
+            <Button icon="pi pi-search"
+            // onClick={(e) => this.setState({ selectedCar: car, visible: true })}
+            >
+            </Button> */}
+          </Panel>
+        </div>
+      );
+    }
+    return <div />;
+  };
+
+  dataViewItemTemplate = (record, layout) => {
+    if (layout === 'grid') {
+      return this.templateGridItem(record);
+    }
+  };
+
+  renderPlotsDataView = (plots, layout) => {
+    return (
+      <div>
+        <DataView
+          value={plots}
+          layout={layout}
+          itemTemplate={this.dataViewItemTemplate}
+          paginator={true}
+          rows={12}
+        />
+      </div>
+    );
+  };
+
+  openLightbox = (record, event) => {
+    const { plots } = this.state;
+    const index = findIndex(plots, function (o) {
+      return o.id == record.id;
+    });
+
+    event.preventDefault();
+    this.setState({
+      currentPlot: index,
+      lightboxIsOpen: true,
+    });
+  };
+
+  closeLightbox = () => {
+    this.setState({
+      currentPlot: 0,
+      lightboxIsOpen: false,
+    });
+  };
+
+  lightboxGotoPrevious = () => {
+    this.setState({
+      currentPlot: this.state.currentPlot - 1,
+    });
+  };
+  lightboxGotoNext = () => {
+    this.setState({
+      currentPlot: this.state.currentPlot + 1,
+    });
+  };
+  lightboxGotoImage = index => {
+    this.setState({
+      currentPlot: index,
+    });
+  };
+
   render() {
-    const { asteroid, inputs, astrometryTable, outputCcdsTree } = this.state;
-
-
+    const {
+      asteroid,
+      inputs,
+      astrometryTable,
+      outputCcdsTree,
+      plots,
+      lightboxImages,
+      currentPlot,
+      lightboxIsOpen,
+    } = this.state;
 
     let title = asteroid.name;
     if (asteroid.number && asteroid.number !== '-') {
@@ -517,6 +621,12 @@ export default class AsteroidRunDetail extends Component {
               }
             />
           </div>
+          <div className="ui-g-12">
+            <PanelCostumize
+              title="Astrometry Plots CCD x Stars x Asteroid"
+              content={this.renderPlotsDataView(plots, 'grid')}
+            />
+          </div>
 
           <div className="ui-g-12">
             <PanelCostumize
@@ -537,6 +647,14 @@ export default class AsteroidRunDetail extends Component {
             onHide={this.onLogHide}
             content={this.state.output_content}
             dismissableMask={true}
+          />
+          <Lightbox
+            currentImage={currentPlot}
+            images={lightboxImages}
+            isOpen={lightboxIsOpen}
+            onClickNext={this.lightboxGotoNext}
+            onClickPrev={this.lightboxGotoPrevious}
+            onClose={this.closeLightbox}
           />
         </div>
       </div>
