@@ -27,7 +27,7 @@ from django.utils import timezone
 from datetime import datetime
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
-from tno.skybot.plot_ccds_objects import ccds_objects
+from tno.skybot.plot_ccds_objects import ccds_objects, read_skybot_output, get_circle_from_ra_dec
 import urllib
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -807,7 +807,8 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
 
         run_id = int(request.query_params.get('run_id', None))
         expnum = int(request.query_params.get('expnum', None))
-
+        image = bool(request.query_params.get('image', False))
+    
         skybotrun = None
         try:
             skybotrun = SkybotRun.objects.get(pk=int(run_id))
@@ -852,24 +853,46 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
         plot_file_path = os.path.join(settings.MEDIA_TMP_DIR, plot_filename)
         plot_src = urllib.parse.urljoin(settings.MEDIA_TMP_URL, plot_filename)
 
-        plot = ccds_objects(
-            ra=ra, 
-            dec=dec,  
-            ccds=ccds, 
-            skybot_file=skybot_output_file, 
-            file_path=plot_file_path)
 
-        return Response({
-            'success': True,
-            'expnum': expnum,
-            'ccds': len(ccds),
-            'asteroids_ccd': len(mAsteroids),
-            'skybot_output_file': skybot_output_file,
-            'plot_file_path': plot_file_path,
-            'plot_src': plot_src,
-            'plot_filename': plot_filename,
-            # 'teste': ccds[0]
-        })
+        if image:
+            plot = ccds_objects(
+                ra=ra, 
+                dec=dec,  
+                ccds=ccds, 
+                skybot_file=skybot_output_file, 
+                file_path=plot_file_path)
+
+            return Response({
+                'success': True,
+                'expnum': expnum,
+                'ccds': len(ccds),
+                'asteroids_ccd': len(mAsteroids),
+                'skybot_output_file': skybot_output_file,
+                'plot_file_path': plot_file_path,
+                'plot_src': plot_src,
+                'plot_filename': plot_filename,
+            })
+
+
+        else:
+
+            skybotRa, skybotDec = read_skybot_output(skybot_output_file)
+            # circleRa, circleDec = get_circle_from_ra_dec(ra, dec)
+
+            return Response({
+                'success': True,
+                'expnum': expnum,
+                'ccds': len(ccds),
+                'ra': ra,
+                'dec': dec,
+                'ccds': ccds,
+                'skybot_output': dict({
+                    'ra': skybotRa,
+                    'dec': skybotDec
+                }),
+            })
+
+
 
     @list_route()
     def asteroids_ccd(self, request):

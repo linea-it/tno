@@ -27,6 +27,21 @@ def dd2degrees(ddmmss):
         deg = -deg
     return deg
 
+def read_skybot_output(filepath):
+    raH, decD = np.loadtxt(filepath, delimiter='|', usecols=(2,3), dtype=str, unpack=True)
+    ra = [hh2degrees(hms) for hms in raH]
+    dec = [dd2degrees(dms) for dms in decD]
+
+    return ra, dec
+
+def get_circle_from_ra_dec(ra, dec):
+    x0, y0 = translationRA(ra), dec
+    rho = 1.2  
+    phi = np.linspace(0, 2*np.pi, 100)
+    xx = x0 + rho*np.cos(phi)
+    yy = y0 + rho*np.sin(phi)
+
+    return xx, yy
 
 def ccds_objects(ra, dec, ccds, skybot_file, file_path ):
 

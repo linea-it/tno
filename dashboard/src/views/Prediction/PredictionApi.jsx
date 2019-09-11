@@ -63,7 +63,7 @@ class PredictionApi {
     });
 
   getPredictionRunById = ({ id }) =>
-    axios.patch(`${this.api}/predict_run/${id}/`);
+    axios.get(`${this.api}/predict_run/${id}/`);
 
   getTimeProfile = ({ id }) => {
     const params = {
