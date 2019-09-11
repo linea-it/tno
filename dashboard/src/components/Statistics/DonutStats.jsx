@@ -77,7 +77,7 @@ class DonutStats extends Component {
               <Tooltip formatter={value => this.format(value)} />
               <Legend
                 iconSize={10}
-                width={120}
+                width={160}
                 height={100}
                 layout="vertical"
                 verticalAlign="middle"
