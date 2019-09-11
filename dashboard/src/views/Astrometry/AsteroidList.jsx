@@ -331,36 +331,6 @@ class AsteroidList extends Component {
     });
   };
 
-  handleCondorButton = rowData => {
-    return (
-      <Button
-        className="ui-button-warning"
-        icon="fa fa-file-text-o"
-        onClick={() => this.openLog(rowData.condor_log)}
-      />
-    );
-  };
-
-  handleCondorError = rowData => {
-    return (
-      <Button
-        className="ui-button-warning"
-        icon="fa fa-file-text-o"
-        onClick={() => this.openLog(rowData.condor_err_log)}
-      />
-    );
-  };
-
-  handleCondorOutput = rowData => {
-    return (
-      <Button
-        className="ui-button-warning"
-        icon="fa fa-file-text-o"
-        onClick={() => this.openLog(rowData.condor_out_log)}
-      />
-    );
-  };
-
   loadErrorMessageColumns = rowData => {
     this.setState({
       columns: [
@@ -394,23 +364,49 @@ class AsteroidList extends Component {
           field: 'condor_log',
           header: 'Log',
           style: { textAlign: 'center', width: '7%' },
-          body: this.handleCondorButton,
+          // body: this.handleCondorButton,
+          body: rowData => {
+            return (
+              <Button
+                className="ui-button-warning"
+                icon="fa fa-file-text-o"
+                onClick={() => this.openLog(rowData.condor_log)}
+              />
+            );
+          },
           sortable: false,
         },
 
         {
           field: 'condor_err_log',
           header: 'Error',
-          body: this.handleCondorError,
+          // body: this.handleCondorError,
+          body: rowData => {
+            return (
+              <Button
+                className="ui-button-warning"
+                icon="fa fa-file-text-o"
+                onClick={() => this.openLog(rowData.condor_err_log)}
+              />
+            );
+          },
           style: { textAlign: 'center', width: '7%' },
-
           sortable: false,
         },
 
         {
           field: 'condor_out_log',
           header: 'Output',
-          body: this.handleCondorOutput,
+          // body: this.handleCondorOutput,
+          body: rowData => {
+            return (
+              <Button
+                className="ui-button-warning"
+                icon="fa fa-file-text-o"
+                onClick={() => this.openLog(rowData.condor_out_log)}
+              />
+            );
+          },
           style: { textAlign: 'center', width: '8%' },
           sortable: false,
         },
