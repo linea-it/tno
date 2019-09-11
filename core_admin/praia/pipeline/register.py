@@ -209,12 +209,35 @@ def register_astrometry_outputs(astrometry_run, asteroid):
                     'file_size'), output.get('extension')
             )
 
+            # Targets Search Log
+            try:
+                filename = results.get('praia_targets').get('log')
+                filepath = os.path.join(asteroid.relative_path, filename)
+                filesize = os.path.getsize(filepath)
+
+                update_create_astrometry_output(
+                    asteroid, 'targets_log', filename, filesize, '.log')
+            except:
+                logger.warning(
+                    "Failed to register PRAIA Target Search Log. %s" % e)
+
             # Header Extraction
             output = results.get('header_extraction')
             update_create_astrometry_output(
                 asteroid, 'header_extraction', output.get('filename'), output.get(
                     'file_size'), output.get('extension')
             )
+
+            # Header Extraction Log
+            try:
+                filename = results.get('header_extraction').get('log')
+                filepath = os.path.join(asteroid.relative_path, filename)
+                filesize = os.path.getsize(filepath)
+
+                update_create_astrometry_output(
+                    asteroid, 'header_extraction_log', filename, filesize, '.log')
+            except:
+                logger.warning("Failed to register PRAIA Header Log. %s" % e)
 
             # Outputs gerados para cada CCD
             count = 0

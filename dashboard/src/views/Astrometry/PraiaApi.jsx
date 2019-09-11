@@ -109,6 +109,9 @@ class PraiaApi {
   read_astrometry_table = id =>
     axios.get(`${this.api}/astrometry_asteroids/${id}/astrometry_table/`);
 
+  getAsteroidMainOutputs = id =>
+    axios.get(`${this.api}/astrometry_asteroids/${id}/main_outputs/`);
+
   getAsteroidOutputsByCCds = id =>
     axios.get(`${this.api}/astrometry_asteroids/${id}/outputs_by_ccd/`);
 
