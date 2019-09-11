@@ -43,6 +43,7 @@ export default class AsteroidRunDetail extends Component {
       selectedNodeKey1: [],
       astrometryTable: [],
       outputCcdsTree: [],
+      mainOutputs: [],
       plots: [],
       currentPlot: 0,
       lightboxIsOpen: false,
@@ -83,6 +84,14 @@ export default class AsteroidRunDetail extends Component {
       const rows = res.data.rows;
       this.setState({
         astrometryTable: rows,
+      });
+    });
+
+    // Main Outputs do pipeline
+    this.api.getAsteroidMainOutputs(asteroid_id).then(res => {
+      const rows = res.data.rows;
+      this.setState({
+        mainOutputs: rows,
       });
     });
 
@@ -573,7 +582,7 @@ export default class AsteroidRunDetail extends Component {
             : 0.0,
       },
       {
-        name: 'Targets',
+        name: 'Target Search',
         value:
           asteroid.execution_targets !== null
             ? moment.duration(asteroid.execution_targets).asSeconds()
@@ -605,12 +614,31 @@ export default class AsteroidRunDetail extends Component {
     );
   }
 
+  renderResultBar = mainOutputs => {
+    const buttons = [];
+    mainOutputs.map(row => {
+      const b = (
+        <Button
+          label={row.type_name}
+          onClick={() => this.handleClickOutput(row)}
+        />
+      );
+      buttons.push(b);
+    });
+    return (
+      <Toolbar>
+        <div className="ui-toolbar-group-left">{buttons}</div>
+      </Toolbar>
+    );
+  };
+
   render() {
     const {
       asteroid,
       inputs,
       astrometryTable,
       outputCcdsTree,
+      mainOutputs,
       plots,
       lightboxImages,
       currentPlot,
@@ -659,7 +687,6 @@ export default class AsteroidRunDetail extends Component {
                   data={stats}
                 />}
             />
-
           </div>
           <div className="ui-sm-6 ui-md-6 ui-lg-4 ui-xl-3">
             <PanelCostumize
@@ -668,6 +695,7 @@ export default class AsteroidRunDetail extends Component {
             />
           </div>
 
+          <div className="ui-g-12">{this.renderResultBar(mainOutputs)}</div>
           <div className="ui-g-12">
             <PanelCostumize
               title="Astrometry"
