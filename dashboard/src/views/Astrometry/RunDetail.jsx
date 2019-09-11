@@ -49,9 +49,6 @@ class PraiaDetail extends Component {
   format_execution_time = duration => {
     var seconds = Math.round(moment.duration(duration).asSeconds());
     // return moment.utc(seconds * 1000).format('HH:mm:ss');
-
-    console.log(duration);
-
   };
 
   onViewAsteroid = asteroid_id => {
@@ -119,10 +116,8 @@ class PraiaDetail extends Component {
     this.loadStatus(id);
     this.loadExecutionTime(id);
 
-
     // TODO deve sair daqui, so para testes
     this.api.checkJobStatus();
-
   };
 
   loadStatus = id => {
@@ -141,21 +136,15 @@ class PraiaDetail extends Component {
     });
   };
 
-
-
-
   // controlInterval = () => {
   //   //This function was created because when user needs to see the number of
   //   // the exectution on pie chart, the interval erase the showing.
   //   //This function may be used for other things but in this case when mouse enter
-  //   //pie chart on DonutStats.jsx then turns off the interval. Else turns it on. 
+  //   //pie chart on DonutStats.jsx then turns off the interval. Else turns it on.
 
   //   this.setState({ interval_condition: this.state.interval_condition === true ? false : true });
 
-
   // };
-
-
 
   renderStatus = () => {
     const { status_data } = this.state;
@@ -229,7 +218,6 @@ class PraiaDetail extends Component {
   renderExecutionTime = () => {
     const execution_time = this.state.data_execution_time;
 
-
     const colors = ['#64b5f6', '#1e88e5', '#3949ab', '#311b92'];
 
     const stats_status = [
@@ -240,11 +228,13 @@ class PraiaDetail extends Component {
       },
       {
         name: 'Bsp_Jpl',
-        value: execution_time !== null ? parseFloat(execution_time.bsp_jpl) : 0.0,
+        value:
+          execution_time !== null ? parseFloat(execution_time.bsp_jpl) : 0.0,
       },
       {
         name: 'Catalog',
-        value: execution_time !== null ? parseFloat(execution_time.catalog) : 0.0,
+        value:
+          execution_time !== null ? parseFloat(execution_time.catalog) : 0.0,
       },
       {
         name: 'Astrometry',
@@ -253,11 +243,17 @@ class PraiaDetail extends Component {
       },
     ];
 
-    return <DonutStats flag={"execution_time"} data={stats_status} controlInterval={this.controlInterval} fill={colors} />;
+    return (
+      <DonutStats
+        flag={'execution_time'}
+        data={stats_status}
+        controlInterval={this.controlInterval}
+        fill={colors}
+      />
+    );
   };
 
   render() {
-
     const {
       data,
       reload_interval,
@@ -266,7 +262,8 @@ class PraiaDetail extends Component {
     } = this.state;
 
     const stats = [
-      { name: 'Process', value: data.proccess_displayname },
+      { name: 'Process', value: data.id },
+      { name: 'Process Name', value: data.input_displayname },
       { name: 'Owner', value: data.owner },
       { name: 'Start', value: data.h_time },
       { name: 'Execution', value: data.h_execution_time },
@@ -292,7 +289,6 @@ class PraiaDetail extends Component {
 
         {this.create_nav_bar()}
 
-
         <div className="ui-g">
           <div className="ui-sm-3 ui-md-4 ui-lg-4 ui-xl-3">
             <PanelCostumize
@@ -309,7 +305,6 @@ class PraiaDetail extends Component {
           </div>
 
           <div className="ui-sm-3 ui-md-4 ui-lg-4 ui-xl-3">
-
             <div>
               <PanelCostumize
                 title="Execution Statistics"
@@ -317,19 +312,14 @@ class PraiaDetail extends Component {
               />
             </div>
 
-            <br></br>
-
+            <br />
 
             <div>
               <PanelCostumize
                 title="Execution Time"
                 content={this.renderExecutionTime()}
-
               />
             </div>
-
-
-
           </div>
 
           {/* <div className="ui-g-4 ui-md-12 ui-sm-1">
@@ -338,10 +328,6 @@ class PraiaDetail extends Component {
               // content={<StepStats info={execute_time} />}
               />
             </div> */}
-
-
-
-
 
           <div className="ui-g-12">
             <Stepper steps={items} activeStep={activeIndex} />

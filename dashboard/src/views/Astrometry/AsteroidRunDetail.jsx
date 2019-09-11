@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Card } from 'primereact/card';
-import moment from 'moment';
 import PraiaApi from './PraiaApi';
 import { Toolbar } from 'primereact/toolbar';
 import { Button } from 'primereact/button';
@@ -10,271 +9,16 @@ import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize';
 import { TreeTable } from 'primereact/treetable';
 import Log from '../../components/Dialog/Log';
-import tableContent from '../Astrometry/assets/astrometry_table_content.json';
-
-const outputs = {
-  D00512549_z_c51_r2379p01_immasked: [],
-  D00512548_z_c54_r2379p01_immasked: [],
-  D00512547_i_c55_r2379p01_immasked: [],
-  D00507395_z_c23_r2379p01_immasked: [],
-  D00507394_z_c55_r2379p01_immasked: [],
-  D00507393_i_c48_r2379p01_immasked: [],
-  D00364726_g_c56_r2166p01_immasked: [
-    {
-      catalog: null,
-      filename: 'D00364726_g_c56_r2166p01_immasked.mes',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.mes',
-      file_size: 0,
-      extension: '.mes',
-    },
-    {
-      catalog: null,
-      filename: 'D00364726_g_c56_r2166p01_immasked.reg',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.reg',
-      file_size: 25492,
-      extension: '.reg',
-    },
-    {
-      catalog: 'gaia1',
-      filename: 'D00364726_g_c56_r2166p01_immasked.gaia1.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia1.rad.xy',
-      file_size: 301378,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia2',
-      filename: 'D00364726_g_c56_r2166p01_immasked.gaia2.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia2.rad.xy',
-      file_size: 301378,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia3',
-      filename: 'D00364726_g_c56_r2166p01_immasked.gaia3.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia3.rad.xy',
-      file_size: 301378,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia4',
-      filename: 'D00364726_g_c56_r2166p01_immasked.gaia4.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia4.rad.xy',
-      file_size: 301378,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia5',
-      filename: 'D00364726_g_c56_r2166p01_immasked.gaia5.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia5.rad.xy',
-      file_size: 301378,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia6',
-      filename: 'D00364726_g_c56_r2166p01_immasked.gaia6.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia6.rad.xy',
-      file_size: 301378,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia7',
-      filename: 'D00364726_g_c56_r2166p01_immasked.gaia7.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia7.rad.xy',
-      file_size: 301378,
-      extension: '.xy',
-    },
-    {
-      catalog: 'ucac4',
-      filename: 'D00364726_g_c56_r2166p01_immasked.ucac4.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.ucac4.rad.xy',
-      file_size: 301378,
-      extension: '.xy',
-    },
-    {
-      catalog: 'ucac5',
-      filename: 'D00364726_g_c56_r2166p01_immasked.ucac5.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.ucac5.rad.xy',
-      file_size: 301378,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia_dr2',
-      filename: 'D00364726_g_c56_r2166p01_immasked.gaia_dr2.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00364726_g_c56_r2166p01_immasked.gaia_dr2.rad.xy',
-      file_size: 301378,
-      extension: '.xy',
-    },
-  ],
-  D00503010_z_c30_r2378p01_immasked: [
-    {
-      catalog: null,
-      filename: 'D00503010_z_c30_r2378p01_immasked.mes',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.mes',
-      file_size: 0,
-      extension: '.mes',
-    },
-    {
-      catalog: null,
-      filename: 'D00503010_z_c30_r2378p01_immasked.reg',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.reg',
-      file_size: 33857,
-      extension: '.reg',
-    },
-    {
-      catalog: 'gaia1',
-      filename: 'D00503010_z_c30_r2378p01_immasked.gaia1.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia1.rad.xy',
-      file_size: 401280,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia2',
-      filename: 'D00503010_z_c30_r2378p01_immasked.gaia2.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia2.rad.xy',
-      file_size: 401280,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia3',
-      filename: 'D00503010_z_c30_r2378p01_immasked.gaia3.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia3.rad.xy',
-      file_size: 401280,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia4',
-      filename: 'D00503010_z_c30_r2378p01_immasked.gaia4.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia4.rad.xy',
-      file_size: 401280,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia5',
-      filename: 'D00503010_z_c30_r2378p01_immasked.gaia5.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia5.rad.xy',
-      file_size: 401280,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia6',
-      filename: 'D00503010_z_c30_r2378p01_immasked.gaia6.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia6.rad.xy',
-      file_size: 401280,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia7',
-      filename: 'D00503010_z_c30_r2378p01_immasked.gaia7.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia7.rad.xy',
-      file_size: 401280,
-      extension: '.xy',
-    },
-    {
-      catalog: 'ucac4',
-      filename: 'D00503010_z_c30_r2378p01_immasked.ucac4.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.ucac4.rad.xy',
-      file_size: 401280,
-      extension: '.xy',
-    },
-    {
-      catalog: 'ucac5',
-      filename: 'D00503010_z_c30_r2378p01_immasked.ucac5.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.ucac5.rad.xy',
-      file_size: 401280,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia_dr2',
-      filename: 'D00503010_z_c30_r2378p01_immasked.gaia_dr2.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00503010_z_c30_r2378p01_immasked.gaia_dr2.rad.xy',
-      file_size: 401280,
-      extension: '.xy',
-    },
-  ],
-  D00506424_z_c35_r2379p01_immasked: [
-    {
-      catalog: null,
-      filename: 'D00506424_z_c35_r2379p01_immasked.mes',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.mes',
-      file_size: 0,
-      extension: '.mes',
-    },
-    {
-      catalog: null,
-      filename: 'D00506424_z_c35_r2379p01_immasked.reg',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.reg',
-      file_size: 28677,
-      extension: '.reg',
-    },
-    {
-      catalog: 'gaia1',
-      filename: 'D00506424_z_c35_r2379p01_immasked.gaia1.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.gaia1.rad.xy',
-      file_size: 339416,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia2',
-      filename: 'D00506424_z_c35_r2379p01_immasked.gaia2.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.gaia2.rad.xy',
-      file_size: 339416,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia3',
-      filename: 'D00506424_z_c35_r2379p01_immasked.gaia3.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.gaia3.rad.xy',
-      file_size: 339416,
-      extension: '.xy',
-    },
-    {
-      catalog: 'gaia4',
-      filename: 'D00506424_z_c35_r2379p01_immasked.gaia4.rad.xy',
-      filepath:
-        '/data/proccess/4/objects/Eris/D00506424_z_c35_r2379p01_immasked.gaia4.rad.xy',
-      file_size: 339416,
-      extension: '.xy',
-    },
-  ],
-};
+import filesize from 'filesize';
 
 export default class AsteroidRunDetail extends Component {
   state = this.initialState;
   api = new PraiaApi();
 
-  // static propTypes = {
-  //     match: PropTypes.object.isRequired,
-  //     history: PropTypes.any.isRequired,
-  //   };
+  static propTypes = {
+    match: PropTypes.object.isRequired,
+    history: PropTypes.any.isRequired,
+  };
 
   get initialState() {
     return {
@@ -292,29 +36,10 @@ export default class AsteroidRunDetail extends Component {
       log_visible: false,
       header: null,
       selectedNodeKey1: [],
-      expandedKeys: [],
-      astrometryTable: tableContent,
+      astrometryTable: [],
+      outputCcdsTree: [],
     };
   }
-
-  input_columns = [
-    {
-      field: 'input_type',
-      header: 'Input Type',
-      sortable: true,
-    },
-    {
-      field: 'h_file_size',
-      header: 'File Size',
-      sortable: true,
-    },
-
-    {
-      field: 'filename',
-      header: 'Filename',
-      sortable: true,
-    },
-  ];
 
   componentDidMount() {
     const {
@@ -322,6 +47,12 @@ export default class AsteroidRunDetail extends Component {
     } = this.props;
 
     const asteroid_id = params.id;
+
+    this.setState({ id: asteroid_id }, () => this.loadData(asteroid_id));
+
+  }
+
+  loadData = asteroid_id => {
     this.api.getAsteroidById(asteroid_id).then(res => {
       this.setState({
         asteroid: res.data,
@@ -338,6 +69,23 @@ export default class AsteroidRunDetail extends Component {
         inputs: inputs,
       });
     });
+
+    // Resultado da Astrometria, dados em formato tabela.
+    this.api.read_astrometry_table(asteroid_id).then(res => {
+      const rows = res.data.rows;
+      this.setState({
+        astrometryTable: rows
+      })
+    })
+
+    // Outputs do pipeline por ccd
+    this.api.getAsteroidOutputsTree(asteroid_id).then(res => {
+      const rows = res.data.rows;
+      this.setState({
+        outputCcdsTree: rows
+      })
+    })
+
   }
 
   onClickBackToAstrometryRun = praia_run => {
@@ -363,7 +111,7 @@ export default class AsteroidRunDetail extends Component {
             icon={this.state.download_icon}
             className="ui-button-info"
             disabled="disabled"
-            // onClick={() => this.onClickDownload(this.state.asteroid.id)}
+          // onClick={() => this.onClickDownload(this.state.asteroid.id)}
           />
         </div>
 
@@ -406,11 +154,11 @@ export default class AsteroidRunDetail extends Component {
     const filename = encodeURIComponent(rowData.filename);
     const title = encodeURIComponent(
       'Process: ' +
-        proccess +
-        ' of the asteroid ' +
-        rowData.asteroid +
-        '. \u00a0 File: ' +
-        rowData.filename
+      proccess +
+      ' of the asteroid ' +
+      rowData.asteroid +
+      '. \u00a0 File: ' +
+      rowData.filename
     );
 
     const history = this.props.history;
@@ -440,40 +188,89 @@ export default class AsteroidRunDetail extends Component {
   renderOutputTreeTable = outputs => {
     const columns = [
       {
-        field: 'filename',
-        header: 'Filename',
-        style: { width: '40%' },
+        field: 'ccd_filename',
+        header: 'CCD Filename',
+        style: { width: '320px' },
         expander: true,
+        sortable: true,
+      },
+      {
+        field: 'expnum',
+        header: 'Expnum',
+        style: {
+          width: '80px',
+        },
+        sortable: false,
+      },
+      {
+        field: 'ccd_num',
+        header: 'CCD',
+        style: {
+          width: '80px',
+        },
+        sortable: false,
+      },
+      {
+        field: 'band',
+        header: 'Band',
+        style: {
+          width: '80px',
+        },
+        sortable: false,
+      },
+      {
+        field: 'count_outputs',
+        header: 'Files',
+        style: {
+          width: '80px',
+        },
+        sortable: false,
+      },
+      {
+        field: 'type_name',
+        header: 'Type',
+        style: {
+          width: '180px',
+          // textAlign: 'center',
+        },
         sortable: true,
       },
       {
         field: 'catalog',
         header: 'Ref. Catalog',
         style: {
-          width: '15%',
-          textAlign: 'center',
+          width: '120px',
         },
         sortable: true,
       },
       {
-        field: 'file_size',
-        header: 'File size',
+        field: 'file_type',
+        header: 'Extension',
         sortable: false,
+        style: {
+          width: '100px',
+        },
       },
       {
-        field: 'extension',
-        header: 'File type',
-        sortable: true,
+        field: 'h_size',
+        header: 'File size',
         style: {
-          width: '10%',
-          textAlign: 'center',
+          width: '100px',
         },
+        sortable: true,
       },
       {
         field: 'actionBtn',
         style: {
           textAlign: 'center',
-          width: '10%',
+          width: '60px',
+        },
+      },
+      {
+        field: 'placeholder',
+        style: {
+          textAlign: 'center',
+          // width: '10%',
         },
       },
     ];
@@ -490,31 +287,112 @@ export default class AsteroidRunDetail extends Component {
         />
       );
     });
+
+    const rows = [];
+
+    outputs.map(ccd => {
+      var a_children = [];
+
+      ccd.outputs.map(output => {
+        var data = output;
+
+        data.h_size = filesize(output.file_size);
+
+        if (data.type == 'astrometry_plot') {
+          // TODO implementar uma funcao para abrir uma png.
+        } else {
+          data.actionBtn = this.openFileBtn(output);
+        }
+
+        a_children.push({
+          data: data,
+          selectable: true,
+        });
+      });
+
+      var nodeCcd = {
+        data: {
+          ccd_filename: ccd.ccd_filename,
+          expnum: ccd.expnum,
+          ccd_num: ccd.ccd_num,
+          band: ccd.band,
+          count_outputs: ccd.count_outputs,
+        },
+        children: a_children,
+        selectable: false,
+      };
+
+      rows.push(nodeCcd);
+    });
+
     return (
       <TreeTable
-        value={outputs}
+        value={rows}
         resizableColumns={true}
         scrollable
         scrollHeight="200px"
         columnResizeMode="expand"
-        // expandedKeys={this.state.expandedKeys}
-        // onToggle={e => {
-        //   this.setState({ expandedKeys: e.value })
-        // }}
-
-        //Component treeTable was updated but primereact documentation doesnt.
-        //TODO: Check previous documentation to try to solve the problem
-        // selectionMode="single"
-        // selectionKeys={this.state.selectedNodeKey1}
-        // selectionChange={e => this.setState({ selectedNodeKey1: e }, () => {
-        //   console.log(this.state.selectedNodeKey1);
-        // })}
       >
         {elColumns}
-        <Column />
+        < Column />
       </TreeTable>
     );
   };
+
+  renderInputTable = inputs => {
+    const columns = [
+      {
+        field: 'type_name',
+        header: 'Input Type',
+        sortable: false,
+        style: {
+          width: '320px',
+        },
+      },
+      {
+        field: 'filename',
+        header: 'Filename',
+        sortable: false,
+        style: {
+          width: '180px',
+        },
+      },
+      {
+        field: 'h_file_size',
+        header: 'File Size',
+        sortable: false,
+        style: {
+          width: '100px',
+        },
+      },
+    ];
+    const elColumns = columns.map((col, i) => {
+      return (
+        <Column
+          key={i}
+          field={col.field}
+          header={col.header}
+          sortable={col.sortable}
+          style={col.style}
+          body={col.body}
+        />
+      );
+    });
+
+    return (
+      <DataTable
+        value={inputs}
+        sortField={'type_name'}
+        sortOrder={1}
+      >
+        {elColumns}
+        <Column
+          style={{ width: '60px', textAlign: 'center' }}
+          body={this.actionTemplate}
+        />
+        <Column />
+      </DataTable>);
+  }
 
   openFileBtn = record => {
     return (
@@ -528,7 +406,7 @@ export default class AsteroidRunDetail extends Component {
 
   //Go from here
   handleClickOutput = record => {
-    this.api.readOutputFile(record.filepath).then(res => {
+    this.api.readOutputFile(record.file_path).then(res => {
       const output = res.data.rows;
       this.setState({
         output_content: output,
@@ -545,30 +423,26 @@ export default class AsteroidRunDetail extends Component {
   astrometry_columns = [
     {
       field: 'ra',
-      header: 'Ra',
+      header: 'RA',
       sortable: false,
-      style: { textAlign: 'center' },
     },
     {
       field: 'dec',
       header: 'Dec',
       sortable: false,
-      style: { textAlign: 'center' },
     },
     {
       field: 'mag',
-      header: 'Mag',
-      sortable: false,
-      style: { textAlign: 'center' },
+      header: 'mag',
+      sortable: true,
     },
     {
       field: 'julian_date',
       header: 'Julian Date',
-      sortable: false,
-      style: { textAlign: 'center' },
+      sortable: true,
     },
     {
-      field: 'cod_obs',
+      field: 'obs_code',
       header: 'Obs. Code',
       sortable: false,
       style: { textAlign: 'center' },
@@ -583,54 +457,9 @@ export default class AsteroidRunDetail extends Component {
   ];
 
   render() {
-    const { asteroid, inputs } = this.state;
+    const { asteroid, inputs, astrometryTable, outputCcdsTree } = this.state;
 
-    const a = [];
 
-    Object.keys(outputs).forEach((ccd_name, index) => {
-      const a_childrens = [];
-      if (outputs[ccd_name].length > 0) {
-        outputs[ccd_name].forEach((file, idx) => {
-          const children = {
-            data: {
-              filename: file.filename,
-              catalog: file.catalog,
-              filepath: file.filepath,
-              // file_size: humanize.filesize(file.file_size),
-              extension: file.extension,
-              actionBtn: this.openFileBtn(file),
-              selectable: true,
-              leaf: true,
-            },
-            children: [],
-          };
-          a_childrens.push(children);
-        });
-      }
-
-      const ccd = {
-        data: {
-          filename:
-            this.format_ccd(ccd_name) + ' ( ' + a_childrens.length + ' files)',
-        },
-        children: a_childrens,
-      };
-
-      a.push(ccd);
-    });
-
-    const inp_columns = this.input_columns.map((col, i) => {
-      return (
-        <Column
-          key={i}
-          field={col.field}
-          header={col.header}
-          sortable={col.sortable}
-          style={col.style}
-          body={col.body}
-        />
-      );
-    });
 
     let title = asteroid.name;
     if (asteroid.number && asteroid.number !== '-') {
@@ -679,16 +508,11 @@ export default class AsteroidRunDetail extends Component {
                 <DataTable
                   scrollable={true}
                   scrollHeight="300px"
-                  value={tableContent}
-                  // sortField={""}
-                  // sortOrder={""}
+                  value={astrometryTable}
+                  paginator={true}
+                  rows={10}
                 >
                   {astrometry_cols}
-
-                  {/* <Column
-              style={{}}
-              body={"TO DO ACTION TEMPLATE - MAYBE"}
-            /> */}
                 </DataTable>
               }
             />
@@ -697,26 +521,14 @@ export default class AsteroidRunDetail extends Component {
           <div className="ui-g-12">
             <PanelCostumize
               title="Input"
-              content={
-                <DataTable
-                  value={inputs}
-                  sortField={'input_type'}
-                  sortOrder={1}
-                >
-                  {inp_columns}
-                  <Column
-                    style={{ textAlign: 'center' }}
-                    body={this.actionTemplate}
-                  />
-                </DataTable>
-              }
+              content={this.renderInputTable(inputs)}
             />
           </div>
 
           <div className="ui-g-12">
             <PanelCostumize
               title="Output"
-              content={this.renderOutputTreeTable(a)}
+              content={this.renderOutputTreeTable(outputCcdsTree)}
             />
           </div>
           <Log
