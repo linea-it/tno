@@ -35,6 +35,7 @@ export default function SimpleSelect(props) {
   const [values, setValues] = useState({
     input: '',
     name: '',
+
   });
 
   const [defaultValue, setDefaultValue] = useState(0);
@@ -54,7 +55,44 @@ export default function SimpleSelect(props) {
 
     setDefaultValue(event.target.value);
 
-    console.log(event.currentTarget.id);
+
+
+    switch (event.currentTarget.title) {
+      case "input":
+
+        let process_id = event.currentTarget.getAttribute('process_id');
+        let orbit_input_list_id = event.currentTarget.getAttribute('orbit_input_list_id');
+        let orbit_run_id = event.currentTarget.getAttribute('orbit_run_id');
+
+        props.setSubmition({
+          processId: process_id,
+          orbit_run_input_list_id: orbit_input_list_id,
+          orbit_run_id: orbit_run_id
+
+        });
+        // props.setSubmition({ orbit_run_input_list_id: orbit_input_list_id });
+
+
+        // console.log(event.currentTarget.id);
+
+        break;
+
+      case "catalog":
+        console.log("catalog");
+        break;
+
+      case "leapSeconds":
+        console.log("leapSeconds");
+        break;
+
+      case "bspPlanetary":
+        console.log("bspPlanetary")
+        break;
+    }
+
+
+
+
   }
 
   const { formControl } = useStyles(props);
@@ -71,16 +109,37 @@ export default function SimpleSelect(props) {
 
 
     if (generalArray && generalArray.length > 0) {
-      return generalArray.map((el, i) => (
-        <MenuItem
-          key={i}
-          id={el.id}
-          className={classes.MenuItem}
-          value={i}
-        >
-          {eval(display)}
-        </MenuItem>
-      ));
+      //Gera os itens de menus com 2 propriedades diferentes: input_list_id(Lista de objetos) e orbitRun_id
+      if (props.title === "input") {
+
+        return generalArray.map((el, i) => (
+          <MenuItem
+            key={i}
+            process_id={el.id}
+            orbit_input_list_id={el.input_list}
+            className={classes.MenuItem}
+            value={i}
+            orbit_run_id={el.proccess}
+            title={props.title}
+          >
+            {eval(display)}
+          </MenuItem>
+        ));
+      }
+      else {
+
+        return generalArray.map((el, i) => (
+          <MenuItem
+            key={i}
+            id={el.id}
+            className={classes.MenuItem}
+            value={i}
+            title={props.title}
+          >
+            {eval(display)}
+          </MenuItem>
+        ));
+      }
     }
   };
 
@@ -93,7 +152,7 @@ export default function SimpleSelect(props) {
           // value={values.input}
           value={defaultValue}
           onChange={handleChange}
-          inputProps={{ name: 'input', id: 'input-simple' }}
+          inputProps={{ name: 'input', id: 'input-simple', }}
           displayEmpty
         >
 

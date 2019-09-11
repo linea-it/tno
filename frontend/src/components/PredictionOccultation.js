@@ -7,7 +7,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import InputNumber from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import { id } from 'postcss-selector-parser';
+// import { id } from 'postcss-selector-parser';
 import DateTime from './DateTimePrediction';
 import InputSelect from './InputSelect';
 import { getOrbitRuns } from '../api/Orbit';
@@ -41,20 +41,23 @@ function PredictionOccultation() {
   const [catalogArray, setCatalogArray] = useState([]);
   const [LeapSecondsArray, setLeapSecondsArray] = useState([]);
   const [bspPlanetaryArray, setBspPlanetaryArray] = useState([]);
-  const [inputNumberValue, setInputNumberValue] = useState(0.15);
-  const [ephemerisNumberValue, setEphemerisNumberValue] = useState(600);
+  const [inputNumberValue, setInputNumberValue] = useState();
+  const [ephemerisNumberValue, setEphemerisNumberValue] = useState();
+  const [actionButton, setActionButton] = useState(true);
 
   const [valueSubmition, setValueSubmition] = useState({
-    process: null,
-    input_list_id: null,
-    input_orbit_id: null,
-    bsp_planetary: null,
-    catalog: null,
+    processId: null,
+    orbit_run_input_list_id: null,
+    orbit_run_id: null,
+    catalogId: null,
+    leap_seconds: null,
+    bsp_planetaryId: null,
     catalog_radius: null,
     ephemeris_initial_date: null,
     ephemeris_final_date: null,
     ephemeris_step: null,
   });
+
 
 
   const loadData = () => {
@@ -76,6 +79,7 @@ function PredictionOccultation() {
     // Load Catalogs
     getCatalogs().then((res) => {
       setCatalogArray(res.results);
+
     });
 
 
@@ -89,10 +93,31 @@ function PredictionOccultation() {
     getBspPlanetary().then((res) => {
       setBspPlanetaryArray(res.results);
     });
+
   };
 
 
+  //If inputArray state is changed so hit the function useEffect
+  //This is important to set first state case the user hit the submit button
+  //Avoid error in case of user hit the submit button without choose any option
+  useEffect(() => {
+    if (inputArray[0]) {
+      setValueSubmition({
+        processId: inputArray[0].id,
+        orbit_run_input_list_id: inputArray[0].input_list,
+        orbit_run_id: process,
+        bsp_planetaryId: bspPlanetaryArray[0].id,
+        leap_seconds: LeapSecondsArray[0].id,
+        catalogId: catalogArray[0].id
+      });
+    }
+
+  }, [inputArray]);
+
+
   useEffect(() => { loadData(); }, []);
+
+
 
   const handleInputNumberChange = (event) => {
     setInputNumberValue(event.target.value);
@@ -125,6 +150,8 @@ function PredictionOccultation() {
   };
 
 
+
+
   return (
     <div>
       <div className={classes.div}>
@@ -139,10 +166,10 @@ function PredictionOccultation() {
 
           <Grid container spacing={2}>
             <Grid item sm={6} xs={6} xl={6} lg={6}>
-              <InputSelect title="Input" width="90%" default={0} setSubmition={setValueSubmition} marginTop={10} data={inputArray} value="el.id" display="el.proccess_displayname" />
-              <InputSelect title="Catalog" width="90%" marginTop={10} data={catalogArray} value="el.id" display="el.display_name" />
-              <InputSelect title="Leap Seconds" width="90%" marginTop={10} data={LeapSecondsArray} value="el.id" display="el.name" />
-              <InputSelect title="BSP Planetary" width="90%" marginTop={10} data={bspPlanetaryArray} value="el.id" display="el.display_name" />
+              <InputSelect title="input" width="90%" setSubmition={setValueSubmition} marginTop={10} data={inputArray} value="el.id" display="el.proccess_displayname" />
+              <InputSelect title="catalog" width="90%" marginTop={10} data={catalogArray} value="el.id" display="el.display_name" />
+              <InputSelect title="leapSeconds" width="90%" marginTop={10} data={LeapSecondsArray} value="el.id" display="el.name" />
+              <InputSelect title="bspPlanetary" width="90%" marginTop={10} data={bspPlanetaryArray} value="el.id" display="el.display_name" />
             </Grid>
 
             <Grid item sm={6} xs={6} xl={6} lg={6}>
@@ -174,6 +201,7 @@ function PredictionOccultation() {
                 color="primary"
                 className={classes.button}
                 onClick={handleSubmitClick}
+                disabled={actionButton}
 
               >
                 Submit
