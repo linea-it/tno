@@ -119,6 +119,9 @@ class PraiaApi {
       `${this.api}/astrometry_asteroids/${id}/outputs_by_ccd/?tree=true`
     );
 
+  getAstrometryPlots = id =>
+    axios.get(`${this.api}/astrometry_asteroids/${id}/plot_ccd/`);
+
   getCSV = (filepath, page, pageSize) => {
     return axios.get(
       `${

@@ -124,7 +124,7 @@ class AsteroidList extends Component {
         icon="fa fa-file-text-o"
         className="ui-button-warning"
         title="Log"
-        // onClick={() => this.showAsteroidLog(asteroid_id)}
+      // onClick={() => this.showAsteroidLog(asteroid_id)}
       />
     );
     // }
@@ -354,19 +354,19 @@ class AsteroidList extends Component {
       //To call API and receive the answer to show on screen the result of reading file
 
       switch (button) {
-      case 'log':
-        this.loadLogContent(log);
+        case 'log':
+          this.loadLogContent(log);
 
-        break;
+          break;
 
-      case 'error':
-        this.loadLogContent(error);
-        break;
+        case 'error':
+          this.loadLogContent(error);
+          break;
 
-      case 'output':
-        this.loadLogContent(output);
+        case 'output':
+          this.loadLogContent(output);
 
-        break;
+          break;
       }
     }
   };
@@ -553,9 +553,9 @@ class AsteroidList extends Component {
 
     return (
       <div>
-        {this.renderAsteroidMenuBar()}
-
         <Card title="" subTitle="">
+
+          {this.renderAsteroidMenuBar()}
           <DataTable
             value={data}
             resizableColumns={true}
@@ -592,7 +592,7 @@ class AsteroidList extends Component {
           <Log
             visible={log.visible}
             onHide={this.onLogHide}
-            // id={this.state.asteroid_id}
+          // id={this.state.asteroid_id}
           />
         </Card>
       </div>
