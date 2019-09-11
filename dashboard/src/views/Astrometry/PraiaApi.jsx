@@ -106,8 +106,6 @@ class PraiaApi {
   getAsteroidStatus = ({ id }) =>
     axios.get(`${this.api}/praia_run/${id}/count_asteroid_status/`);
 
-  checkJobStatus = () => axios.get(`${this.api}/teste/`);
-
   read_astrometry_table = id =>
     axios.get(`${this.api}/astrometry_asteroids/${id}/astrometry_table/`);
 

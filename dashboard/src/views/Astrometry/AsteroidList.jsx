@@ -248,32 +248,25 @@ class AsteroidList extends Component {
     );
   };
 
-  // handleList = (e) => {
-
-  //   this.setState({ checked: e.value }, () => {
-  //     e.value ? this.loadErrorMessageColumns() : this.loadMainColumns();
-
-  //   });
-
-  //   this.state.error_list_visibility === 'hidden' ?
-  //     this.setState({ error_list_visibility: 'visible' })
-  //     : this.setState({ error_list_visibility: 'hidden' });
-
-  // };
-
   loadMainColumns = () => {
     this.setState({
       columns: [
         {
           field: 'name',
           header: 'Name',
-          style: { textAlign: 'center', width: '8%' },
+          style: {
+            // textAlign: 'center', 
+            width: '8%'
+          },
           sortable: true,
         },
         {
           field: 'number',
           header: 'Number',
-          style: { textAlign: 'center', width: '10%' },
+          style: {
+            // textAlign: 'center', 
+            width: '10%'
+          },
           sortable: true,
           body: rowData => {
             if (rowData.number === '-') {
@@ -282,121 +275,88 @@ class AsteroidList extends Component {
             return rowData.number;
           },
         },
-
         {
           field: 'ccd_images',
-          style: { textAlign: 'center' },
+          // style: { textAlign: 'center' },
           header: 'CCD Images',
           sortable: true,
         },
         {
+          field: 'available_ccd_image',
+          // style: { textAlign: 'center' },
+          header: 'Available CCDs',
+          sortable: false,
+        },
+        {
           field: 'processed_ccd_image',
-          style: { textAlign: 'center' },
+          // style: { textAlign: 'center' },
           header: 'Processed CCDs',
-          sortable: true,
+          sortable: false,
         },
         {
           field: 'catalog_rows',
-          style: { textAlign: 'center' },
-          header: 'Catalog Rows',
-          sortable: true,
+          // style: { textAlign: 'center' },
+          header: 'Stars',
+          sortable: false,
+        },
+        {
+          field: 'outputs',
+          // style: { textAlign: 'center' },
+          header: 'Output',
+          sortable: false,
         },
         {
           field: 'execution_time',
-          style: { textAlign: 'center' },
+          // style: { textAlign: 'center' },
           header: 'Execution Time',
           sortable: false,
           body: () => {
             return this.state.execution_time.substring(1, 8);
           },
         },
-
-        // {
-        //   field: 'execution_time',
-        //   header: 'Execution Time',
-        //   sortable: true,
-        //   style: { textAlign: 'center' },
-        //   body: rowData => {
-        //     if (rowData.execution_time !== '' && rowData.execution_time !== null) {
-        //       return moment(rowData.execution_time)._i;
-        //     } else {
-        //       return;
-        //     }
-        //   },
-        // },
       ],
     });
   };
 
-  loadLogContent = file => {
-    this.api.readCondorFile(file).then(res => {
-      const logContent = res.data;
-
+  openLog = filepath => {
+    this.api.readCondorFile(filepath).then(res => {
+      const logContent = res.data.rows;
       this.setState(state => ({
         log: Object.assign({}, state.log, {
           content: logContent,
           visible: true,
+          header: filepath,
         }),
       }));
     });
   };
 
-  openLog = button => {
-    //button is which button was clicked to call the condor log
-
-    const log = this.state.data[0].condor_log;
-    const error = this.state.data[0].condor_err_log;
-    const output = this.state.data[0].condor_out_log;
-
-    if (button) {
-      // console.log(button);
-
-      //To call API and receive the answer to show on screen the result of reading file
-
-      switch (button) {
-        case 'log':
-          this.loadLogContent(log);
-
-          break;
-
-        case 'error':
-          this.loadLogContent(error);
-          break;
-
-        case 'output':
-          this.loadLogContent(output);
-
-          break;
-      }
-    }
-  };
-
-  handleCondorButton = () => {
+  handleCondorButton = rowData => {
     return (
       <Button
         className="ui-button-warning"
         icon="fa fa-file-text-o"
-        onClick={() => this.openLog('log')}
+        onClick={() => this.openLog(rowData.condor_log)}
       />
     );
   };
 
-  handleCondorError = () => {
+  handleCondorError = rowData => {
     return (
       <Button
         className="ui-button-warning"
         icon="fa fa-file-text-o"
-        onClick={() => this.openLog('error')}
+        onClick={() => this.openLog(rowData.condor_err_log)}
       />
     );
   };
 
-  handleCondorOutput = () => {
+  handleCondorOutput = rowData => {
     return (
       <Button
         className="ui-button-warning"
         icon="fa fa-file-text-o"
-        onClick={() => this.openLog('output')}
+        onClick={() => this.openLog(rowData.condor_out_log)}
       />
     );
   };
@@ -458,13 +418,6 @@ class AsteroidList extends Component {
     });
   };
 
-  handleList = button => {
-    if (button == 'main') {
-      console.log('oi');
-    } else {
-    }
-  };
-
   // main_background: "#186BA0",
   // main_color: "#fff",
   // error_background: "#FFFAF0",
@@ -495,16 +448,6 @@ class AsteroidList extends Component {
       <Toolbar>
         <div className="ui-toolbar">
           <div style={{ float: 'right' }}>
-            {/* <ToggleButton
-              style={{ width: '50px' }}
-              onIcon='fa fa-undo'
-              className="ui-button-info"
-              onLabel='Main'
-              offLabel='Errors'
-              checked={this.state.checked}
-              onChange={e => this.handleList(e)}
-
-            /> */}
             <Button
               icon="fa fa-navicon"
               style={{
@@ -592,7 +535,10 @@ class AsteroidList extends Component {
           <Log
             visible={log.visible}
             onHide={this.onLogHide}
-          // id={this.state.asteroid_id}
+            header={log.header}
+            content={log.content}
+            highlight={'json'}
+            dismissableMask={true}
           />
         </Card>
       </div>
