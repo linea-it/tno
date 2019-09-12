@@ -1,0 +1,284 @@
+{
+  "asteroid": "Eris",
+  "images": 22,
+  "available_images": 22,
+  "processed_images": 22,
+  "reference_catalog_csv": "/data/gaia_dr2.csv",
+  "bsp_jpl": "Eris.bsp",
+  "bsp_planetary": "de435.bsp",
+  "leap_second": "naif0012.tls",
+  "header_extraction": {
+    "start": "2019-09-02T17:37:09.353568",
+    "finish": "2019-09-02T17:37:09.384941",
+    "execution_time": 0.031373,
+    "config": "hd.dat",
+    "filename": "hd_out.txt",
+    "file_size": 128,
+    "extension": ".txt",
+    "headers": 22,
+    "log": "praia_header.log"
+  },
+  "praia_astrometry": {
+    "start": "2019-09-02T17:37:09.386046",
+    "finish": "2019-09-02T17:39:31.098964",
+    "execution_time": 141.712918
+  },
+  "praia_targets": {
+    "start": "2019-09-02T17:39:31.099186",
+    "finish": "2019-09-02T17:39:31.299577",
+    "execution_time": 0.200391
+  },
+  "plots": {
+    "start": "2019-09-02T17:39:31.299784",
+    "finish": "2019-09-02T17:39:34.801397",
+    "execution_time": 3.501613
+  },
+  "astrometry": {
+    "filename": "Eris.txt",
+    "file_size": 1216,
+    "extension": ".txt"
+  },
+  "target_offset": {
+    "filename": "target_offset.txt",
+    "file_size": 8664,
+    "extension": ".txt"
+  },
+  "targets_file": {
+    "filename": "targets.txt",
+    "file_size": 1210,
+    "extension": ".txt"
+  },
+  "outputs": {
+    "1307130": {
+      "id": 1,
+      "ccd_id": "1307130",
+      "files": [
+        {
+          "catalog": "gaia1",
+          "filename": "1307130.ast_reduction.gaia1.txt",
+          "file_size": 2305,
+          "extension": ".txt"
+        },
+        {
+          "catalog": "gaia3",
+          "filename": "1307130.ast_reduction.gaia3.txt",
+          "file_size": 2305,
+          "extension": ".txt"
+        },
+        {
+          "catalog": "gaia5",
+          "filename": "1307130.ast_reduction.gaia5.txt",
+          "file_size": 2305,
+          "extension": ".txt"
+        },
+        {
+          "catalog": "gaia7",
+          "filename": "1307130.ast_reduction.gaia7.txt",
+          "file_size": 2305,
+          "extension": ".txt"
+        },
+        {
+          "catalog": "ucac4",
+          "filename": "1307130.ast_reduction.ucac4.txt",
+          "file_size": 2305,
+          "extension": ".txt"
+        },
+        {
+          "catalog": null,
+          "filename": "1307130.ast_photometry.txt",
+          "file_size": 275,
+          "extension": ".txt"
+        },
+        {
+          "catalog": "gaia2",
+          "filename": "1307130.gaia2.rad.xy",
+          "file_size": 367422,
+          "extension": ".xy"
+        },
+        {
+          "catalog": "gaia5",
+          "filename": "1307130.gaia5.rad.xy",
+          "file_size": 367422,
+          "extension": ".xy"
+        },
+        {
+          "catalog": "ucac4",
+          "filename": "1307130.ucac4.rad.xy",
+          "file_size": 367422,
+          "extension": ".xy"
+        },
+        {
+          "catalog": "gaia3",
+          "filename": "1307130.gaia3.rad.xy",
+          "file_size": 367422,
+          "extension": ".xy"
+        },
+        {
+          "catalog": "gaia6",
+          "filename": "1307130.gaia6.rad.xy",
+          "file_size": 367422,
+          "extension": ".xy"
+        },
+        {
+          "catalog": "ucac5",
+          "filename": "1307130.ucac5.rad.xy",
+          "file_size": 367422,
+          "extension": ".xy"
+        },
+        {
+          "catalog": null,
+          "filename": "1307130.astrometry_input.txt",
+          "file_size": 199,
+          "extension": ".txt"
+        },
+        {
+          "catalog": null,
+          "filename": "1307130.astrometry_params.dat",
+          "file_size": 18156,
+          "extension": ".dat"
+        },
+        {
+          "catalog": null,
+          "filename": "1307130.praia_astrometry.log",
+          "file_size": 33306,
+          "extension": ".log"
+        },
+        {
+          "catalog": null,
+          "filename": "1307130.mes",
+          "file_size": 0,
+          "extension": ".mes"
+        },
+        {
+          "catalog": null,
+          "filename": "1307130.reg",
+          "file_size": 31022,
+          "extension": ".reg"
+        },
+        {
+          "catalog": "gaia2",
+          "filename": "1307130.ast_reduction.gaia2.txt",
+          "file_size": 2305,
+          "extension": ".txt"
+        },
+        {
+          "catalog": "gaia4",
+          "filename": "1307130.ast_reduction.gaia4.txt",
+          "file_size": 2305,
+          "extension": ".txt"
+        },
+        {
+          "catalog": "gaia6",
+          "filename": "1307130.ast_reduction.gaia6.txt",
+          "file_size": 2305,
+          "extension": ".txt"
+        },
+        {
+          "catalog": "gaia_dr2",
+          "filename": "1307130.ast_reduction.gaia_dr2.txt",
+          "file_size": 2305,
+          "extension": ".txt"
+        },
+        {
+          "catalog": "ucac5",
+          "filename": "1307130.ast_reduction.ucac5.txt",
+          "file_size": 2305,
+          "extension": ".txt"
+        },
+        {
+          "catalog": "gaia1",
+          "filename": "1307130.gaia1.rad.xy",
+          "file_size": 367422,
+          "extension": ".xy"
+        },
+        {
+          "catalog": "gaia4",
+          "filename": "1307130.gaia4.rad.xy",
+          "file_size": 367422,
+          "extension": ".xy"
+        },
+        {
+          "catalog": "gaia7",
+          "filename": "1307130.gaia7.rad.xy",
+          "file_size": 367422,
+          "extension": ".xy"
+        },
+        {
+          "catalog": "gaia_dr2",
+          "filename": "1307130.gaia_dr2.rad.xy",
+          "file_size": 367422,
+          "extension": ".xy"
+        },
+        {
+          "catalog": null,
+          "filename": "1307130.ast_plot.png",
+          "file_size": 24666,
+          "extension": ".png"
+        }
+      ],
+      "start": "2019-09-02T17:37:09.386661",
+      "finish": "2019-09-02T17:37:34.762921",
+      "execution_time": 25.37626
+    },
+    "1901929": {
+      "id": 2,
+      "ccd_id": "1901929",
+      "files": [
+        {
+          "catalog": null,
+          "filename": "1901929.ast_photometry.txt",
+          "file_size": 275,
+          "extension": ".txt"
+        },
+        {
+          "catalog": "gaia2",
+          "filename": "1901929.gaia2.rad.xy",
+          "file_size": 328966,
+          "extension": ".xy"
+        },
+        {
+          "catalog": "gaia4",
+          "filename": "1901929.gaia4.rad.xy",
+          "file_size": 328966,
+          "extension": ".xy"
+        },
+        {
+          "catalog": "gaia6",
+          "filename": "1901929.gaia6.rad.xy",
+          "file_size": 328966,
+          "extension": ".xy"
+        },
+        {
+          "catalog": "ucac4",
+          "filename": "1901929.ucac4.rad.xy",
+          "file_size": 328966,
+          "extension": ".xy"
+        },
+        {
+          "catalog": "gaia_dr2",
+          "filename": "1901929.gaia_dr2.rad.xy",
+          "file_size": 328966,
+          "extension": ".xy"
+        },
+        {
+          "catalog": null,
+          "filename": "1901929.astrometry_input.txt",
+          "file_size": 199,
+          "extension": ".txt"
+        },
+        {
+          "catalog": null,
+          "filename": "1901929.astrometry_params.dat",
+          "file_size": 18156,
+          "extension": ".dat"
+        },
+        {
+          "catalog": null,
+          "filename": "1901929.praia_astrometry.log",
+          "file_size": 33282,
+          "extension": ".log"
+        }
+      ]
+    }
+  }
+}

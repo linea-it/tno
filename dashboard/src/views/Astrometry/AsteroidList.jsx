@@ -13,6 +13,9 @@ import moment from 'moment';
 import '../Astrometry/assets/runDetailStyle.css';
 import { Toolbar } from 'primereact/toolbar';
 import Log from '../../components/Dialog/Log';
+import LogJSON from '../../components/Dialog/LogJson';
+import asteroids_json from '../Astrometry/assets/asteroids.json';
+
 
 class AsteroidList extends Component {
   state = this.initialState;
@@ -39,6 +42,11 @@ class AsteroidList extends Component {
       execution_time: null,
 
       log: {
+        visible: false,
+        content: null,
+      },
+
+      logJSON: {
         visible: false,
         content: null,
       },
@@ -331,6 +339,22 @@ class AsteroidList extends Component {
     });
   };
 
+
+  openLogJSON = () => {
+
+    const logContent = asteroids_json;
+    this.setState(state => ({
+      logJSON: Object.assign({}, state.logJSON, {
+        content: logContent,
+        visible: true,
+        // header: filepath,
+      }),
+    }));
+
+  }
+
+
+
   loadErrorMessageColumns = rowData => {
     this.setState({
       columns: [
@@ -403,7 +427,7 @@ class AsteroidList extends Component {
               <Button
                 className="ui-button-warning"
                 icon="fa fa-file-text-o"
-                onClick={() => this.openLog(rowData.condor_out_log)}
+                onClick={() => this.openLogJSON(rowData.condor_out_log)}
               />
             );
           },
@@ -474,8 +498,14 @@ class AsteroidList extends Component {
     }));
   };
 
+  onLogJSONHide = () => {
+    this.setState(state => ({
+      logJSON: Object.assign({}, state.log, { visible: false }),
+    }));
+  };
+
   render() {
-    const { data, log } = this.state;
+    const { data, log, logJSON } = this.state;
 
     const columns = this.state.columns.map((col, i) => {
       return (
@@ -533,7 +563,14 @@ class AsteroidList extends Component {
             onHide={this.onLogHide}
             header={log.header}
             content={log.content}
-            highlight={'json'}
+            dismissableMask={true}
+          />
+
+          <LogJSON
+            visible={logJSON.visible}
+            onHide={this.onLogJSONHide}
+            header={logJSON.header}
+            content={logJSON.content}
             dismissableMask={true}
           />
         </Card>
