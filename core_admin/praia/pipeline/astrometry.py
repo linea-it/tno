@@ -509,6 +509,9 @@ class AstrometryPipeline():
                 "Trying to create condor log directory. [ %s ]" % log_dir)
 
             asteroid_alias = obj.name.replace(' ', '')
+
+            max_workers = 10
+
             payload = dict({
                 "queues": 1,
                 "submit_params": {
@@ -523,7 +526,7 @@ class AstrometryPipeline():
                     # "request_cpus": "10",
 
                     "executable": "/app/run.py",
-                    "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
+                    "arguments": "%s --path %s --catalog %s --max_workers=%s" % (asteroid_alias, obj.relative_path, catalog_name, max_workers),
                     "initialdir": obj_absolute_path,
                     "Log": os.path.join(log_dir, "astrometry.log"),
                     "Output": os.path.join(log_dir, "astrometry.out"),
@@ -568,7 +571,8 @@ class AstrometryPipeline():
         instance.status = 'running'
         instance.count_not_executed = cnotexecuted
         instance.save()
-        self.logger.info("Submission to condor completed. Now pipeline runs asynchronously.")
+        self.logger.info(
+            "Submission to condor completed. Now pipeline runs asynchronously.")
 
     def get_astrometry_position_filename(self, name):
         return name.replace(" ", "") + "_obs.txt"

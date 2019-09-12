@@ -533,7 +533,6 @@ class AsteroidList extends Component {
             onHide={this.onLogHide}
             header={log.header}
             content={log.content}
-            highlight={'json'}
             dismissableMask={true}
           />
         </Card>
