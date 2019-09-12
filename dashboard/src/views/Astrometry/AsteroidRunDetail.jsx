@@ -14,7 +14,8 @@ import { TreeTable } from 'primereact/treetable';
 import Log from '../../components/Dialog/Log';
 import filesize from 'filesize';
 import { findIndex } from 'lodash';
-
+import DonutStats from 'components/Statistics/DonutStats';
+import moment from 'moment';
 export default class AsteroidRunDetail extends Component {
   state = this.initialState;
   api = new PraiaApi();
@@ -42,6 +43,7 @@ export default class AsteroidRunDetail extends Component {
       selectedNodeKey1: [],
       astrometryTable: [],
       outputCcdsTree: [],
+      mainOutputs: [],
       plots: [],
       currentPlot: 0,
       lightboxIsOpen: false,
@@ -82,6 +84,14 @@ export default class AsteroidRunDetail extends Component {
       const rows = res.data.rows;
       this.setState({
         astrometryTable: rows,
+      });
+    });
+
+    // Main Outputs do pipeline
+    this.api.getAsteroidMainOutputs(asteroid_id).then(res => {
+      const rows = res.data.rows;
+      this.setState({
+        mainOutputs: rows,
       });
     });
 
@@ -553,12 +563,82 @@ export default class AsteroidRunDetail extends Component {
     });
   };
 
+  renderExecutionTime = asteroid => {
+    const colors = ['#64b5f6', '#1e88e5', '#3949ab', '#311b92'];
+
+    const stats_status = [
+      {
+        name: 'Header Extraction',
+        value:
+          asteroid.execution_header !== null
+            ? Math.ceil(moment.duration(asteroid.execution_header).asSeconds())
+            : 0.0,
+      },
+      {
+        name: 'Astrometry',
+        value:
+          asteroid.execution_astrometry !== null
+            ? moment.duration(asteroid.execution_astrometry).asSeconds()
+            : 0.0,
+      },
+      {
+        name: 'Target Search',
+        value:
+          asteroid.execution_targets !== null
+            ? moment.duration(asteroid.execution_targets).asSeconds()
+            : 0.0,
+      },
+      {
+        name: 'Plots',
+        value:
+          asteroid.execution_plots !== null
+            ? moment.duration(asteroid.execution_plots).asSeconds()
+            : 0.0,
+      },
+      {
+        name: 'Registry',
+        value:
+          asteroid.execution_registry !== null
+            ? moment.duration(asteroid.execution_registry).asSeconds()
+            : 0.0,
+      },
+    ];
+
+    return (
+      <DonutStats
+        flag={'execution_time'}
+        data={stats_status}
+        controlInterval={this.controlInterval}
+        fill={colors}
+      />
+    );
+  }
+
+  renderResultBar = mainOutputs => {
+    const buttons = [];
+    mainOutputs.map(row => {
+      const b = (
+        <Button
+          label={row.type_name}
+          onClick={() => this.handleClickOutput(row)}
+        />
+      );
+      buttons.push(b);
+    });
+    return (
+      <Toolbar>
+        <div className="ui-toolbar-group-left">{buttons}</div>
+      </Toolbar>
+    );
+  };
+
   render() {
     const {
       asteroid,
       inputs,
       astrometryTable,
       outputCcdsTree,
+      mainOutputs,
       plots,
       lightboxImages,
       currentPlot,
@@ -597,14 +677,25 @@ export default class AsteroidRunDetail extends Component {
         {this.create_nav_bar()}
         <div className="ui-g">
           <div className="ui-lg-4 ui-xl-3">
-            <ListStats
-              title={title}
-              statstext={asteroid.status}
-              status={true}
-              data={stats}
+            <PanelCostumize
+              title={`${asteroid.name} - ${asteroid.number}`}
+              content={
+                <ListStats
+                  title={title}
+                  statstext={asteroid.status}
+                  status={true}
+                  data={stats}
+                />}
+            />
+          </div>
+          <div className="ui-sm-6 ui-md-6 ui-lg-4 ui-xl-3">
+            <PanelCostumize
+              title="Execution Time"
+              content={this.renderExecutionTime(asteroid)}
             />
           </div>
 
+          <div className="ui-g-12">{this.renderResultBar(mainOutputs)}</div>
           <div className="ui-g-12">
             <PanelCostumize
               title="Astrometry"

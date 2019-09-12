@@ -336,6 +336,25 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
         return Response(result)
 
     @detail_route(methods=['GET'])
+    def main_outputs(self, request, pk=None):
+        # Recuperar a instancia do Asteroid
+        asteroid = self.get_object()
+
+        # Recuperar o filepath para o arquivo de Astrometria, um dos resultados do pipeline
+        queryset = asteroid.ast_outputs.filter(ccd_image__isnull=True)
+
+        # Adicionar informacoes do apontamento em cada output
+        serializer = AstrometryOutputSerializer(queryset, many=True)
+        rows = serializer.data
+
+        result = dict({
+            'success': True,
+            'rows': rows,
+        })
+
+        return Response(result)
+
+    @detail_route(methods=['GET'])
     def plot_ccd(self, request, pk=None):
         # Recuperar a instancia do Asteroid
         asteroid = self.get_object()
