@@ -51,6 +51,7 @@ const SortLabel = ({
       <span
         onClick={!restProps.disabled ? onSort : null}
         className={!restProps.disabled ? classes.invisibleButton : null}
+        style={{ whiteSpace: `${restProps.column.hasLineBreak ? 'normal' : 'nowrap'}` }}
       >
         {children}
         {!restProps.disabled

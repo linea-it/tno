@@ -8,6 +8,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,12 +28,15 @@ function CustomDialog({
   setVisible,
   title,
   content,
+  maxWidth,
+  headerStyle,
+  bodyStyle,
 }) {
   const classes = useStyles();
 
   return (
-    <Dialog onClose={setVisible} aria-labelledby="customized-dialog-title" open={visible}>
-      <MuiDialogTitle disableTypography className={classes.root}>
+    <Dialog onClose={setVisible} maxWidth={maxWidth} aria-labelledby="customized-dialog-title" open={visible}>
+      <MuiDialogTitle className={clsx(classes.root, headerStyle)}>
         <Typography variant="h6">{ title }</Typography>
         {visible ? (
           <IconButton aria-label="close" className={classes.closeButton} onClick={setVisible}>
@@ -40,19 +44,11 @@ function CustomDialog({
           </IconButton>
         ) : null}
       </MuiDialogTitle>
-      <DialogContent dividers>
+      <DialogContent dividers className={bodyStyle}>
         <Typography gutterBottom>
-            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
-            in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-        </Typography>
-        <Typography gutterBottom>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
-            lacus vel augue laoreet rutrum faucibus dolor auctor.
-        </Typography>
-        <Typography gutterBottom>
-            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel
-            scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus
-            auctor fringilla.
+          {content && content.props.data && content.props.data.length ? content : (
+            'Unable to generate log due to a lack of data!'
+          )}
         </Typography>
       </DialogContent>
     </Dialog>
