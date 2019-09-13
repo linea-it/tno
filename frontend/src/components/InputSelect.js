@@ -71,10 +71,10 @@ export default function SimpleSelect(props) {
         let orbit_run_id = event.currentTarget.getAttribute('orbit_run_id');
 
         props.setSubmition({
+          ...props.valueSubmition,
           processId: process_id,
           orbit_run_input_list_id: orbit_input_list_id,
           orbit_run_id: orbit_run_id,
-
 
 
         });

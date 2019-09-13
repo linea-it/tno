@@ -33,7 +33,7 @@ function CustomDialog({
   return (
     <Dialog onClose={setVisible} aria-labelledby="customized-dialog-title" open={visible}>
       <MuiDialogTitle disableTypography className={classes.root}>
-        <Typography variant="h6">{ title }</Typography>
+        <Typography variant="h6">{title}</Typography>
         {visible ? (
           <IconButton aria-label="close" className={classes.closeButton} onClick={setVisible}>
             <CloseIcon />
@@ -42,17 +42,13 @@ function CustomDialog({
       </MuiDialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
-            Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
-            in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+          {content}
         </Typography>
         <Typography gutterBottom>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis
-            lacus vel augue laoreet rutrum faucibus dolor auctor.
+
         </Typography>
         <Typography gutterBottom>
-            Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel
-            scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus
-            auctor fringilla.
+
         </Typography>
       </DialogContent>
     </Dialog>

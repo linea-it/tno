@@ -201,7 +201,7 @@ function CustomTable(props) {
   const renderFilter = () => (
     <FormControl className={classes.formControl}>
       <InputLabel shrink htmlFor="filter-label-placeholder">
-          Filter
+        Filter
       </InputLabel>
       <Select
         value={filter}
@@ -230,7 +230,7 @@ function CustomTable(props) {
         <>
           <Grid rows={rows} columns={columns}>
             {props.hasSearching ? <SearchState onValueChange={changeSearchValue} /> : null}
-            {props.hasSorting ? <SortingState sorting={sorting} onSortingChange={changeSorting} /> : null }
+            {props.hasSorting ? <SortingState sorting={sorting} onSortingChange={changeSorting} /> : null}
             {props.hasPagination
               ? (
                 <PagingState
@@ -266,7 +266,7 @@ function CustomTable(props) {
                 highlightRow
                 showSelectionColumn={false}
               />
-            ) : null }
+            ) : null}
             {props.hasResizing ? <TableColumnResizing defaultColumnWidths={defaultColumnWidths} /> : null}
             <CustomTableHeaderRowCell hasSorting={props.hasSorting} />
             {props.hasGrouping ? (
@@ -293,8 +293,8 @@ function CustomTable(props) {
           {props.hasSearching ? <SearchState /> : null}
           {props.hasSorting
             ? <SortingState sorting={sorting} onSortingChange={changeSorting} />
-            : null }
-          {props.hasSorting ? <IntegratedSorting /> : null }
+            : null}
+          {props.hasSorting ? <IntegratedSorting /> : null}
           {props.hasPagination
             ? (
               <PagingState
@@ -330,7 +330,7 @@ function CustomTable(props) {
               highlightRow
               showSelectionColumn={false}
             />
-          ) : null }
+          ) : null}
           {props.hasResizing ? <TableColumnResizing defaultColumnWidths={defaultColumnWidths} /> : null}
           <CustomTableHeaderRowCell hasSorting={props.hasSorting} remote={props.remote} />
           {props.hasGrouping ? (

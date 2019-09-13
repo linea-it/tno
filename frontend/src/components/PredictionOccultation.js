@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -11,14 +11,20 @@ import Grid from '@material-ui/core/Grid';
 import DateTime from './DateTimePrediction';
 import InputSelect from './InputSelect';
 import { getOrbitRuns } from '../api/Orbit';
-import {
-  getCatalogs, getLeapSeconds, getBspPlanetary, createPredictRun,
-} from '../api/Prediction';
+import Dialog from "../components/utils/CustomDialog";
+import PredictionHistory from "./PredictionHistory";
+
+import { getCatalogs, getLeapSeconds, getBspPlanetary, createPredictRun, }
+  from '../api/Prediction';
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
     fontSize: 24,
     cursor: 'pointer',
+  },
+
+  card: {
+    marginBottom: 10
   },
 
   inputNumber: {
@@ -39,28 +45,33 @@ function PredictionOccultation() {
 
   const [inputArray, setInputArray] = useState([]);
   const [catalogArray, setCatalogArray] = useState([]);
-  const [LeapSecondsArray, setLeapSecondsArray] = useState([]);
+  const [leapSecondsArray, setLeapSecondsArray] = useState([]);
   const [bspPlanetaryArray, setBspPlanetaryArray] = useState([]);
-  const [inputNumberValue, setInputNumberValue] = useState(0.15);
+  const [inputRadiusValue, setInputRadiusValue] = useState(0.15);
   const [ephemerisNumberValue, setEphemerisNumberValue] = useState(600);
   const [actionButton, setActionButton] = useState(true);
+  const [dateTime, setDateTime] = useState("2017-05-24T10:30");
+  const [dialogVisible, setDialogVisible] = useState(false);
 
   const [valueSubmition, setValueSubmition] = useState({
     processId: null,
     orbit_run_input_list_id: null,
     orbit_run_id: null,
     catalogId: null,
-    leap_seconds: null,
+    leap_secondsId: null,
     bsp_planetaryId: null,
     catalog_radius: null,
+    ephemeris_step: null,
     ephemeris_initial_date: null,
     ephemeris_final_date: null,
-    ephemeris_step: null,
+    submit: false,
+
   });
 
 
 
   const handleSubmitClick = (e) => {
+
     // ***** Values referring to Refine Orbit run. Only success ones ****//
     //  process - processId
     //  input_list_id - input id from object list
@@ -76,23 +87,53 @@ function PredictionOccultation() {
     // ephemeris_step
 
 
+    setValueSubmition({
+      ...valueSubmition,
+      catalog_radius: inputRadiusValue,
+      ephemeris_step: ephemerisNumberValue,
+      ephemeris_initial_date: dateTime,
+      ephemeris_final_date: dateTime,
+      submit: true,
+    });
 
 
-    console.log('clicked')
-    // createPredictRun({
-    //   process,
-    // });
+    setDialogVisible(true);
 
-    console.log(
-      valueSubmition.processId,
-      valueSubmition.orbit_run_input_list_id,
-      valueSubmition.orbit_run_id,
-      valueSubmition.catalogId,
-
-    );
+  }
 
 
-  };
+
+  //When submit button is clicked so calls the function below
+  useEffect(() => {
+
+    if (valueSubmition.submit) {
+
+      //Calls APi for creation of prediction run
+
+
+      createPredictRun({
+        process: valueSubmition.processId,
+        input_list: valueSubmition.orbit_run_input_list_id,
+        input_orbit: valueSubmition.orbit_run_id,
+        leap_second: valueSubmition.leap_secondsId,
+        bsp_planetary: valueSubmition.bsp_planetaryId,
+        catalog: valueSubmition.catalogId,
+        catalog_radius: valueSubmition.catalog_radius,
+        ephemeris_initial_date: valueSubmition.ephemeris_initial_date,
+        ephemeris_final_date: valueSubmition.ephemeris_final_date,
+        ephemeris_step: valueSubmition.ephemeris_step
+      }).then((res) => {
+        console.log(res);
+      });
+
+
+    }
+
+  }, [valueSubmition]);
+
+
+
+
 
   const loadData = () => {
     // Load Input Array
@@ -113,7 +154,6 @@ function PredictionOccultation() {
     // Load Catalogs
     getCatalogs().then((res) => {
       setCatalogArray(res.results);
-      console.log(res.results[0]);
 
     });
 
@@ -130,6 +170,8 @@ function PredictionOccultation() {
     });
 
   };
+
+
 
 
   // If inputArray state is changed so hit the function useEffect
@@ -150,9 +192,53 @@ function PredictionOccultation() {
   // }, [inputArray]);
 
 
+
+  // catalogArray[0].id === "undefined" ? console.log("Catalog Id still undefine") : console.log("Now ok");
+
+  // (
+
+
+
+
   useEffect(() => {
 
-  }, []);
+    if (typeof (catalogArray[0]) != "undefined") {
+      setValueSubmition(
+        {
+          ...valueSubmition,
+          catalogId: catalogArray[0].id,
+
+        }
+
+      )
+    }
+
+  }, [catalogArray]);
+
+
+
+
+  useEffect(() => {
+
+    if (typeof (leapSecondsArray[0]) != "undefined") {
+      setValueSubmition({ ...valueSubmition, leap_secondsId: leapSecondsArray[0].id })
+    }
+
+  }, [leapSecondsArray]);
+
+
+
+
+  useEffect(() => {
+
+    if (typeof (bspPlanetaryArray[0]) != "undefined") {
+      setValueSubmition({ ...valueSubmition, bsp_planetaryId: bspPlanetaryArray[0].id })
+    }
+
+  }, [bspPlanetaryArray]);
+
+
+
 
 
   useEffect(() => {
@@ -165,7 +251,7 @@ function PredictionOccultation() {
 
   const handleInputNumberChange = (event) => {
 
-    setInputNumberValue(event.target.value);
+    setInputRadiusValue(event.target.value);
 
     ephemerisNumberValue ? setActionButton(false) : setActionButton(true);
 
@@ -176,10 +262,22 @@ function PredictionOccultation() {
 
     setEphemerisNumberValue(event.target.value);
 
-    inputNumberValue ? setActionButton(false) : setActionButton(true);
+    inputRadiusValue ? setActionButton(false) : setActionButton(true);
   };
 
 
+  const handleDialogClose = () => {
+
+    setDialogVisible(false);
+  };
+
+
+
+
+  //Columns of the table HISTORY
+  const tableColumns = [
+    { name: "status", title: "Status" }
+  ];
 
 
 
@@ -197,9 +295,9 @@ function PredictionOccultation() {
 
           <Grid container spacing={2}>
             <Grid item sm={6} xs={6} xl={6} lg={6}>
-              <InputSelect title="input" width="90%" setActionButton={setActionButton} setSubmition={setValueSubmition} marginTop={10} data={inputArray} value="el.id" display="el.proccess_displayname" />
+              <InputSelect title="input" width="90%" setActionButton={setActionButton} valueSubmition={valueSubmition} setSubmition={setValueSubmition} marginTop={10} data={inputArray} value="el.id" display="el.proccess_displayname" />
               <InputSelect title="catalog" width="90%" setSubmition={setValueSubmition} marginTop={10} data={catalogArray} value="el.id" display="el.display_name" />
-              <InputSelect title="leapSeconds" width="90%" marginTop={10} data={LeapSecondsArray} value="el.id" display="el.name" />
+              <InputSelect title="leapSeconds" width="90%" marginTop={10} data={leapSecondsArray} value="el.id" display="el.name" />
               <InputSelect title="bspPlanetary" width="90%" marginTop={10} data={bspPlanetaryArray} value="el.id" display="el.display_name" />
             </Grid>
 
@@ -212,7 +310,7 @@ function PredictionOccultation() {
                 className={classes.inputNumber}
                 onChange={handleInputNumberChange}
                 inputProps={{ min: 0.15, max: 2.0, step: 0.01 }}
-                value={inputNumberValue}
+                value={inputRadiusValue}
 
               />
 
@@ -226,8 +324,8 @@ function PredictionOccultation() {
                 value={ephemerisNumberValue}
               />
 
-              <DateTime label="Ephemeris Initial Date" />
-              <DateTime label="Ephemeris Final Date" width="90%" />
+              <DateTime defaultDateTime={dateTime} label="Ephemeris Initial Date" />
+              <DateTime defaultDateTime={dateTime} label="Ephemeris Final Date" width="90%" />
 
               <Button
                 variant="contained"
@@ -257,11 +355,26 @@ function PredictionOccultation() {
             className={classes.cardHeader}
           />
           <CardContent>
-            History of prediction occultation
+            <PredictionHistory>
+
+            </PredictionHistory>
+
+
           </CardContent>
 
         </Card>
       </div>
+
+
+
+      <Dialog
+        visible={dialogVisible}
+        title={"Run Prediction"}
+        content={"The task has been submitted and will be executed in the background."}
+        setVisible={handleDialogClose}
+      >
+
+      </Dialog>
 
     </div>
   );
