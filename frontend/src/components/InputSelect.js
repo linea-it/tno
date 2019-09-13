@@ -57,8 +57,14 @@ export default function SimpleSelect(props) {
 
 
 
+
+
+
     switch (event.currentTarget.title) {
       case "input":
+
+
+        props.setActionButton(false);
 
         let process_id = event.currentTarget.getAttribute('process_id');
         let orbit_input_list_id = event.currentTarget.getAttribute('orbit_input_list_id');
@@ -67,18 +73,22 @@ export default function SimpleSelect(props) {
         props.setSubmition({
           processId: process_id,
           orbit_run_input_list_id: orbit_input_list_id,
-          orbit_run_id: orbit_run_id
+          orbit_run_id: orbit_run_id,
+
+
 
         });
-        // props.setSubmition({ orbit_run_input_list_id: orbit_input_list_id });
 
 
-        // console.log(event.currentTarget.id);
+
+        //Case 
 
         break;
 
       case "catalog":
-        console.log("catalog");
+        let catalogId = event.currentTarget.id;
+        props.setSubmition({ catalogId: catalogId })
+
         break;
 
       case "leapSeconds":
@@ -89,8 +99,6 @@ export default function SimpleSelect(props) {
         console.log("bspPlanetary")
         break;
     }
-
-
 
 
   }
@@ -118,7 +126,7 @@ export default function SimpleSelect(props) {
             process_id={el.id}
             orbit_input_list_id={el.input_list}
             className={classes.MenuItem}
-            value={i}
+            value={i == 0 ? '' : i}
             orbit_run_id={el.proccess}
             title={props.title}
           >

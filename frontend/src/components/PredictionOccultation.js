@@ -41,8 +41,8 @@ function PredictionOccultation() {
   const [catalogArray, setCatalogArray] = useState([]);
   const [LeapSecondsArray, setLeapSecondsArray] = useState([]);
   const [bspPlanetaryArray, setBspPlanetaryArray] = useState([]);
-  const [inputNumberValue, setInputNumberValue] = useState();
-  const [ephemerisNumberValue, setEphemerisNumberValue] = useState();
+  const [inputNumberValue, setInputNumberValue] = useState(0.15);
+  const [ephemerisNumberValue, setEphemerisNumberValue] = useState(600);
   const [actionButton, setActionButton] = useState(true);
 
   const [valueSubmition, setValueSubmition] = useState({
@@ -59,6 +59,40 @@ function PredictionOccultation() {
   });
 
 
+
+  const handleSubmitClick = (e) => {
+    // ***** Values referring to Refine Orbit run. Only success ones ****//
+    //  process - processId
+    //  input_list_id - input id from object list
+    //  input_orbit_id - orbit run id
+
+    //* * Other values**/
+    // leap_second
+    // bsp_planetary,
+    // catalog,
+    // catalog_radius
+    // ephemeris_initial_date
+    // ephemeris_final_date
+    // ephemeris_step
+
+
+
+
+    console.log('clicked')
+    // createPredictRun({
+    //   process,
+    // });
+
+    console.log(
+      valueSubmition.processId,
+      valueSubmition.orbit_run_input_list_id,
+      valueSubmition.orbit_run_id,
+      valueSubmition.catalogId,
+
+    );
+
+
+  };
 
   const loadData = () => {
     // Load Input Array
@@ -79,6 +113,7 @@ function PredictionOccultation() {
     // Load Catalogs
     getCatalogs().then((res) => {
       setCatalogArray(res.results);
+      console.log(res.results[0]);
 
     });
 
@@ -97,57 +132,53 @@ function PredictionOccultation() {
   };
 
 
-  //If inputArray state is changed so hit the function useEffect
-  //This is important to set first state case the user hit the submit button
-  //Avoid error in case of user hit the submit button without choose any option
+  // If inputArray state is changed so hit the function useEffect
+  // This is important to set first state case the user hit the submit button
+  // Avoid error in case of user hit the submit button without choose any option
+  // useEffect(() => {
+  //   if (inputArray[0]) {
+  //     setValueSubmition({
+  //       processId: inputArray[0].id,
+  //       orbit_run_input_list_id: inputArray[0].input_list,
+  //       orbit_run_id: process,
+  //       bsp_planetaryId: bspPlanetaryArray[0].id,
+  //       leap_seconds: LeapSecondsArray[0].id,
+  //       catalogId: catalogArray[0].id
+  //     });
+  //   }
+
+  // }, [inputArray]);
+
+
   useEffect(() => {
-    if (inputArray[0]) {
-      setValueSubmition({
-        processId: inputArray[0].id,
-        orbit_run_input_list_id: inputArray[0].input_list,
-        orbit_run_id: process,
-        bsp_planetaryId: bspPlanetaryArray[0].id,
-        leap_seconds: LeapSecondsArray[0].id,
-        catalogId: catalogArray[0].id
-      });
-    }
 
-  }, [inputArray]);
+  }, []);
 
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    loadData();
 
+  }, []);
 
+  const inputNumber = React.createRef();
+  const ephemerisNumber = React.createRef()
 
   const handleInputNumberChange = (event) => {
+
     setInputNumberValue(event.target.value);
+
+    ephemerisNumberValue ? setActionButton(false) : setActionButton(true);
+
   };
 
 
   const handleEphemerisNumberChange = (event) => {
+
     setEphemerisNumberValue(event.target.value);
+
+    inputNumberValue ? setActionButton(false) : setActionButton(true);
   };
 
-  const handleSubmitClick = () => {
-    // ***** Values referring to Refine Orbit run. Only success ones ****//
-    //  process - processId
-    //  input_list_id - input id from object list
-    //  input_orbit_id - orbit run id
-
-    //* * Other values**/
-    // leap_second
-    // bsp_planetary,
-    // catalog,
-    // catalog_radius
-    // ephemeris_initial_date
-    // ephemeris_final_date
-    // ephemeris_step
-
-
-    createPredictRun({
-      process,
-    });
-  };
 
 
 
@@ -166,8 +197,8 @@ function PredictionOccultation() {
 
           <Grid container spacing={2}>
             <Grid item sm={6} xs={6} xl={6} lg={6}>
-              <InputSelect title="input" width="90%" setSubmition={setValueSubmition} marginTop={10} data={inputArray} value="el.id" display="el.proccess_displayname" />
-              <InputSelect title="catalog" width="90%" marginTop={10} data={catalogArray} value="el.id" display="el.display_name" />
+              <InputSelect title="input" width="90%" setActionButton={setActionButton} setSubmition={setValueSubmition} marginTop={10} data={inputArray} value="el.id" display="el.proccess_displayname" />
+              <InputSelect title="catalog" width="90%" setSubmition={setValueSubmition} marginTop={10} data={catalogArray} value="el.id" display="el.display_name" />
               <InputSelect title="leapSeconds" width="90%" marginTop={10} data={LeapSecondsArray} value="el.id" display="el.name" />
               <InputSelect title="bspPlanetary" width="90%" marginTop={10} data={bspPlanetaryArray} value="el.id" display="el.display_name" />
             </Grid>
@@ -175,6 +206,7 @@ function PredictionOccultation() {
             <Grid item sm={6} xs={6} xl={6} lg={6}>
 
               <InputNumber
+                ref={inputNumber}
                 type="number"
                 placeholder="    Catalog Radius"
                 className={classes.inputNumber}
@@ -185,6 +217,7 @@ function PredictionOccultation() {
               />
 
               <InputNumber
+                ref={ephemerisNumber}
                 type="number"
                 placeholder="    Ephemeris Step"
                 className={classes.inputNumber}
