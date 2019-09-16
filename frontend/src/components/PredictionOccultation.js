@@ -274,10 +274,7 @@ function PredictionOccultation() {
 
 
 
-  //Columns of the table HISTORY
-  const tableColumns = [
-    { name: "status", title: "Status" }
-  ];
+  
 
 
 

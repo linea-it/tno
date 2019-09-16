@@ -27,3 +27,16 @@
     ephemeris_initial_date: null,
     ephemeris_final_date: null,
     ephemeris_step: null,
+
+
+          process: process.process,
+          input_list: process.input_list,
+          input_orbit: process.value,
+          catalog: catalog.value,
+          catalog_radius: catalog_radius,
+          leap_second: leap_second.value,
+          bsp_planetary: bsp_planeraty.value,
+          ephemeris_initial_date: ephemeris_initial_date,
+          ephemeris_final_date: ephemeris_final_date,
+          ephemeris_step: ephemeris_step,
+
