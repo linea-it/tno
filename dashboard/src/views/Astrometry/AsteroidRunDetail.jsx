@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { DataTable } from 'primereact/datatable';
+import { Table } from 'react-bootstrap';
 import { Column } from 'primereact/column';
 import PraiaApi from './PraiaApi';
 import { Toolbar } from 'primereact/toolbar';
@@ -10,6 +11,7 @@ import Lightbox from 'react-images';
 import { Panel } from 'primereact/panel';
 import ListStats from 'components/Statistics/ListStats.jsx';
 import PanelCostumize from 'components/Panel/PanelCostumize';
+import Content from 'components/CardContent/CardContent.jsx';
 import { TreeTable } from 'primereact/treetable';
 import Log from '../../components/Dialog/Log';
 import filesize from 'filesize';
@@ -123,6 +125,15 @@ export default class AsteroidRunDetail extends Component {
         lightboxImages: images,
       });
     });
+
+    //Neighbors
+    this.api.getAsteroidNeighbors(asteroid_id).then(res => {
+      this.setState({
+        prev: res.data.prev,
+        next: res.data.next,
+      });
+    });
+
   };
 
   onClickBackToAstrometryRun = praia_run => {
@@ -563,6 +574,42 @@ export default class AsteroidRunDetail extends Component {
     });
   };
 
+  renderTotais = () => {
+    const { asteroid, astrometryTable } = this.state;
+    // <table>
+    //   <tr>
+    //     <td></td><td>{astrometryTable.length}</td>
+    //   </tr>
+    //   <tr>
+    //     <td></td><td>{asteroid.processed_ccd_image}</td>
+    //   </tr>
+    // </table>
+    return (
+      <Content
+        content={
+          <Table>
+            <tr>
+              <td className="list-text">
+                <div>Positions Detected</div>
+              </td>
+              <td className="list-value">
+                <div>{astrometryTable.length}</div>
+              </td>
+            </tr>
+            <tr>
+              <td className="list-text">
+                <div>Processed CCDs</div>
+              </td>
+              <td className="list-value">
+                <div>{asteroid.processed_ccd_image}</div>
+              </td>
+            </tr>
+          </Table>
+        }
+      />
+    );
+  }
+
   renderExecutionTime = asteroid => {
     const colors = ['#64b5f6', '#1e88e5', '#3949ab', '#311b92'];
 
@@ -693,6 +740,10 @@ export default class AsteroidRunDetail extends Component {
               title="Execution Time"
               content={this.renderExecutionTime(asteroid)}
             />
+            <br />
+            <div>
+              {this.renderTotais()}
+            </div>
           </div>
 
           <div className="ui-g-12">{this.renderResultBar(mainOutputs)}</div>

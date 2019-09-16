@@ -295,7 +295,7 @@ class AsteroidList extends Component {
         },
         {
           field: 'outputs',
-          header: 'Output',
+          header: 'Output Files',
           sortable: false,
         },
         {
