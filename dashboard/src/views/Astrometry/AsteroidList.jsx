@@ -255,7 +255,6 @@ class AsteroidList extends Component {
           field: 'name',
           header: 'Name',
           style: {
-            // textAlign: 'center', 
             width: '8%'
           },
           sortable: true,
@@ -264,7 +263,6 @@ class AsteroidList extends Component {
           field: 'number',
           header: 'Number',
           style: {
-            // textAlign: 'center', 
             width: '10%'
           },
           sortable: true,
@@ -277,37 +275,31 @@ class AsteroidList extends Component {
         },
         {
           field: 'ccd_images',
-          // style: { textAlign: 'center' },
           header: 'CCD Images',
           sortable: true,
         },
         {
           field: 'available_ccd_image',
-          // style: { textAlign: 'center' },
           header: 'Available CCDs',
           sortable: false,
         },
         {
           field: 'processed_ccd_image',
-          // style: { textAlign: 'center' },
           header: 'Processed CCDs',
           sortable: false,
         },
         {
           field: 'catalog_rows',
-          // style: { textAlign: 'center' },
           header: 'Stars',
           sortable: false,
         },
         {
           field: 'outputs',
-          // style: { textAlign: 'center' },
           header: 'Output',
           sortable: false,
         },
         {
           field: 'execution_time',
-          // style: { textAlign: 'center' },
           header: 'Execution Time',
           sortable: false,
           body: () => {
@@ -337,13 +329,17 @@ class AsteroidList extends Component {
         {
           field: 'name',
           header: 'Name',
-          style: { textAlign: 'center', width: '8%' },
+          style: {
+            width: '8%',
+          },
           sortable: true,
         },
         {
           field: 'number',
           header: 'Number',
-          style: { textAlign: 'center', width: '10%' },
+          style: {
+            width: '10%',
+          },
           sortable: true,
           body: rowData => {
             if (rowData.number === '-') {
@@ -356,7 +352,9 @@ class AsteroidList extends Component {
         {
           field: 'error_msg',
           header: 'Error',
-          style: { textAlign: 'center', width: '40%' },
+          style: {
+            width: '40%',
+          },
           sortable: false,
         },
 
@@ -364,7 +362,6 @@ class AsteroidList extends Component {
           field: 'condor_log',
           header: 'Log',
           style: { textAlign: 'center', width: '7%' },
-          // body: this.handleCondorButton,
           body: rowData => {
             return (
               <Button
@@ -380,7 +377,6 @@ class AsteroidList extends Component {
         {
           field: 'condor_err_log',
           header: 'Error',
-          // body: this.handleCondorError,
           body: rowData => {
             return (
               <Button
@@ -397,7 +393,6 @@ class AsteroidList extends Component {
         {
           field: 'condor_out_log',
           header: 'Output',
-          // body: this.handleCondorOutput,
           body: rowData => {
             return (
               <Button
@@ -413,11 +408,6 @@ class AsteroidList extends Component {
       ],
     });
   };
-
-  // main_background: "#186BA0",
-  // main_color: "#fff",
-  // error_background: "#FFFAF0",
-  // error_color: "#555555",
 
   handleListMain = () => {
     this.loadMainColumns();
