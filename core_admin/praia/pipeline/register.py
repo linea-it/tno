@@ -184,30 +184,42 @@ def register_astrometry_outputs(astrometry_run, asteroid):
             results = read_astrometry_json(result_json)
 
             # Astrometry File
-            astrometry = results.get('astrometry')
-            if not astrometry.get('file_size') > 0 and asteroid.status != 'failure':
-                # Se o arquivo de Astrometria estiver vazio, muda o status para warning
-                asteroid.status = 'warning'
-                asteroid.error_msg = 'Astrometry file is empty.'
+            try:
+                astrometry = results.get('astrometry')
+                if not astrometry.get('file_size') > 0 and asteroid.status != 'failure':
+                    # Se o arquivo de Astrometria estiver vazio, muda o status para warning
+                    asteroid.status = 'warning'
+                    asteroid.error_msg = 'Astrometry file is empty.'
 
-            update_create_astrometry_output(
-                asteroid, 'astrometry', astrometry.get('filename'), astrometry.get(
-                    'file_size'), astrometry.get('extension')
-            )
+                update_create_astrometry_output(
+                    asteroid, 'astrometry', astrometry.get('filename'), astrometry.get(
+                        'file_size'), astrometry.get('extension')
+                )
+            except Exception as e:
+                logger.warning(
+                    "Failed to register Astrometry File. %s" % e)
 
             # Target Offset
-            output = results.get('target_offset')
-            update_create_astrometry_output(
-                asteroid, 'target_offset', output.get('filename'), output.get(
-                    'file_size'), output.get('extension')
-            )
+            try:
+                output = results.get('target_offset')
+                update_create_astrometry_output(
+                    asteroid, 'target_offset', output.get('filename'), output.get(
+                        'file_size'), output.get('extension')
+                )
+            except Exception as e:
+                logger.warning(
+                    "Failed to register Target Offset. %s" % e)
 
             # Targets File
-            output = results.get('targets_file')
-            update_create_astrometry_output(
-                asteroid, 'targets', output.get('filename'), output.get(
-                    'file_size'), output.get('extension')
-            )
+            try:
+                output = results.get('targets_file')
+                update_create_astrometry_output(
+                    asteroid, 'targets', output.get('filename'), output.get(
+                        'file_size'), output.get('extension')
+                )
+            except Exception as e:
+                logger.warning(
+                    "Failed to register Targets File. %s" % e)
 
             # Targets Search Log
             try:
@@ -217,16 +229,21 @@ def register_astrometry_outputs(astrometry_run, asteroid):
 
                 update_create_astrometry_output(
                     asteroid, 'targets_log', filename, filesize, '.log')
-            except:
+
+            except Exception as e:
                 logger.warning(
                     "Failed to register PRAIA Target Search Log. %s" % e)
 
             # Header Extraction
-            output = results.get('header_extraction')
-            update_create_astrometry_output(
-                asteroid, 'header_extraction', output.get('filename'), output.get(
-                    'file_size'), output.get('extension')
-            )
+            try:
+                output = results.get('header_extraction')
+                update_create_astrometry_output(
+                    asteroid, 'header_extraction', output.get('filename'), output.get(
+                        'file_size'), output.get('extension')
+                )
+            except Exception as e:
+                logger.warning(
+                    "Failed to register PRAIA Header Extraction. %s" % e)
 
             # Header Extraction Log
             try:
@@ -236,7 +253,7 @@ def register_astrometry_outputs(astrometry_run, asteroid):
 
                 update_create_astrometry_output(
                     asteroid, 'header_extraction_log', filename, filesize, '.log')
-            except:
+            except Exception as e:
                 logger.warning("Failed to register PRAIA Header Log. %s" % e)
 
             # Outputs gerados para cada CCD
