@@ -275,7 +275,7 @@ def register_astrometry_outputs(astrometry_run, asteroid):
                     count += 1
 
             logger.debug(
-                "Registered outputs [ %s ] for [ %s ] CCDs" % (count, len(ccd)))
+                "Registered outputs [ %s ] for [ %s ] CCDs" % (count, count_ccds))
 
             # Registrar Contadores
             asteroid.available_ccd_image = results.get('available_images')
