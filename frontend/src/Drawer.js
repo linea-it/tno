@@ -28,6 +28,7 @@ import RefineOrbit from './components/RefineOrbit';
 import RefineOrbitDetail from './components/RefineOrbitDetail';
 import RefineOrbitAsteroid from './components/RefineOrbitAsteroid';
 import PredictAsteroid from './components/PredictAsteroid';
+import AstrometryRun from './components/AstrometryRun';
 
 
 const drawerWidth = 240;
@@ -384,6 +385,7 @@ function MiniDrawer() {
             <Route exact path="/prediction-of-occultation" render={(props) => <PredictionOccultation {...props} setTitle={setTitle} />} />
             <Route exact path="/prediction-detail/:id" render={(props) => <PredictionDetail {...props} setTitle={setTitle} />} />
             <Route exact path="/predict-asteroid" render={(props) => <PredictAsteroid {...props} setTitle={setTitle} />} />
+            <Route exact path="/astrometry-run/:id" render={(props) => <AstrometryRun {...props} setTitle={setTitle} />} />
           </main>
           <Footer drawerOpen={open} />
         </div>
