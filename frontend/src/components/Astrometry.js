@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Card, CardHeader } from '@material-ui/core';
@@ -15,9 +15,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function Astrometry() {
+function Astrometry({ setTitle }) {
 
   const classes = useStyles();
+
+  useEffect(() => {
+    setTitle("Astrometry");
+  }, []);
 
 
   return (
