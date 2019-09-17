@@ -300,7 +300,7 @@ class AstrometryInput(models.Model):
         help_text="Description of the input type.",
         choices=(
             ('ccd_images_list', 'CCD Images List'),
-            ('bsp_jpl', 'BSP JPL'),
+            ('bsp_jpl', 'Ephemeris JPL'),
             ('catalog', 'Reference Catalog')),
     )
 

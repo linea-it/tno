@@ -103,6 +103,9 @@ class PraiaApi {
       },
     });
 
+  getAsteroidNeighbors = id =>
+    axios.get(`${this.api}/astrometry_asteroids/${id}/get_neighbors/`);
+
   getAsteroidStatus = ({ id }) =>
     axios.get(`${this.api}/praia_run/${id}/count_asteroid_status/`);
 
