@@ -19,6 +19,19 @@ function AstrometryRun({ setTitle }) {
       <Grid container>
 
         <Grid item>
+          <Card>
+
+          </Card>
+
+        </Grid>
+
+      </Grid>
+
+
+
+      <Grid container>
+
+        <Grid item>
 
         </Grid>
 
