@@ -510,7 +510,7 @@ class AstrometryPipeline():
 
             asteroid_alias = obj.name.replace(' ', '')
 
-            max_workers = 56
+            max_workers = 10
 
             payload = dict({
                 "queues": 1,
@@ -520,7 +520,9 @@ class AstrometryPipeline():
                     # "Should_transfer_files": "yes",
                     # "when_to_transfer_output": "on_exit",
                     "+RequiresWholeMachine": "True",
-                    "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
+                    # "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
+                    "Requirements": "SlotsTno == True",
+
 
                     # "request_memory": "4 GB",
                     # "request_cpus": "10",
