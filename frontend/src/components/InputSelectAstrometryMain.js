@@ -55,7 +55,6 @@ export default function SimpleSelect(props) {
 
     setDefaultValue(event.target.value);
 
-
     switch (event.currentTarget.title) {
       case "input":
 

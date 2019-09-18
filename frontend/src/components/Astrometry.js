@@ -1,17 +1,20 @@
 import React, { useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import { Card, CardHeader } from '@material-ui/core';
+import { Card, CardHeader, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InputSelect from './InputSelectAstrometryMain';
-
 
 
 const useStyles = makeStyles((theme) => ({
   cardHeader: {
 
   },
-
+  button: {
+    margin: theme.spacing(1),
+    float: 'right',
+    marginRight: '10%',
+  },
 
 }));
 
@@ -40,13 +43,10 @@ function Astrometry({ setTitle }) {
             <InputSelect title="Input Object List" width="90%" marginTop={10} />
             <InputSelect title="Reference Catalog" width="90%" marginTop={10} />
             <InputSelect title="Configuration" width="90%" marginTop={10} />
-
-
-
+            <Button variant="contained" color="primary" className={classes.button}>Submit</Button>
           </Card>
 
         </Grid>
-
 
       </Grid>
 
@@ -61,11 +61,7 @@ function Astrometry({ setTitle }) {
             />
           </Card>
 
-
         </Grid>
-
-
-
 
       </Grid>
 
