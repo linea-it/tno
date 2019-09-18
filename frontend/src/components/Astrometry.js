@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Card, CardHeader } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import InputSelect from './InputSelectAstrometryMain';
 
 
 
@@ -35,8 +36,14 @@ function Astrometry({ setTitle }) {
               className={classes.cardHeader}
               title={"Execute"}
             />
-          </Card>
 
+            <InputSelect title="Input Object List" width="90%" marginTop={10} />
+            <InputSelect title="Reference Catalog" width="90%" marginTop={10} />
+            <InputSelect title="Configuration" width="90%" marginTop={10} />
+
+
+
+          </Card>
 
         </Grid>
 
@@ -45,7 +52,7 @@ function Astrometry({ setTitle }) {
 
       <Grid container spacing={2}>
 
-        <Grid item sm={6} xl={5}>
+        <Grid item sm={12} xl={12}>
           <Card>
 
             <CardHeader
