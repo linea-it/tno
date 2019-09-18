@@ -539,6 +539,7 @@ class AstrometryPipeline():
             })
 
             # Para Asteroid com mais de 20 CCDs requisitar a maquina inteira e habilitar um limite de threads.
+            # Essa limitacao e por causa da configuracao do cluster, que esta limitando a 2GB de Ram
             if obj.ccd_images > 20:
                 payload["submit_params"]["+RequiresWholeMachine"] = "True"
                 payload["submit_params"]["arguments"] = "%s --path %s --catalog %s --max_workers=%s" % (
