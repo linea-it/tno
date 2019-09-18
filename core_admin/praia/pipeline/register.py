@@ -2,13 +2,14 @@ import json
 import logging
 import os
 import traceback
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
 import humanize
 
 from praia.models import (AstrometryAsteroid, AstrometryInput, AstrometryJob,
                           AstrometryOutput, Run)
-from tno.condor import check_condor_job, check_job_history, remove_job, get_job_by_id
+from tno.condor import (check_condor_job, check_job_history, get_job_by_id,
+                        remove_job)
 
 
 def register_input(run_id, name, asteroid_input):
@@ -288,19 +289,32 @@ def register_astrometry_outputs(astrometry_run, asteroid):
                     'header_extraction').get('execution_time', 0)
                 asteroid.execution_header = timedelta(
                     seconds=etime)
+            except Exception as e:
+                logger.warning(
+                    "Failed to register execution time for Praia Header Extraction. %s" % e)
 
+            try:
                 # Execution Time for Praia Astrometry
                 etime = results.get(
                     'praia_astrometry').get('execution_time', 0)
                 asteroid.execution_astrometry = timedelta(
                     seconds=etime)
+            except Exception as e:
+                logger.warning(
+                    "Failed to register execution time for Praia Astrometry. %s" % e)
 
+            try:
                 # Execution Time for Praia Targets
                 etime = results.get(
                     'praia_targets').get('execution_time', 0)
                 asteroid.execution_targets = timedelta(
                     seconds=etime)
 
+            except Exception as e:
+                logger.warning(
+                    "Failed to register execution time for Praia Targets. %s" % e)
+
+            try:
                 # Execution Time for Plots
                 etime = results.get(
                     'plots').get('execution_time', 0)
@@ -308,14 +322,8 @@ def register_astrometry_outputs(astrometry_run, asteroid):
                     seconds=etime)
 
             except Exception as e:
-                logger.warning("Failed to register execution times. %s" % e)
-
-            try:
-                # Adicionar ao tempo de execucao total do asteroid o tempo do condor Job
-                asteroid.execution_time += asteroid.condor_job.execution_time
-            except Exception as e:
                 logger.warning(
-                    "Failed to register condor job execution time. %s" % e)
+                    "Failed to register execution times for Plots. %s" % e)
 
             if asteroid.status != 'failure':
                 if int(asteroid.processed_ccd_image) != int(asteroid.ccd_images) and asteroid.status != 'failure':
@@ -334,7 +342,9 @@ def register_astrometry_outputs(astrometry_run, asteroid):
             t1 = datetime.now(timezone.utc)
             tdelta = t1 - t0
             asteroid.execution_registry = tdelta
-            asteroid.execution_time += tdelta
+
+            asteroid.execution_time = (asteroid.execution_ccd_list + asteroid.execution_bsp_jpl + asteroid.execution_reference_catalog +
+                                       asteroid.execution_header + asteroid.execution_astrometry + asteroid.execution_targets + asteroid.execution_plots + asteroid.execution_registry)
 
             asteroid.save()
 
@@ -474,7 +484,7 @@ def check_astrometry_running():
 
     runs = Run.objects.filter(status='running', step=3)
 
-    logger.debug("Astrometry Runs: %s" % runs)
+    # logger.debug("Astrometry Runs: %s" % runs)
 
     # Para cada running recupera os jobs
     for astrometry_run in runs:
@@ -494,17 +504,6 @@ def check_astrometry_running():
                 if int(result['JobStatus']) != int(job.job_status):
                     logger.debug("STATUS Diferente")
                     update_job_status(job, result)
-
-                # result = check_condor_job(job.clusterid, job.procid)
-                # logger.debug(result)
-                # if result is None:
-                #     # Busca informacao do job no history do condor
-                #     jobHistory = check_job_history(job.clusterid, job.procid)
-
-                #     update_job_status(job, jobHistory)
-                # else:
-                #     if int(result['JobStatus']) != int(job.job_status):
-                #         update_job_status(job, result)
         else:
 
             # Registra o Final da execucao.
@@ -522,7 +521,3 @@ def check_jobs_wait_to_run(astrometry_run):
         return True
     else:
         return False
-
-
-# def get_jobs_in_hold(astrometry_run):
-#     return astrometry_run.condor_jobs.filter(job_status=5)
