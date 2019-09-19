@@ -21,15 +21,15 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import Icon from '@material-ui/core/Icon';
 import { createBrowserHistory } from 'history';
 import Logo from './assets/img/linea.png';
-import PredictionOccultation from './components/PredictionOccultation';
-import PredictionDetail from './components/PredictionDetail';
 import Footer from './Footer';
 import RefineOrbit from './components/RefineOrbit';
 import RefineOrbitDetail from './components/RefineOrbitDetail';
 import RefineOrbitAsteroid from './components/RefineOrbitAsteroid';
-import PredictAsteroid from './components/PredictAsteroid';
 import OccultationCalendar from './components/OccultationCalendar';
 import TestCalendar from './components/TestCalendar';
+import PredictionOccultation from './components/PredictionOccultation';
+import PredictionOccultationDetail from './components/PredictionOccultationDetail';
+import PredictionOccultationAsteroid from './components/PredictionOccultationAsteroid';
 
 
 const drawerWidth = 240;
@@ -103,11 +103,18 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
     backgroundColor: 'rgb(240, 241, 244)',
+    // height: '100%',
   },
   bodyWrapper: {
     height: '100%',
     width: '100%',
     marginTop: '64px',
+  },
+  bodyWrapperOpen: {
+    maxWidth: `calc(100% - ${drawerWidth}px)`,
+  },
+  bodyWrapperClose: {
+    maxWidth: `calc(100% - ${theme.spacing(7)}px)`,
   },
   homeBtn: {
     fontSize: 18,
@@ -209,7 +216,7 @@ function MiniDrawer() {
           open={open}
         >
           <List className={classes.drawerList}>
-            <Link to="/dashboard" className={classes.invisibleLink}>
+            <Link to="/dashboard" className={classes.invisibleLink} title="Laboratório Interinstitucional de e-Astronomia">
               <ListItem button>
                 <ListItemText
                   primary={(
@@ -224,7 +231,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/dashboard" className={classes.invisibleLink}>
+            <Link to="/dashboard" className={classes.invisibleLink} title="Dashboard">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-home')} />
@@ -236,7 +243,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/registration" className={classes.invisibleLink}>
+            <Link to="/registration" className={classes.invisibleLink} title="Registration">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-user-plus')} />
@@ -248,7 +255,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/pointings" className={classes.invisibleLink}>
+            <Link to="/pointings" className={classes.invisibleLink} title="Pointings">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-dot-circle')} />
@@ -260,7 +267,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/ssso" className={classes.invisibleLink}>
+            <Link to="/ssso" className={classes.invisibleLink} title="Search SSSO">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite', classes.iconAltixDrawer)} />
@@ -272,7 +279,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/skybot" className={classes.invisibleLink}>
+            <Link to="/skybot" className={classes.invisibleLink} title="Skybot Run">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-star', classes.iconAltixDrawer)} />
@@ -284,7 +291,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/objects" className={classes.invisibleLink}>
+            <Link to="/objects" className={classes.invisibleLink} title="Filter Objects">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-filter', classes.iconAltixDrawer)} />
@@ -296,7 +303,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/astrometry" className={classes.invisibleLink}>
+            <Link to="/astrometry" className={classes.invisibleLink} title="Astrometry">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-meteor', classes.iconAltixDrawer)} />
@@ -308,7 +315,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/refine-orbit" className={classes.invisibleLink}>
+            <Link to="/refine-orbit" className={classes.invisibleLink} title="Refine Orbit">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-globe-americas', classes.iconAltixDrawer)} />
@@ -320,7 +327,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/prediction-of-occultation" className={classes.invisibleLink}>
+            <Link to="/prediction-of-occultation" className={classes.invisibleLink} title="Prediction of Occultation">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-chart-area', classes.iconAltixDrawer)} />
@@ -332,7 +339,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/occultations" className={classes.invisibleLink}>
+            <Link to="/occultations" className={classes.invisibleLink} title="Occultations">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-eye-slash', classes.iconAltixDrawer)} />
@@ -344,7 +351,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/occultation-calendar" className={classes.invisibleLink}>
+            <Link to="/occultation-calendar" className={classes.invisibleLink} title="Occultation Calendar">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-calendar-alt', classes.iconAltixDrawer)} />
@@ -356,7 +363,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/light-curve" className={classes.invisibleLink}>
+            <Link to="/light-curve" className={classes.invisibleLink} title="Light Curve Analysis">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-lightbulb', classes.iconAltixDrawer)} />
@@ -373,23 +380,23 @@ function MiniDrawer() {
             <IconButton
               onClick={handleDrawerClick}
               className={clsx(classes.ListIconDrawer, classes.ListIconControlDrawer)}
+              title={open ? 'Close' : 'Open'}
             >
               {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
             </IconButton>
           </div>
         </Drawer>
-        <div className={classes.bodyWrapper}>
+        <div className={clsx(classes.bodyWrapper, open ? classes.bodyWrapperOpen : classes.bodyWrapperClose)}>
           <main className={classes.content}>
             <Route exact path="/refine-orbit" render={(props) => <RefineOrbit {...props} setTitle={setTitle} />} />
             <Route exact path="/refine-orbit/:id" render={(props) => <RefineOrbitDetail {...props} setTitle={setTitle} />} />
             <Route exact path="/refine-orbit/asteroid/:id" render={(props) => <RefineOrbitAsteroid {...props} setTitle={setTitle} />} />
             <Route exact path="/prediction-of-occultation" render={(props) => <PredictionOccultation {...props} setTitle={setTitle} />} />
-            <Route exact path="/prediction-detail/:id" render={(props) => <PredictionDetail {...props} setTitle={setTitle} />} />
-            <Route exact path="/predict-asteroid" render={(props) => <PredictAsteroid {...props} setTitle={setTitle} />} />
+            <Route exact path="/prediction-of-occultation/:id" render={(props) => <PredictionOccultationDetail {...props} setTitle={setTitle} />} />
+            <Route exact path="/prediction-of-occultation/asteroid/:id" render={(props) => <PredictionOccultationAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
             <Route exact path="/occultation-calendar" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/test-calendar/:id/:date/:view/:flag" render={(props) => <TestCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/occultation-calendar-back/:id/:date/:view/" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
-
 
           </main>
           <Footer drawerOpen={open} />

@@ -11,3 +11,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+img.react-images__view-image {
+  max-height: 70vh;
+}
+
+html, body, #root {
+  height: 100%;
+}

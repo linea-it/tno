@@ -7,8 +7,7 @@ import PropTypes from 'prop-types';
 
 const useStyles = makeStyles({
   root: {
-    width: '100%',
-    maxWidth: 360,
+    maxWidth: '100%',
   },
   itemText: {
     flex: '1 1',
@@ -16,12 +15,12 @@ const useStyles = makeStyles({
 });
 
 
-function CustomList({ list }) {
+function CustomList({ data, height, width }) {
   const classes = useStyles();
 
   return (
-    <List className={classes.root}>
-      {list.map((item, i, arr) => (
+    <List className={classes.root} style={{ height, width }}>
+      {data.map((item, i, arr) => (
         <ListItem key={i} divider={i !== arr.length - 1} dense={item.dense ? item.dense : false}>
           <ListItemText primary={item.title} className={classes.itemText} />
           <ListItemText className={classes.itemText} secondary={typeof item.value === 'function' ? item.value() : item.value} />
@@ -31,8 +30,21 @@ function CustomList({ list }) {
   );
 }
 
+CustomList.defaultProps = {
+  height: 'auto',
+  width: '100%',
+};
+
 CustomList.propTypes = {
-  list: PropTypes.arrayOf(PropTypes.object).isRequired,
+  height: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
+  width: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default CustomList;
