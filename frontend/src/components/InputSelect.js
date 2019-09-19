@@ -87,16 +87,28 @@ export default function SimpleSelect(props) {
 
       case "catalog":
         let catalogId = event.currentTarget.id;
-        props.setSubmition({ catalogId: catalogId })
+        props.setSubmition({
+          ...props.valueSubmition,
+          catalogId: catalogId
+        });
+
 
         break;
 
       case "leapSeconds":
-        console.log("leapSeconds");
+        let leapSecondsId = event.currentTarget.id;
+        props.setSubmition({
+          ...props.valueSubmition,
+          leap_secondsId: leapSecondsId
+        });
         break;
 
       case "bspPlanetary":
-        console.log("bspPlanetary")
+        let bsp_planetaryId = event.currentTarget.id;
+        props.setSubmition({
+          ...props.valueSubmition,
+          bsp_planetaryId: bsp_planetaryId
+        })
         break;
     }
 

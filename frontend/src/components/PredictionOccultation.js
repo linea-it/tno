@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -12,7 +12,7 @@ import DateTime from './DateTimePrediction';
 import InputSelect from './InputSelect';
 import { getOrbitRuns } from '../api/Orbit';
 import Dialog from "../components/utils/CustomDialog";
-import PredictionHistory from "./PredictionHistory";
+
 
 import { getCatalogs, getLeapSeconds, getBspPlanetary, createPredictRun, }
   from '../api/Prediction';
@@ -50,7 +50,7 @@ function PredictionOccultation() {
   const [inputRadiusValue, setInputRadiusValue] = useState(0.15);
   const [ephemerisNumberValue, setEphemerisNumberValue] = useState(600);
   const [actionButton, setActionButton] = useState(true);
-  const [dateTime, setDateTime] = useState("2017-05-24T10:30");
+  const [dateTime] = useState("2019-01-01T10:30");
   const [dialogVisible, setDialogVisible] = useState(false);
 
   const [valueSubmition, setValueSubmition] = useState({
@@ -60,10 +60,10 @@ function PredictionOccultation() {
     catalogId: null,
     leap_secondsId: null,
     bsp_planetaryId: null,
-    catalog_radius: null,
-    ephemeris_step: null,
-    ephemeris_initial_date: null,
-    ephemeris_final_date: null,
+    catalog_radius: 0.15,
+    ephemeris_step: 600,
+    ephemeris_initial_date: "2019-01-01T10:30",
+    ephemeris_final_date: "2019-01-01T10:30",
     submit: false,
 
   });
@@ -87,51 +87,27 @@ function PredictionOccultation() {
     // ephemeris_step
 
 
-    setValueSubmition({
-      ...valueSubmition,
-      catalog_radius: inputRadiusValue,
-      ephemeris_step: ephemerisNumberValue,
-      ephemeris_initial_date: dateTime,
-      ephemeris_final_date: dateTime,
-      submit: true,
+    createPredictRun({
+      process: valueSubmition.processId,
+      input_list: valueSubmition.orbit_run_input_list_id,
+      input_orbit: valueSubmition.orbit_run_id,
+      leap_second: valueSubmition.leap_secondsId,
+      bsp_planetary: valueSubmition.bsp_planetaryId,
+      catalog: valueSubmition.catalogId,
+      catalog_radius: valueSubmition.catalog_radius,
+      ephemeris_initial_date: valueSubmition.ephemeris_initial_date,
+      ephemeris_final_date: valueSubmition.ephemeris_final_date,
+      ephemeris_step: valueSubmition.ephemeris_step
+    }).then((res) => {
+      console.log(res);
     });
 
 
-    setDialogVisible(true);
+
+
+    // setDialogVisible(true);
 
   }
-
-
-
-  //When submit button is clicked so calls the function below
-  useEffect(() => {
-
-    if (valueSubmition.submit) {
-
-      //Calls APi for creation of prediction run
-
-
-      createPredictRun({
-        process: valueSubmition.processId,
-        input_list: valueSubmition.orbit_run_input_list_id,
-        input_orbit: valueSubmition.orbit_run_id,
-        leap_second: valueSubmition.leap_secondsId,
-        bsp_planetary: valueSubmition.bsp_planetaryId,
-        catalog: valueSubmition.catalogId,
-        catalog_radius: valueSubmition.catalog_radius,
-        ephemeris_initial_date: valueSubmition.ephemeris_initial_date,
-        ephemeris_final_date: valueSubmition.ephemeris_final_date,
-        ephemeris_step: valueSubmition.ephemeris_step
-      }).then((res) => {
-        console.log(res);
-      });
-
-
-    }
-
-  }, [valueSubmition]);
-
-
 
 
 
@@ -240,7 +216,6 @@ function PredictionOccultation() {
 
 
 
-
   useEffect(() => {
     loadData();
 
@@ -255,6 +230,11 @@ function PredictionOccultation() {
 
     ephemerisNumberValue ? setActionButton(false) : setActionButton(true);
 
+    setValueSubmition({
+      ...valueSubmition,
+      catalog_radius: event.target.value,
+    });
+
   };
 
 
@@ -263,6 +243,11 @@ function PredictionOccultation() {
     setEphemerisNumberValue(event.target.value);
 
     inputRadiusValue ? setActionButton(false) : setActionButton(true);
+
+    setValueSubmition({
+      ...valueSubmition,
+      ephemeris_step: event.target.value
+    });
   };
 
 
@@ -272,11 +257,7 @@ function PredictionOccultation() {
   };
 
 
-
-
-  
-
-
+  console.log(valueSubmition);
 
   return (
     <div>
@@ -293,9 +274,9 @@ function PredictionOccultation() {
           <Grid container spacing={2}>
             <Grid item sm={6} xs={6} xl={6} lg={6}>
               <InputSelect title="input" width="90%" setActionButton={setActionButton} valueSubmition={valueSubmition} setSubmition={setValueSubmition} marginTop={10} data={inputArray} value="el.id" display="el.proccess_displayname" />
-              <InputSelect title="catalog" width="90%" setSubmition={setValueSubmition} marginTop={10} data={catalogArray} value="el.id" display="el.display_name" />
-              <InputSelect title="leapSeconds" width="90%" marginTop={10} data={leapSecondsArray} value="el.id" display="el.name" />
-              <InputSelect title="bspPlanetary" width="90%" marginTop={10} data={bspPlanetaryArray} value="el.id" display="el.display_name" />
+              <InputSelect title="catalog" width="90%" valueSubmition={valueSubmition} setSubmition={setValueSubmition} marginTop={10} data={catalogArray} value="el.id" display="el.display_name" />
+              <InputSelect title="leapSeconds" width="90%" valueSubmition={valueSubmition} setSubmition={setValueSubmition} marginTop={10} data={leapSecondsArray} value="el.id" display="el.name" />
+              <InputSelect title="bspPlanetary" width="90%" valueSubmition={valueSubmition} setSubmition={setValueSubmition} marginTop={10} data={bspPlanetaryArray} value="el.id" display="el.display_name" />
             </Grid>
 
             <Grid item sm={6} xs={6} xl={6} lg={6}>
@@ -321,8 +302,24 @@ function PredictionOccultation() {
                 value={ephemerisNumberValue}
               />
 
-              <DateTime defaultDateTime={dateTime} label="Ephemeris Initial Date" />
-              <DateTime defaultDateTime={dateTime} label="Ephemeris Final Date" width="90%" />
+              <DateTime
+                defaultDateTime={dateTime}
+                label="Ephemeris Initial Date"
+                valueSubmition={valueSubmition}
+                setSubmition={setValueSubmition}
+                title={"initialDate"}
+
+              />
+
+              <DateTime
+                defaultDateTime={dateTime}
+                label="Ephemeris Final Date"
+                valueSubmition={valueSubmition}
+                setSubmition={setValueSubmition}
+                title='finalDate'
+                width="90%"
+
+              />
 
               <Button
                 variant="contained"
@@ -352,15 +349,15 @@ function PredictionOccultation() {
             className={classes.cardHeader}
           />
           <CardContent>
-            <PredictionHistory>
 
-            </PredictionHistory>
 
 
           </CardContent>
 
         </Card>
       </div>
+
+
 
 
 

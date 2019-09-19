@@ -15,19 +15,41 @@ const useStyles = makeStyles({
   },
 });
 
+
 export default function DateAndTimePickers(props) {
   const classes = useStyles();
   const { label } = props;
 
 
+  const handleChange = (event) => {
+
+    const id = event.currentTarget.id;
+    const value = event.currentTarget.value;
+
+    if (id === "initialDate") {
+
+      props.setSubmition({
+        ...props.valueSubmition,
+        ephemeris_initial_date: value,
+      });
+    }
+    else {
+      props.setSubmition({
+        ...props.valueSubmition,
+        ephemeris_final_date: value,
+      });
+    }
+  }
+
   return (
     <form className={classes.container} noValidate>
       <TextField
-        id="datetime-local"
+        id={props.title}
         label={label}
+        title={props.title}
         type="datetime-local"
-        // defaultValue="2017-05-24T10:30"
         defaultValue={props.defaultDateTime}
+        onChange={handleChange}
         className={classes.textField}
         InputLabelProps={{
           shrink: true,

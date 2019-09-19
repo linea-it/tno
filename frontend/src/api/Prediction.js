@@ -22,7 +22,7 @@ export const createPredictRun = ({
   ephemeris_final_date,
   ephemeris_step,
 
-}) => axios.post('/predict_run/', {
+}) => axios.post('/predict_run', {
   process,
   input_list,
   input_orbit,
