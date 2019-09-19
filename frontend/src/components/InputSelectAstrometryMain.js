@@ -102,10 +102,14 @@ export default function SimpleSelect(props) {
   const loadMenuItems = () => {
     // Receive the props data from Astrometry.
     const generalArray = props.data;
+
+    //Display shows the names of the list
+    //That is effectively shown on select
+    //This comes from the props.
     const { display } = props;
     const { value } = props;
 
-     console.log(generalArray);
+
     // Create a map function to define(return) the MenuItems.
 
 
@@ -120,7 +124,8 @@ export default function SimpleSelect(props) {
           value={i}
           title={props.title}
         >
-          {/* {eval(display)} */}
+          {eval(display)}
+
         </MenuItem>
       ));
 
