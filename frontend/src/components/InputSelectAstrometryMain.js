@@ -55,44 +55,41 @@ export default function SimpleSelect(props) {
 
     setDefaultValue(event.target.value);
 
-    switch (event.currentTarget.title) {
+
+    let cases = event.currentTarget.getAttribute("case");
+
+
+    // inputId: ,
+    //   refCatalogId: null,
+    //     configId: null,
+
+    switch (cases) {
       case "input":
-
-
-        props.setActionButton(false);
-
-        let process_id = event.currentTarget.getAttribute('process_id');
-        let orbit_input_list_id = event.currentTarget.getAttribute('orbit_input_list_id');
-        let orbit_run_id = event.currentTarget.getAttribute('orbit_run_id');
 
         props.setSubmition({
           ...props.valueSubmition,
-          processId: process_id,
-          orbit_run_input_list_id: orbit_input_list_id,
-          orbit_run_id: orbit_run_id,
-
+          inputId: event.currentTarget.id
 
         });
-
-        //Case 
 
         break;
 
       case "catalog":
-        let catalogId = event.currentTarget.id;
-        props.setSubmition({ catalogId: catalogId })
+        props.setSubmition({
+          ...props.valueSubmition,
+          refCatalogId: event.currentTarget.id
+
+        });
 
         break;
 
-      case "leapSeconds":
-        console.log("leapSeconds");
-        break;
+      case "configuration":
+        props.setSubmition({
+          ...props.valueSubmition,
+          configId: event.currentTarget.id
 
-      case "bspPlanetary":
-        console.log("bspPlanetary")
-        break;
+        });
     }
-
 
   }
 
@@ -123,6 +120,7 @@ export default function SimpleSelect(props) {
           className={classes.MenuItem}
           value={i}
           title={props.title}
+          case={props.case}
         >
           {eval(display)}
 

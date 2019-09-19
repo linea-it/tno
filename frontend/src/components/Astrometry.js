@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
     float: 'right',
-    marginRight: '10%',
+    marginRight: '5%',
   },
 
 }));
@@ -111,8 +111,10 @@ function Astrometry({ setTitle }) {
 
 
   const handleSubmit = () => {
-
+    console.log(valueSubmition);
   };
+
+  console.log(valueSubmition);
 
   return (
     <div>
@@ -126,10 +128,48 @@ function Astrometry({ setTitle }) {
               title={"Execute"}
             />
 
-            <InputSelect title="Input Object List" display={"el.displayname"} data={objectList} width="90%" marginTop={10} />
-            <InputSelect title="Reference Catalog" display="el.name" data={catalogs} width="90%" marginTop={10} />
-            <InputSelect title="Configuration" width="90%" data={configurations} display="el.displayname" marginTop={10} />
-            <Button variant="contained" color="primary" onClick={handleSubmit} className={classes.button}>Submit</Button>
+            <InputSelect
+              title="Input Object List"
+              case="input"
+              display="el.displayname"
+              data={objectList}
+              width="90%"
+              marginTop={10}
+              valueSubmition={valueSubmition}
+              setSubmition={setValueSubmition}
+            />
+
+            <InputSelect
+              title="Reference Catalog"
+              case="catalog"
+              display="el.name"
+              data={catalogs}
+              width="90%"
+              marginTop={10}
+              valueSubmition={valueSubmition}
+              setSubmition={setValueSubmition}
+            />
+
+            <InputSelect
+              title="Configuration"
+              case="configuration"
+              width="90%"
+              data={configurations}
+              display="el.displayname"
+              marginTop={10}
+              valueSubmition={valueSubmition}
+              setSubmition={setValueSubmition}
+            />
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+              className={classes.button}>
+              Submit
+               </Button>
+
+
           </Card>
 
         </Grid>
