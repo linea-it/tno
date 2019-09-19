@@ -15,7 +15,7 @@ import InputSelect from './InputSelect';
 import { getPredictionRuns } from '../api/Prediction';
 import CustomTable from './utils/CustomTable';
 import { getOrbitRuns } from '../api/Orbit';
-import Dialog from "../components/utils/CustomDialog";
+import Dialog from "@material-ui/core/Dialog";
 import PredictionHistory from "./PredictionHistory";
 
 import { getCatalogs, getLeapSeconds, getBspPlanetary, createPredictRun, } from '../api/Prediction';
