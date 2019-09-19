@@ -1,5 +1,6 @@
 import logging
 import os
+import urllib.parse
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -334,6 +335,67 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
 
         return Response(result)
 
+    @detail_route(methods=['GET'])
+    def main_outputs(self, request, pk=None):
+        # Recuperar a instancia do Asteroid
+        asteroid = self.get_object()
+
+        # Recuperar o filepath para o arquivo de Astrometria, um dos resultados do pipeline
+        queryset = asteroid.ast_outputs.filter(ccd_image__isnull=True)
+
+        # Adicionar informacoes do apontamento em cada output
+        serializer = AstrometryOutputSerializer(queryset, many=True)
+        rows = serializer.data
+
+        result = dict({
+            'success': True,
+            'rows': rows,
+        })
+
+        return Response(result)
+
+    @detail_route(methods=['GET'])
+    def plot_ccd(self, request, pk=None):
+        # Recuperar a instancia do Asteroid
+        asteroid = self.get_object()
+
+        # Recuperar todos os plots para este asteroid
+        queryset = asteroid.ast_outputs.filter(type='astrometry_plot')
+
+        # Recuperar informacao do ccd.
+        # TODO: o campo ccd_image e o id da tabela pointing,
+        # talvez seja melhor fazer uma chave estrangeira nesta coluna ou usar expnum,ccd_num, band
+
+        # Todos os diferentes apontamentos (CCDs)
+        distinct_ids = queryset.values_list(
+            'ccd_image', flat=True).distinct('ccd_image')
+
+        # converter os ids para inteiro
+        distinct_ids = [int(x) for x in distinct_ids]
+
+        # Recuperar na tabela pointings todos os apontamentos.
+        pointings = Pointing.objects.filter(id__in=distinct_ids)
+
+        # Adicionar informacoes do apontamento em cada output
+        serializer = AstrometryOutputSerializer(queryset, many=True)
+        rows = serializer.data
+        for row in rows:
+            pointing = pointings.get(pk=int(row.get('ccd_image')))
+            row.update({
+                'ccd_filename': pointing.filename,
+                'expnum': pointing.expnum,
+                'ccd_num': pointing.ccdnum,
+                'band': pointing.band,
+                'src': urllib.parse.urljoin(settings.MEDIA_URL, row.get('file_path').strip('/'))
+            })
+
+        result = dict({
+            'success': True,
+            'rows': rows,
+        })
+
+        return Response(result)
+
 
 class AstrometryInputViewSet(viewsets.ModelViewSet):
     queryset = AstrometryInput.objects.all()
@@ -348,6 +410,6 @@ class AstrometryOutputViewSet(viewsets.ModelViewSet):
     queryset = AstrometryOutput.objects.all()
     serializer_class = AstrometryOutputSerializer
     search_fields = ('filename',)
-    filter_fields = ('id', 'asteroid', 'filename',)
+    filter_fields = ('id', 'asteroid', 'filename', 'type', 'ccd_image')
     ordering_fields = ('id', 'asteroid',)
     ordering = ('asteroid',)

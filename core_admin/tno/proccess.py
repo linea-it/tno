@@ -1,5 +1,7 @@
 import logging
-import os, errno, shutil
+import os
+import errno
+import shutil
 from django.conf import settings
 from .skybotoutput import FilterObjects
 
@@ -13,7 +15,8 @@ class ProccessManager():
         proccess_dir = settings.PROCCESS_DIR
         directory_name = str(instance.id)
         directory = os.path.join(proccess_dir, directory_name)
-        absolute_path = os.path.join(os.environ['PROCCESS_DIR'], directory_name)
+        absolute_path = os.path.join(
+            os.environ['PROCCESS_DIR'], directory_name)
 
         try:
             # Criar o Diretorio
@@ -30,12 +33,11 @@ class ProccessManager():
             instance.absolute_path = absolute_path
             instance.save()
 
-
-
         except OSError as e:
             instance.status = 'error'
             instance.save()
-            self.logger.error("Failed to create process directory [ %s ]" % directory)
+            self.logger.error(
+                "Failed to create process directory [ %s ]" % directory)
             if e.errno != errno.EEXIST:
                 self.logger.error(e)
                 raise
@@ -69,7 +71,8 @@ class ProccessManager():
             try:
 
                 # Criar o Diretorio
-                os.makedirs(object_directory)
+                if not os.path.exists(object_directory):
+                    os.makedirs(object_directory)
 
                 # Alterar a Permissao do Diretorio
                 os.chmod(object_directory, 0o775)
@@ -77,7 +80,8 @@ class ProccessManager():
                 self.logger.debug("Object Dir: %s" % object_directory)
 
             except OSError as e:
-                self.logger.error("Failed to create directory for Object [ %s ]" % object.get("name"))
+                self.logger.error(
+                    "Failed to create directory for Object [ %s ]" % object.get("name"))
                 self.logger.error(e)
                 raise
 
@@ -101,12 +105,14 @@ class ProccessManager():
 
                 return instance
             else:
-                self.logger.warning("Process has already been marked as purged.")
+                self.logger.warning(
+                    "Process has already been marked as purged.")
 
                 return instance
 
         except Exception as e:
-            self.logger.error("Failed to remove process directory [ %s ]" % directory)
+            self.logger.error(
+                "Failed to remove process directory [ %s ]" % directory)
             self.logger.error(e)
             # raise
 

@@ -116,8 +116,6 @@ class PraiaDetail extends Component {
     this.loadStatus(id);
     this.loadExecutionTime(id);
 
-    // TODO deve sair daqui, so para testes
-    this.api.checkJobStatus();
   };
 
   loadStatus = id => {
@@ -304,7 +302,7 @@ class PraiaDetail extends Component {
             />
           </div>
 
-          <div className="ui-sm-3 ui-md-4 ui-lg-4 ui-xl-3">
+          <div className="ui-sm-4 ui-md-4 ui-lg-4 ui-xl-3">
             <div>
               <PanelCostumize
                 title="Execution Statistics"
