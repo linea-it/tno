@@ -52,8 +52,6 @@ class DonutStats extends Component {
       height: integer,
     };
 
-    // const RADIAN = Math.PI / 180;
-    console.log("height", height)
     if (!height) {
       height = 130;
     }
