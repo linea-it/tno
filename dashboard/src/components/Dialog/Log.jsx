@@ -25,6 +25,7 @@ export default class Log extends Component {
                 header={header}
                 visible={visible}
                 width="650px"
+
                 modal={true}
                 onHide={onHide}
                 maximizable={true}
@@ -35,6 +36,7 @@ export default class Log extends Component {
                     color: '#ffffff',
                     backgroundColor: '#254356',
                     width: 900 + 'px',
+                    minHeight: 600 + 'px',
 
 
                 }}

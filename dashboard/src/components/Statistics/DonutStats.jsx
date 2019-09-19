@@ -42,21 +42,25 @@ class DonutStats extends Component {
   render() {
     const propSet = this.props;
 
-    const { string, array } = PropTypes;
+    const { string, array, integer } = PropTypes;
+    let { height } = propSet;
 
     DonutStats.propTypes = {
       subTitle: string.isRequired,
       data: array.isRequired,
       fill: array.isRequired,
+      height: integer,
     };
 
-    // const RADIAN = Math.PI / 180;
+    if (!height) {
+      height = 130;
+    }
 
     return (
-      <ResponsiveContainer width="100%" height="80%">
+      <ResponsiveContainer width="100%" height="100%">
         <Content
           content={
-            <PieChart width={450} height={130}>
+            <PieChart width={450} height={height}>
               <Pie
                 data={propSet.data}
                 cx={60}
@@ -77,8 +81,8 @@ class DonutStats extends Component {
               <Tooltip formatter={value => this.format(value)} />
               <Legend
                 iconSize={10}
-                width={120}
-                height={100}
+                width={160}
+                height={height}
                 layout="vertical"
                 verticalAlign="middle"
               />

@@ -103,10 +103,28 @@ class PraiaApi {
       },
     });
 
+  getAsteroidNeighbors = id =>
+    axios.get(`${this.api}/astrometry_asteroids/${id}/get_neighbors/`);
+
   getAsteroidStatus = ({ id }) =>
     axios.get(`${this.api}/praia_run/${id}/count_asteroid_status/`);
 
-  checkJobStatus = () => axios.get(`${this.api}/teste/`);
+  read_astrometry_table = id =>
+    axios.get(`${this.api}/astrometry_asteroids/${id}/astrometry_table/`);
+
+  getAsteroidMainOutputs = id =>
+    axios.get(`${this.api}/astrometry_asteroids/${id}/main_outputs/`);
+
+  getAsteroidOutputsByCCds = id =>
+    axios.get(`${this.api}/astrometry_asteroids/${id}/outputs_by_ccd/`);
+
+  getAsteroidOutputsTree = id =>
+    axios.get(
+      `${this.api}/astrometry_asteroids/${id}/outputs_by_ccd/?tree=true`
+    );
+
+  getAstrometryPlots = id =>
+    axios.get(`${this.api}/astrometry_asteroids/${id}/plot_ccd/`);
 
   getCSV = (filepath, page, pageSize) => {
     return axios.get(
@@ -123,10 +141,8 @@ class PraiaApi {
   };
 
   readCondorFile = filepath => {
-
     return axios.get(`${this.api}/read_file?filepath=${filepath}`);
   };
-
 }
 
 export default PraiaApi;

@@ -2,13 +2,14 @@ import json
 import logging
 import os
 import traceback
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import humanize
 
 from praia.models import (AstrometryAsteroid, AstrometryInput, AstrometryJob,
                           AstrometryOutput, Run)
-from tno.condor import check_condor_job, check_job_history, remove_job, get_job_by_id
+from tno.condor import (check_condor_job, check_job_history, get_job_by_id,
+                        remove_job)
 
 
 def register_input(run_id, name, asteroid_input):
@@ -105,7 +106,6 @@ def update_job_status(job, condor_job):
         job.finish_time = finish_time
         job.execution_time = finish_time - job.start_time
 
-
         job.save()
 
         register_astrometry_outputs(job.astrometry_run.pk, job.asteroid.name)
@@ -126,7 +126,7 @@ def update_job_status(job, condor_job):
 
         job.save()
 
-        # Remover o job do condor 
+        # Remover o job do condor
         try:
             remove_job(job.clusterid, job.procid)
         except Exception as e:
@@ -169,7 +169,7 @@ def register_astrometry_outputs(astrometry_run, asteroid):
 
             if asteroid.status != 'failure':
                 asteroid.status = 'failure'
-                asteroid.error_msg = 'Asteroid was processed but the outputs file was not created.'
+                asteroid.error_msg = 'Asteroid was processed but the output file was not created.'
 
             t1 = datetime.now(timezone.utc)
             tdelta = t1 - t0
@@ -177,78 +177,179 @@ def register_astrometry_outputs(astrometry_run, asteroid):
 
             asteroid.save()
 
-            logger.warning("Asteroid [ %s ] was processed but the outputs file was not created." % (asteroid.name))
+            logger.warning(
+                "Asteroid [ %s ] was processed but the output file was not created." % (asteroid.name))
 
         else:
 
             results = read_astrometry_json(result_json)
 
             # Astrometry File
-            astrometry = results.get('astrometry')
-            if not astrometry.get('file_size') > 0 and asteroid.status != 'failure':
-                # Se o arquivo de Astrometria estiver vazio, muda o status para warning
-                asteroid.status = 'warning'
-                asteroid.error_msg = 'Astrometry file is empty.'
+            try:
+                astrometry = results.get('astrometry')
+                if not astrometry.get('file_size') > 0 and asteroid.status != 'failure':
+                    # Se o arquivo de Astrometria estiver vazio, muda o status para warning
+                    asteroid.status = 'warning'
+                    asteroid.error_msg = 'Astrometry file is empty.'
 
-            update_create_astrometry_output(
-                asteroid, 'astrometry', astrometry.get('filename'), astrometry.get(
-                    'file_size'), astrometry.get('extension')
-            )
+                update_create_astrometry_output(
+                    asteroid, 'astrometry', astrometry.get('filename'), astrometry.get(
+                        'file_size'), astrometry.get('extension')
+                )
+            except Exception as e:
+                logger.warning(
+                    "Failed to register Astrometry File. %s" % e)
 
             # Target Offset
-            output = results.get('target_offset')
-            update_create_astrometry_output(
-                asteroid, 'target_offset', output.get('filename'), output.get(
-                    'file_size'), output.get('extension')
-            )
+            try:
+                output = results.get('target_offset')
+                update_create_astrometry_output(
+                    asteroid, 'target_offset', output.get('filename'), output.get(
+                        'file_size'), output.get('extension')
+                )
+            except Exception as e:
+                logger.warning(
+                    "Failed to register Target Offset. %s" % e)
 
             # Targets File
-            output = results.get('targets_file')
-            update_create_astrometry_output(
-                asteroid, 'targets', output.get('filename'), output.get(
-                    'file_size'), output.get('extension')
-            )
+            try:
+                output = results.get('targets_file')
+                update_create_astrometry_output(
+                    asteroid, 'targets', output.get('filename'), output.get(
+                        'file_size'), output.get('extension')
+                )
+            except Exception as e:
+                logger.warning(
+                    "Failed to register Targets File. %s" % e)
 
-            # Arquivos XY gerados para cada ccd e varios catalogos de referencia
+            # Targets Search Log
+            try:
+                filename = results.get('praia_targets').get('log')
+                filepath = os.path.join(asteroid.relative_path, filename)
+                filesize = os.path.getsize(filepath)
+
+                update_create_astrometry_output(
+                    asteroid, 'targets_log', filename, filesize, '.log')
+
+            except Exception as e:
+                logger.warning(
+                    "Failed to register PRAIA Target Search Log. %s" % e)
+
+            # Header Extraction
+            try:
+                output = results.get('header_extraction')
+                update_create_astrometry_output(
+                    asteroid, 'header_extraction', output.get('filename'), output.get(
+                        'file_size'), output.get('extension')
+                )
+            except Exception as e:
+                logger.warning(
+                    "Failed to register PRAIA Header Extraction. %s" % e)
+
+            # Header Extraction Log
+            try:
+                filename = results.get('header_extraction').get('log')
+                filepath = os.path.join(asteroid.relative_path, filename)
+                filesize = os.path.getsize(filepath)
+
+                update_create_astrometry_output(
+                    asteroid, 'header_extraction_log', filename, filesize, '.log')
+            except Exception as e:
+                logger.warning("Failed to register PRAIA Header Log. %s" % e)
+
+            # Outputs gerados para cada CCD
             count = 0
             count_ccds = 0
             outputs = results.get('outputs')
-            for ccd in outputs:
-                a_files = outputs[ccd]
+
+            for ccd_id in outputs:
+                ccd = outputs[ccd_id]
+                a_files = ccd.get('files')
                 count_ccds += 1
 
                 for output in a_files:
-                    f_type = get_type_by_extension(output.get('extension'))
+                    f_type = get_output_type(output)
 
                     update_create_astrometry_output(
-                        asteroid, f_type, output.get('filename'), output.get('file_size'), output.get('extension'), output.get('catalog'), ccd)
+                        asteroid, f_type, output.get('filename'), output.get('file_size'), output.get('extension'), output.get('catalog'), ccd['ccd_id'])
 
                     count += 1
 
             logger.debug(
-                "Registered outputs [ %s ] for [ %s ] CCDs" % (count, len(ccd)))
+                "Registered outputs [ %s ] for [ %s ] CCDs" % (count, count_ccds))
 
             # Registrar Contadores
+            asteroid.available_ccd_image = results.get('available_images')
             asteroid.processed_ccd_image = results.get('processed_images')
-            asteroid.execution_time += asteroid.condor_job.execution_time
+            asteroid.outputs = count
+
+            try:
+                # Execution Time for Praia Header Extraction
+                etime = results.get(
+                    'header_extraction').get('execution_time', 0)
+                asteroid.execution_header = timedelta(
+                    seconds=etime)
+            except Exception as e:
+                logger.warning(
+                    "Failed to register execution time for Praia Header Extraction. %s" % e)
+
+            try:
+                # Execution Time for Praia Astrometry
+                etime = results.get(
+                    'praia_astrometry').get('execution_time', 0)
+                asteroid.execution_astrometry = timedelta(
+                    seconds=etime)
+            except Exception as e:
+                logger.warning(
+                    "Failed to register execution time for Praia Astrometry. %s" % e)
+
+            try:
+                # Execution Time for Praia Targets
+                etime = results.get(
+                    'praia_targets').get('execution_time', 0)
+                asteroid.execution_targets = timedelta(
+                    seconds=etime)
+
+            except Exception as e:
+                logger.warning(
+                    "Failed to register execution time for Praia Targets. %s" % e)
+
+            try:
+                # Execution Time for Plots
+                etime = results.get(
+                    'plots').get('execution_time', 0)
+                asteroid.execution_plots = timedelta(
+                    seconds=etime)
+
+            except Exception as e:
+                logger.warning(
+                    "Failed to register execution times for Plots. %s" % e)
 
             if asteroid.status != 'failure':
                 if int(asteroid.processed_ccd_image) != int(asteroid.ccd_images) and asteroid.status != 'failure':
                     asteroid.status = 'warning'
-                    asteroid.error_msg = 'Some CCDs were not processed.'
+                    asteroid.error_msg = 'Some CCDs are not available.'
                 else:
                     asteroid.status = 'success'
                     asteroid.error_msg = None
 
+            # TODO rever essa regra de falha
+            if results.get('error') is not None:
+                asteroid.status = 'warning'
+                asteroid.error_msg = results.get('error')
+
+            # Execution Time Registry outputs
             t1 = datetime.now(timezone.utc)
             tdelta = t1 - t0
-            asteroid.execution_time += tdelta
+            asteroid.execution_registry = tdelta
+
+            asteroid.execution_time = (asteroid.execution_ccd_list + asteroid.execution_bsp_jpl + asteroid.execution_reference_catalog +
+                                       asteroid.execution_header + asteroid.execution_astrometry + asteroid.execution_targets + asteroid.execution_plots + asteroid.execution_registry)
 
             asteroid.save()
 
             logger.info("Registered [ %s ] outputs for Astrometry Run [ %s ] Asteroid [ %s ] in %s" % (
                 count, astrometry_run, asteroid, humanize.naturaldelta(tdelta)))
-
 
     except Exception as e:
         trace = traceback.format_exc()
@@ -290,15 +391,27 @@ def update_create_astrometry_output(
     return record
 
 
-def get_type_by_extension(extension):
-    if extension == '.xy':
+def get_output_type(output):
+    if output.get('extension') == '.xy':
         return 'astrometric_results'
 
-    elif extension == '.mes':
+    elif output.get('extension') == '.mes':
         return 'mes'
 
-    elif extension == '.reg':
+    elif output.get('extension') == '.reg':
         return 'saoimage_region_file'
+
+    elif output.get('extension') == '.txt':
+        return output.get('filename').split('.')[1]
+
+    elif output.get('extension') == '.dat':
+        return 'astrometry_params'
+
+    elif output.get('extension') == '.log':
+        return 'astrometry_log'
+
+    elif output.get('extension') == '.png':
+        return 'astrometry_plot'
 
     else:
         return None
@@ -325,7 +438,6 @@ def finish_astrometry_run(astrometry_run):
 
         atDelta = at1 - at0
 
-            
         instance.execution_astrometry = atDelta
 
         # Acrescentar os totais de asteroids por status.
@@ -338,7 +450,6 @@ def finish_astrometry_run(astrometry_run):
         instance.count_failed = cfailure
         instance.count_warning = cwarning
         instance.count_not_executed = cnotexecuted
-
 
         instance.status = 'success'
         instance.error_msg = None
@@ -373,7 +484,7 @@ def check_astrometry_running():
 
     runs = Run.objects.filter(status='running', step=3)
 
-    logger.debug("Astrometry Runs: %s"  % runs)
+    # logger.debug("Astrometry Runs: %s" % runs)
 
     # Para cada running recupera os jobs
     for astrometry_run in runs:
@@ -387,29 +498,19 @@ def check_astrometry_running():
 
                 result = get_job_by_id(job.clusterid, job.procid)
 
-                logger.info("Check Status. Asteroid: [%s] Old Status: [%s] Current Status: [%s] ClusterId: [ %s ] " % (job.asteroid.name, job.job_status, result['JobStatus'], job.clusterid))
-
+                logger.info("Check Status. Asteroid: [%s] Old Status: [%s] Current Status: [%s] ClusterId: [ %s ] " % (
+                    job.asteroid.name, job.job_status, result['JobStatus'], job.clusterid))
 
                 if int(result['JobStatus']) != int(job.job_status):
                     logger.debug("STATUS Diferente")
                     update_job_status(job, result)
-
-                # result = check_condor_job(job.clusterid, job.procid)
-                # logger.debug(result)
-                # if result is None:
-                #     # Busca informacao do job no history do condor
-                #     jobHistory = check_job_history(job.clusterid, job.procid)
-
-                #     update_job_status(job, jobHistory)
-                # else:
-                #     if int(result['JobStatus']) != int(job.job_status):
-                #         update_job_status(job, result)
         else:
 
             # Registra o Final da execucao.
             if not check_jobs_wait_to_run(astrometry_run):
                 # Se todos os objetos ja foram executados finaliza o processo.
                 finish_astrometry_run(astrometry_run.pk)
+
 
 def check_jobs_wait_to_run(astrometry_run):
     # Verificar se nao tem nenhum objeto esperando para ser executado.
@@ -420,7 +521,3 @@ def check_jobs_wait_to_run(astrometry_run):
         return True
     else:
         return False
-
-
-# def get_jobs_in_hold(astrometry_run):
-#     return astrometry_run.condor_jobs.filter(job_status=5)
