@@ -100,47 +100,30 @@ export default function SimpleSelect(props) {
   const { title } = props;
 
   const loadMenuItems = () => {
-    // Receive the data from PredictionOccultation props.
+    // Receive the props data from Astrometry.
     const generalArray = props.data;
     const { display } = props;
     const { value } = props;
 
-
+     console.log(generalArray);
     // Create a map function to define(return) the MenuItems.
 
 
     if (generalArray && generalArray.length > 0) {
-      //Gera os itens de menus com 2 propriedades diferentes: input_list_id(Lista de objetos) e orbitRun_id
-      if (props.title === "input") {
 
-        return generalArray.map((el, i) => (
-          <MenuItem
-            key={i}
-            process_id={el.id}
-            orbit_input_list_id={el.input_list}
-            className={classes.MenuItem}
-            value={i == 0 ? '' : i}
-            orbit_run_id={el.proccess}
-            title={props.title}
-          >
-            {eval(display)}
-          </MenuItem>
-        ));
-      }
-      else {
+      return generalArray.map((el, i) => (
 
-        return generalArray.map((el, i) => (
-          <MenuItem
-            key={i}
-            id={el.id}
-            className={classes.MenuItem}
-            value={i}
-            title={props.title}
-          >
-            {eval(display)}
-          </MenuItem>
-        ));
-      }
+        <MenuItem
+          key={i}
+          id={el.id}
+          className={classes.MenuItem}
+          value={i}
+          title={props.title}
+        >
+          {/* {eval(display)} */}
+        </MenuItem>
+      ));
+
     }
   };
 
