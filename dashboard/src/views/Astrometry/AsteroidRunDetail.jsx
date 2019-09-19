@@ -611,9 +611,41 @@ export default class AsteroidRunDetail extends Component {
   }
 
   renderExecutionTime = asteroid => {
-    const colors = ['#64b5f6', '#1e88e5', '#3949ab', '#311b92'];
+    // const colors = [
+    //   '#003f5c',
+    //   '#2f4b7c',
+    //   '#665191',
+    //   '#a05195',
+    //   '#d45087',
+    //   '#f95d6a',
+    //   '#ff7c43',
+    //   '#ffa600',
+    // ];
+    //const colors = ['#01515c', '#006464', '#007761', '#158854', '#51973d', '#86a21f', '#c0a800', '#ffa600'];
+    const colors = ['#1255a6', '#2b66b2', '#3f77be', '#5388c9', '#6699d4', '#7aabdf', '#8fbdea', '#a5cef4', '#bbe0ff'];
 
     const stats_status = [
+      {
+        name: 'CCD Images',
+        value:
+          asteroid.execution_ccd_list !== null
+            ? Math.ceil(moment.duration(asteroid.execution_ccd_list).asSeconds())
+            : 0.0,
+      },
+      {
+        name: 'Ephemeris JPL',
+        value:
+          asteroid.execution_bsp_jpl !== null
+            ? Math.ceil(moment.duration(asteroid.execution_bsp_jpl).asSeconds())
+            : 0.0,
+      },
+      {
+        name: 'Reference Catalog',
+        value:
+          asteroid.execution_reference_catalog !== null
+            ? Math.ceil(moment.duration(asteroid.execution_reference_catalog).asSeconds())
+            : 0.0,
+      },
       {
         name: 'Header Extraction',
         value:
@@ -657,6 +689,7 @@ export default class AsteroidRunDetail extends Component {
         data={stats_status}
         controlInterval={this.controlInterval}
         fill={colors}
+        height={180}
       />
     );
   }

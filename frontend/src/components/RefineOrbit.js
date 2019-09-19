@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   btn: {
     textTransform: 'none',
     padding: '1px 5px',
-    width: '5em',
+    width: '7em',
     minHeight: '1em',
     display: 'block',
     textAlign: 'center',
@@ -42,10 +42,6 @@ const useStyles = makeStyles((theme) => ({
   },
   btnSuccess: {
     backgroundColor: 'green',
-    color: '#fff',
-  },
-  btnFailure: {
-    backgroundColor: 'red',
     color: '#fff',
   },
   btnRunning: {
@@ -61,6 +57,9 @@ const useStyles = makeStyles((theme) => ({
   iconDetail: {
     fontSize: 18,
   },
+  tableWrapper: {
+    maxWidth: '100%',
+  },
 }));
 
 function RefineOrbit({ history, setTitle }) {
@@ -72,22 +71,13 @@ function RefineOrbit({ history, setTitle }) {
       width: 140,
       sortingEnabled: false,
       customElement: (row) => {
-        if (row.status === 'failure') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnFailure)}
-              title={row.status}
-            >
-              Failure
-            </span>
-          );
-        } if (row.status === 'running') {
+        if (row.status === 'running') {
           return (
             <span
               className={clsx(classes.btn, classes.btnRunning)}
               title={row.status}
             >
-              Running
+                Running
             </span>
           );
         }
@@ -96,7 +86,7 @@ function RefineOrbit({ history, setTitle }) {
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
           >
-            Success
+          Success
           </span>
         );
       },
@@ -193,9 +183,7 @@ function RefineOrbit({ history, setTitle }) {
       input_list: select.input_list,
       proccess: select.proccess,
     })
-      .then((res) => {
-        setReload(!reload);
-      })
+      .then(() => setReload(!reload))
       .catch((error) => {
         console.error(error);
       });
@@ -231,7 +219,7 @@ function RefineOrbit({ history, setTitle }) {
         </Card>
       </Grid>
 
-      <Grid>
+      <Grid className={clsx(classes.block, classes.tableWrapper)}>
         <Card>
           <CardHeader
             title={<span>History</span>}
