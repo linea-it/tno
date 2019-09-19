@@ -12,7 +12,7 @@ import DateTime from './DateTimePrediction';
 import InputSelect from './InputSelect';
 import { getOrbitRuns } from '../api/Orbit';
 import Dialog from "../components/utils/CustomDialog";
-import PredictionHistory from "./PredictionHistory";
+// import PredictionHistory from "./PredictionHistory";
 
 import { getCatalogs, getLeapSeconds, getBspPlanetary, createPredictRun, }
   from '../api/Prediction';
@@ -352,9 +352,9 @@ function PredictionOccultation() {
             className={classes.cardHeader}
           />
           <CardContent>
-            <PredictionHistory>
+            {/* <PredictionHistory>
 
-            </PredictionHistory>
+            </PredictionHistory> */}
 
 
           </CardContent>
