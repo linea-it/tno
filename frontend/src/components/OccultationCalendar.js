@@ -9,7 +9,7 @@ import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/list/main.css';
 import occultationData from '../assets/occultation_calendar_data';
 import { makeStyles } from '@material-ui/core/styles';
-import '../assets/css/occultationCalendar.css';
+// import '../assets/css/occultationCalendar.css';
 
 
 
