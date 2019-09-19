@@ -37,7 +37,7 @@ function CustomDialog({
   return (
     <Dialog onClose={setVisible} maxWidth={maxWidth} aria-labelledby="customized-dialog-title" open={visible}>
       <MuiDialogTitle className={clsx(classes.root, headerStyle)}>
-        <Typography variant="h6">{ title }</Typography>
+        <Typography variant="h6">{title}</Typography>
         {visible ? (
           <IconButton aria-label="close" className={classes.closeButton} onClick={setVisible}>
             <CloseIcon />

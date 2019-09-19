@@ -220,7 +220,7 @@ function CustomTable({
   const renderFilter = () => (
     <FormControl className={classes.formControl}>
       <InputLabel shrink htmlFor="filter-label-placeholder">
-          Filter
+        Filter
       </InputLabel>
       <Select
         value={filter}
@@ -249,7 +249,7 @@ function CustomTable({
         <>
           <Grid rows={rows} columns={customColumns}>
             {hasSearching ? <SearchState onValueChange={changeSearchValue} /> : null}
-            {hasSorting ? <SortingState sorting={sorting} onSortingChange={changeSorting} /> : null }
+            {hasSorting ? <SortingState sorting={sorting} onSortingChange={changeSorting} /> : null}
             {hasPagination
               ? (
                 <PagingState
@@ -285,7 +285,7 @@ function CustomTable({
                 highlightRow
                 showSelectionColumn={false}
               />
-            ) : null }
+            ) : null}
             {hasResizing ? <TableColumnResizing defaultColumnWidths={customDefaultColumnWidths} /> : null}
             <CustomTableHeaderRowCell hasSorting={hasSorting} />
             {hasGrouping ? (
@@ -312,8 +312,8 @@ function CustomTable({
           {hasSearching ? <SearchState /> : null}
           {hasSorting
             ? <SortingState sorting={sorting} onSortingChange={changeSorting} />
-            : null }
-          {hasSorting ? <IntegratedSorting /> : null }
+            : null}
+          {hasSorting ? <IntegratedSorting /> : null}
           {hasPagination
             ? (
               <PagingState
@@ -349,7 +349,7 @@ function CustomTable({
               highlightRow
               showSelectionColumn={false}
             />
-          ) : null }
+          ) : null}
           {hasResizing ? <TableColumnResizing defaultColumnWidths={customDefaultColumnWidths} /> : null}
           <CustomTableHeaderRowCell hasLineBreak={hasLineBreak} hasSorting={hasSorting} remote={remote} />
           {hasGrouping ? (
