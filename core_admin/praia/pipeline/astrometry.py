@@ -461,8 +461,10 @@ class AstrometryPipeline():
 
         # Reload na lista de asteroids agora sem os que falharam na etapa anterior.
         # Ordenando pela quantidade de ccd. dessa forma a prioridade e para os que tem menos ccds.
+        # self.asteroids = AstrometryAsteroid.objects.filter(
+        #     astrometry_run=instance.pk).exclude(status__in=list(['failure', 'not_executed'])).order_by('ccd_images')
         self.asteroids = AstrometryAsteroid.objects.filter(
-            astrometry_run=instance.pk).exclude(status__in=list(['failure', 'not_executed'])).order_by('ccd_images')
+            astrometry_run=instance.pk).exclude(status__in=list(['failure', 'not_executed']))
 
         # Nome do catalogo dentro do container e diferente
         # TODO: Resolver isso no cotainer
