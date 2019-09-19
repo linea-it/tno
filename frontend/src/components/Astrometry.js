@@ -44,10 +44,20 @@ function Astrometry({ setTitle }) {
   const [catalogs, setCatalogs] = useState([]);
   const [configurations, setConfigurations] = useState([]);
 
+
+  const [valueSubmition, setValueSubmition] = useState({
+    inputId: null,
+    refCatalogId: null,
+    configId: null,
+  });
+
+
+
   const loadData = (inputValue) => {
 
     getListsByStatus({ status: 'success', search: inputValue }).then((res) => {
       setObjectList(res.data.results);
+
     });
 
     getCatalogs({ search: inputValue }).then((res) => {
@@ -57,12 +67,40 @@ function Astrometry({ setTitle }) {
 
     getConfigurations({ search: inputValue, ordering: "-creation_date" }).then((res) => {
       setConfigurations(res.data.results);
-      console.log(res.data.results);
+
     });
 
 
   };
 
+
+
+  useEffect(() => {
+    if (objectList.length > 0 && typeof objectList[0] != "undefined") {
+      setValueSubmition({
+        ...valueSubmition,
+        inputId: objectList[0].id
+      });
+    }
+  }, [objectList]);
+
+  useEffect(() => {
+    if (catalogs.length > 0 && typeof catalogs[0] != "undefined") {
+      setValueSubmition({
+        ...valueSubmition,
+        refCatalogId: catalogs[0].id
+      });
+    }
+  }, [catalogs]);
+
+  useEffect(() => {
+    if (configurations.length > 0 && typeof configurations[0] != "undefined") {
+      setValueSubmition({
+        ...valueSubmition,
+        configId: configurations[0].id
+      });
+    }
+  }, [configurations]);
 
 
   useEffect(() => {
