@@ -35,6 +35,7 @@ export const createPredictRun = ({
   ephemeris_step,
 });
 
+
 export const getPrediction = () => axios.get('/orbit_run/?status=success').then((res) => res.data);
 
 export const getCatalogs = () => axios.get('/catalog/').then((res) => res.data);
