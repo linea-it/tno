@@ -25,6 +25,8 @@ import Footer from './Footer';
 import RefineOrbit from './components/RefineOrbit';
 import RefineOrbitDetail from './components/RefineOrbitDetail';
 import RefineOrbitAsteroid from './components/RefineOrbitAsteroid';
+import OccultationCalendar from './components/OccultationCalendar';
+import TestCalendar from './components/TestCalendar';
 import PredictionOccultation from './components/PredictionOccultation';
 import PredictionOccultationDetail from './components/PredictionOccultationDetail';
 import PredictionOccultationAsteroid from './components/PredictionOccultationAsteroid';
@@ -392,6 +394,10 @@ function MiniDrawer() {
             <Route exact path="/prediction-of-occultation" render={(props) => <PredictionOccultation {...props} setTitle={setTitle} />} />
             <Route exact path="/prediction-of-occultation/:id" render={(props) => <PredictionOccultationDetail {...props} setTitle={setTitle} />} />
             <Route exact path="/prediction-of-occultation/asteroid/:id" render={(props) => <PredictionOccultationAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
+            <Route exact path="/occultation-calendar" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
+            <Route exact path="/test-calendar/:id/:date/:view/:flag" render={(props) => <TestCalendar {...props} setTitle={setTitle} />} />
+            <Route exact path="/occultation-calendar-back/:id/:date/:view/" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
+
           </main>
           <Footer drawerOpen={open} />
         </div>
