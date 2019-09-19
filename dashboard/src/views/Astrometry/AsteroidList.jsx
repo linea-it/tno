@@ -36,13 +36,10 @@ class AsteroidList extends Component {
       asteroid_id: 0,
       selected: null,
       columns: null,
-      execution_time: null,
-
       log: {
         visible: false,
         content: null,
       },
-
       main_background: '#186BA0',
       main_color: '#fff',
       error_background: '#FFFAF0',
@@ -90,7 +87,6 @@ class AsteroidList extends Component {
           loading: false,
           sortField: sortField,
           sortOrder: sortOrder,
-          execution_time: r.results[0].execution_time,
         });
       });
   };
@@ -295,15 +291,15 @@ class AsteroidList extends Component {
         },
         {
           field: 'outputs',
-          header: 'Output',
+          header: 'Output Files',
           sortable: false,
         },
         {
           field: 'execution_time',
           header: 'Execution Time',
           sortable: false,
-          body: () => {
-            return this.state.execution_time.substring(1, 8);
+          body: rowData => {
+            return rowData.execution_time.substring(0, 8);
           },
         },
       ],

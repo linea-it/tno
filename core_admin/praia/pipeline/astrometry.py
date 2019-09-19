@@ -261,7 +261,7 @@ class AstrometryPipeline():
                     self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (
                         result['input_type'], asteroid.name, result['file_path']))
 
-                asteroid.execution_time = result['execution_time']
+                asteroid.execution_ccd_list = result['execution_time']
                 asteroid.save()
 
         except Exception as e:
@@ -331,8 +331,7 @@ class AstrometryPipeline():
                     self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (
                         result['input_type'], asteroid.name, result['file_path']))
 
-                asteroid.execution_time = asteroid.execution_time + \
-                    result['execution_time']
+                asteroid.execution_bsp_jpl = result['execution_time']
                 asteroid.save()
 
         except Exception as e:
@@ -433,8 +432,7 @@ class AstrometryPipeline():
                         self.logger.info("Registered %s Input for Asteroid [ %s ] Catalog Rows: [ %s ] File: [%s] " % (
                             result['input_type'], asteroid.name, result['catalog_count'], result['file_path']))
 
-                    asteroid.execution_time = asteroid.execution_time + \
-                        result['execution_time']
+                    asteroid.execution_reference_catalog = result['execution_time']
 
                     asteroid.save()
 
@@ -462,6 +460,9 @@ class AstrometryPipeline():
         instance.save()
 
         # Reload na lista de asteroids agora sem os que falharam na etapa anterior.
+        # Ordenando pela quantidade de ccd. dessa forma a prioridade e para os que tem menos ccds.
+        # self.asteroids = AstrometryAsteroid.objects.filter(
+        #     astrometry_run=instance.pk).exclude(status__in=list(['failure', 'not_executed'])).order_by('ccd_images')
         self.asteroids = AstrometryAsteroid.objects.filter(
             astrometry_run=instance.pk).exclude(status__in=list(['failure', 'not_executed']))
 
@@ -517,16 +518,14 @@ class AstrometryPipeline():
                 "submit_params": {
                     "Universe": "docker",
                     "Docker_image": "linea/tno_astrometry:latest",
-                    # "Should_transfer_files": "yes",
-                    # "when_to_transfer_output": "on_exit",
-                    "+RequiresWholeMachine": "True",
-                    "Requirements": "Machine == \"apl16.ib0.cm.linea.gov.br\"",
-
+                    # "+RequiresWholeMachine": "True",
+                    "Requirements": "SlotsTno == True",
                     # "request_memory": "4 GB",
                     # "request_cpus": "10",
 
                     "executable": "/app/run.py",
-                    "arguments": "%s --path %s --catalog %s --max_workers=%s" % (asteroid_alias, obj.relative_path, catalog_name, max_workers),
+                    # "arguments": "%s --path %s --catalog %s --max_workers=%s" % (asteroid_alias, obj.relative_path, catalog_name, max_workers),
+                    "arguments": "%s --path %s --catalog %s " % (asteroid_alias, obj.relative_path, catalog_name),
                     "initialdir": obj_absolute_path,
                     "Log": os.path.join(log_dir, "astrometry.log"),
                     "Output": os.path.join(log_dir, "astrometry.out"),
@@ -540,6 +539,18 @@ class AstrometryPipeline():
                     # "Error": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).err"
                 }
             })
+
+            # Para Asteroid com mais de 20 CCDs requisitar a maquina inteira e habilitar um limite de threads.
+            # Essa limitacao e por causa da configuracao do cluster, que esta limitando a 2GB de Ram
+            if obj.ccd_images > 20:
+                payload["submit_params"]["+RequiresWholeMachine"] = "True"
+                payload["submit_params"]["arguments"] = "%s --path %s --catalog %s --max_workers=%s" % (
+                    asteroid_alias, obj.relative_path, catalog_name, max_workers)
+
+                self.logger.info("Require Machine: True")
+            else:
+                self.logger.info("Require Machine: False")
+
             self.logger.debug("payload: ")
             self.logger.debug(payload)
 
