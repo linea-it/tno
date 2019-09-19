@@ -72,6 +72,9 @@ function Astrometry({ setTitle }) {
 
 
 
+  const handleSubmit = () => {
+
+  };
 
   return (
     <div>
@@ -88,7 +91,7 @@ function Astrometry({ setTitle }) {
             <InputSelect title="Input Object List" display={"el.displayname"} data={objectList} width="90%" marginTop={10} />
             <InputSelect title="Reference Catalog" display="el.name" data={catalogs} width="90%" marginTop={10} />
             <InputSelect title="Configuration" width="90%" data={configurations} display="el.displayname" marginTop={10} />
-            <Button variant="contained" color="primary"  className={classes.button}>Submit</Button>
+            <Button variant="contained" color="primary" onClick={handleSubmit} className={classes.button}>Submit</Button>
           </Card>
 
         </Grid>
