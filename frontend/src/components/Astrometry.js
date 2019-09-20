@@ -4,8 +4,9 @@ import Grid from '@material-ui/core/Grid';
 import { Card, CardHeader, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InputSelect from './InputSelectAstrometryMain';
-import { getListsByStatus, getCatalogs, getConfigurations } from '../api/Praia';
+import { getListsByStatus, getCatalogs, getConfigurations, createPraiaRun } from '../api/Praia';
 import { object } from 'prop-types';
+import AstrometryHistory from './AstrometryHistory';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -24,8 +25,6 @@ const useStyles = makeStyles((theme) => ({
 function Astrometry({ setTitle }) {
 
   const classes = useStyles();
-
-
 
 
   // loadInputs = inputValue => {
@@ -112,13 +111,26 @@ function Astrometry({ setTitle }) {
 
   const handleSubmit = () => {
     console.log(valueSubmition);
+
+    createPraiaRun({
+      input: valueSubmition.inputId,
+      config: valueSubmition.configId,
+      catalog: valueSubmition.refCatalogId,
+    }
+    ).then((res) => {
+      console.log(res);
+    });
+
+    //TODO: When submit Run go to the Run Detail screen
+
+
   };
 
-  console.log(valueSubmition);
+
 
   return (
-    <div>
-      <Grid container spacing={2}>
+    <Grid>
+      <Grid container spacing={4}>
 
         <Grid item sm={6} xl={5}>
           <Card>
@@ -176,7 +188,7 @@ function Astrometry({ setTitle }) {
 
       </Grid>
 
-      <Grid container spacing={2}>
+      <Grid container spacing={4}>
 
         <Grid item sm={12} xl={12}>
           <Card>
@@ -185,13 +197,23 @@ function Astrometry({ setTitle }) {
               className={classes.cardHeader}
               title={"History"}
             />
+
+            <AstrometryHistory>
+
+            </AstrometryHistory>
+
+
           </Card>
 
         </Grid>
 
+
+
+
+
       </Grid>
 
-    </div>
+    </Grid>
 
   );
 
