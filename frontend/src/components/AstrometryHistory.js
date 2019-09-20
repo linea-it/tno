@@ -47,7 +47,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-
 function AstrometryHistory() {
 
 
@@ -225,7 +224,6 @@ function AstrometryHistory() {
   ];
 
 
-
   return (
 
     <div>
@@ -245,8 +243,6 @@ function AstrometryHistory() {
   );
 
 }
-
-
 
 
 export default withRouter(AstrometryHistory);
