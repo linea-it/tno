@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 import {
-  Grid, Card, makeStyles, CardHeader, CardContent,
+  Grid,
+  makeStyles,
+  Card,
+  CardHeader,
+  CardContent,
 } from '@material-ui/core';
 import clsx from 'clsx';
-import CustomList from './utils/CustomList';
-import {
-  getOrbitRunById,
-  getOrbitRunTimeProfile,
-  getAsteroids,
-  getAsteroidLog,
-} from '../api/Orbit';
-import { Donut, TimeProfile } from './utils/CustomChart';
+import moment from 'moment';
+import { getPredictionRunById, getTimeProfile, getAsteroids } from '../api/Prediction';
 import CustomTable from './utils/CustomTable';
-import CustomDialog from './utils/CustomDialog';
-import CustomLog from './utils/CustomLog';
+import CustomList from './utils/CustomList';
+import { Donut, TimeProfile } from './utils/CustomChart';
 
 const useStyles = makeStyles({
+  arrowBack: {
+    fontSize: 9,
+  },
   btn: {
     textTransform: 'none',
     padding: '1px 5px',
@@ -55,37 +56,20 @@ const useStyles = makeStyles({
   block: {
     marginBottom: 15,
   },
-  iconDetail: {
-    fontSize: 18,
-  },
-  logToolbar: {
-    backgroundColor: '#F1F2F5',
-    color: '#454545',
-  },
-  logBody: {
-    backgroundColor: '#1D4455',
-    color: '#FFFFFF',
-  },
   tableWrapper: {
     maxWidth: '100%',
   },
 });
 
-
-function RefineOrbitDetail({ history, match, setTitle }) {
+function PredictionOccultationDetail({ history, match, setTitle }) {
   const classes = useStyles();
-
   const { id } = match.params;
-  const [listTitle, setListTitle] = useState([]);
   const [list, setList] = useState([]);
+  const [statusDonutData, setStatusDonutData] = useState([]);
+  const [executionTimeDonutData, setExecutionTimeDonutData] = useState([]);
+  const [timeProfile, setTimeProfile] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [timeProfile, setTimeProfile] = useState([]);
-  const [donutData, setDonutData] = useState([]);
-  const [asteroidLog, setAsteroidLog] = useState({
-    visible: false,
-    data: [],
-  });
   const pageSizes = [5, 10, 15];
   const columns = [
     {
@@ -153,6 +137,11 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       width: 140,
     },
     {
+      name: 'occultations',
+      title: 'Occultations',
+      width: 140,
+    },
+    {
       name: 'execution_time',
       title: 'Execution Time',
       width: 140,
@@ -162,30 +151,16 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       title: ' ',
       width: 100,
       icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: (el) => history.push(`/refine-orbit/asteroid/${el.id}`),
-      align: 'center',
-    },
-    {
-      name: 'orbit_run',
-      title: ' ',
-      width: 100,
-      icon: <i className={clsx(`fas fa-code ${classes.iconDetail}`)} />,
-      action: (el) => {
-        getAsteroidLog({ id: el.id }).then((res) => {
-          setAsteroidLog({
-            visible: !asteroidLog.visible,
-            data: res.lines,
-          });
-        });
-      },
+      action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
       align: 'center',
     },
   ];
 
+
   useEffect(() => {
-    setTitle('Refine Orbit');
-    getOrbitRunById({ id }).then((data) => {
-      setListTitle(data.input_displayname);
+    setTitle('Prediction of Occultations');
+
+    getPredictionRunById({ id }).then((data) => {
       setList([
         {
           title: 'Status',
@@ -196,7 +171,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
                   className={clsx(classes.btn, classes.btnFailure)}
                   title={data.error_msg}
                 >
-                  Failure
+                    Failure
                 </span>
               );
             } if (data.status === 'running') {
@@ -205,7 +180,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
                   className={clsx(classes.btn, classes.btnRunning)}
                   title={data.status}
                 >
-                  Running
+                    Running
                 </span>
               );
             } if (data.status === 'not_executed') {
@@ -214,7 +189,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
                   className={clsx(classes.btn, classes.btnNotExecuted)}
                   title={data.error_msg}
                 >
-                  Not Executed
+                    Not Executed
                 </span>
               );
             } if (data.status === 'warning') {
@@ -223,7 +198,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
                   className={clsx(classes.btn, classes.btnWarning)}
                   title={data.error_msg ? data.error_msg : 'Warning'}
                 >
-                  Warning
+                    Warning
                 </span>
               );
             }
@@ -240,7 +215,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
         },
         {
           title: 'Process',
-          value: data.proccess_displayname,
+          value: data.process_displayname,
         },
         {
           title: 'Owner',
@@ -258,16 +233,30 @@ function RefineOrbitDetail({ history, match, setTitle }) {
           title: 'Asteroids',
           value: data.count_objects,
         },
+        {
+          title: 'Occultations',
+          value: data.occultations,
+        },
       ]);
 
-      setDonutData([
+      setStatusDonutData([
         { name: 'Success', value: data.count_success },
         { name: 'Warning', value: data.count_warning },
         { name: 'Failure', value: data.count_failed },
         { name: 'Not Executed', value: data.count_not_executed },
       ]);
+
+      setExecutionTimeDonutData([
+        { name: 'Dates', value: Math.round(moment.duration(data.execution_dates).asSeconds()) },
+        { name: 'Ephemeris', value: Math.round(moment.duration(data.execution_ephemeris).asSeconds()) },
+        { name: 'Gaia', value: Math.round(moment.duration(data.execution_catalog).asSeconds()) },
+        { name: 'Search Candidates', value: Math.round(moment.duration(data.execution_search_candidate).asSeconds()) },
+        { name: 'Maps', value: Math.round(moment.duration(data.execution_maps).asSeconds()) },
+        { name: 'Register', value: Math.round(moment.duration(data.execution_register).asSeconds()) },
+      ]);
     });
-    getOrbitRunTimeProfile({ id }).then((res) => setTimeProfile(res));
+
+    getTimeProfile({ id }).then((res) => setTimeProfile(res));
   }, []);
 
   const loadTableData = async ({
@@ -283,7 +272,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       //   value: id,
       // }].concat(filters),
       filters: [{
-        property: 'orbit_run',
+        property: 'predict_run',
         value: id,
       }, ...filter],
       search: searchValue,
@@ -295,49 +284,57 @@ function RefineOrbitDetail({ history, match, setTitle }) {
     }
   };
 
-  const handleDialogClose = () => setAsteroidLog({ visible: false, data: [] });
 
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6} xl={timeProfile.length > 0 ? 4 : 6} className={classes.block}>
+        <Grid item xs={12} md={3} className={classes.block}>
           <Card>
-            <CardHeader title={listTitle} />
+            <CardHeader title="Summary" />
             <CardContent>
               <CustomList data={list} />
             </CardContent>
           </Card>
         </Grid>
-
-
-        <Grid item xs={12} md={6} xl={timeProfile.length > 0 ? 4 : 6} className={classes.block}>
+        <Grid item xs={12} md={9} className={classes.block}>
           <Card>
-            <CardHeader title="Execution Statistics" />
+            <CardHeader
+              title="Time Profile"
+            />
+            <CardContent>
+              <TimeProfile
+                width={773}
+                height={363}
+                data={timeProfile}
+              />
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6} className={classes.block}>
+          <Card>
+            <CardHeader title="Status" />
             <CardContent>
               <Donut
-                width={400}
-                height={315}
-                data={donutData}
+                data={statusDonutData}
               />
             </CardContent>
           </Card>
         </Grid>
 
-        {timeProfile.length > 0 ? (
-          <Grid item xs={12} xl={4} className={classes.block}>
-            <Card>
-              <CardHeader
-                title="Execution Time"
+        <Grid item xs={12} md={6} className={classes.block}>
+          <Card>
+            <CardHeader
+              title="Execution Time"
+            />
+            <CardContent>
+              <Donut
+                data={executionTimeDonutData}
               />
-              <CardContent>
-                <TimeProfile
-                  height={315}
-                  data={timeProfile}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-        ) : null}
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
 
       <Grid container spacing={2}>
@@ -358,30 +355,16 @@ function RefineOrbitDetail({ history, match, setTitle }) {
           </Card>
         </Grid>
       </Grid>
-      <CustomDialog
-        maxWidth="md"
-        visible={asteroidLog.visible}
-        setVisible={handleDialogClose}
-        title="Asteroid Log"
-        content={<CustomLog data={asteroidLog.data} />}
-        headerStyle={classes.logToolbar}
-        bodyStyle={classes.logBody}
-      />
     </>
   );
 }
 
-RefineOrbitDetail.propTypes = {
+PredictionOccultationDetail.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }).isRequired,
+      id: PropTypes.number,
+    }),
   }).isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-  setTitle: PropTypes.func.isRequired,
 };
 
-
-export default withRouter(RefineOrbitDetail);
+export default withRouter(PredictionOccultationDetail);

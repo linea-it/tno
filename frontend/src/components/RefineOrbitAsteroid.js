@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   btn: {
     textTransform: 'none',
     padding: '1px 5px',
-    width: '5em',
+    width: '7em',
     minHeight: '1em',
     display: 'block',
     textAlign: 'center',
@@ -32,6 +32,22 @@ const useStyles = makeStyles((theme) => ({
   btnSuccess: {
     backgroundColor: 'green',
     color: '#fff',
+  },
+  btnFailure: {
+    backgroundColor: 'red',
+    color: '#fff',
+  },
+  btnRunning: {
+    backgroundColor: '#ffba01',
+    color: '#000',
+  },
+  btnNotExecuted: {
+    backgroundColor: '#ABA6A2',
+    color: '#fff',
+  },
+  btnWarning: {
+    backgroundColor: '#D79F15',
+    color: '#FFF',
   },
   block: {
     marginBottom: 15,
@@ -115,51 +131,70 @@ function RefineOrbitAsteroid({ setTitle, match }) {
 
   useEffect(() => {
     setTitle('Refine Orbit');
-    getAsteroidById({ id }).then((res) => {
+    getAsteroidById({ id }).then((data) => {
       setAsteroidList([
         {
           title: 'Status',
           value: () => {
-            if (res.status === 'failure') {
+            if (data.status === 'failure') {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnFailure)}
-                  title={res.status}
+                  title={data.error_msg}
                 >
-                  Failure
+                    Failure
                 </span>
               );
-            } if (res.status === 'running') {
+            } if (data.status === 'running') {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnRunning)}
-                  title={res.status}
+                  title={data.status}
                 >
-                  Running
+                    Running
+                </span>
+              );
+            } if (data.status === 'not_executed') {
+              return (
+                <span
+                  className={clsx(classes.btn, classes.btnNotExecuted)}
+                  title={data.error_msg}
+                >
+                    Not Executed
+                </span>
+              );
+            } if (data.status === 'warning') {
+              return (
+                <span
+                  className={clsx(classes.btn, classes.btnWarning)}
+                  title={data.error_msg ? data.error_msg : 'Warning'}
+                >
+                    Warning
                 </span>
               );
             }
+
             return (
               <span
                 className={clsx(classes.btn, classes.btnSuccess)}
-                title={res.status}
+                title={data.status}
               >
-                Success
+                  Success
               </span>
             );
           },
         },
         {
           title: 'Executed',
-          value: res.h_time,
+          value: data.h_time,
         },
         {
           title: 'Execution Time',
-          value: res.h_execution_time,
+          value: data.h_execution_time,
         },
         {
           title: 'Size',
-          value: res.h_size,
+          value: data.h_size,
         },
       ]);
     });
@@ -204,10 +239,6 @@ function RefineOrbitAsteroid({ setTitle, match }) {
     });
   }, []);
 
-  // useEffect(() => {
-  //   console.log(charts);
-  // }, [charts]);
-
   return (
     <>
       <Grid container spacing={2}>
@@ -215,30 +246,32 @@ function RefineOrbitAsteroid({ setTitle, match }) {
           <Card>
             <CardHeader title="Asteroid" />
             <CardContent>
-              <CustomList list={asteroidList} />
+              <CustomList data={asteroidList} />
             </CardContent>
           </Card>
         </Grid>
       </Grid>
-      <Grid container spacing={2}>
-        <Grid item className={classes.block}>
-          <Card>
-            <CardHeader title="Charts" />
-            <GridList cols={3} className={classes.block}>
-              {charts.map((image) => (
-                <GridListTile item className={classes.chartTile}>
-                  <img src={image.src} className={classes.chart} alt={image.filename} title={image.filename} />
-                </GridListTile>
-              ))}
-            </GridList>
-            <CardContent />
-          </Card>
+      {charts.length > 0 ? (
+        <Grid container spacing={2}>
+          <Grid item className={classes.block}>
+            <Card>
+              <CardHeader title="Charts" />
+              <GridList cols={3} className={classes.block}>
+                {charts.map((image) => (
+                  <GridListTile item className={classes.chartTile}>
+                    <img src={image.src} className={classes.chart} alt={image.filename} title={image.filename} />
+                  </GridListTile>
+                ))}
+              </GridList>
+              <CardContent />
+            </Card>
+          </Grid>
         </Grid>
-      </Grid>
+      ) : null}
 
 
       <Grid container spacing={2}>
-        <Grid item lg={6} xl={6} className={classes.block}>
+        <Grid item lg={resultTableData.length > 0 ? 6 : 12} className={classes.block}>
           <Card>
             <CardHeader title="Inputs" />
 
@@ -255,23 +288,25 @@ function RefineOrbitAsteroid({ setTitle, match }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item lg={6} xl={6} className={classes.block}>
-          <Card>
-            <CardHeader title="Results" />
-            <CardContent>
-              <CustomTable
-                columns={resultColumns}
-                data={resultTableData}
-                hasPagination
-                pageSize={5}
-                hasSearching={false}
-                hasColumnVisibility={false}
-                hasToolbar={false}
-                remote={false}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
+        {resultTableData.length > 0 ? (
+          <Grid item lg={6} className={classes.block}>
+            <Card>
+              <CardHeader title="Results" />
+              <CardContent>
+                <CustomTable
+                  columns={resultColumns}
+                  data={resultTableData}
+                  hasPagination
+                  pageSize={5}
+                  hasSearching={false}
+                  hasColumnVisibility={false}
+                  hasToolbar={false}
+                  remote={false}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+        ) : null}
       </Grid>
     </>
   );

@@ -223,11 +223,11 @@ export default class PredictionCalendar extends Component {
 
 
 
-  //It controls when event is being rendering 
+  //It controls when event is being rendering
   handleEventRender = (event) => {
     // if (event.icon) {
     //   // element.find(".fc-title").prepend("<i class='fa fa-"+event.icon+"'></i>");
-    //   
+    //
     // }
 
     // console.log(event);
