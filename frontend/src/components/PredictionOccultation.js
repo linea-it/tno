@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-=======
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
->>>>>>> 14144294cb7bbbcd0810e44387debfd314809c7a
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -12,17 +8,6 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import InputNumber from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-<<<<<<< HEAD
-// import { id } from 'postcss-selector-parser';
-import DateTime from './DateTimePrediction';
-import InputSelect from './InputSelect';
-import { getOrbitRuns } from '../api/Orbit';
-import Dialog from "../components/utils/CustomDialog";
-// import PredictionHistory from "./PredictionHistory";
-
-import { getCatalogs, getLeapSeconds, getBspPlanetary, createPredictRun, }
-  from '../api/Prediction';
-=======
 import { withRouter } from 'react-router';
 import clsx from 'clsx';
 import DateTime from './DateTimePrediction';
@@ -35,27 +20,12 @@ import PredictionHistory from "./PredictionHistory";
 
 import { getCatalogs, getLeapSeconds, getBspPlanetary, createPredictRun, } from '../api/Prediction';
 
->>>>>>> 14144294cb7bbbcd0810e44387debfd314809c7a
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
     fontSize: 24,
     cursor: 'pointer',
   },
-<<<<<<< HEAD
-
-  card: {
-    marginBottom: 10
-  },
-
-  inputNumber: {
-    marginTop: 25,
-    marginBottom: 18,
-
-    width: '90%',
-  },
-=======
->>>>>>> 14144294cb7bbbcd0810e44387debfd314809c7a
   button: {
     marginTop: theme.spacing(2),
   },
@@ -425,68 +395,6 @@ function PredictionOccultation({ history, setTitle }) {
 
 
 
-
-
-  const [inputArray, setInputArray] = useState([]);
-  const [catalogArray, setCatalogArray] = useState([]);
-  const [leapSecondsArray, setLeapSecondsArray] = useState([]);
-  const [bspPlanetaryArray, setBspPlanetaryArray] = useState([]);
-  const [inputRadiusValue, setInputRadiusValue] = useState(0.15);
-  const [ephemerisNumberValue, setEphemerisNumberValue] = useState(600);
-  const [actionButton, setActionButton] = useState(true);
-  const [dateTime, setDateTime] = useState("2017-05-24T10:30");
-  const [dialogVisible, setDialogVisible] = useState(false);
-
-  const [valueSubmition, setValueSubmition] = useState({
-    processId: null,
-    orbit_run_input_list_id: null,
-    orbit_run_id: null,
-    catalogId: null,
-    leap_secondsId: null,
-    bsp_planetaryId: null,
-    catalog_radius: null,
-    ephemeris_step: null,
-    ephemeris_initial_date: null,
-    ephemeris_final_date: null,
-    submit: false,
-
-  });
-
-
-
-  const handleSubmitClick = (e) => {
-
-    // ***** Values referring to Refine Orbit run. Only success ones ****//
-    //  process - processId
-    //  input_list_id - input id from object list
-    //  input_orbit_id - orbit run id
-
-    //* * Other values**/
-    // leap_second
-    // bsp_planetary,
-    // catalog,
-    // catalog_radius
-    // ephemeris_initial_date
-    // ephemeris_final_date
-    // ephemeris_step
-
-
-    setValueSubmition({
-      ...valueSubmition,
-      catalog_radius: inputRadiusValue,
-      ephemeris_step: ephemerisNumberValue,
-      ephemeris_initial_date: dateTime,
-      ephemeris_final_date: dateTime,
-      submit: true,
-    });
-
-
-    setDialogVisible(true);
-
-  }
-
-
-
   //When submit button is clicked so calls the function below
   useEffect(() => {
 
@@ -517,43 +425,6 @@ function PredictionOccultation({ history, setTitle }) {
 
 
 
-
-
-  const loadData = () => {
-    // Load Input Array
-    getOrbitRuns({
-      ordering: 'start_time',
-      filters: [
-        {
-          property: 'status',
-          value: 'success',
-        },
-      ],
-    })
-      .then((res) => {
-        setInputArray(res.results);
-      });
-
-
-    // Load Catalogs
-    getCatalogs().then((res) => {
-      setCatalogArray(res.results);
-
-    });
-
-
-    // Leap Seconds
-    getLeapSeconds().then((res) => {
-      setLeapSecondsArray(res.results);
-    });
-
-
-    // Bsp Planetary
-    getBspPlanetary().then((res) => {
-      setBspPlanetaryArray(res.results);
-    });
-
-  };
 
 
 
@@ -630,30 +501,7 @@ function PredictionOccultation({ history, setTitle }) {
 
   }, []);
 
-  const inputNumber = React.createRef();
-  const ephemerisNumber = React.createRef()
 
-  const handleInputNumberChange = (event) => {
-
-    setInputRadiusValue(event.target.value);
-
-    ephemerisNumberValue ? setActionButton(false) : setActionButton(true);
-
-  };
-
-
-  const handleEphemerisNumberChange = (event) => {
-
-    setEphemerisNumberValue(event.target.value);
-
-    inputRadiusValue ? setActionButton(false) : setActionButton(true);
-  };
-
-
-  const handleDialogClose = () => {
-
-    setDialogVisible(false);
-  };
 
 
 
@@ -734,13 +582,6 @@ function PredictionOccultation({ history, setTitle }) {
             }
           />
           <CardContent>
-<<<<<<< HEAD
-            {/* <PredictionHistory>
-
-            </PredictionHistory> */}
-
-
-=======
             <CustomTable
               columns={columns}
               data={tableData}
@@ -750,7 +591,6 @@ function PredictionOccultation({ history, setTitle }) {
               defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
               reload={reload}
             />
->>>>>>> 14144294cb7bbbcd0810e44387debfd314809c7a
           </CardContent>
         </Card>
       </Grid>
