@@ -20,7 +20,6 @@ import PredictionHistory from "./PredictionHistory";
 
 import { getCatalogs, getLeapSeconds, getBspPlanetary, createPredictRun, } from '../api/Prediction';
 
-
 const useStyles = makeStyles((theme) => ({
   iconList: {
     fontSize: 24,
@@ -170,7 +169,7 @@ function PredictionOccultation({ history, setTitle }) {
   const [ephemerisNumberValue, setEphemerisNumberValue] = useState(600);
   const [actionButton, setActionButton] = useState(true);
   const [dateTime, setDateTime] = useState("2017-05-24T10:30");
-  const [dialogVisible, setDialogVisible] = useState(false);
+  const [dialogVisible, setDialogVisible] = useState(true);
 
   const [valueSubmition, setValueSubmition] = useState({
     processId: null,
@@ -205,6 +204,8 @@ function PredictionOccultation({ history, setTitle }) {
     // ephemeris_final_date
     // ephemeris_step
 
+    console.log("Here");
+
 
     setValueSubmition({
       ...valueSubmition,
@@ -219,7 +220,6 @@ function PredictionOccultation({ history, setTitle }) {
     setDialogVisible(true);
 
   }
-
 
 
   //When submit button is clicked so calls the function below
@@ -393,82 +393,81 @@ function PredictionOccultation({ history, setTitle }) {
 
 
 
-
-
-
-
   return (
-    <div>
-      <div className={classes.div}>
-        <Card className={classes.card}>
+    <Grid>
 
-          <CardHeader
-            title={(
-              <span className={classes.headerTitle}>Prediction Occutation</span>
-            )}
-            className={classes.cardHeader}
-          />
+      <Grid container spacing={6}>
+        <Grid item lg={12}>
+          <Card >
+            <CardHeader
+              title={(
+                <span>Prediction Occutation</span>
+              )}
 
-          <Grid container spacing={2}>
-            <Grid item sm={6} xs={6} xl={6} lg={6}>
-              <InputSelect title="input" width="90%" setActionButton={setActionButton} valueSubmition={valueSubmition} setSubmition={setValueSubmition} marginTop={10} data={inputArray} value="el.id" display="el.proccess_displayname" />
-              <InputSelect title="catalog" width="90%" setSubmition={setValueSubmition} marginTop={10} data={catalogArray} value="el.id" display="el.display_name" />
-              <InputSelect title="leapSeconds" width="90%" marginTop={10} data={leapSecondsArray} value="el.id" display="el.name" />
-              <InputSelect title="bspPlanetary" width="90%" marginTop={10} data={bspPlanetaryArray} value="el.id" display="el.display_name" />
+            />
+            <Grid container>
+              <Grid item lg={6}>
+                <InputSelect title="input" width="90%" setActionButton={setActionButton} valueSubmition={valueSubmition} setSubmition={setValueSubmition} marginTop={10} data={inputArray} value="el.id" display="el.proccess_displayname" />
+                <InputSelect title="catalog" width="90%" setSubmition={setValueSubmition} marginTop={10} data={catalogArray} value="el.id" display="el.display_name" />
+                <InputSelect title="leapSeconds" width="90%" marginTop={10} data={leapSecondsArray} value="el.id" display="el.name" />
+                <InputSelect title="bspPlanetary" width="90%" marginTop={10} data={bspPlanetaryArray} value="el.id" display="el.display_name" />
+
+              </Grid>
+              <Grid item lg={6}>
+                <InputNumber
+                  ref={inputNumber}
+                  type="number"
+                  placeholder="    Catalog Radius"
+                  className={classes.inputNumber}
+                  onChange={handleInputNumberChange}
+                  inputProps={{ min: 0.15, max: 2.0, step: 0.01 }}
+                  value={inputRadiusValue}
+
+                />
+
+                <InputNumber
+                  ref={ephemerisNumber}
+                  type="number"
+                  placeholder="    Ephemeris Step"
+                  className={classes.inputNumber}
+                  inputProps={{ min: 60, max: 1800, step: 10 }}
+                  onChange={handleEphemerisNumberChange}
+                  value={ephemerisNumberValue}
+                />
+
+                <DateTime defaultDateTime={dateTime} label="Ephemeris Initial Date" />
+                <DateTime defaultDateTime={dateTime} label="Ephemeris Final Date" width="90%" />
+
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  onClick={handleSubmitClick}
+                  disabled={actionButton}
+
+                >
+                  Submit
+            </Button>
+
+              </Grid>
+
             </Grid>
 
-            <Grid item sm={6} xs={6} xl={6} lg={6}>
-
-              <InputNumber
-                ref={inputNumber}
-                type="number"
-                placeholder="    Catalog Radius"
-                className={classes.inputNumber}
-                onChange={handleInputNumberChange}
-                inputProps={{ min: 0.15, max: 2.0, step: 0.01 }}
-                value={inputRadiusValue}
-
-              />
-
-              <InputNumber
-                ref={ephemerisNumber}
-                type="number"
-                placeholder="    Ephemeris Step"
-                className={classes.inputNumber}
-                inputProps={{ min: 60, max: 1800, step: 10 }}
-                onChange={handleEphemerisNumberChange}
-                value={ephemerisNumberValue}
-              />
-
-              <DateTime defaultDateTime={dateTime} label="Ephemeris Initial Date" />
-              <DateTime defaultDateTime={dateTime} label="Ephemeris Final Date" width="90%" />
-
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.button}
-                onClick={handleSubmitClick}
-                disabled={actionButton}
-
-              >
-                Submit
-              </Button>
-
-            </Grid>
-          </Grid>
-
-        </Card>
-      </div>
 
 
-      <Grid className={clsx(classes.block, classes.tableWrapper)}>
-        <Card>
-          <CardHeader
-            title={
-              <span>History</span>
-            }
-          />
-          <CardContent>
+          </Card>
+
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={6}>
+        <Grid item lg={12}>
+          <Card>
+            <CardHeader
+              title={
+                <span>History</span>
+              }
+            />
             <CustomTable
               columns={columns}
               data={tableData}
@@ -478,14 +477,13 @@ function PredictionOccultation({ history, setTitle }) {
               defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
               reload={reload}
             />
-          </CardContent>
-        </Card>
+          </Card>
+
+        </Grid>
       </Grid>
 
-
-
       <Dialog
-        visible={dialogVisible}
+        visible={true}
         title={"Run Prediction"}
         content={"The task has been submitted and will be executed in the background."}
         setVisible={handleDialogClose}
@@ -493,7 +491,7 @@ function PredictionOccultation({ history, setTitle }) {
 
       </Dialog>
 
-    </div>
+    </Grid>
   );
 }
 
