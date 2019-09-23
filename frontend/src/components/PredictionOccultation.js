@@ -15,7 +15,9 @@ import InputSelect from './InputSelect';
 import { getPredictionRuns, getCatalogs, getLeapSeconds, getBspPlanetary, createPredictRun } from '../api/Prediction';
 import CustomTable from './utils/CustomTable';
 import { getOrbitRuns } from '../api/Orbit';
-import Dialog from "@material-ui/core/Dialog";
+// import Dialog from "@material-ui/core/Dialog";
+// import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from "./utils/CustomDialog";
 import moment from 'moment';
 
 
@@ -177,8 +179,10 @@ function PredictionOccultation({ history, setTitle }) {
   const [inputRadiusValue, setInputRadiusValue] = useState(0.15);
   const [ephemerisNumberValue, setEphemerisNumberValue] = useState(600);
   const [actionButton, setActionButton] = useState(true);
-  const [date] = useState(moment(new Date()).format('YYYY-MM-DD').toString());
+  const [initialDate, setInitialDate] = useState(moment(new Date()).format('YYYY-MM-DD').toString());
+  const [finalDate, setFinalDate] = useState(moment(new Date()).format('YYYY-MM-DD').toString());
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [dialogContent, setDialogContent] = useState("ok");
 
   const [valueSubmition, setValueSubmition] = useState({
     processId: null,
@@ -218,13 +222,15 @@ function PredictionOccultation({ history, setTitle }) {
       ...valueSubmition,
       catalog_radius: inputRadiusValue,
       ephemeris_step: ephemerisNumberValue,
-      ephemeris_initial_date: date,
-      ephemeris_final_date: date,
+      ephemeris_initial_date: initialDate,
+      ephemeris_final_date: finalDate,
       submit: true,
     });
 
 
-    setDialogVisible(true);
+
+
+
 
   }
 
@@ -234,7 +240,9 @@ function PredictionOccultation({ history, setTitle }) {
 
     if (valueSubmition.submit) {
 
-      console.log(valueSubmition);
+
+      setDialogContent("The task has been submitted and will be executed in the background...")
+      setDialogVisible(true);
 
       //Calls APi for creation of prediction run
 
@@ -398,8 +406,6 @@ function PredictionOccultation({ history, setTitle }) {
 
 
 
-
-
   return (
     <Grid>
 
@@ -439,10 +445,26 @@ function PredictionOccultation({ history, setTitle }) {
                   inputProps={{ min: 60, max: 1800, step: 10 }}
                   onChange={handleEphemerisNumberChange}
                   value={ephemerisNumberValue}
+
                 />
 
-                <DateTime defaultDate={date} label="Ephemeris Initial Date" />
-                <DateTime defaultDate={date} label="Ephemeris Final Date" width="90%" />
+                <DateTime defaultDate={initialDate}
+                  label="Ephemeris Initial Date"
+                  valueSubmition={valueSubmition}
+                  setSubmition={setValueSubmition}
+                  setInitialDate={setInitialDate}
+                  title={"initialDate"}
+
+                />
+                <DateTime defaultDate={finalDate}
+                  label="Ephemeris Final Date"
+                  valueSubmition={valueSubmition}
+                  setSubmition={setValueSubmition}
+                  setFinalDate={setFinalDate}
+                  title='finalDate'
+                  width="90%"
+
+                />
 
                 <Button
                   variant="contained"
@@ -489,7 +511,7 @@ function PredictionOccultation({ history, setTitle }) {
       <Dialog
         visible={dialogVisible}
         title={"Run Prediction"}
-        content={"The task has been submitted and will be executed in the background."}
+        content={dialogContent}
         setVisible={handleDialogClose}
       >
 

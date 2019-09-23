@@ -22,20 +22,48 @@ export default function DateAndTimePickers(props) {
   const { label } = props;
 
 
+  const handleChange = (event) => {
+
+    const id = event.currentTarget.id;
+    const value = event.currentTarget.value;
+
+
+
+    if (id === "initialDate") {
+
+      props.setSubmition({
+        ...props.valueSubmition,
+        ephemeris_initial_date: value,
+
+      });
+
+      props.setInitialDate(value);
+    }
+    else {
+      props.setSubmition({
+        ...props.valueSubmition,
+        ephemeris_final_date: value,
+      });
+      props.setFinalDate(value);
+    }
+  }
 
 
   return (
     <form className={classes.container} noValidate>
       <TextField
-        id="datetime-local"
+        id={props.title}
+        title={props.title}
         label={label}
         type="date"
         // defaultValue={"2019-05-08"}
         defaultValue={props.defaultDate}
+        onChange={handleChange}
         className={classes.textField}
         InputLabelProps={{
           shrink: true,
         }}
+
       />
     </form>
   );

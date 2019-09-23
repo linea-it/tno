@@ -57,14 +57,11 @@ export default function SimpleSelect(props) {
 
 
 
-
-
-
     switch (event.currentTarget.title) {
       case "input":
 
 
-        props.setActionButton(false);
+        props.setActionButton(false); //Turns the submit button active
 
         let process_id = event.currentTarget.getAttribute('process_id');
         let orbit_input_list_id = event.currentTarget.getAttribute('orbit_input_list_id');
