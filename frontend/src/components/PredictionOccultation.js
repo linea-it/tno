@@ -12,13 +12,12 @@ import { withRouter } from 'react-router';
 import clsx from 'clsx';
 import DateTime from './DateTimePrediction';
 import InputSelect from './InputSelect';
-import { getPredictionRuns } from '../api/Prediction';
+import { getPredictionRuns, getCatalogs, getLeapSeconds, getBspPlanetary, createPredictRun } from '../api/Prediction';
 import CustomTable from './utils/CustomTable';
 import { getOrbitRuns } from '../api/Orbit';
 import Dialog from "@material-ui/core/Dialog";
-import PredictionHistory from "./PredictionHistory";
+import moment from 'moment';
 
-import { getCatalogs, getLeapSeconds, getBspPlanetary, createPredictRun, } from '../api/Prediction';
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
@@ -26,7 +25,10 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer',
   },
   button: {
-    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(1),
+    marginRight: theme.spacing(6),
+    float: 'right',
+
   },
   btn: {
     textTransform: 'none',
@@ -61,6 +63,13 @@ const useStyles = makeStyles((theme) => ({
   },
   tableWrapper: {
     maxWidth: '100%',
+  },
+
+  inputNumber: {
+    marginTop: 25,
+    marginBottom: 18,
+
+    width: '90%',
   },
 }));
 
@@ -168,8 +177,8 @@ function PredictionOccultation({ history, setTitle }) {
   const [inputRadiusValue, setInputRadiusValue] = useState(0.15);
   const [ephemerisNumberValue, setEphemerisNumberValue] = useState(600);
   const [actionButton, setActionButton] = useState(true);
-  const [dateTime, setDateTime] = useState("2017-05-24T10:30");
-  const [dialogVisible, setDialogVisible] = useState(true);
+  const [date] = useState(moment(new Date()).format('YYYY-MM-DD').toString());
+  const [dialogVisible, setDialogVisible] = useState(false);
 
   const [valueSubmition, setValueSubmition] = useState({
     processId: null,
@@ -204,15 +213,13 @@ function PredictionOccultation({ history, setTitle }) {
     // ephemeris_final_date
     // ephemeris_step
 
-    console.log("Here");
-
 
     setValueSubmition({
       ...valueSubmition,
       catalog_radius: inputRadiusValue,
       ephemeris_step: ephemerisNumberValue,
-      ephemeris_initial_date: dateTime,
-      ephemeris_final_date: dateTime,
+      ephemeris_initial_date: date,
+      ephemeris_final_date: date,
       submit: true,
     });
 
@@ -226,6 +233,8 @@ function PredictionOccultation({ history, setTitle }) {
   useEffect(() => {
 
     if (valueSubmition.submit) {
+
+      console.log(valueSubmition);
 
       //Calls APi for creation of prediction run
 
@@ -245,11 +254,9 @@ function PredictionOccultation({ history, setTitle }) {
         console.log(res);
       });
 
-
     }
 
   }, [valueSubmition]);
-
 
 
 
@@ -359,7 +366,6 @@ function PredictionOccultation({ history, setTitle }) {
 
 
 
-
   useEffect(() => {
     loadData();
 
@@ -393,6 +399,7 @@ function PredictionOccultation({ history, setTitle }) {
 
 
 
+
   return (
     <Grid>
 
@@ -403,7 +410,6 @@ function PredictionOccultation({ history, setTitle }) {
               title={(
                 <span>Prediction Occutation</span>
               )}
-
             />
             <Grid container>
               <Grid item lg={6}>
@@ -435,8 +441,8 @@ function PredictionOccultation({ history, setTitle }) {
                   value={ephemerisNumberValue}
                 />
 
-                <DateTime defaultDateTime={dateTime} label="Ephemeris Initial Date" />
-                <DateTime defaultDateTime={dateTime} label="Ephemeris Final Date" width="90%" />
+                <DateTime defaultDate={date} label="Ephemeris Initial Date" />
+                <DateTime defaultDate={date} label="Ephemeris Final Date" width="90%" />
 
                 <Button
                   variant="contained"
@@ -452,8 +458,6 @@ function PredictionOccultation({ history, setTitle }) {
               </Grid>
 
             </Grid>
-
-
 
           </Card>
 
@@ -483,7 +487,7 @@ function PredictionOccultation({ history, setTitle }) {
       </Grid>
 
       <Dialog
-        visible={true}
+        visible={dialogVisible}
         title={"Run Prediction"}
         content={"The task has been submitted and will be executed in the background."}
         setVisible={handleDialogClose}
