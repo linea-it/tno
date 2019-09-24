@@ -70,6 +70,26 @@ export const getTimeProfile = ({ id }) => {
   }).then((res) => res.data.data);
 };
 
+
+
+export const getCalendarEvents = ({ initialDate, finalDate }) => {
+  return axios.get(`/occultation/?date_time__range=${initialDate},${finalDate}&pageSize=3000`)
+    .then((res) => {
+      return res;
+    });
+};
+
+export const getOccultations = ({ id }) => {
+  const params = {
+    asteroid: id,
+  };
+  return axios.get('/occultation/', {
+    params,
+  }).then((res) => res.data);
+};
+
+
+
 export const getAsteroids = ({
   page,
   pageSize,
@@ -133,14 +153,7 @@ export const getAsteroidOutputs = ({ id }) => {
   }).then((res) => res.data);
 };
 
-export const getOccultations = ({ id }) => {
-  const params = {
-    asteroid: id,
-  };
-  return axios.get('/occultation/', {
-    params,
-  }).then((res) => res.data);
-};
+
 
 export const getCatalogPositions = ({ id }) => {
   const params = {
@@ -166,3 +179,6 @@ export const getCatalogStars = ({ id }) => {
 // };
 
 export const getPredictionEvent = ({ asteroidId }) => axios.get(`/occultation/?asteroid=${asteroidId}`).then((res) => res.data);
+
+
+

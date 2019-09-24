@@ -9,7 +9,10 @@ import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/list/main.css';
 import occultationData from '../assets/occultation_calendar_data';
 import { makeStyles } from '@material-ui/core/styles';
+import { getOccultations, getCalendarEvents } from '../api/Prediction';
 // import '../assets/css/occultationCalendar.css';
+import moment from 'moment';
+
 
 
 
@@ -27,24 +30,60 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
   const classes = useStyles();
   const [events, setEvents] = useState([]);
+  // const [initialDate, setInitialDate] = useState(moment(new Date()).format("YYYY-MM-DD"));
+  // const [finalDate, setFinalDate] = useState(moment(new Date()).format("YYYY-MM-DD"));
+  const [initialDate, setInitialDate] = useState(moment(new Date()).startOf('month').format('YYYY-MM-DD'));
+  const [finalDate, setFinalDate] = useState(moment(new Date()).endOf('month').format('YYYY-MM-DD'));
+  const [paramsInitialDate, setParamsInitialDate] = useState(null);
+  const [paramsFinalDate, setParamsFinalDate] = useState(null);
+  const [loadingCalendar, setLoadingCalendar] = useState(false);
+
 
 
   const loadData = () => {
 
-    let arrayEvents = [];
-    let result = [];
+    setLoadingCalendar(true);
+    getCalendarEvents({ initialDate, finalDate }).then((res) => {
 
-    let keys = Object.keys(occultationData);
 
-    keys.forEach(function (key) {
-      result.push(occultationData[key]);
+
+      let data = res.data.results;
+      let result = [];
+
+      data.map((resp, idx) => {
+
+        result.push({ id: resp.id, title: resp.asteroid_name, date: resp.date_time, textColor: "white" });
+      });
+
+      setEvents(result);
+
+      console.log(result);
+
+
     });
 
-    result[3].map((res, idx) => {
-      arrayEvents.push({ id: res.id, title: res.asteroid_name, date: res.date_time, textColor: 'white' });
-    });
 
-    setEvents(arrayEvents);
+
+    // getOccultations({ id: 10 }).then((res) => {
+    //   console.log(res);
+    // });
+
+
+    // let arrayEvents = [];
+    // let result = [];
+
+    // let keys = Object.keys(occultationData);
+
+    // keys.forEach(function (key) {
+    //   result.push(occultationData[key]);
+    // });
+
+    // result[3].map((res, idx) => {
+    //   arrayEvents.push({ id: res.id, title: res.asteroid_name, date: res.date_time, textColor: 'white' });
+    // });
+
+    // setEvents(arrayEvents);
+    // console.log(arrayEvents);
 
 
   };
@@ -57,7 +96,19 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     loadData();
 
 
-  }, []);
+  }, [initialDate, finalDate]);
+
+
+
+  // useEffect(() => {
+
+
+
+  //   setParamsInitialDate(null);
+  //   setParamsFinalDate(null);
+
+
+  // }, [paramsInitialDate, paramsFinalDate]);
 
 
 
@@ -79,11 +130,28 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   }
 
 
-
   const handleDateRender = (arg) => {
-    let start_date = arg.view.currentStart;
-    let end_date = arg.view.currentEnd;
+    let start_date = moment(arg.view.currentStart).format("YYYY-MM-DD");
+    let end_date = moment(arg.view.currentEnd).subtract(1, 'days').format("YYYY-MM-DD");
 
+
+    // console.log(arg);
+    // console.log(start_date);
+
+    // console.log(start_date, end_date);
+
+    if (params.sDate) {
+      setParamsInitialDate(params.sDate);
+      setParamsFinalDate(params.fDate);
+      console.log("Params");
+
+    } else {
+
+      console.log("Not Params");
+      setInitialDate(start_date);
+      setFinalDate(end_date);
+
+    }
 
   }
 
@@ -99,14 +167,15 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
 
 
-
   const handleEvent = (e) => {
     let id = e.event.id;
     let date = e.event.start;
     let view = e.view.type;
     let flag = "calendar";
+    let sDate = { initialDate };
+    let fDate = { finalDate }
 
-    history.push(`/test-calendar/${id}/${date}/${view}/${flag}`);
+    history.push(`/test-calendar/${id}/${date}/${view}/${flag}/${sDate}/${fDate}`);
 
 
   };
@@ -120,12 +189,14 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   };
 
 
+
   return (
 
     <div>
       <FullCalendar
         header={header}
         events={events}
+        loading={loadingCalendar}
 
         //params.date is coming back from occulation. 
         //It's being used to maintain data that went from calendar to occultation.
