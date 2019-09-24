@@ -33,6 +33,13 @@ const theme = createMuiTheme({
         fontWeight: 'bold',
       },
     },
+    MuiTableRow: {
+      root: {
+        '&:hover': {
+          backgroundColor: 'rgba(244, 244, 244, 1)',
+        },
+      },
+    },
   },
 });
 

@@ -171,11 +171,15 @@ function CustomTable({
   };
 
   const changeSearchValue = (value) => {
-    if (remote === true) {
-      clearData();
-      setLoading(true);
+    if (value.length > 2) {
+      if (remote === true) {
+        clearData();
+        setLoading(true);
+      }
+      setSearchValue(value);
+    } else {
+      setSearchValue('');
     }
-    setSearchValue(value);
   };
 
   const changeSelection = (value) => {
