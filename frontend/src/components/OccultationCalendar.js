@@ -7,13 +7,12 @@ import ListPlugin from '@fullcalendar/list';
 import '@fullcalendar/core/main.css';
 import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/list/main.css';
-import occultationData from '../assets/occultation_calendar_data';
 import { makeStyles } from '@material-ui/core/styles';
+import occultationData from '../assets/occultation_calendar_data';
 // import '../assets/css/occultationCalendar.css';
 
 
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
 
   icon: {
 
@@ -21,45 +20,36 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-
 function OccultationCalendar({ history, setTitle, match: { params } }) {
-
-
   const classes = useStyles();
   const [events, setEvents] = useState([]);
 
 
   const loadData = () => {
+    const arrayEvents = [];
+    const result = [];
 
-    let arrayEvents = [];
-    let result = [];
+    const keys = Object.keys(occultationData);
 
-    let keys = Object.keys(occultationData);
-
-    keys.forEach(function (key) {
+    keys.forEach((key) => {
       result.push(occultationData[key]);
     });
 
     result[3].map((res, idx) => {
-      arrayEvents.push({ id: res.id, title: res.asteroid_name, date: res.date_time, textColor: 'white' });
+      arrayEvents.push({
+        id: res.id, title: res.asteroid_name, date: res.date_time, textColor: 'white',
+      });
     });
 
     setEvents(arrayEvents);
-
-
   };
 
 
   useEffect(() => {
-
-    setTitle("Occultation Calendar");
+    setTitle('Occultation Calendar');
 
     loadData();
-
-
   }, []);
-
-
 
 
   // const events =
@@ -76,47 +66,35 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     listYear: 'Year',
     left: 'dayGridDay,dayGridWeek,dayGridMonth,listYear',
 
-  }
-
+  };
 
 
   const handleDateRender = (arg) => {
-    let start_date = arg.view.currentStart;
-    let end_date = arg.view.currentEnd;
+    const start_date = arg.view.currentStart;
+    const end_date = arg.view.currentEnd;
+  };
 
 
-  }
-
-
-
-  //Variable used to change specific button name
+  // Variable used to change specific button name
   const buttonText = {
     listYear: 'year',
     month: 'month',
 
-  }
-
-
-
-
-
-  const handleEvent = (e) => {
-    let id = e.event.id;
-    let date = e.event.start;
-    let view = e.view.type;
-    let flag = "calendar";
-
-    history.push(`/test-calendar/${id}/${date}/${view}/${flag}`);
-
-
   };
 
 
+  const handleEvent = (e) => {
+    const { id } = e.event;
+    const date = e.event.start;
+    const view = e.view.type;
+    const flag = 'calendar';
+
+    history.push(`/test-calendar/${id}/${date}/${view}/${flag}`);
+  };
+
 
   const handleEventRender = (event) => {
-
-    event.el.innerHTML = event.el.innerHTML + "<i id='sol_lua' class='far fa-moon'></i>";
-
+    event.el.innerHTML = `${event.el.innerHTML}<i id='sol_lua' class='far fa-moon'></i>`;
   };
 
 
@@ -127,22 +105,22 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
         header={header}
         events={events}
 
-        //params.date is coming back from occulation. 
-        //It's being used to maintain data that went from calendar to occultation.
-        //Flow:
-        // 1 -User chooses an event. 
+        // params.date is coming back from occulation.
+        // It's being used to maintain data that went from calendar to occultation.
+        // Flow:
+        // 1 -User chooses an event.
         // 2- The specific data goes to occultation.
         // 3 - On occultation screen user click on back button.
-        // 4 - When back, data comes inside params props.(params are internal(invisible operation));   
+        // 4 - When back, data comes inside params props.(params are internal(invisible operation));
         defaultDate={params.date ? new Date(params.date) : new Date()}
 
         eventClick={handleEvent}
         buttonText={buttonText}
         plugins={[DayGridPlugin, InteractionPlugin, ListPlugin]}
         defaultView={params.view ? params.view : null}
-        themeSystem={"standard"}
+        themeSystem="standard"
         datesRender={handleDateRender}
-        weekNumbers={true}
+        weekNumbers
         eventRender={handleEventRender}
 
 
@@ -150,7 +128,6 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     </div>
 
   );
-
 }
 
 
