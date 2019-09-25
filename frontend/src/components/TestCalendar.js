@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 
 function TestCalendar({ history, match: { params } }) {
-
-
   const [values, setValues] = useState({
     id: null,
     date: null,
@@ -24,11 +22,7 @@ function TestCalendar({ history, match: { params } }) {
       sDate: params.sDate,
       fDate: params.fDate,
     });
-
-
   }, []);
-
-
 
 
   const handleClick = () => {
@@ -40,8 +34,6 @@ function TestCalendar({ history, match: { params } }) {
     }
   };
 
-
-  console.log(values.sDate);
   return (
 
     <div>
@@ -52,8 +44,6 @@ function TestCalendar({ history, match: { params } }) {
 
   );
 
-
 }
 
 export default withRouter(TestCalendar);
-

@@ -7,7 +7,6 @@ import ListPlugin from '@fullcalendar/list';
 import '@fullcalendar/core/main.css';
 import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/list/main.css';
-import occultationData from '../assets/occultation_calendar_data';
 import { makeStyles } from '@material-ui/core/styles';
 import { getOccultations, getCalendarEvents } from '../api/Prediction';
 // import '../assets/css/occultationCalendar.css';
@@ -16,8 +15,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { relative } from 'path';
 
 
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
 
   loading: {
     position: 'fixed',
@@ -53,6 +51,8 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
 
   const loadData = () => {
+    const arrayEvents = [];
+    const result = [];
 
 
 
@@ -105,11 +105,9 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
 
   useEffect(() => {
-
-    setTitle("Occultation Calendar");
+    setTitle('Occultation Calendar');
 
     loadData();
-
 
   }, [initialDate, finalDate]);
 
@@ -125,11 +123,6 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
   // }, [paramsInitialDate, paramsFinalDate]);
 
-
-
-
-  // const events =
-  //   [
   //     { title: "2004 DA62 ", date: '2019-08-10 11:32:00', textColor: 'white', },
   //     { title: "oi", date: '2019-08-12 17:30:00', textColor: 'white', backgroundColor: "green", icon: "asterisk" },
   //     { title: "Event Test", date: '2019-09-16 17:30:00', textColor: 'white', backgroundColor: "green", icon: "asterisk" },
@@ -142,8 +135,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     listYear: 'Year',
     left: 'dayGridDay,dayGridWeek,dayGridMonth,listYear',
 
-  }
-
+  };
 
   const handleDateRender = (arg) => {
     let start_date = moment(arg.view.currentStart).format("YYYY-MM-DD");
@@ -175,15 +167,12 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
 
 
-  //Variable used to change specific button name
+  // Variable used to change specific button name
   const buttonText = {
     listYear: 'year',
     month: 'month',
 
-  }
-
-
-
+  };
 
   const handleEvent = (e) => {
     let id = e.event.id;
@@ -197,7 +186,6 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
 
   };
-
 
 
   const handleEventRender = (event) => {
@@ -248,9 +236,9 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
         buttonText={buttonText}
         plugins={[DayGridPlugin, InteractionPlugin, ListPlugin]}
         defaultView={params.view ? params.view : null}
-        themeSystem={"standard"}
+        themeSystem="standard"
         datesRender={handleDateRender}
-        weekNumbers={true}
+        weekNumbers
         eventRender={handleEventRender}
 
 
@@ -258,7 +246,6 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     </div>
 
   );
-
 }
 
 
