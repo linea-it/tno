@@ -31,26 +31,26 @@ function TestCalendar({ history, match: { params } }) {
 
 
 
-const handleClick = () => {
+  const handleClick = () => {
 
-  if (values.flag === "calendar") {
-    history.push(`/occultation-calendar-back/${values.id}/${values.date}/${values.view}/${values.sDate}/${values.fDate}`);
-  } else {
-    console.log("Occultation");
-  }
-};
+    if (values.flag === "calendar") {
+      history.push(`/occultation-calendar-back/${values.id}/${values.date}/${values.view}/${values.sDate}/${values.fDate}`);
+    } else {
+      console.log("Occultation");
+    }
+  };
 
 
+  console.log(values.sDate);
+  return (
 
-return (
-
-  <div>
-    <button onClick={handleClick}>
-      Back
+    <div>
+      <button onClick={handleClick}>
+        Back
       </button>
-  </div>
+    </div>
 
-);
+  );
 
 
 }
