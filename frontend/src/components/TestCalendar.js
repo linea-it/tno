@@ -7,6 +7,8 @@ function TestCalendar({ history, match: { params } }) {
     date: null,
     view: null,
     flag: null,
+    sDate: null, //Start Date
+    fDate: null, //Final Date
 
   });
 
@@ -17,28 +19,31 @@ function TestCalendar({ history, match: { params } }) {
       date: params.date,
       view: params.view,
       flag: params.flag,
+      sDate: params.sDate,
+      fDate: params.fDate,
     });
   }, []);
 
 
   const handleClick = () => {
-    if (values.flag === 'calendar') {
-      history.push(`/occultation-calendar-back/${values.id}/${values.date}/${values.view}`);
+
+    if (values.flag === "calendar") {
+      history.push(`/occultation-calendar-back/${values.id}/${values.date}/${values.view}/${values.sDate}/${values.fDate}`);
     } else {
-      console.log('Occultation');
+      console.log("Occultation");
     }
   };
-
 
   return (
 
     <div>
       <button onClick={handleClick}>
-      Back
+        Back
       </button>
     </div>
 
   );
+
 }
 
 export default withRouter(TestCalendar);
