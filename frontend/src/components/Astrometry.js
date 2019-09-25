@@ -130,7 +130,7 @@ function Astrometry({ setTitle }) {
 
   return (
     <Grid>
-      <Grid container spacing={4}>
+      <Grid container spacing={6}>
 
         <Grid item sm={6} xl={5}>
           <Card>
@@ -188,7 +188,7 @@ function Astrometry({ setTitle }) {
 
       </Grid>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={6}>
 
         <Grid item sm={12} xl={12}>
           <Card>
