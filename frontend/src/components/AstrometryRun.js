@@ -68,7 +68,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
 
     <div>
 
-      <Grid container spacing={2}>
+      <Grid container spacing={6}>
 
         <Grid item sm={4} xl={4}>
           <Card>
@@ -122,7 +122,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
 
 
 
-      <Grid container spacing={2}>
+      <Grid container spacing={6}>
 
         <Grid item sm={12} xl={12}>
           <Card className={classes.card}>
