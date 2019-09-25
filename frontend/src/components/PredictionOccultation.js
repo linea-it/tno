@@ -76,7 +76,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function PredictionOccultation({ history, setTitle }) {
+
   const classes = useStyles();
+
   const columns = [
     {
       name: 'status',
@@ -179,8 +181,8 @@ function PredictionOccultation({ history, setTitle }) {
   const [inputRadiusValue, setInputRadiusValue] = useState(0.15);
   const [ephemerisNumberValue, setEphemerisNumberValue] = useState(600);
   const [actionButton, setActionButton] = useState(true);
-  const [initialDate, setInitialDate] = useState(moment(new Date()).format('YYYY-MM-DD').toString());
-  const [finalDate, setFinalDate] = useState(moment(new Date()).format('YYYY-MM-DD').toString());
+  const [initialDate, setInitialDate] = useState(new Date());
+  const [finalDate, setFinalDate] = useState(new Date());
   const [dialogVisible, setDialogVisible] = useState(false);
   const [dialogContent, setDialogContent] = useState("ok");
 
@@ -227,18 +229,19 @@ function PredictionOccultation({ history, setTitle }) {
       submit: true,
     });
 
-
-
-
-
-
   }
+
+
 
 
   //When submit button is clicked so calls the function below
   useEffect(() => {
 
     if (valueSubmition.submit) {
+
+      setActionButton(true);
+
+      setValueSubmition({ ...valueSubmition, submit: false });
 
 
       setDialogContent("The task has been submitted and will be executed in the background...")
@@ -257,7 +260,18 @@ function PredictionOccultation({ history, setTitle }) {
         catalog_radius: valueSubmition.catalog_radius,
         ephemeris_initial_date: valueSubmition.ephemeris_initial_date,
         ephemeris_final_date: valueSubmition.ephemeris_final_date,
-        ephemeris_step: valueSubmition.ephemeris_step
+        ephemeris_step: valueSubmition.ephemeris_step,
+
+        //process: "66",
+        // input_list: 2,
+        // input_orbit: 25,
+        //leap_second: 1,
+        // bsp_planetary: 1,
+        // catalog: 1,
+        // catalog_radius: 0.15,
+        //ephemeris_initial_date: "2020-01-01T01:59:59Z",
+        //ephemeris_final_date: "2019-01-01T02:00:00Z",
+        // ephemeris_step: 600
       }).then((res) => {
         console.log(res);
       });
@@ -281,6 +295,7 @@ function PredictionOccultation({ history, setTitle }) {
       ],
     })
       .then((res) => {
+
         setInputArray(res.results);
       });
 
@@ -448,7 +463,7 @@ function PredictionOccultation({ history, setTitle }) {
 
                 />
 
-                <DateTime defaultDate={initialDate}
+                <DateTime defaultDate={moment(initialDate).format("YYYY-MM-DD").toString()}
                   label="Ephemeris Initial Date"
                   valueSubmition={valueSubmition}
                   setSubmition={setValueSubmition}
@@ -456,7 +471,7 @@ function PredictionOccultation({ history, setTitle }) {
                   title={"initialDate"}
 
                 />
-                <DateTime defaultDate={finalDate}
+                <DateTime defaultDate={moment(finalDate).format("YYYY-MM-DD").toString()}
                   label="Ephemeris Final Date"
                   valueSubmition={valueSubmition}
                   setSubmition={setValueSubmition}

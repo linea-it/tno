@@ -67,16 +67,15 @@ export default function SimpleSelect(props) {
         let orbit_input_list_id = event.currentTarget.getAttribute('orbit_input_list_id');
         let orbit_run_id = event.currentTarget.getAttribute('orbit_run_id');
 
+
+
         props.setSubmition({
           ...props.valueSubmition,
           processId: process_id,
           orbit_run_input_list_id: orbit_input_list_id,
           orbit_run_id: orbit_run_id,
 
-
         });
-
-
 
         //Case 
 
@@ -120,7 +119,7 @@ export default function SimpleSelect(props) {
         return generalArray.map((el, i) => (
           <MenuItem
             key={i}
-            process_id={el.id}
+            process_id={el.proccess}
             orbit_input_list_id={el.input_list}
             className={classes.MenuItem}
             value={i == 0 ? '' : i}
