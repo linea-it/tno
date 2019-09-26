@@ -25,6 +25,8 @@ import Footer from './Footer';
 import RefineOrbit from './components/RefineOrbit';
 import RefineOrbitDetail from './components/RefineOrbitDetail';
 import RefineOrbitAsteroid from './components/RefineOrbitAsteroid';
+// import PredictAsteroid from './components/PredictAsteroid';
+import Astrometry from './components/Astrometry';
 import OccultationCalendar from './components/OccultationCalendar';
 import TestCalendar from './components/TestCalendar';
 import PredictionOccultation from './components/PredictionOccultation';
@@ -392,6 +394,9 @@ function MiniDrawer() {
             <Route exact path="/refine-orbit/:id" render={(props) => <RefineOrbitDetail {...props} setTitle={setTitle} />} />
             <Route exact path="/refine-orbit/asteroid/:id" render={(props) => <RefineOrbitAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
             <Route exact path="/prediction-of-occultation" render={(props) => <PredictionOccultation {...props} setTitle={setTitle} />} />
+            {/* <Route exact path="/prediction-detail/:id" render={(props) => <PredictionDetail {...props} setTitle={setTitle} />} /> */}
+            {/* <Route exact path="/predict-asteroid" render={(props) => <PredictAsteroid {...props} setTitle={setTitle} />} /> */}
+            <Route exact path="/astrometry" render={(props) => <Astrometry {...props} setTitle={setTitle} />} />
             <Route exact path="/prediction-of-occultation/:id" render={(props) => <PredictionOccultationDetail {...props} setTitle={setTitle} />} />
             <Route exact path="/prediction-of-occultation/asteroid/:id" render={(props) => <PredictionOccultationAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
             <Route exact path="/occultation-calendar" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />

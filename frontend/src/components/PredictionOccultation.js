@@ -74,7 +74,7 @@ function PredictionOccultation({ history, setTitle }) {
               className={clsx(classes.btn, classes.btnRunning)}
               title={row.status}
             >
-                Running
+              Running
             </span>
           );
         }
@@ -83,7 +83,7 @@ function PredictionOccultation({ history, setTitle }) {
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
           >
-          Success
+            Success
           </span>
         );
       },
