@@ -123,7 +123,7 @@ function AstrometryHistory() {
     {
       name: 'status',
       title: 'Status',
-      width: 130,
+      width: 150,
       align: 'center',
       customElement: (row) => {
         if (row.status === 'running') {
@@ -150,14 +150,15 @@ function AstrometryHistory() {
     {
       name: 'proccess_displayname',
       title: 'Process',
-      width: 130,
+      width: 200,
+      align: 'center',
 
     },
 
     {
       name: 'owner',
       title: 'Owner',
-      width: 80,
+      width: 150,
       align: 'center',
 
     },
@@ -165,15 +166,14 @@ function AstrometryHistory() {
     {
       name: 'input_list',
       title: 'Input',
-      width: 70,
+      width: 100,
       align: 'center',
-
     },
 
     {
       name: 'configuration',
       title: 'Configuration',
-      width: 120,
+      width: 150,
       align: 'center',
 
     },
@@ -181,7 +181,8 @@ function AstrometryHistory() {
     {
       name: 'start_time',
       title: 'Date',
-      width: 100,
+      width: 180,
+      align: 'center',
 
     },
 
@@ -189,7 +190,7 @@ function AstrometryHistory() {
     {
       name: 'h_time',
       title: 'Start',
-      width: 100,
+      width: 150,
       align: 'center',
 
     },
@@ -197,7 +198,8 @@ function AstrometryHistory() {
     {
       name: 'h_execution_time',
       title: 'Execution Time',
-      width: 120,
+      width: 180,
+      align: 'center',
 
     },
 
@@ -235,6 +237,8 @@ function AstrometryHistory() {
         loadData={loadData}
         totalCount={totalCount}
         reload={reload}
+        hasSearching={false}
+        hasColumnVisibility={false}
       >
 
       </ Table>

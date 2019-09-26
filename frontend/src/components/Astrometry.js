@@ -5,7 +5,6 @@ import { Card, CardHeader, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InputSelect from './InputSelectAstrometryMain';
 import { getListsByStatus, getCatalogs, getConfigurations, createPraiaRun } from '../api/Praia';
-import { object } from 'prop-types';
 import AstrometryHistory from './AstrometryHistory';
 
 
@@ -57,10 +56,12 @@ function Astrometry({ setTitle }) {
     getListsByStatus({ status: 'success', search: inputValue }).then((res) => {
       setObjectList(res.data.results);
 
+
     });
 
     getCatalogs({ search: inputValue }).then((res) => {
       setCatalogs(res.data.results);
+
     });
 
 
@@ -154,7 +155,7 @@ function Astrometry({ setTitle }) {
             <InputSelect
               title="Reference Catalog"
               case="catalog"
-              display="el.name"
+              display="el.display_name"
               data={catalogs}
               width="90%"
               marginTop={10}
