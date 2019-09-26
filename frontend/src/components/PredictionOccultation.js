@@ -14,12 +14,6 @@ import DateTime from './DateTimePrediction';
 import InputSelect from './InputSelect';
 import { getPredictionRuns } from '../api/Prediction';
 import CustomTable from './utils/CustomTable';
-import { getOrbitRuns } from '../api/Orbit';
-import Dialog from "@material-ui/core/Dialog";
-import PredictionHistory from "./PredictionHistory";
-
-import { getCatalogs, getLeapSeconds, getBspPlanetary, createPredictRun, } from '../api/Prediction';
-
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
@@ -126,8 +120,8 @@ function PredictionOccultation({ history, setTitle }) {
       align: 'center',
     },
     {
-      name: '',
-      title: '',
+      name: 'id',
+      title: ' ',
       width: 100,
       icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: (el) => history.push(`/prediction-of-occultation/${el.id}`),
@@ -162,354 +156,6 @@ function PredictionOccultation({ history, setTitle }) {
     }
   };
 
-  const [inputArray, setInputArray] = useState([]);
-  const [catalogArray, setCatalogArray] = useState([]);
-  const [leapSecondsArray, setLeapSecondsArray] = useState([]);
-  const [bspPlanetaryArray, setBspPlanetaryArray] = useState([]);
-  const [inputRadiusValue, setInputRadiusValue] = useState(0.15);
-  const [ephemerisNumberValue, setEphemerisNumberValue] = useState(600);
-  const [actionButton, setActionButton] = useState(true);
-  const [dateTime, setDateTime] = useState("2017-05-24T10:30");
-  const [dialogVisible, setDialogVisible] = useState(false);
-
-  const [valueSubmition, setValueSubmition] = useState({
-    processId: null,
-    orbit_run_input_list_id: null,
-    orbit_run_id: null,
-    catalogId: null,
-    leap_secondsId: null,
-    bsp_planetaryId: null,
-    catalog_radius: null,
-    ephemeris_step: null,
-    ephemeris_initial_date: null,
-    ephemeris_final_date: null,
-    submit: false,
-
-  });
-
-
-
-  const handleSubmitClick = (e) => {
-
-    // ***** Values referring to Refine Orbit run. Only success ones ****//
-    //  process - processId
-    //  input_list_id - input id from object list
-    //  input_orbit_id - orbit run id
-
-    //* * Other values**/
-    // leap_second
-    // bsp_planetary,
-    // catalog,
-    // catalog_radius
-    // ephemeris_initial_date
-    // ephemeris_final_date
-    // ephemeris_step
-
-
-    setValueSubmition({
-      ...valueSubmition,
-      catalog_radius: inputRadiusValue,
-      ephemeris_step: ephemerisNumberValue,
-      ephemeris_initial_date: dateTime,
-      ephemeris_final_date: dateTime,
-      submit: true,
-    });
-
-
-    setDialogVisible(true);
-
-  }
-
-
-
-  //When submit button is clicked so calls the function below
-  useEffect(() => {
-
-    if (valueSubmition.submit) {
-
-      //Calls APi for creation of prediction run
-
-
-      createPredictRun({
-        process: valueSubmition.processId,
-        input_list: valueSubmition.orbit_run_input_list_id,
-        input_orbit: valueSubmition.orbit_run_id,
-        leap_second: valueSubmition.leap_secondsId,
-        bsp_planetary: valueSubmition.bsp_planetaryId,
-        catalog: valueSubmition.catalogId,
-        catalog_radius: valueSubmition.catalog_radius,
-        ephemeris_initial_date: valueSubmition.ephemeris_initial_date,
-        ephemeris_final_date: valueSubmition.ephemeris_final_date,
-        ephemeris_step: valueSubmition.ephemeris_step
-      }).then((res) => {
-        console.log(res);
-      });
-
-
-    }
-
-  }, [valueSubmition]);
-
-
-
-
-
-  const loadData = () => {
-    // Load Input Array
-    getOrbitRuns({
-      ordering: 'start_time',
-      filters: [
-        {
-          property: 'status',
-          value: 'success',
-        },
-      ],
-    })
-      .then((res) => {
-        setInputArray(res.results);
-      });
-
-
-    // Load Catalogs
-    getCatalogs().then((res) => {
-      setCatalogArray(res.results);
-
-    });
-
-
-    // Leap Seconds
-    getLeapSeconds().then((res) => {
-      setLeapSecondsArray(res.results);
-    });
-
-
-    // Bsp Planetary
-    getBspPlanetary().then((res) => {
-      setBspPlanetaryArray(res.results);
-    });
-
-  };
-
-
-
-
-  // If inputArray state is changed so hit the function useEffect
-  // This is important to set first state case the user hit the submit button
-  // Avoid error in case of user hit the submit button without choose any option
-  // useEffect(() => {
-  //   if (inputArray[0]) {
-  //     setValueSubmition({
-  //       processId: inputArray[0].id,
-  //       orbit_run_input_list_id: inputArray[0].input_list,
-  //       orbit_run_id: process,
-  //       bsp_planetaryId: bspPlanetaryArray[0].id,
-  //       leap_seconds: LeapSecondsArray[0].id,
-  //       catalogId: catalogArray[0].id
-  //     });
-  //   }
-
-  // }, [inputArray]);
-
-
-
-  // catalogArray[0].id === "undefined" ? console.log("Catalog Id still undefine") : console.log("Now ok");
-
-  // (
-
-
-
-
-  useEffect(() => {
-
-    if (typeof (catalogArray[0]) != "undefined") {
-      setValueSubmition(
-        {
-          ...valueSubmition,
-          catalogId: catalogArray[0].id,
-
-        }
-
-      )
-    }
-
-  }, [catalogArray]);
-
-
-
-
-  useEffect(() => {
-
-    if (typeof (leapSecondsArray[0]) != "undefined") {
-      setValueSubmition({ ...valueSubmition, leap_secondsId: leapSecondsArray[0].id })
-    }
-
-  }, [leapSecondsArray]);
-
-
-
-
-  useEffect(() => {
-
-    if (typeof (bspPlanetaryArray[0]) != "undefined") {
-      setValueSubmition({ ...valueSubmition, bsp_planetaryId: bspPlanetaryArray[0].id })
-    }
-
-  }, [bspPlanetaryArray]);
-
-
-
-
-
-  useEffect(() => {
-    loadData();
-
-  }, []);
-
-  const inputNumber = React.createRef();
-  const ephemerisNumber = React.createRef()
-
-  const handleInputNumberChange = (event) => {
-
-    setInputRadiusValue(event.target.value);
-
-    ephemerisNumberValue ? setActionButton(false) : setActionButton(true);
-
-  };
-
-
-  const handleEphemerisNumberChange = (event) => {
-
-    setEphemerisNumberValue(event.target.value);
-
-    inputRadiusValue ? setActionButton(false) : setActionButton(true);
-  };
-
-
-  const handleDialogClose = () => {
-
-    setDialogVisible(false);
-  };
-
-
-
-
-
-
-  //When submit button is clicked so calls the function below
-  useEffect(() => {
-
-    if (valueSubmition.submit) {
-
-      //Calls APi for creation of prediction run
-
-
-      createPredictRun({
-        process: valueSubmition.processId,
-        input_list: valueSubmition.orbit_run_input_list_id,
-        input_orbit: valueSubmition.orbit_run_id,
-        leap_second: valueSubmition.leap_secondsId,
-        bsp_planetary: valueSubmition.bsp_planetaryId,
-        catalog: valueSubmition.catalogId,
-        catalog_radius: valueSubmition.catalog_radius,
-        ephemeris_initial_date: valueSubmition.ephemeris_initial_date,
-        ephemeris_final_date: valueSubmition.ephemeris_final_date,
-        ephemeris_step: valueSubmition.ephemeris_step
-      }).then((res) => {
-        console.log(res);
-      });
-
-
-    }
-
-  }, [valueSubmition]);
-
-
-
-
-
-
-
-  // If inputArray state is changed so hit the function useEffect
-  // This is important to set first state case the user hit the submit button
-  // Avoid error in case of user hit the submit button without choose any option
-  // useEffect(() => {
-  //   if (inputArray[0]) {
-  //     setValueSubmition({
-  //       processId: inputArray[0].id,
-  //       orbit_run_input_list_id: inputArray[0].input_list,
-  //       orbit_run_id: process,
-  //       bsp_planetaryId: bspPlanetaryArray[0].id,
-  //       leap_seconds: LeapSecondsArray[0].id,
-  //       catalogId: catalogArray[0].id
-  //     });
-  //   }
-
-  // }, [inputArray]);
-
-
-
-  // catalogArray[0].id === "undefined" ? console.log("Catalog Id still undefine") : console.log("Now ok");
-
-  // (
-
-
-
-
-  useEffect(() => {
-
-    if (typeof (catalogArray[0]) != "undefined") {
-      setValueSubmition(
-        {
-          ...valueSubmition,
-          catalogId: catalogArray[0].id,
-
-        }
-
-      )
-    }
-
-  }, [catalogArray]);
-
-
-
-
-  useEffect(() => {
-
-    if (typeof (leapSecondsArray[0]) != "undefined") {
-      setValueSubmition({ ...valueSubmition, leap_secondsId: leapSecondsArray[0].id })
-    }
-
-  }, [leapSecondsArray]);
-
-
-
-
-  useEffect(() => {
-
-    if (typeof (bspPlanetaryArray[0]) != "undefined") {
-      setValueSubmition({ ...valueSubmition, bsp_planetaryId: bspPlanetaryArray[0].id })
-    }
-
-  }, [bspPlanetaryArray]);
-
-
-
-
-
-  useEffect(() => {
-    loadData();
-
-  }, []);
-
-
-
-
-
-
-
-
-
-
   return (
     <div>
       <div className={classes.div}>
@@ -524,49 +170,18 @@ function PredictionOccultation({ history, setTitle }) {
 
           <Grid container spacing={2}>
             <Grid item sm={6} xs={6} xl={6} lg={6}>
-              <InputSelect title="input" width="90%" setActionButton={setActionButton} valueSubmition={valueSubmition} setSubmition={setValueSubmition} marginTop={10} data={inputArray} value="el.id" display="el.proccess_displayname" />
-              <InputSelect title="catalog" width="90%" setSubmition={setValueSubmition} marginTop={10} data={catalogArray} value="el.id" display="el.display_name" />
-              <InputSelect title="leapSeconds" width="90%" marginTop={10} data={leapSecondsArray} value="el.id" display="el.name" />
-              <InputSelect title="bspPlanetary" width="90%" marginTop={10} data={bspPlanetaryArray} value="el.id" display="el.display_name" />
+              <InputSelect title="Input" width="90%" marginTop={10} />
+              <InputSelect title="Catalog" width="90%" marginTop={10} />
+              <InputSelect title="Leap Seconds" width="90%" marginTop={10} />
+              <InputSelect title="BSP Planetary" width="90%" marginTop={10} />
             </Grid>
 
             <Grid item sm={6} xs={6} xl={6} lg={6}>
-
-              <InputNumber
-                ref={inputNumber}
-                type="number"
-                placeholder="    Catalog Radius"
-                className={classes.inputNumber}
-                onChange={handleInputNumberChange}
-                inputProps={{ min: 0.15, max: 2.0, step: 0.01 }}
-                value={inputRadiusValue}
-
-              />
-
-              <InputNumber
-                ref={ephemerisNumber}
-                type="number"
-                placeholder="    Ephemeris Step"
-                className={classes.inputNumber}
-                inputProps={{ min: 60, max: 1800, step: 10 }}
-                onChange={handleEphemerisNumberChange}
-                value={ephemerisNumberValue}
-              />
-
-              <DateTime defaultDateTime={dateTime} label="Ephemeris Initial Date" />
-              <DateTime defaultDateTime={dateTime} label="Ephemeris Final Date" width="90%" />
-
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.button}
-                onClick={handleSubmitClick}
-                disabled={actionButton}
-
-              >
-                Submit
-              </Button>
-
+              <InputNumber type="number" placeholder="Catalog Radius" className={classes.inputNumber} />
+              <InputNumber type="number" placeholder="Ephemeris Step" className={classes.inputNumber} />
+              <DateTime label="Ephemeris Initial Date" />
+              <DateTime label="Ephemeris Final Date" width="90%" />
+              <Button variant="contained" color="primary" className={classes.button}>Submit</Button>
             </Grid>
           </Grid>
 
@@ -590,32 +205,11 @@ function PredictionOccultation({ history, setTitle }) {
               totalCount={totalCount}
               defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
               reload={reload}
+              hasSearching={false}
             />
           </CardContent>
         </Card>
       </Grid>
-
-
-
-      <Dialog
-        visible={dialogVisible}
-        title={"Run Prediction"}
-        content={"The task has been submitted and will be executed in the background."}
-        setVisible={handleDialogClose}
-      >
-
-      </Dialog>
-
-
-
-      <Dialog
-        visible={dialogVisible}
-        title={"Run Prediction"}
-        content={"The task has been submitted and will be executed in the background."}
-        setVisible={handleDialogClose}
-      >
-
-      </Dialog>
 
     </div>
   );

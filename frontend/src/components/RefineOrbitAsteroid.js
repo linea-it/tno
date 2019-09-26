@@ -3,18 +3,41 @@ import PropTypes from 'prop-types';
 import {
   Grid, Card, makeStyles, CardHeader, CardContent,
 } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Carousel, { Modal, ModalGateway } from 'react-images';
 import clsx from 'clsx';
 import moment from 'moment';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import { withRouter } from 'react-router';
 import CustomList from './utils/CustomList';
 import CustomTable from './utils/CustomTable';
 import {
-  url as apiUrl, getAsteroidById, getAsteroidInputs, getAsteroidFiles,
+  url as apiUrl,
+  getAsteroidById,
+  getAsteroidInputs,
+  getAsteroidFiles,
+  getAsteroidNeighbors,
+  getAsteroidDownloadLink,
 } from '../api/Orbit';
 
 
 const useStyles = makeStyles((theme) => ({
+  button: {
+    margin: theme.spacing(1),
+  },
+  buttonIcon: {
+    margin: '0 2px',
+  },
+  buttonProgress: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
+  },
   btn: {
     textTransform: 'none',
     padding: '1px 5px',
@@ -51,6 +74,7 @@ const useStyles = makeStyles((theme) => ({
   },
   block: {
     marginBottom: 15,
+    justifyContent: 'center',
   },
   root: {
     display: 'flex',
@@ -66,17 +90,34 @@ const useStyles = makeStyles((theme) => ({
   },
   chartTile: {
     height: 'auto !important',
+    cursor: 'pointer',
+  },
+  cardContentWrapper: {
+    maxHeight: 342,
+    overflow: 'auto',
   },
 }));
 
-function RefineOrbitAsteroid({ setTitle, match }) {
+function RefineOrbitAsteroid({
+  history, setTitle, match, drawerOpen,
+}) {
   const { id } = match.params;
   const classes = useStyles();
+  const [asteroidData, setAsteroidData] = useState([]);
   const [asteroidList, setAsteroidList] = useState([]);
   const [inputTableData, setInputTableData] = useState([]);
   const [resultTableData, setResultTableData] = useState([]);
   const [charts, setCharts] = useState([]);
-
+  const [lightbox, setLightbox] = useState({
+    currentImage: 0,
+    isOpen: false,
+  });
+  const [downloading, setDownloading] = useState(false);
+  const [neighbors, setNeighbors] = useState({
+    prev: null,
+    next: null,
+  });
+  const [reload, setReload] = useState(false);
 
   const inputColumns = [
     {
@@ -102,7 +143,6 @@ function RefineOrbitAsteroid({ setTitle, match }) {
       title: 'Filename',
     },
   ];
-
 
   const resultColumns = [
     {
@@ -131,73 +171,20 @@ function RefineOrbitAsteroid({ setTitle, match }) {
 
   useEffect(() => {
     setTitle('Refine Orbit');
-    getAsteroidById({ id }).then((data) => {
-      setAsteroidList([
-        {
-          title: 'Status',
-          value: () => {
-            if (data.status === 'failure') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnFailure)}
-                  title={data.error_msg}
-                >
-                    Failure
-                </span>
-              );
-            } if (data.status === 'running') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnRunning)}
-                  title={data.status}
-                >
-                    Running
-                </span>
-              );
-            } if (data.status === 'not_executed') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnNotExecuted)}
-                  title={data.error_msg}
-                >
-                    Not Executed
-                </span>
-              );
-            } if (data.status === 'warning') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnWarning)}
-                  title={data.error_msg ? data.error_msg : 'Warning'}
-                >
-                    Warning
-                </span>
-              );
-            }
-
-            return (
-              <span
-                className={clsx(classes.btn, classes.btnSuccess)}
-                title={data.status}
-              >
-                  Success
-              </span>
-            );
-          },
-        },
-        {
-          title: 'Executed',
-          value: data.h_time,
-        },
-        {
-          title: 'Execution Time',
-          value: data.h_execution_time,
-        },
-        {
-          title: 'Size',
-          value: data.h_size,
-        },
-      ]);
+    setAsteroidData([]);
+    setAsteroidList([]);
+    setInputTableData([]);
+    setResultTableData([]);
+    setCharts([]);
+    setAsteroidList([]);
+    setDownloading(false);
+    setNeighbors({
+      prev: null,
+      next: null,
     });
+
+    getAsteroidById({ id }).then((data) => setAsteroidData(data));
+
 
     getAsteroidInputs({ id }).then((data) => {
       const tableData = data.results.map((res) => ({
@@ -237,10 +224,195 @@ function RefineOrbitAsteroid({ setTitle, match }) {
       setCharts(images);
       setResultTableData(resultData);
     });
-  }, []);
+
+    getAsteroidNeighbors({ id }).then((res) => {
+      setNeighbors({
+        prev: res.prev,
+        next: res.next,
+      });
+    });
+  }, [reload]);
+
+
+  useEffect(() => {
+    setAsteroidList([
+      {
+        title: 'Status',
+        value: () => {
+          if (asteroidData.status === 'failure') {
+            return (
+              <span
+                className={clsx(classes.btn, classes.btnFailure)}
+                title={asteroidData.error_msg}
+              >
+                  Failure
+              </span>
+            );
+          } if (asteroidData.status === 'running') {
+            return (
+              <span
+                className={clsx(classes.btn, classes.btnRunning)}
+                title={asteroidData.status}
+              >
+                  Running
+              </span>
+            );
+          } if (asteroidData.status === 'not_executed') {
+            return (
+              <span
+                className={clsx(classes.btn, classes.btnNotExecuted)}
+                title={asteroidData.error_msg}
+              >
+                  Not Executed
+              </span>
+            );
+          } if (asteroidData.status === 'warning') {
+            return (
+              <span
+                className={clsx(classes.btn, classes.btnWarning)}
+                title={asteroidData.error_msg ? asteroidData.error_msg : 'Warning'}
+              >
+                  Warning
+              </span>
+            );
+          }
+
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnSuccess)}
+              title={asteroidData.status}
+            >
+                Success
+            </span>
+          );
+        },
+      },
+      {
+        title: 'Executed',
+        value: asteroidData.h_time,
+      },
+      {
+        title: 'Execution Time',
+        value: asteroidData.h_execution_time,
+      },
+      {
+        title: 'Size',
+        value: asteroidData.h_size,
+      },
+    ]);
+  }, [asteroidData]);
+
+
+  const openLightbox = (i, e) => {
+    e.preventDefault();
+    setLightbox({
+      currentImage: i,
+      isOpen: true,
+    });
+  };
+
+  const closeLightbox = () => {
+    setLightbox({
+      currentImage: 0,
+      isOpen: false,
+    });
+  };
+
+  const handleDownload = async () => {
+    setDownloading(true);
+
+    const data = await getAsteroidDownloadLink({ id });
+
+    if (data.success) {
+      const { src } = data;
+      const file = apiUrl + src;
+
+      window.location.assign(file);
+      setTimeout(() => {
+        setDownloading(false);
+      }, [3000]);
+    } else {
+      // TODO: Implementar notificacao de erro.
+      setTimeout(() => {
+        setDownloading(false);
+      }, [1000]);
+    }
+  };
+
+  const handleAsteroidsNavigation = (asteroidId) => {
+    history.push(`/refine-orbit/asteroid/${asteroidId}`);
+    setReload(!reload);
+  };
+
+  const handleBackNavigation = () => history.push(`/refine-orbit/${asteroidData.orbit_run}`);
 
   return (
     <>
+      <Grid
+        container
+        justify="space-between"
+        alignItems="center"
+        spacing={2}
+      >
+        <Grid item xs={12} md={4}>
+          <Button
+            variant="contained"
+            color="primary"
+            title="Back"
+            className={classes.button}
+            onClick={handleBackNavigation}
+          >
+            <i className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+            <span>Back</span>
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            title="Download"
+            className={classes.button}
+            disabled={downloading}
+            onClick={handleDownload}
+          >
+            <span>Download</span>
+            <i className={clsx('fas', 'fa-download', classes.buttonIcon)} />
+            {downloading ? (
+              <CircularProgress
+                color="secondary"
+                className={classes.buttonProgress}
+                size={24}
+              />
+            ) : null}
+          </Button>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Grid container justify="flex-end">
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                title="Previous"
+                className={classes.button}
+                disabled={neighbors.prev === null}
+                onClick={() => handleAsteroidsNavigation(neighbors.prev)}
+              >
+                <i className={clsx('fas', 'fa-arrow-left', classes.buttonIcon)} />
+                <span>Prev</span>
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                title="Next"
+                className={classes.button}
+                disabled={neighbors.next === null}
+                onClick={() => handleAsteroidsNavigation(neighbors.next)}
+              >
+                <span>Next</span>
+                <i className={clsx('fas', 'fa-arrow-right', classes.buttonIcon)} />
+              </Button>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
       <Grid container spacing={2}>
         <Grid item lg={4} xl={3} className={classes.block}>
           <Card>
@@ -256,10 +428,14 @@ function RefineOrbitAsteroid({ setTitle, match }) {
           <Grid item className={classes.block}>
             <Card>
               <CardHeader title="Charts" />
-              <GridList cols={3} className={classes.block}>
-                {charts.map((image) => (
+              <GridList cols={2} className={classes.block}>
+                {charts.map((image, i) => (
                   <GridListTile item className={classes.chartTile}>
-                    <img src={image.src} className={classes.chart} alt={image.filename} title={image.filename} />
+                    <img src={image.src} className={classes.chart} alt={image.filename} title={image.filename} onClick={(e) => openLightbox(i, e)} />
+                    <GridListTileBar
+                      title={image.filename}
+                      subtitle={<span>{`type: ${image.type}`}</span>}
+                    />
                   </GridListTile>
                 ))}
               </GridList>
@@ -275,7 +451,7 @@ function RefineOrbitAsteroid({ setTitle, match }) {
           <Card>
             <CardHeader title="Inputs" />
 
-            <CardContent>
+            <CardContent className={classes.cardContentWrapper}>
               <CustomTable
                 columns={inputColumns}
                 data={inputTableData}
@@ -292,12 +468,11 @@ function RefineOrbitAsteroid({ setTitle, match }) {
           <Grid item lg={6} className={classes.block}>
             <Card>
               <CardHeader title="Results" />
-              <CardContent>
+              <CardContent className={classes.cardContentWrapper}>
                 <CustomTable
                   columns={resultColumns}
                   data={resultTableData}
-                  hasPagination
-                  pageSize={5}
+                  hasPagination={false}
                   hasSearching={false}
                   hasColumnVisibility={false}
                   hasToolbar={false}
@@ -308,6 +483,24 @@ function RefineOrbitAsteroid({ setTitle, match }) {
           </Grid>
         ) : null}
       </Grid>
+      <ModalGateway>
+        {lightbox.isOpen ? (
+          <Modal onClose={closeLightbox}>
+            <Carousel
+              views={charts}
+              currentIndex={lightbox.currentImage}
+              isOpen={lightbox.isOpen}
+              onClose={closeLightbox}
+              styles={{
+                container: () => ({
+                  maxWidth: drawerOpen ? 'calc(100% - 240px)' : 'calc(100% - 64px)',
+                  marginLeft: drawerOpen ? '240px' : '64px',
+                }),
+              }}
+            />
+          </Modal>
+        ) : null}
+      </ModalGateway>
     </>
   );
 }
@@ -319,6 +512,7 @@ RefineOrbitAsteroid.propTypes = {
     }).isRequired,
   }).isRequired,
   setTitle: PropTypes.func.isRequired,
+  drawerOpen: PropTypes.bool.isRequired,
 };
 
-export default RefineOrbitAsteroid;
+export default withRouter(RefineOrbitAsteroid);

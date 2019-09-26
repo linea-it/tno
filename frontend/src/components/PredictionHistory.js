@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import Table from "../components/utils/CustomTable";
-import { getPredictionRuns } from '../api/Prediction';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
+import Table from './utils/CustomTable';
+import { getPredictionRuns } from '../api/Prediction';
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
@@ -63,8 +63,8 @@ function PredictionHistory() {
 
   const loadData = (page, sizePerPage) => {
     getPredictionRuns({
-      page: page,
-      sizePerPage: sizePerPage
+      page,
+      sizePerPage,
     }).then((res) => {
       console.log(res);
       setTablevalues({
@@ -73,16 +73,9 @@ function PredictionHistory() {
         loading: false,
         // sortField: sortField,
         // sortOrder:sortOrder,
-      }
-      );
-
+      });
     });
-
-
   };
-
-
-
 
 
   useEffect(() => {
@@ -90,14 +83,14 @@ function PredictionHistory() {
   }, []);
 
 
-  tableValues.data ? console.log("Data") : console.log("Not yet");
+  tableValues.data ? console.log('Data') : console.log('Not yet');
 
 
-  //Columns of the table HISTORY
+  // Columns of the table HISTORY
   const tableColumns = [
     {
-      name: "status",
-      title: "Status",
+      name: 'status',
+      title: 'Status',
 
       customElement: (row) => {
         if (row.status === 'running') {
@@ -107,7 +100,7 @@ function PredictionHistory() {
               title={row.status}
             >
               Running
-          </span>
+            </span>
           );
         }
         return (
@@ -116,16 +109,16 @@ function PredictionHistory() {
             title={row.status}
           >
             Success
-        </span>
+          </span>
         );
-      }
+      },
     },
-    { name: "process_displayname", title: "Process" },
-    { name: "owner", title: "Owner" },
-    { name: "start_time", title: "Date" },
-    { name: "h_time", title: "Start" },
-    { name: "h_execution_time", title: "Execution Time" },
-    { name: "count_objects", title: "Asteroids" },
+    { name: 'process_displayname', title: 'Process' },
+    { name: 'owner', title: 'Owner' },
+    { name: 'start_time', title: 'Date' },
+    { name: 'h_time', title: 'Start' },
+    { name: 'h_execution_time', title: 'Execution Time' },
+    { name: 'count_objects', title: 'Asteroids' },
 
   ];
 
@@ -134,16 +127,12 @@ function PredictionHistory() {
     <div>
       <Table
         data={tableValues.data ? tableValues.data : []}
-        columns={tableColumns}  >
-
-
-      </Table>
+        columns={tableColumns}
+      />
 
     </div>
 
   );
-
-
 }
 
 export default (PredictionHistory);

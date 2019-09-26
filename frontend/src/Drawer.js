@@ -392,7 +392,7 @@ function MiniDrawer() {
           <main className={classes.content}>
             <Route exact path="/refine-orbit" render={(props) => <RefineOrbit {...props} setTitle={setTitle} />} />
             <Route exact path="/refine-orbit/:id" render={(props) => <RefineOrbitDetail {...props} setTitle={setTitle} />} />
-            <Route exact path="/refine-orbit/asteroid/:id" render={(props) => <RefineOrbitAsteroid {...props} setTitle={setTitle} />} />
+            <Route exact path="/refine-orbit/asteroid/:id" render={(props) => <RefineOrbitAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
             <Route exact path="/prediction-of-occultation" render={(props) => <PredictionOccultation {...props} setTitle={setTitle} />} />
             {/* <Route exact path="/prediction-detail/:id" render={(props) => <PredictionDetail {...props} setTitle={setTitle} />} /> */}
             {/* <Route exact path="/predict-asteroid" render={(props) => <PredictAsteroid {...props} setTitle={setTitle} />} /> */}
@@ -400,8 +400,8 @@ function MiniDrawer() {
             <Route exact path="/prediction-of-occultation/:id" render={(props) => <PredictionOccultationDetail {...props} setTitle={setTitle} />} />
             <Route exact path="/prediction-of-occultation/asteroid/:id" render={(props) => <PredictionOccultationAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
             <Route exact path="/occultation-calendar" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
-            <Route exact path="/test-calendar/:id/:date/:view/:flag" render={(props) => <TestCalendar {...props} setTitle={setTitle} />} />
-            <Route exact path="/occultation-calendar-back/:id/:date/:view/" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
+            <Route exact path="/test-calendar/:id/:date/:view/:flag/:sDate/:fDate" render={(props) => <TestCalendar {...props} setTitle={setTitle} />} />
+            <Route exact path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
 
           </main>
           <Footer drawerOpen={open} />

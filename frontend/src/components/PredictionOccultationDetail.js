@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardContent,
 } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import moment from 'moment';
 import { getPredictionRunById, getTimeProfile, getAsteroids } from '../api/Prediction';
@@ -15,7 +16,13 @@ import CustomTable from './utils/CustomTable';
 import CustomList from './utils/CustomList';
 import { Donut, TimeProfile } from './utils/CustomChart';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
+  button: {
+    margin: theme.spacing(1),
+  },
+  buttonIcon: {
+    margin: '0 2px',
+  },
   arrowBack: {
     fontSize: 9,
   },
@@ -59,7 +66,7 @@ const useStyles = makeStyles({
   tableWrapper: {
     maxWidth: '100%',
   },
-});
+}));
 
 function PredictionOccultationDetail({ history, match, setTitle }) {
   const classes = useStyles();
@@ -67,7 +74,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   const [list, setList] = useState([]);
   const [statusDonutData, setStatusDonutData] = useState([]);
   const [executionTimeDonutData, setExecutionTimeDonutData] = useState([]);
-  const [timeProfile, setTimeProfile] = useState([]);
+  const [timeProfile, setTimeProfile] = useState({});
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const pageSizes = [5, 10, 15];
@@ -142,7 +149,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       width: 140,
     },
     {
-      name: 'execution_time',
+      name: 'h_execution_time',
       title: 'Execution Time',
       width: 140,
     },
@@ -256,7 +263,10 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       ]);
     });
 
-    getTimeProfile({ id }).then((res) => setTimeProfile(res));
+    getTimeProfile({ id }).then((res) => {
+      console.log(res);
+      setTimeProfile(res);
+    });
   }, []);
 
   const loadTableData = async ({
@@ -284,9 +294,29 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     }
   };
 
+  const handleBackNavigation = () => history.push('/prediction-of-occultation');
 
   return (
     <>
+      <Grid
+        container
+        justify="space-between"
+        alignItems="center"
+        spacing={2}
+      >
+        <Grid item xs={12} md={4}>
+          <Button
+            variant="contained"
+            color="primary"
+            title="Back"
+            className={classes.button}
+            onClick={handleBackNavigation}
+          >
+            <i className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+            <span>Back</span>
+          </Button>
+        </Grid>
+      </Grid>
       <Grid container spacing={2}>
         <Grid item xs={12} md={3} className={classes.block}>
           <Card>
@@ -296,20 +326,22 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} md={9} className={classes.block}>
-          <Card>
-            <CardHeader
-              title="Time Profile"
-            />
-            <CardContent>
-              <TimeProfile
-                width={773}
-                height={363}
-                data={timeProfile}
+        {Object.entries(timeProfile).length > 0 ? (
+          <Grid item xs={12} md={9} className={classes.block}>
+            <Card>
+              <CardHeader
+                title="Time Profile"
               />
-            </CardContent>
-          </Card>
-        </Grid>
+              <CardContent>
+                <TimeProfile
+                  width={773}
+                  height={363}
+                  data={timeProfile}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+        ) : null}
       </Grid>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6} className={classes.block}>
