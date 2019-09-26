@@ -324,8 +324,8 @@ function PredictionOccultation({ history, setTitle }) {
 
 
   // If inputArray state is changed so hit the function useEffect
-  // This is important to set first state case the user hit the submit button
-  // Avoid error in case of user hit the submit button without choose any option
+  // This is important to set first state case the user hits the submit button
+  // Avoid error in case of user hits the submit button without choose any option
   // useEffect(() => {
   //   if (inputArray[0]) {
   //     setValueSubmition({
