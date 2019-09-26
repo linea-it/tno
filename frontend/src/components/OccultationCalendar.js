@@ -13,7 +13,8 @@ import { getOccultations, getCalendarEvents } from '../api/Prediction';
 // import '../assets/css/occultationCalendar.css';
 import moment from 'moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { relative } from 'path';
+import AppBar from './AppBarCalendario';
+
 
 
 
@@ -44,12 +45,16 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   const [paramsInitialDate, setParamsInitialDate] = useState(null);
   const [paramsFinalDate, setParamsFinalDate] = useState(null);
   const [loading, setLoading] = useState(false);
-
-
+  const [eventColorBlue, setEventColorBlue] = useState();
+  const [eventColor, setEventColor] = useState();
 
 
 
   const classes = useStyles();
+
+
+
+  const search = null;
 
 
   const loadData = () => {
@@ -65,9 +70,17 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
       let data = res.data.results;
       let result = [];
 
-      data.map((resp, idx) => {
 
-        result.push({ id: resp.id, title: resp.asteroid_name, date: resp.date_time, textColor: "white" });
+      data.map((resp, idx) => {
+        console.log();
+        result.push({
+          id: resp.id,
+          title: resp.asteroid_name,
+          date: resp.date_time,
+          textColor: "white",
+          backgroundColor: resp.asteroid_name.includes(search) || ((resp.asteroid_name).toLowerCase()).includes(search) ? 'green' : ''
+        });
+
       });
 
       setEvents(result);
@@ -126,13 +139,14 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   // }, [paramsInitialDate, paramsFinalDate]);
 
 
-
+  // const title = "oi";
+  // const search = "oi";
 
   // const events =
   //   [
-  //     { title: "2004 DA62 ", date: '2019-08-10 11:32:00', textColor: 'white', },
-  //     { title: "oi", date: '2019-08-12 17:30:00', textColor: 'white', backgroundColor: "green", icon: "asterisk" },
-  //     { title: "Event Test", date: '2019-09-16 17:30:00', textColor: 'white', backgroundColor: "green", icon: "asterisk" },
+  //     // { title: "2004 DA62 ", date: '2019-09-10 11:32:00', textColor: 'white', },
+  //     { title: "oi", date: '2019-09-12 17:30:00', textColor: 'white', backgroundColor: title === search ? 'green' : 'blue', icon: "asterisk" },
+  //     { title: "Event Test", date: '2019-09-16 17:30:00', textColor: 'white', backgroundColor: title === search ? 'green' : 'blue', icon: "asterisk" },
   //   ]
 
   const header = {
@@ -146,8 +160,42 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
 
   const handleDateRender = (arg) => {
-    let start_date = moment(arg.view.currentStart).format("YYYY-MM-DD");
-    let end_date = moment(arg.view.currentEnd).subtract(1, 'days').format("YYYY-MM-DD");
+
+    let start_date = null;
+    let end_date = null;
+
+
+
+    // if (arg.view.type === "listYear") {
+    //   setEvents([]);
+    // }
+
+
+    start_date = moment(arg.view.currentStart).format("YYYY-MM-DD");
+    end_date = moment(arg.view.currentEnd).format("YYYY-MM-DD");
+
+
+    // console.log(arg.view.type);
+
+
+    //     //Houve um problema de visualização quando o usuário clicava na aba day.
+    //     //Por isso foi necessário esse if
+    //     //O problema foi que como o valor dinâmico do calendário sempre vem um dia a mais,
+    //     //tenho preciso tirar um dia(subtract(1,'days')). Porém quando clica na aba day esse gera um pro-
+    //     //blema de visualização.
+    //     if (arg.view.type === "dayGridDay") {
+    //       start_date = moment(arg.view.currentStart).format("YYYY-MM-DD");
+    //       end_date = moment(arg.view.currentEnd).format("YYYY-MM-DD");
+    //     } else {
+    //       start_date = moment(arg.view.currentStart).format("YYYY-MM-DD");
+    //       end_date = moment(arg.view.currentEnd).subtract(1, 'days').format("YYYY-MM-DD");
+    //     }
+
+
+
+
+
+
 
 
     //Um problema que surgiu nesta página foi o seguinte: 
@@ -166,7 +214,6 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
     setInitialDate(start_date);
     setFinalDate(end_date);
-
 
 
 
@@ -207,11 +254,20 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     const time = moment(event.event.start).format('H');
 
     if (time >= 18) {
-      event.el.innerHTML = event.el.innerHTML + "<i id='sol_lua' class='far fa-moon'></i>";
+      event.el.innerHTML = event.el.innerHTML + "<i id='sol_lua' class='fas fa-moon'></i>";
     } else {
-      event.el.innerHTML = event.el.innerHTML + "<i id='sol_lua' class='far fa-sun'></i>";
+      event.el.innerHTML = event.el.innerHTML + "<i id='sol_lua' class='fas fa-sun'></i>";
     }
 
+
+
+    if (event.el.innerText === "5:30p vent Test") {
+      setEventColor('green');
+
+
+    } else {
+      setEventColor();
+    }
 
 
   };
@@ -228,7 +284,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
       {loading && <CircularProgress size={100} thickness={0.8} className={classes.loading} color="secundary" ></CircularProgress>}
 
-
+      <AppBar />
       <FullCalendar
         header={header}
         events={events}
