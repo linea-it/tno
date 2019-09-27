@@ -47,13 +47,12 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   const [initialDate, setInitialDate] = useState(params.sDate ? params.sDate : moment(new Date()).startOf('month').format('YYYY-MM-DD'));
   const [finalDate, setFinalDate] = useState(moment(new Date()).endOf('month').format('YYYY-MM-DD'));
   const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState();
+  const [search, setSearch] = useState(params.searching ? params.searching : "");
   const [hasSearch, setHasSearch] = useState(false);
-
+  const [event, setEvent] = useState(params.event ? params.event : "");
 
 
   const classes = useStyles();
-
 
 
   const loadData = () => {
@@ -276,8 +275,11 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     let flag = "calendar";
     let sDate = initialDate;
     let fDate = finalDate;
+    let searching = search;
 
-    history.push(`/test-calendar/${id}/${date}/${view}/${flag}/${sDate}/${fDate}`);
+
+
+    history.push(`/test-calendar/${id}/${date}/${view}/${flag}/${sDate}/${fDate}/${searching}`);
 
 
   };
@@ -302,7 +304,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
     <div>
 
-      {loading && <CircularProgress size={100} thickness={0.8} className={classes.loading} color="black" ></CircularProgress>}
+      {loading && <CircularProgress size={100} thickness={0.8} className={classes.loading} ></CircularProgress>}
 
       <AppBar setSearch={setSearch} setHasSearch={setHasSearch} />
 

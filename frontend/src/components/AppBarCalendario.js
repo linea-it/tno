@@ -60,9 +60,14 @@ export default function PrimarySearchAppBar({ setSearch, setHasSearch }) {
 
   const handleChange = (event) => {
     let fetch = event.target.value;
-    setSearch(fetch === "" ? null : fetch);
+    setSearch(fetch === "" ? "" : fetch);
     setHasSearch(true);
+
   }
+
+
+
+
 
 
   return (
