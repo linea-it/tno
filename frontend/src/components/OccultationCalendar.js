@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useLayoutEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react';
 import DayGridPlugin from '@fullcalendar/daygrid';
@@ -7,14 +7,11 @@ import ListPlugin from '@fullcalendar/list';
 import '@fullcalendar/core/main.css';
 import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/list/main.css';
-import occultationData from '../assets/occultation_calendar_data';
 import { makeStyles } from '@material-ui/core/styles';
-import { getOccultations, getCalendarEvents } from '../api/Prediction';
-// import '../assets/css/occultationCalendar.css';
+import { getCalendarEvents } from '../api/Prediction';
 import moment from 'moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import AppBar from './AppBarCalendario';
-
 
 
 
@@ -28,6 +25,16 @@ const useStyles = makeStyles(theme => ({
     right: 0,
     zIndex: 100,
   },
+
+  label: {
+    float: "right",
+  },
+  labelBlue: {
+    color: "#3788D8",
+  },
+  labelGreen: {
+    color: "#008000",
+  },
 }));
 
 
@@ -36,17 +43,12 @@ const useStyles = makeStyles(theme => ({
 function OccultationCalendar({ history, setTitle, match: { params } }) {
 
 
-
   const [events, setEvents] = useState([]);
-  // const [initialDate, setInitialDate] = useState(moment(new Date()).format("YYYY-MM-DD"));
-  // const [finalDate, setFinalDate] = useState(moment(new Date()).format("YYYY-MM-DD"));
   const [initialDate, setInitialDate] = useState(params.sDate ? params.sDate : moment(new Date()).startOf('month').format('YYYY-MM-DD'));
   const [finalDate, setFinalDate] = useState(moment(new Date()).endOf('month').format('YYYY-MM-DD'));
-  const [paramsInitialDate, setParamsInitialDate] = useState(null);
-  const [paramsFinalDate, setParamsFinalDate] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [eventColorBlue, setEventColorBlue] = useState();
-  const [eventColor, setEventColor] = useState();
+  const [search, setSearch] = useState();
+  const [hasSearch, setHasSearch] = useState(false);
 
 
 
@@ -54,43 +56,43 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
 
 
-  const search = null;
-
-
   const loadData = () => {
 
 
 
-    setLoading(true);
-
-    getCalendarEvents({ initialDate, finalDate }).then((res) => {
-
-
-
-      let data = res.data.results;
-      let result = [];
+    if (search && search.length > 0) {
+      loadSearch()
+    } else {
 
 
-      data.map((resp, idx) => {
-        console.log();
-        result.push({
-          id: resp.id,
-          title: resp.asteroid_name,
-          date: resp.date_time,
-          textColor: "white",
-          backgroundColor: resp.asteroid_name.includes(search) || ((resp.asteroid_name).toLowerCase()).includes(search) ? 'green' : ''
+      setLoading(true);
+
+      getCalendarEvents({ initialDate, finalDate }).then((res) => {
+
+        let data = res.data.results;
+        let result = [];
+
+        data.map((resp, idx) => {
+
+          result.push({
+            id: resp.id,
+            title: resp.asteroid_name,
+            date: resp.date_time,
+            textColor: "white",
+            // backgroundColor: resp.asteroid_name.includes(search) || ((resp.asteroid_name).toLowerCase()).includes(search) ? 'green' : ''
+          });
+
         });
+
+        setEvents(result);
+
+        setLoading(false);
+
 
       });
 
-      setEvents(result);
 
-      setLoading(false);
-
-
-    });
-
-
+    }
 
     // getOccultations({ id: 10 }).then((res) => {
     //   console.log(res);
@@ -124,23 +126,45 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     loadData();
 
 
+
+
   }, [initialDate, finalDate]);
 
 
 
-  // useEffect(() => {
+  useEffect(() => {
+
+    // if (hasSearch && typeof search != "undefined") {
+    //   let data = events;
+    //   let result = [];
+
+    //   data.map((resp, idx) => {
+    //     result.push({
+    //       id: resp.id,
+    //       title: resp.title,
+    //       date: resp.date,
+    //       textColor: "white",
+    //       backgroundColor: resp.title.includes(search) || ((resp.title).toLowerCase()).includes(search) ? 'green' : ''
+    //     });
+
+    //   });
+
+    //   setEvents(result);
+    // }
 
 
 
-  //   setParamsInitialDate(null);
-  //   setParamsFinalDate(null);
+
+    if (hasSearch) {
+
+      loadSearch();
+    }
 
 
-  // }, [paramsInitialDate, paramsFinalDate]);
+  }, [search]);
 
 
-  // const title = "oi";
-  // const search = "oi";
+
 
   // const events =
   //   [
@@ -159,41 +183,57 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   }
 
 
+
+  const loadSearch = () => {
+
+    setLoading(true);
+
+    getCalendarEvents({ initialDate, finalDate }).then((res) => {
+
+      let data = res.data.results;
+      let result = [];
+
+      data.map((resp, idx) => {
+
+        if (resp.asteroid_name.includes(search) || ((resp.asteroid_name).toLowerCase()).includes(search)) {
+          result.push({
+            id: resp.id,
+            title: resp.asteroid_name,
+            date: resp.date_time,
+            textColor: "white",
+            // backgroundColor: resp.asteroid_name.includes(search) || ((resp.asteroid_name).toLowerCase()).includes(search) ? 'green' : ''
+          });
+        }
+
+      });
+
+      if (!search) {
+
+        loadData();
+      }
+
+      setEvents(result);
+
+      setLoading(false);
+
+    });
+  };
+
+
+
   const handleDateRender = (arg) => {
 
     let start_date = null;
     let end_date = null;
 
 
-
-    // if (arg.view.type === "listYear") {
-    //   setEvents([]);
-    // }
-
-
     start_date = moment(arg.view.currentStart).format("YYYY-MM-DD");
     end_date = moment(arg.view.currentEnd).format("YYYY-MM-DD");
 
 
-    // console.log(arg.view.type);
-
-
-    //     //Houve um problema de visualização quando o usuário clicava na aba day.
-    //     //Por isso foi necessário esse if
-    //     //O problema foi que como o valor dinâmico do calendário sempre vem um dia a mais,
-    //     //tenho preciso tirar um dia(subtract(1,'days')). Porém quando clica na aba day esse gera um pro-
-    //     //blema de visualização.
-    //     if (arg.view.type === "dayGridDay") {
-    //       start_date = moment(arg.view.currentStart).format("YYYY-MM-DD");
-    //       end_date = moment(arg.view.currentEnd).format("YYYY-MM-DD");
-    //     } else {
-    //       start_date = moment(arg.view.currentStart).format("YYYY-MM-DD");
-    //       end_date = moment(arg.view.currentEnd).subtract(1, 'days').format("YYYY-MM-DD");
-    //     }
-
-
-
-
+    // if (arg.view.type === "listYear") {
+    //   setEvents([]);
+    // }
 
 
 
@@ -216,8 +256,6 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     setFinalDate(end_date);
 
 
-
-
   }
 
 
@@ -228,7 +266,6 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     month: 'month',
 
   }
-
 
 
 
@@ -259,36 +296,19 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
       event.el.innerHTML = event.el.innerHTML + "<i id='sol_lua' class='fas fa-sun'></i>";
     }
 
-
-
-    if (event.el.innerText === "5:30p vent Test") {
-      setEventColor('green');
-
-
-    } else {
-      setEventColor();
-    }
-
-
   };
-
-
-
-
 
   return (
 
     <div>
 
+      {loading && <CircularProgress size={100} thickness={0.8} className={classes.loading} color="black" ></CircularProgress>}
 
+      <AppBar setSearch={setSearch} setHasSearch={setHasSearch} />
 
-      {loading && <CircularProgress size={100} thickness={0.8} className={classes.loading} color="secundary" ></CircularProgress>}
-
-      <AppBar />
       <FullCalendar
         header={header}
         events={events}
-
 
         //params.date is coming back from occulation. 
         //It's being used to maintain data that went from calendar to occultation.
@@ -296,9 +316,8 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
         // 1 -User chooses an event. 
         // 2- The specific data goes to occultation.
         // 3 - On occultation screen user click on back button.
-        // 4 - When back, data comes inside params props.(params are internal(invisible operation));   
+        // 4 - When back, data comes inside params props.(params are internal(internal operation));   
         defaultDate={params.sDate ? params.sDate : initialDate}
-
 
         eventClick={handleEvent}
         buttonText={buttonText}
@@ -311,11 +330,10 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
 
       />
-    </div>
+    </div >
 
   );
 
 }
-
 
 export default withRouter(OccultationCalendar);
