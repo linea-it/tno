@@ -3,6 +3,14 @@ import axios from 'axios';
 const url = 'http://tno-testing.linea.gov.br/api';
 axios.defaults.baseURL = url;
 
+
+export const getListsByStatus = ({ status, search }) =>
+  axios.get(`customlist/`, {
+    params: { status: status, search: search },
+  });
+
+
+
 export const getPraiaRuns = ({
   page, pageSize, ordering, filters = [],
 }) => {
@@ -102,7 +110,7 @@ export const checkJobStatus = () => axios.get('teste/');
 
 export const getCSV = (filepath, page, pageSize) => axios.get(
   `${
-    this.api
+  this.api
   }/read_csv?filepath=${filepath}&page=${page}&pageSize=${pageSize}`,
 );
 
