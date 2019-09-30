@@ -1,8 +1,5 @@
 import React from 'react';
-import clsx from 'clsx';
-import { fade, makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
+import { makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import { TextField } from '@material-ui/core';
 
