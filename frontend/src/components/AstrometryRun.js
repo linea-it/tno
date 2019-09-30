@@ -47,8 +47,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
 
 
 
-
-
   const listStatus = [
     { title: "Status", value: runData.status },
     { title: "Process", value: runData.id },
@@ -93,6 +91,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
             />
 
             <ListStat
+            
               data={listStatus}
             >
 
@@ -112,8 +111,8 @@ function AstrometryRun({ setTitle, match: { params } }) {
             <Donut
 
               data={donutDataStatist}
-            >
 
+            >
             </Donut>
 
           </Card>
