@@ -21,8 +21,7 @@ export const createPredictRun = ({
   ephemeris_initial_date,
   ephemeris_final_date,
   ephemeris_step,
-
-}) => axios.post('/predict_run', {
+}) => axios.post('/predict_run/', {
   process,
   input_list,
   input_orbit,
@@ -34,7 +33,6 @@ export const createPredictRun = ({
   ephemeris_final_date,
   ephemeris_step,
 });
-
 
 export const getPrediction = () => axios.get('/orbit_run/?status=success').then((res) => res.data);
 
@@ -61,7 +59,7 @@ export const predictReRun = ({ id }) => axios.patch(`/predict_run/${id}/`, {
   status: 'pending',
 });
 
-export const getPredictionRunById = ({ id }) => axios.patch(`/predict_run/${id}/`).then((res) => res.data);
+export const getPredictionRunById = ({ id }) => axios.get(`/predict_run/${id}/`).then((res) => res.data);
 
 export const getTimeProfile = ({ id }) => {
   const params = {
@@ -69,22 +67,45 @@ export const getTimeProfile = ({ id }) => {
   };
   return axios.get('/predict_run/get_time_profile/', {
     params,
+  }).then((res) => res.data.data);
+};
+
+
+
+export const getCalendarEvents = ({ initialDate, finalDate }) => {
+  return axios.get(`/occultation/?date_time__range=${initialDate},${finalDate}&pageSize=3000`)
+    .then((res) => {
+      return res;
+    });
+};
+
+export const getOccultations = ({ id }) => {
+  const params = {
+    asteroid: id,
+  };
+  return axios.get('/occultation/', {
+    params,
   }).then((res) => res.data);
 };
 
+
+
 export const getAsteroids = ({
   page,
-  sizePerPage,
+  pageSize,
   sortField,
   sortOrder,
   filters = [],
+  search,
 }) => {
   let ordering = sortField;
   if (sortOrder === -1) {
     ordering = `-${sortField}`;
   }
 
-  const params = { page, pageSize: sizePerPage, ordering };
+  const params = {
+    page, pageSize, search, ordering,
+  };
   filters.forEach((element) => {
     params[element.property] = element.value;
   });
@@ -103,10 +124,10 @@ export const getAsteroidNeighbors = ({ id }) => {
   }).then((res) => res.data);
 };
 
-export const getAsteroidDownloadLink = ({ asteroid_id, name, orbit_run }) => {
+export const getAsteroidDownloadLink = ({ id, name, orbit_run }) => {
   let params = { name, orbit_run };
-  if (asteroid_id) {
-    params = { asteroid_id };
+  if (id) {
+    params = { asteroid_id: id };
   }
 
   return axios.get('/predict_asteroid/download_results/', {
@@ -132,14 +153,6 @@ export const getAsteroidOutputs = ({ id }) => {
   }).then((res) => res.data);
 };
 
-export const getOccultations = ({ id }) => {
-  const params = {
-    asteroid: id,
-  };
-  return axios.get('/occultation/', {
-    params,
-  }).then((res) => res.data);
-};
 
 export const getCatalogPositions = ({ id }) => {
   const params = {
@@ -164,4 +177,7 @@ export const getCatalogStars = ({ id }) => {
 //   return axios.get(`/occultation/?asteroid=${asteroidId}`);
 // };
 
-export const getPredictionEvent = ({ asteroidId }) => axios.get(`http://tno-testing.linea.gov.br/api/occultation/?asteroid=${asteroidId}`).then((res) => res.data);
+export const getPredictionEvent = ({ asteroidId }) => axios.get(`/occultation/?asteroid=${asteroidId}`).then((res) => res.data);
+
+
+

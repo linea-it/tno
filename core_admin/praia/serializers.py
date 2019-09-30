@@ -173,15 +173,25 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
             'status',
             'error_msg',
             'ccd_images',
+            'available_ccd_image',
             'processed_ccd_image',
             'catalog_rows',
+            'outputs',
             'execution_time',
             'catalog_name',
             'h_execution_time',
             'astrometry_log',
             'condor_out_log',
             'condor_err_log',
-            'condor_log'
+            'condor_log',
+            'execution_ccd_list',
+            'execution_bsp_jpl',
+            'execution_reference_catalog',
+            'execution_header',
+            'execution_astrometry',
+            'execution_targets',
+            'execution_plots',
+            'execution_registry'
         )
 
     def get_proccess_displayname(self, obj):

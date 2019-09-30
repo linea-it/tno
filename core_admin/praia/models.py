@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from datetime import timedelta
 
 
 class Configuration(models.Model):
@@ -229,34 +230,52 @@ class AstrometryAsteroid(models.Model):
         null=True, blank=True,
     )
 
+    execution_ccd_list = models.DurationField(
+        verbose_name='Execution CCD List',
+        help_text='Time taken to retrieve list of asteroid-related ccds.',
+        null=True, blank=True, default=timedelta
+    )
+
+    execution_bsp_jpl = models.DurationField(
+        verbose_name='Execution Ephemeris JPL',
+        help_text='Time taken to retrieve Ephemeris from JPL.',
+        null=True, blank=True, default=timedelta
+    )
+
+    execution_reference_catalog = models.DurationField(
+        verbose_name='Execution Reference Catalog',
+        help_text='Time taken to query stars in Reference Catalog.',
+        null=True, blank=True, default=timedelta
+    )
+
     execution_header = models.DurationField(
         verbose_name='Execution Header Extraction',
-        null=True, blank=True
+        null=True, blank=True, default=timedelta
     )
 
     execution_astrometry = models.DurationField(
         verbose_name='Execution PRAIA Astrometry',
-        null=True, blank=True
+        null=True, blank=True, default=timedelta
     )
 
     execution_targets = models.DurationField(
         verbose_name='Execution PRAIA Targets',
-        null=True, blank=True
+        null=True, blank=True, default=timedelta
     )
 
     execution_plots = models.DurationField(
         verbose_name='Execution Plots',
-        null=True, blank=True
+        null=True, blank=True, default=timedelta
     )
 
     execution_registry = models.DurationField(
         verbose_name='Execution Registry',
-        null=True, blank=True
+        null=True, blank=True, default=timedelta
     )
 
     execution_time = models.DurationField(
         verbose_name='Execution Time',
-        null=True, blank=True
+        null=True, blank=True, default=timedelta
     )
 
     outputs = models.IntegerField(
@@ -300,7 +319,7 @@ class AstrometryInput(models.Model):
         help_text="Description of the input type.",
         choices=(
             ('ccd_images_list', 'CCD Images List'),
-            ('bsp_jpl', 'BSP JPL'),
+            ('bsp_jpl', 'Ephemeris JPL'),
             ('catalog', 'Reference Catalog')),
     )
 
@@ -372,10 +391,12 @@ class AstrometryOutput(models.Model):
             ('astrometry', 'Astrometry'),
             ('target_offset', 'Target Offset'),
             ('targets', 'Targets'),
+            ('targets_log', 'Target Search Log'),
             ('astrometric_results', 'Astrometric Results (xy)'),
             ('saoimage_region_file', 'SAO image region file'),
             ('mes', 'mes'),
             ('header_extraction', 'Header Extraction'),
+            ('header_extraction_log', 'Header Extraction Log'),
             ('ast_reduction', 'Astrometry Reduction'),
             ('ast_photometry', 'Astrometry Photometry'),
             ('astrometry_input', 'Astrometry Input'),

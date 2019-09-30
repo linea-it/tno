@@ -56,59 +56,40 @@ export default function SimpleSelect(props) {
     setDefaultValue(event.target.value);
 
 
+    let cases = event.currentTarget.getAttribute("case");
 
-    switch (event.currentTarget.title) {
+
+    // inputId: ,
+    //   refCatalogId: null,
+    //     configId: null,
+
+    switch (cases) {
       case "input":
-
-
-        props.setActionButton(false);
-
-        let process_id = event.currentTarget.getAttribute('process_id');
-        let orbit_input_list_id = event.currentTarget.getAttribute('orbit_input_list_id');
-        let orbit_run_id = event.currentTarget.getAttribute('orbit_run_id');
 
         props.setSubmition({
           ...props.valueSubmition,
-          processId: process_id,
-          orbit_run_input_list_id: orbit_input_list_id,
-          orbit_run_id: orbit_run_id,
-
+          inputId: event.currentTarget.id
 
         });
-
-
-
-        //Case 
 
         break;
 
       case "catalog":
-        let catalogId = event.currentTarget.id;
         props.setSubmition({
           ...props.valueSubmition,
-          catalogId: catalogId
+          refCatalogId: event.currentTarget.id
+
         });
 
-
         break;
 
-      case "leapSeconds":
-        let leapSecondsId = event.currentTarget.id;
+      case "configuration":
         props.setSubmition({
           ...props.valueSubmition,
-          leap_secondsId: leapSecondsId
+          configId: event.currentTarget.id
+
         });
-        break;
-
-      case "bspPlanetary":
-        let bsp_planetaryId = event.currentTarget.id;
-        props.setSubmition({
-          ...props.valueSubmition,
-          bsp_planetaryId: bsp_planetaryId
-        })
-        break;
     }
-
 
   }
 
@@ -116,8 +97,12 @@ export default function SimpleSelect(props) {
   const { title } = props;
 
   const loadMenuItems = () => {
-    // Receive the data from PredictionOccultation props.
+    // Receive the props data from Astrometry.
     const generalArray = props.data;
+
+    //Display shows the names of the list
+    //That is effectively shown on select
+    //This comes from the props.
     const { display } = props;
     const { value } = props;
 
@@ -126,37 +111,22 @@ export default function SimpleSelect(props) {
 
 
     if (generalArray && generalArray.length > 0) {
-      //Gera os itens de menus com 2 propriedades diferentes: input_list_id(Lista de objetos) e orbitRun_id
-      if (props.title === "input") {
 
-        return generalArray.map((el, i) => (
-          <MenuItem
-            key={i}
-            process_id={el.id}
-            orbit_input_list_id={el.input_list}
-            className={classes.MenuItem}
-            value={i == 0 ? '' : i}
-            orbit_run_id={el.proccess}
-            title={props.title}
-          >
-            {eval(display)}
-          </MenuItem>
-        ));
-      }
-      else {
+      return generalArray.map((el, i) => (
 
-        return generalArray.map((el, i) => (
-          <MenuItem
-            key={i}
-            id={el.id}
-            className={classes.MenuItem}
-            value={i}
-            title={props.title}
-          >
-            {eval(display)}
-          </MenuItem>
-        ));
-      }
+        <MenuItem
+          key={i}
+          id={el.id}
+          className={classes.MenuItem}
+          value={i}
+          title={props.title}
+          case={props.case}
+        >
+          {eval(display)}
+
+        </MenuItem>
+      ));
+
     }
   };
 
