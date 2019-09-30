@@ -124,10 +124,10 @@ export const getAsteroidNeighbors = ({ id }) => {
   }).then((res) => res.data);
 };
 
-export const getAsteroidDownloadLink = ({ asteroid_id, name, orbit_run }) => {
+export const getAsteroidDownloadLink = ({ id, name, orbit_run }) => {
   let params = { name, orbit_run };
-  if (asteroid_id) {
-    params = { asteroid_id };
+  if (id) {
+    params = { asteroid_id: id };
   }
 
   return axios.get('/predict_asteroid/download_results/', {

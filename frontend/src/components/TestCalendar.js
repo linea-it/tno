@@ -3,10 +3,6 @@ import { withRouter } from 'react-router-dom';
 
 function TestCalendar({ history, match: { params } }) {
 
-
-
-
-
   const [values, setValues] = useState({
     id: null,
     date: null,
@@ -15,8 +11,6 @@ function TestCalendar({ history, match: { params } }) {
     sDate: null, //Start Date
     fDate: null, //Final Date
     searching: "",
-
-
   });
 
 
@@ -29,16 +23,18 @@ function TestCalendar({ history, match: { params } }) {
       sDate: params.sDate,
       fDate: params.fDate,
       searching: params.searching,
-
-
-
     });
-
-
   }, []);
 
 
+  const handleClick = () => {
 
+    if (values.flag === "calendar") {
+      history.push(`/occultation-calendar-back/${values.id}/${values.date}/${values.view}/${values.sDate}/${values.fDate}`);
+    } else {
+      console.log("Occultation");
+    }
+  };
 
   const handleClick = () => {
 
@@ -52,17 +48,12 @@ function TestCalendar({ history, match: { params } }) {
 
 
   return (
-
     <div>
       <button onClick={handleClick}>
         Back
       </button>
     </div>
-
   );
-
-
 }
 
 export default withRouter(TestCalendar);
-
