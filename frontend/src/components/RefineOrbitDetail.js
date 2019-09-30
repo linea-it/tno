@@ -240,7 +240,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
                 className={clsx(classes.btn, classes.btnSuccess)}
                 title={data.status}
               >
-                  Success
+                Success
               </span>
             );
           },
