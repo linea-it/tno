@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Grid, Card, CardHeader, makeStyles } from '@material-ui/core';
 import ListStat from './utils/CustomList';
 import { Donut } from './utils/CustomChart';
+import { getPraiaRunById } from '../api/Praia';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -18,65 +19,81 @@ function AstrometryRun({ setTitle, match: { params } }) {
 
   const classes = useStyles();
 
+
+  const [runData, setRunData] = useState({});
+
+
   useEffect(() => {
     setTitle("Astrometry Run");
   }, []);
 
 
 
-  const runId = params ? params.id : "id";
+  const runId = params.id ? params.id : "2";
+
+
+
+  useLayoutEffect(() => {
+
+
+    getPraiaRunById({ id: runId }).then((res) => {
+
+      setRunData(res.data);
+      console.log(res.data);
+
+    });
+
+  }, [])
+
+
 
 
 
   const listStatus = [
-    { title: "Status", value: "value" },
-    { title: "Process", value: "value" },
-    { title: "Process Name", value: "value" },
-    { title: "Owner", value: "value" },
-    { title: "Start", value: "value" },
-    { title: "Execution", value: "value" },
-    { title: "Asteroids", value: "value" },
-    { title: "Reference Catalog", value: "value" },
+    { title: "Status", value: runData.status },
+    { title: "Process", value: runData.id },
+    { title: "Process Name", value: runData.input_displayname },
+    { title: "Owner", value: runData.owner },
+    { title: "Start", value: runData.h_time },
+    { title: "Execution", value: runData.h_execution_time },
+    { title: "Asteroids", value: runData.count_objects },
+    { title: "Reference Catalog", value: runData.catalog_name },
   ]
 
 
   const donutDataStatist = [
-    { name: "Success", value: " value" },
-    { name: "Warning", value: " value" },
-    { name: "Failure", value: " value" },
-    { name: "Not Executed", value: " value" },
-    { name: "Running/Idle", value: " value" },
+    { name: "Success", value: 12 },
+    { name: "Warning", value: 5 },
+    { name: "Failure", value: 0 },
+    { name: "Not Executed", value: 20 },
+    { name: "Running/Idle", value: 8 },
   ]
 
-  const donutColorsStatistic = [
-    '#1D3747', '#305D78', '#89C8F7', '#A8D7FF', '#A8D7FF'
-  ];
 
 
   const donutDataExecutionTime = [
-    { name: "Ccd Images", value: "value" },
-    { name: "Bsp_Jpl", value: "value" },
-    { name: "Catalog", value: "value" },
-    { name: "Astrometry", value: "value" },
+    { name: "Ccd Images", value: 2 },
+    { name: "Bsp_Jpl", value: 4 },
+    { name: "Catalog", value: 5 },
+    { name: "Astrometry", value: 7 },
   ];
 
-  const donutColorExecutionTime = [
-    '#1D3747', '#305D78', '#89C8F7', '#A8D7FF'
-  ];
+
 
   return (
 
     <div>
 
-      <Grid container spacing={6}>
+      <Grid container spacing={2}>
 
-        <Grid item sm={4} xl={4}>
+        <Grid item xs={12} md={6} xl={4}>
           <Card>
             <CardHeader
               title={`Astrometry - ${runId} `}
             />
+
             <ListStat
-              list={listStatus}
+              data={listStatus}
             >
 
             </ListStat>
@@ -85,44 +102,47 @@ function AstrometryRun({ setTitle, match: { params } }) {
 
 
         </Grid>
-        <Grid item sm={4} xl={4}>
+
+        <Grid item xs={12} md={6} xl={4}>
           <Card className={classes.card}>
             <CardHeader
               title={"Execution Statistics  "}
             />
 
             <Donut
+
               data={donutDataStatist}
-              fill={donutColorsStatistic}
             >
 
             </Donut>
 
           </Card>
 
-          <Card>
+
+        </Grid >
+
+        <Grid item xs={12} md={6} xl={4}>
+          <Card className={classes.card}>
             <CardHeader
-              title={"Execution Time  "}
+              title={"Execution Statistics  "}
             />
 
             <Donut
+
               data={donutDataExecutionTime}
-              fill={donutColorExecutionTime}
             >
 
             </Donut>
 
-
           </Card>
 
 
-        </Grid>
+        </Grid >
 
-      </Grid>
+      </Grid >
 
 
-
-      <Grid container spacing={6}>
+      <Grid container spacing={2}>
 
         <Grid item sm={12} xl={12}>
           <Card className={classes.card}>
@@ -135,13 +155,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
       </Grid>
 
     </div >
-
-
-
-
-
-
-
 
   );
 };
