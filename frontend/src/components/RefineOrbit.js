@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   btn: {
     textTransform: 'none',
     padding: '1px 5px',
-    width: '5em',
+    width: '7em',
     minHeight: '1em',
     display: 'block',
     textAlign: 'center',
@@ -52,6 +52,14 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ffba01',
     color: '#000',
   },
+  btnNotExecuted: {
+    backgroundColor: '#ABA6A2',
+    color: '#fff',
+  },
+  btnWarning: {
+    backgroundColor: '#D79F15',
+    color: '#FFF',
+  },
   input: {
     margin: 0,
   },
@@ -60,6 +68,9 @@ const useStyles = makeStyles((theme) => ({
   },
   iconDetail: {
     fontSize: 18,
+  },
+  tableWrapper: {
+    maxWidth: '100%',
   },
 }));
 
@@ -76,7 +87,7 @@ function RefineOrbit({ history, setTitle }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}
-              title={row.status}
+              title={row.error_msg}
             >
               Failure
             </span>
@@ -90,7 +101,26 @@ function RefineOrbit({ history, setTitle }) {
               Running
             </span>
           );
+        } if (row.status === 'not_executed') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnNotExecuted)}
+              title={row.error_msg}
+            >
+              Not Executed
+            </span>
+          );
+        } if (row.status === 'warning') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnWarning)}
+              title={row.error_msg ? row.error_msg : 'Warning'}
+            >
+              Warning
+            </span>
+          );
         }
+
         return (
           <span
             className={clsx(classes.btn, classes.btnSuccess)}
@@ -122,7 +152,7 @@ function RefineOrbit({ history, setTitle }) {
       width: 140,
     },
     {
-      name: 'execution_time',
+      name: 'h_execution_time',
       title: 'Execution Time',
       width: 140,
     },
@@ -193,9 +223,7 @@ function RefineOrbit({ history, setTitle }) {
       input_list: select.input_list,
       proccess: select.proccess,
     })
-      .then((res) => {
-        setReload(!reload);
-      })
+      .then(() => setReload(!reload))
       .catch((error) => {
         console.error(error);
       });
@@ -231,7 +259,7 @@ function RefineOrbit({ history, setTitle }) {
         </Card>
       </Grid>
 
-      <Grid>
+      <Grid className={clsx(classes.block, classes.tableWrapper)}>
         <Card>
           <CardHeader
             title={<span>History</span>}
@@ -245,6 +273,7 @@ function RefineOrbit({ history, setTitle }) {
               totalCount={totalCount}
               defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
               reload={reload}
+              hasSearching={false}
             />
           </CardContent>
         </Card>

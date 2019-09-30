@@ -56,52 +56,53 @@ export default function SimpleSelect(props) {
     setDefaultValue(event.target.value);
 
 
-    switch (event.currentTarget.title) {
-      case 'input':
+    let cases = event.currentTarget.getAttribute("case");
 
 
-        props.setActionButton(false);
+    // inputId: ,
+    //   refCatalogId: null,
+    //     configId: null,
 
-        const process_id = event.currentTarget.getAttribute('process_id');
-        const orbit_input_list_id = event.currentTarget.getAttribute('orbit_input_list_id');
-        const orbit_run_id = event.currentTarget.getAttribute('orbit_run_id');
+    switch (cases) {
+      case "input":
 
         props.setSubmition({
           ...props.valueSubmition,
-          processId: process_id,
-          orbit_run_input_list_id: orbit_input_list_id,
-          orbit_run_id,
-
+          inputId: event.currentTarget.id
 
         });
 
+        break;
 
-        // Case
+      case "catalog":
+        props.setSubmition({
+          ...props.valueSubmition,
+          refCatalogId: event.currentTarget.id
+
+        });
 
         break;
 
-      case 'catalog':
-        const catalogId = event.currentTarget.id;
-        props.setSubmition({ catalogId });
+      case "configuration":
+        props.setSubmition({
+          ...props.valueSubmition,
+          configId: event.currentTarget.id
 
-        break;
-
-      case 'leapSeconds':
-        console.log('leapSeconds');
-        break;
-
-      case 'bspPlanetary':
-        console.log('bspPlanetary');
-        break;
+        });
     }
+
   }
 
   const { formControl } = useStyles(props);
   const { title } = props;
 
   const loadMenuItems = () => {
-    // Receive the data from PredictionOccultation props.
+    // Receive the props data from Astrometry.
     const generalArray = props.data;
+
+    //Display shows the names of the list
+    //That is effectively shown on select
+    //This comes from the props.
     const { display } = props;
     const { value } = props;
 
@@ -110,35 +111,22 @@ export default function SimpleSelect(props) {
 
 
     if (generalArray && generalArray.length > 0) {
-      // Gera os itens de menus com 2 propriedades diferentes: input_list_id(Lista de objetos) e orbitRun_id
-      if (props.title === 'input') {
-        return generalArray.map((el, i) => (
-          <MenuItem
-            key={i}
-            process_id={el.id}
-            orbit_input_list_id={el.input_list}
-            className={classes.MenuItem}
-            value={i == 0 ? '' : i}
-            orbit_run_id={el.proccess}
-            title={props.title}
-          >
-            {eval(display)}
-          </MenuItem>
-        ));
-      }
-
 
       return generalArray.map((el, i) => (
+
         <MenuItem
           key={i}
           id={el.id}
           className={classes.MenuItem}
           value={i}
           title={props.title}
+          case={props.case}
         >
           {eval(display)}
+
         </MenuItem>
       ));
+
     }
   };
 
@@ -151,7 +139,7 @@ export default function SimpleSelect(props) {
           // value={values.input}
           value={defaultValue}
           onChange={handleChange}
-          inputProps={{ name: 'input', id: 'input-simple' }}
+          inputProps={{ name: 'input', id: 'input-simple', }}
           displayEmpty
         >
 

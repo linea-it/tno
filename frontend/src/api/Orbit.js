@@ -77,26 +77,25 @@ export const getAsteroids = ({
 
 export const getAsteroidById = ({ id }) => axios.get(`/refined_asteroid/${id}/`).then((res) => res.data);
 
-export const getAsteroidLog = ({ asteroid_id, name, orbit_run }) => {
+export const getAsteroidLog = ({ id, name, orbit_run }) => {
   let params = { name, orbit_run };
-  if (asteroid_id) {
-    params = { asteroid_id };
+  if (id) {
+    params = { asteroid_id: id };
   }
-
   return axios.get('/refined_asteroid/get_log/', {
     params,
-  });
+  }).then((res) => res.data);
 };
 
-export const getAsteroidDownloadLink = ({ asteroid_id, name, orbit_run }) => {
+export const getAsteroidDownloadLink = ({ id, name, orbit_run }) => {
   let params = { name, orbit_run };
-  if (asteroid_id) {
-    params = { asteroid_id };
+  if (id) {
+    params = { asteroid_id: id };
   }
 
   return axios.get('/refined_asteroid/download_results/', {
     params,
-  });
+  }).then((res) => res.data);
 };
 
 export const getAsteroidNeighbors = ({ id }) => {
@@ -112,10 +111,7 @@ export const getAsteroidFiles = ({ id }) => {
   };
   return axios.get('/refined_orbit/', {
     params,
-  }).then((res) => {
-    console.log(res.data.results);
-    return res.data;
-  });
+  }).then((res) => res.data);
 };
 
 export const getAsteroidInputs = ({ id }) => {
