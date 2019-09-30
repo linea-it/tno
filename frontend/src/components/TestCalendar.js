@@ -26,16 +26,6 @@ function TestCalendar({ history, match: { params } }) {
     });
   }, []);
 
-
-  const handleClick = () => {
-
-    if (values.flag === "calendar") {
-      history.push(`/occultation-calendar-back/${values.id}/${values.date}/${values.view}/${values.sDate}/${values.fDate}`);
-    } else {
-      console.log("Occultation");
-    }
-  };
-
   const handleClick = () => {
 
     if (values.flag === "calendar") {
@@ -44,8 +34,6 @@ function TestCalendar({ history, match: { params } }) {
       console.log("Occultation");
     }
   };
-
-
 
   return (
     <div>

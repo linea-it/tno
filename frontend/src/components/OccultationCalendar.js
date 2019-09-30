@@ -219,13 +219,13 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
       <AppBar setSearch={setSearch} setHasSearch={setHasSearch} value={search} />
 
-      //params.date is coming back from occulation. 
-      //It's being used to maintain data that went from calendar to occultation.
-      //Flow:
-      // 1 -User chooses an event. 
-      // 2- The specific data goes to occultation.
-      // 3 - On occultation screen user click on back button.
-      // 4 - When back, data comes inside params props.(params are internal(internal operation));            
+      {/* params.date is coming back from occulation. 
+      It's being used to maintain data that went from calendar to occultation.
+      Flow:
+      1 -User chooses an event. 
+      2- The specific data goes to occultation.
+      3 - On occultation screen user click on back button.
+      4 - When back, data comes inside params props.(params are internal(internal operation));             */}
       <FullCalendar
         header={header}
         events={events}
