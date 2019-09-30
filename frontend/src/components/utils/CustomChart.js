@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
 import moment from 'moment';
+import { makeStyles } from '@material-ui/core/styles';
 
 const colors = [
   '#4D80CC',
@@ -59,7 +60,20 @@ const colors = [
   '#6666FF',
 ];
 
+const useStyles = makeStyles((theme) => ({
+  plotWrapper: {
+    display: 'flex !important',
+    alignItems: 'center',
+    justifyContent: 'center',
+    [theme.breakpoints.down('lg')]: {
+      overflow: 'auto',
+    },
+  },
+}));
+
+
 export function Donut({ data, width, height }) {
+  const classes = useStyles();
   const Plot = createPlotlyComponent(Plotly);
 
   const rows = [{
@@ -77,19 +91,18 @@ export function Donut({ data, width, height }) {
 
   return (
     <Plot
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'auto',
-      }}
       data={rows}
+      className={classes.plotWrapper}
       layout={{
         width,
         height,
+        hovermode: 'closest',
+        autosize: true,
       }}
       config={{
         scrollZoom: true,
+        displaylogo: false,
+        responsive: true,
       }}
     />
   );
@@ -108,6 +121,7 @@ Donut.propTypes = {
 
 
 export function TimeProfile({ data, width, height }) {
+  const classes = useStyles();
   const Plot = createPlotlyComponent(Plotly);
   const rows = [];
 
@@ -120,10 +134,10 @@ export function TimeProfile({ data, width, height }) {
         type: i === 0 ? 'line' : 'scatter',
         mode: 'lines+markers',
         marker: {
-          color: colors[i],
+          color: colors[0],
         },
         line: {
-          color: colors[i.length - i],
+          color: colors[0],
         },
         duration: line.duration,
         showlegend: false,
@@ -328,8 +342,6 @@ export function TimeProfile({ data, width, height }) {
       return <div />;
     }
 
-    const lines = [];
-
     const dates = getDates(data.dates);
     dates.map((e) => {
       rows.push(e);
@@ -445,12 +457,7 @@ export function TimeProfile({ data, width, height }) {
 
   return (
     <Plot
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'auto',
-      }}
+      className={classes.plotWrapper}
       data={rows}
       layout={{
         width,
@@ -466,9 +473,13 @@ export function TimeProfile({ data, width, height }) {
           automargin: true,
           autorange: true,
         },
+        hovermode: 'closest',
+        autosize: true,
       }}
       config={{
         scrollZoom: true,
+        displaylogo: false,
+        responsive: true,
       }}
     />
   );
