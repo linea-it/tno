@@ -1,61 +1,33 @@
 import React from 'react';
+import clsx from 'clsx';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
+import { TextField } from '@material-ui/core';
 
 
 const useStyles = makeStyles(theme => ({
   grow: {
-    flexGrow: 1,
-    marginBottom: theme.spacing(1),
+
+    marginBottom: theme.spacing(6),
+    float: 'right',
+    marginLeft: 10
   },
 
+
+  input: {
+    width: 170,
+  },
 
   search: {
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(1),
-      width: 'auto',
-    },
 
-  },
-  searchIcon: {
-    width: theme.spacing(3),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+  }
 
-  },
-  inputRoot: {
-    color: 'inherit',
-  },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 1),
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: 200,
-    },
-  },
-  sectionDesktop: {
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'flex',
-    },
-  },
 
 }));
 
-export default function PrimarySearchAppBar({ setSearch, setHasSearch }) {
+export default function PrimarySearchAppBar({ setSearch, setHasSearch, value }) {
   const classes = useStyles();
 
   const handleChange = (event) => {
@@ -67,28 +39,27 @@ export default function PrimarySearchAppBar({ setSearch, setHasSearch }) {
 
 
 
-
-
-
   return (
     <div className={classes.grow}>
 
-      <Toolbar>
+      <SearchIcon />
 
-        <SearchIcon />
+      <TextField
+        id="standard-search"
+        label=""
 
-        <InputBase
-          placeholder="Search…"
-          onChange={handleChange}
-          classes={{
-            root: classes.inputRoot,
-            input: classes.inputInput,
-          }}
-          inputProps={{ 'aria-label': 'search' }}
+        placeholder="Search…"
+        onChange={handleChange}
+        value={value}
+        className={classes.input}
+        inputProps={{ 'aria-label': 'search' }}
+        autoFocus={true}
+        type="search"
+        fullWidth={false}
 
-        />
+      />
 
-      </Toolbar>
+
 
     </div>
   );

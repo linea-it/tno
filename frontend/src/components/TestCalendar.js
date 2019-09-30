@@ -14,7 +14,7 @@ function TestCalendar({ history, match: { params } }) {
     flag: null,
     sDate: null, //Start Date
     fDate: null, //Final Date
-    searching: null,
+    searching: "",
 
 
   });

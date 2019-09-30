@@ -39,7 +39,6 @@ const useStyles = makeStyles(theme => ({
 
 
 
-
 function OccultationCalendar({ history, setTitle, match: { params } }) {
 
 
@@ -47,16 +46,15 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   const [initialDate, setInitialDate] = useState(params.sDate ? params.sDate : moment(new Date()).startOf('month').format('YYYY-MM-DD'));
   const [finalDate, setFinalDate] = useState(moment(new Date()).endOf('month').format('YYYY-MM-DD'));
   const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState(params.searching ? params.searching : "");
+  const [search, setSearch] = useState(params.searching ? params.searching : " ");
   const [hasSearch, setHasSearch] = useState(false);
-  const [event, setEvent] = useState(params.event ? params.event : "");
+
 
 
   const classes = useStyles();
 
 
   const loadData = () => {
-
 
 
     if (search && search.length > 0) {
@@ -206,10 +204,10 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
       });
 
-      if (!search) {
+      // if (!search) {
 
-        loadData();
-      }
+      //   loadData();
+      // }
 
       setEvents(result);
 
@@ -233,8 +231,6 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     // if (arg.view.type === "listYear") {
     //   setEvents([]);
     // }
-
-
 
 
     //Um problema que surgiu nesta página foi o seguinte: 
@@ -279,6 +275,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
 
 
+
     history.push(`/test-calendar/${id}/${date}/${view}/${flag}/${sDate}/${fDate}/${searching}`);
 
 
@@ -306,7 +303,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
       {loading && <CircularProgress size={100} thickness={0.8} className={classes.loading} ></CircularProgress>}
 
-      <AppBar setSearch={setSearch} setHasSearch={setHasSearch} />
+      <AppBar setSearch={setSearch} setHasSearch={setHasSearch} value={search} />
 
       <FullCalendar
         header={header}
