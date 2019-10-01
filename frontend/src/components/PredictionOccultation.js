@@ -137,8 +137,8 @@ function PredictionOccultation({ history, setTitle }) {
       align: 'center',
     },
     {
-      name: '',
-      title: '',
+      name: 'id',
+      title: ' ',
       width: 100,
       icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: (el) => history.push(`/prediction-of-occultation/${el.id}`),
@@ -180,8 +180,8 @@ function PredictionOccultation({ history, setTitle }) {
   const [inputRadiusValue, setInputRadiusValue] = useState(0.15);
   const [ephemerisNumberValue, setEphemerisNumberValue] = useState(600);
   const [actionButton, setActionButton] = useState(true);
-  const [initialDate, setInitialDate] = useState(new Date());
-  const [finalDate, setFinalDate] = useState(new Date());
+  const [initialDate, setInitialDate] = useState(moment().startOf('year'));
+  const [finalDate, setFinalDate] = useState(moment().endOf('year'));
   const [dialogVisible, setDialogVisible] = useState(false);
   const [dialogContent, setDialogContent] = useState("ok");
 
