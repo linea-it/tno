@@ -154,7 +154,6 @@ export const getAsteroidOutputs = ({ id }) => {
 };
 
 
-
 export const getCatalogPositions = ({ id }) => {
   const params = {
     asteroid: id,

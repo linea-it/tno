@@ -46,7 +46,7 @@ function CustomDialog({
       </MuiDialogTitle>
       <DialogContent dividers className={bodyStyle}>
         <Typography gutterBottom>
-          {content && content.props.data && content.props.data.length ? content : (
+          {content || content.props.data || content.props.data.length ? content : (
             'Unable to generate log due to a lack of data!'
           )}
         </Typography>
