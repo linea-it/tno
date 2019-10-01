@@ -47,35 +47,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function AstrometryHistory() {
-
-
+function AstrometryHistory({ history }) {
 
   const classes = useStyles();
 
   const [tableData, setTableData] = useState([]);
-
-
-  // this.api.getPraiaRuns({ page: page, pageSize: sizePerPage }).then(res => {
-  //   const r = res.data;
-  //   this.setState({
-  //     data: r.results,
-  //     totalSize: r.count,
-  //     page: page,
-  //     sizePerPage: sizePerPage,
-  //     loading: false,
-  //   });
-  // });
-
-
   const [tablePage, setTablePage] = useState(1);
   const [tablePageSize, setPageSize] = useState(5);
   const [totalCount, setTotalCount] = useState();
   const [reload, setReload] = useState(true);
 
   const pageSizes = [5, 10, 15];
-
-
 
   const loadData = (event) => {
 
@@ -88,36 +70,18 @@ function AstrometryHistory() {
       setTotalCount(res.count);
     });
 
-
   };
-
-  //  const loadTableData = async ({
-  //   sorting, pageSize, currentPage, filter, searchValue,
-  // }) => {
-  //   const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
-  //   const orbits = await getOrbitRuns({
-  //     ordering,
-  //     pageSize,
-  //     page: currentPage !== 0 ? currentPage + 1 : 1,
-  //     filter,
-  //     search: searchValue,
-  //   });
-
-  //   if (orbits && orbits.results) {
-  //     setTableData(orbits.results);
-  //     setTotalCount(orbits.count);
-  //   }
-  // };
-
-
 
   useEffect(() => {
     loadData();
   }, []);
 
 
+  const handleClickHistoryTable = (row) => {
 
-  // console.log(tableData);
+    history.push(`/astrometry-run/${row.id}`)
+
+  };
 
   const columns = [
     {
@@ -186,7 +150,6 @@ function AstrometryHistory() {
 
     },
 
-
     {
       name: 'h_time',
       title: 'Start',
@@ -211,20 +174,17 @@ function AstrometryHistory() {
 
     },
 
-
-
     {
       name: 'id',
       title: ' ',
       width: 100,
       icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: (el) => console.log(el),
+      action: handleClickHistoryTable,
       align: 'center',
     },
 
 
   ];
-
 
   return (
 
@@ -247,7 +207,6 @@ function AstrometryHistory() {
   );
 
 }
-
 
 export default withRouter(AstrometryHistory);
 

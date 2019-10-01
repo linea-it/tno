@@ -7,17 +7,14 @@ import InputSelect from './InputSelectAstrometryMain';
 import { getListsByStatus, getCatalogs, getConfigurations, createPraiaRun } from '../api/Praia';
 import AstrometryHistory from './AstrometryHistory';
 
-
 const useStyles = makeStyles((theme) => ({
   cardHeader: {
-
   },
   button: {
     margin: theme.spacing(1),
     float: 'right',
     marginRight: '5%',
   },
-
 }));
 
 
@@ -25,55 +22,29 @@ function Astrometry({ setTitle }) {
 
   const classes = useStyles();
 
-
-  // loadInputs = inputValue => {
-  //   return this.object_api
-  //     .getListsByStatus({ status: 'success', search: inputValue })
-  //     .then(res => {
-  //       const inputs = res.data.results;
-  //       return { options: inputs };
-  //     });
-  // };
-
-  // .getConfigurations({ search: inputValue, ordering: '-creation_date' })
-
-
   const [objectList, setObjectList] = useState([]);
   const [catalogs, setCatalogs] = useState([]);
   const [configurations, setConfigurations] = useState([]);
-
-
   const [valueSubmition, setValueSubmition] = useState({
     inputId: null,
     refCatalogId: null,
     configId: null,
   });
 
-
-
   const loadData = (inputValue) => {
 
     getListsByStatus({ status: 'success', search: inputValue }).then((res) => {
       setObjectList(res.data.results);
-
-
     });
 
     getCatalogs({ search: inputValue }).then((res) => {
       setCatalogs(res.data.results);
-
     });
-
 
     getConfigurations({ search: inputValue, ordering: "-creation_date" }).then((res) => {
       setConfigurations(res.data.results);
-
     });
-
-
   };
-
-
 
   useEffect(() => {
     if (objectList.length > 0 && typeof objectList[0] != "undefined") {
@@ -102,16 +73,12 @@ function Astrometry({ setTitle }) {
     }
   }, [configurations]);
 
-
   useEffect(() => {
     setTitle("Astrometry");
     loadData();
   }, []);
 
-
-
   const handleSubmit = () => {
-    console.log(valueSubmition);
 
     createPraiaRun({
       input: valueSubmition.inputId,
@@ -123,11 +90,7 @@ function Astrometry({ setTitle }) {
     });
 
     //TODO: When submit Run go to the Run Detail screen
-
-
   };
-
-
 
   return (
     <Grid>
@@ -146,6 +109,7 @@ function Astrometry({ setTitle }) {
               case="input"
               display="el.displayname"
               data={objectList}
+              default="noDefault"
               width="90%"
               marginTop={10}
               valueSubmition={valueSubmition}
@@ -180,40 +144,26 @@ function Astrometry({ setTitle }) {
               onClick={handleSubmit}
               className={classes.button}>
               Submit
-               </Button>
-
+              </Button>
 
           </Card>
-
         </Grid>
-
       </Grid>
 
       <Grid container spacing={6}>
 
         <Grid item sm={12} xl={12}>
           <Card>
-
             <CardHeader
               className={classes.cardHeader}
               title={"History"}
             />
-
             <AstrometryHistory>
 
             </AstrometryHistory>
-
-
           </Card>
-
         </Grid>
-
-
-
-
-
       </Grid>
-
     </Grid>
 
   );
