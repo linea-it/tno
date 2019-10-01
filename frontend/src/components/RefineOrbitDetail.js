@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import {
   Grid, Card, makeStyles, CardHeader, CardContent,
 } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 import CustomList from './utils/CustomList';
 import {
@@ -17,7 +18,13 @@ import CustomTable from './utils/CustomTable';
 import CustomDialog from './utils/CustomDialog';
 import CustomLog from './utils/CustomLog';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
+  button: {
+    margin: theme.spacing(1),
+  },
+  buttonIcon: {
+    margin: '0 2px',
+  },
   btn: {
     textTransform: 'none',
     padding: '1px 5px',
@@ -69,7 +76,7 @@ const useStyles = makeStyles({
   tableWrapper: {
     maxWidth: '100%',
   },
-});
+}));
 
 
 function RefineOrbitDetail({ history, match, setTitle }) {
@@ -153,7 +160,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       width: 140,
     },
     {
-      name: 'execution_time',
+      name: 'h_execution_time',
       title: 'Execution Time',
       width: 140,
     },
@@ -233,7 +240,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
                 className={clsx(classes.btn, classes.btnSuccess)}
                 title={data.status}
               >
-                  Success
+                Success
               </span>
             );
           },
@@ -297,8 +304,29 @@ function RefineOrbitDetail({ history, match, setTitle }) {
 
   const handleDialogClose = () => setAsteroidLog({ visible: false, data: [] });
 
+  const handleBackNavigation = () => history.push('/refine-orbit');
+
   return (
     <>
+      <Grid
+        container
+        justify="space-between"
+        alignItems="center"
+        spacing={2}
+      >
+        <Grid item xs={12} md={4}>
+          <Button
+            variant="contained"
+            color="primary"
+            title="Back"
+            className={classes.button}
+            onClick={handleBackNavigation}
+          >
+            <i className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+            <span>Back</span>
+          </Button>
+        </Grid>
+      </Grid>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6} xl={timeProfile.length > 0 ? 4 : 6} className={classes.block}>
           <Card>

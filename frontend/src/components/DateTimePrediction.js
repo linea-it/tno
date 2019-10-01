@@ -17,6 +17,7 @@ const useStyles = makeStyles({
   },
 });
 
+
 export default function DateAndTimePickers(props) {
   const classes = useStyles();
   const { label } = props;
@@ -26,8 +27,6 @@ export default function DateAndTimePickers(props) {
 
     const id = event.currentTarget.id;
     const value = event.currentTarget.value;
-
-
 
     if (id === "initialDate") {
 

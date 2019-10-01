@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import Table from "../components/utils/CustomTable";
-import { getPredictionRuns } from '../api/Prediction';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
+import Table from './utils/CustomTable';
+import { getPredictionRuns } from '../api/Prediction';
 
 const useStyles = makeStyles((theme) => ({
   iconList: {

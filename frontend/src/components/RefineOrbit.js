@@ -44,9 +44,21 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: 'green',
     color: '#fff',
   },
+  btnFailure: {
+    backgroundColor: 'red',
+    color: '#fff',
+  },
   btnRunning: {
     backgroundColor: '#ffba01',
     color: '#000',
+  },
+  btnNotExecuted: {
+    backgroundColor: '#ABA6A2',
+    color: '#fff',
+  },
+  btnWarning: {
+    backgroundColor: '#D79F15',
+    color: '#FFF',
   },
   input: {
     margin: 0,
@@ -71,22 +83,50 @@ function RefineOrbit({ history, setTitle }) {
       width: 140,
       sortingEnabled: false,
       customElement: (row) => {
-        if (row.status === 'running') {
+        if (row.status === 'failure') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnFailure)}
+              title={row.error_msg}
+            >
+              Failure
+            </span>
+          );
+        } if (row.status === 'running') {
           return (
             <span
               className={clsx(classes.btn, classes.btnRunning)}
               title={row.status}
             >
-                Running
+              Running
+            </span>
+          );
+        } if (row.status === 'not_executed') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnNotExecuted)}
+              title={row.error_msg}
+            >
+              Not Executed
+            </span>
+          );
+        } if (row.status === 'warning') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnWarning)}
+              title={row.error_msg ? row.error_msg : 'Warning'}
+            >
+              Warning
             </span>
           );
         }
+
         return (
           <span
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
           >
-          Success
+            Success
           </span>
         );
       },
@@ -112,7 +152,7 @@ function RefineOrbit({ history, setTitle }) {
       width: 140,
     },
     {
-      name: 'execution_time',
+      name: 'h_execution_time',
       title: 'Execution Time',
       width: 140,
     },
@@ -233,6 +273,7 @@ function RefineOrbit({ history, setTitle }) {
               totalCount={totalCount}
               defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
               reload={reload}
+              hasSearching={false}
             />
           </CardContent>
         </Card>
