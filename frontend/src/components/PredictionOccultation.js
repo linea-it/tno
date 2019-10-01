@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import { makeStyles } from '@material-ui/core/styles';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import InputNumber from '@material-ui/core/Input';
+import InputNumber from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import { withRouter } from 'react-router';
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   inputNumber: {
-    marginTop: 25,
+    marginTop: 9,
     marginBottom: 18,
 
     width: '90%',
@@ -444,7 +444,8 @@ function PredictionOccultation({ history, setTitle }) {
                 <InputNumber
                   ref={inputNumber}
                   type="number"
-                  placeholder="    Catalog Radius"
+                  label="Catalog Radius"
+
                   className={classes.inputNumber}
                   onChange={handleInputNumberChange}
                   inputProps={{ min: 0.15, max: 2.0, step: 0.01 }}
@@ -454,6 +455,7 @@ function PredictionOccultation({ history, setTitle }) {
 
                 <InputNumber
                   ref={ephemerisNumber}
+                  label="Ephemeris Step"
                   type="number"
                   placeholder="    Ephemeris Step"
                   className={classes.inputNumber}
@@ -491,6 +493,7 @@ function PredictionOccultation({ history, setTitle }) {
                 >
                   Submit
             </Button>
+
 
               </Grid>
 
