@@ -14,10 +14,9 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import DescriptionIcon from '@material-ui/icons/Description';
 import SearchIcon from '@material-ui/icons/Search';
-
+import Dialog from './utils/CustomDialog';
 
 const useStyles = makeStyles((theme) => ({
-
   card: {
     marginBottom: 10,
   },
@@ -25,7 +24,11 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: '92%',
   },
 
-
+  dialogBodyStyle: {
+    border: 'none',
+    height: 600,
+    width: 600,
+  },
   btn: {
     textTransform: 'none',
     padding: '1px 5px',
@@ -73,6 +76,11 @@ function AstrometryRun({ setTitle, match: { params } }) {
   const [tableData, setTableData] = useState();
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState();
   const [toolButton, setToolButton] = useState('list');
+  const [dialog, setDialog] = useState({
+    visible: false,
+    content: " ",
+    title: " ",
+  });
   const [tableParams, setTableParams] = useState({
     page: 1,
     sizePerPage: 10,
@@ -83,7 +91,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
     totalCount: null,
 
   })
-
 
   const runId = params.id;
 
@@ -134,7 +141,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
                 </span>
               );
             }
-
             return (
               <span
                 className={clsx(classes.btn, classes.btnSuccess)}
@@ -159,9 +165,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
   const loadExecutionTime = () => {
     getExecutionTimeById({ id: params.id }).then((res) => {
       setExecutionTime(res.data.execution_time);
-
     });
-
   };
 
   const loadExecutionStatistics = () => {
@@ -176,20 +180,15 @@ function AstrometryRun({ setTitle, match: { params } }) {
     let sizePerPage = event ? event.pageSize : tableParams.sizePerPage;
     let sortField = tableParams.sortField;
     let sortOrder = tableParams.sortOrder;
-
-
     let filters = [];
     filters.push({
       property: 'astrometry_run',
       value: runId,
     });
-
     getAsteroids({ page, sizePerPage, filters, sortField, sortOrder }).then((res) => {
       setTableData(res.data.results);
       setTableParams({ ...tableParams, totalCount: res.data.count });
-
     });
-
   };
 
   const listColumnsTable = [
@@ -248,15 +247,12 @@ function AstrometryRun({ setTitle, match: { params } }) {
          </span>
         );
       }
-
     },
-
     {
       name: "name",
       title: "Name",
       align: 'center',
     },
-
     {
       name: "number",
       title: "Number",
@@ -272,7 +268,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
         );
       }
     },
-
     {
       name: "ccd_images",
       title: "CCD Images",
@@ -288,21 +283,18 @@ function AstrometryRun({ setTitle, match: { params } }) {
         );
       }
     },
-
     {
       name: "available_ccd_image",
       title: "Available CCDs",
       width: 140,
       align: 'center',
     },
-
     {
       name: "processed_ccd_image",
       title: "Processed CCDs",
       width: 150,
       align: 'center',
     },
-
     { name: "catalog_rows", title: "Stars", align: 'center', },
     { name: "outputs", title: "Output Files", align: 'center', },
     {
@@ -317,7 +309,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
       },
       width: 140,
       align: 'center',
-
     },
   ];
 
@@ -377,9 +368,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
          </span>
         );
       }
-
     },
-
     {
       name: "number",
       title: "Number",
@@ -396,7 +385,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
         );
       }
     },
-
     {
       name: "error_msg",
       title: "Error",
@@ -410,14 +398,13 @@ function AstrometryRun({ setTitle, match: { params } }) {
       align: 'center',
       customElement: (row) => {
         return (
-          <IconButton onClick={() => handleLog(row.condor_log)}>
+          <IconButton onClick={() => handleLogReading(row.condor_log)}>
             <DescriptionIcon />
           </IconButton>
 
         );
       }
     },
-
     {
       name: "condor_err_log",
       title: "Error",
@@ -425,14 +412,12 @@ function AstrometryRun({ setTitle, match: { params } }) {
       align: 'center',
       customElement: (row) => {
         return (
-          <IconButton onClick={() => handleCondorLog(row.condor_err_log)}>
+          <IconButton onClick={() => handleLogReading(row.condor_err_log)}>
             <DescriptionIcon />
           </IconButton>
-
         );
       }
     },
-
     {
       name: "condor_out_log",
       title: "Output",
@@ -440,14 +425,12 @@ function AstrometryRun({ setTitle, match: { params } }) {
       align: 'center',
       customElement: (row) => {
         return (
-          <IconButton onClick={() => handleOutput(row.condor_out_log)}>
+          <IconButton onClick={() => handleLogReading(row.condor_out_log)}>
             <DescriptionIcon />
           </IconButton>
-
         );
       }
     },
-
     {
       name: "id",
       title: " ",
@@ -458,11 +441,9 @@ function AstrometryRun({ setTitle, match: { params } }) {
           <IconButton>
             <SearchIcon />
           </IconButton>
-
         );
       }
     },
-
   ];
 
   useLayoutEffect(() => {
@@ -492,32 +473,26 @@ function AstrometryRun({ setTitle, match: { params } }) {
     { name: "Astrometry", value: execution_time.astrometry },
   ];
 
-
-
   const handleChangeToolButton = (event, newValue) => {
     setToolButton(newValue);
 
   };
 
-  const handleLog = (log) => {
-    readCondorFile(log).then((res) => {
-      console.log(res);
-    });
+  const handleLogReading = (file) => {
+    if (file) {
+      let arrayLines = [];
+
+      readCondorFile(file).then((res) => {
+        let data = res.data.rows;
+        data.forEach((line, idx) => {
+          arrayLines.push(<div key={idx}>{line}</div>)
+        });
+        setDialog({ content: arrayLines, visible: true, title: file + " " });
+      });
+
+    }
   };
 
-  const handleCondorLog = (error) => {
-    readCondorFile(error).then((res) => {
-      console.log(res);
-    });
-  };
-
-  const handleOutput = (output) => {
-    readCondorFile(output).then((res) => {
-      console.log(res);
-    });
-  };
-
- 
   return (
     <div>
       <Grid container spacing={6}>
@@ -564,7 +539,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
             <CardHeader
               title={"Asteroids"}
             />
-
             <Toolbar >
               <ToggleButtonGroup className={classes.icon}
                 value={toolButton}
@@ -597,6 +571,13 @@ function AstrometryRun({ setTitle, match: { params } }) {
               hasResizing={false}
             >
             </Table>
+            <Dialog
+              visible={dialog.visible}
+              title={dialog.title}
+              content={dialog.content}
+              setVisible={() => setDialog({ visible: false, content: " ", title: " " })}
+              bodyStyle={classes.dialogBodyStyle}
+            />
           </Card>
         </Grid>
       </Grid>
