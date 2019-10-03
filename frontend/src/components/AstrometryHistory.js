@@ -4,8 +4,6 @@ import { withRouter } from 'react-router-dom';
 import Table from './utils/CustomTable';
 import { getPraiaRuns } from '../api/Praia';
 import { makeStyles } from '@material-ui/styles';
-import Interval from 'react-interval';
-
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
@@ -41,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#D79F15',
     color: '#FFF',
   },
-
   iconDetail: {
     fontSize: 18,
   },
@@ -64,8 +61,6 @@ function AstrometryHistory({ history, reloadHistory }) {
   const pageSizes = [5, 10, 15];
 
   const loadData = (event) => {
-
-
     let page = typeof event == "undefined" ? tablePage : event.currentPage + 1;
     let pageSize = typeof event == "undefined" ? tablePageSize : event.pageSize;
     let searchValue = typeof event == "undefined" ? " " : event.searchValue;

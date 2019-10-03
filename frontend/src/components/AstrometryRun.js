@@ -181,7 +181,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
   };
 
   const loadTableData = (event) => {
-
     let page = event ? event.currentPage + 1 : tableParams.page;
     let sizePerPage = event ? event.pageSize : tableParams.sizePerPage;
     let sortField = tableParams.sortField;
@@ -194,8 +193,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
     getAsteroids({ page, sizePerPage, filters, sortField, sortOrder }).then((res) => {
       setTableData(res.data.results);
       setTableParams({ ...tableParams, totalCount: res.data.count });
-
-
     });
   };
 
@@ -511,31 +508,17 @@ function AstrometryRun({ setTitle, match: { params } }) {
         });
         setDialog({ content: arrayLines, visible: true, title: file + " " });
       });
-
     }
   };
 
-
-
-
-
-
   const handleInterval = () => {
     let status = runData && typeof runData != "undefined" ? runData.status : "no";
-
-
     if (status === "running" || status === "pending") {
       setCount(count + 1);
     } else {
       setIntervalCondition(false);
     }
-
-
-
-
   };
-
-
 
   return (
     <div>
