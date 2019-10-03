@@ -36,7 +36,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ffba01',
     color: '#000',
   },
-
+  btnWarning: {
+    backgroundColor: '#D79F15',
+    color: '#FFF',
+  },
 
   iconDetail: {
     fontSize: 18,
@@ -61,6 +64,7 @@ function AstrometryHistory({ history }) {
 
   const loadData = (event) => {
 
+
     let page = typeof event == "undefined" ? tablePage : event.currentPage + 1;
     let pageSize = typeof event == "undefined" ? tablePageSize : event.pageSize;
     let searchValue = typeof event == "undefined" ? " " : event.searchValue;
@@ -69,7 +73,6 @@ function AstrometryHistory({ history }) {
       setTableData(res.results);
       setTotalCount(res.count);
     });
-
   };
 
   useEffect(() => {
@@ -97,6 +100,16 @@ function AstrometryHistory({ history }) {
               title={row.status}
             >
               Running
+            </span>
+          );
+        }
+        if (row.status === 'warning') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnWarning)}
+              title={row.status}
+            >
+              Warning
             </span>
           );
         }

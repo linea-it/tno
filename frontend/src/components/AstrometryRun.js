@@ -4,14 +4,27 @@ import { Grid, Card, CardHeader, makeStyles } from '@material-ui/core';
 import ListStat from './utils/CustomList';
 import { Donut } from './utils/CustomChart';
 import Table from './utils/CustomTable';
-import { getPraiaRunById, getExecutionTimeById, getAsteroidStatus, getAsteroids } from '../api/Praia';
+import { readCondorFile, getPraiaRunById, getExecutionTimeById, getAsteroidStatus, getAsteroids } from '../api/Praia';
 import clsx from 'clsx';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import ListIcon from '@material-ui/icons/List';
+import BugIcon from '@material-ui/icons/BugReport';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import DescriptionIcon from '@material-ui/icons/Description';
+import SearchIcon from '@material-ui/icons/Search';
+
 
 const useStyles = makeStyles((theme) => ({
 
   card: {
     marginBottom: 10,
   },
+  icon: {
+    marginLeft: '92%',
+  },
+
 
   btn: {
     textTransform: 'none',
@@ -58,19 +71,25 @@ function AstrometryRun({ setTitle, match: { params } }) {
   const [execution_time, setExecutionTime] = useState({});
   const [execution_stats, setExecutionStats] = useState({});
   const [tableData, setTableData] = useState();
+  const [columnsAsteroidTable, setColumnsAsteroidTable] = useState();
+  const [toolButton, setToolButton] = useState('list');
+  const [tableParams, setTableParams] = useState({
+    page: 1,
+    sizePerPage: 10,
+    sortField: 'name',
+    sortOrder: 1,
+    pageSizes: [10, 20, 30],
+    reload: true,
+    totalCount: null,
 
-  useEffect(() => {
-    setTitle("Astrometry Run");
+  })
 
-  }, []);
 
   const runId = params.id;
 
   const loadPraiaRun = () => {
     getPraiaRunById({ id: runId }).then((res) => {
-
       const data = res.data;
-
       setList([
         {
           title: 'Status',
@@ -138,7 +157,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
   }
 
   const loadExecutionTime = () => {
-
     getExecutionTimeById({ id: params.id }).then((res) => {
       setExecutionTime(res.data.execution_time);
 
@@ -152,19 +170,312 @@ function AstrometryRun({ setTitle, match: { params } }) {
     });
   };
 
+  const loadTableData = (event) => {
 
-  const loadTableData = () => {
-    console.log("Table Data");
+    let page = event ? event.currentPage + 1 : tableParams.page;
+    let sizePerPage = event ? event.pageSize : tableParams.sizePerPage;
+    let sortField = tableParams.sortField;
+    let sortOrder = tableParams.sortOrder;
+
+
+    let filters = [];
+    filters.push({
+      property: 'astrometry_run',
+      value: runId,
+    });
+
+    getAsteroids({ page, sizePerPage, filters, sortField, sortOrder }).then((res) => {
+      setTableData(res.data.results);
+      setTableParams({ ...tableParams, totalCount: res.data.count });
+
+    });
+
   };
 
-  useLayoutEffect(() => {
+  const listColumnsTable = [
+    {
+      name: "status",
+      title: "Status",
+      align: 'center',
+      width: 120,
+      customElement: (row) => {
+        if (row.status === 'warning') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnWarning)}
+              title={row.status}
+            >
+              Warning
+           </span>
+          );
+        }
+        if (row.status === 'running') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnRunning)}
+              title={row.status}
+            >
+              Running
+           </span>
+          );
+        }
+        if (row.status === 'failure') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnFailure)}
+              title={row.status}
+            >
+              Failure
+           </span>
+          );
+        }
+        if (row.status === 'not_executed') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnNotExecuted)}
+              title={row.status}
+            >
+              Not Executed
+           </span>
+          );
+        }
+        return (
+          <span
+            className={clsx(classes.btn, classes.btnSuccess)}
+            title={row.status}
+          >
+            Success
+         </span>
+        );
+      }
 
+    },
+
+    {
+      name: "name",
+      title: "Name",
+      align: 'center',
+    },
+
+    {
+      name: "number",
+      title: "Number",
+      align: 'center',
+      customElement: (row) => {
+        if (row.number === '-') {
+          return '';
+        }
+        return (
+          <span>
+            {row.number}
+          </span>
+        );
+      }
+    },
+
+    {
+      name: "ccd_images",
+      title: "CCD Images",
+      align: 'center',
+      customElement: (row) => {
+        if (row.ccd_images === '-') {
+          return '';
+        }
+        return (
+          <span>
+            {row.ccd_images}
+          </span>
+        );
+      }
+    },
+
+    {
+      name: "available_ccd_image",
+      title: "Available CCDs",
+      width: 140,
+      align: 'center',
+    },
+
+    {
+      name: "processed_ccd_image",
+      title: "Processed CCDs",
+      width: 150,
+      align: 'center',
+    },
+
+    { name: "catalog_rows", title: "Stars", align: 'center', },
+    { name: "outputs", title: "Output Files", align: 'center', },
+    {
+      name: "execution_time",
+      title: "Execution Time",
+      customElement: (row) => {
+        return (
+          <span>
+            {row.execution_time.substring(0, 8)}
+          </span>
+        );
+      },
+      width: 140,
+      align: 'center',
+
+    },
+  ];
+
+  const bugColumnsTable = [
+    {
+      name: "status",
+      title: "Status",
+      align: 'center',
+      width: 120,
+      customElement: (row) => {
+        if (row.status === 'warning') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnWarning)}
+              title={row.status}
+            >
+              Warning
+           </span>
+          );
+        }
+        if (row.status === 'running') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnRunning)}
+              title={row.status}
+            >
+              Running
+           </span>
+          );
+        }
+        if (row.status === 'failure') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnFailure)}
+              title={row.status}
+            >
+              Failure
+           </span>
+          );
+        }
+        if (row.status === 'not_executed') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnNotExecuted)}
+              title={row.status}
+            >
+              Not Executed
+           </span>
+          );
+        }
+        return (
+          <span
+            className={clsx(classes.btn, classes.btnSuccess)}
+            title={row.status}
+          >
+            Success
+         </span>
+        );
+      }
+
+    },
+
+    {
+      name: "number",
+      title: "Number",
+      align: 'center',
+      width: 120,
+      customElement: (row) => {
+        if (row.number === '-') {
+          return '';
+        }
+        return (
+          <span>
+            {row.number}
+          </span>
+        );
+      }
+    },
+
+    {
+      name: "error_msg",
+      title: "Error",
+      width: 800,
+      align: 'center',
+    },
+    {
+      name: "condor_log",
+      title: "Log",
+      width: 60,
+      align: 'center',
+      customElement: (row) => {
+        return (
+          <IconButton onClick={() => handleLog(row.condor_log)}>
+            <DescriptionIcon />
+          </IconButton>
+
+        );
+      }
+    },
+
+    {
+      name: "condor_err_log",
+      title: "Error",
+      width: 60,
+      align: 'center',
+      customElement: (row) => {
+        return (
+          <IconButton onClick={() => handleCondorLog(row.condor_err_log)}>
+            <DescriptionIcon />
+          </IconButton>
+
+        );
+      }
+    },
+
+    {
+      name: "condor_out_log",
+      title: "Output",
+      width: 80,
+      align: 'center',
+      customElement: (row) => {
+        return (
+          <IconButton onClick={() => handleOutput(row.condor_out_log)}>
+            <DescriptionIcon />
+          </IconButton>
+
+        );
+      }
+    },
+
+    {
+      name: "id",
+      title: " ",
+      width: 80,
+      align: 'center',
+      customElement: (row) => {
+        return (
+          <IconButton>
+            <SearchIcon />
+          </IconButton>
+
+        );
+      }
+    },
+
+  ];
+
+  useLayoutEffect(() => {
+    setTitle("Astrometry Run");
+    loadTableData();
     loadPraiaRun();
     loadExecutionTime();
     loadExecutionStatistics();
-    loadTableData();
+  }, []);
 
-  }, [])
+  useEffect(() => {
+    setColumnsAsteroidTable(listColumnsTable);
+  }, []);
 
   const donutDataStatist = [
     { name: "Success", value: execution_stats.success },
@@ -181,9 +492,35 @@ function AstrometryRun({ setTitle, match: { params } }) {
     { name: "Astrometry", value: execution_time.astrometry },
   ];
 
+
+
+  const handleChangeToolButton = (event, newValue) => {
+    setToolButton(newValue);
+
+  };
+
+  const handleLog = (log) => {
+    readCondorFile(log).then((res) => {
+      console.log(res);
+    });
+  };
+
+  const handleCondorLog = (error) => {
+    readCondorFile(error).then((res) => {
+      console.log(res);
+    });
+  };
+
+  const handleOutput = (output) => {
+    readCondorFile(output).then((res) => {
+      console.log(res);
+    });
+  };
+
+ 
   return (
     <div>
-      <Grid container spacing={2}>
+      <Grid container spacing={6}>
         <Grid item xs={12} md={6} xl={4}>
           <Card>
             <CardHeader
@@ -221,15 +558,45 @@ function AstrometryRun({ setTitle, match: { params } }) {
         </Grid >
       </Grid >
 
-      <Grid container spacing={2}>
+      <Grid container spacing={6}>
         <Grid item sm={12} xl={12}>
           <Card className={classes.card}>
             <CardHeader
               title={"Asteroids"}
             />
-            {/* <Table >
-            </Table> */}
 
+            <Toolbar >
+              <ToggleButtonGroup className={classes.icon}
+                value={toolButton}
+                onChange={handleChangeToolButton}
+                exclusive
+              >
+                <ToggleButton
+                  value="list"
+                  onClick={() => setColumnsAsteroidTable(listColumnsTable)}>
+                  <ListIcon />
+                </ToggleButton>
+                <ToggleButton
+                  value="bug"
+                  onClick={() => setColumnsAsteroidTable(bugColumnsTable)}>
+                  <BugIcon />
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Toolbar>
+
+            <Table
+              data={tableData ? tableData : [{}]}
+              columns={columnsAsteroidTable ? columnsAsteroidTable : listColumnsTable}
+              hasSearching={false}
+              loadData={loadTableData}
+              totalCount={tableParams.totalCount}
+              hasColumnVisibility={false}
+              pageSizes={tableParams.pageSizes}
+              reload={tableParams.reload}
+              hasToolbar={false}
+              hasResizing={false}
+            >
+            </Table>
           </Card>
         </Grid>
       </Grid>
