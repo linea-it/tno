@@ -17,14 +17,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
-function Astrometry({ setTitle }) {
+function Astrometry({ history, setTitle }) {
 
   const classes = useStyles();
 
   const [objectList, setObjectList] = useState([]);
   const [catalogs, setCatalogs] = useState([]);
   const [configurations, setConfigurations] = useState([]);
+  const [reloadHistory, setReloadHistory] = useState(false);
   const [valueSubmition, setValueSubmition] = useState({
     inputId: null,
     refCatalogId: null,
@@ -79,7 +79,6 @@ function Astrometry({ setTitle }) {
   }, []);
 
   const handleSubmit = () => {
-
     createPraiaRun({
       input: valueSubmition.inputId,
       config: valueSubmition.configId,
@@ -87,6 +86,7 @@ function Astrometry({ setTitle }) {
     }
     ).then((res) => {
       console.log(res);
+      history.push(`/astrometry-run/${res.data.id}`);
     });
 
     //TODO: When submit Run go to the Run Detail screen
@@ -98,12 +98,10 @@ function Astrometry({ setTitle }) {
 
         <Grid item sm={6} xl={5}>
           <Card>
-
             <CardHeader
               className={classes.cardHeader}
               title={"Execute"}
             />
-
             <InputSelect
               title="Input Object List"
               case="input"
@@ -115,7 +113,6 @@ function Astrometry({ setTitle }) {
               valueSubmition={valueSubmition}
               setSubmition={setValueSubmition}
             />
-
             <InputSelect
               title="Reference Catalog"
               case="catalog"
@@ -126,7 +123,6 @@ function Astrometry({ setTitle }) {
               valueSubmition={valueSubmition}
               setSubmition={setValueSubmition}
             />
-
             <InputSelect
               title="Configuration"
               case="configuration"
@@ -137,7 +133,6 @@ function Astrometry({ setTitle }) {
               valueSubmition={valueSubmition}
               setSubmition={setValueSubmition}
             />
-
             <Button
               variant="contained"
               color="primary"
@@ -151,23 +146,21 @@ function Astrometry({ setTitle }) {
       </Grid>
 
       <Grid container spacing={6}>
-
         <Grid item sm={12} xl={12}>
           <Card>
             <CardHeader
               className={classes.cardHeader}
               title={"History"}
             />
-            <AstrometryHistory>
-
+            <AstrometryHistory
+              reloadHistory={reloadHistory}
+            >
             </AstrometryHistory>
           </Card>
         </Grid>
       </Grid>
     </Grid>
-
   );
-
 };
 
 export default withRouter(Astrometry);

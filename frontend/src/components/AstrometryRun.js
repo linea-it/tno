@@ -15,6 +15,7 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import DescriptionIcon from '@material-ui/icons/Description';
 import SearchIcon from '@material-ui/icons/Search';
 import Dialog from './utils/CustomDialog';
+import ReactInterval from 'react-interval';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -76,6 +77,10 @@ function AstrometryRun({ setTitle, match: { params } }) {
   const [tableData, setTableData] = useState();
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState();
   const [toolButton, setToolButton] = useState('list');
+  const [reload_interval, setReloadInterval] = useState(3);
+  const [interval_condition, setIntervalCondition] = useState(true);
+  const [count, setCount] = useState(1);
+  const [runData, setRunData] = useState();
   const [dialog, setDialog] = useState({
     visible: false,
     content: " ",
@@ -97,6 +102,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
   const loadPraiaRun = () => {
     getPraiaRunById({ id: runId }).then((res) => {
       const data = res.data;
+      setRunData(res.data);
       setList([
         {
           title: 'Status',
@@ -188,6 +194,8 @@ function AstrometryRun({ setTitle, match: { params } }) {
     getAsteroids({ page, sizePerPage, filters, sortField, sortOrder }).then((res) => {
       setTableData(res.data.results);
       setTableParams({ ...tableParams, totalCount: res.data.count });
+
+
     });
   };
 
@@ -370,6 +378,11 @@ function AstrometryRun({ setTitle, match: { params } }) {
       }
     },
     {
+      name: "name",
+      title: "Name",
+      align: 'center',
+    },
+    {
       name: "number",
       title: "Number",
       align: 'center',
@@ -446,7 +459,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
     },
   ];
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setTitle("Astrometry Run");
     loadTableData();
     loadPraiaRun();
@@ -457,6 +470,15 @@ function AstrometryRun({ setTitle, match: { params } }) {
   useEffect(() => {
     setColumnsAsteroidTable(listColumnsTable);
   }, []);
+
+  useEffect(() => {
+    loadTableData();
+    loadPraiaRun();
+    loadExecutionTime();
+    loadExecutionStatistics();
+
+    console.log("Contou +1");
+  }, [count]);
 
   const donutDataStatist = [
     { name: "Success", value: execution_stats.success },
@@ -493,8 +515,36 @@ function AstrometryRun({ setTitle, match: { params } }) {
     }
   };
 
+
+
+
+
+
+  const handleInterval = () => {
+    let status = runData && typeof runData != "undefined" ? runData.status : "no";
+
+
+    if (status === "running" || status === "pending") {
+      setCount(count + 1);
+    } else {
+      setIntervalCondition(false);
+    }
+
+
+
+
+  };
+
+
+
   return (
     <div>
+      <ReactInterval
+        timeout={reload_interval * 1000}
+        enabled={interval_condition}
+        callback={handleInterval}
+      />
+
       <Grid container spacing={6}>
         <Grid item xs={12} md={6} xl={4}>
           <Card>

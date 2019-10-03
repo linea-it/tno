@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import Table from './utils/CustomTable';
 import { getPraiaRuns } from '../api/Praia';
 import { makeStyles } from '@material-ui/styles';
+import Interval from 'react-interval';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function AstrometryHistory({ history }) {
+function AstrometryHistory({ history, reloadHistory }) {
 
   const classes = useStyles();
 
@@ -79,11 +80,8 @@ function AstrometryHistory({ history }) {
     loadData();
   }, []);
 
-
   const handleClickHistoryTable = (row) => {
-
     history.push(`/astrometry-run/${row.id}`)
-
   };
 
   const columns = [
@@ -123,70 +121,54 @@ function AstrometryHistory({ history }) {
         );
       },
     },
-
     {
       name: 'proccess_displayname',
       title: 'Process',
       width: 200,
       align: 'center',
-
     },
-
     {
       name: 'owner',
       title: 'Owner',
       width: 150,
       align: 'center',
-
     },
-
     {
       name: 'input_list',
       title: 'Input',
       width: 100,
       align: 'center',
     },
-
     {
       name: 'configuration',
       title: 'Configuration',
       width: 150,
       align: 'center',
-
     },
-
     {
       name: 'start_time',
       title: 'Date',
       width: 180,
       align: 'center',
-
     },
-
     {
       name: 'h_time',
       title: 'Start',
       width: 150,
       align: 'center',
-
     },
-
     {
       name: 'h_execution_time',
       title: 'Execution Time',
       width: 180,
       align: 'center',
-
     },
-
     {
       name: 'count_objects',
       title: 'Asteroids',
       width: 100,
       align: 'center',
-
     },
-
     {
       name: 'id',
       title: ' ',
@@ -195,12 +177,9 @@ function AstrometryHistory({ history }) {
       action: handleClickHistoryTable,
       align: 'center',
     },
-
-
   ];
 
   return (
-
     <div>
       <Table
         data={tableData}
@@ -213,12 +192,9 @@ function AstrometryHistory({ history }) {
         hasSearching={false}
         hasColumnVisibility={false}
       >
-
       </ Table>
-
     </div>
   );
-
 }
 
 export default withRouter(AstrometryHistory);
