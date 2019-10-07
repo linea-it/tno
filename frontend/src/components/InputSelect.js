@@ -56,44 +56,59 @@ export default function SimpleSelect(props) {
     setDefaultValue(event.target.value);
 
 
+
     switch (event.currentTarget.title) {
-      case 'input':
+      case "input":
 
 
-        props.setActionButton(false);
+        props.setActionButton(false); //Turns the submit button active
 
-        const process_id = event.currentTarget.getAttribute('process_id');
-        const orbit_input_list_id = event.currentTarget.getAttribute('orbit_input_list_id');
-        const orbit_run_id = event.currentTarget.getAttribute('orbit_run_id');
+        let process_id = event.currentTarget.getAttribute('process_id');
+        let orbit_input_list_id = event.currentTarget.getAttribute('orbit_input_list_id');
+        let orbit_run_id = event.currentTarget.getAttribute('orbit_run_id');
+
+
 
         props.setSubmition({
           ...props.valueSubmition,
           processId: process_id,
           orbit_run_input_list_id: orbit_input_list_id,
-          orbit_run_id,
-
+          orbit_run_id: orbit_run_id,
 
         });
 
-
-        // Case
-
-        break;
-
-      case 'catalog':
-        const catalogId = event.currentTarget.id;
-        props.setSubmition({ catalogId });
+        //Case 
 
         break;
 
-      case 'leapSeconds':
-        console.log('leapSeconds');
+      case "catalog":
+        let catalogId = event.currentTarget.id;
+        props.setSubmition({
+          ...props.valueSubmition,
+          catalogId: catalogId
+        });
+
+
         break;
 
-      case 'bspPlanetary':
-        console.log('bspPlanetary');
+      case "leapSeconds":
+        let leapSecondsId = event.currentTarget.id;
+        props.setSubmition({
+          ...props.valueSubmition,
+          leap_secondsId: leapSecondsId
+        });
+        break;
+
+      case "bspPlanetary":
+        let bsp_planetaryId = event.currentTarget.id;
+        props.setSubmition({
+          ...props.valueSubmition,
+          bsp_planetaryId: bsp_planetaryId
+        })
         break;
     }
+
+
   }
 
   const { formControl } = useStyles(props);
@@ -110,12 +125,13 @@ export default function SimpleSelect(props) {
 
 
     if (generalArray && generalArray.length > 0) {
-      // Gera os itens de menus com 2 propriedades diferentes: input_list_id(Lista de objetos) e orbitRun_id
-      if (props.title === 'input') {
+      //Gera os itens de menus com 2 propriedades diferentes: input_list_id(Lista de objetos) e orbitRun_id
+      if (props.title === "input") {
+
         return generalArray.map((el, i) => (
           <MenuItem
             key={i}
-            process_id={el.id}
+            process_id={el.proccess}
             orbit_input_list_id={el.input_list}
             className={classes.MenuItem}
             value={i == 0 ? '' : i}
@@ -126,19 +142,20 @@ export default function SimpleSelect(props) {
           </MenuItem>
         ));
       }
+      else {
 
-
-      return generalArray.map((el, i) => (
-        <MenuItem
-          key={i}
-          id={el.id}
-          className={classes.MenuItem}
-          value={i}
-          title={props.title}
-        >
-          {eval(display)}
-        </MenuItem>
-      ));
+        return generalArray.map((el, i) => (
+          <MenuItem
+            key={i}
+            id={el.id}
+            className={classes.MenuItem}
+            value={i}
+            title={props.title}
+          >
+            {eval(display)}
+          </MenuItem>
+        ));
+      }
     }
   };
 
@@ -151,7 +168,7 @@ export default function SimpleSelect(props) {
           // value={values.input}
           value={defaultValue}
           onChange={handleChange}
-          inputProps={{ name: 'input', id: 'input-simple' }}
+          inputProps={{ name: 'input', id: 'input-simple', }}
           displayEmpty
         >
 

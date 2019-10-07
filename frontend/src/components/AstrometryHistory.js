@@ -5,7 +5,6 @@ import Table from './utils/CustomTable';
 import { getPraiaRuns } from '../api/Praia';
 import { makeStyles } from '@material-ui/styles';
 
-
 const useStyles = makeStyles((theme) => ({
   iconList: {
     fontSize: 24,
@@ -36,8 +35,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ffba01',
     color: '#000',
   },
-
-
+  btnWarning: {
+    backgroundColor: '#D79F15',
+    color: '#FFF',
+  },
   iconDetail: {
     fontSize: 18,
   },
@@ -47,27 +48,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function AstrometryHistory() {
-
-
+function AstrometryHistory({ history, reloadHistory }) {
 
   const classes = useStyles();
 
   const [tableData, setTableData] = useState([]);
-
-
-  // this.api.getPraiaRuns({ page: page, pageSize: sizePerPage }).then(res => {
-  //   const r = res.data;
-  //   this.setState({
-  //     data: r.results,
-  //     totalSize: r.count,
-  //     page: page,
-  //     sizePerPage: sizePerPage,
-  //     loading: false,
-  //   });
-  // });
-
-
   const [tablePage, setTablePage] = useState(1);
   const [tablePageSize, setPageSize] = useState(5);
   const [totalCount, setTotalCount] = useState();
@@ -75,10 +60,7 @@ function AstrometryHistory() {
 
   const pageSizes = [5, 10, 15];
 
-
-
   const loadData = (event) => {
-
     let page = typeof event == "undefined" ? tablePage : event.currentPage + 1;
     let pageSize = typeof event == "undefined" ? tablePageSize : event.pageSize;
     let searchValue = typeof event == "undefined" ? " " : event.searchValue;
@@ -87,37 +69,15 @@ function AstrometryHistory() {
       setTableData(res.results);
       setTotalCount(res.count);
     });
-
-
   };
-
-  //  const loadTableData = async ({
-  //   sorting, pageSize, currentPage, filter, searchValue,
-  // }) => {
-  //   const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
-  //   const orbits = await getOrbitRuns({
-  //     ordering,
-  //     pageSize,
-  //     page: currentPage !== 0 ? currentPage + 1 : 1,
-  //     filter,
-  //     search: searchValue,
-  //   });
-
-  //   if (orbits && orbits.results) {
-  //     setTableData(orbits.results);
-  //     setTotalCount(orbits.count);
-  //   }
-  // };
-
-
 
   useEffect(() => {
     loadData();
   }, []);
 
-
-
-  // console.log(tableData);
+  const handleClickHistoryTable = (row) => {
+    history.push(`/astrometry-run/${row.id}`)
+  };
 
   const columns = [
     {
@@ -136,6 +96,16 @@ function AstrometryHistory() {
             </span>
           );
         }
+        if (row.status === 'warning') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnWarning)}
+              title={row.status}
+            >
+              Warning
+            </span>
+          );
+        }
         return (
           <span
             className={clsx(classes.btn, classes.btnSuccess)}
@@ -146,88 +116,65 @@ function AstrometryHistory() {
         );
       },
     },
-
     {
       name: 'proccess_displayname',
       title: 'Process',
       width: 200,
       align: 'center',
-
     },
-
     {
       name: 'owner',
       title: 'Owner',
       width: 150,
       align: 'center',
-
     },
-
     {
       name: 'input_list',
       title: 'Input',
       width: 100,
       align: 'center',
     },
-
     {
       name: 'configuration',
       title: 'Configuration',
       width: 150,
       align: 'center',
-
     },
-
     {
       name: 'start_time',
       title: 'Date',
       width: 180,
       align: 'center',
-
     },
-
-
     {
       name: 'h_time',
       title: 'Start',
       width: 150,
       align: 'center',
-
     },
-
     {
       name: 'h_execution_time',
       title: 'Execution Time',
       width: 180,
       align: 'center',
-
     },
-
     {
       name: 'count_objects',
       title: 'Asteroids',
       width: 100,
       align: 'center',
-
     },
-
-
-
     {
       name: 'id',
       title: ' ',
       width: 100,
       icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: (el) => console.log(el),
+      action: handleClickHistoryTable,
       align: 'center',
     },
-
-
   ];
 
-
   return (
-
     <div>
       <Table
         data={tableData}
@@ -240,14 +187,10 @@ function AstrometryHistory() {
         hasSearching={false}
         hasColumnVisibility={false}
       >
-
       </ Table>
-
     </div>
   );
-
 }
-
 
 export default withRouter(AstrometryHistory);
 

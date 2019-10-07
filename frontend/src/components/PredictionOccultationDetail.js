@@ -178,7 +178,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
                   className={clsx(classes.btn, classes.btnFailure)}
                   title={data.error_msg}
                 >
-                    Failure
+                  Failure
                 </span>
               );
             } if (data.status === 'running') {
@@ -187,7 +187,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
                   className={clsx(classes.btn, classes.btnRunning)}
                   title={data.status}
                 >
-                    Running
+                  Running
                 </span>
               );
             } if (data.status === 'not_executed') {
@@ -196,7 +196,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
                   className={clsx(classes.btn, classes.btnNotExecuted)}
                   title={data.error_msg}
                 >
-                    Not Executed
+                  Not Executed
                 </span>
               );
             } if (data.status === 'warning') {
@@ -205,7 +205,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
                   className={clsx(classes.btn, classes.btnWarning)}
                   title={data.error_msg ? data.error_msg : 'Warning'}
                 >
-                    Warning
+                  Warning
                 </span>
               );
             }
@@ -215,7 +215,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
                 className={clsx(classes.btn, classes.btnSuccess)}
                 title={data.status}
               >
-                  Success
+                Success
               </span>
             );
           },

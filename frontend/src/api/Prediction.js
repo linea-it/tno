@@ -22,16 +22,16 @@ export const createPredictRun = ({
   ephemeris_final_date,
   ephemeris_step,
 }) => axios.post('/predict_run/', {
-  process,
-  input_list,
-  input_orbit,
-  leap_second,
-  bsp_planetary,
-  catalog,
-  catalog_radius,
-  ephemeris_initial_date,
-  ephemeris_final_date,
-  ephemeris_step,
+  process: process,
+  input_list: input_list,
+  input_orbit: input_orbit,
+  leap_second: leap_second,
+  bsp_planetary: bsp_planetary,
+  catalog: catalog,
+  catalog_radius: catalog_radius,
+  ephemeris_initial_date: ephemeris_initial_date,
+  ephemeris_final_date: ephemeris_final_date,
+  ephemeris_step: ephemeris_step,
 });
 
 export const getPrediction = () => axios.get('/orbit_run/?status=success').then((res) => res.data);
@@ -152,7 +152,6 @@ export const getAsteroidOutputs = ({ id }) => {
     params,
   }).then((res) => res.data);
 };
-
 
 
 export const getCatalogPositions = ({ id }) => {
