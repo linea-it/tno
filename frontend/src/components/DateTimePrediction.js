@@ -2,6 +2,8 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
+import moment from 'moment';
+
 
 const useStyles = makeStyles({
   container: {
@@ -31,29 +33,36 @@ export default function DateAndTimePickers(props) {
       props.setSubmition({
         ...props.valueSubmition,
         ephemeris_initial_date: value,
+
       });
+
+      props.setInitialDate(value);
     }
     else {
       props.setSubmition({
         ...props.valueSubmition,
         ephemeris_final_date: value,
       });
+      props.setFinalDate(value);
     }
   }
+
 
   return (
     <form className={classes.container} noValidate>
       <TextField
         id={props.title}
-        label={label}
         title={props.title}
-        type="datetime-local"
-        defaultValue={props.defaultDateTime}
+        label={label}
+        type="date"
+        // defaultValue={"2019-05-08"}
+        defaultValue={props.defaultDate}
         onChange={handleChange}
         className={classes.textField}
         InputLabelProps={{
           shrink: true,
         }}
+
       />
     </form>
   );
