@@ -20,7 +20,6 @@ export default function DateAndTimePickers(props) {
   const classes = useStyles();
   const { label } = props;
 
-
   const handleChange = (event) => {
 
     const id = event.currentTarget.id;

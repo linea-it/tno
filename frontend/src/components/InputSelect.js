@@ -35,7 +35,6 @@ export default function SimpleSelect(props) {
   const [values, setValues] = useState({
     input: '',
     name: '',
-
   });
 
   const [defaultValue, setDefaultValue] = useState(0);
@@ -55,14 +54,9 @@ export default function SimpleSelect(props) {
 
     setDefaultValue(event.target.value);
 
-
-
     switch (event.currentTarget.title) {
       case "input":
-
-
         props.setActionButton(false);
-
         let process_id = event.currentTarget.getAttribute('process_id');
         let orbit_input_list_id = event.currentTarget.getAttribute('orbit_input_list_id');
         let orbit_run_id = event.currentTarget.getAttribute('orbit_run_id');
@@ -72,11 +66,7 @@ export default function SimpleSelect(props) {
           processId: process_id,
           orbit_run_input_list_id: orbit_input_list_id,
           orbit_run_id: orbit_run_id,
-
-
         });
-
-
 
         //Case 
 
@@ -172,7 +162,6 @@ export default function SimpleSelect(props) {
           inputProps={{ name: 'input', id: 'input-simple', }}
           displayEmpty
         >
-
 
           Sets the defaulValue each SELECT
 
