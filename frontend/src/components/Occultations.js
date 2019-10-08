@@ -17,6 +17,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import FormControl from '@material-ui/core/FormControl';
+import Divider from '@material-ui/core/Divider';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -33,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
   cardMedia: {
     height: '80%',
     paddingTop: '56.25%', // 16:9
+    width: "90%"
   },
   extendedIcon: {
     marginRight: theme.spacing(1),
@@ -42,11 +44,11 @@ const useStyles = makeStyles((theme) => ({
     height: 800,
   },
   img: {
-    width: '95%',
-    height: '78%',
+    width: '80%',
+    height: '50%',
   },
   imgCard: {
-    height: 400,
+    height: 750,
     width: "100%",
   },
   titleImg: {
@@ -68,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     width: '40%',
   },
   fab: {
-    marginLeft: '30%',
+    // marginLeft: '30%',
   },
   sliderCard: {
     height: 102,
@@ -128,6 +130,9 @@ const useStyles = makeStyles((theme) => ({
   cards: {
     marginLeft: 10,
   },
+  cardActions:{
+    justifyContent:"center",
+  },
   gridListContainer: {
     marginTop: 15,
   },
@@ -138,6 +143,12 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     minWidth: 120,
   },
+  underTitle: {
+    alignContent: "center",
+    justifyContent: "center",
+    textAlign: "center",
+
+  }
 }));
 
 const AirbnbSlider = withStyles({
@@ -320,6 +331,8 @@ function Occultation({ setTitle, ...props }) {
     setMagnitudeValue(value);
   };
 
+  console.log(tileData);
+
   return (
     <Grid>
       <Grid container spacing={8}>
@@ -488,7 +501,7 @@ function Occultation({ setTitle, ...props }) {
             <CardHeader
               title={loadSelectSortGridList()}
             />
-            <GridList cellHeight={'auto'} cols={window.innerWidth <= 1280 ? 3 : 4} spacing={15} className={classes.gridList}>
+            <GridList cellHeight={600} cols={window.innerWidth <= 1280 ? 2 : 4} spacing={15} className={classes.gridList}>
               {!tileData ? null : tileData.map(tile => (
                 <GridListTile key={tile.id} cols={1}>
                   <Card className={classes.imgCard}>
@@ -500,7 +513,10 @@ function Occultation({ setTitle, ...props }) {
                       image={url + tile.src} className={classes.img}
                       title={tile.title}
                     />
-                    <CardActions>
+                    <Divider />
+                    <p className={classes.underTitle}>{tile.date_time}</p>
+                    <p className={classes.underTitle}>G mag*: {tile.g}</p>
+                    <CardActions className={classes.cardActions}>
                       <Fab variant="extended" size={"small"} aria-label="extended" className={classes.fab} onClick={handleImgDetail}>
                         <SearchIcon className={classes.leftIcon}></SearchIcon>
                         Detail
