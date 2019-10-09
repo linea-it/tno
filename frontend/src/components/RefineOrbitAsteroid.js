@@ -444,7 +444,7 @@ function RefineOrbitAsteroid({
         <Grid container spacing={2}>
           <Grid item className={classes.block}>
             <Card>
-              <CardHeader title="Comparing determined orbits from NIMA and JPL" />
+              <CardHeader title="Comparing orbit determined with NIMA and that from JPL" />
               <GridList cols={2} className={classes.block}>
                 {charts.map((image, i) => (
                   <GridListTile item className={classes.chartTile}>
