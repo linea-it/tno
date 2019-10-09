@@ -67,8 +67,6 @@ export default function SimpleSelect(props) {
         let orbit_input_list_id = event.currentTarget.getAttribute('orbit_input_list_id');
         let orbit_run_id = event.currentTarget.getAttribute('orbit_run_id');
 
-
-
         props.setSubmition({
           ...props.valueSubmition,
           processId: process_id,
@@ -135,7 +133,7 @@ export default function SimpleSelect(props) {
             orbit_input_list_id={el.input_list}
             className={classes.MenuItem}
             value={i == 0 ? '' : i}
-            orbit_run_id={el.proccess}
+            orbit_run_id={el.id}
             title={props.title}
           >
             {eval(display)}

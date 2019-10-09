@@ -418,7 +418,7 @@ function PredictionOccultation({ history, setTitle }) {
     setDialogVisible(false);
   };
 
-
+  console.log(valueSubmition);
 
   return (
     <Grid>
@@ -519,6 +519,9 @@ function PredictionOccultation({ history, setTitle }) {
               totalCount={totalCount}
               defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
               reload={reload}
+              hasSearching={false}
+              hasColumnVisibility={false}
+              hasToolbar={false}
             />
           </Card>
 
