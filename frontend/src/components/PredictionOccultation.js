@@ -231,8 +231,6 @@ function PredictionOccultation({ history, setTitle }) {
   }
 
 
-
-
   //When submit button is clicked so calls the function below
   useEffect(() => {
 
@@ -278,7 +276,6 @@ function PredictionOccultation({ history, setTitle }) {
     }
 
   }, [valueSubmition]);
-
 
 
 
@@ -418,7 +415,6 @@ function PredictionOccultation({ history, setTitle }) {
     setDialogVisible(false);
   };
 
-  console.log(valueSubmition);
 
   return (
     <Grid>
@@ -511,6 +507,7 @@ function PredictionOccultation({ history, setTitle }) {
                 <span>History</span>
               }
             />
+
             <CustomTable
               columns={columns}
               data={tableData}
@@ -524,7 +521,6 @@ function PredictionOccultation({ history, setTitle }) {
               hasToolbar={false}
             />
           </Card>
-
         </Grid>
       </Grid>
 

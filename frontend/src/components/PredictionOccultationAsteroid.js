@@ -145,6 +145,7 @@ function PredictionOccultationAsteroid({
   const [outputTableData, setOutputTableData] = useState([]);
   const [neighborhoodStarsPlot, setNeighborhoodStarsPlot] = useState('');
   const [asteroidOrbitPlot, setAsteroidOrbitPlot] = useState('');
+ 
   const [lightbox, setLightbox] = useState({
     isOpen: false,
     currentImage: 0,
@@ -155,6 +156,7 @@ function PredictionOccultationAsteroid({
     next: null,
   });
   const [reload, setReload] = useState(false);
+  const [pageSize, setPageSize] = useState(10);
 
 
   const occultationsColumns = [
@@ -286,6 +288,9 @@ function PredictionOccultationAsteroid({
       next: null,
     });
 
+
+   
+
     getAsteroidById({ id }).then((res) => setAsteroidData(res));
     getOccultations({ id }).then((data) => {
       setOccultationData(
@@ -294,7 +299,12 @@ function PredictionOccultationAsteroid({
           source: row.src ? url + row.src : null,
         })),
       );
+     
     });
+
+
+
+
     getAsteroidInputs({ id }).then((data) => {
       const tableData = data.results.map((res) => ({
         input_type: res.input_type,
@@ -493,6 +503,8 @@ function PredictionOccultationAsteroid({
 
   const handleBackNavigation = () => history.push(`/prediction-of-occultation/${asteroidData.predict_run}`);
 
+
+ 
   return (
     <>
       <Grid
@@ -601,11 +613,12 @@ function PredictionOccultationAsteroid({
                   columns={occultationsColumns}
                   data={occultationData}
                   hasPagination={false}
-                  pageSize={10}
+                  pageSize={pageSize}
                   hasSearching={false}
                   hasColumnVisibility={false}
                   hasToolbar={false}
                   remote={false}
+
                 />
               </CardContent>
             </Card>
