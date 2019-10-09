@@ -96,6 +96,23 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: 342,
     overflow: 'auto',
   },
+  gridListTileBar: {
+    position: 'relative',
+    top: 'auto',
+    bottom: 'auto',
+    height: 'auto',
+    background: 'transparent',
+    textAlign: 'center',
+    padding: '12px 0px 0px',
+  },
+  gridListTileBarText: {
+    fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
+    color: 'rgba(0, 0, 0, 0.67)',
+    fontSize: 14,
+    textTransform: 'uppercase',
+    fontWeight: 'bolder',
+    textShadow: '0 0 .75px',
+  },
 }));
 
 function RefineOrbitAsteroid({
@@ -170,6 +187,7 @@ function RefineOrbitAsteroid({
   ];
 
   useEffect(() => {
+    console.log(history);
     setTitle('Refine Orbit');
     setAsteroidData([]);
     setAsteroidList([]);
@@ -184,7 +202,6 @@ function RefineOrbitAsteroid({
     });
 
     getAsteroidById({ id }).then((data) => setAsteroidData(data));
-
 
     getAsteroidInputs({ id }).then((data) => {
       const tableData = data.results.map((res) => ({
@@ -231,7 +248,7 @@ function RefineOrbitAsteroid({
         next: res.next,
       });
     });
-  }, [reload]);
+  }, [reload, history.location]);
 
 
   useEffect(() => {
@@ -427,14 +444,21 @@ function RefineOrbitAsteroid({
         <Grid container spacing={2}>
           <Grid item className={classes.block}>
             <Card>
-              <CardHeader title="Charts" />
+              <CardHeader title="Comparing determined orbits from NIMA and JPL" />
               <GridList cols={2} className={classes.block}>
                 {charts.map((image, i) => (
                   <GridListTile item className={classes.chartTile}>
-                    <img src={image.src} className={classes.chart} alt={image.filename} title={image.filename} onClick={(e) => openLightbox(i, e)} />
                     <GridListTileBar
+                      className={classes.gridListTileBar}
+                      title={<span className={classes.gridListTileBarText}>{image.filename}</span>}
+                      subtitle={<span className={classes.gridListTileBarText}>{`type: ${image.type}`}</span>}
+                    />
+                    <img
+                      src={image.src}
+                      className={classes.chart}
+                      alt={image.filename}
                       title={image.filename}
-                      subtitle={<span>{`type: ${image.type}`}</span>}
+                      onClick={(e) => openLightbox(i, e)}
                     />
                   </GridListTile>
                 ))}
