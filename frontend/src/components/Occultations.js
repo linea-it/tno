@@ -130,8 +130,8 @@ const useStyles = makeStyles((theme) => ({
   cards: {
     marginLeft: 10,
   },
-  cardActions:{
-    justifyContent:"center",
+  cardActions: {
+    justifyContent: "center",
   },
   gridListContainer: {
     marginTop: 15,
@@ -190,7 +190,6 @@ function Occultation({ setTitle, ...props }) {
 
   const loadOccultations = () => {
     getOccultations(page, pageSize, first, sortField).then((res) => {
-      console.log(res);
       setTileData(res.results);
     });
   };
@@ -331,7 +330,7 @@ function Occultation({ setTitle, ...props }) {
     setMagnitudeValue(value);
   };
 
-  console.log(tileData);
+
 
   return (
     <Grid>
