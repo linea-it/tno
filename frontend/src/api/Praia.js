@@ -69,6 +69,12 @@ export const getAsteroids = ({
   });
 };
 
+// readCondorFile = filepath => {
+//   return axios.get(`${this.api}/read_file?filepath=${filepath}`);
+// };
+
+
+
 export const getPraiaRunById = ({ id }) => axios.get(`praia_run/${id}/`);
 
 export const getExecutionTimeById = ({ id }) => axios.get(`praia_run/${id}/step_execution_time/`);

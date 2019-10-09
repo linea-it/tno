@@ -38,40 +38,23 @@ export default function SimpleSelect(props) {
 
   });
 
-  const [defaultValue, setDefaultValue] = useState(0);
+  const [defaultValue, setDefaultValue] = useState(props.default === "noDefault" ? null : 0);
 
   function handleChange(event) {
-    /*
-    A linha abaixo quer dizer:
-    Pegue todas as propriedades do objeto e copie-as novamente.
-    Porém altere a chave: event.target.name
-
-    Esta é uma forma de alterar os valores das propriedades.
-    Neste caso está alterando o valor de
-    [event.target.name] para o valor que foi selecionado no select.
-    */
 
     setValues((oldValues) => ({ ...oldValues, [event.target.name]: event.target.value }));
 
     setDefaultValue(event.target.value);
 
-
     let cases = event.currentTarget.getAttribute("case");
-
-
-    // inputId: ,
-    //   refCatalogId: null,
-    //     configId: null,
 
     switch (cases) {
       case "input":
-
         props.setSubmition({
           ...props.valueSubmition,
           inputId: event.currentTarget.id
 
         });
-
         break;
 
       case "catalog":
@@ -80,17 +63,14 @@ export default function SimpleSelect(props) {
           refCatalogId: event.currentTarget.id
 
         });
-
         break;
 
       case "configuration":
         props.setSubmition({
           ...props.valueSubmition,
           configId: event.currentTarget.id
-
         });
     }
-
   }
 
   const { formControl } = useStyles(props);
@@ -100,15 +80,13 @@ export default function SimpleSelect(props) {
     // Receive the props data from Astrometry.
     const generalArray = props.data;
 
-    //Display shows the names of the list
+    //Display the names of the list
     //That is effectively shown on select
     //This comes from the props.
     const { display } = props;
     const { value } = props;
 
-
     // Create a map function to define(return) the MenuItems.
-
 
     if (generalArray && generalArray.length > 0) {
 
@@ -130,7 +108,6 @@ export default function SimpleSelect(props) {
     }
   };
 
-
   return (
     <form className={classes.root} autoComplete="off">
       <FormControl className={`${formControl}`}>
@@ -142,7 +119,6 @@ export default function SimpleSelect(props) {
           inputProps={{ name: 'input', id: 'input-simple', }}
           displayEmpty
         >
-
 
           Sets the defaulValue each SELECT
 
