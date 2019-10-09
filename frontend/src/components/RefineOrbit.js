@@ -201,6 +201,7 @@ function RefineOrbit({ history, setTitle }) {
   const loadTableData = async ({
     sorting, pageSize, currentPage, filter, searchValue,
   }) => {
+
     const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
     const orbits = await getOrbitRuns({
       ordering,
