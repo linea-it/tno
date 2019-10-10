@@ -120,13 +120,13 @@ function AstrometryHistory({ history, reloadHistory }) {
       name: 'proccess_displayname',
       title: 'Process',
       width: 200,
-      align: 'center',
+      align: 'left',
     },
     {
       name: 'owner',
       title: 'Owner',
       width: 150,
-      align: 'center',
+      align: 'left',
     },
     {
       name: 'input_list',
