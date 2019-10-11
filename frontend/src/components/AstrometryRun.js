@@ -83,6 +83,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
   const [execution_time, setExecutionTime] = useState({});
   const [execution_stats, setExecutionStats] = useState({});
   const [tableData, setTableData] = useState();
+  const [totalCount, setTotalCount] = useState();
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState();
   const [toolButton, setToolButton] = useState('list');
   const [reload_interval, setReloadInterval] = useState(3);
@@ -91,7 +92,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
   const [runData, setRunData] = useState();
   const [dialog, setDialog] = useState({
     visible: false,
-    content: " ",
+    content: [],
     title: " ",
   });
   const [tableParams, setTableParams] = useState({
@@ -102,7 +103,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
     pageSizes: [10, 20, 30],
     reload: true,
     totalCount: null,
-
   })
 
   const runId = params.id;
@@ -201,6 +201,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
     });
     getAsteroids({ page, sizePerPage, filters, sortField, sortOrder, search: searchValue }).then((res) => {
       setTableData(res.data.results);
+      setTotalCount(res.data.count);
       setTableParams({ ...tableParams, totalCount: res.data.count });
     });
   };
@@ -208,6 +209,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
   const handleAsteroidDetail = (row) => {
     console.log(row);
   };
+
 
   const listColumnsTable = [
     {
@@ -336,7 +338,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
     }
   ];
 
-
   const bugColumnsTable = [
     {
       name: "status",
@@ -418,9 +419,8 @@ function AstrometryRun({ setTitle, match: { params } }) {
     {
       name: "error_msg",
       title: "Error",
-      width: row => row.error_msg.length,
-      maxWidth: 800,
       align: 'left',
+      width: 800,
     },
     {
       name: "condor_log",
@@ -544,6 +544,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
   };
 
 
+
   return (
     <div>
       <ReactInterval
@@ -551,7 +552,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
         enabled={interval_condition}
         callback={handleInterval}
       />
-
       <Grid container spacing={6}>
         <Grid item xs={12} md={6} xl={4}>
           <Card>
@@ -564,7 +564,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
             </ListStat>
           </Card>
         </Grid>
-
         <Grid item xs={12} md={6} xl={4}>
           <Card className={classes.card}>
             <CardHeader
@@ -576,7 +575,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
             </Donut>
           </Card>
         </Grid >
-
         <Grid item xs={12} md={6} xl={4}>
           <Card className={classes.card}>
             <CardHeader
@@ -589,7 +587,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
           </Card>
         </Grid >
       </Grid >
-
       <Grid container spacing={6}>
         <Grid item sm={12} xl={12}>
           <Card className={classes.card}>
@@ -604,24 +601,31 @@ function AstrometryRun({ setTitle, match: { params } }) {
               >
                 <ToggleButton
                   value="list"
-                  onClick={() => setColumnsAsteroidTable(listColumnsTable)}>
+                  onClick={() => {
+                    setColumnsAsteroidTable(listColumnsTable)
+                  }
+                  }>
                   <ListIcon />
                 </ToggleButton>
                 <ToggleButton
                   value="bug"
-                  onClick={() => setColumnsAsteroidTable(bugColumnsTable)}>
+                  onClick={() => {
+                    setColumnsAsteroidTable(bugColumnsTable)
+                  }
+                  }>
                   <BugIcon />
                 </ToggleButton>
               </ToggleButtonGroup>
             </Toolbar>
-
             <Table
               data={tableData ? tableData : [{}]}
               columns={columnsAsteroidTable ? columnsAsteroidTable : listColumnsTable}
               hasSearching={true}
               loadData={loadTableData}
+              children={[]}
               totalCount={tableParams.totalCount}
               hasColumnVisibility={false}
+              totalCount={totalCount}
               pageSizes={tableParams.pageSizes}
               reload={tableParams.reload}
               hasToolbar={true}

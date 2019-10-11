@@ -109,7 +109,7 @@ export function Donut({ data, width, height }) {
 }
 
 Donut.defaultProps = {
-  width: 460,
+  width: 450,
   height: 364,
 };
 
