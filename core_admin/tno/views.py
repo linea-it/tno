@@ -29,6 +29,8 @@ from django.db.models import Count
 from django.db.models.functions import TruncMonth
 from tno.skybot.plot_ccds_objects import ccds_objects, read_skybot_output, get_circle_from_ra_dec
 import urllib
+from rest_framework.decorators import detail_route
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -332,6 +334,33 @@ class CustomListViewSet(viewsets.ModelViewSet):
             'data': data,
         })
 
+    @detail_route(methods=['GET'])
+    def check_ccds_not_downloaded(self, request, pk):
+
+        record = self.get_object()
+
+        # Verificar todos os ccds que estao disponiveis.
+        # count_not_downloaded = FilterObjects().count_pointing_not_downloaded(
+        #     record.tablename, record.schema)
+        ccds, count_ccds = FilterObjects().list_pointing_path_by_table(
+            record.tablename, record.schema)
+
+        not_download = list()
+
+        for ccd in ccds:
+            # Verificar se a imagem esta disponivel no diretorio.
+            filepath = os.path.join(
+                settings.CCD_IMAGES_DIR, ccd.get("filename"))
+            if not os.path.exists(filepath):
+                not_download.append(ccd)
+
+        return Response({
+            'success': True,
+            'list_name': record.displayname,
+            'count_ccds': count_ccds,
+            'count_not_downloaded': len(not_download),
+            'ccds': not_download
+        })
 
 
 class ProccessViewSet(viewsets.ModelViewSet):
@@ -552,6 +581,7 @@ class JohnstonArchiveViewSet(viewsets.ModelViewSet):
         except Exception as e:
             raise e
 
+
 class SkybotRunViewSet(viewsets.ModelViewSet):
     queryset = SkybotRun.objects.all()
     serializer_class = SkybotRunSerializer
@@ -707,7 +737,7 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
                 status = 'warning'
 
             date_obs = getattr(row, "date_obs")
-            
+
             rows.append(dict({
                 'expnum': getattr(row, "expnum"),
                 'band': getattr(row, "band"),
@@ -788,7 +818,7 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
         df = self.read_result_csv(skybotrun)
 
         # Pega o primeiro resultado da busca
-        first = df[df.expnum==expnum].iloc[0]
+        first = df[df.expnum == expnum].iloc[0]
 
         filename = getattr(first, 'filename')
         output_path = self.get_output_path(skybotrun)
@@ -808,7 +838,7 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
         run_id = int(request.query_params.get('run_id', None))
         expnum = int(request.query_params.get('expnum', None))
         image = bool(request.query_params.get('image', False))
-    
+
         skybotrun = None
         try:
             skybotrun = SkybotRun.objects.get(pk=int(run_id))
@@ -835,13 +865,14 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
         dec = ccds[0]['decdeg']
 
         # Objetos dentro de ccd.
-        mAsteroids = SkybotOutput.objects.filter(expnum=expnum, ccdnum__isnull=False)
+        mAsteroids = SkybotOutput.objects.filter(
+            expnum=expnum, ccdnum__isnull=False)
 
         # Objetos retornados skybot
         df = self.read_result_csv(skybotrun)
 
         # Pega o primeiro resultado da busca por expnum
-        first = df[df.expnum==expnum].iloc[0]
+        first = df[df.expnum == expnum].iloc[0]
 
         # Recupera o path para o arquivo de saida do skybot
         filename = getattr(first, 'filename')
@@ -853,13 +884,12 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
         plot_file_path = os.path.join(settings.MEDIA_TMP_DIR, plot_filename)
         plot_src = urllib.parse.urljoin(settings.MEDIA_TMP_URL, plot_filename)
 
-
         if image:
             plot = ccds_objects(
-                ra=ra, 
-                dec=dec,  
-                ccds=ccds, 
-                skybot_file=skybot_output_file, 
+                ra=ra,
+                dec=dec,
+                ccds=ccds,
+                skybot_file=skybot_output_file,
                 file_path=plot_file_path)
 
             return Response({
@@ -872,7 +902,6 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
                 'plot_src': plot_src,
                 'plot_filename': plot_filename,
             })
-
 
         else:
 
@@ -892,8 +921,6 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
                 }),
             })
 
-
-
     @list_route()
     def asteroids_ccd(self, request):
         expnum = int(request.query_params.get('expnum', None))
@@ -904,7 +931,8 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
                 'msg': "Expnum is required"
             })
 
-        asteroids = SkybotOutput.objects.filter(expnum=expnum, ccdnum__isnull=False).order_by('ccdnum')
+        asteroids = SkybotOutput.objects.filter(
+            expnum=expnum, ccdnum__isnull=False).order_by('ccdnum')
         serializer = SkybotOutputSerializer(asteroids, many=True)
         rows = serializer.data
 

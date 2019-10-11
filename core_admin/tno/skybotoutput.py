@@ -350,6 +350,47 @@ class FilterObjects(DBBase):
 
         return rows, totalSize
 
+    def list_pointing_path_by_table(self, tablename, schema, page=1, pageSize=None):
+        """
+            Retorna todos os apontamentos relacionados com a tabela. 
+            informacoes do path e filename. 
+            SELECT b.id as pointing_id, b.desfile_id, b."path", b.filename, b.compression FROM <Tablename> a LEFT JOIN tno_pointing b ON (a.pointing_id = b.id) WHERE a.pointing_id is not null;
+        """
+
+        tbl = self.get_table(tablename, schema).alias('a')
+        tbl_pointing = self.get_table_pointing().alias('b')
+
+        stm_join = tbl.join(tbl_pointing, tbl.c.pointing_id == tbl_pointing.c.id, isouter=True)
+
+        stm = select([
+            tbl_pointing.c.id, 
+            tbl_pointing.c.desfile_id, 
+            tbl_pointing.c.path,
+            tbl_pointing.c.filename,
+            tbl_pointing.c.compression,
+        ]).select_from(stm_join)
+
+        stm = stm.where(and_(tbl.c.pointing_id.isnot(None)))
+
+        # Ordenacao
+        stm = stm.order_by(tbl_pointing.c.id)
+
+        # Paginacao
+        stm = stm.limit(pageSize)
+
+        if page and pageSize:
+            offset = (int(page) * int(pageSize)) - int(pageSize)
+            stm = stm.offset(offset)
+
+        # Total de rows independente da paginacao
+        totalSize = self.stm_count(stm)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows, totalSize
+
+
+
     def count_ccdimage_size(self, tablename, schema=None):
 
         tbl = self.get_table(tablename, schema).alias('a')
