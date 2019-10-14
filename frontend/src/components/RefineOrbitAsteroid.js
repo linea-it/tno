@@ -245,7 +245,7 @@ function RefineOrbitAsteroid({
                 className={clsx(classes.btn, classes.btnFailure)}
                 title={asteroidData.error_msg}
               >
-                  Failure
+                Failure
               </span>
             );
           } if (asteroidData.status === 'running') {
@@ -254,7 +254,7 @@ function RefineOrbitAsteroid({
                 className={clsx(classes.btn, classes.btnRunning)}
                 title={asteroidData.status}
               >
-                  Running
+                Running
               </span>
             );
           } if (asteroidData.status === 'not_executed') {
@@ -263,7 +263,7 @@ function RefineOrbitAsteroid({
                 className={clsx(classes.btn, classes.btnNotExecuted)}
                 title={asteroidData.error_msg}
               >
-                  Not Executed
+                Not Executed
               </span>
             );
           } if (asteroidData.status === 'warning') {
@@ -272,7 +272,7 @@ function RefineOrbitAsteroid({
                 className={clsx(classes.btn, classes.btnWarning)}
                 title={asteroidData.error_msg ? asteroidData.error_msg : 'Warning'}
               >
-                  Warning
+                Warning
               </span>
             );
           }
@@ -282,7 +282,7 @@ function RefineOrbitAsteroid({
               className={clsx(classes.btn, classes.btnSuccess)}
               title={asteroidData.status}
             >
-                Success
+              Success
             </span>
           );
         },
@@ -430,7 +430,7 @@ function RefineOrbitAsteroid({
               <CardHeader title="Charts" />
               <GridList cols={2} className={classes.block}>
                 {charts.map((image, i) => (
-                  <GridListTile item className={classes.chartTile}>
+                  <GridListTile key={i} item="true" className={classes.chartTile}>
                     <img src={image.src} className={classes.chart} alt={image.filename} title={image.filename} onClick={(e) => openLightbox(i, e)} />
                     <GridListTileBar
                       title={image.filename}

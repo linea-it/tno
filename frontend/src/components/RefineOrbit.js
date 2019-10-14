@@ -75,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function RefineOrbit({ history, setTitle }) {
+
   const classes = useStyles();
   const columns = [
     {
