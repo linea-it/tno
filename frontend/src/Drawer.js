@@ -34,6 +34,7 @@ import TestCalendar from './components/TestCalendar';
 import PredictionOccultation from './components/PredictionOccultation';
 import PredictionOccultationDetail from './components/PredictionOccultationDetail';
 import PredictionOccultationAsteroid from './components/PredictionOccultationAsteroid';
+import Occultations from './components/Occultations';
 
 
 const drawerWidth = 240;
@@ -399,13 +400,13 @@ function MiniDrawer() {
             {/* <Route exact path="/prediction-detail/:id" render={(props) => <PredictionDetail {...props} setTitle={setTitle} />} /> */}
             {/* <Route exact path="/predict-asteroid" render={(props) => <PredictAsteroid {...props} setTitle={setTitle} />} /> */}
             <Route exact path="/astrometry-run/:id" render={(props) => <AstrometryRun {...props} setTitle={setTitle} />} />
-            {/* <Route exact path="/predict-asteroid" render={(props) => <PredictAsteroid {...props} setTitle={setTitle} />} /> */}
             <Route exact path="/astrometry" render={(props) => <Astrometry {...props} setTitle={setTitle} />} />
             <Route exact path="/prediction-of-occultation/:id" render={(props) => <PredictionOccultationDetail {...props} setTitle={setTitle} />} />
             <Route exact path="/prediction-of-occultation/asteroid/:id" render={(props) => <PredictionOccultationAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
             <Route exact path="/occultation-calendar" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/test-calendar/:id/:date/:view/:flag/:sDate/:fDate/:searching" render={(props) => <TestCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
+            <Route exact path="/occultations" render={(props) => <Occultations {...props} setTitle={setTitle} />} />
           </main>
           <Footer drawerOpen={open} />
         </div>
