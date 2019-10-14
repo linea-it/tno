@@ -35,7 +35,6 @@ export default function SimpleSelect(props) {
   const [values, setValues] = useState({
     input: '',
     name: '',
-
   });
 
   const [defaultValue, setDefaultValue] = useState(0);
@@ -54,8 +53,6 @@ export default function SimpleSelect(props) {
     setValues((oldValues) => ({ ...oldValues, [event.target.name]: event.target.value }));
 
     setDefaultValue(event.target.value);
-
-
 
     switch (event.currentTarget.title) {
       case "input":
@@ -171,7 +168,6 @@ export default function SimpleSelect(props) {
           inputProps={{ name: 'input', id: 'input-simple', }}
           displayEmpty
         >
-
 
           Sets the defaulValue each SELECT
 
