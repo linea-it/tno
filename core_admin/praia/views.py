@@ -186,32 +186,31 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
         ccds = np.loadtxt(ccd_image_list.file_path, usecols=(
             0, 21, 22, 23, 24, 25, 26, 27, 28), skiprows=1, delimiter=';')
 
-        ccd = ccds[0]
+        # ccd = ccds[0]
 
-        plot_filename = 'ccd_object.png'
+        # plot_filename = 'ccd_object.png'
 
-        plot_file_path = os.path.join(settings.MEDIA_TMP_DIR, plot_filename)
+        # plot_file_path = os.path.join(settings.MEDIA_TMP_DIR, plot_filename)
 
-        self.plotStarsCCD(ccd, stars, plot_file_path)
+        # self.plotStarsCCD(ccd, stars, plot_file_path)
+        # plot = ccds_objects(
+        #     file_path=plot_file_path,
+        #     )
 
         # plot_filename = 'ccd_object_%s.png' % expnum
         # plot_file_path = os.path.join(settings.MEDIA_TMP_DIR, plot_filename)
         # # retornar a url para o plot.
         # plot_src = urllib.parse.urljoin(settings.MEDIA_TMP_URL, plot_filename)
 
-        # plot = ccds_objects(
-        #     file_path=plot_file_path,
-        #     )
-
         result = dict({
             'success': True,
-            'asteroid': asteroid.name,
-            'teste': ccd_image_list.file_path,
-            'teste2': catalog.file_path,
-            'teste3': plot_file_path
+            # 'asteroid': asteroid.name,
             # 'plot_file_path': plot_file_path,
             # 'plot_src': plot_src,
             # 'plot_filename': plot_filename
+            # 'teste': ccd_image_list.file_path,
+            # 'teste2': catalog.file_path,
+            # 'teste3': plot_file_path
         })
 
         return Response(result)
