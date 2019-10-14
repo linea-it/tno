@@ -145,6 +145,7 @@ function PredictionOccultationAsteroid({
   const [outputTableData, setOutputTableData] = useState([]);
   const [neighborhoodStarsPlot, setNeighborhoodStarsPlot] = useState('');
   const [asteroidOrbitPlot, setAsteroidOrbitPlot] = useState('');
+ 
   const [lightbox, setLightbox] = useState({
     isOpen: false,
     currentImage: 0,
@@ -155,67 +156,81 @@ function PredictionOccultationAsteroid({
     next: null,
   });
   const [reload, setReload] = useState(false);
+  const [pageSize, setPageSize] = useState(10);
 
 
   const occultationsColumns = [
     {
       name: 'date_time',
       title: 'Date Time',
-      width: 135,
+      width: 170,
+      align: 'center',
     },
     {
       name: 'ra_star_candidate',
       title: 'RA Candidate Star (hms)',
-      width: 133,
+      width: 210,
+      align: 'center',
     },
     {
       name: 'dec_star_candidate',
       title: 'Dec Candidate Star (dms)',
-      width: 140,
+      width: 220,
+      align: 'center',
     },
     {
       name: 'ra_target',
       title: 'RA Target',
+      align: 'center',
+
     },
     {
       name: 'dec_target',
       title: 'Dec Target',
       width: 100,
+      align: 'center',
     },
     {
       name: 'velocity',
       title: 'Velocity In Plane of Sky',
-      width: 90,
+      width: 195,
+      align: 'center',
     },
     {
       name: 'closest_approach',
       title: 'C/A [arcsec]',
-      width: 60,
+      width: 110,
+      align: 'center',
     },
     {
       name: 'position_angle',
       title: 'P/A [deg]',
-      width: 60,
+      width: 90,
+      align: 'center',
     },
     {
       name: 'g',
       title: 'G*',
       width: 60,
+      align: 'center',
     },
     {
       name: 'j',
       title: 'J*',
       width: 60,
+      align: 'center',
     },
     {
       name: 'h',
       title: 'H*',
       width: 60,
+      align: 'center',
     },
     {
       name: 'k',
       title: 'K*',
       width: 60,
+      align: 'center',
     },
   ];
 
@@ -273,6 +288,9 @@ function PredictionOccultationAsteroid({
       next: null,
     });
 
+
+   
+
     getAsteroidById({ id }).then((res) => setAsteroidData(res));
     getOccultations({ id }).then((data) => {
       setOccultationData(
@@ -281,7 +299,12 @@ function PredictionOccultationAsteroid({
           source: row.src ? url + row.src : null,
         })),
       );
+     
     });
+
+
+
+
     getAsteroidInputs({ id }).then((data) => {
       const tableData = data.results.map((res) => ({
         input_type: res.input_type,
@@ -413,7 +436,7 @@ function PredictionOccultationAsteroid({
       },
       {
         title: 'Observations',
-        value: '*TODO*',
+        value: '',
       },
     ]);
 
@@ -480,6 +503,8 @@ function PredictionOccultationAsteroid({
 
   const handleBackNavigation = () => history.push(`/prediction-of-occultation/${asteroidData.predict_run}`);
 
+
+ 
   return (
     <>
       <Grid
@@ -581,18 +606,19 @@ function PredictionOccultationAsteroid({
         <Grid container spacing={2}>
           <Grid item lg={12} className={clsx(classes.block, classes.tableWrapper)}>
             <Card>
-              <CardHeader title="Asteroids" />
+              <CardHeader title="Occultations" />
 
               <CardContent>
                 <CustomTable
                   columns={occultationsColumns}
                   data={occultationData}
-                  hasPagination
-                  pageSize={10}
+                  hasPagination={false}
+                  pageSize={pageSize}
                   hasSearching={false}
                   hasColumnVisibility={false}
                   hasToolbar={false}
                   remote={false}
+
                 />
               </CardContent>
             </Card>
@@ -616,7 +642,7 @@ function PredictionOccultationAsteroid({
                             once
                             placeholder={(
                               <img src={loading} alt="Loading..." />
-                          )}
+                            )}
                           >
                             <img
                               id={el.id}
@@ -640,7 +666,7 @@ function PredictionOccultationAsteroid({
                               <ul className={classes.ul}>
                                 <ListSubheader><strong>{el.date_time}</strong></ListSubheader>
                                 <ListItem>
-                                  <ListItemText primary="Already Happened:" secondary={<span>{ el.already_happened ? 'Yes' : 'No' }</span>} />
+                                  <ListItemText primary="Already Happened:" secondary={<span>{el.already_happened ? 'Yes' : 'No'}</span>} />
                                 </ListItem>
                                 <ListItem>
                                   <ListItemText primary="Asteroid(s):" secondary={<span>{el.asteroid}</span>} />
