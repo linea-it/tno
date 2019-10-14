@@ -334,7 +334,7 @@ function PredictionOccultationAsteroid({
         next: res.next,
       });
     });
-  }, [reload]);
+  }, [reload, history.location]);
 
 
   const formatExecutionTime = (duration) => {
