@@ -13,9 +13,10 @@ import BugIcon from '@material-ui/icons/BugReport';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import DescriptionIcon from '@material-ui/icons/Description';
-import SearchIcon from '@material-ui/icons/Search';
+import CustomLog from './utils/CustomLog';
 import Dialog from './utils/CustomDialog';
 import ReactInterval from 'react-interval';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -64,6 +65,13 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#D79F15',
     color: '#FFF',
   },
+  iconDetail: {
+    fontSize: 18,
+  },
+  dialogBodyStyle: {
+    backgroundColor: '#1D4455',
+    color: '#FFFFFF',
+  },
 
 }));
 
@@ -75,6 +83,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
   const [execution_time, setExecutionTime] = useState({});
   const [execution_stats, setExecutionStats] = useState({});
   const [tableData, setTableData] = useState();
+  const [totalCount, setTotalCount] = useState();
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState();
   const [toolButton, setToolButton] = useState('list');
   const [reload_interval, setReloadInterval] = useState(3);
@@ -83,7 +92,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
   const [runData, setRunData] = useState();
   const [dialog, setDialog] = useState({
     visible: false,
-    content: " ",
+    content: [],
     title: " ",
   });
   const [tableParams, setTableParams] = useState({
@@ -94,7 +103,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
     pageSizes: [10, 20, 30],
     reload: true,
     totalCount: null,
-
   })
 
   const runId = params.id;
@@ -185,16 +193,23 @@ function AstrometryRun({ setTitle, match: { params } }) {
     let sizePerPage = event ? event.pageSize : tableParams.sizePerPage;
     let sortField = tableParams.sortField;
     let sortOrder = tableParams.sortOrder;
+    let searchValue = event ? event.searchValue : tableParams.searchValue
     let filters = [];
     filters.push({
       property: 'astrometry_run',
       value: runId,
     });
-    getAsteroids({ page, sizePerPage, filters, sortField, sortOrder }).then((res) => {
+    getAsteroids({ page, sizePerPage, filters, sortField, sortOrder, search: searchValue }).then((res) => {
       setTableData(res.data.results);
+      setTotalCount(res.data.count);
       setTableParams({ ...tableParams, totalCount: res.data.count });
     });
   };
+
+  const handleAsteroidDetail = (row) => {
+    console.log(row);
+  };
+
 
   const listColumnsTable = [
     {
@@ -315,6 +330,12 @@ function AstrometryRun({ setTitle, match: { params } }) {
       width: 140,
       align: 'center',
     },
+    {
+      name: "id",
+      title: " ",
+      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: handleAsteroidDetail,
+    }
   ];
 
   const bugColumnsTable = [
@@ -377,7 +398,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
     {
       name: "name",
       title: "Name",
-      align: 'center',
+      align: 'left',
     },
     {
       name: "number",
@@ -398,8 +419,8 @@ function AstrometryRun({ setTitle, match: { params } }) {
     {
       name: "error_msg",
       title: "Error",
+      align: 'left',
       width: 800,
-      align: 'center',
     },
     {
       name: "condor_log",
@@ -408,10 +429,11 @@ function AstrometryRun({ setTitle, match: { params } }) {
       align: 'center',
       customElement: (row) => {
         return (
-          <IconButton onClick={() => handleLogReading(row.condor_log)}>
-            <DescriptionIcon />
-          </IconButton>
-
+          <Tooltip title="Condor Log" >
+            <IconButton onClick={() => handleLogReading(row.condor_log)}>
+              <DescriptionIcon />
+            </IconButton>
+          </Tooltip>
         );
       }
     },
@@ -422,9 +444,11 @@ function AstrometryRun({ setTitle, match: { params } }) {
       align: 'center',
       customElement: (row) => {
         return (
-          <IconButton onClick={() => handleLogReading(row.condor_err_log)}>
-            <DescriptionIcon />
-          </IconButton>
+          <Tooltip title="Condor Error">
+            <IconButton onClick={() => handleLogReading(row.condor_err_log)}>
+              <DescriptionIcon />
+            </IconButton>
+          </Tooltip>
         );
       }
     },
@@ -435,9 +459,11 @@ function AstrometryRun({ setTitle, match: { params } }) {
       align: 'center',
       customElement: (row) => {
         return (
-          <IconButton onClick={() => handleLogReading(row.condor_out_log)}>
-            <DescriptionIcon />
-          </IconButton>
+          <Tooltip title="Condor Output">
+            <IconButton onClick={() => handleLogReading(row.condor_out_log)}>
+              <DescriptionIcon />
+            </IconButton>
+          </Tooltip>
         );
       }
     },
@@ -446,13 +472,8 @@ function AstrometryRun({ setTitle, match: { params } }) {
       title: " ",
       width: 80,
       align: 'center',
-      customElement: (row) => {
-        return (
-          <IconButton>
-            <SearchIcon />
-          </IconButton>
-        );
-      }
+      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: handleAsteroidDetail,
     },
   ];
 
@@ -475,6 +496,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
     loadExecutionStatistics();
 
     console.log("Contou +1");
+
   }, [count]);
 
   const donutDataStatist = [
@@ -494,7 +516,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
 
   const handleChangeToolButton = (event, newValue) => {
     setToolButton(newValue);
-
   };
 
   const handleLogReading = (file) => {
@@ -502,11 +523,13 @@ function AstrometryRun({ setTitle, match: { params } }) {
       let arrayLines = [];
 
       readCondorFile(file).then((res) => {
+
         let data = res.data.rows;
         data.forEach((line, idx) => {
           arrayLines.push(<div key={idx}>{line}</div>)
         });
-        setDialog({ content: arrayLines, visible: true, title: file + " " });
+        // setDialog({ content: arrayLines, visible: true, title: file + " " });
+        setDialog({ content: data, visible: true, title: file + " " });
       });
     }
   };
@@ -520,6 +543,8 @@ function AstrometryRun({ setTitle, match: { params } }) {
     }
   };
 
+
+
   return (
     <div>
       <ReactInterval
@@ -527,7 +552,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
         enabled={interval_condition}
         callback={handleInterval}
       />
-
       <Grid container spacing={6}>
         <Grid item xs={12} md={6} xl={4}>
           <Card>
@@ -540,7 +564,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
             </ListStat>
           </Card>
         </Grid>
-
         <Grid item xs={12} md={6} xl={4}>
           <Card className={classes.card}>
             <CardHeader
@@ -552,7 +575,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
             </Donut>
           </Card>
         </Grid >
-
         <Grid item xs={12} md={6} xl={4}>
           <Card className={classes.card}>
             <CardHeader
@@ -565,7 +587,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
           </Card>
         </Grid >
       </Grid >
-
       <Grid container spacing={6}>
         <Grid item sm={12} xl={12}>
           <Card className={classes.card}>
@@ -580,35 +601,42 @@ function AstrometryRun({ setTitle, match: { params } }) {
               >
                 <ToggleButton
                   value="list"
-                  onClick={() => setColumnsAsteroidTable(listColumnsTable)}>
+                  onClick={() => {
+                    setColumnsAsteroidTable(listColumnsTable)
+                  }
+                  }>
                   <ListIcon />
                 </ToggleButton>
                 <ToggleButton
                   value="bug"
-                  onClick={() => setColumnsAsteroidTable(bugColumnsTable)}>
+                  onClick={() => {
+                    setColumnsAsteroidTable(bugColumnsTable)
+                  }
+                  }>
                   <BugIcon />
                 </ToggleButton>
               </ToggleButtonGroup>
             </Toolbar>
-
             <Table
               data={tableData ? tableData : [{}]}
               columns={columnsAsteroidTable ? columnsAsteroidTable : listColumnsTable}
-              hasSearching={false}
+              hasSearching={true}
               loadData={loadTableData}
+              children={[]}
               totalCount={tableParams.totalCount}
               hasColumnVisibility={false}
+              totalCount={totalCount}
               pageSizes={tableParams.pageSizes}
               reload={tableParams.reload}
-              hasToolbar={false}
+              hasToolbar={true}
               hasResizing={false}
             >
             </Table>
             <Dialog
               visible={dialog.visible}
               title={dialog.title}
-              content={dialog.content}
-              setVisible={() => setDialog({ visible: false, content: " ", title: " " })}
+              content={<CustomLog data={dialog.content} />}
+              setVisible={() => setDialog({ visible: false, content: [], title: " " })}
               bodyStyle={classes.dialogBodyStyle}
             />
           </Card>

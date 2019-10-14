@@ -38,7 +38,7 @@ export default function SimpleSelect(props) {
 
   });
 
-  const [defaultValue, setDefaultValue] = useState(props.default === "noDefault" ? null : 0);
+  const [defaultValue, setDefaultValue] = useState(props.default === "noDefault" ? " " : 0);
 
   function handleChange(event) {
 
