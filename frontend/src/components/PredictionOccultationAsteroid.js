@@ -15,6 +15,7 @@ import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { withRouter } from 'react-router';
+import CustomGridList from './utils/CustomAsteroidGridList';
 import CustomList from './utils/CustomList';
 import CustomTable from './utils/CustomTable';
 import {
@@ -145,7 +146,7 @@ function PredictionOccultationAsteroid({
   const [outputTableData, setOutputTableData] = useState([]);
   const [neighborhoodStarsPlot, setNeighborhoodStarsPlot] = useState('');
   const [asteroidOrbitPlot, setAsteroidOrbitPlot] = useState('');
- 
+
   const [lightbox, setLightbox] = useState({
     isOpen: false,
     currentImage: 0,
@@ -289,7 +290,7 @@ function PredictionOccultationAsteroid({
     });
 
 
-   
+
 
     getAsteroidById({ id }).then((res) => setAsteroidData(res));
     getOccultations({ id }).then((data) => {
@@ -299,7 +300,7 @@ function PredictionOccultationAsteroid({
           source: row.src ? url + row.src : null,
         })),
       );
-     
+
     });
 
 
@@ -504,7 +505,7 @@ function PredictionOccultationAsteroid({
   const handleBackNavigation = () => history.push(`/prediction-of-occultation/${asteroidData.predict_run}`);
 
 
- 
+
   return (
     <>
       <Grid
@@ -625,7 +626,7 @@ function PredictionOccultationAsteroid({
           </Grid>
         </Grid>
       ) : null}
-      {occultationData.length > 0 ? (
+      {/* {occultationData.length > 0 ? (
         <Grid container spacing={2}>
           <Grid item xs={12} className={classes.block}>
             <Card>
@@ -676,11 +677,11 @@ function PredictionOccultationAsteroid({
                                 </ListItem>
                                 <ListItem>
                                   <ListItemText primary="CT:" secondary={<span>{el.ct}</span>} />
-                                </ListItem>
-                                {/* <ListItem>
+                                </ListItem> */}
+      {/* <ListItem>
                                   <ListItemText primary="Date Time:" secondary={<span>{el.date_time}</span>} />
                                 </ListItem> */}
-                                <ListItem>
+      {/* <ListItem>
                                   <ListItemText primary="DEC Star Candidate:" secondary={<span>{el.dec_star_candidate}</span>} />
                                 </ListItem>
                                 <ListItem>
@@ -717,7 +718,19 @@ function PredictionOccultationAsteroid({
             </Card>
           </Grid>
         </Grid>
-      ) : null}
+      ) : null} */}
+
+
+      <CustomGridList
+        tileData={occultationData}
+        baseUrl={url}
+        hasActions={false}
+        cellHeight={500}
+        height={530}
+        spacing={5}
+      />
+
+
       {neighborhoodStarsPlot || asteroidOrbitPlot ? (
         <Grid container spacing={2}>
           <Grid item xs={12} className={classes.block}>
