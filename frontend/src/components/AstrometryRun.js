@@ -17,6 +17,11 @@ import CustomLog from './utils/CustomLog';
 import Dialog from './utils/CustomDialog';
 import ReactInterval from 'react-interval';
 import Tooltip from '@material-ui/core/Tooltip';
+import Stepper from './AstrometryStepper';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import CheckIcon from '@material-ui/icons/Check';
+import WarningIcon from '@material-ui/icons/PriorityHigh';
+import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -25,11 +30,25 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     marginLeft: '92%',
   },
-
-  dialogBodyStyle: {
-    border: 'none',
-    height: 600,
-    width: 600,
+  progress: {
+    marginTop: 6,
+    float: 'left',
+  },
+  checkIcon: {
+    float: 'left',
+    marginTop: 1,
+  },
+  warningIcon: {
+    float: 'left',
+    marginTop: 1,
+  },
+  failureIcon: {
+    float: 'left',
+    marginTop: 1,
+  },
+  checkIcon: {
+    float: 'left',
+    marginTop: 1,
   },
   btn: {
     textTransform: 'none',
@@ -71,8 +90,10 @@ const useStyles = makeStyles((theme) => ({
   dialogBodyStyle: {
     backgroundColor: '#1D4455',
     color: '#FFFFFF',
+    border: 'none',
+    height: 600,
+    width: 600,
   },
-
 }));
 
 function AstrometryRun({ setTitle, match: { params } }) {
@@ -210,13 +231,12 @@ function AstrometryRun({ setTitle, match: { params } }) {
     console.log(row);
   };
 
-
   const listColumnsTable = [
     {
       name: "status",
       title: "Status",
       align: 'center',
-      width: 120,
+      width: 130,
       customElement: (row) => {
         if (row.status === 'warning') {
           return (
@@ -224,6 +244,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
             >
+              <WarningIcon className={classes.warningIcon}></WarningIcon>
               Warning
            </span>
           );
@@ -234,6 +255,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnRunning)}
               title={row.status}
             >
+              <CircularProgress size={15} className={classes.progress} />
               Running
            </span>
           );
@@ -244,6 +266,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnFailure)}
               title={row.status}
             >
+              <ClearIcon className={classes.failureIcon}></ClearIcon>
               Failure
            </span>
           );
@@ -263,6 +286,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
           >
+            <CheckIcon className={classes.checkIcon}></CheckIcon>
             Success
          </span>
         );
@@ -279,7 +303,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
       align: 'center',
       customElement: (row) => {
         if (row.number === '-') {
-          return '';
+          return ' ';
         }
         return (
           <span>
@@ -351,6 +375,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
             >
+              <WarningIcon className={classes.warningIcon}></WarningIcon>
               Warning
            </span>
           );
@@ -361,6 +386,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnRunning)}
               title={row.status}
             >
+              <CircularProgress size={15} className={classes.progress} />
               Running
            </span>
           );
@@ -371,6 +397,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnFailure)}
               title={row.status}
             >
+              <ClearIcon className={classes.failureIcon}></ClearIcon>
               Failure
            </span>
           );
@@ -390,6 +417,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
           >
+            <CheckIcon className={classes.checkIcon}></CheckIcon>
             Success
          </span>
         );
@@ -521,7 +549,6 @@ function AstrometryRun({ setTitle, match: { params } }) {
   const handleLogReading = (file) => {
     if (file) {
       let arrayLines = [];
-
       readCondorFile(file).then((res) => {
 
         let data = res.data.rows;
@@ -586,6 +613,11 @@ function AstrometryRun({ setTitle, match: { params } }) {
             </Donut>
           </Card>
         </Grid >
+      </Grid >
+      <Grid container spacing={6}>
+        <Grid item xs={12} md={12} xl={12}>
+          <Stepper activeStep={runData && typeof runData != "undefined" ? runData.step : 0} />
+        </Grid>
       </Grid >
       <Grid container spacing={6}>
         <Grid item sm={12} xl={12}>
