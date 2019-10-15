@@ -19,3 +19,12 @@ img.react-images__view-image {
 html, body, #root {
   height: 100%;
 }
+
+.MuiTableRow-root > .MuiTableCell-root > div {
+  background-color: inherit !important;
+}
+
+th.MuiTableCell-root.MuiTableCell-head {
+  background-color: #fff !important;
+  z-index: 1;
+}
