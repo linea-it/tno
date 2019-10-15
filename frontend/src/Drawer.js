@@ -35,6 +35,7 @@ import PredictionOccultation from './components/PredictionOccultation';
 import PredictionOccultationDetail from './components/PredictionOccultationDetail';
 import PredictionOccultationAsteroid from './components/PredictionOccultationAsteroid';
 import Occultations from './components/Occultations';
+import SkyBotRun from './components/SkyBotRun';
 
 
 const drawerWidth = 240;
@@ -284,7 +285,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/skybot" className={classes.invisibleLink} title="Skybot Run">
+            <Link to="/skybotrun" className={classes.invisibleLink} title="Skybot Run">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-star', classes.iconAltixDrawer)} />
@@ -407,6 +408,7 @@ function MiniDrawer() {
             <Route exact path="/test-calendar/:id/:date/:view/:flag/:sDate/:fDate/:searching" render={(props) => <TestCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/occultations" render={(props) => <Occultations {...props} setTitle={setTitle} />} />
+            <Route exact path="/skybotrun" render={(props) => <SkyBotRun {...props} setTitle={setTitle} />} />
           </main>
           <Footer drawerOpen={open} />
         </div>
