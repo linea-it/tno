@@ -206,7 +206,7 @@ function CustomTable({
 
   const renderModal = () => (
     <Dialog onClose={onHideModal} open={visible} maxWidth="md">
-      {customModalContent}
+      {customModalContent ? customModalContent : ""}
     </Dialog>
   );
 
