@@ -17,6 +17,7 @@ import { Donut, TimeProfile } from './utils/CustomChart';
 import CustomTable from './utils/CustomTable';
 import CustomDialog from './utils/CustomDialog';
 import CustomLog from './utils/CustomLog';
+import DescriptionIcon from '@material-ui/icons/Description';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -176,7 +177,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       name: 'orbit_run',
       title: ' ',
       width: 100,
-      icon: <i className={clsx(`fas fa-code ${classes.iconDetail}`)} />,
+      icon: <DescriptionIcon />,
       action: (el) => {
         getAsteroidLog({ id: el.id }).then((res) => {
           setAsteroidLog({
@@ -372,7 +373,6 @@ function RefineOrbitDetail({ history, match, setTitle }) {
         <Grid item lg={12} className={clsx(classes.block, classes.tableWrapper)}>
           <Card>
             <CardHeader title="Asteroids" />
-
             <CardContent>
               <CustomTable
                 columns={columns}

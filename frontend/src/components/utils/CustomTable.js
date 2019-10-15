@@ -80,6 +80,7 @@ function CustomTable({
   const customColumnExtensions = columns.map((column) => ({
     columnName: column.name,
     width: !column.width ? 120 : column.width,
+    maxWidth: column.maxWidth ? column.maxWidth : "",
     sortingEnabled:
       !!(!('sortingEnabled' in column) || column.sortingEnabled === true),
     align:
@@ -205,7 +206,7 @@ function CustomTable({
 
   const renderModal = () => (
     <Dialog onClose={onHideModal} open={visible} maxWidth="md">
-      {customModalContent}
+      {customModalContent ? customModalContent : ""}
     </Dialog>
   );
 

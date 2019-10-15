@@ -52,6 +52,7 @@ export const getAsteroids = ({
   sizePerPage,
   sortField,
   sortOrder,
+  search,
   filters = [],
 }) => {
   let ordering = sortField;
@@ -59,7 +60,7 @@ export const getAsteroids = ({
     ordering = `-${sortField}`;
   }
 
-  const params = { page, pageSize: sizePerPage, ordering };
+  const params = { page, pageSize: sizePerPage, ordering,search };
   filters.forEach((element) => {
     params[element.property] = element.value;
   });
