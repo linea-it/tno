@@ -155,7 +155,6 @@ function AstrometryAsteroid({
   const [inputTable, setInputTable] = useState([]);
   const [outputTable, setOutputTable] = useState([]);
 
-
   const [lightbox, setLightbox] = useState({
     isOpen: false,
     currentImage: 0,
@@ -262,12 +261,6 @@ function AstrometryAsteroid({
       title: 'File size',
       width: 100,
     },
-    {
-      name: '',
-      title: '',
-      align: 'center',
-      width: 70,
-    },
   ];
 
 
@@ -295,7 +288,6 @@ function AstrometryAsteroid({
     });
 
     getAstrometryTable({ id }).then((res) => {
-      console.log(res);
       setAstrometryTable(res.rows);
     });
 
@@ -440,7 +432,7 @@ function AstrometryAsteroid({
     setReload(!reload);
   };
 
-  const handleBackNavigation = () => history.push(`/astrometry-run/${asteroidData.predict_run}`);
+  const handleBackNavigation = () => history.push(`/astrometry/${asteroidData.predict_run}`);
 
   const handleMainOutputClick = (output) => {
     getOutputFile(output.file_path).then((res) => {
@@ -452,7 +444,7 @@ function AstrometryAsteroid({
     });
   };
 
-  const handleDialogClose = () => setOutputLog({ visible: false, content: [], title: '' });
+  const handleCustomLogClose = () => setOutputLog({ visible: false, content: [], title: '' });
 
   return (
     <>
@@ -566,7 +558,7 @@ function AstrometryAsteroid({
           <Grid item xs={12} className={classes.block}>
             <Card>
               <CardHeader title="CCD x Stars x Asteroid" />
-              <CardContent className={classes.cardTableResponsive}>
+              <CardContent>
                 <Grid container spacing={2}>
                   {astrometryPlots.map((plot, i) => (
                     <Grid item xs={12} sm={6} md={3} key={plot.id}>
@@ -594,7 +586,7 @@ function AstrometryAsteroid({
         </Grid>
       ) : null}
 
-      {inputTable.lenght > 0 ? (
+      {inputTable.length > 0 ? (
         <Grid container spacing={2}>
           <Grid item xs={12} className={classes.block}>
             <Card>
@@ -642,13 +634,14 @@ function AstrometryAsteroid({
       <CustomDialog
         maxWidth="md"
         visible={outputLog.visible}
-        setVisible={handleDialogClose}
+        setVisible={handleCustomLogClose}
         title={outputLog.title}
         content={<CustomLog data={outputLog.content} />}
         headerStyle={classes.logToolbar}
         bodyStyle={classes.logBody}
         wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px' }}
       />
+
       <ModalGateway>
         {lightbox.isOpen ? (
           <Modal onClose={closeLightbox}>

@@ -1,11 +1,8 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import {
- Grid, Card, CardHeader, makeStyles 
+  Grid, Card, CardHeader, makeStyles,
 } from '@material-ui/core';
-import { Donut } from './utils/CustomChart';
-import Table from './utils/CustomTable';
-import { readCondorFile, getPraiaRunById, getExecutionTimeById, getAsteroidStatus, getAsteroids } from '../api/Praia';
 import clsx from 'clsx';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -14,13 +11,18 @@ import BugIcon from '@material-ui/icons/BugReport';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import DescriptionIcon from '@material-ui/icons/Description';
-import CustomLog from './utils/CustomLog';
-import Dialog from './utils/CustomDialog';
 import ReactInterval from 'react-interval';
 import Tooltip from '@material-ui/core/Tooltip';
+import CustomLog from './utils/CustomLog';
+import Dialog from './utils/CustomDialog';
+import {
+  readCondorFile, getPraiaRunById, getExecutionTimeById, getAsteroidStatus, getAsteroids,
+} from '../api/Praia';
+import Table from './utils/CustomTable';
+import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
   card: {
     marginBottom: 10,
   },
@@ -75,9 +77,9 @@ const useStyles = makeStyles((theme) => ({
     color: '#FFFFFF',
   },
 
-}));
+});
 
-function AstrometryRun({ setTitle, match: { params } }) {
+function AstrometryDetail({ history, setTitle, match: { params } }) {
   const classes = useStyles();
 
   const [list, setList] = useState([]);
@@ -192,8 +194,8 @@ function AstrometryRun({ setTitle, match: { params } }) {
   const loadTableData = (event) => {
     const page = event ? event.currentPage + 1 : tableParams.page;
     const sizePerPage = event ? event.pageSize : tableParams.sizePerPage;
-    const {sortField} = tableParams;
-    const {sortOrder} = tableParams;
+    const { sortField } = tableParams;
+    const { sortOrder } = tableParams;
     const searchValue = event ? event.searchValue : tableParams.searchValue;
     const filters = [];
     filters.push({
@@ -201,17 +203,15 @@ function AstrometryRun({ setTitle, match: { params } }) {
       value: runId,
     });
     getAsteroids({
- page, sizePerPage, filters, sortField, sortOrder, search: searchValue 
-}).then((res) => {
+      page, sizePerPage, filters, sortField, sortOrder, search: searchValue,
+    }).then((res) => {
       setTableData(res.results);
       setTotalCount(res.count);
       setTableParams({ ...tableParams, totalCount: res.count });
     });
   };
 
-  const handleAsteroidDetail = (row) => {
-    console.log(row);
-  };
+  const handleAsteroidDetail = (row) => history.push(`/astrometry/asteroid/${row.id}`);
 
 
   const listColumnsTable = [
@@ -324,10 +324,10 @@ function AstrometryRun({ setTitle, match: { params } }) {
       name: 'execution_time',
       title: 'Execution Time',
       customElement: (row) => (
-          <span>
-            {row.execution_time.substring(0, 8)}
-          </span>
-        ),
+        <span>
+          {row.execution_time.substring(0, 8)}
+        </span>
+      ),
       width: 140,
       align: 'center',
     },
@@ -429,12 +429,12 @@ function AstrometryRun({ setTitle, match: { params } }) {
       width: 60,
       align: 'center',
       customElement: (row) => (
-          <Tooltip title="Condor Log" >
-            <IconButton onClick={() => handleLogReading(row.condor_log)}>
-              <DescriptionIcon />
-            </IconButton>
-          </Tooltip>
-        ),
+        <Tooltip title="Condor Log">
+          <IconButton onClick={() => handleLogReading(row.condor_log)}>
+            <DescriptionIcon />
+          </IconButton>
+        </Tooltip>
+      ),
     },
     {
       name: 'condor_err_log',
@@ -442,12 +442,12 @@ function AstrometryRun({ setTitle, match: { params } }) {
       width: 60,
       align: 'center',
       customElement: (row) => (
-          <Tooltip title="Condor Error">
-            <IconButton onClick={() => handleLogReading(row.condor_err_log)}>
-              <DescriptionIcon />
-            </IconButton>
-          </Tooltip>
-        ),
+        <Tooltip title="Condor Error">
+          <IconButton onClick={() => handleLogReading(row.condor_err_log)}>
+            <DescriptionIcon />
+          </IconButton>
+        </Tooltip>
+      ),
     },
     {
       name: 'condor_out_log',
@@ -455,12 +455,12 @@ function AstrometryRun({ setTitle, match: { params } }) {
       width: 80,
       align: 'center',
       customElement: (row) => (
-          <Tooltip title="Condor Output">
-            <IconButton onClick={() => handleLogReading(row.condor_out_log)}>
-              <DescriptionIcon />
-            </IconButton>
-          </Tooltip>
-        ),
+        <Tooltip title="Condor Output">
+          <IconButton onClick={() => handleLogReading(row.condor_out_log)}>
+            <DescriptionIcon />
+          </IconButton>
+        </Tooltip>
+      ),
     },
     {
       name: 'id',
@@ -522,7 +522,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
           arrayLines.push(<div key={idx}>{line}</div>);
         });
         // setDialog({ content: arrayLines, visible: true, title: file + " " });
-        setDialog({ content: data, visible: true, title: `${file  } ` });
+        setDialog({ content: data, visible: true, title: `${file} ` });
       });
     }
   };
@@ -552,7 +552,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
             />
             <ListStat
               data={list}
-             />
+            />
           </Card>
         </Grid>
         <Grid item xs={12} md={6} xl={4}>
@@ -562,7 +562,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
             />
             <Donut
               data={donutDataStatist}
-             />
+            />
           </Card>
         </Grid>
         <Grid item xs={12} md={6} xl={4}>
@@ -572,7 +572,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
             />
             <Donut
               data={donutDataExecutionTime}
-             />
+            />
           </Card>
         </Grid>
       </Grid>
@@ -584,7 +584,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
             />
             <Toolbar>
               <ToggleButtonGroup
-className={classes.icon}
+                className={classes.icon}
                 value={toolButton}
                 onChange={handleChangeToolButton}
                 exclusive
@@ -620,7 +620,7 @@ className={classes.icon}
               reload={tableParams.reload}
               hasToolbar
               hasResizing={false}
-             />
+            />
             <Dialog
               visible={dialog.visible}
               title={dialog.title}
@@ -635,4 +635,4 @@ className={classes.icon}
   );
 }
 
-export default withRouter(AstrometryRun);
+export default withRouter(AstrometryDetail);
