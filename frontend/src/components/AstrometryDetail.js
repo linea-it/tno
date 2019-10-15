@@ -21,6 +21,11 @@ import {
 import Table from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
+import Stepper from './AstrometryStepper';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import CheckIcon from '@material-ui/icons/Check';
+import WarningIcon from '@material-ui/icons/PriorityHigh';
+import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles({
   card: {
@@ -29,11 +34,25 @@ const useStyles = makeStyles({
   icon: {
     marginLeft: '92%',
   },
-
-  dialogBodyStyle: {
-    border: 'none',
-    height: 600,
-    width: 600,
+  progress: {
+    marginTop: 6,
+    float: 'left',
+  },
+  checkIcon: {
+    float: 'left',
+    marginTop: 1,
+  },
+  warningIcon: {
+    float: 'left',
+    marginTop: 1,
+  },
+  failureIcon: {
+    float: 'left',
+    marginTop: 1,
+  },
+  checkIcon: {
+    float: 'left',
+    marginTop: 1,
   },
   btn: {
     textTransform: 'none',
@@ -75,8 +94,10 @@ const useStyles = makeStyles({
   dialogBodyStyle: {
     backgroundColor: '#1D4455',
     color: '#FFFFFF',
+    border: 'none',
+    height: 600,
+    width: 600,
   },
-
 });
 
 function AstrometryDetail({ history, setTitle, match: { params } }) {
@@ -213,13 +234,12 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
 
   const handleAsteroidDetail = (row) => history.push(`/astrometry/asteroid/${row.id}`);
 
-
   const listColumnsTable = [
     {
       name: 'status',
       title: 'Status',
       align: 'center',
-      width: 120,
+      width: 130,
       customElement: (row) => {
         if (row.status === 'warning') {
           return (
@@ -227,6 +247,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
             >
+              <WarningIcon className={classes.warningIcon}></WarningIcon>
               Warning
             </span>
           );
@@ -237,6 +258,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnRunning)}
               title={row.status}
             >
+              <CircularProgress size={15} className={classes.progress} />
               Running
             </span>
           );
@@ -247,6 +269,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnFailure)}
               title={row.status}
             >
+              <ClearIcon className={classes.failureIcon}></ClearIcon>
               Failure
             </span>
           );
@@ -266,6 +289,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
           >
+            <CheckIcon className={classes.checkIcon}></CheckIcon>
             Success
           </span>
         );
@@ -282,7 +306,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       align: 'center',
       customElement: (row) => {
         if (row.number === '-') {
-          return '';
+          return ' ';
         }
         return (
           <span>
@@ -352,6 +376,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
             >
+              <WarningIcon className={classes.warningIcon}></WarningIcon>
               Warning
             </span>
           );
@@ -362,6 +387,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnRunning)}
               title={row.status}
             >
+              <CircularProgress size={15} className={classes.progress} />
               Running
             </span>
           );
@@ -372,6 +398,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnFailure)}
               title={row.status}
             >
+              <ClearIcon className={classes.failureIcon}></ClearIcon>
               Failure
             </span>
           );
@@ -391,6 +418,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
           >
+            <CheckIcon className={classes.checkIcon}></CheckIcon>
             Success
           </span>
         );
@@ -576,6 +604,11 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           </Card>
         </Grid>
       </Grid>
+      <Grid container spacing={6}>
+        <Grid item xs={12} md={12} xl={12}>
+          <Stepper activeStep={runData && typeof runData != "undefined" ? runData.step : 0} />
+        </Grid>
+      </Grid >
       <Grid container spacing={6}>
         <Grid item sm={12} xl={12}>
           <Card className={classes.card}>
