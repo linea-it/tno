@@ -504,8 +504,6 @@ function PredictionOccultationAsteroid({
 
   const handleBackNavigation = () => history.push(`/prediction-of-occultation/${asteroidData.predict_run}`);
 
-
-
   return (
     <>
       <Grid
@@ -573,7 +571,7 @@ function PredictionOccultationAsteroid({
           </Grid>
         </Grid>
       </Grid>
-      <Grid container spacing={2}>
+      <Grid container spacing={3}>
         <Grid item xs={12} md={4} className={classes.block}>
           <Card>
             <CardHeader title="Asteroid" />
@@ -582,7 +580,6 @@ function PredictionOccultationAsteroid({
             </CardContent>
           </Card>
         </Grid>
-
 
         <Grid item xs={12} md={4} className={classes.block}>
           <Card>
@@ -608,7 +605,6 @@ function PredictionOccultationAsteroid({
           <Grid item lg={12} className={clsx(classes.block, classes.tableWrapper)}>
             <Card>
               <CardHeader title="Occultations" />
-
               <CardContent>
                 <CustomTable
                   columns={occultationsColumns}
@@ -619,116 +615,25 @@ function PredictionOccultationAsteroid({
                   hasColumnVisibility={false}
                   hasToolbar={false}
                   remote={false}
-
                 />
               </CardContent>
             </Card>
           </Grid>
         </Grid>
       ) : null}
-      {/* {occultationData.length > 0 ? (
-        <Grid container spacing={2}>
-          <Grid item xs={12} className={classes.block}>
-            <Card>
-              <CardContent>
-                <Grid container spacing={2} className={classes.plotsWrapper}>
-                  {occultationData.map((el, i) => (
-                    <Fragment key={el.id}>
-                      {el.source !== null ? (
 
-                        <Grid item xs={12} sm={6} md={3}>
-                          <LazyLoad
-                            height={141}
-                            offset={[-100, 0]}
-                            once
-                            placeholder={(
-                              <img src={loading} alt="Loading..." />
-                            )}
-                          >
-                            <img
-                              id={el.id}
-                              src={el.source}
-                              onClick={(e) => openLightbox(i, e)}
-                              className={clsx(classes.imgResponsive, classes.lightboxImage)}
-                              title={el.asteroid_mame}
-                              alt={el.asteroid_mame}
-                            />
-                          </LazyLoad>
-                        </Grid>
-                      ) : null}
-                      <Grid item xs={12} sm={6} md={el.source !== null ? 3 : 6}>
-                        <LazyLoad
-                          height={141}
-                          offset={[-100, 0]}
-                          once
-                        >
-                          <List className={classes.root} subheader={<li />} dense>
-                            <li className={classes.listSection}>
-                              <ul className={classes.ul}>
-                                <ListSubheader><strong>{el.date_time}</strong></ListSubheader>
-                                <ListItem>
-                                  <ListItemText primary="Already Happened:" secondary={<span>{el.already_happened ? 'Yes' : 'No'}</span>} />
-                                </ListItem>
-                                <ListItem>
-                                  <ListItemText primary="Asteroid(s):" secondary={<span>{el.asteroid}</span>} />
-                                </ListItem>
-                                <ListItem>
-                                  <ListItemText primary="Closest Approach:" secondary={<span>{el.closest_approach}</span>} />
-                                </ListItem>
-                                <ListItem>
-                                  <ListItemText primary="CT:" secondary={<span>{el.ct}</span>} />
-                                </ListItem> */}
-      {/* <ListItem>
-                                  <ListItemText primary="Date Time:" secondary={<span>{el.date_time}</span>} />
-                                </ListItem> */}
-      {/* <ListItem>
-                                  <ListItemText primary="DEC Star Candidate:" secondary={<span>{el.dec_star_candidate}</span>} />
-                                </ListItem>
-                                <ListItem>
-                                  <ListItemText primary="DEC Target:" secondary={<span>{el.dec_target}</span>} />
-                                </ListItem>
-                                <ListItem>
-                                  <ListItemText primary="Delta:" secondary={<span>{el.delta}</span>} />
-                                </ListItem>
-                                <ListItem>
-                                  <ListItemText primary="E RA:" secondary={<span>{el.e_ra}</span>} />
-                                </ListItem>
-                                <ListItem>
-                                  <ListItemText primary="G:" secondary={<span>{el.g}</span>} />
-                                </ListItem>
-                                <ListItem>
-                                  <ListItemText primary="H:" secondary={<span>{el.h}</span>} />
-                                </ListItem>
-                                <ListItem>
-                                  <ListItemText primary="Loc T:" secondary={<span>{el.loc_t}</span>} />
-                                </ListItem>
-                                <ListItem>
-                                  <ListItemText primary="Multiplicity Flag:" secondary={<span>{el.multiplicity_flag}</span>} />
-                                </ListItem>
-                              </ul>
-                            </li>
-                          </List>
-                          <Divider />
-                        </LazyLoad>
-                      </Grid>
-                    </Fragment>
-                  ))}
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
+      <Grid container spacing={2}>
+        <Grid item lg={12} xl={12}>
+          <CustomGridList
+            tileData={occultationData}
+            baseUrl={url}
+            hasActions={false}
+            cellHeight={500}
+            height={530}
+            spacing={6}
+          />
         </Grid>
-      ) : null} */}
-
-
-      <CustomGridList
-        tileData={occultationData}
-        baseUrl={url}
-        hasActions={false}
-        cellHeight={500}
-        height={530}
-        spacing={5}
-      />
+      </Grid>
 
 
       {neighborhoodStarsPlot || asteroidOrbitPlot ? (
