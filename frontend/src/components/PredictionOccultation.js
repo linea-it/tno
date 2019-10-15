@@ -231,8 +231,6 @@ function PredictionOccultation({ history, setTitle }) {
   }
 
 
-
-
   //When submit button is clicked so calls the function below
   useEffect(() => {
 
@@ -278,7 +276,6 @@ function PredictionOccultation({ history, setTitle }) {
     }
 
   }, [valueSubmition]);
-
 
 
 
@@ -419,7 +416,6 @@ function PredictionOccultation({ history, setTitle }) {
   };
 
 
-
   return (
     <Grid>
 
@@ -511,6 +507,7 @@ function PredictionOccultation({ history, setTitle }) {
                 <span>History</span>
               }
             />
+
             <CustomTable
               columns={columns}
               data={tableData}
@@ -519,9 +516,11 @@ function PredictionOccultation({ history, setTitle }) {
               totalCount={totalCount}
               defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
               reload={reload}
+              hasSearching={false}
+              hasColumnVisibility={false}
+              hasToolbar={false}
             />
           </Card>
-
         </Grid>
       </Grid>
 

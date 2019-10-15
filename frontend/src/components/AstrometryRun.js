@@ -550,6 +550,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
     if (file) {
       let arrayLines = [];
       readCondorFile(file).then((res) => {
+
         let data = res.data.rows;
         data.forEach((line, idx) => {
           arrayLines.push(<div key={idx}>{line}</div>)
@@ -568,6 +569,8 @@ function AstrometryRun({ setTitle, match: { params } }) {
       setIntervalCondition(false);
     }
   };
+
+
 
   return (
     <div>
@@ -651,6 +654,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
               columns={columnsAsteroidTable ? columnsAsteroidTable : listColumnsTable}
               hasSearching={true}
               loadData={loadTableData}
+              children={[]}
               totalCount={tableParams.totalCount}
               hasColumnVisibility={false}
               totalCount={totalCount}

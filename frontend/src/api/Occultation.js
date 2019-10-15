@@ -20,7 +20,7 @@ export const getOccultations = (page, pageSize, sortField, sortOrder) => {
   // // }
   // params.ordering = ordering;
 
-  return axios.get(`${this.api}/occultation/`, {
+  return axios.get(`/occultation/`, {
     params,
   }).then((res) => res.data);
 };
