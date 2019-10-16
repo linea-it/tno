@@ -390,7 +390,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
         maxWidth="md"
         visible={asteroidLog.visible}
         setVisible={handleDialogClose}
-        title="Asteroid Log"
+        title="NIMA Log"
         content={<CustomLog data={asteroidLog.data} />}
         headerStyle={classes.logToolbar}
         bodyStyle={classes.logBody}
