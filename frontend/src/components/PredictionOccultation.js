@@ -271,6 +271,7 @@ function PredictionOccultation({ history, setTitle }) {
         // ephemeris_step: 600
       }).then((res) => {
         console.log(res);
+        loadTableData();
       });
 
     }
@@ -282,7 +283,7 @@ function PredictionOccultation({ history, setTitle }) {
   const loadData = () => {
     // Load Input Array
     getOrbitRuns({
-      ordering: 'start_time',
+      ordering: '-start_time',
       filters: [
         {
           property: 'status',
@@ -293,6 +294,7 @@ function PredictionOccultation({ history, setTitle }) {
       .then((res) => {
 
         setInputArray(res.results);
+        console.log(res.results);
       });
 
 
@@ -342,9 +344,6 @@ function PredictionOccultation({ history, setTitle }) {
 
   // (
 
-
-
-
   useEffect(() => {
 
     if (typeof (catalogArray[0]) != "undefined") {
@@ -361,8 +360,6 @@ function PredictionOccultation({ history, setTitle }) {
   }, [catalogArray]);
 
 
-
-
   useEffect(() => {
 
     if (typeof (leapSecondsArray[0]) != "undefined") {
@@ -372,8 +369,6 @@ function PredictionOccultation({ history, setTitle }) {
   }, [leapSecondsArray]);
 
 
-
-
   useEffect(() => {
 
     if (typeof (bspPlanetaryArray[0]) != "undefined") {
@@ -381,8 +376,6 @@ function PredictionOccultation({ history, setTitle }) {
     }
 
   }, [bspPlanetaryArray]);
-
-
 
 
   useEffect(() => {
