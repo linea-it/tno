@@ -366,6 +366,10 @@ class CcdImage(models.Model):
         verbose_name='Download finish',
         auto_now_add=False, null=True, blank=True)
 
+    download_time = models.DurationField(
+        verbose_name='Download time',
+        null=True, blank=True)
+
     file_size = models.PositiveIntegerField(
         verbose_name='File Size',
         null=True, blank=True, default=None, help_text='File Size in bytes')
@@ -887,7 +891,7 @@ class SkybotRun(models.Model):
 
     error = models.TextField(
         verbose_name="Error",
-        null=True, 
+        null=True,
         blank=True
     )
 

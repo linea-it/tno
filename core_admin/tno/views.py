@@ -30,7 +30,9 @@ from django.db.models.functions import TruncMonth
 from tno.skybot.plot_ccds_objects import ccds_objects, read_skybot_output, get_circle_from_ra_dec
 import urllib
 from rest_framework.decorators import detail_route
-
+import fnmatch
+import logging
+from dateutil.parser import parse
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -940,4 +942,98 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
             'success': True,
             'rows': rows,
             'count': len(rows)
+        })
+
+
+class CcdImageViewSet(viewsets.ModelViewSet):
+    queryset = CcdImage.objects.all()
+    serializer_class = CcdImageSerializer
+    filter_fields = ('id', 'desfile_id', 'filename')
+    search_fields = ('desfile_id', 'filename')
+
+    @list_route()
+    def import_download_logs(self, request):
+        logger = logging.getLogger('django')
+        default_path = os.path.join(settings.CCD_IMAGES_DIR, 'log')
+
+        path = request.query_params.get('path', None)
+
+        if path is None:
+            path = default_path
+
+        # Recuperar todos os arquivos com extensao .csv
+        listOfFiles = os.listdir(path)
+        pattern = "*.csv"
+
+        files = list([])
+
+        for filename in listOfFiles:
+            if fnmatch.fnmatch(filename, pattern):
+                files.append(filename)
+
+        logger.info("--------------------------------------------------")
+        logger.info("Importando logs de download CCD")
+        
+        files_not_downloaded = list()
+
+        # Para cada imagem inserir na tabela CCD_IMAGE
+        for logname in files:
+            logpath = os.path.join(path, logname)
+
+            ccd_filename = logname.replace('.fz.csv', '')
+
+            # Double Check, conferir se o arquivo de ccd realmente existe no diretorio.
+            # e se o seu tamanho e maior que 0 
+            image_filepath = os.path.join(settings.CCD_IMAGES_DIR, ccd_filename)
+            if os.path.exists(image_filepath) and os.path.getsize(image_filepath) > 0:
+
+                # Ler o log em csv
+                df = pd.read_csv(logpath, sep=';', header=None, index_col=False, names=['download_start_time', 'download_finish_time', 'file_size']) 
+
+                download_start_time, download_finish_time, file_size = df.iloc[0]
+
+                logger.info("CCD Filename %s" % ccd_filename)
+                logger.info("Start %s" % download_start_time)
+                logger.info("Finish %s" % download_finish_time)
+                logger.info("File Size %s" % file_size)
+
+                download_time = parse(download_finish_time) - parse(download_start_time) 
+                logger.info("Download Time %s" % download_time)
+
+                # Recuperar o Apontamento 
+                try:
+                    pointing = Pointing.objects.get(filename=ccd_filename)
+                    logger.info("Pointing Id: %s" % pointing.id)
+
+                    record, created = CcdImage.objects.update_or_create(
+                        desfile_id=pointing.desfile_id,
+                        filename=ccd_filename,
+                        defaults={
+                            'pointing': pointing,
+                            'download_start_time': download_start_time,
+                            'download_finish_time': download_finish_time,
+                            'download_time': download_time,
+                            'file_size': file_size,
+                        }
+                    )
+
+                    record.save()
+                    pointing.downloaded = True
+                    pointing.save()
+
+                    logger.info("CCD Image [ %s ] Created: [ %s ]" % (ccd_filename, created))
+
+                except Pointing.DoesNotExist:
+                    logger.warning("Nao encontrou: %s" % ccd_filename)
+            else:
+                # Se o arquivo de imagem nao existir no diretorio coloca na mensagem de retorno
+                files_not_downloaded.append(ccd_filename)
+
+        logger.info("--------------------------------------------------")
+        return Response({
+            'success': True,
+            'path': path,
+            'count_logs': len(files),
+            'count_not_downloaded': len(files_not_downloaded),
+            'files_not_downloaded': files_not_downloaded
         })
