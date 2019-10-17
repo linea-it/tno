@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { withRouter } from 'react-router-dom';
+import { makeStyles } from '@material-ui/styles';
 import Table from './utils/CustomTable';
 import { getPraiaRuns } from '../api/Praia';
-import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
@@ -49,7 +49,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 function AstrometryHistory({ history, reloadHistory }) {
-
   const classes = useStyles();
 
   const [tableData, setTableData] = useState([]);
@@ -61,11 +60,11 @@ function AstrometryHistory({ history, reloadHistory }) {
   const pageSizes = [5, 10, 15];
 
   const loadData = (event) => {
-    let page = typeof event == "undefined" ? tablePage : event.currentPage + 1;
-    let pageSize = typeof event == "undefined" ? tablePageSize : event.pageSize;
-    let searchValue = typeof event == "undefined" ? " " : event.searchValue;
+    const page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
+    const pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
+    const searchValue = typeof event === 'undefined' ? ' ' : event.searchValue;
 
-    getPraiaRuns({ page: page, pageSize: pageSize, search: searchValue }).then((res) => {
+    getPraiaRuns({ page, pageSize, search: searchValue }).then((res) => {
       setTableData(res.results);
       setTotalCount(res.count);
     });
@@ -76,7 +75,7 @@ function AstrometryHistory({ history, reloadHistory }) {
   }, []);
 
   const handleClickHistoryTable = (row) => {
-    history.push(`/astrometry-run/${row.id}`)
+    history.push(`/astrometry/${row.id}`);
   };
 
   const columns = [
@@ -194,14 +193,9 @@ function AstrometryHistory({ history, reloadHistory }) {
         reload={reload}
         hasSearching={false}
         hasColumnVisibility={false}
-      >
-      </ Table>
+       />
     </div>
   );
 }
 
 export default withRouter(AstrometryHistory);
-
-
-
-

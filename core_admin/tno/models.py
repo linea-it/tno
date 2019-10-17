@@ -152,14 +152,17 @@ class Pointing(models.Model):
             models.Index(fields=['expnum', 'ccdnum']),
             models.Index(fields=['expnum', 'ccdnum', 'band']),
             models.Index(fields=['date_obs']),
-            models.Index(fields=['rac1']),
-            models.Index(fields=['rac2']),
-            models.Index(fields=['rac3']),
-            models.Index(fields=['rac4']),
-            models.Index(fields=['decc1']),
-            models.Index(fields=['decc2']),
-            models.Index(fields=['decc3']),
-            models.Index(fields=['decc4']),
+            # models.Index(fields=['rac1']),
+            # models.Index(fields=['rac2']),
+            # models.Index(fields=['rac3']),
+            # models.Index(fields=['rac4']),
+            # models.Index(fields=['decc1']),
+            # models.Index(fields=['decc2']),
+            # models.Index(fields=['decc3']),
+            # models.Index(fields=['decc4']),
+            models.Index(fields=['pfw_attempt_id']),
+            models.Index(fields=['desfile_id']),
+            models.Index(fields=['filename']),
         ]
 
     def __str__(self):
@@ -365,6 +368,10 @@ class CcdImage(models.Model):
     download_finish_time = models.DateTimeField(
         verbose_name='Download finish',
         auto_now_add=False, null=True, blank=True)
+
+    download_time = models.DurationField(
+        verbose_name='Download time',
+        null=True, blank=True)
 
     file_size = models.PositiveIntegerField(
         verbose_name='File Size',
@@ -887,7 +894,7 @@ class SkybotRun(models.Model):
 
     error = models.TextField(
         verbose_name="Error",
-        null=True, 
+        null=True,
         blank=True
     )
 

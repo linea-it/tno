@@ -2,7 +2,7 @@ import humanize
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Pointing, SkybotOutput, CustomList, Proccess, Catalog, JohnstonArchive, SkybotRun
+from .models import Pointing, SkybotOutput, CustomList, Proccess, Catalog, JohnstonArchive, SkybotRun, CcdImage
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -60,12 +60,14 @@ class PointingSerializer(serializers.ModelSerializer):
         except:
             return None
 
+
 class SkybotRunSerializer(serializers.ModelSerializer):
-    
+
     owner = serializers.SerializerMethodField()
     h_execution_time = serializers.SerializerMethodField()
     start = serializers.SerializerMethodField()
     finish = serializers.SerializerMethodField()
+
     class Meta:
         model = SkybotRun
         fields = (
@@ -115,7 +117,8 @@ class SkybotRunSerializer(serializers.ModelSerializer):
         try:
             return humanize.naturaldelta(obj.execution_time)
         except:
-            return None            
+            return None
+
 
 class SkybotOutputSerializer(serializers.ModelSerializer):
     pointing = serializers.PrimaryKeyRelatedField(
@@ -261,4 +264,20 @@ class JohnstonArchiveSerializer(serializers.ModelSerializer):
             'known_components',
             'discovery',
             'updated',
+        )
+
+
+class CcdImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CcdImage
+        fields = (
+            'id',
+            'pointing',
+            'desfile_id',
+            'filename',
+            'download_start_time',
+            'download_finish_time',
+            'download_time',
+            'file_size',
         )

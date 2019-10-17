@@ -500,7 +500,6 @@ function PredictionOccultationAsteroid({
   const handleBackNavigation = () => history.push(`/prediction-of-occultation/${asteroidData.predict_run}`);
 
 
-
   return (
     <>
       <Grid
@@ -604,7 +603,7 @@ function PredictionOccultationAsteroid({
             <Card>
               <CardHeader title="Occultations" />
 
-              <CardContent>
+              <CardContent className={classes.cardContentWrapper}>
                 <CustomTable
                   columns={occultationsColumns}
                   data={occultationData}

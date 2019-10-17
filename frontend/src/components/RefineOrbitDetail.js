@@ -6,6 +6,7 @@ import {
 } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
+import DescriptionIcon from '@material-ui/icons/Description';
 import CustomList from './utils/CustomList';
 import {
   getOrbitRunById,
@@ -17,7 +18,6 @@ import { Donut, TimeProfile } from './utils/CustomChart';
 import CustomTable from './utils/CustomTable';
 import CustomDialog from './utils/CustomDialog';
 import CustomLog from './utils/CustomLog';
-import DescriptionIcon from '@material-ui/icons/Description';
 import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
