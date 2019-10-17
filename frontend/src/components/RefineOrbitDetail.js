@@ -41,15 +41,15 @@ const useStyles = makeStyles((theme) => ({
     boxSizing: 'border-box',
   },
   btnSuccess: {
-    backgroundColor: 'green',
+    backgroundColor: '#009900',
     color: '#fff',
   },
   btnFailure: {
-    backgroundColor: 'red',
+    backgroundColor: '#ff1a1a',
     color: '#fff',
   },
   btnRunning: {
-    backgroundColor: '#ffba01',
+    backgroundColor: '#0099ff',
     color: '#000',
   },
   btnNotExecuted: {
@@ -269,10 +269,10 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       ]);
 
       setDonutData([
-        { name: 'Success', value: data.count_success },
-        { name: 'Warning', value: data.count_warning },
-        { name: 'Failure', value: data.count_failed },
-        { name: 'Not Executed', value: data.count_not_executed },
+        { name: 'Success', value: data.count_success, color: '#009900' },
+        { name: 'Warning', value: data.count_warning, color: '#D79F15' },
+        { name: 'Failure', value: data.count_failed, color: '#ff1a1a' },
+        { name: 'Not Executed', value: data.count_not_executed, color: '#ABA6A2' },
       ]);
     });
     getOrbitRunTimeProfile({ id }).then((res) => setTimeProfile(res));

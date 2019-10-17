@@ -41,15 +41,15 @@ const useStyles = makeStyles((theme) => ({
     boxSizing: 'border-box',
   },
   btnSuccess: {
-    backgroundColor: 'green',
+    backgroundColor: '#009900',
     color: '#fff',
   },
   btnFailure: {
-    backgroundColor: 'red',
+    backgroundColor: '#ff1a1a',
     color: '#fff',
   },
   btnRunning: {
-    backgroundColor: '#ffba01',
+    backgroundColor: '#0099ff',
     color: '#000',
   },
   btnNotExecuted: {
@@ -75,7 +75,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function RefineOrbit({ history, setTitle }) {
-
   const classes = useStyles();
   const columns = [
     {
@@ -202,7 +201,6 @@ function RefineOrbit({ history, setTitle }) {
   const loadTableData = async ({
     sorting, pageSize, currentPage, filter, searchValue,
   }) => {
-
     const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
     const orbits = await getOrbitRuns({
       ordering,
