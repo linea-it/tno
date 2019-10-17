@@ -5,6 +5,7 @@ import {
 } from '@material-ui/core';
 import clsx from 'clsx';
 import Toolbar from '@material-ui/core/Toolbar';
+import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import ListIcon from '@material-ui/icons/List';
 import BugIcon from '@material-ui/icons/BugReport';
@@ -13,6 +14,10 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ReactInterval from 'react-interval';
 import Tooltip from '@material-ui/core/Tooltip';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import CheckIcon from '@material-ui/icons/Check';
+import WarningIcon from '@material-ui/icons/PriorityHigh';
+import ClearIcon from '@material-ui/icons/Clear';
 import CustomLog from './utils/CustomLog';
 import Dialog from './utils/CustomDialog';
 import {
@@ -22,10 +27,6 @@ import Table from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
 import Stepper from './AstrometryStepper';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import CheckIcon from '@material-ui/icons/Check';
-import WarningIcon from '@material-ui/icons/PriorityHigh';
-import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles({
   card: {
@@ -247,7 +248,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
             >
-              <WarningIcon className={classes.warningIcon}></WarningIcon>
+              <WarningIcon className={classes.warningIcon} />
               Warning
             </span>
           );
@@ -269,7 +270,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnFailure)}
               title={row.status}
             >
-              <ClearIcon className={classes.failureIcon}></ClearIcon>
+              <ClearIcon className={classes.failureIcon} />
               Failure
             </span>
           );
@@ -289,7 +290,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
           >
-            <CheckIcon className={classes.checkIcon}></CheckIcon>
+            <CheckIcon className={classes.checkIcon} />
             Success
           </span>
         );
@@ -358,7 +359,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     {
       name: 'id',
       title: ' ',
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: handleAsteroidDetail,
     },
   ];
@@ -376,7 +377,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
             >
-              <WarningIcon className={classes.warningIcon}></WarningIcon>
+              <WarningIcon className={classes.warningIcon} />
               Warning
             </span>
           );
@@ -398,7 +399,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnFailure)}
               title={row.status}
             >
-              <ClearIcon className={classes.failureIcon}></ClearIcon>
+              <ClearIcon className={classes.failureIcon} />
               Failure
             </span>
           );
@@ -418,7 +419,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
           >
-            <CheckIcon className={classes.checkIcon}></CheckIcon>
+            <CheckIcon className={classes.checkIcon} />
             Success
           </span>
         );
@@ -495,7 +496,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       title: ' ',
       width: 80,
       align: 'center',
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: handleAsteroidDetail,
     },
   ];
@@ -606,9 +607,9 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       </Grid>
       <Grid container spacing={6}>
         <Grid item xs={12} md={12} xl={12}>
-          <Stepper activeStep={runData && typeof runData != "undefined" ? runData.step : 0} />
+          <Stepper activeStep={runData && typeof runData !== 'undefined' ? runData.step : 0} />
         </Grid>
-      </Grid >
+      </Grid>
       <Grid container spacing={6}>
         <Grid item sm={12} xl={12}>
           <Card className={classes.card}>

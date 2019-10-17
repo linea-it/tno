@@ -11,6 +11,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { makeStyles } from '@material-ui/core/styles';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
 import clsx from 'clsx';
 import Grid from '@material-ui/core/Grid';
 import CustomTable from './utils/CustomTable';
@@ -167,7 +168,7 @@ function RefineOrbit({ history, setTitle }) {
       name: 'id',
       title: ' ',
       width: 100,
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: (el) => history.push(`/refine-orbit/${el.id}`),
       align: 'center',
     },

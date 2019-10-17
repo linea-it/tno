@@ -165,18 +165,18 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     let start_date = moment(arg.view.currentStart).format("YYYY-MM-DD");
     let end_date = moment(arg.view.currentEnd).subtract(1, 'days').format("YYYY-MM-DD");
 
-    //Um problema que surgiu nesta página foi o seguinte: 
-    //Quando o calendário renderiza, ele traz consigo uma data default que é especificada 
+    //Um problema que surgiu nesta página foi o seguinte:
+    //Quando o calendário renderiza, ele traz consigo uma data default que é especificada
     //no atributo no componente. Se o calendário não fosse pra página de ocultações estaria tudo certo.
     //Porém como ele vai pra outra página e retorna trazendo as informações de datas iniciais e finais
     //então foi necessário montar um esquema pra que ele não se perdesse nas renderizações.
-    //Desto modo toda vez que ele renderiza, ou ele pega o valor dos params que retornam da página de 
+    //Desto modo toda vez que ele renderiza, ou ele pega o valor dos params que retornam da página de
     //ocultações ou ele renderiza um valor default do dia e mês corrente.
-    //Já a parte do código abaixo obriga o calendário re-renderizar, quebrando portanto a regra de valor 
+    //Já a parte do código abaixo obriga o calendário re-renderizar, quebrando portanto a regra de valor
     //default. Isso foi extemamente útil pra administrar o conteúdo de forma orgamizada.
     //Ou seja, os valores default são sempre carregados na inicialização.
     //Os valores abaixo definidos são sempre carregados a partir da navegação do usuário.
-    //Desta forma consegui amarrar o conteúdo.    
+    //Desta forma consegui amarrar o conteúdo.
 
     setInitialDate(start_date);
     setFinalDate(end_date);
@@ -206,9 +206,9 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     const time = moment(event.event.start).format('H');
 
     if (time >= 18) {
-      event.el.innerHTML = event.el.innerHTML + "<i id='sol_lua' class='fas fa-moon'></i>";
+      event.el.innerHTML = event.el.innerHTML + "<Icon id='sol_lua' class='fas fa-moon'></i>";
     } else {
-      event.el.innerHTML = event.el.innerHTML + "<i id='sol_lua' class='fas fa-sun'></i>";
+      event.el.innerHTML = event.el.innerHTML + "<Icon id='sol_lua' class='fas fa-sun'></i>";
     }
   };
 
@@ -219,10 +219,10 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
       <AppBar setSearch={setSearch} setHasSearch={setHasSearch} value={search} />
 
-      {/* params.date is coming back from occulation. 
+      {/* params.date is coming back from occulation.
       It's being used to maintain data that went from calendar to occultation.
       Flow:
-      1 -User chooses an event. 
+      1 -User chooses an event.
       2- The specific data goes to occultation.
       3 - On occultation screen user click on back button.
       4 - When back, data comes inside params props.(params are internal(internal operation));             */}

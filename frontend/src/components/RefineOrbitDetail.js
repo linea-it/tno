@@ -5,6 +5,7 @@ import {
   Grid, Card, makeStyles, CardHeader, CardContent,
 } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
 import clsx from 'clsx';
 import DescriptionIcon from '@material-ui/icons/Description';
 import CustomList from './utils/CustomList';
@@ -169,7 +170,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       name: 'id',
       title: ' ',
       width: 100,
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: (el) => history.push(`/refine-orbit/asteroid/${el.id}`),
       align: 'center',
     },
@@ -323,7 +324,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
             className={classes.button}
             onClick={handleBackNavigation}
           >
-            <i className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+            <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
             <span>Back</span>
           </Button>
         </Grid>
