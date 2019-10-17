@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardContent,
   Typography,
-  CardActions,
   makeStyles,
 } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
@@ -14,7 +13,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Label from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
-import Dialog from './utils/CustomDialog';
+import Dialog from '@material-ui/core/Dialog';
+import Paper from '@material-ui/core/Paper';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
@@ -34,7 +34,8 @@ const useStyles = makeStyles((theme) => ({
   },
   runButton: {
     marginTop: theme.spacing(3),
-    width: '100%',
+    width: '30%',
+    marginLeft: '70%',
   },
   dialogHeader: {
     width: 600,
@@ -45,12 +46,19 @@ const useStyles = makeStyles((theme) => ({
   },
   finalDate: {
     width: '40%',
-
   },
   dialogButton: {
-    marginTop: 25,
+    marginRight: '4%',
+    marginBottom: '2%',
     float: 'right',
+    width: '15%',
   },
+  initialDate: {
+    margin: 20,
+  },
+  finalDate: {
+    margin: 20,
+  }
 }));
 
 function SkyBotRun({ setTitle }) {
@@ -68,7 +76,6 @@ function SkyBotRun({ setTitle }) {
     title: " ",
   });
 
-
   const classes = useStyles();
 
   const handleSelectRunChange = event => {
@@ -79,8 +86,6 @@ function SkyBotRun({ setTitle }) {
     const options = [
       { title: "All Pointings", value: "all_pointings" },
       { title: "By Period", value: "by_period" },
-      { title: "Region Selection", value: "region_selection" },
-      { title: "Cone Search", value: "cone_search" },
     ];
 
     return options.map((el, i) => (
@@ -92,44 +97,33 @@ function SkyBotRun({ setTitle }) {
         {el.title}
       </MenuItem>
     ));
-
   };
 
   const handleSubmit = () => {
     console.log("Submit");
-    console.log(initialDate);
+    
   };
 
   const handleAllPointings = () => {
-
   };
-
-
-  const handleInitialDateChange = (date) => {
-
-    setInitialDate(date);
-    console.log("State:", initialDate);
-  };
-
-
 
   const handleByPeriod = () => {
+    setDialog({ visible: true })
+  };
 
-    setDialog({
-      visible: true,
-      content:
-        <>
+  const loadDialogContent = () => {
+    return (
+      <Grid container justify="space-around">
+        <Paper>
           <MuiPickersUtilsProvider utils={DateFnsUtils} >
             <KeyboardDatePicker
-
               className={classes.initialDate}
               variant="inline"
               format={"yyyy/MM/dd"}
               id="date-picker-inline"
               label={"Initial Date"}
               value={initialDate}
-              onChange={()=>setInitialDate("2019/01/01")}
-
+              onChange={(date) => setInitialDate(date)}
             />
             <KeyboardDatePicker
               className={classes.finalDate}
@@ -138,7 +132,7 @@ function SkyBotRun({ setTitle }) {
               id="date-picker-inline"
               label={"Final Date"}
               value={finalDate}
-
+              onChange={(date) => setFinalDate(date)}
             />
           </MuiPickersUtilsProvider >
           <Button
@@ -148,34 +142,13 @@ function SkyBotRun({ setTitle }) {
             onClick={handleSubmit}
           >
             Ok
-         </Button>
-        </>,
-      title: "Query of all pointings by Period"
-    });
-
-  };
-
-  const handleRegionSelection = () => {
-
-
-    setDialog({
-      visible: true,
-      content: " ",
-      title: "Query of all pointings within a region"
-    });
-  };
-
-  const handleConeSearch = () => {
-
-    setDialog({
-      visible: true,
-      content: " ",
-      title: "Query of all pointings within the circular region of the sky"
-    });
+          </Button>
+        </Paper>
+      </Grid>
+    )
   };
 
   const handleSelectRunClick = () => {
-
     switch (selectRunValue) {
       case "all_pointings":
         handleAllPointings();
@@ -183,19 +156,10 @@ function SkyBotRun({ setTitle }) {
       case "by_period":
         handleByPeriod();
         break;
-      case "region_selection":
-        handleRegionSelection();
-        break;
-      case "cone_search":
-        handleConeSearch();
-        break;
     }
   };
 
-  console.log(selectRunValue);
-
   return (
-
     <Grid>
       <Grid container spacing={6}>
         <Grid item lg={5} xl={3}>
@@ -217,7 +181,6 @@ function SkyBotRun({ setTitle }) {
                   onChange={handleSelectRunChange}
                 >
                   {loadMenuItems()}
-
                 </Select>
                 <Button
                   variant="contained"
@@ -232,7 +195,6 @@ function SkyBotRun({ setTitle }) {
           </Card>
         </Grid>
       </Grid>
-
       <Grid container spacing={6}>
         <Grid item lg={12} xl={12}>
           <Card>
@@ -246,15 +208,12 @@ function SkyBotRun({ setTitle }) {
         </Grid>
       </Grid>
       <Dialog
-        visible={dialog.visible}
-        title={dialog.title}
-        content={dialog.content}
-        setVisible={() => setDialog({ visible: false, content: " ", title: " " })}
-        headerStyle={classes.dialogHeader}
+        open={dialog.visible}
+        onClose={() => setDialog({ visible: false, content: " ", title: " " })}
       >
+        {loadDialogContent()}
       </Dialog>
     </Grid>
   );
 };
 export default withRouter(SkyBotRun);
-
