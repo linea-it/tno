@@ -290,8 +290,6 @@ function PredictionOccultationAsteroid({
     });
 
 
-
-
     getAsteroidById({ id }).then((res) => setAsteroidData(res));
     getOccultations({ id }).then((data) => {
       setOccultationData(
@@ -300,10 +298,7 @@ function PredictionOccultationAsteroid({
           source: row.src ? url + row.src : null,
         })),
       );
-
     });
-
-
 
 
     getAsteroidInputs({ id }).then((data) => {
@@ -605,7 +600,8 @@ function PredictionOccultationAsteroid({
           <Grid item lg={12} className={clsx(classes.block, classes.tableWrapper)}>
             <Card>
               <CardHeader title="Occultations" />
-              <CardContent>
+
+              <CardContent className={classes.cardContentWrapper}>
                 <CustomTable
                   columns={occultationsColumns}
                   data={occultationData}
