@@ -3,9 +3,9 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import CardMedia from '@material-ui/core/CardMedia';
 import { makeStyles } from '@material-ui/styles';
-import { Card, CardHeader, CardActions } from '@material-ui/core';
+import { Card, CardHeader, CardActions, Button } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
-import Fab from '@material-ui/core/Fab';
+
 
 
 
@@ -48,7 +48,6 @@ export default function CustomAsteroidGridList({
       alignContent: "center",
       justifyContent: "center",
       textAlign: "center",
-
     },
     cardActions: {
       justifyContent: "center",
@@ -90,10 +89,10 @@ export default function CustomAsteroidGridList({
               <p className={classes.underTitle}>{tile.date_time}</p>
               <p className={classes.underTitle}>G mag*: {tile.g}</p>
               {actions && <CardActions className={classes.cardActions}>
-                <Fab variant="extended" size={"small"} aria-label="extended" className={classes.fab} onClick={() => handleImgDetail(tile.id)}>
+                <Button variant="extended" size={"small"} aria-label="extended" className={classes.fab} onClick={() => handleImgDetail(tile.id)}>
                   {buttonIcon}
                   {buttonTitle}
-                </Fab>
+                </Button>
               </CardActions>}
             </Card>
           </GridListTile>
