@@ -23,6 +23,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import WarningIcon from '@material-ui/icons/PriorityHigh';
 import ClearIcon from '@material-ui/icons/Clear';
 
+
 const useStyles = makeStyles((theme) => ({
   card: {
     marginBottom: 10,
@@ -94,7 +95,11 @@ const useStyles = makeStyles((theme) => ({
     height: 600,
     width: 600,
   },
+
 }));
+
+
+
 
 function AstrometryRun({ setTitle, match: { params } }) {
 
@@ -107,7 +112,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
   const [totalCount, setTotalCount] = useState();
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState();
   const [toolButton, setToolButton] = useState('list');
-  const [reload_interval, setReloadInterval] = useState(3);
+  const [reload_interval, setReloadInterval] = useState(1);
   const [interval_condition, setIntervalCondition] = useState(true);
   const [count, setCount] = useState(1);
   const [runData, setRunData] = useState();
@@ -242,7 +247,8 @@ function AstrometryRun({ setTitle, match: { params } }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnWarning)}
-              title={row.status}
+              title={row.error_msg}
+
             >
               <WarningIcon className={classes.warningIcon}></WarningIcon>
               Warning
@@ -264,7 +270,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}
-              title={row.status}
+              title={row.error_msg}
             >
               <ClearIcon className={classes.failureIcon}></ClearIcon>
               Failure
@@ -295,7 +301,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
     {
       name: "name",
       title: "Name",
-      align: 'center',
+      align: 'left',
     },
     {
       name: "number",
@@ -367,13 +373,13 @@ function AstrometryRun({ setTitle, match: { params } }) {
       name: "status",
       title: "Status",
       align: 'center',
-      width: 120,
+      width: 130,      // A Coluna Status, na lista de Debug está menor que o tamanho do botão.
       customElement: (row) => {
         if (row.status === 'warning') {
           return (
             <span
               className={clsx(classes.btn, classes.btnWarning)}
-              title={row.status}
+              title={row.error_msg}
             >
               <WarningIcon className={classes.warningIcon}></WarningIcon>
               Warning
@@ -395,7 +401,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}
-              title={row.status}
+              title={row.error_msg}
             >
               <ClearIcon className={classes.failureIcon}></ClearIcon>
               Failure
@@ -458,7 +464,9 @@ function AstrometryRun({ setTitle, match: { params } }) {
       customElement: (row) => {
         return (
           <Tooltip title="Condor Log" >
-            <IconButton onClick={() => handleLogReading(row.condor_log)}>
+            <IconButton onClick={() => handleLogReading(row.condor_log)}
+              style={{ padding: 0 }}     //O estilo do próprio botão estava atrapalhando a interface
+            >
               <DescriptionIcon />
             </IconButton>
           </Tooltip>
@@ -473,7 +481,9 @@ function AstrometryRun({ setTitle, match: { params } }) {
       customElement: (row) => {
         return (
           <Tooltip title="Condor Error">
-            <IconButton onClick={() => handleLogReading(row.condor_err_log)}>
+            <IconButton onClick={() => handleLogReading(row.condor_err_log)}
+              style={{ padding: 0 }}     //O estilo do próprio botão estava atrapalhando a interface
+            >
               <DescriptionIcon />
             </IconButton>
           </Tooltip>
@@ -488,7 +498,9 @@ function AstrometryRun({ setTitle, match: { params } }) {
       customElement: (row) => {
         return (
           <Tooltip title="Condor Output">
-            <IconButton onClick={() => handleLogReading(row.condor_out_log)}>
+            <IconButton onClick={() => handleLogReading(row.condor_out_log)}
+              style={{ padding: 0 }}     //O estilo do próprio botão estava atrapalhando a interface
+            >
               <DescriptionIcon />
             </IconButton>
           </Tooltip>
@@ -497,7 +509,7 @@ function AstrometryRun({ setTitle, match: { params } }) {
     },
     {
       name: "id",
-      title: " ",
+      title: "",
       width: 80,
       align: 'center',
       icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
@@ -568,9 +580,12 @@ function AstrometryRun({ setTitle, match: { params } }) {
     } else {
       setIntervalCondition(false);
     }
+
+    if (count >= 3) {
+      setReloadInterval(3);
+    }
+
   };
-
-
 
   return (
     <div>
@@ -634,7 +649,9 @@ function AstrometryRun({ setTitle, match: { params } }) {
                 <ToggleButton
                   value="list"
                   onClick={() => {
-                    setColumnsAsteroidTable(listColumnsTable)
+
+                    setColumnsAsteroidTable(listColumnsTable);
+                    loadTableData();
                   }
                   }>
                   <ListIcon />
@@ -642,7 +659,9 @@ function AstrometryRun({ setTitle, match: { params } }) {
                 <ToggleButton
                   value="bug"
                   onClick={() => {
-                    setColumnsAsteroidTable(bugColumnsTable)
+
+                    setColumnsAsteroidTable(bugColumnsTable);
+                    loadTableData();
                   }
                   }>
                   <BugIcon />
@@ -659,9 +678,10 @@ function AstrometryRun({ setTitle, match: { params } }) {
               hasColumnVisibility={false}
               totalCount={totalCount}
               pageSizes={tableParams.pageSizes}
-              reload={tableParams.reload}
+              // reload={tableParams.reload}
+              reload={true}
               hasToolbar={true}
-              hasResizing={false}
+              hasResizing={false}  //A lista de Asteroids as colunas não estão com resize habilitado, diferente das outras listas
             >
             </Table>
             <Dialog

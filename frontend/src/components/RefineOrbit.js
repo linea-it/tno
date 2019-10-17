@@ -24,7 +24,9 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer',
   },
   button: {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(3),
+    marginLeft: '70%',
+    width: '30%',         //Padronizar os Botão de submit, o do refine está diferente do Submit da predição.
   },
   btn: {
     textTransform: 'none',
@@ -71,6 +73,9 @@ const useStyles = makeStyles((theme) => ({
   },
   tableWrapper: {
     maxWidth: '100%',
+  },
+  select: {
+    minWidth: 300,
   },
 }));
 
@@ -146,6 +151,7 @@ function RefineOrbit({ history, setTitle }) {
       name: 'start_time',
       title: 'Date',
       width: 180,
+      align: 'center',
     },
     {
       name: 'h_time',
@@ -153,8 +159,16 @@ function RefineOrbit({ history, setTitle }) {
       width: 140,
     },
     {
-      name: 'h_execution_time',
+      name: 'execution_time',
       title: 'Execution Time',
+      align: 'center',
+      customElement: (row) => {
+        return (
+          <span>
+            {row.execution_time.substring(0, 8)}
+          </span>
+        );
+      },
       width: 140,
     },
     {
@@ -236,19 +250,18 @@ function RefineOrbit({ history, setTitle }) {
       container
       direction="row"
     >
-      <Grid item xs={12} md={4} fullWidth className={classes.gridWrapper}>
+      <Grid item xs={12} md={4} fullwidth className={classes.gridWrapper}>
         <Card>
           <CardHeader
             title={<span>Execute</span>}
           />
           <CardContent>
             <form autoComplete="off">
-              <FormControl fullWidth>
+              <FormControl fullWidth >
                 <InputLabel htmlFor="input">Input</InputLabel>
                 <Select
                   value={select}
                   onChange={handleSelect}
-
                 >
                   {inputData.map((input) => (
                     <MenuItem key={input.id} value={input} item={input}>{input.proccess_displayname}</MenuItem>

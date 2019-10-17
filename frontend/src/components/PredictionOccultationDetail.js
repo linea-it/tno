@@ -16,6 +16,7 @@ import CustomTable from './utils/CustomTable';
 import CustomList from './utils/CustomList';
 import { Donut, TimeProfile } from './utils/CustomChart';
 
+
 const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
@@ -66,6 +67,9 @@ const useStyles = makeStyles((theme) => ({
   tableWrapper: {
     maxWidth: '100%',
   },
+  iconDetail: {
+    fontSize: 18,
+  }
 }));
 
 function PredictionOccultationDetail({ history, match, setTitle }) {
@@ -149,8 +153,16 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       width: 140,
     },
     {
-      name: 'h_execution_time',
+      name: 'execution_time',
       title: 'Execution Time',
+      align: 'center',
+      customElement: (row) => {
+        return (
+          <span>
+            {moment.utc(row.execution_time * 1000).format('HH:mm:ss')}
+          </span>
+        );
+      },
       width: 140,
     },
     {

@@ -145,7 +145,7 @@ function PredictionOccultationAsteroid({
   const [outputTableData, setOutputTableData] = useState([]);
   const [neighborhoodStarsPlot, setNeighborhoodStarsPlot] = useState('');
   const [asteroidOrbitPlot, setAsteroidOrbitPlot] = useState('');
- 
+
   const [lightbox, setLightbox] = useState({
     isOpen: false,
     currentImage: 0,
@@ -289,8 +289,6 @@ function PredictionOccultationAsteroid({
     });
 
 
-   
-
     getAsteroidById({ id }).then((res) => setAsteroidData(res));
     getOccultations({ id }).then((data) => {
       setOccultationData(
@@ -299,10 +297,8 @@ function PredictionOccultationAsteroid({
           source: row.src ? url + row.src : null,
         })),
       );
-     
+
     });
-
-
 
 
     getAsteroidInputs({ id }).then((data) => {
@@ -504,7 +500,7 @@ function PredictionOccultationAsteroid({
   const handleBackNavigation = () => history.push(`/prediction-of-occultation/${asteroidData.predict_run}`);
 
 
- 
+
   return (
     <>
       <Grid
@@ -797,7 +793,7 @@ function PredictionOccultationAsteroid({
               className={clsx(classes.block, classes.tableWrapper)}
             >
               <Card>
-                <CardHeader title="Outputs" />
+                <CardHeader title="Results" />
                 <CardContent className={classes.cardContentWrapper}>
                   <CustomTable
                     columns={outputColumns}

@@ -18,6 +18,7 @@ import { getOrbitRuns } from '../api/Orbit';
 // import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from "./utils/CustomDialog";
 import moment from 'moment';
+import ReactInterval from 'react-interval';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -128,7 +129,15 @@ function PredictionOccultation({ history, setTitle }) {
     {
       name: 'execution_time',
       title: 'Execution Time',
+      customElement: (row) => {
+        return (
+          <span>
+            {row.execution_time.substring(0, 8)}
+          </span>
+        );
+      },
       width: 140,
+      align: 'center',
     },
     {
       name: 'count_objects',
@@ -154,6 +163,11 @@ function PredictionOccultation({ history, setTitle }) {
   useEffect(() => {
     setTitle('Prediction of Occultations');
   }, []);
+
+
+  const reloadData = () => {
+    loadTableData();
+  };
 
   const loadTableData = async ({
     sorting, pageSize, currentPage, filter, searchValue,
@@ -184,6 +198,7 @@ function PredictionOccultation({ history, setTitle }) {
   const [finalDate, setFinalDate] = useState(moment().endOf('year'));
   const [dialogVisible, setDialogVisible] = useState(false);
   const [dialogContent, setDialogContent] = useState("ok");
+  const [timeoutSeconds] = useState(30);
 
   const [valueSubmition, setValueSubmition] = useState({
     processId: null,
@@ -270,8 +285,7 @@ function PredictionOccultation({ history, setTitle }) {
         //ephemeris_final_date: "2019-01-01T02:00:00Z",
         // ephemeris_step: 600
       }).then((res) => {
-        console.log(res);
-        loadTableData();
+        // loadTableData();
       });
 
     }
@@ -283,7 +297,7 @@ function PredictionOccultation({ history, setTitle }) {
   const loadData = () => {
     // Load Input Array
     getOrbitRuns({
-      ordering: '-start_time',
+      ordering: '-start_time',   //- Lista de Inputs deve estar ordenada com o mais recente primeiro. Ok
       filters: [
         {
           property: 'status',
@@ -409,8 +423,17 @@ function PredictionOccultation({ history, setTitle }) {
   };
 
 
+
+
+
   return (
     <Grid>
+      <ReactInterval        //Reload a cada 30 segundos na lista de Execuções
+        timeout={timeoutSeconds * 1000}
+        enabled={true}
+        callback={reloadData}
+      />
+
 
       <Grid container spacing={6}>
         <Grid item lg={12}>
