@@ -54,6 +54,18 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ffba01',
     color: '#000',
   },
+  btnFailure: {
+    backgroundColor: 'red',
+    color: '#fff',
+  },
+  btnNotExecuted: {
+    backgroundColor: '#ABA6A2',
+    color: '#fff',
+  },
+  btnWarning: {
+    backgroundColor: '#D79F15',
+    color: '#FFF',
+  },
   input: {
     margin: 0,
   },
@@ -93,6 +105,36 @@ function PredictionOccultation({ history, setTitle }) {
               title={row.status}
             >
               Running
+            </span>
+          );
+        }
+        if (row.status === 'failure') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnFailure)}
+              title={row.error_msg ? row.error_msg : "Failure"}
+            >
+              Failure
+            </span>
+          );
+        }
+        if (row.status === 'not_executed') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnNotExecuted)}
+              title={row.error_msg}
+            >
+              Not Executed
+            </span>
+          );
+        }
+        if (row.status === 'warning') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnWarning)}
+              title={row.error_msg ? row.error_msg : "Warning"}
+            >
+              Warning
             </span>
           );
         }
@@ -166,7 +208,7 @@ function PredictionOccultation({ history, setTitle }) {
 
 
   const reloadData = () => {
-    loadTableData();
+    // loadTableData();
   };
 
   const loadTableData = async ({
@@ -333,8 +375,6 @@ function PredictionOccultation({ history, setTitle }) {
   };
 
 
-
-
   // If inputArray state is changed so hit the function useEffect
   // This is important to set first state case the user hits the submit button
   // Avoid error in case of user hits the submit button without choose any option
@@ -424,8 +464,6 @@ function PredictionOccultation({ history, setTitle }) {
 
 
 
-
-
   return (
     <Grid>
       <ReactInterval        //Reload a cada 30 segundos na lista de Execuções
@@ -433,7 +471,6 @@ function PredictionOccultation({ history, setTitle }) {
         enabled={true}
         callback={reloadData}
       />
-
 
       <Grid container spacing={6}>
         <Grid item lg={12}>

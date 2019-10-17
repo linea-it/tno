@@ -84,7 +84,7 @@ function Astrometry({ history, setTitle }) {
       config: valueSubmition.configId,
       catalog: valueSubmition.refCatalogId,
     }).then((res) => {
-      history.push(`/astrometry/${res.id}`);
+      history.push(`/astrometry/${res.data.id}`);
     });
 
     // TODO: When submit Run go to the Run Detail screen

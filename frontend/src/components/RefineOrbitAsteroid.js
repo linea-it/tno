@@ -364,7 +364,9 @@ function RefineOrbitAsteroid({
 
   const handleBackNavigation = () => history.push(`/refine-orbit/${asteroidData.orbit_run}`);
 
-  console.log(resultTableData);
+
+  console.log("Asteroid: ", asteroidData);
+
 
   return (
     <>

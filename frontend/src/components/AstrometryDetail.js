@@ -112,7 +112,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   const [toolButton, setToolButton] = useState('list');
   const [reload_interval, setReloadInterval] = useState(1);
   const [interval_condition, setIntervalCondition] = useState(true);
-  const [count, setCount] = useState(1);
+  const [count, setCount] = useState(0.5);  //Assim que submete uma nova execução, muda para a tela de Run mas não carrega de imediato demora um tempo até a primeira requisição.
   const [runData, setRunData] = useState();
   const [dialog, setDialog] = useState({
     visible: false,
@@ -143,7 +143,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnFailure)}
-                  title={data.error_msg}
+                  title={data.error_msg ? data.error_msg : "Failure"}
                 >
                   Failure
                 </span>
@@ -173,7 +173,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnWarning)}
-                  title={data.error_msg}
+                  title={data.error_msg ? data.error_msg : "Warning"}
                 >
                   Warning
                 </span>
@@ -246,7 +246,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
             <span
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.error_msg}
-
             >
               <WarningIcon className={classes.warningIcon}></WarningIcon>
               Warning
@@ -505,7 +504,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     },
     {
       name: "id",
-      title: "",
+      title: " ",
       width: 80,
       align: 'center',
       icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
@@ -554,15 +553,14 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   };
 
   const handleLogReading = (file) => {
-    if (file) {
+    if (file && typeof file != 'undefined') {
       const arrayLines = [];
 
       readCondorFile(file).then((res) => {
-        const data = res.rows;
+        let data = res.data.rows;
         data.forEach((line, idx) => {
           arrayLines.push(<div key={idx}>{line}</div>);
         });
-        // setDialog({ content: arrayLines, visible: true, title: file + " " });
         setDialog({ content: data, visible: true, title: `${file} ` });
       });
     }
@@ -575,8 +573,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     } else {
       setIntervalCondition(false);
     }
-
-    if (count >= 3) {
+    if (count >= 5) {
       setReloadInterval(3);
     }
 
@@ -642,7 +639,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                 <ToggleButton
                   value="list"
                   onClick={() => {
-
                     setColumnsAsteroidTable(listColumnsTable);
                     loadTableData();
                   }
@@ -652,7 +648,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                 <ToggleButton
                   value="bug"
                   onClick={() => {
-
                     setColumnsAsteroidTable(bugColumnsTable);
                     loadTableData();
                   }

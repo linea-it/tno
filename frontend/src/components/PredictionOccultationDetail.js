@@ -93,7 +93,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}
-              title={row.error_msg}
+              title={row.error_msg ? row.error_msg : "Failure"}
             >
               Failure
             </span>
@@ -111,7 +111,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnNotExecuted)}
-              title={row.error_msg}
+              title={row.status}
             >
               Not Executed
             </span>
@@ -175,7 +175,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     },
   ];
 
-
   useEffect(() => {
     setTitle('Prediction of Occultations');
 
@@ -188,7 +187,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnFailure)}
-                  title={data.error_msg}
+                  title={data.error_msg ? data.error_msg : "Failure"}
                 >
                   Failure
                 </span>
@@ -206,7 +205,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnNotExecuted)}
-                  title={data.error_msg}
+                  title={data.status}
                 >
                   Not Executed
                 </span>
@@ -276,7 +275,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     });
 
     getTimeProfile({ id }).then((res) => {
-      console.log(res);
       setTimeProfile(res);
     });
   }, []);
