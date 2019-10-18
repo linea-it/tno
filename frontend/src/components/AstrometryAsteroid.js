@@ -433,7 +433,7 @@ function AstrometryAsteroid({
     setReload(!reload);
   };
 
-  const handleBackNavigation = () => history.push(`/astrometry/${asteroidData.predict_run}`);
+  const handleBackNavigation = () => history.push(`/astrometry/${asteroidData.astrometry_run}`);
 
   const handleMainOutputClick = (output) => {
     getOutputFile(output.file_path).then((res) => {

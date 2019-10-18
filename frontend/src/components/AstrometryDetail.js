@@ -70,15 +70,15 @@ const useStyles = makeStyles({
     boxSizing: 'border-box',
   },
   btnSuccess: {
-    backgroundColor: 'green',
+    backgroundColor: '#009900',
     color: '#fff',
   },
   btnFailure: {
-    backgroundColor: 'red',
+    backgroundColor: '#ff1a1a',
     color: '#fff',
   },
   btnRunning: {
-    backgroundColor: '#ffba01',
+    backgroundColor: '#0099ff',
     color: '#000',
   },
   btnNotExecuted: {
@@ -105,16 +105,15 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   const classes = useStyles();
 
   const [list, setList] = useState([]);
-  const [execution_time, setExecutionTime] = useState({});
-  const [execution_stats, setExecutionStats] = useState({});
-  const [tableData, setTableData] = useState();
-  const [totalCount, setTotalCount] = useState();
-  const [columnsAsteroidTable, setColumnsAsteroidTable] = useState();
+  const [executionTime, setExecutionTime] = useState({});
+  const [executionStats, setExecutionStats] = useState({});
+  const [tableData, setTableData] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [columnsAsteroidTable, setColumnsAsteroidTable] = useState('list');
   const [toolButton, setToolButton] = useState('list');
-  const [reload_interval, setReloadInterval] = useState(3);
-  const [interval_condition, setIntervalCondition] = useState(true);
+  const [intervalCondition, setIntervalCondition] = useState(true);
   const [count, setCount] = useState(1);
-  const [runData, setRunData] = useState();
+  const [runData, setRunData] = useState([]);
   const [dialog, setDialog] = useState({
     visible: false,
     content: [],
@@ -213,12 +212,12 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     });
   };
 
-  const loadTableData = (event) => {
-    const page = event ? event.currentPage + 1 : tableParams.page;
-    const sizePerPage = event ? event.pageSize : tableParams.sizePerPage;
+  const loadTableData = () => {
+    const { page } = tableParams;
+    const { sizePerPage } = tableParams;
     const { sortField } = tableParams;
     const { sortOrder } = tableParams;
-    const searchValue = event ? event.searchValue : tableParams.searchValue;
+    const { searchValue } = tableParams;
     const filters = [];
     filters.push({
       property: 'astrometry_run',
@@ -227,6 +226,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     getAsteroids({
       page, sizePerPage, filters, sortField, sortOrder, search: searchValue,
     }).then((res) => {
+      console.log(res);
       setTableData(res.results);
       setTotalCount(res.count);
       setTableParams({ ...tableParams, totalCount: res.count });
@@ -248,7 +248,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
             >
-              <WarningIcon className={classes.warningIcon} />
               Warning
             </span>
           );
@@ -259,7 +258,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnRunning)}
               title={row.status}
             >
-              <CircularProgress size={15} className={classes.progress} />
               Running
             </span>
           );
@@ -270,7 +268,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnFailure)}
               title={row.status}
             >
-              <ClearIcon className={classes.failureIcon} />
               Failure
             </span>
           );
@@ -290,7 +287,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
           >
-            <CheckIcon className={classes.checkIcon} />
             Success
           </span>
         );
@@ -320,6 +316,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       name: 'ccd_images',
       title: 'CCD Images',
       align: 'center',
+      width: 120,
       customElement: (row) => {
         if (row.ccd_images === '-') {
           return '';
@@ -369,7 +366,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       name: 'status',
       title: 'Status',
       align: 'center',
-      width: 120,
+      width: 130,
       customElement: (row) => {
         if (row.status === 'warning') {
           return (
@@ -377,7 +374,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
             >
-              <WarningIcon className={classes.warningIcon} />
               Warning
             </span>
           );
@@ -388,7 +384,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnRunning)}
               title={row.status}
             >
-              <CircularProgress size={15} className={classes.progress} />
               Running
             </span>
           );
@@ -399,7 +394,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnFailure)}
               title={row.status}
             >
-              <ClearIcon className={classes.failureIcon} />
               Failure
             </span>
           );
@@ -419,7 +413,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
           >
-            <CheckIcon className={classes.checkIcon} />
             Success
           </span>
         );
@@ -450,12 +443,12 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       name: 'error_msg',
       title: 'Error',
       align: 'left',
-      width: 800,
+      width: 360,
     },
     {
       name: 'condor_log',
       title: 'Log',
-      width: 60,
+      width: 80,
       align: 'center',
       customElement: (row) => (
         <Tooltip title="Condor Log">
@@ -468,7 +461,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     {
       name: 'condor_err_log',
       title: 'Error',
-      width: 60,
+      width: 80,
       align: 'center',
       customElement: (row) => (
         <Tooltip title="Condor Error">
@@ -518,23 +511,21 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     loadPraiaRun();
     loadExecutionTime();
     loadExecutionStatistics();
-
-    console.log('Contou +1');
   }, [count]);
 
   const donutDataStatist = [
-    { name: 'Success', value: execution_stats.success },
-    { name: 'Warning', value: execution_stats.warning },
-    { name: 'Failure', value: execution_stats.failure },
-    { name: 'Not Executed', value: execution_stats.not_executed },
-    { name: 'Running/Idle', value: '0' },
+    { name: 'Success', value: execution_stats.success, color: '#009900' },
+    { name: 'Warning', value: execution_stats.warning, color: '#D79F15' },
+    { name: 'Failure', value: execution_stats.failure, color: '#ff1a1a' },
+    { name: 'Not Executed', value: execution_stats.not_executed, color: '#ABA6A2' },
+    { name: 'Running/Idle', value: execution_stats.pending ? execution_stats.pending : 0, color: '#0099ff' },
   ];
 
   const donutDataExecutionTime = [
-    { name: 'Ccd Images', value: execution_time.ccd_images },
-    { name: 'Bsp_Jpl', value: execution_time.bsp_jpl },
-    { name: 'Catalog', value: execution_time.catalog },
-    { name: 'Astrometry', value: execution_time.astrometry },
+    { name: 'Ccd Images', value: executionTime.ccd_images },
+    { name: 'Bsp_Jpl', value: executionTime.bsp_jpl },
+    { name: 'Catalog', value: executionTime.catalog },
+    { name: 'Astrometry', value: executionTime.astrometry },
   ];
 
   const handleChangeToolButton = (event, newValue) => {
@@ -547,9 +538,13 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
 
       readCondorFile(file).then((res) => {
         const data = res.rows;
-        data.forEach((line, idx) => {
-          arrayLines.push(<div key={idx}>{line}</div>);
-        });
+        if (res.success) {
+          data.forEach((line, idx) => {
+            arrayLines.push(<div key={idx}>{line}</div>);
+          });
+        } else {
+          arrayLines.push(<div key={0}>{res.msg}</div>);
+        }
         // setDialog({ content: arrayLines, visible: true, title: file + " " });
         setDialog({ content: data, visible: true, title: `${file} ` });
       });
@@ -569,11 +564,11 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   return (
     <div>
       <ReactInterval
-        timeout={reload_interval * 1000}
-        enabled={interval_condition}
+        timeout={30000}
+        enabled={intervalCondition}
         callback={handleInterval}
       />
-      <Grid container spacing={6}>
+      <Grid container spacing={2}>
         <Grid item xs={12} md={6} xl={4}>
           <Card>
             <CardHeader
@@ -587,7 +582,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         <Grid item xs={12} md={6} xl={4}>
           <Card className={classes.card}>
             <CardHeader
-              title="Execution Statistics  "
+              title="Execution Statistics"
             />
             <Donut
               data={donutDataStatist}
@@ -597,7 +592,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         <Grid item xs={12} md={6} xl={4}>
           <Card className={classes.card}>
             <CardHeader
-              title="Execution Time  "
+              title="Execution Time"
             />
             <Donut
               data={donutDataExecutionTime}
@@ -605,12 +600,12 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           </Card>
         </Grid>
       </Grid>
-      <Grid container spacing={6}>
+      <Grid container spacing={2}>
         <Grid item xs={12} md={12} xl={12}>
           <Stepper activeStep={runData && typeof runData !== 'undefined' ? runData.step : 0} />
         </Grid>
       </Grid>
-      <Grid container spacing={6}>
+      <Grid container spacing={2}>
         <Grid item sm={12} xl={12}>
           <Card className={classes.card}>
             <CardHeader
@@ -626,7 +621,9 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                 <ToggleButton
                   value="list"
                   onClick={() => {
-                    setColumnsAsteroidTable(listColumnsTable);
+                    setColumnsAsteroidTable('list');
+                    loadTableData();
+                    setTableParams((tableParamsRef) => ({ ...tableParamsRef, reload: !tableParamsRef.reload }));
                   }}
                 >
                   <ListIcon />
@@ -634,7 +631,9 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                 <ToggleButton
                   value="bug"
                   onClick={() => {
-                    setColumnsAsteroidTable(bugColumnsTable);
+                    setColumnsAsteroidTable('bug');
+                    loadTableData();
+                    setTableParams((tableParamsRef) => ({ ...tableParamsRef, reload: !tableParamsRef.reload }));
                   }}
                 >
                   <BugIcon />
@@ -642,14 +641,12 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               </ToggleButtonGroup>
             </Toolbar>
             <Table
-              data={tableData || [{}]}
-              columns={columnsAsteroidTable || listColumnsTable}
+              data={tableData}
+              columns={columnsAsteroidTable === 'list' ? listColumnsTable : bugColumnsTable}
               hasSearching
               loadData={loadTableData}
-              children={[]}
               totalCount={tableParams.totalCount}
               hasColumnVisibility={false}
-              totalCount={totalCount}
               pageSizes={tableParams.pageSizes}
               reload={tableParams.reload}
               hasToolbar

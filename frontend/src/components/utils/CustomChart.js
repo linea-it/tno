@@ -76,11 +76,13 @@ export function Donut({ data, width, height }) {
   const classes = useStyles();
   const Plot = createPlotlyComponent(Plotly);
 
+  const colors = data.map((el) => el.color);
+
   const rows = [{
     labels: data.map((el) => el.name),
     values: data.map((el) => el.value),
     marker: {
-      colors: [colors[0], colors[7], colors[2], colors[3], colors[4], colors[20]],
+      colors: colors.length > 0 ? colors : [colors[0], colors[7], colors[2], colors[3], colors[4], colors[20]],
     },
     hole: 0.4,
     type: 'pie',
