@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -87,6 +87,27 @@ const useStyles = makeStyles((theme) => ({
     width: '90%',
   },
 }));
+
+function useInterval(callback, delay) {
+  const savedCallback = useRef();
+
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  // Set up the interval.
+  // eslint-disable-next-line consistent-return
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+    if (delay !== null) {
+      const id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
+}
 
 function PredictionOccultation({ history, setTitle }) {
   const classes = useStyles();
@@ -214,6 +235,10 @@ function PredictionOccultation({ history, setTitle }) {
     }
   };
 
+  useInterval(() => {
+    setReload(!reload);
+  }, 30000);
+
   const [inputArray, setInputArray] = useState([]);
   const [catalogArray, setCatalogArray] = useState([]);
   const [leapSecondsArray, setLeapSecondsArray] = useState([]);
@@ -305,8 +330,8 @@ function PredictionOccultation({ history, setTitle }) {
         // ephemeris_initial_date: "2020-01-01T01:59:59Z",
         // ephemeris_final_date: "2019-01-01T02:00:00Z",
         // ephemeris_step: 600
-      }).then((res) => {
-        console.log(res);
+      }).then(() => {
+        setReload(!reload);
       });
     }
   }, [valueSubmition]);
