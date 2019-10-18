@@ -69,15 +69,15 @@ const useStyles = makeStyles({
     boxSizing: 'border-box',
   },
   btnSuccess: {
-    backgroundColor: 'green',
+    backgroundColor: '#009900',
     color: '#fff',
   },
   btnFailure: {
-    backgroundColor: 'red',
+    backgroundColor: '#ff1a1a',
     color: '#fff',
   },
   btnRunning: {
-    backgroundColor: '#ffba01',
+    backgroundColor: '#0099ff',
     color: '#000',
   },
   btnNotExecuted: {
@@ -247,7 +247,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
             >
-              <WarningIcon className={classes.warningIcon} />
               Warning
             </span>
           );
@@ -258,7 +257,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnRunning)}
               title={row.status}
             >
-              <CircularProgress size={15} className={classes.progress} />
               Running
             </span>
           );
@@ -269,7 +267,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnFailure)}
               title={row.status}
             >
-              <ClearIcon className={classes.failureIcon} />
               Failure
             </span>
           );
@@ -289,7 +286,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
           >
-            <CheckIcon className={classes.checkIcon} />
             Success
           </span>
         );
@@ -369,7 +365,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       name: 'status',
       title: 'Status',
       align: 'center',
-      width: 120,
+      width: 130,
       customElement: (row) => {
         if (row.status === 'warning') {
           return (
@@ -377,7 +373,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
             >
-              <WarningIcon className={classes.warningIcon} />
               Warning
             </span>
           );
@@ -388,7 +383,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnRunning)}
               title={row.status}
             >
-              <CircularProgress size={15} className={classes.progress} />
               Running
             </span>
           );
@@ -399,7 +393,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               className={clsx(classes.btn, classes.btnFailure)}
               title={row.status}
             >
-              <ClearIcon className={classes.failureIcon} />
               Failure
             </span>
           );
@@ -419,7 +412,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
           >
-            <CheckIcon className={classes.checkIcon} />
             Success
           </span>
         );
@@ -450,7 +442,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       name: 'error_msg',
       title: 'Error',
       align: 'left',
-      width: 800,
+      width: 360,
     },
     {
       name: 'condor_log',
@@ -509,20 +501,23 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     loadExecutionStatistics();
   }, []);
 
-  // useEffect(() => {
-  //   loadTableData();
-  //   loadPraiaRun();
-  //   loadExecutionTime();
-  //   loadExecutionStatistics();
-  // }, [count]);
+  useEffect(() => {
+    setColumnsAsteroidTable(listColumnsTable);
+  }, []);
 
+  useEffect(() => {
+    loadTableData();
+    loadPraiaRun();
+    loadExecutionTime();
+    loadExecutionStatistics();
+  }, [count]);
 
   const donutDataStatist = [
-    { name: 'Success', value: executionStats.success },
-    { name: 'Warning', value: executionStats.warning },
-    { name: 'Failure', value: executionStats.failure },
-    { name: 'Not Executed', value: executionStats.not_executed },
-    { name: 'Running/Idle', value: '0' },
+    { name: 'Success', value: execution_stats.success, color: '#009900' },
+    { name: 'Warning', value: execution_stats.warning, color: '#D79F15' },
+    { name: 'Failure', value: execution_stats.failure, color: '#ff1a1a' },
+    { name: 'Not Executed', value: execution_stats.not_executed, color: '#ABA6A2' },
+    { name: 'Running/Idle', value: execution_stats.pending ? execution_stats.pending : 0, color: '#0099ff' },
   ];
 
   const donutDataExecutionTime = [
@@ -542,9 +537,13 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
 
       readCondorFile(file).then((res) => {
         const data = res.rows;
-        data.forEach((line, idx) => {
-          arrayLines.push(<div key={idx}>{line}</div>);
-        });
+        if (res.success) {
+          data.forEach((line, idx) => {
+            arrayLines.push(<div key={idx}>{line}</div>);
+          });
+        } else {
+          arrayLines.push(<div key={0}>{res.msg}</div>);
+        }
         // setDialog({ content: arrayLines, visible: true, title: file + " " });
         setDialog({ content: data, visible: true, title: `${file} ` });
       });

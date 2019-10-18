@@ -48,12 +48,24 @@ const useStyles = makeStyles((theme) => ({
     boxSizing: 'border-box',
   },
   btnSuccess: {
-    backgroundColor: 'green',
+    backgroundColor: '#009900',
+    color: '#fff',
+  },
+  btnFailure: {
+    backgroundColor: '#ff1a1a',
     color: '#fff',
   },
   btnRunning: {
-    backgroundColor: '#ffba01',
+    backgroundColor: '#0099ff',
     color: '#000',
+  },
+  btnNotExecuted: {
+    backgroundColor: '#ABA6A2',
+    color: '#fff',
+  },
+  btnWarning: {
+    backgroundColor: '#D79F15',
+    color: '#FFF',
   },
   input: {
     margin: 0,
@@ -107,7 +119,16 @@ function PredictionOccultation({ history, setTitle }) {
       width: 140,
       sortingEnabled: false,
       customElement: (row) => {
-        if (row.status === 'running') {
+        if (row.status === 'failure') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnFailure)}
+              title={row.error_msg}
+            >
+              Failure
+            </span>
+          );
+        } if (row.status === 'running') {
           return (
             <span
               className={clsx(classes.btn, classes.btnRunning)}
@@ -116,7 +137,26 @@ function PredictionOccultation({ history, setTitle }) {
               Running
             </span>
           );
+        } if (row.status === 'not_executed') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnNotExecuted)}
+              title={row.error_msg}
+            >
+              Not Executed
+            </span>
+          );
+        } if (row.status === 'warning') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnWarning)}
+              title={row.error_msg ? row.error_msg : 'Warning'}
+            >
+              Warning
+            </span>
+          );
         }
+
         return (
           <span
             className={clsx(classes.btn, classes.btnSuccess)}
@@ -264,6 +304,7 @@ function PredictionOccultation({ history, setTitle }) {
 
       setDialogContent('The task has been submitted and will be executed in the background...');
       setDialogVisible(true);
+
       // Calls APi for creation of prediction run
 
 
