@@ -9,6 +9,7 @@ import {
   CardContent,
 } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
 import clsx from 'clsx';
 import moment from 'moment';
 import { getPredictionRunById, getTimeProfile, getAsteroids } from '../api/Prediction';
@@ -157,7 +158,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       name: 'id',
       title: ' ',
       width: 100,
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
       align: 'center',
     },
@@ -312,7 +313,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
             className={classes.button}
             onClick={handleBackNavigation}
           >
-            <i className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+            <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
             <span>Back</span>
           </Button>
         </Grid>

@@ -5,6 +5,7 @@ import {
 } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Icon from '@material-ui/core/Icon';
 import Carousel, { Modal, ModalGateway } from 'react-images';
 import clsx from 'clsx';
 import moment from 'moment';
@@ -379,7 +380,7 @@ function RefineOrbitAsteroid({
             className={classes.button}
             onClick={handleBackNavigation}
           >
-            <i className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+            <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
             <span>Back</span>
           </Button>
           <Button
@@ -391,7 +392,7 @@ function RefineOrbitAsteroid({
             onClick={handleDownload}
           >
             <span>Download</span>
-            <i className={clsx('fas', 'fa-download', classes.buttonIcon)} />
+            <Icon className={clsx('fas', 'fa-download', classes.buttonIcon)} />
             {downloading ? (
               <CircularProgress
                 color="secondary"
@@ -412,7 +413,7 @@ function RefineOrbitAsteroid({
                 disabled={neighbors.prev === null}
                 onClick={() => handleAsteroidsNavigation(neighbors.prev)}
               >
-                <i className={clsx('fas', 'fa-arrow-left', classes.buttonIcon)} />
+                <Icon className={clsx('fas', 'fa-arrow-left', classes.buttonIcon)} />
                 <span>Prev</span>
               </Button>
               <Button
@@ -424,7 +425,7 @@ function RefineOrbitAsteroid({
                 onClick={() => handleAsteroidsNavigation(neighbors.next)}
               >
                 <span>Next</span>
-                <i className={clsx('fas', 'fa-arrow-right', classes.buttonIcon)} />
+                <Icon className={clsx('fas', 'fa-arrow-right', classes.buttonIcon)} />
               </Button>
             </Grid>
           </Grid>

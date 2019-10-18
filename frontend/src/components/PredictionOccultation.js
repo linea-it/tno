@@ -7,6 +7,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import InputNumber from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import Icon from '@material-ui/core/Icon';
 import { withRouter } from 'react-router';
 import clsx from 'clsx';
 import moment from 'moment';
@@ -202,7 +203,7 @@ function PredictionOccultation({ history, setTitle }) {
       name: 'id',
       title: ' ',
       width: 100,
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: (el) => history.push(`/prediction-of-occultation/${el.id}`),
       align: 'center',
     },

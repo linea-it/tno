@@ -5,6 +5,7 @@ import {
 } from '@material-ui/core';
 import clsx from 'clsx';
 import Toolbar from '@material-ui/core/Toolbar';
+import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import ListIcon from '@material-ui/icons/List';
 import BugIcon from '@material-ui/icons/BugReport';
@@ -355,7 +356,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     {
       name: 'id',
       title: ' ',
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: handleAsteroidDetail,
     },
   ];
@@ -488,7 +489,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       title: ' ',
       width: 80,
       align: 'center',
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: handleAsteroidDetail,
     },
   ];
