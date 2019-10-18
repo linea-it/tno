@@ -54,10 +54,18 @@ const useStyles = makeStyles((theme) => ({
     width: '15%',
   },
   initialDate: {
-    margin: 20,
+    marginTop: 50,
+    marginRight: 20,
+    marginBottom: 20,
+    marginLeft: 20,
+    float: 'left',
   },
   finalDate: {
-    margin: 20,
+    marginTop: 50,
+    marginRight: 20,
+    marginBottom: 20,
+    marginLeft: 20,
+    float: 'right',
   }
 }));
 
@@ -101,7 +109,7 @@ function SkyBotRun({ setTitle }) {
 
   const handleSubmit = () => {
     console.log("Submit");
-    
+
   };
 
   const handleAllPointings = () => {
