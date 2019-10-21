@@ -5,7 +5,7 @@ export const url = 'http://tno-testing.linea.gov.br/api';
 
 axios.defaults.baseURL = url;
 axios.interceptors.request.use((config) => {
-  const token = 'Token 9718d50273cc9470fc99ad1d0de463815dda3544';
+  const token = 'Token 50016f67aed3cad432ac10c5e7a16a0745626d1c';
   config.headers.Authorization = token;
   return config;
 });

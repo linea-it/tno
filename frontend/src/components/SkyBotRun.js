@@ -20,6 +20,8 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import { createSkybotRun, getSkybotRunList } from '../api/SkyBotRun';
+import Table from './utils/CustomTable';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -75,9 +77,22 @@ function SkyBotRun({ setTitle }) {
     setTitle("SkyBot Run");
   }, []);
 
-  const [selectRunValue, setSelectRunValue] = useState('by_period');
-  const [initialDate, setInitialDate] = useState();
-  const [finalDate, setFinalDate] = useState();
+  const [selectRunValue, setSelectRunValue] = useState('period');
+  const [initialDate, setInitialDate] = useState(new Date());
+  const [finalDate, setFinalDate] = useState(new Date());
+  const [controlSubmit, setControlSubmit] = useState(false);
+  const [tablePage, setTablePage] = useState(1);
+  const [first, setFirst] = useState(0);
+  const [tablePageSize, setTablePageSize] = useState(10);
+  const [totalSize, setTotalSize] = useState(0);
+  const [sortField, setSortField] = useState('start');
+  const [sortOrder, setOrder] = useState(0);
+  const [totalCount, setTotalCount] = useState(null);
+  const [tableData, setTableData] = useState([]);
+
+  const pageSizes = [5, 10, 15];
+
+
   const [dialog, setDialog] = useState({
     visible: false,
     content: " ",
@@ -92,8 +107,8 @@ function SkyBotRun({ setTitle }) {
 
   const loadMenuItems = () => {
     const options = [
-      { title: "All Pointings", value: "all_pointings" },
-      { title: "By Period", value: "by_period" },
+      { title: "All Pointings", value: "all" },
+      { title: "By Period", value: "period" },
     ];
 
     return options.map((el, i) => (
@@ -108,16 +123,68 @@ function SkyBotRun({ setTitle }) {
   };
 
   const handleSubmit = () => {
-    console.log("Submit");
-
+    createSkybotRun(
+      {
+        type_run: selectRunValue,
+        date_initial: initialDate,
+        date_final: finalDate,
+      }
+    ).then((res) => {
+      console.log(res);
+    }).catch((error) => {
+      console.log("Catch: ", error);
+    });
   };
 
+
+  // useEffect(() => {
+  //   getSkybotRunList(
+  //     {
+  //       page: tablePage,
+  //       pageSize: tablePageSize,
+  //       sortField: sortField,
+  //       sortOrder: sortOrder,
+  //     }
+  //   )
+  //     .then(res => {
+  //       console.log(res.data);
+  //       const data = res.data;
+  //       setTableData(data.results);
+  //       setTotalSize(data.count);
+  //     });
+  // }, []);
+
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+
+  useEffect(() => {
+
+    if (controlSubmit) {
+      handleSubmit();
+    }
+
+  }, [controlSubmit]);
+
   const handleAllPointings = () => {
+    setSelectRunValue("all");
+    setInitialDate('');
+    setFinalDate('');
+    setControlSubmit(true);
+
+    handleSubmit();
   };
 
   const handleByPeriod = () => {
     setDialog({ visible: true })
   };
+
+  const handleDialogSubmit = () => {
+    setDialog({ visible: false });
+    handleSubmit();
+  }
 
   const loadDialogContent = () => {
     return (
@@ -147,7 +214,7 @@ function SkyBotRun({ setTitle }) {
             className={classes.dialogButton}
             variant="contained"
             color="primary"
-            onClick={handleSubmit}
+            onClick={handleDialogSubmit}
           >
             Ok
           </Button>
@@ -158,14 +225,44 @@ function SkyBotRun({ setTitle }) {
 
   const handleSelectRunClick = () => {
     switch (selectRunValue) {
-      case "all_pointings":
+      case "all":
         handleAllPointings();
         break;
-      case "by_period":
+      case "period":
         handleByPeriod();
         break;
     }
   };
+
+  const tableColumns = [
+    { name: 'status', title: 'Status', width: 100, align: 'center' },
+    { name: 'owner', title: 'Owner', width: 100, align: 'left' },
+    { name: 'h_execution_time', title: 'Execution Time', width: 150, align: 'cemter' },
+    { name: 'start', title: 'Start', width: 150, align: 'center' },
+    { name: 'type_run', title: 'Type', width: 120, align: 'cemter' },
+    { name: 'rows', title: 'Rows', width: 100, align: 'cemter' },
+    { name: 'exposure', title: 'Pointings', width: 100, align: 'cemter' },
+
+  ]
+
+  const loadData = (event) => {
+
+    // console.log("evento: ", event);
+
+    let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
+    const pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
+
+
+    getSkybotRunList(page, pageSize, sortField, sortOrder)
+      .then(res => {
+        console.log("Load Data: ", res.data);
+        const data = res.data;
+        setTableData(data.results);
+        setTotalCount(data.count);
+      });
+
+  };
+
 
   return (
     <Grid>
@@ -210,7 +307,19 @@ function SkyBotRun({ setTitle }) {
               title="History"
             />
             <CardContent>
-              History Table
+              <Table
+                columns={tableColumns}
+                data={tableData}
+                loadData={loadData}
+                pageSizes={pageSizes}
+                defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
+                hasSearching={false}
+                hasPagination={true}
+                hasColumnVisibility={false}
+                reload={true}
+                totalCount={totalSize}
+              >
+              </Table>
             </CardContent>
           </Card>
         </Grid>
