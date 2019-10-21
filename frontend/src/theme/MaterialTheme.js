@@ -40,6 +40,11 @@ const theme = createMuiTheme({
         },
       },
     },
+    MuiIcon: {
+      root: {
+        fontSize: '1rem',
+      },
+    },
   },
 });
 

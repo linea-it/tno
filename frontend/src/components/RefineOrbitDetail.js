@@ -5,8 +5,14 @@ import {
   Grid, Card, makeStyles, CardHeader, CardContent,
 } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
 import clsx from 'clsx';
 import DescriptionIcon from '@material-ui/icons/Description';
+import ListIcon from '@material-ui/icons/List';
+import BugIcon from '@material-ui/icons/BugReport';
+import Toolbar from '@material-ui/core/Toolbar';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import CustomList from './utils/CustomList';
 import {
   getOrbitRunById,
@@ -42,15 +48,15 @@ const useStyles = makeStyles((theme) => ({
     boxSizing: 'border-box',
   },
   btnSuccess: {
-    backgroundColor: 'green',
+    backgroundColor: '#009900',
     color: '#fff',
   },
   btnFailure: {
-    backgroundColor: 'red',
+    backgroundColor: '#ff1a1a',
     color: '#fff',
   },
   btnRunning: {
-    backgroundColor: '#ffba01',
+    backgroundColor: '#0099ff',
     color: '#000',
   },
   btnNotExecuted: {
@@ -78,6 +84,11 @@ const useStyles = makeStyles((theme) => ({
   tableWrapper: {
     maxWidth: '100%',
   },
+  toggleButtonTableWrapper: {
+    textAlign: 'right',
+    width: '100%',
+    display: 'block',
+  },
 }));
 
 
@@ -95,8 +106,9 @@ function RefineOrbitDetail({ history, match, setTitle }) {
     visible: false,
     data: [],
   });
+  const [toggleButton, setToggleButton] = useState(0);
   const pageSizes = [5, 10, 15];
-  const columns = [
+  const columnsList = [
     {
       name: 'status',
       title: 'Status',
@@ -178,7 +190,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       name: 'id',
       title: ' ',
       width: 100,
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: (el) => history.push(`/refine-orbit/asteroid/${el.id}`),
       align: 'center',
     },
@@ -189,14 +201,35 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       icon: <DescriptionIcon />,
       action: (el) => {
         getAsteroidLog({ id: el.id }).then((res) => {
-          setAsteroidLog({
-            visible: !asteroidLog.visible,
-            data: res.lines,
-          });
+          if (res.success) {
+            setAsteroidLog({
+              visible: !asteroidLog.visible,
+              data: res.lines,
+            });
+          } else {
+            setAsteroidLog({
+              visible: !asteroidLog.visible,
+              data: [res.msg],
+            });
+          }
         });
       },
       align: 'center',
     },
+  ];
+
+  const columnsBug = [
+    columnsList[0],
+    columnsList[1],
+    columnsList[2],
+    columnsList[3],
+    {
+      name: 'error_msg',
+      title: 'Error Message',
+      width: 260,
+    },
+    columnsList[4],
+    columnsList[5],
   ];
 
   useEffect(() => {
@@ -278,10 +311,10 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       ]);
 
       setDonutData([
-        { name: 'Success', value: data.count_success },
-        { name: 'Warning', value: data.count_warning },
-        { name: 'Failure', value: data.count_failed },
-        { name: 'Not Executed', value: data.count_not_executed },
+        { name: 'Success', value: data.count_success, color: '#009900' },
+        { name: 'Warning', value: data.count_warning, color: '#D79F15' },
+        { name: 'Failure', value: data.count_failed, color: '#ff1a1a' },
+        { name: 'Not Executed', value: data.count_not_executed, color: '#ABA6A2' },
       ]);
     });
     getOrbitRunTimeProfile({ id }).then((res) => setTimeProfile(res));
@@ -295,10 +328,6 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       ordering,
       pageSize,
       page: currentPage !== 0 ? currentPage + 1 : 1,
-      // filters: [{
-      //   property: 'orbit_run',
-      //   value: id,
-      // }].concat(filters),
       filters: [{
         property: 'orbit_run',
         value: id,
@@ -316,6 +345,8 @@ function RefineOrbitDetail({ history, match, setTitle }) {
 
   const handleBackNavigation = () => history.push('/refine-orbit');
 
+  const handleToggleButton = (e, value) => setToggleButton(value);
+
   return (
     <>
       <Grid
@@ -332,7 +363,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
             className={classes.button}
             onClick={handleBackNavigation}
           >
-            <i className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+            <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
             <span>Back</span>
           </Button>
         </Grid>
@@ -383,13 +414,33 @@ function RefineOrbitDetail({ history, match, setTitle }) {
           <Card>
             <CardHeader title="Asteroids" />
             <CardContent>
+              <Toolbar>
+                <ToggleButtonGroup
+                  className={classes.toggleButtonTableWrapper}
+                  value={toggleButton}
+                  onChange={handleToggleButton}
+                  exclusive
+                >
+                  <ToggleButton
+                    value={0}
+                  >
+                    <ListIcon />
+                  </ToggleButton>
+                  <ToggleButton
+                    value={1}
+                  >
+                    <BugIcon />
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Toolbar>
               <CustomTable
-                columns={columns}
+                columns={toggleButton === 0 ? columnsList : columnsBug}
                 data={tableData}
                 loadData={loadTableData}
                 pageSizes={pageSizes}
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
+                hasResizing={false}
               />
             </CardContent>
           </Card>
@@ -399,7 +450,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
         maxWidth="md"
         visible={asteroidLog.visible}
         setVisible={handleDialogClose}
-        title="Asteroid Log"
+        title="NIMA Log"
         content={<CustomLog data={asteroidLog.data} />}
         headerStyle={classes.logToolbar}
         bodyStyle={classes.logBody}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { withRouter } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
+import Icon from '@material-ui/core/Icon';
 import Table from './utils/CustomTable';
 import { getPraiaRuns } from '../api/Praia';
 
@@ -175,7 +176,7 @@ function AstrometryHistory({ history, reloadHistory }) {
       name: 'id',
       title: ' ',
       width: 100,
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: handleClickHistoryTable,
       align: 'center',
     },

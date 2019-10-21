@@ -12,6 +12,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import Divider from '@material-ui/core/Divider';
+import Icon from '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { withRouter } from 'react-router';
@@ -516,7 +517,7 @@ function PredictionOccultationAsteroid({
             className={classes.button}
             onClick={handleBackNavigation}
           >
-            <i className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+            <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
             <span>Back</span>
           </Button>
           <Button
@@ -528,7 +529,7 @@ function PredictionOccultationAsteroid({
             onClick={handleDownload}
           >
             <span>Download</span>
-            <i className={clsx('fas', 'fa-download', classes.buttonIcon)} />
+            <Icon className={clsx('fas', 'fa-download', classes.buttonIcon)} />
             {downloading ? (
               <CircularProgress
                 color="secondary"
@@ -549,7 +550,7 @@ function PredictionOccultationAsteroid({
                 disabled={neighbors.prev === null}
                 onClick={() => handleAsteroidsNavigation(neighbors.prev)}
               >
-                <i className={clsx('fas', 'fa-arrow-left', classes.buttonIcon)} />
+                <Icon className={clsx('fas', 'fa-arrow-left', classes.buttonIcon)} />
                 <span>Prev</span>
               </Button>
               <Button
@@ -561,7 +562,7 @@ function PredictionOccultationAsteroid({
                 onClick={() => handleAsteroidsNavigation(neighbors.next)}
               >
                 <span>Next</span>
-                <i className={clsx('fas', 'fa-arrow-right', classes.buttonIcon)} />
+                <Icon className={clsx('fas', 'fa-arrow-right', classes.buttonIcon)} />
               </Button>
             </Grid>
           </Grid>

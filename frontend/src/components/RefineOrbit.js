@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import Card from '@material-ui/core/Card';
@@ -11,6 +11,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { makeStyles } from '@material-ui/core/styles';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
 import clsx from 'clsx';
 import Grid from '@material-ui/core/Grid';
 import CustomTable from './utils/CustomTable';
@@ -43,15 +44,15 @@ const useStyles = makeStyles((theme) => ({
     boxSizing: 'border-box',
   },
   btnSuccess: {
-    backgroundColor: 'green',
+    backgroundColor: '#009900',
     color: '#fff',
   },
   btnFailure: {
-    backgroundColor: 'red',
+    backgroundColor: '#ff1a1a',
     color: '#fff',
   },
   btnRunning: {
-    backgroundColor: '#ffba01',
+    backgroundColor: '#0099ff',
     color: '#000',
   },
   btnNotExecuted: {
@@ -79,15 +80,34 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function RefineOrbit({ history, setTitle }) {
+function useInterval(callback, delay) {
+  const savedCallback = useRef();
 
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  // Set up the interval.
+  // eslint-disable-next-line consistent-return
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+    if (delay !== null) {
+      const id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
+}
+
+function RefineOrbit({ history, setTitle }) {
   const classes = useStyles();
   const columns = [
     {
       name: 'status',
       title: 'Status',
       width: 140,
-      sortingEnabled: false,
       customElement: (row) => {
         if (row.status === 'failure') {
           return (
@@ -141,6 +161,7 @@ function RefineOrbit({ history, setTitle }) {
       name: 'proccess_displayname',
       title: 'Process',
       width: 180,
+      sortingEnabled: false,
     },
     {
       name: 'owner',
@@ -179,9 +200,9 @@ function RefineOrbit({ history, setTitle }) {
     },
     {
       name: 'id',
-      title: ' ',
+      title: '',
       width: 100,
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: (el) => history.push(`/refine-orbit/${el.id}`),
       align: 'center',
     },
@@ -213,10 +234,13 @@ function RefineOrbit({ history, setTitle }) {
     loadExecuteData();
   }, []);
 
+  useInterval(() => {
+    setReload(!reload);
+  }, 30000);
+
   const loadTableData = async ({
     sorting, pageSize, currentPage, filter, searchValue,
   }) => {
-
     const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
     const orbits = await getOrbitRuns({
       ordering,
