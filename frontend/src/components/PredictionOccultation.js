@@ -20,7 +20,8 @@ import CustomTable from './utils/CustomTable';
 import { getOrbitRuns } from '../api/Orbit';
 // import Dialog from "@material-ui/core/Dialog";
 // import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from './utils/CustomDialog';
+import Dialog from "./utils/CustomDialog";
+import ReactInterval from 'react-interval';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -157,7 +158,6 @@ function PredictionOccultation({ history, setTitle }) {
             </span>
           );
         }
-
         return (
           <span
             className={clsx(classes.btn, classes.btnSuccess)}
@@ -191,7 +191,15 @@ function PredictionOccultation({ history, setTitle }) {
     {
       name: 'execution_time',
       title: 'Execution Time',
+      customElement: (row) => {
+        return (
+          <span>
+            {row.execution_time.substring(0, 8)}
+          </span>
+        );
+      },
       width: 140,
+      align: 'center',
     },
     {
       name: 'count_objects',
@@ -217,6 +225,11 @@ function PredictionOccultation({ history, setTitle }) {
   useEffect(() => {
     setTitle('Prediction of Occultations');
   }, []);
+
+
+  const reloadData = () => {
+    // loadTableData();
+  };
 
   const loadTableData = async ({
     sorting, pageSize, currentPage, filter, searchValue,
@@ -250,7 +263,8 @@ function PredictionOccultation({ history, setTitle }) {
   const [initialDate, setInitialDate] = useState(moment().startOf('year'));
   const [finalDate, setFinalDate] = useState(moment().endOf('year'));
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [dialogContent, setDialogContent] = useState('ok');
+  const [dialogContent, setDialogContent] = useState("ok");
+  const [timeoutSeconds] = useState(30);
 
   const [valueSubmition, setValueSubmition] = useState({
     processId: null,
@@ -341,7 +355,7 @@ function PredictionOccultation({ history, setTitle }) {
   const loadData = () => {
     // Load Input Array
     getOrbitRuns({
-      ordering: 'start_time',
+      ordering: '-start_time',   //- Lista de Inputs deve estar ordenada com o mais recente primeiro. Ok
       filters: [
         {
           property: 'status',
@@ -351,6 +365,7 @@ function PredictionOccultation({ history, setTitle }) {
     })
       .then((res) => {
         setInputArray(res.results);
+        console.log(res.results);
       });
 
 
@@ -394,7 +409,6 @@ function PredictionOccultation({ history, setTitle }) {
   // catalogArray[0].id === "undefined" ? console.log("Catalog Id still undefine") : console.log("Now ok");
 
   // (
-
 
   useEffect(() => {
     if (typeof (catalogArray[0]) !== 'undefined') {
@@ -450,8 +464,14 @@ function PredictionOccultation({ history, setTitle }) {
   };
 
 
+
   return (
     <Grid>
+      <ReactInterval        //Reload a cada 30 segundos na lista de Execuções
+        timeout={timeoutSeconds * 1000}
+        enabled={true}
+        callback={reloadData}
+      />
 
       <Grid container spacing={6}>
         <Grid item lg={12}>

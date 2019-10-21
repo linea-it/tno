@@ -86,7 +86,7 @@ function AstrometryHistory({ history, reloadHistory }) {
       width: 150,
       align: 'center',
       customElement: (row) => {
-        if (row.status === 'running') {
+         if (row.status === 'running') {
           return (
             <span
               className={clsx(classes.btn, classes.btnRunning)}
@@ -101,6 +101,7 @@ function AstrometryHistory({ history, reloadHistory }) {
             <span
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
+
             >
               Warning
             </span>
@@ -153,9 +154,16 @@ function AstrometryHistory({ history, reloadHistory }) {
       align: 'center',
     },
     {
-      name: 'h_execution_time',
+      name: 'execution_time',
       title: 'Execution Time',
       width: 180,
+      customElement: (row) => {
+        return (
+          <span>
+            {row.execution_time.substring(0, 8)}
+          </span>
+        );
+      },
       align: 'center',
     },
     {

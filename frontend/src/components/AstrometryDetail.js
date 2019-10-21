@@ -106,14 +106,15 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
 
   const [list, setList] = useState([]);
   const [executionTime, setExecutionTime] = useState({});
-  const [executionStats, setExecutionStats] = useState({});
+  const [execution_stats, setExecution_stats] = useState({});
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState('list');
   const [toolButton, setToolButton] = useState('list');
-  const [intervalCondition, setIntervalCondition] = useState(true);
-  const [count, setCount] = useState(1);
-  const [runData, setRunData] = useState([]);
+  const [reload_interval, setReloadInterval] = useState(1);
+  const [interval_condition, setIntervalCondition] = useState(true);
+  const [count, setCount] = useState(0.5);
+  const [runData, setRunData] = useState();
   const [dialog, setDialog] = useState({
     visible: false,
     content: [],
@@ -143,7 +144,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnFailure)}
-                  title={data.error_msg}
+                  title={data.error_msg ? data.error_msg : "Failure"}
                 >
                   Failure
                 </span>
@@ -173,7 +174,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnWarning)}
-                  title={data.error_msg}
+                  title={data.error_msg ? data.error_msg : "Warning"}
                 >
                   Warning
                 </span>
@@ -208,7 +209,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
 
   const loadExecutionStatistics = () => {
     getAsteroidStatus({ id: params.id }).then((res) => {
-      setExecutionStats(res.status);
+      setExecution_stats(res.status);
     });
   };
 
@@ -246,7 +247,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnWarning)}
-              title={row.status}
+              title={row.error_msg}
             >
               Warning
             </span>
@@ -266,7 +267,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}
-              title={row.status}
+              title={row.error_msg}
             >
               Failure
             </span>
@@ -293,9 +294,9 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       },
     },
     {
-      name: 'name',
-      title: 'Name',
-      align: 'center',
+      name: "name",
+      title: "Name",
+      align: 'left',
     },
     {
       name: 'number',
@@ -372,7 +373,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnWarning)}
-              title={row.status}
+              title={row.error_msg}
             >
               Warning
             </span>
@@ -392,7 +393,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}
-              title={row.status}
+              title={row.error_msg}
             >
               Failure
             </span>
@@ -450,43 +451,55 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       title: 'Log',
       width: 80,
       align: 'center',
-      customElement: (row) => (
-        <Tooltip title="Condor Log">
-          <IconButton onClick={() => handleLogReading(row.condor_log)}>
-            <DescriptionIcon />
-          </IconButton>
-        </Tooltip>
-      ),
+      customElement: (row) => {
+        return (
+          <Tooltip title="Condor Log" >
+            <IconButton onClick={() => handleLogReading(row.condor_log)}
+              style={{ padding: 0 }}     //O estilo do próprio botão estava atrapalhando a interface
+            >
+              <DescriptionIcon />
+            </IconButton>
+          </Tooltip>
+        );
+      }
     },
     {
       name: 'condor_err_log',
       title: 'Error',
       width: 80,
       align: 'center',
-      customElement: (row) => (
-        <Tooltip title="Condor Error">
-          <IconButton onClick={() => handleLogReading(row.condor_err_log)}>
-            <DescriptionIcon />
-          </IconButton>
-        </Tooltip>
-      ),
+      customElement: (row) => {
+        return (
+          <Tooltip title="Condor Error">
+            <IconButton onClick={() => handleLogReading(row.condor_err_log)}
+              style={{ padding: 0 }}     //O estilo do próprio botão estava atrapalhando a interface
+            >
+              <DescriptionIcon />
+            </IconButton>
+          </Tooltip>
+        );
+      }
     },
     {
       name: 'condor_out_log',
       title: 'Output',
       width: 80,
       align: 'center',
-      customElement: (row) => (
-        <Tooltip title="Condor Output">
-          <IconButton onClick={() => handleLogReading(row.condor_out_log)}>
-            <DescriptionIcon />
-          </IconButton>
-        </Tooltip>
-      ),
+      customElement: (row) => {
+        return (
+          <Tooltip title="Condor Output">
+            <IconButton onClick={() => handleLogReading(row.condor_out_log)}
+              style={{ padding: 0 }}     //O estilo do próprio botão estava atrapalhando a interface
+            >
+              <DescriptionIcon />
+            </IconButton>
+          </Tooltip>
+        );
+      }
     },
     {
-      name: 'id',
-      title: ' ',
+      name: "id",
+      title: " ",
       width: 80,
       align: 'center',
       icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
@@ -533,7 +546,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   };
 
   const handleLogReading = (file) => {
-    if (file) {
+    if (file && typeof file != 'undefined') {
       const arrayLines = [];
 
       readCondorFile(file).then((res) => {
@@ -558,14 +571,17 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     } else {
       setIntervalCondition(false);
     }
-  };
+    if (count >= 5) {
+      setReloadInterval(3);
+    }
 
+  };
 
   return (
     <div>
       <ReactInterval
         timeout={30000}
-        enabled={intervalCondition}
+        enabled={interval_condition}
         callback={handleInterval}
       />
       <Grid container spacing={2}>

@@ -17,6 +17,7 @@ import CustomTable from './utils/CustomTable';
 import CustomList from './utils/CustomList';
 import { Donut, TimeProfile } from './utils/CustomChart';
 
+
 const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
@@ -67,6 +68,9 @@ const useStyles = makeStyles((theme) => ({
   tableWrapper: {
     maxWidth: '100%',
   },
+  iconDetail: {
+    fontSize: 18,
+  }
 }));
 
 function PredictionOccultationDetail({ history, match, setTitle }) {
@@ -90,7 +94,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}
-              title={row.error_msg}
+              title={row.error_msg ? row.error_msg : "Failure"}
             >
               Failure
             </span>
@@ -108,7 +112,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnNotExecuted)}
-              title={row.error_msg}
+              title={row.status}
             >
               Not Executed
             </span>
@@ -150,8 +154,16 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       width: 140,
     },
     {
-      name: 'h_execution_time',
+      name: 'execution_time',
       title: 'Execution Time',
+      align: 'center',
+      customElement: (row) => {
+        return (
+          <span>
+            {moment.utc(row.execution_time * 1000).format('HH:mm:ss')}
+          </span>
+        );
+      },
       width: 140,
     },
     {
@@ -163,7 +175,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       align: 'center',
     },
   ];
-
 
   useEffect(() => {
     setTitle('Prediction of Occultations');
@@ -177,7 +188,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnFailure)}
-                  title={data.error_msg}
+                  title={data.error_msg ? data.error_msg : "Failure"}
                 >
                   Failure
                 </span>
@@ -195,7 +206,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnNotExecuted)}
-                  title={data.error_msg}
+                  title={data.status}
                 >
                   Not Executed
                 </span>
@@ -265,7 +276,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     });
 
     getTimeProfile({ id }).then((res) => {
-      console.log(res);
       setTimeProfile(res);
     });
   }, []);

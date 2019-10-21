@@ -24,6 +24,7 @@ import { Donut, TimeProfile } from './utils/CustomChart';
 import CustomTable from './utils/CustomTable';
 import CustomDialog from './utils/CustomDialog';
 import CustomLog from './utils/CustomLog';
+import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -175,6 +176,14 @@ function RefineOrbitDetail({ history, match, setTitle }) {
     {
       name: 'h_execution_time',
       title: 'Execution Time',
+      align: 'center',
+      customElement: (row) => {
+        return (
+          <span>
+            {moment.utc(row.execution_time * 1000).format('HH:mm:ss')}
+          </span>
+        );
+      },
       width: 140,
     },
     {

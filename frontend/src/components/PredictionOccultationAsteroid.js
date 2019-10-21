@@ -298,6 +298,7 @@ function PredictionOccultationAsteroid({
           source: row.src ? url + row.src : null,
         })),
       );
+
     });
 
 
@@ -792,7 +793,7 @@ function PredictionOccultationAsteroid({
               className={clsx(classes.block, classes.tableWrapper)}
             >
               <Card>
-                <CardHeader title="Outputs" />
+                <CardHeader title="Results" />
                 <CardContent className={classes.cardContentWrapper}>
                   <CustomTable
                     columns={outputColumns}
