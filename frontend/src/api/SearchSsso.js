@@ -18,29 +18,7 @@ export const getSkybotLists = ({ page, pageSize, search, filters }) => {
 
   });
 
-  console.log(params);
   return axios.get(`/skybotoutput/`, { params: params });
 }
 
 
-export const getAsteroids = ({
-  page,
-  sizePerPage,
-  sortField,
-  sortOrder,
-  filters = [],
-}) => {
-  let ordering = sortField;
-  if (sortOrder === -1) {
-    ordering = `-${sortField}`;
-  }
-
-  const params = { page, pageSize: sizePerPage, ordering };
-  filters.forEach((element) => {
-    params[element.property] = element.value;
-  });
-
-  return axios.get('/astrometry_asteroids/', {
-    params,
-  }).then((res) => res.data);
-};

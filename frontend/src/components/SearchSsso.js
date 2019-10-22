@@ -41,14 +41,13 @@ export default function SearchSsso({ setTitle }) {
    let filters =[];
 
     filters.push({
-      property:'ccdnum_isnull',
+      property:'ccdnum__isnull',
       value: false,
     });
 
       getSkybotLists({page: page, pageSize: pageSize, search:searchValue, filters:filters}).then(res => {
         setTotalCount(res.data.count);      
         setTableData(res.data.results); 
-
       });
    };
 
