@@ -18,7 +18,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-
 export default function SearchSsso({ setTitle }) {
 
   const [tableData, setTableData] = useState([{}]);
@@ -38,86 +37,85 @@ export default function SearchSsso({ setTitle }) {
     let pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
     let searchValue = typeof event === 'undefined' ? ' ' : event.searchValue;
 
-   let filters =[];
+    let filters = [];
 
     filters.push({
-      property:'ccdnum__isnull',
+      property: 'ccdnum__isnull',
       value: false,
     });
 
-      getSkybotLists({page: page, pageSize: pageSize, search:searchValue, filters:filters}).then(res => {
-        setTotalCount(res.data.count);      
-        setTableData(res.data.results); 
-      });
-   };
+    getSkybotLists({ page: page, pageSize: pageSize, search: searchValue, filters: filters }).then(res => {
+      setTotalCount(res.data.count);
+      setTableData(res.data.results);
+    });
+  };
 
-const tableColumns = [
-  {
-    name: 'name',
-    title: 'Object Name',
-    width: 180,
-    align: 'left',
-  },
-  {
-    name: 'num',
-    title: 'Object Number',
-    width: 150,
-    align: 'center',
-  },
-  {
-    name: 'raj2000',
-    title: 'RA (deg)',
-    width: 150,
-    align: 'center',
-  },
-  {
-    name: 'decj2000',
-    title: 'Dec (deg)',
-    width: 130,
-    align: 'center',
-  },
-  {
-    name: 'ccdnum',
-    title: 'CCD Number',
-    width: 120,
-    align: 'center',
-  },
-  {
-    name: 'band',
-    title: 'Band',
-    width: 70,
-    align: 'center',
-  },
-  {
-    name: 'expnum',
-    title: 'Exposure',
-    width: 130,
-    align: 'center',
-  },
-  {
-    name: 'dynclass',
-    title: 'Dynamic Class',
-    width: 130,
-    align: 'center',
-  },
-  {
-    name: 'mv',
-    title: 'Visual Magnitude',
-    width: 150,
-    align: 'center',
-  },
-  {
-    name: 'errpos',
-    title: 'Error on the position (arcsec)',
-    width: 250,
-    align: 'center',
-  },
-]
+  const tableColumns = [
+    {
+      name: 'name',
+      title: 'Object Name',
+      width: 180,
+      align: 'left',
+    },
+    {
+      name: 'num',
+      title: 'Object Number',
+      width: 150,
+      align: 'center',
+    },
+    {
+      name: 'raj2000',
+      title: 'RA (deg)',
+      width: 160,
+      align: 'center',
+    },
+    {
+      name: 'decj2000',
+      title: 'Dec (deg)',
+      width: 160,
+      align: 'center',
+    },
+    {
+      name: 'ccdnum',
+      title: 'CCD Number',
+      width: 120,
+      align: 'center',
+    },
+    {
+      name: 'band',
+      title: 'Band',
+      width: 70,
+      align: 'center',
+    },
+    {
+      name: 'expnum',
+      title: 'Exposure',
+      width: 130,
+      align: 'center',
+    },
+    {
+      name: 'dynclass',
+      title: 'Dynamic Class',
+      width: 150,
+      align: 'center',
+    },
+    {
+      name: 'mv',
+      title: 'Visual Magnitude',
+      width: 150,
+      align: 'center',
+    },
+    {
+      name: 'errpos',
+      title: 'Error on the position (arcsec)',
+      width: 250,
+      align: 'center',
+    },
+  ]
 
-
-    return (
-      <Grid>
-
+  return (
+    <Grid>
+      {/*         
         <Grid container spacing={6}>
           <Grid item lg={6} xl={6}>
             <Card>
@@ -134,9 +132,9 @@ const tableColumns = [
               />
             </Card>
           </Grid>
-        </Grid>
+        </Grid> */}
 
-        <Grid container spacing={6}>
+      {/* <Grid container spacing={6}>
           <Grid item lg={12}>
             <Paper className={classes.paper}>
               <Typography variant={"h6"} className={classes.title} >
@@ -172,30 +170,25 @@ const tableColumns = [
             </Paper>
 
           </Grid>
-        </Grid>
+        </Grid> */}
 
-        <Grid container spacing={6}>
-          <Grid item lg={12} xl={12}>
-            <Card>
-              <CardHeader
-                title={"SkyBot Output"}
-              />
-              <Table
-                data={tableData}
-                columns={tableColumns}
-                loadData={loadTableData}
-                totalCount = {totalCount}
-                hasToolbar={true}
-              >
-              </Table>
-            </Card>
-          </Grid>
+      <Grid container spacing={6}>
+        <Grid item lg={12} xl={12}>
+          <Card>
+            <CardHeader
+              title={"SkyBot Output"}
+            />
+            <Table
+              data={tableData}
+              columns={tableColumns}
+              loadData={loadTableData}
+              totalCount={totalCount}
+              hasToolbar={true}
+            >
+            </Table>
+          </Card>
         </Grid>
-
       </Grid>
-
-
-
-    );
-
-  }
+    </Grid>
+  );
+}
