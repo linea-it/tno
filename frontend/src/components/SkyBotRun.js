@@ -131,7 +131,6 @@ function SkyBotRun({ setTitle }) {
 
   const pageSizes = [5, 10, 15];
 
-
   const [dialog, setDialog] = useState({
     visible: false,
     content: " ",
@@ -252,7 +251,6 @@ function SkyBotRun({ setTitle }) {
   };
 
   const handleClickHistoryTable = (row) => {
-
     console.log(row);
   };
 
