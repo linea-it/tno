@@ -103,6 +103,11 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ABA6A2',
     color: '#fff',
   },
+  btnRunning: {
+    backgroundColor: '#ffba01',
+    color: '#000',
+  },
+
 }));
 
 function SkyBotRun({ setTitle }) {
