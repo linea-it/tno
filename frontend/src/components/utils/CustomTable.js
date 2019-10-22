@@ -88,6 +88,7 @@ function CustomTable({
     wordWrapEnabled:
       !(!('wordWrapEnabled' in column) || column.wordWrapEnabled === false),
   }));
+
   const customDefaultColumnWidths = columns.map((column) => ({
     columnName: column.name,
     width: !column.width ? 120 : column.width,
@@ -123,7 +124,7 @@ function CustomTable({
         sorting, pageSize, currentPage, after, filter, searchValue,
       });
     }
-  }, [sorting, currentPage, currentPage, pageSize, filter, searchValue]);
+  }, [sorting, currentPage, currentPage, reload, pageSize, filter, searchValue]);
 
   const clearData = () => {
     setCustomData([]);
@@ -136,7 +137,7 @@ function CustomTable({
     setCustomData(data);
     setCustomTotalCount(totalCount);
     setLoading(false);
-  }, [data, totalCount, reload, defaultExpandedGroups]);
+  }, [data, totalCount, defaultExpandedGroups]);
 
 
   useEffect(() => {
@@ -254,7 +255,7 @@ function CustomTable({
         <>
           <Grid rows={rows} columns={customColumns}>
             {hasSearching ? <SearchState onValueChange={changeSearchValue} /> : null}
-            {hasSorting ? <SortingState sorting={sorting} onSortingChange={changeSorting} /> : null}
+            {hasSorting ? <SortingState sorting={sorting} onSortingChange={changeSorting} columnExtensions={customColumnExtensions} /> : null}
             {hasPagination
               ? (
                 <PagingState
@@ -316,7 +317,13 @@ function CustomTable({
         <Grid rows={rows} columns={customColumns}>
           {hasSearching ? <SearchState /> : null}
           {hasSorting
-            ? <SortingState sorting={sorting} onSortingChange={changeSorting} />
+            ? (
+              <SortingState
+                sorting={sorting}
+                onSortingChange={changeSorting}
+                columnExtensions={customColumnExtensions}
+              />
+            )
             : null}
           {hasSorting ? <IntegratedSorting /> : null}
           {hasPagination

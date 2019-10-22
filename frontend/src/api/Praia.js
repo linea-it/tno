@@ -128,4 +128,4 @@ export const getOutputFile = (filepath) => {
   return axios.get(`/read_file?filepath=${replaced_filepath}`).then((res) => res.data);
 };
 
-export const readCondorFile = (filepath) => axios.get(`/read_file?filepath=${filepath}`);
+export const readCondorFile = (filepath) => axios.get(`/read_file?filepath=${filepath}`).then((res) => res.data);

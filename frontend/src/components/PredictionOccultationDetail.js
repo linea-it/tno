@@ -9,12 +9,14 @@ import {
   CardContent,
 } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
 import clsx from 'clsx';
 import moment from 'moment';
 import { getPredictionRunById, getTimeProfile, getAsteroids } from '../api/Prediction';
 import CustomTable from './utils/CustomTable';
 import CustomList from './utils/CustomList';
 import { Donut, TimeProfile } from './utils/CustomChart';
+
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -41,15 +43,15 @@ const useStyles = makeStyles((theme) => ({
     boxSizing: 'border-box',
   },
   btnSuccess: {
-    backgroundColor: 'green',
+    backgroundColor: '#009900',
     color: '#fff',
   },
   btnFailure: {
-    backgroundColor: 'red',
+    backgroundColor: '#ff1a1a',
     color: '#fff',
   },
   btnRunning: {
-    backgroundColor: '#ffba01',
+    backgroundColor: '#0099ff',
     color: '#000',
   },
   btnNotExecuted: {
@@ -66,6 +68,9 @@ const useStyles = makeStyles((theme) => ({
   tableWrapper: {
     maxWidth: '100%',
   },
+  iconDetail: {
+    fontSize: 18,
+  }
 }));
 
 function PredictionOccultationDetail({ history, match, setTitle }) {
@@ -89,7 +94,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}
-              title={row.error_msg}
+              title={row.error_msg ? row.error_msg : "Failure"}
             >
               Failure
             </span>
@@ -107,7 +112,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnNotExecuted)}
-              title={row.error_msg}
+              title={row.status}
             >
               Not Executed
             </span>
@@ -149,20 +154,27 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       width: 140,
     },
     {
-      name: 'h_execution_time',
+      name: 'execution_time',
       title: 'Execution Time',
+      align: 'center',
+      customElement: (row) => {
+        return (
+          <span>
+            {moment.utc(row.execution_time * 1000).format('HH:mm:ss')}
+          </span>
+        );
+      },
       width: 140,
     },
     {
       name: 'id',
       title: ' ',
       width: 100,
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
       align: 'center',
     },
   ];
-
 
   useEffect(() => {
     setTitle('Prediction of Occultations');
@@ -176,7 +188,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnFailure)}
-                  title={data.error_msg}
+                  title={data.error_msg ? data.error_msg : "Failure"}
                 >
                   Failure
                 </span>
@@ -194,7 +206,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnNotExecuted)}
-                  title={data.error_msg}
+                  title={data.status}
                 >
                   Not Executed
                 </span>
@@ -247,10 +259,10 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       ]);
 
       setStatusDonutData([
-        { name: 'Success', value: data.count_success },
-        { name: 'Warning', value: data.count_warning },
-        { name: 'Failure', value: data.count_failed },
-        { name: 'Not Executed', value: data.count_not_executed },
+        { name: 'Success', value: data.count_success, color: '#009900' },
+        { name: 'Warning', value: data.count_warning, color: '#D79F15' },
+        { name: 'Failure', value: data.count_failed, color: '#ff1a1a' },
+        { name: 'Not Executed', value: data.count_not_executed, color: '#ABA6A2' },
       ]);
 
       setExecutionTimeDonutData([
@@ -264,7 +276,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     });
 
     getTimeProfile({ id }).then((res) => {
-      console.log(res);
       setTimeProfile(res);
     });
   }, []);
@@ -312,7 +323,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
             className={classes.button}
             onClick={handleBackNavigation}
           >
-            <i className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+            <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
             <span>Back</span>
           </Button>
         </Grid>
