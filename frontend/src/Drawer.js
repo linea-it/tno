@@ -36,8 +36,8 @@ import PredictionOccultationDetail from './components/PredictionOccultationDetai
 import PredictionOccultationAsteroid from './components/PredictionOccultationAsteroid';
 import Occultations from './components/Occultations';
 import SkyBotRun from './components/SkyBotRun';
-
 import AstrometryAsteroid from './components/AstrometryAsteroid';
+import SearchSsso from './components/SearchSsso';
 
 const drawerWidth = 240;
 
@@ -409,6 +409,7 @@ function MiniDrawer() {
             <Route exact path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/occultations" render={(props) => <Occultations {...props} setTitle={setTitle} />} />
             <Route exact path="/skybotrun" render={(props) => <SkyBotRun {...props} setTitle={setTitle} />} />
+            <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
           </main>
           <Footer drawerOpen={open} />
         </div>
