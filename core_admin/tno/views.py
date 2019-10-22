@@ -67,8 +67,8 @@ class PointingViewSet(viewsets.ModelViewSet):
     filter_fields = ('id', 'desfile_id', 'expnum', 'band',
                      'exptime', 'date_obs', 'downloaded')
     search_fields = ('id', 'filename', 'desfile_id', 'expnum')
-    ordering_fields = ('id', 'expnum', 'date_obs', 'nite')
-    ordering = ('-date_obs',)
+    ordering_fields = ('id', 'expnum', 'date_obs', 'nite', 'expnum', 'ccdnum', 'band', 'filename', 'exposure_time', 'radeg', 'decdeg', 'downloaded')
+    ordering = ('-date_obs', 'expnum', 'ccdnum')
 
     @list_route()
     def histogram_exposure(self, request):
@@ -149,8 +149,11 @@ class PointingViewSet(viewsets.ModelViewSet):
 class SkybotOutputViewSet(viewsets.ModelViewSet):
     queryset = SkybotOutput.objects.select_related().all()
     serializer_class = SkybotOutputSerializer
-    filter_fields = ('id', 'name', 'expnum', 'dynclass', 'mv')
+    filter_fields = ('id', 'name', 'expnum', 'dynclass', 'mv', 'ccdnum')
     search_fields = ('name', 'dynclass', 'num')
+    ordering_fields = ('name', 'dynclass', 'num', 'raj2000', 'decj2000', 'expnum', 'ccdnum', 'band', 'mv', 'errpos')
+    ordering = ('expnum', 'ccdnum')
+
 
     @list_route()
     def objects(self, request):
