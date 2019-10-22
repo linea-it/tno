@@ -75,7 +75,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function RefineOrbit({ history, setTitle }) {
-
   const classes = useStyles();
   const columns = [
     {
@@ -202,7 +201,6 @@ function RefineOrbit({ history, setTitle }) {
   const loadTableData = async ({
     sorting, pageSize, currentPage, filter, searchValue,
   }) => {
-
     const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
     const orbits = await getOrbitRuns({
       ordering,
@@ -232,55 +230,63 @@ function RefineOrbit({ history, setTitle }) {
   };
 
   return (
-    <Grid
-      container
-      direction="row"
-    >
-      <Grid item xs={12} md={4} fullWidth className={classes.gridWrapper}>
-        <Card>
-          <CardHeader
-            title={<span>Execute</span>}
-          />
-          <CardContent>
-            <form autoComplete="off">
-              <FormControl fullWidth>
-                <InputLabel htmlFor="input">Input</InputLabel>
-                <Select
-                  value={select}
-                  onChange={handleSelect}
-
-                >
-                  {inputData.map((input) => (
-                    <MenuItem key={input.id} value={input} item={input}>{input.proccess_displayname}</MenuItem>
-                  ))}
-                </Select>
-                <Button variant="contained" color="primary" className={classes.button} onClick={handleSubmit}>Submit</Button>
-              </FormControl>
-            </form>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      <Grid className={clsx(classes.block, classes.tableWrapper)}>
-        <Card>
-          <CardHeader
-            title={<span>History</span>}
-          />
-          <CardContent>
-            <CustomTable
-              columns={columns}
-              data={tableData}
-              loadData={loadTableData}
-              pageSizes={pageSizes}
-              totalCount={totalCount}
-              defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
-              reload={reload}
-              hasSearching={false}
+    <>
+      <Grid
+        container
+        direction="row"
+        spacing={2}
+      >
+        <Grid item xs={12} md={4} fullWidth className={classes.gridWrapper}>
+          <Card>
+            <CardHeader
+              title={<span>Execute</span>}
             />
-          </CardContent>
-        </Card>
+            <CardContent>
+              <form autoComplete="off">
+                <FormControl fullWidth>
+                  <InputLabel htmlFor="input">Input</InputLabel>
+                  <Select
+                    value={select}
+                    onChange={handleSelect}
+                  >
+                    {inputData.map((input) => (
+                      <MenuItem key={input.id} value={input} item={input}>{input.proccess_displayname}</MenuItem>
+                    ))}
+                  </Select>
+                  <Button variant="contained" color="primary" className={classes.button} onClick={handleSubmit}>Submit</Button>
+                </FormControl>
+              </form>
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
-    </Grid>
+
+      <Grid
+        container
+        direction="row"
+        spacing={2}
+      >
+        <Grid xs={12} className={clsx(classes.block, classes.tableWrapper)}>
+          <Card>
+            <CardHeader
+              title={<span>History</span>}
+            />
+            <CardContent>
+              <CustomTable
+                columns={columns}
+                data={tableData}
+                loadData={loadTableData}
+                pageSizes={pageSizes}
+                totalCount={totalCount}
+                defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
+                reload={reload}
+                hasSearching={false}
+              />
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </>
   );
 }
 

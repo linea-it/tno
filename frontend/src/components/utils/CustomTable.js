@@ -80,7 +80,7 @@ function CustomTable({
   const customColumnExtensions = columns.map((column) => ({
     columnName: column.name,
     width: !column.width ? 120 : column.width,
-    maxWidth: column.maxWidth ? column.maxWidth : "",
+    maxWidth: column.maxWidth ? column.maxWidth : '',
     sortingEnabled:
       !!(!('sortingEnabled' in column) || column.sortingEnabled === true),
     align:
@@ -206,7 +206,7 @@ function CustomTable({
 
   const renderModal = () => (
     <Dialog onClose={onHideModal} open={visible} maxWidth="md">
-      {customModalContent ? customModalContent : ""}
+      {customModalContent || ''}
     </Dialog>
   );
 
@@ -460,7 +460,10 @@ CustomTable.propTypes = {
   defaultSorting: PropTypes.arrayOf(PropTypes.object),
   // eslint-disable-next-line react/no-unused-prop-types
   pageSize: PropTypes.number,
-  pageSizes: PropTypes.arrayOf(PropTypes.number),
+  pageSizes: PropTypes.oneOfType(
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.number,
+  ),
   hasFiltering: PropTypes.bool,
   hasSearching: PropTypes.bool,
   hasSorting: PropTypes.bool,
