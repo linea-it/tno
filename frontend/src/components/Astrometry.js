@@ -4,7 +4,9 @@ import Grid from '@material-ui/core/Grid';
 import { Card, CardHeader, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InputSelect from './InputSelectAstrometryMain';
-import { getListsByStatus, getCatalogs, getConfigurations, createPraiaRun } from '../api/Praia';
+import {
+  getListsByStatus, getCatalogs, getConfigurations, createPraiaRun,
+} from '../api/Praia';
 import AstrometryHistory from './AstrometryHistory';
 
 const useStyles = makeStyles((theme) => ({
@@ -18,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Astrometry({ history, setTitle }) {
-
   const classes = useStyles();
 
   const [objectList, setObjectList] = useState([]);
@@ -32,49 +33,48 @@ function Astrometry({ history, setTitle }) {
   });
 
   const loadData = (inputValue) => {
-
     getListsByStatus({ status: 'success', search: inputValue }).then((res) => {
-      setObjectList(res.data.results);
+      setObjectList(res.results);
     });
 
     getCatalogs({ search: inputValue }).then((res) => {
-      setCatalogs(res.data.results);
+      setCatalogs(res.results);
     });
 
-    getConfigurations({ search: inputValue, ordering: "-creation_date" }).then((res) => {
-      setConfigurations(res.data.results);
+    getConfigurations({ search: inputValue, ordering: '-creation_date' }).then((res) => {
+      setConfigurations(res.results);
     });
   };
 
   useEffect(() => {
-    if (objectList.length > 0 && typeof objectList[0] != "undefined") {
+    if (objectList.length > 0 && typeof objectList[0] !== 'undefined') {
       setValueSubmition({
         ...valueSubmition,
-        inputId: objectList[0].id
+        inputId: objectList[0].id,
       });
     }
   }, [objectList]);
 
   useEffect(() => {
-    if (catalogs.length > 0 && typeof catalogs[0] != "undefined") {
+    if (catalogs.length > 0 && typeof catalogs[0] !== 'undefined') {
       setValueSubmition({
         ...valueSubmition,
-        refCatalogId: catalogs[0].id
+        refCatalogId: catalogs[0].id,
       });
     }
   }, [catalogs]);
 
   useEffect(() => {
-    if (configurations.length > 0 && typeof configurations[0] != "undefined") {
+    if (configurations.length > 0 && typeof configurations[0] !== 'undefined') {
       setValueSubmition({
         ...valueSubmition,
-        configId: configurations[0].id
+        configId: configurations[0].id,
       });
     }
   }, [configurations]);
 
   useEffect(() => {
-    setTitle("Astrometry");
+    setTitle('Astrometry');
     loadData();
   }, []);
 
@@ -83,24 +83,21 @@ function Astrometry({ history, setTitle }) {
       input: valueSubmition.inputId,
       config: valueSubmition.configId,
       catalog: valueSubmition.refCatalogId,
-    }
-    ).then((res) => {
-      console.log(res);
-      history.push(`/astrometry-run/${res.data.id}`);
+    }).then((res) => {
+      history.push(`/astrometry/${res.data.id}`);
     });
 
-    //TODO: When submit Run go to the Run Detail screen
+    // TODO: When submit Run go to the Run Detail screen
   };
 
   return (
     <Grid>
       <Grid container spacing={6}>
-
         <Grid item sm={6} xl={5}>
           <Card>
             <CardHeader
               className={classes.cardHeader}
-              title={"Execute"}
+              title="Execute"
             />
             <InputSelect
               title="Input Object List"
@@ -137,9 +134,10 @@ function Astrometry({ history, setTitle }) {
               variant="contained"
               color="primary"
               onClick={handleSubmit}
-              className={classes.button}>
+              className={classes.button}
+            >
               Submit
-              </Button>
+            </Button>
 
           </Card>
         </Grid>
@@ -150,25 +148,16 @@ function Astrometry({ history, setTitle }) {
           <Card>
             <CardHeader
               className={classes.cardHeader}
-              title={"History"}
+              title="History"
             />
             <AstrometryHistory
               reloadHistory={reloadHistory}
-            >
-            </AstrometryHistory>
+            />
           </Card>
         </Grid>
       </Grid>
     </Grid>
   );
-};
+}
 
 export default withRouter(Astrometry);
-
-
-
-
-
-
-
-

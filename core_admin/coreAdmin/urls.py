@@ -24,7 +24,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from common import views as common_views
 
 from tno.views import UserViewSet, PointingViewSet, SkybotOutputViewSet, ObjectClassViewSet, CustomListViewSet, \
-    ProccessViewSet, CatalogViewSet, JohnstonArchiveViewSet, SkybotRunViewSet
+    ProccessViewSet, CatalogViewSet, JohnstonArchiveViewSet, SkybotRunViewSet, CcdImageViewSet
 from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet, AstrometryAsteroidViewSet, AstrometryInputViewSet, AstrometryOutputViewSet
 
 from orbit.views import OrbitRunViewSet, RefinedAsteroidViewSet, RefinedOrbitViewSet, RefinedOrbitInputViewSet
@@ -34,6 +34,7 @@ from predict.views import *
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'pointing', PointingViewSet)
+router.register(r'ccd_image', CcdImageViewSet)
 router.register(r'skybotoutput', SkybotOutputViewSet)
 router.register(r'known_tnos_johnston', JohnstonArchiveViewSet)
 

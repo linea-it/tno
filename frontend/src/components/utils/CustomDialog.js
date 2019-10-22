@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -31,11 +32,12 @@ function CustomDialog({
   maxWidth,
   headerStyle,
   bodyStyle,
+  wrapperStyle,
 }) {
   const classes = useStyles();
 
   return (
-    <Dialog onClose={setVisible} maxWidth={maxWidth} aria-labelledby="customized-dialog-title" open={visible}>
+    <Dialog onClose={setVisible} maxWidth={maxWidth} aria-labelledby="customized-dialog-title" open={visible} style={wrapperStyle}>
       <MuiDialogTitle className={clsx(classes.root, headerStyle)}>
         <Typography variant="h6">{title}</Typography>
         {visible ? (
@@ -54,5 +56,16 @@ function CustomDialog({
     </Dialog>
   );
 }
+
+CustomDialog.defaultProps = {
+  wrapperStyle: '',
+};
+
+CustomDialog.propTypes = {
+  wrapperStyle: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object,
+  ]),
+};
 
 export default CustomDialog;
