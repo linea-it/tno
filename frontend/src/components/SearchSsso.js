@@ -68,7 +68,6 @@ export default function SearchSsso({ setTitle }) {
     });
 
     getSkybotLists({ page: page, pageSize: pageSize, search: searchValue, filters: filters }).then(res => {
-      console.log(res);
       setTotalCount(res.data.count);
       setTableData(res.data.results);
     });
@@ -136,8 +135,6 @@ export default function SearchSsso({ setTitle }) {
       align: 'center',
     },
   ]
-
-
 
 
   useEffect(() => {
@@ -357,7 +354,6 @@ export default function SearchSsso({ setTitle }) {
               <Grid item lg={3}>
                 {select_visual_magnitude()}
                 {select_dynamic_class()}
-
                 <Button
                   variant="contained"
                   color="primary"
@@ -365,7 +361,6 @@ export default function SearchSsso({ setTitle }) {
                 >
                   Clear
                 </Button>
-
               </Grid>
               <Table
                 data={tableData}
