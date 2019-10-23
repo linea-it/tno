@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { Card, CardContent, CardHeader } from '@material-ui/core';
+import { Card, CardContent, CardHeader, MenuItem, Button } from '@material-ui/core';
+import { FormControl, InputLabel, Select } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
@@ -15,7 +16,12 @@ const useStyles = makeStyles((theme) => ({
   },
   subtitle: {
     marginBottom: 10,
-  }
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+
 }));
 
 export default function SearchSsso({ setTitle }) {
@@ -24,8 +30,12 @@ export default function SearchSsso({ setTitle }) {
   const [tablePage] = useState(1);
   const [tablePageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
+  const [vMagnitude, setVmagnitude] = useState("");
+  const [dClass, setDclass] = useState([]);
 
   const classes = useStyles();
+
+  const filters = []
 
   useEffect(() => {
     setTitle("Search SSSO");
@@ -37,7 +47,20 @@ export default function SearchSsso({ setTitle }) {
     let pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
     let searchValue = typeof event === 'undefined' ? ' ' : event.searchValue;
 
-    let filters = [];
+
+    if (vMagnitude && vMagnitude != "") {
+      filters.push({
+        property: 'mv__range',
+        value: vMagnitude,
+      });
+    }
+
+    if (dClass && dClass.length > 0) {
+      filters.push({
+        property: 'dynclass__in',
+        value: dClass.toString(),
+      });
+    }
 
     filters.push({
       property: 'ccdnum__isnull',
@@ -45,6 +68,7 @@ export default function SearchSsso({ setTitle }) {
     });
 
     getSkybotLists({ page: page, pageSize: pageSize, search: searchValue, filters: filters }).then(res => {
+      console.log(res);
       setTotalCount(res.data.count);
       setTableData(res.data.results);
     });
@@ -113,6 +137,157 @@ export default function SearchSsso({ setTitle }) {
     },
   ]
 
+
+
+
+  useEffect(() => {
+
+    loadTableData();
+
+    console.log(dClass);
+
+  }, [vMagnitude, dClass]);
+
+
+  const handleSelectVisualMagnitude = (event) => {
+    setVmagnitude(event.target.value);
+  };
+
+  const handleSelectDynamicClass = (event) => {
+    setDclass(event.target.value);
+  };
+
+  const loadMagnitudeColumns = () => {
+
+    const magnitude = [
+      { name: "18,19", value: '18,19', title: '18 - 19' },
+      { name: "19,20", value: '19,20', title: '19 - 20' },
+      { name: "20,21", value: '20,21', title: '20 - 21' },
+      { name: "21,22", value: '21,22', title: '21 - 22' },
+      { name: "22,23", value: '22,23', title: '22 - 23' },
+      { name: "23,24", value: '23,24', title: '23 - 24' },
+      { name: "24,25", value: '24,25', title: '24 - 25' },
+      { name: "25,26", value: '25,26', title: '25 - 26' },
+      { name: "26,27", value: '26,27', title: '26 - 27' },
+      { name: "27,28", value: '27,28', title: '27 - 28' },
+      { name: "28,29", value: '28,29', title: '28 - 29' },
+      { name: "29,30", value: '29,30', title: '29 - 30' },
+      { name: "30,31", value: '30,31', title: '30 - 31' },
+      { name: "31,32", value: '31,32', title: '31 - 32' },
+      { name: "32,33", value: '32,33', title: '32 - 33' },
+      { name: "33,34", value: '33,34', title: '33 - 34' },
+      { name: "34,35", value: '34,35', title: '34 - 35' },
+      { name: "35,36", value: '35,36', title: '35 - 36' },
+    ];
+
+
+    return magnitude.map((el, i) => (
+      <MenuItem
+
+        key={i}
+        value={el.value}
+        title={el.title}
+      >
+        {el.title}
+      </MenuItem>
+    ));
+  };
+
+  const loadDynamicClassColumns = () => {
+
+
+    const dynclass = [
+      { name: 'Centaur', value: 'Centaur', title: 'Centaur', },
+      { name: 'Hungaria', value: 'Hungaria', title: 'Hungaria', },
+      { name: 'KBO>Classical>Inner', value: 'KBO>Classical>Inner', title: 'KBO>Classical>Inner', },
+      { name: 'KBO>Classical>Main', value: 'KBO>Classical>Main', title: 'KBO>Classical>Main', },
+      { name: 'KBO>Detached', value: 'KBO>Detached', title: 'KBO>Detached', },
+      { name: 'KBO>Resonant>11:3', value: 'KBO>Resonant>11:3', title: 'KBO>Resonant>11:3', },
+      { name: 'KBO>Resonant>11:6', value: 'KBO>Resonant>11:6', title: 'KBO>Resonant>11:6', },
+      { name: 'KBO>Resonant>11:8', value: 'KBO>Resonant>11:8', title: 'KBO>Resonant>11:8', },
+      { name: 'KBO>Resonant>19:9', value: 'KBO>Resonant>19:9', title: 'KBO>Resonant>19:9', },
+      { name: 'KBO>Resonant>2:1', value: 'KBO>Resonant>2:1', title: 'KBO>Resonant>2:1', },
+      { name: 'KBO>Resonant>3:1', value: 'KBO>Resonant>3:1', title: 'KBO>Resonant>3:1', },
+      { name: 'KBO>Resonant>3:2', value: 'KBO>Resonant>3:2', title: 'KBO>Resonant>3:2', },
+      { name: 'KBO>Resonant>4:3', value: 'KBO>Resonant>4:3', title: 'KBO>Resonant>4:3', },
+      { name: 'KBO>Resonant>5:2', value: 'KBO>Resonant>5:2', title: 'KBO>Resonant>5:2', },
+      { name: 'KBO>Resonant>5:3', value: 'KBO>Resonant>5:3', title: 'KBO>Resonant>5:3', },
+      { name: 'KBO>Resonant>5:4', value: 'KBO>Resonant>5:4', title: 'KBO>Resonant>5:4', },
+      { name: 'KBO>Resonant>7:2', value: 'KBO>Resonant>7:2', title: 'KBO>Resonant>7:2', },
+      { name: 'KBO>Resonant>7:3', value: 'KBO>Resonant>7:3', title: 'KBO>Resonant>7:3', },
+      { name: 'KBO>Resonant>7:4', value: 'KBO>Resonant>7:4', title: 'KBO>Resonant>7:4', },
+      { name: 'KBO>Resonant>9:4', value: 'KBO>Resonant>9:4', title: 'KBO>Resonant>9:4', },
+      { name: 'KBO>Resonant>9:5', value: 'KBO>Resonant>9:5', title: 'KBO>Resonant>9:5', },
+      { name: 'KBO>SDO', value: 'KBO>SDO', title: 'KBO>SDO', },
+      { name: 'Mars-Crosser', value: 'Mars-Crosser', title: 'Mars-Crosser', },
+      { name: 'MB>Cybele', value: 'MB>Cybele', title: 'MB>Cybele', },
+      { name: 'MB>Hilda', value: 'MB>Hilda', title: 'MB>Hilda', },
+      { name: 'MB>Inner', value: 'MB>Inner', title: 'MB>Inner', },
+      { name: 'MB>Middle', value: 'MB>Middle', title: 'MB>Middle', },
+      { name: 'MB>Outer', value: 'MB>Outer', title: 'MB>Outer', },
+      { name: 'NEA>Amor', value: 'NEA>Amor', title: 'NEA>Amor', },
+      { name: 'NEA>Apollo', value: 'NEA>Apollo', title: 'NEA>Apollo', },
+      { name: 'NEA>Aten', value: 'NEA>Aten', title: 'NEA>Aten', },
+      { name: 'Trojan', value: 'Trojan', title: 'Trojan', },
+    ];
+
+    return dynclass.map((el, i) => (
+      <MenuItem
+
+        key={i}
+        value={el.value}
+        title={el.title}
+      >
+        {el.title}
+      </MenuItem>
+    ));
+
+
+  };
+
+
+
+  const select_visual_magnitude = () => {
+    return (
+      <FormControl className={classes.formControl} fullWidth>
+        <InputLabel htmlFor="magnitude">Visual Magnitude</InputLabel>
+        <Select
+          value={vMagnitude}
+          onChange={handleSelectVisualMagnitude}
+          className={classes.visualMagnitude}
+        >
+          {loadMagnitudeColumns()}
+        </Select>
+      </FormControl>
+    );
+  };
+
+
+
+
+  const select_dynamic_class = () => {
+
+    return (
+      <FormControl className={classes.formControl} fullWidth>
+        <InputLabel htmlFor="dynamicClass">Dynamics Class</InputLabel>
+        <Select
+          multiple
+          value={dClass}
+          onChange={handleSelectDynamicClass}
+          className={classes.dynamicClass}
+        >
+          {loadDynamicClassColumns()}
+        </Select>
+      </FormControl>
+    );
+  };
+
+
+  const handleClearFilters = () => {
+    setVmagnitude("");
+    setDclass([]);
+  };
+
   return (
     <Grid>
       {/*         
@@ -178,14 +353,29 @@ export default function SearchSsso({ setTitle }) {
             <CardHeader
               title={"SkyBot Output"}
             />
-            <Table
-              data={tableData}
-              columns={tableColumns}
-              loadData={loadTableData}
-              totalCount={totalCount}
-              hasToolbar={true}
-            >
-            </Table>
+            <CardContent>
+              <Grid item lg={3}>
+                {select_visual_magnitude()}
+                {select_dynamic_class()}
+
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleClearFilters}
+                >
+                  Clear
+                </Button>
+
+              </Grid>
+              <Table
+                data={tableData}
+                columns={tableColumns}
+                loadData={loadTableData}
+                totalCount={totalCount}
+                hasToolbar={true}
+              >
+              </Table>
+            </CardContent>
           </Card>
         </Grid>
       </Grid>
