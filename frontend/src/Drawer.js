@@ -36,12 +36,13 @@ import PredictionOccultationDetail from './components/PredictionOccultationDetai
 import PredictionOccultationAsteroid from './components/PredictionOccultationAsteroid';
 import Occultations from './components/Occultations';
 import AstrometryAsteroid from './components/AstrometryAsteroid';
+import FilterObjectsDetail from './components/FilterObjectsDetail';
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
+    display: 'block',
     height: '100%',
   },
   appBar: {
@@ -113,7 +114,12 @@ const useStyles = makeStyles((theme) => ({
   bodyWrapper: {
     height: '100%',
     width: '100%',
+    float: 'right',
     marginTop: '64px',
+    // paddingBottom: 64,
+    overflow: 'auto',
+    backgroundColor: 'rgb(240, 241, 244)',
+    maxHeight: 'calc(100% - 128px)',
   },
   bodyWrapperOpen: {
     maxWidth: `calc(100% - ${drawerWidth}px)`,
@@ -406,9 +412,10 @@ function MiniDrawer() {
             <Route exact path="/test-calendar/:id/:date/:view/:flag/:sDate/:fDate/:searching" render={(props) => <TestCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/occultations" render={(props) => <Occultations {...props} setTitle={setTitle} />} />
+            <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
           </main>
-          <Footer drawerOpen={open} />
         </div>
+        <Footer drawerOpen={open} />
       </Router>
     </div>
   );

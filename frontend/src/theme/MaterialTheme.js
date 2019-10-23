@@ -45,6 +45,11 @@ const theme = createMuiTheme({
         fontSize: '1rem',
       },
     },
+    TableHeaderCell: {
+      container: {
+        textTransform: 'capitalize',
+      },
+    },
   },
 });
 

@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   button: {
     marginTop: theme.spacing(3),
     marginLeft: '70%',
-    width: '30%',         //Padronizar os Botão de submit, o do refine está diferente do Submit da predição.
+    width: '30%', // Padronizar os Botão de submit, o do refine está diferente do Submit da predição.
   },
   btn: {
     textTransform: 'none',
@@ -183,13 +183,11 @@ function RefineOrbit({ history, setTitle }) {
       name: 'execution_time',
       title: 'Execution Time',
       align: 'center',
-      customElement: (row) => {
-        return (
+      customElement: (row) => (
           <span>
             {row.execution_time.substring(0, 8)}
           </span>
-        );
-      },
+        ),
       width: 140,
     },
     {
@@ -281,7 +279,7 @@ function RefineOrbit({ history, setTitle }) {
           />
           <CardContent>
             <form autoComplete="off">
-              <FormControl fullWidth >
+              <FormControl fullWidth>
                 <InputLabel htmlFor="input">Input</InputLabel>
                 <Select
                   value={select}
