@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-export const url = 'http://tno-testing.linea.gov.br/api';
+// TODO essa variavel ja existe no auth (api) nao precisa repetir
+export const url = process.env.REACT_APP_API;
 axios.defaults.baseURL = url;
 
 export const getListsByStatus = ({ status, search }) => axios.get('customlist/', {
@@ -118,7 +119,7 @@ export const getAstrometryPlots = ({ id }) => axios.get(`/astrometry_asteroids/$
 
 export const getCSV = (filepath, page, pageSize) => axios.get(
   `${
-    this.api
+  this.api
   }/read_csv?filepath=${filepath}&page=${page}&pageSize=${pageSize}`,
 );
 

@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-export const url = 'http://tno-testing.linea.gov.br/api';
-
-
+// TODO essa variavel ja existe no auth (api) nao precisa repetir
+export const url = process.env.REACT_APP_API;
 axios.defaults.baseURL = url;
+
 axios.interceptors.request.use((config) => {
   const token = 'Token 9718d50273cc9470fc99ad1d0de463815dda3544';
   config.headers.Authorization = token;
@@ -73,10 +73,9 @@ export const getTimeProfile = ({ id }) => {
 
 
 export const getCalendarEvents = ({ initialDate, finalDate }) => {
-  return axios.get(`/occultation/?date_time__range=${initialDate},${finalDate}&pageSize=3000`)
-    .then((res) => {
-      return res;
-    });
+  return axios.get(`/occultation/?date_time__range=${initialDate},${finalDate}&pageSize=3000`).then((res) => {
+    return res;
+  });
 };
 
 export const getOccultations = ({ id }) => {
