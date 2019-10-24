@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const url = 'http://tno-testing.linea.gov.br/api';
+export const url = process.env.REACT_APP_API;
 
 
 axios.defaults.baseURL = url;

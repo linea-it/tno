@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const url = 'http://tno-testing.linea.gov.br/api';
+export const url = process.env.REACT_APP_API;
 
 
 axios.defaults.baseURL = url;
@@ -20,7 +20,7 @@ export const getOccultations = (page, pageSize, sortField, sortOrder) => {
   // // }
   // params.ordering = ordering;
 
-  return axios.get(`/occultation/`, {
+  return axios.get('/occultation/', {
     params,
   }).then((res) => res.data);
 };

@@ -270,54 +270,63 @@ function RefineOrbit({ history, setTitle }) {
   };
 
   return (
-    <Grid
-      container
-      direction="row"
-    >
-      <Grid item xs={12} md={4} fullwidth className={classes.gridWrapper}>
-        <Card>
-          <CardHeader
-            title={<span>Execute</span>}
-          />
-          <CardContent>
-            <form autoComplete="off">
-              <FormControl fullWidth >
-                <InputLabel htmlFor="input">Input</InputLabel>
-                <Select
-                  value={select}
-                  onChange={handleSelect}
-                >
-                  {inputData.map((input) => (
-                    <MenuItem key={input.id} value={input} item={input}>{input.proccess_displayname}</MenuItem>
-                  ))}
-                </Select>
-                <Button variant="contained" color="primary" className={classes.button} onClick={handleSubmit}>Submit</Button>
-              </FormControl>
-            </form>
-          </CardContent>
-        </Card>
+    <>
+      <Grid
+        container
+        direction="row"
+        spacing={2}
+      >
+        <Grid item xs={12} md={4} fullWidth className={classes.gridWrapper}>
+          <Card>
+            <CardHeader
+              title={<span>Execute</span>}
+            />
+            <CardContent>
+              <form autoComplete="off">
+                <FormControl fullWidth>
+                  <InputLabel htmlFor="input">Input</InputLabel>
+                  <Select
+                    value={select}
+                    onChange={handleSelect}
+                  >
+                    {inputData.map((input) => (
+                      <MenuItem key={input.id} value={input} item={input}>{input.proccess_displayname}</MenuItem>
+                    ))}
+                  </Select>
+                  <Button variant="contained" color="primary" className={classes.button} onClick={handleSubmit}>Submit</Button>
+                </FormControl>
+              </form>
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
 
-      <Grid className={clsx(classes.block, classes.tableWrapper)}>
-        <Card>
-          <CardHeader
-            title={<span>History</span>}
-          />
-          <CardContent>
-            <CustomTable
-              columns={columns}
-              data={tableData}
-              loadData={loadTableData}
-              pageSizes={pageSizes}
-              totalCount={totalCount}
-              defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
-              reload={reload}
-              hasSearching={false}
+      <Grid
+        container
+        direction="row"
+        spacing={2}
+      >
+        <Grid xs={12} className={clsx(classes.block, classes.tableWrapper)}>
+          <Card>
+            <CardHeader
+              title={<span>History</span>}
             />
-          </CardContent>
-        </Card>
+            <CardContent>
+              <CustomTable
+                columns={columns}
+                data={tableData}
+                loadData={loadTableData}
+                pageSizes={pageSizes}
+                totalCount={totalCount}
+                defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
+                reload={reload}
+                hasSearching={false}
+              />
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
-    </Grid>
+    </>
   );
 }
 

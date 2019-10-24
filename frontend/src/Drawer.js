@@ -36,6 +36,7 @@ import PredictionOccultationDetail from './components/PredictionOccultationDetai
 import PredictionOccultationAsteroid from './components/PredictionOccultationAsteroid';
 import Occultations from './components/Occultations';
 import AstrometryAsteroid from './components/AstrometryAsteroid';
+import FilterObjects from './components/FilterObjects';
 
 const drawerWidth = 240;
 
@@ -272,18 +273,6 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/ssso" className={classes.invisibleLink} title="Search SSSO">
-              <ListItem button>
-                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite', classes.iconAltixDrawer)} />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Search SSSO"
-                  className={classes.textDrawer}
-                />
-              </ListItem>
-            </Link>
-            <Divider className={classes.borderDrawer} />
             <Link to="/skybot" className={classes.invisibleLink} title="Skybot Run">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
@@ -296,7 +285,19 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/objects" className={classes.invisibleLink} title="Filter Objects">
+            <Link to="/ssso" className={classes.invisibleLink} title="Search SSSO">
+              <ListItem button>
+                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite', classes.iconAltixDrawer)} />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Search SSSO"
+                  className={classes.textDrawer}
+                />
+              </ListItem>
+            </Link>
+            <Divider className={classes.borderDrawer} />
+            <Link to="/filter-objects" className={classes.invisibleLink} title="Filter Objects">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-filter', classes.iconAltixDrawer)} />
@@ -406,6 +407,7 @@ function MiniDrawer() {
             <Route exact path="/test-calendar/:id/:date/:view/:flag/:sDate/:fDate/:searching" render={(props) => <TestCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/occultations" render={(props) => <Occultations {...props} setTitle={setTitle} />} />
+            <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
           </main>
           <Footer drawerOpen={open} />
         </div>

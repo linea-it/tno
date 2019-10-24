@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const url = 'http://tno-testing.linea.gov.br/api';
+export const url = process.env.REACT_APP_API;
 
 
 axios.defaults.baseURL = url;
@@ -22,16 +22,16 @@ export const createPredictRun = ({
   ephemeris_final_date,
   ephemeris_step,
 }) => axios.post('/predict_run/', {
-  process: process,
-  input_list: input_list,
-  input_orbit: input_orbit,
-  leap_second: leap_second,
-  bsp_planetary: bsp_planetary,
-  catalog: catalog,
-  catalog_radius: catalog_radius,
-  ephemeris_initial_date: ephemeris_initial_date,
-  ephemeris_final_date: ephemeris_final_date,
-  ephemeris_step: ephemeris_step,
+  process,
+  input_list,
+  input_orbit,
+  leap_second,
+  bsp_planetary,
+  catalog,
+  catalog_radius,
+  ephemeris_initial_date,
+  ephemeris_final_date,
+  ephemeris_step,
 });
 
 export const getPrediction = () => axios.get('/orbit_run/?status=success').then((res) => res.data);
@@ -71,13 +71,10 @@ export const getTimeProfile = ({ id }) => {
 };
 
 
-
-export const getCalendarEvents = ({ initialDate, finalDate }) => {
-  return axios.get(`/occultation/?date_time__range=${initialDate},${finalDate}&pageSize=3000`)
+export const getCalendarEvents = ({ initialDate, finalDate }) => axios.get(`/occultation/?date_time__range=${initialDate},${finalDate}&pageSize=3000`)
     .then((res) => {
       return res;
     });
-};
 
 export const getOccultations = ({ id }) => {
   const params = {
@@ -87,7 +84,6 @@ export const getOccultations = ({ id }) => {
     params,
   }).then((res) => res.data);
 };
-
 
 
 export const getAsteroids = ({
@@ -178,6 +174,3 @@ export const getCatalogStars = ({ id }) => {
 // };
 
 export const getPredictionEvent = ({ asteroidId }) => axios.get(`/occultation/?asteroid=${asteroidId}`).then((res) => res.data);
-
-
-
