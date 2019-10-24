@@ -78,7 +78,7 @@ const useStyles = makeStyles({
     color: '#fff',
   },
   btnRunning: {
-    backgroundColor: '#0099ff',
+    backgroundColor: '#ffba01',
     color: '#000',
   },
   btnNotExecuted: {

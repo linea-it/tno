@@ -470,7 +470,10 @@ CustomTable.propTypes = {
   defaultSorting: PropTypes.arrayOf(PropTypes.object),
   // eslint-disable-next-line react/no-unused-prop-types
   pageSize: PropTypes.number,
-  pageSizes: PropTypes.arrayOf(PropTypes.number),
+  pageSizes: PropTypes.oneOfType(
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.number,
+  ),
   hasFiltering: PropTypes.bool,
   hasSearching: PropTypes.bool,
   hasSorting: PropTypes.bool,
