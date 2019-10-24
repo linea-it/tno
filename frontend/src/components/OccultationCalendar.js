@@ -8,7 +8,8 @@ import '@fullcalendar/core/main.css';
 import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/list/main.css';
 import { makeStyles } from '@material-ui/core/styles';
-import { getCalendarEvents } from '../api/Prediction';
+// import { getCalendarEvents } from '../api/Prediction';
+import { getOccultations } from '../api/Occultation';
 import moment from 'moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import AppBar from './AppBarCalendario';
@@ -43,7 +44,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   const [initialDate, setInitialDate] = useState(params.sDate ? params.sDate : moment(new Date()).startOf('month').format('YYYY-MM-DD'));
   const [finalDate, setFinalDate] = useState(moment(new Date()).endOf('month').format('YYYY-MM-DD'));
   const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState(params.searching ? params.searching : " ");
+  const [search, setSearch] = useState(params.searching ? params.searching : "");
   const [hasSearch, setHasSearch] = useState(false);
 
   const classes = useStyles();
@@ -53,59 +54,46 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     const arrayEvents = [];
     const result = [];
 
-    if (search && search.length > 0) {
-      loadSearch()
-    } else {
+    setLoading(true);
 
+    const filters = [
+      {
+        property: 'date_time__range',
+        value: [initialDate, finalDate].join(),
+      },
+      {
+        property: 'most_recent_only',
+        value: true,
+      },
+    ];
 
-      setLoading(true);
-
-      getCalendarEvents({ initialDate, finalDate }).then((res) => {
-
-        let data = res.data.results;
-        let result = [];
-
-        data.map((resp, idx) => {
-
-          result.push({
-            id: resp.id,
-            title: resp.asteroid_name,
-            date: resp.date_time,
-            textColor: "white",
-            // backgroundColor: resp.asteroid_name.includes(search) || ((resp.asteroid_name).toLowerCase()).includes(search) ? 'green' : ''
-          });
-
-        });
-
-        setEvents(result);
-
-        setLoading(false);
-
+    if (search && search !== '') {
+      filters.push({
+        property: 'asteroid__name__icontains',
+        value: search,
       });
     }
 
-    // getOccultations({ id: 10 }).then((res) => {
-    //   console.log(res);
-    // });
+    getOccultations({ filters, pageSize: 3000 }).then((res) => {
+      let data = res.results;
+      let result = [];
 
+      data.map((resp) => {
+        // Se o asteroid tiver numero, o nome do asteroid passa a ser NAME(Number) se nao so NAME.
+        const asteroid_name = parseInt(resp.asteroid_number) > 0 ? `${resp.asteroid_name} (${resp.asteroid_number})` : resp.asteroid_name;
 
-    // let arrayEvents = [];
-    // let result = [];
+        result.push({
+          id: resp.id,
+          title: asteroid_name,
+          date: resp.date_time,
+          textColor: "white",
+        });
+      });
 
-    // let keys = Object.keys(occultationData);
-
-    // keys.forEach(function (key) {
-    //   result.push(occultationData[key]);
-    // });
-
-    // result[3].map((res, idx) => {
-    //   arrayEvents.push({ id: res.id, title: res.asteroid_name, date: res.date_time, textColor: 'white' });
-    // });
-
-    // setEvents(arrayEvents);
-    // console.log(arrayEvents);
-
-
+      setEvents(result);
+    }).finally(() => {
+      setLoading(false);
+    });
   };
 
   useEffect(() => {
@@ -116,9 +104,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   }, [initialDate, finalDate]);
 
   useEffect(() => {
-    if (hasSearch) {
-      loadSearch();
-    }
+    loadData();
   }, [search]);
 
 
@@ -129,35 +115,6 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     listYear: 'Year',
     left: 'dayGridDay,dayGridWeek,dayGridMonth,listYear',
 
-  };
-
-  const loadSearch = () => {
-
-    setLoading(true);
-
-    getCalendarEvents({ initialDate, finalDate }).then((res) => {
-
-      let data = res.data.results;
-      let result = [];
-
-      data.map((resp, idx) => {
-
-        if (resp.asteroid_name.includes(search) || ((resp.asteroid_name).toLowerCase()).includes(search)) {
-          result.push({
-            id: resp.id,
-            title: resp.asteroid_name,
-            date: resp.date_time,
-            textColor: "white",
-          });
-        }
-
-      });
-
-      setEvents(result);
-
-      setLoading(false);
-
-    });
   };
 
 
