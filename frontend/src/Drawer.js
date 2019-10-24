@@ -36,6 +36,7 @@ import PredictionOccultationDetail from './components/PredictionOccultationDetai
 import PredictionOccultationAsteroid from './components/PredictionOccultationAsteroid';
 import Occultations from './components/Occultations';
 import AstrometryAsteroid from './components/AstrometryAsteroid';
+import OccultationsDetail from './components/OccultationsDetail';
 
 const drawerWidth = 240;
 
@@ -406,6 +407,7 @@ function MiniDrawer() {
             <Route exact path="/test-calendar/:id/:date/:view/:flag/:sDate/:fDate/:searching" render={(props) => <TestCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/occultations" render={(props) => <Occultations {...props} setTitle={setTitle} />} />
+            <Route exact path="/occultations/:id" render={(props) => <OccultationsDetail {...props} setTitle={setTitle} />} />
           </main>
           <Footer drawerOpen={open} />
         </div>
