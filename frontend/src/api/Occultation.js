@@ -26,4 +26,4 @@ export const getOccultations = ({ page, pageSize, sortField, filters }) => {
   }).then((res) => res.data);
 };
 
-export const getOccultationById = ({ id }) => axios.get(`${this.api}/occultation/${id}/`).then((res) => res.data);
+export const getOccultationById = ({ id }) => axios.get(`/occultation/${id}/`).then((res) => res.data);

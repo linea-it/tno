@@ -4,6 +4,8 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
+import Icon from '@material-ui/core/Icon';
 
 const useStyles = makeStyles({
   root: {
@@ -11,6 +13,15 @@ const useStyles = makeStyles({
   },
   itemText: {
     flex: '1 1',
+  },
+  tooltip: {
+    borderBottom: '1px dotted #888',
+    cursor: 'help',
+  },
+  tooltipIcon: {
+    fontSize: 10,
+    opacity: 0.8,
+    marginLeft: 2,
   },
 });
 
@@ -21,8 +32,25 @@ function CustomList({ data, height, width }) {
   return (
     <List className={classes.root} style={{ height, width }}>
       {data.map((item, i, arr) => (
-        <ListItem key={i} divider={i !== arr.length - 1} dense={item.dense ? item.dense : false}>
-          <ListItemText primary={item.title} className={classes.itemText} />
+        <ListItem
+          key={item.title}
+          divider={i !== arr.length - 1}
+          dense={item.dense ? item.dense : false}
+        >
+          <ListItemText
+            primary={(
+              <span
+                title={item.tooltip ? item.tooltip : ''}
+                className={item.tooltip ? classes.tooltip : ''}
+              >
+                {item.title}
+                {item.tooltip ? (
+                  <sup><Icon className={clsx(classes.tooltipIcon, 'fas', 'fa-info-circle')} /></sup>
+                ) : null}
+              </span>
+            )}
+            className={classes.itemText}
+          />
           <ListItemText className={classes.itemText} secondary={typeof item.value === 'function' ? item.value() : item.value} />
         </ListItem>
       ))}
