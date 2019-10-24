@@ -5,7 +5,7 @@ export const url = process.env.REACT_APP_API;
 
 axios.defaults.baseURL = url;
 axios.interceptors.request.use((config) => {
-  const token = 'Token 9718d50273cc9470fc99ad1d0de463815dda3544';
+  const token = 'Token 846db15e26e2f529c428fbd1431bb2ae9a46d686';
   config.headers.Authorization = token;
   return config;
 });

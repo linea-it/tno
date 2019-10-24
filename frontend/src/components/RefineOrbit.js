@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   button: {
     marginTop: theme.spacing(3),
     marginLeft: '70%',
-    width: '30%',         //Padronizar os Botão de submit, o do refine está diferente do Submit da predição.
+    width: '30%', // Padronizar os Botão de submit, o do refine está diferente do Submit da predição.
   },
   btn: {
     textTransform: 'none',
@@ -183,13 +183,11 @@ function RefineOrbit({ history, setTitle }) {
       name: 'execution_time',
       title: 'Execution Time',
       align: 'center',
-      customElement: (row) => {
-        return (
-          <span>
-            {row.execution_time.substring(0, 8)}
-          </span>
-        );
-      },
+      customElement: (row) => (
+        <span>
+          {row.execution_time.substring(0, 8)}
+        </span>
+      ),
       width: 140,
     },
     {
@@ -270,63 +268,53 @@ function RefineOrbit({ history, setTitle }) {
   };
 
   return (
-    <>
-      <Grid
-        container
-        direction="row"
-        spacing={2}
-      >
-        <Grid item xs={12} md={4} fullWidth className={classes.gridWrapper}>
-          <Card>
-            <CardHeader
-              title={<span>Execute</span>}
-            />
-            <CardContent>
-              <form autoComplete="off">
-                <FormControl fullWidth>
-                  <InputLabel htmlFor="input">Input</InputLabel>
-                  <Select
-                    value={select}
-                    onChange={handleSelect}
-                  >
-                    {inputData.map((input) => (
-                      <MenuItem key={input.id} value={input} item={input}>{input.proccess_displayname}</MenuItem>
-                    ))}
-                  </Select>
-                  <Button variant="contained" color="primary" className={classes.button} onClick={handleSubmit}>Submit</Button>
-                </FormControl>
-              </form>
-            </CardContent>
-          </Card>
-        </Grid>
+    <Grid
+      container
+      direction="row"
+    >
+      <Grid item xs={12} md={4} fullwidth className={classes.gridWrapper}>
+        <Card>
+          <CardHeader
+            title={<span>Execute</span>}
+          />
+          <CardContent>
+            <form autoComplete="off">
+              <FormControl fullWidth>
+                <InputLabel htmlFor="input">Input</InputLabel>
+                <Select
+                  value={select}
+                  onChange={handleSelect}
+                >
+                  {inputData.map((input) => (
+                    <MenuItem key={input.id} value={input} item={input}>{input.proccess_displayname}</MenuItem>
+                  ))}
+                </Select>
+                <Button variant="contained" color="primary" className={classes.button} onClick={handleSubmit}>Submit</Button>
+              </FormControl>
+            </form>
+          </CardContent>
+        </Card>
       </Grid>
-
-      <Grid
-        container
-        direction="row"
-        spacing={2}
-      >
-        <Grid xs={12} className={clsx(classes.block, classes.tableWrapper)}>
-          <Card>
-            <CardHeader
-              title={<span>History</span>}
+      <Grid xs={12} className={clsx(classes.block, classes.tableWrapper)}>
+        <Card>
+          <CardHeader
+            title={<span>History</span>}
+          />
+          <CardContent>
+            <CustomTable
+              columns={columns}
+              data={tableData}
+              loadData={loadTableData}
+              pageSizes={pageSizes}
+              totalCount={totalCount}
+              defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
+              reload={reload}
+              hasSearching={false}
             />
-            <CardContent>
-              <CustomTable
-                columns={columns}
-                data={tableData}
-                loadData={loadTableData}
-                pageSizes={pageSizes}
-                totalCount={totalCount}
-                defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
-                reload={reload}
-                hasSearching={false}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
+          </CardContent>
+        </Card>
       </Grid>
-    </>
+    </Grid>
   );
 }
 

@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-y: hidden;
 }
 
 code {
@@ -27,4 +28,8 @@ html, body, #root {
 th.MuiTableCell-root.MuiTableCell-head {
   background-color: #fff !important;
   z-index: 1;
+}
+
+code.hljs.sql {
+  background-color: #fff;
 }
