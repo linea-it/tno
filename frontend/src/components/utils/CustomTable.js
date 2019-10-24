@@ -76,6 +76,7 @@ function CustomTable({
     name: column.name,
     title: column.title,
     hasLineBreak: column.hasLineBreak ? column.hasLineBreak : false,
+    headerTooltip: column.headerTooltip ? column.headerTooltip : false,
   }));
   const customColumnExtensions = columns.map((column) => ({
     columnName: column.name,
@@ -386,8 +387,8 @@ function CustomTable({
   const rows = customData.map((row) => {
     const line = {};
     Object.keys(row).forEach((key) => {
+      const column = columns.filter((el) => el.name === key)[0];
       if (row[key]) {
-        const column = columns.filter((el) => el.name === key)[0];
         if (
           (column && column.icon && typeof row[key] !== 'object')
           /*
@@ -419,6 +420,8 @@ function CustomTable({
         } else {
           line[key] = row[key];
         }
+      } else if (column && column.customElement) {
+        line[key] = column.customElement(row);
       } else {
         line[key] = '-';
       }

@@ -37,6 +37,8 @@ import PredictionOccultationAsteroid from './components/PredictionOccultationAst
 import Occultations from './components/Occultations';
 import SkyBotRun from './components/SkyBotRun';
 import AstrometryAsteroid from './components/AstrometryAsteroid';
+import Dashboard from './components/Dashboard';
+import Pointings from './components/Pointings';
 import FilterObjects from './components/FilterObjects';
 import FilterObjectsDetail from './components/FilterObjectsDetail';
 import SearchSsso from './components/SearchSsso';
@@ -414,6 +416,8 @@ function MiniDrawer() {
             <Route exact path="/test-calendar/:id/:date/:view/:flag/:sDate/:fDate/:searching" render={(props) => <TestCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/occultations" render={(props) => <Occultations {...props} setTitle={setTitle} />} />
+            <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
+            <Route exact path="/pointings" render={(props) => <Pointings {...props} setTitle={setTitle} />} />
             <Route exact path="/skybotrun" render={(props) => <SkyBotRun {...props} setTitle={setTitle} />} />
             <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
             <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
