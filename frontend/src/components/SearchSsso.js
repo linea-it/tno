@@ -21,11 +21,9 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     minWidth: 120,
   },
-
 }));
 
 export default function SearchSsso({ setTitle }) {
-
   const [tableData, setTableData] = useState([{}]);
   const [tablePage] = useState(1);
   const [tablePageSize] = useState(10);
@@ -46,27 +44,22 @@ export default function SearchSsso({ setTitle }) {
     let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
     let pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
     let searchValue = typeof event === 'undefined' ? ' ' : event.searchValue;
-
-
     if (vMagnitude && vMagnitude != "") {
       filters.push({
         property: 'mv__range',
         value: vMagnitude,
       });
     }
-
     if (dClass && dClass.length > 0) {
       filters.push({
         property: 'dynclass__in',
         value: dClass.toString(),
       });
     }
-
     filters.push({
       property: 'ccdnum__isnull',
       value: false,
     });
-
     getSkybotLists({ page: page, pageSize: pageSize, search: searchValue, filters: filters }).then(res => {
       setTotalCount(res.data.count);
       setTableData(res.data.results);
@@ -136,15 +129,9 @@ export default function SearchSsso({ setTitle }) {
     },
   ]
 
-
   useEffect(() => {
-
     loadTableData();
-
-    console.log(dClass);
-
   }, [vMagnitude, dClass]);
-
 
   const handleSelectVisualMagnitude = (event) => {
     setVmagnitude(event.target.value);
@@ -155,7 +142,6 @@ export default function SearchSsso({ setTitle }) {
   };
 
   const loadMagnitudeColumns = () => {
-
     const magnitude = [
       { name: "18,19", value: '18,19', title: '18 - 19' },
       { name: "19,20", value: '19,20', title: '19 - 20' },
@@ -177,10 +163,8 @@ export default function SearchSsso({ setTitle }) {
       { name: "35,36", value: '35,36', title: '35 - 36' },
     ];
 
-
     return magnitude.map((el, i) => (
       <MenuItem
-
         key={i}
         value={el.value}
         title={el.title}
@@ -191,8 +175,6 @@ export default function SearchSsso({ setTitle }) {
   };
 
   const loadDynamicClassColumns = () => {
-
-
     const dynclass = [
       { name: 'Centaur', value: 'Centaur', title: 'Centaur', },
       { name: 'Hungaria', value: 'Hungaria', title: 'Hungaria', },
@@ -230,7 +212,6 @@ export default function SearchSsso({ setTitle }) {
 
     return dynclass.map((el, i) => (
       <MenuItem
-
         key={i}
         value={el.value}
         title={el.title}
@@ -238,11 +219,7 @@ export default function SearchSsso({ setTitle }) {
         {el.title}
       </MenuItem>
     ));
-
-
   };
-
-
 
   const select_visual_magnitude = () => {
     return (
@@ -259,11 +236,7 @@ export default function SearchSsso({ setTitle }) {
     );
   };
 
-
-
-
   const select_dynamic_class = () => {
-
     return (
       <FormControl className={classes.formControl} fullWidth>
         <InputLabel htmlFor="dynamicClass">Dynamics Class</InputLabel>
@@ -278,7 +251,6 @@ export default function SearchSsso({ setTitle }) {
       </FormControl>
     );
   };
-
 
   const handleClearFilters = () => {
     setVmagnitude("");

@@ -2,13 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import clsx from 'clsx';
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import { Card, CardHeader, CardContent, Typography, makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Label from '@material-ui/core/InputLabel';
@@ -16,22 +10,13 @@ import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import Dialog from '@material-ui/core/Dialog';
 import Paper from '@material-ui/core/Paper';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { createSkybotRun, getSkybotRunList } from '../api/SkyBotRun';
 import Table from './utils/CustomTable';
+import Interval from 'react-interval';
 
 const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  selectRun: {
-    minWidth: 300,
-  },
   typography: {
     marginBottom: 15,
   },
@@ -39,16 +24,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
     width: '30%',
     marginLeft: '70%',
-  },
-  dialogHeader: {
-    width: 600,
-  },
-  initialDate: {
-    width: '40%',
-    marginRight: 50,
-  },
-  finalDate: {
-    width: '40%',
   },
   dialogButton: {
     marginRight: '4%',
@@ -107,11 +82,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ffba01',
     color: '#000',
   },
-
 }));
 
 function SkyBotRun({ setTitle }) {
-
   useEffect(() => {
     setTitle("SkyBot Run");
   }, []);
@@ -121,16 +94,12 @@ function SkyBotRun({ setTitle }) {
   const [finalDate, setFinalDate] = useState(new Date());
   const [controlSubmit, setControlSubmit] = useState(false);
   const [tablePage, setTablePage] = useState(1);
-  const [first, setFirst] = useState(0);
   const [tablePageSize, setTablePageSize] = useState(10);
   const [totalSize, setTotalSize] = useState(0);
   const [sortField, setSortField] = useState('-start');
   const [sortOrder, setOrder] = useState(0);
-  const [totalCount, setTotalCount] = useState(null);
   const [tableData, setTableData] = useState([]);
-
   const pageSizes = [5, 10, 15];
-
   const [dialog, setDialog] = useState({
     visible: false,
     content: " ",
@@ -176,13 +145,10 @@ function SkyBotRun({ setTitle }) {
     loadData();
   }, []);
 
-
   useEffect(() => {
-
     if (controlSubmit) {
       handleSubmit();
     }
-
   }, [controlSubmit]);
 
   const handleAllPointings = () => {
@@ -245,6 +211,8 @@ function SkyBotRun({ setTitle }) {
         handleAllPointings();
         break;
       case "period":
+        setInitialDate(new Date());
+        setFinalDate(new Date());
         handleByPeriod();
         break;
     }
@@ -321,7 +289,6 @@ function SkyBotRun({ setTitle }) {
   ]
 
   const loadData = (event) => {
-
     let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
     const pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
 
@@ -335,6 +302,11 @@ function SkyBotRun({ setTitle }) {
 
   return (
     <Grid>
+      <Interval
+        enabled={true}
+        timeout={10000}
+        callback={loadData}
+      />
       <Grid container spacing={6}>
         <Grid item lg={5} xl={3}>
           <Card>
@@ -343,15 +315,10 @@ function SkyBotRun({ setTitle }) {
             />
             <CardContent>
               <Typography className={classes.typography}>Updates the SkyBot output table.</Typography>
-              <FormControl className={classes.formControl}>
-                <Label htmlFor='select_run'>Select the type of update</Label>
+              <FormControl className={classes.formControl} fullWidth>
+                <Label>Select the type of update</Label>
                 <Select
-                  className={classes.selectRun}
                   value={selectRunValue}
-                  inputProps={{
-                    name: 'select_run',
-                    id: 'select_run',
-                  }}
                   onChange={handleSelectRunChange}
                 >
                   {loadMenuItems()}
@@ -381,7 +348,6 @@ function SkyBotRun({ setTitle }) {
                 data={tableData}
                 loadData={loadData}
                 pageSizes={pageSizes}
-                defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
                 hasSearching={false}
                 hasPagination={true}
                 hasColumnVisibility={false}
