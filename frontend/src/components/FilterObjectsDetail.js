@@ -88,64 +88,58 @@ function FilterObjectsDetail({ setTitle, match }) {
     {
       name: 'raj2000',
       title: 'RA',
-      // formatter: coordinateFormater,
       width: 80,
-      // headerStyle: formatColumnHeader,
     },
     {
       name: 'decj2000',
       title: 'Dec',
-      // formatter: coordinateFormater,
       width: 80,
-      // headerStyle: formatColumnHeader,
     },
-    // { name: 'mv', title: 'mv', width: 60, headerStyle: formatColumnHeader },
     {
       name: 'errpos',
       title: 'errpos',
       width: 70,
-      // headerStyle: formatColumnHeader,
     },
     {
       name: 'jdref',
       title: 'jdref',
       width: 80,
-      // headerStyle: formatColumnHeader,
     },
     {
       title: 'Exp Num',
       name: 'expnum',
       width: 80,
-      // headerStyle: formatColumnHeader,
     },
     {
       title: 'CCD Num',
       name: 'ccdnum',
       width: 80,
-      // headerStyle: formatColumnHeader,
     },
     {
       name: 'band',
       title: 'band',
       align: 'center',
       width: 60,
-      // headerStyle: formatColumnHeader,
     },
     {
       name: 'filename',
       title: 'Downloaded',
       align: 'center',
-      customElement: (el) => (
+      customElement: (el) => (el.filename ? (
         <span title={el.filename}>
           <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
         </span>
-      ),
+      ) : (
+        <span title={el.filename}>
+          <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+        </span>
+      )),
     },
     {
       name: 'externallink',
       title: 'VizieR',
       customElement: (el) => (
-        <a href={el.externallink} target="_blank" className={classes.invisibleButton} title={el.externallink}>
+        <a href={el.externallink} target="_blank" rel="noopener noreferrer" className={classes.invisibleButton} title={el.externallink}>
           <Icon className={clsx(`fas fa-external-link-square-alt ${classes.iconDetail}`)} />
         </a>
       ),
