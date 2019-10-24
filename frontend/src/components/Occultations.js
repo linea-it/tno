@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import {
-  Card, CardHeader, CardContent, Typography
+  Card, CardHeader, CardContent, Typography,
 } from '@material-ui/core';
 import Slider from '@material-ui/core/Slider';
 import DateFnsUtils from '@date-io/date-fns';
@@ -43,10 +44,11 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 352,
     minHeight: 290,
     width: '100%',
+    cursor: 'pointer',
   },
 }));
 
-function Occultation({ setTitle, ...props }) {
+function Occultation({ setTitle, history, ...props }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPagesize] = useState(25);
   const [loading, setLoading] = useState();
@@ -217,6 +219,8 @@ function Occultation({ setTitle, ...props }) {
     }
   };
 
+  const handleRecordClick = (e) => history.push(`/occultations/${e.target.getAttribute('idValue')}`);
+
   return (
     <Grid>
       <Grid container spacing={3}>
@@ -318,7 +322,7 @@ function Occultation({ setTitle, ...props }) {
                       <Card>
                         <CardHeader title={`${record.date_time} - ${asteroidName}`} />
                         <CardContent>
-                          <img src={record.src} className={classes.occMapImg} alt="Occultation Map" />
+                          <img src={record.src} className={classes.occMapImg} alt="Occultation Map" idValue={record.id} onClick={handleRecordClick} />
                         </CardContent>
                       </Card>
                     </Grid>
@@ -332,4 +336,12 @@ function Occultation({ setTitle, ...props }) {
     </Grid>
   );
 }
+
+Occultation.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+  setTitle: PropTypes.func.isRequired,
+};
+
 export default withRouter(Occultation);
