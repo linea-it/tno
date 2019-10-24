@@ -184,10 +184,10 @@ function RefineOrbit({ history, setTitle }) {
       title: 'Execution Time',
       align: 'center',
       customElement: (row) => (
-          <span>
-            {row.execution_time.substring(0, 8)}
-          </span>
-        ),
+        <span>
+          {row.execution_time.substring(0, 8)}
+        </span>
+      ),
       width: 140,
     },
     {
@@ -295,8 +295,7 @@ function RefineOrbit({ history, setTitle }) {
           </CardContent>
         </Card>
       </Grid>
-
-      <Grid className={clsx(classes.block, classes.tableWrapper)}>
+      <Grid xs={12} className={clsx(classes.block, classes.tableWrapper)}>
         <Card>
           <CardHeader
             title={<span>History</span>}
