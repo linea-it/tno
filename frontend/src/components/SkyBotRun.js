@@ -85,19 +85,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SkyBotRun({ setTitle }) {
-  useEffect(() => {
-    setTitle("SkyBot Run");
-  }, []);
 
   const [selectRunValue, setSelectRunValue] = useState('period');
   const [initialDate, setInitialDate] = useState(new Date());
   const [finalDate, setFinalDate] = useState(new Date());
   const [controlSubmit, setControlSubmit] = useState(false);
-  const [tablePage, setTablePage] = useState(1);
-  const [tablePageSize, setTablePageSize] = useState(10);
+  const [tablePage] = useState(1);
+  const [tablePageSize] = useState(10);
   const [totalSize, setTotalSize] = useState(0);
-  const [sortField, setSortField] = useState('-start');
-  const [sortOrder, setOrder] = useState(0);
+  const [sortField] = useState('-start');
+  const [sortOrder] = useState(0);
   const [tableData, setTableData] = useState([]);
   const pageSizes = [5, 10, 15];
   const [dialog, setDialog] = useState({
@@ -108,25 +105,28 @@ function SkyBotRun({ setTitle }) {
 
   const classes = useStyles();
 
-  const handleSelectRunChange = event => {
-    setSelectRunValue(event.target.value);
-  };
 
-  const loadMenuItems = () => {
-    const options = [
-      { title: "All Pointings", value: "all" },
-      { title: "By Period", value: "period" },
-    ];
+  useEffect(() => {
+    setTitle("SkyBot Run");
+    loadData();
+  }, []);
 
-    return options.map((el, i) => (
-      <MenuItem
-        key={i}
-        value={el.value}
-        title={el.title}
-      >
-        {el.title}
-      </MenuItem>
-    ));
+  useEffect(() => {
+    if (controlSubmit) {
+      handleSubmit();
+    }
+  }, [controlSubmit]);
+
+  const loadData = (event) => {
+    let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
+    const pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
+
+    getSkybotRunList({ page: page, pageSize: pageSize, sortField: sortField, sortOrder: sortOrder })
+      .then(res => {
+        const data = res.data;
+        setTableData(data.results);
+        setTotalSize(data.count);
+      });
   };
 
   const handleSubmit = () => {
@@ -136,20 +136,10 @@ function SkyBotRun({ setTitle }) {
         date_initial: initialDate,
         date_final: finalDate,
       }
-    ).then((res) => {
+    ).then(() => {
       loadData();
     })
   };
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    if (controlSubmit) {
-      handleSubmit();
-    }
-  }, [controlSubmit]);
 
   const handleAllPointings = () => {
     setSelectRunValue("all");
@@ -160,6 +150,8 @@ function SkyBotRun({ setTitle }) {
   };
 
   const handleByPeriod = () => {
+    setInitialDate(new Date());
+    setFinalDate(new Date());
     setDialog({ visible: true })
   };
 
@@ -211,22 +203,38 @@ function SkyBotRun({ setTitle }) {
         handleAllPointings();
         break;
       case "period":
-        setInitialDate(new Date());
-        setFinalDate(new Date());
         handleByPeriod();
         break;
     }
   };
 
   const handleClickHistoryTable = (row) => {
-    console.log(row);
+    //TODO: Enviar o id desta tabela para a página de detalhes
   };
+
+
+  const loadMenuItems = () => {
+    const options = [
+      { title: "All Pointings", value: "all" },
+      { title: "By Period", value: "period" },
+    ];
+
+    return options.map((el, i) => (
+      <MenuItem
+        key={i}
+        value={el.value}
+        title={el.title}
+      >
+        {el.title}
+      </MenuItem>
+    ));
+  };
+
 
   const tableColumns = [
     {
       name: 'status', title: 'Status', width: 140, align: 'center',
       customElement: (row) => {
-
         if (row.status === 'running') {
           return (
             <span
@@ -288,18 +296,6 @@ function SkyBotRun({ setTitle }) {
     },
   ]
 
-  const loadData = (event) => {
-    let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
-    const pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
-
-    getSkybotRunList({ page: page, pageSize: pageSize, sortField: sortField, sortOrder: sortOrder })
-      .then(res => {
-        const data = res.data;
-        setTableData(data.results);
-        setTotalSize(data.count);
-      });
-  };
-
   return (
     <Grid>
       <Interval
@@ -315,11 +311,13 @@ function SkyBotRun({ setTitle }) {
             />
             <CardContent>
               <Typography className={classes.typography}>Updates the SkyBot output table.</Typography>
-              <FormControl className={classes.formControl} fullWidth>
+              <FormControl fullWidth>
                 <Label>Select the type of update</Label>
                 <Select
                   value={selectRunValue}
-                  onChange={handleSelectRunChange}
+                  onChange={(event) => {
+                    setSelectRunValue(event.target.value);
+                  }}
                 >
                   {loadMenuItems()}
                 </Select>

@@ -40,6 +40,10 @@ export default function SearchSsso({ setTitle }) {
     loadTableData();
   }, []);
 
+  useEffect(() => {
+    loadTableData();
+  }, [vMagnitude, dClass]);
+
   const loadTableData = (event) => {
     let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
     let pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
@@ -66,79 +70,9 @@ export default function SearchSsso({ setTitle }) {
     });
   };
 
-  const tableColumns = [
-    {
-      name: 'name',
-      title: 'Object Name',
-      width: 180,
-      align: 'left',
-    },
-    {
-      name: 'num',
-      title: 'Object Number',
-      width: 150,
-      align: 'center',
-    },
-    {
-      name: 'raj2000',
-      title: 'RA (deg)',
-      width: 160,
-      align: 'center',
-    },
-    {
-      name: 'decj2000',
-      title: 'Dec (deg)',
-      width: 160,
-      align: 'center',
-    },
-    {
-      name: 'ccdnum',
-      title: 'CCD Number',
-      width: 120,
-      align: 'center',
-    },
-    {
-      name: 'band',
-      title: 'Band',
-      width: 70,
-      align: 'center',
-    },
-    {
-      name: 'expnum',
-      title: 'Exposure',
-      width: 130,
-      align: 'center',
-    },
-    {
-      name: 'dynclass',
-      title: 'Dynamic Class',
-      width: 150,
-      align: 'center',
-    },
-    {
-      name: 'mv',
-      title: 'Visual Magnitude',
-      width: 150,
-      align: 'center',
-    },
-    {
-      name: 'errpos',
-      title: 'Error on the position (arcsec)',
-      width: 250,
-      align: 'center',
-    },
-  ]
-
-  useEffect(() => {
-    loadTableData();
-  }, [vMagnitude, dClass]);
-
-  const handleSelectVisualMagnitude = (event) => {
-    setVmagnitude(event.target.value);
-  };
-
-  const handleSelectDynamicClass = (event) => {
-    setDclass(event.target.value);
+  const handleClearFilters = () => {
+    setVmagnitude("");
+    setDclass([]);
   };
 
   const loadMagnitudeColumns = () => {
@@ -224,11 +158,10 @@ export default function SearchSsso({ setTitle }) {
   const select_visual_magnitude = () => {
     return (
       <FormControl className={classes.formControl} fullWidth>
-        <InputLabel htmlFor="magnitude">Visual Magnitude</InputLabel>
+        <InputLabel>Visual Magnitude</InputLabel>
         <Select
           value={vMagnitude}
-          onChange={handleSelectVisualMagnitude}
-          className={classes.visualMagnitude}
+          onChange={(event) => { setVmagnitude(event.target.value); }}
         >
           {loadMagnitudeColumns()}
         </Select>
@@ -239,12 +172,11 @@ export default function SearchSsso({ setTitle }) {
   const select_dynamic_class = () => {
     return (
       <FormControl className={classes.formControl} fullWidth>
-        <InputLabel htmlFor="dynamicClass">Dynamics Class</InputLabel>
+        <InputLabel>Dynamics Class</InputLabel>
         <Select
           multiple
           value={dClass}
-          onChange={handleSelectDynamicClass}
-          className={classes.dynamicClass}
+          onChange={(event) => { setDclass(event.target.value); }}
         >
           {loadDynamicClassColumns()}
         </Select>
@@ -252,10 +184,68 @@ export default function SearchSsso({ setTitle }) {
     );
   };
 
-  const handleClearFilters = () => {
-    setVmagnitude("");
-    setDclass([]);
-  };
+  const tableColumns = [
+    {
+      name: 'name',
+      title: 'Object Name',
+      width: 180,
+      align: 'left',
+    },
+    {
+      name: 'num',
+      title: 'Object Number',
+      width: 150,
+      align: 'center',
+    },
+    {
+      name: 'raj2000',
+      title: 'RA (deg)',
+      width: 160,
+      align: 'center',
+    },
+    {
+      name: 'decj2000',
+      title: 'Dec (deg)',
+      width: 160,
+      align: 'center',
+    },
+    {
+      name: 'ccdnum',
+      title: 'CCD Number',
+      width: 120,
+      align: 'center',
+    },
+    {
+      name: 'band',
+      title: 'Band',
+      width: 70,
+      align: 'center',
+    },
+    {
+      name: 'expnum',
+      title: 'Exposure',
+      width: 130,
+      align: 'center',
+    },
+    {
+      name: 'dynclass',
+      title: 'Dynamic Class',
+      width: 150,
+      align: 'center',
+    },
+    {
+      name: 'mv',
+      title: 'Visual Magnitude',
+      width: 150,
+      align: 'center',
+    },
+    {
+      name: 'errpos',
+      title: 'Error on the position (arcsec)',
+      width: 250,
+      align: 'center',
+    },
+  ]
 
   return (
     <Grid>
