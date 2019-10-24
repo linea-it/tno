@@ -67,6 +67,7 @@ class SkybotRunSerializer(serializers.ModelSerializer):
     h_execution_time = serializers.SerializerMethodField()
     start = serializers.SerializerMethodField()
     finish = serializers.SerializerMethodField()
+   
 
     class Meta:
         model = SkybotRun
@@ -93,6 +94,7 @@ class SkybotRunSerializer(serializers.ModelSerializer):
             'dec_ll',
             'radius',
             'h_execution_time',
+            'execution_time',
         )
 
     def get_owner(self, obj):
@@ -116,6 +118,12 @@ class SkybotRunSerializer(serializers.ModelSerializer):
     def get_h_execution_time(self, obj):
         try:
             return humanize.naturaldelta(obj.execution_time)
+        except:
+            return None
+
+    def get_execution_time(self, obj):
+        try:
+            return obj.execution_time
         except:
             return None
 

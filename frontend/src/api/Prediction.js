@@ -5,7 +5,7 @@ export const url = process.env.REACT_APP_API;
 axios.defaults.baseURL = url;
 
 axios.interceptors.request.use((config) => {
-  const token = 'Token 9718d50273cc9470fc99ad1d0de463815dda3544';
+  const token = 'Token 846db15e26e2f529c428fbd1431bb2ae9a46d686';
   config.headers.Authorization = token;
   return config;
 });
@@ -22,16 +22,16 @@ export const createPredictRun = ({
   ephemeris_final_date,
   ephemeris_step,
 }) => axios.post('/predict_run/', {
-  process: process,
-  input_list: input_list,
-  input_orbit: input_orbit,
-  leap_second: leap_second,
-  bsp_planetary: bsp_planetary,
-  catalog: catalog,
-  catalog_radius: catalog_radius,
-  ephemeris_initial_date: ephemeris_initial_date,
-  ephemeris_final_date: ephemeris_final_date,
-  ephemeris_step: ephemeris_step,
+  process,
+  input_list,
+  input_orbit,
+  leap_second,
+  bsp_planetary,
+  catalog,
+  catalog_radius,
+  ephemeris_initial_date,
+  ephemeris_final_date,
+  ephemeris_step,
 });
 
 export const getPrediction = () => axios.get('/orbit_run/?status=success').then((res) => res.data);
@@ -158,6 +158,3 @@ export const getCatalogStars = ({ id }) => {
 // };
 
 export const getPredictionEvent = ({ asteroidId }) => axios.get(`/occultation/?asteroid=${asteroidId}`).then((res) => res.data);
-
-
-

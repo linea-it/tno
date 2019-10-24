@@ -46,6 +46,15 @@ const useStyles = makeStyles((theme) => ({
   tableWrapper: {
     maxWidth: '100%',
   },
+  btnFailure: {
+    backgroundColor: '#ff1a1a',
+    color: '#fff',
+  },
+  btnNotExecuted: {
+    backgroundColor: '#ABA6A2',
+    color: '#fff',
+  },
+
 }));
 
 
@@ -86,7 +95,7 @@ function AstrometryHistory({ history, reloadHistory }) {
       width: 150,
       align: 'center',
       customElement: (row) => {
-         if (row.status === 'running') {
+        if (row.status === 'running') {
           return (
             <span
               className={clsx(classes.btn, classes.btnRunning)}
@@ -104,6 +113,28 @@ function AstrometryHistory({ history, reloadHistory }) {
 
             >
               Warning
+            </span>
+          );
+        }
+        if (row.status === 'failure') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnFailure)}
+              title={row.status}
+
+            >
+              Failure
+            </span>
+          );
+        }
+        if (row.status === 'not_executed') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnNotExecuted)}
+              title={row.status}
+
+            >
+              Not Executed
             </span>
           );
         }
@@ -194,7 +225,7 @@ function AstrometryHistory({ history, reloadHistory }) {
         reload={reload}
         hasSearching={false}
         hasColumnVisibility={false}
-       />
+      />
     </div>
   );
 }
