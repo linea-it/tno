@@ -21,8 +21,10 @@
     "axios": "^0.19.0",
     "clsx": "^1.0.4",
     "date-fns": "^2.0.0-beta.5",
+    "filesize": "^5.0.3",
     "history": "^4.9.0",
     "i": "^0.3.6",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "plotly.js": "^1.49.4",
     "prop-types": "^15.7.2",
@@ -35,8 +37,7 @@
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.1.1",
-    "react-sizeme": "^2.6.7",
-    "filesize": "^5.0.3"
+    "react-sizeme": "^2.6.7"
   },
   "scripts": {
     "start": "react-scripts start",

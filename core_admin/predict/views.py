@@ -391,7 +391,7 @@ class PredictOutputViewSet(viewsets.ModelViewSet):
 class OccultationViewSet(viewsets.ModelViewSet):
     # queryset = Occultation.objects.all()
     serializer_class = OccultationSerializer
-    filter_fields = ('id', 'asteroid', 'date_time', )
+    filter_fields = ('id', 'asteroid', 'date_time', 'g' )
     search_fields = ('asteroid__name', 'asteroid__number')
     # ordering_fields = ('date_time', )
     # ordering = ('date_time',)
