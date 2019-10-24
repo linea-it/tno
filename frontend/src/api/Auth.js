@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const api = process.env.REACT_APP_API;
+axios.defaults.baseURL = api;
 
 // Interceptar a requisicao
 // // Add a request interceptor

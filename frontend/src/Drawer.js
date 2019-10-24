@@ -35,14 +35,19 @@ import PredictionOccultation from './components/PredictionOccultation';
 import PredictionOccultationDetail from './components/PredictionOccultationDetail';
 import PredictionOccultationAsteroid from './components/PredictionOccultationAsteroid';
 import Occultations from './components/Occultations';
+import SkyBotRun from './components/SkyBotRun';
 import AstrometryAsteroid from './components/AstrometryAsteroid';
 import OccultationsDetail from './components/OccultationsDetail';
-
+import Dashboard from './components/Dashboard';
+import Pointings from './components/Pointings';
+import FilterObjects from './components/FilterObjects';
+import FilterObjectsDetail from './components/FilterObjectsDetail';
+import SearchSsso from './components/SearchSsso';
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
+    display: 'block',
     height: '100%',
   },
   appBar: {
@@ -114,7 +119,12 @@ const useStyles = makeStyles((theme) => ({
   bodyWrapper: {
     height: '100%',
     width: '100%',
+    float: 'right',
     marginTop: '64px',
+    // paddingBottom: 64,
+    overflow: 'auto',
+    backgroundColor: 'rgb(240, 241, 244)',
+    maxHeight: 'calc(100% - 128px)',
   },
   bodyWrapperOpen: {
     maxWidth: `calc(100% - ${drawerWidth}px)`,
@@ -273,18 +283,6 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/ssso" className={classes.invisibleLink} title="Search SSSO">
-              <ListItem button>
-                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite', classes.iconAltixDrawer)} />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Search SSSO"
-                  className={classes.textDrawer}
-                />
-              </ListItem>
-            </Link>
-            <Divider className={classes.borderDrawer} />
             <Link to="/skybot" className={classes.invisibleLink} title="Skybot Run">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
@@ -297,7 +295,19 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/objects" className={classes.invisibleLink} title="Filter Objects">
+            <Link to="/skybotrun" className={classes.invisibleLink} title="Skybot Run">
+              <ListItem button>
+                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite', classes.iconAltixDrawer)} />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Search SSSO"
+                  className={classes.textDrawer}
+                />
+              </ListItem>
+            </Link>
+            <Divider className={classes.borderDrawer} />
+            <Link to="/filter-objects" className={classes.invisibleLink} title="Filter Objects">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-filter', classes.iconAltixDrawer)} />
@@ -408,9 +418,15 @@ function MiniDrawer() {
             <Route exact path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
             <Route exact path="/occultations" render={(props) => <Occultations {...props} setTitle={setTitle} />} />
             <Route exact path="/occultations/:id" render={(props) => <OccultationsDetail {...props} setTitle={setTitle} />} />
+            <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
+            <Route exact path="/pointings" render={(props) => <Pointings {...props} setTitle={setTitle} />} />
+            <Route exact path="/skybotrun" render={(props) => <SkyBotRun {...props} setTitle={setTitle} />} />
+            <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
+            <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
+            <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
           </main>
-          <Footer drawerOpen={open} />
         </div>
+        <Footer drawerOpen={open} />
       </Router>
     </div>
   );
