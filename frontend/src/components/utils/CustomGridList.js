@@ -7,7 +7,7 @@ import {
 import PropTypes from 'prop-types';
 
 function CustomGridList({
-  tileData,
+  data,
   baseUrl,
   handleImageClick,
 }) {
@@ -23,22 +23,22 @@ function CustomGridList({
   return (
     <>
       <Grid container spacing={2}>
-        {tileData.map((tile) => {
+        {data.map((row) => {
           // eslint-disable-next-line radix
-          const asteroidName = parseInt(tile.asteroid_number) > 0
-            ? `${tile.asteroid_name} (${tile.asteroid_number})`
-            : tile.asteroid_name;
+          const asteroidName = parseInt(row.asteroid_number) > 0
+            ? `${row.asteroid_name} (${row.asteroid_number})`
+            : row.asteroid_name;
 
           return (
             <Grid item xs={12} md={4}>
               <Card>
-                <CardHeader title={`${tile.date_time} - ${asteroidName}`} />
+                <CardHeader title={`${row.date_time} - ${asteroidName}`} />
                 <CardContent>
                   <img
-                    src={baseUrl + tile.src}
+                    src={baseUrl + row.src}
                     className={classes.occMapImg}
                     alt={asteroidName}
-                    onClick={() => handleImageClick(tile.id)}
+                    onClick={() => handleImageClick(row.id)}
                   />
                 </CardContent>
               </Card>
@@ -56,7 +56,7 @@ CustomGridList.defaultProps = {
 };
 
 CustomGridList.propTypes = {
-  tileData: PropTypes.arrayOf(
+  data: PropTypes.arrayOf(
     PropTypes.object,
   ).isRequired,
   baseUrl: PropTypes.string,

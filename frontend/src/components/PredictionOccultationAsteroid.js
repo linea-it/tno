@@ -8,6 +8,7 @@ import moment from 'moment';
 import Carousel, { Modal, ModalGateway } from 'react-images';
 import LazyLoad from 'react-lazyload';
 import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { withRouter } from 'react-router';
 import CustomGridList from './utils/CustomGridList';
@@ -299,7 +300,6 @@ function PredictionOccultationAsteroid({
           source: row.src ? url + row.src : null,
         })),
       );
-
     });
 
 
@@ -625,8 +625,7 @@ function PredictionOccultationAsteroid({
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <CustomGridList
-            tileData={occultationData}
-            baseUrl={url}
+            data={occultationData}
             handleImageClick={handleImageClick}
           />
         </Grid>
