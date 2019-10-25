@@ -14,12 +14,12 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import moment from 'moment';
-
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 import { getOccultations, url } from '../api/Occultation';
+import CustomGridList from './utils/CustomGridList';
 
 const useStyles = makeStyles((theme) => ({
   filtersContainer: {
@@ -219,7 +219,7 @@ function Occultation({ setTitle, history, ...props }) {
     }
   };
 
-  const handleRecordClick = (e) => history.push(`/occultations/${e.target.getAttribute('idValue')}`);
+  const handleRecordClick = (id) => history.push(`/occultations/${id}`);
 
   return (
     <Grid>
@@ -310,28 +310,16 @@ function Occultation({ setTitle, history, ...props }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item lg={12} xl={12}>
-          <Card>
-            <CardContent>
-              <Grid container spacing={2}>
-                {!data ? null : data.map((record) => {
-                  // eslint-disable-next-line radix
-                  const asteroidName = parseInt(record.asteroid_number) > 0 ? `${record.asteroid_name} (${record.asteroid_number})` : record.asteroid_name;
-                  return (
-                    <Grid item xl={3}>
-                      <Card>
-                        <CardHeader title={`${record.date_time} - ${asteroidName}`} />
-                        <CardContent>
-                          <img src={record.src} className={classes.occMapImg} alt="Occultation Map" idValue={record.id} onClick={handleRecordClick} />
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
+        {data ? (
+          <Grid item lg={12} xl={12}>
+            <Grid container spacing={2}>
+              <CustomGridList
+                data={data}
+                handleImageClick={handleRecordClick}
+              />
+            </Grid>
+          </Grid>
+        ) : null}
       </Grid>
     </Grid>
   );
