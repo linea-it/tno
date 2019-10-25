@@ -1,15 +1,20 @@
+import logging
+import os
+import zipfile
+from datetime import datetime, timedelta
+
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
+
 from .models import *
 from .serializers import *
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from django.conf import settings
-import os
-from datetime import datetime, timedelta
-import zipfile
+
+
 class PredictRunViewSet(viewsets.ModelViewSet):
     queryset = PredictRun.objects.all()
     serializer_class = PredictRunSerializer
@@ -21,7 +26,8 @@ class PredictRunViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # Adiconar usuario logado
         if not self.request.user.pk:
-            raise Exception('It is necessary an active login to perform this operation.')
+            raise Exception(
+                'It is necessary an active login to perform this operation.')
         serializer.save(owner=self.request.user)
 
     @list_route()
@@ -40,26 +46,33 @@ class PredictRunViewSet(viewsets.ModelViewSet):
             # Asteroids
             asteroids = predict_run.asteroids.order_by('start_ephemeris')
 
-
             # Ultimo objeto a executar a geracao de mapas
             a = predict_run.asteroids.order_by('finish_maps').last()
             end_maps = a.finish_maps
 
             # Ephemeris Start + End
-            start_ephemeris = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('start_ephemeris').first().start_ephemeris
-            end_ephemeris = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('finish_ephemeris').last().finish_ephemeris
+            start_ephemeris = predict_run.asteroids.exclude(status__in=[
+                                                            'failure', 'not_executed']).order_by('start_ephemeris').first().start_ephemeris
+            end_ephemeris = predict_run.asteroids.exclude(status__in=[
+                                                          'failure', 'not_executed']).order_by('finish_ephemeris').last().finish_ephemeris
 
             # Catalog Start + End
-            start_catalog = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('start_catalog').first().start_catalog
-            end_catalog = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('finish_catalog').last().finish_catalog
+            start_catalog = predict_run.asteroids.exclude(
+                status__in=['failure', 'not_executed']).order_by('start_catalog').first().start_catalog
+            end_catalog = predict_run.asteroids.exclude(
+                status__in=['failure', 'not_executed']).order_by('finish_catalog').last().finish_catalog
 
             # Prediction Start + End
-            start_search = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('start_search_candidate').first().start_search_candidate
-            end_search = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('finish_search_candidate').last().finish_search_candidate
+            start_search = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by(
+                'start_search_candidate').first().start_search_candidate
+            end_search = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by(
+                'finish_search_candidate').last().finish_search_candidate
 
             # Map Start End
-            start_maps = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('start_maps').first().start_maps
-            end_maps = predict_run.asteroids.exclude(status__in=['failure', 'not_executed']).order_by('finish_maps').last().finish_maps
+            start_maps = predict_run.asteroids.exclude(
+                status__in=['failure', 'not_executed']).order_by('start_maps').first().start_maps
+            end_maps = predict_run.asteroids.exclude(
+                status__in=['failure', 'not_executed']).order_by('finish_maps').last().finish_maps
 
             data = dict({
                 'dates': dict({
@@ -82,21 +95,21 @@ class PredictRunViewSet(viewsets.ModelViewSet):
                 'search': dict({
                     'label': 'Prediction of stellar occultation',
                     'start': datetime.strftime(start_search, "%Y-%m-%d %H:%M:%S"),
-                    'finish': datetime.strftime(end_search, "%Y-%m-%d %H:%M:%S"),                    
+                    'finish': datetime.strftime(end_search, "%Y-%m-%d %H:%M:%S"),
                     'rows': []
-                }),                                                
+                }),
                 'map': dict({
                     'label': 'Make prediction maps',
                     'start': datetime.strftime(start_maps, "%Y-%m-%d %H:%M:%S"),
-                    'finish': datetime.strftime(end_maps, "%Y-%m-%d %H:%M:%S"),                    
+                    'finish': datetime.strftime(end_maps, "%Y-%m-%d %H:%M:%S"),
                     'rows': []
-                }), 
+                }),
                 'register': dict({
                     'label': 'Register',
                     'start': datetime.strftime(end_maps, "%Y-%m-%d %H:%M:%S"),
                     'duration': predict_run.execution_register.total_seconds()
-                }),                               
-            })            
+                }),
+            })
 
             # Ephemeris
             for asteroid in asteroids:
@@ -150,6 +163,7 @@ class PredictRunViewSet(viewsets.ModelViewSet):
                 'msg': "Record not found",
             })
 
+
 class PredictAsteroidViewSet(viewsets.ModelViewSet):
     queryset = PredictAsteroid.objects.all()
     serializer_class = PredictAsteroidSerializer
@@ -170,17 +184,17 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
             data = []
 
             asteroid = PredictAsteroid.objects.get(pk=int(asteroid_id))
-            
-            input_position = asteroid.input_file.filter(input_type='positions').first()
+
+            input_position = asteroid.input_file.filter(
+                input_type='positions').first()
 
             if input_position is None or not os.path.exists(input_position.file_path):
                 return Response({
                     'success': False,
                     'msg': "File not found",
-                })                
+                })
 
             data = self.read_positions(input_position.file_path)
-
 
             return Response({
                 'success': True,
@@ -223,21 +237,21 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
             data = []
 
             asteroid = PredictAsteroid.objects.get(pk=int(asteroid_id))
-            
-            catalog = asteroid.predict_result.filter(type='catalog_csv').first()
+
+            catalog = asteroid.predict_result.filter(
+                type='catalog_csv').first()
 
             if catalog is None or not os.path.exists(catalog.file_path):
                 return Response({
                     'success': False,
                     'msg': "File not found",
-                })                
+                })
 
             data = []
             with open(catalog.file_path, 'r') as fp:
                 lines = fp.readlines()
                 for line in lines:
                     data.append(line.strip().split(";"))
-
 
             return Response({
                 'success': True,
@@ -272,7 +286,7 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
 
         next = None
         try:
-            next_model = PredictAsteroid.objects.filter(predict_run=asteroid.predict_run).exclude(status__in=['failure', 'not_executed']).filter(              
+            next_model = PredictAsteroid.objects.filter(predict_run=asteroid.predict_run).exclude(status__in=['failure', 'not_executed']).filter(
                 id__gt=asteroid.id).order_by('id').first()
 
             next = next_model.id
@@ -283,7 +297,7 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
         try:
             prev_model = PredictAsteroid.objects.filter(predict_run=asteroid.predict_run).exclude(status__in=['failure', 'not_executed']).filter(
                 id__lt=asteroid.id).order_by('-id').first()
-                
+
             prev = prev_model.id
         except:
             pass
@@ -292,7 +306,7 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
             "success": True,
             "prev": prev,
             "next": next
-        })) 
+        }))
 
     @list_route()
     def download_results(self, request):
@@ -316,7 +330,8 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
             run = request.query_params.get('predict_run', None)
 
             try:
-                asteroid = PredictAsteroid.objects.get(name=str(name), predict_run=int(run))
+                asteroid = PredictAsteroid.objects.get(
+                    name=str(name), predict_run=int(run))
             except ObjectDoesNotExist:
                 return Response({
                     'success': False,
@@ -354,14 +369,16 @@ class PredictAsteroidViewSet(viewsets.ModelViewSet):
         return Response(dict({
             "success": True,
             "src": src
-        }))       
-        
+        }))
+
+
 class PredictInputViewSet(viewsets.ModelViewSet):
     queryset = PredictInput.objects.all()
     serializer_class = PredictInputSerializer
     filter_fields = ('id', 'asteroid', 'input_type', 'filename',)
     search_fields = ('id', 'input_type', 'filename',)
     ordering = ('filename',)
+
 
 class PredictOutputViewSet(viewsets.ModelViewSet):
     queryset = PredictOutput.objects.all()
@@ -370,28 +387,47 @@ class PredictOutputViewSet(viewsets.ModelViewSet):
     search_fields = ('id', 'type', 'filename',)
     ordering = ('filename',)
 
+
 class OccultationViewSet(viewsets.ModelViewSet):
-    queryset = Occultation.objects.all()
+    # queryset = Occultation.objects.all()
     serializer_class = OccultationSerializer
-    filter_fields = ('id', 'asteroid', 'date_time', )
-    search_fields = ('id', 'asteroid', 'date_time',)
-    ordering_fields = ('date_time', )
-    ordering = ('date_time',)
+    filter_fields = ('id', 'asteroid', 'date_time', 'g' )
+    search_fields = ('asteroid__name', 'asteroid__number')
+    # ordering_fields = ('date_time', )
+    # ordering = ('date_time',)
 
     permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+
+        most_recent_only = bool(self.request.query_params.get(
+            'most_recent_only', False))
+
+        if most_recent_only:
+            queryset = Occultation.objects.select_related(
+                'asteroid').select_related('asteroid__predict_run').distinct('asteroid__name', 'date_time').filter(asteroid__predict_run__status='success').order_by(
+                'asteroid__name', 'date_time', '-asteroid__predict_run__finish_time')
+
+            queryset = queryset.order_by('date_time')
+
+        else:
+            queryset = Occultation.objects.select_related(
+                'asteroid').select_related('asteroid__predict_run').all()
+
+        return queryset
 
 
 class LeapSecondsViewSet(viewsets.ModelViewSet):
     queryset = LeapSecond.objects.all()
-    serializer_class =  LeapSecondsSerializer
+    serializer_class = LeapSecondsSerializer
     filter_fields = ('name', 'display_name', 'url', 'upload')
     search_fields = ('name')
     ordering = ('name',)
+
 
 class BspPlanetaryViewSet(viewsets.ModelViewSet):
     queryset = BspPlanetary.objects.all()
-    serializer_class =  BspPlanetarySerializer
+    serializer_class = BspPlanetarySerializer
     filter_fields = ('name', 'display_name', 'url', 'upload')
     search_fields = ('name')
     ordering = ('name',)
-

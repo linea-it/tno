@@ -20,13 +20,13 @@ import CustomList from './utils/CustomList';
 import CustomTable from './utils/CustomTable';
 import {
   getAsteroidById,
-  getOccultations,
   getAsteroidInputs,
   getAsteroidOutputs,
   url,
   getAsteroidDownloadLink,
   getAsteroidNeighbors,
 } from '../api/Prediction';
+import { getOccultations } from '../api/Occultation';
 import loading from '../assets/img/loading.gif';
 
 const useStyles = makeStyles((theme) => ({
@@ -291,7 +291,13 @@ function PredictionOccultationAsteroid({
 
 
     getAsteroidById({ id }).then((res) => setAsteroidData(res));
-    getOccultations({ id }).then((data) => {
+    getOccultations({
+      filters: [{
+        property: 'asteroid',
+        value: id,
+      }],
+      pageSize: null,
+    }).then((data) => {
       setOccultationData(
         data.results.map((row) => ({
           ...row,
