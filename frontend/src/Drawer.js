@@ -280,18 +280,6 @@ function MiniDrawer() {
                 />
               </ListItem>
             </Link>
-            {/* <Divider className={classes.borderDrawer} />
-            <Link to="/registration" className={classes.invisibleLink} title="Registration">
-              <ListItem button selected={currentPage === 'registration'}>
-                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-user-plus')} />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Registration"
-                  className={classes.textDrawer}
-                />
-              </ListItem>
-            </Link> */}
             <Divider className={classes.borderDrawer} />
             <Link to="/pointings" className={classes.invisibleLink} title="Pointings">
               <ListItem button selected={currentPage === 'pointings'}>
@@ -305,29 +293,6 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            {/* <Link to="/skybot" className={classes.invisibleLink} title="Skybot Run">
-              <ListItem button selected={currentPage === 'skybot'}>
-                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-star')} />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Skybot Run"
-                  className={classes.textDrawer}
-                />
-              </ListItem>
-            </Link> */}
-            {/* <Divider className={classes.borderDrawer} />
-            <Link to="/ssso" className={classes.invisibleLink} title="Search SSSO">
-              <ListItem button selected={currentPage === 'ssso'}>
-                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite')} />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Search SSSO"
-                  className={classes.textDrawer}
-                />
-              </ListItem>
-            </Link> */}
             <ListItem button onClick={handleDrawerSssoClick}>
               {open ? (
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
@@ -453,18 +418,6 @@ function MiniDrawer() {
                 />
               </ListItem>
             </Link>
-            {/* <Divider className={classes.borderDrawer} />
-            <Link to="/light-curve" className={classes.invisibleLink} title="Light Curve Analysis">
-              <ListItem button selected={currentPage === 'registration'}>
-                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-lightbulb')} />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Light Curve Analysis"
-                  className={classes.textDrawer}
-                />
-              </ListItem>
-            </Link> */}
             <Divider className={classes.borderDrawer} />
           </List>
           <div className={classes.drawerControlWrapper}>
