@@ -294,12 +294,7 @@ function PredictionOccultationAsteroid({
       }],
       pageSize: null,
     }).then((data) => {
-      setOccultationData(
-        data.results.map((row) => ({
-          ...row,
-          source: row.src ? url + row.src : null,
-        })),
-      );
+      setOccultationData(data.results);
     });
 
 
@@ -624,13 +619,17 @@ function PredictionOccultationAsteroid({
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <CustomGridList
-            data={occultationData}
-            handleImageClick={handleImageClick}
-          />
+          <Card>
+            <CardContent>
+              <CustomGridList
+                data={occultationData}
+                baseUrl={url}
+                handleImageClick={handleImageClick}
+              />
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
-
 
       {neighborhoodStarsPlot || asteroidOrbitPlot ? (
         <Grid container spacing={2}>
