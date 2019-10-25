@@ -13,6 +13,8 @@ function CustomGridList({
 }) {
   const useStyles = makeStyles({
     occMapImg: {
+      minWidth: 500,
+      minHeight: 415,
       width: '100%',
       cursor: handleImageClick !== null ? 'pointer' : 'normal',
     },
