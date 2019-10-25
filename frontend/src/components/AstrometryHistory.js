@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { withRouter } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
+import Icon from '@material-ui/core/Icon';
 import Table from './utils/CustomTable';
 import { getPraiaRuns } from '../api/Praia';
 
@@ -45,6 +46,15 @@ const useStyles = makeStyles((theme) => ({
   tableWrapper: {
     maxWidth: '100%',
   },
+  btnFailure: {
+    backgroundColor: '#ff1a1a',
+    color: '#fff',
+  },
+  btnNotExecuted: {
+    backgroundColor: '#ABA6A2',
+    color: '#fff',
+  },
+
 }));
 
 
@@ -100,8 +110,31 @@ function AstrometryHistory({ history, reloadHistory }) {
             <span
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
+
             >
               Warning
+            </span>
+          );
+        }
+        if (row.status === 'failure') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnFailure)}
+              title={row.status}
+
+            >
+              Failure
+            </span>
+          );
+        }
+        if (row.status === 'not_executed') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnNotExecuted)}
+              title={row.status}
+
+            >
+              Not Executed
             </span>
           );
         }
@@ -152,9 +185,16 @@ function AstrometryHistory({ history, reloadHistory }) {
       align: 'center',
     },
     {
-      name: 'h_execution_time',
+      name: 'execution_time',
       title: 'Execution Time',
       width: 180,
+      customElement: (row) => {
+        return (
+          <span>
+            {row.execution_time.substring(0, 8)}
+          </span>
+        );
+      },
       align: 'center',
     },
     {
@@ -167,7 +207,7 @@ function AstrometryHistory({ history, reloadHistory }) {
       name: 'id',
       title: ' ',
       width: 100,
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: handleClickHistoryTable,
       align: 'center',
     },
@@ -185,7 +225,7 @@ function AstrometryHistory({ history, reloadHistory }) {
         reload={reload}
         hasSearching={false}
         hasColumnVisibility={false}
-       />
+      />
     </div>
   );
 }

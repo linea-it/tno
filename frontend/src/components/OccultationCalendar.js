@@ -8,7 +8,8 @@ import '@fullcalendar/core/main.css';
 import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/list/main.css';
 import { makeStyles } from '@material-ui/core/styles';
-import { getCalendarEvents } from '../api/Prediction';
+// import { getCalendarEvents } from '../api/Prediction';
+import { getOccultations } from '../api/Occultation';
 import moment from 'moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import AppBar from './AppBarCalendario';
@@ -34,16 +35,13 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-
-
-
 function OccultationCalendar({ history, setTitle, match: { params } }) {
 
   const [events, setEvents] = useState([]);
   const [initialDate, setInitialDate] = useState(params.sDate ? params.sDate : moment(new Date()).startOf('month').format('YYYY-MM-DD'));
   const [finalDate, setFinalDate] = useState(moment(new Date()).endOf('month').format('YYYY-MM-DD'));
   const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState(params.searching ? params.searching : " ");
+  const [search, setSearch] = useState(params.searching ? params.searching : "");
   const [hasSearch, setHasSearch] = useState(false);
 
   const classes = useStyles();
@@ -53,59 +51,46 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     const arrayEvents = [];
     const result = [];
 
-    if (search && search.length > 0) {
-      loadSearch()
-    } else {
+    setLoading(true);
 
+    const filters = [
+      {
+        property: 'date_time__range',
+        value: [initialDate, finalDate].join(),
+      },
+      {
+        property: 'most_recent_only',
+        value: true,
+      },
+    ];
 
-      setLoading(true);
-
-      getCalendarEvents({ initialDate, finalDate }).then((res) => {
-
-        let data = res.data.results;
-        let result = [];
-
-        data.map((resp, idx) => {
-
-          result.push({
-            id: resp.id,
-            title: resp.asteroid_name,
-            date: resp.date_time,
-            textColor: "white",
-            // backgroundColor: resp.asteroid_name.includes(search) || ((resp.asteroid_name).toLowerCase()).includes(search) ? 'green' : ''
-          });
-
-        });
-
-        setEvents(result);
-
-        setLoading(false);
-
+    if (search && search !== '') {
+      filters.push({
+        property: 'asteroid__name__icontains',
+        value: search,
       });
     }
 
-    // getOccultations({ id: 10 }).then((res) => {
-    //   console.log(res);
-    // });
+    getOccultations({ filters, pageSize: 3000 }).then((res) => {
+      let data = res.results;
+      let result = [];
 
+      data.map((resp) => {
+        // Se o asteroid tiver numero, o nome do asteroid passa a ser NAME(Number) se nao so NAME.
+        const asteroid_name = parseInt(resp.asteroid_number) > 0 ? `${resp.asteroid_name} (${resp.asteroid_number})` : resp.asteroid_name;
 
-    // let arrayEvents = [];
-    // let result = [];
+        result.push({
+          id: resp.id,
+          title: asteroid_name,
+          date: resp.date_time,
+          textColor: "white",
+        });
+      });
 
-    // let keys = Object.keys(occultationData);
-
-    // keys.forEach(function (key) {
-    //   result.push(occultationData[key]);
-    // });
-
-    // result[3].map((res, idx) => {
-    //   arrayEvents.push({ id: res.id, title: res.asteroid_name, date: res.date_time, textColor: 'white' });
-    // });
-
-    // setEvents(arrayEvents);
-    // console.log(arrayEvents);
-
-
+      setEvents(result);
+    }).finally(() => {
+      setLoading(false);
+    });
   };
 
   useEffect(() => {
@@ -116,9 +101,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   }, [initialDate, finalDate]);
 
   useEffect(() => {
-    if (hasSearch) {
-      loadSearch();
-    }
+    loadData();
   }, [search]);
 
 
@@ -131,52 +114,23 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
   };
 
-  const loadSearch = () => {
-
-    setLoading(true);
-
-    getCalendarEvents({ initialDate, finalDate }).then((res) => {
-
-      let data = res.data.results;
-      let result = [];
-
-      data.map((resp, idx) => {
-
-        if (resp.asteroid_name.includes(search) || ((resp.asteroid_name).toLowerCase()).includes(search)) {
-          result.push({
-            id: resp.id,
-            title: resp.asteroid_name,
-            date: resp.date_time,
-            textColor: "white",
-          });
-        }
-
-      });
-
-      setEvents(result);
-
-      setLoading(false);
-
-    });
-  };
-
 
   const handleDateRender = (arg) => {
     let start_date = moment(arg.view.currentStart).format("YYYY-MM-DD");
     let end_date = moment(arg.view.currentEnd).subtract(1, 'days').format("YYYY-MM-DD");
 
-    //Um problema que surgiu nesta página foi o seguinte: 
-    //Quando o calendário renderiza, ele traz consigo uma data default que é especificada 
+    //Um problema que surgiu nesta página foi o seguinte:
+    //Quando o calendário renderiza, ele traz consigo uma data default que é especificada
     //no atributo no componente. Se o calendário não fosse pra página de ocultações estaria tudo certo.
     //Porém como ele vai pra outra página e retorna trazendo as informações de datas iniciais e finais
     //então foi necessário montar um esquema pra que ele não se perdesse nas renderizações.
-    //Desto modo toda vez que ele renderiza, ou ele pega o valor dos params que retornam da página de 
+    //Desto modo toda vez que ele renderiza, ou ele pega o valor dos params que retornam da página de
     //ocultações ou ele renderiza um valor default do dia e mês corrente.
-    //Já a parte do código abaixo obriga o calendário re-renderizar, quebrando portanto a regra de valor 
+    //Já a parte do código abaixo obriga o calendário re-renderizar, quebrando portanto a regra de valor
     //default. Isso foi extemamente útil pra administrar o conteúdo de forma orgamizada.
     //Ou seja, os valores default são sempre carregados na inicialização.
     //Os valores abaixo definidos são sempre carregados a partir da navegação do usuário.
-    //Desta forma consegui amarrar o conteúdo.    
+    //Desta forma consegui amarrar o conteúdo.
 
     setInitialDate(start_date);
     setFinalDate(end_date);
@@ -190,15 +144,18 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   };
 
   const handleEvent = (e) => {
-    let id = e.event.id;
-    let date = e.event.start;
-    let view = e.view.type;
-    let flag = "calendar";
-    let sDate = initialDate;
-    let fDate = finalDate;
-    let searching = search;
-
-    history.push(`/test-calendar/${id}/${date}/${view}/${flag}/${sDate}/${fDate}/${searching}`);
+    // history.push(`/test-calendar/${id}/${date}/${view}/${flag}/${sDate}/${fDate}/${searching}`);
+    history.push({
+      pathname: `/occultations/${e.event.id}`,
+      state: {
+        date: e.event.start,
+        view: e.view.type,
+        flag: "calendar",
+        initialDate,
+        finalDate,
+        search,
+      },
+    });
   };
 
 
@@ -206,9 +163,9 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     const time = moment(event.event.start).format('H');
 
     if (time >= 18) {
-      event.el.innerHTML = event.el.innerHTML + "<i id='sol_lua' class='fas fa-moon'></i>";
+      event.el.innerHTML = event.el.innerHTML + "<Icon id='sol_lua' class='fas fa-moon'></i>";
     } else {
-      event.el.innerHTML = event.el.innerHTML + "<i id='sol_lua' class='fas fa-sun'></i>";
+      event.el.innerHTML = event.el.innerHTML + "<Icon id='sol_lua' class='fas fa-sun'></i>";
     }
   };
 
@@ -216,13 +173,12 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
     <div>
       {loading && <CircularProgress size={100} thickness={0.8} className={classes.loading} ></CircularProgress>}
-
       <AppBar setSearch={setSearch} setHasSearch={setHasSearch} value={search} />
 
-      {/* params.date is coming back from occulation. 
+      {/* params.date is coming back from occulation.
       It's being used to maintain data that went from calendar to occultation.
       Flow:
-      1 -User chooses an event. 
+      1 -User chooses an event.
       2- The specific data goes to occultation.
       3 - On occultation screen user click on back button.
       4 - When back, data comes inside params props.(params are internal(internal operation));             */}

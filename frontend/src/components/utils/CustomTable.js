@@ -76,11 +76,12 @@ function CustomTable({
     name: column.name,
     title: column.title,
     hasLineBreak: column.hasLineBreak ? column.hasLineBreak : false,
+    headerTooltip: column.headerTooltip ? column.headerTooltip : false,
   }));
   const customColumnExtensions = columns.map((column) => ({
     columnName: column.name,
     width: !column.width ? 120 : column.width,
-    maxWidth: column.maxWidth ? column.maxWidth : "",
+    maxWidth: column.maxWidth ? column.maxWidth : '',
     sortingEnabled:
       !!(!('sortingEnabled' in column) || column.sortingEnabled === true),
     align:
@@ -88,6 +89,7 @@ function CustomTable({
     wordWrapEnabled:
       !(!('wordWrapEnabled' in column) || column.wordWrapEnabled === false),
   }));
+
   const customDefaultColumnWidths = columns.map((column) => ({
     columnName: column.name,
     width: !column.width ? 120 : column.width,
@@ -123,7 +125,7 @@ function CustomTable({
         sorting, pageSize, currentPage, after, filter, searchValue,
       });
     }
-  }, [sorting, currentPage, currentPage, pageSize, filter, searchValue]);
+  }, [sorting, currentPage, currentPage, reload, pageSize, filter, searchValue]);
 
   const clearData = () => {
     setCustomData([]);
@@ -136,7 +138,7 @@ function CustomTable({
     setCustomData(data);
     setCustomTotalCount(totalCount);
     setLoading(false);
-  }, [data, totalCount, reload, defaultExpandedGroups]);
+  }, [data, totalCount, defaultExpandedGroups]);
 
 
   useEffect(() => {
@@ -206,7 +208,7 @@ function CustomTable({
 
   const renderModal = () => (
     <Dialog onClose={onHideModal} open={visible} maxWidth="md">
-      {customModalContent ? customModalContent : ""}
+      {customModalContent || ''}
     </Dialog>
   );
 
@@ -254,7 +256,7 @@ function CustomTable({
         <>
           <Grid rows={rows} columns={customColumns}>
             {hasSearching ? <SearchState onValueChange={changeSearchValue} /> : null}
-            {hasSorting ? <SortingState sorting={sorting} onSortingChange={changeSorting} /> : null}
+            {hasSorting ? <SortingState sorting={sorting} onSortingChange={changeSorting} columnExtensions={customColumnExtensions} /> : null}
             {hasPagination
               ? (
                 <PagingState
@@ -316,7 +318,13 @@ function CustomTable({
         <Grid rows={rows} columns={customColumns}>
           {hasSearching ? <SearchState /> : null}
           {hasSorting
-            ? <SortingState sorting={sorting} onSortingChange={changeSorting} />
+            ? (
+              <SortingState
+                sorting={sorting}
+                onSortingChange={changeSorting}
+                columnExtensions={customColumnExtensions}
+              />
+            )
             : null}
           {hasSorting ? <IntegratedSorting /> : null}
           {hasPagination
@@ -379,8 +387,8 @@ function CustomTable({
   const rows = customData.map((row) => {
     const line = {};
     Object.keys(row).forEach((key) => {
+      const column = columns.filter((el) => el.name === key)[0];
       if (row[key]) {
-        const column = columns.filter((el) => el.name === key)[0];
         if (
           (column && column.icon && typeof row[key] !== 'object')
           /*
@@ -412,6 +420,8 @@ function CustomTable({
         } else {
           line[key] = row[key];
         }
+      } else if (column && column.customElement) {
+        line[key] = column.customElement(row);
       } else {
         line[key] = '-';
       }
@@ -460,7 +470,10 @@ CustomTable.propTypes = {
   defaultSorting: PropTypes.arrayOf(PropTypes.object),
   // eslint-disable-next-line react/no-unused-prop-types
   pageSize: PropTypes.number,
-  pageSizes: PropTypes.arrayOf(PropTypes.number),
+  pageSizes: PropTypes.oneOfType(
+    PropTypes.arrayOf(PropTypes.number),
+    PropTypes.number,
+  ),
   hasFiltering: PropTypes.bool,
   hasSearching: PropTypes.bool,
   hasSorting: PropTypes.bool,
