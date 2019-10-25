@@ -15,13 +15,13 @@ import CustomList from './utils/CustomList';
 import CustomTable from './utils/CustomTable';
 import {
   getAsteroidById,
-  getOccultations,
   getAsteroidInputs,
   getAsteroidOutputs,
   url,
   getAsteroidDownloadLink,
   getAsteroidNeighbors,
 } from '../api/Prediction';
+import { getOccultations } from '../api/Occultation';
 import loading from '../assets/img/loading.gif';
 
 const useStyles = makeStyles((theme) => ({
@@ -286,13 +286,20 @@ function PredictionOccultationAsteroid({
 
 
     getAsteroidById({ id }).then((res) => setAsteroidData(res));
-    getOccultations({ id }).then((data) => {
+    getOccultations({
+      filters: [{
+        property: 'asteroid',
+        value: id,
+      }],
+      pageSize: null,
+    }).then((data) => {
       setOccultationData(
         data.results.map((row) => ({
           ...row,
           source: row.src ? url + row.src : null,
         })),
       );
+
     });
 
 
@@ -512,7 +519,7 @@ function PredictionOccultationAsteroid({
             className={classes.button}
             onClick={handleBackNavigation}
           >
-            <i className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+            <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
             <span>Back</span>
           </Button>
           <Button
@@ -524,7 +531,7 @@ function PredictionOccultationAsteroid({
             onClick={handleDownload}
           >
             <span>Download</span>
-            <i className={clsx('fas', 'fa-download', classes.buttonIcon)} />
+            <Icon className={clsx('fas', 'fa-download', classes.buttonIcon)} />
             {downloading ? (
               <CircularProgress
                 color="secondary"
@@ -545,7 +552,7 @@ function PredictionOccultationAsteroid({
                 disabled={neighbors.prev === null}
                 onClick={() => handleAsteroidsNavigation(neighbors.prev)}
               >
-                <i className={clsx('fas', 'fa-arrow-left', classes.buttonIcon)} />
+                <Icon className={clsx('fas', 'fa-arrow-left', classes.buttonIcon)} />
                 <span>Prev</span>
               </Button>
               <Button
@@ -557,7 +564,7 @@ function PredictionOccultationAsteroid({
                 onClick={() => handleAsteroidsNavigation(neighbors.next)}
               >
                 <span>Next</span>
-                <i className={clsx('fas', 'fa-arrow-right', classes.buttonIcon)} />
+                <Icon className={clsx('fas', 'fa-arrow-right', classes.buttonIcon)} />
               </Button>
             </Grid>
           </Grid>
@@ -705,7 +712,7 @@ function PredictionOccultationAsteroid({
               className={clsx(classes.block, classes.tableWrapper)}
             >
               <Card>
-                <CardHeader title="Outputs" />
+                <CardHeader title="Results" />
                 <CardContent className={classes.cardContentWrapper}>
                   <CustomTable
                     columns={outputColumns}

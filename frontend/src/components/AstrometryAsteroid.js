@@ -9,6 +9,7 @@ import Carousel, { Modal, ModalGateway } from 'react-images';
 import LazyLoad from 'react-lazyload';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
 import { withRouter } from 'react-router';
 import Skeleton from '@material-ui/lab/Skeleton';
 import filesize from 'filesize';
@@ -432,7 +433,7 @@ function AstrometryAsteroid({
     setReload(!reload);
   };
 
-  const handleBackNavigation = () => history.push(`/astrometry/${asteroidData.predict_run}`);
+  const handleBackNavigation = () => history.push(`/astrometry/${asteroidData.astrometry_run}`);
 
   const handleMainOutputClick = (output) => {
     getOutputFile(output.file_path).then((res) => {
@@ -462,7 +463,7 @@ function AstrometryAsteroid({
             className={classes.button}
             onClick={handleBackNavigation}
           >
-            <i className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+            <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
             <span>Back</span>
           </Button>
         </Grid>
@@ -477,7 +478,7 @@ function AstrometryAsteroid({
                 disabled={neighbors.prev === null}
                 onClick={() => handleAsteroidsNavigation(neighbors.prev)}
               >
-                <i className={clsx('fas', 'fa-arrow-left', classes.buttonIcon)} />
+                <Icon className={clsx('fas', 'fa-arrow-left', classes.buttonIcon)} />
                 <span>Prev</span>
               </Button>
               <Button
@@ -489,7 +490,7 @@ function AstrometryAsteroid({
                 onClick={() => handleAsteroidsNavigation(neighbors.next)}
               >
                 <span>Next</span>
-                <i className={clsx('fas', 'fa-arrow-right', classes.buttonIcon)} />
+                <Icon className={clsx('fas', 'fa-arrow-right', classes.buttonIcon)} />
               </Button>
             </Grid>
           </Grid>
