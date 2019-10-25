@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -13,10 +13,13 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import {
-  BrowserRouter as Router, Route, Link,
+  BrowserRouter as Router, Route, Link, Redirect,
 } from 'react-router-dom';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import Collapse from '@material-ui/core/Collapse';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Icon from '@material-ui/core/Icon';
 import { createBrowserHistory } from 'history';
@@ -193,14 +196,32 @@ const useStyles = makeStyles((theme) => ({
   logoBlock: {
     display: 'block',
   },
+  '@global': {
+    '.MuiListItem-root.Mui-selected, .MuiListItem-root.Mui-selected:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.34)',
+    },
+  },
+  nested: {
+    paddingLeft: theme.spacing(4),
+  },
 }));
 
 function MiniDrawer() {
   const classes = useStyles();
   const [open, setOpen] = useState(true);
+  const [sssoOpen, setSssoOpen] = useState(true);
   const [title, setTitle] = useState('Dashboard');
+  const [currentPage, setCurrentPage] = useState('');
 
   const handleDrawerClick = () => setOpen(!open);
+
+  const handleDrawerSssoClick = () => setSssoOpen(!sssoOpen);
+
+  useEffect(() => {
+    const { href, origin } = window.location;
+    const location = href.split(origin)[1].split('/')[1];
+    setCurrentPage(location);
+  }, [title]);
 
   return (
     <div className={classes.root}>
@@ -249,7 +270,7 @@ function MiniDrawer() {
             </Link>
             <Divider className={classes.borderDrawer} />
             <Link to="/dashboard" className={classes.invisibleLink} title="Dashboard">
-              <ListItem button>
+              <ListItem button selected={currentPage === 'dashboard'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-home')} />
                 </ListItemIcon>
@@ -259,9 +280,9 @@ function MiniDrawer() {
                 />
               </ListItem>
             </Link>
-            <Divider className={classes.borderDrawer} />
+            {/* <Divider className={classes.borderDrawer} />
             <Link to="/registration" className={classes.invisibleLink} title="Registration">
-              <ListItem button>
+              <ListItem button selected={currentPage === 'registration'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-user-plus')} />
                 </ListItemIcon>
@@ -270,10 +291,10 @@ function MiniDrawer() {
                   className={classes.textDrawer}
                 />
               </ListItem>
-            </Link>
+            </Link> */}
             <Divider className={classes.borderDrawer} />
             <Link to="/pointings" className={classes.invisibleLink} title="Pointings">
-              <ListItem button>
+              <ListItem button selected={currentPage === 'pointings'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-dot-circle')} />
                 </ListItemIcon>
@@ -284,34 +305,87 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/skybot" className={classes.invisibleLink} title="Skybot Run">
-              <ListItem button>
+            {/* <Link to="/skybot" className={classes.invisibleLink} title="Skybot Run">
+              <ListItem button selected={currentPage === 'skybot'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-star', classes.iconAltixDrawer)} />
+                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-star')} />
                 </ListItemIcon>
                 <ListItemText
                   primary="Skybot Run"
                   className={classes.textDrawer}
                 />
               </ListItem>
-            </Link>
-            <Divider className={classes.borderDrawer} />
+            </Link> */}
+            {/* <Divider className={classes.borderDrawer} />
             <Link to="/ssso" className={classes.invisibleLink} title="Search SSSO">
-              <ListItem button>
+              <ListItem button selected={currentPage === 'ssso'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite', classes.iconAltixDrawer)} />
+                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite')} />
                 </ListItemIcon>
                 <ListItemText
                   primary="Search SSSO"
                   className={classes.textDrawer}
                 />
               </ListItem>
-            </Link>
+            </Link> */}
+            <ListItem button onClick={handleDrawerSssoClick}>
+              {open ? (
+                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite')} />
+                </ListItemIcon>
+              ) : (
+                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                  {sssoOpen ? (
+                    <ExpandLess className={classes.expandClosed} />
+                  ) : (
+                    <ExpandMore className={classes.expandClosed} />
+                  )}
+                </ListItemIcon>
+              )}
+              <ListItemText
+                primary="Search SSSO"
+                className={classes.textDrawer}
+              />
+              {open ? (
+                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                  {sssoOpen
+                    ? <ExpandLess className={classes.iconDrawer} />
+                    : <ExpandMore className={classes.iconDrawer} />}
+                </ListItemIcon>
+              ) : null}
+            </ListItem>
+            <Collapse in={sssoOpen} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <Link to="/skybot" className={classes.invisibleLink} title="Submit">
+                  <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'skybot'}>
+                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                      <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-arrow-circle-up')} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Submit"
+                      className={classes.textDrawer}
+                    />
+                  </ListItem>
+                </Link>
+                <Link to="/ssso" className={classes.invisibleLink} title="Result">
+                  <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'ssso'}>
+                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                      <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-check-circle')} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Result"
+                      className={classes.textDrawer}
+                    />
+                  </ListItem>
+                </Link>
+              </List>
+            </Collapse>
+
             <Divider className={classes.borderDrawer} />
             <Link to="/filter-objects" className={classes.invisibleLink} title="Filter Objects">
-              <ListItem button>
+              <ListItem button selected={currentPage === 'filter-objects'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-filter', classes.iconAltixDrawer)} />
+                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-filter')} />
                 </ListItemIcon>
                 <ListItemText
                   primary="Filter Objects"
@@ -321,9 +395,9 @@ function MiniDrawer() {
             </Link>
             <Divider className={classes.borderDrawer} />
             <Link to="/astrometry" className={classes.invisibleLink} title="Astrometry">
-              <ListItem button>
+              <ListItem button selected={currentPage === 'astrometry'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-meteor', classes.iconAltixDrawer)} />
+                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-meteor')} />
                 </ListItemIcon>
                 <ListItemText
                   primary="Astrometry"
@@ -333,9 +407,9 @@ function MiniDrawer() {
             </Link>
             <Divider className={classes.borderDrawer} />
             <Link to="/refine-orbit" className={classes.invisibleLink} title="Refine Orbit">
-              <ListItem button>
+              <ListItem button selected={currentPage === 'refine-orbit'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-globe-americas', classes.iconAltixDrawer)} />
+                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-globe-americas')} />
                 </ListItemIcon>
                 <ListItemText
                   primary="Refine Orbit"
@@ -345,9 +419,9 @@ function MiniDrawer() {
             </Link>
             <Divider className={classes.borderDrawer} />
             <Link to="/prediction-of-occultation" className={classes.invisibleLink} title="Prediction of Occultation">
-              <ListItem button>
+              <ListItem button selected={currentPage === 'prediction-of-occultation'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-chart-area', classes.iconAltixDrawer)} />
+                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-chart-area')} />
                 </ListItemIcon>
                 <ListItemText
                   primary="Prediction of Occultation"
@@ -357,9 +431,9 @@ function MiniDrawer() {
             </Link>
             <Divider className={classes.borderDrawer} />
             <Link to="/occultations" className={classes.invisibleLink} title="Occultations">
-              <ListItem button>
+              <ListItem button selected={currentPage === 'occultations'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-eye-slash', classes.iconAltixDrawer)} />
+                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-eye-slash')} />
                 </ListItemIcon>
                 <ListItemText
                   primary="Occultations"
@@ -369,9 +443,9 @@ function MiniDrawer() {
             </Link>
             <Divider className={classes.borderDrawer} />
             <Link to="/occultation-calendar" className={classes.invisibleLink} title="Occultation Calendar">
-              <ListItem button>
+              <ListItem button selected={currentPage === 'occultation-calendar'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-calendar-alt', classes.iconAltixDrawer)} />
+                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-calendar-alt')} />
                 </ListItemIcon>
                 <ListItemText
                   primary="Occultation Calendar"
@@ -379,18 +453,18 @@ function MiniDrawer() {
                 />
               </ListItem>
             </Link>
-            <Divider className={classes.borderDrawer} />
+            {/* <Divider className={classes.borderDrawer} />
             <Link to="/light-curve" className={classes.invisibleLink} title="Light Curve Analysis">
-              <ListItem button>
+              <ListItem button selected={currentPage === 'registration'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-lightbulb', classes.iconAltixDrawer)} />
+                  <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-lightbulb')} />
                 </ListItemIcon>
                 <ListItemText
                   primary="Light Curve Analysis"
                   className={classes.textDrawer}
                 />
               </ListItem>
-            </Link>
+            </Link> */}
             <Divider className={classes.borderDrawer} />
           </List>
           <div className={classes.drawerControlWrapper}>
@@ -425,6 +499,7 @@ function MiniDrawer() {
             <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
             <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
             <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
+            <Redirect path="/" to="/dashboard" />
           </main>
         </div>
         <Footer drawerOpen={open} />
