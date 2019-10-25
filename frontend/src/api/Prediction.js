@@ -1,11 +1,10 @@
 import axios from 'axios';
 
+// TODO essa variavel ja existe no auth (api) nao precisa repetir
 export const url = process.env.REACT_APP_API;
-
-
 axios.defaults.baseURL = url;
 axios.interceptors.request.use((config) => {
-  const token = 'Token 846db15e26e2f529c428fbd1431bb2ae9a46d686';
+  const token = 'Token 2c68c902fd81d383aca48ff17b92435f890a130d';
   config.headers.Authorization = token;
   return config;
 });
@@ -69,20 +68,6 @@ export const getTimeProfile = ({ id }) => {
     params,
   }).then((res) => res.data.data);
 };
-
-
-export const getCalendarEvents = ({ initialDate, finalDate }) => axios.get(`/occultation/?date_time__range=${initialDate},${finalDate}&pageSize=3000`)
-  .then((res) => res);
-
-export const getOccultations = ({ id }) => {
-  const params = {
-    asteroid: id,
-  };
-  return axios.get('/occultation/', {
-    params,
-  }).then((res) => res.data);
-};
-
 
 export const getAsteroids = ({
   page,

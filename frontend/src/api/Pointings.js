@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 
 // TODO essa variavel ja existe no auth (api) nao precisa repetir
@@ -11,16 +10,18 @@ axios.interceptors.request.use((config) => {
 });
 
 
-export const getSkybotLists = ({ page, pageSize, search, filters }) => {
-  const params = { page: page, pageSize: pageSize, search: search };
+export const getPointingsList = ({
+  page, pageSize, search, filters,
+}) => {
+  const params = {
+    page,
+    pageSize,
+    search,
+  };
 
-
-  filters.forEach(function (el) {
+  filters.forEach((el) => {
     params[el.property] = el.value;
-
   });
 
-  return axios.get(`/skybotoutput/`, { params: params });
-}
-
-
+  return axios.get('/pointing/', { params }).then((res) => res.data);
+};

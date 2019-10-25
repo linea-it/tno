@@ -46,8 +46,14 @@ const SortLabel = ({
   onSort, children, direction, ...restProps
 }) => {
   const classes = useStyles();
+
   return (
-    <Tooltip title={children.props.children}>
+    <Tooltip title={
+      restProps.column.headerTooltip
+        ? restProps.column.headerTooltip
+        : children.props.children
+    }
+    >
       <span
         onClick={!restProps.disabled ? onSort : null}
         className={!restProps.disabled ? classes.invisibleButton : null}

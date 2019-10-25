@@ -7,6 +7,8 @@ from django.utils import timezone
 from django.conf import settings
 import urllib.parse
 from datetime import datetime
+
+
 class PredictRunSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
 
@@ -221,7 +223,7 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
             return obj.predict_run.leap_second.display_name
         except:
             return None
-            
+
 
 class PredictInputSerializer(serializers.ModelSerializer):
     asteroid = serializers.PrimaryKeyRelatedField(
@@ -282,6 +284,7 @@ class PredictOutputSerializer(serializers.ModelSerializer):
         except:
             return None
 
+
 class OccultationSerializer(serializers.ModelSerializer):
     asteroid = serializers.PrimaryKeyRelatedField(
         queryset=PredictAsteroid.objects.all(), many=False)
@@ -291,6 +294,7 @@ class OccultationSerializer(serializers.ModelSerializer):
     already_happened = serializers.SerializerMethodField()
     asteroid_name = serializers.SerializerMethodField()
     asteroid_number = serializers.SerializerMethodField()
+    creation_date = serializers.SerializerMethodField()
 
     class Meta:
         model = Occultation
@@ -325,6 +329,7 @@ class OccultationSerializer(serializers.ModelSerializer):
             'pmdec',
             'src',
             'already_happened',
+            'creation_date'
         )
 
     def get_date_time(self, obj):
@@ -338,7 +343,7 @@ class OccultationSerializer(serializers.ModelSerializer):
             return urllib.parse.urljoin(settings.MEDIA_URL, obj.file_path.strip('/'))
         except:
             return None
-    
+
     def get_asteroid_name(self, obj):
         try:
             return obj.asteroid.name
@@ -357,6 +362,13 @@ class OccultationSerializer(serializers.ModelSerializer):
         c = (a < b)
         return c
 
+    def get_creation_date(self, obj):
+        try:
+            return obj.asteroid.predict_run.finish_time
+        except:
+            return None
+
+
 class LeapSecondsSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -368,6 +380,7 @@ class LeapSecondsSerializer(serializers.ModelSerializer):
             'url',
             'upload',
         )
+
 
 class BspPlanetarySerializer(serializers.ModelSerializer):
 
