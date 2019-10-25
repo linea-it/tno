@@ -295,7 +295,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/skybotrun" className={classes.invisibleLink} title="Skybot Run">
+            <Link to="/ssso" className={classes.invisibleLink} title="Skybot Run">
               <ListItem button>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite', classes.iconAltixDrawer)} />
@@ -420,7 +420,7 @@ function MiniDrawer() {
             <Route exact path="/occultations/:id" render={(props) => <OccultationsDetail {...props} setTitle={setTitle} />} />
             <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
             <Route exact path="/pointings" render={(props) => <Pointings {...props} setTitle={setTitle} />} />
-            <Route exact path="/skybotrun" render={(props) => <SkyBotRun {...props} setTitle={setTitle} />} />
+            <Route exact path="/skybot" render={(props) => <SkyBotRun {...props} setTitle={setTitle} />} />
             <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
             <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
             <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />

@@ -3,10 +3,10 @@ import axios from 'axios';
 // TODO essa variavel ja existe no auth (api) nao precisa repetir
 export const url = process.env.REACT_APP_API;
 axios.defaults.baseURL = url;
-
 axios.interceptors.request.use((config) => {
-  const token = 'Token 50016f67aed3cad432ac10c5e7a16a0745626d1c';
+  // const token = 'Token 50016f67aed3cad432ac10c5e7a16a0745626d1c';
   // const token = 'Token 846db15e26e2f529c428fbd1431bb2ae9a46d686';
+  const token = 'Token 2c68c902fd81d383aca48ff17b92435f890a130d';
   config.headers.Authorization = token;
   return config;
 });
