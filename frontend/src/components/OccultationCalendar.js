@@ -35,9 +35,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-
-
-
 function OccultationCalendar({ history, setTitle, match: { params } }) {
 
   const [events, setEvents] = useState([]);
@@ -147,15 +144,18 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   };
 
   const handleEvent = (e) => {
-    let id = e.event.id;
-    let date = e.event.start;
-    let view = e.view.type;
-    let flag = "calendar";
-    let sDate = initialDate;
-    let fDate = finalDate;
-    let searching = search;
-
-    history.push(`/test-calendar/${id}/${date}/${view}/${flag}/${sDate}/${fDate}/${searching}`);
+    // history.push(`/test-calendar/${id}/${date}/${view}/${flag}/${sDate}/${fDate}/${searching}`);
+    history.push({
+      pathname: `/occultations/${e.event.id}`,
+      state: {
+        date: e.event.start,
+        view: e.view.type,
+        flag: "calendar",
+        initialDate,
+        finalDate,
+        search,
+      },
+    });
   };
 
 
@@ -173,7 +173,6 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
     <div>
       {loading && <CircularProgress size={100} thickness={0.8} className={classes.loading} ></CircularProgress>}
-
       <AppBar setSearch={setSearch} setHasSearch={setHasSearch} value={search} />
 
       {/* params.date is coming back from occulation.
