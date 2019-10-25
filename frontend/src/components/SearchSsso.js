@@ -7,7 +7,9 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
 import Table from './utils/CustomTable';
 import { getSkybotLists } from '../api/SearchSsso';
-
+import Toolbar from '@material-ui/core/Toolbar';
+import TextField from '@material-ui/core/TextField';
+import Slider from '@material-ui/core/Slider';
 const useStyles = makeStyles((theme) => ({
   paper: {
     paddingTop: 15,
@@ -21,6 +23,20 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     minWidth: 120,
   },
+  filterField: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: 200,
+  },
+  filterSlider: {
+    width: 200,
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    marginTop: theme.spacing(3),
+  },
+  filterSliderLabel: {
+    color: theme.palette.text.secondary,
+  },
 }));
 
 export default function SearchSsso({ setTitle }) {
@@ -28,7 +44,7 @@ export default function SearchSsso({ setTitle }) {
   const [tablePage] = useState(1);
   const [tablePageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
-  const [vMagnitude, setVmagnitude] = useState("");
+  const [vMagnitude, setVmagnitude] = useState([4, 18]);
   const [dClass, setDclass] = useState([]);
 
   const classes = useStyles();
@@ -48,10 +64,10 @@ export default function SearchSsso({ setTitle }) {
     let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
     let pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
     let searchValue = typeof event === 'undefined' ? ' ' : event.searchValue;
-    if (vMagnitude && vMagnitude != "") {
+    if (vMagnitude) {
       filters.push({
         property: 'mv__range',
-        value: vMagnitude,
+        value: vMagnitude.join(),
       });
     }
     if (dClass && dClass.length > 0) {
@@ -64,48 +80,15 @@ export default function SearchSsso({ setTitle }) {
       property: 'ccdnum__isnull',
       value: false,
     });
-    getSkybotLists({ page: page, pageSize: pageSize, search: searchValue, filters: filters }).then(res => {
+    getSkybotLists({ page, pageSize, search: searchValue, filters }).then(res => {
       setTotalCount(res.data.count);
       setTableData(res.data.results);
     });
   };
 
   const handleClearFilters = () => {
-    setVmagnitude("");
+    setVmagnitude([4, 18]);
     setDclass([]);
-  };
-
-  const loadMagnitudeColumns = () => {
-    const magnitude = [
-      { name: "18,19", value: '18,19', title: '18 - 19' },
-      { name: "19,20", value: '19,20', title: '19 - 20' },
-      { name: "20,21", value: '20,21', title: '20 - 21' },
-      { name: "21,22", value: '21,22', title: '21 - 22' },
-      { name: "22,23", value: '22,23', title: '22 - 23' },
-      { name: "23,24", value: '23,24', title: '23 - 24' },
-      { name: "24,25", value: '24,25', title: '24 - 25' },
-      { name: "25,26", value: '25,26', title: '25 - 26' },
-      { name: "26,27", value: '26,27', title: '26 - 27' },
-      { name: "27,28", value: '27,28', title: '27 - 28' },
-      { name: "28,29", value: '28,29', title: '28 - 29' },
-      { name: "29,30", value: '29,30', title: '29 - 30' },
-      { name: "30,31", value: '30,31', title: '30 - 31' },
-      { name: "31,32", value: '31,32', title: '31 - 32' },
-      { name: "32,33", value: '32,33', title: '32 - 33' },
-      { name: "33,34", value: '33,34', title: '33 - 34' },
-      { name: "34,35", value: '34,35', title: '34 - 35' },
-      { name: "35,36", value: '35,36', title: '35 - 36' },
-    ];
-
-    return magnitude.map((el, i) => (
-      <MenuItem
-        key={i}
-        value={el.value}
-        title={el.title}
-      >
-        {el.title}
-      </MenuItem>
-    ));
   };
 
   const loadDynamicClassColumns = () => {
@@ -144,44 +127,15 @@ export default function SearchSsso({ setTitle }) {
       { name: 'Trojan', value: 'Trojan', title: 'Trojan', },
     ];
 
-    return dynclass.map((el, i) => (
+    return dynclass.map((el) => (
       <MenuItem
-        key={i}
+        key={el.value}
         value={el.value}
         title={el.title}
       >
         {el.title}
       </MenuItem>
     ));
-  };
-
-  const select_visual_magnitude = () => {
-    return (
-      <FormControl className={classes.formControl} fullWidth>
-        <InputLabel>Visual Magnitude</InputLabel>
-        <Select
-          value={vMagnitude}
-          onChange={(event) => { setVmagnitude(event.target.value); }}
-        >
-          {loadMagnitudeColumns()}
-        </Select>
-      </FormControl>
-    );
-  };
-
-  const select_dynamic_class = () => {
-    return (
-      <FormControl className={classes.formControl} fullWidth>
-        <InputLabel>Dynamics Class</InputLabel>
-        <Select
-          multiple
-          value={dClass}
-          onChange={(event) => { setDclass(event.target.value); }}
-        >
-          {loadDynamicClassColumns()}
-        </Select>
-      </FormControl>
-    );
   };
 
   const tableColumns = [
@@ -249,63 +203,6 @@ export default function SearchSsso({ setTitle }) {
 
   return (
     <Grid>
-      {/*         
-        <Grid container spacing={6}>
-          <Grid item lg={6} xl={6}>
-            <Card>
-              <CardHeader
-                title={"Plot_Dinamics"}
-              />
-            </Card>
-
-          </Grid>
-          <Grid item lg={6} xl={6}>
-            <Card>
-              <CardHeader
-                title={" Plot_Band"}
-              />
-            </Card>
-          </Grid>
-        </Grid> */}
-
-      {/* <Grid container spacing={6}>
-          <Grid item lg={12}>
-            <Paper className={classes.paper}>
-              <Typography variant={"h6"} className={classes.title} >
-                Total of CCDs
-            </Typography>
-              <Typography variant={"subtitle1"} className={classes.subtitle}>
-                amount: {totalCount}
-            </Typography>
-
-              <Typography variant={"h6"} className={classes.title} >
-                Total number of observations
-    
-            </Typography>
-              <Typography variant={"subtitle1"} className={classes.subtitle}>
-                amount: {totalCount}
-            </Typography>
-
-              <Typography variant={"h6"} className={classes.title} >
-                Object with the largest number of observations
-    
-            </Typography>
-              <Typography variant={"subtitle1"} className={classes.subtitle}>
-                name: KBO
-            </Typography>
-
-              <Typography variant={"h6"} className={classes.title} >
-                Number of observations of object KBO
-    
-            </Typography>
-              <Typography variant={"subtitle1"} className={classes.subtitle}>
-                amount: {totalCount}
-            </Typography>
-            </Paper>
-
-          </Grid>
-        </Grid> */}
-
       <Grid container spacing={6}>
         <Grid item lg={12} xl={12}>
           <Card>
@@ -313,9 +210,32 @@ export default function SearchSsso({ setTitle }) {
               title={"SkyBot Output"}
             />
             <CardContent>
-              <Grid item lg={3}>
-                {select_visual_magnitude()}
-                {select_dynamic_class()}
+              <Toolbar>
+                <TextField
+                  className={classes.filterField}
+                  select
+                  label="Dynamics Class"
+                  SelectProps={
+                    { multiple: true }
+                  }
+                  value={dClass}
+                  onChange={(event) => { setDclass(event.target.value); }}
+                >
+                  {loadDynamicClassColumns()}
+                </TextField>
+                <div className={classes.filterSlider}>
+                  <Typography gutterBottom variant="body2" className={classes.filterSliderLabel}>
+                    {`Magnitude(g): ${vMagnitude}`}
+                  </Typography>
+                  <Slider
+                    value={vMagnitude}
+                    step={1}
+                    min={4}
+                    max={23}
+                    valueLabelDisplay="auto"
+                    onChange={(event, value) => { setVmagnitude(value); }}
+                  />
+                </div>
                 <Button
                   variant="contained"
                   color="primary"
@@ -323,15 +243,15 @@ export default function SearchSsso({ setTitle }) {
                 >
                   Clear
                 </Button>
-              </Grid>
+              </Toolbar>
+
               <Table
                 data={tableData}
                 columns={tableColumns}
                 loadData={loadTableData}
                 totalCount={totalCount}
-                hasToolbar={true}
-              >
-              </Table>
+                hasToolbar
+              />
             </CardContent>
           </Card>
         </Grid>
