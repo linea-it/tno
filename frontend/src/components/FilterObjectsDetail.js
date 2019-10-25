@@ -161,7 +161,6 @@ function FilterObjectsDetail({ setTitle, match }) {
   };
 
   useEffect(() => {
-    console.log(stats);
     if (stats.tablename) {
       loadObjectsTableData({ currentPage: 0, pageSize: 10 });
     }

@@ -387,6 +387,14 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         </span>
       ),
     },
+    {
+      name: 'id',
+      title: ' ',
+      width: 100,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (el) => history.push(`/filter-objects/${el.id}`),
+      align: 'center',
+    },
   ];
 
   useEffect(() => {
@@ -958,6 +966,10 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
 
 FilterObjects.propTypes = {
   setTitle: PropTypes.func.isRequired,
+    history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+  drawerOpen: PropTypes.bool.isRequired,
 };
 
 export default withRouter(FilterObjects);
