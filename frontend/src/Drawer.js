@@ -209,7 +209,7 @@ const useStyles = makeStyles((theme) => ({
 function MiniDrawer() {
   const classes = useStyles();
   const [open, setOpen] = useState(true);
-  const [sssoOpen, setSssoOpen] = useState(true);
+  const [sssoOpen, setSssoOpen] = useState(false);
   const [title, setTitle] = useState('Dashboard');
   const [currentPage, setCurrentPage] = useState('');
 
