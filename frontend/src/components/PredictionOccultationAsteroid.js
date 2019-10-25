@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Grid, Card, makeStyles, CardHeader, CardContent,
@@ -7,15 +7,10 @@ import clsx from 'clsx';
 import moment from 'moment';
 import Carousel, { Modal, ModalGateway } from 'react-images';
 import LazyLoad from 'react-lazyload';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { withRouter } from 'react-router';
-import CustomGridList from './utils/CustomAsteroidGridList';
+import CustomGridList from './utils/CustomGridList';
 import CustomList from './utils/CustomList';
 import CustomTable from './utils/CustomTable';
 import {
@@ -499,6 +494,8 @@ function PredictionOccultationAsteroid({
 
   const handleBackNavigation = () => history.push(`/prediction-of-occultation/${asteroidData.predict_run}`);
 
+  const handleImageClick = (id) => history.push(`/occultations/${id}`);
+
   return (
     <>
       <Grid
@@ -619,14 +616,11 @@ function PredictionOccultationAsteroid({
       ) : null}
 
       <Grid container spacing={2}>
-        <Grid item lg={12} xl={12}>
+        <Grid item xs={12}>
           <CustomGridList
             tileData={occultationData}
             baseUrl={url}
-            hasActions={false}
-            cellHeight={500}
-            height={530}
-            spacing={6}
+            handleImageClick={handleImageClick}
           />
         </Grid>
       </Grid>
