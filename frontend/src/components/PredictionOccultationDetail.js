@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
   },
   iconDetail: {
     fontSize: 18,
-  }
+  },
 }));
 
 function PredictionOccultationDetail({ history, match, setTitle }) {
@@ -94,7 +94,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}
-              title={row.error_msg ? row.error_msg : "Failure"}
+              title={row.error_msg ? row.error_msg : 'Failure'}
             >
               Failure
             </span>
@@ -157,13 +157,11 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       name: 'execution_time',
       title: 'Execution Time',
       align: 'center',
-      customElement: (row) => {
-        return (
+      customElement: (row) => (
           <span>
             {moment.utc(row.execution_time * 1000).format('HH:mm:ss')}
           </span>
-        );
-      },
+        ),
       width: 140,
     },
     {
@@ -188,7 +186,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnFailure)}
-                  title={data.error_msg ? data.error_msg : "Failure"}
+                  title={data.error_msg ? data.error_msg : 'Failure'}
                 >
                   Failure
                 </span>

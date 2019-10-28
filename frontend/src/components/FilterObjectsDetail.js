@@ -97,12 +97,12 @@ function FilterObjectsDetail({ setTitle, match }) {
     },
     {
       name: 'errpos',
-      title: 'errpos',
+      title: 'Errpos',
       width: 70,
     },
     {
       name: 'jdref',
-      title: 'jdref',
+      title: 'Jref',
       width: 80,
     },
     {
@@ -117,7 +117,7 @@ function FilterObjectsDetail({ setTitle, match }) {
     },
     {
       name: 'band',
-      title: 'band',
+      title: 'Band',
       align: 'center',
       width: 60,
     },
@@ -125,6 +125,7 @@ function FilterObjectsDetail({ setTitle, match }) {
       name: 'filename',
       title: 'Downloaded',
       align: 'center',
+      width: 100,
       customElement: (el) => (el.filename ? (
         <span title={el.filename}>
           <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
