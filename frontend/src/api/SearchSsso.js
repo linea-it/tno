@@ -11,6 +11,7 @@ axios.interceptors.request.use((config) => {
 });
 
 
+
 export const getSkybotLists = ({ page, pageSize, search, filters }) => {
   const params = { page: page, pageSize: pageSize, search: search };
 
@@ -22,5 +23,7 @@ export const getSkybotLists = ({ page, pageSize, search, filters }) => {
 
   return axios.get(`/skybotoutput/`, { params: params });
 }
+
+export const getSkybotRecord = ({ id }) => axios.get(`/skybotoutput/${id}/`);
 
 
