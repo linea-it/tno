@@ -198,7 +198,7 @@ function RefineOrbit({ history, setTitle }) {
     },
     {
       name: 'id',
-      title: '',
+      title: ' ',
       width: 100,
       icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: (el) => history.push(`/refine-orbit/${el.id}`),
