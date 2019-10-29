@@ -172,7 +172,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   return (
 
     <div>
-      {loading && <CircularProgress size={200} thickness={0.6} className={classes.loading} ></CircularProgress>}
+      {loading && <CircularProgress size={120} thickness={0.8} className={classes.loading} ></CircularProgress>}
       <AppBar setSearch={setSearch} setHasSearch={setHasSearch} value={search} />
 
       {/* params.date is coming back from occulation.
