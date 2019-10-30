@@ -19,11 +19,11 @@ import CheckIcon from '@material-ui/icons/Check';
 import WarningIcon from '@material-ui/icons/PriorityHigh';
 import ClearIcon from '@material-ui/icons/Clear';
 import CustomLog from './utils/CustomLog';
-import Dialog from './utils/CustomDialog';
+import CustomDialog from './utils/CustomDialog';
 import {
   readCondorFile, getPraiaRunById, getExecutionTimeById, getAsteroidStatus, getAsteroids,
 } from '../api/Praia';
-import Table from './utils/CustomTable';
+import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
 import Stepper from './AstrometryStepper';
@@ -144,7 +144,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnFailure)}
-                  title={data.error_msg ? data.error_msg : "Failure"}
+                  title={data.error_msg ? data.error_msg : 'Failure'}
                 >
                   Failure
                 </span>
@@ -174,7 +174,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnWarning)}
-                  title={data.error_msg ? data.error_msg : "Warning"}
+                  title={data.error_msg ? data.error_msg : 'Warning'}
                 >
                   Warning
                 </span>
@@ -294,8 +294,8 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       },
     },
     {
-      name: "name",
-      title: "Name",
+      name: 'name',
+      title: 'Name',
       align: 'left',
     },
     {
@@ -451,55 +451,52 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       title: 'Log',
       width: 80,
       align: 'center',
-      customElement: (row) => {
-        return (
-          <Tooltip title="Condor Log" >
-            <IconButton onClick={() => handleLogReading(row.condor_log)}
-              style={{ padding: 0 }}     //O estilo do próprio botão estava atrapalhando a interface
-            >
-              <DescriptionIcon />
-            </IconButton>
-          </Tooltip>
-        );
-      }
+      customElement: (row) => (
+        <Tooltip title="Condor Log">
+          <IconButton
+            onClick={() => handleLogReading(row.condor_log)}
+            style={{ padding: 0 }}
+          >
+            <DescriptionIcon />
+          </IconButton>
+        </Tooltip>
+      ),
     },
     {
       name: 'condor_err_log',
       title: 'Error',
       width: 80,
       align: 'center',
-      customElement: (row) => {
-        return (
-          <Tooltip title="Condor Error">
-            <IconButton onClick={() => handleLogReading(row.condor_err_log)}
-              style={{ padding: 0 }}     //O estilo do próprio botão estava atrapalhando a interface
-            >
-              <DescriptionIcon />
-            </IconButton>
-          </Tooltip>
-        );
-      }
+      customElement: (row) => (
+        <Tooltip title="Condor Error">
+          <IconButton
+            onClick={() => handleLogReading(row.condor_err_log)}
+            style={{ padding: 0 }}
+          >
+            <DescriptionIcon />
+          </IconButton>
+        </Tooltip>
+      ),
     },
     {
       name: 'condor_out_log',
       title: 'Output',
       width: 80,
       align: 'center',
-      customElement: (row) => {
-        return (
-          <Tooltip title="Condor Output">
-            <IconButton onClick={() => handleLogReading(row.condor_out_log)}
-              style={{ padding: 0 }}     //O estilo do próprio botão estava atrapalhando a interface
-            >
-              <DescriptionIcon />
-            </IconButton>
-          </Tooltip>
-        );
-      }
+      customElement: (row) => (
+        <Tooltip title="Condor Output">
+          <IconButton
+            onClick={() => handleLogReading(row.condor_out_log)}
+            style={{ padding: 0 }}
+          >
+            <DescriptionIcon />
+          </IconButton>
+        </Tooltip>
+      ),
     },
     {
-      name: "id",
-      title: " ",
+      name: 'id',
+      title: ' ',
       width: 80,
       align: 'center',
       icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
@@ -546,7 +543,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   };
 
   const handleLogReading = (file) => {
-    if (file && typeof file != 'undefined') {
+    if (file && typeof file !== 'undefined') {
       const arrayLines = [];
 
       readCondorFile(file).then((res) => {
@@ -574,7 +571,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     if (count >= 5) {
       setReloadInterval(3);
     }
-
   };
 
   return (
@@ -656,7 +652,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                 </ToggleButton>
               </ToggleButtonGroup>
             </Toolbar>
-            <Table
+            <CustomTable
               data={tableData}
               columns={columnsAsteroidTable === 'list' ? listColumnsTable : bugColumnsTable}
               hasSearching
@@ -668,7 +664,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               hasToolbar
               hasResizing={false}
             />
-            <Dialog
+            <CustomDialog
               visible={dialog.visible}
               title={dialog.title}
               content={<CustomLog data={dialog.content} />}
