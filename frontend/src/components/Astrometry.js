@@ -91,69 +91,72 @@ function Astrometry({ history, setTitle }) {
   };
 
   return (
-    <Grid>
-      <Grid container spacing={6}>
-        <Grid item sm={6} xl={5}>
-          <Card>
-            <CardHeader
-              className={classes.cardHeader}
-              title="Execute"
-            />
-            <InputSelect
-              title="Input Object List"
-              case="input"
-              display="el.displayname"
-              data={objectList}
-              default="noDefault"
-              width="90%"
-              marginTop={10}
-              valueSubmition={valueSubmition}
-              setSubmition={setValueSubmition}
-            />
-            <InputSelect
-              title="Reference Catalog"
-              case="catalog"
-              display="el.display_name"
-              data={catalogs}
-              width="90%"
-              marginTop={10}
-              valueSubmition={valueSubmition}
-              setSubmition={setValueSubmition}
-            />
-            <InputSelect
-              title="Configuration"
-              case="configuration"
-              width="90%"
-              data={configurations}
-              display="el.displayname"
-              marginTop={10}
-              valueSubmition={valueSubmition}
-              setSubmition={setValueSubmition}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit}
-              className={classes.button}
-            >
-              Submit
-            </Button>
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Grid container spacing={6}>
+          <Grid item sm={6} xl={5}>
+            <Card>
+              <CardHeader
+                className={classes.cardHeader}
+                title="Execute"
+              />
+              <InputSelect
+                title="Input Object List"
+                case="input"
+                display="el.displayname"
+                data={objectList}
+                default="noDefault"
+                width="90%"
+                marginTop={10}
+                valueSubmition={valueSubmition}
+                setSubmition={setValueSubmition}
+              />
+              <InputSelect
+                title="Reference Catalog"
+                case="catalog"
+                display="el.display_name"
+                data={catalogs}
+                width="90%"
+                marginTop={10}
+                valueSubmition={valueSubmition}
+                setSubmition={setValueSubmition}
+              />
+              <InputSelect
+                title="Configuration"
+                case="configuration"
+                width="90%"
+                data={configurations}
+                display="el.displayname"
+                marginTop={10}
+                valueSubmition={valueSubmition}
+                setSubmition={setValueSubmition}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+                className={classes.button}
+              >
+                Submit
+              </Button>
 
-          </Card>
+            </Card>
+          </Grid>
         </Grid>
       </Grid>
-
-      <Grid container spacing={6}>
-        <Grid item sm={12} xl={12}>
-          <Card>
-            <CardHeader
-              className={classes.cardHeader}
-              title="History"
-            />
-            <AstrometryHistory
-              reloadHistory={reloadHistory}
-            />
-          </Card>
+      <Grid item xs={12}>
+        <Grid container spacing={6}>
+          <Grid item sm={12} xl={12}>
+            <Card>
+              <CardHeader
+                className={classes.cardHeader}
+                title="History"
+              />
+              <AstrometryHistory
+                reloadHistory={reloadHistory}
+              />
+            </Card>
+          </Grid>
         </Grid>
       </Grid>
     </Grid>
