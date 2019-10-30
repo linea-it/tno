@@ -54,9 +54,20 @@ function SearchSSSoDetail({ history, setTitle, match: { params } }) {
     { title: "Exposure: ", value: listData.expnum },
     { title: "CCD number: ", value: listData.ccdnum },
     {
-      title: "External Link: ", value: <a target="_blank" href={listData.externallink}> Open Link</a>
+      title: "External Link: ", value: () => checkLink(),
     },
   ]
+
+  const checkLink = () => {
+    let resp = "";
+
+    if (!listData.externallink === "link") {
+      resp = <a target="_blank" href={listData.externallink}> Open Link</a>
+    } else {
+      resp = "no link";
+    }
+    return resp;
+  };
 
   const handleBackNavigation = () => {
     history.push('/ssso');
