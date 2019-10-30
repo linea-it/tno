@@ -1,17 +1,20 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
-import { Card, CardHeader, CardContent } from '@material-ui/core';
+import { Card, CardHeader, CardContent, Button } from '@material-ui/core';
 import Table from './utils/CustomTable';
 import CustomList from './utils/CustomList';
 import { getSkybotRecord } from '../api/SearchSsso';
+import clsx from 'clsx';
+import Icon from '@material-ui/core/Icon';
 
-function SearchSSSoDetail({ setTitle, match: { params } }) {
+
+function SearchSSSoDetail({ history, setTitle, match: { params } }) {
 
   const [tableData, setTableData] = useState([]);
   const [listData, setListData] = useState([{}]);
 
-  const id = params?params.id:0;
+  const id = params ? params.id : 0;
 
   useEffect(() => {
     setTitle("Search SSSo Detail");
@@ -60,9 +63,13 @@ function SearchSSSoDetail({ setTitle, match: { params } }) {
     },
   ]
 
+  const handleBackNavigation = () => {
+    history.push('/ssso');
+  };
+
   return (
     <Grid>
-      <Grid container spacing={6}>
+      <Grid container spacing={2}>
         {/* <Grid item lg={12}>
           <Card>
             <CardHeader
@@ -83,6 +90,17 @@ function SearchSSSoDetail({ setTitle, match: { params } }) {
             </CardContent>
           </Card>
         </Grid> */}
+        <Grid item lg={12} xl={4}>
+          <Button
+            variant="contained"
+            color="primary"
+            title="Back"
+            onClick={handleBackNavigation}
+          >
+            <Icon className={clsx('fas', 'fa-undo')} />
+            <span style={{ paddingLeft: "10px" }}> Back </span>
+          </Button>
+        </Grid>
         <Grid item lg={8} xl={7}>
           <Card>
             <CardHeader
@@ -91,7 +109,6 @@ function SearchSSSoDetail({ setTitle, match: { params } }) {
             <CardContent>
               <CustomList
                 data={listColumns}
-
               />
             </CardContent>
           </Card>
