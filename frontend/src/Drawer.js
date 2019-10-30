@@ -453,7 +453,7 @@ function MiniDrawer() {
             <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
             <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
             <Route exact path="/search-ssso-detail/:id" render={(props) => <SearchSssoDetail {...props} setTitle={setTitle} />} />
-            {/* <Redirect path="/" to="/dashboard" /> */}
+            <Redirect path="/" to="/dashboard" />
           </main>
         </div>
         <Footer drawerOpen={open} />
