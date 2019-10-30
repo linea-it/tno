@@ -2,16 +2,13 @@ import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import { Card, CardHeader, CardContent, Button } from '@material-ui/core';
-import Table from './utils/CustomTable';
 import CustomList from './utils/CustomList';
 import { getSkybotRecord } from '../api/SearchSsso';
 import clsx from 'clsx';
 import Icon from '@material-ui/core/Icon';
 
-
 function SearchSSSoDetail({ history, setTitle, match: { params } }) {
 
-  const [tableData, setTableData] = useState([]);
   const [listData, setListData] = useState([{}]);
 
   const id = params ? params.id : 0;
@@ -26,8 +23,6 @@ function SearchSSSoDetail({ history, setTitle, match: { params } }) {
       setListData(res ? res.data : []);
     });
   };
-
-  const columsTable = [{}];
 
   const listColumns = [
     { title: "Pointings: ", value: listData.pointing },
@@ -70,27 +65,7 @@ function SearchSSSoDetail({ history, setTitle, match: { params } }) {
   return (
     <Grid>
       <Grid container spacing={2}>
-        {/* <Grid item lg={12}>
-          <Card>
-            <CardHeader
-              title={"Observation"}
-            />
-            <CardContent>
-              <Table
-                data={tableData}
-                columns={columsTable}
-                hasSearching={false}
-                hasToolbar={false}
-                hasFiltering={false}
-                hasColumnVisibility={false}
-                hasPagination={false}
-                hasSorting={false}
-              >
-              </Table>
-            </CardContent>
-          </Card>
-        </Grid> */}
-        <Grid item lg={12} xl={4}>
+        <Grid item lg={12} xl={12}>
           <Button
             variant="contained"
             color="primary"

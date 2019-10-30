@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Card, CardContent, CardHeader, MenuItem, Button } from '@material-ui/core';
-import { FormControl, InputLabel, Select } from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
 import Table from './utils/CustomTable';
@@ -10,6 +8,9 @@ import { getSkybotLists } from '../api/SearchSsso';
 import Toolbar from '@material-ui/core/Toolbar';
 import TextField from '@material-ui/core/TextField';
 import Slider from '@material-ui/core/Slider';
+import clsx from 'clsx';
+import Icon from '@material-ui/core/Icon';
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     paddingTop: 15,
@@ -37,9 +38,12 @@ const useStyles = makeStyles((theme) => ({
   filterSliderLabel: {
     color: theme.palette.text.secondary,
   },
+  icoDetail: {
+    fontSize: 18,
+  }
 }));
 
-export default function SearchSsso({ setTitle }) {
+export default function SearchSsso({ history, setTitle }) {
   const [tableData, setTableData] = useState([{}]);
   const [tablePage] = useState(1);
   const [tablePageSize] = useState(10);
@@ -89,6 +93,10 @@ export default function SearchSsso({ setTitle }) {
   const handleClearFilters = () => {
     setVmagnitude([4, 18]);
     setDclass([]);
+  };
+
+  const handleSearchSssoDetail = (row) => {
+    history.push(`search-ssso-detail/${row.id}`);
   };
 
   const loadDynamicClassColumns = () => {
@@ -148,7 +156,7 @@ export default function SearchSsso({ setTitle }) {
     {
       name: 'num',
       title: 'Object Number',
-      width: 150,
+      width: 130,
       align: 'left',
     },
     {
@@ -184,7 +192,7 @@ export default function SearchSsso({ setTitle }) {
     {
       name: 'dynclass',
       title: 'Dynamic Class',
-      width: 160,
+      width: 140,
       align: 'left',
     },
     {
@@ -196,7 +204,7 @@ export default function SearchSsso({ setTitle }) {
     {
       name: 'errpos',
       title: 'Error on the position (arcsec)',
-      width: 250,
+      width: 248,
       align: 'center',
     },
     {
@@ -250,7 +258,6 @@ export default function SearchSsso({ setTitle }) {
                   Clear
                 </Button>
               </Toolbar>
-
               <Table
                 data={tableData}
                 columns={tableColumns}
