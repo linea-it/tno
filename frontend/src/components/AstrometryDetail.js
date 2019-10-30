@@ -51,10 +51,6 @@ const useStyles = makeStyles({
     float: 'left',
     marginTop: 1,
   },
-  checkIcon: {
-    float: 'left',
-    marginTop: 1,
-  },
   btn: {
     textTransform: 'none',
     padding: '1px 5px',
@@ -108,7 +104,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   const [executionTime, setExecutionTime] = useState({});
   const [execution_stats, setExecution_stats] = useState({});
   const [tableData, setTableData] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState('list');
   const [toolButton, setToolButton] = useState('list');
   const [reload_interval, setReloadInterval] = useState(1);
@@ -227,7 +222,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     getAsteroids({
       page, sizePerPage, filters, sortField, sortOrder, search: searchValue,
     }).then((res) => {
-      console.log(res);
       setTableData(res.results);
       setTotalCount(res.count);
       setTableParams({ ...tableParams, totalCount: res.count });
@@ -580,7 +574,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   return (
     <div>
       <ReactInterval
-        timeout={30000}
+        timeout={reload_interval * 1000}
         enabled={interval_condition}
         callback={handleInterval}
       />
