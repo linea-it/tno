@@ -451,7 +451,7 @@ function MiniDrawer() {
               <Route exact path="/occultations/:id" render={(props) => <OccultationsDetail {...props} setTitle={setTitle} />} />
               <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
               <Route exact path="/pointings" render={(props) => <Pointings {...props} setTitle={setTitle} />} />
-              <Route exact path="/skybot" render={(props) => <SkyBotRun {...props} setTitle={setTitle} />} />
+              <Route exact path="/skybot" render={(props) => <Skybot {...props} setTitle={setTitle} />} />
               <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
               <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
               <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
