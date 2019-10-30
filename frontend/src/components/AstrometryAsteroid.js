@@ -26,6 +26,7 @@ import {
   getAstrometryPlots,
   getInputsByAsteroidId,
   getAsteroidOutputsTree,
+  getCSV,
 } from '../api/Praia';
 import CustomDialog from './utils/CustomDialog';
 import CustomLog from './utils/CustomLog';
@@ -166,6 +167,14 @@ function AstrometryAsteroid({
   });
   const [reload, setReload] = useState(false);
 
+  const [inputCsv, setInputCsv] = useState({ visible: false, content: '', title: '' });
+  const [inputCsvVisible, setInputCsvVisible] = useState(false);
+  const [inputCsvTable, setInputCsvTable] = useState({
+    columns: [],
+    rows: [],
+    count: 0,
+  });
+
   const astrometryColumns = [
     {
       name: 'ra',
@@ -210,6 +219,12 @@ function AstrometryAsteroid({
       name: 'h_file_size',
       title: 'File Size',
       width: 150,
+    },
+    {
+      name: 'id',
+      title: ' ',
+      icon: <Icon className={clsx(`fas fa-file-csv ${classes.iconDetail}`)} />,
+      action: (el) => setInputCsv({ title: el.filename, content: el.file_path, visible: false }),
     },
   ];
 
@@ -445,7 +460,30 @@ function AstrometryAsteroid({
     });
   };
 
-  const handleCustomLogClose = () => setOutputLog({ visible: false, content: [], title: '' });
+  const loadInputCsvTableData = ({ currentPage, pageSize }) => {
+    getCSV({ filepath: inputCsv.content, page: currentPage + 1, pageSize })
+      .then((res) => {
+        setInputCsvTable({
+          ...res,
+          columns: res.columns.map((column) => ({
+            name: column,
+            title: column,
+          })),
+        });
+        setInputCsvVisible(true);
+      });
+  };
+
+  useEffect(() => {
+    if (inputCsv.content !== '') loadInputCsvTableData({ currentPage: 0, pageSize: 10 });
+  }, [inputCsv]);
+
+  const handleOutputLogClose = () => setOutputLog({ visible: false, content: '', title: '' });
+
+  const handleInputCsvClose = () => {
+    setInputCsvVisible(false);
+    setInputCsv({ content: '', title: '' });
+  };
 
   return (
     <>
@@ -635,11 +673,29 @@ function AstrometryAsteroid({
       <CustomDialog
         maxWidth="md"
         visible={outputLog.visible}
-        setVisible={handleCustomLogClose}
+        setVisible={handleOutputLogClose}
         title={outputLog.title}
         content={<CustomLog data={outputLog.content} />}
         headerStyle={classes.logToolbar}
         bodyStyle={classes.logBody}
+        wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px' }}
+      />
+
+      <CustomDialog
+        maxWidth="lg"
+        visible={inputCsvVisible}
+        setVisible={handleInputCsvClose}
+        title={inputCsv.title}
+        content={() => (
+          <CustomTable
+            columns={inputCsvTable.columns}
+            data={inputCsvTable.rows}
+            totalCount={inputCsvTable.count}
+            loadData={loadInputCsvTableData}
+            hasSearching={false}
+            hasSorting={false}
+          />
+        )}
         wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px' }}
       />
 
