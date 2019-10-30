@@ -11,9 +11,6 @@ import animation from '../assets/img/dashboard/animation.gif';
 import { SizeMe } from 'react-sizeme';
 
 const useStyles = makeStyles({
-  block: {
-    marginBottom: 15,
-  },
   btn: {
     textTransform: 'none',
     padding: '1px 5px',
@@ -46,99 +43,103 @@ function Dashboard({ setTitle }) {
   const [expositionHeight, setExpositionHeight] = useState(0)
   const [asteroidSunHeight, setAsteroidSunHeight] = useState(0)
 
-
-
   useEffect(() => {
     setTitle('Dashboard');
   }, []);
 
   return (
-    <>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6} className={classes.block}>
-          <Card>
-            <CardHeader title="Plot exposure" />
-            <CardContent className={classes.centerImage}>
-              <img src={histogramExposures} className={classes.imgResponsive} alt="Plot exposure" title="Plot exposure" />
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={6} className={classes.block}>
-          <Card>
-            <CardHeader title="CCD x Exposure time" />
-            <CardContent className={classes.centerImage}>
-              <img src={histogramExposureTime} className={classes.imgResponsive} alt="CCD x Exposure time" title="CCD x Exposure time" style={{ maxHeight: 383 }} />
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6} className={classes.block}>
-          <Card>
-            <CardHeader title="CCDs x Band" />
-            <CardContent className={classes.centerImage} style={{ height: expositionHeight }}>
-              <img src={histogramBands} className={classes.imgResponsive} alt="CCDs x Band" title="CCDs x Band" style={{ maxHeight: 311 }} />
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={6} className={classes.block}>
-          <Card>
-            <CardHeader title="DES Exposition" />
-            <SizeMe monitorHeight monitorWidth={false}>
-              {({ size }) => {
-                setExpositionHeight(size.height)
-                return (
-                  <CardContent className={classes.centerImage}>
-                    <img
-                      src={animation}
-                      className={classes.imgResponsive}
-                      alt="DES Exposition"
-                      title="DES Exposition"
-                    />
-                  </CardContent>
-                )
-              }}
-            </SizeMe>
-          </Card>
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6} className={classes.block}>
+            <Card>
+              <CardHeader title="Plot exposure" />
+              <CardContent className={classes.centerImage}>
+                <img src={histogramExposures} className={classes.imgResponsive} alt="Plot exposure" title="Plot exposure" />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={6} className={classes.block}>
+            <Card>
+              <CardHeader title="CCD x Exposure time" />
+              <CardContent className={classes.centerImage}>
+                <img src={histogramExposureTime} className={classes.imgResponsive} alt="CCD x Exposure time" title="CCD x Exposure time" style={{ maxHeight: 383 }} />
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
       </Grid>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6} className={classes.block}>
-          <Card>
-            <CardHeader title="Plot Exposure" />
+      <Grid item xs={12}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6} className={classes.block}>
+            <Card>
+              <CardHeader title="CCDs x Band" />
+              <CardContent className={classes.centerImage} style={{ height: expositionHeight }}>
+                <img src={histogramBands} className={classes.imgResponsive} alt="CCDs x Band" title="CCDs x Band" style={{ maxHeight: 311 }} />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={6} className={classes.block}>
+            <Card>
+              <CardHeader title="DES Exposition" />
               <SizeMe monitorHeight monitorWidth={false}>
                 {({ size }) => {
-                  setAsteroidSunHeight(size.height);
+                  setExpositionHeight(size.height)
                   return (
                     <CardContent className={classes.centerImage}>
                       <img
-                        src={exposuresbyclass}
+                        src={animation}
                         className={classes.imgResponsive}
-                        alt="Plot Exposure"
-                        title="Plot Exposure"
+                        alt="DES Exposition"
+                        title="DES Exposition"
                       />
                     </CardContent>
                   )
                 }}
               </SizeMe>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={6} className={classes.block}>
-          <Card>
-            <CardHeader title="Histogram Asteroid-Sun distance" />
-            <CardContent className={classes.centerImage} style={{ minHeight: asteroidSunHeight }}>
-              <img
-                src={histogramSemimajoraxis}
-                className={classes.imgResponsive}
-                alt="Histogram Asteroid-Sun distance"
-                title="Histogram Asteroid-Sun distance"
-                style={{ maxHeight: 385 }}
-              />
-            </CardContent>
-          </Card>
+            </Card>
+          </Grid>
         </Grid>
       </Grid>
-    </>
+      <Grid item xs={12}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6} className={classes.block}>
+            <Card>
+              <CardHeader title="Plot Exposure" />
+                <SizeMe monitorHeight monitorWidth={false}>
+                  {({ size }) => {
+                    setAsteroidSunHeight(size.height);
+                    return (
+                      <CardContent className={classes.centerImage}>
+                        <img
+                          src={exposuresbyclass}
+                          className={classes.imgResponsive}
+                          alt="Plot Exposure"
+                          title="Plot Exposure"
+                        />
+                      </CardContent>
+                    )
+                  }}
+                </SizeMe>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={6} className={classes.block}>
+            <Card>
+              <CardHeader title="Histogram Asteroid-Sun distance" />
+              <CardContent className={classes.centerImage} style={{ minHeight: asteroidSunHeight }}>
+                <img
+                  src={histogramSemimajoraxis}
+                  className={classes.imgResponsive}
+                  alt="Histogram Asteroid-Sun distance"
+                  title="Histogram Asteroid-Sun distance"
+                  style={{ maxHeight: 385 }}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 }
 
