@@ -10,6 +10,8 @@ import { getSkybotLists } from '../api/SearchSsso';
 import Toolbar from '@material-ui/core/Toolbar';
 import TextField from '@material-ui/core/TextField';
 import Slider from '@material-ui/core/Slider';
+import clsx from 'clsx';
+import Icon from '@material-ui/core/Icon';
 const useStyles = makeStyles((theme) => ({
   paper: {
     paddingTop: 15,
@@ -37,9 +39,12 @@ const useStyles = makeStyles((theme) => ({
   filterSliderLabel: {
     color: theme.palette.text.secondary,
   },
+  iconDetail: {
+    fontSize: 18,
+  },
 }));
 
-export default function SearchSsso({ setTitle }) {
+export default function SearchSsso({ history, setTitle }) {
   const [tableData, setTableData] = useState([{}]);
   const [tablePage] = useState(1);
   const [tablePageSize] = useState(10);
@@ -138,6 +143,13 @@ export default function SearchSsso({ setTitle }) {
     ));
   };
 
+
+
+  const handleSearchSssoDetail = (row) => {
+    history.push(`search-ssso-detail/${row.id}`);
+  };
+
+
   const tableColumns = [
     {
       name: 'name',
@@ -199,6 +211,12 @@ export default function SearchSsso({ setTitle }) {
       width: 250,
       align: 'center',
     },
+    {
+      name: 'id',
+      title: " ",
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.icoDetail}`)} />,
+      action: handleSearchSssoDetail,
+    }
   ]
 
   return (
