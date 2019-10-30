@@ -4,6 +4,7 @@ import {
   Grid, Card, makeStyles, CardHeader, CardContent,
 } from '@material-ui/core';
 import Icon from '@material-ui/core/Icon';
+import { withRouter } from 'react-router';
 import clsx from 'clsx';
 import CustomTable from './utils/CustomTable';
 import { getPointingsList } from '../api/Pointings';
@@ -21,7 +22,7 @@ const useStyles = makeStyles({
   },
 });
 
-function Pointings({ setTitle }) {
+function Pointings({ setTitle, history }) {
   const classes = useStyles();
   const [pointingsTableData, setPointingsTableData] = useState([]);
   const [pointingsTableCount, setPointingsTableCount] = useState(0);
@@ -102,6 +103,13 @@ function Pointings({ setTitle }) {
         </span>
       )),
     },
+    {
+      name: 'id',
+      title: ' ',
+      align: 'center',
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (el) => history.push(`/pointings/${el.id}`),
+    },
   ];
 
   const loadPointingsTableData = ({
@@ -116,7 +124,7 @@ function Pointings({ setTitle }) {
   };
 
   useEffect(() => {
-    setTitle('Pointigs');
+    setTitle('Pointings');
     // loadPointingsTableData({
     //   currentPage: 0, pageSize: 10,
     // });
@@ -146,6 +154,9 @@ function Pointings({ setTitle }) {
 
 Pointings.propTypes = {
   setTitle: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
-export default Pointings;
+export default withRouter(Pointings);
