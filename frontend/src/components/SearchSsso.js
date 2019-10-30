@@ -10,8 +10,6 @@ import { getSkybotLists } from '../api/SearchSsso';
 import Toolbar from '@material-ui/core/Toolbar';
 import TextField from '@material-ui/core/TextField';
 import Slider from '@material-ui/core/Slider';
-import clsx from 'clsx';
-import Icon from '@material-ui/core/Icon';
 const useStyles = makeStyles((theme) => ({
   paper: {
     paddingTop: 15,
@@ -39,12 +37,9 @@ const useStyles = makeStyles((theme) => ({
   filterSliderLabel: {
     color: theme.palette.text.secondary,
   },
-  iconDetail: {
-    fontSize: 18,
-  },
 }));
 
-export default function SearchSsso({ history, setTitle }) {
+export default function SearchSsso({ setTitle }) {
   const [tableData, setTableData] = useState([{}]);
   const [tablePage] = useState(1);
   const [tablePageSize] = useState(10);
@@ -143,13 +138,6 @@ export default function SearchSsso({ history, setTitle }) {
     ));
   };
 
-
-
-  const handleSearchSssoDetail = (row) => {
-    history.push(`search-ssso-detail/${row.id}`);
-  };
-
-
   const tableColumns = [
     {
       name: 'name',
@@ -161,19 +149,19 @@ export default function SearchSsso({ history, setTitle }) {
       name: 'num',
       title: 'Object Number',
       width: 150,
-      align: 'center',
+      align: 'left',
     },
     {
       name: 'raj2000',
       title: 'RA (deg)',
       width: 160,
-      align: 'center',
+      align: 'left',
     },
     {
       name: 'decj2000',
       title: 'Dec (deg)',
       width: 160,
-      align: 'center',
+      align: 'left',
     },
     {
       name: 'ccdnum',
@@ -191,13 +179,13 @@ export default function SearchSsso({ history, setTitle }) {
       name: 'expnum',
       title: 'Exposure',
       width: 130,
-      align: 'center',
+      align: 'left',
     },
     {
       name: 'dynclass',
       title: 'Dynamic Class',
-      width: 150,
-      align: 'center',
+      width: 160,
+      align: 'left',
     },
     {
       name: 'mv',
