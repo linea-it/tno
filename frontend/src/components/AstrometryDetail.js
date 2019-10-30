@@ -18,11 +18,11 @@ import CheckIcon from '@material-ui/icons/Check';
 import WarningIcon from '@material-ui/icons/PriorityHigh';
 import ClearIcon from '@material-ui/icons/Clear';
 import CustomLog from './utils/CustomLog';
-import Dialog from './utils/CustomDialog';
+import CustomDialog from './utils/CustomDialog';
 import {
   readCondorFile, getPraiaRunById, getExecutionTimeById, getAsteroidStatus, getAsteroids,
 } from '../api/Praia';
-import Table from './utils/CustomTable';
+import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
 import Stepper from './AstrometryStepper';
@@ -657,7 +657,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                   </ToggleButton>
                 </ToggleButtonGroup>
               </Toolbar>
-              <Table
+              <CustomTable
                 data={tableData}
                 columns={columnsAsteroidTable === 'list' ? listColumnsTable : bugColumnsTable}
                 hasSearching
@@ -669,7 +669,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                 hasToolbar
                 hasResizing={false}
               />
-              <Dialog
+              <CustomDialog
                 visible={dialog.visible}
                 title={dialog.title}
                 content={<CustomLog data={dialog.content} />}

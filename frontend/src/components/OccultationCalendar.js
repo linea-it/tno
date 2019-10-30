@@ -17,9 +17,9 @@ import AppBar from './AppBarCalendario';
 const useStyles = makeStyles(theme => ({
   loading: {
     position: 'fixed',
-    top: 200,
+    top: 350,
     bottom: 0,
-    left: 700,
+    left: '50%',
     right: 0,
     zIndex: 100,
   },
@@ -172,7 +172,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   return (
 
     <div>
-      {loading && <CircularProgress size={100} thickness={0.8} className={classes.loading} ></CircularProgress>}
+      {loading && <CircularProgress size={120} thickness={0.8} className={classes.loading} ></CircularProgress>}
       <AppBar setSearch={setSearch} setHasSearch={setHasSearch} value={search} />
 
       {/* params.date is coming back from occulation.
