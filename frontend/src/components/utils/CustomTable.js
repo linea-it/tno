@@ -95,20 +95,23 @@ function CustomTable({
     width: !column.width ? 120 : column.width,
   }));
 
+  const customSorting = () => {
+    if (defaultSorting && defaultSorting[0].columnName && defaultSorting[0].direction) {
+      return defaultSorting;
+    } if (columns && columns[0]) {
+      return [{
+        columnName: columns[0].name,
+        direction: 'asc',
+      }];
+    }
+    return null;
+  };
+
   const [customData, setCustomData] = useState(data);
   const [customTotalCount, setCustomTotalCount] = useState(totalCount);
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [sorting, setSorting] = useState(
-    defaultSorting[0].columnName && defaultSorting[0].direction
-      ? defaultSorting
-      : [
-        {
-          columnName: columns[0].name,
-          direction: 'asc',
-        },
-      ],
-  );
+  const [sorting, setSorting] = useState(customSorting());
   const [currentPage, setCurrentPage] = useState(0);
   const [after, setAfter] = useState('');
   const [customPageSize, setCustomPageSize] = useState(pageSize);

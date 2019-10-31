@@ -60,3 +60,15 @@ export const getSkybotRunResults = ({
   };
   return axios.get('/skybot_run/results/', { params }).then((res) => res.data);
 };
+
+export const getExposurePlot = (skybotrun, expnum) => axios.get('/skybot_run/skybot_output_plot/', {
+  params: { run_id: skybotrun, expnum },
+}).then((res) => res.data);
+
+export const getOutputByExposure = (run_id, expnum) => axios.get('/skybot_run/skybot_output_by_exposure/', {
+  params: { run_id, expnum },
+}).then((res) => res.data);
+
+export const getAsteroidsInsideCCD = (expnum) => axios.get('/skybot_run/asteroids_ccd/', {
+  params: { expnum },
+}).then((res) => res.data);

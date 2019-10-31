@@ -66,7 +66,7 @@ function SkybotDetail({ setTitle, match, history }) {
   const [skybotRunDetailList, setSkybotRunDetailList] = useState([]);
   const [timeProfile, setTimeProfile] = useState([]);
   const [skybotDetailTableData, setSkybotDetailTableData] = useState([]);
-  const [skybotDetailTableTotalCount, setSkybotDetailTableTotalCount] = useState([]);
+  const [skybotDetailTableTotalCount, setSkybotDetailTableTotalCount] = useState(0);
 
   const skybotDetailTableColumns = [
     {
@@ -174,6 +174,14 @@ function SkybotDetail({ setTitle, match, history }) {
       title: 'Inside CCD',
       sortingEnabled: false,
       width: 100,
+    },
+    {
+      name: 'ccd_time',
+      title: ' ',
+      width: 100,
+      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (row) => history.push(`/skybot/${id}/asteroid/${row.expnum}`),
+      align: 'center',
     },
   ];
 
