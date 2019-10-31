@@ -26,6 +26,7 @@ import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
 import Stepper from './AstrometryStepper';
+import moment from 'moment';
 
 const useStyles = makeStyles({
   card: {
@@ -346,7 +347,8 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       title: 'Execution Time',
       customElement: (row) => (
         <span>
-          {row.execution_time.substring(0, 8)}
+          {row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}
+         
         </span>
       ),
       width: 140,
