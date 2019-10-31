@@ -223,7 +223,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       page, sizePerPage, filters, sortField, sortOrder, search: searchValue,
     }).then((res) => {
       setTableData(res.results);
-      setTotalCount(res.count);
       setTableParams({ ...tableParams, totalCount: res.count });
     });
   };
