@@ -84,9 +84,6 @@ const useStyles = makeStyles((theme) => ({
   input: {
     margin: 0,
   },
-  gridWrapper: {
-    marginBottom: theme.spacing(3),
-  },
   iconDetail: {
     fontSize: 18,
   },
@@ -617,276 +614,277 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
 
 
   return (
-    <>
-      <Grid
-        container
-        direction="row"
-        spacing={2}
-      >
-        <Grid item xs={12} md={4} className={classes.gridWrapper}>
-          <SizeMe monitorHeight monitorWidth={false}>
-            {({ size }) => {
-              setFilterFormSize(size);
-              return (
-                <Card>
-                  <CardHeader
-                    title="Filter"
-                  />
-                  <CardContent>
-                    <Grid container spacing={4}>
-                      <Grid item xs={12}>
-                        <form autoComplete="off" onSumbit={handleSearchFilterSubmit}>
-                          <FormControl fullWidth className={classes.formControl}>
-                            <Grid container alignItems="flex-end" spacing={1}>
-                              <Grid item xs={12} md={9}>
-                                <TextField
-                                  label="Search"
-                                  value={searchFilter}
-                                  onChange={handleSearchFilter}
-                                  fullWidth
-                                />
-                              </Grid>
-                              <Grid item xs={12} md={3}>
-                                <Button
-                                  variant="contained"
-                                  color="primary"
-                                  className={classes.button}
-                                  fullWidth
-                                  onClick={handleSearchFilterSubmit}
-                                  disabled={resultLoading}
-                                >
-                                  <Icon className={clsx('fas', 'fa-search', classes.buttonIcon)} />
-                                  {resultLoading ? (
-                                    <CircularProgress
-                                      color="primary"
-                                      className={classes.buttonProgress}
-                                      size={24}
-                                    />
-                                  ) : null}
-                                </Button>
-                              </Grid>
-                            </Grid>
-                          </FormControl>
-                        </form>
-                      </Grid>
-                      <Grid item xs={12} className={classes.formDividerWrapper}>
-                        <Divider />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <form autoComplete="off">
-                          <FormControl className={classes.formControl} fullWidth>
-                            <InputLabel>Dynamic Class</InputLabel>
-                            <Select
-                              fullWidth
-                              multiple
-                              value={dynamicClass}
-                              onChange={handleDynamicClass}
-                              input={<Input />}
-                              renderValue={() => (
-                                <div className={classes.chips}>
-                                  {dynamicClass.map((i) => (
-                                    <Chip
-                                      key={optionsClassFirstLevel[i].id}
-                                      label={optionsClassFirstLevel[i].label}
-                                      className={classes.chip}
-                                    />
-                                  ))}
-                                </div>
-                              )}
-                            >
-                              {optionsClassFirstLevel.map((option, i) => (
-                                <MenuItem key={option.id} value={i}>
-                                  {option.label}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                          <FormControl className={classes.formControl} fullWidth>
-                            <InputLabel>Sublevel Dynamic Class</InputLabel>
-                            <Select
-                              disabled={!(sublevelDynamicClassList.length > 0)}
-                              fullWidth
-                              multiple
-                              value={sublevelDynamicClassSelected}
-                              onChange={handleSublevelDynamicClass}
-                              input={<Input />}
-                              renderValue={() => (
-                                <div className={classes.chips}>
-                                  {sublevelDynamicClassSelected.map((i) => (
-                                    <Chip
-                                      key={sublevelDynamicClassList[i].id}
-                                      label={sublevelDynamicClassList[i].label}
-                                      className={classes.chip}
-                                    />
-                                  ))}
-                                </div>
-                              )}
-                            >
-                              {sublevelDynamicClassList.map((option, i) => (
-                                <MenuItem key={option.id} value={i}>
-                                  {option.label}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                          <FormControl
-                            className={clsx(classes.formControl, classes.formControlCheckbox)}
-                            fullWidth
-                          >
-                            <FormControlLabel
-                              control={(
-                                <Checkbox
-                                  defaultChecked
-                                  color="default"
-                                  value="Visual magnitude ≤"
-                                  checked={visualMagnitudeCheck}
-                                  onChange={handleMagnitudeCheck}
-                                />
-                              )}
-                              label="Visual Magnitude ≤"
-                            />
-                            <TextField
-                              disabled={!visualMagnitudeCheck}
-                              value={visualMagnitude}
-                              onChange={handleMagnitude}
-                              type="number"
-                              inputProps={{ min: 0, max: 55 }}
-                            />
-                          </FormControl>
-                          <FormControl
-                            className={clsx(classes.formControl, classes.formControlCheckbox)}
-                            fullWidth
-                          >
-                            <FormControlLabel
-                              control={(
-                                <Checkbox
-                                  defaultChecked
-                                  color="default"
-                                  value="Minimum time difference between observations"
-                                  checked={timeMinimumCheck}
-                                  onChange={handleTimeMinimumCheck}
-                                />
-                              )}
-                              label="Minimum time difference between observations"
-                            />
-                            <TextField
-                              disabled={!timeMinimumCheck}
-                              value={timeMinimum}
-                              onChange={handleTimeMinimum}
-                              type="number"
-                              inputProps={{ min: 0, max: 1000 }}
-                            />
-                          </FormControl>
-                          <FormControl
-                            className={clsx(classes.formControl, classes.formControlCheckbox)}
-                            fullWidth
-                          >
-                            <FormControlLabel
-                              control={(
-                                <Checkbox
-                                  defaultChecked
-                                  color="default"
-                                  value="Show same objects with more than one filter in the same night?"
-                                  checked={sameObjectsCheck}
-                                  onChange={handleSameObjectsCheck}
-                                />
-                              )}
-                              label="Show same objects with more than one filter in the same night?"
-                            />
-                          </FormControl>
-                          <FormControl className={classes.formControl} fullWidth>
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              className={classes.button}
-                              fullWidth
-                              onClick={handleFilterSubmit}
-                              disabled={resultLoading}
-                            >
-                              Filter
-                              {resultLoading ? (
-                                <CircularProgress
-                                  color="primary"
-                                  className={classes.buttonProgress}
-                                  size={24}
-                                />
-                              ) : null}
-                            </Button>
-                          </FormControl>
-                        </form>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              );
-            }}
-          </SizeMe>
-
-        </Grid>
-        <Grid item xs={12} md={8} fullWidth className={classes.gridWrapper}>
-          <Card style={{ minHeight: filterFormSize.height, height: '100%' }}>
-            <CardHeader
-              title="Result"
-            />
-            <CardContent className={classes.fullHeight}>
-              {resultTableData.length > 0 ? (
-                <form autoComplete="off" className={classes.fullHeight}>
-                  <FormControl fullWidth className={classes.formControl}>
-                    <CustomTable
-                      columns={resultTableColumns}
-                      data={resultTableData}
-                      totalCount={resultTableData.length}
-                      defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
-                      hasSearching={false}
-                      hasSorting={false}
-                      remote={false}
-                      pageSize={7}
-                      pageSizes={7}
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Grid
+          container
+          direction="row"
+          spacing={2}
+        >
+          <Grid item xs={12} md={4}>
+            <SizeMe monitorHeight monitorWidth={false}>
+              {({ size }) => {
+                setFilterFormSize(size);
+                return (
+                  <Card>
+                    <CardHeader
+                      title="Filter"
                     />
-                  </FormControl>
-                  <FormControl
-                    fullWidth
-                    className={clsx(classes.formControl, classes.resultFilterForm)}
-                  >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      className={classes.button}
-                      onClick={handleSaveSubmit}
-                    >
-                      Save
-                    </Button>
-                  </FormControl>
-                </form>
-              ) : (
-                <Skeleton height={filterFormSize.height - 95} />
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+                    <CardContent>
+                      <Grid container spacing={4}>
+                        <Grid item xs={12}>
+                          <form autoComplete="off">
+                            <FormControl fullWidth className={classes.formControl}>
+                              <Grid container alignItems="flex-end" spacing={1}>
+                                <Grid item xs={12} md={9}>
+                                  <TextField
+                                    label="Search"
+                                    value={searchFilter}
+                                    onChange={handleSearchFilter}
+                                    fullWidth
+                                  />
+                                </Grid>
+                                <Grid item xs={12} md={3}>
+                                  <Button
+                                    variant="contained"
+                                    color="primary"
+                                    className={classes.button}
+                                    fullWidth
+                                    onClick={handleSearchFilterSubmit}
+                                    disabled={resultLoading}
+                                  >
+                                    <Icon className={clsx('fas', 'fa-search', classes.buttonIcon)} />
+                                    {resultLoading ? (
+                                      <CircularProgress
+                                        color="primary"
+                                        className={classes.buttonProgress}
+                                        size={24}
+                                      />
+                                    ) : null}
+                                  </Button>
+                                </Grid>
+                              </Grid>
+                            </FormControl>
+                          </form>
+                        </Grid>
+                        <Grid item xs={12} className={classes.formDividerWrapper}>
+                          <Divider />
+                        </Grid>
+                        <Grid item xs={12}>
+                          <form autoComplete="off">
+                            <FormControl className={classes.formControl} fullWidth>
+                              <InputLabel>Dynamic Class</InputLabel>
+                              <Select
+                                fullWidth
+                                multiple
+                                value={dynamicClass}
+                                onChange={handleDynamicClass}
+                                input={<Input />}
+                                renderValue={() => (
+                                  <div className={classes.chips}>
+                                    {dynamicClass.map((i) => (
+                                      <Chip
+                                        key={optionsClassFirstLevel[i].id}
+                                        label={optionsClassFirstLevel[i].label}
+                                        className={classes.chip}
+                                      />
+                                    ))}
+                                  </div>
+                                )}
+                              >
+                                {optionsClassFirstLevel.map((option, i) => (
+                                  <MenuItem key={option.id} value={i}>
+                                    {option.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                            <FormControl className={classes.formControl} fullWidth>
+                              <InputLabel>Sublevel Dynamic Class</InputLabel>
+                              <Select
+                                disabled={!(sublevelDynamicClassList.length > 0)}
+                                fullWidth
+                                multiple
+                                value={sublevelDynamicClassSelected}
+                                onChange={handleSublevelDynamicClass}
+                                input={<Input />}
+                                renderValue={() => (
+                                  <div className={classes.chips}>
+                                    {sublevelDynamicClassSelected.map((i) => (
+                                      <Chip
+                                        key={sublevelDynamicClassList[i].id}
+                                        label={sublevelDynamicClassList[i].label}
+                                        className={classes.chip}
+                                      />
+                                    ))}
+                                  </div>
+                                )}
+                              >
+                                {sublevelDynamicClassList.map((option, i) => (
+                                  <MenuItem key={option.id} value={i}>
+                                    {option.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                            <FormControl
+                              className={clsx(classes.formControl, classes.formControlCheckbox)}
+                              fullWidth
+                            >
+                              <FormControlLabel
+                                control={(
+                                  <Checkbox
+                                    color="default"
+                                    value="Visual magnitude ≤"
+                                    checked={visualMagnitudeCheck}
+                                    onChange={handleMagnitudeCheck}
+                                  />
+                                )}
+                                label="Visual Magnitude ≤"
+                              />
+                              <TextField
+                                disabled={!visualMagnitudeCheck}
+                                value={visualMagnitude}
+                                onChange={handleMagnitude}
+                                type="number"
+                                inputProps={{ min: 0, max: 55 }}
+                              />
+                            </FormControl>
+                            <FormControl
+                              className={clsx(classes.formControl, classes.formControlCheckbox)}
+                              fullWidth
+                            >
+                              <FormControlLabel
+                                control={(
+                                  <Checkbox
+                                    color="default"
+                                    value="Minimum time difference between observations"
+                                    checked={timeMinimumCheck}
+                                    onChange={handleTimeMinimumCheck}
+                                  />
+                                )}
+                                label="Minimum time difference between observations"
+                              />
+                              <TextField
+                                disabled={!timeMinimumCheck}
+                                value={timeMinimum}
+                                onChange={handleTimeMinimum}
+                                type="number"
+                                inputProps={{ min: 0, max: 1000 }}
+                              />
+                            </FormControl>
+                            <FormControl
+                              className={clsx(classes.formControl, classes.formControlCheckbox)}
+                              fullWidth
+                            >
+                              <FormControlLabel
+                                control={(
+                                  <Checkbox
+                                    color="default"
+                                    value="Show same objects with more than one filter in the same night?"
+                                    checked={sameObjectsCheck}
+                                    onChange={handleSameObjectsCheck}
+                                  />
+                                )}
+                                label="Show same objects with more than one filter in the same night?"
+                              />
+                            </FormControl>
+                            <FormControl className={classes.formControl} fullWidth>
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                className={classes.button}
+                                fullWidth
+                                onClick={handleFilterSubmit}
+                                disabled={resultLoading}
+                              >
+                                Filter
+                                {resultLoading ? (
+                                  <CircularProgress
+                                    color="primary"
+                                    className={classes.buttonProgress}
+                                    size={24}
+                                  />
+                                ) : null}
+                              </Button>
+                            </FormControl>
+                          </form>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                  </Card>
+                );
+              }}
+            </SizeMe>
 
-      <Grid
-        container
-        direction="row"
-        spacing={2}
-      >
-
-        <Grid item xs={12} className={clsx(classes.block, classes.tableWrapper)}>
-          <Card>
-            <CardHeader
-              title={<span>History</span>}
-            />
-            <CardContent>
-              <CustomTable
-                columns={historyTableColumns}
-                data={historyTableData}
-                loadData={loadHistoryTableData}
-                totalCount={historyCount}
-                defaultSorting={[{ columnName: 'creation_date', direction: 'desc' }]}
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <Card style={{ minHeight: filterFormSize.height, height: '100%' }}>
+              <CardHeader
+                title="Result"
               />
-            </CardContent>
-          </Card>
+              <CardContent className={classes.fullHeight}>
+                {resultTableData.length > 0 ? (
+                  <form autoComplete="off" className={classes.fullHeight}>
+                    <FormControl fullWidth className={classes.formControl}>
+                      <CustomTable
+                        columns={resultTableColumns}
+                        data={resultTableData}
+                        totalCount={resultTableData.length}
+                        defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
+                        hasSearching={false}
+                        hasSorting={false}
+                        remote={false}
+                        pageSize={7}
+                        pageSizes={7}
+                      />
+                    </FormControl>
+                    <FormControl
+                      fullWidth
+                      className={clsx(classes.formControl, classes.resultFilterForm)}
+                    >
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.button}
+                        onClick={handleSaveSubmit}
+                      >
+                        Save
+                      </Button>
+                    </FormControl>
+                  </form>
+                ) : (
+                  <Skeleton height={(filterFormSize.height - 95) || 0} />
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+
+      </Grid>
+      <Grid item xs={12}>
+        <Grid
+          container
+          direction="row"
+          spacing={2}
+        >
+
+          <Grid item xs={12} className={clsx(classes.block, classes.tableWrapper)}>
+            <Card>
+              <CardHeader
+                title={<span>History</span>}
+              />
+              <CardContent>
+                <CustomTable
+                  columns={historyTableColumns}
+                  data={historyTableData}
+                  loadData={loadHistoryTableData}
+                  totalCount={historyCount}
+                  defaultSorting={[{ columnName: 'creation_date', direction: 'desc' }]}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
       </Grid>
 
@@ -895,7 +893,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         visible={saveDialogVisible}
         setVisible={handleSaveDialogClose}
         title="Save List"
-        content={(
+        content={() => (
           <form autoComplete="off">
             <FormControl className={classes.formControl} fullWidth>
               <TextField
@@ -952,21 +950,23 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         }}
       />
 
-      <CustomSnackbar
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        open={tableNameSnackbarVisible}
-        autoHideDuration={5000} // Auto hide is not working, so I improvised with a "setTimeout".
-        onClose={handleTableNameSnackbarClose}
-        message={tableNameValidation.msg}
-        variant={tableNameValidation.status}
-      />
-    </>
+      {tableNameValidation.status ? (
+        <CustomSnackbar
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          open={tableNameSnackbarVisible}
+          autoHideDuration={5000} // Auto hide is not working, so I improvised with a "setTimeout".
+          onClose={handleTableNameSnackbarClose}
+          message={tableNameValidation.msg}
+          variant={tableNameValidation.status}
+        />
+      ) : null}
+    </Grid>
   );
 }
 
 FilterObjects.propTypes = {
   setTitle: PropTypes.func.isRequired,
-    history: PropTypes.shape({
+  history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
   drawerOpen: PropTypes.bool.isRequired,

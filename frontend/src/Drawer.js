@@ -46,7 +46,7 @@ import Dashboard from './components/Dashboard';
 import Pointings from './components/Pointings';
 import FilterObjects from './components/FilterObjects';
 import FilterObjectsDetail from './components/FilterObjectsDetail';
-
+import SearchSssoDetail from './components/SearchSssoDetail';
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -299,14 +299,14 @@ function MiniDrawer() {
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite')} />
                 </ListItemIcon>
               ) : (
-                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  {sssoOpen ? (
-                    <ExpandLess className={classes.expandClosed} />
-                  ) : (
-                    <ExpandMore className={classes.expandClosed} />
-                  )}
-                </ListItemIcon>
-              )}
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    {sssoOpen ? (
+                      <ExpandLess className={classes.expandClosed} />
+                    ) : (
+                        <ExpandMore className={classes.expandClosed} />
+                      )}
+                  </ListItemIcon>
+                )}
               <ListItemText
                 primary="Search SSSO"
                 className={classes.textDrawer}
@@ -452,6 +452,7 @@ function MiniDrawer() {
             <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
             <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
             <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
+            <Route exact path="/search-ssso-detail/:id" render={(props) => <SearchSssoDetail {...props} setTitle={setTitle} />} />
             <Redirect path="/" to="/dashboard" />
           </main>
         </div>

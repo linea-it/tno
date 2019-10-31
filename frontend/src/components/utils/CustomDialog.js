@@ -39,7 +39,7 @@ function CustomDialog({
   return (
     <Dialog onClose={setVisible} maxWidth={maxWidth} aria-labelledby="customized-dialog-title" open={visible} style={wrapperStyle}>
       <MuiDialogTitle className={clsx(classes.root, headerStyle)}>
-        <Typography variant="h6">{title}</Typography>
+        <Typography variant="h6" component="span">{title}</Typography>
         {visible ? (
           <IconButton aria-label="close" className={classes.closeButton} onClick={setVisible}>
             <CloseIcon />
@@ -47,11 +47,16 @@ function CustomDialog({
         ) : null}
       </MuiDialogTitle>
       <DialogContent dividers className={bodyStyle}>
-        <Typography gutterBottom>
-          {content || content.props.data || content.props.data.length ? content : (
-            'Unable to generate log due to a lack of data!'
+        {typeof content === 'function' ? (
+          content()
+        )
+          : (
+            <Typography gutterBottom>
+              {content || content.props.data || content.props.data.length ? content : (
+                'Unable to generate log due to a lack of data!'
+              )}
+            </Typography>
           )}
-        </Typography>
       </DialogContent>
     </Dialog>
   );

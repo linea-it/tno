@@ -25,3 +25,5 @@ export const getPointingsList = ({
 
   return axios.get('/pointing/', { params }).then((res) => res.data);
 };
+
+export const getPointing = ({ id }) => axios.get(`/pointing/${id}`).then((res) => res.data);

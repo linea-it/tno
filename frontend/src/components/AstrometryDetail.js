@@ -12,21 +12,17 @@ import BugIcon from '@material-ui/icons/BugReport';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import DescriptionIcon from '@material-ui/icons/Description';
-import ReactInterval from 'react-interval';
 import Tooltip from '@material-ui/core/Tooltip';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import CheckIcon from '@material-ui/icons/Check';
-import WarningIcon from '@material-ui/icons/PriorityHigh';
-import ClearIcon from '@material-ui/icons/Clear';
 import CustomLog from './utils/CustomLog';
-import Dialog from './utils/CustomDialog';
+import CustomDialog from './utils/CustomDialog';
 import {
   readCondorFile, getPraiaRunById, getExecutionTimeById, getAsteroidStatus, getAsteroids,
 } from '../api/Praia';
-import Table from './utils/CustomTable';
+import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
 import Stepper from './AstrometryStepper';
+import ReactInterval from 'react-interval';
 
 const useStyles = makeStyles({
   card: {
@@ -139,7 +135,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnFailure)}
-                  title={data.error_msg ? data.error_msg : "Failure"}
+                  title={data.error_msg ? data.error_msg : 'Failure'}
                 >
                   Failure
                 </span>
@@ -169,7 +165,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnWarning)}
-                  title={data.error_msg ? data.error_msg : "Warning"}
+                  title={data.error_msg ? data.error_msg : 'Warning'}
                 >
                   Warning
                 </span>
@@ -287,8 +283,8 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       },
     },
     {
-      name: "name",
-      title: "Name",
+      name: 'name',
+      title: 'Name',
       align: 'left',
     },
     {
@@ -444,55 +440,52 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       title: 'Log',
       width: 80,
       align: 'center',
-      customElement: (row) => {
-        return (
-          <Tooltip title="Condor Log" >
-            <IconButton onClick={() => handleLogReading(row.condor_log)}
-              style={{ padding: 0 }}     //O estilo do próprio botão estava atrapalhando a interface
-            >
-              <DescriptionIcon />
-            </IconButton>
-          </Tooltip>
-        );
-      }
+      customElement: (row) => (
+        <Tooltip title="Condor Log">
+          <IconButton
+            onClick={() => handleLogReading(row.condor_log)}
+            style={{ padding: 0 }} // ! Button style was compromising the ultimate layout
+          >
+            <DescriptionIcon />
+          </IconButton>
+        </Tooltip>
+      ),
     },
     {
       name: 'condor_err_log',
       title: 'Error',
       width: 80,
       align: 'center',
-      customElement: (row) => {
-        return (
-          <Tooltip title="Condor Error">
-            <IconButton onClick={() => handleLogReading(row.condor_err_log)}
-              style={{ padding: 0 }}     //O estilo do próprio botão estava atrapalhando a interface
-            >
-              <DescriptionIcon />
-            </IconButton>
-          </Tooltip>
-        );
-      }
+      customElement: (row) => (
+        <Tooltip title="Condor Error">
+          <IconButton
+            onClick={() => handleLogReading(row.condor_err_log)}
+            style={{ padding: 0 }} // ! Button style was compromising the ultimate layout
+          >
+            <DescriptionIcon />
+          </IconButton>
+        </Tooltip>
+      ),
     },
     {
       name: 'condor_out_log',
       title: 'Output',
       width: 80,
       align: 'center',
-      customElement: (row) => {
-        return (
-          <Tooltip title="Condor Output">
-            <IconButton onClick={() => handleLogReading(row.condor_out_log)}
-              style={{ padding: 0 }}     //O estilo do próprio botão estava atrapalhando a interface
-            >
-              <DescriptionIcon />
-            </IconButton>
-          </Tooltip>
-        );
-      }
+      customElement: (row) => (
+        <Tooltip title="Condor Output">
+          <IconButton
+            onClick={() => handleLogReading(row.condor_out_log)}
+            style={{ padding: 0 }} // ! Button style was compromising the ultimate layout
+          >
+            <DescriptionIcon />
+          </IconButton>
+        </Tooltip>
+      ),
     },
     {
-      name: "id",
-      title: " ",
+      name: 'id',
+      title: ' ',
       width: 80,
       align: 'center',
       icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
@@ -519,6 +512,8 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     loadExecutionStatistics();
   }, [count]);
 
+  console.log(execution_stats);
+
   const donutDataStatist = [
     { name: 'Success', value: execution_stats.success, color: '#009900' },
     { name: 'Warning', value: execution_stats.warning, color: '#D79F15' },
@@ -539,7 +534,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   };
 
   const handleLogReading = (file) => {
-    if (file && typeof file != 'undefined') {
+    if (file && typeof file !== 'undefined') {
       const arrayLines = [];
 
       readCondorFile(file).then((res) => {
@@ -567,11 +562,10 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     if (count >= 5) {
       setReloadInterval(3);
     }
-
   };
 
   return (
-    <div>
+    <Grid>
       <ReactInterval
         timeout={reload_interval * 1000}
         enabled={interval_condition}
@@ -609,70 +603,80 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           </Card>
         </Grid>
       </Grid>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={12} xl={12}>
-          <Stepper activeStep={runData && typeof runData !== 'undefined' ? runData.step : 0} />
+
+      <Grid item xs={12}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={12} xl={12}>
+            <Stepper activeStep={runData && typeof runData !== 'undefined' ? runData.step : 0} />
+          </Grid>
         </Grid>
       </Grid>
-      <Grid container spacing={2}>
-        <Grid item sm={12} xl={12}>
-          <Card className={classes.card}>
-            <CardHeader
-              title="Asteroids"
-            />
-            <Toolbar>
-              <ToggleButtonGroup
-                className={classes.icon}
-                value={toolButton}
-                onChange={handleChangeToolButton}
-                exclusive
-              >
-                <ToggleButton
-                  value="list"
-                  onClick={() => {
-                    setColumnsAsteroidTable('list');
-                    loadTableData();
-                    setTableParams((tableParamsRef) => ({ ...tableParamsRef, reload: !tableParamsRef.reload }));
-                  }}
+      <Grid item xs={12}>
+        <Grid container spacing={2}>
+          <Grid item sm={12} xl={12}>
+            <Card className={classes.card}>
+              <CardHeader
+                title="Asteroids"
+              />
+              <Toolbar>
+                <ToggleButtonGroup
+                  className={classes.icon}
+                  value={toolButton}
+                  onChange={handleChangeToolButton}
+                  exclusive
                 >
-                  <ListIcon />
-                </ToggleButton>
-                <ToggleButton
-                  value="bug"
-                  onClick={() => {
-                    setColumnsAsteroidTable('bug');
-                    loadTableData();
-                    setTableParams((tableParamsRef) => ({ ...tableParamsRef, reload: !tableParamsRef.reload }));
-                  }}
-                >
-                  <BugIcon />
-                </ToggleButton>
-              </ToggleButtonGroup>
-            </Toolbar>
-            <Table
-              data={tableData}
-              columns={columnsAsteroidTable === 'list' ? listColumnsTable : bugColumnsTable}
-              hasSearching
-              loadData={loadTableData}
-              totalCount={tableParams.totalCount}
-              hasColumnVisibility={false}
-              pageSizes={tableParams.pageSizes}
-              reload={tableParams.reload}
-              hasToolbar
-              hasResizing={false}
-            />
-            <Dialog
-              visible={dialog.visible}
-              title={dialog.title}
-              content={<CustomLog data={dialog.content} />}
-              setVisible={() => setDialog({ visible: false, content: [], title: ' ' })}
-              bodyStyle={classes.dialogBodyStyle}
-            />
-          </Card>
+                  <ToggleButton
+                    value="list"
+                    onClick={() => {
+                      setColumnsAsteroidTable('list');
+                      loadTableData();
+                      setTableParams((tableParamsRef) => ({
+                        ...tableParamsRef,
+                        reload: !tableParamsRef.reload,
+                      }));
+                    }}
+                  >
+                    <ListIcon />
+                  </ToggleButton>
+                  <ToggleButton
+                    value="bug"
+                    onClick={() => {
+                      setColumnsAsteroidTable('bug');
+                      loadTableData();
+                      setTableParams((tableParamsRef) => ({
+                        ...tableParamsRef,
+                        reload: !tableParamsRef.reload,
+                      }));
+                    }}
+                  >
+                    <BugIcon />
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Toolbar>
+              <CustomTable
+                data={tableData}
+                columns={columnsAsteroidTable === 'list' ? listColumnsTable : bugColumnsTable}
+                hasSearching
+                loadData={loadTableData}
+                totalCount={tableParams.totalCount ? tableParams.totalCount : 1}
+                hasColumnVisibility={false}
+                pageSizes={tableParams.pageSizes}
+                reload={tableParams.reload}
+                hasToolbar
+                hasResizing={false}
+              />
+              <CustomDialog
+                visible={dialog.visible}
+                title={dialog.title}
+                content={<CustomLog data={dialog.content} />}
+                setVisible={() => setDialog({ visible: false, content: [], title: ' ' })}
+                bodyStyle={classes.dialogBodyStyle}
+              />
+            </Card>
+          </Grid>
         </Grid>
       </Grid>
-    </div>
+    </Grid>
   );
 }
-
 export default withRouter(AstrometryDetail);
