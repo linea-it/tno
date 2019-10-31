@@ -456,7 +456,7 @@ CustomTable.defaultProps = {
   hasGrouping: false,
   hasToolbar: true,
   defaultExpandedGroups: [''],
-  defaultSorting: [{}],
+  defaultSorting: null,
   totalCount: 0,
   reload: false,
   remote: true,

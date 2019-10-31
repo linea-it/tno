@@ -49,6 +49,7 @@ import FilterObjectsDetail from './components/FilterObjectsDetail';
 import SkybotDetail from './components/SkybotDetail';
 import SkybotAsteroid from './components/SkybotAsteroid';
 import PointingsDetail from './components/PointingsDetail';
+import SearchSssoDetail from './components/SearchSssoDetail';
 
 const drawerWidth = 240;
 
@@ -302,14 +303,14 @@ function MiniDrawer() {
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite')} />
                 </ListItemIcon>
               ) : (
-                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  {sssoOpen ? (
-                    <ExpandLess className={classes.expandClosed} />
-                  ) : (
-                    <ExpandMore className={classes.expandClosed} />
-                  )}
-                </ListItemIcon>
-              )}
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    {sssoOpen ? (
+                      <ExpandLess className={classes.expandClosed} />
+                    ) : (
+                        <ExpandMore className={classes.expandClosed} />
+                      )}
+                  </ListItemIcon>
+                )}
               <ListItemText
                 primary="Search SSSO"
                 className={classes.textDrawer}
@@ -435,6 +436,7 @@ function MiniDrawer() {
         </Drawer>
         <div className={clsx(classes.bodyWrapper, open ? classes.bodyWrapperOpen : classes.bodyWrapperClose)}>
           <main className={classes.content}>
+
             <Switch>
               <Route exact path="/refine-orbit" render={(props) => <RefineOrbit {...props} setTitle={setTitle} />} />
               <Route exact path="/refine-orbit/:id" render={(props) => <RefineOrbitDetail {...props} setTitle={setTitle} />} />
@@ -459,6 +461,7 @@ function MiniDrawer() {
               <Route exact path="/pointings/:id" render={(props) => <PointingsDetail {...props} setTitle={setTitle} />} />
               <Route exact path="/skybot/:id" render={(props) => <SkybotDetail {...props} setTitle={setTitle} />} />
               <Route exact path="/skybot/:runId/asteroid/:id" render={(props) => <SkybotAsteroid {...props} setTitle={setTitle} />} />
+              <Route exact path="/search-ssso-detail/:id" render={(props) => <SearchSssoDetail {...props} setTitle={setTitle} />} />
               <Redirect path="/" to="/dashboard" />
             </Switch>
           </main>

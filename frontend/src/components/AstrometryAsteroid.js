@@ -26,6 +26,7 @@ import {
   getAstrometryPlots,
   getInputsByAsteroidId,
   getAsteroidOutputsTree,
+  getCSV,
 } from '../api/Praia';
 import CustomDialog from './utils/CustomDialog';
 import CustomLog from './utils/CustomLog';
@@ -77,9 +78,6 @@ const useStyles = makeStyles((theme) => ({
   btnWarning: {
     backgroundColor: '#D79F15',
     color: '#FFF',
-  },
-  block: {
-    marginBottom: 15,
   },
   iconDetail: {
     fontSize: 18,
@@ -166,6 +164,14 @@ function AstrometryAsteroid({
   });
   const [reload, setReload] = useState(false);
 
+  const [inputCsv, setInputCsv] = useState({ visible: false, content: '', title: '' });
+  const [inputCsvVisible, setInputCsvVisible] = useState(false);
+  const [inputCsvTable, setInputCsvTable] = useState({
+    columns: [],
+    rows: [],
+    count: 0,
+  });
+
   const astrometryColumns = [
     {
       name: 'ra',
@@ -210,6 +216,12 @@ function AstrometryAsteroid({
       name: 'h_file_size',
       title: 'File Size',
       width: 150,
+    },
+    {
+      name: 'id',
+      title: ' ',
+      icon: <Icon className={clsx(`fas fa-file-csv ${classes.iconDetail}`)} />,
+      action: (el) => setInputCsv({ title: el.filename, content: el.file_path, visible: false }),
     },
   ];
 
@@ -445,201 +457,253 @@ function AstrometryAsteroid({
     });
   };
 
-  const handleCustomLogClose = () => setOutputLog({ visible: false, content: [], title: '' });
+  const loadInputCsvTableData = ({ currentPage, pageSize }) => {
+    getCSV({ filepath: inputCsv.content, page: currentPage + 1, pageSize })
+      .then((res) => {
+        setInputCsvTable({
+          ...res,
+          columns: res.columns.map((column) => ({
+            name: column,
+            title: column,
+          })),
+        });
+        setInputCsvVisible(true);
+      });
+  };
+
+  useEffect(() => {
+    if (inputCsv.content !== '') loadInputCsvTableData({ currentPage: 0, pageSize: 10 });
+  }, [inputCsv]);
+
+  const handleOutputLogClose = () => setOutputLog({ visible: false, content: '', title: '' });
+
+  const handleInputCsvClose = () => {
+    setInputCsvVisible(false);
+    setInputCsv({ content: '', title: '' });
+  };
 
   return (
-    <>
-      <Grid
-        container
-        justify="space-between"
-        alignItems="center"
-        spacing={2}
-      >
-        <Grid item xs={12} md={4}>
-          <Button
-            variant="contained"
-            color="primary"
-            title="Back"
-            className={classes.button}
-            onClick={handleBackNavigation}
-          >
-            <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
-            <span>Back</span>
-          </Button>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Grid container justify="flex-end">
-            <Grid item>
-              <Button
-                variant="contained"
-                color="primary"
-                title="Previous"
-                className={classes.button}
-                disabled={neighbors.prev === null}
-                onClick={() => handleAsteroidsNavigation(neighbors.prev)}
-              >
-                <Icon className={clsx('fas', 'fa-arrow-left', classes.buttonIcon)} />
-                <span>Prev</span>
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                title="Next"
-                className={classes.button}
-                disabled={neighbors.next === null}
-                onClick={() => handleAsteroidsNavigation(neighbors.next)}
-              >
-                <span>Next</span>
-                <Icon className={clsx('fas', 'fa-arrow-right', classes.buttonIcon)} />
-              </Button>
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Grid
+          container
+          justify="space-between"
+          alignItems="center"
+          spacing={2}
+        >
+          <Grid item xs={12} md={4}>
+            <Button
+              variant="contained"
+              color="primary"
+              title="Back"
+              className={classes.button}
+              onClick={handleBackNavigation}
+            >
+              <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+              <span>Back</span>
+            </Button>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Grid container justify="flex-end">
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  title="Previous"
+                  className={classes.button}
+                  disabled={neighbors.prev === null}
+                  onClick={() => handleAsteroidsNavigation(neighbors.prev)}
+                >
+                  <Icon className={clsx('fas', 'fa-arrow-left', classes.buttonIcon)} />
+                  <span>Prev</span>
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  title="Next"
+                  className={classes.button}
+                  disabled={neighbors.next === null}
+                  onClick={() => handleAsteroidsNavigation(neighbors.next)}
+                >
+                  <span>Next</span>
+                  <Icon className={clsx('fas', 'fa-arrow-right', classes.buttonIcon)} />
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={4} className={classes.block}>
-          <Card>
-            <CardHeader title="Asteroid" />
-            <CardContent>
-              <CustomList data={asteroidList} />
-            </CardContent>
-          </Card>
+      <Grid item xs={12}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={4}>
+            <Card>
+              <CardHeader title="Asteroid" />
+              <CardContent>
+                <CustomList data={asteroidList} />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <Card>
+              <CardHeader title="Execution Time" />
+              <CardContent>
+                {renderExecutionTime()}
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={8} className={classes.block}>
-          <Card>
-            <CardHeader title="Execution Time" />
-            <CardContent>
-              {renderExecutionTime()}
-            </CardContent>
-          </Card>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <ButtonGroup className={classes.buttonContained}>
+              {asteroidMainOutputs.map((output) => (
+                <Button
+                  key={output.id}
+                  className={classes.buttonContained}
+                  variant="contained"
+                  color="primary"
+                  title="Back"
+                  onClick={() => handleMainOutputClick(output)}
+                >
+                  {output.type_name}
+                </Button>
+              ))}
+            </ButtonGroup>
+          </Grid>
         </Grid>
       </Grid>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} className={classes.block}>
-          <ButtonGroup className={classes.buttonContained}>
-            {asteroidMainOutputs.map((output) => (
-              <Button
-                key={output.id}
-                className={classes.buttonContained}
-                variant="contained"
-                color="primary"
-                title="Back"
-                onClick={() => handleMainOutputClick(output)}
-              >
-                {output.type_name}
-              </Button>
-            ))}
-          </ButtonGroup>
-        </Grid>
+      <Grid item xs={12}>
+        {astrometryTable.length > 0 ? (
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Card>
+                <CardHeader title="Astrometry" />
+                <CardContent>
+                  <CustomTable
+                    columns={astrometryColumns}
+                    data={astrometryTable}
+                    totalCount={astrometryTable.length}
+                    hasColumnVisibility={false}
+                    remote={false}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        ) : null }
       </Grid>
 
-      {astrometryTable.length > 0 ? (
-        <Grid container spacing={2}>
-          <Grid item xs={12} className={classes.block}>
-            <Card>
-              <CardHeader title="Astrometry" />
-              <CardContent>
-                <CustomTable
-                  columns={astrometryColumns}
-                  data={astrometryTable}
-                  totalCount={astrometryTable.length}
-                  hasColumnVisibility={false}
-                  remote={false}
-                />
-              </CardContent>
-            </Card>
+      <Grid item xs={12}>
+        {astrometryPlots.length > 0 ? (
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Card>
+                <CardHeader title="CCD x Stars x Asteroid" />
+                <CardContent>
+                  <Grid container spacing={2}>
+                    {astrometryPlots.map((plot, i) => (
+                      <Grid item xs={12} sm={6} md={3} key={plot.id}>
+                        <LazyLoad
+                          offset={[-100, 0]}
+                          once
+                          placeholder={(
+                            <Skeleton height={400} />
+                          )}
+                        >
+                          <img
+                            src={plot.source}
+                            onClick={(e) => openLightbox(i, e)}
+                            className={clsx(classes.imgResponsive, classes.lightboxImage)}
+                            title={plot.filename}
+                            alt={plot.filename}
+                          />
+                        </LazyLoad>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
-        </Grid>
-      ) : null }
+        ) : null}
+      </Grid>
 
-
-      {astrometryPlots.length > 0 ? (
-        <Grid container spacing={2}>
-          <Grid item xs={12} className={classes.block}>
-            <Card>
-              <CardHeader title="CCD x Stars x Asteroid" />
-              <CardContent>
-                <Grid container spacing={2}>
-                  {astrometryPlots.map((plot, i) => (
-                    <Grid item xs={12} sm={6} md={3} key={plot.id}>
-                      <LazyLoad
-                        offset={[-100, 0]}
-                        once
-                        placeholder={(
-                          <Skeleton height={400} />
-                        )}
-                      >
-                        <img
-                          src={plot.source}
-                          onClick={(e) => openLightbox(i, e)}
-                          className={clsx(classes.imgResponsive, classes.lightboxImage)}
-                          title={plot.filename}
-                          alt={plot.filename}
-                        />
-                      </LazyLoad>
-                    </Grid>
-                  ))}
-                </Grid>
-              </CardContent>
-            </Card>
+      <Grid item xs={12}>
+        {inputTable.length > 0 ? (
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Card>
+                <CardHeader title="Input" />
+                <CardContent className={classes.cardTableResponsive}>
+                  <CustomTable
+                    columns={inputColumns}
+                    data={inputTable}
+                    hasPagination={false}
+                    hasColumnVisibility={false}
+                    remote={false}
+                    hasSearching={false}
+                    hasToolbar={false}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
-        </Grid>
-      ) : null}
+        ) : null}
+      </Grid>
 
-      {inputTable.length > 0 ? (
-        <Grid container spacing={2}>
-          <Grid item xs={12} className={classes.block}>
-            <Card>
-              <CardHeader title="Input" />
-              <CardContent className={classes.cardTableResponsive}>
-                <CustomTable
-                  columns={inputColumns}
-                  data={inputTable}
-                  hasPagination={false}
-                  hasColumnVisibility={false}
-                  remote={false}
-                  hasSearching={false}
-                  hasToolbar={false}
-                />
-              </CardContent>
-            </Card>
+      <Grid item xs={12}>
+        {outputTable.length > 0 ? (
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Card>
+                <CardHeader title="Output" />
+                <CardContent className={classes.cardTableResponsive}>
+                  <CustomTable
+                    columns={outputColumns}
+                    data={outputTable}
+                    hasGrouping
+                    grouping={[{ columnName: 'ccd_filename' }]}
+                    hasPagination={false}
+                    hasColumnVisibility={false}
+                    remote={false}
+                    hasSearching={false}
+                    hasToolbar={false}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
-        </Grid>
-
-      ) : null}
-
-      {outputTable.length > 0 ? (
-        <Grid container spacing={2}>
-          <Grid item xs={12} className={classes.block}>
-            <Card>
-              <CardHeader title="Output" />
-              <CardContent className={classes.cardTableResponsive}>
-                <CustomTable
-                  columns={outputColumns}
-                  data={outputTable}
-                  hasGrouping
-                  grouping={[{ columnName: 'ccd_filename' }]}
-                  hasPagination={false}
-                  hasColumnVisibility={false}
-                  remote={false}
-                  hasSearching={false}
-                  hasToolbar={false}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      ) : null}
+        ) : null}
+      </Grid>
 
       <CustomDialog
         maxWidth="md"
         visible={outputLog.visible}
-        setVisible={handleCustomLogClose}
+        setVisible={handleOutputLogClose}
         title={outputLog.title}
         content={<CustomLog data={outputLog.content} />}
         headerStyle={classes.logToolbar}
         bodyStyle={classes.logBody}
+        wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px' }}
+      />
+
+      <CustomDialog
+        maxWidth="lg"
+        visible={inputCsvVisible}
+        setVisible={handleInputCsvClose}
+        title={inputCsv.title}
+        content={() => (
+          <CustomTable
+            columns={inputCsvTable.columns}
+            data={inputCsvTable.rows}
+            totalCount={inputCsvTable.count}
+            loadData={loadInputCsvTableData}
+            hasSearching={false}
+            hasSorting={false}
+          />
+        )}
         wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px' }}
       />
 
@@ -661,7 +725,7 @@ function AstrometryAsteroid({
           </Modal>
         ) : null}
       </ModalGateway>
-    </>
+    </Grid>
   );
 }
 

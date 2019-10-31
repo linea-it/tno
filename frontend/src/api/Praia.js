@@ -122,11 +122,13 @@ export const getAsteroidOutputsTree = ({ id }) => axios.get(
 
 export const getAstrometryPlots = ({ id }) => axios.get(`/astrometry_asteroids/${id}/plot_ccd/`).then((res) => res.data);
 
-export const getCSV = (filepath, page, pageSize) => axios.get(
-  `${
-  this.api
-  }/read_csv?filepath=${filepath}&page=${page}&pageSize=${pageSize}`,
-);
+export const getCSV = ({ filepath, page, pageSize }) => {
+  const params = { filepath, page, pageSize };
+
+  return axios.get('/read_csv/', {
+    params,
+  }).then((res) => res.data);
+};
 
 export const getOutputFile = (filepath) => {
   const replaced_filepath = filepath.replace('/data', '');

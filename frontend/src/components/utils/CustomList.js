@@ -33,7 +33,7 @@ function CustomList({ data, height, width }) {
     <List className={classes.root} style={{ height, width }}>
       {data.map((item, i, arr) => (
         <ListItem
-          key={item.title}
+          key={i}
           divider={i !== arr.length - 1}
           dense={item.dense ? item.dense : false}
         >
