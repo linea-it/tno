@@ -592,7 +592,7 @@ function AstrometryAsteroid({
               </Card>
             </Grid>
           </Grid>
-        ) : null }
+        ) : null}
       </Grid>
 
       <Grid item xs={12}>
@@ -704,7 +704,7 @@ function AstrometryAsteroid({
             hasSorting={false}
           />
         )}
-        wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px' }}
+      wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px' }}
       />
 
       <ModalGateway>
