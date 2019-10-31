@@ -512,7 +512,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     loadExecutionStatistics();
   }, [count]);
 
-  console.log(execution_stats);
 
   const donutDataStatist = [
     { name: 'Success', value: execution_stats.success, color: '#009900' },
@@ -676,7 +675,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           </Grid>
         </Grid>
       </Grid>
-    </Grid>
+    </Grid >
   );
 }
 export default withRouter(AstrometryDetail);
