@@ -13,7 +13,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import {
-  BrowserRouter as Router, Route, Link, Redirect, Switch
+  BrowserRouter as Router, Route, Link, Redirect,
 } from 'react-router-dom';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -48,6 +48,9 @@ import FilterObjects from './components/FilterObjects';
 import FilterObjectsDetail from './components/FilterObjectsDetail';
 import SkybotDetail from './components/SkybotDetail';
 import PointingsDetail from './components/PointingsDetail';
+import SearchSssoDetail from './components/SearchSssoDetail';
+import { Switch } from 'react-router-dom';
+
 
 const drawerWidth = 240;
 
@@ -301,14 +304,14 @@ function MiniDrawer() {
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite')} />
                 </ListItemIcon>
               ) : (
-                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                  {sssoOpen ? (
-                    <ExpandLess className={classes.expandClosed} />
-                  ) : (
-                    <ExpandMore className={classes.expandClosed} />
-                  )}
-                </ListItemIcon>
-              )}
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    {sssoOpen ? (
+                      <ExpandLess className={classes.expandClosed} />
+                    ) : (
+                        <ExpandMore className={classes.expandClosed} />
+                      )}
+                  </ListItemIcon>
+                )}
               <ListItemText
                 primary="Search SSSO"
                 className={classes.textDrawer}
@@ -451,14 +454,16 @@ function MiniDrawer() {
               <Route exact path="/occultations/:id" render={(props) => <OccultationsDetail {...props} setTitle={setTitle} />} />
               <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
               <Route exact path="/pointings" render={(props) => <Pointings {...props} setTitle={setTitle} />} />
-              <Route exact path="/skybot" render={(props) => <SkyBotRun {...props} setTitle={setTitle} />} />
+              <Route exact path="/skybot" render={(props) => <Skybot {...props} setTitle={setTitle} />} />
               <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
               <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
               <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
               <Route exact path="/skybot/:id" render={(props) => <SkybotDetail {...props} setTitle={setTitle} />} />
               <Route exact path="/pointings/:id" render={(props) => <PointingsDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/search-ssso-detail/:id" render={(props) => <SearchSssoDetail {...props} setTitle={setTitle} />} />
               <Redirect path="/" to="/dashboard" />
             </Switch>
+
           </main>
         </div>
         <Footer drawerOpen={open} />

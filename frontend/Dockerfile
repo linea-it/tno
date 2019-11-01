@@ -24,5 +24,5 @@ RUN sed --regexp-extended --in-place=.bak 's%^pid\s+/var/run/nginx.pid;%pid /var
 COPY --from=builder /app/build /var/www/frontend
 RUN chgrp nginx /var/www/frontend
 RUN chmod -R g+w /var/www/frontend
-# ADD ./nginx/production.conf /etc/nginx/conf.d/default.conf
+ADD ./nginx/production.conf /etc/nginx/conf.d/default.conf
 USER nginx

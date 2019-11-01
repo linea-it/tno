@@ -13,7 +13,6 @@ import BugIcon from '@material-ui/icons/BugReport';
 import Toolbar from '@material-ui/core/Toolbar';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import moment from 'moment';
 import CustomList from './utils/CustomList';
 import {
   getOrbitRunById,
@@ -25,6 +24,7 @@ import { Donut, TimeProfile } from './utils/CustomChart';
 import CustomTable from './utils/CustomTable';
 import CustomDialog from './utils/CustomDialog';
 import CustomLog from './utils/CustomLog';
+import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function RefineOrbitDetail({ history, match, setTitle }) {
+function SkybotRunDetail({ history, match, setTitle }) {
   const classes = useStyles();
 
   const { id } = match.params;
@@ -177,11 +177,13 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       name: 'h_execution_time',
       title: 'Execution Time',
       align: 'center',
-      customElement: (row) => (
-        <span>
-          {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ""}
-        </span>
-      ),
+      customElement: (row) => {
+        return (
+          <span>
+            {moment.utc(row.execution_time * 1000).format('HH:mm:ss')}
+          </span>
+        );
+      },
       width: 140,
     },
     {
@@ -457,7 +459,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
   );
 }
 
-RefineOrbitDetail.propTypes = {
+SkybotRunDetail.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       id: PropTypes.string.isRequired,
@@ -470,4 +472,4 @@ RefineOrbitDetail.propTypes = {
 };
 
 
-export default withRouter(RefineOrbitDetail);
+export default withRouter(SkybotRunDetail);

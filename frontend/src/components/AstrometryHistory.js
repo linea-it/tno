@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/styles';
 import Icon from '@material-ui/core/Icon';
 import Table from './utils/CustomTable';
 import { getPraiaRuns } from '../api/Praia';
+import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
@@ -191,7 +192,7 @@ function AstrometryHistory({ history, reloadHistory }) {
       customElement: (row) => {
         return (
           <span>
-            {row.execution_time.substring(0, 8)}
+            {row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}
           </span>
         );
       },

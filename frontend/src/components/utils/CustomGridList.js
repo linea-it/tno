@@ -25,14 +25,14 @@ function CustomGridList({
   return (
     <>
       <Grid container spacing={2}>
-        {data.map((row) => {
+        {data.map((row, i) => {
           // eslint-disable-next-line radix
           const asteroidName = parseInt(row.asteroid_number) > 0
             ? `${row.asteroid_name} (${row.asteroid_number})`
             : row.asteroid_name;
 
           return (
-            <Grid item xs={12} md={4}>
+            <Grid key={i} item xs={12} md={4}>
               <Card>
                 <CardHeader title={`${row.date_time} - ${asteroidName}`} />
                 <CardContent>

@@ -192,7 +192,7 @@ function Skybot({ setTitle, history }) {
           color="primary"
           onClick={handleDialogSubmit}
         >
-            Ok
+          Ok
         </Button>
       </Paper>
     </Grid>
@@ -242,8 +242,8 @@ function Skybot({ setTitle, history }) {
               title={row.status}
             >
               {' '}
-Running
-
+              Running
+              
             </span>
           );
         }
@@ -253,8 +253,8 @@ Running
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
             >
-Warning
-
+              Warning
+              
             </span>
           );
         }
@@ -264,8 +264,8 @@ Warning
               className={clsx(classes.btn, classes.btnFailure)}
               title={row.status}
             >
-Failure
-
+              Failure
+              
             </span>
           );
         }
@@ -275,8 +275,8 @@ Failure
               className={clsx(classes.btn, classes.btnNotExecuted)}
               title={row.status}
             >
-Not Executed
-
+              Not Executed
+              
             </span>
           );
         }
@@ -285,8 +285,8 @@ Not Executed
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
           >
-Success
-
+            Success
+            
           </span>
         );
       },
@@ -312,6 +312,11 @@ Success
     },
     {
       name: 'exposure', title: 'Pointings', width: 100, align: 'center',
+      name: 'execution_time', title: 'Execution Time', width: 150, align: 'center',
+      customElement: (row) => {
+        console.log(row.execution_time);
+        return <span>{row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}</span>
+      }
     },
     {
       name: 'id',
