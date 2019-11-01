@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import clsx from 'clsx';
-import { Card, CardHeader, CardContent, Typography, makeStyles } from '@material-ui/core';
+import {
+  Card, CardHeader, CardContent, Typography, makeStyles,
+} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
 import Label from '@material-ui/core/InputLabel';
@@ -12,9 +14,9 @@ import Dialog from '@material-ui/core/Dialog';
 import Paper from '@material-ui/core/Paper';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import { createSkybotRun, getSkybotRunList } from '../api/SkyBotRun';
-import Table from './utils/CustomTable';
 import Interval from 'react-interval';
+import { createSkybotRun, getSkybotRunList } from '../api/Skybot';
+import Table from './utils/CustomTable';
 
 const useStyles = makeStyles((theme) => ({
   typography: {
@@ -84,8 +86,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function SkyBotRun({ setTitle }) {
-
+function Skybot({ setTitle, history }) {
   const [selectRunValue, setSelectRunValue] = useState('period');
   const [initialDate, setInitialDate] = useState(new Date());
   const [finalDate, setFinalDate] = useState(new Date());
@@ -99,15 +100,15 @@ function SkyBotRun({ setTitle }) {
   const pageSizes = [5, 10, 15];
   const [dialog, setDialog] = useState({
     visible: false,
-    content: " ",
-    title: " ",
+    content: ' ',
+    title: ' ',
   });
 
   const classes = useStyles();
 
 
   useEffect(() => {
-    setTitle("SkyBot Run");
+    setTitle('Skybot Run');
     loadData();
   }, []);
 
@@ -118,12 +119,14 @@ function SkyBotRun({ setTitle }) {
   }, [controlSubmit]);
 
   const loadData = (event) => {
-    let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
+    const page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
     const pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
 
-    getSkybotRunList({ page: page, pageSize: pageSize, sortField: sortField, sortOrder: sortOrder })
-      .then(res => {
-        const data = res.data;
+    getSkybotRunList({
+      page, pageSize, sortField, sortOrder,
+    })
+      .then((res) => {
+        const { data } = res;
         setTableData(data.results);
         setTotalSize(data.count);
       });
@@ -135,14 +138,14 @@ function SkyBotRun({ setTitle }) {
         type_run: selectRunValue,
         date_initial: initialDate,
         date_final: finalDate,
-      }
+      },
     ).then(() => {
       loadData();
-    })
+    });
   };
 
   const handleAllPointings = () => {
-    setSelectRunValue("all");
+    setSelectRunValue('all');
     setInitialDate('');
     setFinalDate('');
     setControlSubmit(true);
@@ -152,71 +155,65 @@ function SkyBotRun({ setTitle }) {
   const handleByPeriod = () => {
     setInitialDate(new Date());
     setFinalDate(new Date());
-    setDialog({ visible: true })
+    setDialog({ visible: true });
   };
 
   const handleDialogSubmit = () => {
     setDialog({ visible: false });
     handleSubmit();
-  }
-
-  const loadDialogContent = () => {
-    return (
-      <Grid container justify="space-around">
-        <Paper>
-          <MuiPickersUtilsProvider utils={DateFnsUtils} >
-            <KeyboardDatePicker
-              className={classes.initialDate}
-              variant="inline"
-              format={"yyyy/MM/dd"}
-              id="date-picker-inline"
-              label={"Initial Date"}
-              value={initialDate}
-              onChange={(date) => setInitialDate(date)}
-            />
-            <KeyboardDatePicker
-              className={classes.finalDate}
-              variant="inline"
-              format={"yyyy/MM/dd"}
-              id="date-picker-inline"
-              label={"Final Date"}
-              value={finalDate}
-              onChange={(date) => setFinalDate(date)}
-            />
-          </MuiPickersUtilsProvider >
-          <Button
-            className={classes.dialogButton}
-            variant="contained"
-            color="primary"
-            onClick={handleDialogSubmit}
-          >
-            Ok
-          </Button>
-        </Paper>
-      </Grid>
-    )
   };
+
+  const loadDialogContent = () => (
+    <Grid container justify="space-around">
+      <Paper>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <KeyboardDatePicker
+            className={classes.initialDate}
+            variant="inline"
+            format="yyyy/MM/dd"
+            id="date-picker-inline"
+            label="Initial Date"
+            value={initialDate}
+            onChange={(date) => setInitialDate(date)}
+          />
+          <KeyboardDatePicker
+            className={classes.finalDate}
+            variant="inline"
+            format="yyyy/MM/dd"
+            id="date-picker-inline"
+            label="Final Date"
+            value={finalDate}
+            onChange={(date) => setFinalDate(date)}
+          />
+        </MuiPickersUtilsProvider>
+        <Button
+          className={classes.dialogButton}
+          variant="contained"
+          color="primary"
+          onClick={handleDialogSubmit}
+        >
+            Ok
+        </Button>
+      </Paper>
+    </Grid>
+  );
 
   const handleSelectRunClick = () => {
     switch (selectRunValue) {
-      case "all":
+      case 'all':
         handleAllPointings();
         break;
-      case "period":
+      case 'period':
         handleByPeriod();
         break;
     }
   };
 
-  const handleClickHistoryTable = (row) => {
-    //TODO: Enviar o id desta tabela para a página de detalhes
-  };
-
 
   const loadMenuItems = () => {
     const options = [
-      { title: "All Pointings", value: "all" },
-      { title: "By Period", value: "period" },
+      { title: 'All Pointings', value: 'all' },
+      { title: 'By Period', value: 'period' },
     ];
 
     return options.map((el, i) => (
@@ -233,14 +230,19 @@ function SkyBotRun({ setTitle }) {
 
   const tableColumns = [
     {
-      name: 'status', title: 'Status', width: 140, align: 'center',
+      name: 'status',
+      title: 'Status',
+      width: 140,
+      align: 'center',
       customElement: (row) => {
         if (row.status === 'running') {
           return (
             <span
               className={clsx(classes.btn, classes.btnRunning)}
               title={row.status}
-            > Running</span>
+            >
+            Running
+            </span>
           );
         }
         if (row.status === 'warning') {
@@ -248,7 +250,9 @@ function SkyBotRun({ setTitle }) {
             <span
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
-            >Warning</span>
+            >
+            Warning
+            </span>
           );
         }
         if (row.status === 'failure') {
@@ -256,7 +260,9 @@ function SkyBotRun({ setTitle }) {
             <span
               className={clsx(classes.btn, classes.btnFailure)}
               title={row.status}
-            >Failure</span>
+            >
+            Failure
+            </span>
           );
         }
         if (row.status === 'not_executed') {
@@ -264,43 +270,62 @@ function SkyBotRun({ setTitle }) {
             <span
               className={clsx(classes.btn, classes.btnNotExecuted)}
               title={row.status}
-            >Not Executed</span>
+            >
+            Not Executed
+            </span>
           );
         }
         return (
           <span
             className={clsx(classes.btn, classes.btnSuccess)}
             title={row.status}
-          >Success</span>
+          >
+            Success
+          </span>
         );
-      }
+      },
     },
-    { name: 'owner', title: 'Owner', width: 140, align: 'left' },
     {
+      name: 'owner', title: 'Owner', width: 140, align: 'left',
+    },
+    {
+      name: 'execution_time',
+      title: 'Execution Time',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.execution_time.substring(0, 8)}</span>,
+    },
+    {
+      name: 'start', title: 'Start', width: 200, align: 'center',
+    },
+    {
+      name: 'type_run', title: 'Type', width: 120, align: 'center',
+    },
+    {
+      name: 'rows', title: 'Rows', width: 100, align: 'center',
+    },
+    {
+      name: 'exposure', title: 'Pointings', width: 100, align: 'center',
       name: 'execution_time', title: 'Execution Time', width: 150, align: 'center',
       customElement: (row) => {
         console.log(row.execution_time);
         return <span>{row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}</span>
       }
     },
-    { name: 'start', title: 'Start', width: 200, align: 'center' },
-    { name: 'type_run', title: 'Type', width: 120, align: 'center' },
-    { name: 'rows', title: 'Rows', width: 100, align: 'center' },
-    { name: 'exposure', title: 'Pointings', width: 100, align: 'center' },
     {
       name: 'id',
       title: ' ',
       width: 100,
       icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: handleClickHistoryTable,
+      action: (row) => history.push(`/skybot/${row.id}`),
       align: 'center',
     },
-  ]
+  ];
 
   return (
     <Grid>
       <Interval
-        enabled={true}
+        enabled
         timeout={10000}
         callback={loadData}
       />
@@ -329,7 +354,7 @@ function SkyBotRun({ setTitle }) {
                   onClick={handleSelectRunClick}
                 >
                   Run
-                  </Button>
+                </Button>
               </FormControl>
             </CardContent>
           </Card>
@@ -348,24 +373,23 @@ function SkyBotRun({ setTitle }) {
                 loadData={loadData}
                 pageSizes={pageSizes}
                 hasSearching={false}
-                hasPagination={true}
+                hasPagination
                 hasColumnVisibility={false}
                 hasToolbar={false}
-                reload={true}
+                reload
                 totalCount={totalSize}
-              >
-              </Table>
+              />
             </CardContent>
           </Card>
         </Grid>
       </Grid>
       <Dialog
         open={dialog.visible}
-        onClose={() => setDialog({ visible: false, content: " ", title: " " })}
+        onClose={() => setDialog({ visible: false, content: ' ', title: ' ' })}
       >
         {loadDialogContent()}
       </Dialog>
     </Grid>
   );
-};
-export default withRouter(SkyBotRun);
+}
+export default withRouter(Skybot);

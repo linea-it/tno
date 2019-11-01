@@ -500,3 +500,111 @@ TimeProfile.propTypes = {
     PropTypes.object,
   ]).isRequired,
 };
+
+export function CCD({ data, width, height }) {
+  const classes = useStyles();
+  const Plot = createPlotlyComponent(Plotly);
+
+  const rows = [];
+
+  data.ccds.forEach((row, i) => {
+    let showlegend = false;
+    if (i === 0) {
+      showlegend = true;
+    }
+    rows.push({
+      x: row.x,
+      y: row.y,
+      mode: 'lines',
+      line: {
+        color: '#3972b3',
+      },
+      type: 'scatter',
+      name: 'CCDs',
+      showlegend,
+      hoverinfo: 'skip',
+    });
+  });
+
+  rows.push({
+    x: data.asteroids.x,
+    y: data.asteroids.y,
+    mode: 'markers',
+    type: 'scatter',
+    name: 'Asteroids',
+    legendgroup: 'Asteroid',
+  });
+
+  rows.push({
+    x: [data.asteroidsLimit.x[1] - 0.5, data.asteroidsLimit.x[1]],
+    y: [data.asteroidsLimit.y[1] + 0.1, data.asteroidsLimit.y[1]],
+    text: ['Cone Search Radius'],
+    name: 'Cone Search Radius',
+    mode: 'text',
+    showlegend: false,
+    textfont: {
+      color: 'rgba(255, 26, 26, 0.7)',
+      size: 18,
+    },
+  });
+
+  return (
+    <Plot
+      data={rows}
+      className={classes.plotWrapper}
+      layout={{
+        width,
+        height,
+        hovermode: 'closest',
+        autosize: true,
+        xaxis: {
+          title: 'RAº',
+        },
+        yaxis: {
+          title: 'Decº',
+          scaleanchor: 'x',
+        },
+        shapes: [
+          {
+            opacity: 0.5,
+            xref: 'x',
+            yref: 'y',
+            x0: data.asteroidsLimit.x[0],
+            y0: data.asteroidsLimit.y[0],
+            x1: data.asteroidsLimit.x[1],
+            y1: data.asteroidsLimit.y[1],
+            type: 'circle',
+            line: {
+              color: '#ff1a1a',
+            },
+          },
+        ],
+      }}
+      config={{
+        scrollZoom: true,
+        displaylogo: false,
+        responsive: true,
+      }}
+    />
+  );
+}
+
+CCD.defaultProps = {
+  width: 'auto',
+  height: 'auto',
+};
+
+CCD.propTypes = {
+  width: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]),
+  height: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]),
+  data: PropTypes.shape({
+    x: PropTypes.array,
+    y: PropTypes.array,
+  }).isRequired,
+};

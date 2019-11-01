@@ -13,6 +13,7 @@ import BugIcon from '@material-ui/icons/BugReport';
 import Toolbar from '@material-ui/core/Toolbar';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import moment from 'moment';
 import CustomList from './utils/CustomList';
 import {
   getOrbitRunById,
@@ -24,7 +25,6 @@ import { Donut, TimeProfile } from './utils/CustomChart';
 import CustomTable from './utils/CustomTable';
 import CustomDialog from './utils/CustomDialog';
 import CustomLog from './utils/CustomLog';
-import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -177,14 +177,11 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       name: 'h_execution_time',
       title: 'Execution Time',
       align: 'center',
-      customElement: (row) => {
-        console.log(row.execution_time);
-        return (
-          <span>
-            {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ""}
-          </span>
-        );
-      },
+      customElement: (row) => (
+        <span>
+          {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ""}
+        </span>
+      ),
       width: 140,
     },
     {
