@@ -49,7 +49,6 @@ import FilterObjectsDetail from './components/FilterObjectsDetail';
 import SkybotDetail from './components/SkybotDetail';
 import PointingsDetail from './components/PointingsDetail';
 import SearchSssoDetail from './components/SearchSssoDetail';
-import { Switch } from 'react-router-dom';
 import SkybotAsteroid from './components/SkybotAsteroid';
 
 const drawerWidth = 240;
