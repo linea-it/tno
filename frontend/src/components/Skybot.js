@@ -306,6 +306,11 @@ function Skybot({ setTitle, history }) {
     },
     {
       name: 'exposure', title: 'Pointings', width: 100, align: 'center',
+      name: 'execution_time', title: 'Execution Time', width: 150, align: 'center',
+      customElement: (row) => {
+        console.log(row.execution_time);
+        return <span>{row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}</span>
+      }
     },
     {
       name: 'id',

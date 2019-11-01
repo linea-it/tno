@@ -188,7 +188,6 @@ function RefineOrbitAsteroid({
   ];
 
   useEffect(() => {
-    console.log(history);
     setTitle('Refine Orbit');
     setAsteroidData([]);
     setAsteroidList([]);
@@ -214,8 +213,7 @@ function RefineOrbitAsteroid({
       setInputTableData(tableData);
     });
     getAsteroidFiles({ id }).then((data) => {
-      console.log("Data: ", data);
-      const resultData = data.results.map((res) => ({
+        const resultData = data.results.map((res) => ({
         filename: res.filename,
         h_size: res.h_size,
         file_type: res.file_type,
@@ -364,9 +362,6 @@ function RefineOrbitAsteroid({
   };
 
   const handleBackNavigation = () => history.push(`/refine-orbit/${asteroidData.orbit_run}`);
-
-
-  console.log("Asteroid: ", asteroidData);
 
 
   return (

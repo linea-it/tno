@@ -159,7 +159,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       align: 'center',
       customElement: (row) => (
           <span>
-            {moment.utc(row.execution_time * 1000).format('HH:mm:ss')}
+            {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ""}
           </span>
         ),
       width: 140,
