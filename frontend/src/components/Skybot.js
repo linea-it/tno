@@ -241,7 +241,7 @@ function Skybot({ setTitle, history }) {
               className={clsx(classes.btn, classes.btnRunning)}
               title={row.status}
             >
-            Running
+              Running
             </span>
           );
         }
@@ -251,7 +251,7 @@ function Skybot({ setTitle, history }) {
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
             >
-            Warning
+              Warning
             </span>
           );
         }
@@ -261,7 +261,7 @@ function Skybot({ setTitle, history }) {
               className={clsx(classes.btn, classes.btnFailure)}
               title={row.status}
             >
-            Failure
+              Failure
             </span>
           );
         }
@@ -271,7 +271,7 @@ function Skybot({ setTitle, history }) {
               className={clsx(classes.btn, classes.btnNotExecuted)}
               title={row.status}
             >
-            Not Executed
+              Not Executed
             </span>
           );
         }
@@ -293,7 +293,7 @@ function Skybot({ setTitle, history }) {
       title: 'Execution Time',
       width: 150,
       align: 'center',
-      customElement: (row) => <span>{row.execution_time.substring(0, 8)}</span>,
+      customElement: (row) => <span>{row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}</span>,
     },
     {
       name: 'start', title: 'Start', width: 200, align: 'center',
@@ -308,7 +308,7 @@ function Skybot({ setTitle, history }) {
       name: 'exposure', title: 'Pointings', width: 100, align: 'center',
       name: 'execution_time', title: 'Execution Time', width: 150, align: 'center',
       customElement: (row) => {
-        console.log(row.execution_time);
+
         return <span>{row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}</span>
       }
     },
