@@ -18,8 +18,6 @@ import {
 } from '../api/Prediction';
 import CustomTable from './utils/CustomTable';
 import { getOrbitRuns } from '../api/Orbit';
-// import Dialog from "@material-ui/core/Dialog";
-// import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from "./utils/CustomDialog";
 import ReactInterval from 'react-interval';
 
@@ -365,7 +363,6 @@ function PredictionOccultation({ history, setTitle }) {
     })
       .then((res) => {
         setInputArray(res.results);
-        console.log(res.results);
       });
 
 
@@ -405,10 +402,6 @@ function PredictionOccultation({ history, setTitle }) {
 
   // }, [inputArray]);
 
-
-  // catalogArray[0].id === "undefined" ? console.log("Catalog Id still undefine") : console.log("Now ok");
-
-  // (
 
   useEffect(() => {
     if (typeof (catalogArray[0]) !== 'undefined') {

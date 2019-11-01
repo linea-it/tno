@@ -13,10 +13,6 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import DescriptionIcon from '@material-ui/icons/Description';
 import Tooltip from '@material-ui/core/Tooltip';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import CheckIcon from '@material-ui/icons/Check';
-import WarningIcon from '@material-ui/icons/PriorityHigh';
-import ClearIcon from '@material-ui/icons/Clear';
 import CustomLog from './utils/CustomLog';
 import CustomDialog from './utils/CustomDialog';
 import {
@@ -26,7 +22,8 @@ import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
 import Stepper from './AstrometryStepper';
-import moment from 'moment';
+import ReactInterval from 'react-interval';
+
 
 const useStyles = makeStyles({
   card: {
@@ -48,10 +45,6 @@ const useStyles = makeStyles({
     marginTop: 1,
   },
   failureIcon: {
-    float: 'left',
-    marginTop: 1,
-  },
-  checkIcon: {
     float: 'left',
     marginTop: 1,
   },
@@ -108,7 +101,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   const [executionTime, setExecutionTime] = useState({});
   const [execution_stats, setExecution_stats] = useState({});
   const [tableData, setTableData] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState('list');
   const [toolButton, setToolButton] = useState('list');
   const [reload_interval, setReloadInterval] = useState(1);
@@ -228,7 +220,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       page, sizePerPage, filters, sortField, sortOrder, search: searchValue,
     }).then((res) => {
       setTableData(res.results);
-      setTotalCount(res.count);
       setTableParams({ ...tableParams, totalCount: res.count });
     });
   };
@@ -523,6 +514,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     loadExecutionStatistics();
   }, [count]);
 
+
   const donutDataStatist = [
     { name: 'Success', value: execution_stats.success, color: '#009900' },
     { name: 'Warning', value: execution_stats.warning, color: '#D79F15' },
@@ -574,39 +566,42 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   };
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6} xl={4}>
-            <Card>
-              <CardHeader
-                title={`Astrometry - ${runId} `}
-              />
-              <ListStat
-                data={list}
-              />
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={6} xl={4}>
-            <Card className={classes.card}>
-              <CardHeader
-                title="Execution Statistics"
-              />
-              <Donut
-                data={donutDataStatist}
-              />
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={6} xl={4}>
-            <Card className={classes.card}>
-              <CardHeader
-                title="Execution Time"
-              />
-              <Donut
-                data={donutDataExecutionTime}
-              />
-            </Card>
-          </Grid>
+    <Grid>
+      <ReactInterval
+        timeout={reload_interval * 1000}
+        enabled={interval_condition}
+        callback={handleInterval}
+      />
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6} xl={4}>
+          <Card>
+            <CardHeader
+              title={`Astrometry - ${runId} `}
+            />
+            <ListStat
+              data={list}
+            />
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={6} xl={4}>
+          <Card className={classes.card}>
+            <CardHeader
+              title="Execution Statistics"
+            />
+            <Donut
+              data={donutDataStatist}
+            />
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={6} xl={4}>
+          <Card className={classes.card}>
+            <CardHeader
+              title="Execution Time"
+            />
+            <Donut
+              data={donutDataExecutionTime}
+            />
+          </Card>
         </Grid>
       </Grid>
 
@@ -664,7 +659,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                 columns={columnsAsteroidTable === 'list' ? listColumnsTable : bugColumnsTable}
                 hasSearching
                 loadData={loadTableData}
-                totalCount={tableParams.totalCount}
+                totalCount={tableParams.totalCount ? tableParams.totalCount : 1}
                 hasColumnVisibility={false}
                 pageSizes={tableParams.pageSizes}
                 reload={tableParams.reload}
@@ -682,8 +677,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           </Grid>
         </Grid>
       </Grid>
-    </Grid>
+    </Grid >
   );
 }
-
 export default withRouter(AstrometryDetail);

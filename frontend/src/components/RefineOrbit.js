@@ -272,7 +272,7 @@ function RefineOrbit({ history, setTitle }) {
       container
       direction="row"
     >
-      <Grid item xs={12} md={4} fullwidth className={classes.gridWrapper}>
+      <Grid item xs={12} md={4} className={classes.gridWrapper}>
         <Card>
           <CardHeader
             title={<span>Execute</span>}
@@ -295,7 +295,7 @@ function RefineOrbit({ history, setTitle }) {
           </CardContent>
         </Card>
       </Grid>
-      <Grid xs={12} className={clsx(classes.block, classes.tableWrapper)}>
+      <Grid className={clsx(classes.block, classes.tableWrapper)}>
         <Card>
           <CardHeader
             title={<span>History</span>}
