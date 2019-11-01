@@ -241,9 +241,7 @@ function Skybot({ setTitle, history }) {
               className={clsx(classes.btn, classes.btnRunning)}
               title={row.status}
             >
-              {' '}
-              Running
-              
+            Running
             </span>
           );
         }
@@ -253,8 +251,7 @@ function Skybot({ setTitle, history }) {
               className={clsx(classes.btn, classes.btnWarning)}
               title={row.status}
             >
-              Warning
-              
+            Warning
             </span>
           );
         }
@@ -264,8 +261,7 @@ function Skybot({ setTitle, history }) {
               className={clsx(classes.btn, classes.btnFailure)}
               title={row.status}
             >
-              Failure
-              
+            Failure
             </span>
           );
         }
@@ -275,8 +271,7 @@ function Skybot({ setTitle, history }) {
               className={clsx(classes.btn, classes.btnNotExecuted)}
               title={row.status}
             >
-              Not Executed
-              
+            Not Executed
             </span>
           );
         }
@@ -286,7 +281,6 @@ function Skybot({ setTitle, history }) {
             title={row.status}
           >
             Success
-            
           </span>
         );
       },

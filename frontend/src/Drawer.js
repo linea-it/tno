@@ -13,7 +13,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import {
-  BrowserRouter as Router, Route, Link, Redirect,
+  BrowserRouter as Router, Route, Link, Redirect, Switch,
 } from 'react-router-dom';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -50,7 +50,7 @@ import SkybotDetail from './components/SkybotDetail';
 import PointingsDetail from './components/PointingsDetail';
 import SearchSssoDetail from './components/SearchSssoDetail';
 import { Switch } from 'react-router-dom';
-
+import SkybotAsteroid from './components/SkybotAsteroid';
 
 const drawerWidth = 240;
 
@@ -459,11 +459,11 @@ function MiniDrawer() {
               <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
               <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
               <Route exact path="/skybot/:id" render={(props) => <SkybotDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/skybot/:runId/asteroid/:id" render={(props) => <SkybotAsteroid {...props} setTitle={setTitle} />} />
               <Route exact path="/pointings/:id" render={(props) => <PointingsDetail {...props} setTitle={setTitle} />} />
               <Route exact path="/search-ssso-detail/:id" render={(props) => <SearchSssoDetail {...props} setTitle={setTitle} />} />
               <Redirect path="/" to="/dashboard" />
             </Switch>
-
           </main>
         </div>
         <Footer drawerOpen={open} />
