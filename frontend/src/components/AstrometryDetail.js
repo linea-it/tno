@@ -24,6 +24,7 @@ import ListStat from './utils/CustomList';
 import Stepper from './AstrometryStepper';
 import ReactInterval from 'react-interval';
 
+
 const useStyles = makeStyles({
   card: {
     marginBottom: 10,
@@ -337,7 +338,8 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       title: 'Execution Time',
       customElement: (row) => (
         <span>
-          {row.execution_time.substring(0, 8)}
+          {row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}
+         
         </span>
       ),
       width: 140,

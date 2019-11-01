@@ -279,7 +279,8 @@ function SkyBotRun({ setTitle }) {
     {
       name: 'execution_time', title: 'Execution Time', width: 150, align: 'center',
       customElement: (row) => {
-        return <span>{row.execution_time.substring(0, 8)}</span>
+        console.log(row.execution_time);
+        return <span>{row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}</span>
       }
     },
     { name: 'start', title: 'Start', width: 200, align: 'center' },

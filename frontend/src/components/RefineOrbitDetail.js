@@ -178,9 +178,10 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       title: 'Execution Time',
       align: 'center',
       customElement: (row) => {
+        console.log(row.execution_time);
         return (
           <span>
-            {moment.utc(row.execution_time * 1000).format('HH:mm:ss')}
+            {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ""}
           </span>
         );
       },

@@ -185,7 +185,7 @@ function RefineOrbit({ history, setTitle }) {
       align: 'center',
       customElement: (row) => (
         <span>
-          {row.execution_time.substring(0, 8)}
+          {row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}
         </span>
       ),
       width: 140,

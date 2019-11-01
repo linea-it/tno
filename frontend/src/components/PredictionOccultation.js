@@ -192,7 +192,7 @@ function PredictionOccultation({ history, setTitle }) {
       customElement: (row) => {
         return (
           <span>
-            {row.execution_time.substring(0, 8)}
+            {row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}
           </span>
         );
       },

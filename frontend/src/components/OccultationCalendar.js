@@ -9,39 +9,38 @@ import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/list/main.css';
 import { makeStyles } from '@material-ui/core/styles';
 // import { getCalendarEvents } from '../api/Prediction';
-import { getOccultations } from '../api/Occultation';
 import moment from 'moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { getOccultations } from '../api/Occultation';
 import AppBar from './AppBarCalendario';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   loading: {
     position: 'fixed',
-    top: 350,
-    bottom: 0,
-    left: '50%',
-    right: 0,
+    top: '50%',
+    left: 'calc(50% + 120px)',
     zIndex: 100,
+    transform: 'translate(-50%, -50%)',
+    animation: 'none',
   },
 
   label: {
-    float: "right",
+    float: 'right',
   },
   labelBlue: {
-    color: "#3788D8",
+    color: '#3788D8',
   },
   labelGreen: {
-    color: "#008000",
+    color: '#008000',
   },
 }));
 
 function OccultationCalendar({ history, setTitle, match: { params } }) {
-
   const [events, setEvents] = useState([]);
   const [initialDate, setInitialDate] = useState(params.sDate ? params.sDate : moment(new Date()).startOf('month').format('YYYY-MM-DD'));
   const [finalDate, setFinalDate] = useState(moment(new Date()).endOf('month').format('YYYY-MM-DD'));
   const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState(params.searching ? params.searching : "");
+  const [search, setSearch] = useState(params.searching ? params.searching : '');
   const [hasSearch, setHasSearch] = useState(false);
 
   const classes = useStyles();
@@ -72,8 +71,8 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     }
 
     getOccultations({ filters, pageSize: 3000 }).then((res) => {
-      let data = res.results;
-      let result = [];
+      const data = res.results;
+      const result = [];
 
       data.map((resp) => {
         // Se o asteroid tiver numero, o nome do asteroid passa a ser NAME(Number) se nao so NAME.
@@ -83,7 +82,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
           id: resp.id,
           title: asteroid_name,
           date: resp.date_time,
-          textColor: "white",
+          textColor: 'white',
         });
       });
 
@@ -97,7 +96,6 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     setTitle('Occultation Calendar');
 
     loadData();
-
   }, [initialDate, finalDate]);
 
   useEffect(() => {
@@ -116,25 +114,25 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
 
   const handleDateRender = (arg) => {
-    let start_date = moment(arg.view.currentStart).format("YYYY-MM-DD");
-    let end_date = moment(arg.view.currentEnd).subtract(1, 'days').format("YYYY-MM-DD");
+    const start_date = moment(arg.view.currentStart).format('YYYY-MM-DD');
+    const end_date = moment(arg.view.currentEnd).subtract(1, 'days').format('YYYY-MM-DD');
 
-    //Um problema que surgiu nesta página foi o seguinte:
-    //Quando o calendário renderiza, ele traz consigo uma data default que é especificada
-    //no atributo no componente. Se o calendário não fosse pra página de ocultações estaria tudo certo.
-    //Porém como ele vai pra outra página e retorna trazendo as informações de datas iniciais e finais
-    //então foi necessário montar um esquema pra que ele não se perdesse nas renderizações.
-    //Desto modo toda vez que ele renderiza, ou ele pega o valor dos params que retornam da página de
-    //ocultações ou ele renderiza um valor default do dia e mês corrente.
-    //Já a parte do código abaixo obriga o calendário re-renderizar, quebrando portanto a regra de valor
-    //default. Isso foi extemamente útil pra administrar o conteúdo de forma orgamizada.
-    //Ou seja, os valores default são sempre carregados na inicialização.
-    //Os valores abaixo definidos são sempre carregados a partir da navegação do usuário.
-    //Desta forma consegui amarrar o conteúdo.
+    // Um problema que surgiu nesta página foi o seguinte:
+    // Quando o calendário renderiza, ele traz consigo uma data default que é especificada
+    // no atributo no componente. Se o calendário não fosse pra página de ocultações estaria tudo certo.
+    // Porém como ele vai pra outra página e retorna trazendo as informações de datas iniciais e finais
+    // então foi necessário montar um esquema pra que ele não se perdesse nas renderizações.
+    // Desto modo toda vez que ele renderiza, ou ele pega o valor dos params que retornam da página de
+    // ocultações ou ele renderiza um valor default do dia e mês corrente.
+    // Já a parte do código abaixo obriga o calendário re-renderizar, quebrando portanto a regra de valor
+    // default. Isso foi extemamente útil pra administrar o conteúdo de forma orgamizada.
+    // Ou seja, os valores default são sempre carregados na inicialização.
+    // Os valores abaixo definidos são sempre carregados a partir da navegação do usuário.
+    // Desta forma consegui amarrar o conteúdo.
 
     setInitialDate(start_date);
     setFinalDate(end_date);
-  }
+  };
 
   // Variable used to change specific button name
   const buttonText = {
@@ -150,7 +148,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
       state: {
         date: e.event.start,
         view: e.view.type,
-        flag: "calendar",
+        flag: 'calendar',
         initialDate,
         finalDate,
         search,
@@ -163,16 +161,16 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     const time = moment(event.event.start).format('H');
 
     if (time >= 18) {
-      event.el.innerHTML = event.el.innerHTML + "<Icon id='sol_lua' class='fas fa-moon'></i>";
+      event.el.innerHTML = `${event.el.innerHTML}<Icon id='sol_lua' class='fas fa-moon'></i>`;
     } else {
-      event.el.innerHTML = event.el.innerHTML + "<Icon id='sol_lua' class='fas fa-sun'></i>";
+      event.el.innerHTML = `${event.el.innerHTML}<Icon id='sol_lua' class='fas fa-sun'></i>`;
     }
   };
 
   return (
 
     <div>
-      {loading && <CircularProgress size={120} thickness={0.8} className={classes.loading} ></CircularProgress>}
+      {loading && <CircularProgress size={120} thickness={0.8} className={classes.loading} />}
       <AppBar setSearch={setSearch} setHasSearch={setHasSearch} value={search} />
 
       {/* params.date is coming back from occulation.
@@ -195,7 +193,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
         weekNumbers
         eventRender={handleEventRender}
       />
-    </div >
+    </div>
 
   );
 }
