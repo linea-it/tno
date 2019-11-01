@@ -47,9 +47,10 @@ import Pointings from './components/Pointings';
 import FilterObjects from './components/FilterObjects';
 import FilterObjectsDetail from './components/FilterObjectsDetail';
 import SkybotDetail from './components/SkybotDetail';
-import SkybotAsteroid from './components/SkybotAsteroid';
 import PointingsDetail from './components/PointingsDetail';
 import SearchSssoDetail from './components/SearchSssoDetail';
+import { Switch } from 'react-router-dom';
+import SkybotAsteroid from './components/SkybotAsteroid';
 
 const drawerWidth = 240;
 
@@ -436,7 +437,6 @@ function MiniDrawer() {
         </Drawer>
         <div className={clsx(classes.bodyWrapper, open ? classes.bodyWrapperOpen : classes.bodyWrapperClose)}>
           <main className={classes.content}>
-
             <Switch>
               <Route exact path="/refine-orbit" render={(props) => <RefineOrbit {...props} setTitle={setTitle} />} />
               <Route exact path="/refine-orbit/:id" render={(props) => <RefineOrbitDetail {...props} setTitle={setTitle} />} />
@@ -458,9 +458,9 @@ function MiniDrawer() {
               <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
               <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
               <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
-              <Route exact path="/pointings/:id" render={(props) => <PointingsDetail {...props} setTitle={setTitle} />} />
               <Route exact path="/skybot/:id" render={(props) => <SkybotDetail {...props} setTitle={setTitle} />} />
               <Route exact path="/skybot/:runId/asteroid/:id" render={(props) => <SkybotAsteroid {...props} setTitle={setTitle} />} />
+              <Route exact path="/pointings/:id" render={(props) => <PointingsDetail {...props} setTitle={setTitle} />} />
               <Route exact path="/search-ssso-detail/:id" render={(props) => <SearchSssoDetail {...props} setTitle={setTitle} />} />
               <Redirect path="/" to="/dashboard" />
             </Switch>

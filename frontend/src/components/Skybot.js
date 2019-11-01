@@ -192,7 +192,7 @@ function Skybot({ setTitle, history }) {
           color="primary"
           onClick={handleDialogSubmit}
         >
-            Ok
+          Ok
         </Button>
       </Paper>
     </Grid>
