@@ -94,14 +94,14 @@ function Pointings({ setTitle, history }) {
       headerTooltip: 'flag indicating whether the image was downloaded from DES',
       sortingEnabled: false,
       customElement: (el) => (el.downloaded ? (
-        <span title={el.downloaded}>
+        <span title={el.downloaded.toString()}>
           <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
         </span>
       ) : (
-        <span title={el.downloaded}>
-          <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-        </span>
-      )),
+          <span title={el.downloaded.toString()}>
+            <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+          </span>
+        )),
     },
     {
       name: 'id',
@@ -130,6 +130,7 @@ function Pointings({ setTitle, history }) {
     // });
   }, []);
 
+
   return (
     <>
       <Grid container spacing={2}>
@@ -142,7 +143,7 @@ function Pointings({ setTitle, history }) {
                 data={pointingsTableData}
                 loadData={loadPointingsTableData}
                 totalCount={pointingsTableCount}
-                // hasSorting={false}
+              // hasSorting={false}
               />
             </CardContent>
           </Card>
