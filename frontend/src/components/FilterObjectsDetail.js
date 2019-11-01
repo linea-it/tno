@@ -130,10 +130,10 @@ function FilterObjectsDetail({ setTitle, match }) {
           <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
         </span>
       ) : (
-        <span title={el.filename}>
-          <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-        </span>
-      )),
+          <span title={el.filename}>
+            <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+          </span>
+        )),
     },
     {
       name: 'externallink',
@@ -154,10 +154,12 @@ function FilterObjectsDetail({ setTitle, match }) {
   }, []);
 
   const loadObjectsTableData = ({ currentPage, pageSize }) => {
-    getObjectsList({ tablename: stats.tablename, page: currentPage + 1, pageSize }).then((res) => {
-      setObjectsTableCount(res.count);
-      setObjectsTableData(res.results);
-    });
+    if (stats.tablename) {
+      getObjectsList({ tablename: stats.tablename, page: currentPage + 1, pageSize }).then((res) => {
+        setObjectsTableCount(res.count);
+        setObjectsTableData(res.results);
+      });
+    }
   };
 
   useEffect(() => {
