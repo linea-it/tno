@@ -365,7 +365,6 @@ function PredictionOccultation({ history, setTitle }) {
     })
       .then((res) => {
         setInputArray(res.results);
-        console.log(res.results);
       });
 
 
@@ -592,7 +591,7 @@ function PredictionOccultation({ history, setTitle }) {
 }
 
 PredictionOccultation.propTypes = {
-  history: PropTypes.objectOf(PropTypes.object).isRequired,
+  history: PropTypes.object.isRequired,
   setTitle: PropTypes.func.isRequired,
 };
 

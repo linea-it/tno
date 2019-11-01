@@ -273,8 +273,8 @@ function OccultationsDetail({ setTitle, match }) {
             <CardHeader title="Sky map (Aladin)" />
             <CardContent>
               <CustomSkymap
-                ra={occultation.ra_star_candidate}
-                dec={occultation.dec_star_candidate}
+                ra={occultation.ra_star_candidate ? occultation.ra_star_candidate : 0}
+                dec={occultation.dec_star_candidate ? occultation.dec_star_candidate : 0}
               />
             </CardContent>
           </Card>
