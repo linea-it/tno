@@ -220,8 +220,13 @@ function AstrometryAsteroid({
     {
       name: 'id',
       title: ' ',
-      icon: <Icon className={clsx(`fas fa-file-csv ${classes.iconDetail}`)} />,
-      action: (el) => setInputCsv({ title: el.filename, content: el.file_path, visible: false }),
+      customElement: (row) => {
+        if (row.file_type && row.file_type === "csv" && row.file_type !== "") {
+          return <Icon className={clsx(`fas fa-file-csv ${classes.iconDetail}`)}
+            onClick={() => setInputCsv({ title: row.filename, content: row.file_path, visible: false })}
+          />
+        }
+      },
     },
   ];
 
@@ -471,6 +476,7 @@ function AstrometryAsteroid({
       });
   };
 
+
   useEffect(() => {
     if (inputCsv.content !== '') loadInputCsvTableData({ currentPage: 0, pageSize: 10 });
   }, [inputCsv]);
@@ -704,7 +710,7 @@ function AstrometryAsteroid({
             hasSorting={false}
           />
         )}
-      wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px' }}
+        wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px' }}
       />
 
       <ModalGateway>
