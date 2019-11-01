@@ -218,6 +218,7 @@ function OccultationsDetail({ setTitle, match }) {
     ]);
   }, [occultation]);
 
+
   return (
     <>
       <Grid container spacing={2}>
