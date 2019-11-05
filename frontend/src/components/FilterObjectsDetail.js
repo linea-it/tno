@@ -63,6 +63,28 @@ const useStyles = makeStyles({
   highlightSqlBlock: {
     backgroundColor: '#fff',
   },
+  filterClassWrapper: {
+    color: 'rgba(0, 0, 0, 0.87)',
+    border: 'none',
+    cursor: 'default',
+    height: 32,
+    display: 'inline-flex',
+    outline: 0,
+    fontSize: '0.8125rem',
+    boxSizing: 'border-box',
+    transition: 'background-color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    alignItems: 'center',
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    whiteSpace: 'nowrap',
+    borderRadius: 16,
+    verticalAlign: 'middle',
+    justifyContent: 'center',
+    textDecoration: 'none',
+    backgroundColor: '#e0e0e0',
+    padding: 10,
+    margin: 2,
+    fontWeight: 'normal',
+  },
 });
 
 function FilterObjectsDetail({ setTitle, match }) {
@@ -139,11 +161,11 @@ function FilterObjectsDetail({ setTitle, match }) {
     {
       name: 'externallink',
       title: 'VizieR',
-      customElement: (el) => (
+      customElement: (el) => (el.externallink !== 'link' ? (
         <a href={el.externallink} target="_blank" rel="noopener noreferrer" className={classes.invisibleButton} title={el.externallink}>
           <Icon className={clsx(`fas fa-external-link-square-alt ${classes.iconDetail}`)} />
         </a>
-      ),
+      ) : '-'),
       align: 'center',
     },
   ];
@@ -167,8 +189,61 @@ function FilterObjectsDetail({ setTitle, match }) {
     }
   }, [stats]);
 
+  const filterClassesClick = () => {
+    console.log('hello');
+  };
+
   return (
     <>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={3} className={classes.block}>
+          <CustomCardStats
+            title="Objects"
+            services={stats.distinct_objects}
+            color="#4d4d4d"
+            icon="fa-meteor"
+          />
+        </Grid>
+        <Grid item xs={12} md={3} className={classes.block}>
+          <CustomCardStats
+            title="Rows"
+            services={stats.rows}
+            color="#3333ff"
+            icon="fa-stream"
+          />
+        </Grid>
+        <Grid item xs={12} md={3} className={classes.block}>
+          <CustomCardStats
+            title="Objects not on CCD"
+            services={stats.missing_pointing}
+            color="#804000"
+            icon="fa-eye-slash"
+          />
+        </Grid>
+        <Grid item xs={12} md={3} className={classes.block}>
+          <CustomCardStats
+            title="Class"
+            // services={stats.filter_dynclass}
+            customServices={() => {
+              const filterClasses = stats.filter_dynclass ? stats.filter_dynclass.split(';') : [];
+              console.log(filterClasses);
+              return (
+                <>
+                  <span title={filterClasses[0]} className={classes.filterClassWrapper}>
+                    {filterClasses[0]}
+                  </span>
+                  <span className={classes.filterClassWrapper} onClick={filterClassesClick}>...</span>
+                </>
+              );
+              // return filterClasses.map((el) => (
+              //   <span title={el} className={classes.filterClassWrapper}>{el}</span>
+              // ));
+            }}
+            color="#ff3385"
+            icon="fa-angle-double-right"
+          />
+        </Grid>
+      </Grid>
       <Grid container spacing={2}>
         <Grid item xs={12} md={4} className={classes.block}>
           <CustomCardStats
@@ -181,7 +256,7 @@ function FilterObjectsDetail({ setTitle, match }) {
         </Grid>
         <Grid item xs={12} md={4} className={classes.block}>
           <CustomCardStats
-            title="CCDs"
+            title="CCDs Images"
             services={stats.rows}
             color="#FF9500"
             icon="fa-database"
@@ -190,7 +265,7 @@ function FilterObjectsDetail({ setTitle, match }) {
         </Grid>
         <Grid item xs={12} md={4} className={classes.block}>
           <CustomCardStats
-            title="Need to be Download"
+            title="Need Downloading"
             services={stats.not_downloaded}
             color="#FF4A55"
             icon="fa-download"
@@ -304,22 +379,6 @@ function FilterObjectsDetail({ setTitle, match }) {
                     {' '}
                     {stats.filter_name}
                   </span>
-                  <br />
-                  <Divider style={{ marginTop: 30 }} />
-                  <div style={{ margin: '30px 0' }}>
-                    <span>
-                      <b>SQL:</b>
-                    </span>
-                    <Highlight lang="sql" value={sqlFormatter.format(stats.sql)} />
-                  </div>
-
-                  <Divider style={{ marginTop: 30 }} />
-                  <div style={{ margin: '30px 0' }}>
-                    <span>
-                      <b>SQL Create:</b>
-                    </span>
-                    <Highlight lang="sql" value={sqlFormatter.format(stats.sql_creation)} />
-                  </div>
                 </div>
               </CardContent>
             </Card>
