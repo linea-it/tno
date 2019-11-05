@@ -85,6 +85,20 @@ const useStyles = makeStyles({
     margin: 2,
     fontWeight: 'normal',
   },
+  allClassesInfo: {
+    padding: '10px 20px',
+    fontWeight: 'bold',
+    cursor: 'help',
+    position: 'relative',
+  },
+  classIconDetail: {
+    fontSize: 13,
+    position: 'absolute',
+    top: -3,
+    right: 2,
+    width: 'auto',
+    color: '#444',
+  },
 });
 
 function FilterObjectsDetail({ setTitle, match }) {
@@ -189,10 +203,6 @@ function FilterObjectsDetail({ setTitle, match }) {
     }
   }, [stats]);
 
-  const filterClassesClick = () => {
-    console.log('hello');
-  };
-
   return (
     <>
       <Grid container spacing={2}>
@@ -226,18 +236,17 @@ function FilterObjectsDetail({ setTitle, match }) {
             // services={stats.filter_dynclass}
             customServices={() => {
               const filterClasses = stats.filter_dynclass ? stats.filter_dynclass.split(';') : [];
-              console.log(filterClasses);
               return (
                 <>
-                  <span title={filterClasses[0]} className={classes.filterClassWrapper}>
+                  <span className={classes.filterClassWrapper}>
                     {filterClasses[0]}
                   </span>
-                  <span className={classes.filterClassWrapper} onClick={filterClassesClick}>...</span>
+                  <span title={filterClasses.join('; ')} className={clsx(classes.filterClassWrapper, classes.allClassesInfo)}>
+                    <span>...</span>
+                    <sup><Icon className={clsx('fas fa-info-circle', classes.classIconDetail)} /></sup>
+                  </span>
                 </>
               );
-              // return filterClasses.map((el) => (
-              //   <span title={el} className={classes.filterClassWrapper}>{el}</span>
-              // ));
             }}
             color="#ff3385"
             icon="fa-angle-double-right"

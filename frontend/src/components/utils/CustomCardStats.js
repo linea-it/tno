@@ -18,9 +18,9 @@ function CustomCardStats({
       borderLeft: `4px solid ${color}`,
       position: 'relative',
     },
-    // content: {
-    //   flex: '1 0 auto',
-    // },
+    content: {
+      flex: '1 0 auto',
+    },
     iconCard: {
       position: 'absolute',
       right: 15,
