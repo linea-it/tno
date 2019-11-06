@@ -10,13 +10,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Label from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
-import Dialog from '@material-ui/core/Dialog';
-import Paper from '@material-ui/core/Paper';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import Interval from 'react-interval';
 import { createSkybotRun, getSkybotRunList } from '../api/Skybot';
 import Table from './utils/CustomTable';
+
 
 const useStyles = makeStyles((theme) => ({
   typography: {
@@ -33,20 +32,11 @@ const useStyles = makeStyles((theme) => ({
     float: 'right',
     width: '15%',
   },
-  initialDate: {
-    marginTop: 50,
-    marginRight: 20,
-    marginBottom: 20,
-    marginLeft: 20,
-    float: 'left',
+
+  dateSet: {
+    marginTop: 30,
   },
-  finalDate: {
-    marginTop: 50,
-    marginRight: 20,
-    marginBottom: 20,
-    marginLeft: 20,
-    float: 'right',
-  },
+
   iconDetail: {
     fontSize: 18,
   },
@@ -88,21 +78,18 @@ const useStyles = makeStyles((theme) => ({
 
 function Skybot({ setTitle, history }) {
   const [selectRunValue, setSelectRunValue] = useState('period');
-  const [initialDate, setInitialDate] = useState(new Date());
-  const [finalDate, setFinalDate] = useState(new Date());
-  const [controlSubmit, setControlSubmit] = useState(false);
-  const [tablePage] = useState(1);
-  const [tablePageSize] = useState(10);
+  const [initialDate, setInitialDate] = useState(null);
+  const [finalDate, setFinalDate] = useState(null);
+  const [tablePage, setTablePage] = useState(1);
+  const [tablePageSize, setTablePageSize] = useState(10);
   const [totalSize, setTotalSize] = useState(0);
   const [sortField] = useState('-start');
   const [sortOrder] = useState(0);
   const [tableData, setTableData] = useState([]);
   const pageSizes = [5, 10, 15];
-  const [dialog, setDialog] = useState({
-    visible: false,
-    content: ' ',
-    title: ' ',
-  });
+  const [disabledRunButton, setDisabledRunButton] = useState(true);
+  const [disabledDate, setDisabledDate] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const classes = useStyles();
 
@@ -112,15 +99,52 @@ function Skybot({ setTitle, history }) {
     loadData();
   }, []);
 
+
+
   useEffect(() => {
-    if (controlSubmit) {
-      handleSubmit();
+    if (initialDate && finalDate) {
+      setDisabledRunButton(false);
     }
-  }, [controlSubmit]);
+
+    if (!initialDate || initialDate.toString() === "Invalid Date") {
+      setDisabledRunButton(true);
+    }
+
+    if (!finalDate || finalDate.toString() === "Invalid Date") {
+      setDisabledRunButton(true);
+    }
+
+  }, [initialDate, finalDate]);
+
+
+  useEffect(() => {
+    if (selectRunValue === "all") {
+      setDisabledDate(true);
+      setDisabledRunButton(false);
+    }
+
+    if (selectRunValue === "period") {
+      setDisabledDate(false);
+      setDisabledRunButton(true);
+      setInitialDate(null);
+      setFinalDate(null);
+    }
+
+  }, [selectRunValue]);
 
   const loadData = (event) => {
-    const page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
-    const pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
+    let page = null;
+    let pageSize = null;
+
+    if (event) {
+      page = event.currentPage + 1;
+      pageSize = event.pageSize;
+      setTablePage(page);
+      setTablePageSize(event.pageSize);
+    } else {
+      page = tablePage;
+      pageSize = tablePageSize;
+    }
 
     getSkybotRunList({
       page, pageSize, sortField, sortOrder,
@@ -129,6 +153,7 @@ function Skybot({ setTitle, history }) {
         const { data } = res;
         setTableData(data.results);
         setTotalSize(data.count);
+        setLoading(false);
       });
   };
 
@@ -140,75 +165,28 @@ function Skybot({ setTitle, history }) {
         date_final: finalDate,
       },
     ).then(() => {
+      setInitialDate(null);
+      setFinalDate(null);
+      setDisabledRunButton(true);
       loadData();
     });
   };
 
-  const handleAllPointings = () => {
-    setSelectRunValue('all');
-    setInitialDate('');
-    setFinalDate('');
-    setControlSubmit(true);
-    handleSubmit();
-  };
-
-  const handleByPeriod = () => {
-    setInitialDate(new Date());
-    setFinalDate(new Date());
-    setDialog({ visible: true });
-  };
-
-  const handleDialogSubmit = () => {
-    setDialog({ visible: false });
-    handleSubmit();
-  };
-
-  const loadDialogContent = () => (
-    <Grid container justify="space-around">
-      <Paper>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <KeyboardDatePicker
-            className={classes.initialDate}
-            variant="inline"
-            format="yyyy/MM/dd"
-            id="date-picker-inline"
-            label="Initial Date"
-            value={initialDate}
-            onChange={(date) => setInitialDate(date)}
-          />
-          <KeyboardDatePicker
-            className={classes.finalDate}
-            variant="inline"
-            format="yyyy/MM/dd"
-            id="date-picker-inline"
-            label="Final Date"
-            value={finalDate}
-            onChange={(date) => setFinalDate(date)}
-          />
-        </MuiPickersUtilsProvider>
-        <Button
-          className={classes.dialogButton}
-          variant="contained"
-          color="primary"
-          onClick={handleDialogSubmit}
-        >
-          Ok
-        </Button>
-      </Paper>
-    </Grid>
-  );
-
   const handleSelectRunClick = () => {
     switch (selectRunValue) {
       case 'all':
-        handleAllPointings();
+        setSelectRunValue('all');
+        setInitialDate('');
+        setFinalDate('');
+        setLoading(true);
+        handleSubmit();
         break;
       case 'period':
-        handleByPeriod();
+        setLoading(true);
+        handleSubmit();
         break;
     }
   };
-
 
   const loadMenuItems = () => {
     const options = [
@@ -330,7 +308,7 @@ function Skybot({ setTitle, history }) {
         callback={loadData}
       />
       <Grid container spacing={6}>
-        <Grid item lg={5} xl={3}>
+        <Grid item lg={6} xl={3}>
           <Card>
             <CardHeader
               title="SkyBot Run"
@@ -347,10 +325,34 @@ function Skybot({ setTitle, history }) {
                 >
                   {loadMenuItems()}
                 </Select>
+
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <KeyboardDatePicker
+                    disableFuture
+                    disabled={disabledDate}
+                    className={classes.dateSet}
+                    format="yyyy/MM/dd"
+                    label="Initial Date"
+                    value={initialDate}
+                    onChange={(date) => setInitialDate(date)}
+                  />
+                  <KeyboardDatePicker
+                    disableFuture
+                    disabled={disabledDate}
+                    className={classes.dateSet}
+
+                    format="yyyy/MM/dd"
+                    label="Final Date"
+                    value={finalDate}
+                    onChange={(date) => setFinalDate(date)}
+                  />
+                </MuiPickersUtilsProvider>
+
                 <Button
                   variant="contained"
                   color="primary"
                   className={classes.runButton}
+                  disabled={disabledRunButton}
                   onClick={handleSelectRunClick}
                 >
                   Run
@@ -360,6 +362,7 @@ function Skybot({ setTitle, history }) {
           </Card>
         </Grid>
       </Grid>
+
       <Grid container spacing={6}>
         <Grid item lg={12} xl={12}>
           <Card>
@@ -383,12 +386,6 @@ function Skybot({ setTitle, history }) {
           </Card>
         </Grid>
       </Grid>
-      <Dialog
-        open={dialog.visible}
-        onClose={() => setDialog({ visible: false, content: ' ', title: ' ' })}
-      >
-        {loadDialogContent()}
-      </Dialog>
     </Grid>
   );
 }
