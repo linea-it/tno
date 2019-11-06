@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
     float: 'right',
     width: '15%',
   },
-
   dateSet: {
     marginTop: 30,
   },
