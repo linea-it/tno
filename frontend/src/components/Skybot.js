@@ -12,8 +12,10 @@ import FormControl from '@material-ui/core/FormControl';
 import Interval from 'react-interval';
 import { createSkybotRun, getSkybotRunList } from '../api/Skybot';
 import Table from './utils/CustomTable';
-import TextField from '@material-ui/core/TextField';
 import ToolTip from '@material-ui/core/Tooltip';
+import DatePicker from 'react-date-picker';
+import Label from '@material-ui/core/FormLabel';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -21,9 +23,29 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 15,
   },
   runButton: {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(10),
     width: '30%',
     marginLeft: '70%',
+  },
+  initialDatePicker: {
+    position: "absolute",
+    zIndex: 2,
+    marginTop: 70,
+  },
+
+  finalDatePicker: {
+    position: "absolute",
+    zIndex: 2,
+    marginTop: 70,
+    marginLeft: 220,
+  },
+
+  initialDateLabel: {
+    marginTop: 20
+  },
+  finalDateLabel: {
+    marginTop: 20,
+    marginLeft: 145
   },
 
   filtersContainer: {
@@ -103,29 +125,6 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-function InputComponent({ ...props }) {
-  const classes = useStyles();
-  const [value, setValue] = useState(null);
-
-  const handleChange = event => {
-    setValue(event.target.value);
-    if (props.onChange) {
-      props.onChange(event);
-    }
-  };
-
-  return (
-    <div className={classes.root}>
-      <div className={classes.display}>{value}</div>
-      <input
-        className={classes.input}
-        {...props}
-        onChange={handleChange}
-        value={value}
-      />
-    </div>
-  );
-}
 
 function Skybot({ setTitle, history }) {
   const [selectRunValue, setSelectRunValue] = useState('period');
@@ -380,30 +379,24 @@ function Skybot({ setTitle, history }) {
                   </ToolTip>
                 </FormControl>
 
-                <TextField
-                  type="date"
+                <span className={classes.initialDateLabel}><Label >Initial Date</Label></span>
+                <DatePicker
+                  locale='en'
+                  className={classes.initialDatePicker}
                   disabled={disabledDate}
-                  className={classes.initialDate}
-                  defaultValue={initialDate}
-                  onChange={(date) => setInitialDate(date.target.value)}
-                  helperText={"Initial Date"}
-                  InputProps={{
-                    inputComponent: InputComponent
-                  }}
-
+                  value={initialDate}
+                  onChange={(date) => setInitialDate(date)}
+                  format={"y/MM/dd"}
                 />
 
-                <TextField
-                  type="date"
+                <span className={classes.finalDateLabel}><Label >Final Date</Label></span>
+                <DatePicker
+                  locale='en'
+                  className={classes.finalDatePicker}
                   disabled={disabledDate}
-                  className={classes.finalDate}
-                  defaultValue={initialDate}
-                  className={classes.finalDate}
-                  helperText={"Final Date"}
-                  onChange={(date) => setFinalDate(date.target.value)}
-                  InputProps={{
-                    inputComponent: InputComponent
-                  }}
+                  value={finalDate}
+                  onChange={(date) => setFinalDate(date)}
+                  format={"y/MM/dd"}
                 />
 
                 <Button
@@ -424,6 +417,7 @@ function Skybot({ setTitle, history }) {
                     null
                   }
                 </Button>
+
               </form>
             </CardContent>
 
