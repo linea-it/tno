@@ -3,20 +3,18 @@ import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import clsx from 'clsx';
 import {
-  Card, CardHeader, CardContent, Typography, makeStyles,
+  Card, CardHeader, CardContent, Typography, makeStyles, CircularProgress, TextareaAutosize,
 } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
-import Label from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
-import Dialog from '@material-ui/core/Dialog';
-import Paper from '@material-ui/core/Paper';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
 import Interval from 'react-interval';
 import { createSkybotRun, getSkybotRunList } from '../api/Skybot';
 import Table from './utils/CustomTable';
+import TextField from '@material-ui/core/TextField';
+import ToolTip from '@material-ui/core/Tooltip';
+
 
 const useStyles = makeStyles((theme) => ({
   typography: {
@@ -27,6 +25,12 @@ const useStyles = makeStyles((theme) => ({
     width: '30%',
     marginLeft: '70%',
   },
+
+  filtersContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+
   dialogButton: {
     marginRight: '4%',
     marginBottom: '2%',
@@ -34,18 +38,18 @@ const useStyles = makeStyles((theme) => ({
     width: '15%',
   },
   initialDate: {
-    marginTop: 50,
-    marginRight: 20,
-    marginBottom: 20,
-    marginLeft: 20,
-    float: 'left',
+    marginTop: 30,
   },
   finalDate: {
-    marginTop: 50,
-    marginRight: 20,
-    marginBottom: 20,
-    marginLeft: 20,
-    float: 'right',
+    marginTop: 30,
+    marginLeft: "5%",
+  },
+  progress: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
   },
   iconDetail: {
     fontSize: 18,
@@ -84,28 +88,61 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ffba01',
     color: '#000',
   },
+  display: {
+    position: "absolute",
+    top: 2,
+    left: 0,
+    bottom: 2,
+    background: "white",
+    pointerEvents: "none",
+    right: 50,
+    display: "flex",
+    alignItems: "center"
+  },
+  input: {},
+
 }));
+
+function InputComponent({ ...props }) {
+  const classes = useStyles();
+  const [value, setValue] = useState(null);
+
+  const handleChange = event => {
+    setValue(event.target.value);
+    if (props.onChange) {
+      props.onChange(event);
+    }
+  };
+
+  return (
+    <div className={classes.root}>
+      <div className={classes.display}>{value}</div>
+      <input
+        className={classes.input}
+        {...props}
+        onChange={handleChange}
+        value={value}
+      />
+    </div>
+  );
+}
 
 function Skybot({ setTitle, history }) {
   const [selectRunValue, setSelectRunValue] = useState('period');
-  const [initialDate, setInitialDate] = useState(new Date());
-  const [finalDate, setFinalDate] = useState(new Date());
-  const [controlSubmit, setControlSubmit] = useState(false);
-  const [tablePage] = useState(1);
-  const [tablePageSize] = useState(10);
+  const [initialDate, setInitialDate] = useState(null);
+  const [finalDate, setFinalDate] = useState(null);
+  const [tablePage, setTablePage] = useState(1);
+  const [tablePageSize, setTablePageSize] = useState(10);
   const [totalSize, setTotalSize] = useState(0);
   const [sortField] = useState('-start');
   const [sortOrder] = useState(0);
   const [tableData, setTableData] = useState([]);
   const pageSizes = [5, 10, 15];
-  const [dialog, setDialog] = useState({
-    visible: false,
-    content: ' ',
-    title: ' ',
-  });
+  const [disabledRunButton, setDisabledRunButton] = useState(true);
+  const [disabledDate, setDisabledDate] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const classes = useStyles();
-
 
   useEffect(() => {
     setTitle('Skybot Run');
@@ -113,14 +150,48 @@ function Skybot({ setTitle, history }) {
   }, []);
 
   useEffect(() => {
-    if (controlSubmit) {
-      handleSubmit();
+
+    if (initialDate && finalDate) {
+      setDisabledRunButton(false);
     }
-  }, [controlSubmit]);
+
+    if (!initialDate || initialDate === "") {
+      setDisabledRunButton(true);
+    }
+
+    if (!finalDate || finalDate === "") {
+      setDisabledRunButton(true);
+    }
+  }, [initialDate, finalDate]);
+
+
+  useEffect(() => {
+    if (selectRunValue === "all") {
+      setDisabledDate(true);
+      setDisabledRunButton(false);
+    }
+
+    if (selectRunValue === "period") {
+      setDisabledDate(false);
+      setDisabledRunButton(true);
+      setInitialDate(null);
+      setFinalDate(null);
+    }
+  }, [selectRunValue]);
 
   const loadData = (event) => {
-    const page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
-    const pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
+    let page = null;
+    let pageSize = null;
+
+    if (event) {
+      page = event.currentPage + 1;
+      pageSize = event.pageSize;
+      setTablePage(page);
+      setTablePageSize(event.pageSize);
+    } else {
+      page = tablePage;
+      pageSize = tablePageSize;
+    }
 
     getSkybotRunList({
       page, pageSize, sortField, sortOrder,
@@ -129,6 +200,7 @@ function Skybot({ setTitle, history }) {
         const { data } = res;
         setTableData(data.results);
         setTotalSize(data.count);
+        setLoading(false);
       });
   };
 
@@ -140,75 +212,28 @@ function Skybot({ setTitle, history }) {
         date_final: finalDate,
       },
     ).then(() => {
+      setInitialDate(null);
+      setFinalDate(null);
       loadData();
     });
   };
 
-  const handleAllPointings = () => {
-    setSelectRunValue('all');
-    setInitialDate('');
-    setFinalDate('');
-    setControlSubmit(true);
-    handleSubmit();
-  };
-
-  const handleByPeriod = () => {
-    setInitialDate(new Date());
-    setFinalDate(new Date());
-    setDialog({ visible: true });
-  };
-
-  const handleDialogSubmit = () => {
-    setDialog({ visible: false });
-    handleSubmit();
-  };
-
-  const loadDialogContent = () => (
-    <Grid container justify="space-around">
-      <Paper>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <KeyboardDatePicker
-            className={classes.initialDate}
-            variant="inline"
-            format="yyyy/MM/dd"
-            id="date-picker-inline"
-            label="Initial Date"
-            value={initialDate}
-            onChange={(date) => setInitialDate(date)}
-          />
-          <KeyboardDatePicker
-            className={classes.finalDate}
-            variant="inline"
-            format="yyyy/MM/dd"
-            id="date-picker-inline"
-            label="Final Date"
-            value={finalDate}
-            onChange={(date) => setFinalDate(date)}
-          />
-        </MuiPickersUtilsProvider>
-        <Button
-          className={classes.dialogButton}
-          variant="contained"
-          color="primary"
-          onClick={handleDialogSubmit}
-        >
-          Ok
-        </Button>
-      </Paper>
-    </Grid>
-  );
-
   const handleSelectRunClick = () => {
     switch (selectRunValue) {
       case 'all':
-        handleAllPointings();
+        setSelectRunValue('all');
+        setInitialDate('');
+        setFinalDate('');
+        setLoading(true);
+        handleSubmit();
         break;
       case 'period':
-        handleByPeriod();
+        setDisabledRunButton(true);
+        setLoading(true);
+        handleSubmit();
         break;
     }
   };
-
 
   const loadMenuItems = () => {
     const options = [
@@ -330,36 +355,82 @@ function Skybot({ setTitle, history }) {
         callback={loadData}
       />
       <Grid container spacing={6}>
-        <Grid item lg={5} xl={3}>
+        <Grid item lg={7} xl={5}>
           <Card>
             <CardHeader
               title="SkyBot Run"
             />
             <CardContent>
               <Typography className={classes.typography}>Updates the SkyBot output table.</Typography>
-              <FormControl fullWidth>
-                <Label>Select the type of update</Label>
-                <Select
-                  value={selectRunValue}
-                  onChange={(event) => {
-                    setSelectRunValue(event.target.value);
+
+              <form className={classes.filtersContainer} noValidate autoComplete="off">
+
+                <FormControl fullWidth>
+                  <ToolTip title={"Select the type of update"}>
+                    <Select
+                      helperText={"Select the type of update"}
+                      className={classes.select}
+                      value={selectRunValue}
+                      onChange={(event) => {
+                        setSelectRunValue(event.target.value);
+                      }}
+                    >
+                      {loadMenuItems()}
+                    </Select>
+                  </ToolTip>
+                </FormControl>
+
+                <TextField
+                  type="date"
+                  disabled={disabledDate}
+                  className={classes.initialDate}
+                  defaultValue={initialDate}
+                  onChange={(date) => setInitialDate(date.target.value)}
+                  helperText={"Initial Date"}
+                  InputProps={{
+                    inputComponent: InputComponent
                   }}
-                >
-                  {loadMenuItems()}
-                </Select>
+
+                />
+
+                <TextField
+                  type="date"
+                  disabled={disabledDate}
+                  className={classes.finalDate}
+                  defaultValue={initialDate}
+                  className={classes.finalDate}
+                  helperText={"Final Date"}
+                  onChange={(date) => setFinalDate(date.target.value)}
+                  InputProps={{
+                    inputComponent: InputComponent
+                  }}
+                />
+
                 <Button
                   variant="contained"
                   color="primary"
                   className={classes.runButton}
+                  disabled={disabledRunButton}
                   onClick={handleSelectRunClick}
                 >
                   Run
+                  {loading ?
+                    <CircularProgress
+                      color="primary"
+                      className={classes.progress}
+                      size={24}
+                    />
+                    :
+                    null
+                  }
                 </Button>
-              </FormControl>
+              </form>
             </CardContent>
+
           </Card>
         </Grid>
       </Grid>
+
       <Grid container spacing={6}>
         <Grid item lg={12} xl={12}>
           <Card>
@@ -383,13 +454,7 @@ function Skybot({ setTitle, history }) {
           </Card>
         </Grid>
       </Grid>
-      <Dialog
-        open={dialog.visible}
-        onClose={() => setDialog({ visible: false, content: ' ', title: ' ' })}
-      >
-        {loadDialogContent()}
-      </Dialog>
-    </Grid>
+    </Grid >
   );
 }
 export default withRouter(Skybot);
