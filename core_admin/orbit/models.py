@@ -95,9 +95,16 @@ class OrbitRun(models.Model):
         max_length=10,
         verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'))
+        choices=(
+            ('pending', 'Pending'),
+            ('running', 'Running'),
+            ('warning', 'Warning'),
+            ('success', 'Success'),
+            ('failure', 'Failure'),
+            ('not_executed', 'Not Executed'),
+            ('idle', 'Idle'),
+        )
     )
-
     def __str__(self):
         return str(self.id)
 
@@ -112,51 +119,51 @@ class ObservationFile(models.Model):
         Os dados sao extraidos deste servico: https://minorplanetcenter.net/db_search/show_object?object_id=2006+BF208
     """
 
-    name = models.CharField(
+    name=models.CharField(
         verbose_name='Name',
         max_length=32,
         unique=True,
         null=False, blank=False,
         help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).')
 
-    source = models.CharField(
+    source=models.CharField(
         verbose_name='Source',
         max_length=6,
         null=False, blank=False,
         choices=(('MPC', 'MPC'), ('AstDys', 'AstDys'),)
     )
 
-    observations = models.PositiveIntegerField(
+    observations=models.PositiveIntegerField(
         verbose_name='Observations',
         null=True, blank=True,
         help_text='Number of Observations for this object or number of lines in the file.'
     )
 
-    filename = models.CharField(
+    filename=models.CharField(
         max_length=256,
         null=True, blank=True,
         verbose_name='Filename', help_text='Filename is formed by name without space and separated by underline.'
     )
 
-    download_start_time = models.DateTimeField(
+    download_start_time=models.DateTimeField(
         verbose_name='Download Start',
         auto_now_add=True, null=True, blank=True)
 
-    download_finish_time = models.DateTimeField(
+    download_finish_time=models.DateTimeField(
         verbose_name='Download finish',
         auto_now_add=False, null=True, blank=True)
 
-    file_size = models.PositiveIntegerField(
+    file_size=models.PositiveIntegerField(
         verbose_name='File Size',
         null=True, blank=True, default=None, help_text='File Size in bytes')
 
-    external_url = models.URLField(
+    external_url=models.URLField(
         verbose_name='External URL',
         null=True, blank=True,
         help_text='File Url in the original service.'
     )
 
-    download_url = models.URLField(
+    download_url=models.URLField(
         verbose_name='Download URL',
         null=True, blank=True,
         help_text='Url used to download file.'
@@ -173,45 +180,45 @@ class OrbitalParameterFile(models.Model):
         Os dados sao extraidos deste servico: https://minorplanetcenter.net/db_search/show_object?object_id=2006+BF208
     """
 
-    name = models.CharField(
+    name=models.CharField(
         verbose_name='Name',
         max_length=32,
         unique=True,
         null=False, blank=False,
         help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).')
 
-    source = models.CharField(
+    source=models.CharField(
         verbose_name='Source',
         max_length=6,
         null=False, blank=False,
         choices=(('MPC', 'MPC'), ('AstDys', 'AstDys'),)
     )
 
-    filename = models.CharField(
+    filename=models.CharField(
         max_length=256,
         null=True, blank=True,
         verbose_name='Filename', help_text='Filename is formed by name without space and separated by underline.'
     )
 
-    download_start_time = models.DateTimeField(
+    download_start_time=models.DateTimeField(
         verbose_name='Download Start',
         auto_now_add=True, null=True, blank=True)
 
-    download_finish_time = models.DateTimeField(
+    download_finish_time=models.DateTimeField(
         verbose_name='Download finish',
         auto_now_add=False, null=True, blank=True)
 
-    file_size = models.PositiveIntegerField(
+    file_size=models.PositiveIntegerField(
         verbose_name='File Size',
         null=True, blank=True, default=None, help_text='File Size in bytes')
 
-    external_url = models.URLField(
+    external_url=models.URLField(
         verbose_name='External URL',
         null=True, blank=True,
         help_text='File Url in the original service.'
     )
 
-    download_url = models.URLField(
+    download_url=models.URLField(
         verbose_name='Download URL',
         null=True, blank=True,
         help_text='Url used to download file.'
@@ -228,28 +235,28 @@ class BspJplFile(models.Model):
         Os dados sao extraidos deste servico: ftp://ssd.jpl.nasa.gov/pub/ssd/SCRIPTS/smb_spk
     """
 
-    name = models.CharField(
+    name=models.CharField(
         verbose_name='Name',
         max_length=32,
         unique=True,
         null=False, blank=False,
         help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).')
 
-    filename = models.CharField(
+    filename=models.CharField(
         max_length=256,
         null=True, blank=True,
         verbose_name='Filename', help_text='Filename is formed by name without space and separated by underline.'
     )
 
-    download_start_time = models.DateTimeField(
+    download_start_time=models.DateTimeField(
         verbose_name='Download Start',
         auto_now_add=True, null=True, blank=True)
 
-    download_finish_time = models.DateTimeField(
+    download_finish_time=models.DateTimeField(
         verbose_name='Download finish',
         auto_now_add=False, null=True, blank=True)
 
-    file_size = models.PositiveIntegerField(
+    file_size=models.PositiveIntegerField(
         verbose_name='File Size',
         null=True, blank=True, default=None, help_text='File Size in bytes')
 
@@ -264,61 +271,62 @@ class RefinedAsteroid(models.Model):
     """
 
     class Meta:
-        unique_together = ('orbit_run', 'name')
+        unique_together=('orbit_run', 'name')
 
     # Relation With orbit.OrbitRun
-    orbit_run = models.ForeignKey(
+    orbit_run=models.ForeignKey(
         OrbitRun, on_delete=models.CASCADE, verbose_name='Orbit Run',
         null=False, blank=False, default=None, related_name='asteroids'
     )
 
-    name = models.CharField(
+    name=models.CharField(
         verbose_name='Name',
         max_length=32,
         null=False, blank=False,
         help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).')
 
-    number = models.CharField(
+    number=models.CharField(
         max_length=6, default=None, null=True, blank=True,
         verbose_name='Number',
         help_text='(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).'
     )
 
-    status = models.CharField(
+    status=models.CharField(
         max_length=10,
         verbose_name='Status',
         default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('failure', 'Failure'), ('warning', 'Warning'))
+        choices=(('pending', 'Pending'), ('running', 'Running'), ('success',
+                 'Success'), ('failure', 'Failure'), ('warning', 'Warning'))
     )
 
-    error_msg = models.CharField(
+    error_msg=models.CharField(
         max_length=256,
         verbose_name="Error Message",
         help_text="When the status is failure, this field should contain a message with the error.",
         null=True, blank=True,
     )
 
-    start_time = models.DateTimeField(
+    start_time=models.DateTimeField(
         verbose_name='Start Time',
         auto_now_add=False, null=True, blank=True)
 
-    finish_time = models.DateTimeField(
+    finish_time=models.DateTimeField(
         verbose_name='Finish Time',
         auto_now_add=False, null=True, blank=True)
 
-    execution_time = models.DurationField(
+    execution_time=models.DurationField(
         verbose_name='Execution Time',
         null=True, blank=True
     )
 
-    relative_path = models.CharField(
+    relative_path=models.CharField(
         max_length=256,
         verbose_name='Relative Path',
         null=True, blank=True,
         help_text='Path relative to the refine orbit OBJECT directory, this is the internal path in the proccess directory.',
     )
 
-    absolute_path = models.CharField(
+    absolute_path=models.CharField(
         max_length=1024,
         verbose_name='Absolute Path',
         null=True, blank=True,
@@ -335,7 +343,7 @@ class RefinedOrbit(models.Model):
         Um Objeto pode ter varios arquivos de resultado de tipos diferentes.
     """
 
-    asteroid = models.ForeignKey(
+    asteroid=models.ForeignKey(
         RefinedAsteroid, on_delete=models.CASCADE, verbose_name='Asteroid',
         null=False, blank=False, related_name='refined_orbit'
     )
@@ -346,8 +354,8 @@ class RefinedOrbit(models.Model):
     # omc_sep_all.png --> residual_all_v1
     # omc_sep_recent.png --> residual_recent
     # omc_sep.png --> residual_all_v2
-    
-    type = models.CharField(
+
+    type=models.CharField(
         max_length=60,
         verbose_name='Type',
         null=True, blank=True, default=None,
@@ -373,25 +381,25 @@ class RefinedOrbit(models.Model):
         )
     )
 
-    filename = models.CharField(
+    filename=models.CharField(
         max_length=256,
         null=False, blank=False,
         verbose_name='Filename',
         help_text='Filename is formed by name without space and separated by underline.'
     )
 
-    file_size = models.PositiveIntegerField(
+    file_size=models.PositiveIntegerField(
         verbose_name='File Size',
         null=False, blank=False, help_text='File Size in bytes')
 
-    file_type = models.CharField(
+    file_type=models.CharField(
         max_length=10,
         verbose_name='File Type',
         null=False, blank=False,
         help_text="File extension like '.txt'"
     )
 
-    relative_path = models.CharField(
+    relative_path=models.CharField(
         max_length=1024,
         verbose_name='Relative Path',
         null=True, blank=True,
@@ -412,12 +420,12 @@ class RefinedOrbitInput(models.Model):
         - BSP_JPL - Arquivo baixado do JPL
     """
 
-    asteroid = models.ForeignKey(
+    asteroid=models.ForeignKey(
         RefinedAsteroid, on_delete=models.CASCADE, verbose_name='Asteroid',
         null=False, blank=False, related_name='input_file'
     )
 
-    input_type = models.CharField(
+    input_type=models.CharField(
         max_length=60,
         verbose_name='Input Type',
         null=False, blank=False,
@@ -426,24 +434,24 @@ class RefinedOrbitInput(models.Model):
                  ('astrometry', 'Astrometry'))
     )
 
-    source = models.CharField(
+    source=models.CharField(
         verbose_name='Source',
         max_length=6,
         null=True, blank=True,
         choices=(('MPC', 'MPC'), ('AstDys', 'AstDys'), ('JPL', 'JPL'))
     )
 
-    date_time = models.DateTimeField(
+    date_time=models.DateTimeField(
         verbose_name='Date Time',
         auto_now_add=False, null=True, blank=True)
 
-    filename = models.CharField(
+    filename=models.CharField(
         max_length=256,
         null=False, blank=False,
         verbose_name='Filename',
     )
 
-    relative_path = models.CharField(
+    relative_path=models.CharField(
         max_length=1024,
         verbose_name='Relative Path',
         null=True, blank=True,
