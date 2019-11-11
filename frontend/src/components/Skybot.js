@@ -104,37 +104,33 @@ function Skybot({ setTitle, history }) {
   }, []);
 
 
-
   useEffect(() => {
     if (initialDate && finalDate) {
       setDisabledRunButton(false);
     }
 
-    if (!initialDate || initialDate.toString() === "Invalid Date") {
+    if (!initialDate || initialDate.toString() === 'Invalid Date') {
       setDisabledRunButton(true);
     }
 
-    if (!finalDate || finalDate.toString() === "Invalid Date") {
+    if (!finalDate || finalDate.toString() === 'Invalid Date') {
       setDisabledRunButton(true);
     }
-
-
   }, [initialDate, finalDate]);
 
 
   useEffect(() => {
-    if (selectRunValue === "all") {
+    if (selectRunValue === 'all') {
       setDisabledDate(true);
       setDisabledRunButton(false);
     }
 
-    if (selectRunValue === "period") {
+    if (selectRunValue === 'period') {
       setDisabledDate(false);
       setDisabledRunButton(true);
       setInitialDate(null);
       setFinalDate(null);
     }
-
   }, [selectRunValue]);
 
   const loadData = (event) => {
@@ -182,13 +178,13 @@ function Skybot({ setTitle, history }) {
 
   const loadMenuItems = () => {
     const options = [
-      { title: 'All Pointings', value: 'all' },
-      { title: 'By Period', value: 'period' },
+      { id: 1, title: 'All Pointings', value: 'all' },
+      { id: 2, title: 'By Period', value: 'period' },
     ];
 
     return options.map((el, i) => (
       <MenuItem
-        key={i}
+        key={el.id}
         value={el.value}
         title={el.title}
       >
@@ -259,13 +255,6 @@ function Skybot({ setTitle, history }) {
       name: 'owner', title: 'Owner', width: 140, align: 'left',
     },
     {
-      name: 'execution_time',
-      title: 'Execution Time',
-      width: 150,
-      align: 'center',
-      customElement: (row) => <span>{row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}</span>,
-    },
-    {
       name: 'start', title: 'Start', width: 200, align: 'center',
     },
     {
@@ -275,12 +264,12 @@ function Skybot({ setTitle, history }) {
       name: 'rows', title: 'Rows', width: 100, align: 'center',
     },
     {
-      name: 'exposure', title: 'Pointings', width: 100, align: 'center',
-      name: 'execution_time', title: 'Execution Time', width: 150, align: 'center',
-      customElement: (row) => {
 
-        return <span>{row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}</span>
-      }
+      name: 'execution_time',
+      title: 'Execution Time',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.execution_time ? row.execution_time : '-'}</span>,
     },
     {
       name: 'id',
