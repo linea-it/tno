@@ -410,7 +410,7 @@ function Skybot({ setTitle, history }) {
         title={"Skybot Run"}
         visible={dialogVisible}
         setVisible={() => setDialogVisible(false)}
-        content={"Executing skybot in background... check status on history table."}
+        content={"Executing skybot in background...  check dinamic history table "}
         headerStyle={classes.logToolbar}
       />
     </Grid>
