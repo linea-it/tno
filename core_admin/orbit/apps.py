@@ -6,3 +6,5 @@ class OrbitConfig(AppConfig):
 
     def ready(self):
         from . import signals
+
+        print("Refine Orbit App: [Ready]")
