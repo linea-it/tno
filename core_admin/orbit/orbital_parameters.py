@@ -60,11 +60,12 @@ class GetOrbitalParameters(DownloadParameters):
             raise e
 
         self.logger.info("Configuring Parsl")
-        self.logger.debug("Parsl Config:" )
+        self.logger.debug("Parsl Config:")
         self.logger.debug(settings.PARSL_CONFIG)
 
         # Configuracao do Parsl Log.
-        parsl.set_file_logger(os.path.join(output_path, 'orbital_parameters_parsl.log'))
+        parsl.set_file_logger(os.path.join(
+            output_path, 'orbital_parameters_parsl.log'))
 
         # Declaracao do Parsl APP
         @App('python', dfk)
@@ -77,10 +78,12 @@ class GetOrbitalParameters(DownloadParameters):
             msg = "Download [ FAILURE ] - Object: %s " % (result.get('name'))
 
             if result.get('filename', None) is not None:
+                self.logger.debug(result)
                 msg = "Download [ SUCCESS ] - [ %s ] Object: %s File: %s [ %s ] [ %s seconds ]" % (
-                    result.get('source'),
-                    result.get('name'), result.get('filename'), humanize.naturalsize(result.get('file_size')),
-                    result.get('download_time'))
+                    result.get('source', None),
+                    result.get('name', None), result.get(
+                        'filename', None), humanize.naturalsize(result.get('file_size', 0)),
+                    result.get('download_time', 0))
 
             logger.info(msg)
 
@@ -92,7 +95,8 @@ class GetOrbitalParameters(DownloadParameters):
             # Utiliza o parsl apenas para os objetos que estao marcados
             # para serem baixados.
             if row.get("need_download"):
-                results.append(start_parsl_job(row.get("name"), row.get("num"), files_path, self.logger))
+                results.append(start_parsl_job(row.get("name"),
+                                               row.get("num"), files_path, self.logger))
 
         # Espera o Resultado de todos os jobs.
         outputs = [i.result() for i in results]
@@ -120,7 +124,8 @@ class GetOrbitalParameters(DownloadParameters):
         t1 = datetime.now()
 
         tdelta = t1 - t0
-        self.logger.info('Download Orbital Parameter Completed in %s' % humanize.naturaldelta(tdelta))
+        self.logger.info('Download Orbital Parameter Completed in %s' %
+                         humanize.naturaldelta(tdelta))
 
     def download(self, name, number, output_path):
         """
@@ -131,22 +136,29 @@ class GetOrbitalParameters(DownloadParameters):
         :param output_path:
         :return:
         """
-        t0 = datetime.now()
+        try:
 
-        # Try to download the AstDyS files.
-        result = self.download_ast_dys(name, number, output_path)
+            # Try to download the AstDyS files.
+            download_result = self.download_ast_dys(name, number, output_path)
 
-        # Checking if the object exists in AstDyS if it does not exist it tries to look in the MPC.
-        if result is None:
-            # Try to download from MPC
-            self.download_mpc(name, number, output_path)
+            # Checking if the object exists in AstDyS if it does not exist it tries to look in the MPC.
+            if download_result is None:
+                # Try to download from MPC
+                download_result = self.download_mpc(name, number, output_path)
 
-        if result is None:
-            result = dict({
+            self.logger.debug(download_result)
+
+            if download_result is None:
+                return dict({
+                    "name": name
+                })
+
+            return download_result
+        except Exception as e:
+            self.logger.error(e)
+            return dict({
                 "name": name
             })
-
-        return result
 
     def download_ast_dys(self, name, number, output_path):
 
@@ -159,7 +171,8 @@ class GetOrbitalParameters(DownloadParameters):
         # AstDys Orbital Parameters URL
         url = AstDys().getOrbitalParametersURL(name, number)
 
-        filename = name.replace(" ", "_") + AstDys().orbital_parameters_extension
+        filename = name.replace(" ", "_") + \
+            AstDys().orbital_parameters_extension
 
         # Try to download the AstDyS files.
         file_path, download_stats = Download().download_file_from_url(url, output_path=output_path, filename=filename,
@@ -244,7 +257,8 @@ class GetOrbitalParameters(DownloadParameters):
 
     def get_latest(self, name):
         try:
-            f = OrbitalParameterFile.objects.filter(name=name).order_by('-download_finish_time').first()
+            f = OrbitalParameterFile.objects.filter(
+                name=name).order_by('-download_finish_time').first()
             return f
 
         except:
