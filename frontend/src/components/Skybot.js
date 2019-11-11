@@ -13,7 +13,7 @@ import Interval from 'react-interval';
 import { createSkybotRun, getSkybotRunList } from '../api/Skybot';
 import Table from './utils/CustomTable';
 import ToolTip from '@material-ui/core/Tooltip';
-import DatePicker from 'react-date-picker';
+import DatePicker from '@material-ui/core/TextField';
 import Label from '@material-ui/core/FormLabel';
 
 
@@ -27,25 +27,14 @@ const useStyles = makeStyles((theme) => ({
     width: '30%',
     marginLeft: '70%',
   },
-  initialDatePicker: {
-    position: "absolute",
-    zIndex: 2,
-    marginTop: 70,
-  },
 
-  finalDatePicker: {
-    position: "absolute",
-    zIndex: 2,
-    marginTop: 70,
-    marginLeft: 220,
-  },
 
-  initialDateLabel: {
-    marginTop: 20
-  },
-  finalDateLabel: {
+  intitalDatePicker: {
     marginTop: 20,
-    marginLeft: 145
+  },
+  finalDatePicker: {
+    marginTop: 20,
+    marginLeft: 50,
   },
 
   filtersContainer: {
@@ -362,6 +351,7 @@ function Skybot({ setTitle, history }) {
             <CardContent>
               <Typography className={classes.typography}>Updates the SkyBot output table.</Typography>
 
+
               <form className={classes.filtersContainer} noValidate autoComplete="off">
 
                 <FormControl fullWidth>
@@ -379,24 +369,29 @@ function Skybot({ setTitle, history }) {
                   </ToolTip>
                 </FormControl>
 
-                <span className={classes.initialDateLabel}><Label >Initial Date</Label></span>
+
                 <DatePicker
-                  locale='en'
-                  className={classes.initialDatePicker}
-                  disabled={disabledDate}
-                  value={initialDate}
-                  onChange={(date) => setInitialDate(date)}
-                  format={"y/MM/dd"}
+                  className={classes.intitalDatePicker}
+                  label={"Initial Date"}
+                  type="date"
+                  defaultValue={initialDate}
+                  onChange={(date) => setInitialDate(date.target.value)}
+
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
                 />
 
-                <span className={classes.finalDateLabel}><Label >Final Date</Label></span>
+
                 <DatePicker
-                  locale='en'
                   className={classes.finalDatePicker}
-                  disabled={disabledDate}
-                  value={finalDate}
-                  onChange={(date) => setFinalDate(date)}
-                  format={"y/MM/dd"}
+                  label={"Final Date"}
+                  type="date"
+                  defaultValue={initialDate}
+                  onChange={(date) => setFinalDate(date.target.value)}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
                 />
 
                 <Button
