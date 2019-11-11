@@ -193,7 +193,6 @@ function Skybot({ setTitle, history }) {
     ));
   };
 
-
   const tableColumns = [
     {
       name: 'status',
@@ -265,11 +264,10 @@ function Skybot({ setTitle, history }) {
     },
     {
 
-      name: 'execution_time',
+      name: 'h_execution_time',
       title: 'Execution Time',
       width: 150,
       align: 'center',
-      customElement: (row) => <span>{row.execution_time ? row.execution_time : '-'}</span>,
     },
     {
       name: 'id',
