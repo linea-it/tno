@@ -32,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
     float: 'right',
     width: '15%',
   },
-
   dateSet: {
     marginTop: 30,
   },
@@ -80,20 +79,16 @@ function Skybot({ setTitle, history }) {
   const [selectRunValue, setSelectRunValue] = useState('period');
   const [initialDate, setInitialDate] = useState(null);
   const [finalDate, setFinalDate] = useState(null);
-  const [tablePage] = useState(1);
-  const [tablePageSize] = useState(10);
+  const [tablePage, setTablePage] = useState(1);
+  const [tablePageSize, setTablePageSize] = useState(10);
   const [totalSize, setTotalSize] = useState(0);
   const [sortField] = useState('-start');
   const [sortOrder] = useState(0);
   const [tableData, setTableData] = useState([]);
   const pageSizes = [5, 10, 15];
-  const [dialog, setDialog] = useState({
-    visible: false,
-    content: ' ',
-    title: ' ',
-  });
   const [disabledRunButton, setDisabledRunButton] = useState(true);
   const [disabledDate, setDisabledDate] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const classes = useStyles();
 
@@ -134,8 +129,18 @@ function Skybot({ setTitle, history }) {
   }, [selectRunValue]);
 
   const loadData = (event) => {
-    const page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
-    const pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
+    let page = null;
+    let pageSize = null;
+
+    if (event) {
+      page = event.currentPage + 1;
+      pageSize = event.pageSize;
+      setTablePage(page);
+      setTablePageSize(event.pageSize);
+    } else {
+      page = tablePage;
+      pageSize = tablePageSize;
+    }
 
     getSkybotRunList({
       page, pageSize, sortField, sortOrder,
@@ -144,6 +149,7 @@ function Skybot({ setTitle, history }) {
         const { data } = res;
         setTableData(data.results);
         setTotalSize(data.count);
+        setLoading(false);
       });
   };
 
