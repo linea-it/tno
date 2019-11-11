@@ -14,20 +14,16 @@ import { createSkybotRun, getSkybotRunList } from '../api/Skybot';
 import Table from './utils/CustomTable';
 import ToolTip from '@material-ui/core/Tooltip';
 import DatePicker from '@material-ui/core/TextField';
-import moment from 'moment';
-
-
 
 const useStyles = makeStyles((theme) => ({
   typography: {
     marginBottom: 15,
   },
   runButton: {
-    marginTop: theme.spacing(10),
+    marginTop: theme.spacing(7),
     width: '30%',
     marginLeft: '70%',
   },
-
 
   intitalDatePicker: {
     marginTop: 20,
@@ -351,7 +347,6 @@ function Skybot({ setTitle, history }) {
             <CardContent>
               <Typography className={classes.typography}>Updates the SkyBot output table.</Typography>
 
-
               <form className={classes.filtersContainer} noValidate autoComplete="off">
 
                 <FormControl fullWidth>
@@ -368,8 +363,6 @@ function Skybot({ setTitle, history }) {
                     </Select>
                   </ToolTip>
                 </FormControl>
-
-
                 <DatePicker
                   className={classes.intitalDatePicker}
                   label={"Initial Date"}
@@ -381,7 +374,6 @@ function Skybot({ setTitle, history }) {
                     shrink: true,
                   }}
                 />
-
 
                 <DatePicker
                   className={classes.finalDatePicker}
@@ -414,7 +406,6 @@ function Skybot({ setTitle, history }) {
                     null
                   }
                 </Button>
-
               </form>
             </CardContent>
 
