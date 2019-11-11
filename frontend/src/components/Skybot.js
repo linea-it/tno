@@ -14,7 +14,7 @@ import { createSkybotRun, getSkybotRunList } from '../api/Skybot';
 import Table from './utils/CustomTable';
 import ToolTip from '@material-ui/core/Tooltip';
 import DatePicker from '@material-ui/core/TextField';
-import Label from '@material-ui/core/FormLabel';
+import moment from 'moment';
 
 
 
@@ -374,9 +374,9 @@ function Skybot({ setTitle, history }) {
                   className={classes.intitalDatePicker}
                   label={"Initial Date"}
                   type="date"
-                  defaultValue={initialDate}
+                  disabled={disabledDate}
+                  margin="dense"
                   onChange={(date) => setInitialDate(date.target.value)}
-
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -388,6 +388,8 @@ function Skybot({ setTitle, history }) {
                   label={"Final Date"}
                   type="date"
                   defaultValue={initialDate}
+                  disabled={disabledDate}
+
                   onChange={(date) => setFinalDate(date.target.value)}
                   InputLabelProps={{
                     shrink: true,
