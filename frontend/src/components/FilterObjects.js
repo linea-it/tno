@@ -111,14 +111,6 @@ const useStyles = makeStyles((theme) => ({
   formControlCheckbox: {
     marginLeft: 6,
   },
-  resultFilterForm: {
-    // [theme.breakpoints.up('md')]: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 24,
-    // },
-  },
   fullHeight: {
     position: 'relative',
     height: '100%',
@@ -128,6 +120,17 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 14,
     marginBottom: 10,
 
+  },
+  filterFormButtons: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 10,
+    width: 'calc(100% - 16px)',
+    margin: 'auto',
+  },
+  filterFormWrapper: {
+    paddingBottom: 100,
   },
 }));
 
@@ -145,6 +148,9 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
   const [timeMinimum, setTimeMinimum] = useState(0);
   const [sameObjectsCheck, setSameObjectsCheck] = useState(false);
   const [filterFormSize, setFilterFormSize] = useState({
+    height: 0,
+  });
+  const [resultTableSize, setResultTableSize] = useState({
     height: 0,
   });
   const [historyTableData, setHistoryTableData] = useState([]);
@@ -406,6 +412,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         .filter((option) => option.parentId === current.id);
       currentSublevelList = currentSublevelList.concat(currentChildren);
     });
+    setSublevelDynamicClassSelected(Object.keys(currentSublevelList).map((el) => Number(el)));
     setSublevelDynamicClassList(currentSublevelList);
   }, [dynamicClass]);
 
@@ -460,6 +467,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
   };
 
   const handleSublevelDynamicClass = (e) => {
+    console.log(e.target.value);
     setSublevelDynamicClassSelected(e.target.value);
   };
 
@@ -505,7 +513,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
     sorting, pageSize, currentPage, filter, searchValue,
   }) => {
     const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
-
     getCustomList({
       ordering,
       pageSize,
@@ -626,7 +633,14 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
               {({ size }) => {
                 setFilterFormSize(size);
                 return (
-                  <Card>
+                  <Card
+                    style={{
+                      minHeight: resultTableSize.height > filterFormSize.height
+                        ? resultTableSize.height
+                        : filterFormSize.height,
+                      height: '100%',
+                    }}
+                  >
                     <CardHeader
                       title="Filter"
                     />
@@ -638,7 +652,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                               <Grid container alignItems="flex-end" spacing={1}>
                                 <Grid item xs={12} md={9}>
                                   <TextField
-                                    label="Search"
+                                    label="Search by name"
                                     value={searchFilter}
                                     onChange={handleSearchFilter}
                                     fullWidth
@@ -671,9 +685,9 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                           <Divider />
                         </Grid>
                         <Grid item xs={12}>
-                          <form autoComplete="off">
+                          <form autoComplete="off" className={classes.filterFormWrapper}>
                             <FormControl className={classes.formControl} fullWidth>
-                              <InputLabel>Dynamic Class</InputLabel>
+                              <InputLabel>Dynamic class</InputLabel>
                               <Select
                                 fullWidth
                                 multiple
@@ -700,7 +714,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                               </Select>
                             </FormControl>
                             <FormControl className={classes.formControl} fullWidth>
-                              <InputLabel>Sublevel Dynamic Class</InputLabel>
+                              <InputLabel>Sublevel dynamic class</InputLabel>
                               <Select
                                 disabled={!(sublevelDynamicClassList.length > 0)}
                                 fullWidth
@@ -735,12 +749,12 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                                 control={(
                                   <Checkbox
                                     color="default"
-                                    value="Visual magnitude ≤"
+                                    value="Visual magnitude brighter than or equal to"
                                     checked={visualMagnitudeCheck}
                                     onChange={handleMagnitudeCheck}
                                   />
                                 )}
-                                label="Visual Magnitude ≤"
+                                label="Visual Magnitude brighter than or equal to"
                               />
                               <TextField
                                 disabled={!visualMagnitudeCheck}
@@ -789,25 +803,45 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                                 label="Show same objects with more than one filter in the same night?"
                               />
                             </FormControl>
-                            <FormControl className={classes.formControl} fullWidth>
-                              <Button
-                                variant="contained"
-                                color="primary"
-                                className={classes.button}
-                                fullWidth
-                                onClick={handleFilterSubmit}
-                                disabled={resultLoading}
-                              >
-                                Filter
-                                {resultLoading ? (
-                                  <CircularProgress
+                            <Grid container spacing={2} className={classes.filterFormButtons}>
+                              <Grid item xs={12} md={6}>
+                                <FormControl className={classes.formControl} fullWidth>
+                                  <Button
+                                    variant="contained"
                                     color="primary"
-                                    className={classes.buttonProgress}
-                                    size={24}
-                                  />
-                                ) : null}
-                              </Button>
-                            </FormControl>
+                                    className={classes.button}
+                                    fullWidth
+                                    onClick={handleFilterSubmit}
+                                    disabled={resultLoading}
+                                  >
+                                    Filter
+                                    {resultLoading ? (
+                                      <CircularProgress
+                                        color="primary"
+                                        className={classes.buttonProgress}
+                                        size={24}
+                                      />
+                                    ) : null}
+                                  </Button>
+                                </FormControl>
+                              </Grid>
+                              <Grid item xs={12} md={6}>
+                                <FormControl
+                                  fullWidth
+                                  className={classes.formControl}
+                                >
+                                  <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    className={classes.button}
+                                    onClick={handleSaveSubmit}
+                                    disabled={!(resultTableData.length > 0)}
+                                  >
+                                    Save
+                                  </Button>
+                                </FormControl>
+                              </Grid>
+                            </Grid>
                           </form>
                         </Grid>
                       </Grid>
@@ -819,45 +853,44 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
 
           </Grid>
           <Grid item xs={12} md={8}>
-            <Card style={{ minHeight: filterFormSize.height, height: '100%' }}>
-              <CardHeader
-                title="Result"
-              />
-              <CardContent className={classes.fullHeight}>
-                {resultTableData.length > 0 ? (
-                  <form autoComplete="off" className={classes.fullHeight}>
-                    <FormControl fullWidth className={classes.formControl}>
-                      <CustomTable
-                        columns={resultTableColumns}
-                        data={resultTableData}
-                        totalCount={resultTableData.length}
-                        defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
-                        hasSearching={false}
-                        hasSorting={false}
-                        remote={false}
-                        pageSize={7}
-                        pageSizes={7}
-                      />
-                    </FormControl>
-                    <FormControl
-                      fullWidth
-                      className={clsx(classes.formControl, classes.resultFilterForm)}
-                    >
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        className={classes.button}
-                        onClick={handleSaveSubmit}
-                      >
-                        Save
-                      </Button>
-                    </FormControl>
-                  </form>
-                ) : (
-                  <Skeleton height={(filterFormSize.height - 95) || 0} />
-                )}
-              </CardContent>
-            </Card>
+            <SizeMe monitorHeight monitorWidth={false}>
+              {({ size }) => {
+                setResultTableSize(size);
+                return (
+                  <Card
+                    style={{
+                      minHeight: resultTableSize.height > filterFormSize.height
+                        ? resultTableSize.height
+                        : filterFormSize.height,
+                      height: '100%',
+                    }}
+                  >
+                    <CardHeader
+                      title="Result"
+                    />
+                    <CardContent className={classes.fullHeight}>
+                      {resultTableData.length > 0 ? (
+                        <form autoComplete="off" className={classes.fullHeight}>
+                          <FormControl fullWidth className={classes.formControl}>
+                            <CustomTable
+                              columns={resultTableColumns}
+                              data={resultTableData}
+                              totalCount={resultTableData.length}
+                              defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
+                              hasSearching={false}
+                              hasSorting={false}
+                              remote={false}
+                            />
+                          </FormControl>
+                        </form>
+                      ) : (
+                        <Skeleton height={(filterFormSize.height - 95) || 0} />
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              }}
+            </SizeMe>
           </Grid>
         </Grid>
 
@@ -894,7 +927,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         setVisible={handleSaveDialogClose}
         title="Save List"
         content={() => (
-          <form autoComplete="off">
+          <form autoComplete="off" disabled>
             <FormControl className={classes.formControl} fullWidth>
               <TextField
                 label="Name"

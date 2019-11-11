@@ -466,19 +466,19 @@ class RefineOrbit():
             error_msg = None
 
             if not observations_file:
-                status = "failure"
+                status = "not_executed"
                 error_msg = "Missing Input Observations"
 
             if not orbital_parameters_file:
-                status = "failure"
+                status = "not_executed"
                 error_msg = "Missing Input Orbital Parameters"
 
             if not bsp_jpl_file:
-                status = "failure"
+                status = "not_executed"
                 error_msg = "Missing Input BSP JPL"
 
             if not astrometry_position_file:
-                status = "failure"
+                status = "not_executed"
                 error_msg = "Missing Input Astrometry Positions"
 
             if status is not None:
@@ -702,6 +702,9 @@ class RefineOrbit():
             if result['status'] != 'failure':
                 msg = "[ SUCCESS ] - Object: %s Time: %s " % (
                     obj['name'], humanize.naturaldelta(tdelta))
+
+            elif result['status'] != 'not_executed':
+                msg = "[ Not Executed ] - Object: %s " % obj['name']
             else:
                 msg = "[ FAILURE ] - Object: %s " % obj['name']
 
@@ -715,7 +718,7 @@ class RefineOrbit():
         for alias in objects:
             obj = objects[alias]
 
-            if obj['status'] is not 'failure':
+            if obj['status'] not in ['failure', 'not_executed']:
                 result = start_parsl_job(
                     id=id,
                     obj=obj,

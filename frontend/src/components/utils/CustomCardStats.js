@@ -10,7 +10,7 @@ import Divider from '@material-ui/core/Divider';
 import PropTypes from 'prop-types';
 
 function CustomCardStats({
-  title, services, color, icon, size,
+  title, services, color, icon, size, customServices,
 }) {
   const useStyles = makeStyles(({
     card: {
@@ -65,16 +65,20 @@ function CustomCardStats({
           {title}
         </Typography>
         <Typography variant="subtitle1" color="textSecondary" className={classes.services}>
-          {services}
+          {customServices !== null ? customServices() : services}
         </Typography>
         <Icon className={clsx(classes.iconCard, 'fas', icon)} />
-        <Divider />
-        <div className={classes.sizeWrapper}>
-          <Icon className={clsx(classes.iconSizeCard, classes.inlineBlock, 'fas', 'fa-hdd')} />
-          <Typography variant="subtitle1" color="textSecondary" className={classes.inlineBlock}>
-            {size}
-          </Typography>
-        </div>
+        {size !== '' ? (
+          <>
+            <Divider />
+            <div className={classes.sizeWrapper}>
+              <Icon className={clsx(classes.iconSizeCard, classes.inlineBlock, 'fas', 'fa-hdd')} />
+              <Typography variant="subtitle1" color="textSecondary" className={classes.inlineBlock}>
+                {size}
+              </Typography>
+            </div>
+          </>
+        ) : null}
       </CardContent>
     </Card>
   );
@@ -86,6 +90,7 @@ CustomCardStats.defaultProps = {
   color: '',
   icon: '',
   size: '',
+  customServices: null,
 };
 
 CustomCardStats.propTypes = {
@@ -100,6 +105,7 @@ CustomCardStats.propTypes = {
     PropTypes.string,
     PropTypes.number,
   ]),
+  customServices: PropTypes.func,
 };
 
 
