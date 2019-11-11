@@ -288,6 +288,16 @@ function Skybot({ setTitle, history }) {
     {
       name: 'owner', title: 'Owner', width: 140, align: 'left',
     },
+
+    {
+      name: 'date_initial', title: "Initial Date", width: 100, align: 'left',
+    },
+    {
+      name: 'date_final', title: "Final Date", width: 100, align: 'left',
+    },
+    {
+      name: 'type_run', title: "Run Type", width: 100, align: 'center',
+    },
     {
       name: 'execution_time',
       title: 'Execution Time',
@@ -321,6 +331,9 @@ function Skybot({ setTitle, history }) {
       align: 'center',
     },
   ];
+
+  console.log(tableData);
+
 
   return (
     <Grid>
