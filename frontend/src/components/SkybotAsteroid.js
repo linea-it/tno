@@ -8,6 +8,8 @@ import {
   CardContent,
 } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
+import Icon from '@material-ui/core/Icon';
+import clsx from 'clsx';
 import Skeleton from '@material-ui/lab/Skeleton';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
@@ -60,6 +62,23 @@ const useStyles = makeStyles({
     backgroundColor: '#D79F15',
     color: '#FFF',
   },
+  invisibleButton: {
+    backgroundColor: 'transparent',
+    cursor: 'pointer',
+    color: 'rgb(85, 85, 85)',
+    '&:hover': {
+      color: 'rgba(0, 0, 0, 0.87)',
+    },
+    padding: 0,
+    fontSize: '1rem',
+    lineHeight: 1.75,
+    fontHeight: 500,
+    letterSpacing: '0.02857em',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    maxWidth: '100%',
+  },
 });
 
 function SkybotAsteroid({ setTitle, match }) {
@@ -69,12 +88,14 @@ function SkybotAsteroid({ setTitle, match }) {
   const [ccdsPlotData, setCcdsPlotData] = useState({});
   const [exposuresTableColumns, setExposuresTableColumns] = useState([]);
   const [exposuresTableData, setExposuresTableData] = useState([]);
-  const [asteroidsOnlyInsideCcds, setAsteroidsOnlyInsideCcds] = useState(false);
+  const [asteroidsOnlyInsideCcds, setAsteroidsOnlyInsideCcds] = useState(true);
 
   const circleCoordinatesPlaneFormat = (x) => {
     if (typeof x === 'number') return x > 180 ? x - 360 : x;
     return x.map((n) => (n > 180 ? n - 360 : n));
   };
+
+  const round = (value, decimals) => Number(`${Math.round(`${value}e${decimals}`)}e-${decimals}`);
 
   useEffect(() => {
     setTitle('Skybot Run');
@@ -116,19 +137,85 @@ function SkybotAsteroid({ setTitle, match }) {
     setExposuresTableData([]);
     if (asteroidsOnlyInsideCcds === false) {
       getOutputByExposure(runId, id).then((res) => {
-        setExposuresTableColumns(
-          Object.keys(res.rows[0])
-            .map((column) => ({ name: column })),
-        );
-        setExposuresTableData(res.rows);
+        const columns = Object.keys(res.rows[0]).map((column) => {
+          if (column === 'externallink') {
+            return {
+              name: column,
+              customElement: (el) => {
+                if (el.externallink === 'link') return '-';
+                return (
+                  <a href={el.externallink} target="_blank" rel="noopener noreferrer" className={classes.invisibleButton} title={el.externallink}>
+                    <Icon className={clsx(`fas fa-external-link-square-alt ${classes.iconDetail}`)} />
+                  </a>
+                );
+              },
+            };
+          }
+
+          return {
+            name: column,
+          };
+        });
+
+
+        setExposuresTableColumns(columns);
+        setExposuresTableData(res.rows.map((row) => ({
+          ...row,
+          raj2000: row.raj2000 ? round(row.raj2000, 3) : '-',
+          decj2000: row.decj2000 ? round(row.decj2000, 3) : '-',
+          d: row.d ? round(row.d, 3) : '-',
+          dracosdec: row.dracosdec ? round(row.dracosdec, 3) : '-',
+          ddec: row.ddec ? round(row.ddec, 3) : '-',
+          dgeo: row.dgeo ? round(row.dgeo, 3) : '-',
+          dhelio: row.dhelio ? round(row.dhelio, 3) : '-',
+          px: row.px ? round(row.px, 3) : '-',
+          py: row.py ? round(row.py, 3) : '-',
+          pz: row.pz ? round(row.pz, 3) : '-',
+          vx: row.vx ? round(row.vx, 3) : '-',
+          vy: row.vy ? round(row.vy, 3) : '-',
+          vz: row.vz ? round(row.vz, 3) : '-',
+          jdref: row.jdref ? round(row.jdref, 3) : '-',
+        })));
       });
     } else {
       getAsteroidsInsideCCD(id).then((res) => {
-        setExposuresTableColumns(
-          Object.keys(res.rows[0])
-            .map((column) => ({ name: column })),
-        );
-        setExposuresTableData(res.rows);
+        const columns = Object.keys(res.rows[0]).map((column) => {
+          if (column === 'externallink') {
+            return {
+              name: column,
+              customElement: (el) => {
+                if (el.externallink === 'link') return '-';
+                return (
+                  <a href={el.externallink} target="_blank" rel="noopener noreferrer" className={classes.invisibleButton} title={el.externallink}>
+                    <Icon className={clsx(`fas fa-external-link-square-alt ${classes.iconDetail}`)} />
+                  </a>
+                );
+              },
+            };
+          }
+
+          return {
+            name: column,
+          };
+        });
+        setExposuresTableColumns(columns);
+        setExposuresTableData(res.rows.map((row) => ({
+          ...row,
+          raj2000: row.raj2000 ? round(row.raj2000, 3) : '-',
+          decj2000: row.decj2000 ? round(row.decj2000, 3) : '-',
+          d: row.d ? round(row.d, 3) : '-',
+          dracosdec: row.dracosdec ? round(row.dracosdec, 3) : '-',
+          ddec: row.ddec ? round(row.ddec, 3) : '-',
+          dgeo: row.dgeo ? round(row.dgeo, 3) : '-',
+          dhelio: row.dhelio ? round(row.dhelio, 3) : '-',
+          px: row.px ? round(row.px, 3) : '-',
+          py: row.py ? round(row.py, 3) : '-',
+          pz: row.pz ? round(row.pz, 3) : '-',
+          vx: row.vx ? round(row.vx, 3) : '-',
+          vy: row.vy ? round(row.vy, 3) : '-',
+          vz: row.vz ? round(row.vz, 3) : '-',
+          jdref: row.jdref ? round(row.jdref, 3) : '-',
+        })));
       });
     }
   }, [asteroidsOnlyInsideCcds]);
