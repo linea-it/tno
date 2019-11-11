@@ -333,6 +333,10 @@ function Skybot({ setTitle, history }) {
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
                     disableFuture
+                    variant={"inline"}
+                    autoOk={true}
+                    openTo={"month"}
+                    views={["month", "date"]}
                     disabled={disabledDate}
                     className={classes.dateSet}
                     format="yyyy/MM/dd"
@@ -342,9 +346,12 @@ function Skybot({ setTitle, history }) {
                   />
                   <KeyboardDatePicker
                     disableFuture
+                    variant={"inline"}
+                    autoOk={true}
                     disabled={disabledDate}
                     className={classes.dateSet}
-
+                    openTo={"month"}
+                    views={["month", "date"]}
                     format="yyyy/MM/dd"
                     label="Final Date"
                     value={finalDate}
@@ -408,5 +415,5 @@ function Skybot({ setTitle, history }) {
       />
     </Grid>
   );
-  }
+}
 export default withRouter(Skybot);
