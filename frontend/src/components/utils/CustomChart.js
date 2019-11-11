@@ -522,6 +522,7 @@ export function CCD({ data, width, height }) {
       type: 'scatter',
       name: 'CCDs',
       showlegend,
+      legendgroup: 'CCDs',
       hoverinfo: 'skip',
     });
   });
@@ -532,19 +533,17 @@ export function CCD({ data, width, height }) {
     mode: 'markers',
     type: 'scatter',
     name: 'Asteroids',
-    legendgroup: 'Asteroid',
   });
 
   rows.push({
-    x: [data.asteroidsLimit.x[1] - 0.5, data.asteroidsLimit.x[1]],
-    y: [data.asteroidsLimit.y[1] + 0.1, data.asteroidsLimit.y[1]],
-    text: ['Cone Search Radius'],
-    name: 'Cone Search Radius',
-    mode: 'text',
-    showlegend: false,
-    textfont: {
+    x: [null],
+    y: [null],
+    name: 'Query Limit',
+    mode: 'lines',
+    showlegend: true,
+    hoverinfo: 'skip',
+    line: {
       color: 'rgba(255, 26, 26, 0.7)',
-      size: 18,
     },
   });
 
@@ -553,15 +552,16 @@ export function CCD({ data, width, height }) {
       data={rows}
       className={classes.plotWrapper}
       layout={{
+        title: 'Cone Search',
         width,
         height,
         hovermode: 'closest',
         autosize: true,
         xaxis: {
-          title: 'RAº',
+          title: 'RA (º)',
         },
         yaxis: {
-          title: 'Decº',
+          title: 'Dec (º)',
           scaleanchor: 'x',
         },
         shapes: [

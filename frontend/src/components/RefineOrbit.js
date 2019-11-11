@@ -44,15 +44,15 @@ const useStyles = makeStyles((theme) => ({
     boxSizing: 'border-box',
   },
   btnSuccess: {
-    backgroundColor: '#009900',
+    backgroundColor: 'green',
     color: '#fff',
   },
   btnFailure: {
-    backgroundColor: '#ff1a1a',
+    backgroundColor: 'red',
     color: '#fff',
   },
   btnRunning: {
-    backgroundColor: '#0099ff',
+    backgroundColor: '#ffba01',
     color: '#000',
   },
   btnNotExecuted: {
@@ -185,7 +185,7 @@ function RefineOrbit({ history, setTitle }) {
       align: 'center',
       customElement: (row) => (
         <span>
-          {row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}
+          {row.execution_time && typeof row.execution_time === 'string' ? row.execution_time.substring(0, 8) : ''}
         </span>
       ),
       width: 140,

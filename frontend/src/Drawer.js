@@ -213,7 +213,7 @@ const useStyles = makeStyles((theme) => ({
 function MiniDrawer() {
   const classes = useStyles();
   const [open, setOpen] = useState(true);
-  const [sssoOpen, setSssoOpen] = useState(false);
+  const [sssoOpen, setSssoOpen] = useState(true);
   const [title, setTitle] = useState('Dashboard');
   const [currentPage, setCurrentPage] = useState('');
 
@@ -303,14 +303,14 @@ function MiniDrawer() {
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite')} />
                 </ListItemIcon>
               ) : (
-                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                     {sssoOpen ? (
                       <ExpandLess className={classes.expandClosed} />
                     ) : (
-                        <ExpandMore className={classes.expandClosed} />
-                      )}
+                      <ExpandMore className={classes.expandClosed} />
+                    )}
                   </ListItemIcon>
-                )}
+              )}
               <ListItemText
                 primary="Search SSSO"
                 className={classes.textDrawer}
