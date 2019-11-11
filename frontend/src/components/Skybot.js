@@ -15,6 +15,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import Interval from 'react-interval';
 import { createSkybotRun, getSkybotRunList } from '../api/Skybot';
 import Table from './utils/CustomTable';
+import CustomDialog from './utils/CustomDialog';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -81,6 +82,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ffba01',
     color: '#000',
   },
+  logToolbar: {
+    backgroundColor: '#F1F2F5',
+    color: '#454545',
+  },
 }));
 
 function Skybot({ setTitle, history }) {
@@ -97,6 +102,7 @@ function Skybot({ setTitle, history }) {
   const [disabledRunButton, setDisabledRunButton] = useState(true);
   const [disabledDate, setDisabledDate] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [dialogVisible, setDialogVisible] = useState(false);
 
 
   const classes = useStyles();
@@ -173,8 +179,7 @@ function Skybot({ setTitle, history }) {
         date_final: finalDate,
       },
     ).then(() => {
-      setInitialDate(null);
-      setFinalDate(null);
+      setDialogVisible(true);
       loadData();
     });
   };
@@ -403,6 +408,14 @@ function Skybot({ setTitle, history }) {
           </Card>
         </Grid>
       </Grid>
+      <CustomDialog
+        title={"Skybot Run"}
+        visible={dialogVisible}
+        setVisible={() => setDialogVisible(false)}
+        content={"Executing skybot in background... check status on history table."}
+        headerStyle={classes.logToolbar}
+
+      />
     </Grid>
   );
 }
