@@ -367,5 +367,5 @@ function Skybot({ setTitle, history }) {
       </Grid>
     </Grid>
   );
-}
+  }
 export default withRouter(Skybot);

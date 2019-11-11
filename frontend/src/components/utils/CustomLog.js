@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 function CustomLog({ data }) {
   return (
     <pre style={{ border: 'none' }}>
-      {data.map((line) => <div style={{ whiteSpace: 'normal' }}>{line}</div>)}
+      {data ? data.map((line) => <div style={{ whiteSpace: 'normal' }}>{line}</div>) : null}
     </pre>
   );
 }
