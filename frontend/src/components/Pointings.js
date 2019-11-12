@@ -39,7 +39,7 @@ function Pointings({ setTitle, history }) {
     {
       name: 'filename',
       title: 'Filename',
-      width: 120,
+      width: 170,
       customElement: (el) => (
         <span title={el.filename}>
           {el.filename}
@@ -78,6 +78,13 @@ function Pointings({ setTitle, history }) {
       align: 'center',
       headerTooltip: 'Exposure time of observation',
       sortingEnabled: false,
+      customElement: (row) => {
+        return (
+          <span>
+            {row.ra_cent ? parseFloat(row.ra_cent.toFixed(3)) : ""}
+          </span>
+        );
+      },
     },
     {
       name: 'dec_cent',
@@ -85,6 +92,13 @@ function Pointings({ setTitle, history }) {
       align: 'center',
       headerTooltip: 'Exposure time of observation',
       sortingEnabled: false,
+      customElement: (row) => {
+        return (
+          <span>
+            {row.dec_cent ? parseFloat(row.dec_cent.toFixed(3)) : ""}
+          </span>
+        );
+      },
     },
 
     {
@@ -98,10 +112,10 @@ function Pointings({ setTitle, history }) {
           <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
         </span>
       ) : (
-        <span title={el.downloaded}>
-          <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-        </span>
-      )),
+          <span title={el.downloaded}>
+            <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+          </span>
+        )),
     },
     {
       name: 'id',
@@ -142,7 +156,7 @@ function Pointings({ setTitle, history }) {
                 data={pointingsTableData}
                 loadData={loadPointingsTableData}
                 totalCount={pointingsTableCount}
-                // hasSorting={false}
+              // hasSorting={false}
               />
             </CardContent>
           </Card>
