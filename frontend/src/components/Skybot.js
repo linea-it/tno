@@ -19,7 +19,6 @@ import SnackBar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
 
 
-
 const useStyles = makeStyles((theme) => ({
   typography: {
     marginBottom: 15,
@@ -94,6 +93,7 @@ function Skybot({ setTitle, history }) {
   const [selectRunValue, setSelectRunValue] = useState('period');
   const [initialDate, setInitialDate] = useState(null);
   const [finalDate, setFinalDate] = useState(null);
+  const [errorDatePicker, setErrorDatePicker] = useState(false);
   const [tablePage, setTablePage] = useState(1);
   const [tablePageSize, setTablePageSize] = useState(10);
   const [totalSize, setTotalSize] = useState(0);
@@ -102,7 +102,8 @@ function Skybot({ setTitle, history }) {
   const [tableData, setTableData] = useState([]);
   const pageSizes = [5, 10, 15];
   const [disabledRunButton, setDisabledRunButton] = useState(true);
-  const [disabledDate, setDisabledDate] = useState(false);
+  const [disabledInitialDate, setDisabledInitialDate] = useState(true);
+  const [disabledFinalDate, setDisabledFinalDate] = useState(true);
   const [loading, setLoading] = useState(false);
   const [snackBarVisible, setSnackBarVisible] = useState(false);
   const [snackBarPosition] = useState({
@@ -113,21 +114,34 @@ function Skybot({ setTitle, history }) {
 
   const classes = useStyles();
 
-
   useEffect(() => {
     setTitle('Skybot Run');
     loadData();
   }, []);
 
 
+  useEffect(() => {
+
+    if (errorDatePicker) {
+      setDisabledRunButton(true);
+    }
+
+  }, [errorDatePicker]);
+
 
   useEffect(() => {
-    if (initialDate && finalDate) {
+
+    if (initialDate) {
+      setDisabledFinalDate(false);
+    }
+
+    if ((initialDate && finalDate) && (!errorDatePicker)) {
       setDisabledRunButton(false);
     }
 
     if (!initialDate || initialDate.toString() === "Invalid Date") {
       setDisabledRunButton(true);
+      setDisabledFinalDate(true);
     }
 
     if (!finalDate || finalDate.toString() === "Invalid Date") {
@@ -139,17 +153,19 @@ function Skybot({ setTitle, history }) {
 
   useEffect(() => {
     if (selectRunValue === "all") {
-      setDisabledDate(true);
+      setDisabledInitialDate(true);
+      setDisabledFinalDate(true);
       setDisabledRunButton(false);
     }
 
     if (selectRunValue === "period") {
-      setDisabledDate(false);
+      setDisabledInitialDate(false);
       setDisabledRunButton(true);
       setInitialDate(null);
       setFinalDate(null);
     }
   }, [selectRunValue]);
+
 
   const loadData = (event) => {
     let page = null;
@@ -316,12 +332,24 @@ function Skybot({ setTitle, history }) {
   };
 
 
-
   const transitionSnackBar = (props) => {
     return <Slide {...props} direction="left" />;
   }
 
   const { vertical, horizontal } = snackBarPosition;
+
+
+  const handleFinalDateError = (error) => {
+    let currentDateMessage = "Date should not be after current date";
+    let initialDateMessage = "Date should not be before initial date"
+
+    if (error.trim() === currentDateMessage.trim() ||
+      error.trim() === initialDateMessage.trim()) {
+      setErrorDatePicker(true);
+    } else {
+      setErrorDatePicker(false)
+    }
+  };
 
   return (
     <Grid>
@@ -352,25 +380,27 @@ function Skybot({ setTitle, history }) {
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
                     disableFuture
-                    views={["month", "date"]}
-                    disabled={disabledDate}
+                    disabled={disabledInitialDate}
                     className={classes.dateSet}
                     format="yyyy/MM/dd"
                     label="Initial Date"
                     value={initialDate}
                     onChange={(date) => setInitialDate(date)}
-                    maxDate={finalDate}
+                    maxDateMessage={"Date should not be after current date"}
+
                   />
                   <KeyboardDatePicker
                     disableFuture
-                    disabled={disabledDate}
+                    disabled={disabledFinalDate}
                     className={classes.dateSet}
-                    views={["month", "date"]}
                     format="yyyy/MM/dd"
                     label="Final Date"
                     value={finalDate}
                     minDate={initialDate}
+                    minDateMessage={" Date should not be before initial date"}
+                    maxDateMessage={"Date should not be after current date"}
                     onChange={(date) => setFinalDate(date)}
+                    onError={handleFinalDateError}
                   />
                 </MuiPickersUtilsProvider>
 
