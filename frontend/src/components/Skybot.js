@@ -15,7 +15,8 @@ import DateFnsUtils from '@date-io/date-fns';
 import Interval from 'react-interval';
 import { createSkybotRun, getSkybotRunList } from '../api/Skybot';
 import Table from './utils/CustomTable';
-import CustomDialog from './utils/CustomDialog';
+import SnackBar from '@material-ui/core/Snackbar';
+import Slide from '@material-ui/core/Slide';
 
 
 
@@ -103,8 +104,12 @@ function Skybot({ setTitle, history }) {
   const [disabledRunButton, setDisabledRunButton] = useState(true);
   const [disabledDate, setDisabledDate] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [dialogVisible, setDialogVisible] = useState(false);
-
+  const [snackBarVisible, setSnackBarVisible] = useState(false);
+  const [snackBarPosition] = useState({
+    vertical: 'bottom',
+    horizontal: 'right',
+  });
+  const [snackBarTransition, setSnackBarTransition] = useState(undefined);
 
   const classes = useStyles();
 
@@ -179,8 +184,8 @@ function Skybot({ setTitle, history }) {
         date_final: finalDate,
       },
     ).then(() => {
-      setDialogVisible(true);
       loadData();
+      setDisabledRunButton(false);
     });
   };
 
@@ -194,6 +199,8 @@ function Skybot({ setTitle, history }) {
         handleSubmit();
         break;
       case 'period':
+        setSnackBarVisible(true);
+        setSnackBarTransition(() => transitionSnackBar)
         setDisabledRunButton(true);
         setLoading(true);
         handleSubmit();
@@ -304,6 +311,18 @@ function Skybot({ setTitle, history }) {
     },
   ];
 
+  const handleCloseSnackBar = (event, reason) => {
+    setSnackBarVisible(false);
+  };
+
+
+
+  const transitionSnackBar = (props) => {
+    return <Slide {...props} direction="left" />;
+  }
+
+  const { vertical, horizontal } = snackBarPosition;
+
   return (
     <Grid>
       <Interval
@@ -333,9 +352,6 @@ function Skybot({ setTitle, history }) {
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
                     disableFuture
-                    variant={"inline"}
-                    autoOk={true}
-                    openTo={"month"}
                     views={["month", "date"]}
                     disabled={disabledDate}
                     className={classes.dateSet}
@@ -343,18 +359,17 @@ function Skybot({ setTitle, history }) {
                     label="Initial Date"
                     value={initialDate}
                     onChange={(date) => setInitialDate(date)}
+                    maxDate={finalDate}
                   />
                   <KeyboardDatePicker
                     disableFuture
-                    variant={"inline"}
-                    autoOk={true}
                     disabled={disabledDate}
                     className={classes.dateSet}
-                    openTo={"month"}
                     views={["month", "date"]}
                     format="yyyy/MM/dd"
                     label="Final Date"
                     value={finalDate}
+                    minDate={initialDate}
                     onChange={(date) => setFinalDate(date)}
                   />
                 </MuiPickersUtilsProvider>
@@ -406,12 +421,13 @@ function Skybot({ setTitle, history }) {
           </Card>
         </Grid>
       </Grid>
-      <CustomDialog
-        title={"Skybot Run"}
-        visible={dialogVisible}
-        setVisible={() => setDialogVisible(false)}
-        content={"Executing skybot in background...  check dinamic history table "}
-        headerStyle={classes.logToolbar}
+      <SnackBar
+        open={snackBarVisible}
+        autoHideDuration={3500}
+        TransitionComponent={snackBarTransition}
+        anchorOrigin={{ vertical, horizontal }}
+        message={"Executing in background...  details on dinamic history table"}
+        onClose={handleCloseSnackBar}
       />
     </Grid>
   );
