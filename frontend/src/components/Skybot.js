@@ -13,10 +13,10 @@ import FormControl from '@material-ui/core/FormControl';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import Interval from 'react-interval';
-import { createSkybotRun, getSkybotRunList } from '../api/Skybot';
-import Table from './utils/CustomTable';
 import SnackBar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
+import { createSkybotRun, getSkybotRunList } from '../api/Skybot';
+import Table from './utils/CustomTable';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -121,16 +121,13 @@ function Skybot({ setTitle, history }) {
 
 
   useEffect(() => {
-
     if (errorDatePicker) {
       setDisabledRunButton(true);
     }
-
   }, [errorDatePicker]);
 
 
   useEffect(() => {
-
     if (initialDate) {
       setDisabledFinalDate(false);
     }
@@ -139,26 +136,25 @@ function Skybot({ setTitle, history }) {
       setDisabledRunButton(false);
     }
 
-    if (!initialDate || initialDate.toString() === "Invalid Date") {
+    if (!initialDate || initialDate.toString() === 'Invalid Date') {
       setDisabledRunButton(true);
       setDisabledFinalDate(true);
     }
 
-    if (!finalDate || finalDate.toString() === "Invalid Date") {
+    if (!finalDate || finalDate.toString() === 'Invalid Date') {
       setDisabledRunButton(true);
     }
-
   }, [initialDate, finalDate]);
 
 
   useEffect(() => {
-    if (selectRunValue === "all") {
+    if (selectRunValue === 'all') {
       setDisabledInitialDate(true);
       setDisabledFinalDate(true);
       setDisabledRunButton(false);
     }
 
-    if (selectRunValue === "period") {
+    if (selectRunValue === 'period') {
       setDisabledInitialDate(false);
       setDisabledRunButton(true);
       setInitialDate(null);
@@ -216,7 +212,7 @@ function Skybot({ setTitle, history }) {
         break;
       case 'period':
         setSnackBarVisible(true);
-        setSnackBarTransition(() => transitionSnackBar)
+        setSnackBarTransition(() => transitionSnackBar);
         setDisabledRunButton(true);
         setLoading(true);
         handleSubmit();
@@ -332,22 +328,20 @@ function Skybot({ setTitle, history }) {
   };
 
 
-  const transitionSnackBar = (props) => {
-    return <Slide {...props} direction="left" />;
-  }
+  const transitionSnackBar = (props) => <Slide {...props} direction="left" />;
 
   const { vertical, horizontal } = snackBarPosition;
 
 
   const handleFinalDateError = (error) => {
-    let currentDateMessage = "Date should not be after current date";
-    let initialDateMessage = "Date should not be before initial date"
+    const currentDateMessage = 'Date should not be after current date';
+    const initialDateMessage = 'Date should not be before initial date';
 
-    if (error.trim() === currentDateMessage.trim() ||
-      error.trim() === initialDateMessage.trim()) {
+    if (error.trim() === currentDateMessage.trim()
+      || error.trim() === initialDateMessage.trim()) {
       setErrorDatePicker(true);
     } else {
-      setErrorDatePicker(false)
+      setErrorDatePicker(false);
     }
   };
 
@@ -386,7 +380,7 @@ function Skybot({ setTitle, history }) {
                     label="Initial Date"
                     value={initialDate}
                     onChange={(date) => setInitialDate(date)}
-                    maxDateMessage={"Date should not be after current date"}
+                    maxDateMessage="Date should not be after current date"
 
                   />
                   <KeyboardDatePicker
@@ -397,8 +391,8 @@ function Skybot({ setTitle, history }) {
                     label="Final Date"
                     value={finalDate}
                     minDate={initialDate}
-                    minDateMessage={" Date should not be before initial date"}
-                    maxDateMessage={"Date should not be after current date"}
+                    minDateMessage=" Date should not be before initial date"
+                    maxDateMessage="Date should not be after current date"
                     onChange={(date) => setFinalDate(date)}
                     onError={handleFinalDateError}
                   />
@@ -412,15 +406,15 @@ function Skybot({ setTitle, history }) {
                   onClick={handleSelectRunClick}
                 >
                   Run
-                  {loading ?
-                    <CircularProgress
-                      color="primary"
-                      className={classes.progress}
-                      size={24}
-                    />
-                    :
-                    null
-                  }
+                  {loading
+                    ? (
+                      <CircularProgress
+                        color="primary"
+                        className={classes.progress}
+                        size={24}
+                      />
+                    )
+                    : null}
                 </Button>
               </FormControl>
             </CardContent>
@@ -456,7 +450,7 @@ function Skybot({ setTitle, history }) {
         autoHideDuration={3500}
         TransitionComponent={snackBarTransition}
         anchorOrigin={{ vertical, horizontal }}
-        message={"Executing in background...  details on dinamic history table"}
+        message="Executing... Check progress on the table below."
         onClose={handleCloseSnackBar}
       />
     </Grid>
