@@ -299,9 +299,9 @@ function Skybot({ setTitle, history }) {
               title="SkyBot Run"
             />
             <CardContent>
-              <Typography className={classes.typography}>Updates the SkyBot output table.</Typography>
+              <Typography className={classes.typography}>Identification CCDs with objects.</Typography>
               <FormControl fullWidth>
-                <Label>Select the type of update</Label>
+                <Label>Select the type of submit </Label>
                 <Select
                   value={selectRunValue}
                   onChange={(event) => {
@@ -373,5 +373,5 @@ function Skybot({ setTitle, history }) {
       </Grid>
     </Grid>
   );
-  }
+}
 export default withRouter(Skybot);
