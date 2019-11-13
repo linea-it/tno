@@ -180,88 +180,103 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
 
   const optionsClassSecondLevel = [
     {
-      id: 1, parentId: 1, label: 'Classical>Inner', value: 'Centaur>Classical>Inner',
+      id: 1, parentId: 3, label: 'Detached', value: 'KBO>Detached',
     },
     {
-      id: 2, parentId: 1, label: 'Classical>Main', value: 'Centaur>Classical>Main',
+      id: 2, parentId: 3, label: 'Classical', value: 'KBO>Classical',
     },
     {
-      id: 3, parentId: 2, label: 'Detached', value: 'Hungaria>Detached',
+      id: 3, parentId: 3, label: 'Classical>Inner', value: 'KBO>Classical>Inner',
     },
     {
-      id: 4, parentId: 3, label: 'Resonant>11:3', value: 'KBO>Resonant>11:3',
+      id: 4, parentId: 3, label: 'Classical>Main', value: 'KBO>Classical>Main',
     },
     {
-      id: 5, parentId: 3, label: 'Resonant>11:6', value: 'KBO>Resonant>11:6',
+      id: 5, parentId: 3, label: 'Classical>Outer', value: 'KBO>Classical>Outer',
     },
     {
-      id: 6, parentId: 3, label: 'Resonant>11:8', value: 'KBO>Resonant>11:8',
+      id: 6, parentId: 3, label: 'Resonant>11:3', value: 'KBO>Resonant>11:3',
     },
     {
-      id: 7, parentId: 3, label: 'Resonant>19:9', value: 'KBO>Resonant>19:9',
+      id: 7, parentId: 3, label: 'Resonant>11:6', value: 'KBO>Resonant>11:6',
     },
     {
-      id: 8, parentId: 3, label: 'Resonant>2:1', value: 'KBO>Resonant>2:1',
+      id: 8, parentId: 3, label: 'Resonant>11:8', value: 'KBO>Resonant>11:8',
     },
     {
-      id: 9, parentId: 3, label: 'Resonant>3:1', value: 'KBO>Resonant>3:1',
+      id: 9, parentId: 3, label: 'Resonant>19:9', value: 'KBO>Resonant>19:9',
     },
     {
-      id: 10, parentId: 3, label: 'Resonant>3:2', value: 'KBO>Resonant>3:2',
+      id: 10, parentId: 3, label: 'Resonant>2:1', value: 'KBO>Resonant>2:1',
     },
     {
-      id: 11, parentId: 3, label: 'Resonant>4:3', value: 'KBO>Resonant>4:3',
+      id: 11, parentId: 3, label: 'Resonant>3:1', value: 'KBO>Resonant>3:1',
     },
     {
-      id: 12, parentId: 3, label: 'Resonant>5:2', value: 'KBO>Resonant>5:2',
+      id: 12, parentId: 3, label: 'Resonant>3:2', value: 'KBO>Resonant>3:2',
     },
     {
-      id: 13, parentId: 3, label: 'Resonant>5:3', value: 'KBO>Resonant>5:3',
+      id: 13, parentId: 3, label: 'Resonant>4:3', value: 'KBO>Resonant>4:3',
     },
     {
-      id: 14, parentId: 3, label: 'Resonant>5:4', value: 'KBO>Resonant>5:4',
+      id: 14, parentId: 3, label: 'Resonant>5:2', value: 'KBO>Resonant>5:2',
     },
     {
-      id: 15, parentId: 3, label: 'Resonant>7:2', value: 'KBO>Resonant>7:2',
+      id: 15, parentId: 3, label: 'Resonant>5:3', value: 'KBO>Resonant>5:3',
     },
     {
-      id: 16, parentId: 3, label: 'Resonant>7:3', value: 'KBO>Resonant>7:3',
+      id: 16, parentId: 3, label: 'Resonant>5:4', value: 'KBO>Resonant>5:4',
     },
     {
-      id: 17, parentId: 3, label: 'Resonant>7:4', value: 'KBO>Resonant>7:4',
+      id: 17, parentId: 3, label: 'Resonant>7:2', value: 'KBO>Resonant>7:2',
     },
     {
-      id: 18, parentId: 3, label: 'Resonant>9:4', value: 'KBO>Resonant>9:4',
+      id: 18, parentId: 3, label: 'Resonant>7:3', value: 'KBO>Resonant>7:3',
     },
     {
-      id: 19, parentId: 3, label: 'Resonant>9:5', value: 'KBO>Resonant>9:5',
+      id: 19, parentId: 3, label: 'Resonant>7:4', value: 'KBO>Resonant>7:4',
     },
     {
-      id: 20, parentId: 5, label: 'SDO', value: 'MB>SDO',
+      id: 20, parentId: 3, label: 'Resonant>9:4', value: 'KBO>Resonant>9:4',
     },
     {
-      id: 21, parentId: 5, label: 'Cybele', value: 'MB>Cybele',
+      id: 21, parentId: 3, label: 'Resonant>9:5', value: 'KBO>Resonant>9:5',
     },
     {
-      id: 22, parentId: 5, label: 'Hilda', value: 'MB>Hilda',
+      id: 22, parentId: 3, label: 'SDO', value: 'KBO>SDO',
     },
     {
-      id: 23, parentId: 5, label: 'Inner', value: 'MB>Inner',
+      id: 23, parentId: 5, label: 'Cybele', value: 'MB>Cybele',
     },
     {
-      id: 24, parentId: 5, label: 'Middle', value: 'MB>Middle',
+      id: 24, parentId: 5, label: 'Hilda', value: 'MB>Hilda',
     },
     {
-      id: 25, parentId: 5, label: 'Outer', value: 'MB>Outer',
+      id: 25, parentId: 5, label: 'Inner', value: 'MB>Inner',
     },
     {
-      id: 26, parentId: 6, label: 'Amor', value: 'NEA>Amor',
+      id: 26, parentId: 5, label: 'Middle', value: 'MB>Middle',
     },
     {
-      id: 27, parentId: 6, label: 'Apollo', value: 'NEA>Apollo',
+      id: 27, parentId: 5, label: 'Outer', value: 'MB>Outer',
     },
     {
-      id: 28, parentId: 6, label: 'Aten', value: 'NEA>Aten',
+      id: 28, parentId: 6, label: 'Amor', value: 'NEA>Amor',
+    },
+    {
+      id: 29, parentId: 6, label: 'Apollo', value: 'NEA>Apollo',
+    },
+    {
+      id: 30, parentId: 6, label: 'Aten', value: 'NEA>Aten',
+    },
+    {
+      id: 31, parentId: 6, label: 'Aten', value: 'NEA>Atira',
+    },
+    {
+      id: 32, parentId: 4, label: 'Deep', value: 'Mars-Crosser>Deep',
+    },
+    {
+      id: 33, parentId: 4, label: 'Shallow', value: 'Mars-Crosser>Shallow',
     },
   ];
 
