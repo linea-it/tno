@@ -303,14 +303,14 @@ function MiniDrawer() {
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite')} />
                 </ListItemIcon>
               ) : (
-                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                     {sssoOpen ? (
                       <ExpandLess className={classes.expandClosed} />
                     ) : (
-                      <ExpandMore className={classes.expandClosed} />
-                    )}
+                        <ExpandMore className={classes.expandClosed} />
+                      )}
                   </ListItemIcon>
-              )}
+                )}
               <ListItemText
                 primary="Search SSSO"
                 className={classes.textDrawer}
@@ -331,7 +331,7 @@ function MiniDrawer() {
                       <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-arrow-circle-up')} />
                     </ListItemIcon>
                     <ListItemText
-                      primary="Submit"
+                      primary="Execute Skybot"
                       className={classes.textDrawer}
                     />
                   </ListItem>
