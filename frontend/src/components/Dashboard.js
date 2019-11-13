@@ -52,13 +52,13 @@ function Dashboard({ setTitle }) {
     <Grid container spacing={2}>
       <Grid item xs={12} md={6} lg={4} className={classes.block}>
         <Card>
-          <CardHeader title="Plot exposure" />
+          <CardHeader title="Exposures x Year" />
           <CardContent className={classes.centerImage} style={{ minHeight: ccdBandHeight }}>
 
 
             <Grid container spacing={2}>
               <Grid xs={12}>
-                <img src={histogramExposures} className={classes.imgResponsive} alt="Plot exposure" title="Plot exposure" />
+                <img src={histogramExposures} className={classes.imgResponsive} alt="Exposures x Year" title="Exposures x Year" />
               </Grid>
               <Grid xs={12}>
                 <CustomTable
@@ -116,11 +116,11 @@ function Dashboard({ setTitle }) {
       </Grid>
       <Grid item xs={12} md={6} lg={4} className={classes.block}>
         <Card>
-          <CardHeader title="CCD x Exposure time" />
+          <CardHeader title="Exposures x Exposure Time" />
           <CardContent className={classes.centerImage} style={{ minHeight: ccdBandHeight }}>
             <Grid container spacing={2}>
               <Grid xs={12}>
-                <img src={histogramExposureTime} className={classes.imgResponsive} alt="CCD x Exposure time" title="CCD x Exposure time" />
+                <img src={histogramExposureTime} className={classes.imgResponsive} alt="Exposures x Exposure Time" title="Exposures x Exposure Time" />
               </Grid>
               <Grid xs={12}>
                 <CustomTable
@@ -177,7 +177,7 @@ function Dashboard({ setTitle }) {
       </Grid>
       <Grid item xs={12} md={6} lg={4} className={classes.block}>
         <Card>
-          <CardHeader title="CCDs x Band" />
+          <CardHeader title="Exposures x Band" />
           <SizeMe monitorHeight monitorWidth={false}>
             {({ size }) => {
               setCcdBandHeight(size.height);
@@ -186,7 +186,7 @@ function Dashboard({ setTitle }) {
 
                   <Grid container spacing={2}>
                     <Grid xs={12}>
-                      <img src={histogramBands} className={classes.imgResponsive} alt="CCDs x Band" title="CCDs x Band" style={{ maxHeight: 311 }} />
+                      <img src={histogramBands} className={classes.imgResponsive} alt="Exposures x Band" title="Exposures x Band" style={{ maxHeight: 311 }} />
                     </Grid>
                     <Grid xs={12}>
                       <CustomTable
