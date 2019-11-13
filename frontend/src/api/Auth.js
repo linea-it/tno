@@ -1,22 +1,8 @@
 import axios from 'axios';
 
-const api = process.env.REACT_APP_API;
-axios.defaults.baseURL = api;
+export const url = process.env.REACT_APP_API;
+axios.defaults.baseURL = url;
 
-// Interceptar a requisicao
-// // Add a request interceptor
-// axios.interceptors.request.use(
-//   function(config) {
-//     // Do something before request is sent
-//     return config;
-//   },
-//   function(error) {
-//     // Do something with request error
-//     return Promise.reject(error);
-//   }
-// );
-
-// Interceptar a Resposta.
 // Add a response interceptor
 axios.interceptors.response.use(
   (response) =>
@@ -26,10 +12,6 @@ axios.interceptors.response.use(
     // Do something with response error
     if (error.response) {
       // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      // console.log(error.response.data);
-      // console.log(error.response.status);
-      // console.log(error.response.headers);
 
       if (error.response.status === 401) {
         logout();
@@ -50,7 +32,6 @@ axios.interceptors.response.use(
 );
 
 export function isAuthenticated() {
-  // return !!localStorage.token;
   if (localStorage.token) {
     axios.defaults.headers.common.Authorization = `Token ${localStorage.token}`;
     return true;
@@ -58,29 +39,9 @@ export function isAuthenticated() {
   return false;
 }
 
-export function login(username, password, cb) {
-  if (localStorage.token) {
-    if (cb) cb(true);
-    return;
-  }
-  getToken(username, password, (res) => {
-    if (res.authenticated) {
-      localStorage.token = res.token;
-      axios.defaults.headers.common.Authorization = `Token ${res.token}`;
-      if (cb) cb(true);
-    } else if (cb) cb(false);
-  });
-}
-
-export function logout() {
-  console.log('logout()');
-  delete localStorage.token;
-  window.location.replace(`${window.location.hostname}/login`);
-}
-
 export function getToken(username, password, cb) {
   axios
-    .post(`${api}/obtain-auth-token/`, {
+    .post(`/obtain-auth-token/`, {
       username,
       password,
     })
@@ -102,4 +63,24 @@ export function getToken(username, password, cb) {
         alert(data.non_field_errors[0]);
       }
     });
+}
+
+export function login(username, password, cb) {
+  if (localStorage.token) {
+    if (cb) cb(true);
+    return;
+  }
+
+  getToken(username, password, (res) => {
+    if (res.authenticated) {
+      localStorage.token = res.token;
+      axios.defaults.headers.common.Authorization = `Token ${res.token}`;
+      if (cb) cb(true);
+    } else if (cb) cb(false);
+  });
+}
+
+export function logout() {
+  delete localStorage.token;
+  window.location.replace(`${window.location.hostname}/login`);
 }
