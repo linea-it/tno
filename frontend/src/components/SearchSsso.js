@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: 30,
     paddingBottom: 10,
   },
+
   subtitle: {
     marginBottom: 10,
   },
@@ -41,6 +42,10 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
     width: 200,
   },
+  sublevelList: {
+    width: 200,
+  },
+
   filterSlider: {
     width: 200,
     marginLeft: theme.spacing(1),
@@ -126,52 +131,52 @@ export default function SearchSsso({ history, setTitle }) {
     history.push(`search-ssso-detail/${row.id}`);
   };
 
-  const loadDynamicClassColumns = () => {
-    const dynclass = [
-      { name: 'Centaur', value: 'Centaur', title: 'Centaur', },
-      { name: 'Hungaria', value: 'Hungaria', title: 'Hungaria', },
-      { name: 'KBO>Classical>Inner', value: 'KBO>Classical>Inner', title: 'KBO>Classical>Inner', },
-      { name: 'KBO>Classical>Main', value: 'KBO>Classical>Main', title: 'KBO>Classical>Main', },
-      { name: 'KBO>Detached', value: 'KBO>Detached', title: 'KBO>Detached', },
-      { name: 'KBO>Resonant>11:3', value: 'KBO>Resonant>11:3', title: 'KBO>Resonant>11:3', },
-      { name: 'KBO>Resonant>11:6', value: 'KBO>Resonant>11:6', title: 'KBO>Resonant>11:6', },
-      { name: 'KBO>Resonant>11:8', value: 'KBO>Resonant>11:8', title: 'KBO>Resonant>11:8', },
-      { name: 'KBO>Resonant>19:9', value: 'KBO>Resonant>19:9', title: 'KBO>Resonant>19:9', },
-      { name: 'KBO>Resonant>2:1', value: 'KBO>Resonant>2:1', title: 'KBO>Resonant>2:1', },
-      { name: 'KBO>Resonant>3:1', value: 'KBO>Resonant>3:1', title: 'KBO>Resonant>3:1', },
-      { name: 'KBO>Resonant>3:2', value: 'KBO>Resonant>3:2', title: 'KBO>Resonant>3:2', },
-      { name: 'KBO>Resonant>4:3', value: 'KBO>Resonant>4:3', title: 'KBO>Resonant>4:3', },
-      { name: 'KBO>Resonant>5:2', value: 'KBO>Resonant>5:2', title: 'KBO>Resonant>5:2', },
-      { name: 'KBO>Resonant>5:3', value: 'KBO>Resonant>5:3', title: 'KBO>Resonant>5:3', },
-      { name: 'KBO>Resonant>5:4', value: 'KBO>Resonant>5:4', title: 'KBO>Resonant>5:4', },
-      { name: 'KBO>Resonant>7:2', value: 'KBO>Resonant>7:2', title: 'KBO>Resonant>7:2', },
-      { name: 'KBO>Resonant>7:3', value: 'KBO>Resonant>7:3', title: 'KBO>Resonant>7:3', },
-      { name: 'KBO>Resonant>7:4', value: 'KBO>Resonant>7:4', title: 'KBO>Resonant>7:4', },
-      { name: 'KBO>Resonant>9:4', value: 'KBO>Resonant>9:4', title: 'KBO>Resonant>9:4', },
-      { name: 'KBO>Resonant>9:5', value: 'KBO>Resonant>9:5', title: 'KBO>Resonant>9:5', },
-      { name: 'KBO>SDO', value: 'KBO>SDO', title: 'KBO>SDO', },
-      { name: 'Mars-Crosser', value: 'Mars-Crosser', title: 'Mars-Crosser', },
-      { name: 'MB>Cybele', value: 'MB>Cybele', title: 'MB>Cybele', },
-      { name: 'MB>Hilda', value: 'MB>Hilda', title: 'MB>Hilda', },
-      { name: 'MB>Inner', value: 'MB>Inner', title: 'MB>Inner', },
-      { name: 'MB>Middle', value: 'MB>Middle', title: 'MB>Middle', },
-      { name: 'MB>Outer', value: 'MB>Outer', title: 'MB>Outer', },
-      { name: 'NEA>Amor', value: 'NEA>Amor', title: 'NEA>Amor', },
-      { name: 'NEA>Apollo', value: 'NEA>Apollo', title: 'NEA>Apollo', },
-      { name: 'NEA>Aten', value: 'NEA>Aten', title: 'NEA>Aten', },
-      { name: 'Trojan', value: 'Trojan', title: 'Trojan', },
-    ];
+  // const loadDynamicClassColumns = () => {
+  //   const dynclass = [
+  //     { name: 'Centaur', value: 'Centaur', title: 'Centaur', },
+  //     { name: 'Hungaria', value: 'Hungaria', title: 'Hungaria', },
+  //     { name: 'KBO>Classical>Inner', value: 'KBO>Classical>Inner', title: 'KBO>Classical>Inner', },
+  //     { name: 'KBO>Classical>Main', value: 'KBO>Classical>Main', title: 'KBO>Classical>Main', },
+  //     { name: 'KBO>Detached', value: 'KBO>Detached', title: 'KBO>Detached', },
+  //     { name: 'KBO>Resonant>11:3', value: 'KBO>Resonant>11:3', title: 'KBO>Resonant>11:3', },
+  //     { name: 'KBO>Resonant>11:6', value: 'KBO>Resonant>11:6', title: 'KBO>Resonant>11:6', },
+  //     { name: 'KBO>Resonant>11:8', value: 'KBO>Resonant>11:8', title: 'KBO>Resonant>11:8', },
+  //     { name: 'KBO>Resonant>19:9', value: 'KBO>Resonant>19:9', title: 'KBO>Resonant>19:9', },
+  //     { name: 'KBO>Resonant>2:1', value: 'KBO>Resonant>2:1', title: 'KBO>Resonant>2:1', },
+  //     { name: 'KBO>Resonant>3:1', value: 'KBO>Resonant>3:1', title: 'KBO>Resonant>3:1', },
+  //     { name: 'KBO>Resonant>3:2', value: 'KBO>Resonant>3:2', title: 'KBO>Resonant>3:2', },
+  //     { name: 'KBO>Resonant>4:3', value: 'KBO>Resonant>4:3', title: 'KBO>Resonant>4:3', },
+  //     { name: 'KBO>Resonant>5:2', value: 'KBO>Resonant>5:2', title: 'KBO>Resonant>5:2', },
+  //     { name: 'KBO>Resonant>5:3', value: 'KBO>Resonant>5:3', title: 'KBO>Resonant>5:3', },
+  //     { name: 'KBO>Resonant>5:4', value: 'KBO>Resonant>5:4', title: 'KBO>Resonant>5:4', },
+  //     { name: 'KBO>Resonant>7:2', value: 'KBO>Resonant>7:2', title: 'KBO>Resonant>7:2', },
+  //     { name: 'KBO>Resonant>7:3', value: 'KBO>Resonant>7:3', title: 'KBO>Resonant>7:3', },
+  //     { name: 'KBO>Resonant>7:4', value: 'KBO>Resonant>7:4', title: 'KBO>Resonant>7:4', },
+  //     { name: 'KBO>Resonant>9:4', value: 'KBO>Resonant>9:4', title: 'KBO>Resonant>9:4', },
+  //     { name: 'KBO>Resonant>9:5', value: 'KBO>Resonant>9:5', title: 'KBO>Resonant>9:5', },
+  //     { name: 'KBO>SDO', value: 'KBO>SDO', title: 'KBO>SDO', },
+  //     { name: 'Mars-Crosser', value: 'Mars-Crosser', title: 'Mars-Crosser', },
+  //     { name: 'MB>Cybele', value: 'MB>Cybele', title: 'MB>Cybele', },
+  //     { name: 'MB>Hilda', value: 'MB>Hilda', title: 'MB>Hilda', },
+  //     { name: 'MB>Inner', value: 'MB>Inner', title: 'MB>Inner', },
+  //     { name: 'MB>Middle', value: 'MB>Middle', title: 'MB>Middle', },
+  //     { name: 'MB>Outer', value: 'MB>Outer', title: 'MB>Outer', },
+  //     { name: 'NEA>Amor', value: 'NEA>Amor', title: 'NEA>Amor', },
+  //     { name: 'NEA>Apollo', value: 'NEA>Apollo', title: 'NEA>Apollo', },
+  //     { name: 'NEA>Aten', value: 'NEA>Aten', title: 'NEA>Aten', },
+  //     { name: 'Trojan', value: 'Trojan', title: 'Trojan', },
+  //   ];
 
-    return dynclass.map((el) => (
-      <MenuItem
-        key={el.value}
-        value={el.value}
-        title={el.title}
-      >
-        {el.title}
-      </MenuItem>
-    ));
-  };
+  //   return dynclass.map((el) => (
+  //     <MenuItem
+  //       key={el.value}
+  //       value={el.value}
+  //       title={el.title}
+  //     >
+  //       {el.title}
+  //     </MenuItem>
+  //   ));
+  // };
 
   const tableColumns = [
     {
@@ -255,7 +260,6 @@ export default function SearchSsso({ history, setTitle }) {
       action: handleSearchSssoDetail,
     }
   ]
-
 
   const optionsClassFirstLevel = [
     { id: 1, label: 'Centaur', value: 'Centaur' },
@@ -388,8 +392,8 @@ export default function SearchSsso({ history, setTitle }) {
               title={"SkyBot Output"}
             />
             <CardContent>
-              <Toolbar>
-                {/* <TextField
+
+              {/* <TextField
                   className={classes.filterField}
                   select
                   label="Dynamic Class"
@@ -402,7 +406,9 @@ export default function SearchSsso({ history, setTitle }) {
                   {loadDynamicClassColumns()}
                 </TextField> */}
 
-                <div>
+
+              <Grid container>
+                <Grid item lg={4} xl={4}>
                   <FormControl>
                     <InputLabel>Dynamic class</InputLabel>
                     <Select
@@ -430,63 +436,74 @@ export default function SearchSsso({ history, setTitle }) {
                       ))}
                     </Select>
                   </FormControl>
-                </div>
+                </Grid>
 
-                <div>
-                  <FormControl className={classes.formControl} fullWidth>
-                    <InputLabel>Sublevel dynamic class</InputLabel>
-                    <Select
-                      disabled={!(sublevelDynamicClassList.length > 0)}
+                <Grid item lg={4} xl={4}>
+                  <div className={classes.filterSlider}>
+                    <Typography gutterBottom variant="body2" className={classes.filterSliderLabel}>
+                      {`Magnitude(g): ${vMagnitude}`}
+                    </Typography>
+                    <Slider
+                      value={vMagnitude}
+                      step={1}
+                      min={4}
+                      max={23}
+                      valueLabelDisplay="auto"
+                      onChange={(event, value) => { setVmagnitude(value); }}
+                    />
 
-                      //  className={classes.filterField}
-                      multiple
-                      value={sublevelDynamicClassSelected}
-                      onChange={handleSublevelDynamicClass}
-                      input={<Input />}
-                      renderValue={() => (
-                        <div className={classes.chips}>
-                          {sublevelDynamicClassSelected.map((i) => (
-                            <Chip
-                              key={sublevelDynamicClassList[i].id}
-                              label={sublevelDynamicClassList[i].label}
-                              className={classes.chip}
-                            />
-                          ))}
-                        </div>
-                      )}
+                  </div>
+                </Grid>
+                <Grid item lg={3} xl={3}>
+                  <div>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleClearFilters}
                     >
-                      {sublevelDynamicClassList.map((option, i) => (
-                        <MenuItem key={option.id} value={i}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </div>
-
-
-                <div className={classes.filterSlider}>
-                  <Typography gutterBottom variant="body2" className={classes.filterSliderLabel}>
-                    {`Magnitude(g): ${vMagnitude}`}
-                  </Typography>
-                  <Slider
-                    value={vMagnitude}
-                    step={1}
-                    min={4}
-                    max={23}
-                    valueLabelDisplay="auto"
-                    onChange={(event, value) => { setVmagnitude(value); }}
-                  />
-                </div>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleClearFilters}
-                >
-                  Clear
+                      Clear
                 </Button>
+                  </div>
+                </Grid>
 
-              </Toolbar>
+              </Grid>
+
+              <Grid container>
+                <Grid item lg={8} xl={8}>
+                  <div>
+                    <FormControl className={classes.formControl} fullWidth >
+                      <InputLabel>Sublevel dynamic class</InputLabel>
+                      <Select
+                        disabled={!(sublevelDynamicClassList.length > 0)}
+                        multiple
+                        fullWidth
+                        value={sublevelDynamicClassSelected}
+                        onChange={handleSublevelDynamicClass}
+                        input={<Input />}
+
+                        renderValue={() => (
+                          <div className={classes.chips}>
+                            {sublevelDynamicClassSelected.map((i) => (
+                              <Chip
+                                key={sublevelDynamicClassList[i].id}
+                                label={sublevelDynamicClassList[i].label}
+                                className={classes.chip}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      >
+                        {sublevelDynamicClassList.map((option, i) => (
+                          <MenuItem key={option.id} value={i}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </div>
+                </Grid>
+              </Grid>
+
               <Table
                 data={tableData}
                 columns={tableColumns}
@@ -497,7 +514,7 @@ export default function SearchSsso({ history, setTitle }) {
             </CardContent>
           </Card>
         </Grid>
-      </Grid>
-    </Grid>
+      </Grid >
+    </Grid >
   );
 }
