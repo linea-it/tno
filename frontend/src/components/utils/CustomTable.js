@@ -5,6 +5,7 @@ import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   PagingState,
@@ -46,7 +47,32 @@ const useStyles = makeStyles({
     left: '24px',
     zIndex: '999',
   },
+  noDataCell: {
+    padding: '48px 0px',
+  },
+  noDataWrapper: {
+    left: '50%',
+    display: 'inline-block',
+    position: 'sticky',
+  },
+  noDataText: {
+    display: 'inline-block',
+    transform: 'translateX(-50%)',
+  },
 });
+
+function CustomNoDataCellComponent({ ...noDatProps }, customLoading) {
+  const classes = useStyles();
+
+  return (
+    <td className={clsx(classes.noDataCell, 'MuiTableCell-root', 'MuiTableCell-body')} {...noDatProps}>
+      <div className={classes.noDataWrapper}>
+        <big className={classes.noDataText}>{customLoading ? 'Loading...' : 'No Data'}</big>
+      </div>
+    </td>
+  );
+}
+
 
 function CustomTable({
   columns,
@@ -71,6 +97,7 @@ function CustomTable({
   modalContent,
   hasFiltering,
   hasLineBreak,
+  loading,
 }) {
   const customColumns = columns.map((column) => ({
     name: column.name,
@@ -110,7 +137,7 @@ function CustomTable({
   const [customData, setCustomData] = useState(data);
   const [customTotalCount, setCustomTotalCount] = useState(totalCount);
   const [visible, setVisible] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [customLoading, setCustomLoading] = useState(true);
   const [sorting, setSorting] = useState(customSorting());
   const [currentPage, setCurrentPage] = useState(0);
   const [after, setAfter] = useState('');
@@ -132,7 +159,7 @@ function CustomTable({
 
   const clearData = () => {
     setCustomData([]);
-    setLoading(false);
+    setCustomLoading(true);
     setCurrentPage(0);
     setAfter('');
   };
@@ -140,8 +167,12 @@ function CustomTable({
   useEffect(() => {
     setCustomData(data);
     setCustomTotalCount(totalCount);
-    setLoading(false);
+    setCustomLoading(false);
   }, [data, totalCount, defaultExpandedGroups]);
+
+  useEffect(() => {
+    if (loading !== null) setCustomLoading(loading);
+  }, [loading]);
 
 
   useEffect(() => {
@@ -151,7 +182,7 @@ function CustomTable({
   const changeSorting = (value) => {
     if (remote === true) {
       clearData();
-      setLoading(true);
+      setCustomLoading(true);
     }
     setSorting(value);
   };
@@ -160,7 +191,7 @@ function CustomTable({
     const offset = value * pageSize;
     const next = window.btoa(`arrayconnection:${offset - 1}`);
     if (remote === true) {
-      setLoading(true);
+      setCustomLoading(true);
     }
     setCurrentPage(value);
     setAfter(next);
@@ -170,7 +201,7 @@ function CustomTable({
     const totalPages = Math.ceil(customTotalCount / value);
     const theCurrentPage = Math.min(currentPage, totalPages - 1);
     if (remote === true) {
-      setLoading(true);
+      setCustomLoading(true);
     }
     setCurrentPage(theCurrentPage);
     setCustomPageSize(value);
@@ -180,7 +211,7 @@ function CustomTable({
     if (value.length > 2) {
       if (remote === true) {
         clearData();
-        setLoading(true);
+        setCustomLoading(true);
       }
       setSearchValue(value);
     } else {
@@ -202,7 +233,7 @@ function CustomTable({
   const handleChangeFilter = (evt) => {
     if (remote === true) {
       clearData();
-      setLoading(true);
+      setCustomLoading(true);
     }
     setFilter(evt.target.value);
   };
@@ -219,8 +250,8 @@ function CustomTable({
     <CircularProgress
       style={{
         position: 'absolute',
-        top: '50%',
-        left: '50%',
+        top: 'calc(50% - 40px)',
+        left: 'calc(50% - 20px)',
         marginTop: 'translateY(-50%)',
         zIndex: '99',
       }}
@@ -288,7 +319,17 @@ function CustomTable({
             )
               : null}
             {hasGrouping ? <IntegratedGrouping /> : null}
-            <Table columnExtensions={customColumnExtensions} />
+            {loading !== null ? (
+              <Table
+                columnExtensions={customColumnExtensions}
+                noDataCellComponent={(props) => CustomNoDataCellComponent({ ...props }, customLoading)}
+              />
+
+            ) : (
+              <Table
+                columnExtensions={customColumnExtensions}
+              />
+            )}
             {hasSelection ? (
               <TableSelection
                 selectByRowClick
@@ -358,7 +399,18 @@ function CustomTable({
           )
             : null}
           {hasGrouping ? <IntegratedGrouping /> : null}
-          <Table columnExtensions={customColumnExtensions} />
+          {loading !== null ? (
+            <Table
+              columnExtensions={customColumnExtensions}
+              noDataCellComponent={(props) => CustomNoDataCellComponent({ ...props }, customLoading)}
+            />
+
+          ) : (
+            <Table
+              columnExtensions={customColumnExtensions}
+            />
+          )}
+
           {hasSelection ? (
             <TableSelection
               selectByRowClick
@@ -391,7 +443,7 @@ function CustomTable({
     const line = {};
     Object.keys(row).forEach((key) => {
       const column = columns.filter((el) => el.name === key)[0];
-      if (row[key]) {
+      if (key in row) {
         if (
           (column && column.icon && typeof row[key] !== 'object')
           /*
@@ -436,7 +488,7 @@ function CustomTable({
     <>
       {hasFiltering ? renderFilter() : null}
       {renderTable(rows)}
-      {loading && renderLoading()}
+      {customLoading && renderLoading()}
     </>
   );
 }
@@ -462,6 +514,7 @@ CustomTable.defaultProps = {
   remote: true,
   hasLineBreak: false,
   grouping: [{}],
+  loading: null,
 };
 
 
@@ -492,6 +545,7 @@ CustomTable.propTypes = {
   reload: PropTypes.bool,
   remote: PropTypes.bool,
   grouping: PropTypes.arrayOf(PropTypes.object),
+  loading: PropTypes.bool,
 };
 
 export default CustomTable;

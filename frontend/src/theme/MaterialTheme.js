@@ -45,11 +45,16 @@ const theme = createMuiTheme({
         fontSize: '1rem',
       },
     },
-    // TableHeaderCell: {
-    //   container: {
-    //     textTransform: 'capitalize',
-    //   },
-    // },
+    MuiCard: {
+      root: {
+        position: 'relative',
+      },
+    },
+    MuiCardContent: {
+      root: {
+        position: 'relative',
+      },
+    },
   },
 });
 

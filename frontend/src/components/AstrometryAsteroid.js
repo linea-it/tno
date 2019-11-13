@@ -6,12 +6,10 @@ import {
 import clsx from 'clsx';
 import moment from 'moment';
 import Carousel, { Modal, ModalGateway } from 'react-images';
-import LazyLoad from 'react-lazyload';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import { withRouter } from 'react-router';
-import Skeleton from '@material-ui/lab/Skeleton';
 import filesize from 'filesize';
 import CustomList from './utils/CustomList';
 import CustomTable from './utils/CustomTable';
@@ -221,10 +219,13 @@ function AstrometryAsteroid({
       name: 'id',
       title: ' ',
       customElement: (row) => {
-        if (row.file_type && row.file_type === "csv" && row.file_type !== "") {
-          return <Icon className={clsx(`fas fa-file-csv ${classes.iconDetail}`)}
-            onClick={() => setInputCsv({ title: row.filename, content: row.file_path, visible: false })}
-          />
+        if (row.file_type && row.file_type === 'csv' && row.file_type !== '') {
+          return (
+            <Icon
+              className={clsx(`fas fa-file-csv ${classes.iconDetail}`)}
+              onClick={() => setInputCsv({ title: row.filename, content: row.file_path, visible: false })}
+            />
+          );
         }
       },
     },
@@ -476,6 +477,10 @@ function AstrometryAsteroid({
       });
   };
 
+  useEffect(() => {
+    console.log(astrometryPlots);
+  }, [astrometryPlots]);
+
 
   useEffect(() => {
     if (inputCsv.content !== '') loadInputCsvTableData({ currentPage: 0, pageSize: 10 });
@@ -611,21 +616,13 @@ function AstrometryAsteroid({
                   <Grid container spacing={2}>
                     {astrometryPlots.map((plot, i) => (
                       <Grid item xs={12} sm={6} md={3} key={plot.id}>
-                        <LazyLoad
-                          offset={[-100, 0]}
-                          once
-                          placeholder={(
-                            <Skeleton height={400} />
-                          )}
-                        >
-                          <img
-                            src={plot.source}
-                            onClick={(e) => openLightbox(i, e)}
-                            className={clsx(classes.imgResponsive, classes.lightboxImage)}
-                            title={plot.filename}
-                            alt={plot.filename}
-                          />
-                        </LazyLoad>
+                        <img
+                          src={plot.source}
+                          onClick={(e) => openLightbox(i, e)}
+                          className={clsx(classes.imgResponsive, classes.lightboxImage)}
+                          title={plot.filename}
+                          alt={plot.filename}
+                        />
                       </Grid>
                     ))}
                   </Grid>
