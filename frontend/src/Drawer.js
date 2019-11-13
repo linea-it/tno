@@ -285,7 +285,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/pointings" className={classes.invisibleLink} title="Pointings">
+            <Link to="/pointings" className={classes.invisibleLink} title="Query the database and download the metadata telling, among others, pointing coordinates, date of observation, exposure time, band, and image location in database">
               <ListItem button selected={currentPage === 'pointings'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-dot-circle')} />
@@ -314,6 +314,7 @@ function MiniDrawer() {
               <ListItemText
                 primary="Search SSSO"
                 className={classes.textDrawer}
+                title="Identification of small solar system objects (SSSO) in all pointings using the SkyBoT service:"
               />
               {open ? (
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
@@ -351,7 +352,7 @@ function MiniDrawer() {
             </Collapse>
 
             <Divider className={classes.borderDrawer} />
-            <Link to="/filter-objects" className={classes.invisibleLink} title="Filter Objects">
+            <Link to="/filter-objects" className={classes.invisibleLink} title="Download of images which have observations of specific objects.">
               <ListItem button selected={currentPage === 'filter-objects'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-filter')} />
@@ -363,7 +364,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/astrometry" className={classes.invisibleLink} title="Astrometry">
+            <Link to="/astrometry" className={classes.invisibleLink} title="Astrometric reduction using PRAIA package and stellar catalogue Gaia like reference to detect and determine positions of objects from CCD frame.">
               <ListItem button selected={currentPage === 'astrometry'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-meteor')} />
@@ -375,7 +376,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/refine-orbit" className={classes.invisibleLink} title="Refine Orbit">
+            <Link to="/refine-orbit" className={classes.invisibleLink} title="Refinement of Orbits of specifics objects using NIMA code.">
               <ListItem button selected={currentPage === 'refine-orbit'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-globe-americas')} />
@@ -387,7 +388,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/prediction-of-occultation" className={classes.invisibleLink} title="Prediction of Occultation">
+            <Link to="/prediction-of-occultation" className={classes.invisibleLink} title="Comparison of objects’ ephemeris and positions of stars to predict events of stellar occultation using Gaia catalogue like reference.">
               <ListItem button selected={currentPage === 'prediction-of-occultation'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-chart-area')} />
@@ -411,7 +412,7 @@ function MiniDrawer() {
               </ListItem>
             </Link>
             <Divider className={classes.borderDrawer} />
-            <Link to="/occultation-calendar" className={classes.invisibleLink} title="Occultation Calendar">
+            <Link to="/occultation-calendar" className={classes.invisibleLink} title="Calendar containing all the occultations">
               <ListItem button selected={currentPage === 'occultation-calendar'}>
                 <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                   <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-calendar-alt')} />
