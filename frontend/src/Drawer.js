@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
@@ -23,8 +20,9 @@ import Collapse from '@material-ui/core/Collapse';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Icon from '@material-ui/core/Icon';
 import { createBrowserHistory } from 'history';
+import Login from './Login';
 import Logo from './assets/img/linea.png';
-import Footer from './Footer';
+import CustomFooter from './components/utils/CustomFooter';
 import RefineOrbit from './components/RefineOrbit';
 import RefineOrbitDetail from './components/RefineOrbitDetail';
 import RefineOrbitAsteroid from './components/RefineOrbitAsteroid';
@@ -50,6 +48,7 @@ import SkybotDetail from './components/SkybotDetail';
 import PointingsDetail from './components/PointingsDetail';
 import SearchSssoDetail from './components/SearchSssoDetail';
 import SkybotAsteroid from './components/SkybotAsteroid';
+import CustomToolbar from './components/utils/CustomToolbar';
 
 const drawerWidth = 240;
 
@@ -57,25 +56,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'block',
     height: '100%',
-  },
-  appBar: {
-    backgroundColor: '#fff',
-    boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2)',
-    color: '#000',
-    width: `calc(100% - ${theme.spacing(7) + 1}px)`,
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
   },
   menuButton: {
     marginRight: 36,
@@ -231,18 +211,12 @@ function MiniDrawer() {
     <div className={classes.root}>
       <Router history={createBrowserHistory}>
         <CssBaseline />
-        <AppBar
-          position="fixed"
-          className={clsx(classes.appBar, {
-            [classes.appBarShift]: open,
-          })}
-        >
-          <Toolbar>
-            <Typography variant="h6" component="h1">
-              {title}
-            </Typography>
-          </Toolbar>
-        </AppBar>
+        <CustomToolbar title={title} open={open} drawerWidth={drawerWidth} />
+
+        <Switch>
+          <Route exact path="/login" render={(props) => <Login {...props} setTitle={setTitle} />} />
+        </Switch>
+
         <Drawer
           variant="permanent"
           className={clsx(classes.drawer, {
@@ -466,7 +440,7 @@ function MiniDrawer() {
             </Switch>
           </main>
         </div>
-        <Footer drawerOpen={open} />
+        <CustomFooter drawerOpen={open} />
       </Router>
     </div>
   );

@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import { Typography, Toolbar } from '@material-ui/core';
-import logo from './assets/img/linea-logo-mini.png';
+import logo from '../../assets/img/linea-logo-mini.png';
 
-function Footer(props) {
+function CustomFooter(props) {
   const { drawerOpen } = props;
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -89,8 +89,8 @@ function Footer(props) {
   );
 }
 
-Footer.propTypes = {
+CustomFooter.propTypes = {
   drawerOpen: PropTypes.bool.isRequired,
 };
 
-export default Footer;
+export default CustomFooter;
