@@ -59,7 +59,7 @@ function PointingsDetail({ setTitle, match, history }) {
           value: res.expnum,
         },
         {
-          title: 'CCD',
+          title: 'CCD Number',
           tooltip: 'CCD Number (1, 2, ..., 62)',
           value: res.ccdnum,
         },
@@ -107,89 +107,91 @@ function PointingsDetail({ setTitle, match, history }) {
         },
         {
           title: 'RA (deg)',
+          tooltip: 'Right Ascension of DECam image (CCDs mosaic center)',
           value: res.radeg,
         },
         {
           title: 'Dec (deg)',
+          tooltip: 'Declination of DECam image (CCDs mosaic center)',
           value: res.decdeg,
         },
         {
-          title: 'racmin',
+          title: 'racmin (deg)',
           tooltip: 'Minimal right ascension respectively of the CCD cover.',
           value: res.racmin,
         },
         {
-          title: 'racmax',
+          title: 'racmax (deg)',
           tooltip: 'Maximum right ascension respectively of the CCD cover.',
           value: res.racmax,
         },
         {
-          title: 'deccmin',
+          title: 'deccmin (deg)',
           tooltip: 'Minimum declination respectively of the CCD cover.',
           value: res.deccmin,
         },
         {
-          title: 'deccmax',
+          title: 'deccmax (deg)',
           tooltip: 'Maximum declination respectively of the CCD cover.',
           value: res.deccmax,
         },
         {
-          title: 'ra_cent',
+          title: 'ra_cent (deg)',
           tooltip: 'Right ascension of the CCD center',
           value: res.ra_cent,
         },
         {
-          title: 'dec_cent',
+          title: 'dec_cent (deg)',
           tooltip: 'Declination of the CCD center',
           value: res.dec_cent,
         },
         {
-          title: 'rac1',
+          title: 'rac1 (deg)',
           tooltip: 'CCD Corner Coordinates 1 - upper left.',
           value: res.rac1,
         },
         {
-          title: 'rac2',
+          title: 'rac2 (deg)',
           tooltip: 'CCD Corner Coordinates 2 - lower left.',
           value: res.rac2,
         },
         {
-          title: 'rac3',
+          title: 'rac3 (deg)',
           tooltip: 'CCD Corner Coordinates 3 - lower right.',
           value: res.rac3,
         },
         {
-          title: 'rac4',
+          title: 'rac4 (deg)',
           tooltip: 'CCD Corner Coordinates 4 - upper right).',
           value: res.rac4,
         },
         {
-          title: 'decc1',
+          title: 'decc1 (deg)',
           tooltip: 'CCD Corner Coordinates 1 - upper left.',
           value: res.decc1,
         },
         {
-          title: 'decc2',
+          title: 'decc2 (deg)',
           tooltip: 'CCD Corner Coordinates 2 - lower left.',
           value: res.decc2,
         },
         {
-          title: 'decc3',
+          title: 'decc3 (deg)',
           tooltip: 'CCD Corner Coordinates 3 - lower right.)',
           value: res.decc3,
         },
         {
-          title: 'decc4',
+          title: 'decc4 (deg)',
           tooltip: 'CCD Corner Coordinates 4 - upper right).',
           value: res.decc4,
         },
         {
-          title: 'ra_size',
+          title: 'ra_size (deg)',
           tooltip: 'CCD dimensions in degrees (width Ã— height).',
           value: res.ra_size,
         },
         {
-          title: 'dec_size',
+          title: 'dec_size (deg)',
           tooltip: 'CCD dimensions in degrees (width Ã— height).',
           value: res.dec_size,
         },
@@ -257,7 +259,7 @@ function PointingsDetail({ setTitle, match, history }) {
               <Card>
                 <CardHeader
                   title="Details Pointing"
-                  subheader="These are the details of the object named Lorem Ipsum and number 000"
+                  // subheader="These are the details of the object named Lorem Ipsum and number 000"
                 />
                 <CardContent className={classes.cardContentWrapper}>
                   <CustomList

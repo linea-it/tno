@@ -26,6 +26,7 @@ function Pointings({ setTitle, history }) {
   const classes = useStyles();
   const [pointingsTableData, setPointingsTableData] = useState([]);
   const [pointingsTableCount, setPointingsTableCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const pointingsTableColumns = [
     {
@@ -50,7 +51,7 @@ function Pointings({ setTitle, history }) {
     },
     {
       name: 'ccdnum',
-      title: 'CDD Number',
+      title: 'CCD Number',
       align: 'center',
       width: 120,
       headerTooltip: 'CCD Number (1, 2, ..., 62)',
@@ -66,7 +67,7 @@ function Pointings({ setTitle, history }) {
     },
     {
       name: 'exptime',
-      title: 'Exposure time',
+      title: 'Exposure time (s)',
       align: 'center',
       width: 130,
       headerTooltip: 'Exposure time of observation',
@@ -74,16 +75,16 @@ function Pointings({ setTitle, history }) {
     },
     {
       name: 'ra_cent',
-      title: 'RA_CENT',
+      title: 'ra_cent (deg)',
       align: 'center',
-      headerTooltip: 'Exposure time of observation',
+      headerTooltip: 'Right Ascension of the center of the CCD image',
       sortingEnabled: false,
     },
     {
       name: 'dec_cent',
-      title: 'DEC_CENT',
+      title: 'dec_cent (deg)',
       align: 'center',
-      headerTooltip: 'Exposure time of observation',
+      headerTooltip: 'Declination of the center of the CCD image',
       sortingEnabled: false,
     },
 
@@ -105,7 +106,7 @@ function Pointings({ setTitle, history }) {
     },
     {
       name: 'id',
-      title: ' ',
+      title: 'Detail',
       align: 'center',
       icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
       action: (el) => history.push(`/pointings/${el.id}`),
@@ -115,19 +116,23 @@ function Pointings({ setTitle, history }) {
   const loadPointingsTableData = ({
     currentPage, pageSize, searchValue, filters = [],
   }) => {
+    setLoading(true);
     getPointingsList({
       page: currentPage + 1, pageSize, search: searchValue, filters,
     }).then((res) => {
       setPointingsTableCount(res.count);
       setPointingsTableData(res.results);
+      setLoading(false);
+    }).catch((err) => {
+      console.error(err);
+      setLoading(false);
     });
   };
 
   useEffect(() => {
     setTitle('Pointings');
-    // loadPointingsTableData({
-    //   currentPage: 0, pageSize: 10,
-    // });
+
+    console.log('hellsfdskr');
   }, []);
 
   return (
@@ -142,6 +147,7 @@ function Pointings({ setTitle, history }) {
                 data={pointingsTableData}
                 loadData={loadPointingsTableData}
                 totalCount={pointingsTableCount}
+                loading={loading}
                 // hasSorting={false}
               />
             </CardContent>
