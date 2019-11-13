@@ -20,7 +20,6 @@ import Collapse from '@material-ui/core/Collapse';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Icon from '@material-ui/core/Icon';
 import { createBrowserHistory } from 'history';
-import Login from './Login';
 import Logo from './assets/img/linea.png';
 import CustomFooter from './components/utils/CustomFooter';
 import RefineOrbit from './components/RefineOrbit';
@@ -212,11 +211,6 @@ function MiniDrawer() {
       <Router history={createBrowserHistory}>
         <CssBaseline />
         <CustomToolbar title={title} open={open} drawerWidth={drawerWidth} />
-
-        <Switch>
-          <Route exact path="/login" render={(props) => <Login {...props} setTitle={setTitle} />} />
-        </Switch>
-
         <Drawer
           variant="permanent"
           className={clsx(classes.drawer, {
