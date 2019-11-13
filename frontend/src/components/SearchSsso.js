@@ -162,14 +162,28 @@ export default function SearchSsso({ history, setTitle }) {
     {
       name: 'raj2000',
       title: 'RA (deg)',
-      width: 160,
+      width: 120,
       align: 'left',
+      customElement: (row) => {
+        return (
+          <span>
+            {row.raj2000 ? parseFloat(row.raj2000.toFixed(3)) : ""}
+          </span>
+        );
+      },
     },
     {
       name: 'decj2000',
       title: 'Dec (deg)',
-      width: 160,
+      width: 120,
       align: 'left',
+      customElement: (row) => {
+        return (
+          <span>
+            {row.decj2000 ? parseFloat(row.decj2000.toFixed(3)) : ""}
+          </span>
+        );
+      },
     },
     {
       name: 'ccdnum',
