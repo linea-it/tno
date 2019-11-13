@@ -3,9 +3,9 @@ import clsx from 'clsx';
 import { withRouter } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import Icon from '@material-ui/core/Icon';
+import moment from 'moment';
 import Table from './utils/CustomTable';
 import { getPraiaRuns } from '../api/Praia';
-import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
@@ -67,10 +67,12 @@ function AstrometryHistory({ history, reloadHistory }) {
   const [tablePageSize, setPageSize] = useState(5);
   const [totalCount, setTotalCount] = useState();
   const [reload, setReload] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const pageSizes = [5, 10, 15];
 
   const loadData = (event) => {
+    setLoading(true);
     const page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
     const pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
     const searchValue = typeof event === 'undefined' ? ' ' : event.searchValue;
@@ -78,6 +80,10 @@ function AstrometryHistory({ history, reloadHistory }) {
     getPraiaRuns({ page, pageSize, search: searchValue }).then((res) => {
       setTableData(res.results);
       setTotalCount(res.count);
+      setLoading(false);
+    }).catch((err) => {
+      console.error(err);
+      setLoading(false);
     });
   };
 
@@ -189,13 +195,11 @@ function AstrometryHistory({ history, reloadHistory }) {
       name: 'execution_time',
       title: 'Execution Time',
       width: 180,
-      customElement: (row) => {
-        return (
-          <span>
-            {row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}
-          </span>
-        );
-      },
+      customElement: (row) => (
+        <span>
+          {row.execution_time && typeof row.execution_time === 'string' ? row.execution_time.substring(0, 8) : ''}
+        </span>
+      ),
       align: 'center',
     },
     {
@@ -226,6 +230,7 @@ function AstrometryHistory({ history, reloadHistory }) {
         reload={reload}
         hasSearching={false}
         hasColumnVisibility={false}
+        loading={loading}
       />
     </div>
   );

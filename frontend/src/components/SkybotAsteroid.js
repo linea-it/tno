@@ -86,9 +86,137 @@ function SkybotAsteroid({ setTitle, match }) {
   const coneSearchRadius = 1.2; // ! Cone search radius in Degres.
   const { id, runId } = match.params;
   const [ccdsPlotData, setCcdsPlotData] = useState({});
-  const [exposuresTableColumns, setExposuresTableColumns] = useState([]);
   const [exposuresTableData, setExposuresTableData] = useState([]);
   const [asteroidsOnlyInsideCcds, setAsteroidsOnlyInsideCcds] = useState(true);
+
+  const exposuresTableColumns = [{
+    title: 'Pointings',
+    name: 'pointing',
+  },
+  {
+    title: 'Object Name',
+    name: 'name',
+  },
+  {
+    title: 'Object Number',
+    name: 'num',
+  },
+  {
+    title: 'Dynamic class',
+    name: 'dynclass',
+  },
+  {
+    title: 'Right Ascension (RA) [hms]',
+    name: 'ra',
+  },
+  {
+    title: 'Declination (Dec) [dms]',
+    name: 'dec',
+  },
+  {
+    title: 'Right Ascension (RA) [degree]',
+    name: 'raj2000',
+  },
+  {
+    title: 'Declination (Dec) [degree]',
+    name: 'decj2000',
+  },
+  {
+    title: 'Visual Magnitude',
+    name: 'mv',
+  },
+  {
+    title: 'Error on the position [arcsec]',
+    name: 'errpos',
+  },
+  {
+    title: 'Angular Distance [arcsec]',
+    name: 'd',
+  },
+  {
+    title: 'dRAcosDec',
+    name: 'dracosdec',
+
+  },
+  {
+    title: 'dDEC',
+    name: 'd',
+  },
+  {
+    title: 'Geocentric distance [AU]',
+    name: 'dgeo',
+  },
+  {
+    title: 'Heliocentric distance [AU]',
+    name: 'dhelio',
+  },
+  {
+    title: 'Phase angle [degrees]',
+    name: 'phase',
+  },
+  {
+    title: 'Solar elongation',
+    name: 'solelong',
+  },
+  {
+    title: 'Vector position in x [AU]',
+    name: 'px',
+  },
+  {
+    title: 'Vector position in y [AU]',
+    name: 'py',
+
+  },
+  {
+    title: 'Vector position in z [AU]',
+    name: 'pz',
+
+  },
+  {
+    title: 'Vector position in x [AU/d]',
+    name: 'vx',
+
+  },
+  {
+    title: 'Vector position in y [AU/d]',
+    name: 'vy',
+
+  },
+  {
+    title: 'Vector position in z [AU/d]',
+    name: 'vz',
+
+  },
+  {
+    title: 'Epoch of the position vector [Julien Day]',
+    name: 'jdref',
+
+  },
+  {
+    title: 'Band',
+    name: 'band',
+
+  },
+  {
+    title: 'Exposure',
+    name: 'expnum',
+
+  },
+  {
+    title: 'CCD number',
+    name: 'ccdnum',
+  },
+  {
+    name: 'externallink',
+    title: 'VizieR',
+    customElement: (el) => (el.externallink !== 'link' ? (
+      <a href={el.externallink} target="_blank" rel="noopener noreferrer" className={classes.invisibleButton} title={el.externallink}>
+        <Icon className={clsx(`fas fa-external-link-square-alt ${classes.iconDetail}`)} />
+      </a>
+    ) : '-'),
+    align: 'center',
+  },
+];
 
   const circleCoordinatesPlaneFormat = (x) => {
     if (typeof x === 'number') return x > 180 ? x - 360 : x;
@@ -133,7 +261,6 @@ function SkybotAsteroid({ setTitle, match }) {
   }, []);
 
   useEffect(() => {
-    setExposuresTableColumns([]);
     setExposuresTableData([]);
     if (asteroidsOnlyInsideCcds === false) {
       getOutputByExposure(runId, id).then((res) => {
@@ -157,8 +284,6 @@ function SkybotAsteroid({ setTitle, match }) {
           };
         });
 
-
-        setExposuresTableColumns(columns);
         setExposuresTableData(res.rows.map((row) => ({
           ...row,
           raj2000: row.raj2000 ? round(row.raj2000, 3) : '-',
@@ -198,7 +323,6 @@ function SkybotAsteroid({ setTitle, match }) {
             name: column,
           };
         });
-        setExposuresTableColumns(columns);
         setExposuresTableData(res.rows.map((row) => ({
           ...row,
           raj2000: row.raj2000 ? round(row.raj2000, 3) : '-',

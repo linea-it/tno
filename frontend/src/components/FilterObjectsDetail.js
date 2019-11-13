@@ -125,11 +125,25 @@ function FilterObjectsDetail({ setTitle, match }) {
       name: 'raj2000',
       title: 'RA',
       width: 80,
+      customElement: (row) => {
+        return (
+          <span>
+            {row.raj2000 ? parseFloat(row.raj2000.toFixed(3)) : ""}
+          </span>
+        );
+      },
     },
     {
       name: 'decj2000',
       title: 'Dec',
       width: 80,
+      customElement: (row) => {
+        return (
+          <span>
+            {row.decj2000 ? parseFloat(row.decj2000.toFixed(3)) : ""}
+          </span>
+        );
+      },
     },
     {
       name: 'errpos',
@@ -167,10 +181,10 @@ function FilterObjectsDetail({ setTitle, match }) {
           <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
         </span>
       ) : (
-        <span title={el.filename}>
-          <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-        </span>
-      )),
+          <span title={el.filename}>
+            <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+          </span>
+        )),
     },
     {
       name: 'externallink',
