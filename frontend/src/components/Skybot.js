@@ -340,7 +340,7 @@ function Skybot({ setTitle, history }) {
                   disabled={disabledRunButton}
                   onClick={handleSelectRunClick}
                 >
-                  Run
+                  Submit
                 </Button>
               </FormControl>
             </CardContent>
@@ -373,5 +373,5 @@ function Skybot({ setTitle, history }) {
       </Grid>
     </Grid>
   );
-  }
+}
 export default withRouter(Skybot);
