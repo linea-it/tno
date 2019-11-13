@@ -307,47 +307,47 @@ function Dashboard({ setTitle }) {
         </Card>
       </Grid>
       <Grid item xs={12} md={6} lg={4} className={classes.block}>
-        <Card>
-          <CardHeader title="DES Exposition" />
-          <CardContent className={classes.centerImage} style={{ minHeight: asteroidSunHeight }}>
+        <Card style={{ minHeight: asteroidSunHeight }}>
+          <CardHeader title="Aitoff projection of the exposures" />
+          <CardContent className={classes.centerImage}>
             <img
               src={animation}
               className={classes.imgResponsive}
-              alt="DES Exposition"
-              title="DES Exposition"
+              alt="Aitoff projection of the exposures"
+              title="Aitoff projection of the exposures"
             />
           </CardContent>
         </Card>
       </Grid>
       <Grid item xs={12} md={6} lg={4} className={classes.block}>
-        <Card>
-          <CardHeader title="Plot Exposure" />
-          <SizeMe monitorHeight monitorWidth={false}>
-            {({ size }) => {
-              setAsteroidSunHeight(size.height);
-              return (
+        <SizeMe monitorHeight monitorWidth={false}>
+          {({ size }) => {
+            setAsteroidSunHeight(size.height);
+            return (
+              <Card>
+                <CardHeader title="Objects and observations identified in CCD images" />
                 <CardContent className={classes.centerImage}>
                   <img
                     src={exposuresbyclass}
                     className={classes.imgResponsive}
-                    alt="Plot Exposure"
-                    title="Plot Exposure"
+                    alt="Objects and observations identified in CCD images"
+                    title="Objects and observations identified in CCD images"
                   />
                 </CardContent>
-              );
-            }}
-          </SizeMe>
-        </Card>
+              </Card>
+            );
+          }}
+        </SizeMe>
       </Grid>
       <Grid item xs={12} md={6} lg={4} className={classes.block}>
-        <Card>
-          <CardHeader title="Histogram Asteroid-Sun distance" />
-          <CardContent className={classes.centerImage} style={{ minHeight: asteroidSunHeight }}>
+        <Card style={{ minHeight: asteroidSunHeight }}>
+          <CardHeader title="Histogram Semi-major axis of identified objects" />
+          <CardContent className={classes.centerImage}>
             <img
               src={histogramSemimajoraxis}
               className={classes.imgResponsive}
-              alt="Histogram Asteroid-Sun distance"
-              title="Histogram Asteroid-Sun distance"
+              alt="Histogram Semi-major axis of identified objects"
+              title="Histogram Semi-major axis of identified objects"
               style={{ maxHeight: 385 }}
             />
           </CardContent>
