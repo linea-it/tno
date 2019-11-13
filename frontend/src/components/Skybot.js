@@ -295,9 +295,7 @@ function Skybot({ setTitle, history }) {
     },
   ];
 
-  console.log(tableData);
-
-
+  
   return (
     <Grid>
       <Interval
@@ -386,5 +384,5 @@ function Skybot({ setTitle, history }) {
       </Grid>
     </Grid>
   );
-  }
+}
 export default withRouter(Skybot);
