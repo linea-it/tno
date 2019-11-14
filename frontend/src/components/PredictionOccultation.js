@@ -306,20 +306,15 @@ function PredictionOccultation({ history, setTitle }) {
     });
   };
 
-
   // When submit button is clicked so calls the function below
   useEffect(() => {
     if (valueSubmition.submit) {
       setActionButton(true);
-
       setValueSubmition({ ...valueSubmition, submit: false });
-
-
       setDialogContent('The task has been submitted and will be executed in the background...');
       setDialogVisible(true);
 
       // Calls APi for creation of prediction run
-
 
       createPredictRun({
         process: valueSubmition.processId,
@@ -332,23 +327,11 @@ function PredictionOccultation({ history, setTitle }) {
         ephemeris_initial_date: valueSubmition.ephemeris_initial_date,
         ephemeris_final_date: valueSubmition.ephemeris_final_date,
         ephemeris_step: valueSubmition.ephemeris_step,
-
-        // process: "66",
-        // input_list: 2,
-        // input_orbit: 25,
-        // leap_second: 1,
-        // bsp_planetary: 1,
-        // catalog: 1,
-        // catalog_radius: 0.15,
-        // ephemeris_initial_date: "2020-01-01T01:59:59Z",
-        // ephemeris_final_date: "2019-01-01T02:00:00Z",
-        // ephemeris_step: 600
       }).then(() => {
         setReload(!reload);
       });
     }
   }, [valueSubmition]);
-
 
   const loadData = () => {
     // Load Input Array
@@ -365,18 +348,15 @@ function PredictionOccultation({ history, setTitle }) {
         setInputArray(res.results);
       });
 
-
     // Load Catalogs
     getCatalogs().then((res) => {
       setCatalogArray(res.results);
     });
 
-
     // Leap Seconds
     getLeapSeconds().then((res) => {
       setLeapSecondsArray(res.results);
     });
-
 
     // Bsp Planetary
     getBspPlanetary().then((res) => {
@@ -384,38 +364,16 @@ function PredictionOccultation({ history, setTitle }) {
     });
   };
 
-
-  // If inputArray state is changed so hit the function useEffect
-  // This is important to set first state case the user hits the submit button
-  // Avoid error in case of user hits the submit button without choose any option
-  // useEffect(() => {
-  //   if (inputArray[0]) {
-  //     setValueSubmition({
-  //       processId: inputArray[0].id,
-  //       orbit_run_input_list_id: inputArray[0].input_list,
-  //       orbit_run_id: process,
-  //       bsp_planetaryId: bspPlanetaryArray[0].id,
-  //       leap_seconds: LeapSecondsArray[0].id,
-  //       catalogId: catalogArray[0].id
-  //     });
-  //   }
-
-  // }, [inputArray]);
-
-
   useEffect(() => {
     if (typeof (catalogArray[0]) !== 'undefined') {
       setValueSubmition(
         {
           ...valueSubmition,
           catalogId: catalogArray[0].id,
-
         },
-
       );
     }
   }, [catalogArray]);
-
 
   useEffect(() => {
     if (typeof (leapSecondsArray[0]) !== 'undefined') {
@@ -423,13 +381,11 @@ function PredictionOccultation({ history, setTitle }) {
     }
   }, [leapSecondsArray]);
 
-
   useEffect(() => {
     if (typeof (bspPlanetaryArray[0]) !== 'undefined') {
       setValueSubmition({ ...valueSubmition, bsp_planetaryId: bspPlanetaryArray[0].id });
     }
   }, [bspPlanetaryArray]);
-
 
   useEffect(() => {
     loadData();
@@ -440,23 +396,17 @@ function PredictionOccultation({ history, setTitle }) {
 
   const handleInputNumberChange = (event) => {
     setInputRadiusValue(event.target.value);
-
     ephemerisNumberValue ? setActionButton(false) : setActionButton(true);
   };
 
-
   const handleEphemerisNumberChange = (event) => {
     setEphemerisNumberValue(event.target.value);
-
     inputRadiusValue ? setActionButton(false) : setActionButton(true);
   };
-
 
   const handleDialogClose = () => {
     setDialogVisible(false);
   };
-
-
 
   return (
     <Grid>
@@ -487,14 +437,11 @@ function PredictionOccultation({ history, setTitle }) {
                   ref={inputNumber}
                   type="number"
                   label="Catalog Radius"
-
                   className={classes.inputNumber}
                   onChange={handleInputNumberChange}
                   inputProps={{ min: 0.15, max: 2.0, step: 0.01 }}
                   value={inputRadiusValue}
-
                 />
-
                 <InputNumber
                   ref={ephemerisNumber}
                   label="Ephemeris Step"
@@ -504,9 +451,7 @@ function PredictionOccultation({ history, setTitle }) {
                   inputProps={{ min: 60, max: 1800, step: 10 }}
                   onChange={handleEphemerisNumberChange}
                   value={ephemerisNumberValue}
-
                 />
-
                 <DateTime
                   defaultDate={moment(initialDate).format('YYYY-MM-DD').toString()}
                   label="Ephemeris Initial Date"
@@ -514,7 +459,6 @@ function PredictionOccultation({ history, setTitle }) {
                   setSubmition={setValueSubmition}
                   setInitialDate={setInitialDate}
                   title="initialDate"
-
                 />
                 <DateTime
                   defaultDate={moment(finalDate).format('YYYY-MM-DD').toString()}
@@ -526,14 +470,12 @@ function PredictionOccultation({ history, setTitle }) {
                   width="90%"
 
                 />
-
                 <Button
                   variant="contained"
                   color="primary"
                   className={classes.button}
                   onClick={handleSubmitClick}
                   disabled={actionButton}
-
                 >
                   Submit
                 </Button>
