@@ -216,7 +216,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ) : '-'),
     align: 'center',
   },
-];
+  ];
 
   const circleCoordinatesPlaneFormat = (x) => {
     if (typeof x === 'number') return x > 180 ? x - 360 : x;
@@ -397,8 +397,8 @@ function SkybotAsteroid({ setTitle, match }) {
                     remote={false}
                   />
                 ) : (
-                  <Skeleton height={540} />
-                )}
+                    <Skeleton height={540} />
+                  )}
               </CardContent>
             </Card>
           </Grid>
