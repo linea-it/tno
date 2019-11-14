@@ -484,7 +484,7 @@ export default function SearchSsso({ history, setTitle }) {
               </Grid>
 
               <Grid container>
-                <Grid item lg={4} xl={3}>
+                <Grid item lg={3} xl={3}>
                   <div className={classes.filterSlider}>
                     <Typography gutterBottom variant="body2" className={classes.filterSliderLabel}>
                       {`Magnitude(g): ${vMagnitude}`}
