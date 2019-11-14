@@ -568,6 +568,7 @@ function PredictionOccultation({ history, setTitle }) {
               hasSearching={false}
               hasColumnVisibility={false}
               hasToolbar={false}
+              loading={true}
             />
           </Card>
         </Grid>

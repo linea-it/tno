@@ -450,6 +450,7 @@ function Skybot({ setTitle, history }) {
                 hasToolbar={false}
                 reload
                 totalCount={totalSize}
+                loading={true}
               />
             </CardContent>
           </Card>

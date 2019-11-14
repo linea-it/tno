@@ -929,6 +929,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                   loadData={loadHistoryTableData}
                   totalCount={historyCount}
                   defaultSorting={[{ columnName: 'creation_date', direction: 'desc' }]}
+                  loading={true}
                 />
               </CardContent>
             </Card>

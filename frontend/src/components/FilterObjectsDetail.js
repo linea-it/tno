@@ -308,6 +308,7 @@ function FilterObjectsDetail({ setTitle, match }) {
                 loadData={loadObjectsTableData}
                 hasSearching={false}
                 hasSorting={false}
+                loading={true}
               />
             </CardContent>
           </Card>
