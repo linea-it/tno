@@ -79,6 +79,7 @@ const useStyles = makeStyles((theme) => ({
   },
   iconDetail: {
     fontSize: 18,
+    cursor: 'pointer',
   },
   logToolbar: {
     backgroundColor: '#F1F2F5',
