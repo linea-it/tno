@@ -295,7 +295,7 @@ function Skybot({ setTitle, history }) {
     },
   ];
 
-  
+
   return (
     <Grid>
       <Interval
