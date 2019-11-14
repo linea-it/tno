@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#fff',
     boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2)',
     color: '#000',
-    width: `calc(100% - ${theme.spacing(7) + 1}px)`,
+    width: (drawerWidth) => (drawerWidth === 0 ? '100%' : `calc(100% - ${theme.spacing(7) + 1}px)`),
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
@@ -48,10 +48,15 @@ function CustomToolbar({ title, open, drawerWidth }) {
   );
 }
 
+CustomToolbar.defaultProps = {
+  open: null,
+  drawerWidth: 0,
+};
+
 CustomToolbar.propTypes = {
   title: PropTypes.string.isRequired,
-  open: PropTypes.bool.isRequired,
-  drawerWidth: PropTypes.number.isRequired,
+  open: PropTypes.bool,
+  drawerWidth: PropTypes.number,
 };
 
 export default CustomToolbar;

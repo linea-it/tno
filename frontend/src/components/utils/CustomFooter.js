@@ -6,7 +6,7 @@ import { Typography, Toolbar } from '@material-ui/core';
 import logo from '../../assets/img/linea-logo-mini.png';
 
 function CustomFooter(props) {
-  const { drawerOpen } = props;
+  const { drawerOpen, drawerWidth } = props;
   const useStyles = makeStyles((theme) => ({
     root: {
       width: '100%',
@@ -30,7 +30,7 @@ function CustomFooter(props) {
       top: 'auto',
       bottom: 0,
       backgroundColor: '#6A6A6A',
-      width: `calc(100% - ${theme.spacing(7) - 1}px)`,
+      width: drawerOpen === null ? '100%' : `calc(100% - ${theme.spacing(7) - 1}px)`,
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
@@ -56,6 +56,8 @@ function CustomFooter(props) {
       verticalAlign: 'middle',
     },
   }));
+
+  console.log('drawerOpen', drawerOpen);
 
   const classes = useStyles();
 
@@ -89,8 +91,12 @@ function CustomFooter(props) {
   );
 }
 
+CustomFooter.defaultProps = {
+  drawerOpen: null,
+};
+
 CustomFooter.propTypes = {
-  drawerOpen: PropTypes.bool.isRequired,
+  drawerOpen: PropTypes.bool,
 };
 
 export default CustomFooter;
