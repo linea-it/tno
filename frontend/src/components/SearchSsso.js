@@ -5,8 +5,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
 import Table from './utils/CustomTable';
 import { getSkybotLists } from '../api/SearchSsso';
-import Toolbar from '@material-ui/core/Toolbar';
-import TextField from '@material-ui/core/TextField';
+// import Toolbar from '@material-ui/core/Toolbar';
+// import TextField from '@material-ui/core/TextField';
 import Slider from '@material-ui/core/Slider';
 import clsx from 'clsx';
 import Icon from '@material-ui/core/Icon';
@@ -124,12 +124,6 @@ export default function SearchSsso({ history, setTitle }) {
       setTableData(res.data.results);
     });
   };
-
-
-
-  // const [dynamicClass, setDynamicClass] = useState([0]);
-  // const [sublevelDynamicClassSelected, setSublevelDynamicClassSelected] = useState([]);
-  // const [sublevelDynamicClassList, setSublevelDynamicClassList] = useState([]);
 
   const handleClearFilters = () => {
     setVmagnitude([4, 18]);
@@ -417,7 +411,6 @@ export default function SearchSsso({ history, setTitle }) {
                   {loadDynamicClassColumns()}
                 </TextField> */}
 
-
               <Grid container>
                 <Grid item lg={3} xl={3}>
                   <FormControl>
@@ -448,7 +441,7 @@ export default function SearchSsso({ history, setTitle }) {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item lg={9} xl={9}>
+                <Grid item lg={9} xl={8} md={6}>
                   <div>
                     <FormControl className={classes.formControl} fullWidth >
                       <InputLabel>Sublevel dynamic class</InputLabel>
