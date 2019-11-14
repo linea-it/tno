@@ -136,7 +136,6 @@ function SkybotAsteroid({ setTitle, match }) {
   {
     title: 'dRAcosDec',
     name: 'dracosdec',
-
   },
   {
     title: 'dDEC',
@@ -165,42 +164,34 @@ function SkybotAsteroid({ setTitle, match }) {
   {
     title: 'Vector position in y [AU]',
     name: 'py',
-
   },
   {
     title: 'Vector position in z [AU]',
     name: 'pz',
-
   },
   {
     title: 'Vector position in x [AU/d]',
     name: 'vx',
-
   },
   {
     title: 'Vector position in y [AU/d]',
     name: 'vy',
-
   },
   {
     title: 'Vector position in z [AU/d]',
     name: 'vz',
-
   },
   {
     title: 'Epoch of the position vector [Julien Day]',
     name: 'jdref',
-
   },
   {
     title: 'Band',
     name: 'band',
-
   },
   {
     title: 'Exposure',
     name: 'expnum',
-
   },
   {
     title: 'CCD number',
