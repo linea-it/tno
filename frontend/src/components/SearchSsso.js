@@ -45,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
   sublevelList: {
     width: 200,
   },
+  clearButton: {
+    marginTop: 30,
+  },
 
   filterSlider: {
     width: 200,
@@ -122,9 +125,17 @@ export default function SearchSsso({ history, setTitle }) {
     });
   };
 
+
+
+  // const [dynamicClass, setDynamicClass] = useState([0]);
+  // const [sublevelDynamicClassSelected, setSublevelDynamicClassSelected] = useState([]);
+  // const [sublevelDynamicClassList, setSublevelDynamicClassList] = useState([]);
+
   const handleClearFilters = () => {
     setVmagnitude([4, 18]);
-    setDclass([]);
+    // setDclass([]);
+    setSublevelDynamicClassSelected([]);
+    setDynamicClass([0]);
   };
 
   const handleSearchSssoDetail = (row) => {
@@ -408,7 +419,7 @@ export default function SearchSsso({ history, setTitle }) {
 
 
               <Grid container>
-                <Grid item lg={4} xl={4}>
+                <Grid item lg={3} xl={3}>
                   <FormControl>
                     <InputLabel>Dynamic class</InputLabel>
                     <Select
@@ -437,39 +448,7 @@ export default function SearchSsso({ history, setTitle }) {
                     </Select>
                   </FormControl>
                 </Grid>
-
-                <Grid item lg={4} xl={4}>
-                  <div className={classes.filterSlider}>
-                    <Typography gutterBottom variant="body2" className={classes.filterSliderLabel}>
-                      {`Magnitude(g): ${vMagnitude}`}
-                    </Typography>
-                    <Slider
-                      value={vMagnitude}
-                      step={1}
-                      min={4}
-                      max={23}
-                      valueLabelDisplay="auto"
-                      onChange={(event, value) => { setVmagnitude(value); }}
-                    />
-
-                  </div>
-                </Grid>
-                <Grid item lg={3} xl={3}>
-                  <div>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleClearFilters}
-                    >
-                      Clear
-                </Button>
-                  </div>
-                </Grid>
-
-              </Grid>
-
-              <Grid container>
-                <Grid item lg={8} xl={8}>
+                <Grid item lg={9} xl={9}>
                   <div>
                     <FormControl className={classes.formControl} fullWidth >
                       <InputLabel>Sublevel dynamic class</InputLabel>
@@ -500,6 +479,36 @@ export default function SearchSsso({ history, setTitle }) {
                         ))}
                       </Select>
                     </FormControl>
+                  </div>
+                </Grid>
+              </Grid>
+
+              <Grid container>
+                <Grid item lg={4} xl={3}>
+                  <div className={classes.filterSlider}>
+                    <Typography gutterBottom variant="body2" className={classes.filterSliderLabel}>
+                      {`Magnitude(g): ${vMagnitude}`}
+                    </Typography>
+                    <Slider
+                      value={vMagnitude}
+                      step={1}
+                      min={4}
+                      max={23}
+                      valueLabelDisplay="auto"
+                      onChange={(event, value) => { setVmagnitude(value); }}
+                    />
+                  </div>
+                </Grid>
+                <Grid item lg={3} xl={3}>
+                  <div>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleClearFilters}
+                      className={classes.clearButton}
+                    >
+                      Clear
+                </Button>
                   </div>
                 </Grid>
               </Grid>
