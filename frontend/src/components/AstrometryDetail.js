@@ -23,14 +23,21 @@ import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
 import Stepper from './AstrometryStepper';
 import ReactInterval from 'react-interval';
+import Button from '@material-ui/core/Button';
 
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   card: {
     marginBottom: 10,
   },
+  backIcon: {
+    marginRight: 10,
+  },
   icon: {
     marginLeft: '92%',
+  },
+  backButton: {
+    margin: theme.spacing(1),
   },
   progress: {
     marginTop: 6,
@@ -92,7 +99,7 @@ const useStyles = makeStyles({
     height: 600,
     width: 600,
   },
-});
+}));
 
 function AstrometryDetail({ history, setTitle, match: { params } }) {
   const classes = useStyles();
@@ -339,7 +346,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       customElement: (row) => (
         <span>
           {row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}
-         
+
         </span>
       ),
       width: 140,
@@ -565,6 +572,11 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     }
   };
 
+
+  const handleBackNabigation = () => {
+    history.push('/astrometry');
+  };
+
   return (
     <Grid>
       <ReactInterval
@@ -572,6 +584,15 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         enabled={interval_condition}
         callback={handleInterval}
       />
+      <Button
+        variant="contained"
+        color="primary"
+        className={classes.backButton}
+        onClick={handleBackNabigation}
+      >
+        <Icon className={clsx('fas', 'fa-undo', classes.backIcon)} />
+        <span>Back</span>
+      </Button>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6} xl={4}>
           <Card>
