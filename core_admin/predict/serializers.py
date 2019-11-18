@@ -151,6 +151,10 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
     planetary_ephemeris = serializers.SerializerMethodField()
     leap_second = serializers.SerializerMethodField()
 
+    condor_out_log = serializers.SerializerMethodField()
+    condor_err_log = serializers.SerializerMethodField()
+    condor_log = serializers.SerializerMethodField()
+
     class Meta:
         model = PredictAsteroid
         fields = (
@@ -165,6 +169,9 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
             'execution_time',
             'h_execution_time',
             'start_ephemeris',
+            'condor_out_log',
+            'condor_err_log',
+            'condor_log',
             'finish_ephemeris',
             'execution_ephemeris',
             'start_catalog',
@@ -223,6 +230,36 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
             return obj.predict_run.leap_second.display_name
         except:
             return None
+
+    def get_condor_out_log(self, obj):
+        try:
+            log = os.path.join(obj.condor_relative_path, 'predict.out')
+            if os.path.exists(log):
+                return log
+            else:
+                return None
+        except:
+            return None
+
+    def get_condor_err_log(self, obj):
+        try:
+            log = os.path.join(obj.condor_relative_path, 'predict.err')
+            if os.path.exists(log):
+                return log
+            else:
+                return None
+        except:
+            return None
+
+    def get_condor_log(self, obj):
+        try:
+            log = os.path.join(obj.condor_relative_path, 'predict.log')
+            if os.path.exists(log):
+                return log
+            else:
+                return None
+        except:
+            return None        
 
 
 class PredictInputSerializer(serializers.ModelSerializer):
