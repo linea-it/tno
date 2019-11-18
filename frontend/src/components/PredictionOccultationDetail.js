@@ -7,6 +7,8 @@ import {
   Card,
   CardHeader,
   CardContent,
+  List,
+  IconButton,
 } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
@@ -16,7 +18,13 @@ import { getPredictionRunById, getTimeProfile, getAsteroids } from '../api/Predi
 import CustomTable from './utils/CustomTable';
 import CustomList from './utils/CustomList';
 import { Donut, TimeProfile } from './utils/CustomChart';
-
+import ToolBar from "@material-ui/core/Toolbar";
+import ToggleButton from "@material-ui/lab/ToggleButton";
+import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
+import ListIcon from "@material-ui/icons/List";
+import BugIcon from '@material-ui/icons/BugReport';
+import Tooltip from "@material-ui/core/Tooltip";
+import DescriptionIcon from "@material-ui/icons/Description";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -25,8 +33,14 @@ const useStyles = makeStyles((theme) => ({
   buttonIcon: {
     margin: '0 2px',
   },
+  toggleButton: {
+    marginLeft: '90%',
+  },
   arrowBack: {
     fontSize: 9,
+  },
+  iconDetail: {
+    fontSize: 18,
   },
   btn: {
     textTransform: 'none',
@@ -83,99 +97,16 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const pageSizes = [5, 10, 15];
-  const columns = [
-    {
-      name: 'status',
-      title: 'Status',
-      width: 140,
-      sortingEnabled: false,
-      customElement: (row) => {
-        if (row.status === 'failure') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnFailure)}
-              title={row.error_msg ? row.error_msg : 'Failure'}
-            >
-              Failure
-            </span>
-          );
-        } if (row.status === 'running') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnRunning)}
-              title={row.status}
-            >
-              Running
-            </span>
-          );
-        } if (row.status === 'not_executed') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnNotExecuted)}
-              title={row.status}
-            >
-              Not Executed
-            </span>
-          );
-        } if (row.status === 'warning') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnWarning)}
-              title={row.error_msg ? row.error_msg : 'Warning'}
-            >
-              Warning
-            </span>
-          );
-        }
+  const [toolButton, setToolButton] = useState('list');
+  const [columnsAsteroidTable, setColumnsAsteroidTable] = useState([]);
 
-        return (
-          <span
-            className={clsx(classes.btn, classes.btnSuccess)}
-            title={row.status}
-          >
-            Success
-          </span>
-        );
-      },
-    },
-    {
-      name: 'name',
-      title: 'Name',
-      width: 180,
-    },
-    {
-      name: 'number',
-      title: 'Number',
-      width: 140,
-    },
-    {
-      name: 'occultations',
-      title: 'Occultations',
-      width: 140,
-    },
-    {
-      name: 'execution_time',
-      title: 'Execution Time',
-      align: 'center',
-      customElement: (row) => (
-          <span>
-            {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ""}
-          </span>
-        ),
-      width: 140,
-    },
-    {
-      name: 'id',
-      title: ' ',
-      width: 100,
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
-      align: 'center',
-    },
-  ];
+
+
 
   useEffect(() => {
     setTitle('Prediction of Occultations');
+
+    setColumnsAsteroidTable(tableListArray);
 
     getPredictionRunById({ id }).then((data) => {
       setList([
@@ -278,10 +209,241 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     });
   }, []);
 
+
+
+  const tableListArray = [
+    {
+      name: 'status',
+      title: 'Status',
+      width: 140,
+      sortingEnabled: false,
+      customElement: (row) => {
+        if (row.status === 'failure') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnFailure)}
+              title={row.error_msg ? row.error_msg : 'Failure'}
+            >
+              Failure
+            </span>
+          );
+        } if (row.status === 'running') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnRunning)}
+              title={row.status}
+            >
+              Running
+            </span>
+          );
+        } if (row.status === 'not_executed') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnNotExecuted)}
+              title={row.status}
+            >
+              Not Executed
+            </span>
+          );
+        } if (row.status === 'warning') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnWarning)}
+              title={row.error_msg ? row.error_msg : 'Warning'}
+            >
+              Warning
+            </span>
+          );
+        }
+
+        return (
+          <span
+            className={clsx(classes.btn, classes.btnSuccess)}
+            title={row.status}
+          >
+            Success
+          </span>
+        );
+      },
+    },
+    {
+      name: 'name',
+      title: 'Name',
+      width: 180,
+    },
+    {
+      name: 'number',
+      title: 'Number',
+      width: 140,
+      sortingEnabled: false,
+    },
+    {
+      name: 'occultations',
+      title: 'Occultations',
+      width: 140,
+      sortingEnabled: false,
+    },
+    {
+      name: 'execution_time',
+      title: 'Execution Time',
+      align: 'center',
+      customElement: (row) => (
+        <span>
+          {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ""}
+        </span>
+      ),
+      width: 140,
+      sortingEnabled: false,
+    },
+    {
+      name: 'id',
+      title: ' ',
+      width: 100,
+      sortingEnabled: false,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
+      align: 'center',
+    },
+  ];
+
+
+  const bugLogArray = [
+    {
+      name: 'status',
+      title: 'Status',
+      width: 140,
+      sortingEnabled: false,
+      customElement: (row) => {
+        if (row.status === 'failure') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnFailure)}
+              title={row.error_msg ? row.error_msg : 'Failure'}
+            >
+              Failure
+            </span>
+          );
+        } if (row.status === 'running') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnRunning)}
+              title={row.status}
+            >
+              Running
+            </span>
+          );
+        } if (row.status === 'not_executed') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnNotExecuted)}
+              title={row.status}
+            >
+              Not Executed
+            </span>
+          );
+        } if (row.status === 'warning') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnWarning)}
+              title={row.error_msg ? row.error_msg : 'Warning'}
+            >
+              Warning
+            </span>
+          );
+        }
+        return (
+          <span
+            className={clsx(classes.btn, classes.btnSuccess)}
+            title={row.status}
+          >
+            Success
+          </span>
+        );
+      },
+    },
+    {
+      name: 'name',
+      title: 'Name',
+      width: 180,
+    },
+    {
+      name: 'number',
+      title: 'Number',
+      width: 140,
+      sortingEnabled: false,
+    },
+    {
+      name: 'error_msg',
+      title: 'Error',
+      width: 350,
+      sortingEnabled: false,
+    },
+    {
+      name: 'condor_log',
+      title: 'Log',
+      width: 80,
+      align: 'center',
+      sortingEnabled: false,
+
+      customElement: (row) => (
+        <Tooltip title="Condor Log">
+          <IconButton
+            onClick={() => handleLogReading(row.condor_log)}
+            sytle={{ padding: 0 }}
+          >
+            <DescriptionIcon />
+          </IconButton>
+        </Tooltip>
+      ),
+    },
+    {
+      name: 'condor_err_log',
+      title: 'Error',
+      width: 80,
+      align: 'center',
+      customElement: (row) => (
+        <Tooltip title="Condor Error">
+          <IconButton
+            onClick={() => handleLogReading(row.condor_err_log)}
+            style={{ padding: 0 }}
+          >
+            <DescriptionIcon />
+          </IconButton>
+        </Tooltip>
+      ),
+    },
+    {
+      name: 'condor_out_log',
+      title: "Output",
+      width: 80,
+      customElement: (row) => (
+        <Tooltip title="Condor Output">
+          <IconButton
+            onClick={() => handleLogReading(row.condor_out_log)}
+            style={{ padding: 0 }}
+          >
+            <DescriptionIcon />
+          </IconButton>
+        </Tooltip>
+      ),
+    },
+    {
+      name: "id",
+      title: " ",
+      icon: <Icon className={clsx('fas fa-info-circle')} />
+    },
+  ];
+
+  const handleLogReading = () => {
+    console.log("here");
+  };
+
   const loadTableData = async ({
     sorting, pageSize, currentPage, filter, searchValue,
   }) => {
+
     const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
+
     const asteroids = await getAsteroids({
       ordering,
       pageSize,
@@ -305,6 +467,14 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
 
   const handleBackNavigation = () => history.push('/prediction-of-occultation');
 
+  const handleChangeToolButton = (event, value) => {
+    value === "list" ?
+      setColumnsAsteroidTable(tableListArray) : setColumnsAsteroidTable(bugLogArray);
+    setToolButton(value)
+    // loadTableData();
+  };
+
+  console.log(tableData);
   return (
     <>
       <Grid
@@ -382,15 +552,34 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
         <Grid item lg={12} className={clsx(classes.block, classes.tableWrapper)}>
           <Card>
             <CardHeader title="Asteroids" />
-
             <CardContent>
+              <ToolBar>
+                <ToggleButtonGroup
+                  className={classes.toggleButton}
+                  value={toolButton}
+                  onChange={handleChangeToolButton}
+                  exclusive
+                >
+                  <ToggleButton
+                    value="list"
+                  >
+                    <ListIcon />
+                  </ToggleButton>
+                  <ToggleButton
+                    value="bugLog"
+                  >
+                    <BugIcon />
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </ToolBar>
               <CustomTable
-                columns={columns}
+                columns={columnsAsteroidTable}
                 data={tableData}
                 loadData={loadTableData}
                 pageSizes={pageSizes}
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
+                hasResizing={false}
               />
             </CardContent>
           </Card>
