@@ -233,7 +233,7 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
 
     def get_condor_out_log(self, obj):
         try:
-            log = os.path.join(obj.condor_relative_path, 'predict.out')
+            log = os.path.join(obj.condor_relative_path, 'prediction.out')
             if os.path.exists(log):
                 return log
             else:
@@ -243,7 +243,7 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
 
     def get_condor_err_log(self, obj):
         try:
-            log = os.path.join(obj.condor_relative_path, 'predict.err')
+            log = os.path.join(obj.condor_relative_path, 'prediction.err')
             if os.path.exists(log):
                 return log
             else:
@@ -253,7 +253,7 @@ class PredictAsteroidSerializer(serializers.ModelSerializer):
 
     def get_condor_log(self, obj):
         try:
-            log = os.path.join(obj.condor_relative_path, 'predict.log')
+            log = os.path.join(obj.condor_relative_path, 'prediction.log')
             if os.path.exists(log):
                 return log
             else:
