@@ -359,9 +359,9 @@ function Skybot({ setTitle, history }) {
               title="SkyBot Run"
             />
             <CardContent>
-              <Typography className={classes.typography}>Updates the SkyBot output table.</Typography>
+              <Typography className={classes.typography}>Identification of CCDs with objects.</Typography>
               <FormControl fullWidth>
-                <Label>Select the type of update</Label>
+                <Label>Select the type of submission</Label>
                 <Select
                   value={selectRunValue}
                   onChange={(event) => {

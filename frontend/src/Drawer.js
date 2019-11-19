@@ -471,5 +471,4 @@ function MiniDrawer() {
     </div>
   );
 }
-
 export default MiniDrawer;
