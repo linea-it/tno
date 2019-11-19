@@ -328,7 +328,7 @@ function MiniDrawer() {
                       <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-filter')} />
                     </ListItemIcon>
                     <ListItemText
-                      primary="Filter Objects"
+                      primary="Execute Skybot"
                       className={classes.textDrawer}
                     />
                   </ListItem>
@@ -451,5 +451,4 @@ function MiniDrawer() {
     </div>
   );
 }
-
 export default MiniDrawer;
