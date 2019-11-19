@@ -157,3 +157,7 @@ export const getCatalogStars = ({ id }) => {
 // };
 
 export const getPredictionEvent = ({ asteroidId }) => axios.get(`/occultation/?asteroid=${asteroidId}`).then((res) => res.data);
+
+export const readCondorFile = (filepath) =>
+  axios.get(`/read_file?filepath=${filepath}`)
+    .then((res) => res.data);

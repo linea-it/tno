@@ -14,7 +14,7 @@ import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import clsx from 'clsx';
 import moment from 'moment';
-import { getPredictionRunById, getTimeProfile, getAsteroids } from '../api/Prediction';
+import { getPredictionRunById, getTimeProfile, getAsteroids, readCondorFile } from '../api/Prediction';
 import CustomTable from './utils/CustomTable';
 import CustomList from './utils/CustomList';
 import { Donut, TimeProfile } from './utils/CustomChart';
@@ -25,6 +25,8 @@ import ListIcon from "@material-ui/icons/List";
 import BugIcon from '@material-ui/icons/BugReport';
 import Tooltip from "@material-ui/core/Tooltip";
 import DescriptionIcon from "@material-ui/icons/Description";
+import CustomDialog from './utils/CustomDialog';
+import CustomLog from "./utils/CustomLog";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -99,6 +101,9 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   const pageSizes = [5, 10, 15];
   const [toolButton, setToolButton] = useState('list');
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState([]);
+  const [dialog, setDialog] = useState({
+    content: [], visible: false, title: " ",
+  });
 
 
 
@@ -300,7 +305,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       title: ' ',
       width: 100,
       sortingEnabled: false,
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Tooltip title={"Details"}><Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} /></Tooltip>,
       action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
       align: 'center',
     },
@@ -388,7 +393,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       customElement: (row) => (
         <Tooltip title="Condor Log">
           <IconButton
-            onClick={() => handleLogReading(row.condor_log)}
+            onClick={() => row.condor_log ? handleLogReading(row.condor_log) : null}
             sytle={{ padding: 0 }}
           >
             <DescriptionIcon />
@@ -401,10 +406,11 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       title: 'Error',
       width: 80,
       align: 'center',
+      sortingEnabled: false,
       customElement: (row) => (
         <Tooltip title="Condor Error">
           <IconButton
-            onClick={() => handleLogReading(row.condor_err_log)}
+            onClick={() => row.condor_err_log ? handleLogReading(row.condor_err_log) : null}
             style={{ padding: 0 }}
           >
             <DescriptionIcon />
@@ -416,10 +422,12 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       name: 'condor_out_log',
       title: "Output",
       width: 80,
+      align: 'center',
+      sortingEnabled: false,
       customElement: (row) => (
         <Tooltip title="Condor Output">
           <IconButton
-            onClick={() => handleLogReading(row.condor_out_log)}
+            onClick={() => row.condor_out_log ? handleLogReading(row.condor_out_log) : null}
             style={{ padding: 0 }}
           >
             <DescriptionIcon />
@@ -430,12 +438,20 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     {
       name: "id",
       title: " ",
-      icon: <Icon className={clsx('fas fa-info-circle')} />
+      icon: <Tooltip title={"Details"}><Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} /></Tooltip>,
+      action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
+      align: 'center',
     },
   ];
 
-  const handleLogReading = () => {
-    console.log("here");
+  const handleLogReading = (file) => {
+    if (file && typeof file !== 'undefined') {
+
+      readCondorFile(file).then((res) => {
+        const data = res ? res.rows : null;
+        setDialog({ content: data, visible: true, title: `${file}` });
+      });
+    }
   };
 
   const loadTableData = async ({
@@ -471,10 +487,9 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     value === "list" ?
       setColumnsAsteroidTable(tableListArray) : setColumnsAsteroidTable(bugLogArray);
     setToolButton(value)
-    // loadTableData();
+    //  loadTableData();
   };
 
-  console.log(tableData);
   return (
     <>
       <Grid
@@ -580,10 +595,18 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
                 hasResizing={false}
+                reload={true}
               />
             </CardContent>
           </Card>
         </Grid>
+        <CustomDialog
+          visible={dialog.visible}
+          title={dialog.title}
+          content={<CustomLog data={dialog.content} />}
+          setVisible={() => setDialog({ visible: false, content: [], title: " " })}
+        >
+        </CustomDialog>
       </Grid>
     </>
   );
