@@ -85,7 +85,8 @@ export default function SearchSsso({ history, setTitle }) {
 
   useEffect(() => {
     loadTableData();
-  }, [vMagnitude, dClass]);
+  }, [vMagnitude, dynamicClass]);
+
 
 
   useEffect(() => {
@@ -97,6 +98,8 @@ export default function SearchSsso({ history, setTitle }) {
     });
     setSublevelDynamicClassSelected(Object.keys(currentSublevelList).map((el) => Number(el)));
     setSublevelDynamicClassList(currentSublevelList);
+    loadTableData();
+
   }, [dynamicClass]);
 
   const loadTableData = (event) => {
@@ -109,12 +112,29 @@ export default function SearchSsso({ history, setTitle }) {
         value: vMagnitude.join(),
       });
     }
-    if (dClass && dClass.length > 0) {
+    if (dynamicClass && dynamicClass.length == 1) {
       filters.push({
         property: 'dynclass__in',
-        value: dClass.toString(),
+        value: 'Centaur',
       });
+    } else {
+      const dynamicClassSelected = dynamicClass
+        .map((i) => optionsClassFirstLevel[i].value)
+        .concat(
+          sublevelDynamicClassSelected
+            .map((i) => optionsClassSecondLevel[i].value),
+        )
+        .join(';');
+
+      console.log(dynamicClassSelected);
+
+      //   filters.push({
+      //   property: 'dynclass__in',
+      //   value: dynamicClassSelected
+      // });
     }
+
+    //This filter means only asteroids in CCD
     filters.push({
       property: 'ccdnum__isnull',
       value: false,
@@ -124,6 +144,7 @@ export default function SearchSsso({ history, setTitle }) {
       setTableData(res.data.results);
     });
   };
+
 
   const handleClearFilters = () => {
     setVmagnitude([4, 18]);
