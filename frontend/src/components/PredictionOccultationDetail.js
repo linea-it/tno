@@ -7,8 +7,6 @@ import {
   Card,
   CardHeader,
   CardContent,
-  List,
-  IconButton,
 } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
@@ -24,7 +22,6 @@ import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import ListIcon from "@material-ui/icons/List";
 import BugIcon from '@material-ui/icons/BugReport';
 import Tooltip from "@material-ui/core/Tooltip";
-import DescriptionIcon from "@material-ui/icons/Description";
 import CustomDialog from './utils/CustomDialog';
 import CustomLog from "./utils/CustomLog";
 
@@ -106,8 +103,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   });
 
 
-
-
   useEffect(() => {
     setTitle('Prediction of Occultations');
 
@@ -155,7 +150,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
                 </span>
               );
             }
-
             return (
               <span
                 className={clsx(classes.btn, classes.btnSuccess)}
@@ -384,58 +378,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       sortingEnabled: false,
     },
     {
-      name: 'condor_log',
-      title: 'Log',
-      width: 80,
-      align: 'center',
-      sortingEnabled: false,
-
-      customElement: (row) => (
-        <Tooltip title="Condor Log">
-          <IconButton
-            onClick={() => row.condor_log ? handleLogReading(row.condor_log) : null}
-            sytle={{ padding: 0 }}
-          >
-            <DescriptionIcon />
-          </IconButton>
-        </Tooltip>
-      ),
-    },
-    {
-      name: 'condor_err_log',
-      title: 'Error',
-      width: 80,
-      align: 'center',
-      sortingEnabled: false,
-      customElement: (row) => (
-        <Tooltip title="Condor Error">
-          <IconButton
-            onClick={() => row.condor_err_log ? handleLogReading(row.condor_err_log) : null}
-            style={{ padding: 0 }}
-          >
-            <DescriptionIcon />
-          </IconButton>
-        </Tooltip>
-      ),
-    },
-    {
-      name: 'condor_out_log',
-      title: "Output",
-      width: 80,
-      align: 'center',
-      sortingEnabled: false,
-      customElement: (row) => (
-        <Tooltip title="Condor Output">
-          <IconButton
-            onClick={() => row.condor_out_log ? handleLogReading(row.condor_out_log) : null}
-            style={{ padding: 0 }}
-          >
-            <DescriptionIcon />
-          </IconButton>
-        </Tooltip>
-      ),
-    },
-    {
       name: "id",
       title: " ",
       icon: <Tooltip title={"Details"}><Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} /></Tooltip>,
@@ -444,15 +386,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     },
   ];
 
-  const handleLogReading = (file) => {
-    if (file && typeof file !== 'undefined') {
-
-      readCondorFile(file).then((res) => {
-        const data = res ? res.rows : null;
-        setDialog({ content: data, visible: true, title: `${file}` });
-      });
-    }
-  };
 
   const loadTableData = async ({
     sorting, pageSize, currentPage, filter, searchValue,
