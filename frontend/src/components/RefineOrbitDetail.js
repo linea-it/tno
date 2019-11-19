@@ -439,6 +439,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
                 hasResizing={false}
+                loading={true}
               />
             </CardContent>
           </Card>

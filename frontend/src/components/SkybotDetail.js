@@ -363,6 +363,7 @@ function SkybotDetail({ setTitle, match, history }) {
                     totalCount={skybotDetailTableTotalCount}
                     loadData={loadSkybotDetailTableData}
                     hasSearching={false}
+                    loading={true}
                   />
                 </CardContent>
               </Card>
