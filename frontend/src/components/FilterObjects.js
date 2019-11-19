@@ -28,7 +28,7 @@ import CustomSnackbar from './utils/CustomSnackbar';
 import CustomDialog from './utils/CustomDialog';
 import CustomTable from './utils/CustomTable';
 import {
-  getCustomList, getSkybotOutput, postCustomList, checkTableName,
+  getCustomList, getSkybotOutput, getSkybotOutputCount, postCustomList, checkTableName,
 } from '../api/Filter';
 
 
@@ -132,6 +132,30 @@ const useStyles = makeStyles((theme) => ({
   filterFormWrapper: {
     paddingBottom: 100,
   },
+  filterFrame: {
+    backgroundColor: theme.palette.background.default,
+    color: theme.palette.primary.main,
+    fontSize: 13,
+    fontWeight: 'bold',
+    position: 'absolute',
+    right: 7,
+    borderRadius: 2,
+    padding: '1px 2px',
+    minWidth: 35,
+  },
+  filterCountWrapper: {
+    position: 'relative',
+  },
+  filterCountText: {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    right: 0,
+    left: 0,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    fontSize: 32,
+  },
 }));
 
 
@@ -167,6 +191,8 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
     msg: '',
   });
   const [tableNameSnackbarVisible, setTableNameSnackbarVisible] = useState(false);
+  const [skybotOutputCount, setSkybotOutputCount] = useState(0);
+
 
   const optionsClassFirstLevel = [
     { id: 1, label: 'Centaur', value: 'Centaur' },
@@ -284,42 +310,51 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
     {
       name: 'name',
       title: 'Name',
+      sortingEnabled: false,
     },
     {
       name: 'freq',
-      title: 'Freq.',
+      title: 'CCD Numbers',
       width: 80,
+      sortingEnabled: false,
     },
     {
       name: 'filters',
       title: 'Filters',
       width: 80,
       align: 'center',
+      sortingEnabled: false,
     },
     {
       name: 'mag_min',
       title: 'Mag. Min.',
+      sortingEnabled: false,
     },
     {
       name: 'mag_max',
       title: 'Mag. Max.',
+      sortingEnabled: false,
     },
     {
       name: 'min_errpos',
       title: 'Min. Errpos.',
+      sortingEnabled: false,
     },
     {
       name: 'max_errpos',
       title: 'Max. Errpos.',
+      sortingEnabled: false,
     },
     {
       name: 'diff_nights',
       title: 'Diff. Nights',
+      sortingEnabled: false,
     },
     {
       name: 'diff_date_nights',
       title: 'Diff. Date Max',
       width: 130,
+      sortingEnabled: false,
     },
   ];
 
@@ -430,6 +465,49 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
     setSublevelDynamicClassSelected(Object.keys(currentSublevelList).map((el) => Number(el)));
     setSublevelDynamicClassList(currentSublevelList);
   }, [dynamicClass]);
+
+  const loadSkybotOutputCount = ({
+    objectTable = null,
+    useMagnitude = null,
+    magnitude = null,
+    useDifferenceTime = null,
+    diffDateNights = null,
+    moreFilter = null,
+    checked = null,
+  }) => {
+    getSkybotOutputCount({
+      objectTable,
+      useMagnitude,
+      magnitude,
+      useDifferenceTime,
+      diffDateNights,
+      moreFilter,
+      checked,
+    }).then((res) => setSkybotOutputCount(res.count));
+  };
+
+  useEffect(() => {
+    if (dynamicClass.length > 0) {
+      const dynamicClassSelected = dynamicClass
+        .map((i) => optionsClassFirstLevel[i].value)
+        .concat(
+          sublevelDynamicClassSelected
+            .map((i) => optionsClassSecondLevel[i].value),
+        )
+        .join(';');
+
+      loadSkybotOutputCount({
+        objectTable: dynamicClassSelected,
+        useMagnitude: visualMagnitudeCheck,
+        magnitude: visualMagnitude,
+        useDifferenceTime: timeMinimumCheck,
+        diffDateNights: timeMinimum,
+        moreFilter: sameObjectsCheck,
+        checked: true,
+        name: null,
+      });
+    }
+  }, [dynamicClass, sublevelDynamicClassSelected, visualMagnitudeCheck, visualMagnitude, timeMinimumCheck, timeMinimum, sameObjectsCheck]);
 
   const handleSearchFilter = (e) => setSearchFilter(e.target.value);
 
@@ -560,11 +638,12 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         });
         setTableNameSnackbarVisible(true);
 
-        setTimeout(() => { setTableNameSnackbarVisible(false); }, 5000);
+        setTimeout(() => { setTableNameSnackbarVisible(false); }, 6000);
       } else {
         // Verify if the table already exists:
         checkTableName({ tablename, status: 'success' })
           .then((res) => {
+            console.log(res);
             if (res.count === 0) {
               // The table name is unique:
               setTableNameValidation({
@@ -586,7 +665,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
               });
               setTableNameSnackbarVisible(true);
 
-              setTimeout(() => { setTableNameSnackbarVisible(false); }, 5000);
+              setTimeout(() => { setTableNameSnackbarVisible(false); }, 10000);
             }
           });
       }
@@ -830,6 +909,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                                     disabled={resultLoading}
                                   >
                                     Filter
+                                    <div className={classes.filterFrame}>{skybotOutputCount}</div>
                                     {resultLoading ? (
                                       <CircularProgress
                                         color="primary"
@@ -893,13 +973,19 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                               totalCount={resultTableData.length}
                               defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
                               hasSearching={false}
-                              hasSorting={false}
                               remote={false}
                             />
                           </FormControl>
                         </form>
                       ) : (
-                        <Skeleton height={(filterFormSize.height - 95) || 0} />
+                        <div className={classes.filterCountWrapper}>
+                          <Skeleton height={(filterFormSize.height - 95) || 0} />
+                          {skybotOutputCount > 0 ? (
+                            <span className={classes.filterCountText}>
+                              {skybotOutputCount > 1 ? `Current filter has ${skybotOutputCount} objects` : `Current filter has ${skybotOutputCount} object`}
+                            </span>
+                          ) : null}
+                        </div>
                       )}
                     </CardContent>
                   </Card>
@@ -954,7 +1040,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
               />
             </FormControl>
 
-            <FormControl fullWidth>
+            {/* <FormControl fullWidth>
               <TextField
                 disabled
                 label="Table Name"
@@ -962,7 +1048,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                 margin="none"
                 variant="outlined"
               />
-            </FormControl>
+            </FormControl> */}
 
             <FormControl className={classes.formControl} fullWidth>
               <TextField
@@ -977,7 +1063,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
             </FormControl>
             <Divider />
             <FormControl className={classes.formControl} fullWidth>
-              <Button color="primary" variant="contained" onClick={handleSaveListClick} disabled={resultLoading}>Save</Button>
+              <Button color="primary" variant="contained" onClick={handleSaveListClick} disabled={!tableNameValidation.valid}>Save</Button>
               {resultLoading ? (
                 <CircularProgress
                   color="primary"
@@ -986,10 +1072,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                 />
               ) : null}
             </FormControl>
-            <FormControl className={classes.formControl} fullWidth>
-              <Button color="secondary" variant="contained" onClick={handleSaveDialogClose}>Close</Button>
-            </FormControl>
-
           </form>
         )}
         wrapperStyle={{

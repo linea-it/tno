@@ -110,7 +110,7 @@ class FilterObjects(DBBase):
 
     def get_objects(self,
                     name=None, objectTable=None, magnitude=None, diffDateNights=None,
-                    moreFilter=None, page=1, pageSize=100):
+                    moreFilter=None, page=1, pageSize=None):
 
         """Applies the filters to the skybot output table and returns the list
         of objects that meet the requirements.
@@ -133,6 +133,18 @@ class FilterObjects(DBBase):
         rows = self.fetch_all_dict(stm)
 
         return rows, totalSize
+
+    def get_objects_count(self,
+                    name=None, objectTable=None, magnitude=None, diffDateNights=None,
+                    moreFilter=None,):
+
+
+        stm = self.get_objects_stm(
+            name, objectTable, magnitude, diffDateNights, moreFilter)
+
+        totalSize = self.stm_count(stm)
+
+        return totalSize
 
     def create_object_list(self,
                            tablename, name, objectTable,
@@ -293,7 +305,7 @@ class FilterObjects(DBBase):
 
     def count_missing_pointing(self, tablename, schema=None):
         """
-            Retorna o total de registros que esta na lista mais nao esta dentro 
+            Retorna o total de registros que esta na lista mais nao esta dentro
             de nenhum apontamento ou CCD.
         """
         # SELECT COUNT(*) FROM <tablename> WHERE pointing_id is null;
@@ -307,7 +319,7 @@ class FilterObjects(DBBase):
 
     def count_pointing_not_downloaded(self, tablename, schema=None):
         """
-            Retorna o total de registros que esta associado a um CCD mais nao teve 
+            Retorna o total de registros que esta associado a um CCD mais nao teve
             as imagens baixadas ainda.
         """
         # SELECT COUNT(*) FROM <tablename> a LEFT JOIN tno_ccdimage b ON (a.pointing_id = b.pointing_id) WHERE a.pointing_id is not null AND b.filename is null;
@@ -352,8 +364,8 @@ class FilterObjects(DBBase):
 
     def list_pointing_path_by_table(self, tablename, schema, page=1, pageSize=None):
         """
-            Retorna todos os apontamentos relacionados com a tabela. 
-            informacoes do path e filename. 
+            Retorna todos os apontamentos relacionados com a tabela.
+            informacoes do path e filename.
             SELECT b.id as pointing_id, b.desfile_id, b."path", b.filename, b.compression FROM <Tablename> a LEFT JOIN tno_pointing b ON (a.pointing_id = b.id) WHERE a.pointing_id is not null;
         """
 
@@ -363,8 +375,8 @@ class FilterObjects(DBBase):
         stm_join = tbl.join(tbl_pointing, tbl.c.pointing_id == tbl_pointing.c.id, isouter=True)
 
         stm = select([
-            tbl_pointing.c.id, 
-            tbl_pointing.c.desfile_id, 
+            tbl_pointing.c.id,
+            tbl_pointing.c.desfile_id,
             tbl_pointing.c.path,
             tbl_pointing.c.filename,
             tbl_pointing.c.compression,
@@ -426,9 +438,9 @@ class FilterObjects(DBBase):
 
     def check_bsp_jpl_by_object(self, name, max_age):
         """
-            Retorna o registro do bsl jpl para o objeto, 
-            se o download estiver acima da prazo maximo o 
-            resultado vai ser vazio. 
+            Retorna o registro do bsl jpl para o objeto,
+            se o download estiver acima da prazo maximo o
+            resultado vai ser vazio.
         """
         # select * from orbit_bspjplfile where "name"='Eris' and download_finish_time > (NOW() - INTERVAL '30 DAY');
         tbl = self.get_table_bsp_jpl_file()
@@ -553,7 +565,7 @@ class Pointing(DBBase):
 
     # Count por faixa das exposições
     def count_range_exposures(self, start, end):
-        
+
         stm = select([func.count()]).where(between(self.tbl.c.exptime, int(start.strip()), int(end.strip())))
 
         return self.fetch_scalar(stm)

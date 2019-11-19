@@ -8,9 +8,6 @@ import Divider from '@material-ui/core/Divider';
 import clsx from 'clsx';
 import Highlight from 'react-syntax-highlight';
 import moment from 'moment';
-import { getStatsById, getObjectsList } from '../api/Filter';
-import CustomCardStats from './utils/CustomCardStats';
-import CustomTable from './utils/CustomTable';
 // https://github.com/zlargon/react-highlight
 import 'highlight.js/styles/default.css';
 import 'highlight.js/styles/atom-one-light.css';
@@ -18,7 +15,14 @@ import 'highlight.js/styles/atom-one-light.css';
 // https://github.com/zeroturnaround/sql-formatter
 import sqlFormatter from 'sql-formatter';
 
-const useStyles = makeStyles({
+import Toolbar from '@material-ui/core/Toolbar';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import CustomTable from './utils/CustomTable';
+import CustomCardStats from './utils/CustomCardStats';
+import { getStatsById, getObjectsList } from '../api/Filter';
+
+const useStyles = makeStyles((theme) => ({
   block: {
     marginBottom: 15,
   },
@@ -99,7 +103,14 @@ const useStyles = makeStyles({
     width: 'auto',
     color: '#444',
   },
-});
+  overflowAuto: {
+    overflow: 'auto',
+  },
+  sqlLogMarginTop: {
+    display: 'block',
+    marginTop: -theme.spacing(1),
+  },
+}));
 
 function FilterObjectsDetail({ setTitle, match }) {
   const classes = useStyles();
@@ -107,6 +118,7 @@ function FilterObjectsDetail({ setTitle, match }) {
   const [stats, setStats] = useState({});
   const [objectsTableCount, setObjectsTableCount] = useState(0);
   const [objectsTableData, setObjectsTableData] = useState([]);
+  const [sqlLogVisible, setSqlLogVisible] = useState(false);
 
   const objectsColumns = [
     {
@@ -125,25 +137,21 @@ function FilterObjectsDetail({ setTitle, match }) {
       name: 'raj2000',
       title: 'RA',
       width: 80,
-      customElement: (row) => {
-        return (
-          <span>
-            {row.raj2000 ? parseFloat(row.raj2000.toFixed(3)) : ""}
-          </span>
-        );
-      },
+      customElement: (row) => (
+        <span>
+          {row.raj2000 ? parseFloat(row.raj2000.toFixed(3)) : ''}
+        </span>
+      ),
     },
     {
       name: 'decj2000',
       title: 'Dec',
       width: 80,
-      customElement: (row) => {
-        return (
-          <span>
-            {row.decj2000 ? parseFloat(row.decj2000.toFixed(3)) : ""}
-          </span>
-        );
-      },
+      customElement: (row) => (
+        <span>
+          {row.decj2000 ? parseFloat(row.decj2000.toFixed(3)) : ''}
+        </span>
+      ),
     },
     {
       name: 'errpos',
@@ -181,10 +189,10 @@ function FilterObjectsDetail({ setTitle, match }) {
           <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
         </span>
       ) : (
-          <span title={el.filename}>
-            <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-          </span>
-        )),
+        <span title={el.filename}>
+          <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+        </span>
+      )),
     },
     {
       name: 'externallink',
@@ -216,6 +224,8 @@ function FilterObjectsDetail({ setTitle, match }) {
       loadObjectsTableData({ currentPage: 0, pageSize: 10 });
     }
   }, [stats]);
+
+  const handleSqlLogChange = () => setSqlLogVisible(!sqlLogVisible);
 
   return (
     <>
@@ -279,7 +289,7 @@ function FilterObjectsDetail({ setTitle, match }) {
         </Grid>
         <Grid item xs={12} md={4} className={classes.block}>
           <CustomCardStats
-            title="CCDs Images"
+            title="CCDs With Objects"
             services={stats.rows}
             color="#FF9500"
             icon="fa-database"
@@ -296,31 +306,13 @@ function FilterObjectsDetail({ setTitle, match }) {
           />
         </Grid>
       </Grid>
-      <Grid container spacing={2}>
-        <Grid item xs={12} className={classes.block}>
-          <Card>
-            <CardHeader title="Objects" />
-            <CardContent>
-              <CustomTable
-                columns={objectsColumns}
-                data={objectsTableData}
-                totalCount={objectsTableCount}
-                loadData={loadObjectsTableData}
-                hasSearching={false}
-                hasSorting={false}
-                loading={true}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
       {stats.id ? (
         <Grid container spacing={2}>
           <Grid item xs={12} className={classes.block}>
             <Card>
               <CardHeader title="Detail" />
               <CardContent>
-                <div>
+                <div className={classes.overflowAuto}>
                   <span>
                     <b>Owner:</b>
                     {' '}
@@ -403,12 +395,58 @@ function FilterObjectsDetail({ setTitle, match }) {
                     {' '}
                     {stats.filter_name}
                   </span>
+                  <br />
+                  <span className={classes.sqlLogMarginTop}>
+                    <b>SQL Log:</b>
+                    <Switch
+                      checked={sqlLogVisible}
+                      onChange={handleSqlLogChange}
+                      value={sqlLogVisible}
+                      color="primary"
+                    />
+                  </span>
+                  {sqlLogVisible ? (
+                    <>
+                      <Divider style={{ marginTop: 30 }} />
+                      <div style={{ margin: '30px 0' }}>
+                        <span>
+                          <b>SQL:</b>
+                        </span>
+                        <Highlight lang="sql" value={sqlFormatter.format(stats.sql)} />
+                      </div>
+
+                      <Divider style={{ marginTop: 30 }} />
+                      <div style={{ margin: '30px 0' }}>
+                        <span>
+                          <b>SQL Create:</b>
+                        </span>
+                        <Highlight lang="sql" value={sqlFormatter.format(stats.sql_creation)} />
+                      </div>
+                    </>
+                  ) : null}
                 </div>
               </CardContent>
             </Card>
           </Grid>
         </Grid>
       ) : null}
+      <Grid container spacing={2}>
+        <Grid item xs={12} className={classes.block}>
+          <Card>
+            <CardHeader title="Objects" />
+            <CardContent>
+              <CustomTable
+                columns={objectsColumns}
+                data={objectsTableData}
+                totalCount={objectsTableCount}
+                loadData={loadObjectsTableData}
+                hasSearching={false}
+                hasSorting={false}
+              />
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
     </>
   );
 }
