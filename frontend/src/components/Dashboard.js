@@ -57,10 +57,10 @@ function Dashboard({ setTitle }) {
 
 
             <Grid container spacing={2}>
-              <Grid xs={12}>
+              <Grid item xs={12}>
                 <img src={histogramExposures} className={classes.imgResponsive} alt="Plot exposure" title="Plot exposure" />
               </Grid>
-              <Grid xs={12}>
+              <Grid item xs={12}>
                 <CustomTable
                   columns={[
                     {
@@ -123,10 +123,10 @@ function Dashboard({ setTitle }) {
               return (
                 <CardContent className={classes.centerImage}>
                   <Grid container spacing={2}>
-                    <Grid xs={12}>
+                    <Grid item xs={12}>
                       <img src={histogramExposureTime} className={classes.imgResponsive} alt="CCD x Exposure time" title="CCD x Exposure time" />
                     </Grid>
-                    <Grid xs={12}>
+                    <Grid item xs={12}>
                       <CustomTable
                         columns={[
                           {
@@ -209,10 +209,10 @@ function Dashboard({ setTitle }) {
           <CardContent className={classes.centerImage} style={{ minHeight: exposureSize.height }}>
 
             <Grid container spacing={2}>
-              <Grid xs={12}>
+              <Grid item xs={12}>
                 <img src={histogramBands} className={classes.imgResponsive} alt="CCDs x Band" title="CCDs x Band" style={{ maxHeight: 311 }} />
               </Grid>
-              <Grid xs={12}>
+              <Grid item xs={12}>
                 <CustomTable
                   columns={[
                     {

@@ -41,7 +41,7 @@ export function isAuthenticated() {
 
 export function getToken(username, password, cb) {
   axios
-    .post(`/obtain-auth-token/`, {
+    .post('/obtain-auth-token/', {
       username,
       password,
     })

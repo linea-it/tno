@@ -57,7 +57,6 @@ export const postCustomList = ({
   }).then((res) => res.data);
 };
 
-
 export const getSkybotOutput = ({
   page = 1,
   pageSize,
@@ -91,6 +90,39 @@ export const getSkybotOutput = ({
   });
 
   return axios.get('/skybotoutput/objects', {
+    params,
+  }).then((res) => res.data);
+};
+
+export const getSkybotOutputCount = ({
+  name,
+  objectTable,
+  useMagnitude,
+  magnitude,
+  useDifferenceTime,
+  diffDateNights,
+  moreFilter,
+  checked,
+  filters = [],
+}) => {
+  const params = {
+    name,
+    objectTable,
+    useMagnitude,
+    magnitude,
+    useDifferenceTime,
+    diffDateNights,
+    moreFilter,
+    checked,
+  };
+
+  filters.forEach((element) => {
+    if (element.value && element.value !== null) {
+      params[element.property] = element.value;
+    }
+  });
+
+  return axios.get('/skybotoutput/objects_count', {
     params,
   }).then((res) => res.data);
 };
