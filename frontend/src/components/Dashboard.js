@@ -60,7 +60,7 @@ function Dashboard({ setTitle }) {
               <Grid xs={12}>
                 <img src={histogramExposures} className={classes.imgResponsive} alt="Exposures x Year" title="Exposures x Year" />
               </Grid>
-              <Grid xs={12}>
+              <Grid item xs={12}>
                 <CustomTable
                   columns={[
                     {
@@ -188,7 +188,7 @@ function Dashboard({ setTitle }) {
                     <Grid xs={12}>
                       <img src={histogramBands} className={classes.imgResponsive} alt="Exposures x Band" title="Exposures x Band" style={{ maxHeight: 311 }} />
                     </Grid>
-                    <Grid xs={12}>
+                    <Grid item xs={12}>
                       <CustomTable
                         columns={[
                           {

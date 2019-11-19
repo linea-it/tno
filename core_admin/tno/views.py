@@ -177,16 +177,48 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
         moreFilter = request.query_params.get('moreFilter')
 
         page = request.query_params.get('page', 1)
-        pageSize = request.query_params.get(
-            'pageSize', self.pagination_class.page_size)
+
+        pageSize = request.query_params.get('pageSize')
+
+        if(pageSize):
+            pageSize = int(request.query_params.get( 'pageSize', self.pagination_class.page_size))
+        else:
+            pageSize = None
 
         rows, count = FilterObjects().get_objects(
             name, objectTable, magnitude, diffDateNights,
-            moreFilter, int(page), int(pageSize))
+            moreFilter, int(page), pageSize)
 
         return Response({
             'success': True,
             "results": rows,
+            "count": count
+        })
+
+
+    @list_route()
+    def objects_count(self, request):
+        name = request.query_params.get('name')
+
+        objectTable = request.query_params.get('objectTable')
+
+        magnitude = None
+        if request.query_params.get('useMagnitude') and float(request.query_params.get('magnitude')) > 0:
+            magnitude = float(request.query_params.get('magnitude'))
+
+        diffDateNights = None
+        if request.query_params.get('useDifferenceTime') and float(request.query_params.get('diffDateNights')) > 0:
+            diffDateNights = float(request.query_params.get('diffDateNights'))
+
+        moreFilter = request.query_params.get('moreFilter')
+
+        count = FilterObjects().get_objects_count(
+            name, objectTable, magnitude, diffDateNights,
+            moreFilter
+        )
+
+        return Response({
+            'success': True,
             "count": count
         })
 
@@ -474,8 +506,8 @@ class JohnstonArchiveViewSet(viewsets.ModelViewSet):
 
         Downloaded from: http://www.johnstonsarchive.net/astro/tnoslist.html
 
-        Table includes TNOs, SDOs, and Centaurs listed by the MPC as of 7 October 2018, 
-        plus other unusual asteroids with aphelion distances greater than 7.5 AU, 
+        Table includes TNOs, SDOs, and Centaurs listed by the MPC as of 7 October 2018,
+        plus other unusual asteroids with aphelion distances greater than 7.5 AU,
         plus several additional reported objects without MPC designations.
 
         To search for the object name use the 'search' attribute
@@ -976,7 +1008,7 @@ class CcdImageViewSet(viewsets.ModelViewSet):
 
         logger.info("--------------------------------------------------")
         logger.info("Importando logs de download CCD")
-        
+
         files_not_downloaded = list()
 
         # Para cada imagem inserir na tabela CCD_IMAGE
@@ -986,12 +1018,12 @@ class CcdImageViewSet(viewsets.ModelViewSet):
             ccd_filename = logname.replace('.fz.csv', '')
 
             # Double Check, conferir se o arquivo de ccd realmente existe no diretorio.
-            # e se o seu tamanho e maior que 0 
+            # e se o seu tamanho e maior que 0
             image_filepath = os.path.join(settings.CCD_IMAGES_DIR, ccd_filename)
             if os.path.exists(image_filepath) and os.path.getsize(image_filepath) > 0:
 
                 # Ler o log em csv
-                df = pd.read_csv(logpath, sep=';', header=None, index_col=False, names=['download_start_time', 'download_finish_time', 'file_size']) 
+                df = pd.read_csv(logpath, sep=';', header=None, index_col=False, names=['download_start_time', 'download_finish_time', 'file_size'])
 
                 download_start_time, download_finish_time, file_size = df.iloc[0]
 
@@ -1000,10 +1032,10 @@ class CcdImageViewSet(viewsets.ModelViewSet):
                 logger.info("Finish %s" % download_finish_time)
                 logger.info("File Size %s" % file_size)
 
-                download_time = parse(download_finish_time) - parse(download_start_time) 
+                download_time = parse(download_finish_time) - parse(download_start_time)
                 logger.info("Download Time %s" % download_time)
 
-                # Recuperar o Apontamento 
+                # Recuperar o Apontamento
                 try:
                     pointing = Pointing.objects.get(filename=ccd_filename)
                     logger.info("Pointing Id: %s" % pointing.id)

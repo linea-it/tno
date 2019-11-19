@@ -15,8 +15,8 @@ import GridListTileBar from '@material-ui/core/GridListTileBar';
 import { withRouter } from 'react-router';
 import CustomList from './utils/CustomList';
 import CustomTable from './utils/CustomTable';
+import { url as apiUrl } from '../api/Auth'
 import {
-  url as apiUrl,
   getAsteroidById,
   getAsteroidInputs,
   getAsteroidFiles,
