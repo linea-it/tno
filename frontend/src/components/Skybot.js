@@ -405,7 +405,7 @@ function Skybot({ setTitle, history }) {
                   disabled={disabledRunButton}
                   onClick={handleSelectRunClick}
                 >
-                  Run
+                  Submit
                   {loading
                     ? (
                       <CircularProgress
