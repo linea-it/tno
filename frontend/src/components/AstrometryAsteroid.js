@@ -14,9 +14,9 @@ import filesize from 'filesize';
 import CustomList from './utils/CustomList';
 import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
+import { url } from '../api/Auth'
 import {
   getAsteroidById,
-  url,
   getAsteroidNeighbors,
   getAstrometryTable,
   getAsteroidMainOutputs,
@@ -79,6 +79,7 @@ const useStyles = makeStyles((theme) => ({
   },
   iconDetail: {
     fontSize: 18,
+    cursor: 'pointer',
   },
   logToolbar: {
     backgroundColor: '#F1F2F5',

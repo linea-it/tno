@@ -310,6 +310,7 @@ function RefineOrbit({ history, setTitle }) {
               defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
               reload={reload}
               hasSearching={false}
+              loading={true}
             />
           </CardContent>
         </Card>

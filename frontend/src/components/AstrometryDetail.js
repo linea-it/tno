@@ -23,14 +23,21 @@ import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
 import Stepper from './AstrometryStepper';
 import ReactInterval from 'react-interval';
+import Button from '@material-ui/core/Button';
 
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   card: {
     marginBottom: 10,
   },
+  backIcon: {
+    marginRight: 10,
+  },
   icon: {
     marginLeft: '92%',
+  },
+  backButton: {
+    margin: theme.spacing(1),
   },
   progress: {
     marginTop: 6,
@@ -92,14 +99,16 @@ const useStyles = makeStyles({
     height: 600,
     width: 600,
   },
-});
+}));
 
 function AstrometryDetail({ history, setTitle, match: { params } }) {
   const classes = useStyles();
 
   const [list, setList] = useState([]);
-  const [executionTime, setExecutionTime] = useState({});
-  const [execution_stats, setExecution_stats] = useState({});
+  const [executionTime, setExecutionTime] = useState(null);
+  const [executionStats, setExecutionStats] = useState(null);
+  const [donutDataStatist, setDonutDataStatist] = useState([]);
+  const [donutDataExecutionTime, setDonutDataExecutionTime] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState('list');
   const [toolButton, setToolButton] = useState('list');
@@ -201,7 +210,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
 
   const loadExecutionStatistics = () => {
     getAsteroidStatus({ id: params.id }).then((res) => {
-      setExecution_stats(res.status);
+      setExecutionStats(res.status);
     });
   };
 
@@ -339,7 +348,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       customElement: (row) => (
         <span>
           {row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}
-         
+
         </span>
       ),
       width: 140,
@@ -514,21 +523,32 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     loadExecutionStatistics();
   }, [count]);
 
+  useEffect(() => {
+    if(executionStats) {
+      if((executionStats.success !== 0 && executionStats.warning !== 0 && executionStats.failure !== 0 && executionStats.not_executed !== 0)) {
+          setDonutDataStatist([
+            { name: 'Success', value: executionStats.success, color: '#009900' },
+            { name: 'Warning', value: executionStats.warning, color: '#D79F15' },
+            { name: 'Failure', value: executionStats.failure, color: '#ff1a1a' },
+            { name: 'Not Executed', value: executionStats.not_executed, color: '#ABA6A2' },
+            { name: 'Running/Idle', value: executionStats.pending ? executionStats.pending : 0, color: '#0099ff' },
+          ]);
+      }
+    }
+  }, [executionStats])
 
-  const donutDataStatist = [
-    { name: 'Success', value: execution_stats.success, color: '#009900' },
-    { name: 'Warning', value: execution_stats.warning, color: '#D79F15' },
-    { name: 'Failure', value: execution_stats.failure, color: '#ff1a1a' },
-    { name: 'Not Executed', value: execution_stats.not_executed, color: '#ABA6A2' },
-    { name: 'Running/Idle', value: execution_stats.pending ? execution_stats.pending : 0, color: '#0099ff' },
-  ];
-
-  const donutDataExecutionTime = [
-    { name: 'Ccd Images', value: executionTime.ccd_images },
-    { name: 'Bsp_Jpl', value: executionTime.bsp_jpl },
-    { name: 'Catalog', value: executionTime.catalog },
-    { name: 'Astrometry', value: executionTime.astrometry },
-  ];
+  useEffect(() => {
+    if(executionTime) {
+      if(executionTime.ccd_images !== 0 || executionTime.bsp_jpl !== 0 || executionTime.catalog !== 0 || executionTime.astrometry !== 0) {
+        setDonutDataExecutionTime( [
+          { name: 'Ccd Images', value: executionTime.ccd_images },
+          { name: 'Bsp_Jpl', value: executionTime.bsp_jpl },
+          { name: 'Catalog', value: executionTime.catalog },
+          { name: 'Astrometry', value: executionTime.astrometry },
+        ]);
+      }
+    }
+  }, [executionTime])
 
   const handleChangeToolButton = (event, newValue) => {
     setToolButton(newValue);
@@ -565,6 +585,11 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     }
   };
 
+
+  const handleBackNabigation = () => {
+    history.push('/astrometry');
+  };
+
   return (
     <Grid>
       <ReactInterval
@@ -572,6 +597,15 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         enabled={interval_condition}
         callback={handleInterval}
       />
+      <Button
+        variant="contained"
+        color="primary"
+        className={classes.backButton}
+        onClick={handleBackNabigation}
+      >
+        <Icon className={clsx('fas', 'fa-undo', classes.backIcon)} />
+        <span>Back</span>
+      </Button>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6} xl={4}>
           <Card>
@@ -583,26 +617,31 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
             />
           </Card>
         </Grid>
-        <Grid item xs={12} md={6} xl={4}>
-          <Card className={classes.card}>
-            <CardHeader
-              title="Execution Statistics"
-            />
-            <Donut
-              data={donutDataStatist}
-            />
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={6} xl={4}>
-          <Card className={classes.card}>
-            <CardHeader
-              title="Execution Time"
-            />
-            <Donut
-              data={donutDataExecutionTime}
-            />
-          </Card>
-        </Grid>
+        {donutDataStatist.length > 0 ? (
+          <Grid item xs={12} md={6} xl={4}>
+            <Card className={classes.card}>
+              <CardHeader
+                title="Execution Statistics"
+              />
+              <Donut
+                data={donutDataStatist}
+              />
+            </Card>
+          </Grid>
+        ) : null}
+
+        {donutDataExecutionTime.length > 0 ? (
+          <Grid item xs={12} md={6} xl={4}>
+            <Card className={classes.card}>
+              <CardHeader
+                title="Execution Time"
+              />
+              <Donut
+                data={donutDataExecutionTime}
+              />
+            </Card>
+          </Grid>
+        ) : null}
       </Grid>
 
       <Grid item xs={12}>

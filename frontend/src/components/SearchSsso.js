@@ -277,6 +277,7 @@ export default function SearchSsso({ history, setTitle }) {
                 columns={tableColumns}
                 loadData={loadTableData}
                 totalCount={totalCount}
+                loading={true}
                 hasToolbar
               />
             </CardContent>

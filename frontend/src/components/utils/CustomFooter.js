@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import { Typography, Toolbar } from '@material-ui/core';
-import logo from './assets/img/linea-logo-mini.png';
+import logo from '../../assets/img/linea-logo-mini.png';
 
-function Footer(props) {
-  const { drawerOpen } = props;
+function CustomFooter(props) {
+  const { drawerOpen, drawerWidth } = props;
   const useStyles = makeStyles((theme) => ({
     root: {
       width: '100%',
@@ -30,7 +30,7 @@ function Footer(props) {
       top: 'auto',
       bottom: 0,
       backgroundColor: '#6A6A6A',
-      width: `calc(100% - ${theme.spacing(7) - 1}px)`,
+      width: drawerOpen === null ? '100%' : `calc(100% - ${theme.spacing(7) - 1}px)`,
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
@@ -56,6 +56,8 @@ function Footer(props) {
       verticalAlign: 'middle',
     },
   }));
+
+  console.log('drawerOpen', drawerOpen);
 
   const classes = useStyles();
 
@@ -89,8 +91,12 @@ function Footer(props) {
   );
 }
 
-Footer.propTypes = {
-  drawerOpen: PropTypes.bool.isRequired,
+CustomFooter.defaultProps = {
+  drawerOpen: null,
 };
 
-export default Footer;
+CustomFooter.propTypes = {
+  drawerOpen: PropTypes.bool,
+};
+
+export default CustomFooter;
