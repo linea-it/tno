@@ -297,6 +297,16 @@ function Skybot({ setTitle, history }) {
     {
       name: 'owner', title: 'Owner', width: 140, align: 'left',
     },
+
+    {
+      name: 'date_initial', title: "Initial Date", width: 100, align: 'left',
+    },
+    {
+      name: 'date_final', title: "Final Date", width: 100, align: 'left',
+    },
+    {
+      name: 'type_run', title: "Run Type", width: 100, align: 'center',
+    },
     {
       name: 'start', title: 'Start', width: 200, align: 'center',
     },
@@ -359,9 +369,9 @@ function Skybot({ setTitle, history }) {
               title="SkyBot Run"
             />
             <CardContent>
-              <Typography className={classes.typography}>Updates the SkyBot output table.</Typography>
+              <Typography className={classes.typography}>Identification of CCDs with objects.</Typography>
               <FormControl fullWidth>
-                <Label>Select the type of update</Label>
+                <Label>Select the type of submission</Label>
                 <Select
                   value={selectRunValue}
                   onChange={(event) => {
@@ -381,7 +391,6 @@ function Skybot({ setTitle, history }) {
                     value={initialDate}
                     onChange={(date) => setInitialDate(date)}
                     maxDateMessage="Date should not be after current date"
-
                   />
                   <KeyboardDatePicker
                     disableFuture
@@ -405,7 +414,7 @@ function Skybot({ setTitle, history }) {
                   disabled={disabledRunButton}
                   onClick={handleSelectRunClick}
                 >
-                  Run
+                  Submit
                   {loading
                     ? (
                       <CircularProgress
@@ -440,6 +449,7 @@ function Skybot({ setTitle, history }) {
                 hasToolbar={false}
                 reload
                 totalCount={totalSize}
+                loading={true}
               />
             </CardContent>
           </Card>

@@ -14,11 +14,11 @@ import { withRouter } from 'react-router';
 import CustomGridList from './utils/CustomGridList';
 import CustomList from './utils/CustomList';
 import CustomTable from './utils/CustomTable';
+import { url } from '../api/Auth'
 import {
   getAsteroidById,
   getAsteroidInputs,
   getAsteroidOutputs,
-  url,
   getAsteroidDownloadLink,
   getAsteroidNeighbors,
 } from '../api/Prediction';

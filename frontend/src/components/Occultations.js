@@ -18,7 +18,8 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-import { getOccultations, url } from '../api/Occultation';
+import { url } from '../api/Auth'
+import { getOccultations } from '../api/Occultation';
 import CustomGridList from './utils/CustomGridList';
 
 const useStyles = makeStyles((theme) => ({

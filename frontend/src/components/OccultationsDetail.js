@@ -6,7 +6,8 @@ import {
 import moment from 'moment';
 import CustomList from './utils/CustomList';
 import CustomSkymap from './utils/CustomSkymap';
-import { url, getOccultationById } from '../api/Occultation';
+import { url } from '../api/Auth'
+import { getOccultationById } from '../api/Occultation';
 
 const useStyles = makeStyles((theme) => ({
   block: {
