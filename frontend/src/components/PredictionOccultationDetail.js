@@ -12,18 +12,18 @@ import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import clsx from 'clsx';
 import moment from 'moment';
-import { getPredictionRunById, getTimeProfile, getAsteroids, readCondorFile } from '../api/Prediction';
-import CustomTable from './utils/CustomTable';
-import CustomList from './utils/CustomList';
-import { Donut, TimeProfile } from './utils/CustomChart';
-import ToolBar from "@material-ui/core/Toolbar";
-import ToggleButton from "@material-ui/lab/ToggleButton";
-import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import ListIcon from "@material-ui/icons/List";
+import ToolBar from '@material-ui/core/Toolbar';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import ListIcon from '@material-ui/icons/List';
 import BugIcon from '@material-ui/icons/BugReport';
-import Tooltip from "@material-ui/core/Tooltip";
+import Tooltip from '@material-ui/core/Tooltip';
+import { Donut, TimeProfile } from './utils/CustomChart';
+import CustomList from './utils/CustomList';
+import CustomTable from './utils/CustomTable';
+import { getPredictionRunById, getTimeProfile, getAsteroids } from '../api/Prediction';
 import CustomDialog from './utils/CustomDialog';
-import CustomLog from "./utils/CustomLog";
+import CustomLog from './utils/CustomLog';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -99,7 +99,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   const [toolButton, setToolButton] = useState('list');
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState([]);
   const [dialog, setDialog] = useState({
-    content: [], visible: false, title: " ",
+    content: [], visible: false, title: ' ',
   });
 
 
@@ -209,7 +209,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   }, []);
 
 
-
   const tableListArray = [
     {
       name: 'status',
@@ -288,7 +287,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       align: 'center',
       customElement: (row) => (
         <span>
-          {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ""}
+          {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ''}
         </span>
       ),
       width: 140,
@@ -299,7 +298,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       title: ' ',
       width: 100,
       sortingEnabled: false,
-      icon: <Tooltip title={"Details"}><Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} /></Tooltip>,
+      icon: <Tooltip title="Details"><Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} /></Tooltip>,
       action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
       align: 'center',
     },
@@ -373,14 +372,14 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     },
     {
       name: 'error_msg',
-      title: 'Error',
+      title: 'Error Message',
       width: 350,
       sortingEnabled: false,
     },
     {
-      name: "id",
-      title: " ",
-      icon: <Tooltip title={"Details"}><Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} /></Tooltip>,
+      name: 'id',
+      title: ' ',
+      icon: <Tooltip title="Details"><Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} /></Tooltip>,
       action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
       align: 'center',
     },
@@ -390,7 +389,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   const loadTableData = async ({
     sorting, pageSize, currentPage, filter, searchValue,
   }) => {
-
     const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
 
     const asteroids = await getAsteroids({
@@ -417,9 +415,9 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   const handleBackNavigation = () => history.push('/prediction-of-occultation');
 
   const handleChangeToolButton = (event, value) => {
-    value === "list" ?
-      setColumnsAsteroidTable(tableListArray) : setColumnsAsteroidTable(bugLogArray);
-    setToolButton(value)
+    value === 'list'
+      ? setColumnsAsteroidTable(tableListArray) : setColumnsAsteroidTable(bugLogArray);
+    setToolButton(value);
     //  loadTableData();
   };
 
@@ -528,7 +526,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
                 hasResizing={false}
-                reload={true}
+                reload
               />
             </CardContent>
           </Card>
@@ -537,9 +535,8 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
           visible={dialog.visible}
           title={dialog.title}
           content={<CustomLog data={dialog.content} />}
-          setVisible={() => setDialog({ visible: false, content: [], title: " " })}
-        >
-        </CustomDialog>
+          setVisible={() => setDialog({ visible: false, content: [], title: ' ' })}
+        />
       </Grid>
     </>
   );
