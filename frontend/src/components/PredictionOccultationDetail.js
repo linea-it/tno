@@ -12,11 +12,18 @@ import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import clsx from 'clsx';
 import moment from 'moment';
-import { getPredictionRunById, getTimeProfile, getAsteroids } from '../api/Prediction';
-import CustomTable from './utils/CustomTable';
-import CustomList from './utils/CustomList';
+import ToolBar from '@material-ui/core/Toolbar';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import ListIcon from '@material-ui/icons/List';
+import BugIcon from '@material-ui/icons/BugReport';
+import Tooltip from '@material-ui/core/Tooltip';
 import { Donut, TimeProfile } from './utils/CustomChart';
-
+import CustomList from './utils/CustomList';
+import CustomTable from './utils/CustomTable';
+import { getPredictionRunById, getTimeProfile, getAsteroids } from '../api/Prediction';
+import CustomDialog from './utils/CustomDialog';
+import CustomLog from './utils/CustomLog';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -25,8 +32,14 @@ const useStyles = makeStyles((theme) => ({
   buttonIcon: {
     margin: '0 2px',
   },
+  toggleButton: {
+    marginLeft: '90%',
+  },
   arrowBack: {
     fontSize: 9,
+  },
+  iconDetail: {
+    fontSize: 18,
   },
   btn: {
     textTransform: 'none',
@@ -83,7 +96,120 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const pageSizes = [5, 10, 15];
-  const columns = [
+  const [toolButton, setToolButton] = useState('list');
+  const [columnsAsteroidTable, setColumnsAsteroidTable] = useState([]);
+  const [dialog, setDialog] = useState({
+    content: [], visible: false, title: ' ',
+  });
+
+
+  useEffect(() => {
+    setTitle('Prediction of Occultations');
+
+    setColumnsAsteroidTable(tableListArray);
+
+    getPredictionRunById({ id }).then((data) => {
+      setList([
+        {
+          title: 'Status',
+          value: () => {
+            if (data.status === 'failure') {
+              return (
+                <span
+                  className={clsx(classes.btn, classes.btnFailure)}
+                  title={data.error_msg ? data.error_msg : 'Failure'}
+                >
+                  Failure
+                </span>
+              );
+            } if (data.status === 'running') {
+              return (
+                <span
+                  className={clsx(classes.btn, classes.btnRunning)}
+                  title={data.status}
+                >
+                  Running
+                </span>
+              );
+            } if (data.status === 'not_executed') {
+              return (
+                <span
+                  className={clsx(classes.btn, classes.btnNotExecuted)}
+                  title={data.status}
+                >
+                  Not Executed
+                </span>
+              );
+            } if (data.status === 'warning') {
+              return (
+                <span
+                  className={clsx(classes.btn, classes.btnWarning)}
+                  title={data.error_msg ? data.error_msg : 'Warning'}
+                >
+                  Warning
+                </span>
+              );
+            }
+            return (
+              <span
+                className={clsx(classes.btn, classes.btnSuccess)}
+                title={data.status}
+              >
+                Success
+              </span>
+            );
+          },
+        },
+        {
+          title: 'Process',
+          value: data.process_displayname,
+        },
+        {
+          title: 'Owner',
+          value: data.owner,
+        },
+        {
+          title: 'Start',
+          value: data.h_time,
+        },
+        {
+          title: 'Execution',
+          value: data.h_execution_time,
+        },
+        {
+          title: 'Asteroids',
+          value: data.count_objects,
+        },
+        {
+          title: 'Occultations',
+          value: data.occultations,
+        },
+      ]);
+
+      setStatusDonutData([
+        { name: 'Success', value: data.count_success, color: '#009900' },
+        { name: 'Warning', value: data.count_warning, color: '#D79F15' },
+        { name: 'Failure', value: data.count_failed, color: '#ff1a1a' },
+        { name: 'Not Executed', value: data.count_not_executed, color: '#ABA6A2' },
+      ]);
+
+      setExecutionTimeDonutData([
+        { name: 'Dates', value: Math.round(moment.duration(data.execution_dates).asSeconds()) },
+        { name: 'Ephemeris', value: Math.round(moment.duration(data.execution_ephemeris).asSeconds()) },
+        { name: 'Gaia', value: Math.round(moment.duration(data.execution_catalog).asSeconds()) },
+        { name: 'Search Candidates', value: Math.round(moment.duration(data.execution_search_candidate).asSeconds()) },
+        { name: 'Maps', value: Math.round(moment.duration(data.execution_maps).asSeconds()) },
+        { name: 'Register', value: Math.round(moment.duration(data.execution_register).asSeconds()) },
+      ]);
+    });
+
+    getTimeProfile({ id }).then((res) => {
+      setTimeProfile(res);
+    });
+  }, []);
+
+
+  const tableListArray = [
     {
       name: 'status',
       title: 'Status',
@@ -147,141 +273,124 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       name: 'number',
       title: 'Number',
       width: 140,
+      sortingEnabled: false,
     },
     {
       name: 'occultations',
       title: 'Occultations',
       width: 140,
+      sortingEnabled: false,
     },
     {
       name: 'execution_time',
       title: 'Execution Time',
       align: 'center',
       customElement: (row) => (
-          <span>
-            {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ""}
-          </span>
-        ),
+        <span>
+          {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ''}
+        </span>
+      ),
       width: 140,
+      sortingEnabled: false,
     },
     {
       name: 'id',
       title: ' ',
       width: 100,
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      sortingEnabled: false,
+      icon: <Tooltip title="Details"><Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} /></Tooltip>,
       action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
       align: 'center',
     },
   ];
 
-  useEffect(() => {
-    setTitle('Prediction of Occultations');
 
-    getPredictionRunById({ id }).then((data) => {
-      setList([
-        {
-          title: 'Status',
-          value: () => {
-            if (data.status === 'failure') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnFailure)}
-                  title={data.error_msg ? data.error_msg : 'Failure'}
-                >
-                  Failure
-                </span>
-              );
-            } if (data.status === 'running') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnRunning)}
-                  title={data.status}
-                >
-                  Running
-                </span>
-              );
-            } if (data.status === 'not_executed') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnNotExecuted)}
-                  title={data.status}
-                >
-                  Not Executed
-                </span>
-              );
-            } if (data.status === 'warning') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnWarning)}
-                  title={data.error_msg ? data.error_msg : 'Warning'}
-                >
-                  Warning
-                </span>
-              );
-            }
+  const bugLogArray = [
+    {
+      name: 'status',
+      title: 'Status',
+      width: 140,
+      sortingEnabled: false,
+      customElement: (row) => {
+        if (row.status === 'failure') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnFailure)}
+              title={row.error_msg ? row.error_msg : 'Failure'}
+            >
+              Failure
+            </span>
+          );
+        } if (row.status === 'running') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnRunning)}
+              title={row.status}
+            >
+              Running
+            </span>
+          );
+        } if (row.status === 'not_executed') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnNotExecuted)}
+              title={row.status}
+            >
+              Not Executed
+            </span>
+          );
+        } if (row.status === 'warning') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnWarning)}
+              title={row.error_msg ? row.error_msg : 'Warning'}
+            >
+              Warning
+            </span>
+          );
+        }
+        return (
+          <span
+            className={clsx(classes.btn, classes.btnSuccess)}
+            title={row.status}
+          >
+            Success
+          </span>
+        );
+      },
+    },
+    {
+      name: 'name',
+      title: 'Name',
+      width: 180,
+    },
+    {
+      name: 'number',
+      title: 'Number',
+      width: 140,
+      sortingEnabled: false,
+    },
+    {
+      name: 'error_msg',
+      title: 'Error Message',
+      width: 350,
+      sortingEnabled: false,
+    },
+    {
+      name: 'id',
+      title: ' ',
+      icon: <Tooltip title="Details"><Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} /></Tooltip>,
+      action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
+      align: 'center',
+    },
+  ];
 
-            return (
-              <span
-                className={clsx(classes.btn, classes.btnSuccess)}
-                title={data.status}
-              >
-                Success
-              </span>
-            );
-          },
-        },
-        {
-          title: 'Process',
-          value: data.process_displayname,
-        },
-        {
-          title: 'Owner',
-          value: data.owner,
-        },
-        {
-          title: 'Start',
-          value: data.h_time,
-        },
-        {
-          title: 'Execution',
-          value: data.h_execution_time,
-        },
-        {
-          title: 'Asteroids',
-          value: data.count_objects,
-        },
-        {
-          title: 'Occultations',
-          value: data.occultations,
-        },
-      ]);
-
-      setStatusDonutData([
-        { name: 'Success', value: data.count_success, color: '#009900' },
-        { name: 'Warning', value: data.count_warning, color: '#D79F15' },
-        { name: 'Failure', value: data.count_failed, color: '#ff1a1a' },
-        { name: 'Not Executed', value: data.count_not_executed, color: '#ABA6A2' },
-      ]);
-
-      setExecutionTimeDonutData([
-        { name: 'Dates', value: Math.round(moment.duration(data.execution_dates).asSeconds()) },
-        { name: 'Ephemeris', value: Math.round(moment.duration(data.execution_ephemeris).asSeconds()) },
-        { name: 'Gaia', value: Math.round(moment.duration(data.execution_catalog).asSeconds()) },
-        { name: 'Search Candidates', value: Math.round(moment.duration(data.execution_search_candidate).asSeconds()) },
-        { name: 'Maps', value: Math.round(moment.duration(data.execution_maps).asSeconds()) },
-        { name: 'Register', value: Math.round(moment.duration(data.execution_register).asSeconds()) },
-      ]);
-    });
-
-    getTimeProfile({ id }).then((res) => {
-      setTimeProfile(res);
-    });
-  }, []);
 
   const loadTableData = async ({
     sorting, pageSize, currentPage, filter, searchValue,
   }) => {
     const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
+
     const asteroids = await getAsteroids({
       ordering,
       pageSize,
@@ -304,6 +413,13 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   };
 
   const handleBackNavigation = () => history.push('/prediction-of-occultation');
+
+  const handleChangeToolButton = (event, value) => {
+    value === 'list'
+      ? setColumnsAsteroidTable(tableListArray) : setColumnsAsteroidTable(bugLogArray);
+    setToolButton(value);
+    //  loadTableData();
+  };
 
   return (
     <>
@@ -382,19 +498,45 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
         <Grid item lg={12} className={clsx(classes.block, classes.tableWrapper)}>
           <Card>
             <CardHeader title="Asteroids" />
-
             <CardContent>
+              <ToolBar>
+                <ToggleButtonGroup
+                  className={classes.toggleButton}
+                  value={toolButton}
+                  onChange={handleChangeToolButton}
+                  exclusive
+                >
+                  <ToggleButton
+                    value="list"
+                  >
+                    <ListIcon />
+                  </ToggleButton>
+                  <ToggleButton
+                    value="bugLog"
+                  >
+                    <BugIcon />
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </ToolBar>
               <CustomTable
-                columns={columns}
+                columns={columnsAsteroidTable}
                 data={tableData}
                 loadData={loadTableData}
                 pageSizes={pageSizes}
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
+                hasResizing={false}
+                reload
               />
             </CardContent>
           </Card>
         </Grid>
+        <CustomDialog
+          visible={dialog.visible}
+          title={dialog.title}
+          content={<CustomLog data={dialog.content} />}
+          setVisible={() => setDialog({ visible: false, content: [], title: ' ' })}
+        />
       </Grid>
     </>
   );
