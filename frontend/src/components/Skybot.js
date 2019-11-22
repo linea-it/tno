@@ -389,7 +389,7 @@ function Skybot({ setTitle, history }) {
                     format="yyyy/MM/dd"
                     label="Initial Date"
                     value={initialDate}
-                    onChange={(date) => setInitialDate(date)}
+                    onChange={(date) => { setInitialDate(date); setFinalDate(date) }}
                     maxDateMessage="Date should not be after current date"
                   />
                   <KeyboardDatePicker
