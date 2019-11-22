@@ -44,10 +44,10 @@ export default function SearchSsso({ history, setTitle }) {
   const [tablePageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [vMagnitude, setVmagnitude] = useState([4, 18]);
-  const [dClass, setDclass] = useState("Centaur");
+  const [dClass, setDclass] = useState("");
   const [subLevelVisible, setSubLevelVisible] = useState(true);
   const [subDClass, setSubDClass] = useState([]);
-  const [subDClassSelect, setSubDClassSelect] = useState("");
+  const [valueSelected, setValueSelected] = useState("");
 
   const classes = useStyles();
 
@@ -63,51 +63,39 @@ export default function SearchSsso({ history, setTitle }) {
   }, [vMagnitude]);
 
   useEffect(() => {
-    let classes = [];
+
+    let dynClass = [];
     let optionFound = optionsClassFirstLevel.filter((option) => option.value === dClass);
 
-    classes = classes.concat(optionFound);
+    dynClass = dynClass.concat(optionFound);
 
     let curChidren = [];
-    classes.forEach((value, i) => {
+
+    dynClass.forEach((value, i) => {
       let childrenFound = optionsClassSecondLevel.filter((option) => option.parentId === value.id);
       curChidren = curChidren.concat(childrenFound);
     });
 
     setSubDClass(curChidren);
     loadDynamicSubClass();
-
-    loadTableData();
-
+    setValueSelected(dynClass[0] ? dynClass[0].value : "");
   }, [dClass]);
+
+  useEffect(() => {
+    loadTableData();
+  }, [valueSelected]);
 
   useEffect(() => {
     if (subDClass.length < 1) {
-      setSubDClassSelect("");
       setSubLevelVisible(true);
     }
     if (subDClass.length > 0) {
-      // setSubDClassSelect(subDClass[0].value);
+      setValueSelected(subDClass[0].value);
       setSubLevelVisible(false);
     }
-
   }, [subDClass]);
 
-  useEffect(() => {
-    // console.log(dClass);
-  }, [dClass]);
-
-  useEffect(() => {
-
-    loadTableData();
-
-  }, [subDClassSelect]);
-
   const loadTableData = (event) => {
-
-    // console.log("DClass: ", dClass);
-    // console.log("SubDClass: ", subDClassSelect);
-
     let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
     let pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
     let searchValue = typeof event === 'undefined' ? ' ' : event.searchValue;
@@ -121,7 +109,7 @@ export default function SearchSsso({ history, setTitle }) {
     if (dClass && dClass.length > 0) {
       filters.push({
         property: 'dynclass__in',
-        value: subDClassSelect == "" ? dClass : subDClassSelect
+        value: valueSelected,
       });
     }
 
@@ -130,7 +118,6 @@ export default function SearchSsso({ history, setTitle }) {
       property: 'ccdnum__isnull',
       value: false,
     });
-
 
     getSkybotLists({ page, pageSize, search: searchValue, filters }).then(res => {
       setTotalCount(res.data.count);
@@ -141,7 +128,6 @@ export default function SearchSsso({ history, setTitle }) {
   const handleClearFilters = () => {
     setVmagnitude([4, 18]);
     setDclass([]);
-    setSubDClassSelect("");
   };
 
   const handleSearchSssoDetail = (row) => {
@@ -315,7 +301,7 @@ export default function SearchSsso({ history, setTitle }) {
   };
 
   const handleSubLevelSelect = (event) => {
-    setSubDClassSelect(event.target.value);
+    setValueSelected(event.target.value);
   };
 
   return (
@@ -332,9 +318,6 @@ export default function SearchSsso({ history, setTitle }) {
                   className={classes.filterField}
                   select
                   label="Select Dynamic Class"
-                  // SelectProps={
-                  //   { multiple: true }
-                  // }
                   value={dClass}
                   onChange={handleSelectDynamicClass}
                 >
@@ -345,7 +328,7 @@ export default function SearchSsso({ history, setTitle }) {
                   select
                   disabled={subLevelVisible}
                   label="Select Sub Level"
-                  value={subDClassSelect}
+                  value={valueSelected}
                   onChange={handleSubLevelSelect}
                 >
                   {loadDynamicSubClass()} }
