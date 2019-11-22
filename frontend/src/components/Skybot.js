@@ -350,6 +350,7 @@ function Skybot({ setTitle, history }) {
     if (error.trim() === currentDateMessage.trim()
       || error.trim() === initialDateMessage.trim()) {
       setErrorDatePicker(true);
+      setFinalDate(null);
     } else {
       setErrorDatePicker(false);
     }
@@ -389,7 +390,7 @@ function Skybot({ setTitle, history }) {
                     format="yyyy/MM/dd"
                     label="Initial Date"
                     value={initialDate}
-                    onChange={(date) => { setInitialDate(date); setFinalDate(date) }}
+                    onChange={(date) => { setInitialDate(date) }}
                     maxDateMessage="Date should not be after current date"
                   />
                   <KeyboardDatePicker
