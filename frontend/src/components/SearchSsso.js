@@ -87,7 +87,7 @@ export default function SearchSsso({ history, setTitle }) {
       setSubLevelVisible(true);
     }
     if (subDClass.length > 0) {
-      setSubDClassSelect(subDClass[0].value);
+      // setSubDClassSelect(subDClass[0].value);
       setSubLevelVisible(false);
     }
 
@@ -105,8 +105,8 @@ export default function SearchSsso({ history, setTitle }) {
 
   const loadTableData = (event) => {
 
-    console.log("DClass: ", dClass);
-    console.log("SubDClass: ", subDClassSelect);
+    // console.log("DClass: ", dClass);
+    // console.log("SubDClass: ", subDClassSelect);
 
     let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
     let pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
