@@ -26,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexWrap: 'wrap',
   },
-
   clearButton: {
     marginTop: 20,
     marginLeft: theme.spacing(3),
@@ -45,7 +44,8 @@ export default function SearchSsso({ history, setTitle }) {
   const [tablePageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
   const [vMagnitude, setVmagnitude] = useState([4, 18]);
-  const [dClass, setDclass] = useState([]);
+  const [dClass, setDclass] = useState("Centaur");
+  const [subLevelVisible, setSubLevelVisible] = useState(true);
   const [subDClass, setSubDClass] = useState([]);
   const [subDClassSelect, setSubDClassSelect] = useState("");
 
@@ -64,24 +64,50 @@ export default function SearchSsso({ history, setTitle }) {
 
   useEffect(() => {
     let classes = [];
-    dClass.forEach((value) => {
-      let optionFound = optionsClassFirstLevel.filter((option) => option.value === value);
-      classes = classes.concat(optionFound);
-    });
+    let optionFound = optionsClassFirstLevel.filter((option) => option.value === dClass);
+
+    classes = classes.concat(optionFound);
+
     let curChidren = [];
     classes.forEach((value, i) => {
       let childrenFound = optionsClassSecondLevel.filter((option) => option.parentId === value.id);
       curChidren = curChidren.concat(childrenFound);
     });
+
     setSubDClass(curChidren);
     loadDynamicSubClass();
+
+    loadTableData();
+
   }, [dClass]);
 
   useEffect(() => {
+    if (subDClass.length < 1) {
+      setSubDClassSelect("");
+      setSubLevelVisible(true);
+    }
+    if (subDClass.length > 0) {
+      setSubDClassSelect(subDClass[0].value);
+      setSubLevelVisible(false);
+    }
+
+  }, [subDClass]);
+
+  useEffect(() => {
+    // console.log(dClass);
+  }, [dClass]);
+
+  useEffect(() => {
+
     loadTableData();
+
   }, [subDClassSelect]);
 
   const loadTableData = (event) => {
+
+    console.log("DClass: ", dClass);
+    console.log("SubDClass: ", subDClassSelect);
+
     let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
     let pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
     let searchValue = typeof event === 'undefined' ? ' ' : event.searchValue;
@@ -95,7 +121,7 @@ export default function SearchSsso({ history, setTitle }) {
     if (dClass && dClass.length > 0) {
       filters.push({
         property: 'dynclass__in',
-        value: subDClassSelect,
+        value: subDClassSelect == "" ? dClass : subDClassSelect
       });
     }
 
@@ -104,6 +130,8 @@ export default function SearchSsso({ history, setTitle }) {
       property: 'ccdnum__isnull',
       value: false,
     });
+
+
     getSkybotLists({ page, pageSize, search: searchValue, filters }).then(res => {
       setTotalCount(res.data.count);
       setTableData(res.data.results);
@@ -304,9 +332,9 @@ export default function SearchSsso({ history, setTitle }) {
                   className={classes.filterField}
                   select
                   label="Select Dynamic Class"
-                  SelectProps={
-                    { multiple: true }
-                  }
+                  // SelectProps={
+                  //   { multiple: true }
+                  // }
                   value={dClass}
                   onChange={handleSelectDynamicClass}
                 >
@@ -315,6 +343,7 @@ export default function SearchSsso({ history, setTitle }) {
                 <TextField
                   className={classes.filterField}
                   select
+                  disabled={subLevelVisible}
                   label="Select Sub Level"
                   value={subDClassSelect}
                   onChange={handleSubLevelSelect}
