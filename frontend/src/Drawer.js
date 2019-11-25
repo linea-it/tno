@@ -296,7 +296,7 @@ function MiniDrawer() {
                 </ListItem>
                 <Collapse in={sssoOpen} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
-                    <Link to="/skybot" className={classes.invisibleLink} title="Submit">
+                    <Link to="/skybot" className={classes.invisibleLink} title="Execute Skybot">
                       <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'skybot'}>
                         <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                           <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-arrow-circle-up')} />
