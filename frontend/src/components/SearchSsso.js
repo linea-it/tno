@@ -163,7 +163,7 @@ export default function SearchSsso({ history, setTitle }) {
       name: 'raj2000',
       title: 'RA (deg)',
       width: 120,
-      align: 'left',
+      align: 'right',
       customElement: (row) => {
         return (
           <span>
@@ -176,7 +176,7 @@ export default function SearchSsso({ history, setTitle }) {
       name: 'decj2000',
       title: 'Dec (deg)',
       width: 120,
-      align: 'left',
+      align: 'right',
       customElement: (row) => {
         return (
           <span>
