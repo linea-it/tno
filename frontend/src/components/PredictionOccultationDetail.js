@@ -98,6 +98,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   const pageSizes = [5, 10, 15];
   const [toolButton, setToolButton] = useState('list');
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState([]);
+  const [loadingChart, setLoadingChart] = useState(true);
   const [dialog, setDialog] = useState({
     content: [], visible: false, title: ' ',
   });
@@ -201,6 +202,14 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
         { name: 'Maps', value: Math.round(moment.duration(data.execution_maps).asSeconds()) },
         { name: 'Register', value: Math.round(moment.duration(data.execution_register).asSeconds()) },
       ]);
+
+
+      let options = Object.values(data);
+      options.map((option) => {
+        if (option) {
+          setLoadingChart(false);
+        }
+      });
     });
 
     getTimeProfile({ id }).then((res) => {
@@ -475,6 +484,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
             <CardContent>
               <Donut
                 data={statusDonutData}
+                loading={loadingChart}
               />
             </CardContent>
           </Card>
@@ -488,6 +498,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
             <CardContent>
               <Donut
                 data={executionTimeDonutData}
+                loading={loadingChart}
               />
             </CardContent>
           </Card>

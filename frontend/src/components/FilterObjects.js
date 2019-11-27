@@ -61,6 +61,17 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '4px',
     boxSizing: 'border-box',
   },
+  skeleton: {
+
+    zIndex: 1,
+  },
+  circular_progress: {
+
+    marginTop: "10%",
+    marginLeft: "45%",
+    marginBottom: "25%",
+    zIndex: 2,
+  },
   btnSuccess: {
     backgroundColor: 'green',
     color: '#fff',
@@ -148,13 +159,12 @@ const useStyles = makeStyles((theme) => ({
   },
   filterCountText: {
     position: 'absolute',
-    top: '50%',
-    transform: 'translateY(-50%)',
     right: 0,
     left: 0,
     textAlign: 'center',
     textTransform: 'uppercase',
     fontSize: 32,
+    zIndex: 2,
   },
 }));
 
@@ -978,15 +988,20 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                           </FormControl>
                         </form>
                       ) : (
-                        <div className={classes.filterCountWrapper}>
-                          <Skeleton height={(filterFormSize.height - 95) || 0} />
-                          {skybotOutputCount > 0 ? (
-                            <span className={classes.filterCountText}>
-                              {skybotOutputCount > 1 ? `Current filter has ${skybotOutputCount} objects` : `Current filter has ${skybotOutputCount} object`}
-                            </span>
-                          ) : null}
-                        </div>
-                      )}
+                          <div className={classes.filterCountWrapper}>
+
+
+                            <Skeleton height={350} className={classes.skeleton} />
+                            <CircularProgress
+                              className={classes.circular_progress}
+                            />
+                            {skybotOutputCount > 0 ? (
+                              <span className={classes.filterCountText}>
+                                {skybotOutputCount > 1 ? `Current filter has ${skybotOutputCount} objects` : `Current filter has ${skybotOutputCount} object`}
+                              </span>
+                            ) : null}
+                          </div>
+                        )}
                     </CardContent>
                   </Card>
                 );

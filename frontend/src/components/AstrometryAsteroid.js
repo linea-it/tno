@@ -152,6 +152,7 @@ function AstrometryAsteroid({
   const [astrometryPlots, setAstrometryPlots] = useState([]);
   const [inputTable, setInputTable] = useState([]);
   const [outputTable, setOutputTable] = useState([]);
+  const [loadingChart, setLoadingChart] = useState(true);
 
   const [lightbox, setLightbox] = useState({
     isOpen: false,
@@ -285,6 +286,7 @@ function AstrometryAsteroid({
 
 
   useEffect(() => {
+
     setTitle('Astrometry Asteroid');
     setAsteroidData([]);
 
@@ -345,6 +347,7 @@ function AstrometryAsteroid({
       });
       setOutputTable(outputs);
     });
+    setLoadingChart(false);
   }, [reload, history.location]);
 
   useEffect(() => {
@@ -428,6 +431,7 @@ function AstrometryAsteroid({
         data={data}
         fill={colors}
         height={408}
+        loading={loadingChart}
       />
     );
   };

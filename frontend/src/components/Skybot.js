@@ -461,7 +461,7 @@ function Skybot({ setTitle, history }) {
         autoHideDuration={3500}
         TransitionComponent={snackBarTransition}
         anchorOrigin={{ vertical, horizontal }}
-        message="Executing... Check progress on the table below."
+        message="Executing... Check progress on history table."
         onClose={handleCloseSnackBar}
       />
     </Grid>

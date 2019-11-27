@@ -131,6 +131,8 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     totalCount: null,
   });
 
+  const [loadingChart, setLoadingChart] = useState(true);
+
   const runId = params.id;
 
   const loadPraiaRun = () => {
@@ -141,7 +143,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         {
           title: 'Status',
           value: () => {
-            if (data.status === 'failure') {
+            if (data.status === 'failed') {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnFailure)}
@@ -205,6 +207,14 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   const loadExecutionTime = () => {
     getExecutionTimeById({ id: params.id }).then((res) => {
       setExecutionTime(res.execution_time);
+
+      //Defines the loading of the chart
+      let options = Object.values(res.execution_time ? res.execution_time : []);
+      options.map((option) => {
+        if (option) {
+          setLoadingChart(false);
+        }
+      });
     });
   };
 
@@ -524,23 +534,23 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   }, [count]);
 
   useEffect(() => {
-    if(executionStats) {
-      if((executionStats.success !== 0 && executionStats.warning !== 0 && executionStats.failure !== 0 && executionStats.not_executed !== 0)) {
-          setDonutDataStatist([
-            { name: 'Success', value: executionStats.success, color: '#009900' },
-            { name: 'Warning', value: executionStats.warning, color: '#D79F15' },
-            { name: 'Failure', value: executionStats.failure, color: '#ff1a1a' },
-            { name: 'Not Executed', value: executionStats.not_executed, color: '#ABA6A2' },
-            { name: 'Running/Idle', value: executionStats.pending ? executionStats.pending : 0, color: '#0099ff' },
-          ]);
+    if (executionStats) {
+      if ((executionStats.success !== 0 && executionStats.warning !== 0 && executionStats.failure !== 0 && executionStats.not_executed !== 0)) {
+        setDonutDataStatist([
+          { name: 'Success', value: executionStats.success, color: '#009900' },
+          { name: 'Warning', value: executionStats.warning, color: '#D79F15' },
+          { name: 'Failure', value: executionStats.failure, color: '#ff1a1a' },
+          { name: 'Not Executed', value: executionStats.not_executed, color: '#ABA6A2' },
+          { name: 'Running/Idle', value: executionStats.pending ? executionStats.pending : 0, color: '#0099ff' },
+        ]);
       }
     }
   }, [executionStats])
 
   useEffect(() => {
-    if(executionTime) {
-      if(executionTime.ccd_images !== 0 || executionTime.bsp_jpl !== 0 || executionTime.catalog !== 0 || executionTime.astrometry !== 0) {
-        setDonutDataExecutionTime( [
+    if (executionTime) {
+      if (executionTime.ccd_images !== 0 || executionTime.bsp_jpl !== 0 || executionTime.catalog !== 0 || executionTime.astrometry !== 0) {
+        setDonutDataExecutionTime([
           { name: 'Ccd Images', value: executionTime.ccd_images },
           { name: 'Bsp_Jpl', value: executionTime.bsp_jpl },
           { name: 'Catalog', value: executionTime.catalog },
@@ -638,6 +648,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               />
               <Donut
                 data={donutDataExecutionTime}
+                loading={loadingChart}
               />
             </Card>
           </Grid>

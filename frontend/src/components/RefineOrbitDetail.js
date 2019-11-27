@@ -106,8 +106,10 @@ function RefineOrbitDetail({ history, match, setTitle }) {
     visible: false,
     data: [],
   });
+
   const [toggleButton, setToggleButton] = useState(0);
   const pageSizes = [5, 10, 15];
+  const [loadingChart, setLoadingChart] = useState(true);
   const columnsList = [
     {
       name: 'status',
@@ -314,8 +316,18 @@ function RefineOrbitDetail({ history, match, setTitle }) {
         { name: 'Failure', value: data.count_failed, color: '#ff1a1a' },
         { name: 'Not Executed', value: data.count_not_executed, color: '#ABA6A2' },
       ]);
+
+
+      let options = Object.values(data);
+      options.map((option) => {
+        if (option) {
+          setLoadingChart(false);
+        }
+      });
     });
+
     getOrbitRunTimeProfile({ id }).then((res) => setTimeProfile(res));
+
   }, []);
 
   const loadTableData = async ({
@@ -385,6 +397,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
                 width={400}
                 height={315}
                 data={donutData}
+                loading={loadingChart}
               />
             </CardContent>
           </Card>

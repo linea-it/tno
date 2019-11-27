@@ -142,6 +142,8 @@ function PredictionOccultationAsteroid({
   const [outputTableData, setOutputTableData] = useState([]);
   const [neighborhoodStarsPlot, setNeighborhoodStarsPlot] = useState('');
   const [asteroidOrbitPlot, setAsteroidOrbitPlot] = useState('');
+  const [loadingInputTable, setLoadingInputTable] = useState(true);
+  const [loadingResultsTable, setLoadingResultsTable] = useState(true);
 
   const [lightbox, setLightbox] = useState({
     isOpen: false,
@@ -246,7 +248,6 @@ function PredictionOccultationAsteroid({
     },
   ];
 
-
   const outputColumns = [
     {
       name: 'filename',
@@ -305,6 +306,7 @@ function PredictionOccultationAsteroid({
         file_size: res.h_size,
       }));
       setInputTableData(tableData);
+      setLoadingInputTable(false);
     });
     getAsteroidOutputs({ id }).then((data) => {
       const tableData = data.results.map((res) => ({
@@ -319,6 +321,7 @@ function PredictionOccultationAsteroid({
       if (asteroidOrbit) setAsteroidOrbitPlot(url + asteroidOrbit.src);
 
       setOutputTableData(tableData);
+      setLoadingResultsTable(false);
     });
 
     getAsteroidNeighbors({ id }).then((res) => {
@@ -697,6 +700,7 @@ function PredictionOccultationAsteroid({
                     hasColumnVisibility={false}
                     hasToolbar={false}
                     remote={false}
+                    loading={loadingInputTable}
                   />
                 </CardContent>
               </Card>
@@ -719,6 +723,7 @@ function PredictionOccultationAsteroid({
                     hasSearching={false}
                     hasColumnVisibility={false}
                     hasToolbar={false}
+                    loading={loadingResultsTable}
                     remote={false}
                   />
                 </CardContent>

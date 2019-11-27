@@ -68,6 +68,8 @@ function SkybotDetail({ setTitle, match, history }) {
   const [skybotDetailTableData, setSkybotDetailTableData] = useState([]);
   const [skybotDetailTableTotalCount, setSkybotDetailTableTotalCount] = useState(0);
 
+  const [loadingChart, setLoadingChart] = useState(true);
+
   const skybotDetailTableColumns = [
     {
       name: 'status',
@@ -266,6 +268,9 @@ function SkybotDetail({ setTitle, match, history }) {
     });
 
     getStatistic({ id }).then((res) => {
+      if (res) {
+        setLoadingChart(false);
+      }
       setTimeProfile([
         {
           name: 'Download ',
@@ -343,6 +348,7 @@ function SkybotDetail({ setTitle, match, history }) {
                   <Donut
                     data={timeProfile}
                     height={315}
+                    loading={loadingChart}
                   />
                 </CardContent>
               </Card>

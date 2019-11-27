@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
 import moment from 'moment';
 import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const colors = [
   '#4D80CC',
@@ -69,10 +70,16 @@ const useStyles = makeStyles((theme) => ({
       overflow: 'auto',
     },
   },
+  circular_progress: {
+    marginTop: "25%",
+    marginLeft: "45%",
+    marginBottom: "25%",
+  }
 }));
 
 
-export function Donut({ data, width, height }) {
+export function Donut({ data, width, height, loading }) {
+
   const classes = useStyles();
   const Plot = createPlotlyComponent(Plotly);
 
@@ -92,37 +99,44 @@ export function Donut({ data, width, height }) {
   }];
 
   return (
-    <Plot
-      data={rows}
-      className={classes.plotWrapper}
-      layout={{
-        width,
-        height,
-        hovermode: 'closest',
-        autosize: true,
-      }}
-      config={{
-        scrollZoom: true,
-        displaylogo: false,
-        responsive: true,
-      }}
-    />
+    !loading ?
+      <Plot
+        data={rows}
+        className={classes.plotWrapper}
+        layout={{
+          width,
+          height,
+          hovermode: 'closest',
+          autosize: true,
+        }}
+        config={{
+          scrollZoom: true,
+          displaylogo: false,
+          responsive: true,
+        }}
+      />
+      :
+      <CircularProgress
+        className={classes.circular_progress}
+      />
   );
 }
 
 Donut.defaultProps = {
   width: 450,
   height: 364,
+  loading: false,
 };
 
 Donut.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  loading: PropTypes.bool,
 };
 
 
-export function TimeProfile({ data, width, height }) {
+export function TimeProfile({ data, width, height, loading }) {
   const classes = useStyles();
   const Plot = createPlotlyComponent(Plotly);
   const rows = [];
@@ -456,40 +470,45 @@ export function TimeProfile({ data, width, height }) {
     });
   }
 
-
   return (
-    <Plot
-      className={classes.plotWrapper}
-      data={rows}
-      layout={{
-        width,
-        height,
-        title: 'Time Profiler',
-        xaxis: {
-          title: 'Execution Time',
-          automargin: true,
-          autorange: true,
-        },
-        yaxis: {
-          title: 'Asteroids',
-          automargin: true,
-          autorange: true,
-        },
-        hovermode: 'closest',
-        autosize: true,
-      }}
-      config={{
-        scrollZoom: true,
-        displaylogo: false,
-        responsive: true,
-      }}
-    />
+    !loading ?
+      <Plot
+        className={classes.plotWrapper}
+        data={rows}
+        layout={{
+          width,
+          height,
+          title: 'Time Profiler',
+          xaxis: {
+            title: 'Execution Time',
+            automargin: true,
+            autorange: true,
+          },
+          yaxis: {
+            title: 'Asteroids',
+            automargin: true,
+            autorange: true,
+          },
+          hovermode: 'closest',
+          autosize: true,
+        }}
+        config={{
+          scrollZoom: true,
+          displaylogo: false,
+          responsive: true,
+        }}
+      />
+      :
+      <CircularProgress
+        className={classes.circular_progress}
+      />
   );
 }
 
 TimeProfile.defaultProps = {
   width: 500,
   height: 310,
+  loading: false
 };
 
 TimeProfile.propTypes = {
@@ -499,6 +518,7 @@ TimeProfile.propTypes = {
     PropTypes.array,
     PropTypes.object,
   ]).isRequired,
+  loading: PropTypes.bool
 };
 
 export function CCD({ data, width, height }) {

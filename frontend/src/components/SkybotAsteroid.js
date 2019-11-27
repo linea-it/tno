@@ -16,7 +16,7 @@ import Switch from '@material-ui/core/Switch';
 import CustomTable from './utils/CustomTable';
 import { CCD } from './utils/CustomChart';
 import { getExposurePlot, getOutputByExposure, getAsteroidsInsideCCD } from '../api/Skybot';
-
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles({
   cardContentWrapper: {
@@ -41,6 +41,11 @@ const useStyles = makeStyles({
     0px 3px 1px -2px rgba(0, 0, 0, 0.12)`,
     borderRadius: '4px',
     boxSizing: 'border-box',
+  },
+  circular_progress: {
+    marginTop: "25%",
+    marginLeft: "45%",
+    marginBottom: "25%",
   },
   btnSuccess: {
     backgroundColor: '#009900',
@@ -352,7 +357,9 @@ function SkybotAsteroid({ setTitle, match }) {
                     data={ccdsPlotData}
                     height={550}
                   />
-                ) : null}
+                ) : <CircularProgress
+                    className={classes.circular_progress}
+                  />}
               </CardContent>
             </Card>
           </Grid>
@@ -387,9 +394,13 @@ function SkybotAsteroid({ setTitle, match }) {
                     hasSearching={false}
                     remote={false}
                   />
-                ) : (
-                    <Skeleton height={540} />
-                  )}
+                )
+                  :
+                  <CircularProgress
+                    className={classes.circular_progress}
+                  />
+                  // <Skeleton height={540} />
+                }
               </CardContent>
             </Card>
           </Grid>

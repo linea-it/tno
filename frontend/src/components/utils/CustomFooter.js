@@ -57,7 +57,7 @@ function CustomFooter(props) {
     },
   }));
 
-  console.log('drawerOpen', drawerOpen);
+  // console.log('drawerOpen', drawerOpen);
 
   const classes = useStyles();
 
