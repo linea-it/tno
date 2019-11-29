@@ -274,11 +274,13 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       title: 'Number',
       width: 140,
       sortingEnabled: false,
+      align: 'right',
     },
     {
       name: 'occultations',
       title: 'Occultations',
       width: 140,
+      align: 'right',
       sortingEnabled: false,
     },
     {

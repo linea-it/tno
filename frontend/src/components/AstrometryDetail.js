@@ -300,7 +300,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     {
       name: 'number',
       title: 'Number',
-      align: 'center',
+      align: 'right',
       customElement: (row) => {
         if (row.number === '-') {
           return ' ';
@@ -315,7 +315,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     {
       name: 'ccd_images',
       title: 'CCD Images',
-      align: 'center',
+      align: 'right',
       width: 120,
       customElement: (row) => {
         if (row.ccd_images === '-') {
@@ -332,16 +332,16 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       name: 'available_ccd_image',
       title: 'Available CCDs',
       width: 140,
-      align: 'center',
+      align: 'right',
     },
     {
       name: 'processed_ccd_image',
       title: 'Processed CCDs',
       width: 150,
-      align: 'center',
+      align: 'right',
     },
-    { name: 'catalog_rows', title: 'Stars', align: 'center' },
-    { name: 'outputs', title: 'Output Files', align: 'center' },
+    { name: 'catalog_rows', title: 'Stars', align: 'right' },
+    { name: 'outputs', title: 'Output Files', align: 'right' },
     {
       name: 'execution_time',
       title: 'Execution Time',
@@ -427,7 +427,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     {
       name: 'number',
       title: 'Number',
-      align: 'center',
+      align: 'right',
       width: 120,
       customElement: (row) => {
         if (row.number === '-') {
@@ -524,23 +524,23 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   }, [count]);
 
   useEffect(() => {
-    if(executionStats) {
-      if((executionStats.success !== 0 && executionStats.warning !== 0 && executionStats.failure !== 0 && executionStats.not_executed !== 0)) {
-          setDonutDataStatist([
-            { name: 'Success', value: executionStats.success, color: '#009900' },
-            { name: 'Warning', value: executionStats.warning, color: '#D79F15' },
-            { name: 'Failure', value: executionStats.failure, color: '#ff1a1a' },
-            { name: 'Not Executed', value: executionStats.not_executed, color: '#ABA6A2' },
-            { name: 'Running/Idle', value: executionStats.pending ? executionStats.pending : 0, color: '#0099ff' },
-          ]);
+    if (executionStats) {
+      if ((executionStats.success !== 0 && executionStats.warning !== 0 && executionStats.failure !== 0 && executionStats.not_executed !== 0)) {
+        setDonutDataStatist([
+          { name: 'Success', value: executionStats.success, color: '#009900' },
+          { name: 'Warning', value: executionStats.warning, color: '#D79F15' },
+          { name: 'Failure', value: executionStats.failure, color: '#ff1a1a' },
+          { name: 'Not Executed', value: executionStats.not_executed, color: '#ABA6A2' },
+          { name: 'Running/Idle', value: executionStats.pending ? executionStats.pending : 0, color: '#0099ff' },
+        ]);
       }
     }
   }, [executionStats])
 
   useEffect(() => {
-    if(executionTime) {
-      if(executionTime.ccd_images !== 0 || executionTime.bsp_jpl !== 0 || executionTime.catalog !== 0 || executionTime.astrometry !== 0) {
-        setDonutDataExecutionTime( [
+    if (executionTime) {
+      if (executionTime.ccd_images !== 0 || executionTime.bsp_jpl !== 0 || executionTime.catalog !== 0 || executionTime.astrometry !== 0) {
+        setDonutDataExecutionTime([
           { name: 'Ccd Images', value: executionTime.ccd_images },
           { name: 'Bsp_Jpl', value: executionTime.bsp_jpl },
           { name: 'Catalog', value: executionTime.catalog },
