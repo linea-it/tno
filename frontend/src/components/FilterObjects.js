@@ -746,7 +746,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                               <Grid container alignItems="flex-end" spacing={1}>
                                 <Grid item xs={12} md={9}>
                                   <TextField
-                                    label="Search by name"
+                                    label="Search by object name"
                                     value={searchFilter}
                                     onChange={handleSearchFilter}
                                     fullWidth
