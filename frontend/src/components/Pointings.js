@@ -30,6 +30,15 @@ function Pointings({ setTitle, history }) {
 
   const pointingsTableColumns = [
     {
+      name: 'id',
+      title: 'Details',
+      align: 'center',
+      width: 100,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (el) => history.push(`/pointings/${el.id}`),
+      sortingEnabled: false,
+    },
+    {
       name: 'date_obs',
       title: 'Observation Date',
       width: 200,
@@ -101,7 +110,6 @@ function Pointings({ setTitle, history }) {
         );
       },
     },
-
     {
       name: 'downloaded',
       title: 'Downloaded',
@@ -117,13 +125,6 @@ function Pointings({ setTitle, history }) {
             <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
           </span>
         )),
-    },
-    {
-      name: 'id',
-      title: 'Detail',
-      align: 'center',
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: (el) => history.push(`/pointings/${el.id}`),
     },
   ];
 
@@ -145,8 +146,6 @@ function Pointings({ setTitle, history }) {
 
   useEffect(() => {
     setTitle('Pointings');
-
-    console.log('hellsfdskr');
   }, []);
 
   return (
