@@ -90,48 +90,49 @@ function SkybotAsteroid({ setTitle, match }) {
   const [asteroidsOnlyInsideCcds, setAsteroidsOnlyInsideCcds] = useState(true);
 
   const exposuresTableColumns = [{
-    title: 'Pointings',
+    title: 'Point',
     name: 'pointing',
+    headerTooltip: "Pointings",
   },
   {
-    title: 'Object Name',
+    title: 'Obj Name',
     name: 'name',
+    headerTooltip: "Object Name",
   },
   {
-    title: 'Object Number',
+    title: 'Obj Num',
     name: 'num',
+    headerTooltip: "Object Number",
   },
   {
-    title: 'Dynamic class',
+    title: 'Dyn Class',
     name: 'dynclass',
+    headerTooltip: "Dynamic Class",
   },
   {
-    title: 'Right Ascension (RA) [hms]',
-    name: 'ra',
-  },
-  {
-    title: 'Declination (Dec) [dms]',
-    name: 'dec',
-  },
-  {
-    title: 'Right Ascension (RA) [degree]',
+    title: 'RA (deg)',
     name: 'raj2000',
+    headerTooltip: "Right Ascension (degree)",
   },
   {
-    title: 'Declination (Dec) [degree]',
+    title: 'Dec (deg)',
     name: 'decj2000',
+    headerTooltip: "Declination (degree)",
   },
   {
-    title: 'Visual Magnitude',
+    title: 'Vis Mag',
     name: 'mv',
+    headerTooltip: "Visual Magnitude",
   },
   {
-    title: 'Error on the position [arcsec]',
+    title: 'Error',
     name: 'errpos',
+    headerTooltip: "Error on the position (arcsec)",
   },
   {
-    title: 'Angular Distance [arcsec]',
+    title: 'Ang Dist (arcsec)',
     name: 'd',
+    headerTooltip: "Angular Distance (arcsec)",
   },
   {
     title: 'dRAcosDec',
@@ -142,60 +143,73 @@ function SkybotAsteroid({ setTitle, match }) {
     name: 'd',
   },
   {
-    title: 'Geocentric distance [AU]',
+    title: 'Geoc Dist (AU)',
     name: 'dgeo',
+    headerTooltip: "Geocentric Distance (AU)",
   },
   {
-    title: 'Heliocentric distance [AU]',
+    title: 'Hel Dist (AU)',
     name: 'dhelio',
+    headerTooltip: "Heliocentric Distance (AU)",
   },
   {
-    title: 'Phase angle [degrees]',
+    title: 'Phase Angle (deg)',
     name: 'phase',
+    headerTooltip: "Phase Angle (degrees)",
   },
   {
-    title: 'Solar elongation',
+    title: 'Solar Elong',
     name: 'solelong',
+    headerTooltip: "Solar Elongation",
   },
   {
-    title: 'Vector position in x [AU]',
+    title: 'Vec Pos x (AU)',
     name: 'px',
+    headerTooltip: "Vector position in x (AU)",
   },
   {
-    title: 'Vector position in y [AU]',
+    title: 'Vec pos y (AU)',
     name: 'py',
+    headerTooltip: "Vector position in y (AU)",
   },
   {
-    title: 'Vector position in z [AU]',
+    title: 'Vec Pos z (AU)',
     name: 'pz',
+    headerTooltip: "Vector position in z (AU)",
   },
   {
-    title: 'Vector position in x [AU/d]',
+    title: 'Vec Pos x [AU/d]',
     name: 'vx',
+    headerTooltip: "Vector Position in x (AU/d)",
   },
   {
-    title: 'Vector position in y [AU/d]',
+    title: 'Vec Pos y [AU/d]',
     name: 'vy',
+    headerTooltip: "Vector position in y (AU/d)",
   },
   {
-    title: 'Vector position in z [AU/d]',
+    title: 'Vec Pos z [AU/d]',
     name: 'vz',
+    headerTooltip: "Vector position in z (AU/d)",
   },
   {
-    title: 'Epoch of the position vector [Julien Day]',
+    title: 'Epo Pos Vec (Julien Day)',
     name: 'jdref',
+    headerTooltip: "Epoch of the Position Vector (Julien Day)",
   },
   {
     title: 'Band',
     name: 'band',
   },
   {
-    title: 'Exposure',
+    title: 'Expos',
     name: 'expnum',
+    headerTooltip: "Exposure"
   },
   {
-    title: 'CCD number',
+    title: 'CCD Num',
     name: 'ccdnum',
+    headerTooltip: "CCD Number",
   },
   {
     name: 'externallink',
@@ -309,7 +323,6 @@ function SkybotAsteroid({ setTitle, match }) {
               },
             };
           }
-
           return {
             name: column,
           };

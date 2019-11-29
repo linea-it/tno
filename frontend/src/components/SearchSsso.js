@@ -149,21 +149,24 @@ export default function SearchSsso({ history, setTitle }) {
   const tableColumns = [
     {
       name: 'name',
-      title: 'Object Name',
+      title: 'Obj Name',
       width: 180,
       align: 'left',
+      headerTooltip: "Object Name",
     },
     {
       name: 'num',
-      title: 'Object Number',
+      title: 'Obj Num',
       width: 130,
       align: 'left',
+      headerTooltip: "Obj Number"
     },
     {
       name: 'raj2000',
       title: 'RA (deg)',
       width: 120,
       align: 'left',
+      headerTooltip: "Right Ascension (deg)",
       customElement: (row) => {
         return (
           <span>
@@ -177,6 +180,7 @@ export default function SearchSsso({ history, setTitle }) {
       title: 'Dec (deg)',
       width: 120,
       align: 'left',
+      headerTooltip: "Declination (deg)",
       customElement: (row) => {
         return (
           <span>
@@ -187,9 +191,10 @@ export default function SearchSsso({ history, setTitle }) {
     },
     {
       name: 'ccdnum',
-      title: 'CCD Number',
+      title: 'CCD Num',
       width: 120,
       align: 'center',
+      headerTooltip: "CCD Number"
     },
     {
       name: 'band',
@@ -199,27 +204,31 @@ export default function SearchSsso({ history, setTitle }) {
     },
     {
       name: 'expnum',
-      title: 'Exposure',
-      width: 130,
+      title: 'Expos',
+      width: 140,
       align: 'left',
+      headerTooltip: "Exposure",
     },
     {
       name: 'dynclass',
-      title: 'Dynamic Class',
+      title: 'Dyn Class',
       width: 140,
       align: 'left',
+      headerTooltip: "Dynamic Class",
     },
     {
       name: 'mv',
-      title: 'Visual Magnitude',
-      width: 150,
+      title: 'Vis Mag',
+      width: 100,
       align: 'center',
+      headerTooltip: "Visual Magnitude",
     },
     {
       name: 'errpos',
-      title: 'Error on the position (arcsec)',
-      width: 248,
+      title: 'Error',
+      width: 100,
       align: 'center',
+      headerTooltip: "Error on the position (arcsec)",
     },
     {
       name: 'id',
