@@ -106,14 +106,6 @@ function SkybotAsteroid({ setTitle, match }) {
     name: 'dynclass',
   },
   {
-    title: 'Right Ascension (RA) [hms]',
-    name: 'ra',
-  },
-  {
-    title: 'Declination (Dec) [dms]',
-    name: 'dec',
-  },
-  {
     title: 'Right Ascension (RA) [degree]',
     name: 'raj2000',
   },
