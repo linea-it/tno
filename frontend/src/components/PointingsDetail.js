@@ -9,6 +9,7 @@ import clsx from 'clsx';
 import { withRouter } from 'react-router';
 import CustomList from './utils/CustomList';
 import { getPointing } from '../api/Pointings';
+import moment from 'moment';
 
 const useStyles = makeStyles({
   cardContentWrapper: {
@@ -46,12 +47,12 @@ function PointingsDetail({ setTitle, match, history }) {
         {
           title: 'Night',
           tooltip: 'Night at which the observation was made.',
-          value: res.nite,
+          value: moment(res.nite).format("YYYY-MM-DD"),
         },
         {
           title: 'Observation Date',
           tooltip: 'Date and time of observation',
-          value: res.date_obs,
+          value: moment(res.date_obs).format("YYYY-MM-DD"),
         },
         {
           title: 'Exposure',
@@ -100,10 +101,10 @@ function PointingsDetail({ setTitle, match, history }) {
               <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
             </span>
           ) : (
-            <span title="False">
-              <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-            </span>
-          )),
+              <span title="False">
+                <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+              </span>
+            )),
         },
         {
           title: 'RA (deg)',
@@ -218,10 +219,10 @@ function PointingsDetail({ setTitle, match, history }) {
               <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
             </span>
           ) : (
-            <span title="Has not been downloaded">
-              <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-            </span>
-          )),
+              <span title="Has not been downloaded">
+                <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+              </span>
+            )),
         },
       ]);
     });
@@ -259,7 +260,7 @@ function PointingsDetail({ setTitle, match, history }) {
               <Card>
                 <CardHeader
                   title="Details Pointing"
-                  // subheader="These are the details of the object named Lorem Ipsum and number 000"
+                // subheader="These are the details of the object named Lorem Ipsum and number 000"
                 />
                 <CardContent className={classes.cardContentWrapper}>
                   <CustomList

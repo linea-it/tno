@@ -435,8 +435,8 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
       name: 'creation_date',
       title: 'Date',
       customElement: (row) => (
-        <span title={moment(row.creation_date).format('HH:mm:ss')}>
-          {moment(row.creation_date).format('MM-DD-YYYY')}
+        <span>
+          {row.creation_date ? moment(row.creation_date).format('YYYY-MM-DD') : ""}
         </span>
       ),
     },
@@ -978,15 +978,15 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                           </FormControl>
                         </form>
                       ) : (
-                        <div className={classes.filterCountWrapper}>
-                          <Skeleton height={(filterFormSize.height - 95) || 0} />
-                          {skybotOutputCount > 0 ? (
-                            <span className={classes.filterCountText}>
-                              {skybotOutputCount > 1 ? `Current filter has ${skybotOutputCount} objects` : `Current filter has ${skybotOutputCount} object`}
-                            </span>
-                          ) : null}
-                        </div>
-                      )}
+                          <div className={classes.filterCountWrapper}>
+                            <Skeleton height={(filterFormSize.height - 95) || 0} />
+                            {skybotOutputCount > 0 ? (
+                              <span className={classes.filterCountText}>
+                                {skybotOutputCount > 1 ? `Current filter has ${skybotOutputCount} objects` : `Current filter has ${skybotOutputCount} object`}
+                              </span>
+                            ) : null}
+                          </div>
+                        )}
                     </CardContent>
                   </Card>
                 );

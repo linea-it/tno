@@ -234,7 +234,7 @@ function Occultation({ setTitle, history, ...props }) {
                     className={classes.filterField}
                     disableToolbar
                     variant="inline"
-                    format="MM/dd/yyyy"
+                    format="yyyy-MM-dd"
                     margin="normal"
                     label="Start Date"
                     value={startDate}
@@ -244,7 +244,7 @@ function Occultation({ setTitle, history, ...props }) {
                     className={classes.filterField}
                     disableToolbar
                     variant="inline"
-                    format="MM/dd/yyyy"
+                    format="yyyy-MM-dd"
                     margin="normal"
                     label="Final Date"
                     value={endDate}

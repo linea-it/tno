@@ -141,8 +141,8 @@ function SkybotDetail({ setTitle, match, history }) {
       title: 'Date Obs',
       sortingEnabled: false,
       customElement: (el) => (
-        <span title={moment(el.date_time).format('HH:mm:ss')}>
-          {moment(el.date_time).format('YYYY/MM/DD')}
+        <span>
+          {el.date_obs ? moment(el.date_obs).format('YYYY-MM-DD') : ""}
         </span>
       ),
       align: 'center',
