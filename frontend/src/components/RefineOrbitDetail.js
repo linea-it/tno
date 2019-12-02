@@ -175,7 +175,8 @@ function RefineOrbitDetail({ history, match, setTitle }) {
     },
     {
       name: 'h_execution_time',
-      title: 'Execution Time',
+      title: 'Exec Time',
+      headerTooltip:"Execution time",
       align: 'center',
       customElement: (row) => (
         <span>

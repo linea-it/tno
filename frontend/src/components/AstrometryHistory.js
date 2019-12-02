@@ -175,8 +175,9 @@ function AstrometryHistory({ history, reloadHistory }) {
     },
     {
       name: 'configuration',
-      title: 'Configuration',
-      width: 150,
+      title: 'Config',
+      headerTooltip: "Configuration",
+      width: 100,
       align: 'center',
     },
     {
@@ -193,8 +194,9 @@ function AstrometryHistory({ history, reloadHistory }) {
     },
     {
       name: 'execution_time',
-      title: 'Execution Time',
-      width: 180,
+      title: 'Exec Time',
+      headerTooltip: "Execution time",
+      width: 100,
       customElement: (row) => (
         <span>
           {row.execution_time && typeof row.execution_time === 'string' ? row.execution_time.substring(0, 8) : ''}

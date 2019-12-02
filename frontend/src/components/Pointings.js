@@ -31,8 +31,8 @@ function Pointings({ setTitle, history }) {
   const pointingsTableColumns = [
     {
       name: 'date_obs',
-      title: 'Observation Date',
-      width: 200,
+      title: 'Observ Date',
+      width: 150,
       align: 'center',
       headerTooltip: 'Date and time of observation',
       sortingEnabled: false,
@@ -51,7 +51,7 @@ function Pointings({ setTitle, history }) {
     },
     {
       name: 'ccdnum',
-      title: 'CCD Number',
+      title: 'CCD Num',
       align: 'center',
       width: 120,
       headerTooltip: 'CCD Number (1, 2, ..., 62)',
@@ -67,7 +67,7 @@ function Pointings({ setTitle, history }) {
     },
     {
       name: 'exptime',
-      title: 'Exposure time (s)',
+      title: 'Expos time (s)',
       align: 'center',
       width: 130,
       headerTooltip: 'Exposure time of observation',
@@ -145,8 +145,6 @@ function Pointings({ setTitle, history }) {
 
   useEffect(() => {
     setTitle('Pointings');
-
-    console.log('hellsfdskr');
   }, []);
 
   return (
