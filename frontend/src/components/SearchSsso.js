@@ -156,9 +156,6 @@ export default function SearchSsso({ history, setTitle }) {
         console.log(res.results);
       });
     }
-
-
-
   };
 
   const handleClearFilters = () => {
@@ -495,7 +492,6 @@ export default function SearchSsso({ history, setTitle }) {
                   </Select>
                 </FormControl>
 
-
                 <Button
                   variant="contained"
                   color="primary"
@@ -514,7 +510,6 @@ export default function SearchSsso({ history, setTitle }) {
                 loading={true}
                 hasToolbar
               />
-
             </CardContent>
           </Card>
         </Grid>
