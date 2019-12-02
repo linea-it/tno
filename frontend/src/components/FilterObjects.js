@@ -927,7 +927,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                                 >
                                   <Button
                                     variant="contained"
-                                    color="secondary"
+                                    color="primary"
                                     className={classes.button}
                                     onClick={handleSaveSubmit}
                                     disabled={!(resultTableData.length > 0)}
@@ -978,15 +978,15 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                           </FormControl>
                         </form>
                       ) : (
-                        <div className={classes.filterCountWrapper}>
-                          <Skeleton height={(filterFormSize.height - 95) || 0} />
-                          {skybotOutputCount > 0 ? (
-                            <span className={classes.filterCountText}>
-                              {skybotOutputCount > 1 ? `Current filter has ${skybotOutputCount} objects` : `Current filter has ${skybotOutputCount} object`}
-                            </span>
-                          ) : null}
-                        </div>
-                      )}
+                          <div className={classes.filterCountWrapper}>
+                            <Skeleton height={(filterFormSize.height - 95) || 0} />
+                            {skybotOutputCount > 0 ? (
+                              <span className={classes.filterCountText}>
+                                {skybotOutputCount > 1 ? `Current filter has ${skybotOutputCount} objects` : `Current filter has ${skybotOutputCount} object`}
+                              </span>
+                            ) : null}
+                          </div>
+                        )}
                     </CardContent>
                   </Card>
                 );
@@ -1063,7 +1063,11 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
             </FormControl>
             <Divider />
             <FormControl className={classes.formControl} fullWidth>
-              <Button color="primary" variant="contained" onClick={handleSaveListClick} disabled={!tableNameValidation.valid}>Save</Button>
+              <Button color="primary" variant="contained" onClick={handleSaveListClick}
+                disabled={false}
+                disabled={!tableNameValidation.valid}
+              >
+                Save</Button>
               {resultLoading ? (
                 <CircularProgress
                   color="primary"
