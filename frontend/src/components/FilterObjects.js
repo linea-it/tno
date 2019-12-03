@@ -928,7 +928,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                                 >
                                   <Button
                                     variant="contained"
-                                    color="secondary"
+                                    color="primary"
                                     className={classes.button}
                                     onClick={handleSaveSubmit}
                                     disabled={!(resultTableData.length > 0)}
@@ -1064,7 +1064,11 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
             </FormControl>
             <Divider />
             <FormControl className={classes.formControl} fullWidth>
-              <Button color="primary" variant="contained" onClick={handleSaveListClick} disabled={!tableNameValidation.valid}>Save</Button>
+              <Button color="primary" variant="contained" onClick={handleSaveListClick}
+                disabled={false}
+                disabled={!tableNameValidation.valid}
+              >
+                Save</Button>
               {resultLoading ? (
                 <CircularProgress
                   color="primary"
