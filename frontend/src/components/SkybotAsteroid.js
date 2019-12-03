@@ -97,21 +97,24 @@ function SkybotAsteroid({ setTitle, match }) {
   };
 
   const exposuresTableColumns = [{
-    title: 'Pointings',
+    title: 'Point',
     name: 'pointing',
+    headerTooltip: 'Pointings',
   },
   {
-    title: 'Object Name',
+    title: 'Obj Name',
     name: 'name',
+    headerTooltip: 'Object Name',
   },
   {
-    title: 'Object Number',
+    title: 'Obj Num',
     name: 'num',
     align: 'right',
   },
   {
-    title: 'Dynamic class',
+    title: 'Dyn Class',
     name: 'dynclass',
+    headerTooltip: 'Dynamic Class',
   },
   {
     title: 'Right Ascension (RA) [hms]',
@@ -133,7 +136,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'Declination (Dec) [degree]',
+    title: 'Dec (deg)',
     name: 'decj2000',
     align: 'right',
     customElement: (row) => (
@@ -143,12 +146,12 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'Visual Magnitude',
+    title: 'Vis Mag',
     name: 'mv',
     align: 'right',
   },
   {
-    title: 'Error on the position [arcsec]',
+    title: 'Error',
     name: 'errpos',
     align: 'right',
     customElement: (row) => (
@@ -158,7 +161,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'Angular Distance [arcsec]',
+    title: 'Ang Dist (arcsec)',
     name: 'd',
     align: 'right',
     customElement: (row) => (
@@ -188,7 +191,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'Geocentric distance [AU]',
+    title: 'Geoc Dist (AU)',
     name: 'dgeo',
     align: 'right',
     customElement: (row) => (
@@ -198,7 +201,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'Heliocentric distance [AU]',
+    title: 'Hel Dist (AU)',
     name: 'dhelio',
     align: 'right',
     customElement: (row) => (
@@ -208,7 +211,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'Phase angle [degrees]',
+    title: 'Phase Angle (deg)',
     name: 'phase',
     align: 'right',
     customElement: (row) => (
@@ -218,7 +221,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'Solar elongation',
+    title: 'Solar Elong',
     name: 'solelong',
     align: 'right',
     customElement: (row) => (
@@ -228,7 +231,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'Vector position in x [AU]',
+    title: 'Vec Pos x (AU)',
     name: 'px',
     align: 'right',
     customElement: (row) => (
@@ -238,7 +241,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'Vector position in y [AU]',
+    title: 'Vec pos y (AU)',
     name: 'py',
     align: 'right',
     customElement: (row) => (
@@ -248,7 +251,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'Vector position in z [AU]',
+    title: 'Vec Pos z (AU)',
     name: 'pz',
     align: 'right',
     customElement: (row) => (
@@ -258,7 +261,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'Vector position in x [AU/d]',
+    title: 'Vec Pos x [AU/d]',
     name: 'vx',
     align: 'right',
     customElement: (row) => (
@@ -268,7 +271,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'Vector position in y [AU/d]',
+    title: 'Vec Pos y [AU/d]',
     name: 'vy',
     align: 'right',
     customElement: (row) => (
@@ -278,7 +281,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'Vector position in z [AU/d]',
+    title: 'Vec Pos z [AU/d]',
     name: 'vz',
     align: 'right',
     customElement: (row) => (
@@ -288,7 +291,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'Epoch of the position vector [Julien Day]',
+    title: 'Epo Pos Vec (Julien Day)',
     name: 'jdref',
     align: 'right',
   },
@@ -298,12 +301,12 @@ function SkybotAsteroid({ setTitle, match }) {
     align: 'center',
   },
   {
-    title: 'Exposure',
+    title: 'Expos',
     name: 'expnum',
     align: 'right',
   },
   {
-    title: 'CCD number',
+    title: 'CCD Num',
     name: 'ccdnum',
     align: 'right',
   },
@@ -419,7 +422,6 @@ function SkybotAsteroid({ setTitle, match }) {
               },
             };
           }
-
           return {
             name: column,
           };

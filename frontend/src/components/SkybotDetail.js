@@ -161,7 +161,8 @@ function SkybotDetail({ setTitle, match, history }) {
     },
     {
       name: 'execution_time',
-      title: 'Execution Time (s)',
+      title: 'Exec Time (s)',
+      headerTooltip: "Execution time",
       sortingEnabled: false,
       width: 150,
       align: 'right',

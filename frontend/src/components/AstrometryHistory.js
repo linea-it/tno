@@ -201,8 +201,9 @@ function AstrometryHistory({ history, reloadHistory }) {
     },
     {
       name: 'execution_time',
-      title: 'Execution Time',
-      width: 180,
+      title: 'Exec Time',
+      headerTooltip: 'Execution time',
+      width: 100,
       customElement: (row) => (
         <span>
           {row.execution_time && typeof row.execution_time === 'string' ? row.execution_time.substring(0, 8) : ''}
@@ -216,7 +217,7 @@ function AstrometryHistory({ history, reloadHistory }) {
       width: 100,
       align: 'right',
     },
-   ];
+  ];
 
   return (
     <div>

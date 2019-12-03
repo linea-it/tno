@@ -190,7 +190,8 @@ function RefineOrbit({ history, setTitle }) {
     },
     {
       name: 'execution_time',
-      title: 'Execution Time',
+      title: 'Exec Time',
+      headerTooltip: "Execution time",
       align: 'center',
       customElement: (row) => (
         <span>

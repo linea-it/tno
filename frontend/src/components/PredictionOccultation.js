@@ -198,7 +198,8 @@ function PredictionOccultation({ history, setTitle }) {
     },
     {
       name: 'execution_time',
-      title: 'Execution Time',
+      title: 'Exec Time',
+      headerTooltip: "Execution time",
       customElement: (row) => {
         return (
           <span>

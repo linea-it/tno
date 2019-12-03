@@ -309,7 +309,7 @@ function Skybot({ setTitle, history }) {
     },
 
     {
-      name: 'date_initial', title: "Initial Date", width: 100, align: 'left',
+      name: 'date_initial', title: "Init Date", width: 100, align: 'left', headerTooltip: "Initial Date",
     },
     {
       name: 'date_final', title: "Final Date", width: 100, align: 'left',
@@ -329,9 +329,10 @@ function Skybot({ setTitle, history }) {
     {
 
       name: 'h_execution_time',
-      title: 'Execution Time',
+      title: 'Exec Time',
       width: 150,
       align: 'center',
+      headerTooltip: "Execution time"
     },
   ];
 

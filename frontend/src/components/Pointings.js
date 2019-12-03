@@ -30,8 +30,8 @@ function Pointings({ setTitle, history }) {
 
 
   const handleValues = (value) => {
-    let roundValue = parseFloat(value).toFixed(3);
-    let stringValue = roundValue.toString();
+    const roundValue = parseFloat(value).toFixed(3);
+    const stringValue = roundValue.toString();
     return stringValue;
   };
 
@@ -47,8 +47,8 @@ function Pointings({ setTitle, history }) {
     },
     {
       name: 'date_obs',
-      title: 'Observation Date',
-      width: 200,
+      title: 'Observ Date',
+      width: 150,
       align: 'center',
       headerTooltip: 'Date and time of observation',
       sortingEnabled: false,
@@ -95,26 +95,23 @@ function Pointings({ setTitle, history }) {
       align: 'right',
       headerTooltip: 'Right Ascension of the center of the CCD image',
       sortingEnabled: false,
-      customElement: (row) => 
-        (
-          <span>
-            {row.ra_cent ? handleValues(row.ra_cent) : ""}
-          </span>
-        )
-     },
+      customElement: (row) => (
+        <span>
+          {row.ra_cent ? handleValues(row.ra_cent) : ''}
+        </span>
+      ),
+    },
     {
       name: 'dec_cent',
       title: 'dec_cent (deg)',
       align: 'right',
       headerTooltip: 'Declination of the center of the CCD image',
       sortingEnabled: false,
-      customElement: (row) => {
-        return (
-          <span>
-            {row.dec_cent ? handleValues(row.dec_cent) : ""}
-          </span>
-        );
-      },
+      customElement: (row) => (
+        <span>
+          {row.dec_cent ? handleValues(row.dec_cent) : ''}
+        </span>
+      ),
     },
     {
       name: 'downloaded',
@@ -127,10 +124,10 @@ function Pointings({ setTitle, history }) {
           <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
         </span>
       ) : (
-          <span title={el.downloaded}>
-            <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-          </span>
-        )),
+        <span title={el.downloaded}>
+          <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+        </span>
+      )),
     },
   ];
 

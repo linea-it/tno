@@ -13,6 +13,8 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import DescriptionIcon from '@material-ui/icons/Description';
 import Tooltip from '@material-ui/core/Tooltip';
+import ReactInterval from 'react-interval';
+import Button from '@material-ui/core/Button';
 import CustomLog from './utils/CustomLog';
 import CustomDialog from './utils/CustomDialog';
 import {
@@ -22,8 +24,6 @@ import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
 import Stepper from './AstrometryStepper';
-import ReactInterval from 'react-interval';
-import Button from '@material-ui/core/Button';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -346,7 +346,8 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     },
     {
       name: 'processed_ccd_image',
-      title: 'Processed CCDs',
+      title: 'Proc CCDs',
+      headerTooltip: 'Processed CCDs',
       width: 150,
       align: 'right',
     },
@@ -354,10 +355,11 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     { name: 'outputs', title: 'Output Files', align: 'right' },
     {
       name: 'execution_time',
-      title: 'Execution Time',
+      title: 'Exec Time',
+      headerTooltip: 'Execution time',
       customElement: (row) => (
         <span>
-          {row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}
+          {row.execution_time && typeof row.execution_time === 'string' ? row.execution_time.substring(0, 8) : ''}
 
         </span>
       ),
@@ -540,7 +542,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         ]);
       }
     }
-  }, [executionStats])
+  }, [executionStats]);
 
   useEffect(() => {
     if (executionTime) {
@@ -553,7 +555,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         ]);
       }
     }
-  }, [executionTime])
+  }, [executionTime]);
 
   const handleChangeToolButton = (event, newValue) => {
     setToolButton(newValue);
@@ -721,7 +723,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           </Grid>
         </Grid>
       </Grid>
-    </Grid >
+    </Grid>
   );
 }
 export default withRouter(AstrometryDetail);
