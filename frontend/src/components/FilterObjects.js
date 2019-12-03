@@ -995,7 +995,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
             </SizeMe>
           </Grid>
         </Grid>
-
       </Grid>
       <Grid item xs={12}>
         <Grid

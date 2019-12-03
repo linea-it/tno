@@ -117,16 +117,16 @@ function SkybotAsteroid({ setTitle, match }) {
     headerTooltip: 'Dynamic Class',
   },
   {
-    title: 'Right Ascension (RA) [hms]',
+    title: 'Right Ascension  (hms)',
     name: 'ra',
     align: 'right',
   },
   {
-    title: 'Declination (Dec) [dms]',
+    title: 'Declination  (dms)',
     name: 'dec',
   },
   {
-    title: 'Right Ascension (RA) [degree]',
+    title: 'Right Ascension  (degree)',
     name: 'raj2000',
     align: 'right',
     customElement: (row) => (
@@ -171,7 +171,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'dRAcosDec',
+    title: 'dRAcosDec (arcsec/h)',
     name: 'dracosdec',
     align: 'right',
     customElement: (row) => (
@@ -181,7 +181,7 @@ function SkybotAsteroid({ setTitle, match }) {
     ),
   },
   {
-    title: 'dDEC',
+    title: 'dDEC  (arcsec/h)',
     name: 'd',
     align: 'right',
     customElement: (row) => (

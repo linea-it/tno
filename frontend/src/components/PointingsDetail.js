@@ -55,7 +55,7 @@ function PointingsDetail({ setTitle, match, history }) {
           value: res.date_obs,
         },
         {
-          title: 'Exposure',
+          title: 'Exposure (s)',
           tooltip: 'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
           value: res.expnum,
         },

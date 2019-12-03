@@ -144,7 +144,7 @@ function FilterObjectsDetail({ setTitle, match }) {
     { name: 'name', title: 'Name' },
     {
       name: 'raj2000',
-      title: 'RA',
+      title: 'RA (deg)',
       width: 80,
       align: 'right',
       customElement: (row) =>
@@ -156,7 +156,7 @@ function FilterObjectsDetail({ setTitle, match }) {
     },
     {
       name: 'decj2000',
-      title: 'Dec',
+      title: 'Dec (deg)',
       width: 80,
       align: 'right',
       customElement: (row) =>
@@ -168,7 +168,7 @@ function FilterObjectsDetail({ setTitle, match }) {
     },
     {
       name: 'errpos',
-      title: 'Errpos',
+      title: 'Errpos (arcsec)',
       width: 70,
       align: 'right',
       customElement: (row) =>
@@ -180,7 +180,7 @@ function FilterObjectsDetail({ setTitle, match }) {
     },
     {
       name: 'jdref',
-      title: 'Jref',
+      title: 'Jref (JD)',
       width: 80,
       align: 'right',
     },

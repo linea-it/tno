@@ -227,7 +227,7 @@ export default function SearchSsso({ history, setTitle }) {
     },
     {
       name: 'mv',
-      title: 'Visual Magnitude',
+      title: 'Visual Magnitude (mag)',
       width: 150,
       align: 'right',
     },
