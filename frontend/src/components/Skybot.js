@@ -324,7 +324,7 @@ function Skybot({ setTitle, history }) {
       name: 'type_run', title: 'Type', width: 120, align: 'center',
     },
     {
-      name: 'rows', title: 'Rows', width: 100, align: 'center',
+      name: 'rows', title: 'Rows', width: 100, align: 'right',
     },
     {
 

@@ -310,7 +310,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     {
       name: 'number',
       title: 'Number',
-      align: 'center',
+      align: 'right',
       customElement: (row) => {
         if (row.number === '-') {
           return ' ';
@@ -325,7 +325,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     {
       name: 'ccd_images',
       title: 'CCD Images',
-      align: 'center',
+      align: 'right',
       width: 120,
       customElement: (row) => {
         if (row.ccd_images === '-') {
@@ -342,16 +342,16 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       name: 'available_ccd_image',
       title: 'Available CCDs',
       width: 140,
-      align: 'center',
+      align: 'right',
     },
     {
       name: 'processed_ccd_image',
       title: 'Processed CCDs',
       width: 150,
-      align: 'center',
+      align: 'right',
     },
-    { name: 'catalog_rows', title: 'Stars', align: 'center' },
-    { name: 'outputs', title: 'Output Files', align: 'center' },
+    { name: 'catalog_rows', title: 'Stars', align: 'right' },
+    { name: 'outputs', title: 'Output Files', align: 'right' },
     {
       name: 'execution_time',
       title: 'Execution Time',
@@ -440,7 +440,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     {
       name: 'number',
       title: 'Number',
-      align: 'center',
+      align: 'right',
       width: 120,
       customElement: (row) => {
         if (row.number === '-') {

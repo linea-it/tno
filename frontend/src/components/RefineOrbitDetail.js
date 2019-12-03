@@ -182,6 +182,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       name: 'number',
       title: 'Number',
       width: 140,
+      align: 'right',
     },
     {
       name: 'h_execution_time',

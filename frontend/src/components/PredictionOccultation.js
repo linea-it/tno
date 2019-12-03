@@ -213,7 +213,7 @@ function PredictionOccultation({ history, setTitle }) {
       name: 'count_objects',
       title: 'Asteroids',
       width: 90,
-      align: 'center',
+      align: 'right',
     },
   ];
 

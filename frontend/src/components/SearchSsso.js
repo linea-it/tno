@@ -99,6 +99,12 @@ export default function SearchSsso({ history, setTitle }) {
     history.push(`search-ssso-detail/${row.id}`);
   };
 
+  const handleValues = (value) => {
+    let roundValue = parseFloat(value).toFixed(3);
+    let stringValue = roundValue.toString();
+    return stringValue;
+  };
+
   const loadDynamicClassColumns = () => {
     const dynclass = [
       { name: 'Centaur', value: 'Centaur', title: 'Centaur', },
@@ -165,17 +171,17 @@ export default function SearchSsso({ history, setTitle }) {
       name: 'num',
       title: 'Object Number',
       width: 130,
-      align: 'left',
+      align: 'right',
     },
     {
       name: 'raj2000',
       title: 'RA (deg)',
       width: 120,
-      align: 'left',
+      align: 'right',
       customElement: (row) => {
         return (
           <span>
-            {row.raj2000 ? parseFloat(row.raj2000.toFixed(3)) : ""}
+            {row.raj2000 ? handleValues(row.raj2000) : ""}
           </span>
         );
       },
@@ -184,11 +190,11 @@ export default function SearchSsso({ history, setTitle }) {
       name: 'decj2000',
       title: 'Dec (deg)',
       width: 120,
-      align: 'left',
+      align: 'right',
       customElement: (row) => {
         return (
           <span>
-            {row.decj2000 ? parseFloat(row.decj2000.toFixed(3)) : ""}
+            {row.decj2000 ? handleValues(row.decj2000) : ""}
           </span>
         );
       },
@@ -197,7 +203,7 @@ export default function SearchSsso({ history, setTitle }) {
       name: 'ccdnum',
       title: 'CCD Number',
       width: 120,
-      align: 'center',
+      align: 'right',
     },
     {
       name: 'band',
@@ -209,7 +215,7 @@ export default function SearchSsso({ history, setTitle }) {
       name: 'expnum',
       title: 'Exposure',
       width: 130,
-      align: 'left',
+      align: 'right',
     },
     {
       name: 'dynclass',
@@ -221,13 +227,20 @@ export default function SearchSsso({ history, setTitle }) {
       name: 'mv',
       title: 'Visual Magnitude',
       width: 150,
-      align: 'center',
+      align: 'right',
     },
     {
       name: 'errpos',
       title: 'Error on the position (arcsec)',
       width: 248,
-      align: 'center',
+      align: 'right',
+      customElement: (row) => {
+        return (
+          <span>
+            {row.errpos ? handleValues(row.errpos) : ""}
+          </span>
+        );
+      },
     },
 
   ]

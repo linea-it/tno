@@ -179,13 +179,13 @@ function AstrometryHistory({ history, reloadHistory }) {
       name: 'input_list',
       title: 'Input',
       width: 100,
-      align: 'center',
+      align: 'right',
     },
     {
       name: 'configuration',
       title: 'Configuration',
       width: 150,
-      align: 'center',
+      align: 'right',
     },
     {
       name: 'start_time',
@@ -214,7 +214,7 @@ function AstrometryHistory({ history, reloadHistory }) {
       name: 'count_objects',
       title: 'Asteroids',
       width: 100,
-      align: 'center',
+      align: 'right',
     },
    ];
 

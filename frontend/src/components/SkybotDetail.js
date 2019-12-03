@@ -139,6 +139,7 @@ function SkybotDetail({ setTitle, match, history }) {
       title: 'Expnum',
       sortingEnabled: false,
       width: 100,
+      align: 'right',
     },
     {
       name: 'band',
@@ -163,28 +164,33 @@ function SkybotDetail({ setTitle, match, history }) {
       title: 'Execution Time (s)',
       sortingEnabled: false,
       width: 150,
+      align: 'right',
     },
     {
       name: 'count_rows',
       title: 'Skybot Rows',
       sortingEnabled: false,
+      align: 'right',
     },
     {
       name: 'created',
       title: 'Created',
       sortingEnabled: false,
+      align: 'right',
     },
     {
       name: 'updated',
       title: 'Updated',
       sortingEnabled: false,
       width: 100,
+      align: 'right',
     },
     {
       name: 'ccd_count_rows',
       title: 'Inside CCD',
       sortingEnabled: false,
       width: 100,
+      align: 'right',
     },
 
   ];
