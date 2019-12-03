@@ -120,12 +120,21 @@ function FilterObjectsDetail({ setTitle, match }) {
   const [objectsTableData, setObjectsTableData] = useState([]);
   const [sqlLogVisible, setSqlLogVisible] = useState(false);
 
+
+
+  const handleValues = (value) => {
+    let roundValue = parseFloat(value).toFixed(3);
+    let stringValue = roundValue.toString();
+    return stringValue;
+  };
+
   const objectsColumns = [
     {
       title: 'Pointing',
       name: 'pointing_id',
       hidden: true,
       width: 100,
+      align: 'right',
     },
     {
       name: 'dynclass',
@@ -137,41 +146,55 @@ function FilterObjectsDetail({ setTitle, match }) {
       name: 'raj2000',
       title: 'RA (deg)',
       width: 80,
-      customElement: (row) => (
-        <span>
-          {row.raj2000 ? parseFloat(row.raj2000.toFixed(3)) : ''}
-        </span>
-      ),
+      align: 'right',
+      customElement: (row) =>
+        (
+          <span>
+            {row.raj2000 ? handleValues(row.raj2000) : ""}
+          </span>
+        )
     },
     {
       name: 'decj2000',
       title: 'Dec (deg)',
       width: 80,
-      customElement: (row) => (
-        <span>
-          {row.decj2000 ? parseFloat(row.decj2000.toFixed(3)) : ''}
-        </span>
-      ),
+      align: 'right',
+      customElement: (row) =>
+        (
+          <span>
+            {row.decj2000 ? handleValues(row.decj2000) : ""}
+          </span>
+        )
     },
     {
       name: 'errpos',
       title: 'Errpos (arcsec)',
       width: 70,
+      align: 'right',
+      customElement: (row) =>
+        (
+          <span>
+            {row.errpos ? handleValues(row.errpos) : ""}
+          </span>
+        )
     },
     {
       name: 'jdref',
       title: 'Jref (JD)',
       width: 80,
+      align: 'right',
     },
     {
       title: 'Exp Num',
       name: 'expnum',
       width: 80,
+      align: 'right',
     },
     {
       title: 'CCD Num',
       name: 'ccdnum',
       width: 80,
+      align: 'right',
     },
     {
       name: 'band',

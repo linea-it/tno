@@ -105,6 +105,15 @@ function RefineOrbit({ history, setTitle }) {
   const classes = useStyles();
   const columns = [
     {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (el) => history.push(`/refine-orbit/${el.id}`),
+      align: 'center',
+      sortingEnabled: false,
+    },
+    {
       name: 'status',
       title: 'Status',
       width: 140,
@@ -181,7 +190,8 @@ function RefineOrbit({ history, setTitle }) {
     },
     {
       name: 'execution_time',
-      title: 'Execution Time',
+      title: 'Exec Time',
+      headerTooltip: "Execution time",
       align: 'center',
       customElement: (row) => (
         <span>
@@ -194,15 +204,7 @@ function RefineOrbit({ history, setTitle }) {
       name: 'count_objects',
       title: 'Asteroids',
       width: 90,
-      align: 'center',
-    },
-    {
-      name: 'id',
-      title: ' ',
-      width: 100,
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: (el) => history.push(`/refine-orbit/${el.id}`),
-      align: 'center',
+      align: 'right',
     },
   ];
   const [tableData, setTableData] = useState([]);
