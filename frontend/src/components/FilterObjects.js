@@ -360,8 +360,17 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
 
   const historyTableColumns = [
     {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (el) => history.push(`/filter-objects/${el.id}`),
+      align: 'center',
+    },
+    {
       name: 'status',
       title: 'Status',
+      align: 'center',
       width: 140,
       customElement: (row) => {
         if (row.status === 'failure' || row.status === 'error') {
@@ -439,14 +448,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
           {moment(row.creation_date).format('MM-DD-YYYY')}
         </span>
       ),
-    },
-    {
-      name: 'id',
-      title: ' ',
-      width: 100,
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: (el) => history.push(`/filter-objects/${el.id}`),
-      align: 'center',
     },
   ];
 
@@ -978,15 +979,15 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                           </FormControl>
                         </form>
                       ) : (
-                        <div className={classes.filterCountWrapper}>
-                          <Skeleton height={(filterFormSize.height - 95) || 0} />
-                          {skybotOutputCount > 0 ? (
-                            <span className={classes.filterCountText}>
-                              {skybotOutputCount > 1 ? `Current filter has ${skybotOutputCount} objects` : `Current filter has ${skybotOutputCount} object`}
-                            </span>
-                          ) : null}
-                        </div>
-                      )}
+                          <div className={classes.filterCountWrapper}>
+                            <Skeleton height={(filterFormSize.height - 95) || 0} />
+                            {skybotOutputCount > 0 ? (
+                              <span className={classes.filterCountText}>
+                                {skybotOutputCount > 1 ? `Current filter has ${skybotOutputCount} objects` : `Current filter has ${skybotOutputCount} object`}
+                              </span>
+                            ) : null}
+                          </div>
+                        )}
                     </CardContent>
                   </Card>
                 );
