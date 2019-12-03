@@ -54,7 +54,7 @@ function PointingsDetail({ setTitle, match, history }) {
           value: res.date_obs,
         },
         {
-          title: 'Exposure',
+          title: 'Exposure (s)',
           tooltip: 'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
           value: res.expnum,
         },
@@ -100,10 +100,10 @@ function PointingsDetail({ setTitle, match, history }) {
               <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
             </span>
           ) : (
-            <span title="False">
-              <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-            </span>
-          )),
+              <span title="False">
+                <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+              </span>
+            )),
         },
         {
           title: 'RA (deg)',
@@ -218,10 +218,10 @@ function PointingsDetail({ setTitle, match, history }) {
               <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
             </span>
           ) : (
-            <span title="Has not been downloaded">
-              <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-            </span>
-          )),
+              <span title="Has not been downloaded">
+                <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+              </span>
+            )),
         },
       ]);
     });
@@ -259,7 +259,7 @@ function PointingsDetail({ setTitle, match, history }) {
               <Card>
                 <CardHeader
                   title="Details Pointing"
-                  // subheader="These are the details of the object named Lorem Ipsum and number 000"
+                // subheader="These are the details of the object named Lorem Ipsum and number 000"
                 />
                 <CardContent className={classes.cardContentWrapper}>
                   <CustomList

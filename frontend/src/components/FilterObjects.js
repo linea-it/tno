@@ -978,15 +978,15 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                           </FormControl>
                         </form>
                       ) : (
-                        <div className={classes.filterCountWrapper}>
-                          <Skeleton height={(filterFormSize.height - 95) || 0} />
-                          {skybotOutputCount > 0 ? (
-                            <span className={classes.filterCountText}>
-                              {skybotOutputCount > 1 ? `Current filter has ${skybotOutputCount} objects` : `Current filter has ${skybotOutputCount} object`}
-                            </span>
-                          ) : null}
-                        </div>
-                      )}
+                          <div className={classes.filterCountWrapper}>
+                            <Skeleton height={(filterFormSize.height - 95) || 0} />
+                            {skybotOutputCount > 0 ? (
+                              <span className={classes.filterCountText}>
+                                {skybotOutputCount > 1 ? `Current filter has ${skybotOutputCount} objects` : `Current filter has ${skybotOutputCount} object`}
+                              </span>
+                            ) : null}
+                          </div>
+                        )}
                     </CardContent>
                   </Card>
                 );
@@ -994,7 +994,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
             </SizeMe>
           </Grid>
         </Grid>
-
       </Grid>
       <Grid item xs={12}>
         <Grid

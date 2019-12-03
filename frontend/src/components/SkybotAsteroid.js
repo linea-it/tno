@@ -106,83 +106,83 @@ function SkybotAsteroid({ setTitle, match }) {
     name: 'dynclass',
   },
   {
-    title: 'Right Ascension (RA) [hms]',
+    title: 'Right Ascension  (hms)',
     name: 'ra',
   },
   {
-    title: 'Declination (Dec) [dms]',
+    title: 'Declination  (dms)',
     name: 'dec',
   },
   {
-    title: 'Right Ascension (RA) [degree]',
+    title: 'Right Ascension  (degree)',
     name: 'raj2000',
   },
   {
-    title: 'Declination (Dec) [degree]',
+    title: 'Declination  (degree)',
     name: 'decj2000',
   },
   {
-    title: 'Visual Magnitude',
+    title: 'Visual Magnitude (mag)',
     name: 'mv',
   },
   {
-    title: 'Error on the position [arcsec]',
+    title: 'Error on the position (arcsec)',
     name: 'errpos',
   },
   {
-    title: 'Angular Distance [arcsec]',
+    title: 'Angular Distance (arcsec)',
     name: 'd',
   },
   {
-    title: 'dRAcosDec',
+    title: 'dRAcosDec (arcsec/h)',
     name: 'dracosdec',
   },
   {
-    title: 'dDEC',
+    title: 'dDEC  (arcsec/h)',
     name: 'd',
   },
   {
-    title: 'Geocentric distance [AU]',
+    title: 'Geocentric distance (AU)',
     name: 'dgeo',
   },
   {
-    title: 'Heliocentric distance [AU]',
+    title: 'Heliocentric distance (AU)',
     name: 'dhelio',
   },
   {
-    title: 'Phase angle [degrees]',
+    title: 'Phase angle (degree)',
     name: 'phase',
   },
   {
-    title: 'Solar elongation',
+    title: 'Solar elongation (degree)',
     name: 'solelong',
   },
   {
-    title: 'Vector position in x [AU]',
+    title: 'Vector position in x (AU)',
     name: 'px',
   },
   {
-    title: 'Vector position in y [AU]',
+    title: 'Vector position in y (AU)',
     name: 'py',
   },
   {
-    title: 'Vector position in z [AU]',
+    title: 'Vector position in z (AU)',
     name: 'pz',
   },
   {
-    title: 'Vector position in x [AU/d]',
+    title: 'Vector position in x (AU/d)',
     name: 'vx',
   },
   {
-    title: 'Vector position in y [AU/d]',
+    title: 'Vector position in y (AU/d)',
     name: 'vy',
   },
   {
-    title: 'Vector position in z [AU/d]',
+    title: 'Vector position in z (AU/d)',
     name: 'vz',
   },
   {
-    title: 'Epoch of the position vector [Julien Day]',
+    title: 'Epoch of the position vector (Julien Day)',
     name: 'jdref',
   },
   {

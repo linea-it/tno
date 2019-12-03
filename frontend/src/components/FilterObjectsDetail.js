@@ -135,7 +135,7 @@ function FilterObjectsDetail({ setTitle, match }) {
     { name: 'name', title: 'Name' },
     {
       name: 'raj2000',
-      title: 'RA',
+      title: 'RA (deg)',
       width: 80,
       customElement: (row) => (
         <span>
@@ -145,7 +145,7 @@ function FilterObjectsDetail({ setTitle, match }) {
     },
     {
       name: 'decj2000',
-      title: 'Dec',
+      title: 'Dec (deg)',
       width: 80,
       customElement: (row) => (
         <span>
@@ -155,12 +155,12 @@ function FilterObjectsDetail({ setTitle, match }) {
     },
     {
       name: 'errpos',
-      title: 'Errpos',
+      title: 'Errpos (arcsec)',
       width: 70,
     },
     {
       name: 'jdref',
-      title: 'Jref',
+      title: 'Jref (JD)',
       width: 80,
     },
     {
@@ -189,10 +189,10 @@ function FilterObjectsDetail({ setTitle, match }) {
           <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
         </span>
       ) : (
-        <span title={el.filename}>
-          <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-        </span>
-      )),
+          <span title={el.filename}>
+            <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+          </span>
+        )),
     },
     {
       name: 'externallink',
