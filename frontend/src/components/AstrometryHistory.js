@@ -97,6 +97,14 @@ function AstrometryHistory({ history, reloadHistory }) {
 
   const columns = [
     {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: handleClickHistoryTable,
+      align: 'center',
+    },
+    {
       name: 'status',
       title: 'Status',
       width: 150,
@@ -208,15 +216,7 @@ function AstrometryHistory({ history, reloadHistory }) {
       width: 100,
       align: 'center',
     },
-    {
-      name: 'id',
-      title: ' ',
-      width: 100,
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: handleClickHistoryTable,
-      align: 'center',
-    },
-  ];
+   ];
 
   return (
     <div>

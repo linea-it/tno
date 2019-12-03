@@ -69,9 +69,20 @@ function SkybotDetail({ setTitle, match, history }) {
   const [skybotDetailTableTotalCount, setSkybotDetailTableTotalCount] = useState(0);
 
   const skybotDetailTableColumns = [
+
+    {
+      name: 'ccd_time',
+      title: 'Details',
+      width: 100,
+      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (row) => history.push(`/skybot/${id}/asteroid/${row.expnum}`),
+      align: 'center',
+      sortingEnabled: false,
+    },
     {
       name: 'status',
       title: 'Status',
+      align: 'center',
       sortingEnabled: false,
       customElement: (row) => {
         if (row.status === 'failure') {
@@ -175,14 +186,7 @@ function SkybotDetail({ setTitle, match, history }) {
       sortingEnabled: false,
       width: 100,
     },
-    {
-      name: 'ccd_time',
-      title: ' ',
-      width: 100,
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: (row) => history.push(`/skybot/${id}/asteroid/${row.expnum}`),
-      align: 'center',
-    },
+
   ];
 
 

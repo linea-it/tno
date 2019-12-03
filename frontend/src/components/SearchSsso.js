@@ -148,6 +148,14 @@ export default function SearchSsso({ history, setTitle }) {
 
   const tableColumns = [
     {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.icoDetail}`)} />,
+      action: handleSearchSssoDetail,
+      sortingEnabled: false,
+    },
+    {
       name: 'name',
       title: 'Object Name',
       width: 180,
@@ -221,12 +229,7 @@ export default function SearchSsso({ history, setTitle }) {
       width: 248,
       align: 'center',
     },
-    {
-      name: 'id',
-      title: " ",
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.icoDetail}`)} />,
-      action: handleSearchSssoDetail,
-    }
+
   ]
 
   return (

@@ -211,9 +211,19 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
 
   const tableListArray = [
     {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      sortingEnabled: false,
+      icon: <Tooltip title="Details"><Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} /></Tooltip>,
+      action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
+      align: 'center',
+    },
+    {
       name: 'status',
       title: 'Status',
       width: 140,
+      align: 'center',
       sortingEnabled: false,
       customElement: (row) => {
         if (row.status === 'failure') {
@@ -293,23 +303,23 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       width: 140,
       sortingEnabled: false,
     },
+  ];
+
+  const bugLogArray = [
     {
       name: 'id',
-      title: ' ',
+      title: 'Details',
       width: 100,
-      sortingEnabled: false,
       icon: <Tooltip title="Details"><Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} /></Tooltip>,
       action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
       align: 'center',
+      sortingEnabled: false,
     },
-  ];
-
-
-  const bugLogArray = [
     {
       name: 'status',
       title: 'Status',
       width: 140,
+      align: 'center',
       sortingEnabled: false,
       customElement: (row) => {
         if (row.status === 'failure') {
@@ -375,13 +385,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       title: 'Error Message',
       width: 350,
       sortingEnabled: false,
-    },
-    {
-      name: 'id',
-      title: ' ',
-      icon: <Tooltip title="Details"><Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} /></Tooltip>,
-      action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
-      align: 'center',
     },
   ];
 
