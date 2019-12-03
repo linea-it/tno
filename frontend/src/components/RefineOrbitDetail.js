@@ -110,9 +110,19 @@ function RefineOrbitDetail({ history, match, setTitle }) {
   const pageSizes = [5, 10, 15];
   const columnsList = [
     {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (el) => history.push(`/refine-orbit/asteroid/${el.id}`),
+      align: 'center',
+      sortingEnabled: false,
+    },
+    {
       name: 'status',
       title: 'Status',
       width: 140,
+      align: 'center',
       sortingEnabled: false,
       customElement: (row) => {
         if (row.status === 'failure') {
@@ -172,6 +182,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       name: 'number',
       title: 'Number',
       width: 140,
+      align: 'right',
     },
     {
       name: 'h_execution_time',
@@ -183,14 +194,6 @@ function RefineOrbitDetail({ history, match, setTitle }) {
         </span>
       ),
       width: 140,
-    },
-    {
-      name: 'id',
-      title: ' ',
-      width: 100,
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: (el) => history.push(`/refine-orbit/asteroid/${el.id}`),
-      align: 'center',
     },
     {
       name: 'orbit_run',

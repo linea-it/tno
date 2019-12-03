@@ -114,9 +114,19 @@ function PredictionOccultation({ history, setTitle }) {
 
   const columns = [
     {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (el) => history.push(`/prediction-of-occultation/${el.id}`),
+      align: 'center',
+      sortingEnabled: false,
+    },
+    {
       name: 'status',
       title: 'Status',
       width: 140,
+      align: 'center',
       sortingEnabled: false,
       customElement: (row) => {
         if (row.status === 'failure') {
@@ -203,15 +213,7 @@ function PredictionOccultation({ history, setTitle }) {
       name: 'count_objects',
       title: 'Asteroids',
       width: 90,
-      align: 'center',
-    },
-    {
-      name: 'id',
-      title: ' ',
-      width: 100,
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: (el) => history.push(`/prediction-of-occultation/${el.id}`),
-      align: 'center',
+      align: 'right',
     },
   ];
 
