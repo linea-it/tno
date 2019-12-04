@@ -46,6 +46,8 @@ export const getSkybotOutput = ({
     }
   });
 
+  console.log(filters);
+
   return axios.get('/skybotoutput/objects', {
     params,
   }).then((res) => res.data);

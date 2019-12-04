@@ -48,14 +48,16 @@ const useStyles = makeStyles((theme) => ({
   },
 
   filterSubLevel: {
-    marginTop: theme.spacing(4),
+    marginLeft: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    width: 600,
   },
 
   filterSlider: {
     width: 200,
     marginLeft: theme.spacing(6),
     marginRight: theme.spacing(1),
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(3),
   },
   filterSliderLabel: {
     color: theme.palette.text.secondary,
@@ -64,7 +66,8 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 18,
   },
   clearButton: {
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(3),
+    marginLeft: theme.spacing(2),
   },
 }));
 
@@ -76,8 +79,10 @@ export default function SearchSsso({ history, setTitle }) {
   const [vMagnitude, setVmagnitude] = useState([4, 18]);
   const [dClass, setDclass] = useState([]);
   const [dynamicClass, setDynamicClass] = useState([0]);
-  const [subLevelDynamicClassSelected, setSublevelDynamicClassSelected] = useState([]);
-  const [subLevelDynamicClassList, setSublevelDynamicClassList] = useState([]);
+  const [subLevelDynamicClassSelected, setSubLevelDynamicClassSelected] = useState([]);
+  const [subLevelDynamicClassList, setSubLevelDynamicClassList] = useState([]);
+  const [objectCompiled, setObjectCompiled] = useState();
+
 
   const classes = useStyles();
 
@@ -96,26 +101,69 @@ export default function SearchSsso({ history, setTitle }) {
     let currentSublevelList = [];
     dynamicClass.forEach((i) => {
       const current = optionsClassFirstLevel[i];
-      const currentChildren = optionsClassSecondLevel
-        .filter((option) => option.parentId === current.id);
+      const currentChildren = optionsClassSecondLevel.filter((option) => option.parentId === current.id);
       currentSublevelList = currentSublevelList.concat(currentChildren);
+
     });
-    setSublevelDynamicClassSelected(Object.keys(currentSublevelList).map((el) => Number(el)));
-    setSublevelDynamicClassList(currentSublevelList);
+    setSubLevelDynamicClassSelected(Object.keys(currentSublevelList).map((el) => Number(el)));
+    setSubLevelDynamicClassList(currentSublevelList);
+
+    // loadTableData();
 
   }, [dynamicClass]);
 
 
   useEffect(() => {
+    // loadTableData();
+    //  console.log("SubLevel Selected: ", subLevelDynamicClassSelected);
+
+    // if (dynamicClass.length > 0) {
+    //   const dynamicClassSelected = dynamicClass
+    //     .map((i) => optionsClassFirstLevel[i].value)
+    //     .concat(
+    //       subLevelDynamicClassSelected
+    //         .map((i) => optionsClassSecondLevel[i].value),
+    //     )
+    //     .join(';');
+
+    //   console.log(dynamicClassSelected);
+
+    // }
+
+    if (dynamicClass.length > 0) {
+      const dynamicClassSelected = dynamicClass
+        .map((i) => optionsClassFirstLevel[i].value)
+        .concat(
+          subLevelDynamicClassSelected
+            .map((i) => subLevelDynamicClassList[i].value),
+        )
+        .join(';');
+
+      setObjectCompiled(dynamicClassSelected);
+
+    }
+
+    // subLevelDynamicClassSelected.map((i) => {
+    //   console.log("Second Level: ", subLevelDynamicClassList[i].value);
+    // });
+
+    //  console.log("Selected: ", subLevelDynamicClassSelected)
+
+  }, [subLevelDynamicClassSelected]);
+
+
+
+  useEffect(() => {
 
     loadTableData();
-  }, [dynamicClass, subLevelDynamicClassSelected]);
+  }, [objectCompiled, vMagnitude]);
 
 
   const loadTableData = (event) => {
     let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
     let pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
-    let searchValue = typeof event === 'undefined' ? ' ' : event.searchValue;
+    let searchValue = typeof event === 'undefined' || !event ? '' : event.searchValue;
+
     // if (vMagnitude) {
     //   filters.push({
     //     property: 'mv__range',
@@ -138,24 +186,38 @@ export default function SearchSsso({ history, setTitle }) {
     // });
 
 
-    if (dynamicClass.length > 0) {
-      let dynamicClassSelected = dynamicClass
-        .map((i) => optionsClassFirstLevel[i].value)
-        .concat(
-          subLevelDynamicClassSelected
-            .map((i) => optionsClassSecondLevel[i].value),
-        )
-        .join(';');
 
-      getSkybotOutput({
-        objectTable: dynamicClassSelected,
-        page: page,
-        pageSize: pageSize,
-      }).then((res) => {
-        // setTableData(res.results);
-        console.log(res.results);
-      });
-    }
+    // getSkybotOutput({
+    //   objectTable: dynamicClassSelected,
+    //   page: page,
+    //   pageSize: pageSize,
+    // }).then((res) => {
+    //   setTableData(res.results);
+    //   setTotalCount(res.count);
+    // });
+
+
+    filters.push({
+      property: 'ccdnum__isnull',
+      value: false,
+    });
+
+    filters.push({
+      property: 'mv__range',
+      value: vMagnitude.join(),
+    });
+
+    getSkybotOutput({
+      objectTable: objectCompiled,
+      page: page,
+      pageSize: pageSize,
+      filters: filters,
+      name: searchValue,
+    }).then((res) => {
+      setTableData(res.results);
+      setTotalCount(res.count);
+      console.log(res.count);
+    });
   };
 
   const handleClearFilters = () => {
@@ -272,23 +334,23 @@ export default function SearchSsso({ history, setTitle }) {
       align: 'left',
     },
     {
-      name: 'dynclass',
+      name: 'object_table',
       title: 'Dynamic Class',
       width: 140,
       align: 'left',
     },
-    {
-      name: 'mv',
-      title: 'Visual Magnitude',
-      width: 150,
-      align: 'center',
-    },
-    {
-      name: 'errpos',
-      title: 'Error on the position (arcsec)',
-      width: 248,
-      align: 'center',
-    },
+    // {
+    //   name: 'mv',
+    //   title: 'Visual Magnitude',
+    //   width: 150,
+    //   align: 'center',
+    // },
+    // {
+    //   name: 'errpos',
+    //   title: 'Error on the position (arcsec)',
+    //   width: 248,
+    //   align: 'center',
+    // },
     {
       name: 'id',
       title: " ",
@@ -306,123 +368,65 @@ export default function SearchSsso({ history, setTitle }) {
     { id: 6, label: 'NEA', value: 'NEA' },
     { id: 7, label: 'Trojan', value: 'Trojan' },
   ];
+
   const optionsClassSecondLevel = [
-    {
-      id: 1, parentId: 3, label: 'Detached', value: 'KBO>Detached',
-    },
-    {
-      id: 2, parentId: 3, label: 'Classical', value: 'KBO>Classical',
-    },
-    {
-      id: 3, parentId: 3, label: 'Classical>Inner', value: 'KBO>Classical>Inner',
-    },
-    {
-      id: 4, parentId: 3, label: 'Classical>Main', value: 'KBO>Classical>Main',
-    },
-    {
-      id: 5, parentId: 3, label: 'Classical>Outer', value: 'KBO>Classical>Outer',
-    },
-    {
-      id: 6, parentId: 3, label: 'Resonant>11:3', value: 'KBO>Resonant>11:3',
-    },
-    {
-      id: 7, parentId: 3, label: 'Resonant>11:6', value: 'KBO>Resonant>11:6',
-    },
-    {
-      id: 8, parentId: 3, label: 'Resonant>11:8', value: 'KBO>Resonant>11:8',
-    },
-    {
-      id: 9, parentId: 3, label: 'Resonant>19:9', value: 'KBO>Resonant>19:9',
-    },
-    {
-      id: 10, parentId: 3, label: 'Resonant>2:1', value: 'KBO>Resonant>2:1',
-    },
-    {
-      id: 11, parentId: 3, label: 'Resonant>3:1', value: 'KBO>Resonant>3:1',
-    },
-    {
-      id: 12, parentId: 3, label: 'Resonant>3:2', value: 'KBO>Resonant>3:2',
-    },
-    {
-      id: 13, parentId: 3, label: 'Resonant>4:3', value: 'KBO>Resonant>4:3',
-    },
-    {
-      id: 14, parentId: 3, label: 'Resonant>5:2', value: 'KBO>Resonant>5:2',
-    },
-    {
-      id: 15, parentId: 3, label: 'Resonant>5:3', value: 'KBO>Resonant>5:3',
-    },
-    {
-      id: 16, parentId: 3, label: 'Resonant>5:4', value: 'KBO>Resonant>5:4',
-    },
-    {
-      id: 17, parentId: 3, label: 'Resonant>7:2', value: 'KBO>Resonant>7:2',
-    },
-    {
-      id: 18, parentId: 3, label: 'Resonant>7:3', value: 'KBO>Resonant>7:3',
-    },
-    {
-      id: 19, parentId: 3, label: 'Resonant>7:4', value: 'KBO>Resonant>7:4',
-    },
-    {
-      id: 20, parentId: 3, label: 'Resonant>9:4', value: 'KBO>Resonant>9:4',
-    },
-    {
-      id: 21, parentId: 3, label: 'Resonant>9:5', value: 'KBO>Resonant>9:5',
-    },
-    {
-      id: 22, parentId: 3, label: 'SDO', value: 'KBO>SDO',
-    },
-    {
-      id: 23, parentId: 5, label: 'Cybele', value: 'MB>Cybele',
-    },
-    {
-      id: 24, parentId: 5, label: 'Hilda', value: 'MB>Hilda',
-    },
-    {
-      id: 25, parentId: 5, label: 'Inner', value: 'MB>Inner',
-    },
-    {
-      id: 26, parentId: 5, label: 'Middle', value: 'MB>Middle',
-    },
-    {
-      id: 27, parentId: 5, label: 'Outer', value: 'MB>Outer',
-    },
-    {
-      id: 28, parentId: 6, label: 'Amor', value: 'NEA>Amor',
-    },
-    {
-      id: 29, parentId: 6, label: 'Apollo', value: 'NEA>Apollo',
-    },
-    {
-      id: 30, parentId: 6, label: 'Aten', value: 'NEA>Aten',
-    },
-    {
-      id: 31, parentId: 6, label: 'Aten', value: 'NEA>Atira',
-    },
-    {
-      id: 32, parentId: 4, label: 'Deep', value: 'Mars-Crosser>Deep',
-    },
-    {
-      id: 33, parentId: 4, label: 'Shallow', value: 'Mars-Crosser>Shallow',
-    },
+    { id: 1, parentId: 3, label: 'Detached', value: 'KBO>Detached' },
+    { id: 2, parentId: 3, label: 'Classical', value: 'KBO>Classical' },
+    { id: 3, parentId: 3, label: 'Classical>Inner', value: 'KBO>Classical>Inner' },
+    { id: 4, parentId: 3, label: 'Classical>Main', value: 'KBO>Classical>Main' },
+    { id: 5, parentId: 3, label: 'Classical>Outer', value: 'KBO>Classical>Outer' },
+    { id: 6, parentId: 3, label: 'Resonant>11:3', value: 'KBO>Resonant>11:3' },
+    { id: 7, parentId: 3, label: 'Resonant>11:6', value: 'KBO>Resonant>11:6' },
+    { id: 8, parentId: 3, label: 'Resonant>11:8', value: 'KBO>Resonant>11:8' },
+    { id: 9, parentId: 3, label: 'Resonant>19:9', value: 'KBO>Resonant>19:9' },
+    { id: 10, parentId: 3, label: 'Resonant>2:1', value: 'KBO>Resonant>2:1' },
+    { id: 11, parentId: 3, label: 'Resonant>3:1', value: 'KBO>Resonant>3:1' },
+    { id: 12, parentId: 3, label: 'Resonant>3:2', value: 'KBO>Resonant>3:2' },
+    { id: 13, parentId: 3, label: 'Resonant>4:3', value: 'KBO>Resonant>4:3' },
+    { id: 14, parentId: 3, label: 'Resonant>5:2', value: 'KBO>Resonant>5:2' },
+    { id: 15, parentId: 3, label: 'Resonant>5:3', value: 'KBO>Resonant>5:3' },
+    { id: 16, parentId: 3, label: 'Resonant>5:4', value: 'KBO>Resonant>5:4' },
+    { id: 17, parentId: 3, label: 'Resonant>7:2', value: 'KBO>Resonant>7:2' },
+    { id: 18, parentId: 3, label: 'Resonant>7:3', value: 'KBO>Resonant>7:3' },
+    { id: 19, parentId: 3, label: 'Resonant>7:4', value: 'KBO>Resonant>7:4' },
+    { id: 20, parentId: 3, label: 'Resonant>9:4', value: 'KBO>Resonant>9:4' },
+    { id: 21, parentId: 3, label: 'Resonant>9:5', value: 'KBO>Resonant>9:5' },
+    { id: 22, parentId: 3, label: 'SDO', value: 'KBO>SDO' },
+    { id: 23, parentId: 5, label: 'Cybele', value: 'MB>Cybele' },
+    { id: 24, parentId: 5, label: 'Hilda', value: 'MB>Hilda' },
+    { id: 25, parentId: 5, label: 'Inner', value: 'MB>Inner' },
+    { id: 26, parentId: 5, label: 'Middle', value: 'MB>Middle' },
+    { id: 27, parentId: 5, label: 'Outer', value: 'MB>Outer' },
+    { id: 28, parentId: 6, label: 'Amor', value: 'NEA>Amor' },
+    { id: 29, parentId: 6, label: 'Apollo', value: 'NEA>Apollo' },
+    { id: 30, parentId: 6, label: 'Aten', value: 'NEA>Aten' },
+    { id: 31, parentId: 6, label: 'Aten', value: 'NEA>Atira' },
+    { id: 32, parentId: 4, label: 'Deep', value: 'Mars-Crosser>Deep' },
+    { id: 33, parentId: 4, label: 'Shallow', value: 'Mars-Crosser>Shallow' },
   ];
 
   const handleDynamicClass = (e) => {
-    setSublevelDynamicClassSelected([]);
+    setSubLevelDynamicClassSelected([]);
     setDynamicClass(e.target.value);
   };
+
+  const handleSubLevelDynamicClass = (e) => {
+    setSubLevelDynamicClassSelected(e.target.value);
+  };
+
+
 
   return (
     <Grid>
       <Grid container spacing={6}>
-        <Grid item lg={12} xl={12}>
-          <Card>
-            <CardHeader
-              title={"SkyBot Output"}
-            />
-            <CardContent>
-              <form className={classes.filtersContainer}>
+
+        <Card>
+          <CardHeader
+            title={"SkyBot Output"}
+          />
+          <CardContent>
+            <form className={classes.filtersContainer}>
+              <Grid item lg={7} xl={7}>
                 <FormControl>
                   <InputLabel>Dynamic class</InputLabel>
                   <Select
@@ -450,6 +454,9 @@ export default function SearchSsso({ history, setTitle }) {
                     ))}
                   </Select>
                 </FormControl>
+              </Grid>
+
+              <Grid item lg={3} xl={3}>
                 <div className={classes.filterSlider}>
                   <Typography gutterBottom variant="body2" className={classes.filterSliderLabel}>
                     {`Magnitude(g): ${vMagnitude}`}
@@ -463,35 +470,8 @@ export default function SearchSsso({ history, setTitle }) {
                     onChange={(event, value) => { setVmagnitude(value); }}
                   />
                 </div>
-
-                <FormControl fullWidth className={classes.filterSubLevel}>
-                  <InputLabel>Sublevel dynamic class</InputLabel>
-                  <Select
-                    disabled={!(subLevelDynamicClassList.length > 0)}
-                    multiple
-                    value={subLevelDynamicClassSelected}
-                    // onChange={handleSublevelDynamicClass}
-                    input={<Input />}
-                    renderValue={() => (
-                      <div className={classes.chips}>
-                        {subLevelDynamicClassSelected.map((i) => (
-                          <Chip
-                            key={subLevelDynamicClassList[i].id}
-                            label={subLevelDynamicClassList[i].label}
-                            className={classes.chip}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  >
-                    {subLevelDynamicClassList.map((option, i) => (
-                      <MenuItem key={option.id} value={i}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
+              </Grid>
+              <Grid item lg={2} xl={2}>
                 <Button
                   variant="contained"
                   color="primary"
@@ -500,20 +480,49 @@ export default function SearchSsso({ history, setTitle }) {
                 >
                   Clear
                 </Button>
-              </form>
+              </Grid>
+              <FormControl className={classes.filterSubLevel}>
+                <InputLabel>Sublevel dynamic class</InputLabel>
+                <Select
+                  disabled={!(subLevelDynamicClassList.length > 0)}
+                  multiple
+                  value={subLevelDynamicClassSelected}
+                  onChange={handleSubLevelDynamicClass}
+                  input={<Input />}
+                  renderValue={() => (
+                    <div className={classes.chips}>
+                      {subLevelDynamicClassSelected.map((i) => (
+                        <Chip
+                          key={subLevelDynamicClassList[i].id}
+                          label={subLevelDynamicClassList[i].label}
+                          className={classes.chip}
+                        />
+                      ))}
+                    </div>
+                  )}
+                >
+                  {subLevelDynamicClassList.map((option, i) => (
+                    <MenuItem key={option.id} value={i}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-              <Table
-                data={tableData}
-                columns={tableColumns}
-                loadData={loadTableData}
-                totalCount={totalCount}
-                loading={true}
-                hasToolbar
-              />
-            </CardContent>
-          </Card>
-        </Grid>
+            </form>
+
+            <Table
+              data={tableData}
+              columns={tableColumns}
+              loadData={loadTableData}
+              totalCount={totalCount}
+              // loading={true}
+              hasToolbar
+            />
+          </CardContent>
+        </Card>
       </Grid>
     </Grid>
+
   );
 }
