@@ -6,8 +6,6 @@ import {
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
 import { getSkybotLists } from '../api/SearchSsso';
-import Toolbar from '@material-ui/core/Toolbar';
-import TextField from '@material-ui/core/TextField';
 import Slider from '@material-ui/core/Slider';
 import clsx from 'clsx';
 import Icon from '@material-ui/core/Icon';
@@ -16,7 +14,6 @@ import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
 import FormControl from "@material-ui/core/FormControl";
 import Chip from "@material-ui/core/Chip";
-import { getSkybotOutput } from '../api/SearchSsso';
 import Table from './utils/CustomTable';
 
 const useStyles = makeStyles((theme) => ({
@@ -75,13 +72,13 @@ export default function SearchSsso({ history, setTitle }) {
   const [tableData, setTableData] = useState([{}]);
   const [tablePage] = useState(1);
   const [tablePageSize] = useState(10);
+  const [tableLoading, setTableLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [vMagnitude, setVmagnitude] = useState([4, 18]);
-  const [dClass, setDclass] = useState([]);
   const [dynamicClass, setDynamicClass] = useState([0]);
   const [subLevelDynamicClassSelected, setSubLevelDynamicClassSelected] = useState([]);
   const [subLevelDynamicClassList, setSubLevelDynamicClassList] = useState([]);
-  const [objectCompiled, setObjectCompiled] = useState();
+  const [objectCompiled, setObjectCompiled] = useState("Centaur");
 
   const classes = useStyles();
 
@@ -89,12 +86,11 @@ export default function SearchSsso({ history, setTitle }) {
 
   useEffect(() => {
     setTitle('Search SSSO');
-    loadTableData();
   }, []);
 
   useEffect(() => {
     loadTableData();
-  }, [vMagnitude, dClass]);
+  }, [vMagnitude]);
 
   useEffect(() => {
     let currentSublevelList = [];
@@ -105,26 +101,9 @@ export default function SearchSsso({ history, setTitle }) {
     });
     setSubLevelDynamicClassSelected(Object.keys(currentSublevelList).map((el) => Number(el)));
     setSubLevelDynamicClassList(currentSublevelList);
-
-    // loadTableData();
-
   }, [dynamicClass]);
 
   useEffect(() => {
-    // loadTableData();
-    //  console.log("SubLevel Selected: ", subLevelDynamicClassSelected);
-
-    // if (dynamicClass.length > 0) {
-    //   const dynamicClassSelected = dynamicClass
-    //     .map((i) => optionsClassFirstLevel[i].value)
-    //     .concat(
-    //       subLevelDynamicClassSelected
-    //         .map((i) => optionsClassSecondLevel[i].value),
-    //     )
-    //     .join(';');
-    //   console.log(dynamicClassSelected);
-    // }
-
     if (dynamicClass.length > 0) {
       const dynamicClassSelected = dynamicClass
         .map((i) => optionsClassFirstLevel[i].value)
@@ -132,58 +111,43 @@ export default function SearchSsso({ history, setTitle }) {
           subLevelDynamicClassSelected
             .map((i) => subLevelDynamicClassList[i].value),
         )
-        .join(';');
-
+        .join(',');
       setObjectCompiled(dynamicClassSelected);
     }
-
-    // subLevelDynamicClassSelected.map((i) => {
-    //   console.log("Second Level: ", subLevelDynamicClassList[i].value);
-    // });
-
-    //  console.log("Selected: ", subLevelDynamicClassSelected)
-
   }, [subLevelDynamicClassSelected]);
 
   useEffect(() => {
-
     loadTableData();
-  }, [objectCompiled, vMagnitude]);
-
+  }, [objectCompiled]);
 
   const loadTableData = (event) => {
+    setTableLoading(true);
     let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
     let pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
     let searchValue = typeof event === 'undefined' || !event ? '' : event.searchValue;
 
-    // if (dClass && dClass.length > 0) {
-    // filters.push({
-    //   property: 'dynclass__in',
-    //   // value: dClass.toString(),
-    //   value: "Centaur",
-    // });
-    // }
 
-    if (vMagnitude) {
-      filters.push({
+    let options = [
+      {
+        property: 'dynclass__in',
+        value: objectCompiled,
+      },
+      {
         property: 'mv__range',
         value: vMagnitude.join(),
+      },
+      {
+        property: 'ccdnum__isnull',
+        value: false,
+      },
+    ]
+
+    options.map((option) => {
+      filters.push({
+        property: option.property,
+        value: option.value,
       });
-    }
-
-    filters.push({
-      property: 'ccdnum__isnull',
-      value: false,
     });
-
-    filters.push({
-      property: 'objectTable',
-      value: objectCompiled,
-    });
-    // getSkybotLists({ page, pageSize, search: searchValue, filters }).then(res => {
-    //   setTotalCount(res.data.count);
-    //   setTableData(res.data.results);
-    // });
 
     getSkybotLists({
       page,
@@ -191,87 +155,22 @@ export default function SearchSsso({ history, setTitle }) {
       search: searchValue,
       filters,
     }).then(res => {
-      // setTotalCount(res.data.count);
-      // setTableData(res.data.results);
-      console.log(res.data);
+      setTotalCount(res.data.count);
+      setTableData(res.data.results);
+      setTableLoading(false);
     });
-
-    // getSkybotOutput({
-    //   objectTable: dynamicClassSelected,
-    //   page: page,
-    //   pageSize: pageSize,
-    // }).then((res) => {
-    //   setTableData(res.results);
-    //   setTotalCount(res.count);
-    // });
-
-    // getSkybotOutput({
-    //   objectTable: objectCompiled,
-    //   page: page,
-    //   pageSize: pageSize,
-    //   filters: filters,
-    //   name: searchValue,
-    // }).then((res) => {
-    //   setTableData(res.results);
-    //   setTotalCount(res.count);
-    //   console.log(res.count);
-    // });
   };
 
   const handleClearFilters = () => {
     setVmagnitude([4, 18]);
-    setDclass([]);
+    setObjectCompiled("")
+    setDynamicClass([]);
   };
 
   const handleSearchSssoDetail = (row) => {
     history.push(`search-ssso-detail/${row.id}`);
   };
-  // const loadDynamicClassColumns = () => {
-  //   const dynclass = [
-  //     { name: 'Centaur', value: 'Centaur', title: 'Centaur', },
-  //     { name: 'Hungaria', value: 'Hungaria', title: 'Hungaria', },
-  //     { name: 'KBO>Classical>Inner', value: 'KBO>Classical>Inner', title: 'KBO>Classical>Inner', },
-  //     { name: 'KBO>Classical>Main', value: 'KBO>Classical>Main', title: 'KBO>Classical>Main', },
-  //     { name: 'KBO>Detached', value: 'KBO>Detached', title: 'KBO>Detached', },
-  //     { name: 'KBO>Resonant>11:3', value: 'KBO>Resonant>11:3', title: 'KBO>Resonant>11:3', },
-  //     { name: 'KBO>Resonant>11:6', value: 'KBO>Resonant>11:6', title: 'KBO>Resonant>11:6', },
-  //     { name: 'KBO>Resonant>11:8', value: 'KBO>Resonant>11:8', title: 'KBO>Resonant>11:8', },
-  //     { name: 'KBO>Resonant>19:9', value: 'KBO>Resonant>19:9', title: 'KBO>Resonant>19:9', },
-  //     { name: 'KBO>Resonant>2:1', value: 'KBO>Resonant>2:1', title: 'KBO>Resonant>2:1', },
-  //     { name: 'KBO>Resonant>3:1', value: 'KBO>Resonant>3:1', title: 'KBO>Resonant>3:1', },
-  //     { name: 'KBO>Resonant>3:2', value: 'KBO>Resonant>3:2', title: 'KBO>Resonant>3:2', },
-  //     { name: 'KBO>Resonant>4:3', value: 'KBO>Resonant>4:3', title: 'KBO>Resonant>4:3', },
-  //     { name: 'KBO>Resonant>5:2', value: 'KBO>Resonant>5:2', title: 'KBO>Resonant>5:2', },
-  //     { name: 'KBO>Resonant>5:3', value: 'KBO>Resonant>5:3', title: 'KBO>Resonant>5:3', },
-  //     { name: 'KBO>Resonant>5:4', value: 'KBO>Resonant>5:4', title: 'KBO>Resonant>5:4', },
-  //     { name: 'KBO>Resonant>7:2', value: 'KBO>Resonant>7:2', title: 'KBO>Resonant>7:2', },
-  //     { name: 'KBO>Resonant>7:3', value: 'KBO>Resonant>7:3', title: 'KBO>Resonant>7:3', },
-  //     { name: 'KBO>Resonant>7:4', value: 'KBO>Resonant>7:4', title: 'KBO>Resonant>7:4', },
-  //     { name: 'KBO>Resonant>9:4', value: 'KBO>Resonant>9:4', title: 'KBO>Resonant>9:4', },
-  //     { name: 'KBO>Resonant>9:5', value: 'KBO>Resonant>9:5', title: 'KBO>Resonant>9:5', },
-  //     { name: 'KBO>SDO', value: 'KBO>SDO', title: 'KBO>SDO', },
-  //     { name: 'Mars-Crosser', value: 'Mars-Crosser', title: 'Mars-Crosser', },
-  //     { name: 'MB>Cybele', value: 'MB>Cybele', title: 'MB>Cybele', },
-  //     { name: 'MB>Hilda', value: 'MB>Hilda', title: 'MB>Hilda', },
-  //     { name: 'MB>Inner', value: 'MB>Inner', title: 'MB>Inner', },
-  //     { name: 'MB>Middle', value: 'MB>Middle', title: 'MB>Middle', },
-  //     { name: 'MB>Outer', value: 'MB>Outer', title: 'MB>Outer', },
-  //     { name: 'NEA>Amor', value: 'NEA>Amor', title: 'NEA>Amor', },
-  //     { name: 'NEA>Apollo', value: 'NEA>Apollo', title: 'NEA>Apollo', },
-  //     { name: 'NEA>Aten', value: 'NEA>Aten', title: 'NEA>Aten', },
-  //     { name: 'Trojan', value: 'Trojan', title: 'Trojan', },
-  //   ];
 
-  //   return dynclass.map((el) => (
-  //     <MenuItem
-  //       key={el.value}
-  //       value={el.value}
-  //       title={el.title}
-  //     >
-  //       {el.title}
-  //     </MenuItem>
-  //   ));
-  // };
   const handleValues = (value) => {
     const roundValue = parseFloat(value).toFixed(3);
     const stringValue = roundValue.toString();
@@ -341,7 +240,7 @@ export default function SearchSsso({ history, setTitle }) {
       align: 'right',
     },
     {
-      name: 'object_table',
+      name: 'dynclass',
       title: 'Dynamic Class',
       width: 140,
       align: 'left',
@@ -424,7 +323,6 @@ export default function SearchSsso({ history, setTitle }) {
   return (
     <Grid>
       <Grid container spacing={6}>
-
         <Card>
           <CardHeader
             title={"SkyBot Output"}
@@ -519,7 +417,7 @@ export default function SearchSsso({ history, setTitle }) {
               columns={tableColumns}
               loadData={loadTableData}
               totalCount={totalCount}
-              // loading={true}
+              loading={tableLoading}
               hasToolbar
             />
           </CardContent>
