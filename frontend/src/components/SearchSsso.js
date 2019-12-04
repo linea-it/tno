@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import {
- Card, CardContent, CardHeader, MenuItem, Button 
+  Card, CardContent, CardHeader, MenuItem, Button
 } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
@@ -48,13 +48,11 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
     width: 600,
   },
-
   filterSubLevel: {
     marginLeft: theme.spacing(1),
     marginTop: theme.spacing(1),
     width: 600,
   },
-
   filterSlider: {
     width: 200,
     marginLeft: theme.spacing(6),
@@ -85,7 +83,6 @@ export default function SearchSsso({ history, setTitle }) {
   const [subLevelDynamicClassList, setSubLevelDynamicClassList] = useState([]);
   const [objectCompiled, setObjectCompiled] = useState();
 
-
   const classes = useStyles();
 
   const filters = [];
@@ -105,7 +102,6 @@ export default function SearchSsso({ history, setTitle }) {
       const current = optionsClassFirstLevel[i];
       const currentChildren = optionsClassSecondLevel.filter((option) => option.parentId === current.id);
       currentSublevelList = currentSublevelList.concat(currentChildren);
-
     });
     setSubLevelDynamicClassSelected(Object.keys(currentSublevelList).map((el) => Number(el)));
     setSubLevelDynamicClassList(currentSublevelList);
@@ -113,7 +109,6 @@ export default function SearchSsso({ history, setTitle }) {
     // loadTableData();
 
   }, [dynamicClass]);
-
 
   useEffect(() => {
     // loadTableData();
@@ -127,9 +122,7 @@ export default function SearchSsso({ history, setTitle }) {
     //         .map((i) => optionsClassSecondLevel[i].value),
     //     )
     //     .join(';');
-
     //   console.log(dynamicClassSelected);
-
     // }
 
     if (dynamicClass.length > 0) {
@@ -142,7 +135,6 @@ export default function SearchSsso({ history, setTitle }) {
         .join(';');
 
       setObjectCompiled(dynamicClassSelected);
-
     }
 
     // subLevelDynamicClassSelected.map((i) => {
@@ -152,8 +144,6 @@ export default function SearchSsso({ history, setTitle }) {
     //  console.log("Selected: ", subLevelDynamicClassSelected)
 
   }, [subLevelDynamicClassSelected]);
-
-
 
   useEffect(() => {
 
@@ -166,28 +156,45 @@ export default function SearchSsso({ history, setTitle }) {
     let pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
     let searchValue = typeof event === 'undefined' || !event ? '' : event.searchValue;
 
-    // if (vMagnitude) {
-    //   filters.push({
-    //     property: 'mv__range',
-    //     value: vMagnitude.join(),
-    //   });
-    // }
     // if (dClass && dClass.length > 0) {
-    //   filters.push({
-    //     property: 'dynclass__in',
-    //     value: dClass.toString(),
-    //   });
-    // }
     // filters.push({
-    //   property: 'ccdnum__isnull',
-    //   value: false,
+    //   property: 'dynclass__in',
+    //   // value: dClass.toString(),
+    //   value: "Centaur",
     // });
+    // }
+
+    if (vMagnitude) {
+      filters.push({
+        property: 'mv__range',
+        value: vMagnitude.join(),
+      });
+    }
+
+    filters.push({
+      property: 'ccdnum__isnull',
+      value: false,
+    });
+
+    filters.push({
+      property: 'objectTable',
+      value: objectCompiled,
+    });
     // getSkybotLists({ page, pageSize, search: searchValue, filters }).then(res => {
     //   setTotalCount(res.data.count);
     //   setTableData(res.data.results);
     // });
 
-
+    getSkybotLists({
+      page,
+      pageSize,
+      search: searchValue,
+      filters,
+    }).then(res => {
+      // setTotalCount(res.data.count);
+      // setTableData(res.data.results);
+      console.log(res.data);
+    });
 
     // getSkybotOutput({
     //   objectTable: dynamicClassSelected,
@@ -198,28 +205,17 @@ export default function SearchSsso({ history, setTitle }) {
     //   setTotalCount(res.count);
     // });
 
-
-    filters.push({
-      property: 'ccdnum__isnull',
-      value: false,
-    });
-
-    filters.push({
-      property: 'mv__range',
-      value: vMagnitude.join(),
-    });
-
-    getSkybotOutput({
-      objectTable: objectCompiled,
-      page: page,
-      pageSize: pageSize,
-      filters: filters,
-      name: searchValue,
-    }).then((res) => {
-      setTableData(res.results);
-      setTotalCount(res.count);
-      console.log(res.count);
-    });
+    // getSkybotOutput({
+    //   objectTable: objectCompiled,
+    //   page: page,
+    //   pageSize: pageSize,
+    //   filters: filters,
+    //   name: searchValue,
+    // }).then((res) => {
+    //   setTableData(res.results);
+    //   setTotalCount(res.count);
+    //   console.log(res.count);
+    // });
   };
 
   const handleClearFilters = () => {
@@ -230,7 +226,6 @@ export default function SearchSsso({ history, setTitle }) {
   const handleSearchSssoDetail = (row) => {
     history.push(`search-ssso-detail/${row.id}`);
   };
-
   // const loadDynamicClassColumns = () => {
   //   const dynclass = [
   //     { name: 'Centaur', value: 'Centaur', title: 'Centaur', },
@@ -283,7 +278,6 @@ export default function SearchSsso({ history, setTitle }) {
     return stringValue;
   };
 
- 
   const tableColumns = [
     {
       name: 'id',
@@ -312,10 +306,10 @@ export default function SearchSsso({ history, setTitle }) {
       width: 120,
       align: 'right',
       customElement: (row) => (
-          <span>
-            {row.raj2000 ? handleValues(row.raj2000) : ""}
-          </span>
-        ),
+        <span>
+          {row.raj2000 ? handleValues(row.raj2000) : ""}
+        </span>
+      ),
     },
     {
       name: 'decj2000',
@@ -323,10 +317,10 @@ export default function SearchSsso({ history, setTitle }) {
       width: 120,
       align: 'right',
       customElement: (row) => (
-          <span>
-            {row.decj2000 ? handleValues(row.decj2000) : ""}
-          </span>
-        ),
+        <span>
+          {row.decj2000 ? handleValues(row.decj2000) : ""}
+        </span>
+      ),
     },
     {
       name: 'ccdnum',
@@ -365,12 +359,11 @@ export default function SearchSsso({ history, setTitle }) {
       width: 248,
       align: 'right',
       customElement: (row) => (
-          <span>
-            {row.errpos ? handleValues(row.errpos) : ""}
-          </span>
-        ),
+        <span>
+          {row.errpos ? handleValues(row.errpos) : ""}
+        </span>
+      ),
     },
-
   ];
 
   const optionsClassFirstLevel = [
@@ -427,8 +420,6 @@ export default function SearchSsso({ history, setTitle }) {
   const handleSubLevelDynamicClass = (e) => {
     setSubLevelDynamicClassSelected(e.target.value);
   };
-
-
 
   return (
     <Grid>
@@ -522,9 +513,7 @@ export default function SearchSsso({ history, setTitle }) {
                   ))}
                 </Select>
               </FormControl>
-
             </form>
-
             <Table
               data={tableData}
               columns={tableColumns}
@@ -537,6 +526,5 @@ export default function SearchSsso({ history, setTitle }) {
         </Card>
       </Grid>
     </Grid>
-
   );
 }
