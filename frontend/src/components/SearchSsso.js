@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { Card, CardContent, CardHeader, MenuItem, Button } from '@material-ui/core';
+import {
+ Card, CardContent, CardHeader, MenuItem, Button 
+} from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
-import Table from './utils/CustomTable';
 import { getSkybotLists } from '../api/SearchSsso';
 import Toolbar from '@material-ui/core/Toolbar';
 import TextField from '@material-ui/core/TextField';
@@ -16,6 +17,7 @@ import Input from '@material-ui/core/Input';
 import FormControl from "@material-ui/core/FormControl";
 import Chip from "@material-ui/core/Chip";
 import { getSkybotOutput } from '../api/SearchSsso';
+import Table from './utils/CustomTable';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -86,10 +88,10 @@ export default function SearchSsso({ history, setTitle }) {
 
   const classes = useStyles();
 
-  const filters = []
+  const filters = [];
 
   useEffect(() => {
-    setTitle("Search SSSO");
+    setTitle('Search SSSO');
     loadTableData();
   }, []);
 
@@ -275,51 +277,62 @@ export default function SearchSsso({ history, setTitle }) {
   //     </MenuItem>
   //   ));
   // };
+  const handleValues = (value) => {
+    const roundValue = parseFloat(value).toFixed(3);
+    const stringValue = roundValue.toString();
+    return stringValue;
+  };
 
+ 
   const tableColumns = [
     {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.icoDetail}`)} />,
+      action: handleSearchSssoDetail,
+      sortingEnabled: false,
+    },
+    {
       name: 'name',
-      title: 'Object Name',
+      title: 'Obj Name',
       width: 180,
       align: 'left',
+      headerTooltip: 'Object Name',
     },
     {
       name: 'num',
-      title: 'Object Number',
+      title: 'Obj Num',
       width: 130,
-      align: 'left',
+      align: 'right',
     },
     {
       name: 'raj2000',
       title: 'RA (deg)',
       width: 120,
-      align: 'left',
-      customElement: (row) => {
-        return (
+      align: 'right',
+      customElement: (row) => (
           <span>
-            {row.raj2000 ? parseFloat(row.raj2000.toFixed(3)) : ""}
+            {row.raj2000 ? handleValues(row.raj2000) : ""}
           </span>
-        );
-      },
+        ),
     },
     {
       name: 'decj2000',
       title: 'Dec (deg)',
       width: 120,
-      align: 'left',
-      customElement: (row) => {
-        return (
+      align: 'right',
+      customElement: (row) => (
           <span>
-            {row.decj2000 ? parseFloat(row.decj2000.toFixed(3)) : ""}
+            {row.decj2000 ? handleValues(row.decj2000) : ""}
           </span>
-        );
-      },
+        ),
     },
     {
       name: 'ccdnum',
-      title: 'CCD Number',
+      title: 'CCD Num',
       width: 120,
-      align: 'center',
+      align: 'right',
     },
     {
       name: 'band',
@@ -331,33 +344,34 @@ export default function SearchSsso({ history, setTitle }) {
       name: 'expnum',
       title: 'Exposure',
       width: 130,
-      align: 'left',
+      align: 'right',
     },
     {
       name: 'object_table',
       title: 'Dynamic Class',
       width: 140,
       align: 'left',
+      headerTooltip: 'Dynamic Class',
     },
-    // {
-    //   name: 'mv',
-    //   title: 'Visual Magnitude',
-    //   width: 150,
-    //   align: 'center',
-    // },
-    // {
-    //   name: 'errpos',
-    //   title: 'Error on the position (arcsec)',
-    //   width: 248,
-    //   align: 'center',
-    // },
     {
-      name: 'id',
-      title: " ",
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.icoDetail}`)} />,
-      action: handleSearchSssoDetail,
-    }
-  ]
+      name: 'mv',
+      title: 'Visual Magnitude (mag)',
+      width: 150,
+      align: 'right',
+    },
+    {
+      name: 'errpos',
+      title: 'Error on the position (arcsec)',
+      width: 248,
+      align: 'right',
+      customElement: (row) => (
+          <span>
+            {row.errpos ? handleValues(row.errpos) : ""}
+          </span>
+        ),
+    },
+
+  ];
 
   const optionsClassFirstLevel = [
     { id: 1, label: 'Centaur', value: 'Centaur' },

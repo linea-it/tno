@@ -13,6 +13,8 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import DescriptionIcon from '@material-ui/icons/Description';
 import Tooltip from '@material-ui/core/Tooltip';
+import ReactInterval from 'react-interval';
+import Button from '@material-ui/core/Button';
 import CustomLog from './utils/CustomLog';
 import CustomDialog from './utils/CustomDialog';
 import {
@@ -22,8 +24,6 @@ import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
 import Stepper from './AstrometryStepper';
-import ReactInterval from 'react-interval';
-import Button from '@material-ui/core/Button';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -237,6 +237,15 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
 
   const listColumnsTable = [
     {
+      name: 'id',
+      title: 'Details',
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: handleAsteroidDetail,
+      sortingEnabled: false,
+      width: 100,
+      align: 'center',
+    },
+    {
       name: 'status',
       title: 'Status',
       align: 'center',
@@ -296,11 +305,12 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       name: 'name',
       title: 'Name',
       align: 'left',
+      sortingEnabled: true,
     },
     {
       name: 'number',
       title: 'Number',
-      align: 'center',
+      align: 'right',
       customElement: (row) => {
         if (row.number === '-') {
           return ' ';
@@ -315,7 +325,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     {
       name: 'ccd_images',
       title: 'CCD Images',
-      align: 'center',
+      align: 'right',
       width: 120,
       customElement: (row) => {
         if (row.ccd_images === '-') {
@@ -332,37 +342,42 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       name: 'available_ccd_image',
       title: 'Available CCDs',
       width: 140,
-      align: 'center',
+      align: 'right',
     },
     {
       name: 'processed_ccd_image',
-      title: 'Processed CCDs',
+      title: 'Proc CCDs',
+      headerTooltip: 'Processed CCDs',
       width: 150,
-      align: 'center',
+      align: 'right',
     },
-    { name: 'catalog_rows', title: 'Stars', align: 'center' },
-    { name: 'outputs', title: 'Output Files', align: 'center' },
+    { name: 'catalog_rows', title: 'Stars', align: 'right' },
+    { name: 'outputs', title: 'Output Files', align: 'right' },
     {
       name: 'execution_time',
-      title: 'Execution Time',
+      title: 'Exec Time',
+      headerTooltip: 'Execution time',
       customElement: (row) => (
         <span>
-          {row.execution_time && typeof row.execution_time === "string" ? row.execution_time.substring(0, 8) : ""}
+          {row.execution_time && typeof row.execution_time === 'string' ? row.execution_time.substring(0, 8) : ''}
 
         </span>
       ),
       width: 140,
       align: 'center',
     },
-    {
-      name: 'id',
-      title: ' ',
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: handleAsteroidDetail,
-    },
   ];
 
   const bugColumnsTable = [
+    {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      align: 'center',
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: handleAsteroidDetail,
+      sortingEnabled: false,
+    },
     {
       name: 'status',
       title: 'Status',
@@ -427,7 +442,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     {
       name: 'number',
       title: 'Number',
-      align: 'center',
+      align: 'right',
       width: 120,
       customElement: (row) => {
         if (row.number === '-') {
@@ -494,14 +509,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         </Tooltip>
       ),
     },
-    {
-      name: 'id',
-      title: ' ',
-      width: 80,
-      align: 'center',
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: handleAsteroidDetail,
-    },
   ];
 
   useEffect(() => {
@@ -524,23 +531,23 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   }, [count]);
 
   useEffect(() => {
-    if(executionStats) {
-      if((executionStats.success !== 0 && executionStats.warning !== 0 && executionStats.failure !== 0 && executionStats.not_executed !== 0)) {
-          setDonutDataStatist([
-            { name: 'Success', value: executionStats.success, color: '#009900' },
-            { name: 'Warning', value: executionStats.warning, color: '#D79F15' },
-            { name: 'Failure', value: executionStats.failure, color: '#ff1a1a' },
-            { name: 'Not Executed', value: executionStats.not_executed, color: '#ABA6A2' },
-            { name: 'Running/Idle', value: executionStats.pending ? executionStats.pending : 0, color: '#0099ff' },
-          ]);
+    if (executionStats) {
+      if ((executionStats.success !== 0 && executionStats.warning !== 0 && executionStats.failure !== 0 && executionStats.not_executed !== 0)) {
+        setDonutDataStatist([
+          { name: 'Success', value: executionStats.success, color: '#009900' },
+          { name: 'Warning', value: executionStats.warning, color: '#D79F15' },
+          { name: 'Failure', value: executionStats.failure, color: '#ff1a1a' },
+          { name: 'Not Executed', value: executionStats.not_executed, color: '#ABA6A2' },
+          { name: 'Running/Idle', value: executionStats.pending ? executionStats.pending : 0, color: '#0099ff' },
+        ]);
       }
     }
-  }, [executionStats])
+  }, [executionStats]);
 
   useEffect(() => {
-    if(executionTime) {
-      if(executionTime.ccd_images !== 0 || executionTime.bsp_jpl !== 0 || executionTime.catalog !== 0 || executionTime.astrometry !== 0) {
-        setDonutDataExecutionTime( [
+    if (executionTime) {
+      if (executionTime.ccd_images !== 0 || executionTime.bsp_jpl !== 0 || executionTime.catalog !== 0 || executionTime.astrometry !== 0) {
+        setDonutDataExecutionTime([
           { name: 'Ccd Images', value: executionTime.ccd_images },
           { name: 'Bsp_Jpl', value: executionTime.bsp_jpl },
           { name: 'Catalog', value: executionTime.catalog },
@@ -548,7 +555,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         ]);
       }
     }
-  }, [executionTime])
+  }, [executionTime]);
 
   const handleChangeToolButton = (event, newValue) => {
     setToolButton(newValue);
@@ -716,7 +723,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           </Grid>
         </Grid>
       </Grid>
-    </Grid >
+    </Grid>
   );
 }
 export default withRouter(AstrometryDetail);
