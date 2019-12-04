@@ -150,7 +150,7 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
     queryset = SkybotOutput.objects.select_related().all()
     serializer_class = SkybotOutputSerializer
     filter_fields = ('id', 'name', 'expnum', 'dynclass', 'mv', 'ccdnum')
-    search_fields = ('name', 'num')
+    search_fields = ('name', 'num', 'dynclass', 'mv')
     ordering_fields = ('name', 'dynclass', 'num', 'raj2000', 'decj2000', 'expnum', 'ccdnum', 'band', 'mv', 'errpos')
     ordering = ('expnum', 'ccdnum')
 
