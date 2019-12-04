@@ -89,105 +89,226 @@ function SkybotAsteroid({ setTitle, match }) {
   const [exposuresTableData, setExposuresTableData] = useState([]);
   const [asteroidsOnlyInsideCcds, setAsteroidsOnlyInsideCcds] = useState(true);
 
+
+  const handleValues = (value) => {
+    const roundValue = parseFloat(value).toFixed(3);
+    const stringValue = roundValue.toString();
+    return stringValue;
+  };
+
   const exposuresTableColumns = [{
-    title: 'Pointings',
+    title: 'Point',
     name: 'pointing',
+    headerTooltip: 'Pointings',
   },
   {
-    title: 'Object Name',
+    title: 'Obj Name',
     name: 'name',
+    headerTooltip: 'Object Name',
   },
   {
-    title: 'Object Number',
+    title: 'Obj Num',
     name: 'num',
+    align: 'right',
   },
   {
-    title: 'Dynamic class',
+    title: 'Dyn Class',
     name: 'dynclass',
+    headerTooltip: 'Dynamic Class',
   },
   {
-    title: 'Right Ascension (RA) [degree]',
+    title: 'Right Ascension  (hms)',
+    name: 'ra',
+    align: 'right',
+  },
+  {
+    title: 'Declination  (dms)',
+    name: 'dec',
+  },
+  {
+    title: 'Right Ascension  (degree)',
     name: 'raj2000',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.raj2000 ? handleValues(row.raj2000) : ''}
+      </span>
+    ),
   },
   {
-    title: 'Declination (Dec) [degree]',
+    title: 'Dec (deg)',
     name: 'decj2000',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.decj2000 ? handleValues(row.decj2000) : ''}
+      </span>
+    ),
   },
   {
-    title: 'Visual Magnitude',
+    title: 'Vis Mag',
     name: 'mv',
+    align: 'right',
   },
   {
-    title: 'Error on the position [arcsec]',
+    title: 'Error',
     name: 'errpos',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.errpos ? handleValues(row.errpos) : ''}
+      </span>
+    ),
   },
   {
-    title: 'Angular Distance [arcsec]',
+    title: 'Ang Dist (arcsec)',
     name: 'd',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.d ? handleValues(row.d) : ''}
+      </span>
+    ),
   },
   {
-    title: 'dRAcosDec',
+    title: 'dRAcosDec (arcsec/h)',
     name: 'dracosdec',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.dracosdec ? handleValues(row.dracosdec) : ''}
+      </span>
+    ),
   },
   {
-    title: 'dDEC',
+    title: 'dDEC  (arcsec/h)',
     name: 'd',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.d ? handleValues(row.d) : ''}
+      </span>
+    ),
   },
   {
-    title: 'Geocentric distance [AU]',
+    title: 'Geoc Dist (AU)',
     name: 'dgeo',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.dgeo ? handleValues(row.dgeo) : ''}
+      </span>
+    ),
   },
   {
-    title: 'Heliocentric distance [AU]',
+    title: 'Hel Dist (AU)',
     name: 'dhelio',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.dhelio ? handleValues(row.dhelio) : ''}
+      </span>
+    ),
   },
   {
-    title: 'Phase angle [degrees]',
+    title: 'Phase Angle (deg)',
     name: 'phase',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.phase ? handleValues(row.phase) : ''}
+      </span>
+    ),
   },
   {
-    title: 'Solar elongation',
+    title: 'Solar Elong',
     name: 'solelong',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.solelong ? handleValues(row.solelong) : ''}
+      </span>
+    ),
   },
   {
-    title: 'Vector position in x [AU]',
+    title: 'Vec Pos x (AU)',
     name: 'px',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.px ? handleValues(row.px) : ''}
+      </span>
+    ),
   },
   {
-    title: 'Vector position in y [AU]',
+    title: 'Vec pos y (AU)',
     name: 'py',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.py ? handleValues(row.py) : ''}
+      </span>
+    ),
   },
   {
-    title: 'Vector position in z [AU]',
+    title: 'Vec Pos z (AU)',
     name: 'pz',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.pz ? handleValues(row.pz) : ''}
+      </span>
+    ),
   },
   {
-    title: 'Vector position in x [AU/d]',
+    title: 'Vec Pos x [AU/d]',
     name: 'vx',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.vx ? handleValues(row.vx) : ''}
+      </span>
+    ),
   },
   {
-    title: 'Vector position in y [AU/d]',
+    title: 'Vec Pos y [AU/d]',
     name: 'vy',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.vy ? handleValues(row.vy) : ''}
+      </span>
+    ),
   },
   {
-    title: 'Vector position in z [AU/d]',
+    title: 'Vec Pos z [AU/d]',
     name: 'vz',
+    align: 'right',
+    customElement: (row) => (
+      <span>
+        {row.vz ? handleValues(row.vz) : ''}
+      </span>
+    ),
   },
   {
-    title: 'Epoch of the position vector [Julien Day]',
+    title: 'Epo Pos Vec (Julien Day)',
     name: 'jdref',
+    align: 'right',
   },
   {
     title: 'Band',
     name: 'band',
+    align: 'center',
   },
   {
-    title: 'Exposure',
+    title: 'Expos',
     name: 'expnum',
+    align: 'right',
   },
   {
-    title: 'CCD number',
+    title: 'CCD Num',
     name: 'ccdnum',
+    align: 'right',
   },
   {
     name: 'externallink',
@@ -301,7 +422,6 @@ function SkybotAsteroid({ setTitle, match }) {
               },
             };
           }
-
           return {
             name: column,
           };
@@ -380,8 +500,8 @@ function SkybotAsteroid({ setTitle, match }) {
                     remote={false}
                   />
                 ) : (
-                    <Skeleton height={540} />
-                  )}
+                  <Skeleton height={540} />
+                )}
               </CardContent>
             </Card>
           </Grid>

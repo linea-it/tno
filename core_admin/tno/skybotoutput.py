@@ -27,8 +27,32 @@ class FilterObjects(DBBase):
         cols = self.table.c
 
         stm = select([
+            cols.id,
             cols.dynclass.label("object_table"),
             cols.name,
+            cols.num,
+            cols.ra,
+            cols.dec,
+            cols.raj2000,
+            cols.decj2000,
+            cols.d,
+            cols.dracosdec,
+            cols.ddec,
+            cols.dgeo,
+            cols.dhelio,
+            cols.phase,
+            cols.solelong,
+            cols.px,
+            cols.py,
+            cols.pz,
+            cols.vx,
+            cols.vy,
+            cols.vz,
+            cols.externallink,
+            cols.expnum,
+            cols.ccdnum,
+            cols.band,
+            cols.pointing_id,
             func.count(cols.name).label("freq"),
             null().label('filters'),
             func.min(cols.mv).label('mag_min'),
@@ -94,7 +118,7 @@ class FilterObjects(DBBase):
             stm = stm.where(and_(*terms))
 
         # Agrupamento
-        stm = stm.group_by(cols.name, cols.dynclass)
+        stm = stm.group_by(cols.id, cols.name, cols.dynclass)
 
         # Ordenacao
         stm = stm.order_by(cols.name)
