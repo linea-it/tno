@@ -240,6 +240,16 @@ function Skybot({ setTitle, history }) {
 
   const tableColumns = [
     {
+      name: 'id',
+      title: 'Details',
+      width: 110,
+      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (row) => history.push(`/skybot/${row.id}`),
+      align: 'center',
+      sortingEnabled: false,
+
+    },
+    {
       name: 'status',
       title: 'Status',
       width: 140,
@@ -325,21 +335,14 @@ function Skybot({ setTitle, history }) {
       name: 'type_run', title: 'Type', width: 120, align: 'center',
     },
     {
-      name: 'rows', title: 'Rows', width: 100, align: 'center',
+      name: 'rows', title: 'Rows', width: 100, align: 'right',
     },
     {
       name: 'h_execution_time',
-      title: 'Execution Time',
+      title: 'Exec Time',
       width: 150,
       align: 'center',
-    },
-    {
-      name: 'id',
-      title: ' ',
-      width: 100,
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: (row) => history.push(`/skybot/${row.id}`),
-      align: 'center',
+      headerTooltip: "Execution time"
     },
   ];
 

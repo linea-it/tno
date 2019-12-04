@@ -33,6 +33,7 @@ function PointingsDetail({ setTitle, match, history }) {
     setTitle('Pointings');
 
     getPointing({ id }).then((res) => {
+      console.log(res);
       setPointingDetailsList([
         {
           title: 'Image Id',
@@ -55,7 +56,7 @@ function PointingsDetail({ setTitle, match, history }) {
           value: moment(res.date_obs).format("YYYY-MM-DD"),
         },
         {
-          title: 'Exposure',
+          title: 'Exposure (s)',
           tooltip: 'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
           value: res.expnum,
         },

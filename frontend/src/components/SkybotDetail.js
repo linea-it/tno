@@ -69,9 +69,20 @@ function SkybotDetail({ setTitle, match, history }) {
   const [skybotDetailTableTotalCount, setSkybotDetailTableTotalCount] = useState(0);
 
   const skybotDetailTableColumns = [
+
+    {
+      name: 'ccd_time',
+      title: 'Details',
+      width: 100,
+      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (row) => history.push(`/skybot/${id}/asteroid/${row.expnum}`),
+      align: 'center',
+      sortingEnabled: false,
+    },
     {
       name: 'status',
       title: 'Status',
+      align: 'center',
       sortingEnabled: false,
       customElement: (row) => {
         if (row.status === 'failure') {
@@ -128,6 +139,7 @@ function SkybotDetail({ setTitle, match, history }) {
       title: 'Expnum',
       sortingEnabled: false,
       width: 100,
+      align: 'right',
     },
     {
       name: 'band',
@@ -149,40 +161,39 @@ function SkybotDetail({ setTitle, match, history }) {
     },
     {
       name: 'execution_time',
-      title: 'Execution Time (s)',
+      title: 'Exec Time (s)',
+      headerTooltip: "Execution time",
       sortingEnabled: false,
       width: 150,
+      align: 'right',
     },
     {
       name: 'count_rows',
       title: 'Skybot Rows',
       sortingEnabled: false,
+      align: 'right',
     },
     {
       name: 'created',
       title: 'Created',
       sortingEnabled: false,
+      align: 'right',
     },
     {
       name: 'updated',
       title: 'Updated',
       sortingEnabled: false,
       width: 100,
+      align: 'right',
     },
     {
       name: 'ccd_count_rows',
       title: 'Inside CCD',
       sortingEnabled: false,
       width: 100,
+      align: 'right',
     },
-    {
-      name: 'ccd_time',
-      title: ' ',
-      width: 100,
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: (row) => history.push(`/skybot/${id}/asteroid/${row.expnum}`),
-      align: 'center',
-    },
+
   ];
 
 

@@ -29,7 +29,23 @@ function Pointings({ setTitle, history }) {
   const [pointingsTableCount, setPointingsTableCount] = useState(0);
   const [loading, setLoading] = useState(false);
 
+
+  const handleValues = (value) => {
+    const roundValue = parseFloat(value).toFixed(3);
+    const stringValue = roundValue.toString();
+    return stringValue;
+  };
+
   const pointingsTableColumns = [
+    {
+      name: 'id',
+      title: 'Details',
+      align: 'center',
+      width: 100,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (el) => history.push(`/pointings/${el.id}`),
+      sortingEnabled: false,
+    },
     {
       name: 'date_obs',
       title: 'Observation Date',
@@ -58,7 +74,7 @@ function Pointings({ setTitle, history }) {
     {
       name: 'ccdnum',
       title: 'CCD Number',
-      align: 'center',
+      align: 'right',
       width: 120,
       headerTooltip: 'CCD Number (1, 2, ..., 62)',
       sortingEnabled: false,
@@ -74,7 +90,7 @@ function Pointings({ setTitle, history }) {
     {
       name: 'exptime',
       title: 'Exposure time (s)',
-      align: 'center',
+      align: 'right',
       width: 130,
       headerTooltip: 'Exposure time of observation',
       sortingEnabled: false,
@@ -82,32 +98,27 @@ function Pointings({ setTitle, history }) {
     {
       name: 'ra_cent',
       title: 'ra_cent (deg)',
-      align: 'center',
+      align: 'right',
       headerTooltip: 'Right Ascension of the center of the CCD image',
       sortingEnabled: false,
-      customElement: (row) => {
-        return (
-          <span>
-            {row.ra_cent ? parseFloat(row.ra_cent.toFixed(3)) : ""}
-          </span>
-        );
-      },
+      customElement: (row) => (
+        <span>
+          {row.ra_cent ? handleValues(row.ra_cent) : ''}
+        </span>
+      ),
     },
     {
       name: 'dec_cent',
       title: 'dec_cent (deg)',
-      align: 'center',
+      align: 'right',
       headerTooltip: 'Declination of the center of the CCD image',
       sortingEnabled: false,
-      customElement: (row) => {
-        return (
-          <span>
-            {row.dec_cent ? parseFloat(row.dec_cent.toFixed(3)) : ""}
-          </span>
-        );
-      },
+      customElement: (row) => (
+        <span>
+          {row.dec_cent ? handleValues(row.dec_cent) : ''}
+        </span>
+      ),
     },
-
     {
       name: 'downloaded',
       title: 'Downloaded',
@@ -119,17 +130,10 @@ function Pointings({ setTitle, history }) {
           <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
         </span>
       ) : (
-          <span title={el.downloaded}>
-            <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-          </span>
-        )),
-    },
-    {
-      name: 'id',
-      title: 'Detail',
-      align: 'center',
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: (el) => history.push(`/pointings/${el.id}`),
+        <span title={el.downloaded}>
+          <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+        </span>
+      )),
     },
   ];
 
@@ -151,8 +155,6 @@ function Pointings({ setTitle, history }) {
 
   useEffect(() => {
     setTitle('Pointings');
-
-    console.log('hellsfdskr');
   }, []);
 
   return (

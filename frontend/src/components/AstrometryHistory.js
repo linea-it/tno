@@ -97,6 +97,14 @@ function AstrometryHistory({ history, reloadHistory }) {
 
   const columns = [
     {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: handleClickHistoryTable,
+      align: 'center',
+    },
+    {
       name: 'status',
       title: 'Status',
       width: 150,
@@ -171,13 +179,13 @@ function AstrometryHistory({ history, reloadHistory }) {
       name: 'input_list',
       title: 'Input',
       width: 100,
-      align: 'center',
+      align: 'right',
     },
     {
       name: 'configuration',
       title: 'Configuration',
       width: 150,
-      align: 'center',
+      align: 'right',
     },
     {
       name: 'start_time',
@@ -198,8 +206,9 @@ function AstrometryHistory({ history, reloadHistory }) {
     },
     {
       name: 'execution_time',
-      title: 'Execution Time',
-      width: 180,
+      title: 'Exec Time',
+      headerTooltip: 'Execution time',
+      width: 100,
       customElement: (row) => (
         <span>
           {row.execution_time && typeof row.execution_time === 'string' ? row.execution_time.substring(0, 8) : ''}
@@ -211,15 +220,7 @@ function AstrometryHistory({ history, reloadHistory }) {
       name: 'count_objects',
       title: 'Asteroids',
       width: 100,
-      align: 'center',
-    },
-    {
-      name: 'id',
-      title: ' ',
-      width: 100,
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: handleClickHistoryTable,
-      align: 'center',
+      align: 'right',
     },
   ];
 
