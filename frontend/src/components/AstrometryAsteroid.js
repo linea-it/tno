@@ -172,18 +172,22 @@ function AstrometryAsteroid({
     count: 0,
   });
 
+
   const astrometryColumns = [
     {
       name: 'ra',
       title: 'RA',
+      align: 'right',
     },
     {
       name: 'dec',
       title: 'Dec',
+      align: 'right',
     },
     {
       name: 'mag',
       title: 'mag',
+      align: 'right',
     },
     {
       name: 'julian_date',
@@ -192,9 +196,8 @@ function AstrometryAsteroid({
     {
       name: 'obs_code',
       title: 'Obs. Code',
-      align: 'center',
+      align: 'right',
     },
-
     {
       name: 'catalog_code',
       title: 'Catalog Code',

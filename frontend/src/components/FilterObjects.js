@@ -370,8 +370,17 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
 
   const historyTableColumns = [
     {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (el) => history.push(`/filter-objects/${el.id}`),
+      align: 'center',
+    },
+    {
       name: 'status',
       title: 'Status',
+      align: 'center',
       width: 140,
       customElement: (row) => {
         if (row.status === 'failure' || row.status === 'error') {
@@ -449,14 +458,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
           {moment(row.creation_date).format('MM-DD-YYYY')}
         </span>
       ),
-    },
-    {
-      name: 'id',
-      title: ' ',
-      width: 100,
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
-      action: (el) => history.push(`/filter-objects/${el.id}`),
-      align: 'center',
     },
   ];
 
@@ -756,7 +757,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                               <Grid container alignItems="flex-end" spacing={1}>
                                 <Grid item xs={12} md={9}>
                                   <TextField
-                                    label="Search by name"
+                                    label="Search by object name"
                                     value={searchFilter}
                                     onChange={handleSearchFilter}
                                     fullWidth
@@ -937,7 +938,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                                 >
                                   <Button
                                     variant="contained"
-                                    color="secondary"
+                                    color="primary"
                                     className={classes.button}
                                     onClick={handleSaveSubmit}
                                     disabled={!(resultTableData.length > 0)}
@@ -990,7 +991,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                       ) : (
                           <div className={classes.filterCountWrapper}>
 
-
                             <Skeleton height={350} className={classes.skeleton} />
                             <CircularProgress
                               className={classes.circular_progress}
@@ -1009,7 +1009,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
             </SizeMe>
           </Grid>
         </Grid>
-
       </Grid>
       <Grid item xs={12}>
         <Grid
@@ -1078,7 +1077,11 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
             </FormControl>
             <Divider />
             <FormControl className={classes.formControl} fullWidth>
-              <Button color="primary" variant="contained" onClick={handleSaveListClick} disabled={!tableNameValidation.valid}>Save</Button>
+              <Button color="primary" variant="contained" onClick={handleSaveListClick}
+                disabled={false}
+                disabled={!tableNameValidation.valid}
+              >
+                Save</Button>
               {resultLoading ? (
                 <CircularProgress
                   color="primary"
