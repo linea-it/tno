@@ -124,8 +124,7 @@ export default function SearchSsso({ history, setTitle }) {
     setTableLoading(true);
     let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
     let pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
-    let searchValue = typeof event === 'undefined' || !event ? '' : event.searchValue;
-
+    let searchValue = typeof event === 'undefined' && !event ? " " : event.searchValue;
 
     let options = [
       {
@@ -163,7 +162,7 @@ export default function SearchSsso({ history, setTitle }) {
 
   const handleClearFilters = () => {
     setVmagnitude([4, 18]);
-    setObjectCompiled("")
+    setObjectCompiled("");
     setDynamicClass([]);
   };
 
@@ -306,7 +305,7 @@ export default function SearchSsso({ history, setTitle }) {
     { id: 28, parentId: 6, label: 'Amor', value: 'NEA>Amor' },
     { id: 29, parentId: 6, label: 'Apollo', value: 'NEA>Apollo' },
     { id: 30, parentId: 6, label: 'Aten', value: 'NEA>Aten' },
-    { id: 31, parentId: 6, label: 'Aten', value: 'NEA>Atira' },
+    { id: 31, parentId: 6, label: 'Atira', value: 'NEA>Atira' },
     { id: 32, parentId: 4, label: 'Deep', value: 'Mars-Crosser>Deep' },
     { id: 33, parentId: 4, label: 'Shallow', value: 'Mars-Crosser>Shallow' },
   ];
