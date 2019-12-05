@@ -156,6 +156,8 @@ export default function SearchSsso({ history, setTitle }) {
     }).then(res => {
       setTotalCount(res.data.count);
       setTableData(res.data.results);
+
+    }).finally(() => {
       setTableLoading(false);
     });
   };
