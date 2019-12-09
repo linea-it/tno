@@ -2,8 +2,6 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
-import moment from 'moment';
-
 
 const useStyles = makeStyles({
   container: {
@@ -17,7 +15,6 @@ const useStyles = makeStyles({
   },
 });
 
-
 export default function DateAndTimePickers(props) {
   const classes = useStyles();
   const { label } = props;
@@ -28,13 +25,10 @@ export default function DateAndTimePickers(props) {
     const value = event.currentTarget.value;
 
     if (id === "initialDate") {
-
       props.setSubmition({
         ...props.valueSubmition,
         ephemeris_initial_date: value,
-
       });
-
       props.setInitialDate(value);
     }
     else {
@@ -46,7 +40,6 @@ export default function DateAndTimePickers(props) {
     }
   }
 
-
   return (
     <form className={classes.container} noValidate>
       <TextField
@@ -54,14 +47,12 @@ export default function DateAndTimePickers(props) {
         title={props.title}
         label={label}
         type="date"
-        // defaultValue={"2019-05-08"}
         defaultValue={props.defaultDate}
         onChange={handleChange}
         className={classes.textField}
         InputLabelProps={{
           shrink: true,
         }}
-
       />
     </form>
   );

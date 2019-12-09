@@ -471,5 +471,4 @@ SkybotRunDetail.propTypes = {
   setTitle: PropTypes.func.isRequired,
 };
 
-
 export default withRouter(SkybotRunDetail);

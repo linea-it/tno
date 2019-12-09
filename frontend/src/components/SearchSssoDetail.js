@@ -6,6 +6,7 @@ import CustomList from './utils/CustomList';
 import { getSkybotRecord } from '../api/SearchSsso';
 import clsx from 'clsx';
 import Icon from '@material-ui/core/Icon';
+import PropTypes from 'prop-types';
 
 function SearchSSSoDetail({ history, setTitle, match: { params } }) {
 
@@ -102,4 +103,17 @@ function SearchSSSoDetail({ history, setTitle, match: { params } }) {
     </Grid>
   );
 };
+
+SearchSSSoDetail.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+  setTitle: PropTypes.func.isRequired,
+};
+
 export default withRouter(SearchSSSoDetail);

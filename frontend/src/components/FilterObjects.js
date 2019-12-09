@@ -31,7 +31,6 @@ import {
   getCustomList, getSkybotOutput, getSkybotOutputCount, postCustomList, checkTableName,
 } from '../api/Filter';
 
-
 const useStyles = makeStyles((theme) => ({
   iconList: {
     fontSize: 24,

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import {
- Card, CardContent, CardHeader, MenuItem, Button 
+  Card, CardContent, CardHeader, MenuItem, Button
 } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
@@ -12,6 +12,7 @@ import Slider from '@material-ui/core/Slider';
 import clsx from 'clsx';
 import Icon from '@material-ui/core/Icon';
 import Table from './utils/CustomTable';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -87,8 +88,8 @@ export default function SearchSsso({ history, setTitle }) {
       value: false,
     });
     getSkybotLists({
- page, pageSize, search: searchValue, filters 
-}).then((res) => {
+      page, pageSize, search: searchValue, filters
+    }).then((res) => {
       setTotalCount(res.data.count);
       setTableData(res.data.results);
     });
@@ -184,10 +185,10 @@ export default function SearchSsso({ history, setTitle }) {
       width: 120,
       align: 'right',
       customElement: (row) => (
-          <span>
-            {row.raj2000 ? handleValues(row.raj2000) : ""}
-          </span>
-        ),
+        <span>
+          {row.raj2000 ? handleValues(row.raj2000) : ""}
+        </span>
+      ),
     },
     {
       name: 'decj2000',
@@ -195,10 +196,10 @@ export default function SearchSsso({ history, setTitle }) {
       width: 120,
       align: 'right',
       customElement: (row) => (
-          <span>
-            {row.decj2000 ? handleValues(row.decj2000) : ""}
-          </span>
-        ),
+        <span>
+          {row.decj2000 ? handleValues(row.decj2000) : ""}
+        </span>
+      ),
     },
     {
       name: 'ccdnum',
@@ -237,10 +238,10 @@ export default function SearchSsso({ history, setTitle }) {
       width: 248,
       align: 'right',
       customElement: (row) => (
-          <span>
-            {row.errpos ? handleValues(row.errpos) : ""}
-          </span>
-        ),
+        <span>
+          {row.errpos ? handleValues(row.errpos) : ""}
+        </span>
+      ),
     },
 
   ];
@@ -303,3 +304,11 @@ export default function SearchSsso({ history, setTitle }) {
     </Grid>
   );
 }
+
+SearchSsso.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+  setTitle: PropTypes.func.isRequired,
+};
+

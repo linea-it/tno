@@ -8,15 +8,9 @@ import Divider from '@material-ui/core/Divider';
 import clsx from 'clsx';
 import Highlight from 'react-syntax-highlight';
 import moment from 'moment';
-// https://github.com/zlargon/react-highlight
 import 'highlight.js/styles/default.css';
 import 'highlight.js/styles/atom-one-light.css';
-
-// https://github.com/zeroturnaround/sql-formatter
 import sqlFormatter from 'sql-formatter';
-
-import Toolbar from '@material-ui/core/Toolbar';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import CustomTable from './utils/CustomTable';
 import CustomCardStats from './utils/CustomCardStats';
@@ -119,8 +113,6 @@ function FilterObjectsDetail({ setTitle, match }) {
   const [objectsTableCount, setObjectsTableCount] = useState(0);
   const [objectsTableData, setObjectsTableData] = useState([]);
   const [sqlLogVisible, setSqlLogVisible] = useState(false);
-
-
 
   const handleValues = (value) => {
     let roundValue = parseFloat(value).toFixed(3);

@@ -102,7 +102,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     content: [], visible: false, title: ' ',
   });
 
-
   useEffect(() => {
     setTitle('Prediction of Occultations');
 
@@ -207,7 +206,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       setTimeProfile(res);
     });
   }, []);
-
 
   const tableListArray = [
     {
@@ -390,7 +388,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       sortingEnabled: false,
     },
   ];
-
 
   const loadTableData = async ({
     sorting, pageSize, currentPage, filter, searchValue,

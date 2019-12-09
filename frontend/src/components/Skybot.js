@@ -17,7 +17,7 @@ import SnackBar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
 import { createSkybotRun, getSkybotRunList } from '../api/Skybot';
 import Table from './utils/CustomTable';
-
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
   typography: {
@@ -34,7 +34,6 @@ const useStyles = makeStyles((theme) => ({
     float: 'right',
     width: '15%',
   },
-
   dateSet: {
     marginTop: 30,
   },
@@ -45,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: -12,
     marginLeft: -12,
   },
-
   iconDetail: {
     fontSize: 18,
   },
@@ -119,13 +117,11 @@ function Skybot({ setTitle, history }) {
     loadData();
   }, []);
 
-
   useEffect(() => {
     if (errorDatePicker) {
       setDisabledRunButton(true);
     }
   }, [errorDatePicker]);
-
 
   useEffect(() => {
     if (initialDate) {
@@ -246,7 +242,6 @@ function Skybot({ setTitle, history }) {
       action: (row) => history.push(`/skybot/${row.id}`),
       align: 'center',
       sortingEnabled: false,
-
     },
     {
       name: 'status',
@@ -327,7 +322,6 @@ function Skybot({ setTitle, history }) {
       name: 'rows', title: 'Rows', width: 100, align: 'right',
     },
     {
-
       name: 'h_execution_time',
       title: 'Exec Time',
       width: 150,
@@ -340,11 +334,9 @@ function Skybot({ setTitle, history }) {
     setSnackBarVisible(false);
   };
 
-
   const transitionSnackBar = (props) => <Slide {...props} direction="left" />;
 
   const { vertical, horizontal } = snackBarPosition;
-
 
   const handleFinalDateError = (error) => {
     const currentDateMessage = 'Date should not be after current date';
@@ -470,4 +462,12 @@ function Skybot({ setTitle, history }) {
     </Grid>
   );
 }
+
+Skybot.propTypes = {
+  setTitle: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
 export default withRouter(Skybot);

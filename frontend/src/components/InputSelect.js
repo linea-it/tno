@@ -56,8 +56,6 @@ export default function SimpleSelect(props) {
 
     switch (event.currentTarget.title) {
       case "input":
-
-
         props.setActionButton(false); //Turns the submit button active
 
         let process_id = event.currentTarget.getAttribute('process_id');
@@ -69,11 +67,7 @@ export default function SimpleSelect(props) {
           processId: process_id,
           orbit_run_input_list_id: orbit_input_list_id,
           orbit_run_id: orbit_run_id,
-
         });
-
-        //Case 
-
         break;
 
       case "catalog":
@@ -82,8 +76,6 @@ export default function SimpleSelect(props) {
           ...props.valueSubmition,
           catalogId: catalogId
         });
-
-
         break;
 
       case "leapSeconds":
@@ -102,8 +94,6 @@ export default function SimpleSelect(props) {
         })
         break;
     }
-
-
   }
 
   const { formControl } = useStyles(props);
@@ -115,9 +105,7 @@ export default function SimpleSelect(props) {
     const { display } = props;
     const { value } = props;
 
-
     // Create a map function to define(return) the MenuItems.
-
 
     if (generalArray && generalArray.length > 0) {
       //Gera os itens de menus com 2 propriedades diferentes: input_list_id(Lista de objetos) e orbitRun_id
@@ -153,7 +141,6 @@ export default function SimpleSelect(props) {
       }
     }
   };
-
 
   return (
     <form className={classes.root} autoComplete="off">

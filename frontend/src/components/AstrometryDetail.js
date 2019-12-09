@@ -17,6 +17,7 @@ import ReactInterval from 'react-interval';
 import Button from '@material-ui/core/Button';
 import CustomLog from './utils/CustomLog';
 import CustomDialog from './utils/CustomDialog';
+import PropTypes from 'prop-types';
 import {
   readCondorFile, getPraiaRunById, getExecutionTimeById, getAsteroidStatus, getAsteroids,
 } from '../api/Praia';
@@ -24,7 +25,6 @@ import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
 import Stepper from './AstrometryStepper';
-
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -597,6 +597,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     history.push('/astrometry');
   };
 
+
   return (
     <Grid>
       <ReactInterval
@@ -726,4 +727,17 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     </Grid>
   );
 }
+
+AstrometryDetail.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+  setTitle: PropTypes.func.isRequired,
+};
+
 export default withRouter(AstrometryDetail);

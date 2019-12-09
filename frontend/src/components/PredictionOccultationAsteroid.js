@@ -749,4 +749,17 @@ function PredictionOccultationAsteroid({
   );
 }
 
+PredictionOccultationAsteroid.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+  setTitle: PropTypes.func.isRequired,
+  drawerOpen: PropTypes.bool.isRequired,
+};
+
 export default withRouter(PredictionOccultationAsteroid);

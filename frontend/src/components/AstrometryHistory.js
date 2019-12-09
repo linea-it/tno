@@ -3,9 +3,9 @@ import clsx from 'clsx';
 import { withRouter } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import Icon from '@material-ui/core/Icon';
-import moment from 'moment';
 import Table from './utils/CustomTable';
 import { getPraiaRuns } from '../api/Praia';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
@@ -58,8 +58,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-
-function AstrometryHistory({ history, reloadHistory }) {
+function AstrometryHistory({ history }) {
   const classes = useStyles();
 
   const [tableData, setTableData] = useState([]);
@@ -236,5 +235,11 @@ function AstrometryHistory({ history, reloadHistory }) {
     </div>
   );
 }
+
+AstrometryHistory.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default withRouter(AstrometryHistory);
