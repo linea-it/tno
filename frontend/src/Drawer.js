@@ -225,7 +225,7 @@ function MiniDrawer() {
           open={open}
         >
           <List className={classes.drawerList}>
-            <Link to={isAuthenticated() ? '/dashboard' : '/login'} className={classes.invisibleLink} title="Laboratório Interinstitucional de e-Astronomia">
+            <Link to={isAuthenticated() ? '/dashboard' : ''} className={classes.invisibleLink} title="Laboratório Interinstitucional de e-Astronomia">
               <ListItem button>
                 <ListItemText
                   primary={(
@@ -272,14 +272,14 @@ function MiniDrawer() {
                       <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite')} />
                     </ListItemIcon>
                   ) : (
-                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                      {sssoOpen ? (
-                        <ExpandLess className={classes.expandClosed} />
-                      ) : (
-                        <ExpandMore className={classes.expandClosed} />
-                      )}
-                    </ListItemIcon>
-                  )}
+                      <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                        {sssoOpen ? (
+                          <ExpandLess className={classes.expandClosed} />
+                        ) : (
+                            <ExpandMore className={classes.expandClosed} />
+                          )}
+                      </ListItemIcon>
+                    )}
                   <ListItemText
                     primary="Search SSSO"
                     className={classes.textDrawer}
@@ -436,12 +436,12 @@ function MiniDrawer() {
                 <Redirect path="/" to="/dashboard" />
               </Switch>
             ) : (
-              <Switch>
-                <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
-                <Route exact path="/login" render={(props) => <Login {...props} setTitle={setTitle} />} />
-                <Redirect to="/login" />
-              </Switch>
-            )}
+                <Switch>
+                  <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
+                  {/* <Route exact path="/login" render={(props) => <Login {...props} setTitle={setTitle} />} /> */}
+                  {/* <Redirect to="/login" /> */}
+                </Switch>
+              )}
           </main>
         </div>
         <CustomFooter drawerOpen={open} />

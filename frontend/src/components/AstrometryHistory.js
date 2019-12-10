@@ -130,7 +130,7 @@ function AstrometryHistory({ history }) {
             </span>
           );
         }
-        if (row.status === 'failure') {
+        if (row.status === 'failed') {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}

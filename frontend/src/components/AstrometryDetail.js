@@ -141,7 +141,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         {
           title: 'Status',
           value: () => {
-            if (data.status === 'failure') {
+            if (data.status === 'failed') {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnFailure)}

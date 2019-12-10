@@ -37,10 +37,6 @@ function Login({ history, setTitle }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  useEffect(() => {
-    setTitle('Login');
-  }, []);
-
   const handleUsernameChange = (e) => setUsername(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
@@ -125,3 +121,5 @@ function Login({ history, setTitle }) {
 }
 
 export default withRouter(Login);
+
+// export default Login;
