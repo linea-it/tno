@@ -9,6 +9,7 @@ import clsx from 'clsx';
 import { withRouter } from 'react-router';
 import CustomList from './utils/CustomList';
 import { getPointing } from '../api/Pointings';
+import moment from 'moment';
 
 const useStyles = makeStyles({
   cardContentWrapper: {
@@ -47,12 +48,12 @@ function PointingsDetail({ setTitle, match, history }) {
         {
           title: 'Night',
           tooltip: 'Night at which the observation was made.',
-          value: res.nite,
+          value: moment(res.nite).format("YYYY-MM-DD"),
         },
         {
           title: 'Observation Date',
           tooltip: 'Date and time of observation',
-          value: res.date_obs,
+          value: moment(res.date_obs).format("YYYY-MM-DD"),
         },
         {
           title: 'Exposure (s)',

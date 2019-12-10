@@ -17,6 +17,7 @@ import SnackBar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
 import { createSkybotRun, getSkybotRunList } from '../api/Skybot';
 import Table from './utils/CustomTable';
+import moment from "moment";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -309,10 +310,20 @@ function Skybot({ setTitle, history }) {
     },
 
     {
-      name: 'date_initial', title: "Init Date", width: 100, align: 'left', headerTooltip: "Initial Date",
+      name: 'date_initial', title: "Initial Date", width: 100, align: 'left',
+      customElement: (row) => (
+        <span>
+          {row.date_initial ? moment(row.date_initial).format("YYYY-MM-DD") : ""}
+        </span>
+      ),
     },
     {
       name: 'date_final', title: "Final Date", width: 100, align: 'left',
+      customElement: (row) => (
+        <span>
+          {row.date_final ? moment(row.date_final).format("YYYY-MM-DD") : ""}
+        </span>
+      ),
     },
     {
       name: 'type_run', title: "Run Type", width: 100, align: 'center',
@@ -327,7 +338,6 @@ function Skybot({ setTitle, history }) {
       name: 'rows', title: 'Rows', width: 100, align: 'right',
     },
     {
-
       name: 'h_execution_time',
       title: 'Exec Time',
       width: 150,
@@ -390,7 +400,7 @@ function Skybot({ setTitle, history }) {
                     disableFuture
                     disabled={disabledInitialDate}
                     className={classes.dateSet}
-                    format="yyyy/MM/dd"
+                    format="yyyy-MM-dd"
                     label="Initial Date"
                     value={initialDate}
                     onChange={(date) => { setInitialDate(date) }}
@@ -400,7 +410,7 @@ function Skybot({ setTitle, history }) {
                     disableFuture
                     disabled={disabledFinalDate}
                     className={classes.dateSet}
-                    format="yyyy/MM/dd"
+                    format="yyyy-MM-dd"
                     label="Final Date"
                     value={finalDate}
                     minDate={initialDate}
