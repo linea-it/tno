@@ -271,7 +271,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
             </span>
           );
         }
-        if (row.status === 'failure') {
+        if (row.status === 'failed') {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}
@@ -404,7 +404,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
             </span>
           );
         }
-        if (row.status === 'failure') {
+        if (row.status === 'failed') {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}

@@ -218,7 +218,7 @@ function Skybot({ setTitle, history }) {
     }
   };
 
-  const loadMenuItems = () => {
+    const loadMenuItems = () => {
     const options = [
       { id: 1, title: 'All Pointings', value: 'all' },
       { id: 2, title: 'By Period', value: 'period' },

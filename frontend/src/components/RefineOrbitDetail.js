@@ -187,7 +187,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
     {
       name: 'h_execution_time',
       title: 'Exec Time',
-      headerTooltip:"Execution time",
+      headerTooltip: "Execution time",
       align: 'center',
       customElement: (row) => (
         <span>
@@ -341,6 +341,22 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       setTableData(asteroids.results);
       setTotalCount(asteroids.count);
     }
+
+
+    //TESTE
+    // const asteroids = await getAsteroids({
+
+    //   filters: [{
+    //     property: 'orbit_run',
+    //     value: id,
+    //   }, ...filter],
+
+    // });
+
+    // console.log(asteroids);
+
+
+
   };
 
   const handleDialogClose = () => setAsteroidLog({ visible: false, data: [] });

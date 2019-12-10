@@ -62,7 +62,6 @@ const useStyles = makeStyles({
 function SkybotDetail({ setTitle, match, history }) {
   const classes = useStyles();
   const { id } = match.params;
-
   const [skybotRunDetailList, setSkybotRunDetailList] = useState([]);
   const [timeProfile, setTimeProfile] = useState([]);
   const [skybotDetailTableData, setSkybotDetailTableData] = useState([]);
@@ -193,9 +192,7 @@ function SkybotDetail({ setTitle, match, history }) {
       width: 100,
       align: 'right',
     },
-
   ];
-
 
   useEffect(() => {
     setTitle('Skybot Run');

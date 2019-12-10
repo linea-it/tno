@@ -11,7 +11,7 @@ export const getSkybotLists = ({
     params[el.property] = el.value;
   });
 
-  return axios.get('/skybotoutput/', { params });
+   return axios.get('/skybotoutput/', { params });
 };
 
 export const getSkybotRecord = ({ id }) => axios.get(`/skybotoutput/${id}/`);
