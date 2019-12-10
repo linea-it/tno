@@ -6,6 +6,7 @@ import Icon from '@material-ui/core/Icon';
 import Table from './utils/CustomTable';
 import { getPraiaRuns } from '../api/Praia';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
@@ -190,6 +191,11 @@ function AstrometryHistory({ history }) {
       name: 'start_time',
       title: 'Date',
       width: 180,
+      customElement: (row) => (
+        <span>
+          {row.start_time ? moment(row.start_time).format("YYYY-MM-DD HH:mm:ss") : ""}
+        </span>
+      ),
       align: 'center',
     },
     {

@@ -228,13 +228,15 @@ export default function SearchSsso({ history, setTitle }) {
     },
     {
       name: 'mv',
-      title: 'Visual Magnitude (mag)',
+      title: 'Visual Mag (mag)',
+      headerTooltip: "Visual Magnitude (mag)",
       width: 150,
       align: 'right',
     },
     {
       name: 'errpos',
-      title: 'Error on the position (arcsec)',
+      title: 'Error (arcsec)',
+      headerTooltip: "Error on the position (arcsec)",
       width: 248,
       align: 'right',
       customElement: (row) => (
