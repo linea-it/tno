@@ -341,22 +341,6 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       setTableData(asteroids.results);
       setTotalCount(asteroids.count);
     }
-
-
-    //TESTE
-    // const asteroids = await getAsteroids({
-
-    //   filters: [{
-    //     property: 'orbit_run',
-    //     value: id,
-    //   }, ...filter],
-
-    // });
-
-    // console.log(asteroids);
-
-
-
   };
 
   const handleDialogClose = () => setAsteroidLog({ visible: false, data: [] });
@@ -395,7 +379,6 @@ function RefineOrbitDetail({ history, match, setTitle }) {
             </CardContent>
           </Card>
         </Grid>
-
 
         <Grid item xs={12} md={6} xl={timeProfile.length > 0 ? 4 : 6} className={classes.block}>
           <Card>
@@ -489,6 +472,5 @@ RefineOrbitDetail.propTypes = {
   }).isRequired,
   setTitle: PropTypes.func.isRequired,
 };
-
 
 export default withRouter(RefineOrbitDetail);
