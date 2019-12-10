@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import {
-  Card, CardContent, CardHeader, MenuItem, Button
+  Card, CardContent, CardHeader, MenuItem, Button,
 } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
-import { getSkybotLists } from '../api/SearchSsso';
 import Slider from '@material-ui/core/Slider';
 import clsx from 'clsx';
 import Icon from '@material-ui/core/Icon';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import Input from '@material-ui/core/Input';
-import FormControl from "@material-ui/core/FormControl";
-import Chip from "@material-ui/core/Chip";
+import FormControl from '@material-ui/core/FormControl';
+import Chip from '@material-ui/core/Chip';
+import { getSkybotLists } from '../api/SearchSsso';
 import Table from './utils/CustomTable';
 
 const useStyles = makeStyles((theme) => ({
@@ -78,7 +78,7 @@ export default function SearchSsso({ history, setTitle }) {
   const [dynamicClass, setDynamicClass] = useState([0]);
   const [subLevelDynamicClassSelected, setSubLevelDynamicClassSelected] = useState([]);
   const [subLevelDynamicClassList, setSubLevelDynamicClassList] = useState([]);
-  const [objectCompiled, setObjectCompiled] = useState("Centaur");
+  const [objectCompiled, setObjectCompiled] = useState('Centaur');
 
   const classes = useStyles();
 
@@ -122,11 +122,11 @@ export default function SearchSsso({ history, setTitle }) {
 
   const loadTableData = (event) => {
     setTableLoading(true);
-    let page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
-    let pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
-    let searchValue = typeof event === 'undefined' && !event ? " " : event.searchValue;
+    const page = typeof event === 'undefined' ? tablePage : event.currentPage + 1;
+    const pageSize = typeof event === 'undefined' ? tablePageSize : event.pageSize;
+    const searchValue = typeof event === 'undefined' && !event ? ' ' : event.searchValue;
 
-    let options = [
+    const options = [
       {
         property: 'dynclass__in',
         value: objectCompiled,
@@ -139,7 +139,7 @@ export default function SearchSsso({ history, setTitle }) {
         property: 'ccdnum__isnull',
         value: false,
       },
-    ]
+    ];
 
     options.map((option) => {
       filters.push({
@@ -153,7 +153,7 @@ export default function SearchSsso({ history, setTitle }) {
       pageSize,
       search: searchValue,
       filters,
-    }).then(res => {
+    }).then((res) => {
       setTotalCount(res.data.count);
       setTableData(res.data.results);
     }).finally(() => {
@@ -163,7 +163,7 @@ export default function SearchSsso({ history, setTitle }) {
 
   const handleClearFilters = () => {
     setVmagnitude([4, 18]);
-    setObjectCompiled("");
+    setObjectCompiled('');
     setDynamicClass([]);
   };
 
@@ -206,7 +206,7 @@ export default function SearchSsso({ history, setTitle }) {
       align: 'right',
       customElement: (row) => (
         <span>
-          {row.raj2000 ? handleValues(row.raj2000) : ""}
+          {row.raj2000 ? handleValues(row.raj2000) : ''}
         </span>
       ),
     },
@@ -217,7 +217,7 @@ export default function SearchSsso({ history, setTitle }) {
       align: 'right',
       customElement: (row) => (
         <span>
-          {row.decj2000 ? handleValues(row.decj2000) : ""}
+          {row.decj2000 ? handleValues(row.decj2000) : ''}
         </span>
       ),
     },
@@ -248,18 +248,20 @@ export default function SearchSsso({ history, setTitle }) {
     },
     {
       name: 'mv',
-      title: 'Visual Magnitude (mag)',
+      title: 'Visual Mag (mag)',
+      headerTooltip: 'Visual Magnitude (mag)',
       width: 150,
       align: 'right',
     },
     {
       name: 'errpos',
-      title: 'Error on the position (arcsec)',
+      title: 'Error (arcsec)',
+      headerTooltip: 'Error on the position (arcsec)',
       width: 248,
       align: 'right',
       customElement: (row) => (
         <span>
-          {row.errpos ? handleValues(row.errpos) : ""}
+          {row.errpos ? handleValues(row.errpos) : ''}
         </span>
       ),
     },
@@ -276,39 +278,105 @@ export default function SearchSsso({ history, setTitle }) {
   ];
 
   const optionsClassSecondLevel = [
-    { id: 1, parentId: 3, label: 'Detached', value: 'KBO>Detached' },
-    { id: 2, parentId: 3, label: 'Classical', value: 'KBO>Classical' },
-    { id: 3, parentId: 3, label: 'Classical>Inner', value: 'KBO>Classical>Inner' },
-    { id: 4, parentId: 3, label: 'Classical>Main', value: 'KBO>Classical>Main' },
-    { id: 5, parentId: 3, label: 'Classical>Outer', value: 'KBO>Classical>Outer' },
-    { id: 6, parentId: 3, label: 'Resonant>11:3', value: 'KBO>Resonant>11:3' },
-    { id: 7, parentId: 3, label: 'Resonant>11:6', value: 'KBO>Resonant>11:6' },
-    { id: 8, parentId: 3, label: 'Resonant>11:8', value: 'KBO>Resonant>11:8' },
-    { id: 9, parentId: 3, label: 'Resonant>19:9', value: 'KBO>Resonant>19:9' },
-    { id: 10, parentId: 3, label: 'Resonant>2:1', value: 'KBO>Resonant>2:1' },
-    { id: 11, parentId: 3, label: 'Resonant>3:1', value: 'KBO>Resonant>3:1' },
-    { id: 12, parentId: 3, label: 'Resonant>3:2', value: 'KBO>Resonant>3:2' },
-    { id: 13, parentId: 3, label: 'Resonant>4:3', value: 'KBO>Resonant>4:3' },
-    { id: 14, parentId: 3, label: 'Resonant>5:2', value: 'KBO>Resonant>5:2' },
-    { id: 15, parentId: 3, label: 'Resonant>5:3', value: 'KBO>Resonant>5:3' },
-    { id: 16, parentId: 3, label: 'Resonant>5:4', value: 'KBO>Resonant>5:4' },
-    { id: 17, parentId: 3, label: 'Resonant>7:2', value: 'KBO>Resonant>7:2' },
-    { id: 18, parentId: 3, label: 'Resonant>7:3', value: 'KBO>Resonant>7:3' },
-    { id: 19, parentId: 3, label: 'Resonant>7:4', value: 'KBO>Resonant>7:4' },
-    { id: 20, parentId: 3, label: 'Resonant>9:4', value: 'KBO>Resonant>9:4' },
-    { id: 21, parentId: 3, label: 'Resonant>9:5', value: 'KBO>Resonant>9:5' },
-    { id: 22, parentId: 3, label: 'SDO', value: 'KBO>SDO' },
-    { id: 23, parentId: 5, label: 'Cybele', value: 'MB>Cybele' },
-    { id: 24, parentId: 5, label: 'Hilda', value: 'MB>Hilda' },
-    { id: 25, parentId: 5, label: 'Inner', value: 'MB>Inner' },
-    { id: 26, parentId: 5, label: 'Middle', value: 'MB>Middle' },
-    { id: 27, parentId: 5, label: 'Outer', value: 'MB>Outer' },
-    { id: 28, parentId: 6, label: 'Amor', value: 'NEA>Amor' },
-    { id: 29, parentId: 6, label: 'Apollo', value: 'NEA>Apollo' },
-    { id: 30, parentId: 6, label: 'Aten', value: 'NEA>Aten' },
-    { id: 31, parentId: 6, label: 'Atira', value: 'NEA>Atira' },
-    { id: 32, parentId: 4, label: 'Deep', value: 'Mars-Crosser>Deep' },
-    { id: 33, parentId: 4, label: 'Shallow', value: 'Mars-Crosser>Shallow' },
+    {
+      id: 1, parentId: 3, label: 'Detached', value: 'KBO>Detached',
+    },
+    {
+      id: 2, parentId: 3, label: 'Classical', value: 'KBO>Classical',
+    },
+    {
+      id: 3, parentId: 3, label: 'Classical>Inner', value: 'KBO>Classical>Inner',
+    },
+    {
+      id: 4, parentId: 3, label: 'Classical>Main', value: 'KBO>Classical>Main',
+    },
+    {
+      id: 5, parentId: 3, label: 'Classical>Outer', value: 'KBO>Classical>Outer',
+    },
+    {
+      id: 6, parentId: 3, label: 'Resonant>11:3', value: 'KBO>Resonant>11:3',
+    },
+    {
+      id: 7, parentId: 3, label: 'Resonant>11:6', value: 'KBO>Resonant>11:6',
+    },
+    {
+      id: 8, parentId: 3, label: 'Resonant>11:8', value: 'KBO>Resonant>11:8',
+    },
+    {
+      id: 9, parentId: 3, label: 'Resonant>19:9', value: 'KBO>Resonant>19:9',
+    },
+    {
+      id: 10, parentId: 3, label: 'Resonant>2:1', value: 'KBO>Resonant>2:1',
+    },
+    {
+      id: 11, parentId: 3, label: 'Resonant>3:1', value: 'KBO>Resonant>3:1',
+    },
+    {
+      id: 12, parentId: 3, label: 'Resonant>3:2', value: 'KBO>Resonant>3:2',
+    },
+    {
+      id: 13, parentId: 3, label: 'Resonant>4:3', value: 'KBO>Resonant>4:3',
+    },
+    {
+      id: 14, parentId: 3, label: 'Resonant>5:2', value: 'KBO>Resonant>5:2',
+    },
+    {
+      id: 15, parentId: 3, label: 'Resonant>5:3', value: 'KBO>Resonant>5:3',
+    },
+    {
+      id: 16, parentId: 3, label: 'Resonant>5:4', value: 'KBO>Resonant>5:4',
+    },
+    {
+      id: 17, parentId: 3, label: 'Resonant>7:2', value: 'KBO>Resonant>7:2',
+    },
+    {
+      id: 18, parentId: 3, label: 'Resonant>7:3', value: 'KBO>Resonant>7:3',
+    },
+    {
+      id: 19, parentId: 3, label: 'Resonant>7:4', value: 'KBO>Resonant>7:4',
+    },
+    {
+      id: 20, parentId: 3, label: 'Resonant>9:4', value: 'KBO>Resonant>9:4',
+    },
+    {
+      id: 21, parentId: 3, label: 'Resonant>9:5', value: 'KBO>Resonant>9:5',
+    },
+    {
+      id: 22, parentId: 3, label: 'SDO', value: 'KBO>SDO',
+    },
+    {
+      id: 23, parentId: 5, label: 'Cybele', value: 'MB>Cybele',
+    },
+    {
+      id: 24, parentId: 5, label: 'Hilda', value: 'MB>Hilda',
+    },
+    {
+      id: 25, parentId: 5, label: 'Inner', value: 'MB>Inner',
+    },
+    {
+      id: 26, parentId: 5, label: 'Middle', value: 'MB>Middle',
+    },
+    {
+      id: 27, parentId: 5, label: 'Outer', value: 'MB>Outer',
+    },
+    {
+      id: 28, parentId: 6, label: 'Amor', value: 'NEA>Amor',
+    },
+    {
+      id: 29, parentId: 6, label: 'Apollo', value: 'NEA>Apollo',
+    },
+    {
+      id: 30, parentId: 6, label: 'Aten', value: 'NEA>Aten',
+    },
+    {
+      id: 31, parentId: 6, label: 'Atira', value: 'NEA>Atira',
+    },
+    {
+      id: 32, parentId: 4, label: 'Deep', value: 'Mars-Crosser>Deep',
+    },
+    {
+      id: 33, parentId: 4, label: 'Shallow', value: 'Mars-Crosser>Shallow',
+    },
   ];
 
   const handleDynamicClass = (e) => {
@@ -325,7 +393,7 @@ export default function SearchSsso({ history, setTitle }) {
       <Grid container spacing={6}>
         <Card>
           <CardHeader
-            title={"SkyBot Output"}
+            title="SkyBot Output"
           />
           <CardContent>
             <form className={classes.filtersContainer}>

@@ -150,8 +150,8 @@ function RefineOrbitAsteroid({
       name: 'date_time',
       title: 'Date',
       customElement: (el) => (
-        <span title={moment(el.date_time).format('HH:mm:ss')}>
-          {moment(el.date_time).format('YYYY/MM/DD')}
+        <span>
+          {el.date_time ? moment(el.date_time).format('YYYY-MM-DD') : ""}
         </span>
       ),
       width: 150,
@@ -213,7 +213,7 @@ function RefineOrbitAsteroid({
       setInputTableData(tableData);
     });
     getAsteroidFiles({ id }).then((data) => {
-        const resultData = data.results.map((res) => ({
+      const resultData = data.results.map((res) => ({
         filename: res.filename,
         h_size: res.h_size,
         file_type: res.file_type,
