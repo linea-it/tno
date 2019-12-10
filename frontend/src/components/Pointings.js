@@ -89,9 +89,9 @@ function Pointings({ setTitle, history }) {
     },
     {
       name: 'exptime',
-      title: 'Exposure time (s)',
+      title: 'Expos time (s)',
       align: 'right',
-      width: 130,
+      width: 100,
       headerTooltip: 'Exposure time of observation',
       sortingEnabled: false,
     },
@@ -130,10 +130,10 @@ function Pointings({ setTitle, history }) {
           <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
         </span>
       ) : (
-        <span title={el.downloaded}>
-          <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-        </span>
-      )),
+          <span title={el.downloaded}>
+            <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+          </span>
+        )),
     },
   ];
 
