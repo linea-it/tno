@@ -38,9 +38,6 @@ const useStyles = makeStyles((theme) => ({
   arrowBack: {
     fontSize: 9,
   },
-  iconDetail: {
-    fontSize: 18,
-  },
   btn: {
     textTransform: 'none',
     padding: '1px 5px',
@@ -296,7 +293,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     {
       name: 'execution_time',
       title: 'Exec Time',
-      headerTooltip: "Execution time",
+      headerTooltip: 'Execution time',
       align: 'center',
       customElement: (row) => (
         <span>

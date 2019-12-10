@@ -8,6 +8,7 @@ import { withRouter } from 'react-router';
 import clsx from 'clsx';
 import CustomTable from './utils/CustomTable';
 import { getPointingsList } from '../api/Pointings';
+import moment from 'moment';
 
 
 const useStyles = makeStyles({
@@ -47,8 +48,13 @@ function Pointings({ setTitle, history }) {
     },
     {
       name: 'date_obs',
-      title: 'Observ Date',
-      width: 150,
+      title: 'Observation Date',
+      customElement: (row) => (
+        <span>
+          {row.date_obs ? moment(row.date_obs).format("YYYY-MM-DD") : ""}
+        </span>
+      ),
+      width: 200,
       align: 'center',
       headerTooltip: 'Date and time of observation',
       sortingEnabled: false,

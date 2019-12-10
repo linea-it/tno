@@ -456,20 +456,20 @@ function PredictionOccultation({ history, setTitle }) {
                   value={ephemerisNumberValue}
                 />
                 <DateTime
-                  defaultDate={moment(initialDate).format('YYYY-MM-DD').toString()}
+                  defaultDate={initialDate}
                   label="Ephemeris Initial Date"
                   valueSubmition={valueSubmition}
                   setSubmition={setValueSubmition}
                   setInitialDate={setInitialDate}
-                  title="initialDate"
+                  titleId="initialDate"
                 />
                 <DateTime
-                  defaultDate={moment(finalDate).format('YYYY-MM-DD').toString()}
+                  defaultDate={finalDate}
                   label="Ephemeris Final Date"
                   valueSubmition={valueSubmition}
                   setSubmition={setValueSubmition}
                   setFinalDate={setFinalDate}
-                  title="finalDate"
+                  titleId="finalDate"
                   width="90%"
 
                 />

@@ -191,6 +191,11 @@ function AstrometryHistory({ history, reloadHistory }) {
       name: 'start_time',
       title: 'Date',
       width: 180,
+      customElement: (row) => (
+        <span>
+          {row.start_time ? moment(row.start_time).format("YYYY-MM-DD HH:mm:ss") : ""}
+        </span>
+      ),
       align: 'center',
     },
     {
