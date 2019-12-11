@@ -125,18 +125,23 @@ function FilterObjectsDetail({ setTitle, match }) {
       title: 'Pointing',
       name: 'pointing_id',
       hidden: true,
-      width: 100,
+      width: 120,
       align: 'right',
+
     },
     {
       name: 'dynclass',
       title: 'Class',
       width: 100,
+      headerTooltip: 'Class',
+      sortingEnabled: false,
+
     },
-    { name: 'name', title: 'Name' },
+    { name: 'name', title: 'Name', sortingEnabled: false, },
     {
       name: 'raj2000',
       title: 'RA (deg)',
+      headerTooltip: 'Right Ascension',
       width: 80,
       align: 'right',
       customElement: (row) =>
@@ -144,11 +149,13 @@ function FilterObjectsDetail({ setTitle, match }) {
           <span>
             {row.raj2000 ? handleValues(row.raj2000) : ""}
           </span>
-        )
+        ),
+      sortingEnabled: false,
     },
     {
       name: 'decj2000',
       title: 'Dec (deg)',
+      headerTooltip: 'Declination',
       width: 80,
       align: 'right',
       customElement: (row) =>
@@ -156,43 +163,53 @@ function FilterObjectsDetail({ setTitle, match }) {
           <span>
             {row.decj2000 ? handleValues(row.decj2000) : ""}
           </span>
-        )
+        ),
+      sortingEnabled: false,
     },
     {
       name: 'errpos',
-      title: 'Errpos (arcsec)',
-      width: 70,
+      title: 'Error (arcsec)',
+      width: 110,
       align: 'right',
+      headerTooltip: "Error on the position",
       customElement: (row) =>
         (
           <span>
             {row.errpos ? handleValues(row.errpos) : ""}
           </span>
-        )
+        ),
+      sortingEnabled: false,
     },
     {
       name: 'jdref',
       title: 'Jref (JD)',
       width: 80,
       align: 'right',
+      sortingEnabled: false,
+      
     },
     {
       title: 'Exp Num',
       name: 'expnum',
       width: 80,
       align: 'right',
+      sortingEnabled: false,
+      headerTooltip: "Exposure Number",
     },
     {
       title: 'CCD Num',
       name: 'ccdnum',
       width: 80,
       align: 'right',
+      sortingEnabled: false,
+      headerTooltip: "CCD Number",
     },
     {
       name: 'band',
       title: 'Band',
       align: 'center',
       width: 60,
+      sortingEnabled: false,
     },
     {
       name: 'filename',
@@ -208,6 +225,7 @@ function FilterObjectsDetail({ setTitle, match }) {
             <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
           </span>
         )),
+      sortingEnabled: false,
     },
     {
       name: 'externallink',
@@ -218,6 +236,7 @@ function FilterObjectsDetail({ setTitle, match }) {
         </a>
       ) : '-'),
       align: 'center',
+      sortingEnabled: false,
     },
   ];
 
@@ -456,7 +475,6 @@ function FilterObjectsDetail({ setTitle, match }) {
                 totalCount={objectsTableCount}
                 loadData={loadObjectsTableData}
                 hasSearching={false}
-                hasSorting={false}
               />
             </CardContent>
           </Card>

@@ -65,5 +65,4 @@ CustomGridList.propTypes = {
   handleImageClick: PropTypes.func,
 };
 
-
 export default CustomGridList;

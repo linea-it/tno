@@ -199,12 +199,14 @@ export default function SearchSsso({ history, setTitle }) {
       title: 'Obj Num',
       width: 130,
       align: 'right',
+      headerTooltip: "Object Number",
     },
     {
       name: 'raj2000',
       title: 'RA (deg)',
       width: 120,
       align: 'right',
+      headerTooltip: "Right Ascension",
       customElement: (row) => (
         <span>
           {row.raj2000 ? handleValues(row.raj2000) : ''}
@@ -216,6 +218,7 @@ export default function SearchSsso({ history, setTitle }) {
       title: 'Dec (deg)',
       width: 120,
       align: 'right',
+      headerTooltip: "Declination",
       customElement: (row) => (
         <span>
           {row.decj2000 ? handleValues(row.decj2000) : ''}
@@ -227,6 +230,7 @@ export default function SearchSsso({ history, setTitle }) {
       title: 'CCD Num',
       width: 120,
       align: 'right',
+      headerTooltip: "CCD Number",
     },
     {
       name: 'band',
