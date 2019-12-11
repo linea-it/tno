@@ -186,7 +186,7 @@ function FilterObjectsDetail({ setTitle, match }) {
       width: 80,
       align: 'right',
       sortingEnabled: false,
-      
+      headerTooltip: "Julian Reference Day",
     },
     {
       title: 'Exp Num',
