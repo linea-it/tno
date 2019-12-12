@@ -14,11 +14,10 @@ from django.http import HttpResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-
+from django.shortcuts import redirect
 from praia.models import Run
 from praia.pipeline.register import check_astrometry_running, register_astrometry_outputs
-
-logger = logging.getLogger("astrometry")
+from django.contrib.auth import authenticate, login
 
 
 @api_view(['GET'])
@@ -57,9 +56,9 @@ def import_skybot(request):
 
 @api_view(['GET'])
 def read_file(request):
-    """ 
-    Function to read .log file 
-    A filepath parameter is obrigatory to display the file. 
+    """
+    Function to read .log file
+    A filepath parameter is obrigatory to display the file.
     """
     if request.method == 'GET':
 
@@ -102,10 +101,10 @@ def read_file(request):
 
 @api_view(['GET'])
 def read_csv(request):
-    """ 
-    Function to read .csv file 
-    A filepath parameter is obrigatory to display the file. 
-    this view can be paginated, with page and pageSize parameters. 
+    """
+    Function to read .csv file
+    A filepath parameter is obrigatory to display the file.
+    this view can be paginated, with page and pageSize parameters.
 
     eg: http://localhost/api/read_csv?filepath=/proccess/78/objects/Eris/gaia_dr2.csv&page=2&pageSize=5&format=json
 
@@ -184,7 +183,7 @@ def download_file(request):
 
     http://localhost:7001/api/teste/?filepath=/archive/tmp/teste.csv
 
-    When the file is bigger than 1Mb, the file is zipped. 
+    When the file is bigger than 1Mb, the file is zipped.
     """
     if request.method == 'GET':
         # Funcao para fazer download de um arquivo
@@ -226,3 +225,42 @@ def download_file(request):
                 response['Content-Disposition'] = 'inline; filename=' + \
                     os.path.basename(filepath)
                 return response
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
+def auth_shibboleth(request):
+
+    logger = logging.getLogger('auth_shibboleth')
+    logger.info("---------------------------------------------------------")
+    logger.info("Shibboleth Authentication Endpoint")
+
+    if request.method == 'POST':
+        logger.debug("Method POST")
+        logger.debug(request.data)
+
+        user = authenticate(request, username=None, password=None)
+
+        logger.debug("Retornou usuario: %s - %s" % (user.pk, user.username))
+
+        try:
+            login(request, user, backend='tno.auth_shibboleth.ShibbolethBackend')
+
+            logger.info("Usuario Autenticado.")
+
+        except Exception as e:
+            logger.error(e)
+
+    elif request.method == 'GET':
+        logger.debug("Method GET")
+        logger.debug(request.query_params)
+
+        # TODO validar o exemplo do Gidlab
+
+    # Redireciona para a home
+    # TODO talvez precise de variavel com a url da aplicacao.
+    home = settings.HOST_URL
+    logger.info("Redirect to Home: [ %s ]" % home)
+    response = redirect(home)
+
+    return response

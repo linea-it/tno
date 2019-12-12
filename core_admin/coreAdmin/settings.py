@@ -215,6 +215,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+AUTHENTICATION_BACKENDS = (
+    'tno.auth_shibboleth.ShibbolethBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
@@ -252,7 +257,7 @@ PARSL_CONFIG = {
     }
 }
 
-# MINIMUM THREADS 
+# MINIMUM THREADS
 MINIMUM_THREADS = os.environ.get('MINIMUM_THREADS', 4)
 
 # DOCKER Configuration
@@ -267,7 +272,7 @@ except Exception as e:
     raise ("Environment variable HOST_ARCHIVE can not be null.")
 
 
-# CONDOR API 
+# CONDOR API
 try:
     CONDOR_API = os.environ["CONDOR_API"]
     CONDOR_CLUSTER = os.environ["CONDOR_CLUSTER"]
@@ -279,6 +284,12 @@ try:
     LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
 except:
     LOGGING_LEVEL = 'INFO'
+
+# HOST URL 
+try:
+    HOST_URL = os.environ["HOST_URL"]
+except:
+    raise ("Environment variable HOST_URL can not be null.")
 
 LOGGING = {
     'version': 1,
@@ -353,7 +364,15 @@ LOGGING = {
             'backupCount': 5,
             'filename': os.path.join(LOG_DIR, 'condor.log'),
             'formatter': 'standard',
-        },        
+        },
+        'auth_shibboleth': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'auth_shibboleth.log'),
+            'formatter': 'standard',
+        },
     },
     'loggers': {
         'django': {
@@ -395,6 +414,11 @@ LOGGING = {
             'handlers': ['condor'],
             'level': LOGGING_LEVEL,
             'propagate': True,
-        },        
+        },
+        'auth_shibboleth': {
+            'handlers': ['auth_shibboleth'],
+            'level': LOGGING_LEVEL,
+            'propagate': True,
+        },
     },
 }
