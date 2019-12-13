@@ -16,6 +16,7 @@ import Switch from '@material-ui/core/Switch';
 import CustomTable from './utils/CustomTable';
 import { CCD } from './utils/CustomChart';
 import { getExposurePlot, getOutputByExposure, getAsteroidsInsideCCD } from '../api/Skybot';
+import Button from '@material-ui/core/Button';
 
 
 const useStyles = makeStyles({
@@ -26,8 +27,9 @@ const useStyles = makeStyles({
     fontSize: 18,
   },
   buttonIcon: {
-    margin: '0 2px',
+    margin: '0 10px 0 0',
   },
+
   btn: {
     textTransform: 'none',
     padding: '1px 5px',
@@ -81,7 +83,7 @@ const useStyles = makeStyles({
   },
 });
 
-function SkybotAsteroid({ setTitle, match }) {
+function SkybotAsteroid({ setTitle, match, history }) {
   const classes = useStyles();
   const coneSearchRadius = 1.2; // ! Cone search radius in Degres.
   const { id, runId } = match.params;
@@ -102,14 +104,15 @@ function SkybotAsteroid({ setTitle, match }) {
     headerTooltip: 'Pointings',
   },
   {
-    title: 'Obj Name',
+    title: 'Name',
     name: 'name',
     headerTooltip: 'Object Name',
   },
   {
-    title: 'Obj Num',
+    title: 'Num',
     name: 'num',
     align: 'right',
+    headerTooltip: "Object Number"
   },
   {
     title: 'Dyn Class',
@@ -162,6 +165,7 @@ function SkybotAsteroid({ setTitle, match }) {
         {row.d ? handleValues(row.d) : ''}
       </span>
     ),
+    headerTooltip: "Angular Distance",
   },
   {
     title: 'dRAcosDec (arcsec/h)',
@@ -192,6 +196,7 @@ function SkybotAsteroid({ setTitle, match }) {
         {row.dgeo ? handleValues(row.dgeo) : ''}
       </span>
     ),
+    headerTooltip: "Geocentric Distance"
   },
   {
     title: 'Hel Dist (AU)',
@@ -202,6 +207,7 @@ function SkybotAsteroid({ setTitle, match }) {
         {row.dhelio ? handleValues(row.dhelio) : ''}
       </span>
     ),
+    headerTooltip: "Heliocentric Distance"
   },
   {
     title: 'Phase Angle (deg)',
@@ -222,6 +228,7 @@ function SkybotAsteroid({ setTitle, match }) {
         {row.solelong ? handleValues(row.solelong) : ''}
       </span>
     ),
+    headerTooltip: "Solar Elongantion",
   },
   {
     title: 'Vec Pos x (AU)',
@@ -232,6 +239,7 @@ function SkybotAsteroid({ setTitle, match }) {
         {row.px ? handleValues(row.px) : ''}
       </span>
     ),
+    headerTooltip: "Vector Position in x",
   },
   {
     title: 'Vec pos y (AU)',
@@ -242,6 +250,7 @@ function SkybotAsteroid({ setTitle, match }) {
         {row.py ? handleValues(row.py) : ''}
       </span>
     ),
+    headerTooltip: "Vector Position in y",
   },
   {
     title: 'Vec Pos z (AU)',
@@ -252,6 +261,7 @@ function SkybotAsteroid({ setTitle, match }) {
         {row.pz ? handleValues(row.pz) : ''}
       </span>
     ),
+    headerTooltip: "Vector Position in z",
   },
   {
     title: 'Vec Pos x [AU/d]',
@@ -262,6 +272,7 @@ function SkybotAsteroid({ setTitle, match }) {
         {row.vx ? handleValues(row.vx) : ''}
       </span>
     ),
+    headerTooltip: "Vector Position in x",
   },
   {
     title: 'Vec Pos y [AU/d]',
@@ -272,6 +283,7 @@ function SkybotAsteroid({ setTitle, match }) {
         {row.vy ? handleValues(row.vy) : ''}
       </span>
     ),
+    headerTooltip: "Vector Position in y",
   },
   {
     title: 'Vec Pos z [AU/d]',
@@ -282,11 +294,13 @@ function SkybotAsteroid({ setTitle, match }) {
         {row.vz ? handleValues(row.vz) : ''}
       </span>
     ),
+    headerTooltip: "Vector Position in z",
   },
   {
     title: 'Epo Pos Vec (Julien Day)',
     name: 'jdref',
     align: 'right',
+    headerTooltip: "Epoch of the position vector (Julian Day)"
   },
   {
     title: 'Band',
@@ -294,9 +308,10 @@ function SkybotAsteroid({ setTitle, match }) {
     align: 'center',
   },
   {
-    title: 'Expos',
+    title: 'Exp Num',
     name: 'expnum',
     align: 'right',
+    headerTooltip: "Exposute Number",
   },
   {
     title: 'CCD Num',
@@ -446,6 +461,16 @@ function SkybotAsteroid({ setTitle, match }) {
     <Grid container spacing={2}>
       <Grid item xs={12}>
         <Grid container spacing={2}>
+          <Grid item xs={12} md={12}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => history.push(`/skybot/${runId}`)}
+            >
+              <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+              <span>Back</span>
+            </Button>
+          </Grid>
           <Grid item xs={12} md={12}>
             <Card>
               <CardHeader

@@ -439,13 +439,14 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     },
     {
       name: 'name',
-      title: 'Obj Name',
+      title: 'Name',
       align: 'left',
       width: 100,
+      headerTooltip: "Object Name",
     },
     {
       name: 'number',
-      title: 'Obj Num',
+      title: 'Num',
       align: 'right',
       width: 100,
       customElement: (row) => {
@@ -607,16 +608,19 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         enabled={interval_condition}
         callback={handleInterval}
       />
-      <Button
-        variant="contained"
-        color="primary"
-        className={classes.backButton}
-        onClick={handleBackNabigation}
-      >
-        <Icon className={clsx('fas', 'fa-undo', classes.backIcon)} />
-        <span>Back</span>
-      </Button>
       <Grid container spacing={2}>
+        <Grid item xs={12} xl={12} md={12}>
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.backButton}
+            onClick={handleBackNabigation}
+          >
+            <Icon className={clsx('fas', 'fa-undo', classes.backIcon)} />
+            <span>Back</span>
+          </Button>
+        </Grid>
+
         <Grid item xs={12} md={6} xl={4}>
           <Card>
             <CardHeader

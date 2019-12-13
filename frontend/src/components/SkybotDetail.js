@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     fontSize: 18,
   },
   buttonIcon: {
-    margin: '0 2px',
+    margin: '0 10px 0 0',
   },
   btn: {
     textTransform: 'none',
@@ -319,7 +319,6 @@ function SkybotDetail({ setTitle, match, history }) {
                 variant="contained"
                 color="primary"
                 title="Back"
-                className={classes.button}
                 onClick={handleBackNavigation}
               >
                 <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />

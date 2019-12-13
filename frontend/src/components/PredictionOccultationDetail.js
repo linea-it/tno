@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
   },
   buttonIcon: {
-    margin: '0 2px',
+    margin: '0 10px 0 0',
   },
   toggleButton: {
     marginLeft: '90%',
