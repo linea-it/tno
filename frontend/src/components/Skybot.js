@@ -182,6 +182,8 @@ function Skybot({ setTitle, history }) {
         const { data } = res;
         setTableData(data.results);
         setTotalSize(data.count);
+      })
+      .finally(() => {
         setLoading(false);
       });
   };
@@ -218,7 +220,7 @@ function Skybot({ setTitle, history }) {
     }
   };
 
-    const loadMenuItems = () => {
+  const loadMenuItems = () => {
     const options = [
       { id: 1, title: 'All Pointings', value: 'all' },
       { id: 2, title: 'By Period', value: 'period' },
@@ -304,7 +306,6 @@ function Skybot({ setTitle, history }) {
     {
       name: 'owner', title: 'Owner', width: 140, align: 'left',
     },
-
     {
       name: 'date_initial', title: "Initial Date", width: 100, align: 'left',
       customElement: (row) => (
@@ -342,9 +343,6 @@ function Skybot({ setTitle, history }) {
     },
   ];
 
-  const handleCloseSnackBar = (event, reason) => {
-    setSnackBarVisible(false);
-  };
 
   const transitionSnackBar = (props) => <Slide {...props} direction="left" />;
 
@@ -468,8 +466,8 @@ function Skybot({ setTitle, history }) {
         autoHideDuration={3500}
         TransitionComponent={snackBarTransition}
         anchorOrigin={{ vertical, horizontal }}
-        message="Executing... Check progress on the table below."
-        onClose={handleCloseSnackBar}
+        message="Executing... Check progress on history table ."
+        onClose={() => setSnackBarVisible(false)}
       />
     </Grid>
   );

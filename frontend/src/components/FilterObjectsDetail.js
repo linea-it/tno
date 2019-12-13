@@ -132,12 +132,12 @@ function FilterObjectsDetail({ setTitle, match }) {
     {
       name: 'dynclass',
       title: 'Class',
-      width: 100,
+      width: 120,
       headerTooltip: 'Class',
       sortingEnabled: false,
 
     },
-    { name: 'name', title: 'Name', sortingEnabled: false, },
+    { name: 'name', title: 'Obj Name', sortingEnabled: false, headerTooltip: "Object Name" },
     {
       name: 'raj2000',
       title: 'RA (deg)',

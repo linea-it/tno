@@ -271,7 +271,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
             </span>
           );
         }
-        if (row.status === 'failed') {
+        if (row.status === 'failure') {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}
@@ -303,13 +303,15 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     },
     {
       name: 'name',
-      title: 'Name',
+      title: 'Obj Name',
       align: 'left',
+      width: 100,
       sortingEnabled: true,
+      headerTooltip: "Object Name",
     },
     {
       name: 'number',
-      title: 'Number',
+      title: 'Obj Num',
       align: 'right',
       customElement: (row) => {
         if (row.number === '-') {
@@ -321,6 +323,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           </span>
         );
       },
+      headerTooltip: "Object Number",
     },
     {
       name: 'ccd_images',
@@ -404,7 +407,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
             </span>
           );
         }
-        if (row.status === 'failed') {
+        if (row.status === 'failure') {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}
@@ -436,14 +439,15 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     },
     {
       name: 'name',
-      title: 'Name',
+      title: 'Obj Name',
       align: 'left',
+      width: 100,
     },
     {
       name: 'number',
-      title: 'Number',
+      title: 'Obj Num',
       align: 'right',
-      width: 120,
+      width: 100,
       customElement: (row) => {
         if (row.number === '-') {
           return '';
@@ -454,6 +458,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           </span>
         );
       },
+      headerTooltip: "Object Number",
     },
     {
       name: 'error_msg',
@@ -574,7 +579,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         } else {
           arrayLines.push(<div key={0}>{res.msg}</div>);
         }
-        // setDialog({ content: arrayLines, visible: true, title: file + " " });
         setDialog({ content: data, visible: true, title: `${file} ` });
       });
     }
@@ -592,11 +596,9 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     }
   };
 
-
   const handleBackNabigation = () => {
     history.push('/astrometry');
   };
-
 
   return (
     <Grid>

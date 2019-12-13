@@ -190,7 +190,7 @@ export default function SearchSsso({ history, setTitle }) {
     {
       name: 'name',
       title: 'Obj Name',
-      width: 180,
+      width: 100,
       align: 'left',
       headerTooltip: 'Object Name',
     },
@@ -235,34 +235,35 @@ export default function SearchSsso({ history, setTitle }) {
     {
       name: 'band',
       title: 'Band',
-      width: 70,
+      width: 60,
       align: 'center',
     },
     {
       name: 'expnum',
-      title: 'Exposure',
+      title: 'Exp Num',
       width: 130,
       align: 'right',
+      headerTooltip: "Esposure Number"
     },
     {
       name: 'dynclass',
-      title: 'Dynamic Class',
-      width: 140,
+      title: 'Dyn Class',
+      width: 100,
       align: 'left',
       headerTooltip: 'Dynamic Class',
     },
     {
       name: 'mv',
-      title: 'Visual Mag (mag)',
-      headerTooltip: 'Visual Magnitude (mag)',
-      width: 150,
+      title: 'Visual Mag',
+      width: 120,
       align: 'right',
+      headerTooltip: "Visual Magnitude",
     },
     {
       name: 'errpos',
       title: 'Error (arcsec)',
       headerTooltip: 'Error on the position (arcsec)',
-      width: 248,
+      width: 150,
       align: 'right',
       customElement: (row) => (
         <span>

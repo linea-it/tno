@@ -117,16 +117,7 @@ function SkybotAsteroid({ setTitle, match }) {
     headerTooltip: 'Dynamic Class',
   },
   {
-    title: 'Right Ascension  (hms)',
-    name: 'ra',
-    align: 'right',
-  },
-  {
-    title: 'Declination  (dms)',
-    name: 'dec',
-  },
-  {
-    title: 'Right Ascension  (degree)',
+    title: 'RA  (deg)',
     name: 'raj2000',
     align: 'right',
     customElement: (row) => (
@@ -134,6 +125,7 @@ function SkybotAsteroid({ setTitle, match }) {
         {row.raj2000 ? handleValues(row.raj2000) : ''}
       </span>
     ),
+    headerTooltip: "Right Ascension",
   },
   {
     title: 'Dec (deg)',
@@ -144,9 +136,10 @@ function SkybotAsteroid({ setTitle, match }) {
         {row.decj2000 ? handleValues(row.decj2000) : ''}
       </span>
     ),
+    headerTooltip: "Declination",
   },
   {
-    title: 'Vis Mag',
+    title: 'Visual Mag ',
     name: 'mv',
     align: 'right',
   },
@@ -500,8 +493,8 @@ function SkybotAsteroid({ setTitle, match }) {
                     remote={false}
                   />
                 ) : (
-                  <Skeleton height={540} />
-                )}
+                    <Skeleton height={540} />
+                  )}
               </CardContent>
             </Card>
           </Grid>

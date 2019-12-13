@@ -78,8 +78,6 @@ function PredictionHistory() {
     loadData(tableValues.page, tableValues.sizePerPage);
   }, []);
 
-  tableValues.data ? console.log("Data") : console.log("Not yet");
-
   //Columns of the table HISTORY
   const tableColumns = [
     {

@@ -30,8 +30,6 @@ function SearchSSSoDetail({ history, setTitle, match: { params } }) {
     { title: "Object Name: ", value: listData.name },
     { title: "Object Number:", value: listData.num },
     { title: "Dynamic class:", value: listData.dynclass },
-    { title: "Right Ascension  (hms):", value: listData.ra },
-    { title: "Declination (Dec) (dms):", value: listData.dec },
     { title: "Visual Magnitude: (mag)", value: listData.mv },
     { title: "Error on the position (arcsec):", value: listData.errpos },
     { title: "Angular Distance (arcsec):", value: listData.d },

@@ -14,7 +14,7 @@ import filesize from 'filesize';
 import CustomList from './utils/CustomList';
 import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
-import { url } from '../api/Auth'
+import { url } from '../api/Auth';
 import {
   getAsteroidById,
   getAsteroidNeighbors,
@@ -482,8 +482,7 @@ function AstrometryAsteroid({
   };
 
   useEffect(() => {
-    console.log(astrometryPlots);
-  }, [astrometryPlots]);
+    }, [astrometryPlots]);
 
 
   useEffect(() => {

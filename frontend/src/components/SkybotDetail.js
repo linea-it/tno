@@ -68,7 +68,6 @@ function SkybotDetail({ setTitle, match, history }) {
   const [skybotDetailTableTotalCount, setSkybotDetailTableTotalCount] = useState(0);
 
   const skybotDetailTableColumns = [
-
     {
       name: 'ccd_time',
       title: 'Details',
@@ -135,10 +134,11 @@ function SkybotDetail({ setTitle, match, history }) {
     },
     {
       name: 'expnum',
-      title: 'Expnum',
+      title: 'Exp Num',
       sortingEnabled: false,
       width: 100,
       align: 'right',
+      headerTooltip: "Exposure Number"
     },
     {
       name: 'band',
@@ -149,18 +149,19 @@ function SkybotDetail({ setTitle, match, history }) {
     },
     {
       name: 'date_obs',
-      title: 'Date Obs',
+      title: 'Obs Date',
       sortingEnabled: false,
       customElement: (el) => (
         <span>
           {el.date_obs ? moment(el.date_obs).format('YYYY-MM-DD') : ""}
         </span>
       ),
+      headerTooltip: "Observation Date",
       align: 'center',
     },
     {
       name: 'execution_time',
-      title: 'Exec Time (s)',
+      title: 'Exec Time ',
       headerTooltip: "Execution time",
       sortingEnabled: false,
       width: 150,
@@ -191,6 +192,7 @@ function SkybotDetail({ setTitle, match, history }) {
       sortingEnabled: false,
       width: 100,
       align: 'right',
+      headerTooltip: "Objects inside CCD"
     },
   ];
 
@@ -289,8 +291,6 @@ function SkybotDetail({ setTitle, match, history }) {
         },
       ]);
     });
-
-    // loadSkybotDetailTableData({ currentPage: 0, pageSize: 10 });
   }, []);
 
   const handleBackNavigation = () => history.push('/skybot');

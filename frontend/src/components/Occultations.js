@@ -141,10 +141,6 @@ function Occultation({ setTitle, history, ...props }) {
 
   const classes = useStyles();
 
-  const handleImgDetail = () => {
-    console.log('TODO: open  here the detail of the asteroids.');
-  };
-
   const handleStartDateChange = (date) => {
     setStartDate(date);
   };

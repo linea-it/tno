@@ -423,7 +423,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
     {
       name: 'displayname',
       title: 'Name',
-    },
+     },
     {
       name: 'owner',
       title: 'Owner',
@@ -560,7 +560,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
   };
 
   const handleSublevelDynamicClass = (e) => {
-    console.log(e.target.value);
     setSublevelDynamicClassSelected(e.target.value);
   };
 
@@ -643,7 +642,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         // Verify if the table already exists:
         checkTableName({ tablename, status: 'success' })
           .then((res) => {
-            console.log(res);
             if (res.count === 0) {
               // The table name is unique:
               setTableNameValidation({
@@ -700,7 +698,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         setResultLoading(false);
       })
       .catch((err) => {
-        console.error(err);
         setResultLoading(false);
       });
   };
