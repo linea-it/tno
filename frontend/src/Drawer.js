@@ -48,6 +48,7 @@ import SkybotAsteroid from './components/SkybotAsteroid';
 import CustomToolbar from './components/utils/CustomToolbar';
 import Login from './Login';
 import { isAuthenticated } from './api/Auth';
+import BspJpl from './components/BspJpl';
 
 const drawerWidth = 240;
 
@@ -193,12 +194,15 @@ function MiniDrawer() {
   const classes = useStyles();
   const [open, setOpen] = useState(true);
   const [sssoOpen, setSssoOpen] = useState(true);
+  const [inputOpen, setInputOpen] = useState(true);
   const [title, setTitle] = useState('Dashboard');
   const [currentPage, setCurrentPage] = useState('');
 
   const handleDrawerClick = () => setOpen(!open);
 
   const handleDrawerSssoClick = () => setSssoOpen(!sssoOpen);
+
+  const handleDrawerInputClick = () => setInputOpen(!inputOpen);
 
   useEffect(() => {
     const { href, origin } = window.location;
@@ -273,14 +277,14 @@ function MiniDrawer() {
                       <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite')} />
                     </ListItemIcon>
                   ) : (
-                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                      {sssoOpen ? (
-                        <ExpandLess className={classes.expandClosed} />
-                      ) : (
-                        <ExpandMore className={classes.expandClosed} />
-                      )}
-                    </ListItemIcon>
-                  )}
+                      <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                        {sssoOpen ? (
+                          <ExpandLess className={classes.expandClosed} />
+                        ) : (
+                            <ExpandMore className={classes.expandClosed} />
+                          )}
+                      </ListItemIcon>
+                    )}
                   <ListItemText
                     primary="Search SSSO"
                     className={classes.textDrawer}
@@ -396,6 +400,65 @@ function MiniDrawer() {
               </>
             ) : null}
             <Divider className={classes.borderDrawer} />
+
+
+            {/* Criação do Button que controla a abertura e o fechamento das abas internas*/}
+            <ListItem button onClick={handleDrawerInputClick}>
+              {open ? (
+                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                  <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-file-import')} />
+                </ListItemIcon>
+              ) : (
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    {inputOpen ? (
+                      <ExpandLess className={classes.expandClosed} />
+                    ) : (
+                        <ExpandMore className={classes.expandClosed} />
+                      )}
+                  </ListItemIcon>
+                )}
+              <ListItemText
+                primary="Input"
+                className={classes.textDrawer}
+                title="Import necessary updating files"
+              />
+              {open ? (
+                <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                  {inputOpen
+                    ? <ExpandLess className={classes.iconDrawer} />
+                    : <ExpandMore className={classes.iconDrawer} />}
+                </ListItemIcon>
+              ) : null}
+            </ListItem>
+
+
+            {/* Criação do que fica dentro do botão input */}
+            <Collapse in={inputOpen} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <Link to="/bsp_jpl" className={classes.invisibleLink} title="Bsp_Jpl">
+                  <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'bsp'}>
+                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                      <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-space-shuttle')} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Bsp_Jpl"
+                      className={classes.textDrawer}
+                    />
+                  </ListItem>
+                </Link>
+
+              </List>
+            </Collapse>
+
+
+
+
+
+
+
+
+            <Divider className={classes.borderDrawer} />
+
           </List>
           <div className={classes.drawerControlWrapper}>
             <IconButton
@@ -427,6 +490,7 @@ function MiniDrawer() {
                 <Route exact path="/occultations/:id" render={(props) => <OccultationsDetail {...props} setTitle={setTitle} />} />
                 <Route exact path="/pointings" render={(props) => <Pointings {...props} setTitle={setTitle} />} />
                 <Route exact path="/skybot" render={(props) => <Skybot {...props} setTitle={setTitle} />} />
+                <Route exact path="/bsp_jpl" render={(props) => <BspJpl {...props} setTitle={setTitle} />} />
                 <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
                 <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
                 <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
@@ -438,12 +502,12 @@ function MiniDrawer() {
                 <Redirect path="/" to="/dashboard" />
               </Switch>
             ) : (
-              <Switch>
-                <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
-                <Route exact path="/login" render={(props) => <Login {...props} setTitle={setTitle} />} />
-                <Redirect to="/login" />
-              </Switch>
-            )}
+                <Switch>
+                  <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
+                  <Route exact path="/login" render={(props) => <Login {...props} setTitle={setTitle} />} />
+                  <Redirect to="/login" />
+                </Switch>
+              )}
           </main>
         </div>
         <CustomFooter drawerOpen={open} />
