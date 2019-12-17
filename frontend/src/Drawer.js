@@ -49,6 +49,7 @@ import CustomToolbar from './components/utils/CustomToolbar';
 import Login from './Login';
 import { isAuthenticated } from './api/Auth';
 import BspJpl from './components/BspJpl';
+import ObservFiles from './components/ObservFiles';
 
 const drawerWidth = 240;
 
@@ -193,8 +194,8 @@ const useStyles = makeStyles((theme) => ({
 function MiniDrawer() {
   const classes = useStyles();
   const [open, setOpen] = useState(true);
-  const [sssoOpen, setSssoOpen] = useState(true);
-  const [inputOpen, setInputOpen] = useState(true);
+  const [sssoOpen, setSssoOpen] = useState(false);
+  const [inputOpen, setInputOpen] = useState(false);
   const [title, setTitle] = useState('Dashboard');
   const [currentPage, setCurrentPage] = useState('');
 
@@ -443,6 +444,17 @@ function MiniDrawer() {
                         />
                       </ListItem>
                     </Link>
+                    <Link to="/observ_files" className={classes.invisibleLink} title="Observation Files">
+                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'observ_files'}>
+                        <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                          <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-file')} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary="Observation Files"
+                          className={classes.textDrawer}
+                        />
+                      </ListItem>
+                    </Link>
 
                   </List>
                 </Collapse>
@@ -482,6 +494,7 @@ function MiniDrawer() {
                 <Route exact path="/pointings" render={(props) => <Pointings {...props} setTitle={setTitle} />} />
                 <Route exact path="/skybot" render={(props) => <Skybot {...props} setTitle={setTitle} />} />
                 <Route exact path="/bsp_jpl" render={(props) => <BspJpl {...props} setTitle={setTitle} />} />
+                <Route exact path="/observ_files" render={(props) => <ObservFiles {...props} setTitle={setTitle} />} />
                 <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
                 <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
                 <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />

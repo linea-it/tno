@@ -8,6 +8,7 @@ function BspJpl({ setTitle }) {
 
   const [tableData, setTableData] = useState([]);
   const [dataTotalCount, setDataTotalCount] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setTitle("Bsp Jpl");
@@ -20,9 +21,12 @@ function BspJpl({ setTitle }) {
     let pageSize = typeof event === 'undefined' ? 10 : event.pageSize;
 
     getBspJpl({ page, pageSize, }).then((res) => {
+      setLoading(true);
       setTableData(res.data.results);
       setDataTotalCount(res.data.count);
-    })
+    }).finally(() => {
+      setLoading(false);
+    });
   };
 
   const columnsTable = [
@@ -75,6 +79,7 @@ function BspJpl({ setTitle }) {
       data={tableData}
       columns={columnsTable}
       loadData={loadTableData}
+      loading={loading}
       totalCount={dataTotalCount}
       hasSearching={false}
       hasColumnVisibility={false}
