@@ -15,6 +15,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Chip from '@material-ui/core/Chip';
 import { getSkybotLists } from '../api/SearchSsso';
 import Table from './utils/CustomTable';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -189,7 +190,7 @@ export default function SearchSsso({ history, setTitle }) {
     {
       name: 'name',
       title: 'Obj Name',
-      width: 180,
+      width: 100,
       align: 'left',
       headerTooltip: 'Object Name',
     },
@@ -198,12 +199,14 @@ export default function SearchSsso({ history, setTitle }) {
       title: 'Obj Num',
       width: 130,
       align: 'right',
+      headerTooltip: "Object Number",
     },
     {
       name: 'raj2000',
       title: 'RA (deg)',
       width: 120,
       align: 'right',
+      headerTooltip: "Right Ascension",
       customElement: (row) => (
         <span>
           {row.raj2000 ? handleValues(row.raj2000) : ''}
@@ -215,6 +218,7 @@ export default function SearchSsso({ history, setTitle }) {
       title: 'Dec (deg)',
       width: 120,
       align: 'right',
+      headerTooltip: "Declination",
       customElement: (row) => (
         <span>
           {row.decj2000 ? handleValues(row.decj2000) : ''}
@@ -226,38 +230,40 @@ export default function SearchSsso({ history, setTitle }) {
       title: 'CCD Num',
       width: 120,
       align: 'right',
+      headerTooltip: "CCD Number",
     },
     {
       name: 'band',
       title: 'Band',
-      width: 70,
+      width: 60,
       align: 'center',
     },
     {
       name: 'expnum',
-      title: 'Exposure',
+      title: 'Exp Num',
       width: 130,
       align: 'right',
+      headerTooltip: "Esposure Number"
     },
     {
       name: 'dynclass',
-      title: 'Dynamic Class',
-      width: 140,
+      title: 'Dyn Class',
+      width: 100,
       align: 'left',
       headerTooltip: 'Dynamic Class',
     },
     {
       name: 'mv',
-      title: 'Visual Mag (mag)',
-      headerTooltip: 'Visual Magnitude (mag)',
-      width: 150,
+      title: 'Visual Mag',
+      width: 120,
       align: 'right',
+      headerTooltip: "Visual Magnitude",
     },
     {
       name: 'errpos',
       title: 'Error (arcsec)',
       headerTooltip: 'Error on the position (arcsec)',
-      width: 248,
+      width: 150,
       align: 'right',
       customElement: (row) => (
         <span>
@@ -494,3 +500,11 @@ export default function SearchSsso({ history, setTitle }) {
     </Grid>
   );
 }
+
+SearchSsso.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+  setTitle: PropTypes.func.isRequired,
+};
+

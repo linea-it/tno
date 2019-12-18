@@ -25,7 +25,6 @@ export default function DateAndTimePickers(props) {
   const handleChange = (date) => {
 
     if (id === "initialDate") {
-
       props.setSubmition({
         ...props.valueSubmition,
         ephemeris_initial_date: date,

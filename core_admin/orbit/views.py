@@ -330,3 +330,4 @@ class BspJplViewSet(viewsets.ModelViewSet):
     serializer_class = BspJplSerializer
     search_fields = ('name')
     ordering = ('name')
+

@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { Card, CardHeader, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import InputSelect from './InputSelectAstrometryMain';
+import PropTypes from 'prop-types';
 import {
   getListsByStatus, getCatalogs, getConfigurations, createPraiaRun,
 } from '../api/Praia';
@@ -139,7 +140,6 @@ function Astrometry({ history, setTitle }) {
               >
                 Submit
               </Button>
-
             </Card>
           </Grid>
         </Grid>
@@ -163,4 +163,12 @@ function Astrometry({ history, setTitle }) {
   );
 }
 
+Astrometry.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+  setTitle: PropTypes.func.isRequired,
+};
+
 export default withRouter(Astrometry);
+

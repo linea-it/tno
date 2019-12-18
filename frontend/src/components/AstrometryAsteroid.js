@@ -14,7 +14,7 @@ import filesize from 'filesize';
 import CustomList from './utils/CustomList';
 import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
-import { url } from '../api/Auth'
+import { url } from '../api/Auth';
 import {
   getAsteroidById,
   getAsteroidNeighbors,
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
   },
   buttonIcon: {
-    margin: '0 2px',
+    margin: '0 10px 0 0',
   },
   buttonProgress: {
     position: 'absolute',
@@ -171,31 +171,35 @@ function AstrometryAsteroid({
     count: 0,
   });
 
-
   const astrometryColumns = [
     {
       name: 'ra',
       title: 'RA',
       align: 'right',
+      headerTooltip: "Right Ascension",
     },
     {
       name: 'dec',
       title: 'Dec',
       align: 'right',
+      headerTooltip: "Declination",
     },
     {
       name: 'mag',
-      title: 'mag',
+      title: 'Mag',
       align: 'right',
+      headerTooltip: "Magnitude",
     },
     {
       name: 'julian_date',
       title: 'Julian Date',
+      headerTooltip: "Julian Reference Date",
     },
     {
       name: 'obs_code',
-      title: 'Obs. Code',
+      title: 'Obs Code',
       align: 'right',
+      headerTooltip: "Observation Code",
     },
     {
       name: 'catalog_code',
@@ -234,7 +238,6 @@ function AstrometryAsteroid({
       },
     },
   ];
-
 
   const outputColumns = [
     {
@@ -299,7 +302,6 @@ function AstrometryAsteroid({
       prev: null,
       next: null,
     });
-
 
     getAsteroidById({ id }).then((res) => setAsteroidData(res));
 
@@ -482,7 +484,6 @@ function AstrometryAsteroid({
   };
 
   useEffect(() => {
-    console.log(astrometryPlots);
   }, [astrometryPlots]);
 
 

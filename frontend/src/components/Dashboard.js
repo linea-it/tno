@@ -10,6 +10,7 @@ import histogramSemimajoraxis from '../assets/img/dashboard/histogramSemimajorax
 import histogramBands from '../assets/img/dashboard/histogramBands.png';
 import animation from '../assets/img/dashboard/animation.gif';
 import CustomTable from './utils/CustomTable';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles({
   btn: {
@@ -54,7 +55,6 @@ function Dashboard({ setTitle }) {
         <Card>
           <CardHeader title="Exposures x Year" />
           <CardContent className={classes.centerImage} style={{ minHeight: ccdBandHeight }}>
-
 
             <Grid container spacing={2}>
               <Grid xs={12}>
@@ -356,5 +356,9 @@ function Dashboard({ setTitle }) {
     </Grid>
   );
 }
+
+Dashboard.propTypes = {
+  setTitle: PropTypes.func.isRequired,
+};
 
 export default Dashboard;

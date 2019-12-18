@@ -33,7 +33,6 @@ function PointingsDetail({ setTitle, match, history }) {
     setTitle('Pointings');
 
     getPointing({ id }).then((res) => {
-      console.log(res);
       setPointingDetailsList([
         {
           title: 'Image Id',
@@ -70,19 +69,16 @@ function PointingsDetail({ setTitle, match, history }) {
           tooltip: 'Filter used to do the observation (u, g, r, i, z, Y).',
           value: res.band,
         },
-
         {
           title: 'Exposure time',
           tooltip: 'Exposure time of observation.',
           value: res.exptime,
         },
-
         {
           title: 'Cloud apass',
           tooltip: 'Atmospheric extinction in magnitudes',
           value: res.cloud_apass,
         },
-
         {
           title: 'Cloud nomad',
           tooltip: 'Atmospheric extinction in magnitudes',
@@ -94,7 +90,6 @@ function PointingsDetail({ setTitle, match, history }) {
           tooltip: 'Parameter related to image quality',
           value: res.t_eff,
         },
-
         {
           title: 'Cross RA 0',
           value: (res.crossra0 ? (

@@ -32,7 +32,7 @@ function CustomGridList({
             : row.asteroid_name;
 
           return (
-            <Grid key={i} item xs={12} md={4}>
+            <Grid key={i} item xs={12} xl={4} lg={6} md={4} >
               <Card>
                 <CardHeader title={`${row.date_time} - ${asteroidName}`} />
                 <CardContent>
@@ -64,6 +64,5 @@ CustomGridList.propTypes = {
   baseUrl: PropTypes.string,
   handleImageClick: PropTypes.func,
 };
-
 
 export default CustomGridList;
