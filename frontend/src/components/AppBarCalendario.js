@@ -2,26 +2,19 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 import { TextField } from '@material-ui/core';
-
+import PropTypes from 'prop-types'
 
 const useStyles = makeStyles(theme => ({
   grow: {
-
     marginBottom: theme.spacing(6),
     float: 'right',
     marginLeft: 10
   },
-
-
   input: {
     width: 170,
   },
-
   search: {
-
   }
-
-
 }));
 
 export default function PrimarySearchAppBar({ setSearch, setHasSearch, value }) {
@@ -31,9 +24,7 @@ export default function PrimarySearchAppBar({ setSearch, setHasSearch, value }) 
     let fetch = event.target.value;
     setSearch(fetch === "" ? "" : fetch);
     setHasSearch(true);
-
   }
-
 
 
   return (
@@ -44,7 +35,6 @@ export default function PrimarySearchAppBar({ setSearch, setHasSearch, value }) 
       <TextField
         id="standard-search"
         label=""
-
         placeholder="Search…"
         onChange={handleChange}
         value={value}
@@ -53,11 +43,13 @@ export default function PrimarySearchAppBar({ setSearch, setHasSearch, value }) 
         autoFocus={true}
         type="search"
         fullWidth={false}
-
       />
-
-
-
     </div>
   );
-}  
+}
+
+PrimarySearchAppBar.propTypes = {
+  setSearch: PropTypes.func.isRequired,
+  setHasSearch: PropTypes.func.isRequired,
+  value: PropTypes.string,
+};

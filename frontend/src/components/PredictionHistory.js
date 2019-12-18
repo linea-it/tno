@@ -60,38 +60,23 @@ function PredictionHistory() {
     sortOrder: null,
   });
 
-
   const loadData = (page, sizePerPage) => {
     getPredictionRuns({
       page: page,
       sizePerPage: sizePerPage
     }).then((res) => {
-      console.log(res);
       setTablevalues({
         data: res.results,
         totalSize: res.count,
         loading: false,
-        // sortField: sortField,
-        // sortOrder:sortOrder,
       }
       );
-
     });
-
-
   };
-
-
-
-
 
   useEffect(() => {
     loadData(tableValues.page, tableValues.sizePerPage);
   }, []);
-
-
-  tableValues.data ? console.log("Data") : console.log("Not yet");
-
 
   //Columns of the table HISTORY
   const tableColumns = [
@@ -126,24 +111,16 @@ function PredictionHistory() {
     { name: "h_time", title: "Start" },
     { name: "h_execution_time", title: "Execution Time" },
     { name: "count_objects", title: "Asteroids" },
-
   ];
 
   return (
-
     <div>
       <Table
         data={tableValues.data ? tableValues.data : []}
         columns={tableColumns}  >
-
-
       </Table>
-
     </div>
-
   );
-
-
 }
 
 export default (PredictionHistory);

@@ -17,6 +17,7 @@ import ReactInterval from 'react-interval';
 import Button from '@material-ui/core/Button';
 import CustomLog from './utils/CustomLog';
 import CustomDialog from './utils/CustomDialog';
+import PropTypes from 'prop-types';
 import {
   readCondorFile, getPraiaRunById, getExecutionTimeById, getAsteroidStatus, getAsteroids,
 } from '../api/Praia';
@@ -24,7 +25,6 @@ import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
 import Stepper from './AstrometryStepper';
-
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -141,7 +141,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         {
           title: 'Status',
           value: () => {
-            if (data.status === 'failure') {
+            if (data.status === 'failed') {
               return (
                 <span
                   className={clsx(classes.btn, classes.btnFailure)}
@@ -303,13 +303,15 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     },
     {
       name: 'name',
-      title: 'Name',
+      title: 'Obj Name',
       align: 'left',
+      width: 100,
       sortingEnabled: true,
+      headerTooltip: "Object Name",
     },
     {
       name: 'number',
-      title: 'Number',
+      title: 'Obj Num',
       align: 'right',
       customElement: (row) => {
         if (row.number === '-') {
@@ -321,6 +323,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           </span>
         );
       },
+      headerTooltip: "Object Number",
     },
     {
       name: 'ccd_images',
@@ -438,12 +441,14 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       name: 'name',
       title: 'Name',
       align: 'left',
+      width: 100,
+      headerTooltip: "Object Name",
     },
     {
       name: 'number',
-      title: 'Number',
+      title: 'Num',
       align: 'right',
-      width: 120,
+      width: 100,
       customElement: (row) => {
         if (row.number === '-') {
           return '';
@@ -454,6 +459,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           </span>
         );
       },
+      headerTooltip: "Object Number",
     },
     {
       name: 'error_msg',
@@ -574,7 +580,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         } else {
           arrayLines.push(<div key={0}>{res.msg}</div>);
         }
-        // setDialog({ content: arrayLines, visible: true, title: file + " " });
         setDialog({ content: data, visible: true, title: `${file} ` });
       });
     }
@@ -592,7 +597,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     }
   };
 
-
   const handleBackNabigation = () => {
     history.push('/astrometry');
   };
@@ -604,16 +608,19 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         enabled={interval_condition}
         callback={handleInterval}
       />
-      <Button
-        variant="contained"
-        color="primary"
-        className={classes.backButton}
-        onClick={handleBackNabigation}
-      >
-        <Icon className={clsx('fas', 'fa-undo', classes.backIcon)} />
-        <span>Back</span>
-      </Button>
       <Grid container spacing={2}>
+        <Grid item xs={12} xl={12} md={12}>
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.backButton}
+            onClick={handleBackNabigation}
+          >
+            <Icon className={clsx('fas', 'fa-undo', classes.backIcon)} />
+            <span>Back</span>
+          </Button>
+        </Grid>
+
         <Grid item xs={12} md={6} xl={4}>
           <Card>
             <CardHeader
@@ -726,4 +733,17 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     </Grid>
   );
 }
+
+AstrometryDetail.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+  setTitle: PropTypes.func.isRequired,
+};
+
 export default withRouter(AstrometryDetail);
