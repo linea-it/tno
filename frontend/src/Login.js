@@ -40,10 +40,6 @@ function Login({ history, setTitle }) {
   const loginEnv = process.env.REACT_APP_INST_LOGIN ?
     process.env.REACT_APP_INST_LOGIN : "";
 
-  useEffect(() => {
-    setTitle('Login');
-  }, []);
-
   const handleUsernameChange = (e) => setUsername(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
 
@@ -150,3 +146,5 @@ function Login({ history, setTitle }) {
 }
 
 export default withRouter(Login);
+
+// export default Login;

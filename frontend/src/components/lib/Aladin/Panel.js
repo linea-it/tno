@@ -60,13 +60,11 @@ class Panel extends Component {
   }
 
   componentDidMount = () => {
-    // console.log("Depois do component estar renderizado")
 
     this.create_aladin();
   };
 
   componentDidUpdate = () => {
-    // console.log("Depois do componente ter atualizado")
     // // Load CCDs:
     // this.api.getExposures({}).then(res => {
     //   const r = res.data;
@@ -213,7 +211,7 @@ class Panel extends Component {
     let result = null;
 
     if (overlays.length > 0) {
-      overlays.forEach(function(item) {
+      overlays.forEach(function (item) {
         if (item.name === name) {
           result = item;
         }

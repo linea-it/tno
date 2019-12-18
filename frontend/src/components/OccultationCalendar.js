@@ -8,7 +8,6 @@ import '@fullcalendar/core/main.css';
 import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/list/main.css';
 import { makeStyles } from '@material-ui/core/styles';
-// import { getCalendarEvents } from '../api/Prediction';
 import moment from 'moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { getOccultations } from '../api/Occultation';
@@ -23,7 +22,6 @@ const useStyles = makeStyles(() => ({
     transform: 'translate(-50%, -50%)',
     animation: 'none',
   },
-
   label: {
     float: 'right',
   },
@@ -45,10 +43,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
   const classes = useStyles();
 
-
   const loadData = () => {
-    const arrayEvents = [];
-    const result = [];
 
     setLoading(true);
 
@@ -102,16 +97,13 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     loadData();
   }, [search]);
 
-
   const header = {
     center: 'title',
     right: 'prev,next, ',
     month: 'month',
     listYear: 'Year',
     left: 'dayGridDay,dayGridWeek,dayGridMonth,listYear',
-
   };
-
 
   const handleDateRender = (arg) => {
     const start_date = moment(arg.view.currentStart).format('YYYY-MM-DD');
@@ -138,11 +130,9 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   const buttonText = {
     listYear: 'year',
     month: 'month',
-
   };
 
   const handleEvent = (e) => {
-    // history.push(`/test-calendar/${id}/${date}/${view}/${flag}/${sDate}/${fDate}/${searching}`);
     history.push({
       pathname: `/occultations/${e.event.id}`,
       state: {
@@ -156,7 +146,6 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     });
   };
 
-
   const handleEventRender = (event) => {
     const time = moment(event.event.start).format('H');
 
@@ -168,7 +157,6 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   };
 
   return (
-
     <div>
       {loading && <CircularProgress size={120} thickness={0.8} className={classes.loading} />}
       <AppBar setSearch={setSearch} setHasSearch={setHasSearch} value={search} />
@@ -179,7 +167,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
       1 -User chooses an event.
       2- The specific data goes to occultation.
       3 - On occultation screen user click on back button.
-      4 - When back, data comes inside params props.(params are internal(internal operation));             */}
+      4 - When back, data comes inside params props.(params are internal(internal operation)); */}
       <FullCalendar
         header={header}
         events={events}
@@ -194,7 +182,6 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
         eventRender={handleEventRender}
       />
     </div>
-
   );
 }
 
