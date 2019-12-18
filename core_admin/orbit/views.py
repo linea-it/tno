@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from .models import OrbitRun
-from .serializers import OrbitRunSerializer
+from .serializers import OrbitRunSerializer, BspJplSerializer
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 import os
-from .models import OrbitRun, RefinedAsteroid, RefinedOrbit, RefinedOrbitInput
+from .models import OrbitRun, RefinedAsteroid, RefinedOrbit, RefinedOrbitInput, BspJplFile
 from .serializers import OrbitRunSerializer, RefinedAsteroidSerializer, RefinedOrbitSerializer, \
-    RefinedOrbitInputSerializer
+    RefinedOrbitInputSerializer, BspJplSerializer
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
@@ -324,3 +324,7 @@ class RefinedOrbitInputViewSet(viewsets.ModelViewSet):
     filter_fields = ('id', 'asteroid', 'input_type', 'filename')
     search_fields = ('id', 'filename')
     ordering = ('input_type')
+
+class BspJplViewSet(viewsets.ModelViewSet):
+    queryset = BspJplFile.objects.all()
+    serializer_class = BspJplSerializer

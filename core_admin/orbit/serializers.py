@@ -1,4 +1,4 @@
-from orbit.models import OrbitRun, RefinedAsteroid, RefinedOrbit, RefinedOrbitInput
+from orbit.models import OrbitRun, RefinedAsteroid, RefinedOrbit, RefinedOrbitInput, BspJplFile
 from rest_framework import serializers
 from tno.models import Proccess, CustomList
 import humanize
@@ -224,3 +224,18 @@ class RefinedOrbitInputSerializer(serializers.ModelSerializer):
             return datetime.strftime(obj.date_time, "%Y-%m-%d %H:%M:%S")
         except:
             return None
+
+
+class BspJplSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BspJplFile
+        fields = (
+            'name',
+            'filename',
+            'download_start_time',
+            'download_finish_time',
+            'file_size',
+        )
+
+        
