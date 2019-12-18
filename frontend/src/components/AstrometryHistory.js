@@ -3,9 +3,10 @@ import clsx from 'clsx';
 import { withRouter } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import Icon from '@material-ui/core/Icon';
-import moment from 'moment';
 import Table from './utils/CustomTable';
 import { getPraiaRuns } from '../api/Praia';
+import PropTypes from 'prop-types';
+import moment from 'moment';
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
@@ -58,8 +59,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-
-function AstrometryHistory({ history, reloadHistory }) {
+function AstrometryHistory({ history }) {
   const classes = useStyles();
 
   const [tableData, setTableData] = useState([]);
@@ -82,8 +82,7 @@ function AstrometryHistory({ history, reloadHistory }) {
       setTotalCount(res.count);
       setLoading(false);
     }).catch((err) => {
-      console.error(err);
-      setLoading(false);
+       setLoading(false);
     });
   };
 
@@ -131,7 +130,7 @@ function AstrometryHistory({ history, reloadHistory }) {
             </span>
           );
         }
-        if (row.status === 'failure') {
+        if (row.status === 'failed') {
           return (
             <span
               className={clsx(classes.btn, classes.btnFailure)}
@@ -241,5 +240,11 @@ function AstrometryHistory({ history, reloadHistory }) {
     </div>
   );
 }
+
+AstrometryHistory.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default withRouter(AstrometryHistory);

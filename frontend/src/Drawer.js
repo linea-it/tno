@@ -27,7 +27,6 @@ import RefineOrbitDetail from './components/RefineOrbitDetail';
 import RefineOrbitAsteroid from './components/RefineOrbitAsteroid';
 import AstrometryDetail from './components/AstrometryDetail';
 import Astrometry from './components/Astrometry';
-import TestCalendar from './components/TestCalendar';
 import PredictionOccultation from './components/PredictionOccultation';
 import PredictionOccultationDetail from './components/PredictionOccultationDetail';
 import PredictionOccultationAsteroid from './components/PredictionOccultationAsteroid';
@@ -48,6 +47,8 @@ import SkybotAsteroid from './components/SkybotAsteroid';
 import CustomToolbar from './components/utils/CustomToolbar';
 import Login from './Login';
 import { isAuthenticated } from './api/Auth';
+import BspJpl from './components/BspJpl';
+import ObservFiles from './components/ObservFiles';
 
 const drawerWidth = 240;
 
@@ -192,13 +193,16 @@ const useStyles = makeStyles((theme) => ({
 function MiniDrawer() {
   const classes = useStyles();
   const [open, setOpen] = useState(true);
-  const [sssoOpen, setSssoOpen] = useState(true);
+  const [sssoOpen, setSssoOpen] = useState(false);
+  const [inputOpen, setInputOpen] = useState(false);
   const [title, setTitle] = useState('Dashboard');
   const [currentPage, setCurrentPage] = useState('');
 
   const handleDrawerClick = () => setOpen(!open);
 
   const handleDrawerSssoClick = () => setSssoOpen(!sssoOpen);
+
+  const handleDrawerInputClick = () => setInputOpen(!inputOpen);
 
   useEffect(() => {
     const { href, origin } = window.location;
@@ -226,7 +230,7 @@ function MiniDrawer() {
           open={open}
         >
           <List className={classes.drawerList}>
-            <Link to={isAuthenticated() ? '/dashboard' : '/login'} className={classes.invisibleLink} title="Laboratório Interinstitucional de e-Astronomia">
+            <Link to={isAuthenticated() ? '/dashboard' : ''} className={classes.invisibleLink} title="Laboratório Interinstitucional de e-Astronomia">
               <ListItem button>
                 <ListItemText
                   primary={(
@@ -273,14 +277,14 @@ function MiniDrawer() {
                       <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite')} />
                     </ListItemIcon>
                   ) : (
-                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                      {sssoOpen ? (
-                        <ExpandLess className={classes.expandClosed} />
-                      ) : (
-                        <ExpandMore className={classes.expandClosed} />
-                      )}
-                    </ListItemIcon>
-                  )}
+                      <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                        {sssoOpen ? (
+                          <ExpandLess className={classes.expandClosed} />
+                        ) : (
+                            <ExpandMore className={classes.expandClosed} />
+                          )}
+                      </ListItemIcon>
+                    )}
                   <ListItemText
                     primary="Search SSSO"
                     className={classes.textDrawer}
@@ -393,9 +397,72 @@ function MiniDrawer() {
                     />
                   </ListItem>
                 </Link>
+                <Divider className={classes.borderDrawer} />
+
+                {/* Criação do Button que controla a abertura e o fechamento das abas internas*/}
+                <ListItem button onClick={handleDrawerInputClick}>
+                  {open ? (
+                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                      <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-file-import')} />
+                    </ListItemIcon>
+                  ) : (
+                      <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                        {inputOpen ? (
+                          <ExpandLess className={classes.expandClosed} />
+                        ) : (
+                            <ExpandMore className={classes.expandClosed} />
+                          )}
+                      </ListItemIcon>
+                    )}
+                  <ListItemText
+                    primary="Input"
+                    className={classes.textDrawer}
+                    title="Import necessary updating files"
+                  />
+                  {open ? (
+                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                      {inputOpen
+                        ? <ExpandLess className={classes.iconDrawer} />
+                        : <ExpandMore className={classes.iconDrawer} />}
+                    </ListItemIcon>
+                  ) : null}
+                </ListItem>
+
+
+                {/* Criação do que fica dentro do botão input */}
+                <Collapse in={inputOpen} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    <Link to="/bsp_jpl" className={classes.invisibleLink} title="Bsp_Jpl">
+                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'bsp'}>
+                        <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                          <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-space-shuttle')} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary="Bsp_Jpl"
+                          className={classes.textDrawer}
+                        />
+                      </ListItem>
+                    </Link>
+                    <Link to="/observ_files" className={classes.invisibleLink} title="Observation Files">
+                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'observ_files'}>
+                        <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                          <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-file')} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary="Observation Files"
+                          className={classes.textDrawer}
+                        />
+                      </ListItem>
+                    </Link>
+
+                  </List>
+                </Collapse>
+
+                <Divider className={classes.borderDrawer} />
               </>
             ) : null}
             <Divider className={classes.borderDrawer} />
+
           </List>
           <div className={classes.drawerControlWrapper}>
             <IconButton
@@ -409,41 +476,34 @@ function MiniDrawer() {
         </Drawer>
         <div className={clsx(classes.bodyWrapper, open ? classes.bodyWrapperOpen : classes.bodyWrapperClose)}>
           <main className={classes.content}>
-            {isAuthenticated() ? (
-              <Switch>
-                <Route exact path="/refine-orbit" render={(props) => <RefineOrbit {...props} setTitle={setTitle} />} />
-                <Route exact path="/refine-orbit/:id" render={(props) => <RefineOrbitDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/refine-orbit/asteroid/:id" render={(props) => <RefineOrbitAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
-                <Route exact path="/astrometry/asteroid/:id" render={(props) => <AstrometryAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
-                <Route exact path="/astrometry/:id" render={(props) => <AstrometryDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/astrometry" render={(props) => <Astrometry {...props} setTitle={setTitle} />} />
-                <Route exact path="/prediction-of-occultation/asteroid/:id" render={(props) => <PredictionOccultationAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
-                <Route exact path="/prediction-of-occultation/:id" render={(props) => <PredictionOccultationDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/prediction-of-occultation" render={(props) => <PredictionOccultation {...props} setTitle={setTitle} />} />
-                <Route exact path="/occultation-calendar" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
-                <Route exact path="/test-calendar/:id/:date/:view/:flag/:sDate/:fDate/:searching" render={(props) => <TestCalendar {...props} setTitle={setTitle} />} />
-                <Route exact path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
-                <Route exact path="/occultations" render={(props) => <Occultations {...props} setTitle={setTitle} />} />
-                <Route exact path="/occultations/:id" render={(props) => <OccultationsDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/pointings" render={(props) => <Pointings {...props} setTitle={setTitle} />} />
-                <Route exact path="/skybot" render={(props) => <Skybot {...props} setTitle={setTitle} />} />
-                <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
-                <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
-                <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/skybot/:id" render={(props) => <SkybotDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/skybot/:runId/asteroid/:id" render={(props) => <SkybotAsteroid {...props} setTitle={setTitle} />} />
-                <Route exact path="/pointings/:id" render={(props) => <PointingsDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/search-ssso-detail/:id" render={(props) => <SearchSssoDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
-                <Redirect path="/" to="/dashboard" />
-              </Switch>
-            ) : (
-              <Switch>
-                <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
-                <Route exact path="/login" render={(props) => <Login {...props} setTitle={setTitle} />} />
-                <Redirect to="/login" />
-              </Switch>
-            )}
+            <Switch>
+              <Route exact path="/refine-orbit" render={(props) => <RefineOrbit {...props} setTitle={setTitle} />} />
+              <Route exact path="/refine-orbit/:id" render={(props) => <RefineOrbitDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/refine-orbit/asteroid/:id" render={(props) => <RefineOrbitAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
+              <Route exact path="/astrometry/asteroid/:id" render={(props) => <AstrometryAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
+              <Route exact path="/astrometry/:id" render={(props) => <AstrometryDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/astrometry" render={(props) => <Astrometry {...props} setTitle={setTitle} />} />
+              <Route exact path="/prediction-of-occultation/asteroid/:id" render={(props) => <PredictionOccultationAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
+              <Route exact path="/prediction-of-occultation/:id" render={(props) => <PredictionOccultationDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/prediction-of-occultation" render={(props) => <PredictionOccultation {...props} setTitle={setTitle} />} />
+              <Route exact path="/occultation-calendar" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
+              <Route exact path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
+              <Route exact path="/occultations" render={(props) => <Occultations {...props} setTitle={setTitle} />} />
+              <Route exact path="/occultations/:id" render={(props) => <OccultationsDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/pointings" render={(props) => <Pointings {...props} setTitle={setTitle} />} />
+              <Route exact path="/skybot" render={(props) => <Skybot {...props} setTitle={setTitle} />} />
+              <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
+              <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
+              <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/skybot/:id" render={(props) => <SkybotDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/skybot/:runId/asteroid/:id" render={(props) => <SkybotAsteroid {...props} setTitle={setTitle} />} />
+              <Route exact path="/pointings/:id" render={(props) => <PointingsDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/search-ssso-detail/:id" render={(props) => <SearchSssoDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
+              <Route exact path="/bsp_jpl" render={(props) => <BspJpl {...props} setTitle={setTitle} />} />
+              <Route exact path="/observ_files" render={(props) => <ObservFiles {...props} setTitle={setTitle} />} />
+              <Redirect path="/" to="/dashboard" />
+            </Switch>
           </main>
         </div>
         <CustomFooter drawerOpen={open} />

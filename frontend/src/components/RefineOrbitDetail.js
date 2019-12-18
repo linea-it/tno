@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
   },
   buttonIcon: {
-    margin: '0 2px',
+    margin: '0 10px 0 0 ',
   },
   btn: {
     textTransform: 'none',
@@ -187,7 +187,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
     {
       name: 'h_execution_time',
       title: 'Exec Time',
-      headerTooltip:"Execution time",
+      headerTooltip: "Execution time",
       align: 'center',
       customElement: (row) => (
         <span>
@@ -380,7 +380,6 @@ function RefineOrbitDetail({ history, match, setTitle }) {
           </Card>
         </Grid>
 
-
         <Grid item xs={12} md={6} xl={timeProfile.length > 0 ? 4 : 6} className={classes.block}>
           <Card>
             <CardHeader title="Execution Statistics" />
@@ -473,6 +472,5 @@ RefineOrbitDetail.propTypes = {
   }).isRequired,
   setTitle: PropTypes.func.isRequired,
 };
-
 
 export default withRouter(RefineOrbitDetail);
