@@ -127,7 +127,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     sortField: 'name',
     sortOrder: 1,
     pageSizes: [10, 20, 30],
-    reload: true,
     totalCount: null,
   });
 
@@ -214,23 +213,28 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     });
   };
 
-  const loadTableData = () => {
-    const { page } = tableParams;
-    const { sizePerPage } = tableParams;
-    const { sortField } = tableParams;
-    const { sortOrder } = tableParams;
-    const { searchValue } = tableParams;
+  const loadTableData = (event) => {
+
+    let page = typeof event != "undefined" ? event.currentPage + 1 : tableParams.page;
+    let sizePerPage = typeof event != "undefined" ? event.pageSize : tableParams.sizePerPage;
+    let searchValue = typeof event != "undefined" ? event.searchValue : "";
+    let sortField = tableParams.sortField;
+    let sortOrder = tableParams.sortOrder;
+
     const filters = [];
+
     filters.push({
       property: 'astrometry_run',
       value: runId,
     });
+
     getAsteroids({
       page, sizePerPage, filters, sortField, sortOrder, search: searchValue,
-    }).then((res) => {
-      setTableData(res.results);
-      setTableParams({ ...tableParams, totalCount: res.count });
-    });
+    })
+      .then((res) => {
+        setTableData(res.results);
+        setTableParams({ ...tableParams, totalCount: res.count });
+      })
   };
 
   const handleAsteroidDetail = (row) => history.push(`/astrometry/asteroid/${row.id}`);
@@ -715,9 +719,10 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                 totalCount={tableParams.totalCount ? tableParams.totalCount : 1}
                 hasColumnVisibility={false}
                 pageSizes={tableParams.pageSizes}
-                reload={tableParams.reload}
                 hasToolbar
                 hasResizing={false}
+                hasPagination={true}
+
               />
               <CustomDialog
                 visible={dialog.visible}
