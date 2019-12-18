@@ -57,10 +57,8 @@ function CustomFooter(props) {
     },
   }));
 
-  console.log('drawerOpen', drawerOpen);
-
   const classes = useStyles();
-
+  
   return (
     <footer className={classes.root}>
       <AppBar position="fixed" className={drawerOpen ? classes.appBarDrawerOpen : classes.appBarDrawerClose}>

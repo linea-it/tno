@@ -148,7 +148,6 @@ function Pointings({ setTitle, history }) {
       setPointingsTableData(res.results);
       setLoading(false);
     }).catch((err) => {
-      console.error(err);
       setLoading(false);
     });
   };

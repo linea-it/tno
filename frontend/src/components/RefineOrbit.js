@@ -102,7 +102,60 @@ function useInterval(callback, delay) {
 }
 
 function RefineOrbit({ history, setTitle }) {
+  const [tableData, setTableData] = useState([]);
+  const [inputData, setInputData] = useState([]);
+  const pageSizes = [5, 10, 15];
+  const [select, setSelect] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [reload, setReload] = useState(true);
+  
+  
   const classes = useStyles();
+
+  useEffect(() => {
+    setTitle('Refine Orbits');
+    loadExecuteData();
+  }, []);
+
+  useInterval(() => {
+    setReload(!reload);
+  }, 30000);
+
+
+
+  const loadExecuteData = () => {
+    getPraiaRuns({
+      ordering: '-start_time',
+      filters: [
+        {
+          property: 'status',
+          value: 'success',
+        },
+      ],
+    }).then((res) => {
+      setInputData(res.results);
+    });
+  };
+
+  
+  const loadTableData = async ({
+    sorting, pageSize, currentPage, filter, searchValue,
+  }) => {
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
+    const orbits = await getOrbitRuns({
+      ordering,
+      pageSize,
+      page: currentPage !== 0 ? currentPage + 1 : 1,
+      filter,
+      search: searchValue,
+    });
+
+    if (orbits && orbits.results) {
+      setTableData(orbits.results);
+      setTotalCount(orbits.count);
+    }
+  };
+
   const columns = [
     {
       name: 'id',
@@ -207,54 +260,7 @@ function RefineOrbit({ history, setTitle }) {
       align: 'right',
     },
   ];
-  const [tableData, setTableData] = useState([]);
-  const [inputData, setInputData] = useState([]);
-  const pageSizes = [5, 10, 15];
-  const [select, setSelect] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
-  const [reload, setReload] = useState(true);
 
-
-  const loadExecuteData = () => {
-    getPraiaRuns({
-      ordering: '-start_time',
-      filters: [
-        {
-          property: 'status',
-          value: 'success',
-        },
-      ],
-    }).then((res) => {
-      setInputData(res.results);
-    });
-  };
-
-  useEffect(() => {
-    setTitle('Refine Orbits');
-    loadExecuteData();
-  }, []);
-
-  useInterval(() => {
-    setReload(!reload);
-  }, 30000);
-
-  const loadTableData = async ({
-    sorting, pageSize, currentPage, filter, searchValue,
-  }) => {
-    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
-    const orbits = await getOrbitRuns({
-      ordering,
-      pageSize,
-      page: currentPage !== 0 ? currentPage + 1 : 1,
-      filter,
-      search: searchValue,
-    });
-
-    if (orbits && orbits.results) {
-      setTableData(orbits.results);
-      setTotalCount(orbits.count);
-    }
-  };
 
   const handleSelect = (e) => setSelect(e.target.value);
 
@@ -265,7 +271,6 @@ function RefineOrbit({ history, setTitle }) {
     })
       .then(() => setReload(!reload))
       .catch((error) => {
-        console.error(error);
       });
   };
 

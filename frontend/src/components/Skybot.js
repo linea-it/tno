@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import clsx from 'clsx';
@@ -16,12 +17,13 @@ import Interval from 'react-interval';
 import SnackBar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
 import moment from 'moment';
-import { createSkybotRun, getSkybotRunList, getSkybotRunEstimate, getExposuresByPeriod } from '../api/Skybot';
-import Table from './utils/CustomTable';
+import Skeleton from '@material-ui/lab/Skeleton'
+import { SizeMe } from 'react-sizeme';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
-import { SizeMe } from 'react-sizeme';
-import Skeleton from '@material-ui/lab/Skeleton'
+import { createSkybotRun, getSkybotRunList, getSkybotRunEstimate, getExposuresByPeriod } from '../api/Skybot';
+import Table from './utils/CustomTable';
+
 
 const useStyles = makeStyles((theme) => ({
   typography: {
@@ -38,7 +40,6 @@ const useStyles = makeStyles((theme) => ({
     float: 'right',
     width: '15%',
   },
-
   dateSet: {
     marginTop: 30,
   },
@@ -50,7 +51,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: -12,
     marginLeft: -12,
   },
-
   iconDetail: {
     fontSize: 18,
   },
@@ -147,13 +147,11 @@ function Skybot({ setTitle, history }) {
     loadData();
   }, []);
 
-
   useEffect(() => {
     if (errorDatePicker) {
       setDisabledRunButton(true);
     }
   }, [errorDatePicker]);
-
 
   useEffect(() => {
     setExposuresByPeriod([])
@@ -254,6 +252,8 @@ function Skybot({ setTitle, history }) {
         const { data } = res;
         setTableData(data.results);
         setTotalSize(data.count);
+      })
+      .finally(() => {
         setLoading(false);
       });
   };
@@ -316,7 +316,6 @@ function Skybot({ setTitle, history }) {
       action: (row) => history.push(`/skybot/${row.id}`),
       align: 'center',
       sortingEnabled: false,
-
     },
     {
       name: 'status',
@@ -377,7 +376,6 @@ function Skybot({ setTitle, history }) {
     {
       name: 'owner', title: 'Owner', width: 140, align: 'left',
     },
-
     {
       name: 'date_initial',
       title: 'Initial Date',
@@ -421,15 +419,10 @@ function Skybot({ setTitle, history }) {
     },
   ];
 
-  const handleCloseSnackBar = (event, reason) => {
-    setSnackBarVisible(false);
-  };
-
 
   const transitionSnackBar = (props) => <Slide {...props} direction="left" />;
 
   const { vertical, horizontal } = snackBarPosition;
-
 
   const handleFinalDateError = (error) => {
     const currentDateMessage = 'Date should not be after current date';
@@ -632,10 +625,18 @@ function Skybot({ setTitle, history }) {
         autoHideDuration={3500}
         TransitionComponent={snackBarTransition}
         anchorOrigin={{ vertical, horizontal }}
-        message="Executing... Check progress on the table below."
-        onClose={handleCloseSnackBar}
+        message="Executing... Check progress on history table ."
+        onClose={() => setSnackBarVisible(false)}
       />
     </Grid>
   );
 }
+
+Skybot.propTypes = {
+  setTitle: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
 export default withRouter(Skybot);

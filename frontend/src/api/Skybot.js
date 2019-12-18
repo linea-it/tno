@@ -9,13 +9,11 @@ export const createSkybotRun = ({
   date_initial = date_initial !== '' ? moment(date_initial).format('YYYY-MM-DD') : null;
   date_final = date_final !== '' ? moment(date_final).format('YYYY-MM-DD') : null;
 
-
   return axios.post('/skybot_run/', {
     type_run,
     status: 'pending',
     date_initial,
     date_final,
-
   });
 };
 

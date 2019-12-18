@@ -4,15 +4,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import {
-  Card, CardHeader, CardContent, Typography,
+  Card, CardContent, Typography,
 } from '@material-ui/core';
 import Slider from '@material-ui/core/Slider';
 import DateFnsUtils from '@date-io/date-fns';
 import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
 import moment from 'moment';
 import {
   MuiPickersUtilsProvider,
@@ -134,7 +131,6 @@ function Occultation({ setTitle, history, ...props }) {
     }
   };
 
-
   useEffect(() => {
     setTitle('Occultations');
   }, []);
@@ -144,11 +140,6 @@ function Occultation({ setTitle, history, ...props }) {
   }, [startDate, endDate, objectName, magnitude]);
 
   const classes = useStyles();
-
-  const handleImgDetail = () => {
-    console.log('TODO: open  here the detail of the asteroids.');
-  };
-
 
   const handleStartDateChange = (date) => {
     setStartDate(date);
