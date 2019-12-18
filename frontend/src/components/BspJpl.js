@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getBspJpl } from '../api/Input';
 import CustomTable from '../components/utils/CustomTable';
 import moment from 'moment';
+import { Grid, Card, CardContent, CardHeader } from '@material-ui/core';
 
 
 function BspJpl({ setTitle }) {
@@ -76,15 +77,25 @@ function BspJpl({ setTitle }) {
   ];
 
   return (
-    <CustomTable
-      data={tableData}
-      columns={columnsTable}
-      loadData={loadTableData}
-      loading={loading}
-      totalCount={dataTotalCount}
-      hasColumnVisibility={false}
-    >
-    </CustomTable>
+
+
+    <Grid container spacing={2}>
+      <Grid item xs={12} >
+        <Card>
+          <CardHeader title="List with the BSP JPL Files" />
+          <CardContent>
+            <CustomTable
+              data={tableData}
+              columns={columnsTable}
+              loadData={loadTableData}
+              loading={loading}
+              totalCount={dataTotalCount}
+             >
+            </CustomTable>
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
   );
 }
 

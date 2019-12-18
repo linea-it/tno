@@ -50,6 +50,7 @@ import Login from './Login';
 import { isAuthenticated } from './api/Auth';
 import BspJpl from './components/BspJpl';
 import ObservFiles from './components/ObservFiles';
+import OrbitalParameterFiles from './components/OrbitalParameterFiles';
 
 const drawerWidth = 240;
 
@@ -433,8 +434,8 @@ function MiniDrawer() {
                 {/* Criação do que fica dentro do botão input */}
                 <Collapse in={inputOpen} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
-                    <Link to="/bsp_jpl" className={classes.invisibleLink} title="Bsp_Jpl">
-                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'bsp'}>
+                    <Link to="/bsp-jpl" className={classes.invisibleLink} title="Bsp_Jpl">
+                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'bsp-jpl'}>
                         <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                           <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-space-shuttle')} />
                         </ListItemIcon>
@@ -444,8 +445,8 @@ function MiniDrawer() {
                         />
                       </ListItem>
                     </Link>
-                    <Link to="/observ_files" className={classes.invisibleLink} title="Observation Files">
-                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'observ_files'}>
+                    <Link to="/observ-files" className={classes.invisibleLink} title="Observation Files">
+                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'observ-files'}>
                         <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                           <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-file')} />
                         </ListItemIcon>
@@ -455,7 +456,18 @@ function MiniDrawer() {
                         />
                       </ListItem>
                     </Link>
-
+                    <Link to="/orbital-parameter" className={classes.invisibleLink} title="Orbital Parameter Files">
+                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'orbital-parameter'}>
+                        <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                          <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-globe')} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary="Orbital Parameter Files"
+                          className={classes.textDrawer}
+                        >
+                        </ListItemText>
+                      </ListItem>
+                    </Link>
                   </List>
                 </Collapse>
 
@@ -493,8 +505,9 @@ function MiniDrawer() {
                 <Route exact path="/occultations/:id" render={(props) => <OccultationsDetail {...props} setTitle={setTitle} />} />
                 <Route exact path="/pointings" render={(props) => <Pointings {...props} setTitle={setTitle} />} />
                 <Route exact path="/skybot" render={(props) => <Skybot {...props} setTitle={setTitle} />} />
-                <Route exact path="/bsp_jpl" render={(props) => <BspJpl {...props} setTitle={setTitle} />} />
-                <Route exact path="/observ_files" render={(props) => <ObservFiles {...props} setTitle={setTitle} />} />
+                <Route exact path="/bsp-jpl" render={(props) => <BspJpl {...props} setTitle={setTitle} />} />
+                <Route exact path="/observ-files" render={(props) => <ObservFiles {...props} setTitle={setTitle} />} />
+                <Route exact path="/orbital-parameter" render={(props) => <OrbitalParameterFiles {...props} setTitle={setTitle} />} />
                 <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
                 <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
                 <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
