@@ -15,8 +15,9 @@ function ObservFiles({ setTitle }) {
     setLoading(true);
     let page = typeof event === 'undefined' ? 1 : event.currentPage + 1;
     let pageSize = typeof event === 'undefined' ? 10 : event.pageSize;
+    let search = typeof event === 'undefined' ? " " : event.searchValue;
 
-    getObservationFiles({ page, pageSize }).then((res) => {
+    getObservationFiles({ page, pageSize, search }).then((res) => {
       setTableData(res.data.results);
     }).finally(() => {
       setLoading(false);
@@ -76,7 +77,6 @@ function ObservFiles({ setTitle }) {
       columns={tableColumns}
       loadData={loadTableData}
       loading={loading}
-      hasSearching={false}
       hasColumnVisibility={false}
     >
     </CustomTable>

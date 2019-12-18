@@ -15,13 +15,14 @@ export const getBspJpl = ({
 
 
 export const getObservationFiles = ({
-  page, pageSize
+  page, pageSize, search
 }) => {
 
   return axios.get('observation_files', {
     params: {
       page,
       pageSize,
+      search,
     }
   });
 
