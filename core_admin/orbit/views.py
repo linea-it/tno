@@ -328,5 +328,5 @@ class RefinedOrbitInputViewSet(viewsets.ModelViewSet):
 class BspJplViewSet(viewsets.ModelViewSet):
     queryset = BspJplFile.objects.all()
     serializer_class = BspJplSerializer
-    search_fields = ('name')
-    ordering = ('name')
+    search_fields = ('id','name')
+   

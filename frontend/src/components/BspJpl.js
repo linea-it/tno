@@ -19,8 +19,9 @@ function BspJpl({ setTitle }) {
 
     let page = typeof event === 'undefined' ? 1 : event.currentPage + 1;
     let pageSize = typeof event === 'undefined' ? 10 : event.pageSize;
+    let search = typeof event === 'undefined' ? " " : event.searchValue;
 
-    getBspJpl({ page, pageSize, }).then((res) => {
+    getBspJpl({ page, pageSize, search }).then((res) => {
       setLoading(true);
       setTableData(res.data.results);
       setDataTotalCount(res.data.count);
@@ -81,7 +82,6 @@ function BspJpl({ setTitle }) {
       loadData={loadTableData}
       loading={loading}
       totalCount={dataTotalCount}
-      hasSearching={false}
       hasColumnVisibility={false}
     >
     </CustomTable>
