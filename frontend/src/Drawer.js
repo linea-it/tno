@@ -429,7 +429,6 @@ function MiniDrawer() {
                   ) : null}
                 </ListItem>
 
-
                 {/* Criação do que fica dentro do botão input */}
                 <Collapse in={inputOpen} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
@@ -467,6 +466,7 @@ function MiniDrawer() {
                         </ListItemText>
                       </ListItem>
                     </Link>
+
                   </List>
                 </Collapse>
 

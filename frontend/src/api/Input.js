@@ -13,7 +13,6 @@ export const getBspJpl = ({
   });
 };
 
-
 export const getObservationFiles = ({
   page, pageSize, search
 }) => {
