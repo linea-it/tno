@@ -8,6 +8,7 @@ function BspJpl({ setTitle }) {
 
   const [tableData, setTableData] = useState([]);
   const [dataTotalCount, setDataTotalCount] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setTitle("Bsp Jpl");
@@ -18,11 +19,15 @@ function BspJpl({ setTitle }) {
 
     let page = typeof event === 'undefined' ? 1 : event.currentPage + 1;
     let pageSize = typeof event === 'undefined' ? 10 : event.pageSize;
+    let search = typeof event === 'undefined' ? " " : event.searchValue;
 
-    getBspJpl({ page, pageSize, }).then((res) => {
+    getBspJpl({ page, pageSize, search }).then((res) => {
+      setLoading(true);
       setTableData(res.data.results);
       setDataTotalCount(res.data.count);
-    })
+    }).finally(() => {
+      setLoading(false);
+    });
   };
 
   const columnsTable = [
@@ -75,8 +80,8 @@ function BspJpl({ setTitle }) {
       data={tableData}
       columns={columnsTable}
       loadData={loadTableData}
+      loading={loading}
       totalCount={dataTotalCount}
-      hasSearching={false}
       hasColumnVisibility={false}
     >
     </CustomTable>
