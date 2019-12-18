@@ -6,9 +6,8 @@ from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 import os
-from .models import OrbitRun, RefinedAsteroid, RefinedOrbit, RefinedOrbitInput, BspJplFile
-from .serializers import OrbitRunSerializer, RefinedAsteroidSerializer, RefinedOrbitSerializer, \
-    RefinedOrbitInputSerializer, BspJplSerializer
+from .models import OrbitRun, RefinedAsteroid, RefinedOrbit, RefinedOrbitInput, BspJplFile, ObservationFile
+from .serializers import OrbitRunSerializer, RefinedAsteroidSerializer, RefinedOrbitSerializer, RefinedOrbitInputSerializer, BspJplSerializer,ObservationFileSerializer
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
@@ -331,3 +330,8 @@ class BspJplViewSet(viewsets.ModelViewSet):
     search_fields = ('id', 'name',)
     ordering = ('id', 'name',)
 
+class ObservationFileViewSet(viewsets.ModelViewSet):
+    queryset = ObservationFile.objects.all()
+    serializer_class = ObservationFileSerializer
+    search_fields = ('id', 'name',)
+    ordering = ('id', 'name',)
