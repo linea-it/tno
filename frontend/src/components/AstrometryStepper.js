@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(theme => ({
 
@@ -22,6 +23,8 @@ export default function AstrometryStepper({ activeStep }) {
 
   const steps = getSteps();
 
+
+
   return (
     <>
       <Stepper activeStep={activeStep}>
@@ -39,3 +42,7 @@ export default function AstrometryStepper({ activeStep }) {
     </>
   );
 }
+
+AstrometryStepper.propTypes = {
+  activeStep: PropTypes.number,
+};

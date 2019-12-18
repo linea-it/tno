@@ -90,7 +90,7 @@ function BspJpl({ setTitle }) {
               loadData={loadTableData}
               loading={loading}
               totalCount={dataTotalCount}
-             >
+            >
             </CustomTable>
           </CardContent>
         </Card>

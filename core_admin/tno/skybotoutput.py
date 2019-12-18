@@ -2,9 +2,13 @@ import os
 from .db import DBBase
 from sqlalchemy.sql import select, and_, or_, func, subquery, text
 from sqlalchemy import create_engine, inspect, MetaData, func, Table, Column, Integer, String, Float, Boolean, \
-    literal_column, null, between
+    literal_column, null, between, cast, DATE, func, text
 
 from django.utils import timezone
+
+import logging
+
+
 
 
 class FilterObjects(DBBase):
@@ -582,17 +586,57 @@ class Pointing(DBBase):
 
         return self.fetch_one_dict(stm)
 
-    def count_unique_exposures(self):
-        stm = select([func.count(func.distinct(self.tbl.c.expnum)).label('exposures')])
-
-        return self.fetch_scalar(stm)
-
     # Count por faixa das exposições
     def count_range_exposures(self, start, end):
 
         stm = select([func.count()]).where(between(self.tbl.c.exptime, int(start.strip()), int(end.strip())))
 
         return self.fetch_scalar(stm)
+
+    def count_unique_exposures(self):
+        stm = select([func.count(func.distinct(self.tbl.c.expnum)).label('exposures')])
+
+        return self.fetch_scalar(stm)
+
+    # Count por período das exposições
+    def count_unique_exposures_by_period(self, date_initial=None, end_time=None):
+
+        if not date_initial or not end_time:
+            raise Exception('It is necessary to have an initial and end date.')
+
+        stm = select([func.count(func.distinct(self.tbl.c.expnum)).label('exposures')]).where(and_(
+            cast(self.tbl.c.date_obs, DATE) >= date_initial.strftime("%Y-%m-%d"),
+            cast(self.tbl.c.date_obs, DATE) <= end_time.strftime("%Y-%m-%d")
+        ))
+
+        return self.fetch_scalar(stm)
+
+
+    # Exposições
+    def unique_exposures(self):
+
+        stm = select([
+            func.count(func.distinct(self.tbl.c.expnum)).label('exposures'),
+            cast(self.tbl.c.date_obs, DATE).label('date_obs'),
+        ]).group_by(cast(self.tbl.c.date_obs, DATE))
+
+        return self.fetch_all_dict(stm)
+
+    # Exposições por período
+    def unique_exposures_by_period(self, date_initial=None, end_time=None):
+
+        if not date_initial or not end_time:
+            raise Exception('It is necessary to have an initial and end date.')
+
+        stm = select([
+            func.count(func.distinct(self.tbl.c.expnum)).label('exposures'),
+            cast(self.tbl.c.date_obs, DATE).label('date_obs'),
+            ]).where(and_(
+            cast(self.tbl.c.date_obs, DATE) >= date_initial.strftime("%Y-%m-%d"),
+            cast(self.tbl.c.date_obs, DATE) <= end_time.strftime("%Y-%m-%d")
+        )).group_by(cast(self.tbl.c.date_obs, DATE))
+
+        return self.fetch_all_dict(stm)
 
     def counts_range_exposures(self):
 

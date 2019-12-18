@@ -1,4 +1,4 @@
-from orbit.models import OrbitRun, RefinedAsteroid, RefinedOrbit, RefinedOrbitInput
+from orbit.models import OrbitRun, RefinedAsteroid, RefinedOrbit, RefinedOrbitInput, BspJplFile
 from rest_framework import serializers
 from tno.models import Proccess, CustomList
 import humanize
