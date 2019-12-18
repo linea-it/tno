@@ -60,3 +60,14 @@ export const getOutputByExposure = (run_id, expnum) => axios.get('/skybot_run/sk
 export const getAsteroidsInsideCCD = (expnum) => axios.get('/skybot_run/asteroids_ccd/', {
   params: { expnum },
 }).then((res) => res.data);
+
+export const getSkybotRunEstimate = (initialDate, finalDate) => axios.get('/skybot_run/execution_time_estimate/', {
+  params: { initial_date: initialDate, final_date: finalDate },
+}).then(res => res.data);
+
+export const getExposuresByPeriod = (initialDate, finalDate) => axios.get('/skybot_run/exposures_by_period/', {
+  params: { initial_date: initialDate, final_date: finalDate },
+}).then(res => {
+  console.log(res.data.rows)
+  return  res.data
+});

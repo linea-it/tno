@@ -27,6 +27,7 @@ from django.utils import timezone
 from datetime import datetime
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
+from django.db.models import Sum
 from tno.skybot.plot_ccds_objects import ccds_objects, read_skybot_output, get_circle_from_ra_dec
 import urllib
 from rest_framework.decorators import detail_route
@@ -979,6 +980,94 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
             'count': len(rows)
         })
 
+    @list_route()
+    def execution_time_estimate(self, request):
+        """
+        Returns a time estimation (in seconds) based on Skybot's previous runs.
+
+        You can have an estimate based on ALL unique exposures, by not passing any parameter:
+        Example: /skybot_run/execution_time_estimate/
+
+        Or you can have an estimate by a particular period, by passing an initial date (YYYY-MM-DD) and a final date (YYYY-MM-DD):
+        Example: /skybot_run/execution_time_estimate/?initial_date=2010-01-20&final_date=2019-02-13
+
+        Use the format=json attribute to have the result in JSON:
+        Example: /skybot_run/execution_time_estimate/?format=json
+        """
+        exposures = 0
+
+        db = PointingDB()
+
+        initial_date = request.query_params.get('initial_date', None)
+        final_date = request.query_params.get('final_date', None)
+
+        # If the execution is by period, then convert them into a datetime notation:
+        if initial_date and final_date:
+            initial_date = datetime.strptime(initial_date, "%Y-%m-%d")
+            final_date = datetime.strptime(final_date, "%Y-%m-%d")
+
+            exposures =  db.count_unique_exposures_by_period(initial_date, final_date)
+        else:
+            exposures =  db.count_unique_exposures()
+
+
+        # Get the summation of all successful exposures and their respective execution time:
+        exposure_and_time_sum = dict(
+            SkybotRun.objects \
+            .filter(status='success') \
+            .aggregate(
+                exposure=Sum('exposure'),
+                execution_time=Sum('execution_time')
+            )
+        )
+
+        # A rough average: divide the amount of exposures by their execution time (s):
+        execution_mean = exposure_and_time_sum['exposure'] / exposure_and_time_sum['execution_time'].seconds
+
+        # The estimate should, then, be the amount of exposures that I want to submit multiplied by the average:
+        execution_estimate = exposures * execution_mean
+
+        return Response({
+            'success': True,
+            'exposures': exposures,
+            'time_per_exposure': execution_mean,
+            'estimate': execution_estimate,
+        })
+
+    @list_route()
+    def exposures_by_period(self, request):
+        """
+        Returns exposures and their respective observation date.
+
+        You can have ALL unique exposures, by not passing any parameter:
+        Example: /skybot_run/exposures_by_period/
+
+        Or you can have exposures by a particular period, by passing an initial date (YYYY-MM-DD) and a final date (YYYY-MM-DD):
+        Example: /skybot_run/exposures_by_period/?initial_date=2010-01-20&final_date=2019-02-13
+
+        Use the format=json attribute to have the result in JSON:
+        Example: /skybot_run/exposures_by_period/?format=json
+        """
+        exposures = 0
+
+        db = PointingDB()
+
+        initial_date = request.query_params.get('initial_date', None)
+        final_date = request.query_params.get('final_date', None)
+
+        # If the execution is by period, then convert them into a datetime notation:
+        if initial_date and final_date:
+            initial_date = datetime.strptime(initial_date, "%Y-%m-%d")
+            final_date = datetime.strptime(final_date, "%Y-%m-%d")
+
+            exposures =  db.unique_exposures_by_period(initial_date, final_date)
+        else:
+            exposures =  db.unique_exposures()
+
+        return Response({
+            'success': True,
+            'rows': exposures,
+        })
 
 class CcdImageViewSet(viewsets.ModelViewSet):
     queryset = CcdImage.objects.all()
