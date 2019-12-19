@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Card, CardContent, CardHeader, Icon, makeStyles } from '@material-ui/core';
 import CustomTable from '../components/utils/CustomTable';
-import { getJohnstonArchives } from '../api/Input';
+import { getJohnstonArchives, updateJohnstonList } from '../api/Input';
+import Button from '@material-ui/core/Button';
+import SnackBar from '@material-ui/core/Snackbar';
 import moment from 'moment';
 import clsx from 'clsx';
 
 const useStyles = makeStyles({
   iconDetail: {
     fontSize: 18,
-  }
+  },
+  updateButton: {
+   marginTop:30,
+  },
 });
 
 
@@ -18,6 +23,12 @@ function JohnstonArchives({ setTitle, history }) {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dataTotalCount, setDataTotalCount] = useState(0);
+  const [snackBarVisible, setSnackBarVisible] = useState(false);
+  const [snackBarTransition, setSnackBarTransition] = useState(undefined);
+  const [snackBarPosition] = useState({
+    vertical: 'bottom',
+    horizontal: 'right',
+  });
 
 
   useEffect(() => {
@@ -61,7 +72,6 @@ function JohnstonArchives({ setTitle, history }) {
       name: 'number',
       title: "Obj Num",
       headerTooltip: "Object Number (not all objects have numbers assigned)",
-      align: 'right',
       sortingEnabled: false,
     },
     {
@@ -106,6 +116,7 @@ function JohnstonArchives({ setTitle, history }) {
       name: 'known_components',
       title: "Known Comp",
       headerTooltip: "Known Components",
+      width: 200,
       sortingEnabled: false,
     },
     {
@@ -116,10 +127,27 @@ function JohnstonArchives({ setTitle, history }) {
     {
       name: 'updated',
       title: "Updated",
+      customElement: (row) => (
+        <span>
+          {row.updated ? moment(row.updated).format("YYYY-MM-DD HH:mm:ss") : ""}
+        </span>
+      ),
       sortingEnabled: false,
     },
   ]
 
+  const handleUpdate = () =>{
+    setLoading(true);
+    setTableData([]);
+    setSnackBarVisible(true);
+   updateJohnstonList().then((res)=>{
+    }).finally(()=>{
+     loadTableData();
+   });
+
+  };
+  
+  const { vertical, horizontal } = snackBarPosition;
   return (
 
     <Grid container spacing={2}>
@@ -128,6 +156,15 @@ function JohnstonArchives({ setTitle, history }) {
           <CardHeader title="List of Known Trans-Neptunian Objects
                              and other outer Solar System Objects " />
           <CardContent>
+            <Button
+              className={classes.updateButton}
+              variant='contained'
+              color="primary"
+              onClick={handleUpdate}
+            >
+              Update List
+            </Button>
+
             <CustomTable
               data={tableData}
               columns={tableColumns}
@@ -139,6 +176,14 @@ function JohnstonArchives({ setTitle, history }) {
           </CardContent>
         </Card>
       </Grid>
+      <SnackBar
+        open={snackBarVisible}
+        autoHideDuration={6000}
+        TransitionComponent={snackBarTransition}
+        anchorOrigin={{ vertical, horizontal }}
+        message="Executing... This update takes about 3 minutes"
+        onClose={() => setSnackBarVisible(false)}
+      />
     </Grid>
   );
 };

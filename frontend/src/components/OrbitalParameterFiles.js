@@ -4,11 +4,14 @@ import { getOrbitalParameterFiles } from '../api/Input';
 import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
 import { CardHeader, CardContent } from '@material-ui/core';
+import moment from 'moment';
 
 function OrbitalParameterFiles({ setTitle }) {
 
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [tableDataCount, setTableDataCount] = useState(true);
+
 
   useEffect(() => {
     setTitle("Orbital Parameter Files");
@@ -25,6 +28,7 @@ function OrbitalParameterFiles({ setTitle }) {
     getOrbitalParameterFiles({ page, pageSize, search })
       .then((res) => {
         setTableData(res.data.results);
+        setTableDataCount(res.data.count);
       }).finally(() => {
         setLoading(false);
       });
@@ -49,11 +53,23 @@ function OrbitalParameterFiles({ setTitle }) {
     {
       name: 'download_start_time',
       title: 'Download Start Time',
+      width: 200,
+      customElement: (row) => (
+        <span>
+          {row.download_start_time ? moment(row.download_start_time).format("YYYY-MM-DD HH:mm:ss") : ""}
+        </span>
+      ),
       sortingEnabled: false
     },
     {
       name: 'download_finish_time',
       title: 'Download Finish Time',
+      width: 200,
+      customElement: (row) => (
+        <span>
+          {row.download_start_time ? moment(row.download_finish_time).format("YYYY-MM-DD HH:mm:ss") : ""}
+        </span>
+      ),
       sortingEnabled: false
     },
     {
@@ -64,12 +80,14 @@ function OrbitalParameterFiles({ setTitle }) {
     {
       name: 'external_url',
       title: 'External Url',
+      width: 200,
       sortingEnabled: false,
     },
     {
       name: 'download_url',
       title: 'Download Url',
       sortingEnabled: false,
+      width: 200,
     },
   ]
 
@@ -85,6 +103,7 @@ function OrbitalParameterFiles({ setTitle }) {
               hasColumnVisibility={false}
               loadData={loadTableData}
               loading={loading}
+              totalCount={tableDataCount}
             >
             </CustomTable>
           </CardContent>

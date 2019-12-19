@@ -8,6 +8,7 @@ function ObservFiles({ setTitle }) {
 
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [tableDataCount, setTableDataCount] = useState(true);
 
   useEffect(() => {
     setTitle("Observation Files");
@@ -21,6 +22,8 @@ function ObservFiles({ setTitle }) {
 
     getObservationFiles({ page, pageSize, search }).then((res) => {
       setTableData(res.data.results);
+      setTableDataCount(res.data.count);
+
     }).finally(() => {
       setLoading(false);
     });
@@ -38,28 +41,36 @@ function ObservFiles({ setTitle }) {
     },
     {
       name: 'observations',
-      title: 'Observations',
+      title: 'Observ',
       sortingEnabled: false,
+      headerTooltip: 'Observations',
     },
     {
       name: 'filename',
       title: 'Filename',
       sortingEnabled: false,
+      width: 150,
     },
     {
       name: 'download_start_time',
       title: 'Download Start Time',
+      width: 200,
       customElement: (row) => (
         <span>
           {row.download_start_time ? moment(row.download_start_time).format("YYYY-MM-DD HH:mm:ss") : ""}
         </span>
       ),
-
       sortingEnabled: false,
     },
     {
-      name: 'download_finish-time',
+      name: 'download_finish_time',
       title: "Download Finish Time",
+      width: 200,
+      customElement: (row) => (
+        <span>
+          {row.download_start_time ? moment(row.download_finish_time).format("YYYY-MM-DD HH:mm:ss") : ""}
+        </span>
+      ),
       sortingEnabled: false,
     },
     {
@@ -71,11 +82,13 @@ function ObservFiles({ setTitle }) {
       name: 'external_url',
       title: 'External Url',
       sortingEnabled: false,
+      width: 200,
     },
     {
       name: 'download_url',
       title: 'Download Url',
       sortingEnabled: false,
+      width: 200,
     }
   ]
 
@@ -91,12 +104,13 @@ function ObservFiles({ setTitle }) {
               columns={tableColumns}
               loadData={loadTableData}
               loading={loading}
+              totalCount={tableDataCount}
             >
             </CustomTable>
           </CardContent>
         </Card>
       </Grid>
-    </Grid>
+    </Grid >
   );
 };
 export default ObservFiles;

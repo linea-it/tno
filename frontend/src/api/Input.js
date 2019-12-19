@@ -55,3 +55,7 @@ export const getJohnstonArchives = ({
 export const getJohnstonArchivesById = (id) => {
   return axios.get(`/known_tnos_johnston/${id}`);
 };
+
+export const updateJohnstonList = () =>{
+return axios.get(`/known_tnos_johnston/update_list`);
+}

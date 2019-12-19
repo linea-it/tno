@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CardHeader, Grid, Card, CardContent } from '@material-ui/core';
 import CustomList from './utils/CustomList';
 import { getJohnstonArchivesById } from '../api/Input';
+import moment from 'moment';
 
 function JohnstonArchivesDetail({ setTitle, match }) {
 
@@ -16,6 +17,8 @@ function JohnstonArchivesDetail({ setTitle, match }) {
 
   const loadData = () => {
     getJohnstonArchivesById(id).then((res) => {
+      console.log(res.data);
+      let updatedDate = moment(res.updated).format("YYYY-MM-DD HH:mm:ss");
       setListData([
         {
           title: 'Name',
@@ -87,12 +90,19 @@ function JohnstonArchivesDetail({ setTitle, match }) {
         },
         {
           title: 'Updated',
-          value: res.data.updated,
+          value: updatedDate,
         },
-
       ]);
     });
   };
+
+
+  // customElement: (row) => (
+  //   <span>
+  //     {row.updated ? moment(row.updated).format("YYYY-MM-DD HH:mm:ss") : ""}
+  //   </span>
+  // ),
+
 
   return (
     <Grid container spacing={2}>
