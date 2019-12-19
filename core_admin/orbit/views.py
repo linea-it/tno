@@ -6,8 +6,9 @@ from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 import os
-from .models import OrbitRun, RefinedAsteroid, RefinedOrbit, RefinedOrbitInput, BspJplFile, ObservationFile
-from .serializers import OrbitRunSerializer, RefinedAsteroidSerializer, RefinedOrbitSerializer, RefinedOrbitInputSerializer, BspJplSerializer,ObservationFileSerializer
+from .models import OrbitRun, RefinedAsteroid, RefinedOrbit, RefinedOrbitInput, BspJplFile, ObservationFile, OrbitalParameterFile
+from .serializers import OrbitRunSerializer, RefinedAsteroidSerializer, RefinedOrbitSerializer, \
+    RefinedOrbitInputSerializer, BspJplSerializer, ObservationFileSerializer, OrbitalParameterSerializer
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
@@ -327,11 +328,16 @@ class RefinedOrbitInputViewSet(viewsets.ModelViewSet):
 class BspJplViewSet(viewsets.ModelViewSet):
     queryset = BspJplFile.objects.all()
     serializer_class = BspJplSerializer
-    search_fields = ('id', 'name',)
-    ordering = ('id', 'name',)
+    search_fields = ('id','name')
+   
 
 class ObservationFileViewSet(viewsets.ModelViewSet):
     queryset = ObservationFile.objects.all()
     serializer_class = ObservationFileSerializer
-    search_fields = ('id', 'name',)
-    ordering = ('id', 'name',)
+    search_fields = ('id', 'name')
+
+
+class OrbitalParameterViewSet(viewsets.ModelViewSet):
+    queryset = OrbitalParameterFile.objects.all()
+    serializer_class = OrbitalParameterSerializer
+    search_fields = ('id', 'name')

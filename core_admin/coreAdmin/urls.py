@@ -27,7 +27,7 @@ from tno.views import UserViewSet, PointingViewSet, SkybotOutputViewSet, ObjectC
     ProccessViewSet, CatalogViewSet, JohnstonArchiveViewSet, SkybotRunViewSet, CcdImageViewSet
 from praia.views import PraiaRunViewSet, PraiaConfigurationViewSet, AstrometryAsteroidViewSet, AstrometryInputViewSet, AstrometryOutputViewSet
 
-from orbit.views import OrbitRunViewSet, RefinedAsteroidViewSet, RefinedOrbitViewSet, RefinedOrbitInputViewSet, BspJplViewSet, ObservationFileViewSet
+from orbit.views import OrbitRunViewSet, RefinedAsteroidViewSet, RefinedOrbitViewSet, RefinedOrbitInputViewSet, BspJplViewSet, ObservationFileViewSet, OrbitalParameterViewSet
 
 from predict.views import *
 
@@ -54,6 +54,7 @@ router.register(r'bsp_planetary', BspPlanetaryViewSet)
 router.register(r'skybot_run', SkybotRunViewSet)
 router.register(r'bsp_jpl', BspJplViewSet)
 router.register(r'observation_files', ObservationFileViewSet)
+router.register(r'orbital_parameter', OrbitalParameterViewSet)
 
 
 
