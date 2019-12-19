@@ -5,8 +5,6 @@ import { getJohnstonArchives } from '../api/Input';
 import moment from 'moment';
 import clsx from 'clsx';
 
-
-
 const useStyles = makeStyles({
   iconDetail: {
     fontSize: 18,
