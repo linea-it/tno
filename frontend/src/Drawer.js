@@ -50,6 +50,8 @@ import { isAuthenticated } from './api/Auth';
 import BspJpl from './components/BspJpl';
 import ObservFiles from './components/ObservFiles';
 import OrbitalParameterFiles from './components/OrbitalParameterFiles';
+import JohnstonArchives from './components/JohnstonArchives';
+import JohnstonArchivesDetail from './components/JohnstonArchivesDetail';
 
 const drawerWidth = 240;
 
@@ -400,7 +402,6 @@ function MiniDrawer() {
                 </Link>
                 <Divider className={classes.borderDrawer} />
 
-                {/* Criação do Button que controla a abertura e o fechamento das abas internas*/}
                 <ListItem button onClick={handleDrawerInputClick}>
                   {open ? (
                     <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
@@ -416,7 +417,7 @@ function MiniDrawer() {
                       </ListItemIcon>
                     )}
                   <ListItemText
-                    primary="Input"
+                    primary="Input Files"
                     className={classes.textDrawer}
                     title="Import necessary updating files"
                   />
@@ -429,7 +430,6 @@ function MiniDrawer() {
                   ) : null}
                 </ListItem>
 
-                {/* Criação do que fica dentro do botão input */}
                 <Collapse in={inputOpen} timeout="auto" unmountOnExit>
                   <List component="div" disablePadding>
                     <Link to="/bsp-jpl" className={classes.invisibleLink} title="Bsp_Jpl">
@@ -449,7 +449,7 @@ function MiniDrawer() {
                           <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-file')} />
                         </ListItemIcon>
                         <ListItemText
-                          primary="Observation Files"
+                          primary="Observation"
                           className={classes.textDrawer}
                         />
                       </ListItem>
@@ -460,7 +460,22 @@ function MiniDrawer() {
                           <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-globe')} />
                         </ListItemIcon>
                         <ListItemText
-                          primary="Orbital Parameter Files"
+                          primary="Orbital Parameter"
+                          className={classes.textDrawer}
+                        >
+                        </ListItemText>
+                      </ListItem>
+                    </Link>
+
+
+                    {/* Johnston Archives */}
+                    <Link to="/johnston-archives" className={classes.invisibleLink} title="List of Known Trans-Neptunian Objects and other outer solar system objects">
+                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'johnston-archives'}>
+                        <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                          <Icon className={clsx(classes.iconDrawer, 'far', 'fa-object-group')} />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary="Johnston Archives"
                           className={classes.textDrawer}
                         >
                         </ListItemText>
@@ -500,7 +515,6 @@ function MiniDrawer() {
                 <Route exact path="/prediction-of-occultation/:id" render={(props) => <PredictionOccultationDetail {...props} setTitle={setTitle} />} />
                 <Route exact path="/prediction-of-occultation" render={(props) => <PredictionOccultation {...props} setTitle={setTitle} />} />
                 <Route exact path="/occultation-calendar" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
-                {/* <Route exact path="/test-calendar/:id/:date/:view/:flag/:sDate/:fDate/:searching" render={(props) => <TestCalendar {...props} setTitle={setTitle} />} /> */}
                 <Route exact path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
                 <Route exact path="/occultations" render={(props) => <Occultations {...props} setTitle={setTitle} />} />
                 <Route exact path="/occultations/:id" render={(props) => <OccultationsDetail {...props} setTitle={setTitle} />} />
@@ -509,6 +523,8 @@ function MiniDrawer() {
                 <Route exact path="/bsp-jpl" render={(props) => <BspJpl {...props} setTitle={setTitle} />} />
                 <Route exact path="/observ-files" render={(props) => <ObservFiles {...props} setTitle={setTitle} />} />
                 <Route exact path="/orbital-parameter" render={(props) => <OrbitalParameterFiles {...props} setTitle={setTitle} />} />
+                <Route exact path="/johnston-archives" render={(props) => <JohnstonArchives {...props} setTitle={setTitle} />} />
+                <Route exact path="/johnston-archives/:id" render={(props) => <JohnstonArchivesDetail {...props} setTitle={setTitle} />} />
                 <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
                 <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
                 <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />

@@ -226,6 +226,9 @@ function PointingsDetail({ setTitle, match, history }) {
 
   const handleBackNavigation = () => history.push('/pointings');
 
+
+  console.log("Pointings:", pointingDetailsList);
+
   return (
     <>
       <Grid container spacing={2}>
@@ -255,7 +258,7 @@ function PointingsDetail({ setTitle, match, history }) {
             <Grid item xs={12} className={classes.block}>
               <Card>
                 <CardHeader
-                  title="Details Pointing"
+                  title="Pointing Details"
                 // subheader="These are the details of the object named Lorem Ipsum and number 000"
                 />
                 <CardContent className={classes.cardContentWrapper}>

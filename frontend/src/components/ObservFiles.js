@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import CustomTable from './utils/CustomTable';
 import { getObservationFiles } from '../api/Input';
 import { Grid, Card, CardContent, CardHeader } from '@material-ui/core';
+import moment from 'moment';
 
 function ObservFiles({ setTitle }) {
 
@@ -48,6 +49,12 @@ function ObservFiles({ setTitle }) {
     {
       name: 'download_start_time',
       title: 'Download Start Time',
+      customElement: (row) => (
+        <span>
+          {row.download_start_time ? moment(row.download_start_time).format("YYYY-MM-DD HH:mm:ss") : ""}
+        </span>
+      ),
+
       sortingEnabled: false,
     },
     {

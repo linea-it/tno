@@ -39,3 +39,19 @@ export const getOrbitalParameterFiles = ({
     }
   });
 }
+
+export const getJohnstonArchives = ({
+  page, pageSize, search,
+}) => {
+  return axios.get('/known_tnos_johnston', {
+    params: {
+      page,
+      pageSize,
+      search,
+    }
+  });
+};
+
+export const getJohnstonArchivesById = (id) => {
+  return axios.get(`/known_tnos_johnston/${id}`);
+};
