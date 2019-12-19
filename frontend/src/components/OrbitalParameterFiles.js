@@ -24,8 +24,9 @@ function OrbitalParameterFiles({ setTitle }) {
     let page = typeof event === 'undefined' ? 1 : event.currentPage + 1;
     let pageSize = typeof event === 'undefined' ? 10 : event.pageSize;
     let search = typeof event === 'undefined' ? "" : event.searchValue;
+    const ordering = event.sorting[0].direction === 'desc' ? `-${event.sorting[0].columnName}` : event.sorting[0].columnName;
 
-    getOrbitalParameterFiles({ page, pageSize, search })
+    getOrbitalParameterFiles({ page, pageSize, search, ordering })
       .then((res) => {
         setTableData(res.data.results);
         setTableDataCount(res.data.count);
@@ -38,7 +39,7 @@ function OrbitalParameterFiles({ setTitle }) {
     {
       name: 'name',
       title: 'Name',
-      sortingEnabled: false
+
     },
     {
       name: 'source',

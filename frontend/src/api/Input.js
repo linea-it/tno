@@ -14,7 +14,7 @@ export const getBspJpl = ({
 };
 
 export const getObservationFiles = ({
-  page, pageSize, search
+  page, pageSize, search, ordering
 }) => {
 
   return axios.get('/observation_files', {
@@ -22,6 +22,7 @@ export const getObservationFiles = ({
       page,
       pageSize,
       search,
+      ordering
     }
   });
 };
@@ -30,12 +31,14 @@ export const getOrbitalParameterFiles = ({
   page,
   pageSize,
   search,
+  ordering
 }) => {
   return axios.get('/orbital_parameter', {
     params: {
       page,
       pageSize,
       search,
+      ordering,
     }
   });
 }
@@ -56,6 +59,6 @@ export const getJohnstonArchivesById = (id) => {
   return axios.get(`/known_tnos_johnston/${id}`);
 };
 
-export const updateJohnstonList = () =>{
-return axios.get(`/known_tnos_johnston/update_list`);
+export const updateJohnstonList = () => {
+  return axios.get(`/known_tnos_johnston/update_list`);
 }
