@@ -12,7 +12,8 @@ const useStyles = makeStyles({
     fontSize: 18,
   },
   updateButton: {
-   marginTop:30,
+   marginTop:15,
+   marginBottom:15,
   },
 });
 
@@ -154,11 +155,7 @@ function JohnstonArchives({ setTitle, history }) {
 
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Card>
-          <CardHeader title="List of Known Trans-Neptunian Objects
-                             and other outer Solar System Objects " />
-          <CardContent>
-            <Button
+      <Button
               className={classes.updateButton}
               variant='contained'
               color="primary"
@@ -166,8 +163,14 @@ function JohnstonArchives({ setTitle, history }) {
             >
               Update List
             </Button>
-
-            <CustomTable
+      </Grid>
+      
+      <Grid item xs={12}>
+        <Card>
+          <CardHeader title="List of Known Trans-Neptunian Objects
+                             and other outer Solar System Objects " />
+          <CardContent>
+             <CustomTable
               data={tableData}
               columns={tableColumns}
               loadData={loadTableData}
