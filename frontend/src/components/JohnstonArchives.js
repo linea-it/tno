@@ -141,6 +141,7 @@ function JohnstonArchives({ setTitle, history }) {
     setTableData([]);
     setSnackBarVisible(true);
    updateJohnstonList().then((res)=>{
+     console.log(res);
     }).finally(()=>{
      loadTableData();
    });
@@ -148,6 +149,7 @@ function JohnstonArchives({ setTitle, history }) {
   };
   
   const { vertical, horizontal } = snackBarPosition;
+  
   return (
 
     <Grid container spacing={2}>
@@ -178,10 +180,10 @@ function JohnstonArchives({ setTitle, history }) {
       </Grid>
       <SnackBar
         open={snackBarVisible}
-        autoHideDuration={6000}
+        autoHideDuration={7000}
         TransitionComponent={snackBarTransition}
         anchorOrigin={{ vertical, horizontal }}
-        message="Executing... This update takes about 3 minutes"
+        message="Updating...  It takes about 3 minutes"
         onClose={() => setSnackBarVisible(false)}
       />
     </Grid>

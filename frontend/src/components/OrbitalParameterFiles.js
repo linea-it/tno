@@ -39,7 +39,6 @@ function OrbitalParameterFiles({ setTitle }) {
     {
       name: 'name',
       title: 'Name',
-
     },
     {
       name: 'source',
