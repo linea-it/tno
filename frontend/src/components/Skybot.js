@@ -353,6 +353,16 @@ function Skybot({ setTitle, history }) {
             </span>
           );
         }
+        if (row.status === 'canceled') {
+          return (
+            <span
+              className={clsx(classes.btn, classes.btnFailure)}
+              title={row.status}
+            >
+              Canceled
+            </span>
+          );
+        }
         if (row.status === 'not_executed') {
           return (
             <span
