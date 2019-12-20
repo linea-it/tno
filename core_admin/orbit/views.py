@@ -334,6 +334,7 @@ class BspJplViewSet(viewsets.ModelViewSet):
 class ObservationFileViewSet(viewsets.ModelViewSet):
     queryset = ObservationFile.objects.all()
     serializer_class = ObservationFileSerializer
+    ordering = ('name')
     search_fields = ('id', 'name')
 
 
@@ -341,3 +342,4 @@ class OrbitalParameterViewSet(viewsets.ModelViewSet):
     queryset = OrbitalParameterFile.objects.all()
     serializer_class = OrbitalParameterSerializer
     search_fields = ('id', 'name')
+    ordering =('name')
