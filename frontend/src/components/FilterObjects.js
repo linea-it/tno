@@ -31,7 +31,6 @@ import {
   getCustomList, getSkybotOutput, getSkybotOutputCount, postCustomList, checkTableName,
 } from '../api/Filter';
 
-
 const useStyles = makeStyles((theme) => ({
   iconList: {
     fontSize: 24,
@@ -424,7 +423,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
     {
       name: 'displayname',
       title: 'Name',
-    },
+     },
     {
       name: 'owner',
       title: 'Owner',
@@ -444,8 +443,8 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
       name: 'creation_date',
       title: 'Date',
       customElement: (row) => (
-        <span title={moment(row.creation_date).format('HH:mm:ss')}>
-          {moment(row.creation_date).format('MM-DD-YYYY')}
+        <span>
+          {row.creation_date ? moment(row.creation_date).format('YYYY-MM-DD') : ""}
         </span>
       ),
     },
@@ -561,7 +560,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
   };
 
   const handleSublevelDynamicClass = (e) => {
-    console.log(e.target.value);
     setSublevelDynamicClassSelected(e.target.value);
   };
 
@@ -644,7 +642,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         // Verify if the table already exists:
         checkTableName({ tablename, status: 'success' })
           .then((res) => {
-            console.log(res);
             if (res.count === 0) {
               // The table name is unique:
               setTableNameValidation({
@@ -701,7 +698,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         setResultLoading(false);
       })
       .catch((err) => {
-        console.error(err);
         setResultLoading(false);
       });
   };

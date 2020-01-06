@@ -30,16 +30,13 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
   },
   buttonIcon: {
-    margin: '0 2px',
+    margin: '0 10px 0 0',
   },
   toggleButton: {
     marginLeft: '90%',
   },
   arrowBack: {
     fontSize: 9,
-  },
-  iconDetail: {
-    fontSize: 18,
   },
   btn: {
     textTransform: 'none',
@@ -101,7 +98,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   const [dialog, setDialog] = useState({
     content: [], visible: false, title: ' ',
   });
-
 
   useEffect(() => {
     setTitle('Prediction of Occultations');
@@ -208,7 +204,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     });
   }, []);
 
-
   const tableListArray = [
     {
       name: 'id',
@@ -296,7 +291,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     {
       name: 'execution_time',
       title: 'Exec Time',
-      headerTooltip: "Execution time",
+      headerTooltip: 'Execution time',
       align: 'center',
       customElement: (row) => (
         <span>
@@ -390,7 +385,6 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       sortingEnabled: false,
     },
   ];
-
 
   const loadTableData = async ({
     sorting, pageSize, currentPage, filter, searchValue,

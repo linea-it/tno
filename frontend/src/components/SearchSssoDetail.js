@@ -6,6 +6,7 @@ import CustomList from './utils/CustomList';
 import { getSkybotRecord } from '../api/SearchSsso';
 import clsx from 'clsx';
 import Icon from '@material-ui/core/Icon';
+import PropTypes from 'prop-types';
 
 function SearchSSSoDetail({ history, setTitle, match: { params } }) {
 
@@ -29,8 +30,6 @@ function SearchSSSoDetail({ history, setTitle, match: { params } }) {
     { title: "Object Name: ", value: listData.name },
     { title: "Object Number:", value: listData.num },
     { title: "Dynamic class:", value: listData.dynclass },
-    { title: "Right Ascension  (hms):", value: listData.ra },
-    { title: "Declination (Dec) (dms):", value: listData.dec },
     { title: "Visual Magnitude: (mag)", value: listData.mv },
     { title: "Error on the position (arcsec):", value: listData.errpos },
     { title: "Angular Distance (arcsec):", value: listData.d },
@@ -102,4 +101,17 @@ function SearchSSSoDetail({ history, setTitle, match: { params } }) {
     </Grid>
   );
 };
+
+SearchSSSoDetail.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+  setTitle: PropTypes.func.isRequired,
+};
+
 export default withRouter(SearchSSSoDetail);

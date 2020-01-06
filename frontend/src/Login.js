@@ -37,9 +37,8 @@ function Login({ history, setTitle }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  useEffect(() => {
-    setTitle('Login');
-  }, []);
+  const loginEnv = process.env.REACT_APP_INST_LOGIN ?
+    process.env.REACT_APP_INST_LOGIN : "";
 
   const handleUsernameChange = (e) => setUsername(e.target.value);
   const handlePasswordChange = (e) => setPassword(e.target.value);
@@ -58,6 +57,12 @@ function Login({ history, setTitle }) {
       handleSubmit();
     }
   };
+
+
+  const handleInstitutionalLogin = () => {
+    window.location.href = window.location.origin + "/Shibboleth.sso/Login";
+  };
+
 
   return (
     <Container component="main" maxWidth="xs">
@@ -111,6 +116,22 @@ function Login({ history, setTitle }) {
           >
             Sign In
           </Button>
+
+          {loginEnv === "true" ? <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+            onClick={handleInstitutionalLogin}
+          // disabled={!!(username === '' || password === '')}
+          >
+            Institutional Login
+            </Button> : null}
+
+
+
+
+
           {/* <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
@@ -125,3 +146,5 @@ function Login({ history, setTitle }) {
 }
 
 export default withRouter(Login);
+
+// export default Login;

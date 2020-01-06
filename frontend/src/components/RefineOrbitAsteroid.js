@@ -29,8 +29,11 @@ const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
   },
-  buttonIcon: {
-    margin: '0 2px',
+  backButtonIcon: {
+    margin: '0 10px 0 0 ',
+  },
+  downloadButtonIcon: {
+    margin: '0 0 0 10px ',
   },
   buttonProgress: {
     position: 'absolute',
@@ -150,8 +153,8 @@ function RefineOrbitAsteroid({
       name: 'date_time',
       title: 'Date',
       customElement: (el) => (
-        <span title={moment(el.date_time).format('HH:mm:ss')}>
-          {moment(el.date_time).format('YYYY/MM/DD')}
+        <span>
+          {el.date_time ? moment(el.date_time).format('YYYY-MM-DD') : ""}
         </span>
       ),
       width: 150,
@@ -213,7 +216,7 @@ function RefineOrbitAsteroid({
       setInputTableData(tableData);
     });
     getAsteroidFiles({ id }).then((data) => {
-        const resultData = data.results.map((res) => ({
+      const resultData = data.results.map((res) => ({
         filename: res.filename,
         h_size: res.h_size,
         file_type: res.file_type,
@@ -380,7 +383,7 @@ function RefineOrbitAsteroid({
             className={classes.button}
             onClick={handleBackNavigation}
           >
-            <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+            <Icon className={clsx('fas', 'fa-undo', classes.backButtonIcon)} />
             <span>Back</span>
           </Button>
           <Button
@@ -392,7 +395,7 @@ function RefineOrbitAsteroid({
             onClick={handleDownload}
           >
             <span>Download</span>
-            <Icon className={clsx('fas', 'fa-download', classes.buttonIcon)} />
+            <Icon className={clsx('fas', 'fa-download', classes.downloadButtonIcon)} />
             {downloading ? (
               <CircularProgress
                 color="secondary"

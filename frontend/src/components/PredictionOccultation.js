@@ -21,7 +21,6 @@ import { getOrbitRuns } from '../api/Orbit';
 import Dialog from "./utils/CustomDialog";
 import ReactInterval from 'react-interval';
 
-
 const useStyles = makeStyles((theme) => ({
   iconList: {
     fontSize: 24,
@@ -79,11 +78,9 @@ const useStyles = makeStyles((theme) => ({
   tableWrapper: {
     maxWidth: '100%',
   },
-
   inputNumber: {
     marginTop: 9,
     marginBottom: 18,
-
     width: '90%',
   },
 }));
@@ -279,9 +276,7 @@ function PredictionOccultation({ history, setTitle }) {
     ephemeris_initial_date: null,
     ephemeris_final_date: null,
     submit: false,
-
   });
-
 
   const handleSubmitClick = (e) => {
     // ***** Values referring to Refine Orbit run. Only success ones ****//
@@ -297,7 +292,6 @@ function PredictionOccultation({ history, setTitle }) {
     // ephemeris_initial_date
     // ephemeris_final_date
     // ephemeris_step
-
 
     setValueSubmition({
       ...valueSubmition,
@@ -318,7 +312,6 @@ function PredictionOccultation({ history, setTitle }) {
       setDialogVisible(true);
 
       // Calls APi for creation of prediction run
-
       createPredictRun({
         process: valueSubmition.processId,
         input_list: valueSubmition.orbit_run_input_list_id,
@@ -456,20 +449,20 @@ function PredictionOccultation({ history, setTitle }) {
                   value={ephemerisNumberValue}
                 />
                 <DateTime
-                  defaultDate={moment(initialDate).format('YYYY-MM-DD').toString()}
+                  defaultDate={initialDate}
                   label="Ephemeris Initial Date"
                   valueSubmition={valueSubmition}
                   setSubmition={setValueSubmition}
                   setInitialDate={setInitialDate}
-                  title="initialDate"
+                  titleId="initialDate"
                 />
                 <DateTime
-                  defaultDate={moment(finalDate).format('YYYY-MM-DD').toString()}
+                  defaultDate={finalDate}
                   label="Ephemeris Final Date"
                   valueSubmition={valueSubmition}
                   setSubmition={setValueSubmition}
                   setFinalDate={setFinalDate}
-                  title="finalDate"
+                  titleId="finalDate"
                   width="90%"
 
                 />
@@ -482,14 +475,9 @@ function PredictionOccultation({ history, setTitle }) {
                 >
                   Submit
                 </Button>
-
-
               </Grid>
-
             </Grid>
-
           </Card>
-
         </Grid>
       </Grid>
 
@@ -525,7 +513,6 @@ function PredictionOccultation({ history, setTitle }) {
         content={dialogContent}
         setVisible={handleDialogClose}
       />
-
     </Grid>
   );
 }

@@ -9,6 +9,7 @@ import clsx from 'clsx';
 import { withRouter } from 'react-router';
 import CustomList from './utils/CustomList';
 import { getPointing } from '../api/Pointings';
+import moment from 'moment';
 
 const useStyles = makeStyles({
   cardContentWrapper: {
@@ -32,7 +33,6 @@ function PointingsDetail({ setTitle, match, history }) {
     setTitle('Pointings');
 
     getPointing({ id }).then((res) => {
-      console.log(res);
       setPointingDetailsList([
         {
           title: 'Image Id',
@@ -47,12 +47,12 @@ function PointingsDetail({ setTitle, match, history }) {
         {
           title: 'Night',
           tooltip: 'Night at which the observation was made.',
-          value: res.nite,
+          value: moment(res.nite).format("YYYY-MM-DD"),
         },
         {
           title: 'Observation Date',
           tooltip: 'Date and time of observation',
-          value: res.date_obs,
+          value: moment(res.date_obs).format("YYYY-MM-DD"),
         },
         {
           title: 'Exposure (s)',
@@ -69,19 +69,16 @@ function PointingsDetail({ setTitle, match, history }) {
           tooltip: 'Filter used to do the observation (u, g, r, i, z, Y).',
           value: res.band,
         },
-
         {
           title: 'Exposure time',
           tooltip: 'Exposure time of observation.',
           value: res.exptime,
         },
-
         {
           title: 'Cloud apass',
           tooltip: 'Atmospheric extinction in magnitudes',
           value: res.cloud_apass,
         },
-
         {
           title: 'Cloud nomad',
           tooltip: 'Atmospheric extinction in magnitudes',
@@ -93,7 +90,6 @@ function PointingsDetail({ setTitle, match, history }) {
           tooltip: 'Parameter related to image quality',
           value: res.t_eff,
         },
-
         {
           title: 'Cross RA 0',
           value: (res.crossra0 ? (
@@ -230,6 +226,9 @@ function PointingsDetail({ setTitle, match, history }) {
 
   const handleBackNavigation = () => history.push('/pointings');
 
+
+  console.log("Pointings:", pointingDetailsList);
+
   return (
     <>
       <Grid container spacing={2}>
@@ -259,7 +258,7 @@ function PointingsDetail({ setTitle, match, history }) {
             <Grid item xs={12} className={classes.block}>
               <Card>
                 <CardHeader
-                  title="Details Pointing"
+                  title="Pointing Details"
                 // subheader="These are the details of the object named Lorem Ipsum and number 000"
                 />
                 <CardContent className={classes.cardContentWrapper}>

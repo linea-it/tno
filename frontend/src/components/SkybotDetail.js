@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     fontSize: 18,
   },
   buttonIcon: {
-    margin: '0 2px',
+    margin: '0 10px 0 0',
   },
   btn: {
     textTransform: 'none',
@@ -62,14 +62,12 @@ const useStyles = makeStyles({
 function SkybotDetail({ setTitle, match, history }) {
   const classes = useStyles();
   const { id } = match.params;
-
   const [skybotRunDetailList, setSkybotRunDetailList] = useState([]);
   const [timeProfile, setTimeProfile] = useState([]);
   const [skybotDetailTableData, setSkybotDetailTableData] = useState([]);
   const [skybotDetailTableTotalCount, setSkybotDetailTableTotalCount] = useState(0);
 
   const skybotDetailTableColumns = [
-
     {
       name: 'ccd_time',
       title: 'Details',
@@ -136,10 +134,11 @@ function SkybotDetail({ setTitle, match, history }) {
     },
     {
       name: 'expnum',
-      title: 'Expnum',
+      title: 'Exp Num',
       sortingEnabled: false,
       width: 100,
       align: 'right',
+      headerTooltip: "Exposure Number"
     },
     {
       name: 'band',
@@ -150,18 +149,19 @@ function SkybotDetail({ setTitle, match, history }) {
     },
     {
       name: 'date_obs',
-      title: 'Date Obs',
+      title: 'Obs Date',
       sortingEnabled: false,
       customElement: (el) => (
-        <span title={moment(el.date_time).format('HH:mm:ss')}>
-          {moment(el.date_time).format('YYYY/MM/DD')}
+        <span>
+          {el.date_obs ? moment(el.date_obs).format('YYYY-MM-DD') : ""}
         </span>
       ),
+      headerTooltip: "Observation Date",
       align: 'center',
     },
     {
       name: 'execution_time',
-      title: 'Exec Time (s)',
+      title: 'Exec Time ',
       headerTooltip: "Execution time",
       sortingEnabled: false,
       width: 150,
@@ -192,10 +192,9 @@ function SkybotDetail({ setTitle, match, history }) {
       sortingEnabled: false,
       width: 100,
       align: 'right',
+      headerTooltip: "Objects inside CCD"
     },
-
   ];
-
 
   useEffect(() => {
     setTitle('Skybot Run');
@@ -292,8 +291,6 @@ function SkybotDetail({ setTitle, match, history }) {
         },
       ]);
     });
-
-    // loadSkybotDetailTableData({ currentPage: 0, pageSize: 10 });
   }, []);
 
   const handleBackNavigation = () => history.push('/skybot');
@@ -322,7 +319,6 @@ function SkybotDetail({ setTitle, match, history }) {
                 variant="contained"
                 color="primary"
                 title="Back"
-                className={classes.button}
                 onClick={handleBackNavigation}
               >
                 <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
