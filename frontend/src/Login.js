@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { withRouter } from 'react-router-dom';
 import { login } from './api/Auth';
+import produce from 'immer';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -60,7 +61,7 @@ function Login({ history, setTitle }) {
 
 
   const handleInstitutionalLogin = () => {
-    window.location.href = window.location.origin + "/Shibboleth.sso/Login";
+    window.location.href = "http://gidlabdemo.linea.gov.br:82/Shibboleth.sso/Login";
   };
 
 
@@ -102,10 +103,10 @@ function Login({ history, setTitle }) {
             onKeyPress={handleKeyPress}
             autoComplete="current-password"
           />
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
-          />
+          /> */}
           <Button
             fullWidth
             variant="contained"
@@ -127,9 +128,6 @@ function Login({ history, setTitle }) {
           >
             Institutional Login
             </Button> : null}
-
-
-
 
 
           {/* <Grid container>
