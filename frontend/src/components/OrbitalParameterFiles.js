@@ -9,6 +9,8 @@ import moment from 'moment';
 import Icon from '@material-ui/core/Icon';
 import clsx from 'clsx';
 import { readOrbitalFile } from '../api/Orbit';
+import CustomDialog from './utils/CustomDialog';
+import CustomLog from './utils/CustomLog';
 
 const useStyles = makeStyles((theme) => ({
   iconDetail: {
@@ -20,9 +22,8 @@ const useStyles = makeStyles((theme) => ({
     border: 'none',
     height: 600,
     width: 1600,
-  },
+  }
 }));
-
 
 function OrbitalParameterFiles({ setTitle }) {
 
@@ -34,7 +35,6 @@ function OrbitalParameterFiles({ setTitle }) {
     content: [],
     title: ' ',
   });
-
 
   useEffect(() => {
     setTitle("Orbital Parameter Files");
@@ -129,7 +129,7 @@ function OrbitalParameterFiles({ setTitle }) {
     if (file && typeof file !== 'undefined') {
       const arrayLines = [];
 
-      readOrbitalFile(file).then((res) => {
+      readOrbitalFile().then((res) => {
         const data = res.rows;
 
         if (res.success) {
@@ -139,12 +139,10 @@ function OrbitalParameterFiles({ setTitle }) {
         } else {
           arrayLines.push(<div key={0}>{res.msg}</div>);
         }
-        setDialog({ content: data, visible: true, title: `${file} ` });
+        setDialog({ content: data, visible: true, title: `${file}` })
       });
     }
-  };
-
-  console.log(tableData);
+  }
 
   return (
     <Grid container spacing={2}>
@@ -164,6 +162,14 @@ function OrbitalParameterFiles({ setTitle }) {
           </CardContent>
         </Card>
       </Grid>
+      <CustomDialog
+        maxWidth={1700}
+        visible={dialog.visible}
+        title={dialog.title}
+        content={<CustomLog data={dialog.content} />}
+        setVisible={() => setDialog({ visible: false, content: [], title: ' ' })}
+        bodyStyle={classes.dialogBodyStyle}
+      />
     </Grid>
   );
 };
