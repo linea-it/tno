@@ -102,10 +102,10 @@ function Login({ history, setTitle }) {
             onKeyPress={handleKeyPress}
             autoComplete="current-password"
           />
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
-          />
+          /> */}
           <Button
             fullWidth
             variant="contained"
