@@ -130,10 +130,6 @@ function Login({ history, setTitle }) {
             Institutional Login
             </Button> : null}
 
-
-
-
-
           {/* <Grid container>
             <Grid item xs>
               <Link href="#" variant="body2">
