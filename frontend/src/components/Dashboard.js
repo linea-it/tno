@@ -47,7 +47,7 @@ function Dashboard({ setTitle }) {
 
   useEffect(() => {
     setTitle('Dashboard');
-  }, []);
+  }, [setTitle]);
 
   return (
     <Grid container spacing={2}>

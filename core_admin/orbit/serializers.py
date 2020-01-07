@@ -469,6 +469,7 @@ class ObservationFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ObservationFile
         fields = (
+            'id',
             'name',
             'source',
             'observations',
