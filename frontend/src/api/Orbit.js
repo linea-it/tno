@@ -111,3 +111,5 @@ export const getAsteroidInputs = ({ id }) => {
     params,
   }).then((res) => res.data);
 };
+
+export const readFile = (filepath) => axios.get(`/read_file?filepath=/archive/observations/Lempo.rwo`).then((res) => res.data);

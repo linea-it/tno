@@ -12,6 +12,8 @@ import Container from '@material-ui/core/Container';
 import { withRouter } from 'react-router-dom';
 import { login } from './api/Auth';
 
+//Come on
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(7),
@@ -37,7 +39,7 @@ function Login({ history, setTitle }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const loginEnv = process.env.REACT_APP_INST_LOGIN ?
+  const loginEnv = process.env.REACT_APP_INST_LOGIN || process.env.REACT_APP_INST_LOGIN !== "" ?
     process.env.REACT_APP_INST_LOGIN : "";
 
   const handleUsernameChange = (e) => setUsername(e.target.value);
@@ -60,7 +62,7 @@ function Login({ history, setTitle }) {
 
 
   const handleInstitutionalLogin = () => {
-    window.location.href = window.location.origin + "/Shibboleth.sso/Login";
+    window.location.href = process.env.REACT_APP_INST_LOGIN;
   };
 
 
@@ -102,10 +104,10 @@ function Login({ history, setTitle }) {
             onKeyPress={handleKeyPress}
             autoComplete="current-password"
           />
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
-          />
+          /> */}
           <Button
             fullWidth
             variant="contained"
@@ -117,7 +119,7 @@ function Login({ history, setTitle }) {
             Sign In
           </Button>
 
-          {loginEnv === "true" ? <Button
+          {loginEnv !== "" ? <Button
             fullWidth
             variant="contained"
             color="primary"
