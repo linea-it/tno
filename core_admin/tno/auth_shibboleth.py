@@ -38,34 +38,40 @@ class ShibbolethBackend(object):
         """
 
         self.logger.info("Try Shibboleth Authentication")
+        try:
+            user_info = request.data
 
-        user_info = request.data
+            self.logger.info(user_info)
 
-        self.logger.info(user_info)
+            if 'Shib-Handler' in user_info:
 
-        if 'Shib-Handler' in user_info:
+                user = self.ensure_user(user_info)
+                # user = User.objects.get(username='gverde')
+                # self.logger.info(type(user))
 
-            user = self.ensure_user(user_info)
-            # user = User.objects.get(username='gverde')
-            # self.logger.info(type(user))
-
-            return user
-
-        return None
+                return user
+            else:
+                self.logger.info("Login Shibboleth Fail.")
+                return None
+        except Exception as e:
+            self.logger.info(
+                "Missing parameters needed to authenticate in Shibboleth.")
+            self.logger.debug(e)
+            return None
 
     def ensure_user(self, user_info):
         self.logger.info(
             "Verifying that the user [%s - %s] already exists in the administrative database" % (
-                user_info.get('Shib-inetOrgPerson-mail'), user_info.get('Shib-inetOrgPerson-cn'))
+                user_info.get('Shib-inetOrgPerson-mail'), user_info.get('Shib-inetOrgPerson-cn')))
         try:
-            user=User.objects.get(username=user_info.get(
+            user = User.objects.get(username=user_info.get(
                 'Shib-inetOrgPerson-cn'), email=user_info.get('Shib-inetOrgPerson-mail'))
 
             self.logger.info("User already registered.")
 
         except User.DoesNotExist:
-            user=User(username=user_info.get('username'),
-                      email=user_info.get('Shib-inetOrgPerson-mail'))
+            user = User(username=user_info.get('username'),
+                        email=user_info.get('Shib-inetOrgPerson-mail'))
 
             self.logger.info("User not registered, first access.")
 
@@ -76,16 +82,16 @@ class ShibbolethBackend(object):
 
         self.logger.info("Updated user data")
 
-        group=self.ensure_group('Shibboleth')
+        group = self.ensure_group('Shibboleth')
         user.groups.add(group)
 
         return user
 
     def ensure_group(self, name):
         try:
-            group=Group.objects.get(name=name)
+            group = Group.objects.get(name=name)
         except Group.DoesNotExist:
-            group=Group(name=name)
+            group = Group(name=name)
             group.save()
 
         return group
