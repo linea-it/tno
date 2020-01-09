@@ -511,45 +511,35 @@ class AstrometryPipeline():
 
             asteroid_alias = obj.name.replace(' ', '')
 
-            max_workers = 10
+            max_workers = 4
 
             payload = dict({
                 "queues": 1,
                 "submit_params": {
                     "Universe": "docker",
                     "Docker_image": "linea/tno_astrometry:latest",
-                    # "+RequiresWholeMachine": "True",
                     "Requirements": "SlotsTno == True",
-                    # "request_memory": "4 GB",
-                    # "request_cpus": "10",
-
                     "executable": "/app/run.py",
                     # "arguments": "%s --path %s --catalog %s --max_workers=%s" % (asteroid_alias, obj.relative_path, catalog_name, max_workers),
-                    "arguments": "%s --path %s --catalog %s " % (asteroid_alias, obj.relative_path, catalog_name),
+                    "arguments": "%s --path %s --catalog %s --max_workers=%s" % (asteroid_alias, obj.relative_path, catalog_name, max_workers),
                     "initialdir": obj_absolute_path,
                     "Log": os.path.join(log_dir, "astrometry.log"),
                     "Output": os.path.join(log_dir, "astrometry.out"),
                     "Error": os.path.join(log_dir, "astrometry.err")
-
-                    # "executable": "/app/run.py",
-                    # "arguments": "Eris --path /proccess/4/objects/Eris --catalog gaia2",
-                    # "initialdir": "/archive/des/tno/testing/proccess/4/objects/Eris",
-                    # "Log": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).log",
-                    # "Output": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).out",
-                    # "Error": "/archive/des/tno/testing/proccess/4/objects/Eris/condor/astrometry-$(Process).err"
                 }
             })
 
             # Para Asteroid com mais de 20 CCDs requisitar a maquina inteira e habilitar um limite de threads.
             # Essa limitacao e por causa da configuracao do cluster, que esta limitando a 2GB de Ram
-            if obj.ccd_images > 20:
-                payload["submit_params"]["+RequiresWholeMachine"] = "True"
-                payload["submit_params"]["arguments"] = "%s --path %s --catalog %s --max_workers=%s" % (
-                    asteroid_alias, obj.relative_path, catalog_name, max_workers)
+            # TODO: RequireWholeMachine desligado temporariamente, estava impedindo que os jobs executassem em mais de uma maquina.
+            # if obj.ccd_images > 20:
+            #     payload["submit_params"]["+RequiresWholeMachine"] = "True"
+            #     payload["submit_params"]["arguments"] = "%s --path %s --catalog %s --max_workers=%s" % (
+            #         asteroid_alias, obj.relative_path, catalog_name, max_workers)
 
-                self.logger.info("Require Machine: True")
-            else:
-                self.logger.info("Require Machine: False")
+            #     self.logger.info("Require Machine: True")
+            # else:
+            #     self.logger.info("Require Machine: False")
 
             self.logger.debug("payload: ")
             self.logger.debug(payload)
