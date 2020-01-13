@@ -20,6 +20,7 @@ import CustomTable from './utils/CustomTable';
 import { getOrbitRuns } from '../api/Orbit';
 import Dialog from "./utils/CustomDialog";
 import ReactInterval from 'react-interval';
+import CustomColumnStatus from './utils/CustomColumnStatus';
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
@@ -31,40 +32,6 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(6),
     float: 'right',
 
-  },
-  btn: {
-    textTransform: 'none',
-    padding: '1px 5px',
-    width: '7em',
-    minHeight: '1em',
-    display: 'block',
-    textAlign: 'center',
-    lineHeight: '2',
-    boxShadow: `0px 1px 5px 0px rgba(0, 0, 0, 0.2),
-    0px 2px 2px 0px rgba(0, 0, 0, 0.14),
-    0px 3px 1px -2px rgba(0, 0, 0, 0.12)`,
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-  },
-  btnSuccess: {
-    backgroundColor: '#009900',
-    color: '#fff',
-  },
-  btnFailure: {
-    backgroundColor: '#ff1a1a',
-    color: '#fff',
-  },
-  btnRunning: {
-    backgroundColor: '#0099ff',
-    color: '#000',
-  },
-  btnNotExecuted: {
-    backgroundColor: '#ABA6A2',
-    color: '#fff',
-  },
-  btnWarning: {
-    backgroundColor: '#D79F15',
-    color: '#FFF',
   },
   input: {
     margin: 0,
@@ -125,53 +92,7 @@ function PredictionOccultation({ history, setTitle }) {
       width: 140,
       align: 'center',
       sortingEnabled: false,
-      customElement: (row) => {
-        if (row.status === 'failure') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnFailure)}
-              title={row.error_msg}
-            >
-              Failure
-            </span>
-          );
-        } if (row.status === 'running') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnRunning)}
-              title={row.status}
-            >
-              Running
-            </span>
-          );
-        } if (row.status === 'not_executed') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnNotExecuted)}
-              title={row.error_msg}
-            >
-              Not Executed
-            </span>
-          );
-        } if (row.status === 'warning') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnWarning)}
-              title={row.error_msg ? row.error_msg : 'Warning'}
-            >
-              Warning
-            </span>
-          );
-        }
-        return (
-          <span
-            className={clsx(classes.btn, classes.btnSuccess)}
-            title={row.status}
-          >
-            Success
-          </span>
-        );
-      },
+      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
     },
     {
       name: 'process_displayname',

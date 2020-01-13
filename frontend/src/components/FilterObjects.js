@@ -30,6 +30,7 @@ import CustomTable from './utils/CustomTable';
 import {
   getCustomList, getSkybotOutput, getSkybotOutputCount, postCustomList, checkTableName,
 } from '../api/Filter';
+import CustomColumnStatus from './utils/CustomColumnStatus';
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
@@ -46,40 +47,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: -12,
     marginLeft: -12,
   },
-  btn: {
-    textTransform: 'none',
-    padding: '1px 5px',
-    width: '7em',
-    minHeight: '1em',
-    display: 'block',
-    textAlign: 'center',
-    lineHeight: '2',
-    boxShadow: `0px 1px 5px 0px rgba(0, 0, 0, 0.2),
-    0px 2px 2px 0px rgba(0, 0, 0, 0.14),
-    0px 3px 1px -2px rgba(0, 0, 0, 0.12)`,
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-  },
-  btnSuccess: {
-    backgroundColor: 'green',
-    color: '#fff',
-  },
-  btnFailure: {
-    backgroundColor: 'red',
-    color: '#fff',
-  },
-  btnRunning: {
-    backgroundColor: '#ffba01',
-    color: '#000',
-  },
-  btnNotExecuted: {
-    backgroundColor: '#ABA6A2',
-    color: '#fff',
-  },
-  btnWarning: {
-    backgroundColor: '#D79F15',
-    color: '#FFF',
-  },
+
   input: {
     margin: 0,
   },
@@ -371,59 +339,12 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
       title: 'Status',
       align: 'center',
       width: 140,
-      customElement: (row) => {
-        if (row.status === 'failure' || row.status === 'error') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnFailure)}
-              title={row.error_msg}
-            >
-              Failure
-            </span>
-          );
-        } if (row.status === 'running') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnRunning)}
-              title={row.status}
-            >
-              Running
-            </span>
-          );
-        } if (row.status === 'not_executed') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnNotExecuted)}
-              title={row.error_msg}
-            >
-              Not Executed
-            </span>
-          );
-        } if (row.status === 'warning') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnWarning)}
-              title={row.error_msg ? row.error_msg : 'Warning'}
-            >
-              Warning
-            </span>
-          );
-        }
-
-        return (
-          <span
-            className={clsx(classes.btn, classes.btnSuccess)}
-            title={row.status}
-          >
-            Success
-          </span>
-        );
-      },
+      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
     },
     {
       name: 'displayname',
       title: 'Name',
-     },
+    },
     {
       name: 'owner',
       title: 'Owner',
@@ -444,7 +365,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
       title: 'Date',
       customElement: (row) => (
         <span>
-          {row.creation_date ? moment(row.creation_date).format('YYYY-MM-DD') : ""}
+          {row.creation_date ? moment(row.creation_date).format('YYYY-MM-DD') : ''}
         </span>
       ),
     },
@@ -507,7 +428,15 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         name: null,
       });
     }
-  }, [dynamicClass, sublevelDynamicClassSelected, visualMagnitudeCheck, visualMagnitude, timeMinimumCheck, timeMinimum, sameObjectsCheck]);
+  }, [
+    dynamicClass,
+    sublevelDynamicClassSelected,
+    visualMagnitudeCheck,
+    visualMagnitude,
+    timeMinimumCheck,
+    timeMinimum,
+    sameObjectsCheck,
+  ]);
 
   const handleSearchFilter = (e) => setSearchFilter(e.target.value);
 
@@ -698,7 +627,9 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         setResultLoading(false);
       })
       .catch((err) => {
+        console.error(err);
         setResultLoading(false);
+        return err;
       });
   };
 
@@ -975,15 +906,15 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                           </FormControl>
                         </form>
                       ) : (
-                          <div className={classes.filterCountWrapper}>
-                            <Skeleton height={(filterFormSize.height - 95) || 0} />
-                            {skybotOutputCount > 0 ? (
-                              <span className={classes.filterCountText}>
-                                {skybotOutputCount > 1 ? `Current filter has ${skybotOutputCount} objects` : `Current filter has ${skybotOutputCount} object`}
-                              </span>
-                            ) : null}
-                          </div>
-                        )}
+                        <div className={classes.filterCountWrapper}>
+                          <Skeleton height={(filterFormSize.height - 95) || 0} />
+                          {skybotOutputCount > 0 ? (
+                            <span className={classes.filterCountText}>
+                              {skybotOutputCount > 1 ? `Current filter has ${skybotOutputCount} objects` : `Current filter has ${skybotOutputCount} object`}
+                            </span>
+                          ) : null}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 );
@@ -1011,7 +942,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                   loadData={loadHistoryTableData}
                   totalCount={historyCount}
                   defaultSorting={[{ columnName: 'creation_date', direction: 'desc' }]}
-                  loading={true}
+                  loading
                 />
               </CardContent>
             </Card>
@@ -1035,17 +966,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                 onChange={handleSaveNameChange}
               />
             </FormControl>
-
-            {/* <FormControl fullWidth>
-              <TextField
-                disabled
-                label="Table Name"
-                value={tableNameValidation.name}
-                margin="none"
-                variant="outlined"
-              />
-            </FormControl> */}
-
             <FormControl className={classes.formControl} fullWidth>
               <TextField
                 label="Description"
@@ -1059,11 +979,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
             </FormControl>
             <Divider />
             <FormControl className={classes.formControl} fullWidth>
-              <Button color="primary" variant="contained" onClick={handleSaveListClick}
-                disabled={false}
-                disabled={!tableNameValidation.valid}
-              >
-                Save</Button>
+              <Button color="primary" variant="contained" onClick={handleSaveListClick} disabled={!tableNameValidation.valid}>Save</Button>
               {resultLoading ? (
                 <CircularProgress
                   color="primary"

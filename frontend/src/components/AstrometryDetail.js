@@ -15,9 +15,9 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import Tooltip from '@material-ui/core/Tooltip';
 import ReactInterval from 'react-interval';
 import Button from '@material-ui/core/Button';
+import PropTypes from 'prop-types';
 import CustomLog from './utils/CustomLog';
 import CustomDialog from './utils/CustomDialog';
-import PropTypes from 'prop-types';
 import {
   readCondorFile, getPraiaRunById, getExecutionTimeById, getAsteroidStatus, getAsteroids,
 } from '../api/Praia';
@@ -56,40 +56,6 @@ const useStyles = makeStyles((theme) => ({
     float: 'left',
     marginTop: 1,
   },
-  btn: {
-    textTransform: 'none',
-    padding: '1px 5px',
-    width: '7em',
-    minHeight: '1em',
-    display: 'block',
-    textAlign: 'center',
-    lineHeight: '2',
-    boxShadow: `0px 1px 5px 0px rgba(0, 0, 0, 0.2),
-    0px 2px 2px 0px rgba(0, 0, 0, 0.14),
-    0px 3px 1px -2px rgba(0, 0, 0, 0.12)`,
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-  },
-  btnSuccess: {
-    backgroundColor: '#009900',
-    color: '#fff',
-  },
-  btnFailure: {
-    backgroundColor: '#ff1a1a',
-    color: '#fff',
-  },
-  btnRunning: {
-    backgroundColor: '#ffba01',
-    color: '#000',
-  },
-  btnNotExecuted: {
-    backgroundColor: '#ABA6A2',
-    color: '#fff',
-  },
-  btnWarning: {
-    backgroundColor: '#D79F15',
-    color: '#FFF',
-  },
   iconDetail: {
     fontSize: 18,
   },
@@ -113,8 +79,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   const [tableData, setTableData] = useState([]);
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState('list');
   const [toolButton, setToolButton] = useState('list');
-  const [reload_interval, setReloadInterval] = useState(10);
-  const [interval_condition, setIntervalCondition] = useState(true);
+  const [intervalCondition, setIntervalCondition] = useState(true);
   const [count, setCount] = useState(0.5);
   const [runData, setRunData] = useState();
   const [dialog, setDialog] = useState({
@@ -141,65 +106,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         {
           title: 'Status',
           value: () => <CustomColumnStatus status={data.status} title={data.error_msg} />,
-          //   if (data.status === 'failed') {
-          //     return (
-          //       <span
-          //         className={clsx(classes.btn, classes.btnFailure)}
-          //         title={data.error_msg ? data.error_msg : 'Failure'}
-          //       >
-          //         Failure
-          //       </span>
-          //     );
-          //   }
-          //   if (data.status === 'running') {
-          //     return (
-          //       <span
-          //         className={clsx(classes.btn, classes.btnRunning)}
-          //         title={data.error_msg}
-          //       >
-          //         Running
-          //       </span>
-          //     );
-          //   }
-          //   if (data.status === 'not_executed') {
-          //     return (
-          //       <span
-          //         className={clsx(classes.btn, classes.btnNotExecuted)}
-          //         title={data.error_msg}
-          //       >
-          //         Not Executed
-          //       </span>
-          //     );
-          //   }
-          //   if (data.status === 'warning') {
-          //     return (
-          //       <span
-          //         className={clsx(classes.btn, classes.btnWarning)}
-          //         title={data.error_msg ? data.error_msg : 'Warning'}
-          //       >
-          //         Warning
-          //       </span>
-          //     );
-          //   }
-          //   if (data.status === 'success') {
-          //     return (
-          //       <span
-          //         className={clsx(classes.btn, classes.btnSuccess)}
-          //         title={data.status}
-          //       >
-          //         Success
-          //       </span>
-          //     );
-          //   }
-          //   return (
-          //     <span
-          //       className={clsx(classes.btn, classes.btnSuccess)}
-          //       title={data.status}
-          //     >
-          //       {data.status}
-          //     </span>
-          //   );
-          // },
         },
         { title: 'Process', value: data.id },
         { title: 'Process Name', value: data.input_displayname },
@@ -225,12 +131,11 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   };
 
   const loadTableData = (event) => {
-
-    let page = typeof event != "undefined" ? event.currentPage + 1 : tableParams.page;
-    let sizePerPage = typeof event != "undefined" ? event.pageSize : tableParams.sizePerPage;
-    let searchValue = typeof event != "undefined" ? event.searchValue : "";
-    let sortField = tableParams.sortField;
-    let sortOrder = tableParams.sortOrder;
+    const page = typeof event !== 'undefined' ? event.currentPage + 1 : tableParams.page;
+    const sizePerPage = typeof event !== 'undefined' ? event.pageSize : tableParams.sizePerPage;
+    const searchValue = typeof event !== 'undefined' ? event.searchValue : '';
+    const { sortField } = tableParams;
+    const { sortOrder } = tableParams;
 
     const filters = [];
 
@@ -245,7 +150,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       .then((res) => {
         setTableData(res.results);
         setTableParams({ ...tableParams, totalCount: res.count });
-      })
+      });
   };
 
   const handleAsteroidDetail = (row) => history.push(`/astrometry/asteroid/${row.id}`);
@@ -265,56 +170,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       title: 'Status',
       align: 'center',
       width: 130,
-      customElement: (row) => {
-        if (row.status === 'warning') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnWarning)}
-              title={row.error_msg}
-            >
-              Warning
-            </span>
-          );
-        }
-        if (row.status === 'running') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnRunning)}
-              title={row.status}
-            >
-              Running
-            </span>
-          );
-        }
-        if (row.status === 'failure') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnFailure)}
-              title={row.error_msg}
-            >
-              Failure
-            </span>
-          );
-        }
-        if (row.status === 'not_executed') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnNotExecuted)}
-              title={row.status}
-            >
-              Not Executed
-            </span>
-          );
-        }
-        return (
-          <span
-            className={clsx(classes.btn, classes.btnSuccess)}
-            title={row.status}
-          >
-            Success
-          </span>
-        );
-      },
+      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
     },
     {
       name: 'name',
@@ -322,7 +178,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       align: 'left',
       width: 100,
       sortingEnabled: true,
-      headerTooltip: "Object Name",
+      headerTooltip: 'Object Name',
     },
     {
       name: 'number',
@@ -338,7 +194,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           </span>
         );
       },
-      headerTooltip: "Object Number",
+      headerTooltip: 'Object Number',
     },
     {
       name: 'ccd_images',
@@ -401,63 +257,14 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       title: 'Status',
       align: 'center',
       width: 130,
-      customElement: (row) => {
-        if (row.status === 'warning') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnWarning)}
-              title={row.error_msg}
-            >
-              Warning
-            </span>
-          );
-        }
-        if (row.status === 'running') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnRunning)}
-              title={row.status}
-            >
-              Running
-            </span>
-          );
-        }
-        if (row.status === 'failure') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnFailure)}
-              title={row.error_msg}
-            >
-              Failure
-            </span>
-          );
-        }
-        if (row.status === 'not_executed') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnNotExecuted)}
-              title={row.status}
-            >
-              Not Executed
-            </span>
-          );
-        }
-        return (
-          <span
-            className={clsx(classes.btn, classes.btnSuccess)}
-            title={row.status}
-          >
-            Success
-          </span>
-        );
-      },
+      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
     },
     {
       name: 'name',
       title: 'Name',
       align: 'left',
       width: 100,
-      headerTooltip: "Object Name",
+      headerTooltip: 'Object Name',
     },
     {
       name: 'number',
@@ -474,7 +281,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           </span>
         );
       },
-      headerTooltip: "Object Number",
+      headerTooltip: 'Object Number',
     },
     {
       name: 'error_msg',
@@ -607,9 +414,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     } else {
       setIntervalCondition(false);
     }
-    // if (count >= 5) {
-    //   setReloadInterval(3);
-    // }
   };
 
   const handleBackNabigation = () => {
@@ -619,8 +423,8 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   return (
     <Grid>
       <ReactInterval
-        timeout={reload_interval * 1000}
-        enabled={interval_condition}
+        timeout={10000}
+        enabled={intervalCondition}
         callback={handleInterval}
       />
       <Grid container spacing={2}>
@@ -733,8 +537,8 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                 pageSizes={tableParams.pageSizes}
                 hasToolbar
                 hasResizing={false}
-                hasPagination={true}
-                loading={true}
+                hasPagination
+                loading
               />
               <CustomDialog
                 visible={dialog.visible}

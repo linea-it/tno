@@ -5,7 +5,7 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles({
   btn: {
-    textTransform: 'none',
+    textTransform: 'capitalize',
     padding: '1px 5px',
     width: '7em',
     minHeight: '1em',
@@ -53,8 +53,14 @@ function CustomColumnStatus({ status, title }) {
     case 'failure':
       statusColor = classes.btnFailure;
       break;
+    case 'canceled':
+      statusColor = classes.btnFailure;
+      break;
     case 'warning':
       statusColor = classes.btnWarning;
+      break;
+    case 'running':
+      statusColor = classes.btnRunning;
       break;
     default:
       statusColor = classes.btnNotExecuted;
