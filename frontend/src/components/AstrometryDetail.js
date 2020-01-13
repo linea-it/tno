@@ -25,6 +25,7 @@ import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
 import ListStat from './utils/CustomList';
 import Stepper from './AstrometryStepper';
+import CustomColumnStatus from './utils/CustomColumnStatus';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -112,7 +113,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   const [tableData, setTableData] = useState([]);
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState('list');
   const [toolButton, setToolButton] = useState('list');
-  const [reload_interval, setReloadInterval] = useState(1);
+  const [reload_interval, setReloadInterval] = useState(10);
   const [interval_condition, setIntervalCondition] = useState(true);
   const [count, setCount] = useState(0.5);
   const [runData, setRunData] = useState();
@@ -123,10 +124,10 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   });
   const [tableParams, setTableParams] = useState({
     page: 1,
-    sizePerPage: 10,
+    sizePerPage: 30,
     sortField: 'name',
     sortOrder: 1,
-    pageSizes: [10, 20, 30],
+    pageSizes: [10, 20, 30, 50],
     totalCount: null,
   });
 
@@ -139,56 +140,66 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       setList([
         {
           title: 'Status',
-          value: () => {
-            if (data.status === 'failed') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnFailure)}
-                  title={data.error_msg ? data.error_msg : 'Failure'}
-                >
-                  Failure
-                </span>
-              );
-            }
-            if (data.status === 'running') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnRunning)}
-                  title={data.error_msg}
-                >
-                  Running
-                </span>
-              );
-            }
-            if (data.status === 'not_executed') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnNotExecuted)}
-                  title={data.error_msg}
-                >
-                  Not Executed
-                </span>
-              );
-            }
-            if (data.status === 'warning') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnWarning)}
-                  title={data.error_msg ? data.error_msg : 'Warning'}
-                >
-                  Warning
-                </span>
-              );
-            }
-            return (
-              <span
-                className={clsx(classes.btn, classes.btnSuccess)}
-                title={data.status}
-              >
-                Success
-              </span>
-            );
-          },
+          value: () => <CustomColumnStatus status={data.status} title={data.error_msg} />,
+          //   if (data.status === 'failed') {
+          //     return (
+          //       <span
+          //         className={clsx(classes.btn, classes.btnFailure)}
+          //         title={data.error_msg ? data.error_msg : 'Failure'}
+          //       >
+          //         Failure
+          //       </span>
+          //     );
+          //   }
+          //   if (data.status === 'running') {
+          //     return (
+          //       <span
+          //         className={clsx(classes.btn, classes.btnRunning)}
+          //         title={data.error_msg}
+          //       >
+          //         Running
+          //       </span>
+          //     );
+          //   }
+          //   if (data.status === 'not_executed') {
+          //     return (
+          //       <span
+          //         className={clsx(classes.btn, classes.btnNotExecuted)}
+          //         title={data.error_msg}
+          //       >
+          //         Not Executed
+          //       </span>
+          //     );
+          //   }
+          //   if (data.status === 'warning') {
+          //     return (
+          //       <span
+          //         className={clsx(classes.btn, classes.btnWarning)}
+          //         title={data.error_msg ? data.error_msg : 'Warning'}
+          //       >
+          //         Warning
+          //       </span>
+          //     );
+          //   }
+          //   if (data.status === 'success') {
+          //     return (
+          //       <span
+          //         className={clsx(classes.btn, classes.btnSuccess)}
+          //         title={data.status}
+          //       >
+          //         Success
+          //       </span>
+          //     );
+          //   }
+          //   return (
+          //     <span
+          //       className={clsx(classes.btn, classes.btnSuccess)}
+          //       title={data.status}
+          //     >
+          //       {data.status}
+          //     </span>
+          //   );
+          // },
         },
         { title: 'Process', value: data.id },
         { title: 'Process Name', value: data.input_displayname },
@@ -596,9 +607,9 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     } else {
       setIntervalCondition(false);
     }
-    if (count >= 5) {
-      setReloadInterval(3);
-    }
+    // if (count >= 5) {
+    //   setReloadInterval(3);
+    // }
   };
 
   const handleBackNabigation = () => {
@@ -718,11 +729,12 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                 loadData={loadTableData}
                 totalCount={tableParams.totalCount ? tableParams.totalCount : 1}
                 hasColumnVisibility={false}
+                pageSize={tableParams.sizePerPage}
                 pageSizes={tableParams.pageSizes}
                 hasToolbar
                 hasResizing={false}
                 hasPagination={true}
-
+                loading={true}
               />
               <CustomDialog
                 visible={dialog.visible}

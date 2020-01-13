@@ -64,12 +64,12 @@ function AstrometryHistory({ history }) {
 
   const [tableData, setTableData] = useState([]);
   const [tablePage, setTablePage] = useState(1);
-  const [tablePageSize, setPageSize] = useState(5);
+  const [tablePageSize, setPageSize] = useState(30);
   const [totalCount, setTotalCount] = useState();
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  const pageSizes = [5, 10, 15];
+  const pageSizes = [5, 10, 15, 30, 50];
 
   const loadData = (event) => {
     setLoading(true);
@@ -82,7 +82,7 @@ function AstrometryHistory({ history }) {
       setTotalCount(res.count);
       setLoading(false);
     }).catch((err) => {
-       setLoading(false);
+      setLoading(false);
     });
   };
 
