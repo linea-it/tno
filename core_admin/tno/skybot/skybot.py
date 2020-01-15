@@ -80,8 +80,16 @@ class ImportSkybotManagement():
             tdelta = t1 - t0
             self.logger.info("Done in %s" % humanize.naturaldelta(tdelta))
 
+
             current_run.refresh_from_db()
-            current_run.status = 'success'
+
+
+            # If the current run was stopped during the execution, then maintain it as "canceled";
+            # If the current run got to the end, then consider it as a successful run;
+            # Otherwise, the "exception", under, will catch it.
+            if current_run.status != 'canceled':
+                current_run.status = 'success'
+
             current_run.finish = t1
             current_run.execution_time = tdelta
             current_run.save()
