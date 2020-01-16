@@ -39,7 +39,7 @@ class SkybotServer():
         self.logger.info(
             "-------------------------- Skybot Run: %s --------------------------" % skybotrun.id)
 
-        # DEBUG LIMIT 
+        # DEBUG LIMIT
         self.debug_limit = None
 
         try:
@@ -94,7 +94,7 @@ class SkybotServer():
         self.max_workers = 1
 
         result_columns = ['expnum', 'band', 'date_obs', 'skybot_downloaded', 'skybot_url', 'download_start', 'download_finish', 'download_time', 'filename',
-                        'file_size', 'file_path', 'import_start', 'import_finish', 'import_time', 'count_created', 'count_updated', 'count_rows', 
+                        'file_size', 'file_path', 'import_start', 'import_finish', 'import_time', 'count_created', 'count_updated', 'count_rows',
                         'ccd_count', 'ccd_count_rows', 'ccd_start', 'ccd_finish', 'ccd_time', 'error']
 
         self.df_results = pd.DataFrame(
@@ -144,10 +144,16 @@ class SkybotServer():
 
                 associate_result = self.associate_ccd(result)
                 result.update(associate_result)
-
                 self.register_result(result)
             else:
                 self.register_errors(result)
+
+            # Refresh the database to get the updated value, in case of the run being stopped.
+            self.skybotrun.refresh_from_db()
+
+            # If the Skybot Run was canceled during the execution, break the loop:
+            if self.skybotrun.status == 'canceled':
+                break
 
         self.write_results()
 
@@ -187,6 +193,7 @@ class SkybotServer():
             result['expnum'], 3, result['ccd_start'], result['ccd_finish'])
 
 
+
     def write_stats(self):
 
         with open(self.stats_json, 'w') as outfile:
@@ -209,11 +216,11 @@ class SkybotServer():
         self.logger.debug("Total de Pointings: %s" % count)
 
         cols = self.dbpt.tbl.c
-        
+
         stm = select([cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg]).group_by(
             cols.expnum, cols.band, cols.date_obs, cols.radeg, cols.decdeg).order_by(cols.date_obs).limit(self.debug_limit)
 
-        
+
         pointings = self.dbpt.fetch_all_dict(stm)
 
         self.logger.debug("Rows: [%s]" % len(pointings))
@@ -378,7 +385,7 @@ class SkybotServer():
                 'skybot_url': r.url,
                 'filename': filename,
                 'file_size': file_size,
-                'file_path': file_path,                
+                'file_path': file_path,
             })
 
             self.logger.debug("Skybot URL: [ %s ]" % r.url)
@@ -411,6 +418,8 @@ class SkybotServer():
 
         return result
 
+
+
     def get_ccds_by_expnum(self, expnum):
 
         self.logger.debug("Get CCDs for Expnum: [ %s ]" % expnum)
@@ -419,7 +428,7 @@ class SkybotServer():
         tbl = self.dbpt.tbl
 
         stm = select(tbl.c).order_by(tbl.c.ccdnum).where(and_(tbl.c.expnum == expnum))
-        
+
         ccds = self.dbpt.fetch_all_dict(stm)
 
         t1 = datetime.now()
@@ -436,7 +445,7 @@ class SkybotServer():
         self.logger.debug(poiting)
         self.logger.debug("Expnum [ %s ] Band [ %s ]" % (poiting['expnum'], poiting['band']))
 
-        t0 = datetime.now() 
+        t0 = datetime.now()
 
         # Para cada exposicao buscar todos os ccds
         ccds = self.get_ccds_by_expnum(poiting['expnum'])
@@ -460,12 +469,12 @@ class SkybotServer():
                         cols.band == ccd['band']
                         )).\
                             values(ccdnum = ccd['ccdnum'])
-                    
+
 
             self.logger.debug("SQL: %s" % str(stm))
 
             asteroids = self.dbsk.engine.execute(stm)
-            
+
             count = asteroids.rowcount
 
             count_updates += count

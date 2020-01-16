@@ -33,6 +33,7 @@ function SkybotDetail({ setTitle, match, history }) {
   const [timeProfile, setTimeProfile] = useState([]);
   const [skybotDetailTableData, setSkybotDetailTableData] = useState([]);
   const [skybotDetailTableTotalCount, setSkybotDetailTableTotalCount] = useState(0);
+  const [currentSkybotRunStatus, setCurrentSkybotRunStatus] = useState('');
 
   const skybotDetailTableColumns = [
     {
@@ -58,7 +59,7 @@ function SkybotDetail({ setTitle, match, history }) {
       sortingEnabled: false,
       width: 100,
       align: 'right',
-      headerTooltip: "Exposure Number"
+      headerTooltip: 'Exposure Number',
     },
     {
       name: 'band',
@@ -73,16 +74,16 @@ function SkybotDetail({ setTitle, match, history }) {
       sortingEnabled: false,
       customElement: (el) => (
         <span>
-          {el.date_obs ? moment(el.date_obs).format('YYYY-MM-DD') : ""}
+          {el.date_obs ? moment(el.date_obs).format('YYYY-MM-DD') : ''}
         </span>
       ),
-      headerTooltip: "Observation Date",
+      headerTooltip: 'Observation Date',
       align: 'center',
     },
     {
       name: 'execution_time',
       title: 'Exec Time ',
-      headerTooltip: "Execution time",
+      headerTooltip: 'Execution time',
       sortingEnabled: false,
       width: 150,
       align: 'right',
@@ -112,14 +113,15 @@ function SkybotDetail({ setTitle, match, history }) {
       sortingEnabled: false,
       width: 100,
       align: 'right',
-      headerTooltip: "Objects inside CCD"
+      headerTooltip: 'Objects inside CCD',
     },
   ];
 
-  useEffect(() => {
-    setTitle('Skybot Run');
+  const handleBackNavigation = () => history.push('/skybot');
 
+  const loadSkybotDetailSummary = () => {
     getSkybotRunById({ id }).then((res) => {
+      setCurrentSkybotRunStatus(res.status);
       setSkybotRunDetailList([
         {
           title: 'Status',
@@ -147,7 +149,9 @@ function SkybotDetail({ setTitle, match, history }) {
         },
       ]);
     });
+  };
 
+  const loadSkybotDetailExecutionTime = () => {
     getStatistic({ id }).then((res) => {
       setTimeProfile([
         {
@@ -164,9 +168,7 @@ function SkybotDetail({ setTitle, match, history }) {
         },
       ]);
     });
-  }, []);
-
-  const handleBackNavigation = () => history.push('/skybot');
+  };
 
   const loadSkybotDetailTableData = ({ currentPage, pageSize }) => {
     getSkybotRunResults({
@@ -177,17 +179,39 @@ function SkybotDetail({ setTitle, match, history }) {
     });
   };
 
+  const clearData = () => {
+    setTimeProfile([]);
+    setSkybotDetailTableData([]);
+    setSkybotDetailTableTotalCount(0);
+  };
+
+  const handleStopRun = () => {
+    stopSkybotRunById(id)
+      .then(() => {
+        clearData();
+        loadSkybotDetailSummary();
+        loadSkybotDetailExecutionTime();
+        loadSkybotDetailTableData({ currentPage: 0, pageSize: 10 });
+      })
+      .catch((err) => console.error(err));
+  };
+
+  useEffect(() => {
+    setTitle('Skybot Run');
+    loadSkybotDetailSummary();
+    loadSkybotDetailExecutionTime();
+  }, []);
+
   return (
     <>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Grid
             container
-            justify="space-between"
             alignItems="center"
             spacing={2}
           >
-            <Grid item xs={12} md={4}>
+            <Grid item>
               <Button
                 variant="contained"
                 color="primary"
@@ -198,6 +222,20 @@ function SkybotDetail({ setTitle, match, history }) {
                 <span>Back</span>
               </Button>
             </Grid>
+            {currentSkybotRunStatus === 'running' ? (
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  title="Stop"
+                  onClick={handleStopRun}
+                  className={classes.btnFailure}
+                >
+                  <Icon className={clsx('fas', 'fa-stop', classes.buttonIcon)} />
+                  <span>Stop</span>
+                </Button>
+              </Grid>
+            ) : null}
           </Grid>
         </Grid>
         <Grid item xs={12}>
@@ -243,7 +281,7 @@ function SkybotDetail({ setTitle, match, history }) {
                     totalCount={skybotDetailTableTotalCount}
                     loadData={loadSkybotDetailTableData}
                     hasSearching={false}
-                    loading={true}
+                    loading
                   />
                 </CardContent>
               </Card>
