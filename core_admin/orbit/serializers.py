@@ -487,6 +487,7 @@ class OrbitalParameterSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrbitalParameterFile
         fields = (
+            'id',
             'name',
             'source',
             'filename',

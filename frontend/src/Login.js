@@ -12,8 +12,6 @@ import Container from '@material-ui/core/Container';
 import { withRouter } from 'react-router-dom';
 import { login } from './api/Auth';
 
-//Come on
-
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(7),

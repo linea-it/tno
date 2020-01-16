@@ -2,20 +2,45 @@ import React, { useEffect, useState } from 'react';
 import CustomTable from './utils/CustomTable';
 import { getOrbitalParameterFiles } from '../api/Input';
 import Card from '@material-ui/core/Card';
+import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import { CardHeader, CardContent } from '@material-ui/core';
 import moment from 'moment';
+import Icon from '@material-ui/core/Icon';
+import clsx from 'clsx';
+import { readOrbitalFile } from '../api/Orbit';
+import CustomDialog from './utils/CustomDialog';
+import CustomLog from './utils/CustomLog';
+
+const useStyles = makeStyles((theme) => ({
+  iconDetail: {
+    fontSize: 18,
+  },
+  dialogBodyStyle: {
+    backgroundColor: '#1D4455',
+    color: '#FFFFFF',
+    border: 'none',
+    height: 600,
+    width: 1600,
+  }
+}));
 
 function OrbitalParameterFiles({ setTitle }) {
 
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tableDataCount, setTableDataCount] = useState(true);
-
+  const [dialog, setDialog] = useState({
+    visible: false,
+    content: [],
+    title: ' ',
+  });
 
   useEffect(() => {
     setTitle("Orbital Parameter Files");
-  }, []);
+  }, [setTitle]);
+
+  const classes = useStyles();
 
   const loadTableData = (event) => {
 
@@ -36,6 +61,15 @@ function OrbitalParameterFiles({ setTitle }) {
   };
 
   const tableColumns = [
+    {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (el) => handleFileReading(el.download_url),
+      align: 'center',
+      sortingEnabled: false,
+    },
     {
       name: 'name',
       title: 'Name',
@@ -91,6 +125,25 @@ function OrbitalParameterFiles({ setTitle }) {
     },
   ]
 
+  const handleFileReading = (file) => {
+    if (file && typeof file !== 'undefined') {
+      const arrayLines = [];
+
+      readOrbitalFile().then((res) => {
+        const data = res.rows;
+
+        if (res.success) {
+          data.forEach((line, idx) => {
+            arrayLines.push(<div key={idx}>{line}</div>);
+          });
+        } else {
+          arrayLines.push(<div key={0}>{res.msg}</div>);
+        }
+        setDialog({ content: data, visible: true, title: `${file}` })
+      });
+    }
+  }
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} >
@@ -109,6 +162,14 @@ function OrbitalParameterFiles({ setTitle }) {
           </CardContent>
         </Card>
       </Grid>
+      <CustomDialog
+        maxWidth={1700}
+        visible={dialog.visible}
+        title={dialog.title}
+        content={<CustomLog data={dialog.content} />}
+        setVisible={() => setDialog({ visible: false, content: [], title: ' ' })}
+        bodyStyle={classes.dialogBodyStyle}
+      />
     </Grid>
   );
 };
