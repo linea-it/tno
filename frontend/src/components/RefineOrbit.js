@@ -79,16 +79,6 @@ function RefineOrbit({ history, setTitle }) {
 
   const classes = useStyles();
 
-  useEffect(() => {
-    setTitle('Refine Orbits');
-    loadExecuteData();
-  }, []);
-
-  useInterval(() => {
-    setReload(!reload);
-  }, 30000);
-
-
   const loadExecuteData = () => {
     getPraiaRuns({
       ordering: '-start_time',
@@ -102,6 +92,15 @@ function RefineOrbit({ history, setTitle }) {
       setInputData(res.results);
     });
   };
+
+  useEffect(() => {
+    setTitle('Refine Orbits');
+    loadExecuteData();
+  }, []);
+
+  useInterval(() => {
+    setReload(!reload);
+  }, 30000);
 
 
   const loadTableData = async ({
