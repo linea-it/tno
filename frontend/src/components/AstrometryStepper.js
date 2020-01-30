@@ -5,7 +5,7 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import PropTypes from 'prop-types';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
 
   instructions: {
     marginTop: theme.spacing(1),
@@ -18,11 +18,9 @@ function getSteps() {
 }
 
 export default function AstrometryStepper({ activeStep }) {
-
   const classes = useStyles();
 
   const steps = getSteps();
-
 
 
   return (

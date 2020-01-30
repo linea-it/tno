@@ -3,10 +3,11 @@ import clsx from 'clsx';
 import { withRouter } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import Icon from '@material-ui/core/Icon';
-import Table from './utils/CustomTable';
-import { getPraiaRuns } from '../api/Praia';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import Table from './utils/CustomTable';
+import { getPraiaRuns } from '../api/Praia';
+import CustomColumnStatus from './utils/CustomColumnStatus';
 
 const useStyles = makeStyles((theme) => ({
   iconList: {
@@ -16,47 +17,6 @@ const useStyles = makeStyles((theme) => ({
   button: {
     marginTop: theme.spacing(2),
   },
-  btn: {
-    textTransform: 'none',
-    padding: '1px 5px',
-    width: '7em',
-    minHeight: '1em',
-    display: 'block',
-    textAlign: 'center',
-    lineHeight: '2',
-    boxShadow: `0px 1px 5px 0px rgba(0, 0, 0, 0.2),
-    0px 2px 2px 0px rgba(0, 0, 0, 0.14),
-    0px 3px 1px -2px rgba(0, 0, 0, 0.12)`,
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-  },
-  btnSuccess: {
-    backgroundColor: 'green',
-    color: '#fff',
-  },
-  btnRunning: {
-    backgroundColor: '#ffba01',
-    color: '#000',
-  },
-  btnWarning: {
-    backgroundColor: '#D79F15',
-    color: '#FFF',
-  },
-  iconDetail: {
-    fontSize: 18,
-  },
-  tableWrapper: {
-    maxWidth: '100%',
-  },
-  btnFailure: {
-    backgroundColor: '#ff1a1a',
-    color: '#fff',
-  },
-  btnNotExecuted: {
-    backgroundColor: '#ABA6A2',
-    color: '#fff',
-  },
-
 }));
 
 function AstrometryHistory({ history }) {
@@ -64,12 +24,12 @@ function AstrometryHistory({ history }) {
 
   const [tableData, setTableData] = useState([]);
   const [tablePage, setTablePage] = useState(1);
-  const [tablePageSize, setPageSize] = useState(5);
+  const [tablePageSize, setPageSize] = useState(30);
   const [totalCount, setTotalCount] = useState();
   const [reload, setReload] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  const pageSizes = [5, 10, 15];
+  const pageSizes = [5, 10, 15, 30, 50];
 
   const loadData = (event) => {
     setLoading(true);
@@ -82,7 +42,7 @@ function AstrometryHistory({ history }) {
       setTotalCount(res.count);
       setLoading(false);
     }).catch((err) => {
-       setLoading(false);
+      setLoading(false);
     });
   };
 
@@ -108,59 +68,7 @@ function AstrometryHistory({ history }) {
       title: 'Status',
       width: 150,
       align: 'center',
-      customElement: (row) => {
-        if (row.status === 'running') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnRunning)}
-              title={row.status}
-            >
-              Running
-            </span>
-          );
-        }
-        if (row.status === 'warning') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnWarning)}
-              title={row.status}
-
-            >
-              Warning
-            </span>
-          );
-        }
-        if (row.status === 'failed') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnFailure)}
-              title={row.status}
-
-            >
-              Failure
-            </span>
-          );
-        }
-        if (row.status === 'not_executed') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnNotExecuted)}
-              title={row.status}
-
-            >
-              Not Executed
-            </span>
-          );
-        }
-        return (
-          <span
-            className={clsx(classes.btn, classes.btnSuccess)}
-            title={row.status}
-          >
-            Success
-          </span>
-        );
-      },
+      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
     },
     {
       name: 'proccess_displayname',
@@ -192,7 +100,7 @@ function AstrometryHistory({ history }) {
       width: 180,
       customElement: (row) => (
         <span>
-          {row.start_time ? moment(row.start_time).format("YYYY-MM-DD HH:mm:ss") : ""}
+          {row.start_time ? moment(row.start_time).format('YYYY-MM-DD HH:mm:ss') : ''}
         </span>
       ),
       align: 'center',

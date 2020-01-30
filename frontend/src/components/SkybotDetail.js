@@ -14,6 +14,7 @@ import { Donut } from './utils/CustomChart';
 import {
   getSkybotRunById, getStatistic, getSkybotRunResults, stopSkybotRunById,
 } from '../api/Skybot';
+import CustomColumnStatus from './utils/CustomColumnStatus';
 
 const useStyles = makeStyles({
   cardContentWrapper: {
@@ -24,40 +25,6 @@ const useStyles = makeStyles({
   },
   buttonIcon: {
     margin: '0 10px 0 0',
-  },
-  btn: {
-    textTransform: 'none',
-    padding: '1px 5px',
-    width: '7em',
-    minHeight: '1em',
-    display: 'block',
-    textAlign: 'center',
-    lineHeight: '2',
-    boxShadow: `0px 1px 5px 0px rgba(0, 0, 0, 0.2),
-    0px 2px 2px 0px rgba(0, 0, 0, 0.14),
-    0px 3px 1px -2px rgba(0, 0, 0, 0.12)`,
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-  },
-  btnWarning: {
-    backgroundColor: '#D79F15',
-    color: '#FFF',
-  },
-  btnSuccess: {
-    backgroundColor: 'green',
-    color: '#fff',
-  },
-  btnFailure: {
-    backgroundColor: '#ff1a1a',
-    color: '#fff',
-  },
-  btnNotExecuted: {
-    backgroundColor: '#ABA6A2',
-    color: '#fff',
-  },
-  btnRunning: {
-    backgroundColor: '#ffba01',
-    color: '#000',
   },
 });
 
@@ -85,63 +52,7 @@ function SkybotDetail({ setTitle, match, history }) {
       title: 'Status',
       align: 'center',
       sortingEnabled: false,
-      customElement: (row) => {
-        if (row.status === 'failure') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnFailure)}
-              title={row.error_msg}
-            >
-              Failure
-            </span>
-          );
-        } if (row.status === 'canceled') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnFailure)}
-              title={row.status}
-            >
-              Canceled
-            </span>
-          );
-        } if (row.status === 'running') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnRunning)}
-              title={row.status}
-            >
-              Running
-            </span>
-          );
-        } if (row.status === 'not_executed') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnNotExecuted)}
-              title={row.error_msg}
-            >
-              Not Executed
-            </span>
-          );
-        } if (row.status === 'warning') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnWarning)}
-              title={row.error_msg ? row.error_msg : 'Warning'}
-            >
-              Warning
-            </span>
-          );
-        }
-
-        return (
-          <span
-            className={clsx(classes.btn, classes.btnSuccess)}
-            title={row.status}
-          >
-            Success
-          </span>
-        );
-      },
+      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
       width: 140,
     },
     {
@@ -216,63 +127,7 @@ function SkybotDetail({ setTitle, match, history }) {
       setSkybotRunDetailList([
         {
           title: 'Status',
-          value: () => {
-            if (res.status === 'failure') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnFailure)}
-                  title={res.error_msg}
-                >
-                  Failure
-                </span>
-              );
-            } if (res.status === 'canceled') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnFailure)}
-                  title={res.status}
-                >
-                  Canceled
-                </span>
-              );
-            } if (res.status === 'running') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnRunning)}
-                  title={res.status}
-                >
-                  Running
-                </span>
-              );
-            } if (res.status === 'not_executed') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnNotExecuted)}
-                  title={res.error_msg}
-                >
-                  Not Executed
-                </span>
-              );
-            } if (res.status === 'warning') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnWarning)}
-                  title={res.error_msg ? res.error_msg : 'Warning'}
-                >
-                  Warning
-                </span>
-              );
-            }
-
-            return (
-              <span
-                className={clsx(classes.btn, classes.btnSuccess)}
-                title={res.status}
-              >
-                Success
-              </span>
-            );
-          },
+          value: () => <CustomColumnStatus status={res.status} title={res.error_msg} />,
         },
         {
           title: 'Owner',
