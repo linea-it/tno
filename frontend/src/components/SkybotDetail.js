@@ -11,7 +11,9 @@ import moment from 'moment';
 import CustomList from './utils/CustomList';
 import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
-import { getSkybotRunById, getStatistic, getSkybotRunResults } from '../api/Skybot';
+import {
+  getSkybotRunById, getStatistic, getSkybotRunResults, stopSkybotRunById,
+} from '../api/Skybot';
 import CustomColumnStatus from './utils/CustomColumnStatus';
 
 const useStyles = makeStyles({

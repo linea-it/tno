@@ -95,6 +95,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
     pageSizes: [10, 20, 30, 50],
     totalCount: null,
   });
+  const [reload, setReload] = useState(true);
 
   const runId = params.id;
 
@@ -352,7 +353,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   }, []);
 
   useEffect(() => {
-    loadTableData();
+    setReload(!reload);
     loadPraiaRun();
     loadExecutionTime();
     loadExecutionStatistics();
@@ -423,7 +424,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   return (
     <Grid>
       <ReactInterval
-        timeout={10000}
+        timeout={30000}
         enabled={intervalCondition}
         callback={handleInterval}
       />
@@ -471,6 +472,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
               />
               <Donut
                 data={donutDataExecutionTime}
+                reload={reload}
               />
             </Card>
           </Grid>
@@ -502,11 +504,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                     value="list"
                     onClick={() => {
                       setColumnsAsteroidTable('list');
-                      loadTableData();
-                      setTableParams((tableParamsRef) => ({
-                        ...tableParamsRef,
-                        reload: !tableParamsRef.reload,
-                      }));
+                      // loadTableData();
                     }}
                   >
                     <ListIcon />
@@ -515,11 +513,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                     value="bug"
                     onClick={() => {
                       setColumnsAsteroidTable('bug');
-                      loadTableData();
-                      setTableParams((tableParamsRef) => ({
-                        ...tableParamsRef,
-                        reload: !tableParamsRef.reload,
-                      }));
+                      // loadTableData();
                     }}
                   >
                     <BugIcon />
@@ -537,6 +531,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                 pageSizes={tableParams.pageSizes}
                 hasToolbar
                 hasResizing={false}
+                reload={reload}
                 hasPagination
                 loading
               />
