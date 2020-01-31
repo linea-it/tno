@@ -23,6 +23,7 @@ import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
 import { createSkybotRun, getSkybotRunList, getSkybotRunEstimate, getExposuresByPeriod } from '../api/Skybot';
 import Table from './utils/CustomTable';
+import CustomColumnStatus from './utils/CustomColumnStatus';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -53,40 +54,6 @@ const useStyles = makeStyles((theme) => ({
   },
   iconDetail: {
     fontSize: 18,
-  },
-  btn: {
-    textTransform: 'none',
-    padding: '1px 5px',
-    width: '7em',
-    minHeight: '1em',
-    display: 'block',
-    textAlign: 'center',
-    lineHeight: '2',
-    boxShadow: `0px 1px 5px 0px rgba(0, 0, 0, 0.2),
-    0px 2px 2px 0px rgba(0, 0, 0, 0.14),
-    0px 3px 1px -2px rgba(0, 0, 0, 0.12)`,
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-  },
-  btnWarning: {
-    backgroundColor: '#D79F15',
-    color: '#FFF',
-  },
-  btnSuccess: {
-    backgroundColor: 'green',
-    color: '#fff',
-  },
-  btnFailure: {
-    backgroundColor: '#ff1a1a',
-    color: '#fff',
-  },
-  btnNotExecuted: {
-    backgroundColor: '#ABA6A2',
-    color: '#fff',
-  },
-  btnRunning: {
-    backgroundColor: '#ffba01',
-    color: '#000',
   },
   logToolbar: {
     backgroundColor: '#F1F2F5',
@@ -213,8 +180,8 @@ function Skybot({ setTitle, history }) {
           loading: false,
           hasData: res.rows.length > 0,
         });
-        setExposuresByPeriod(res.rows)
-      })
+        setExposuresByPeriod(res.rows);
+      });
       setDisabledRunButton(false);
     }
 
@@ -274,9 +241,7 @@ function Skybot({ setTitle, history }) {
   const handleSelectRunClick = () => {
     switch (selectRunValue) {
       case 'all':
-        setSelectRunValue('all');
-        setInitialDate('');
-        setFinalDate('');
+        setDisabledRunButton(true);
         setLoading(true);
         handleSubmit();
         break;
@@ -322,56 +287,7 @@ function Skybot({ setTitle, history }) {
       title: 'Status',
       width: 140,
       align: 'center',
-      customElement: (row) => {
-        if (row.status === 'running') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnRunning)}
-              title={row.status}
-            >
-              Running
-            </span>
-          );
-        }
-        if (row.status === 'warning') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnWarning)}
-              title={row.status}
-            >
-              Warning
-            </span>
-          );
-        }
-        if (row.status === 'failure') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnFailure)}
-              title={row.status}
-            >
-              Failure
-            </span>
-          );
-        }
-        if (row.status === 'not_executed') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnNotExecuted)}
-              title={row.status}
-            >
-              Not Executed
-            </span>
-          );
-        }
-        return (
-          <span
-            className={clsx(classes.btn, classes.btnSuccess)}
-            title={row.status}
-          >
-            Success
-          </span>
-        );
-      },
+      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
     },
     {
       name: 'owner', title: 'Owner', width: 140, align: 'left',
@@ -449,7 +365,7 @@ function Skybot({ setTitle, history }) {
     if (minutes < 10) {minutes = "0"+minutes;}
     if (seconds < 10) {seconds = "0"+seconds;}
     return hours+':'+minutes+':'+seconds;
-}
+  }
 
   return (
     <Grid>
@@ -471,6 +387,10 @@ function Skybot({ setTitle, history }) {
                 <Select
                   value={selectRunValue}
                   onChange={(event) => {
+                    if (event.target.value === 'all') {
+                      setInitialDate(null);
+                      setFinalDate(null);
+                    }
                     setSelectRunValue(event.target.value);
                   }}
                 >

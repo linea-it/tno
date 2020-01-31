@@ -11,7 +11,10 @@ import moment from 'moment';
 import CustomList from './utils/CustomList';
 import CustomTable from './utils/CustomTable';
 import { Donut } from './utils/CustomChart';
-import { getSkybotRunById, getStatistic, getSkybotRunResults } from '../api/Skybot';
+import {
+  getSkybotRunById, getStatistic, getSkybotRunResults, stopSkybotRunById,
+} from '../api/Skybot';
+import CustomColumnStatus from './utils/CustomColumnStatus';
 
 const useStyles = makeStyles({
   cardContentWrapper: {
@@ -23,40 +26,6 @@ const useStyles = makeStyles({
   buttonIcon: {
     margin: '0 10px 0 0',
   },
-  btn: {
-    textTransform: 'none',
-    padding: '1px 5px',
-    width: '7em',
-    minHeight: '1em',
-    display: 'block',
-    textAlign: 'center',
-    lineHeight: '2',
-    boxShadow: `0px 1px 5px 0px rgba(0, 0, 0, 0.2),
-    0px 2px 2px 0px rgba(0, 0, 0, 0.14),
-    0px 3px 1px -2px rgba(0, 0, 0, 0.12)`,
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-  },
-  btnSuccess: {
-    backgroundColor: '#009900',
-    color: '#fff',
-  },
-  btnFailure: {
-    backgroundColor: '#ff1a1a',
-    color: '#fff',
-  },
-  btnRunning: {
-    backgroundColor: '#0099ff',
-    color: '#000',
-  },
-  btnNotExecuted: {
-    backgroundColor: '#ABA6A2',
-    color: '#fff',
-  },
-  btnWarning: {
-    backgroundColor: '#D79F15',
-    color: '#FFF',
-  },
 });
 
 function SkybotDetail({ setTitle, match, history }) {
@@ -66,6 +35,7 @@ function SkybotDetail({ setTitle, match, history }) {
   const [timeProfile, setTimeProfile] = useState([]);
   const [skybotDetailTableData, setSkybotDetailTableData] = useState([]);
   const [skybotDetailTableTotalCount, setSkybotDetailTableTotalCount] = useState(0);
+  const [currentSkybotRunStatus, setCurrentSkybotRunStatus] = useState('');
 
   const skybotDetailTableColumns = [
     {
@@ -82,54 +52,7 @@ function SkybotDetail({ setTitle, match, history }) {
       title: 'Status',
       align: 'center',
       sortingEnabled: false,
-      customElement: (row) => {
-        if (row.status === 'failure') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnFailure)}
-              title={row.error_msg}
-            >
-              Failure
-            </span>
-          );
-        } if (row.status === 'running') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnRunning)}
-              title={row.status}
-            >
-              Running
-            </span>
-          );
-        } if (row.status === 'not_executed') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnNotExecuted)}
-              title={row.error_msg}
-            >
-              Not Executed
-            </span>
-          );
-        } if (row.status === 'warning') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnWarning)}
-              title={row.error_msg ? row.error_msg : 'Warning'}
-            >
-              Warning
-            </span>
-          );
-        }
-
-        return (
-          <span
-            className={clsx(classes.btn, classes.btnSuccess)}
-            title={row.status}
-          >
-            Success
-          </span>
-        );
-      },
+      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
       width: 140,
     },
     {
@@ -138,7 +61,7 @@ function SkybotDetail({ setTitle, match, history }) {
       sortingEnabled: false,
       width: 100,
       align: 'right',
-      headerTooltip: "Exposure Number"
+      headerTooltip: 'Exposure Number',
     },
     {
       name: 'band',
@@ -153,16 +76,16 @@ function SkybotDetail({ setTitle, match, history }) {
       sortingEnabled: false,
       customElement: (el) => (
         <span>
-          {el.date_obs ? moment(el.date_obs).format('YYYY-MM-DD') : ""}
+          {el.date_obs ? moment(el.date_obs).format('YYYY-MM-DD') : ''}
         </span>
       ),
-      headerTooltip: "Observation Date",
+      headerTooltip: 'Observation Date',
       align: 'center',
     },
     {
       name: 'execution_time',
       title: 'Exec Time ',
-      headerTooltip: "Execution time",
+      headerTooltip: 'Execution time',
       sortingEnabled: false,
       width: 150,
       align: 'right',
@@ -192,65 +115,19 @@ function SkybotDetail({ setTitle, match, history }) {
       sortingEnabled: false,
       width: 100,
       align: 'right',
-      headerTooltip: "Objects inside CCD"
+      headerTooltip: 'Objects inside CCD',
     },
   ];
 
-  useEffect(() => {
-    setTitle('Skybot Run');
+  const handleBackNavigation = () => history.push('/skybot');
 
+  const loadSkybotDetailSummary = () => {
     getSkybotRunById({ id }).then((res) => {
+      setCurrentSkybotRunStatus(res.status);
       setSkybotRunDetailList([
         {
           title: 'Status',
-          value: () => {
-            if (res.status === 'failure') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnFailure)}
-                  title={res.error_msg}
-                >
-                  Failure
-                </span>
-              );
-            } if (res.status === 'running') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnRunning)}
-                  title={res.status}
-                >
-                  Running
-                </span>
-              );
-            } if (res.status === 'not_executed') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnNotExecuted)}
-                  title={res.error_msg}
-                >
-                  Not Executed
-                </span>
-              );
-            } if (res.status === 'warning') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnWarning)}
-                  title={res.error_msg ? res.error_msg : 'Warning'}
-                >
-                  Warning
-                </span>
-              );
-            }
-
-            return (
-              <span
-                className={clsx(classes.btn, classes.btnSuccess)}
-                title={res.status}
-              >
-                Success
-              </span>
-            );
-          },
+          value: () => <CustomColumnStatus status={res.status} title={res.error_msg} />,
         },
         {
           title: 'Owner',
@@ -274,7 +151,9 @@ function SkybotDetail({ setTitle, match, history }) {
         },
       ]);
     });
+  };
 
+  const loadSkybotDetailExecutionTime = () => {
     getStatistic({ id }).then((res) => {
       setTimeProfile([
         {
@@ -291,9 +170,7 @@ function SkybotDetail({ setTitle, match, history }) {
         },
       ]);
     });
-  }, []);
-
-  const handleBackNavigation = () => history.push('/skybot');
+  };
 
   const loadSkybotDetailTableData = ({ currentPage, pageSize }) => {
     getSkybotRunResults({
@@ -304,17 +181,39 @@ function SkybotDetail({ setTitle, match, history }) {
     });
   };
 
+  const clearData = () => {
+    setTimeProfile([]);
+    setSkybotDetailTableData([]);
+    setSkybotDetailTableTotalCount(0);
+  };
+
+  const handleStopRun = () => {
+    stopSkybotRunById(id)
+      .then(() => {
+        clearData();
+        loadSkybotDetailSummary();
+        loadSkybotDetailExecutionTime();
+        loadSkybotDetailTableData({ currentPage: 0, pageSize: 10 });
+      })
+      .catch((err) => console.error(err));
+  };
+
+  useEffect(() => {
+    setTitle('Skybot Run');
+    loadSkybotDetailSummary();
+    loadSkybotDetailExecutionTime();
+  }, []);
+
   return (
     <>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Grid
             container
-            justify="space-between"
             alignItems="center"
             spacing={2}
           >
-            <Grid item xs={12} md={4}>
+            <Grid item>
               <Button
                 variant="contained"
                 color="primary"
@@ -325,6 +224,20 @@ function SkybotDetail({ setTitle, match, history }) {
                 <span>Back</span>
               </Button>
             </Grid>
+            {currentSkybotRunStatus === 'running' ? (
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  title="Stop"
+                  onClick={handleStopRun}
+                  className={classes.btnFailure}
+                >
+                  <Icon className={clsx('fas', 'fa-stop', classes.buttonIcon)} />
+                  <span>Stop</span>
+                </Button>
+              </Grid>
+            ) : null}
           </Grid>
         </Grid>
         <Grid item xs={12}>
@@ -370,7 +283,7 @@ function SkybotDetail({ setTitle, match, history }) {
                     totalCount={skybotDetailTableTotalCount}
                     loadData={loadSkybotDetailTableData}
                     hasSearching={false}
-                    loading={true}
+                    loading
                   />
                 </CardContent>
               </Card>

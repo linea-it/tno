@@ -25,6 +25,7 @@ import { Donut, TimeProfile } from './utils/CustomChart';
 import CustomTable from './utils/CustomTable';
 import CustomDialog from './utils/CustomDialog';
 import CustomLog from './utils/CustomLog';
+import CustomColumnStatus from './utils/CustomColumnStatus';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -32,40 +33,6 @@ const useStyles = makeStyles((theme) => ({
   },
   buttonIcon: {
     margin: '0 10px 0 0 ',
-  },
-  btn: {
-    textTransform: 'none',
-    padding: '1px 5px',
-    width: '7em',
-    minHeight: '1em',
-    display: 'block',
-    textAlign: 'center',
-    lineHeight: '2',
-    boxShadow: `0px 1px 5px 0px rgba(0, 0, 0, 0.2),
-    0px 2px 2px 0px rgba(0, 0, 0, 0.14),
-    0px 3px 1px -2px rgba(0, 0, 0, 0.12)`,
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-  },
-  btnSuccess: {
-    backgroundColor: '#009900',
-    color: '#fff',
-  },
-  btnFailure: {
-    backgroundColor: '#ff1a1a',
-    color: '#fff',
-  },
-  btnRunning: {
-    backgroundColor: '#0099ff',
-    color: '#000',
-  },
-  btnNotExecuted: {
-    backgroundColor: '#ABA6A2',
-    color: '#fff',
-  },
-  btnWarning: {
-    backgroundColor: '#D79F15',
-    color: '#FFF',
   },
   block: {
     marginBottom: 15,
@@ -124,54 +91,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       width: 140,
       align: 'center',
       sortingEnabled: false,
-      customElement: (row) => {
-        if (row.status === 'failure') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnFailure)}
-              title={row.error_msg}
-            >
-              Failure
-            </span>
-          );
-        } if (row.status === 'running') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnRunning)}
-              title={row.status}
-            >
-              Running
-            </span>
-          );
-        } if (row.status === 'not_executed') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnNotExecuted)}
-              title={row.error_msg}
-            >
-              Not Executed
-            </span>
-          );
-        } if (row.status === 'warning') {
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnWarning)}
-              title={row.error_msg ? row.error_msg : 'Warning'}
-            >
-              Warning
-            </span>
-          );
-        }
-
-        return (
-          <span
-            className={clsx(classes.btn, classes.btnSuccess)}
-            title={row.status}
-          >
-            Success
-          </span>
-        );
-      },
+      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
     },
     {
       name: 'name',
@@ -187,11 +107,11 @@ function RefineOrbitDetail({ history, match, setTitle }) {
     {
       name: 'h_execution_time',
       title: 'Exec Time',
-      headerTooltip: "Execution time",
+      headerTooltip: 'Execution time',
       align: 'center',
       customElement: (row) => (
         <span>
-          {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ""}
+          {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ''}
         </span>
       ),
       width: 140,
@@ -241,54 +161,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       setList([
         {
           title: 'Status',
-          value: () => {
-            if (data.status === 'failure') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnFailure)}
-                  title={data.error_msg}
-                >
-                  Failure
-                </span>
-              );
-            } if (data.status === 'running') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnRunning)}
-                  title={data.status}
-                >
-                  Running
-                </span>
-              );
-            } if (data.status === 'not_executed') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnNotExecuted)}
-                  title={data.error_msg}
-                >
-                  Not Executed
-                </span>
-              );
-            } if (data.status === 'warning') {
-              return (
-                <span
-                  className={clsx(classes.btn, classes.btnWarning)}
-                  title={data.error_msg ? data.error_msg : 'Warning'}
-                >
-                  Warning
-                </span>
-              );
-            }
-
-            return (
-              <span
-                className={clsx(classes.btn, classes.btnSuccess)}
-                title={data.status}
-              >
-                Success
-              </span>
-            );
-          },
+          value: () => <CustomColumnStatus status={data.status} title={data.error_msg} />,
         },
         {
           title: 'Process',
@@ -442,7 +315,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
                 hasResizing={false}
-                loading={true}
+                loading
               />
             </CardContent>
           </Card>

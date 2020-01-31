@@ -15,7 +15,7 @@ import GridListTileBar from '@material-ui/core/GridListTileBar';
 import { withRouter } from 'react-router';
 import CustomList from './utils/CustomList';
 import CustomTable from './utils/CustomTable';
-import { url as apiUrl } from '../api/Auth'
+import { url as apiUrl } from '../api/Auth';
 import {
   getAsteroidById,
   getAsteroidInputs,
@@ -23,6 +23,7 @@ import {
   getAsteroidNeighbors,
   getAsteroidDownloadLink,
 } from '../api/Orbit';
+import CustomColumnStatus from './utils/CustomColumnStatus';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -41,40 +42,6 @@ const useStyles = makeStyles((theme) => ({
     left: '50%',
     marginTop: -12,
     marginLeft: -12,
-  },
-  btn: {
-    textTransform: 'none',
-    padding: '1px 5px',
-    width: '7em',
-    minHeight: '1em',
-    display: 'block',
-    textAlign: 'center',
-    lineHeight: '2',
-    boxShadow: `0px 1px 5px 0px rgba(0, 0, 0, 0.2),
-    0px 2px 2px 0px rgba(0, 0, 0, 0.14),
-    0px 3px 1px -2px rgba(0, 0, 0, 0.12)`,
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-  },
-  btnSuccess: {
-    backgroundColor: '#009900',
-    color: '#fff',
-  },
-  btnFailure: {
-    backgroundColor: '#ff1a1a',
-    color: '#fff',
-  },
-  btnRunning: {
-    backgroundColor: '#0099ff',
-    color: '#000',
-  },
-  btnNotExecuted: {
-    backgroundColor: '#ABA6A2',
-    color: '#fff',
-  },
-  btnWarning: {
-    backgroundColor: '#D79F15',
-    color: '#FFF',
   },
   block: {
     marginBottom: 15,
@@ -154,7 +121,7 @@ function RefineOrbitAsteroid({
       title: 'Date',
       customElement: (el) => (
         <span>
-          {el.date_time ? moment(el.date_time).format('YYYY-MM-DD') : ""}
+          {el.date_time ? moment(el.date_time).format('YYYY-MM-DD') : ''}
         </span>
       ),
       width: 150,
@@ -258,54 +225,7 @@ function RefineOrbitAsteroid({
     setAsteroidList([
       {
         title: 'Status',
-        value: () => {
-          if (asteroidData.status === 'failure') {
-            return (
-              <span
-                className={clsx(classes.btn, classes.btnFailure)}
-                title={asteroidData.error_msg}
-              >
-                Failure
-              </span>
-            );
-          } if (asteroidData.status === 'running') {
-            return (
-              <span
-                className={clsx(classes.btn, classes.btnRunning)}
-                title={asteroidData.status}
-              >
-                Running
-              </span>
-            );
-          } if (asteroidData.status === 'not_executed') {
-            return (
-              <span
-                className={clsx(classes.btn, classes.btnNotExecuted)}
-                title={asteroidData.error_msg}
-              >
-                Not Executed
-              </span>
-            );
-          } if (asteroidData.status === 'warning') {
-            return (
-              <span
-                className={clsx(classes.btn, classes.btnWarning)}
-                title={asteroidData.error_msg ? asteroidData.error_msg : 'Warning'}
-              >
-                Warning
-              </span>
-            );
-          }
-
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnSuccess)}
-              title={asteroidData.status}
-            >
-              Success
-            </span>
-          );
-        },
+        value: () => <CustomColumnStatus status={asteroidData.status} title={asteroidData.error_msg} />,
       },
       {
         title: 'Executed',

@@ -24,6 +24,7 @@ import {
 } from '../api/Prediction';
 import { getOccultations } from '../api/Occultation';
 import loading from '../assets/img/loading.gif';
+import CustomColumnStatus from './utils/CustomColumnStatus';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -55,26 +56,6 @@ const useStyles = makeStyles((theme) => ({
       0px 3px 1px -2px rgba(0, 0, 0, 0.12)`,
     borderRadius: '4px',
     boxSizing: 'border-box',
-  },
-  btnSuccess: {
-    backgroundColor: 'green',
-    color: '#fff',
-  },
-  btnFailure: {
-    backgroundColor: 'red',
-    color: '#fff',
-  },
-  btnRunning: {
-    backgroundColor: '#ffba01',
-    color: '#000',
-  },
-  btnNotExecuted: {
-    backgroundColor: '#ABA6A2',
-    color: '#fff',
-  },
-  btnWarning: {
-    backgroundColor: '#D79F15',
-    color: '#FFF',
   },
   block: {
     marginBottom: 15,
@@ -342,54 +323,7 @@ function PredictionOccultationAsteroid({
     setAsteroidList([
       {
         title: 'Status',
-        value: () => {
-          if (asteroidData.status === 'failure') {
-            return (
-              <span
-                className={clsx(classes.btn, classes.btnFailure)}
-                title={asteroidData.error_msg}
-              >
-                Failure
-              </span>
-            );
-          } if (asteroidData.status === 'running') {
-            return (
-              <span
-                className={clsx(classes.btn, classes.btnRunning)}
-                title={asteroidData.status}
-              >
-                Running
-              </span>
-            );
-          } if (asteroidData.status === 'not_executed') {
-            return (
-              <span
-                className={clsx(classes.btn, classes.btnNotExecuted)}
-                title={asteroidData.error_msg}
-              >
-                Not Executed
-              </span>
-            );
-          } if (asteroidData.status === 'warning') {
-            return (
-              <span
-                className={clsx(classes.btn, classes.btnWarning)}
-                title={asteroidData.error_msg ? asteroidData.error_msg : 'Warning'}
-              >
-                Warning
-              </span>
-            );
-          }
-
-          return (
-            <span
-              className={clsx(classes.btn, classes.btnSuccess)}
-              title={asteroidData.status}
-            >
-              Success
-            </span>
-          );
-        },
+        value: () => <CustomColumnStatus status={asteroidData.status} title={asteroidData.error_msg} />,
       },
       {
         title: 'Asteroid',

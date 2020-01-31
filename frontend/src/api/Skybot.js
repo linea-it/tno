@@ -71,3 +71,7 @@ export const getExposuresByPeriod = (initialDate, finalDate) => axios.get('/skyb
   console.log(res.data.rows)
   return  res.data
 });
+
+export const stopSkybotRunById = (id) => axios.patch(`/skybot_run/${id}/`, {
+  status: 'canceled'
+}).then(res => res)

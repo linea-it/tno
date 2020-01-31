@@ -1,18 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import CustomTable from './utils/CustomTable';
 import { getObservationFiles } from '../api/Input';
+import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Card, CardContent, CardHeader } from '@material-ui/core';
 import moment from 'moment';
+import Icon from '@material-ui/core/Icon';
+import clsx from 'clsx';
+import CustomDialog from './utils/CustomDialog';
+import CustomLog from './utils/CustomLog';
+import { readFile } from '../api/Orbit';
+
+const useStyles = makeStyles((theme) => ({
+  iconDetail: {
+    fontSize: 18,
+  },
+  dialogBodyStyle: {
+    backgroundColor: '#1D4455',
+    color: '#FFFFFF',
+    border: 'none',
+    height: 600,
+    width: 1600,
+  },
+}));
 
 function ObservFiles({ setTitle }) {
 
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tableDataCount, setTableDataCount] = useState(true);
+  const [dialog, setDialog] = useState({
+    visible: false,
+    content: [],
+    title: ' ',
+  });
 
   useEffect(() => {
     setTitle("Observation Files");
   }, []);
+
+  const classes = useStyles();
 
   const loadTableData = (event) => {
     setLoading(true);
@@ -20,7 +46,6 @@ function ObservFiles({ setTitle }) {
     let pageSize = typeof event === 'undefined' ? 10 : event.pageSize;
     let search = typeof event === 'undefined' ? " " : event.searchValue;
     const ordering = event.sorting[0].direction === 'desc' ? `-${event.sorting[0].columnName}` : event.sorting[0].columnName;
-
 
     getObservationFiles({ page, pageSize, search, ordering }).then((res) => {
       setTableData(res.data.results);
@@ -32,6 +57,15 @@ function ObservFiles({ setTitle }) {
   };
 
   const tableColumns = [
+    {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      action: (el) => handleFileReading(el.download_url),
+      align: 'center',
+      sortingEnabled: false,
+    },
     {
       name: 'name',
       title: 'Name',
@@ -94,8 +128,27 @@ function ObservFiles({ setTitle }) {
     }
   ]
 
-  return (
+  const handleFileReading = (file) => {
+    if (file && typeof file !== 'undefined') {
+      const arrayLines = [];
+      console.log(file);
 
+      readFile(file).then((res) => {
+        const data = res.rows;
+
+        if (res.success) {
+          data.forEach((line, idx) => {
+            arrayLines.push(<div key={idx}>{line}</div>);
+          });
+        } else {
+          arrayLines.push(<div key={0}>{res.msg}</div>);
+        }
+        setDialog({ content: data, visible: true, title: `${file} ` });
+      });
+    }
+  };
+
+  return (
     <Grid container spacing={2}>
       <Grid item xs={12} >
         <Card>
@@ -112,6 +165,14 @@ function ObservFiles({ setTitle }) {
           </CardContent>
         </Card>
       </Grid>
+      <CustomDialog
+        maxWidth={1700}
+        visible={dialog.visible}
+        title={dialog.title}
+        content={<CustomLog data={dialog.content} />}
+        setVisible={() => setDialog({ visible: false, content: [], title: ' ' })}
+        bodyStyle={classes.dialogBodyStyle}
+      />
     </Grid >
   );
 };

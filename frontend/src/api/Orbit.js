@@ -111,3 +111,8 @@ export const getAsteroidInputs = ({ id }) => {
     params,
   }).then((res) => res.data);
 };
+
+export const readFile = (filepath) => axios.get(`/read_file?filepath=/archive/observations/Lempo.rwo`).then((res) => res.data);
+
+export const readOrbitalFile = (filepath) => axios.get(`/read_file?filepath=/archive/orbital_parameters/Eris.eq0`).then((res) => res.data);
+
