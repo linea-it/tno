@@ -227,8 +227,8 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'common.pagination.StandardResultsSetPagination',
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
-        # 'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'url_filter.integrations.drf.DjangoFilterBackend',
@@ -285,11 +285,20 @@ try:
 except:
     LOGGING_LEVEL = 'INFO'
 
-# HOST URL 
+# HOST URL
 try:
     HOST_URL = os.environ["HOST_URL"]
 except:
     raise ("Environment variable HOST_URL can not be null.")
+
+# Auth Shibboleth
+try:
+    # TODO desabilitar a autenticacao com shibbolet baseado em alguma conf.
+    AUTH_SHIB_SESSIONS = "/auth_shib_sessions"
+
+except Exception as e:
+    raise ("Auth Shibboleth settings are required in .env file")
+
 
 LOGGING = {
     'version': 1,

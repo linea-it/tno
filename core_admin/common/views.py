@@ -18,6 +18,9 @@ from django.shortcuts import redirect
 from praia.models import Run
 from praia.pipeline.register import check_astrometry_running, register_astrometry_outputs
 from django.contrib.auth import authenticate, login
+from tno.auth_shibboleth import ShibbolethBackend
+from django.contrib.auth.models import User
+from django.contrib.auth import logout
 
 
 @api_view(['GET'])
@@ -31,6 +34,17 @@ def teste(request):
             'success': True,
         })
     return Response(result)
+
+
+@api_view(['GET'])
+def logout_view(request):
+    logout(request)
+
+    # Redireciona para a home
+    home = settings.HOST_URL
+    response = redirect(home)
+
+    return response
 
 
 @api_view(['GET'])
@@ -227,7 +241,7 @@ def download_file(request):
                 return response
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 @permission_classes([AllowAny])
 def auth_shibboleth(request):
 
@@ -235,32 +249,59 @@ def auth_shibboleth(request):
     logger.info("---------------------------------------------------------")
     logger.info("Shibboleth Authentication Endpoint")
 
-    if request.method == 'POST':
-        logger.debug("Method POST")
-        logger.debug(request.data)
-
-        user = authenticate(request, username=None, password=None)
-
-        logger.debug("Retornou usuario: %s - %s" % (user.pk, user.username))
-
-        try:
-            login(request, user, backend='tno.auth_shibboleth.ShibbolethBackend')
-
-            logger.info("Usuario Autenticado.")
-
-        except Exception as e:
-            logger.error(e)
-
-    elif request.method == 'GET':
-        logger.debug("Method GET")
+    if request.method == 'GET':
         logger.debug(request.query_params)
 
-        # TODO validar o exemplo do Gidlab
+        logger.debug("Is Authenticated: %s" % request.user.is_authenticated)
+
+        if not request.user.is_authenticated:
+            try:
+                data = request.query_params
+                sid = data['sid']
+                logger.debug("Session ID: %s" % sid)
+
+            except KeyError:
+                logger.error("Parameter \"sid\"  session id  is unknown.")
+
+            # Fazer o parse do arquivo de sessao antes de chamar o authenticate
+            try:
+                session_data = ShibbolethBackend().read_session_file(sid)
+            except Exception as e:
+                logger.error(e)
+            finally:
+                # Deletar o aquivo de sessao
+                ShibbolethBackend().destroy_session_file(sid)
+
+            try:
+                # TODO: melhorar a checagem de authenticacao. verificar mais atributos como a origem por exemplo.
+                # Tenta autenticar o usuario com os dados da sessao
+                user = ShibbolethBackend().authenticate(
+                    request, session_data, username=None, password=None)
+
+                # Setar o tempo de expiracao da sessao, necessario ser feito antes do login
+                # baseado nesta resposta https://stackoverflow.com/a/27062144/9063237
+                # a data de expiração está em Unix epoch time. conversor de epoch online util para testes: https://www.epochconverter.com/
+                request.session.expire_date = session_data.get(
+                    'Shib-Session-Expires')
+
+                # Efetua o Login
+                login(request, user, backend='tno.auth_shibboleth.ShibbolethBackend')
+
+            except Exception as e:
+                logger.error(e)
+                logger.error("User not found, authentication failed.")
+
+            # Just Checking if is authenticated
+            logger.debug("Is Authenticated: %s" %
+                         request.user.is_authenticated)
+
+        else:
+            # TODO: Revisar esta parte pode haver inconsistencias.
+            logger.debug("User is already logged in does nothing.")
 
     # Redireciona para a home
-    # TODO talvez precise de variavel com a url da aplicacao.
     home = settings.HOST_URL
-    logger.info("Redirect to Home: [ %s ]" % home)
+    logger.info("Redirect to Home: [ %s:%s ]" % (request.scheme, home))
     response = redirect(home)
 
     return response
