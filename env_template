@@ -50,3 +50,10 @@ HOST_ARCHIVE=/home/<user>/tno/archive
 # O IP do Host aparece no atributo "Network"->"Gateway": "172.19.0.1",
 # A porta tem que ser a definida no arquivo: /etc/systemd/system/docker.service.d/startup_options.conf
 #DOCKER_HOST=tcp://0.0.0.0:2376
+
+# Autenticao Gidlab Shibboleth
+# Diretório onde ficam os arquivos de sessão.
+AUTH_SHIB_SESSIONS=./auth_shib_sessions
+# Chave para criptografar os arquivos de sessao.
+# pode ser gerada randomicamente por este site por exemplo: https://randomkeygen.com/
+AUTH_SHIB_CRYPT_KEY=

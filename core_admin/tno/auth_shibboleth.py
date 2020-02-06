@@ -3,6 +3,7 @@ import os
 import json
 from django.conf import settings
 from django.contrib.auth.models import User, Group
+import pyAesCrypt
 
 
 class ShibbolethBackend(object):
@@ -92,7 +93,10 @@ class ShibbolethBackend(object):
         """
             Recuperar os dados da sessao, usando arquivo compartilhado com o app Shibboleth.
             no diretorio configurado no settings deve existir um arquivo com os dados da sessao.
-            o Nome do arquivo é o valor de session_id. e o seu conteudo é este:
+            o Nome do arquivo é o valor de session_id. 
+            o arquivo vai estar criptografado com esta lib: https://pypi.org/project/pyAesCrypt/
+            a chave para descriptografica esta no settings na variavel: AUTH_SHIB_CRYPT_KEY
+            e o seu conteudo é este:
             {
                 "Shib-Handler": "https://dev.gidlab.rnp.br/Shibboleth.sso",
                 "Shib-Application-ID": "default",
@@ -112,8 +116,23 @@ class ShibbolethBackend(object):
                 "Shib-inetOrgPerson-sn": "glauber.costa"
             }
         """
+        filepath_crypt = os.path.join(
+            settings.AUTH_SHIB_SESSIONS, session_id + '.aes')
         filepath = os.path.join(settings.AUTH_SHIB_SESSIONS, session_id)
         try:
+            self.logger.debug(
+                "Decrypt session file: [%s -> %s]" % (filepath_crypt, filepath))
+
+            # decrypt
+            bufferSize = 64 * 1024
+            password = settings.AUTH_SHIB_CRYPT_KEY
+            pyAesCrypt.decryptFile(
+                filepath_crypt, filepath, password, bufferSize)
+
+            os.remove(filepath_crypt)
+            self.logger.debug(
+                "Destroying the encrypted session file: [%s]" % filepath_crypt)
+
             with open(filepath) as f:
                 session_data = json.loads(f.read())
 
@@ -127,7 +146,7 @@ class ShibbolethBackend(object):
             raise(e)
 
     def destroy_session_file(self, session_id):
-        self.logger.info("Destroying the session file")
+        self.logger.debug("Destroying the session file")
 
         filepath = os.path.join(settings.AUTH_SHIB_SESSIONS, session_id)
         try:

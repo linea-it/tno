@@ -291,13 +291,13 @@ def auth_shibboleth(request):
                 logger.error(e)
                 logger.error("User not found, authentication failed.")
 
-            # Just Checking if is authenticated
-            logger.debug("Is Authenticated: %s" %
-                         request.user.is_authenticated)
-
         else:
             # TODO: Revisar esta parte pode haver inconsistencias.
-            logger.debug("User is already logged in does nothing.")
+            logger.info("User is already logged in does nothing.")
+
+        # Just Checking if is authenticated
+        logger.info("Is Authenticated: %s" %
+                    request.user.is_authenticated)
 
     # Redireciona para a home
     home = settings.HOST_URL

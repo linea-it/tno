@@ -293,8 +293,9 @@ except:
 
 # Auth Shibboleth
 try:
-    # TODO desabilitar a autenticacao com shibbolet baseado em alguma conf.
+    # TODO: desabilitar a autenticacao com shibbolet baseado em alguma conf.
     AUTH_SHIB_SESSIONS = "/auth_shib_sessions"
+    AUTH_SHIB_CRYPT_KEY = os.getenv('AUTH_SHIB_CRYPT_KEY')
 
 except Exception as e:
     raise ("Auth Shibboleth settings are required in .env file")
