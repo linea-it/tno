@@ -78,8 +78,8 @@ urlpatterns = [
     url(r'^api/obtain-auth-token/$', csrf_exempt(obtain_auth_token)),
     url(r'^api/auth_shibboleth/', common_views.auth_shibboleth),
     url(r'^api/logout/', common_views.logout_view),
-    url(r'^api/teste/', common_views.teste),
     url(r'^api/import-skybot', common_views.import_skybot),
     url(r'^api/read_file', common_views.read_file),
-    url(r'^api/read_csv', common_views.read_csv)
+    url(r'^api/read_csv', common_views.read_csv),
+    url(r'^api/teste/', common_views.teste),
 ] + static('api'+settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
