@@ -43,3 +43,6 @@ docker-compose.yml
 
 # Authenticate Shibboleth
 auth_shib_sessions
+
+# Venv python para desenvolvimento
+env_tno
