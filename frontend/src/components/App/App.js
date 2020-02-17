@@ -27,7 +27,13 @@ function App() {
               path="/login"
               render={() => {
                 const loginUrl = `${url}/auth/login/`;
-                const next = window.location.host;
+                // TODO: Este if é para quando o usuario tem um link para uma url especifica do app com parametros
+                // e tenta acessar mais ainda não está logado. no Django é o parametro next. depois do login ele redireciona para onde o usuario tentou acessar. 
+                // No react o Router não me passa esse valor, se o usuario tentou acessar uma url, sem estar logado o router direcionou ele para o /login mais não passa  a url que tentou antes
+                let next = '/';
+                if (window.location.pathname !== '/login') {
+                  next = window.location.pathname + window.location.search;
+                }
                 window.location.replace(`${loginUrl}?next=${next}`);
                 return null;
               }}
