@@ -3,6 +3,10 @@ import axios from 'axios';
 export const url = process.env.REACT_APP_API;
 axios.defaults.baseURL = url;
 
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+axios.defaults.withCredentials = true;
+
 // Add a response interceptor
 axios.interceptors.response.use(
   (response) =>
@@ -14,7 +18,9 @@ axios.interceptors.response.use(
       // The request was made and the server responded with a status code
 
       if (error.response.status === 401) {
-        logout();
+        // Não autorizado
+        // TODO: Tratar quando o usuario tentar acessar uma api que ele nao tem permissao.
+        // console.warn(error.request);
       }
     } else if (error.request) {
       // The request was made but no response was received
@@ -31,51 +37,28 @@ axios.interceptors.response.use(
   },
 );
 
-export function isAuthenticated() {
-  if (localStorage.token) {
-    axios.defaults.headers.common.Authorization = `Token ${localStorage.token}`;
-    return true;
-  }
-  return false;
-}
-
-export function getToken(username, password, cb) {
-  axios
-    .post('/obtain-auth-token/', {
-      username,
-      password,
-    })
+export function loggedUser() {
+  return axios
+    .get('/users/i')
     .then((res) => {
       const result = res.data;
-      cb({
-        authenticated: true,
-        token: result.token,
-      });
+      return result;
     })
-    .catch((error) => {
-      const { data } = error.response;
-      if ('non_field_errors' in data) {
-        alert(data.non_field_errors[0]);
-      }
+    .catch(() => {
+      return null;
     });
 }
 
-export function login(username, password, cb) {
-  if (localStorage.token) {
-    if (cb) cb(true);
-    return;
-  }
-
-  getToken(username, password, (res) => {
-    if (res.authenticated) {
-      localStorage.token = res.token;
-      axios.defaults.headers.common.Authorization = `Token ${res.token}`;
-      if (cb) cb(true);
-    } else if (cb) cb(false);
+export function isAuthenticated() {
+  return loggedUser().then((res) => {
+    if (res !== null) {
+      return true;
+    }
+    return false;
   });
 }
 
+
 export function logout() {
-  delete localStorage.token;
-  window.location.replace(`${window.location.hostname}/login`);
+  window.location.replace(`${url}/auth/logout`);
 }

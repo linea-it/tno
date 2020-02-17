@@ -90,7 +90,7 @@ if not EMAIL_NOTIFICATIONS:
 SECRET_KEY = 'm=5=08^4a(il)bba)$cd%f*#wrcammi(r(q#($b$n^-jz8%+j0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', False)
 
 ALLOWED_HOSTS = ['*']
 
@@ -136,7 +136,7 @@ ROOT_URLCONF = 'coreAdmin.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR, os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -144,6 +144,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django_settings_export.settings_export',
             ],
         },
     },
@@ -215,15 +216,18 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+AUTHENTICATION_BACKENDS = (
+    'tno.auth_shibboleth.ShibbolethBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication'
+        'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'common.pagination.StandardResultsSetPagination',
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
-        # 'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'url_filter.integrations.drf.DjangoFilterBackend',
@@ -232,7 +236,11 @@ REST_FRAMEWORK = {
     ),
 }
 
-CORS_ORIGIN_ALLOW_ALL = True
+# CORS com essa combinação o serv de desenvolvimento do frontend consegue se authenticar
+if DEBUG:
+    ALLOWED_HOSTS = '*'
+    CORS_ALLOW_CREDENTIALS = True
+    SESSION_COOKIE_SAMESITE = None
 
 # Parsl
 PARSL_CONFIG = {
@@ -252,7 +260,7 @@ PARSL_CONFIG = {
     }
 }
 
-# MINIMUM THREADS 
+# MINIMUM THREADS
 MINIMUM_THREADS = os.environ.get('MINIMUM_THREADS', 4)
 
 # DOCKER Configuration
@@ -267,7 +275,7 @@ except Exception as e:
     raise ("Environment variable HOST_ARCHIVE can not be null.")
 
 
-# CONDOR API 
+# CONDOR API
 try:
     CONDOR_API = os.environ["CONDOR_API"]
     CONDOR_CLUSTER = os.environ["CONDOR_CLUSTER"]
@@ -279,6 +287,39 @@ try:
     LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
 except:
     LOGGING_LEVEL = 'INFO'
+
+# HOST URL url para onde o app está disponivel. em desenvolvimento //localhost
+# No ambiente de testes é //tno-testing.linea.gov.br
+HOST_URL = None
+try:
+    HOST_URL = os.environ["HOST_URL"]
+except:
+    raise ("Environment variable HOST_URL can not be null.")
+
+# Configurando os redirects padrao de login e logout, para apontar para o HOST_URL.
+if HOST_URL is not None:
+    LOGOUT_REDIRECT_URL = HOST_URL
+    LOGIN_REDIRECT_URL = HOST_URL
+
+
+# Auth Shibboleth
+# Variaveis de configuração para o Login Institucional usando Shibboleth e Gidlab.
+# se AUTH_SHIB_URL usar None para desativar o login institucional, isto remove o botão da tela de login.
+AUTH_SHIB_URL = None
+try:
+    AUTH_SHIB_URL = os.getenv('AUTH_SHIB_URL')
+    if AUTH_SHIB_URL is not None:
+        AUTH_SHIB_SESSIONS = "/auth_shib_sessions"
+        AUTH_SHIB_CRYPT_KEY = os.getenv('AUTH_SHIB_CRYPT_KEY')
+
+except Exception as e:
+    raise ("Auth Shibboleth settings are required in .env file")
+
+
+SETTINGS_EXPORT = [
+    'AUTH_SHIB_URL',
+]
+
 
 LOGGING = {
     'version': 1,
@@ -353,7 +394,15 @@ LOGGING = {
             'backupCount': 5,
             'filename': os.path.join(LOG_DIR, 'condor.log'),
             'formatter': 'standard',
-        },        
+        },
+        'auth_shibboleth': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'auth_shibboleth.log'),
+            'formatter': 'standard',
+        },
     },
     'loggers': {
         'django': {
@@ -395,6 +444,11 @@ LOGGING = {
             'handlers': ['condor'],
             'level': LOGGING_LEVEL,
             'propagate': True,
-        },        
+        },
+        'auth_shibboleth': {
+            'handlers': ['auth_shibboleth'],
+            'level': LOGGING_LEVEL,
+            'propagate': True,
+        },
     },
 }

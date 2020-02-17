@@ -2,6 +2,10 @@
 
 EMAIL_NOTIFICATIONS=
 
+# Modo de Debug do backend, usar DEBUG=False para desligar.
+DEBUG=False
+
+# Level do Log (INFO, DEBUG, WARNING, ERROR, CRITICAL)
 LOGGING_LEVEL=INFO
 
 # Database Settings for Django Backend "CoreAdmin"
@@ -41,7 +45,8 @@ CONDOR_MACHINE=apl16.ib0.cm.linea.gov.br
 # Path para o diretorio de archive na maquina host, utilizado para montar os volumes dos 
 # dos containers em tempo de execucao.
 # OBS: para developers o diretorio onde a aplicacao foi instalada. ex: /home/user/tno/archive
-HOST_ARCHIVE=/home/<user>/tno/archive
+# Exemplo: HOST_ARCHIVE=/home/<user>/tno/archive
+HOST_ARCHIVE=
 
 # Docker Client
 # Ip e porta do configurado para o client docker do host. 
@@ -50,3 +55,13 @@ HOST_ARCHIVE=/home/<user>/tno/archive
 # O IP do Host aparece no atributo "Network"->"Gateway": "172.19.0.1",
 # A porta tem que ser a definida no arquivo: /etc/systemd/system/docker.service.d/startup_options.conf
 #DOCKER_HOST=tcp://0.0.0.0:2376
+
+# Autenticao Gidlab Shibboleth
+# Url para pagina de login do Shibboleth, usar None para desativar o login institucional
+AUTH_SHIB_URL=http://gidlabdemo.linea.gov.br/Shibboleth.sso/Login
+# Diretório onde ficam os arquivos de sessão.
+# é necessario que os 2 containers possam escrever neste diretório.
+AUTH_SHIB_SESSIONS=./auth_shib_sessions
+# Chave para criptografar os arquivos de sessao. 
+# gerada randomicamente por este site por exemplo: https://randomkeygen.com/
+AUTH_SHIB_CRYPT_KEY=

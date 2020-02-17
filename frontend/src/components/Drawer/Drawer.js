@@ -45,13 +45,12 @@ import PointingsDetail from '../Pointings/PointingsDetail';
 import SearchSssoDetail from '../SearchSsso/SearchSssoDetail';
 import SkybotAsteroid from '../Skybot/SkybotAsteroid';
 import CustomToolbar from '../helpers/CustomToolbar';
-import Login from '../Login/Login';
-import { isAuthenticated } from '../../api/Auth';
 import BspJpl from '../BspJpl/BspJpl';
 import Observation from '../Observation/Observation';
 import OrbitalParameter from '../OrbitalParameter/OrbitalParameter';
 import JohnstonArchive from '../JohnstonArchive/JohnstonArchive';
 import JohnstonArchiveDetail from '../JohnstonArchive/JohnstonArchiveDetail';
+import { loggedUser } from '../../api/Auth';
 
 const drawerWidth = 240;
 
@@ -200,12 +199,19 @@ function MiniDrawer() {
   const [inputOpen, setInputOpen] = useState(false);
   const [title, setTitle] = useState('Dashboard');
   const [currentPage, setCurrentPage] = useState('');
+  const [currentUser, setCurrentUser] = useState({ username: '' });
 
   const handleDrawerClick = () => setOpen(!open);
 
   const handleDrawerSssoClick = () => setSssoOpen(!sssoOpen);
 
   const handleDrawerInputClick = () => setInputOpen(!inputOpen);
+
+  useEffect(() => {
+    loggedUser().then((res) => {
+      setCurrentUser(res);
+    });
+  }, []);
 
   useEffect(() => {
     const { href, origin } = window.location;
@@ -217,7 +223,7 @@ function MiniDrawer() {
     <div className={classes.root}>
       <Router history={createBrowserHistory}>
         <CssBaseline />
-        <CustomToolbar title={title} open={open} drawerWidth={drawerWidth} isAuthenticated={isAuthenticated()} />
+        <CustomToolbar title={title} open={open} drawerWidth={drawerWidth} currentUser={currentUser} />
         <Drawer
           variant="permanent"
           className={clsx(classes.drawer, {
@@ -233,7 +239,7 @@ function MiniDrawer() {
           open={open}
         >
           <List className={classes.drawerList}>
-            <Link to={isAuthenticated() ? '/dashboard' : ''} className={classes.invisibleLink} title="Laboratório Interinstitucional de e-Astronomia">
+            <Link to="/dashboard" className={classes.invisibleLink} title="Laboratório Interinstitucional de e-Astronomia">
               <ListItem button>
                 <ListItemText
                   primary={(
@@ -259,233 +265,231 @@ function MiniDrawer() {
                 />
               </ListItem>
             </Link>
-            {isAuthenticated() ? (
-              <>
-                <Divider className={classes.borderDrawer} />
-                <Link to="/pointings" className={classes.invisibleLink} title="Query the database and download the metadata telling, among others, pointing coordinates, date of observation, exposure time, band, and image location in database">
-                  <ListItem button selected={currentPage === 'pointings'}>
-                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                      <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-dot-circle')} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Pointings"
-                      className={classes.textDrawer}
-                    />
-                  </ListItem>
-                </Link>
-                <Divider className={classes.borderDrawer} />
-                <ListItem button onClick={handleDrawerSssoClick}>
-                  {open ? (
-                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                      <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite')} />
-                    </ListItemIcon>
-                  ) : (
+            <>
+              <Divider className={classes.borderDrawer} />
+              <Link to="/pointings" className={classes.invisibleLink} title="Query the database and download the metadata telling, among others, pointing coordinates, date of observation, exposure time, band, and image location in database">
+                <ListItem button selected={currentPage === 'pointings'}>
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-dot-circle')} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Pointings"
+                    className={classes.textDrawer}
+                  />
+                </ListItem>
+              </Link>
+              <Divider className={classes.borderDrawer} />
+              <ListItem button onClick={handleDrawerSssoClick}>
+                {open ? (
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-satellite')} />
+                  </ListItemIcon>
+                ) : (
                     <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                       {sssoOpen ? (
                         <ExpandLess className={classes.expandClosed} />
                       ) : (
-                        <ExpandMore className={classes.expandClosed} />
-                      )}
+                          <ExpandMore className={classes.expandClosed} />
+                        )}
                     </ListItemIcon>
                   )}
+                <ListItemText
+                  primary="Search SSSO"
+                  className={classes.textDrawer}
+                  title="Identification of small solar system objects (SSSO) in all pointings using the SkyBoT service:"
+                />
+                {open ? (
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    {sssoOpen
+                      ? <ExpandLess className={classes.iconDrawer} />
+                      : <ExpandMore className={classes.iconDrawer} />}
+                  </ListItemIcon>
+                ) : null}
+              </ListItem>
+              <Collapse in={sssoOpen} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  <Link to="/skybot" className={classes.invisibleLink} title="Execute Skybot">
+                    <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'skybot'}>
+                      <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                        <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-arrow-circle-up')} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Execute Skybot"
+                        className={classes.textDrawer}
+                      />
+                    </ListItem>
+                  </Link>
+                  <Link to="/ssso" className={classes.invisibleLink} title="Result">
+                    <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'ssso'}>
+                      <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                        <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-check-circle')} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Result"
+                        className={classes.textDrawer}
+                      />
+                    </ListItem>
+                  </Link>
+                </List>
+              </Collapse>
+
+              <Divider className={classes.borderDrawer} />
+              <Link to="/filter-objects" className={classes.invisibleLink} title="Download of images which have observations of specific objects.">
+                <ListItem button selected={currentPage === 'filter-objects'}>
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-filter')} />
+                  </ListItemIcon>
                   <ListItemText
-                    primary="Search SSSO"
+                    primary="Filter Objects"
                     className={classes.textDrawer}
-                    title="Identification of small solar system objects (SSSO) in all pointings using the SkyBoT service:"
                   />
-                  {open ? (
-                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                      {sssoOpen
-                        ? <ExpandLess className={classes.iconDrawer} />
-                        : <ExpandMore className={classes.iconDrawer} />}
-                    </ListItemIcon>
-                  ) : null}
                 </ListItem>
-                <Collapse in={sssoOpen} timeout="auto" unmountOnExit>
-                  <List component="div" disablePadding>
-                    <Link to="/skybot" className={classes.invisibleLink} title="Execute Skybot">
-                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'skybot'}>
-                        <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                          <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-arrow-circle-up')} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary="Execute Skybot"
-                          className={classes.textDrawer}
-                        />
-                      </ListItem>
-                    </Link>
-                    <Link to="/ssso" className={classes.invisibleLink} title="Result">
-                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'ssso'}>
-                        <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                          <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-check-circle')} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary="Result"
-                          className={classes.textDrawer}
-                        />
-                      </ListItem>
-                    </Link>
-                  </List>
-                </Collapse>
+              </Link>
+              <Divider className={classes.borderDrawer} />
+              <Link to="/astrometry" className={classes.invisibleLink} title="Astrometric reduction using PRAIA package and stellar catalogue Gaia like reference to detect and determine positions of objects from CCD frame.">
+                <ListItem button selected={currentPage === 'astrometry'}>
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-meteor')} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Astrometry"
+                    className={classes.textDrawer}
+                  />
+                </ListItem>
+              </Link>
+              <Divider className={classes.borderDrawer} />
+              <Link to="/refine-orbit" className={classes.invisibleLink} title="Refinement of Orbits of specifics objects using NIMA code.">
+                <ListItem button selected={currentPage === 'refine-orbit'}>
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-globe-americas')} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Refine Orbit"
+                    className={classes.textDrawer}
+                  />
+                </ListItem>
+              </Link>
+              <Divider className={classes.borderDrawer} />
+              <Link to="/prediction-of-occultation" className={classes.invisibleLink} title="Comparison of objects��� ephemeris and positions of stars to predict events of stellar occultation using Gaia catalogue like reference.">
+                <ListItem button selected={currentPage === 'prediction-of-occultation'}>
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-chart-area')} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Prediction of Occultation"
+                    className={classes.textDrawer}
+                  />
+                </ListItem>
+              </Link>
+              <Divider className={classes.borderDrawer} />
+              <Link to="/occultation" className={classes.invisibleLink} title="Occultation">
+                <ListItem button selected={currentPage === 'occultation'}>
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-eye-slash')} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Occultation"
+                    className={classes.textDrawer}
+                  />
+                </ListItem>
+              </Link>
+              <Divider className={classes.borderDrawer} />
+              <Link to="/occultation-calendar" className={classes.invisibleLink} title="Calendar containing all the occultations">
+                <ListItem button selected={currentPage === 'occultation-calendar'}>
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-calendar-alt')} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary="Occultation Calendar"
+                    className={classes.textDrawer}
+                  />
+                </ListItem>
+              </Link>
+              <Divider className={classes.borderDrawer} />
 
-                <Divider className={classes.borderDrawer} />
-                <Link to="/filter-objects" className={classes.invisibleLink} title="Download of images which have observations of specific objects.">
-                  <ListItem button selected={currentPage === 'filter-objects'}>
-                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                      <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-filter')} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Filter Objects"
-                      className={classes.textDrawer}
-                    />
-                  </ListItem>
-                </Link>
-                <Divider className={classes.borderDrawer} />
-                <Link to="/astrometry" className={classes.invisibleLink} title="Astrometric reduction using PRAIA package and stellar catalogue Gaia like reference to detect and determine positions of objects from CCD frame.">
-                  <ListItem button selected={currentPage === 'astrometry'}>
-                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                      <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-meteor')} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Astrometry"
-                      className={classes.textDrawer}
-                    />
-                  </ListItem>
-                </Link>
-                <Divider className={classes.borderDrawer} />
-                <Link to="/refine-orbit" className={classes.invisibleLink} title="Refinement of Orbits of specifics objects using NIMA code.">
-                  <ListItem button selected={currentPage === 'refine-orbit'}>
-                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                      <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-globe-americas')} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Refine Orbit"
-                      className={classes.textDrawer}
-                    />
-                  </ListItem>
-                </Link>
-                <Divider className={classes.borderDrawer} />
-                <Link to="/prediction-of-occultation" className={classes.invisibleLink} title="Comparison of objects��� ephemeris and positions of stars to predict events of stellar occultation using Gaia catalogue like reference.">
-                  <ListItem button selected={currentPage === 'prediction-of-occultation'}>
-                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                      <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-chart-area')} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Prediction of Occultation"
-                      className={classes.textDrawer}
-                    />
-                  </ListItem>
-                </Link>
-                <Divider className={classes.borderDrawer} />
-                <Link to="/occultation" className={classes.invisibleLink} title="Occultation">
-                  <ListItem button selected={currentPage === 'occultation'}>
-                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                      <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-eye-slash')} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Occultation"
-                      className={classes.textDrawer}
-                    />
-                  </ListItem>
-                </Link>
-                <Divider className={classes.borderDrawer} />
-                <Link to="/occultation-calendar" className={classes.invisibleLink} title="Calendar containing all the occultations">
-                  <ListItem button selected={currentPage === 'occultation-calendar'}>
-                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                      <Icon className={clsx(classes.iconDrawer, 'fa', 'fa-calendar-alt')} />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Occultation Calendar"
-                      className={classes.textDrawer}
-                    />
-                  </ListItem>
-                </Link>
-                <Divider className={classes.borderDrawer} />
-
-                <ListItem button onClick={handleDrawerInputClick}>
-                  {open ? (
-                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                      <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-file-import')} />
-                    </ListItemIcon>
-                  ) : (
+              <ListItem button onClick={handleDrawerInputClick}>
+                {open ? (
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-file-import')} />
+                  </ListItemIcon>
+                ) : (
                     <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
                       {inputOpen ? (
                         <ExpandLess className={classes.expandClosed} />
                       ) : (
-                        <ExpandMore className={classes.expandClosed} />
-                      )}
+                          <ExpandMore className={classes.expandClosed} />
+                        )}
                     </ListItemIcon>
                   )}
-                  <ListItemText
-                    primary="Input Files"
-                    className={classes.textDrawer}
-                    title="Import necessary updating files"
-                  />
-                  {open ? (
-                    <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                      {inputOpen
-                        ? <ExpandLess className={classes.iconDrawer} />
-                        : <ExpandMore className={classes.iconDrawer} />}
-                    </ListItemIcon>
-                  ) : null}
-                </ListItem>
+                <ListItemText
+                  primary="Input Files"
+                  className={classes.textDrawer}
+                  title="Import necessary updating files"
+                />
+                {open ? (
+                  <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                    {inputOpen
+                      ? <ExpandLess className={classes.iconDrawer} />
+                      : <ExpandMore className={classes.iconDrawer} />}
+                  </ListItemIcon>
+                ) : null}
+              </ListItem>
 
-                <Collapse in={inputOpen} timeout="auto" unmountOnExit>
-                  <List component="div" disablePadding>
-                    <Link to="/bsp-jpl" className={classes.invisibleLink} title="Bsp_Jpl">
-                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'bsp-jpl'}>
-                        <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                          <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-space-shuttle')} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary="Bsp_Jpl"
-                          className={classes.textDrawer}
-                        />
-                      </ListItem>
-                    </Link>
-                    <Link to="/observation" className={classes.invisibleLink} title="Observation Files">
-                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'observation'}>
-                        <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                          <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-file')} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary="Observation"
-                          className={classes.textDrawer}
-                        />
-                      </ListItem>
-                    </Link>
-                    <Link to="/orbital-parameter" className={classes.invisibleLink} title="Orbital Parameter Files">
-                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'orbital-parameter'}>
-                        <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                          <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-globe')} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary="Orbital Parameter"
-                          className={classes.textDrawer}
-                        />
-                      </ListItem>
-                    </Link>
+              <Collapse in={inputOpen} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  <Link to="/bsp-jpl" className={classes.invisibleLink} title="Bsp_Jpl">
+                    <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'bsp-jpl'}>
+                      <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                        <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-space-shuttle')} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Bsp_Jpl"
+                        className={classes.textDrawer}
+                      />
+                    </ListItem>
+                  </Link>
+                  <Link to="/observation" className={classes.invisibleLink} title="Observation Files">
+                    <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'observation'}>
+                      <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                        <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-file')} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Observation"
+                        className={classes.textDrawer}
+                      />
+                    </ListItem>
+                  </Link>
+                  <Link to="/orbital-parameter" className={classes.invisibleLink} title="Orbital Parameter Files">
+                    <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'orbital-parameter'}>
+                      <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                        <Icon className={clsx(classes.iconDrawer, 'fas', 'fa-globe')} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Orbital Parameter"
+                        className={classes.textDrawer}
+                      />
+                    </ListItem>
+                  </Link>
 
 
-                    {/* Johnston Archives */}
-                    <Link to="/johnston-archive" className={classes.invisibleLink} title="List of Known Trans-Neptunian Objects and other outer solar system objects">
-                      <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'johnston-archive'}>
-                        <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
-                          <Icon className={clsx(classes.iconDrawer, 'far', 'fa-object-group')} />
-                        </ListItemIcon>
-                        <ListItemText
-                          primary="Johnston Archives"
-                          className={classes.textDrawer}
-                        />
-                      </ListItem>
-                    </Link>
+                  {/* Johnston Archives */}
+                  <Link to="/johnston-archive" className={classes.invisibleLink} title="List of Known Trans-Neptunian Objects and other outer solar system objects">
+                    <ListItem button className={open ? classes.nested : ''} selected={currentPage === 'johnston-archive'}>
+                      <ListItemIcon className={clsx(classes.ListIconDrawer, open ? classes.ListIconDrawerOpen : '')}>
+                        <Icon className={clsx(classes.iconDrawer, 'far', 'fa-object-group')} />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Johnston Archives"
+                        className={classes.textDrawer}
+                      />
+                    </ListItem>
+                  </Link>
 
-                  </List>
-                </Collapse>
+                </List>
+              </Collapse>
 
-                <Divider className={classes.borderDrawer} />
-              </>
-            ) : null}
+              <Divider className={classes.borderDrawer} />
+            </>
             <Divider className={classes.borderDrawer} />
 
           </List>
@@ -501,45 +505,37 @@ function MiniDrawer() {
         </Drawer>
         <div className={clsx(classes.bodyWrapper, open ? classes.bodyWrapperOpen : classes.bodyWrapperClose)}>
           <main className={classes.content}>
-            {isAuthenticated() ? (
-              <Switch>
-                <Route exact path="/refine-orbit" render={(props) => <RefineOrbit {...props} setTitle={setTitle} />} />
-                <Route exact path="/refine-orbit/:id" render={(props) => <RefineOrbitDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/refine-orbit/asteroid/:id" render={(props) => <RefineOrbitAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
-                <Route exact path="/astrometry/asteroid/:id" render={(props) => <AstrometryAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
-                <Route exact path="/astrometry/:id" render={(props) => <AstrometryDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/astrometry" render={(props) => <Astrometry {...props} setTitle={setTitle} />} />
-                <Route exact path="/prediction-of-occultation/asteroid/:id" render={(props) => <PredictionOccultationAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
-                <Route exact path="/prediction-of-occultation/:id" render={(props) => <PredictionOccultationDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/prediction-of-occultation" render={(props) => <PredictionOccultation {...props} setTitle={setTitle} />} />
-                <Route exact path="/occultation-calendar" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
-                <Route exact path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
-                <Route exact path="/occultation" render={(props) => <Occultation {...props} setTitle={setTitle} />} />
-                <Route exact path="/occultation/:id" render={(props) => <OccultationDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/pointings" render={(props) => <Pointings {...props} setTitle={setTitle} />} />
-                <Route exact path="/skybot" render={(props) => <Skybot {...props} setTitle={setTitle} />} />
-                <Route exact path="/bsp-jpl" render={(props) => <BspJpl {...props} setTitle={setTitle} />} />
-                <Route exact path="/observation" render={(props) => <Observation {...props} setTitle={setTitle} />} />
-                <Route exact path="/orbital-parameter" render={(props) => <OrbitalParameter {...props} setTitle={setTitle} />} />
-                <Route exact path="/johnston-archive" render={(props) => <JohnstonArchive {...props} setTitle={setTitle} />} />
-                <Route exact path="/johnston-archive/:id" render={(props) => <JohnstonArchiveDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
-                <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
-                <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/skybot/:id" render={(props) => <SkybotDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/skybot/:runId/asteroid/:id" render={(props) => <SkybotAsteroid {...props} setTitle={setTitle} />} />
-                <Route exact path="/pointings/:id" render={(props) => <PointingsDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/search-ssso-detail/:id" render={(props) => <SearchSssoDetail {...props} setTitle={setTitle} />} />
-                <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
-                <Redirect path="/" to="/dashboard" />
-              </Switch>
-            ) : (
-              <Switch>
-                <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
-                <Route exact path="/login" render={(props) => <Login {...props} setTitle={setTitle} />} />
-                <Redirect to="/login" />
-              </Switch>
-            )}
+            <Switch>
+              <Route exact path="/refine-orbit" render={(props) => <RefineOrbit {...props} setTitle={setTitle} />} />
+              <Route exact path="/refine-orbit/:id" render={(props) => <RefineOrbitDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/refine-orbit/asteroid/:id" render={(props) => <RefineOrbitAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
+              <Route exact path="/astrometry/asteroid/:id" render={(props) => <AstrometryAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
+              <Route exact path="/astrometry/:id" render={(props) => <AstrometryDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/astrometry" render={(props) => <Astrometry {...props} setTitle={setTitle} />} />
+              <Route exact path="/prediction-of-occultation/asteroid/:id" render={(props) => <PredictionOccultationAsteroid {...props} setTitle={setTitle} drawerOpen={open} />} />
+              <Route exact path="/prediction-of-occultation/:id" render={(props) => <PredictionOccultationDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/prediction-of-occultation" render={(props) => <PredictionOccultation {...props} setTitle={setTitle} />} />
+              <Route exact path="/occultation-calendar" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
+              <Route exact path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching" render={(props) => <OccultationCalendar {...props} setTitle={setTitle} />} />
+              <Route exact path="/occultation" render={(props) => <Occultation {...props} setTitle={setTitle} />} />
+              <Route exact path="/occultation/:id" render={(props) => <OccultationDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/pointings" render={(props) => <Pointings {...props} setTitle={setTitle} />} />
+              <Route exact path="/skybot" render={(props) => <Skybot {...props} setTitle={setTitle} />} />
+              <Route exact path="/bsp-jpl" render={(props) => <BspJpl {...props} setTitle={setTitle} />} />
+              <Route exact path="/observation" render={(props) => <Observation {...props} setTitle={setTitle} />} />
+              <Route exact path="/orbital-parameter" render={(props) => <OrbitalParameter {...props} setTitle={setTitle} />} />
+              <Route exact path="/johnston-archive" render={(props) => <JohnstonArchive {...props} setTitle={setTitle} />} />
+              <Route exact path="/johnston-archive/:id" render={(props) => <JohnstonArchiveDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/ssso" render={(props) => <SearchSsso {...props} setTitle={setTitle} />} />
+              <Route exact path="/filter-objects" render={(props) => <FilterObjects {...props} setTitle={setTitle} drawerOpen={open} />} />
+              <Route exact path="/filter-objects/:id" render={(props) => <FilterObjectsDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/skybot/:id" render={(props) => <SkybotDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/skybot/:runId/asteroid/:id" render={(props) => <SkybotAsteroid {...props} setTitle={setTitle} />} />
+              <Route exact path="/pointings/:id" render={(props) => <PointingsDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/search-ssso-detail/:id" render={(props) => <SearchSssoDetail {...props} setTitle={setTitle} />} />
+              <Route exact path="/dashboard" render={(props) => <Dashboard {...props} setTitle={setTitle} />} />
+              <Redirect path="/" to="/dashboard" />
+            </Switch>
           </main>
         </div>
         <CustomFooter drawerOpen={open} />
