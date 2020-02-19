@@ -5,12 +5,13 @@ from datetime import datetime
 
 
 class Download():
-    def download_file_from_url(self, url, output_path, filename, overwrite=True, ignore_errors=False, timeout=30):
+    def download_file_from_url(self, url, output_path, filename, overwrite=True, ignore_errors=False, timeout=30, auth=None):
         """
         Esta funcao faz o download de um arquivo
         :param url: url completa de qual arquivo deve ser baixado
         :param dir: path completo onde o arquivo devera se salvo
         :param filename: nome do arquivo apos baixado
+        :param auth: Tupla (username, password)
         :return: file_path: file path completo do arquivo salvo
         """
 
@@ -34,7 +35,16 @@ class Download():
         if not os.path.exists(file_path):
 
             try:
-                r = requests.get(url, stream=True, verify=False, timeout=timeout)
+                # Resolve problema de SSL precisa da lib pyopenssl.
+                requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':RC4-SHA'
+                try:
+                    requests.packages.urllib3.contrib.pyopenssl.DEFAULT_SSL_CIPHER_LIST += ':RC4-SHA'
+                except AttributeError:
+                    # no pyopenssl support used / needed / available
+                    pass
+
+                r = requests.get(url, stream=True, verify=False,
+                                 timeout=timeout, auth=auth)
                 if r.status_code == 200:
                     with open(file_path, 'wb') as f:
                         r.raw.decode_content = True
@@ -57,8 +67,8 @@ class Download():
                 # print("Downloading Done! File: %s Size: %s bytes Time %s seconds" % (filename, size, seconds))
 
                 download_stats = dict({
-                    "start_time": start,
-                    "finish_time": finish,
+                    "start_time": start.isoformat(),
+                    "finish_time": finish.isoformat(),
                     "download_time": seconds,
                     "file_size": size,
                     "filename": filename,

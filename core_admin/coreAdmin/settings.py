@@ -315,6 +315,17 @@ try:
 except Exception as e:
     raise ("Auth Shibboleth settings are required in .env file")
 
+# Url para download dos CCDs,
+# usar None para desativar esta opcao.
+# ex: 'https://desar2.cosmology.illinois.edu/DESFiles/desarchive/'
+DES_ARCHIVE_URL = os.getenv('DES_ARCHIVE_URL')
+if DES_ARCHIVE_URL is not None:
+    try:
+        # Username e Password no DES.
+        DES_USERNAME = os.getenv('DES_USERNAME')
+        DES_PASSWORD = os.getenv('DES_PASSWORD')
+    except Exception as e:
+        raise ("DES user settings are required in .env file")
 
 SETTINGS_EXPORT = [
     'AUTH_SHIB_URL',
@@ -403,6 +414,14 @@ LOGGING = {
             'filename': os.path.join(LOG_DIR, 'auth_shibboleth.log'),
             'formatter': 'standard',
         },
+        'download_ccds': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'download_ccds.log'),
+            'formatter': 'standard',
+        },
     },
     'loggers': {
         'django': {
@@ -450,5 +469,11 @@ LOGGING = {
             'level': LOGGING_LEVEL,
             'propagate': True,
         },
+        'download_ccds': {
+            'handlers': ['download_ccds'],
+            'level': LOGGING_LEVEL,
+            'propagate': True,
+        },
+
     },
 }

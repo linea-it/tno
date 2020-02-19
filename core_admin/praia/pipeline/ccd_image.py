@@ -3,6 +3,9 @@ import csv
 from datetime import datetime, timezone, timedelta
 from tno.skybotoutput import FilterObjects
 from praia.pipeline.register import register_input
+from django.conf import settings
+from tno.des_ccds import download_des_ccds
+
 
 def create_ccd_images_list(run_id, name, output_filepath):
     # Recuperar as exposicoes para cada objeto.
@@ -32,6 +35,9 @@ def create_ccd_images_list(run_id, name, output_filepath):
                     temp_file, delimiter=';', fieldnames=headers)
                 writer.writeheader()
                 writer.writerows(ccds)
+
+            # Para cada CCD, verifica se ele existe e faz o Download se nao existir.
+            download_des_ccds(ccds)
 
             result.update({
                 'file_size': os.path.getsize(output_filepath),

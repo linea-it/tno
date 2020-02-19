@@ -9,11 +9,12 @@ ENV APP_PATH=/app
 
 #RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN apt-get update && apt-get install -y  \
-                vim \
-                expect \
-                telnet \
-                ftp \
-            && rm -rf /var/lib/apt/lists/*
+    vim \
+    expect \
+    telnet \
+    ftp \
+    libcfitsio-bin \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir $APP_PATH
 

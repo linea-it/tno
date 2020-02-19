@@ -34,6 +34,8 @@ from rest_framework.decorators import detail_route
 import fnmatch
 import logging
 from dateutil.parser import parse
+from concurrent import futures
+from tno.des_ccds import download_des_ccds
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -372,14 +374,8 @@ class CustomListViewSet(viewsets.ModelViewSet):
             'data': data,
         })
 
-    @detail_route(methods=['GET'])
-    def check_ccds_not_downloaded(self, request, pk):
-
-        record = self.get_object()
-
+    def ccds_not_downloaded_by_list(self, record):
         # Verificar todos os ccds que estao disponiveis.
-        # count_not_downloaded = FilterObjects().count_pointing_not_downloaded(
-        #     record.tablename, record.schema)
         ccds, count_ccds = FilterObjects().list_pointing_path_by_table(
             record.tablename, record.schema)
 
@@ -392,12 +388,43 @@ class CustomListViewSet(viewsets.ModelViewSet):
             if not os.path.exists(filepath):
                 not_download.append(ccd)
 
+        return not_download
+
+    @detail_route(methods=['GET'])
+    def check_ccds_not_downloaded(self, request, pk):
+
+        record = self.get_object()
+
+        not_download = self.ccds_not_downloaded_by_list(record)
+
         return Response({
             'success': True,
             'list_name': record.displayname,
-            'count_ccds': count_ccds,
             'count_not_downloaded': len(not_download),
             'ccds': not_download
+        })
+
+    @detail_route(methods=['GET'])
+    def download_ccds_by_list(self, request, pk):
+        """
+            Verifica quais ccds relacionados com a lista precisam ser baixados. 
+            e executa o download destes ccds.
+        """
+        record = self.get_object()
+
+        # Todos os CCDs relacioandos com a lista que não foram baixados.
+        not_download = self.ccds_not_downloaded_by_list(record)
+
+        # Executa a função de Download em background. 
+        with futures.ProcessPoolExecutor(max_workers=1) as ex:
+            ex.submit(download_des_ccds, not_download)
+
+        return Response({
+            'success': True,
+            'list_name': record.displayname,
+            'count_not_downloaded': len(not_download),
+            'msg': 'These downloads will be executed in the background'
+            # 'not_download': not_download,
         })
 
 
