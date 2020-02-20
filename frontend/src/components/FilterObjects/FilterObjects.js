@@ -454,7 +454,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
     diffDateNights = null,
     moreFilter = null,
     checked = null,
-    currentPage,
+    currentPage = 0,
   }) => {
     getSkybotOutput({
       name,
