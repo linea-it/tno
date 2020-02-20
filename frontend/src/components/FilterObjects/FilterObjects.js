@@ -130,7 +130,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
   const classes = useStyles();
 
   const [searchFilter, setSearchFilter] = useState('');
-  const [dynamicClass, setDynamicClass] = useState([0]);
+  const [dynamicClass, setDynamicClass] = useState([]);
   const [sublevelDynamicClassList, setSublevelDynamicClassList] = useState([]);
   const [sublevelDynamicClassSelected, setSublevelDynamicClassSelected] = useState([]);
   const [visualMagnitudeCheck, setVisualMagnitudeCheck] = useState(false);
@@ -158,7 +158,8 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
     msg: '',
   });
   const [tableNameSnackbarVisible, setTableNameSnackbarVisible] = useState(false);
-  const [skybotOutputCount, setSkybotOutputCount] = useState(0);
+  const [objectsCount, setObjectsCount] = useState(0);
+  const [observationsCount, setObservationsCount] = useState(0);
 
 
   const optionsClassFirstLevel = [
@@ -404,7 +405,10 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
       diffDateNights,
       moreFilter,
       checked,
-    }).then((res) => setSkybotOutputCount(res.count));
+    }).then((res) => {
+      setObjectsCount(res.count_objects);
+      setObservationsCount(res.count_observations);
+    });
   };
 
   useEffect(() => {
@@ -417,6 +421,8 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         )
         .join(';');
 
+      // Todas as vezes que um dos filtros muda
+      // Executa a query que retorna o total de resultados.
       loadSkybotOutputCount({
         objectTable: dynamicClassSelected,
         useMagnitude: visualMagnitudeCheck,
@@ -425,7 +431,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         diffDateNights: timeMinimum,
         moreFilter: sameObjectsCheck,
         checked: true,
-        name: null,
       });
     }
   }, [
@@ -441,6 +446,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
   const handleSearchFilter = (e) => setSearchFilter(e.target.value);
 
   const loadSkybotOutput = ({
+    name = null,
     objectTable = null,
     useMagnitude = null,
     magnitude = null,
@@ -451,6 +457,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
     currentPage,
   }) => {
     getSkybotOutput({
+      name,
       objectTable,
       useMagnitude,
       magnitude,
@@ -471,14 +478,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
       setResultTableData([]);
       loadSkybotOutput({
         name: searchFilter,
-        objectTable: null,
-        useMagnitude: null,
-        magnitude: null,
-        useDifferenceTime: null,
-        diffDateNights: null,
-        moreFilter: null,
-        checked: null,
-        currentPage: 0,
       });
     }
   };
@@ -837,7 +836,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                                     disabled={resultLoading}
                                   >
                                     Filter
-                                    <div className={classes.filterFrame}>{skybotOutputCount}</div>
+                                    {/* <div className={classes.filterFrame}>{objectsCount}</div> */}
                                     {resultLoading ? (
                                       <CircularProgress
                                         color="primary"
@@ -906,15 +905,16 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                           </FormControl>
                         </form>
                       ) : (
-                        <div className={classes.filterCountWrapper}>
-                          <Skeleton height={(filterFormSize.height - 95) || 0} />
-                          {skybotOutputCount > 0 ? (
-                            <span className={classes.filterCountText}>
-                              {skybotOutputCount > 1 ? `Current filter has ${skybotOutputCount} objects` : `Current filter has ${skybotOutputCount} object`}
-                            </span>
-                          ) : null}
-                        </div>
-                      )}
+                          <div className={classes.filterCountWrapper}>
+                            <Skeleton height={(filterFormSize.height - 95) || 0} />
+                            {objectsCount > 0 ? (
+                              <span className={classes.filterCountText}>
+                                {objectsCount > 1 ? `Current filter has ${objectsCount} objects` : `Current filter has ${objectsCount} object`}
+                                {observationsCount !== null ? ` and ${observationsCount} observations` : ''}
+                              </span>
+                            ) : null}
+                          </div>
+                        )}
                     </CardContent>
                   </Card>
                 );
