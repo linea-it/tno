@@ -138,3 +138,7 @@ export const checkTableName = ({ tablename, status }) => {
     params,
   }).then((res) => res.data);
 };
+
+export const submitDownloadCcds = ({ id }) => {
+  return axios.get(`customlist/${id}/download_ccds_by_list/`).then((res) => res.data);
+};
