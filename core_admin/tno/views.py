@@ -35,6 +35,7 @@ import fnmatch
 import logging
 from dateutil.parser import parse
 
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -68,7 +69,8 @@ class PointingViewSet(viewsets.ModelViewSet):
     filter_fields = ('id', 'desfile_id', 'expnum', 'band',
                      'exptime', 'date_obs', 'downloaded')
     search_fields = ('id', 'filename', 'desfile_id', 'expnum')
-    ordering_fields = ('id', 'expnum', 'date_obs', 'nite', 'expnum', 'ccdnum', 'band', 'filename', 'exposure_time', 'radeg', 'decdeg', 'downloaded')
+    ordering_fields = ('id', 'expnum', 'date_obs', 'nite', 'expnum', 'ccdnum',
+                       'band', 'filename', 'exposure_time', 'radeg', 'decdeg', 'downloaded')
     ordering = ('-date_obs', 'expnum', 'ccdnum')
 
     @list_route()
@@ -152,17 +154,16 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
     serializer_class = SkybotOutputSerializer
     filter_fields = ('id', 'name', 'expnum', 'dynclass', 'mv', 'ccdnum')
     search_fields = ('name', 'num', 'dynclass', 'mv')
-    ordering_fields = ('name', 'dynclass', 'num', 'raj2000', 'decj2000', 'expnum', 'ccdnum', 'band', 'mv', 'errpos')
+    ordering_fields = ('name', 'dynclass', 'num', 'raj2000',
+                       'decj2000', 'expnum', 'ccdnum', 'band', 'mv', 'errpos')
     ordering = ('expnum', 'ccdnum')
-
 
     @list_route()
     def objects(self, request):
         """
-
+            Especifica para tela de Filter Objects que utiliza a query agrupada por objetos.
         """
         # Retrive Params
-
         name = request.query_params.get('name')
 
         objectTable = request.query_params.get('objectTable')
@@ -182,7 +183,8 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
         pageSize = request.query_params.get('pageSize')
 
         if(pageSize):
-            pageSize = int(request.query_params.get( 'pageSize', self.pagination_class.page_size))
+            pageSize = int(request.query_params.get(
+                'pageSize', self.pagination_class.page_size))
         else:
             pageSize = None
 
@@ -196,9 +198,11 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
             "count": count
         })
 
-
     @list_route()
     def objects_count(self, request):
+        """
+            Especifica para tela de Filter Objects que utiliza a query agrupada por objetos.
+        """
         name = request.query_params.get('name')
 
         objectTable = request.query_params.get('objectTable')
@@ -213,14 +217,21 @@ class SkybotOutputViewSet(viewsets.ModelViewSet):
 
         moreFilter = request.query_params.get('moreFilter')
 
-        count = FilterObjects().get_objects_count(
+        # Total de Objetos unicos que atendem aos filtros da query
+        count_objects = FilterObjects().get_objects_count(
+            name, objectTable, magnitude, diffDateNights,
+            moreFilter
+        )
+        # Total de Observações que atendem aos filtros da query
+        count_observations = FilterObjects().get_observations_count(
             name, objectTable, magnitude, diffDateNights,
             moreFilter
         )
 
         return Response({
             'success': True,
-            "count": count
+            "count_objects": count_objects,
+            "count_observations": count_observations
         })
 
     def generate_statistics(self):
@@ -1006,15 +1017,15 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
             initial_date = datetime.strptime(initial_date, "%Y-%m-%d")
             final_date = datetime.strptime(final_date, "%Y-%m-%d")
 
-            exposures =  db.count_unique_exposures_by_period(initial_date, final_date)
+            exposures = db.count_unique_exposures_by_period(
+                initial_date, final_date)
         else:
-            exposures =  db.count_unique_exposures()
-
+            exposures = db.count_unique_exposures()
 
         # Get the summation of all successful exposures and their respective execution time:
         exposure_and_time_sum = dict(
-            SkybotRun.objects \
-            .filter(status='success') \
+            SkybotRun.objects
+            .filter(status='success')
             .aggregate(
                 exposure=Sum('exposure'),
                 execution_time=Sum('execution_time')
@@ -1022,7 +1033,8 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
         )
 
         # A rough average: divide the amount of exposures by their execution time (s):
-        execution_mean = exposure_and_time_sum['exposure'] / exposure_and_time_sum['execution_time'].seconds
+        execution_mean = exposure_and_time_sum['exposure'] / \
+            exposure_and_time_sum['execution_time'].seconds
 
         # The estimate should, then, be the amount of exposures that I want to submit multiplied by the average:
         execution_estimate = exposures * execution_mean
@@ -1060,14 +1072,15 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
             initial_date = datetime.strptime(initial_date, "%Y-%m-%d")
             final_date = datetime.strptime(final_date, "%Y-%m-%d")
 
-            exposures =  db.unique_exposures_by_period(initial_date, final_date)
+            exposures = db.unique_exposures_by_period(initial_date, final_date)
         else:
-            exposures =  db.unique_exposures()
+            exposures = db.unique_exposures()
 
         return Response({
             'success': True,
             'rows': exposures,
         })
+
 
 class CcdImageViewSet(viewsets.ModelViewSet):
     queryset = CcdImage.objects.all()
@@ -1108,11 +1121,13 @@ class CcdImageViewSet(viewsets.ModelViewSet):
 
             # Double Check, conferir se o arquivo de ccd realmente existe no diretorio.
             # e se o seu tamanho e maior que 0
-            image_filepath = os.path.join(settings.CCD_IMAGES_DIR, ccd_filename)
+            image_filepath = os.path.join(
+                settings.CCD_IMAGES_DIR, ccd_filename)
             if os.path.exists(image_filepath) and os.path.getsize(image_filepath) > 0:
 
                 # Ler o log em csv
-                df = pd.read_csv(logpath, sep=';', header=None, index_col=False, names=['download_start_time', 'download_finish_time', 'file_size'])
+                df = pd.read_csv(logpath, sep=';', header=None, index_col=False, names=[
+                                 'download_start_time', 'download_finish_time', 'file_size'])
 
                 download_start_time, download_finish_time, file_size = df.iloc[0]
 
@@ -1121,7 +1136,8 @@ class CcdImageViewSet(viewsets.ModelViewSet):
                 logger.info("Finish %s" % download_finish_time)
                 logger.info("File Size %s" % file_size)
 
-                download_time = parse(download_finish_time) - parse(download_start_time)
+                download_time = parse(download_finish_time) - \
+                    parse(download_start_time)
                 logger.info("Download Time %s" % download_time)
 
                 # Recuperar o Apontamento
@@ -1145,7 +1161,8 @@ class CcdImageViewSet(viewsets.ModelViewSet):
                     pointing.downloaded = True
                     pointing.save()
 
-                    logger.info("CCD Image [ %s ] Created: [ %s ]" % (ccd_filename, created))
+                    logger.info("CCD Image [ %s ] Created: [ %s ]" % (
+                        ccd_filename, created))
 
                 except Pointing.DoesNotExist:
                     logger.warning("Nao encontrou: %s" % ccd_filename)
