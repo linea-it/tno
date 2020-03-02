@@ -29,32 +29,27 @@ export const postCustomList = ({
   tablename,
   description,
   filter_dynclass,
+  filter_magnitude,
+  filter_diffdatenights,
   filter_morefilter,
   filter_name,
-  filters = [],
 }) => {
   const params = {
     displayname,
     tablename,
     description,
-    filter_dynclass,
-    filter_morefilter,
-    filter_name,
   };
 
-  // filtro por magnitude
-  if (filters.useMagnitude) {
-    params.filter_magnitude = filters.magnitude;
-  }
-  // filtro por difference time
-  if (filters.useDifferenceTime) {
-    params.filter_diffdatenights = filters.diffDateNights;
+  if (filter_name !== '' && filter_name !== null) {
+    params['filter_name'] = filter_name;
+  } else {
+    params['filter_dynclass'] = filter_dynclass;
+    params['filter_magnitude'] = filter_magnitude;
+    params['filter_diffdatenights'] = filter_diffdatenights;
+    params['filter_morefilter'] = filter_morefilter;
   }
 
-
-  return axios.post('/customlist/', {
-    ...params,
-  }).then((res) => res.data);
+  return axios.post('/customlist/', params).then((res) => res.data);
 };
 
 export const getSkybotOutput = ({

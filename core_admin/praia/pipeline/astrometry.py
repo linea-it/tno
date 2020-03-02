@@ -511,7 +511,7 @@ class AstrometryPipeline():
 
             asteroid_alias = obj.name.replace(' ', '')
 
-            max_workers = 4
+            max_workers = 6
 
             payload = dict({
                 "queues": 1,
