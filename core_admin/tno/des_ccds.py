@@ -26,7 +26,7 @@ def unpack_fz(filepath):
 
 def download_ccd(idx, ccd, base_url, ccd_image_dir, auth):
     logger = logging.getLogger('download_ccds')
-    logger.debug("Downloading IDX: [%s] CCD_ID: [%s] Filename: [%s]" % (
+    logger.info("Downloading IDX: [%s] CCD_ID: [%s] Filename: [%s]" % (
         idx, ccd['id'], ccd['filename']))
 
     try:
@@ -48,7 +48,7 @@ def download_ccd(idx, ccd, base_url, ccd_image_dir, auth):
         # Termino do Download
         finish = datetime.now(timezone.utc)
         tdelta = finish - start
-        logger.debug("Downloaded  IDX: [%s] CCD_ID: [%s] in %s" % (
+        logger.info("Downloaded  IDX: [%s] CCD_ID: [%s] in %s" % (
             idx, ccd['id'], humanize.naturaldelta(tdelta)))
 
         # Descompactar .fz para .fits

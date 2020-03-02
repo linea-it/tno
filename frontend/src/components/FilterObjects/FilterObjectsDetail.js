@@ -201,10 +201,10 @@ function FilterObjectsDetail({ setTitle, match }) {
           <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
         </span>
       ) : (
-        <span title={el.filename}>
-          <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-        </span>
-      )),
+          <span title={el.filename}>
+            <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+          </span>
+        )),
       sortingEnabled: false,
     },
     {
@@ -381,35 +381,44 @@ function FilterObjectsDetail({ setTitle, match }) {
                     {stats.missing_pointing}
                   </span>
                   <br />
-                  <span>
-                    <b>Class:</b>
-                    {' '}
-                    {stats.filter_dynclass}
-                  </span>
-                  <br />
-                  <span>
-                    <b>Magnitude:</b>
-                    {' '}
-                    {stats.filter_magnitude}
-                  </span>
-                  <br />
-                  <span>
-                    <b>Minimun difference time between observations:</b>
-                    {stats.filter_diffdatenights}
-                  </span>
-                  <br />
-                  <span>
-                    <b>More than one Filter:</b>
-                    {' '}
-                    {stats.filter_morefilter}
-                  </span>
-                  <br />
-                  <span>
-                    <b>Filter by Name:</b>
-                    {' '}
-                    {stats.filter_name}
-                  </span>
-                  <br />
+                  {(stats.filter_name !== '' && stats.filter_name !== null)
+                    ? (
+                      <>
+                        <span>
+                          <b>Filter by Name:</b>
+                          {' '}
+                          {stats.filter_name}
+                        </span>
+                        <br />
+                      </>
+                    )
+                    : (
+                      <>
+                        <span>
+                          <b>Class:</b>
+                          {' '}
+                          {stats.filter_dynclass}
+                        </span>
+                        <br />
+                        <span>
+                          <b>Magnitude:</b>
+                          {' '}
+                          {stats.filter_magnitude}
+                        </span>
+                        <br />
+                        <span>
+                          <b>Minimun difference time between observations:</b>
+                          {stats.filter_diffdatenights}
+                        </span>
+                        <br />
+                        <span>
+                          <b>More than one Filter:</b>
+                          {' '}
+                          {stats.filter_morefilter.toString()}
+                        </span>
+                        <br />
+                      </>
+                    )}
                   <span className={classes.sqlLogMarginTop}>
                     <b>SQL Log:</b>
                     <Switch

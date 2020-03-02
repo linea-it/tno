@@ -615,9 +615,10 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
     postCustomList({
       displayname: saveName,
       tablename: tableNameValidation.name,
-      filters: dynamicClassSelected,
       description: saveDescription,
       filter_dynclass: dynamicClassSelected,
+      filter_magnitude: visualMagnitude,
+      filter_diffdatenights: timeMinimum,
       filter_morefilter: sameObjectsCheck,
       filter_name: searchFilter,
     })
