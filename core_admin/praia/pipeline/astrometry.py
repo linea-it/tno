@@ -255,7 +255,7 @@ class AstrometryPipeline():
                     # Somar o tempo da etapa com o tempo total de execucao do asteroid.
                     asteroid.execution_time += result['execution_time']
                     asteroid.save()
-            idx += 1
+                idx += 1
 
         except Exception as e:
             self.on_error(instance, e)
