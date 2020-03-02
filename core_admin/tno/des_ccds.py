@@ -102,7 +102,7 @@ def register_download(ccd):
         logger.error(e)
 
 
-def download_des_ccds(ccds):
+def download_des_ccds(ccds, max_workers=10):
 
     logger = logging.getLogger('download_ccds')
     logger.info("--------------------------------------------------")
@@ -124,7 +124,7 @@ def download_des_ccds(ccds):
     auth = (settings.DES_USERNAME, settings.DES_PASSWORD)
 
     # Maximo de Downloads em paralelo 10
-    pool = ThreadPoolExecutor(max_workers=10)
+    pool = ThreadPoolExecutor(max_workers=max_workers)
     futures = []
     idx = 0
 
@@ -169,3 +169,16 @@ def download_des_ccds(ccds):
     logger.info("Done!")
 
     return downloaded
+
+
+def count_available_des_ccds(ccds):
+    ccd_image_dir = settings.CCD_IMAGES_DIR
+    count = 0
+
+    for ccd in ccds:
+        # Verificar se o ccd existe no diretório,
+        filepath = os.path.join(ccd_image_dir, ccd['filename'])
+        if os.path.exists(filepath):
+            count += 1
+
+    return count
