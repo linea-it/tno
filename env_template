@@ -1,5 +1,8 @@
 # FOR DEVELOPMENT WITH docker-compose
 
+# the hostname and port number of the current Server URL
+HOST_URL=//localhost
+
 EMAIL_NOTIFICATIONS=
 
 # Modo de Debug do backend, usar DEBUG=False para desligar.

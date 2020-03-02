@@ -209,44 +209,26 @@ class AstrometryPipeline():
         # ===================================================================================================
         self.logger.info(
             "---------------------------------// CCD Images //---------------------------------")
-
         ccd_images_start = datetime.now(timezone.utc)
-
-        pool = ThreadPoolExecutor(max_workers=4)
-        futures = []
-        idx = 1
         try:
 
-            for obj in self.asteroids:
-                obj.status = 'running'
-                obj.save()
+            idx = 1
+            for asteroid in self.asteroids:
+                asteroid.status = 'running'
+                asteroid.save()
 
                 self.logger.info(
-                    "Running CCD Images [ %s / %s ] Object: [ %s ]" % (idx, obj_count, obj.name))
+                    "Running CCD Images [ %s / %s ] Object: [ %s ]" % (idx, obj_count, asteroid.name))
 
-                obj_dir = obj.relative_path
-
-                # CCD Images
+                # CCD Images csv
+                obj_dir = asteroid.relative_path
                 ccd_images_file = os.path.join(obj_dir, "ccd_images.csv")
 
-                self.logger.debug("CCD Images CSV: [ %s ]" % ccd_images_file)
+                # Max Workers - para o download no DES recomendado maximo 10 downloads simultaneos.
+                result = create_ccd_images_list(
+                    instance.pk, asteroid.name, ccd_images_file, max_workers=10)
 
-                futures.append(pool.submit(
-                    create_ccd_images_list, instance.pk, obj.name, ccd_images_file))
-
-                idx += 1
-
-            # Esperar todas as execucoes.
-            wait(futures)
-
-            results = []
-            for future in futures:
-                results.append(future.result())
-
-            for result in results:
-                # Registar a quantidade de CCDs para cada Asteroid
-                asteroid = self.asteroids.get(name=result['asteroid'])
-
+                # Registar a quantidade de CCDs para o Asteroid
                 if result["ccds_count"] is None or result["ccds_count"] == 0:
                     # Asteroid nao tem CCD image associada a ele, marcar como falha.
                     asteroid.status = 'not_executed'
@@ -255,25 +237,37 @@ class AstrometryPipeline():
                     self.logger.warning(
                         "Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
                 else:
-                    asteroid.status = 'running'
+                    # Volta o status do asteroid para idle
+                    asteroid.status = 'idle'
+                    # Guarda o total de ccds registrados para o asteroid.
                     asteroid.ccd_images = result['ccds_count']
+                    # Guarda o total de ccds disponiveis no diretorio.
+                    asteroid.available_ccd_image = result['ccds_available']
+
+                    self.logger.info("CCDs: [%s] Available: [%s] Downloaded: [%s]" % (
+                        result['ccds_count'], result['ccds_available'], result['ccds_downloaded']))
 
                     self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (
                         result['input_type'], asteroid.name, result['file_path']))
 
-                asteroid.execution_ccd_list = result['execution_time']
-                asteroid.save()
+                    # Tempo que levou na etapa de CCD, para este asteroid.
+                    asteroid.execution_ccd_list = result['execution_time']
+                    # Somar o tempo da etapa com o tempo total de execucao do asteroid.
+                    asteroid.execution_time += result['execution_time']
+                    asteroid.save()
+            idx += 1
 
         except Exception as e:
             self.on_error(instance, e)
 
-        ccd_images_finish = datetime.now(timezone.utc)
-        ccd_images_execution_time = ccd_images_finish - ccd_images_start
+        finally:
+            ccd_images_finish = datetime.now(timezone.utc)
+            ccd_images_execution_time = ccd_images_finish - ccd_images_start
 
-        self.logger.info("Finished CCD Images list in %s" %
-                         humanize.naturaldelta(ccd_images_execution_time))
-
-        instance.execution_ccd_images = ccd_images_execution_time
+            self.logger.info("Finished CCD Images list in %s" %
+                             humanize.naturaldelta(ccd_images_execution_time))
+            instance.execution_ccd_images = ccd_images_execution_time
+            instance.save()
 
         # ===================================================================================================
         # BSP JPL - Retrieve BSP JPL  for every asteroid
@@ -327,11 +321,14 @@ class AstrometryPipeline():
                         "Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
 
                 else:
-                    obj.status = 'running'
+                    asteroid.status = 'idle'
                     self.logger.info("Registered %s Input for Asteroid [ %s ] File: [%s] " % (
                         result['input_type'], asteroid.name, result['file_path']))
 
+                # Guarda o tempo da etapa BSP JPL por asteroid.
                 asteroid.execution_bsp_jpl = result['execution_time']
+                # Soma o tempo de execucao da etapa ao tempo de execucao total do asteroid.
+                asteroid.execution_time += result['execution_time']
                 asteroid.save()
 
         except Exception as e:
@@ -427,13 +424,16 @@ class AstrometryPipeline():
                             "Asteroid [ %s ] - %s" % (asteroid.name, asteroid.error_msg))
                     else:
                         asteroid.catalog_rows = int(result['catalog_count'])
-                        obj.status = 'running'
+                        asteroid.status = 'idle'
 
                         self.logger.info("Registered %s Input for Asteroid [ %s ] Catalog Rows: [ %s ] File: [%s] " % (
                             result['input_type'], asteroid.name, result['catalog_count'], result['file_path']))
 
+                    # Guarda o tempo de execucao da etapa.
                     asteroid.execution_reference_catalog = result['execution_time']
 
+                    # Soma o tempo de execucao da etapa ao tempo de execucao total do asteroid.
+                    asteroid.execution_time += result['execution_time']
                     asteroid.save()
 
             except Exception as e:
