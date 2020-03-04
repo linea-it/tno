@@ -1,4 +1,5 @@
-import os, errno
+import os
+import errno
 import logging
 from sqlalchemy.sql import select, or_, func, text, case
 from sqlalchemy.sql.expression import literal_column
@@ -26,6 +27,8 @@ import parsl
 from parsl import *
 from statistics import mean
 import time
+
+
 class RefineOrbit():
     def __init__(self):
         self.logger = logging.getLogger("refine_orbit")
@@ -60,13 +63,62 @@ class RefineOrbit():
 
         self.execution_time = []
 
+        # TODO: poderiam ser inputs fornecido pelo usuario na interface de submissao.
+        # Periodo em anos para os Plots.
+        # Serao usados para calcular o periodo do plot. (ano atual - start, ano atual + end)
+        self.plot_start_years = 4
+        self.plot_end_years = 2
+
+        # Periodo em anos para o BSP JPL.
+        # quantidade de anos para calcular o periodo contido no BSP JPL.
+        # IMPORTANTE: deve ser igual ao periodo usado no BSP JPL.
+        self.bsp_start_years = 10
+        self.bsp_end_years = 10
+
+        # Periodo em anos para a Ephemeris gerada pelo NIMA.
+        self.ephem_start_years = 1
+        self.ephem_end_years = 1
+
+    def get_plot_period(self):
+        """
+            Retorna o periodo inicial e final que será usado para os plots.
+        """
+        now = datetime.now()
+        start = now - timedelta(days=(self.plot_start_years * 365.25))
+        end = now + timedelta(days=(self.plot_end_years * 365.25))
+        return ('%s-01-01' % start.year, '%s-01-01' % end.year)
+
+    def get_bsp_period(self):
+        """
+            Retorna o Periodo de um BSP baseado no ano atual. 
+            IMPORTANTE: este periodo precisa coincindir com o periodo usado para gerar o BSP. 
+            IMPORTANTE: Martin recomendou que as datas iniciais e finais fossem 01 e 09, parece que o
+            programa que vai usar as datas precisa de um intervalo x de dias. mais ele não tinha certeza sobre isso. 
+
+            TODO: Ler os periodos a partir do header do BSP. 
+        """
+        now = datetime.now()
+        start = now - timedelta(days=(self.bsp_start_years * 365.25))
+        end = now + timedelta(days=(self.bsp_end_years * 365.25))
+        return ('%s-01-01' % start.year, '%s-01-09' % end.year)
+
+    def get_ephem_period(self):
+        """
+            Retorna o periodo inicial e final o NIMA vai gerar a Ephemeris. 
+        """
+        now = datetime.now()
+        start = now - timedelta(days=(self.ephem_start_years * 365.25))
+        end = now + timedelta(days=(self.ephem_end_years * 365.25))
+        return ('%s-01-01' % start.year, '%s-01-01' % end.year)
+
     def startRefineOrbitRun(self, run_id):
         self.logger.debug("ORBIT RUN: %s" % run_id)
 
         instance = OrbitRun.objects.get(pk=run_id)
 
         start_time = datetime.now()
-        self.results["start_time"] = start_time.replace(microsecond=0).isoformat(' ')
+        self.results["start_time"] = start_time.replace(
+            microsecond=0).isoformat(' ')
 
         # Recuperar a Instancia do processo
         self.proccess = instance.proccess
@@ -83,7 +135,8 @@ class RefineOrbit():
 
         # recuperar a Custom List usada como input
         self.input_list = instance.input_list
-        self.logger.debug("CUSTOM LIST: %s - %s" % (self.input_list.id, self.input_list.displayname))
+        self.logger.debug("CUSTOM LIST: %s - %s" %
+                          (self.input_list.id, self.input_list.displayname))
 
         self.results["input_list"] = self.input_list.id
 
@@ -120,15 +173,19 @@ class RefineOrbit():
             self.logger.debug(
                 "---------------------- Observations --------------------------------------------------------------------------")
             # Pesquisando as observacoes que precisam ser baixadas
-            observations = RefineOrbitDB().get_observations(self.input_list.tablename, self.input_list.schema, max_age)
+            observations = RefineOrbitDB().get_observations(
+                self.input_list.tablename, self.input_list.schema, max_age)
 
-            self.observations_input_file = os.path.join(instance.relative_path, 'observations.csv')
+            self.observations_input_file = os.path.join(
+                instance.relative_path, 'observations.csv')
 
             self.logger.info("Writing Observations Input File")
-            RefineOrbit().writer_refine_orbit_file_list(self.observations_input_file, observations)
+            RefineOrbit().writer_refine_orbit_file_list(
+                self.observations_input_file, observations)
 
             # Download das Observations
-            self.getObservations(instance, self.observations_input_file, steps_file)
+            self.getObservations(
+                instance, self.observations_input_file, steps_file)
 
             # ---------------------- Orbital Parameters --------------------------------------------------------------------
             self.logger.debug(
@@ -137,21 +194,26 @@ class RefineOrbit():
             orbital_parameters = RefineOrbitDB().get_orbital_parameters(self.input_list.tablename, self.input_list.schema,
                                                                         max_age)
 
-            self.orbital_parameters_input_file = os.path.join(instance.relative_path, 'orbital_parameters.csv')
+            self.orbital_parameters_input_file = os.path.join(
+                instance.relative_path, 'orbital_parameters.csv')
 
             self.logger.info("Writing Orbital Parameters Input File")
-            self.writer_refine_orbit_file_list(self.orbital_parameters_input_file, orbital_parameters)
+            self.writer_refine_orbit_file_list(
+                self.orbital_parameters_input_file, orbital_parameters)
 
             # Download dos parametros Orbitais
-            self.getOrbitalParameters(instance, self.orbital_parameters_input_file, steps_file)
+            self.getOrbitalParameters(
+                instance, self.orbital_parameters_input_file, steps_file)
 
             # ---------------------- BSPs ----------------------------------------------------------------------------------
             self.logger.debug(
                 "---------------------- BSPs ----------------------------------------------------------------------------------")
             # Pesquisando os bsp_jpl que precisam ser baixadas
-            bsp_jpl = RefineOrbitDB().get_bsp_jpl(self.input_list.tablename, self.input_list.schema, max_age)
+            bsp_jpl = RefineOrbitDB().get_bsp_jpl(
+                self.input_list.tablename, self.input_list.schema, max_age)
 
-            self.bsp_jpl_input_file = os.path.join(instance.relative_path, 'bsp_jpl.csv')
+            self.bsp_jpl_input_file = os.path.join(
+                instance.relative_path, 'bsp_jpl.csv')
 
             self.logger.info("Writing BSP JPL Input File")
             RefineOrbit().writer_refine_orbit_file_list(self.bsp_jpl_input_file, bsp_jpl)
@@ -164,7 +226,8 @@ class RefineOrbit():
 
             self.results["execution_download_time"] = t_download_delta.total_seconds()
 
-            self.logger.info("Download Finish in %s" % humanize.naturaldelta(t_download_delta))
+            self.logger.info("Download Finish in %s" %
+                             humanize.naturaldelta(t_download_delta))
 
             # ---------------------- Objects -------------------------------------------------------------------------------
 
@@ -172,7 +235,7 @@ class RefineOrbit():
 
             # Recuperando os Objetos
             objects, obj_count = ProccessManager().get_objects(tablename=self.input_list.tablename,
-                                                            schema=self.input_list.schema)
+                                                               schema=self.input_list.schema)
 
             self.results["count_objects"] = obj_count
 
@@ -201,7 +264,7 @@ class RefineOrbit():
                     }),
                     "results": dict({
                         "bsp_nima": None,
-                        "residual_all_v2": None, 
+                        "residual_all_v2": None,
                         "residual_all_v1": None,
                         "residual_recent": None,
                         "comparison_nima_jpl_ra": None,
@@ -227,7 +290,8 @@ class RefineOrbit():
 
             # Separa os inputs necessarios no diretorio individual de cada objeto.
             # TODO: Essa etapa pode ser paralelizada com Parsl
-            self.collect_inputs_by_objects(self.results["objects"], self.objects_dir)
+            self.collect_inputs_by_objects(
+                self.results["objects"], self.objects_dir)
 
             # ---------------------- Running NIMA --------------------------------------------------------------------------
             self.logger.info("Running NIMA for all objects")
@@ -258,7 +322,8 @@ class RefineOrbit():
             finish_time = datetime.now()
             instance.finish_time = finish_time
 
-            self.results["finish_time"] = finish_time.replace(microsecond=0).isoformat(' ')
+            self.results["finish_time"] = finish_time.replace(
+                microsecond=0).isoformat(' ')
             tdelta = finish_time - start_time
             self.results["execution_time"] = tdelta.total_seconds()
             # Average Time per object
@@ -339,7 +404,8 @@ class RefineOrbit():
         :param instance:
         """
         try:
-            GetOrbitalParameters().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
+            GetOrbitalParameters().run(input_file=input_file,
+                                       output_path=instance.relative_path, step_file=step_file)
         except Exception as e:
             self.logger.error(e)
             raise (e)
@@ -353,7 +419,8 @@ class RefineOrbit():
         :param instance:
         """
         try:
-            BSPJPL().run(input_file=input_file, output_path=instance.relative_path, step_file=step_file)
+            BSPJPL().run(input_file=input_file,
+                         output_path=instance.relative_path, step_file=step_file)
         except Exception as e:
             self.logger.error(e)
             raise (e)
@@ -387,11 +454,11 @@ class RefineOrbit():
                 self.logger.error(msg)
                 raise Exception(msg)
 
-
         except OSError as e:
             instance.status = 'error'
             instance.save()
-            self.logger.error("Failed to create refine orbit directory [ %s ]" % directory)
+            self.logger.error(
+                "Failed to create refine orbit directory [ %s ]" % directory)
             if e.errno != errno.EEXIST:
                 self.logger.error(e)
                 raise
@@ -406,7 +473,8 @@ class RefineOrbit():
 
         with open(file_path, 'w') as csvfile:
             fieldnames = header_orb_param
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';', extrasaction='ignore')
+            writer = csv.DictWriter(
+                csvfile, fieldnames=fieldnames, delimiter=';', extrasaction='ignore')
 
             writer.writeheader()
 
@@ -441,9 +509,11 @@ class RefineOrbit():
             # Copiar os Arquivos de Orbital Parameters
             orbital_parameters_file = None
             try:
-                orbital_parameters_file = self.copy_orbital_parameters_file(obj, obj_dir)
+                orbital_parameters_file = self.copy_orbital_parameters_file(
+                    obj, obj_dir)
             except Exception as e:
-                self.logger.error("Failed to retrieve Orbital Parameters Input")
+                self.logger.error(
+                    "Failed to retrieve Orbital Parameters Input")
                 self.logger.error(e)
 
             # Copiar os Arquivos de BSP_JPL
@@ -457,7 +527,8 @@ class RefineOrbit():
             # Verificar se o Arquivo do PRAIA (Astrometry position) existe no diretorio do objeto.
             astrometry_position_file = None
             try:
-                astrometry_position_file = self.verify_astrometry_position_file(obj, obj_dir)
+                astrometry_position_file = self.verify_astrometry_position_file(
+                    obj, obj_dir)
             except Exception as e:
                 self.logger.error("Failed to retrieve Astrometry Input")
                 self.logger.error(e)
@@ -517,7 +588,8 @@ class RefineOrbit():
                     "observation_file_id": observation.id
                 })
 
-                self.logger.debug("Object [ %s ] Observation File: %s" % (obj.get("name"), new_file_path))
+                self.logger.debug("Object [ %s ] Observation File: %s" % (
+                    obj.get("name"), new_file_path))
 
                 return new_file_path
             else:
@@ -525,7 +597,8 @@ class RefineOrbit():
                     "Failed to copy Observations File: %s -> %s" % (original_observation_file, obj_dir))
                 return None
         else:
-            self.logger.warning("Object [ %s ] has no Observations File" % obj.get("name"))
+            self.logger.warning(
+                "Object [ %s ] has no Observations File" % obj.get("name"))
             return None
 
     def copy_orbital_parameters_file(self, obj, obj_dir):
@@ -552,7 +625,8 @@ class RefineOrbit():
                     "orbital_parameter_file_id": orb_parameter.id
                 })
 
-                self.logger.debug("Object [ %s ] Orbital Parameters File: %s" % (obj.get("name"), new_file_path))
+                self.logger.debug("Object [ %s ] Orbital Parameters File: %s" % (
+                    obj.get("name"), new_file_path))
 
                 return new_file_path
             else:
@@ -560,7 +634,8 @@ class RefineOrbit():
                     "Failed to copy Orbital Parameters File: %s -> %s" % (original_file, obj_dir))
                 return None
         else:
-            self.logger.warning("Object [ %s ] has no Orbital Parameters File" % obj.get("name"))
+            self.logger.warning(
+                "Object [ %s ] has no Orbital Parameters File" % obj.get("name"))
             return None
 
     def copy_bsp_jpl_file(self, obj, obj_dir):
@@ -589,7 +664,8 @@ class RefineOrbit():
                     "bsp_file_id": bsp_file.id
                 })
 
-                self.logger.debug("Object [ %s ] BSP_JPL File: %s" % (obj.get("name"), new_file_path))
+                self.logger.debug("Object [ %s ] BSP_JPL File: %s" % (
+                    obj.get("name"), new_file_path))
 
                 return new_file_path
             else:
@@ -597,7 +673,8 @@ class RefineOrbit():
                     "Failed to copy BSP_JPL File: %s -> %s" % (original_file, obj_dir))
                 return None
         else:
-            self.logger.warning("Object [ %s ] has no BSP_JPL File" % obj.get("name"))
+            self.logger.warning(
+                "Object [ %s ] has no BSP_JPL File" % obj.get("name"))
             return None
 
     def verify_astrometry_position_file(self, obj, obj_dir):
@@ -627,10 +704,12 @@ class RefineOrbit():
                 "source": None,
             })
 
-            self.logger.debug("Object [ %s ] Astrometry File: %s" % (obj.get("name"), file_path))
+            self.logger.debug("Object [ %s ] Astrometry File: %s" % (
+                obj.get("name"), file_path))
 
         else:
-            self.logger.warning("Object [ %s ] has no Astrometry File" % obj.get("name"))
+            self.logger.warning(
+                "Object [ %s ] has no Astrometry File" % obj.get("name"))
             file_path = None
 
         return file_path
@@ -649,13 +728,13 @@ class RefineOrbit():
             raise e
 
         # Configuracao do Parsl Log.
-        parsl.set_file_logger(os.path.join(self.relative_path, 'nima_parsl.log'))
+        parsl.set_file_logger(os.path.join(
+            self.relative_path, 'nima_parsl.log'))
 
         # Declaracao do Parsl APP
         @App("python", dfk)
         def start_parsl_job(id, obj, logger):
             t0 = datetime.now()
-
 
             # Criar o arquivo com parametros de entrada
             nima_config = self.nima_input_file(obj)
@@ -671,7 +750,7 @@ class RefineOrbit():
             obj["finish_nima"] = t1.replace(microsecond=0).isoformat(' ')
             obj["execution_nima"] = str(tdelta)
 
-            # Input 
+            # Input
             obj["inputs"]["nima_config"] = dict({
                 "filename": os.path.basename(nima_config),
                 "file_path": nima_config,
@@ -679,7 +758,7 @@ class RefineOrbit():
                 "file_type": os.path.splitext(nima_config)[1]
             })
 
-            # Results 
+            # Results
             if result['status'] != "failure":
                 obj["results"]["bsp_nima"] = result["bsp_nima"]
                 obj["results"]["residual_all_v2"] = result["residual_all_v2"]
@@ -688,7 +767,7 @@ class RefineOrbit():
                 obj["results"]["comparison_nima_jpl_ra"] = result["comparison_nima_jpl_ra"]
                 obj["results"]["comparison_nima_jpl_dec"] = result["comparison_nima_jpl_dec"]
                 obj["results"]["comparison_bsp_integration"] = result["comparison_bsp_integration"]
-                # Arquivos Opcionais                
+                # Arquivos Opcionais
                 obj["results"]["correl_mat"] = result["correl_mat"]
                 obj["results"]["sigyr_res"] = result["sigyr_res"]
                 obj["results"]["offset_oth_obs"] = result["offset_oth_obs"]
@@ -747,10 +826,12 @@ class RefineOrbit():
             elif row['status'] == "warning":
                 warning += 1
 
-            exec_tdelta = timedelta(seconds=pytimeparse.parse(row['execution_nima']))
+            exec_tdelta = timedelta(
+                seconds=pytimeparse.parse(row['execution_nima']))
             average.append(exec_tdelta.total_seconds())
 
-            self.execution_time.append(pytimeparse.parse(row['execution_nima']))
+            self.execution_time.append(
+                pytimeparse.parse(row['execution_nima']))
 
             self.results['objects'][row['alias']] = row
 
@@ -776,7 +857,6 @@ class RefineOrbit():
             "Finished refine orbit, %s asteroids in %s" % (
                 count, humanize.naturaldelta(tdelta)))
 
-
     def run_nima_container(self, id, obj):
         """ 
             Cria uma instancia do Container NIMA 
@@ -800,8 +880,9 @@ class RefineOrbit():
 
         # Path absoluto para o diretorio de dados que sera montado no container.
         absolute_archive_path = settings.HOST_ARCHIVE_DIR
-        absolute_data_path = os.path.join(absolute_archive_path, data_path.strip('/'))
-        self.logger.debug("Absolute Data Path: %s" % absolute_data_path)        
+        absolute_data_path = os.path.join(
+            absolute_archive_path, data_path.strip('/'))
+        self.logger.debug("Absolute Data Path: %s" % absolute_data_path)
 
         self.results["objects"][alias]["absolute_path"] = absolute_data_path
 
@@ -816,6 +897,7 @@ class RefineOrbit():
 
         try:
             self.logger.debug("Starting Container NIMA [ %s ]" % id)
+            self.logger.debug("CMD: [ %s ]" % cmd)
 
             container = docker_client.containers.run(
                 docker_image,
@@ -832,13 +914,15 @@ class RefineOrbit():
             error_msg = None
 
             # Verificar se a Orbita foi gerada
-            file_nima_bsp = os.path.join(data_path, "%s_nima.bsp" % obj["alias"].replace('_', ''))
+            file_nima_bsp = os.path.join(
+                data_path, "%s_nima.bsp" % obj["alias"].replace('_', ''))
 
             omc_sep = os.path.join(data_path, "omc_sep.png")
             omc_sep_all = os.path.join(data_path, "omc_sep_all.png")
             omc_sep_recent = os.path.join(data_path, "omc_sep_recent.png")
             diff_nima_jpl_ra = os.path.join(data_path, "diff_nima_jpl_RA.png")
-            diff_nima_jpl_dec = os.path.join(data_path, "diff_nima_jpl_Dec.png")
+            diff_nima_jpl_dec = os.path.join(
+                data_path, "diff_nima_jpl_Dec.png")
             diff_bsp_ni = os.path.join(data_path, "diff_bsp-ni.png")
             # Arquivos Opcionais
             correl_mat = os.path.join(data_path, "correl.mat")
@@ -864,12 +948,11 @@ class RefineOrbit():
                     error_msg = "the residual recent charts was not created"
                     omc_sep_recent = None
 
-
                 if not os.path.exists(diff_nima_jpl_ra):
                     status = "warning"
                     error_msg = "The comparison nima jpl RA chart was not created"
                     diff_nima_jpl_ra = None
-                
+
                 if not os.path.exists(diff_nima_jpl_dec):
                     status = "warning"
                     error_msg = "The comparison nima jpl Dec chart was not created"
@@ -879,7 +962,7 @@ class RefineOrbit():
                     status = "warning"
                     error_msg = "The comparison bsp integration chart was not created"
                     diff_bsp_ni = None
-               
+
                 if not os.path.exists(correl_mat):
                     correl_mat = None
                 if not os.path.exists(sigyr_res):
@@ -905,12 +988,11 @@ class RefineOrbit():
                     "error_msg": "NIMA BSP was not created"
                 })
 
-
             result = dict({
                 "status": status,
                 "error_msg": error_msg,
                 "bsp_nima": file_nima_bsp,
-                "residual_all_v2": omc_sep, 
+                "residual_all_v2": omc_sep,
                 "residual_all_v1": omc_sep_all,
                 "residual_recent": omc_sep_recent,
                 "comparison_nima_jpl_ra": diff_nima_jpl_ra,
@@ -940,7 +1022,6 @@ class RefineOrbit():
                 "error_msg": "Container NIMA failed: %s" % e
             })
 
-
     def nima_input_file(self, obj):
         # TODO: Precisa de um refactoring, os parametros podem vir da interface.
         try:
@@ -951,15 +1032,33 @@ class RefineOrbit():
 
                 data = file.read()
 
-                name = obj.get("name").replace('_', '').replace(' ', '')
+                # Substitui no template as tags {} pelo valor das variaveis.
 
+                # Parametro Asteroid Name
+                name = obj.get("name").replace('_', '').replace(' ', '')
+                data = data.replace('{name}', name.ljust(66))
+
+                # Parametro Asteroid Number
                 number = obj.get("number")
                 if number is None or number == '-':
                     number = name
-
                 data = data.replace('{number}', number.ljust(66))
 
-                data = data.replace('{name}', name.ljust(66))
+                # Parametro Plot start e Plot end
+                plot_start, plot_end = self.get_plot_period()
+                data = data.replace('{plot_start_date}', plot_start.ljust(66))
+                data = data.replace('{plot_end_date}', plot_end.ljust(66))
+
+                # Parametro BSP start e BSP end
+                bsp_start, bsp_end = self.get_bsp_period()
+                data = data.replace('{bsp_start_date}', bsp_start.ljust(66))
+                data = data.replace('{bsp_end_date}', bsp_end.ljust(66))
+
+                # Parametro Ephem start e Ephem end
+                ephem_start, ephem_end = self.get_ephem_period()
+                data = data.replace('{ephem_start_date}',
+                                    ephem_start.ljust(66))
+                data = data.replace('{ephem_end_date}', ephem_end.ljust(66))
 
                 with open(input_file, 'w') as new_file:
                     new_file.write(data)
@@ -969,7 +1068,6 @@ class RefineOrbit():
         except Exception as e:
             self.logger.error(e)
             raise (e)
-
 
     def register_refined_asteroid(self, obj, orbit_run):
 
@@ -1004,7 +1102,7 @@ class RefineOrbit():
             for ftype in obj.get("results"):
                 result = obj.get("results").get(ftype)
                 if result is not None:
-                    filename = os.path.basename(result) 
+                    filename = os.path.basename(result)
                     file_size = os.path.getsize(result)
                     file_type = os.path.splitext(result)[1]
 
@@ -1039,11 +1137,12 @@ class RefineOrbit():
 
                     input_file.save()
 
-            self.logger.info("Registered Object %s %s" % (obj.get("name"), l_created))
+            self.logger.info("Registered Object %s %s" %
+                             (obj.get("name"), l_created))
 
         except Exception as e:
-            self.logger.error("Failed to Register Object %s Error: %s" % (obj.get("name"), e))
-
+            self.logger.error(
+                "Failed to Register Object %s Error: %s" % (obj.get("name"), e))
 
     def get_docker_image(self, docker_client, image_name):
 
@@ -1076,6 +1175,7 @@ class RefineOrbit():
 
         return docker_image
 
+
 class RefineOrbitDB(DBBase):
     def get_observations(self, tablename, schema=None, max_age=None):
         """
@@ -1084,7 +1184,8 @@ class RefineOrbitDB(DBBase):
 
         table = self.get_table_observations_file()
 
-        stm = self._get_stm_download_tables_record(tablename, table, schema, max_age)
+        stm = self._get_stm_download_tables_record(
+            tablename, table, schema, max_age)
 
         rows = self.fetch_all_dict(stm)
 
@@ -1095,7 +1196,8 @@ class RefineOrbitDB(DBBase):
         """
         table = self.get_table_orbital_parameters_file()
 
-        stm = self._get_stm_download_tables_record(tablename, table, schema, max_age)
+        stm = self._get_stm_download_tables_record(
+            tablename, table, schema, max_age)
 
         rows = self.fetch_all_dict(stm)
 
@@ -1107,7 +1209,8 @@ class RefineOrbitDB(DBBase):
 
         table = self.get_table_bsp_jpl_file()
 
-        stm = self._get_stm_download_tables_record(tablename, table, schema, max_age)
+        stm = self._get_stm_download_tables_record(
+            tablename, table, schema, max_age)
 
         rows = self.fetch_all_dict(stm)
 
@@ -1157,5 +1260,3 @@ class RefineOrbitDB(DBBase):
         stm = stm.order_by(tbl.c.name)
 
         return stm
-
-

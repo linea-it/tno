@@ -10,8 +10,8 @@
 - [ ] feature - Alterar a visualização da Lista de Objetos, Martin solicitou que a lista apresente os objetos agrupados, hoje é apresentado cada observação do objeto. e que tenha estatisticas de cada objeto individual como qtd CCD, filtros diferentes, se tem todos os CCDs, etc. 
 
 # Refine Orbit 
-- [ ] fix - Erro ao executar, não encontra os parametros orbitais.  
-- [ ] fix - Arquivo de configuração do Nima com input hardcoded.   
+- [ ] fix - Erro ao executar, erro com aquivo *_a.obs.  
+- [x] fix - Arquivo de configuração do Nima com input hardcoded.   
 - [ ] feature - Executar o Refine Orbit no condor. 
 
 # Predict Occultation
@@ -20,4 +20,4 @@
 # General
 - [ ] feature - Organizar os Status de execução, para que possam ser ordenados.
 - [ ] feature - Pagina publica de acesso as predições. 
-
+- [ ] feature - Guardar informações do BSP JPL, criar função para ler os headers do BSP como Periodo e Versão e SPK ID. 
