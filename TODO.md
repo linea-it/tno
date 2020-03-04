@@ -1,14 +1,23 @@
 # Astrometry Pipeline
-- [x] Para cada asteroid recuperar a lista de exposições. 
-- [x] Para cada asteroid criar o arquivo de parametros. 
-- [x] Para cada asteroid criar link para o Fits do CCD.
-- [x] Para cada asteroid, varrer todas as exposições e criar o catalogo Gaia. 
-- [ ] Guardar informações dos inputs que foram gerados durante a execução. 4h
-- [x] Implementar Download do BSP JPL para objetos que não tem ou tem mais de 30 dias. 6h
-- [ ] Implementar criação do catalogo gaia2 para os CCDs de cada objeto.  8h
-- [x] Alterar o container tirar os inputs hardcoded. 8h
-- [ ] Instalar, Configurar e testar biblioteca pyCondor para submissão. ?
-- [ ] Execucar o container astrometria para cada asteroid no Condor.  ?
-- [ ] Gerenciar os errors em cada etapa. ?
-- [ ] Implementar interface para visualizar os resultados. 12h
-- [ ] Implementar função para Download dos CCDs que não foram baixados. ?
+- [ ] feature - Reaproveitar catalogo de referencia, guardar as querys feitas no GAIA DR2. 
+- [ ] feature - Reaproveitar Astrometria do ccd, executar 1 vez por ccd e guardar o resultado independente do objeto.
+- [ ] fix - Problema no Condor ao usar RequireWholeMachine, todos os jobs vão para mesma maquina. não considera as maquinas da lista 'SlotsTno' ( Time de Infra, vou criar o ticket )
+- [ ] fix - Problema no Condor, os container estão limitados a 2GB de RAM. ( Time de Infra, vou criar o ticket )
+- [x] fix - Download do BSP JPL, com data hardcoded
+
+# Filter Object
+- [ ] fix - Problema na query que apresenta o total de objetos, query executa a cada troca de filtro gerando lentidão. 
+- [ ] feature - Alterar a visualização da Lista de Objetos, Martin solicitou que a lista apresente os objetos agrupados, hoje é apresentado cada observação do objeto. e que tenha estatisticas de cada objeto individual como qtd CCD, filtros diferentes, se tem todos os CCDs, etc. 
+
+# Refine Orbit 
+- [ ] fix - Erro ao executar, não encontra os parametros orbitais.  
+- [ ] fix - Arquivo de configuração do Nima com input hardcoded.   
+- [ ] feature - Executar o Refine Orbit no condor. 
+
+# Predict Occultation
+- [ ] fix - Erro Positions file was not created, a predição não está executando para nenhum objeto.
+
+# General
+- [ ] feature - Organizar os Status de execução, para que possam ser ordenados.
+- [ ] feature - Pagina publica de acesso as predições. 
+

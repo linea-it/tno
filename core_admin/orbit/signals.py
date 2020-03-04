@@ -1,12 +1,13 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
-from .models import OrbitRun
+from .models import OrbitRun, BspJplFile
 import os
 import logging
 from orbit.refine_orbit import RefineOrbit, RefineOrbitDB
 import shutil
 from datetime import datetime
 import threading
+from orbit.bsp_jpl import BSPJPL
 
 
 @receiver(post_save, sender=OrbitRun)
@@ -46,3 +47,19 @@ def run_refine(run_id):
         "Starting a thread to execute the refine orbit ID [%s]" % run_id)
 
     RefineOrbit().startRefineOrbitRun(run_id)
+
+
+@receiver(pre_delete, sender=BspJplFile)
+def delete_proccess(sender, instance, using, **kwargs):
+    """
+        Executado Toda vez que um registro de BSP JPL File for deletado,
+    verifica se o arquivo existe no diretório e remove.
+
+    :param sender:
+    :param instance:
+    :return:
+    """
+    file_path, bsp_model = BSPJPL().get_file_path(instance.name)
+
+    if os.path.exists(file_path):
+        os.unlink(file_path)
