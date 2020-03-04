@@ -4,7 +4,7 @@ from django.conf import settings
 import parsl
 from parsl import *
 from subprocess import DEVNULL, STDOUT, check_call, CalledProcessError
-from datetime import datetime
+from datetime import datetime, timedelta
 import humanize
 import subprocess
 import time
@@ -31,13 +31,16 @@ class BSPJPL(DownloadParameters):
         # Verifica se o script small_body_spk esta disponivel no diretorio bin e se tem permissao de execucao
         self.small_body_spk = os.path.join(settings.BIN_DIR, 'small_body_spk')
         if not os.path.exists(self.small_body_spk) or not os.access(self.small_body_spk, os.X_OK):
-            raise Exception("Script small_body_spk does not exist or does not have execute permission")
+            raise Exception(
+                "Script small_body_spk does not exist or does not have execute permission")
 
         if settings.EMAIL_NOTIFICATIONS is None:
-            raise Exception("you must have a valid email set in the EMAIL_NOTIFICATION environment variable.")
+            raise Exception(
+                "you must have a valid email set in the EMAIL_NOTIFICATION environment variable.")
 
         if settings.BSP_JPL_DIR is None:
-            raise Exception("it is necessary to have a valid path defined in the BSP_JPL_DIR settings variable.")
+            raise Exception(
+                "it is necessary to have a valid path defined in the BSP_JPL_DIR settings variable.")
 
         self.bsp_jpl_dir = settings.BSP_JPL_DIR
 
@@ -52,6 +55,23 @@ class BSPJPL(DownloadParameters):
 
         self.bsp_jpl_extension = ".bsp"
 
+        # Quantos anos antes do atual, vai começar o bsp. (Year - bsp_start_years)
+        self.bsp_start_years = 10
+        # Quantos anos depois do atual, termina o bsp. (Year + bsp_start_years)
+        self.bsp_end_years = 10
+
+    def get_start_date(self):
+        now = datetime.now()
+        # Ano atual - bsp_start_years.
+        start = now - timedelta(days=(self.bsp_start_years * 365.24))
+        return '%s-Jan-01' % start.year
+
+    def get_end_date(self):
+        now = datetime.now()
+        # Ano atual + bsp_start_years.
+        end = now + timedelta(days=(self.bsp_start_years * 365.24))
+        return '%s-Jan-01' % end.year
+
     def download(self, name, filename, output_path, logger):
 
         start = datetime.now()
@@ -63,12 +83,12 @@ class BSPJPL(DownloadParameters):
                 self.small_body_spk,
                 '-b',
                 '"%s"' % name,
-                '2000-Jan-01',
-                '2030-Jan-01',
+                self.get_start_date(),
+                self.get_end_date(),
                 settings.EMAIL_NOTIFICATIONS,
                 file_path]
 
-            logger.debug("Command: [ %s ]" %(" ".join(args)))
+            logger.debug("Command: [ %s ]" % (" ".join(args)))
 
             # TODO stdout deve ser jogado para um arquivo de log
             # executa de fato o download.
@@ -85,7 +105,6 @@ class BSPJPL(DownloadParameters):
             trace = traceback.format_exc()
             logger.error(trace)
             return None
-
 
         finish = datetime.now()
         tdelta = finish - start
@@ -136,7 +155,7 @@ class BSPJPL(DownloadParameters):
             raise e
 
         self.logger.info("Configuring Parsl")
-        self.logger.debug("Parsl Config:" )
+        self.logger.debug("Parsl Config:")
         self.logger.debug(settings.PARSL_CONFIG)
 
         # Configuracao do Parsl Log.
@@ -166,7 +185,8 @@ class BSPJPL(DownloadParameters):
                 })
 
                 msg = "Download [ SUCCESS ] - Object: %s File: %s Size: %s Time: %s seconds" % (
-                    result.get('name'), result.get('filename'), humanize.naturalsize(result.get('file_size')),
+                    result.get('name'), result.get(
+                        'filename'), humanize.naturalsize(result.get('file_size')),
                     result.get('download_time'))
 
             logger.info(msg)
@@ -179,7 +199,8 @@ class BSPJPL(DownloadParameters):
             # Utiliza o parsl apenas para os objetos que estao marcados
             # para serem baixados.
             if row.get("need_download"):
-                filename = row.get("name").replace(" ", "_") + self.bsp_jpl_extension
+                filename = row.get("name").replace(
+                    " ", "_") + self.bsp_jpl_extension
 
                 result = start_parsl_job(
                     name=row.get("name"),
@@ -215,7 +236,8 @@ class BSPJPL(DownloadParameters):
         t1 = datetime.now()
         tdelta = t1 - t0
 
-        self.logger.info("Download BSP_JPL Completed in %s" % humanize.naturaldelta(tdelta))
+        self.logger.info("Download BSP_JPL Completed in %s" %
+                         humanize.naturaldelta(tdelta))
 
     def update_or_create_record(self, record):
 
@@ -255,7 +277,8 @@ class BSPJPL(DownloadParameters):
 
     def get_latest(self, name):
         try:
-            f = BspJplFile.objects.filter(name=name).order_by('-download_finish_time').first()
+            f = BspJplFile.objects.filter(name=name).order_by(
+                '-download_finish_time').first()
             return f
 
         except:
