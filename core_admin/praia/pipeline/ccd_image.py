@@ -23,7 +23,7 @@ def create_ccd_images_list(run_id, name, output_filepath, max_workers=10):
     })
 
     try:
-        ccds, ccds_count = FilterObjects().ccd_images_by_object(name)
+        ccds, ccds_count = FilterObjects().ccd_images_by_object(name, only_in_ccd=True)
 
         if ccds_count is not None and ccds_count > 0:
 

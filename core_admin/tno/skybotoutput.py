@@ -446,7 +446,7 @@ class FilterObjects(DBBase):
             image_size = 0
         return image_size
 
-    def ccd_images_by_object(self, name):
+    def ccd_images_by_object(self, name, only_in_ccd=False):
         # select a.* from tno_pointing a inner join tno_skybotoutput b on (a.id = b.pointing_id) where b.name = 'Eris';
         tbl = self.get_table_pointing()
         tbl_skybot = self.get_table_skybot().alias('b')
@@ -456,9 +456,15 @@ class FilterObjects(DBBase):
 
         stm = select(tbl.c).select_from(stm_join)
 
-        stm = stm.where(and_(tbl_skybot.c.name == name))
+        stm = stm.where(and_(
+            tbl_skybot.c.name == name,
+            tbl_skybot.c.ccdnum.isnot(None)))
 
         totalSize = self.stm_count(stm)
+
+        stm = stm.order_by(tbl.c.date_obs.asc())
+
+        self.debug_query(stm, True)
 
         rows = self.fetch_all_dict(stm)
 

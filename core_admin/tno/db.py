@@ -12,6 +12,7 @@ from sqlalchemy.schema import Sequence
 import collections
 import os
 from django.conf import settings
+import logging
 
 
 class DBBase():
@@ -22,6 +23,8 @@ class DBBase():
         self.current_dialect = None
 
         self.inspect = inspect(self.engine)
+
+        self.logger = logging.getLogger('django')
 
     def get_db_uri(self):
         db_uri = ""
@@ -89,7 +92,8 @@ class DBBase():
         with self.engine.connect() as con:
             # Over para que a contagem seja feita no final da query em casos
             # que tenham counts ou distincts
-            stm_count = stm.with_only_columns([func.count().over().label('totalCount')]).limit(None).offset(None)
+            stm_count = stm.with_only_columns(
+                [func.count().over().label('totalCount')]).limit(None).offset(None)
             count = con.execute(stm_count).scalar()
 
             if settings.DEBUG:
@@ -150,31 +154,33 @@ class DBBase():
             and_schema = "AND nspname = %s" % schema
 
         stm = text(str(
-            "SELECT *, pg_size_pretty(total_bytes) AS total" \
-            " , pg_size_pretty(index_bytes) AS INDEX" \
-            " , pg_size_pretty(toast_bytes) AS toast" \
-            " , pg_size_pretty(table_bytes) AS TABLE" \
-            " FROM (" \
-            " SELECT *, total_bytes-index_bytes-COALESCE(toast_bytes,0) AS table_bytes FROM (" \
-            " SELECT c.oid,nspname AS table_schema, relname AS TABLE_NAME" \
-            " , c.reltuples AS row_estimate" \
-            " , pg_total_relation_size(c.oid) AS total_bytes" \
-            " , pg_indexes_size(c.oid) AS index_bytes" \
-            " , pg_total_relation_size(reltoastrelid) AS toast_bytes" \
-            " FROM pg_class c" \
-            " LEFT JOIN pg_namespace n ON n.oid = c.relnamespace" \
-            " WHERE relkind = 'r'" \
-            " %s AND relname = '%s'" \
-            " ) a" \
+            "SELECT *, pg_size_pretty(total_bytes) AS total"
+            " , pg_size_pretty(index_bytes) AS INDEX"
+            " , pg_size_pretty(toast_bytes) AS toast"
+            " , pg_size_pretty(table_bytes) AS TABLE"
+            " FROM ("
+            " SELECT *, total_bytes-index_bytes-COALESCE(toast_bytes,0) AS table_bytes FROM ("
+            " SELECT c.oid,nspname AS table_schema, relname AS TABLE_NAME"
+            " , c.reltuples AS row_estimate"
+            " , pg_total_relation_size(c.oid) AS total_bytes"
+            " , pg_indexes_size(c.oid) AS index_bytes"
+            " , pg_total_relation_size(reltoastrelid) AS toast_bytes"
+            " FROM pg_class c"
+            " LEFT JOIN pg_namespace n ON n.oid = c.relnamespace"
+            " WHERE relkind = 'r'"
+            " %s AND relname = '%s'"
+            " ) a"
             " ) a;" % (and_schema, tablename)
         ))
 
         return self.fetch_one_dict(stm)
 
     def debug_query(self, stm, with_parameters=False):
-        # TODO send debug to Log
+        if settings.DEBUG:
+            sql = self.stm_to_str(stm, with_parameters)
 
-        print(self.stm_to_str(stm, with_parameters))
+            print(sql)
+            self.logger.info(sql)
 
     def stm_to_str(self, stm, with_parameters=False):
         sql = str(stm.compile(
@@ -197,7 +203,8 @@ class DBBase():
     def _create_table_as(element, compiler, **kw):
         return "CREATE TABLE %s AS %s" % (
             element.name,
-            element.query.compile(dialect=element.dialect, compile_kwargs={"literal_binds": True})
+            element.query.compile(dialect=element.dialect, compile_kwargs={
+                                  "literal_binds": True})
         )
 
     def create_table_as(self, table, stm, schema=None):
@@ -251,13 +258,15 @@ class DBBase():
 
     def get_table_observations_file(self):
         schema = self.get_base_schema()
-        self.table_observations_file = self.get_table('orbit_observationfile', schema)
+        self.table_observations_file = self.get_table(
+            'orbit_observationfile', schema)
 
         return self.table_observations_file
 
     def get_table_orbital_parameters_file(self):
         schema = self.get_base_schema()
-        self.table_orbital_parameters_file = self.get_table('orbit_orbitalparameterfile', schema)
+        self.table_orbital_parameters_file = self.get_table(
+            'orbit_orbitalparameterfile', schema)
 
         return self.table_orbital_parameters_file
 
@@ -289,7 +298,6 @@ class CatalogDB(DBBase):
 
         return db_uri
 
-
     def radial_query(self, tablename, ra_property, dec_property, ra, dec, radius, schema=None, columns=None, limit=None):
 
         s_columns = '*'
@@ -297,14 +305,14 @@ class CatalogDB(DBBase):
             s_columns = ', '.join(columns)
 
         if schema is not None:
-            tablename = "%s.%s" %(schema, tablename)
+            tablename = "%s.%s" % (schema, tablename)
 
         s_limit = ''
         if limit is not None:
             s_limit = 'LIMIT %s' % limit
 
-        stm = """SELECT %s FROM %s WHERE q3c_radial_query("%s", "%s", %s, %s, %s) %s """ %(s_columns, tablename, ra_property,
-                                                                                        dec_property, ra, dec, radius, s_limit)
+        stm = """SELECT %s FROM %s WHERE q3c_radial_query("%s", "%s", %s, %s, %s) %s """ % (s_columns, tablename, ra_property,
+                                                                                            dec_property, ra, dec, radius, s_limit)
 
         return self.fetch_all_dict(text(stm))
 
@@ -315,15 +323,12 @@ class CatalogDB(DBBase):
             s_columns = ', '.join(columns)
 
         if schema is not None:
-            tablename = "%s.%s" %(schema, tablename)
+            tablename = "%s.%s" % (schema, tablename)
 
         s_limit = ''
         if limit is not None:
             s_limit = 'LIMIT %s' % limit
 
-        stm = """SELECT %s FROM %s WHERE q3c_poly_query("%s", "%s", '{%s}') %s """ %(s_columns, tablename, ra_property,
-                                                                                        dec_property, ", ".join(positions), s_limit)
+        stm = """SELECT %s FROM %s WHERE q3c_poly_query("%s", "%s", '{%s}') %s """ % (s_columns, tablename, ra_property,
+                                                                                      dec_property, ", ".join(positions), s_limit)
         return self.fetch_all_dict(text(stm))
-
-
-

@@ -364,6 +364,14 @@ LOGGING = {
             'filename': os.path.join(LOG_DIR, 'astrometry.log'),
             'formatter': 'standard',
         },
+        'astrometry_daemon': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'astrometry_daemon.log'),
+            'formatter': 'standard',
+        },
         'refine_orbit': {
             'level': LOGGING_LEVEL,
             'class': 'logging.handlers.RotatingFileHandler',
@@ -436,6 +444,11 @@ LOGGING = {
         },
         'astrometry': {
             'handlers': ['astrometry'],
+            'level': LOGGING_LEVEL,
+            'propagate': True,
+        },
+        'astrometry_daemon': {
+            'handlers': ['astrometry_daemon'],
             'level': LOGGING_LEVEL,
             'propagate': True,
         },
