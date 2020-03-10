@@ -480,7 +480,7 @@ def finish_astrometry_run(astrometry_run):
 
 
 def check_astrometry_running():
-    logger = logging.getLogger("astrometry")
+    logger = logging.getLogger("astrometry_daemon")
 
     runs = Run.objects.filter(status='running', step=3)
 

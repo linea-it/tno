@@ -563,7 +563,7 @@ class AstrometryPipeline():
                 obj.error_msg("Job submission failed. Error: %s" % e)
                 obj.save()
 
-        # Nome descritivo do arquivo txt gerado pelo PRAIA "Astrometric observed ICRF positions"
+            idx += 1
 
         # Acrescentar os totais de asteroids por status.
         cnotexecuted = instance.asteroids.filter(status='not_executed').count()
