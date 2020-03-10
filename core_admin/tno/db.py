@@ -285,6 +285,8 @@ class CatalogDB(DBBase):
 
         self.inspect = inspect(self.engine)
 
+        self.logger = logging.getLogger('django')
+
     def get_db_uri(self):
         db_uri = ""
 
