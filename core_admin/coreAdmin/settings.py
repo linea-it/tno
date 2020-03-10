@@ -62,6 +62,11 @@ JHONSTONS_ARCHIVE = os.path.join(ARCHIVE_DIR, JHONSTONS_ARCHIVE_ROOT)
 if not os.path.exists(JHONSTONS_ARCHIVE):
     os.mkdir(JHONSTONS_ARCHIVE)
 
+CUSTOM_LIST_ROOT = 'custom_list'
+CUSTOM_LIST = os.path.join(ARCHIVE_DIR, CUSTOM_LIST_ROOT)
+if not os.path.exists(CUSTOM_LIST):
+    os.mkdir(CUSTOM_LIST)
+
 # TODO:  Este diretorio e provisorio faz parte da simulacao do PRAIA.
 ASTROMETRY_POSITIONS_DIR = os.path.join(ARCHIVE_DIR, "astrometry_positions")
 if not os.path.exists(ASTROMETRY_POSITIONS_DIR):

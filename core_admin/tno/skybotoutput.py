@@ -3,7 +3,7 @@ from .db import DBBase
 from sqlalchemy.sql import select, and_, or_, func, subquery, text
 from sqlalchemy import create_engine, inspect, MetaData, func, Table, Column, Integer, String, Float, Boolean, \
     literal_column, null, between, cast, DATE, func, text
-
+from django.conf import settings
 from django.utils import timezone
 
 import logging
@@ -18,6 +18,7 @@ class FilterObjects(DBBase):
 
     def __init__(self):
         super(FilterObjects, self).__init__()
+        self.logger = logging.getLogger("skybot")
 
         self.table = None
 
@@ -164,6 +165,28 @@ class FilterObjects(DBBase):
             # é preciso executar a query primeiro e fazer um Sum na quantidade de CCD Nums
             return None
 
+
+    def writer_custom_list_file(self, file_path, records):
+        """
+
+        """
+        self.logger.debug("Input File: %s" % file_path)
+
+        # header_orb_param = ["name", "num", "filename", "need_download"]
+
+        with open(file_path, 'w') as csvfile:
+            # fieldnames = header_orb_param
+            writer = csv.DictWriter(
+                csvfile, delimiter=';', extrasaction='ignore')
+
+            writer.writeheader()
+
+            # Fix boolean field
+            for row in records:
+                writer.writerow(row)
+
+        return file_path
+
     def create_object_list(self,
                            tablename, name, objectTable,
                            magnitude, diffDateNights, moreFilter):
@@ -196,6 +219,24 @@ class FilterObjects(DBBase):
         schema = self.get_base_schema()
 
         try:
+
+            self.logger.info("---------------------------------------------------------------------")
+
+            self.logger.info(cols)
+            self.logger.info(stm)
+
+            # Create:
+            custom_list_path = os.path.join(settings.CUSTOM_LIST, tablename)
+
+
+            if not os.path.exists(custom_list_path):
+                os.mkdir(custom_list_path)
+
+            custom_list_file = os.path.join(custom_list_path, 'objects.csv')
+
+            # Create file with all objects:
+            self.writer_custom_list_file(custom_list_file, all_stm)
+
             create_stm = self.create_table_as(
                 tablename, all_stm, schema=schema)
 
