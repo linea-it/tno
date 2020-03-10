@@ -511,13 +511,13 @@ class AstrometryPipeline():
 
             asteroid_alias = obj.name.replace(' ', '')
 
-            max_workers = 6
+            max_workers = 5
 
             payload = dict({
                 "queues": 1,
                 "submit_params": {
                     "Universe": "docker",
-                    "Docker_image": "linea/tno_astrometry:latest",
+                    "Docker_image": "linea/tno_astrometry:v.1.1.0",
                     "Requirements": "SlotsTno == True",
                     "executable": "/app/run.py",
                     # "arguments": "%s --path %s --catalog %s --max_workers=%s" % (asteroid_alias, obj.relative_path, catalog_name, max_workers),
