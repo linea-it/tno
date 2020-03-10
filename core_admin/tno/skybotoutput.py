@@ -456,9 +456,13 @@ class FilterObjects(DBBase):
 
         stm = select(tbl.c).select_from(stm_join)
 
-        stm = stm.where(and_(
-            tbl_skybot.c.name == name,
-            tbl_skybot.c.ccdnum.isnot(None)))
+        if only_in_ccd:
+            stm = stm.where(and_(
+                tbl_skybot.c.name == name,
+                tbl_skybot.c.ccdnum.isnot(None)))
+        else:
+            stm = stm.where(and_(
+                tbl_skybot.c.name == name))
 
         totalSize = self.stm_count(stm)
 
