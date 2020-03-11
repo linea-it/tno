@@ -5,7 +5,7 @@ from sqlalchemy import create_engine, inspect, MetaData, func, Table, Column, In
     literal_column, null, between, cast, DATE, func, text
 from django.conf import settings
 from django.utils import timezone
-
+import csv
 import logging
 
 
@@ -166,26 +166,60 @@ class FilterObjects(DBBase):
             return None
 
 
-    def writer_custom_list_file(self, file_path, records):
+    def get_grouped_objects(self, tablename, schema=None):
+
+        self.logger.info("Starting...")
+
+        tbl = self.get_table(tablename, schema)
+
+        self.logger.info(tablename)
+        # TODO acrescentar mais colunas a query
+        tbl = self.get_table(tablename, schema).alias('a')
+
+        tbl_ccd = self.get_table_ccdimage().alias('b')
+
+        stm_join = tbl.join(tbl_ccd, tbl.c.pointing_id ==
+                            tbl_ccd.c.pointing_id, isouter=True)
+
+        self.logger.info("---eeeee----eeeee----")
+
+        stm = select([
+            func.distinct(tbl.c.name).label('name'),
+            func.count(func.distinct(tbl.c.name)).label('objects'),
+            # func.count(func.is_not_null(tbl.c.num)).label('objects_inside_ccd'),
+            # func.count(func.is_null(tbl.c.num)).label('objects_outside_ccd'),
+        ]).select_from(stm_join)
+
+        # Agrupamento
+        # stm = stm.group_by(tbl.c.name, tbl.c.num)
+
+        # Ordenacao
+        stm = stm.order_by(tbl.c.name)
+
+        self.logger.info("----------------------------------------")
+        self.logger.info(stm)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows
+
+
+    def writer_custom_list_file(self, file, rows):
         """
 
         """
-        self.logger.debug("Input File: %s" % file_path)
 
-        # header_orb_param = ["name", "num", "filename", "need_download"]
+        with open(file, 'w') as csvfile:
+            fieldnames = ['id', 'num', 'name', 'dynclass', 'ra', 'dec', 'raj2000', 'decj2000', 'mv', 'errpos', 'd', 'dracosdec', 'ddec', 'dgeo', 'dhelio', 'phase', 'solelong', 'px', 'py', 'pz', 'vx', 'vy', 'vz', 'jdref', 'externallink', 'expnum', 'ccdnum', 'band', 'pointing_id']
 
-        with open(file_path, 'w') as csvfile:
-            # fieldnames = header_orb_param
             writer = csv.DictWriter(
-                csvfile, delimiter=';', extrasaction='ignore')
-
+                csvfile, fieldnames=fieldnames, delimiter=";")
             writer.writeheader()
 
-            # Fix boolean field
-            for row in records:
+            for row in rows:
                 writer.writerow(row)
 
-        return file_path
+        return file
 
     def create_object_list(self,
                            tablename, name, objectTable,
@@ -204,13 +238,12 @@ class FilterObjects(DBBase):
         # Trocar as colunas, para retornar apenas os nomes dos objetos e retirar o limit.
         cols = self.table.c
 
-        # Todos os objetos por nome
+        # All objects by name:
         stm_content = stm.with_only_columns([cols.name]).limit(None)
         self.debug_query(stm_content, True)
 
-        # Query com todos as linhas que contem estes objetos, name in (stm_content).
+        # Query with all lines that contain this object, name in (stm_content).
         all_stm = select([self.table], cols.name.in_(stm_content))
-
         self.debug_query(all_stm, True)
 
         # Create table As
@@ -218,14 +251,19 @@ class FilterObjects(DBBase):
         databse = self.get_database()
         schema = self.get_base_schema()
 
+        # Fetch all objects:
+        all_objects = self.fetch_all_dict(all_stm)
+
         try:
+            self.logger.info("---------------------------------------")
+            grouped_objects = self.get_grouped_objects(tablename, schema)
 
-            self.logger.info("---------------------------------------------------------------------")
+            self.logger.info("----------------------------------------")
+            self.logger.info(grouped_objects)
+            self.logger.info("----------------------------------------")
 
-            self.logger.info(cols)
-            self.logger.info(stm)
 
-            # Create:
+            # Create folder by tablename:
             custom_list_path = os.path.join(settings.CUSTOM_LIST, tablename)
 
 
@@ -235,7 +273,7 @@ class FilterObjects(DBBase):
             custom_list_file = os.path.join(custom_list_path, 'objects.csv')
 
             # Create file with all objects:
-            self.writer_custom_list_file(custom_list_file, all_stm)
+            self.writer_custom_list_file(custom_list_file, all_objects)
 
             create_stm = self.create_table_as(
                 tablename, all_stm, schema=schema)
@@ -307,8 +345,6 @@ class FilterObjects(DBBase):
         return rows, totalSize
 
     def list_distinct_objects_by_table(self, tablename, schema=None, page=1, pageSize=None):
-
-        tbl = self.get_table(tablename, schema)
 
         # TODO acrescentar mais colunas a query
         tbl = self.get_table(tablename, schema).alias('a')
