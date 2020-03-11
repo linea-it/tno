@@ -447,6 +447,10 @@ class FilterObjects(DBBase):
         return image_size
 
     def ccd_images_by_object(self, name, only_in_ccd=False):
+        # TODO: Esta query esta retornando resultado errado.
+        # devido a duplicidades na tabela de pointings,
+        # o join pelo pointing_id retorna mais de um resultado.
+
         # select a.* from tno_pointing a inner join tno_skybotoutput b on (a.id = b.pointing_id) where b.name = 'Eris';
         tbl = self.get_table_pointing()
         tbl_skybot = self.get_table_skybot().alias('b')
@@ -557,6 +561,32 @@ class SkybotOutput(DBBase):
 
         return self.fetch_all_dict(stm)
 
+    def positions_by_object(self, name, only_in_ccd=False):
+        """
+            Retorna todas as linhas da tabela skybotoutput 
+            relacionadas a um objeto. 
+        """
+        tbl = self.get_table_skybot()
+
+        stm = select([tbl.c.id, tbl.c.expnum, tbl.c.ccdnum, tbl.c.band])
+
+        terms = list([tbl.c.name == name])
+
+        if only_in_ccd:
+            terms.append(tbl.c.ccdnum.isnot(None))
+
+        stm = stm.where(and_(*terms))
+
+        totalSize = self.stm_count(stm)
+
+        stm = stm.order_by(tbl.c.expnum.asc(), tbl.c.ccdnum.asc())
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows, totalSize
+
 
 class Pointing(DBBase):
     def __init__(self):
@@ -665,3 +695,35 @@ class Pointing(DBBase):
             results.append(
                 dict({'name': exptime, 'exposure': self.count_range_exposures(start, end)}))
         return results
+
+    def exposure_by_expnum(self, expnum, ccdnum, band, most_recent=True):
+        """
+            Retorna os dados do Apontamento/CCD para uma (expnum, ccdnum, band) expecifica.
+            Alguns apontamentos tem duplicidade devido a reprocessamentos no des. 
+            Parametro most_recent=True considera apenas os mais recentes em caso de duplicidade.
+        """
+        tbl = self.tbl
+
+        stm = select([
+            tbl.c.id, tbl.c.pfw_attempt_id, tbl.c.desfile_id, tbl.c.nite, tbl.c.date_obs,
+            tbl.c.expnum, tbl.c.ccdnum, tbl.c.band, tbl.c.exptime, tbl.c.cloud_apass,
+            tbl.c.cloud_nomad, tbl.c.t_eff, tbl.c.crossra0, tbl.c.radeg, tbl.c.decdeg,
+            tbl.c.racmin, tbl.c.racmax, tbl.c.deccmin, tbl.c.deccmax, tbl.c.ra_cent,
+            tbl.c.dec_cent, tbl.c.rac1, tbl.c.rac2, tbl.c.rac3, tbl.c.rac4,
+            tbl.c.decc1, tbl.c.decc2, tbl.c.decc3, tbl.c.decc4, tbl.c.ra_size, tbl.c.dec_size,
+            tbl.c.path, tbl.c.filename, tbl.c.compression
+        ])
+
+        stm = stm.where(and_(
+            tbl.c.expnum == expnum,
+            tbl.c.ccdnum == ccdnum,
+            tbl.c.band == band
+        ))
+
+        stm = stm.order_by(tbl.c.pfw_attempt_id.desc())
+        stm = stm.limit(1)
+        self.debug_query(stm, True)
+
+        rows = self.fetch_one_dict(stm)
+
+        return rows
