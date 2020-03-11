@@ -81,13 +81,14 @@ export function Donut({ data, width, height }) {
   const rows = [{
     labels: data.map((el) => el.name),
     values: data.map((el) => el.value),
+    text: data.map((el) => el.title),
     marker: {
       colors: colors.length > 0 ? colors : [colors[0], colors[7], colors[2], colors[3], colors[4], colors[20]],
     },
     hole: 0.4,
     type: 'pie',
     textposition: 'inside',
-    hoverinfo: 'label+value',
+    hoverinfo: 'label+text',
     sort: false,
   }];
 

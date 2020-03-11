@@ -338,6 +338,7 @@ function AstrometryAsteroid({
     const data = [
       {
         name: 'CCD Images',
+        title: asteroidData.execution_ccd_list ? asteroidData.execution_ccd_list.split('.')[0] : 0,
         value:
           asteroidData.execution_ccd_list !== null
             ? Math.ceil(moment.duration(asteroidData.execution_ccd_list).asSeconds())
@@ -345,6 +346,7 @@ function AstrometryAsteroid({
       },
       {
         name: 'Ephemeris JPL',
+        title: asteroidData.execution_bsp_jpl ? asteroidData.execution_bsp_jpl.split('.')[0] : 0,
         value:
           asteroidData.execution_bsp_jpl !== null
             ? Math.ceil(moment.duration(asteroidData.execution_bsp_jpl).asSeconds())
@@ -352,6 +354,7 @@ function AstrometryAsteroid({
       },
       {
         name: 'Reference Catalog',
+        title: asteroidData.execution_reference_catalog ? asteroidData.execution_reference_catalog.split('.')[0] : 0,
         value:
           asteroidData.execution_reference_catalog !== null
             ? Math.ceil(moment.duration(asteroidData.execution_reference_catalog).asSeconds())
@@ -359,6 +362,7 @@ function AstrometryAsteroid({
       },
       {
         name: 'Header Extraction',
+        title: asteroidData.execution_header ? asteroidData.execution_header.split('.')[0] : 0,
         value:
           asteroidData.execution_header !== null
             ? Math.ceil(moment.duration(asteroidData.execution_header).asSeconds())
@@ -366,6 +370,7 @@ function AstrometryAsteroid({
       },
       {
         name: 'Astrometry',
+        title: asteroidData.execution_astrometry ? asteroidData.execution_astrometry.split('.')[0] : 0,
         value:
           asteroidData.execution_astrometry !== null
             ? moment.duration(asteroidData.execution_astrometry).asSeconds()
@@ -373,6 +378,7 @@ function AstrometryAsteroid({
       },
       {
         name: 'Target Search',
+        title: asteroidData.execution_targets ? asteroidData.execution_targets.split('.')[0] : 0,
         value:
           asteroidData.execution_targets !== null
             ? moment.duration(asteroidData.execution_targets).asSeconds()
@@ -380,6 +386,7 @@ function AstrometryAsteroid({
       },
       {
         name: 'Plots',
+        title: asteroidData.execution_plots ? asteroidData.execution_plots.split('.')[0] : 0,
         value:
           asteroidData.execution_plots !== null
             ? moment.duration(asteroidData.execution_plots).asSeconds()
@@ -387,6 +394,7 @@ function AstrometryAsteroid({
       },
       {
         name: 'Registry',
+        title: asteroidData.execution_registry ? asteroidData.execution_registry.split('.')[0] : 0,
         value:
           asteroidData.execution_registry !== null
             ? moment.duration(asteroidData.execution_registry).asSeconds()
@@ -545,7 +553,7 @@ function AstrometryAsteroid({
                   className={classes.buttonContained}
                   variant="contained"
                   color="primary"
-                  title="Back"
+                  title={output.type_name}
                   onClick={() => handleMainOutputClick(output)}
                 >
                   {output.type_name}
@@ -660,7 +668,7 @@ function AstrometryAsteroid({
         content={<CustomLog data={outputLog.content} />}
         headerStyle={classes.logToolbar}
         bodyStyle={classes.logBody}
-        wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px' }}
+        wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px', marginBottom: 64 }}
       />
 
       <CustomDialog
@@ -678,7 +686,7 @@ function AstrometryAsteroid({
             hasSorting={false}
           />
         )}
-        wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px' }}
+        wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px', marginBottom: 64 }}
       />
 
       <ModalGateway>
