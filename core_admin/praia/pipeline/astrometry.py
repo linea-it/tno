@@ -517,7 +517,7 @@ class AstrometryPipeline():
                 "queues": 1,
                 "submit_params": {
                     "Universe": "docker",
-                    "Docker_image": "linea/tno_astrometry:v.1.1.0",
+                    "Docker_image": "linea/tno_astrometry:v1.1.2",
                     "Requirements": "SlotsTno == True",
                     "executable": "/app/run.py",
                     # "arguments": "%s --path %s --catalog %s --max_workers=%s" % (asteroid_alias, obj.relative_path, catalog_name, max_workers),
