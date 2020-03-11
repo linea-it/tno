@@ -109,6 +109,8 @@ function FilterObjectsDetail({ setTitle, match }) {
       hidden: true,
       width: 120,
       align: 'right',
+      sortingEnabled: false,
+
     },
     {
       name: 'dynclass',
@@ -201,10 +203,10 @@ function FilterObjectsDetail({ setTitle, match }) {
           <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
         </span>
       ) : (
-          <span title={el.filename}>
-            <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-          </span>
-        )),
+        <span title={el.filename}>
+          <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+        </span>
+      )),
       sortingEnabled: false,
     },
     {
@@ -241,9 +243,37 @@ function FilterObjectsDetail({ setTitle, match }) {
 
   const handleSqlLogChange = () => setSqlLogVisible(!sqlLogVisible);
 
+
+  // const loadSkybotOutput = ({
+  //   name = null,
+  //   objectTable = null,
+  //   useMagnitude = null,
+  //   magnitude = null,
+  //   useDifferenceTime = null,
+  //   diffDateNights = null,
+  //   moreFilter = null,
+  //   checked = null,
+  //   currentPage = 0,
+  // }) => {
+  //   getSkybotOutput({
+  //     name,
+  //     objectTable,
+  //     useMagnitude,
+  //     magnitude,
+  //     useDifferenceTime,
+  //     diffDateNights,
+  //     moreFilter,
+  //     checked,
+  //     page: currentPage + 1,
+  //   }).then((res) => {
+  //     setResultLoading(false);
+  //     setResultTableData(res.results);
+  //   });
+  // };
+
   return (
     <>
-      <Grid container spacing={2}>
+      {/* <Grid container spacing={2}>
         <Grid item xs={12} md={3} className={classes.block}>
           <CustomCardStats
             title="Objects"
@@ -319,7 +349,7 @@ function FilterObjectsDetail({ setTitle, match }) {
             size={stats.size_not_downloaded}
           />
         </Grid>
-      </Grid>
+      </Grid> */}
       {stats.id ? (
         <Grid container spacing={2}>
           <Grid item xs={12} className={classes.block}>
