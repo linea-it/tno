@@ -414,7 +414,6 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
             # Read the file:
             df = pd.read_csv(
                 filepath,
-                skiprows=1,
                 delimiter=","
             )
 
