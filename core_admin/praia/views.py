@@ -236,7 +236,7 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
                 ra = "%s:%s:%s" % (
                     "{:02d}".format(int(record[1])),
                     "{:02d}".format(int(record[2])),
-                    "{0:.3f}".format(float(record[3])))
+                    "{0:.4f}".format(float(record[3])))
 
                 dec = "%s:%s:%s" % (
                     "{:02d}".format(int(record[4])),

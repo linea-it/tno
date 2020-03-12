@@ -27,6 +27,8 @@ import parsl
 from parsl import *
 from statistics import mean
 import time
+import pandas as pd
+from tno.jdutil import jd_to_datetime
 
 
 class RefineOrbit():
@@ -65,8 +67,7 @@ class RefineOrbit():
 
         # TODO: poderiam ser inputs fornecido pelo usuario na interface de submissao.
         # Periodo em anos para os Plots.
-        # Serao usados para calcular o periodo do plot. (ano atual - start, ano atual + end)
-        self.plot_start_years = 4
+        # Serao usados para calcular o periodo do plot. (no atual + end)
         self.plot_end_years = 2
 
         # Periodo em anos para o BSP JPL.
@@ -79,14 +80,31 @@ class RefineOrbit():
         self.ephem_start_years = 1
         self.ephem_end_years = 1
 
-    def get_plot_period(self):
+    def get_plot_period(self, astrometry):
         """
             Retorna o periodo inicial e final que será usado para os plots.
         """
+        # Ler o arquivo de astrometria, para recuperar as datas
+        df = self.read_astrometry_position_file(astrometry)
+
+        # Descobrir a data mais antiga e mais recente em JD e converter para date.
+        dates = df[7].to_list()
+        min_jd = min(dates)
+        start = jd_to_datetime(min_jd)
+        max_jd = max(dates)
+        end = jd_to_datetime(max_jd)
+
+        # Regra utiliz
         now = datetime.now()
-        start = now - timedelta(days=(self.plot_start_years * 365.25))
         end = now + timedelta(days=(self.plot_end_years * 365.25))
-        return ('%s-01-01' % start.year, '%s-01-01' % end.year)
+
+        start_plot = '%s-01-01' % start.year
+        end_plot = '%s-01-01' % end.year
+
+        self.logger.info(
+            "Period for Plot: Start: [%s] End: [%s]" % (start_plot, end_plot))
+
+        return start_plot, end_plot
 
     def get_bsp_period(self):
         """
@@ -714,6 +732,16 @@ class RefineOrbit():
 
         return file_path
 
+    def read_astrometry_position_file(self, astrometry):
+        self.logger.info("Reading Astrometry Positions")
+        self.logger.debug("Astrometry File: [%s]" % astrometry)
+
+        df = pd.read_csv(astrometry,
+                         header=None,
+                         delim_whitespace=True,
+                         )
+        return df
+
     def run_nima(self, objects, objects_path):
 
         t0 = datetime.now()
@@ -1025,7 +1053,6 @@ class RefineOrbit():
     def nima_input_file(self, obj):
         # TODO: Precisa de um refactoring, os parametros podem vir da interface.
         try:
-
             input_file = os.path.join(obj['relative_path'], "input.txt")
 
             with open("orbit/nima_input_template.txt") as file:
@@ -1045,7 +1072,8 @@ class RefineOrbit():
                 data = data.replace('{number}', number.ljust(66))
 
                 # Parametro Plot start e Plot end
-                plot_start, plot_end = self.get_plot_period()
+                plot_start, plot_end = self.get_plot_period(
+                    astrometry=obj['inputs']['astrometry']['file_path'])
                 data = data.replace('{plot_start_date}', plot_start.ljust(66))
                 data = data.replace('{plot_end_date}', plot_end.ljust(66))
 

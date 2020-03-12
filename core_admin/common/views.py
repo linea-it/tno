@@ -29,15 +29,21 @@ def teste(request):
         # check_astrometry_running()
 
         # Registro de resultado da astrometria.
-        # register_astrometry_outputs(102, 'Eris')
+        # register_astrometry_outputs(108, 'Eris')
 
         # Exemplo de criacao da lista de ccds.
         # from praia.pipeline.ccd_image import create_ccd_images_list
         # filepath = os.path.join(settings.MEDIA_TMP_DIR, 'teste_Eris_ccd.csv')
         # result = create_ccd_images_list(178, 'Eris', filepath, max_workers=1)
 
+        from orbit.refine_orbit import RefineOrbit
+        start, end = RefineOrbit().get_plot_period(
+            astrometry='/proccess/106/objects/Eris/Eris.txt')
+
         result = dict({
             'success': True,
+            'start': start,
+            'end': end
         })
 
         return Response(result)
