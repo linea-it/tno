@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Grid, Card, makeStyles, CardHeader, CardContent,
+  Grid,
+  Card,
+  makeStyles,
+  CardHeader,
+  CardContent,
 } from '@material-ui/core';
 import clsx from 'clsx';
 import moment from 'moment';
@@ -13,8 +17,9 @@ import { withRouter } from 'react-router';
 import filesize from 'filesize';
 import CustomList from '../helpers/CustomList';
 import CustomTable from '../helpers/CustomTable';
-import { Donut } from '../helpers/CustomChart';
+import { Donut, AstrometryTimeProfile } from '../helpers/CustomChart';
 import { url } from '../../api/Auth';
+import { withSize } from 'react-sizeme';
 import {
   getAsteroidById,
   getAsteroidNeighbors,
@@ -25,11 +30,12 @@ import {
   getInputsByAsteroidId,
   getAsteroidOutputsTree,
   getCSV,
+  getAsteroidTimeProfile,
 } from '../../api/Praia';
 import CustomDialog from '../helpers/CustomDialog';
 import CustomLog from '../helpers/CustomLog';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   button: {
     margin: theme.spacing(1),
   },
@@ -102,19 +108,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function AstrometryAsteroid({
-  history,
-  setTitle,
-  match,
-  drawerOpen,
-}) {
+function AstrometryAsteroid({ history, setTitle, match, drawerOpen, size }) {
   const classes = useStyles();
   const { id } = match.params;
   const [asteroidData, setAsteroidData] = useState([]);
   const [asteroidList, setAsteroidList] = useState([]);
   const [astrometryTable, setAstrometryTable] = useState([]);
   const [asteroidMainOutputs, setAsteroidMainOutputs] = useState([]);
-  const [outputLog, setOutputLog] = useState({ visible: false, content: [], title: '' });
+  const [outputLog, setOutputLog] = useState({
+    visible: false,
+    content: [],
+    title: '',
+  });
   const [astrometryPlots, setAstrometryPlots] = useState([]);
   const [inputTable, setInputTable] = useState([]);
   const [outputTable, setOutputTable] = useState([]);
@@ -129,13 +134,19 @@ function AstrometryAsteroid({
   });
   const [reload, setReload] = useState(false);
 
-  const [inputCsv, setInputCsv] = useState({ visible: false, content: '', title: '' });
+  const [inputCsv, setInputCsv] = useState({
+    visible: false,
+    content: '',
+    title: '',
+  });
   const [inputCsvVisible, setInputCsvVisible] = useState(false);
   const [inputCsvTable, setInputCsvTable] = useState({
     columns: [],
     rows: [],
     count: 0,
   });
+
+  const [astrometryTimeProfile, setAstrometryTimeProfile] = useState([]);
 
   const astrometryColumns = [
     {
@@ -192,12 +203,18 @@ function AstrometryAsteroid({
     {
       name: 'id',
       title: ' ',
-      customElement: (row) => {
+      customElement: row => {
         if (row.file_type && row.file_type === 'csv' && row.file_type !== '') {
           return (
             <Icon
               className={clsx(`fas fa-file-csv ${classes.iconDetail}`)}
-              onClick={() => setInputCsv({ title: row.filename, content: row.file_path, visible: false })}
+              onClick={() =>
+                setInputCsv({
+                  title: row.filename,
+                  content: row.file_path,
+                  visible: false,
+                })
+              }
             />
           );
         }
@@ -255,7 +272,6 @@ function AstrometryAsteroid({
     },
   ];
 
-
   useEffect(() => {
     setTitle('Astrometry Asteroid');
     setAsteroidData([]);
@@ -269,40 +285,40 @@ function AstrometryAsteroid({
       next: null,
     });
 
-    getAsteroidById({ id }).then((res) => setAsteroidData(res));
+    getAsteroidById({ id }).then(res => setAsteroidData(res));
 
-    getAsteroidNeighbors({ id }).then((res) => {
+    getAsteroidNeighbors({ id }).then(res => {
       setNeighbors({
         prev: res.prev,
         next: res.next,
       });
     });
 
-    getAstrometryTable({ id }).then((res) => {
+    getAstrometryTable({ id }).then(res => {
       setAstrometryTable(res.rows);
     });
 
-    getAsteroidMainOutputs({ id }).then((res) => {
+    getAsteroidMainOutputs({ id }).then(res => {
       setAsteroidMainOutputs(res.rows);
     });
 
-    getAstrometryPlots({ id }).then((res) => {
+    getAstrometryPlots({ id }).then(res => {
       setAstrometryPlots(
-        res.rows.map((row) => ({
+        res.rows.map(row => ({
           ...row,
           source: row.src ? url + row.src : null,
-        })),
+        }))
       );
     });
 
-    getInputsByAsteroidId({ id }).then((res) => {
+    getInputsByAsteroidId({ id }).then(res => {
       setInputTable(res.results);
     });
 
-    getAsteroidOutputsTree({ id }).then((res) => {
+    getAsteroidOutputsTree({ id }).then(res => {
       const outputs = [];
-      res.rows.forEach((row) => {
-        row.outputs.forEach((output) => {
+      res.rows.forEach(row => {
+        row.outputs.forEach(output => {
           outputs.push({
             ...output,
             band: row.band,
@@ -315,6 +331,11 @@ function AstrometryAsteroid({
         });
       });
       setOutputTable(outputs);
+    });
+
+    getAsteroidTimeProfile(id).then(res => {
+      console.log(res);
+      setAstrometryTimeProfile(res.rows);
     });
   }, [reload, history.location]);
 
@@ -331,46 +352,75 @@ function AstrometryAsteroid({
     ]);
   }, [asteroidData, astrometryTable]);
 
-
   const renderExecutionTime = () => {
-    const colors = ['#1255a6', '#2b66b2', '#3f77be', '#5388c9', '#6699d4', '#7aabdf', '#8fbdea', '#a5cef4', '#bbe0ff'];
+    const colors = [
+      '#1255a6',
+      '#2b66b2',
+      '#3f77be',
+      '#5388c9',
+      '#6699d4',
+      '#7aabdf',
+      '#8fbdea',
+      '#a5cef4',
+      '#bbe0ff',
+    ];
 
     const data = [
       {
         name: 'CCD Images',
-        title: asteroidData.execution_ccd_list ? asteroidData.execution_ccd_list.split('.')[0] : 0,
+        title: asteroidData.execution_ccd_list
+          ? asteroidData.execution_ccd_list.split('.')[0]
+          : 0,
         value:
           asteroidData.execution_ccd_list !== null
-            ? Math.ceil(moment.duration(asteroidData.execution_ccd_list).asSeconds())
+            ? Math.ceil(
+                moment.duration(asteroidData.execution_ccd_list).asSeconds()
+              )
             : 0.0,
       },
       {
         name: 'Ephemeris JPL',
-        title: asteroidData.execution_bsp_jpl ? asteroidData.execution_bsp_jpl.split('.')[0] : 0,
+        title: asteroidData.execution_bsp_jpl
+          ? asteroidData.execution_bsp_jpl.split('.')[0]
+          : 0,
         value:
           asteroidData.execution_bsp_jpl !== null
-            ? Math.ceil(moment.duration(asteroidData.execution_bsp_jpl).asSeconds())
+            ? Math.ceil(
+                moment.duration(asteroidData.execution_bsp_jpl).asSeconds()
+              )
             : 0.0,
       },
       {
         name: 'Reference Catalog',
-        title: asteroidData.execution_reference_catalog ? asteroidData.execution_reference_catalog.split('.')[0] : 0,
+        title: asteroidData.execution_reference_catalog
+          ? asteroidData.execution_reference_catalog.split('.')[0]
+          : 0,
         value:
           asteroidData.execution_reference_catalog !== null
-            ? Math.ceil(moment.duration(asteroidData.execution_reference_catalog).asSeconds())
+            ? Math.ceil(
+                moment
+                  .duration(asteroidData.execution_reference_catalog)
+                  .asSeconds()
+              )
             : 0.0,
       },
       {
         name: 'Header Extraction',
-        title: asteroidData.execution_header ? asteroidData.execution_header.split('.')[0] : 0,
+        title: asteroidData.execution_header
+          ? asteroidData.execution_header.split('.')[0]
+          : 0,
         value:
           asteroidData.execution_header !== null
-            ? Math.ceil(moment.duration(asteroidData.execution_header).asSeconds())
+            ? Math.ceil(
+                moment.duration(asteroidData.execution_header).asSeconds()
+              )
             : 0.0,
       },
       {
         name: 'Astrometry',
-        title: asteroidData.execution_astrometry ? asteroidData.execution_astrometry.split('.')[0] : 0,
+        title: asteroidData.execution_astrometry
+          ? asteroidData.execution_astrometry.split('.')[0]
+          : 0,
         value:
           asteroidData.execution_astrometry !== null
             ? moment.duration(asteroidData.execution_astrometry).asSeconds()
@@ -378,7 +428,9 @@ function AstrometryAsteroid({
       },
       {
         name: 'Target Search',
-        title: asteroidData.execution_targets ? asteroidData.execution_targets.split('.')[0] : 0,
+        title: asteroidData.execution_targets
+          ? asteroidData.execution_targets.split('.')[0]
+          : 0,
         value:
           asteroidData.execution_targets !== null
             ? moment.duration(asteroidData.execution_targets).asSeconds()
@@ -386,7 +438,9 @@ function AstrometryAsteroid({
       },
       {
         name: 'Plots',
-        title: asteroidData.execution_plots ? asteroidData.execution_plots.split('.')[0] : 0,
+        title: asteroidData.execution_plots
+          ? asteroidData.execution_plots.split('.')[0]
+          : 0,
         value:
           asteroidData.execution_plots !== null
             ? moment.duration(asteroidData.execution_plots).asSeconds()
@@ -394,7 +448,9 @@ function AstrometryAsteroid({
       },
       {
         name: 'Registry',
-        title: asteroidData.execution_registry ? asteroidData.execution_registry.split('.')[0] : 0,
+        title: asteroidData.execution_registry
+          ? asteroidData.execution_registry.split('.')[0]
+          : 0,
         value:
           asteroidData.execution_registry !== null
             ? moment.duration(asteroidData.execution_registry).asSeconds()
@@ -402,13 +458,7 @@ function AstrometryAsteroid({
       },
     ];
 
-    return (
-      <Donut
-        data={data}
-        fill={colors}
-        height={408}
-      />
-    );
+    return <Donut data={data} fill={colors} height={408} />;
   };
 
   const openLightbox = (i, e) => {
@@ -426,15 +476,16 @@ function AstrometryAsteroid({
     });
   };
 
-  const handleAsteroidsNavigation = (asteroidId) => {
+  const handleAsteroidsNavigation = asteroidId => {
     history.push(`/astrometry/asteroid/${asteroidId}`);
     setReload(!reload);
   };
 
-  const handleBackNavigation = () => history.push(`/astrometry/${asteroidData.astrometry_run}`);
+  const handleBackNavigation = () =>
+    history.push(`/astrometry/${asteroidData.astrometry_run}`);
 
-  const handleMainOutputClick = (output) => {
-    getOutputFile(output.file_path).then((res) => {
+  const handleMainOutputClick = output => {
+    getOutputFile(output.file_path).then(res => {
       setOutputLog({
         title: output.filename,
         visible: true,
@@ -444,28 +495,31 @@ function AstrometryAsteroid({
   };
 
   const loadInputCsvTableData = ({ currentPage, pageSize }) => {
-    getCSV({ filepath: inputCsv.content, page: currentPage + 1, pageSize })
-      .then((res) => {
-        setInputCsvTable({
-          ...res,
-          columns: res.columns.map((column) => ({
-            name: column,
-            title: column,
-          })),
-        });
-        setInputCsvVisible(true);
+    getCSV({
+      filepath: inputCsv.content,
+      page: currentPage + 1,
+      pageSize,
+    }).then(res => {
+      setInputCsvTable({
+        ...res,
+        columns: res.columns.map(column => ({
+          name: column,
+          title: column,
+        })),
       });
+      setInputCsvVisible(true);
+    });
   };
 
-  useEffect(() => {
-  }, [astrometryPlots]);
-
+  useEffect(() => {}, [astrometryPlots]);
 
   useEffect(() => {
-    if (inputCsv.content !== '') loadInputCsvTableData({ currentPage: 0, pageSize: 10 });
+    if (inputCsv.content !== '')
+      loadInputCsvTableData({ currentPage: 0, pageSize: 10 });
   }, [inputCsv]);
 
-  const handleOutputLogClose = () => setOutputLog({ visible: false, content: '', title: '' });
+  const handleOutputLogClose = () =>
+    setOutputLog({ visible: false, content: '', title: '' });
 
   const handleInputCsvClose = () => {
     setInputCsvVisible(false);
@@ -475,48 +529,48 @@ function AstrometryAsteroid({
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Grid
-          container
-          justify="space-between"
-          alignItems="center"
-          spacing={2}
-        >
+        <Grid container justify='space-between' alignItems='center' spacing={2}>
           <Grid item xs={12} md={4}>
             <Button
-              variant="contained"
-              color="primary"
-              title="Back"
+              variant='contained'
+              color='primary'
+              title='Back'
               className={classes.button}
-              onClick={handleBackNavigation}
-            >
+              onClick={handleBackNavigation}>
               <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
               <span>Back</span>
             </Button>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Grid container justify="flex-end">
+            <Grid container justify='flex-end'>
               <Grid item>
                 <Button
-                  variant="contained"
-                  color="primary"
-                  title="Previous"
+                  variant='contained'
+                  color='primary'
+                  title='Previous'
                   className={classes.button}
                   disabled={neighbors.prev === null}
-                  onClick={() => handleAsteroidsNavigation(neighbors.prev)}
-                >
-                  <Icon className={clsx('fas', 'fa-arrow-left', classes.buttonIcon)} />
+                  onClick={() => handleAsteroidsNavigation(neighbors.prev)}>
+                  <Icon
+                    className={clsx('fas', 'fa-arrow-left', classes.buttonIcon)}
+                  />
                   <span>Prev</span>
                 </Button>
                 <Button
-                  variant="contained"
-                  color="primary"
-                  title="Next"
+                  variant='contained'
+                  color='primary'
+                  title='Next'
                   className={classes.button}
                   disabled={neighbors.next === null}
-                  onClick={() => handleAsteroidsNavigation(neighbors.next)}
-                >
+                  onClick={() => handleAsteroidsNavigation(neighbors.next)}>
                   <span>Next</span>
-                  <Icon className={clsx('fas', 'fa-arrow-right', classes.buttonIcon)} />
+                  <Icon
+                    className={clsx(
+                      'fas',
+                      'fa-arrow-right',
+                      classes.buttonIcon
+                    )}
+                  />
                 </Button>
               </Grid>
             </Grid>
@@ -527,7 +581,7 @@ function AstrometryAsteroid({
         <Grid container spacing={2}>
           <Grid item xs={12} md={4}>
             <Card>
-              <CardHeader title="Asteroid" />
+              <CardHeader title='Asteroid' />
               <CardContent>
                 <CustomList data={asteroidList} />
               </CardContent>
@@ -535,9 +589,19 @@ function AstrometryAsteroid({
           </Grid>
           <Grid item xs={12} md={8}>
             <Card>
-              <CardHeader title="Execution Time" />
+              <CardHeader title='Execution Time' />
+              <CardContent>{renderExecutionTime()}</CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader title='Time Profile' />
               <CardContent>
-                {renderExecutionTime()}
+                <AstrometryTimeProfile
+                  data={astrometryTimeProfile}
+                  width={1273}
+                  height={463}
+                />
               </CardContent>
             </Card>
           </Grid>
@@ -547,15 +611,14 @@ function AstrometryAsteroid({
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <ButtonGroup className={classes.buttonContained}>
-              {asteroidMainOutputs.map((output) => (
+              {asteroidMainOutputs.map(output => (
                 <Button
                   key={output.id}
                   className={classes.buttonContained}
-                  variant="contained"
-                  color="primary"
+                  variant='contained'
+                  color='primary'
                   title={output.type_name}
-                  onClick={() => handleMainOutputClick(output)}
-                >
+                  onClick={() => handleMainOutputClick(output)}>
                   {output.type_name}
                 </Button>
               ))}
@@ -569,7 +632,7 @@ function AstrometryAsteroid({
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Card>
-                <CardHeader title="Astrometry" />
+                <CardHeader title='Astrometry' />
                 <CardContent>
                   <CustomTable
                     columns={astrometryColumns}
@@ -590,15 +653,18 @@ function AstrometryAsteroid({
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Card>
-                <CardHeader title="CCD x Stars x Asteroid" />
+                <CardHeader title='CCD x Stars x Asteroid' />
                 <CardContent>
                   <Grid container spacing={2}>
                     {astrometryPlots.map((plot, i) => (
                       <Grid item xs={12} sm={6} md={3} key={plot.id}>
                         <img
                           src={plot.source}
-                          onClick={(e) => openLightbox(i, e)}
-                          className={clsx(classes.imgResponsive, classes.lightboxImage)}
+                          onClick={e => openLightbox(i, e)}
+                          className={clsx(
+                            classes.imgResponsive,
+                            classes.lightboxImage
+                          )}
                           title={plot.filename}
                           alt={plot.filename}
                         />
@@ -617,7 +683,7 @@ function AstrometryAsteroid({
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Card>
-                <CardHeader title="Input" />
+                <CardHeader title='Input' />
                 <CardContent className={classes.cardTableResponsive}>
                   <CustomTable
                     columns={inputColumns}
@@ -640,7 +706,7 @@ function AstrometryAsteroid({
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Card>
-                <CardHeader title="Output" />
+                <CardHeader title='Output' />
                 <CardContent className={classes.cardTableResponsive}>
                   <CustomTable
                     columns={outputColumns}
@@ -661,18 +727,21 @@ function AstrometryAsteroid({
       </Grid>
 
       <CustomDialog
-        maxWidth="md"
+        maxWidth='md'
         visible={outputLog.visible}
         setVisible={handleOutputLogClose}
         title={outputLog.title}
         content={<CustomLog data={outputLog.content} />}
         headerStyle={classes.logToolbar}
         bodyStyle={classes.logBody}
-        wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px', marginBottom: 64 }}
+        wrapperStyle={{
+          marginLeft: drawerOpen ? '240px' : '64px',
+          marginBottom: 64,
+        }}
       />
 
       <CustomDialog
-        maxWidth="lg"
+        maxWidth='lg'
         visible={inputCsvVisible}
         setVisible={handleInputCsvClose}
         title={inputCsv.title}
@@ -686,7 +755,10 @@ function AstrometryAsteroid({
             hasSorting={false}
           />
         )}
-        wrapperStyle={{ marginLeft: drawerOpen ? '240px' : '64px', marginBottom: 64 }}
+        wrapperStyle={{
+          marginLeft: drawerOpen ? '240px' : '64px',
+          marginBottom: 64,
+        }}
       />
 
       <ModalGateway>
@@ -699,7 +771,9 @@ function AstrometryAsteroid({
               onClose={closeLightbox}
               styles={{
                 container: () => ({
-                  maxWidth: drawerOpen ? 'calc(100% - 240px)' : 'calc(100% - 64px)',
+                  maxWidth: drawerOpen
+                    ? 'calc(100% - 240px)'
+                    : 'calc(100% - 64px)',
                   marginLeft: drawerOpen ? '240px' : '64px',
                 }),
               }}
@@ -724,4 +798,4 @@ AstrometryAsteroid.propTypes = {
   drawerOpen: PropTypes.bool.isRequired,
 };
 
-export default withRouter(AstrometryAsteroid);
+export default withRouter(withSize()(AstrometryAsteroid));
