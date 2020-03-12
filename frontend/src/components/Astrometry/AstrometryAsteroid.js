@@ -19,7 +19,6 @@ import CustomList from '../helpers/CustomList';
 import CustomTable from '../helpers/CustomTable';
 import { Donut, AstrometryTimeProfile } from '../helpers/CustomChart';
 import { url } from '../../api/Auth';
-import { withSize } from 'react-sizeme';
 import {
   getAsteroidById,
   getAsteroidNeighbors,
@@ -108,7 +107,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function AstrometryAsteroid({ history, setTitle, match, drawerOpen, size }) {
+function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
   const classes = useStyles();
   const { id } = match.params;
   const [asteroidData, setAsteroidData] = useState([]);
@@ -798,4 +797,4 @@ AstrometryAsteroid.propTypes = {
   drawerOpen: PropTypes.bool.isRequired,
 };
 
-export default withRouter(withSize()(AstrometryAsteroid));
+export default withRouter(AstrometryAsteroid);
