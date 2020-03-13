@@ -19,7 +19,7 @@ from orbit.bsp_jpl import BSPJPL
 from praia.models import AstrometryAsteroid, AstrometryInput, Run
 from praia.pipeline.bsp_jpl import retrieve_bsp_jpl
 from praia.pipeline.ccd_image import create_ccd_images_list
-from praia.pipeline.register import register_condor_job
+from praia.pipeline.register import register_condor_job, register_csv_stages_outputs
 from praia.pipeline.star_catalog import create_star_catalog
 from tno.condor import submit_condor_job
 from tno.db import CatalogDB, DBBase
@@ -65,6 +65,25 @@ class AstrometryPipeline():
         self.instance = instance
 
         return instance
+
+    def run_register_csv_stages_outputs(self, asteroid_name, asteroid_relative_path, start_time, finish_time, execution_time, stage):
+
+
+        self.logger.info(asteroid_name, asteroid_relative_path, start_time, finish_time, execution_time, stage)
+
+        stages_output_filepath = os.path.join(asteroid_relative_path, 'time_profile.csv')
+
+        # CCD List Stage CSV:
+        ccd_list_result_csv = dict({
+            'asteroid': asteroid_name,
+            stage: {
+                'start': start_time,
+                'finish': finish_time,
+                'execution_time': execution_time,
+            }
+        })
+
+        register_csv_stages_outputs(stages_output_filepath, ccd_list_result_csv, stage)
 
     def startAstrometryRun(self, run_id):
 
@@ -255,6 +274,28 @@ class AstrometryPipeline():
                     # Somar o tempo da etapa com o tempo total de execucao do asteroid.
                     asteroid.execution_time += result['execution_time']
                     asteroid.save()
+
+                    self.logger.debug('--------------------------------------------------')
+                    self.logger.debug(result)
+                    self.logger.debug('--------------------------------------------------')
+
+                    time_profile_csv = os.path.join(asteroid.relative_path, 'time_profile.csv')
+
+                    # Check and delete if time profile csv file exists:
+                    if os.path.isfile(time_profile_csv):
+                        os.remove(time_profile_csv)
+
+                    # Executar o time profile:
+                    self.run_register_csv_stages_outputs(
+                        asteroid.name,
+                        asteroid.relative_path,
+                        result['start_time'],
+                        result['finish_time'],
+                        result['execution_time'],
+                        'ccd_images'
+                    )
+
+
                 idx += 1
 
         except Exception as e:
@@ -266,7 +307,9 @@ class AstrometryPipeline():
 
             self.logger.info("Finished CCD Images list in %s" %
                              humanize.naturaldelta(ccd_images_execution_time))
+
             instance.execution_ccd_images = ccd_images_execution_time
+
             instance.save()
 
         # ===================================================================================================
@@ -330,6 +373,16 @@ class AstrometryPipeline():
                 # Soma o tempo de execucao da etapa ao tempo de execucao total do asteroid.
                 asteroid.execution_time += result['execution_time']
                 asteroid.save()
+
+                # BPL JPL List Stage CSV:
+                self.run_register_csv_stages_outputs(
+                    asteroid.name,
+                    asteroid.relative_path,
+                    result['start_time'],
+                    result['finish_time'],
+                    result['execution_time'],
+                    'bsp_jpl',
+                )
 
         except Exception as e:
             self.on_error(instance, e)
@@ -436,6 +489,17 @@ class AstrometryPipeline():
                     asteroid.execution_time += result['execution_time']
                     asteroid.save()
 
+                    # Gaia Catalog List Stage CSV:
+                    self.run_register_csv_stages_outputs(
+                        asteroid.name,
+                        asteroid.relative_path,
+                        result['start_time'],
+                        result['finish_time'],
+                        result['execution_time'],
+                        'gaia_catalog'
+                    )
+
+
             except Exception as e:
                 self.on_error(instance, e)
 
@@ -445,7 +509,15 @@ class AstrometryPipeline():
             self.logger.info("Finished Star Catalog in %s" %
                              humanize.naturaldelta(catalog_execution_time))
 
+            # -------------------- Test -------------------- #
+            try:
+                raise("Parou aqui")
+            except Exception as e:
+                return e
+
         instance.execution_catalog = catalog_execution_time
+
+
 
         # Fim da geracao dos inputs.
 
