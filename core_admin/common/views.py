@@ -26,6 +26,7 @@ from django.contrib.auth import logout
 @api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
+        
         # check_astrometry_running()
 
         # Registro de resultado da astrometria.
@@ -39,12 +40,15 @@ def teste(request):
         # from orbit.refine_orbit import RefineOrbit
         # start, end = RefineOrbit().get_plot_period(
         #     astrometry='/proccess/106/objects/Eris/Eris.txt')
-
         # result = dict({
-        #     'success': True,
-        #     'start': start,
-        #     'end': end
-        # })
+        #      'success': True,
+        #      'start': start,
+        #      'end': end
+        #  })
+            
+        result = dict({
+            'success': True,
+        })
 
         return Response(result)
 
