@@ -511,7 +511,7 @@ class AstrometryPipeline():
 
             asteroid_alias = obj.name.replace(' ', '')
 
-            max_workers = 5
+            max_workers = 20
 
             payload = dict({
                 "queues": 1,
@@ -520,8 +520,8 @@ class AstrometryPipeline():
                     "Docker_image": "linea/tno_astrometry:v1.1.2",
                     "Requirements": "SlotsTno == True",
                     "executable": "/app/run.py",
-                    # "arguments": "%s --path %s --catalog %s --max_workers=%s" % (asteroid_alias, obj.relative_path, catalog_name, max_workers),
-                    "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
+                    "arguments": "%s --path %s --catalog %s --max_workers=%s" % (asteroid_alias, obj.relative_path, catalog_name, max_workers),
+                    # "arguments": "%s --path %s --catalog %s" % (asteroid_alias, obj.relative_path, catalog_name),
                     "+RequiresWholeMachine": "True",
                     "Machine": "apl16.ib0.cm.linea.gov.br",
                     "initialdir": obj_absolute_path,
