@@ -298,6 +298,7 @@ function PredictionOccultationAsteroid({
 
       const neighborhoodStars = data.results.filter((el) => el.type === 'neighborhood_stars')[0];
       const asteroidOrbit = data.results.filter((el) => el.type === 'asteroid_orbit')[0];
+
       if (neighborhoodStars) setNeighborhoodStarsPlot(url + neighborhoodStars.src);
       if (asteroidOrbit) setAsteroidOrbitPlot(url + asteroidOrbit.src);
 
@@ -552,22 +553,24 @@ function PredictionOccultationAsteroid({
           </Grid>
         </Grid>
       ) : null}
+      {occultationData.length > 0 ? (
 
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <CustomGridList
-                data={occultationData}
-                baseUrl={url}
-                handleImageClick={handleImageClick}
-              />
-            </CardContent>
-          </Card>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Card>
+              <CardContent>
+                <CustomGridList
+                  data={occultationData}
+                  baseUrl={url}
+                  handleImageClick={handleImageClick}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
-      </Grid>
+      ) : null}
 
-      {neighborhoodStarsPlot || asteroidOrbitPlot ? (
+      {neighborhoodStarsPlot !== '' || asteroidOrbitPlot !== '' ? (
         <Grid container spacing={2}>
           <Grid item xs={12} className={classes.block}>
             <Card>
@@ -600,7 +603,7 @@ function PredictionOccultationAsteroid({
           </Grid>
         </Grid>
       ) : null}
-      {inputTableData.length > 0 || outputTableData.length > 0 ? (
+      {inputTableData.length > 0 ? (
         <Grid container spacing={2}>
           {inputTableData.length > 0 ? (
             <Grid item xs={12} md={outputTableData.length > 0 ? 6 : 12} className={classes.block}>
@@ -620,7 +623,7 @@ function PredictionOccultationAsteroid({
               </Card>
             </Grid>
           ) : null}
-          {inputTableData.length > 0 || outputTableData.length > 0 ? (
+          {outputTableData.length > 0 ? (
             <Grid
               item
               xs={12}
@@ -628,7 +631,7 @@ function PredictionOccultationAsteroid({
               className={clsx(classes.block, classes.tableWrapper)}
             >
               <Card>
-                <CardHeader title="Results" />
+                <CardHeader title="Outputs" />
                 <CardContent className={classes.cardContentWrapper}>
                   <CustomTable
                     columns={outputColumns}
