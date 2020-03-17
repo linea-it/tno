@@ -51,9 +51,9 @@ function Occultation({ setTitle, history, ...props }) {
   const [pageSize, setPagesize] = useState(25);
   const [loading, setLoading] = useState();
   const [data, setData] = useState();
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
-  const [magnitude, setMagnitude] = useState([4, 18]);
+  const [startDate, setStartDate] = useState(moment().startOf('year').format('YYYY-MM-DD'));
+  const [endDate, setEndDate] = useState(moment().endOf('year').format('YYYY-MM-DD'));
+  const [magnitude, setMagnitude] = useState([4, 23]);
   const [diameter, setDiameter] = useState([0, 600]);
   const [objectName, setObjectName] = useState();
   const [dynamicClass, setDynamicClass] = useState('');
@@ -70,13 +70,13 @@ function Occultation({ setTitle, history, ...props }) {
       if (endDate) {
         filters.push({
           property: 'date_time__range',
-          value: [moment(startDate).format('YYYY-MM-DD HH:mm:ss'), moment(endDate).format('YYYY-MM-DD HH:mm:ss')].join(),
+          value: [moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD')].join(),
         });
       } else {
         // Se nao tiver endDate buca por datas maiores que o start date.
         filters.push({
           property: 'date_time__gte',
-          value: moment(startDate).format('YYYY-MM-DD HH:mm:ss'),
+          value: moment(startDate).format('YYYY-MM-DD'),
         });
       }
     }
@@ -119,10 +119,10 @@ function Occultation({ setTitle, history, ...props }) {
       setLoading(false);
     } else {
       getOccultations({ filters, pageSize }).then((res) => {
-        res.results.map((row) => {
-          row.src = url + row.src;
-          return row;
-        });
+        res.results.map((row) => ({
+          ...row,
+          src: row.src ? url + row.src : null,
+        }));
 
         setData(res.results);
       }).finally(() => {
