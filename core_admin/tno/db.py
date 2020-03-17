@@ -79,7 +79,10 @@ class DBBase():
 
         queryset = self.engine.execute(stm).fetchone()
 
-        return self.to_dict(queryset)
+        if queryset is not None:
+            return self.to_dict(queryset)
+        else:
+            return None
 
     def fetch_scalar(self, stm):
         if settings.DEBUG:

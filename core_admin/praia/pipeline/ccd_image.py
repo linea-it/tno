@@ -6,9 +6,11 @@ from praia.pipeline.register import register_input
 from django.conf import settings
 from tno.des_ccds import download_des_ccds, count_available_des_ccds
 import traceback
-
+import logging
 
 def create_ccd_images_list(run_id, name, output_filepath, max_workers=10):
+    logger = logging.getLogger('astrometry')
+
     # Recuperar as exposicoes para cada objeto.
     start = datetime.now(timezone.utc)
 
@@ -26,7 +28,9 @@ def create_ccd_images_list(run_id, name, output_filepath, max_workers=10):
         # Listar todos as posicoes do objeto que estejam associadas a um CCD.
         positions, count = SkybotOutput().positions_by_object(name, only_in_ccd=True)
 
-        if count > 0:
+        logger.debug("Skybot Positions: [%s]" % len(positions))
+
+        if positions is not None and len(positions) > 0:
             pdb = PointingDB()
             rows = list()
 
@@ -36,11 +40,18 @@ def create_ccd_images_list(run_id, name, output_filepath, max_workers=10):
                 pointing = pdb.exposure_by_expnum(
                     position['expnum'], position['ccdnum'], position['band'])
 
-                # Adiciona o ID do Skybotoutput que resultou na selecao deste Apontamento.
-                pointing.update({'skybotoutput_id': position['id']})
+                if pointing is not None:
+                    # Adiciona o ID do Skybotoutput que resultou na selecao deste Apontamento.
+                    pointing.update({'skybotoutput_id': position['id']})
 
-                rows.append(pointing)
+                    logger.debug("Pointing: [%s] for Position: [%s]" % (pointing['id'], position['id'])) 
 
+                    rows.append(pointing)
+                else:
+                    # Nao encontrou um apontamento para esta posicao.
+                    logger.warning("Pointing not foud for Position: [%s]" % (position['id'])) 
+
+            logger.debug("Pointings: [%s]" % len(rows))
             headers = ['id', 'pfw_attempt_id', 'desfile_id', 'nite', 'date_obs', 'expnum',
                        'ccdnum', 'band', 'exptime', 'cloud_apass', 'cloud_nomad', 't_eff', 'crossra0',
                        'radeg', 'decdeg', 'racmin', 'racmax', 'deccmin', 'deccmax', 'ra_cent', 'dec_cent',
@@ -69,6 +80,9 @@ def create_ccd_images_list(run_id, name, output_filepath, max_workers=10):
             })
 
     except Exception as e:
+        trace = traceback.format_exc()
+        logger.error(e)
+        logger.error(trace)
         result.update({
             'error_msg': e
         })
