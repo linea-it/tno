@@ -724,6 +724,9 @@ class Pointing(DBBase):
         stm = stm.limit(1)
         self.debug_query(stm, True)
 
-        rows = self.fetch_one_dict(stm)
+        try:
+            rows = self.fetch_one_dict(stm)
 
-        return rows
+            return rows
+        except Exception as e:
+            return None
