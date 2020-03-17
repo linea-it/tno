@@ -6,7 +6,6 @@ import {
 import clsx from 'clsx';
 import moment from 'moment';
 import Carousel, { Modal, ModalGateway } from 'react-images';
-import LazyLoad from 'react-lazyload';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -577,40 +576,22 @@ function PredictionOccultationAsteroid({
                 <Grid container spacing={2} className={classes.plotsWrapper}>
                   {neighborhoodStarsPlot ? (
                     <Grid item xs={12} md={asteroidOrbitPlot ? 6 : 12}>
-                      <LazyLoad
-                        height={450}
-                        width="100%"
-                        offset={[-100, 0]}
-                        placeholder={(
-                          <img src={loading} alt="Loading..." />
-                        )}
-                      >
-                        <img
-                          src={neighborhoodStarsPlot}
-                          className={classes.imgResponsive}
-                          title="Neighborhood Stars"
-                          alt="Neighborhood Stars"
-                        />
-                      </LazyLoad>
+                      <img
+                        src={neighborhoodStarsPlot}
+                        className={classes.imgResponsive}
+                        title="Neighborhood Stars"
+                        alt="Neighborhood Stars"
+                      />
                     </Grid>
                   ) : null}
                   {asteroidOrbitPlot ? (
                     <Grid item xs={12} md={neighborhoodStarsPlot ? 6 : 12}>
-                      <LazyLoad
-                        height={450}
-                        offset={[-200, 0]}
-                        once
-                        placeholder={(
-                          <img src={loading} alt="Loading..." />
-                        )}
-                      >
-                        <img
-                          src={asteroidOrbitPlot}
-                          className={classes.imgResponsive}
-                          title="Asteroid Orbit"
-                          alt="Asteroid Orbit"
-                        />
-                      </LazyLoad>
+                      <img
+                        src={asteroidOrbitPlot}
+                        className={classes.imgResponsive}
+                        title="Asteroid Orbit"
+                        alt="Asteroid Orbit"
+                      />
                     </Grid>
                   ) : null}
                 </Grid>
