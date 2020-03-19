@@ -106,6 +106,9 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: 440,
     overflow: 'auto',
   },
+  containerWrap: {
+    flexWrap: 'inherit',
+  },
 }));
 
 function PredictionOccultationAsteroid({
@@ -603,10 +606,15 @@ function PredictionOccultationAsteroid({
           </Grid>
         </Grid>
       ) : null}
-      {inputTableData.length > 0 ? (
-        <Grid container spacing={2}>
+      {inputTableData.length > 0 || outputTableData.length > 0 ? (
+        <Grid container spacing={2} className={classes.containerWrap}>
           {inputTableData.length > 0 ? (
-            <Grid item xs={12} md={outputTableData.length > 0 ? 6 : 12} className={classes.block}>
+            <Grid
+              item
+              xs={12}
+              md={outputTableData.length > 0 ? 6 : 12}
+              className={clsx(classes.block, classes.tableWrapper)}
+            >
               <Card>
                 <CardHeader title="Inputs" />
                 <CardContent className={classes.cardContentWrapper}>
