@@ -11,6 +11,8 @@ from praia.models import (AstrometryAsteroid, AstrometryInput, AstrometryJob,
 from tno.condor import (check_condor_job, check_job_history, get_job_by_id,
                         remove_job)
 
+import csv
+
 
 def register_input(run_id, name, asteroid_input):
 
@@ -56,9 +58,9 @@ def update_job_status(job, condor_job):
         0 - 'Unexpanded'
         1 - 'Idle'
         2 - 'Running'
-        3 - 'Removed' 
-        4 - 'Completed' 
-        5 - 'Held' 
+        3 - 'Removed'
+        4 - 'Completed'
+        5 - 'Held'
         6 - 'Submission'
 
     """
@@ -149,6 +151,55 @@ def update_job_status(job, condor_job):
     logger.info("Update Condor Job ClusterId [ %s ] ProcId [ %s ] Status: [ %s ] " % (
         job.clusterid, job.clusterid.procid, condor_job['JobStatus']))
 
+def register_csv_stages_outputs(filepath, rows, unique_stage=''):
+
+    logger = logging.getLogger('astrometry')
+
+    stages = list(['header_extraction', 'praia_targets', 'plots']) if unique_stage is '' else list([unique_stage])
+    columns = list(['object', 'start', 'finish', 'execution_time', 'ccd', 'stage'])
+
+    # Time profile list:
+    time_profile_list = list()
+
+    for stage in stages:
+        time_profile_list.append(dict({
+            'object': rows['asteroid'],
+            'ccd': None,
+            'stage': stage,
+            'start':rows[stage]['start'],
+            'finish': rows[stage]['finish'],
+            'execution_time': rows[stage]['execution_time'],
+        }))
+
+    if 'outputs' in rows:
+        for output in rows['outputs']:
+            if rows['outputs'][output]['start']:
+                time_profile_list.append(dict({
+                    'object': rows['asteroid'],
+                    'ccd': None,
+                    'stage': 'praia_astrometry',
+                    'start':rows['outputs'][output]['start'],
+                    'finish': rows['outputs'][output]['finish'],
+                    'execution_time': rows['outputs'][output]['execution_time'],
+                }))
+
+    time_profile_list.sort(key=lambda x: x['start'])
+
+    # Check if the file exists:
+    file_exists = False if os.path.isfile(filepath) is False else True
+
+    try:
+        with open(filepath, 'a+') as file:
+            writer = csv.DictWriter(file, fieldnames=columns)
+
+            if not file_exists:
+                writer.writeheader()
+
+            for row in time_profile_list:
+                writer.writerow(row)
+
+    except IOError:
+        return IOError
 
 def register_astrometry_outputs(astrometry_run, asteroid):
     logger = logging.getLogger("astrometry")
@@ -347,6 +398,14 @@ def register_astrometry_outputs(astrometry_run, asteroid):
                                        asteroid.execution_header + asteroid.execution_astrometry + asteroid.execution_targets + asteroid.execution_plots + asteroid.execution_registry)
 
             asteroid.save()
+
+            # Executar o time profile:
+            stages_output_filepath = os.path.join(asteroid.relative_path, 'time_profile.csv')
+
+            logger.info("--------- filepath ----------")
+            logger.info(stages_output_filepath)
+            logger.info("--------- filepath ----------")
+            register_csv_stages_outputs(stages_output_filepath, results)
 
             logger.info("Registered [ %s ] outputs for Astrometry Run [ %s ] Asteroid [ %s ] in %s" % (
                 count, astrometry_run, asteroid, humanize.naturaldelta(tdelta)))

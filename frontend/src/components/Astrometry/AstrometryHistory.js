@@ -83,13 +83,13 @@ function AstrometryHistory({ history }) {
       align: 'left',
     },
     {
-      name: 'input_list',
+      name: 'input_displayname',
       title: 'Input',
       width: 100,
       align: 'right',
     },
     {
-      name: 'configuration',
+      name: 'configuration_displayname',
       title: 'Configuration',
       width: 150,
       align: 'right',

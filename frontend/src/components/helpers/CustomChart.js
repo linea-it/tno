@@ -60,7 +60,7 @@ const colors = [
   '#6666FF',
 ];
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   plotWrapper: {
     display: 'flex !important',
     alignItems: 'center',
@@ -71,25 +71,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 export function Donut({ data, width, height }) {
   const classes = useStyles();
   const Plot = createPlotlyComponent(Plotly);
 
-  const colors = data.map((el) => el.color);
+  const colors = data.map(el => el.color);
 
-  const rows = [{
-    labels: data.map((el) => el.name),
-    values: data.map((el) => el.value),
-    marker: {
-      colors: colors.length > 0 ? colors : [colors[0], colors[7], colors[2], colors[3], colors[4], colors[20]],
+  const rows = [
+    {
+      labels: data.map(el => el.name),
+      values: data.map(el => el.value),
+      text: data.map(el => el.title),
+      marker: {
+        colors:
+          colors.length > 0
+            ? colors
+            : [
+                colors[0],
+                colors[7],
+                colors[2],
+                colors[3],
+                colors[4],
+                colors[20],
+              ],
+      },
+      hole: 0.4,
+      type: 'pie',
+      textposition: 'inside',
+      hoverinfo: 'label+text',
+      sort: false,
     },
-    hole: 0.4,
-    type: 'pie',
-    textposition: 'inside',
-    hoverinfo: 'label+value',
-    sort: false,
-  }];
+  ];
 
   return (
     <Plot
@@ -121,7 +133,6 @@ Donut.propTypes = {
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
-
 export function TimeProfile({ data, width, height }) {
   const classes = useStyles();
   const Plot = createPlotlyComponent(Plotly);
@@ -149,7 +160,7 @@ export function TimeProfile({ data, width, height }) {
   } else if (typeof data === 'object' && !Array.isArray(data)) {
     let idx = 1;
 
-    const getDates = (dates) => {
+    const getDates = dates => {
       if (dates) {
         return [
           {
@@ -175,12 +186,12 @@ export function TimeProfile({ data, width, height }) {
       return [];
     };
 
-    const getEphemeris = (ephemeris) => {
+    const getEphemeris = ephemeris => {
       if (ephemeris && ephemeris.rows && ephemeris.rows.length > 0) {
         idx++;
 
         const lines = [];
-        ephemeris.rows.map((row) => {
+        ephemeris.rows.map(row => {
           const obj = {
             name: row.name,
             duration: moment.duration(row.duration, 'seconds').humanize(),
@@ -209,13 +220,13 @@ export function TimeProfile({ data, width, height }) {
       return [];
     };
 
-    const getCatalog = (catalog) => {
+    const getCatalog = catalog => {
       if (catalog && catalog.rows && catalog.rows.length > 0) {
         idx++;
 
         const lines = [];
 
-        catalog.rows.map((row) => {
+        catalog.rows.map(row => {
           const obj = {
             name: row.name,
             duration: moment.duration(row.duration, 'seconds').humanize(),
@@ -244,13 +255,13 @@ export function TimeProfile({ data, width, height }) {
       return [];
     };
 
-    const getSearchs = (searchs) => {
+    const getSearchs = searchs => {
       if (searchs && searchs.rows && searchs.rows.length > 0) {
         idx++;
 
         const lines = [];
 
-        searchs.rows.map((row) => {
+        searchs.rows.map(row => {
           const obj = {
             name: row.name,
             duration: moment.duration(row.duration, 'seconds').humanize(),
@@ -279,13 +290,13 @@ export function TimeProfile({ data, width, height }) {
       return [];
     };
 
-    const getMaps = (maps) => {
+    const getMaps = maps => {
       if (maps && maps.rows && maps.rows.length > 0) {
         idx++;
 
         const lines = [];
 
-        maps.rows.map((row) => {
+        maps.rows.map(row => {
           const obj = {
             name: row.name,
             duration: moment.duration(row.duration, 'seconds').humanize(),
@@ -314,7 +325,7 @@ export function TimeProfile({ data, width, height }) {
       return [];
     };
 
-    const getRegister = (dates) => {
+    const getRegister = dates => {
       if (dates) {
         return [
           {
@@ -345,13 +356,13 @@ export function TimeProfile({ data, width, height }) {
     }
 
     const dates = getDates(data.dates);
-    dates.map((e) => {
+    dates.map(e => {
       rows.push(e);
       return e;
     });
 
     const ephemeris = getEphemeris(data.ephemeris);
-    ephemeris.map((e) => {
+    ephemeris.map(e => {
       rows.push(e);
       return e;
     });
@@ -375,7 +386,7 @@ export function TimeProfile({ data, width, height }) {
     }
 
     const catalogs = getCatalog(data.catalog);
-    catalogs.map((e) => {
+    catalogs.map(e => {
       rows.push(e);
       return e;
     });
@@ -400,7 +411,7 @@ export function TimeProfile({ data, width, height }) {
     }
 
     const searchs = getSearchs(data.search);
-    searchs.map((e) => {
+    searchs.map(e => {
       rows.push(e);
       return e;
     });
@@ -425,7 +436,7 @@ export function TimeProfile({ data, width, height }) {
     }
 
     const maps = getMaps(data.map);
-    maps.map((e) => {
+    maps.map(e => {
       rows.push(e);
       return e;
     });
@@ -450,12 +461,11 @@ export function TimeProfile({ data, width, height }) {
     }
 
     const register = getRegister(data.register);
-    register.map((e) => {
+    register.map(e => {
       rows.push(e);
       return e;
     });
   }
-
 
   return (
     <Plot
@@ -495,10 +505,7 @@ TimeProfile.defaultProps = {
 TimeProfile.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
-  data: PropTypes.oneOfType([
-    PropTypes.array,
-    PropTypes.object,
-  ]).isRequired,
+  data: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
 };
 
 export function CCD({ data, width, height }) {
@@ -595,16 +602,118 @@ CCD.defaultProps = {
 };
 
 CCD.propTypes = {
-  width: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]),
-  height: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string,
-  ]),
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   data: PropTypes.shape({
     x: PropTypes.array,
     y: PropTypes.array,
   }).isRequired,
+};
+
+export function AstrometryTimeProfile({ data, width, height }) {
+  const classes = useStyles();
+  const Plot = createPlotlyComponent(Plotly);
+  const colors = ['#FEAA00', '#00CC01', '#FF0100', '#1240AC', '#000000'];
+  const rows = [];
+  let indexAxisY = 0;
+  let firstAstometryCheck = true;
+
+  const getColor = stage => {
+    switch (stage) {
+      case 'header_extraction':
+        return colors[0];
+        break;
+      case 'praia_targets':
+        return colors[1];
+        break;
+      case 'plots':
+        return colors[2];
+        break;
+      case 'praia_astrometry':
+        return colors[3];
+        break;
+      default:
+        return colors[3];
+    }
+  };
+
+  const getCcdStage = row => {
+    indexAxisY++;
+    const axisY = indexAxisY;
+    return [axisY, axisY];
+  };
+
+  const astometryLegendCheck = () => {
+    if (firstAstometryCheck) {
+      firstAstometryCheck = false;
+      return true;
+    }
+    return false;
+  };
+
+  const getHoverTemplate = row => {
+    return `</br>${row[0]}
+      </br>Stage: ${row[5]}
+      ${row[4] ? `</br>CCD: ${row[4]}` : ``}
+      </br>Start: ${moment(row[1]).format('L LTS')}
+      </br>Finish: ${moment(row[2]).format('L LTS')}
+      </br>Duration: ${moment.utc(row[3] * 1000).format('HH:mm:ss')}`;
+  };
+
+  const totalRunTime = moment(rows[rows.length - 1]) - moment(rows[0]);
+
+  data.forEach(row => {
+    rows.push({
+      type: 'scatter',
+      mode: 'lines+markers',
+      name: row[5],
+      duration: moment.duration(row[3], 'seconds').humanize(),
+      x: [row[1], row[2]],
+      y: getCcdStage(row),
+      line: {
+        color: getColor(row[5]),
+      },
+      showlegend: !row[4] ? true : astometryLegendCheck(),
+      legendgroup: row[4] ? 'Praia_astrometry' : row[5],
+      hovertemplate: getHoverTemplate(row),
+    });
+  });
+
+  return (
+    <Plot
+      className={classes.plotWrapper}
+      data={rows}
+      layout={{
+        width,
+        height,
+        xaxis: {
+          automargin: true,
+          autorange: true,
+        },
+        yaxis: {
+          automargin: true,
+          autorange: true,
+          showticklabels: false,
+        },
+        hovermode: 'closest',
+        autosize: true,
+      }}
+      config={{
+        scrollZoom: true,
+        displaylogo: false,
+        responsive: true,
+      }}
+    />
+  );
+}
+
+AstrometryTimeProfile.defaultProps = {
+  width: 500,
+  height: 310,
+};
+
+AstrometryTimeProfile.propTypes = {
+  width: PropTypes.number,
+  height: PropTypes.number,
+  data: PropTypes.arrayOf([PropTypes.array]).isRequired,
 };
