@@ -592,7 +592,7 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
               <CardContent>{renderExecutionTime()}</CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Card>
               <CardHeader title='Time Profile' />
               <CardContent>
@@ -603,7 +603,7 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
                 />
               </CardContent>
             </Card>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Grid>
       <Grid item xs={12}>

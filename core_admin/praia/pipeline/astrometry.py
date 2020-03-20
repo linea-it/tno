@@ -68,9 +68,6 @@ class AstrometryPipeline():
 
     def run_register_csv_stages_outputs(self, asteroid_name, asteroid_relative_path, start_time, finish_time, execution_time, stage):
 
-
-        self.logger.info(asteroid_name, asteroid_relative_path, start_time, finish_time, execution_time, stage)
-
         stages_output_filepath = os.path.join(asteroid_relative_path, 'time_profile.csv')
 
         # CCD List Stage CSV:
@@ -275,10 +272,7 @@ class AstrometryPipeline():
                     asteroid.execution_time += result['execution_time']
                     asteroid.save()
 
-                    self.logger.debug('--------------------------------------------------')
-                    self.logger.debug(result)
-                    self.logger.debug('--------------------------------------------------')
-
+                    # Adiciona o tempo no arquivo de time profile
                     time_profile_csv = os.path.join(asteroid.relative_path, 'time_profile.csv')
 
                     # Check and delete if time profile csv file exists:
@@ -374,7 +368,7 @@ class AstrometryPipeline():
                 asteroid.execution_time += result['execution_time']
                 asteroid.save()
 
-                # BPL JPL List Stage CSV:
+                # Registra o tempo no arquivo de time profile:
                 self.run_register_csv_stages_outputs(
                     asteroid.name,
                     asteroid.relative_path,
@@ -509,15 +503,7 @@ class AstrometryPipeline():
             self.logger.info("Finished Star Catalog in %s" %
                              humanize.naturaldelta(catalog_execution_time))
 
-            # -------------------- Test -------------------- #
-            try:
-                raise("Parou aqui")
-            except Exception as e:
-                return e
-
         instance.execution_catalog = catalog_execution_time
-
-
 
         # Fim da geracao dos inputs.
 

@@ -198,8 +198,6 @@ def register_csv_stages_outputs(filepath, rows, unique_stage=''):
             for row in time_profile_list:
                 writer.writerow(row)
 
-            logger.debug("The file [ %s ] has been registered" % file)
-
     except IOError:
         return IOError
 
