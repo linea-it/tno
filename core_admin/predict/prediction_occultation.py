@@ -23,6 +23,8 @@ class PredictionOccultation():
     def __init__(self):
         self.logger = logging.getLogger("predict_occultation")
 
+        self.predict_pipeline_image = 'linea/praiaoccultation:v1.0.1'
+
         self.archive_dir = settings.ARCHIVE_DIR
         self.process = None
         self.input_list = None
@@ -447,7 +449,7 @@ class PredictionOccultation():
         # Recupera a Imagem Docker
         docker_image = self.get_docker_image(
             docker_client=docker_client,
-            image_name="linea/praiaoccultation:latest")
+            image_name=self.predict_pipeline_image)
 
         # Path absoluto para o diretorio de dados que sera montado no container.
         absolute_archive_path = settings.HOST_ARCHIVE_DIR
@@ -618,7 +620,7 @@ class PredictionOccultation():
         # Recupera a Imagem Docker
         docker_image = self.get_docker_image(
             docker_client=docker_client,
-            image_name="linea/praiaoccultation:latest")
+            image_name=self.predict_pipeline_image)
 
         # executa o app Parsl para cara registro em paralelo
         results = []
@@ -1328,7 +1330,7 @@ class PredictionOccultation():
         # Recupera a Imagem Docker
         docker_image = self.get_docker_image(
             docker_client=docker_client,
-            image_name="linea/praiaoccultation:latest")
+            image_name=self.predict_pipeline_image)
 
         # Path absoluto para o diretorio de dados que sera montado no container.
         absolute_archive_path = settings.HOST_ARCHIVE_DIR
@@ -1536,7 +1538,7 @@ class PredictionOccultation():
         # Recupera a Imagem Docker
         docker_image = self.get_docker_image(
             docker_client=docker_client,
-            image_name="linea/praiaoccultation:latest")
+            image_name=self.predict_pipeline_image)
 
         # Path absoluto para o diretorio de dados que sera montado no container.
         absolute_archive_path = settings.HOST_ARCHIVE_DIR
