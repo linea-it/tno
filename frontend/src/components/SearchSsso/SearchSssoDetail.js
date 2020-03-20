@@ -75,7 +75,7 @@ function SearchSSSoDetail({ history, setTitle, match: { params } }) {
   return (
     <Grid>
       <Grid container spacing={2}>
-        <Grid item lg={12} xl={12}>
+        <Grid item xs={12}>
           <Button
             variant="contained"
             color="primary"
@@ -86,7 +86,7 @@ function SearchSSSoDetail({ history, setTitle, match: { params } }) {
             <span style={{ paddingLeft: '10px' }}> Back </span>
           </Button>
         </Grid>
-        <Grid item lg={8} xl={7}>
+        <Grid item xs={12}>
           <Card>
             <CardHeader
               title="SkyBot Output"

@@ -37,6 +37,7 @@ npm-debug.log
 
 # Nginx conf
 /nginx/nginx-proxy.conf
+nginx-proxy.conf
 
 # Docker compose
 docker-compose.yml

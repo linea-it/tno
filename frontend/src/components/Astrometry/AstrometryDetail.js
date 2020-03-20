@@ -388,7 +388,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   return (
     <Grid>
       <Grid container spacing={2}>
-        <Grid item xs={12} xl={12} md={12}>
+        <Grid item xs={12}>
           <Button
             variant="contained"
             color="primary"
@@ -400,18 +400,22 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           </Button>
         </Grid>
 
-        <Grid item xs={12} md={6} xl={4}>
-          <Card>
-            <CardHeader
-              title={`Astrometry - ${runId} `}
-            />
-            <ListStat
-              data={list}
-            />
-          </Card>
+        <Grid item xs={12} xl={4}>
+          <Grid item xs={12} lg={6} xl={12}>
+            <Card>
+              <CardHeader
+                title={`Astrometry - ${runId} `}
+              />
+              <ListStat
+                data={list}
+              />
+            </Card>
+          </Grid>
         </Grid>
+
+
         {donutDataStatist.length > 0 ? (
-          <Grid item xs={12} md={6} xl={4}>
+          <Grid item xs={12} lg={6} xl={4}>
             <Card className={classes.card}>
               <CardHeader
                 title="Execution Statistics"
@@ -424,7 +428,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         ) : null}
 
         {donutDataExecutionTime.length > 0 ? (
-          <Grid item xs={12} md={6} xl={4}>
+          <Grid item xs={12} lg={6} xl={4}>
             <Card className={classes.card}>
               <CardHeader
                 title="Execution Time"

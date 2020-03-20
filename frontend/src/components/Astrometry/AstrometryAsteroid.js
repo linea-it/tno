@@ -528,8 +528,13 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Grid container justify='space-between' alignItems='center' spacing={2}>
-          <Grid item xs={12} md={4}>
+        <Grid
+          container
+          justify="space-between"
+          alignItems="center"
+          spacing={2}
+        >
+          <Grid item xs={4} md={4}>
             <Button
               variant='contained'
               color='primary'
@@ -540,8 +545,8 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
               <span>Back</span>
             </Button>
           </Grid>
-          <Grid item xs={12} md={4}>
-            <Grid container justify='flex-end'>
+          <Grid item xs={8} md={4}>
+            <Grid container justify="flex-end">
               <Grid item>
                 <Button
                   variant='contained'
