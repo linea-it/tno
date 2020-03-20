@@ -105,6 +105,9 @@ const useStyles = makeStyles(theme => ({
     maxHeight: 500,
     overflow: 'auto',
   },
+  timeProfileWrapper: {
+    marginTop: 20,
+  },
 }));
 
 function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
@@ -592,18 +595,6 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
               <CardContent>{renderExecutionTime()}</CardContent>
             </Card>
           </Grid>
-          {/* <Grid item xs={12}>
-            <Card>
-              <CardHeader title='Time Profile' />
-              <CardContent>
-                <AstrometryTimeProfile
-                  data={astrometryTimeProfile}
-                  width={1273}
-                  height={463}
-                />
-              </CardContent>
-            </Card>
-          </Grid> */}
         </Grid>
       </Grid>
       <Grid item xs={12}>
@@ -723,6 +714,19 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
             </Grid>
           </Grid>
         ) : null}
+
+        <Grid item xs={12} className={classes.timeProfileWrapper}>
+          <Card>
+            <CardHeader title='Time Profile' />
+            <CardContent>
+              <AstrometryTimeProfile
+                data={astrometryTimeProfile}
+                width={1273}
+                height={463}
+              />
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
 
       <CustomDialog
