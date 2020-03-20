@@ -35,7 +35,7 @@ function CustomDialog({
   const classes = useStyles();
 
   return (
-    <Dialog onClose={setVisible} maxWidth={maxWidth} aria-labelledby="customized-dialog-title" open={visible} style={wrapperStyle}>
+    <Dialog onClose={setVisible} maxWidth={maxWidth} fullWidth={true} aria-labelledby="customized-dialog-title" open={visible} style={wrapperStyle}>
       <MuiDialogTitle className={clsx(classes.root, headerStyle)}>
         <Typography variant="h6" component="span">{title}</Typography>
         {visible ? (

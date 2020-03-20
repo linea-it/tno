@@ -396,6 +396,47 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
         return Response(result)
 
 
+    @detail_route(methods=['GET'])
+    def plot_time_profile(self, request, pk=None):
+        """
+            Returns an object with the file's path, columns of the CSV and its rows.
+            Endpoint created to setup the a time profile plot.
+        """
+        try:
+            # Get the asteroid's instance:
+            asteroid = self.get_object()
+
+            # Get the file's path:
+            filepath = os.path.join(asteroid.relative_path, 'time_profile.csv')
+
+            columns = ["object", "start", "finish", "execution_time", "ccd", "stage"]
+
+            # Read the file:
+            df = pd.read_csv(
+                filepath,
+                delimiter=","
+            )
+
+            # Fill non-numeric values with 0:
+            df = df.fillna(0)
+
+            # Parse dataframe to list:
+            rows = df.values.tolist()
+
+            return Response(dict({
+                'success': True,
+                'filepath': filepath,
+                'columns': columns,
+                'rows': rows,
+            }))
+
+        except AstrometryOutput.DoesNotExist as e:
+            return Response(dict({
+                'success': False,
+                'rows': [],
+                'msg': 'There is no Astrometry result for this asteroid.',
+            }))
+
 class AstrometryInputViewSet(viewsets.ModelViewSet):
     queryset = AstrometryInput.objects.all()
     serializer_class = AstrometryInputSerializer
