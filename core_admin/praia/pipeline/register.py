@@ -155,7 +155,11 @@ def register_csv_stages_outputs(filepath, rows, unique_stage=''):
 
     logger = logging.getLogger('astrometry')
 
-    stages = list(['header_extraction', 'praia_targets', 'plots']) if unique_stage is '' else list([unique_stage])
+    stages = list(['header_extraction', 'praia_targets', 'plots'])
+
+    if(unique_stage is not ''):
+        stages = list([unique_stage])
+
     columns = list(['object', 'start', 'finish', 'execution_time', 'ccd', 'stage'])
 
     # Time profile list:
@@ -166,7 +170,7 @@ def register_csv_stages_outputs(filepath, rows, unique_stage=''):
             'object': rows['asteroid'],
             'ccd': None,
             'stage': stage,
-            'start':rows[stage]['start'],
+            'start': rows[stage]['start'],
             'finish': rows[stage]['finish'],
             'execution_time': rows[stage]['execution_time'],
         }))
@@ -176,7 +180,7 @@ def register_csv_stages_outputs(filepath, rows, unique_stage=''):
             if rows['outputs'][output]['start']:
                 time_profile_list.append(dict({
                     'object': rows['asteroid'],
-                    'ccd': None,
+                    'ccd': rows['outputs'][output]['ccd_id'],
                     'stage': 'praia_astrometry',
                     'start':rows['outputs'][output]['start'],
                     'finish': rows['outputs'][output]['finish'],
@@ -197,6 +201,8 @@ def register_csv_stages_outputs(filepath, rows, unique_stage=''):
 
             for row in time_profile_list:
                 writer.writerow(row)
+
+            logger.debug("The file [ %s ] has been registered" % file)
 
     except IOError:
         return IOError

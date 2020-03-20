@@ -699,7 +699,7 @@ export function AstrometryTimeProfile({ data, width, height }) {
         autosize: true,
       }}
       config={{
-        scrollZoom: true,
+        scrollZoom: false,
         displaylogo: false,
         responsive: true,
       }}
