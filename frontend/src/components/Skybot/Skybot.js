@@ -398,7 +398,7 @@ function Skybot({ setTitle, history }) {
   return (
     <Grid>
       <Grid container spacing={2}>
-        <Grid item lg={4} xl={3}>
+        <Grid item xs={12} lg={4} xl={3}>
           <Card>
             <CardHeader
               title="SkyBot Run"
@@ -477,7 +477,7 @@ function Skybot({ setTitle, history }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item lg={8} xl={9}>
+        <Grid item xs={12} lg={8} xl={9}>
           <Card>
             <CardHeader
               title="Unique Exposures By Period"
@@ -540,7 +540,7 @@ function Skybot({ setTitle, history }) {
       </Grid>
 
       <Grid container spacing={6}>
-        <Grid item lg={12} xl={12}>
+        <Grid item xs={12}>
           <Card>
             <CardHeader
               title="History"

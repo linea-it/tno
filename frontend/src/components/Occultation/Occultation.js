@@ -28,9 +28,15 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     width: 200,
+    [theme.breakpoints.down('md')]: {
+      width: '100%',
+    },
   },
   filterSlider: {
     width: 200,
+    [theme.breakpoints.down('md')]: {
+      width: '100%',
+    },
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     marginTop: theme.spacing(3),
@@ -216,7 +222,7 @@ function Occultation({ setTitle, history, ...props }) {
   return (
     <Grid>
       <Grid container spacing={3}>
-        <Grid item lg={12} xl={12}>
+        <Grid item lg={12}>
           <Card>
             <CardContent>
               <form className={classes.filtersContainer} noValidate autoComplete="off">

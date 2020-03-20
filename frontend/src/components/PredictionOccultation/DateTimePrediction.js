@@ -4,7 +4,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import DateFnsUtils from '@date-io/date-fns';
 import PropTypes from 'prop-types';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   container: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -13,8 +13,11 @@ const useStyles = makeStyles({
     marginTop: 10,
     marginBottom: 15,
     width: '90%',
+    [theme.breakpoints.down('lg')]: {
+      marginLeft: '5%',
+    },
   },
-});
+}));
 
 export default function DateAndTimePickers(props) {
   const classes = useStyles();

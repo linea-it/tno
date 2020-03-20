@@ -95,7 +95,7 @@ function Astrometry({ history, setTitle }) {
     <Grid container spacing={2}>
       <Grid item xs={12}>
         <Grid container spacing={6}>
-          <Grid item sm={6} xl={5}>
+          <Grid item xs={12} lg={5}>
             <Card>
               <CardHeader
                 className={classes.cardHeader}

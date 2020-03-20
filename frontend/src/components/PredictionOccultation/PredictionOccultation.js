@@ -48,6 +48,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 9,
     marginBottom: 18,
     width: '90%',
+    [theme.breakpoints.down('lg')]: {
+      marginLeft: '5%',
+    },
   },
 }));
 
@@ -320,7 +323,7 @@ function PredictionOccultation({ history, setTitle }) {
     <Grid>
 
       <Grid container spacing={6}>
-        <Grid item lg={12}>
+        <Grid item xs={12}>
           <Card>
             <CardHeader
               title={(
@@ -328,14 +331,14 @@ function PredictionOccultation({ history, setTitle }) {
               )}
             />
             <Grid container>
-              <Grid item lg={6}>
+              <Grid item xs={12} lg={6}>
                 <InputSelect title="input" width="90%" setActionButton={setActionButton} valueSubmition={valueSubmition} setSubmition={setValueSubmition} marginTop={10} data={inputArray} value="el.id" display="el.proccess_displayname" />
                 <InputSelect title="catalog" width="90%" setSubmition={setValueSubmition} marginTop={10} data={catalogArray} value="el.id" display="el.display_name" />
                 <InputSelect title="leapSeconds" width="90%" marginTop={10} data={leapSecondsArray} value="el.id" display="el.name" />
                 <InputSelect title="bspPlanetary" width="90%" marginTop={10} data={bspPlanetaryArray} value="el.id" display="el.display_name" />
 
               </Grid>
-              <Grid item lg={6}>
+              <Grid item xs={12} lg={6}>
                 <InputNumber
                   ref={inputNumber}
                   type="number"
@@ -362,6 +365,7 @@ function PredictionOccultation({ history, setTitle }) {
                   setSubmition={setValueSubmition}
                   setInitialDate={setInitialDate}
                   titleId="initialDate"
+                  className={classes.inputNumber}
                 />
                 <DateTime
                   defaultDate={finalDate}
@@ -371,6 +375,7 @@ function PredictionOccultation({ history, setTitle }) {
                   setFinalDate={setFinalDate}
                   titleId="finalDate"
                   width="90%"
+                  className={classes.inputNumber}
 
                 />
                 <Button
@@ -389,7 +394,7 @@ function PredictionOccultation({ history, setTitle }) {
       </Grid>
 
       <Grid container spacing={6}>
-        <Grid item lg={12}>
+        <Grid item xs={12}>
           <Card>
             <CardHeader
               title={

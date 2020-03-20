@@ -271,7 +271,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
         </Grid>
       </Grid>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={3} className={classes.block}>
+        <Grid item xs={12} lg={6} className={classes.block}>
           <Card>
             <CardHeader title="Summary" />
             <CardContent>
@@ -323,7 +323,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       </Grid>
 
       <Grid container spacing={2}>
-        <Grid item lg={12} className={clsx(classes.block, classes.tableWrapper)}>
+        <Grid item xs={12} className={clsx(classes.block, classes.tableWrapper)}>
           <Card>
             <CardHeader title="Asteroids" />
             <CardContent>

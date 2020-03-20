@@ -395,8 +395,8 @@ export default function SearchSsso({ history, setTitle }) {
   };
 
   return (
-    <Grid>
-      <Grid container spacing={6}>
+    <Grid container spacing={6}>
+      <Grid item xs={12}>
         <Card>
           <CardHeader
             title="SkyBot Output"
