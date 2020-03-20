@@ -194,7 +194,7 @@ const useStyles = makeStyles((theme) => ({
 
 function MiniDrawer() {
   const classes = useStyles();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(window.innerWidth > 1360 ? true : false);
   const [sssoOpen, setSssoOpen] = useState(false);
   const [inputOpen, setInputOpen] = useState(false);
   const [title, setTitle] = useState('Dashboard');
