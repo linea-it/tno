@@ -313,6 +313,7 @@ function Occultation({ setTitle, history, ...props }) {
             <Grid container spacing={2}>
               <CustomGridList
                 data={data}
+                baseUrl={url}
                 handleImageClick={handleRecordClick}
               />
             </Grid>
