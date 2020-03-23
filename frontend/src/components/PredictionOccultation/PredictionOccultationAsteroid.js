@@ -436,7 +436,7 @@ function PredictionOccultationAsteroid({
 
   const handleBackNavigation = () => history.push(`/prediction-of-occultation/${asteroidData.predict_run}`);
 
-  const handleImageClick = (id) => history.push(`/occultations/${id}`);
+  const handleImageClick = (occultationId) => history.push(`/occultation/${occultationId}`);
 
   return (
     <>
