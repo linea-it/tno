@@ -613,25 +613,27 @@ CCD.propTypes = {
 export function AstrometryTimeProfile({ data, width, height }) {
   const classes = useStyles();
   const Plot = createPlotlyComponent(Plotly);
-  const colors = ['#FEAA00', '#00CC01', '#FF0100', '#1240AC', '#000000'];
+  const colors = ['#996600', '#ff00ff', '#6600cc', '#FEAA00', '#1240AC', '#FF0100', '#00CC01', '#000000'];
   const rows = [];
   let indexAxisY = 0;
   let firstAstometryCheck = true;
 
   const getColor = stage => {
     switch (stage) {
-      case 'header_extraction':
+      case 'ccd_images':
         return colors[0];
-        break;
-      case 'praia_targets':
+      case 'bsp_jpl':
         return colors[1];
-        break;
-      case 'plots':
+      case 'gaia_catalog':
         return colors[2];
-        break;
-      case 'praia_astrometry':
+      case 'header_extraction':
         return colors[3];
-        break;
+      case 'praia_astrometry':
+        return colors[4];
+      case 'praia_targets':
+        return colors[5];
+      case 'plots':
+        return colors[6];
       default:
         return colors[3];
     }
