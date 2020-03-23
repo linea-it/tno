@@ -269,17 +269,19 @@ function OccultationDetail({ setTitle, match }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} md={6} className={classes.block}>
-          <Card>
-            <CardHeader title="Sky map (Aladin)" />
-            <CardContent>
-              <CustomSkymap
-                ra={occultation.ra_star_candidate}
-                dec={occultation.dec_star_candidate}
-              />
-            </CardContent>
-          </Card>
-        </Grid>
+        {occultation.ra_star_candidate && occultation.dec_star_candidate ? (
+          <Grid item xs={12} md={6} className={classes.block}>
+            <Card>
+              <CardHeader title="Sky map (Aladin)" />
+              <CardContent>
+                <CustomSkymap
+                  ra={occultation.ra_star_candidate}
+                  dec={occultation.dec_star_candidate}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+        ) : null}
       </Grid>
     </>
   );
