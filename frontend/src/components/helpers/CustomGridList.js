@@ -13,8 +13,6 @@ function CustomGridList({
 }) {
   const useStyles = makeStyles({
     occMapImg: {
-      minWidth: 500,
-      minHeight: 415,
       width: '100%',
       cursor: handleImageClick !== null ? 'pointer' : 'normal',
     },
@@ -32,7 +30,7 @@ function CustomGridList({
             : row.asteroid_name;
 
           return (
-            <Grid key={i} item xs={12} xl={4} lg={6} md={4} >
+            <Grid key={i} item xs={12} xl={4} lg={6} md={4}>
               <Card>
                 <CardHeader title={`${row.date_time} - ${asteroidName}`} />
                 <CardContent>
