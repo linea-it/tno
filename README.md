@@ -16,13 +16,11 @@ cp env_template .env
 
 Copy ngnix config
 ```
-cd nginx
 cp dashboard/nginx/development.conf ./nginx-proxy.conf
 ```
 
 Copy docker-compose.yml
 ```
-cd ..
 cp docker-compose-development-template.yml docker-compose.yml
 ```
 
@@ -40,7 +38,7 @@ docker-compose up
 
 In another terminal configure Docker host port following this https://github.com/linea-it/tno/blob/master/docs/Configure_Docker_Host.md
 
-get docker host ip and put in DOCKER_HOST variable in .env 
+get docker host ip and put in DOCKER_HOST variable in .env
 
 ```
 $ docker ps
@@ -58,7 +56,7 @@ $ docker inspect -f '{{range .NetworkSettings.Networks}}{{.Gateway}}{{end}}' tno
 ```
 ...
 # Docker Client
-# Ip e porta do configurado para o client docker do host. 
+# Ip e porta do configurado para o client docker do host.
 # e possivel obter o ip utilizando o comando
 # docker inspect <container_id>
 # O IP do Host aparece no atributo "Network"->"Gateway": "172.19.0.1",
@@ -68,7 +66,7 @@ DOCKER_HOST=tcp://172.18.0.1:2376
 ```
 restart containers
 ```
-docker-compose stop 
+docker-compose stop
 docker-compose up
 ```
 
@@ -88,14 +86,14 @@ with the docker running open a new terminal and run this command.
  docker exec -it $(docker ps -q -f name=backend) python manage.py createsuperuser
 ```
 
-### Table preparation for Q3C 
+### Table preparation for Q3C
 run create_q3c_index for create indexes.
 ```
 docker exec -it $(docker ps -q -f name=backend) python manage.py create_q3c_index
 ```
 
 ### Importar os csv para o banco de dados
-Com o Container Database rodando, verificar se o diretorio com os csv está montado como volume no container. 
+Com o Container Database rodando, verificar se o diretorio com os csv está montado como volume no container.
 executar os comando do psql para importar as tabelas. nos exemplos o diretorio com os CSVs esta montado em /data.
 
 #### Pointings
@@ -113,7 +111,7 @@ docker exec -it $(docker ps -q -f name=database) psql -h localhost -U postgres -
 docker exec -it $(docker ps -q -f name=database) psql -h localhost -U postgres -c "\\copy tno_skybotoutput from '/data/tno_skybotoutput.csv' DELIMITER ';' CSV HEADER"
 ```
 
-### Run 
+### Run
 Stop all containers and run in background mode
 ```
 docker-compose up -d
@@ -122,7 +120,7 @@ docker-compose up -d
 Run Frontend
 ```
 cd dashboard
-yarn 
+yarn
 yarn run start
 ```
 
@@ -145,13 +143,13 @@ Access admin interface in http://localhost/admin
 
     ```
     name: naif0012
-    display name: naif0012   
+    display name: naif0012
     url: https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls
     file: Download file fron this url and upload in this field
     ```
 
 - Home › Predict › Bsp planetarys › Add bsp planetary - Create a BSP Planetary record (**Temporary**)
-  
+
   ```
   name: de435
   display name: de435
