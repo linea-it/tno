@@ -13,7 +13,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Button from '@material-ui/core/Button';
 import { deepOrange } from '@material-ui/core/colors';
-import { logout } from '../../api/Auth';
+import { logout } from '../../services/api/Auth';
 
 const useStyles = makeStyles((theme) => ({
 
