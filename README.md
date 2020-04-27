@@ -16,7 +16,7 @@ cp env_template .env
 
 Copy ngnix config
 ```
-cp dashboard/nginx/development.conf ./nginx-proxy.conf
+cp frontend/nginx/development.conf ./nginx-proxy.conf
 ```
 
 Copy docker-compose.yml
