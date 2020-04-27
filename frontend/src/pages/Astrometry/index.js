@@ -29,7 +29,7 @@ function Astrometry({ history, setTitle }) {
     refCatalogId: null,
     configId: null,
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -44,10 +44,6 @@ function Astrometry({ history, setTitle }) {
         setLoading(false);
       });
   };
-
-  useEffect(() => {
-    loadTableData();
-  }, []);
 
   const handleClickHistoryTable = (row) => {
     history.push(`/astrometry/${row.id}`);
@@ -251,8 +247,8 @@ function Astrometry({ history, setTitle }) {
             <Card>
               <CardHeader title="History" />
               <Table
-                data={tableData}
                 columns={tableColumns}
+                data={tableData}
                 defaultSorting={[
                   { columnName: 'start_time', direction: 'desc' },
                 ]}
@@ -260,7 +256,6 @@ function Astrometry({ history, setTitle }) {
                 totalCount={totalCount}
                 hasSearching={false}
                 hasColumnVisibility={false}
-                loading={loading}
               />
             </Card>
           </Grid>

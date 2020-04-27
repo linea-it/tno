@@ -10,6 +10,8 @@ function JohnstonArchiveDetail({ setTitle, match }) {
   const { id } =
     match || match.params != 'undefined' || match.params ? match.params : '';
 
+  console.log('whaaaaat?!', id);
+
   useEffect(() => {
     setTitle('Johnston Archives Details');
     loadData();
