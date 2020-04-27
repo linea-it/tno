@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { withRouter } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import {
   Grid,
   Card,
@@ -30,28 +30,90 @@ import {
   getAsteroids,
 } from '../../services/api/Prediction';
 
-function PredictionOccultationDetail({ history, match, setTitle }) {
-  const { id } = match.params;
+function PredictionOccultationDetail({ setTitle }) {
+  const { id } = useParams();
+  const history = useHistory();
   const [list, setList] = useState([]);
   const [statusDonutData, setStatusDonutData] = useState([]);
   const [executionTimeDonutData, setExecutionTimeDonutData] = useState([]);
   const [timeProfile, setTimeProfile] = useState({});
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
-  const pageSizes = [5, 10, 15];
   const [toolButton, setToolButton] = useState('list');
-  const [columnsAsteroidTable, setColumnsAsteroidTable] = useState([]);
   const [dialog, setDialog] = useState({
     content: [],
     visible: false,
-    title: ' ',
+    title: '',
   });
+
+  const tableListArray = [
+    {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      sortingEnabled: false,
+      icon: (
+        <Tooltip title="Details">
+          <Icon className="fas fa-info-circle" />
+        </Tooltip>
+      ),
+      action: (el) =>
+        history.push(`/prediction-of-occultation/asteroid/${el.id}`),
+      align: 'center',
+    },
+    {
+      name: 'status',
+      title: 'Status',
+      width: 140,
+      align: 'center',
+      sortingEnabled: false,
+      customElement: (row) => (
+        <ColumnStatus status={row.status} title={row.error_msg} />
+      ),
+    },
+    {
+      name: 'name',
+      title: 'Name',
+      width: 180,
+    },
+    {
+      name: 'number',
+      title: 'Number',
+      width: 140,
+      sortingEnabled: false,
+      align: 'right',
+    },
+    {
+      name: 'occultations',
+      title: 'Occultations',
+      width: 140,
+      align: 'right',
+      sortingEnabled: false,
+    },
+    {
+      name: 'execution_time',
+      title: 'Exec Time',
+      headerTooltip: 'Execution time',
+      align: 'center',
+      customElement: (row) => (
+        <span>
+          {row.execution_time
+            ? moment.utc(row.execution_time * 1000).format('HH:mm:ss')
+            : ''}
+        </span>
+      ),
+      width: 140,
+      sortingEnabled: false,
+    },
+  ];
+
+  const [columnsTable, setColumnsTable] = useState(tableListArray);
 
   useEffect(() => {
     setTitle('Prediction of Occultations');
+  }, [setTitle]);
 
-    setColumnsAsteroidTable(tableListArray);
-
+  useEffect(() => {
     getPredictionRunById({ id }).then((data) => {
       setList([
         {
@@ -136,68 +198,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
     getTimeProfile({ id }).then((res) => {
       setTimeProfile(res);
     });
-  }, []);
-
-  const tableListArray = [
-    {
-      name: 'id',
-      title: 'Details',
-      width: 100,
-      sortingEnabled: false,
-      icon: (
-        <Tooltip title="Details">
-          <Icon className="fas fa-info-circle" />
-        </Tooltip>
-      ),
-      action: (el) =>
-        history.push(`/prediction-of-occultation/asteroid/${el.id}`),
-      align: 'center',
-    },
-    {
-      name: 'status',
-      title: 'Status',
-      width: 140,
-      align: 'center',
-      sortingEnabled: false,
-      customElement: (row) => (
-        <ColumnStatus status={row.status} title={row.error_msg} />
-      ),
-    },
-    {
-      name: 'name',
-      title: 'Name',
-      width: 180,
-    },
-    {
-      name: 'number',
-      title: 'Number',
-      width: 140,
-      sortingEnabled: false,
-      align: 'right',
-    },
-    {
-      name: 'occultations',
-      title: 'Occultations',
-      width: 140,
-      align: 'right',
-      sortingEnabled: false,
-    },
-    {
-      name: 'execution_time',
-      title: 'Exec Time',
-      headerTooltip: 'Execution time',
-      align: 'center',
-      customElement: (row) => (
-        <span>
-          {row.execution_time
-            ? moment.utc(row.execution_time * 1000).format('HH:mm:ss')
-            : ''}
-        </span>
-      ),
-      width: 140,
-      sortingEnabled: false,
-    },
-  ];
+  }, [setTitle, id]);
 
   const bugLogArray = [
     {
@@ -282,11 +283,11 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   const handleBackNavigation = () => history.push('/prediction-of-occultation');
 
   const handleChangeToolButton = (event, value) => {
-    value === 'list'
-      ? setColumnsAsteroidTable(tableListArray)
-      : setColumnsAsteroidTable(bugLogArray);
-    setToolButton(value);
-    //  loadTableData();
+    const columnToggleValue =
+      value === 'list'
+        ? setColumnsTable(tableListArray)
+        : setColumnsTable(bugLogArray);
+    setToolButton(columnToggleValue);
   };
 
   return (
@@ -364,10 +365,9 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
                 </ToggleButtonGroup>
               </Toolbar>
               <Table
-                columns={columnsAsteroidTable}
+                columns={columnsTable}
                 data={tableData}
                 loadData={loadTableData}
-                pageSizes={pageSizes}
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
                 hasResizing={false}
@@ -390,11 +390,7 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
 }
 
 PredictionOccultationDetail.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.number,
-    }),
-  }).isRequired,
+  setTitle: PropTypes.func.isRequired,
 };
 
-export default withRouter(PredictionOccultationDetail);
+export default PredictionOccultationDetail;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
+import PropTypes from 'prop-types';
 import { Grid, Card, CardContent, CardHeader } from '@material-ui/core';
 import Table from '../../components/Table';
 import { getBspJpl } from '../../services/api/Input';
@@ -11,7 +12,7 @@ function BspJpl({ setTitle }) {
 
   useEffect(() => {
     setTitle('Bsp Jpl');
-  }, []);
+  }, [setTitle]);
 
   const loadTableData = (event) => {
     const page = typeof event === 'undefined' ? 1 : event.currentPage + 1;
@@ -97,5 +98,9 @@ function BspJpl({ setTitle }) {
     </Grid>
   );
 }
+
+BspJpl.propTypes = {
+  setTitle: PropTypes.func.isRequired,
+};
 
 export default BspJpl;

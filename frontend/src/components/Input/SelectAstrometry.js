@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState } from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -6,21 +7,11 @@ import { Select as MuiSelect } from '@material-ui/core';
 import PropTypes from 'prop-types';
 
 function SelectAstrometry(props) {
-  const [values, setValues] = useState({
-    input: '',
-    name: '',
-  });
-
   const [defaultValue, setDefaultValue] = useState(
     props.default === 'noDefault' ? ' ' : 0
   );
 
   function handleChange(event) {
-    setValues((oldValues) => ({
-      ...oldValues,
-      [event.target.name]: event.target.value,
-    }));
-
     setDefaultValue(event.target.value);
 
     const cases = event.currentTarget.getAttribute('case');
@@ -104,6 +95,8 @@ function SelectAstrometry(props) {
 
 SelectAstrometry.propTypes = {
   title: PropTypes.string.isRequired,
+  default: PropTypes.string.isRequired,
+  setSubmition: PropTypes.func.isRequired,
 };
 
 export default SelectAstrometry;

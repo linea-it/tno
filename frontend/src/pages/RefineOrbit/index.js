@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import {
   CardHeader,
   Card,
@@ -39,7 +39,8 @@ function useInterval(callback, delay) {
     }
   }, [delay]);
 }
-function RefineOrbit({ history, setTitle }) {
+function RefineOrbit({ setTitle }) {
+  const history = useHistory();
   const [tableData, setTableData] = useState([]);
   const [inputData, setInputData] = useState([]);
   const pageSizes = [5, 10, 15];
@@ -63,6 +64,9 @@ function RefineOrbit({ history, setTitle }) {
 
   useEffect(() => {
     setTitle('Refine Orbits');
+  }, [setTitle]);
+
+  useEffect(() => {
     loadExecuteData();
   }, []);
 
@@ -218,8 +222,7 @@ function RefineOrbit({ history, setTitle }) {
 }
 
 RefineOrbit.propTypes = {
-  history: PropTypes.objectOf(PropTypes.object).isRequired,
   setTitle: PropTypes.func.isRequired,
 };
 
-export default withRouter(RefineOrbit);
+export default RefineOrbit;

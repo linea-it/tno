@@ -36,28 +36,30 @@ const TableHeaderRowCell = ({ ...restProps }) => (
   />
 );
 
-const SortingIcon = ({ direction }) => (direction === 'asc' ? (
-  <ArrowUpward style={{ fontSize: '18px' }} />
-) : (
-  <ArrowDownward style={{ fontSize: '18px' }} />
-));
+const SortingIcon = ({ direction }) =>
+  direction === 'asc' ? (
+    <ArrowUpward style={{ fontSize: '18px' }} />
+  ) : (
+    <ArrowDownward style={{ fontSize: '18px' }} />
+  );
 
-const SortLabel = ({
-  onSort, children, direction, ...restProps
-}) => {
+const SortLabel = ({ onSort, children, direction, ...restProps }) => {
   const classes = useStyles();
 
   return (
-    <Tooltip title={
-      restProps.column.headerTooltip
-        ? restProps.column.headerTooltip
-        : children.props.children
-    }
+    <Tooltip
+      title={
+        restProps.column.headerTooltip
+          ? restProps.column.headerTooltip
+          : children.props.children
+      }
     >
       <span
         onClick={!restProps.disabled ? onSort : null}
         className={!restProps.disabled ? classes.invisibleButton : null}
-        style={{ whiteSpace: `${restProps.column.hasLineBreak ? 'normal' : 'nowrap'}` }}
+        style={{
+          whiteSpace: `${restProps.column.hasLineBreak ? 'normal' : 'nowrap'}`,
+        }}
       >
         {children}
         {!restProps.disabled

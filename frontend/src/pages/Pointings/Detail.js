@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router';
+import { useParams, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import {
   Grid,
@@ -13,14 +13,17 @@ import {
 import List from '../../components/List';
 import { getPointing } from '../../services/api/Pointings';
 
-function PointingsDetail({ setTitle, match, history }) {
-  const { id } = match.params;
+function PointingsDetail({ setTitle }) {
+  const { id } = useParams();
+  const history = useHistory();
 
   const [pointingDetailsList, setPointingDetailsList] = useState([]);
 
   useEffect(() => {
     setTitle('Pointings');
+  }, [setTitle]);
 
+  useEffect(() => {
     getPointing({ id }).then((res) => {
       setPointingDetailsList([
         {
@@ -213,7 +216,7 @@ function PointingsDetail({ setTitle, match, history }) {
         },
       ]);
     });
-  }, []);
+  }, [id]);
 
   const handleBackNavigation = () => history.push('/pointings');
 
@@ -262,14 +265,6 @@ function PointingsDetail({ setTitle, match, history }) {
 
 PointingsDetail.propTypes = {
   setTitle: PropTypes.func.isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
 };
 
-export default withRouter(PointingsDetail);
+export default PointingsDetail;

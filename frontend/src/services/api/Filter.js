@@ -2,26 +2,40 @@ import axios from 'axios';
 
 export const getStatsById = ({ id }) => {
   const params = { id };
-  return axios.get('/customlist/get_stats', { params }).then((res) => res.data.data);
+  return axios
+    .get('/customlist/get_stats', { params })
+    .then((res) => res.data.data);
 };
 
-export const getObjectsList = ({ tablename, page, pageSize }) => axios.get('/customlist/list_objects/', {
-  params: { tablename, page, pageSize },
-}).then((res) => res.data);
+export const getObjectsList = ({ tablename, page, pageSize }) =>
+  axios
+    .get('/customlist/list_objects/', {
+      params: { tablename, page, pageSize },
+    })
+    .then((res) => res.data);
 
 export const getCustomList = ({
-  page, pageSize, ordering, search, filters = [],
+  page,
+  pageSize,
+  ordering,
+  search,
+  filters = [],
 }) => {
   const params = {
-    page, pageSize, ordering, search,
+    page,
+    pageSize,
+    ordering,
+    search,
   };
   filters.forEach((element) => {
     params[element.property] = element.value;
   });
 
-  return axios.get('/customlist', {
-    params,
-  }).then((res) => res.data);
+  return axios
+    .get('/customlist', {
+      params,
+    })
+    .then((res) => res.data);
 };
 
 export const postCustomList = ({
@@ -41,12 +55,12 @@ export const postCustomList = ({
   };
 
   if (filter_name !== '' && filter_name !== null) {
-    params['filter_name'] = filter_name;
+    params.filter_name = filter_name;
   } else {
-    params['filter_dynclass'] = filter_dynclass;
-    params['filter_magnitude'] = filter_magnitude;
-    params['filter_diffdatenights'] = filter_diffdatenights;
-    params['filter_morefilter'] = filter_morefilter;
+    params.filter_dynclass = filter_dynclass;
+    params.filter_magnitude = filter_magnitude;
+    params.filter_diffdatenights = filter_diffdatenights;
+    params.filter_morefilter = filter_morefilter;
   }
 
   return axios.post('/customlist/', params).then((res) => res.data);
@@ -84,9 +98,11 @@ export const getSkybotOutput = ({
     }
   });
 
-  return axios.get('/skybotoutput/objects', {
-    params,
-  }).then((res) => res.data);
+  return axios
+    .get('/skybotoutput/objects', {
+      params,
+    })
+    .then((res) => res.data);
 };
 
 export const getSkybotOutputCount = ({
@@ -117,11 +133,12 @@ export const getSkybotOutputCount = ({
     }
   });
 
-  return axios.get('/skybotoutput/objects_count', {
-    params,
-  }).then((res) => res.data);
+  return axios
+    .get('/skybotoutput/objects_count', {
+      params,
+    })
+    .then((res) => res.data);
 };
-
 
 export const checkTableName = ({ tablename, status }) => {
   const params = {
@@ -129,11 +146,15 @@ export const checkTableName = ({ tablename, status }) => {
     status,
   };
 
-  return axios.get('/customlist/', {
-    params,
-  }).then((res) => res.data);
+  return axios
+    .get('/customlist/', {
+      params,
+    })
+    .then((res) => res.data);
 };
 
 export const submitDownloadCcds = ({ id }) => {
-  return axios.get(`customlist/${id}/download_ccds_by_list/`).then((res) => res.data);
+  return axios
+    .get(`customlist/${id}/download_ccds_by_list/`)
+    .then((res) => res.data);
 };

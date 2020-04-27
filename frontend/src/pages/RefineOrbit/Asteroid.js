@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { withRouter } from 'react-router';
+import { useParams, useHistory } from 'react-router-dom';
 import Carousel, { Modal, ModalGateway } from 'react-images';
 import {
   Grid,
@@ -27,8 +27,9 @@ import {
   getAsteroidDownloadLink,
 } from '../../services/api/Orbit';
 
-function RefineOrbitAsteroid({ history, setTitle, match, drawerOpen }) {
-  const { id } = match.params;
+function RefineOrbitAsteroid({ setTitle, drawerOpen }) {
+  const { id } = useParams();
+  const history = useHistory();
   const [asteroidData, setAsteroidData] = useState([]);
   const [asteroidList, setAsteroidList] = useState([]);
   const [inputTableData, setInputTableData] = useState([]);
@@ -87,16 +88,11 @@ function RefineOrbitAsteroid({ history, setTitle, match, drawerOpen }) {
     },
   ];
 
-  const plotImagesOrder = [
-    'comparison_nima_jpl_ra',
-    'comparison_nima_jpl_dec',
-    'residual_all_v1',
-    'residual_recent',
-    'comparison_bsp_integration',
-  ];
-
   useEffect(() => {
     setTitle('Refine Orbit');
+  }, [setTitle]);
+
+  useEffect(() => {
     setAsteroidData([]);
     setAsteroidList([]);
     setInputTableData([]);
@@ -130,6 +126,13 @@ function RefineOrbitAsteroid({ history, setTitle, match, drawerOpen }) {
       // Lista so com os arquivos que sao imagens
       const excludedImages = ['omc_sep.png'];
       const images = [];
+      const plotImagesOrder = [
+        'comparison_nima_jpl_ra',
+        'comparison_nima_jpl_dec',
+        'residual_all_v1',
+        'residual_recent',
+        'comparison_bsp_integration',
+      ];
 
       data.results.forEach((e) => {
         if (e.file_type === '.png' && !excludedImages.includes(e.filename)) {
@@ -153,7 +156,7 @@ function RefineOrbitAsteroid({ history, setTitle, match, drawerOpen }) {
         next: res.next,
       });
     });
-  }, [reload, history.location]);
+  }, [reload, history.location, id]);
 
   useEffect(() => {
     setAsteroidList([
@@ -387,4 +390,4 @@ RefineOrbitAsteroid.propTypes = {
   drawerOpen: PropTypes.bool.isRequired,
 };
 
-export default withRouter(RefineOrbitAsteroid);
+export default RefineOrbitAsteroid;

@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-export const getOccultations = ({
- page, pageSize, sortField, filters 
-}) => {
+export const getOccultations = ({ page, pageSize, sortField, filters }) => {
   const params = { page, pageSize };
 
   if (filters) {
@@ -11,9 +9,12 @@ export const getOccultations = ({
     });
   }
 
-  return axios.get('/occultation/', {
-    params,
-  }).then((res) => res.data);
+  return axios
+    .get('/occultation/', {
+      params,
+    })
+    .then((res) => res.data);
 };
 
-export const getOccultationById = ({ id }) => axios.get(`/occultation/${id}/`).then((res) => res.data);
+export const getOccultationById = ({ id }) =>
+  axios.get(`/occultation/${id}/`).then((res) => res.data);

@@ -8,7 +8,7 @@ import {
   Icon,
   Button,
 } from '@material-ui/core';
-import { withRouter } from 'react-router';
+import { useParams, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import List from '../../components/List';
 import Table from '../../components/Table';
@@ -21,8 +21,9 @@ import {
   stopSkybotRunById,
 } from '../../services/api/Skybot';
 
-function SkybotDetail({ setTitle, match, history }) {
-  const { id } = match.params;
+function SkybotDetail({ setTitle }) {
+  const { id } = useParams();
+  const history = useHistory();
   const [skybotRunDetailList, setSkybotRunDetailList] = useState([]);
   const [timeProfile, setTimeProfile] = useState([]);
   const [skybotDetailTableData, setSkybotDetailTableData] = useState([]);
@@ -31,6 +32,7 @@ function SkybotDetail({ setTitle, match, history }) {
     setSkybotDetailTableTotalCount,
   ] = useState(0);
   const [currentSkybotRunStatus, setCurrentSkybotRunStatus] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const skybotDetailTableColumns = [
     {
@@ -118,7 +120,7 @@ function SkybotDetail({ setTitle, match, history }) {
 
   const handleBackNavigation = () => history.push('/skybot');
 
-  const loadSkybotDetailSummary = () => {
+  useEffect(() => {
     getSkybotRunById({ id }).then((res) => {
       setCurrentSkybotRunStatus(res.status);
       setSkybotRunDetailList([
@@ -150,9 +152,9 @@ function SkybotDetail({ setTitle, match, history }) {
         },
       ]);
     });
-  };
+  }, [id, loading]);
 
-  const loadSkybotDetailExecutionTime = () => {
+  useEffect(() => {
     getStatistic({ id }).then((res) => {
       setTimeProfile([
         {
@@ -169,7 +171,7 @@ function SkybotDetail({ setTitle, match, history }) {
         },
       ]);
     });
-  };
+  }, [id, loading]);
 
   const loadSkybotDetailTableData = ({ currentPage, pageSize }) => {
     getSkybotRunResults({
@@ -191,17 +193,13 @@ function SkybotDetail({ setTitle, match, history }) {
   const handleStopRun = () => {
     stopSkybotRunById(id).then(() => {
       clearData();
-      loadSkybotDetailSummary();
-      loadSkybotDetailExecutionTime();
-      loadSkybotDetailTableData({ currentPage: 0, pageSize: 10 });
+      setLoading(!loading);
     });
   };
 
   useEffect(() => {
     setTitle('Skybot Run');
-    loadSkybotDetailSummary();
-    loadSkybotDetailExecutionTime();
-  }, []);
+  }, [setTitle]);
 
   return (
     <>
@@ -266,7 +264,7 @@ function SkybotDetail({ setTitle, match, history }) {
                     totalCount={skybotDetailTableTotalCount}
                     loadData={loadSkybotDetailTableData}
                     hasSearching={false}
-                    loading
+                    loading={loading}
                   />
                 </CardContent>
               </Card>
@@ -280,14 +278,6 @@ function SkybotDetail({ setTitle, match, history }) {
 
 SkybotDetail.propTypes = {
   setTitle: PropTypes.func.isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
 };
 
-export default withRouter(SkybotDetail);
+export default SkybotDetail;

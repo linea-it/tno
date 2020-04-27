@@ -25,7 +25,6 @@ const useStyles = makeStyles({
   },
 });
 
-
 function CustomList({ data, height, width }) {
   const classes = useStyles();
 
@@ -38,20 +37,33 @@ function CustomList({ data, height, width }) {
           dense={item.dense ? item.dense : false}
         >
           <ListItemText
-            primary={(
+            primary={
               <span
                 title={item.tooltip ? item.tooltip : ''}
                 className={item.tooltip ? classes.tooltip : ''}
               >
                 {item.title}
                 {item.tooltip ? (
-                  <sup><Icon className={clsx(classes.tooltipIcon, 'fas', 'fa-info-circle')} /></sup>
+                  <sup>
+                    <Icon
+                      className={clsx(
+                        classes.tooltipIcon,
+                        'fas',
+                        'fa-info-circle'
+                      )}
+                    />
+                  </sup>
                 ) : null}
               </span>
-            )}
+            }
             className={classes.itemText}
           />
-          <ListItemText className={classes.itemText} secondary={typeof item.value === 'function' ? item.value() : item.value} />
+          <ListItemText
+            className={classes.itemText}
+            secondary={
+              typeof item.value === 'function' ? item.value() : item.value
+            }
+          />
         </ListItem>
       ))}
     </List>
@@ -64,14 +76,8 @@ CustomList.defaultProps = {
 };
 
 CustomList.propTypes = {
-  height: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]),
-  width: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]),
+  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 

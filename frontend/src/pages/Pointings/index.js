@@ -137,7 +137,7 @@ function Pointings({ setTitle, history }) {
 
   useEffect(() => {
     setTitle('Pointings');
-  }, []);
+  }, [setTitle]);
 
   return (
     <>

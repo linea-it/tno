@@ -11,7 +11,7 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import Carousel, { Modal, ModalGateway } from 'react-images';
-import { withRouter } from 'react-router';
+import { useParams, useHistory } from 'react-router-dom';
 import Image from '../../components/List/Image';
 import List from '../../components/List';
 import Table from '../../components/Table';
@@ -26,13 +26,9 @@ import {
   getAsteroidNeighbors,
 } from '../../services/api/Prediction';
 
-function PredictionOccultationAsteroid({
-  history,
-  setTitle,
-  match,
-  drawerOpen,
-}) {
-  const { id } = match.params;
+function PredictionOccultationAsteroid({ setTitle, drawerOpen }) {
+  const { id } = useParams();
+  const history = useHistory();
   const [asteroidData, setAsteroidData] = useState([]);
   const [asteroidList, setAsteroidList] = useState([]);
   const [infoList, setInfoList] = useState([]);
@@ -162,6 +158,9 @@ function PredictionOccultationAsteroid({
 
   useEffect(() => {
     setTitle('Prediction of Occultations');
+  }, [setTitle]);
+
+  useEffect(() => {
     setAsteroidData([]);
     setAsteroidList([]);
     setInfoList([]);
@@ -229,7 +228,7 @@ function PredictionOccultationAsteroid({
         next: res.next,
       });
     });
-  }, [reload, history.location]);
+  }, [id, reload, history.location]);
 
   const formatExecutionTime = (duration) => {
     const seconds = Math.round(moment.duration(duration).asSeconds());
@@ -567,16 +566,8 @@ function PredictionOccultationAsteroid({
 }
 
 PredictionOccultationAsteroid.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
   setTitle: PropTypes.func.isRequired,
   drawerOpen: PropTypes.bool.isRequired,
 };
 
-export default withRouter(PredictionOccultationAsteroid);
+export default PredictionOccultationAsteroid;

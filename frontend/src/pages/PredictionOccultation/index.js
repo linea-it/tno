@@ -9,7 +9,7 @@ import {
   Grid,
   Icon,
 } from '@material-ui/core';
-import { withRouter } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 /*
@@ -53,7 +53,8 @@ function useInterval(callback, delay) {
   }, [delay]);
 }
 
-function PredictionOccultation({ history, setTitle }) {
+function PredictionOccultation({ setTitle }) {
+  const history = useHistory();
   const columns = [
     {
       name: 'id',
@@ -117,13 +118,12 @@ function PredictionOccultation({ history, setTitle }) {
   ];
 
   const [tableData, setTableData] = useState([]);
-  const pageSizes = [5, 10, 15];
   const [totalCount, setTotalCount] = useState(0);
   const [reload, setReload] = useState(true);
 
   useEffect(() => {
     setTitle('Prediction of Occultations');
-  }, []);
+  }, [setTitle]);
 
   const loadTableData = async ({
     sorting,
@@ -231,7 +231,7 @@ function PredictionOccultation({ history, setTitle }) {
         setReload(!reload);
       });
     }
-  }, [valueSubmition]);
+  }, [valueSubmition, reload]);
 
   const loadData = () => {
     // Load Input Array
@@ -414,7 +414,6 @@ function PredictionOccultation({ history, setTitle }) {
               columns={columns}
               data={tableData}
               loadData={loadTableData}
-              pageSizes={pageSizes}
               totalCount={totalCount}
               defaultSorting={[{ columnName: 'start_time', direction: 'desc' }]}
               reload={reload}
@@ -438,8 +437,7 @@ function PredictionOccultation({ history, setTitle }) {
 }
 
 PredictionOccultation.propTypes = {
-  history: PropTypes.objectOf(PropTypes.object).isRequired,
   setTitle: PropTypes.func.isRequired,
 };
 
-export default withRouter(PredictionOccultation);
+export default PredictionOccultation;

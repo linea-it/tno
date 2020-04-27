@@ -20,7 +20,7 @@ function Observation({ setTitle }) {
 
   useEffect(() => {
     setTitle('Observation Files');
-  }, []);
+  }, [setTitle]);
 
   const loadTableData = (event) => {
     setLoading(true);

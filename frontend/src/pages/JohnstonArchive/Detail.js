@@ -1,23 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { CardHeader, Grid, Card, CardContent } from '@material-ui/core';
+import PropTypes from 'prop-types';
 import moment from 'moment';
+import { useParams } from 'react-router-dom';
+import { CardHeader, Grid, Card, CardContent } from '@material-ui/core';
 import List from '../../components/List';
 import { getJohnstonArchivesById } from '../../services/api/Input';
 
-function JohnstonArchiveDetail({ setTitle, match }) {
+function JohnstonArchiveDetail({ setTitle }) {
+  const { id } = useParams();
   const [listData, setListData] = useState([]);
-
-  const { id } =
-    match || match.params != 'undefined' || match.params ? match.params : '';
-
-  console.log('whaaaaat?!', id);
 
   useEffect(() => {
     setTitle('Johnston Archives Details');
-    loadData();
-  }, []);
+  }, [setTitle]);
 
-  const loadData = () => {
+  useEffect(() => {
     getJohnstonArchivesById(id).then((res) => {
       const updatedDate = moment(res.updated).format('YYYY-MM-DD HH:mm:ss');
       setListData([
@@ -95,7 +92,7 @@ function JohnstonArchiveDetail({ setTitle, match }) {
         },
       ]);
     });
-  };
+  }, [id]);
 
   return (
     <Grid container spacing={2}>
@@ -110,5 +107,9 @@ function JohnstonArchiveDetail({ setTitle, match }) {
     </Grid>
   );
 }
+
+JohnstonArchiveDetail.propTypes = {
+  setTitle: PropTypes.func.isRequired,
+};
 
 export default JohnstonArchiveDetail;

@@ -9,18 +9,20 @@ import {
   Snackbar,
 } from '@material-ui/core';
 import moment from 'moment';
+import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
 import {
   getJohnstonArchives,
   updateJohnstonList,
 } from '../../services/api/Input';
 import Table from '../../components/Table';
 
-function JohnstonArchive({ setTitle, history }) {
+function JohnstonArchive({ setTitle }) {
+  const history = useHistory();
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dataTotalCount, setDataTotalCount] = useState(0);
   const [snackBarVisible, setSnackBarVisible] = useState(false);
-  const [snackBarTransition, setSnackBarTransition] = useState(undefined);
   const [snackBarPosition] = useState({
     vertical: 'bottom',
     horizontal: 'right',
@@ -173,7 +175,6 @@ function JohnstonArchive({ setTitle, history }) {
       <Snackbar
         open={snackBarVisible}
         autoHideDuration={7000}
-        TransitionComponent={snackBarTransition}
         anchorOrigin={{ vertical, horizontal }}
         message="Updating...  It takes about 3 minutes"
         onClose={() => setSnackBarVisible(false)}
@@ -181,5 +182,9 @@ function JohnstonArchive({ setTitle, history }) {
     </Grid>
   );
 }
+
+JohnstonArchive.propTypes = {
+  setTitle: PropTypes.func.isRequired,
+};
 
 export default JohnstonArchive;

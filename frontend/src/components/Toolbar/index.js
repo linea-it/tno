@@ -16,12 +16,12 @@ import { deepOrange } from '@material-ui/core/colors';
 import { logout } from '../../services/api/Auth';
 
 const useStyles = makeStyles((theme) => ({
-
   appBar: {
     backgroundColor: '#fff',
     boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2)',
     color: '#000',
-    width: (drawerWidth) => (drawerWidth === 0 ? '100%' : `calc(100% - ${theme.spacing(7) + 1}px)`),
+    width: (drawerWidth) =>
+      drawerWidth === 0 ? '100%' : `calc(100% - ${theme.spacing(7) + 1}px)`,
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
@@ -50,9 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CustomToolbar({
-  title, open, drawerWidth, currentUser,
-}) {
+function CustomToolbar({ title, open, drawerWidth, currentUser }) {
   const classes = useStyles(drawerWidth);
   const [userSettingsAnchorEl, setUserSettingsAnchorEl] = useState(null);
 
@@ -75,13 +73,12 @@ function CustomToolbar({
           </Grid>
           <Grid item>
             <div className={classes.sectionButtons}>
-              <Avatar
-                className={classes.avatar}
-                onClick={handleUserOpen}
-              >
+              <Avatar className={classes.avatar} onClick={handleUserOpen}>
                 {currentUser.username.substring(0, 2).toUpperCase()}
               </Avatar>
-              <Button color="inherit" onClick={handleUserOpen}>{currentUser.username}</Button>
+              <Button color="inherit" onClick={handleUserOpen}>
+                {currentUser.username}
+              </Button>
               <Menu
                 anchorEl={userSettingsAnchorEl}
                 // anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
@@ -99,7 +96,6 @@ function CustomToolbar({
             </div>
           </Grid>
         </Grid>
-
       </Toolbar>
     </AppBar>
   );

@@ -40,7 +40,6 @@ const useStyles = makeStyles({
   },
 });
 
-
 function CustomColumnStatus({ status, title }) {
   const classes = useStyles();
 
@@ -66,10 +65,7 @@ function CustomColumnStatus({ status, title }) {
       statusColor = classes.btnNotExecuted;
   }
   return (
-    <span
-      className={clsx(classes.btn, statusColor)}
-      title={title || status}
-    >
+    <span className={clsx(classes.btn, statusColor)} title={title || status}>
       {status}
     </span>
   );

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useParams } from 'react-router-dom';
 import moment from 'moment';
 import {
   Grid,
@@ -17,8 +18,8 @@ import { getStatsById, getObjectsList } from '../../services/api/Filter';
 import 'highlight.js/styles/default.css';
 import 'highlight.js/styles/atom-one-light.css';
 
-function FilterObjectsDetail({ setTitle, match }) {
-  const { id } = match.params;
+function FilterObjectsDetail({ setTitle }) {
+  const { id } = useParams();
   const [stats, setStats] = useState({});
   const [objectsTableCount, setObjectsTableCount] = useState(0);
   const [objectsTableData, setObjectsTableData] = useState([]);
@@ -155,8 +156,11 @@ function FilterObjectsDetail({ setTitle, match }) {
 
   useEffect(() => {
     setTitle('Filter Objects');
+  }, [setTitle]);
+
+  useEffect(() => {
     getStatsById({ id }).then((res) => setStats(res));
-  }, []);
+  }, [id]);
 
   const loadObjectsTableData = ({ currentPage, pageSize }) => {
     getObjectsList({
@@ -168,12 +172,6 @@ function FilterObjectsDetail({ setTitle, match }) {
       setObjectsTableData(res.results);
     });
   };
-
-  useEffect(() => {
-    if (stats.tablename) {
-      loadObjectsTableData({ currentPage: 0, pageSize: 10 });
-    }
-  }, [stats]);
 
   const handleSqlLogChange = () => setSqlLogVisible(!sqlLogVisible);
 
@@ -314,11 +312,6 @@ function FilterObjectsDetail({ setTitle, match }) {
 
 FilterObjectsDetail.propTypes = {
   setTitle: PropTypes.func.isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
 };
 
 export default FilterObjectsDetail;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { withRouter } from 'react-router';
+import { useParams, useHistory } from 'react-router';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {
@@ -31,8 +31,9 @@ import {
   getAsteroidLog,
 } from '../../services/api/Orbit';
 
-function RefineOrbitDetail({ history, match, setTitle }) {
-  const { id } = match.params;
+function RefineOrbitDetail({ setTitle }) {
+  const { id } = useParams();
+  const history = useHistory();
   const [listTitle, setListTitle] = useState([]);
   const [list, setList] = useState([]);
   const [tableData, setTableData] = useState([]);
@@ -130,6 +131,9 @@ function RefineOrbitDetail({ history, match, setTitle }) {
 
   useEffect(() => {
     setTitle('Refine Orbit');
+  }, [setTitle]);
+
+  useEffect(() => {
     getOrbitRunById({ id }).then((data) => {
       setListTitle(data.input_displayname);
       setList([
@@ -173,7 +177,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       ]);
     });
     getOrbitRunTimeProfile({ id }).then((res) => setTimeProfile(res));
-  }, []);
+  }, [id]);
 
   const loadTableData = async ({
     sorting,
@@ -303,15 +307,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
 }
 
 RefineOrbitDetail.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
   setTitle: PropTypes.func.isRequired,
 };
 
-export default withRouter(RefineOrbitDetail);
+export default RefineOrbitDetail;

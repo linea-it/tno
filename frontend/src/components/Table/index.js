@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
 import {
   PagingState,
   SortingState,
@@ -15,7 +19,7 @@ import {
 } from '@devexpress/dx-react-grid';
 import {
   Grid,
-  Table,
+  Table as MuiTable,
   PagingPanel,
   TableColumnResizing,
   Toolbar,
@@ -24,48 +28,15 @@ import {
   TableColumnVisibility,
   TableGroupRow,
 } from '@devexpress/dx-react-grid-material-ui';
-import {
-  Input,
-  InputLabel,
-  MenuItem,
-  FormControl,
-  Select,
-  Button,
-  Dialog,
-  CircularProgress,
-} from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
 import ColumnChooser from './ColumnChooser';
 import HeaderRowCell from './HeaderRowCell';
-
-const useStyles = makeStyles({
-  wrapPaper: {
-    position: 'relative',
-    paddingTop: '10px',
-  },
-  formControl: {
-    width: '180px',
-    position: 'absolute',
-    top: '8px',
-    left: '24px',
-    zIndex: '999',
-  },
-  noDataCell: {
-    padding: '48px 0px',
-  },
-  noDataWrapper: {
-    left: '50%',
-    display: 'inline-block',
-    position: 'sticky',
-  },
-  noDataText: {
-    display: 'inline-block',
-    transform: 'translateX(-50%)',
-  },
-});
+import useStyles from './styles';
 
 function CustomNoDataCellComponent({ ...noDatProps }, customLoading) {
   const classes = useStyles();
-
   return (
     <td
       className={clsx(
@@ -84,7 +55,7 @@ function CustomNoDataCellComponent({ ...noDatProps }, customLoading) {
   );
 }
 
-function CustomTable({
+function Table({
   columns,
   data,
   totalCount,
@@ -179,15 +150,7 @@ function CustomTable({
         searchValue,
       });
     }
-  }, [
-    sorting,
-    currentPage,
-    currentPage,
-    reload,
-    pageSize,
-    filter,
-    searchValue,
-  ]);
+  }, [sorting, currentPage, reload, pageSize, filter, searchValue]); // eslint-disable-line
 
   const clearData = () => {
     setCustomData([]);
@@ -355,14 +318,14 @@ function CustomTable({
             ) : null}
             {hasGrouping ? <IntegratedGrouping /> : null}
             {loading !== null ? (
-              <Table
+              <MuiTable
                 columnExtensions={customColumnExtensions}
                 noDataCellComponent={(props) =>
                   CustomNoDataCellComponent({ ...props }, customLoading)
                 }
               />
             ) : (
-              <Table columnExtensions={customColumnExtensions} />
+              <MuiTable columnExtensions={customColumnExtensions} />
             )}
             {hasSelection ? (
               <TableSelection
@@ -423,14 +386,14 @@ function CustomTable({
           ) : null}
           {hasGrouping ? <IntegratedGrouping /> : null}
           {loading !== null ? (
-            <Table
+            <MuiTable
               columnExtensions={customColumnExtensions}
               noDataCellComponent={(props) =>
                 CustomNoDataCellComponent({ ...props }, customLoading)
               }
             />
           ) : (
-            <Table columnExtensions={customColumnExtensions} />
+            <MuiTable columnExtensions={customColumnExtensions} />
           )}
 
           {hasSelection ? (
@@ -517,7 +480,7 @@ function CustomTable({
   );
 }
 
-CustomTable.defaultProps = {
+Table.defaultProps = {
   loadData: () => null,
   pageSize: 10,
   pageSizes: [5, 10, 15],
@@ -541,7 +504,7 @@ CustomTable.defaultProps = {
   loading: null,
 };
 
-CustomTable.propTypes = {
+Table.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,
   loadData: PropTypes.func,
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -571,4 +534,4 @@ CustomTable.propTypes = {
   loading: PropTypes.bool,
 };
 
-export default CustomTable;
+export default Table;

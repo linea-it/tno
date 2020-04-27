@@ -34,7 +34,7 @@ axios.interceptors.response.use(
     console.error(error.config);
 
     return Promise.reject(error);
-  },
+  }
 );
 
 export function loggedUser() {
@@ -57,7 +57,6 @@ export function isAuthenticated() {
     return false;
   });
 }
-
 
 export function logout() {
   window.location.replace(`${url}/auth/logout`);

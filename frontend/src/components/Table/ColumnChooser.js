@@ -25,7 +25,7 @@ class CustomColumnChooser extends Component {
 
   containerComponent(columns) {
     let isAllChecked = true;
-
+    const { chooserAllChecked } = this.state;
     return (
       <Paper style={styles.chooserPaperWrapper}>
         {columns.children.map((column, index) => {
@@ -44,17 +44,19 @@ class CustomColumnChooser extends Component {
                 <>
                   <FormGroup row style={styles.chooserFormGroupWrapper}>
                     <FormControlLabel
-                      control={(
+                      control={
                         <Checkbox
                           checked={
                             isAllChecked === false
                               ? isAllChecked
-                              : this.state.chooserAllChecked
+                              : chooserAllChecked
                           }
                           value="all"
-                          onChange={() => this.handleToggleAll(columns.children)}
+                          onChange={() =>
+                            this.handleToggleAll(columns.children)
+                          }
                         />
-                      )}
+                      }
                       label="All"
                     />
                   </FormGroup>
@@ -63,13 +65,15 @@ class CustomColumnChooser extends Component {
               ) : null}
               <FormGroup row style={styles.chooserFormGroupWrapper}>
                 <FormControlLabel
-                  control={(
+                  control={
                     <Checkbox
                       checked={!column.props.item.hidden}
                       value={item.name}
-                      onChange={() => this.handleToggle(index, columns.children, toggle)}
+                      onChange={() =>
+                        this.handleToggle(index, columns.children, toggle)
+                      }
                     />
-                  )}
+                  }
                   label={item.title}
                 />
               </FormGroup>
@@ -91,12 +95,12 @@ class CustomColumnChooser extends Component {
   handleToggle(currentColumnIndex, columns, toggle) {
     toggle();
     let isAllChecked = true;
-    columns.map((column, index) => {
+    columns.forEach((column, index) => {
       if (currentColumnIndex === index && column.props.item.hidden === false) {
         isAllChecked = false;
       } else if (
-        currentColumnIndex !== index
-        && column.props.item.hidden === true
+        currentColumnIndex !== index &&
+        column.props.item.hidden === true
       ) {
         isAllChecked = false;
       }
@@ -106,10 +110,13 @@ class CustomColumnChooser extends Component {
   }
 
   handleToggleAll(columns) {
-    this.setState((prevState) => ({ chooserAllChecked: !prevState.chooserAllChecked }));
+    const { chooserAllChecked } = this.state;
+    this.setState((prevState) => ({
+      chooserAllChecked: !prevState.chooserAllChecked,
+    }));
 
-    columns.map((column) => {
-      if (this.state.chooserAllChecked) {
+    columns.forEach((column) => {
+      if (chooserAllChecked) {
         if (!column.props.item.hidden) {
           column.props.onToggle();
         }

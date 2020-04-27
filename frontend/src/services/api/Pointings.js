@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-export const getPointingsList = ({
-  page, pageSize, search, filters,
-}) => {
+export const getPointingsList = ({ page, pageSize, search, filters }) => {
   const params = {
     page,
     pageSize,
@@ -16,4 +14,5 @@ export const getPointingsList = ({
   return axios.get('/pointing/', { params }).then((res) => res.data);
 };
 
-export const getPointing = ({ id }) => axios.get(`/pointing/${id}`).then((res) => res.data);
+export const getPointing = ({ id }) =>
+  axios.get(`/pointing/${id}`).then((res) => res.data);
