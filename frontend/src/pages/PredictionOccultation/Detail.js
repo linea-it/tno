@@ -1,57 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import { withRouter } from 'react-router-dom';
 import {
   Grid,
-  makeStyles,
   Card,
   CardHeader,
   CardContent,
+  Button,
+  Icon,
+  Tooltip,
+  Toolbar,
 } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
-import clsx from 'clsx';
-import moment from 'moment';
-import ToolBar from '@material-ui/core/Toolbar';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import ListIcon from '@material-ui/icons/List';
-import BugIcon from '@material-ui/icons/BugReport';
-import Tooltip from '@material-ui/core/Tooltip';
-import { Donut, TimeProfile } from '../../components/helpers/CustomChart';
-import CustomList from '../../components/helpers/CustomList';
-import CustomTable from '../../components/helpers/CustomTable';
-import { getPredictionRunById, getTimeProfile, getAsteroids } from '../../services/api/Prediction';
-import CustomDialog from '../../components/helpers/CustomDialog';
-import CustomLog from '../../components/helpers/CustomLog';
-import CustomColumnStatus from '../../components/helpers/CustomColumnStatus';
-
-const useStyles = makeStyles((theme) => ({
-  button: {
-    margin: theme.spacing(1),
-  },
-  buttonIcon: {
-    margin: '0 10px 0 0',
-  },
-  toggleButton: {
-    marginLeft: '90%',
-  },
-  arrowBack: {
-    fontSize: 9,
-  },
-  block: {
-    marginBottom: 15,
-  },
-  tableWrapper: {
-    maxWidth: '100%',
-  },
-  iconDetail: {
-    fontSize: 18,
-  },
-}));
+import {
+  List as ListIcon,
+  BugReport as BugReportIcon,
+} from '@material-ui/icons';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import List from '../../components/List';
+import Table from '../../components/Table';
+import Dialog from '../../components/Dialog';
+import Log from '../../components/Log';
+import ColumnStatus from '../../components/Table/ColumnStatus';
+import Donut from '../../components/Chart/Donut';
+import TimeProfile from '../../components/Chart/TimeProfile';
+import {
+  getPredictionRunById,
+  getTimeProfile,
+  getAsteroids,
+} from '../../services/api/Prediction';
 
 function PredictionOccultationDetail({ history, match, setTitle }) {
-  const classes = useStyles();
   const { id } = match.params;
   const [list, setList] = useState([]);
   const [statusDonutData, setStatusDonutData] = useState([]);
@@ -63,7 +42,9 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   const [toolButton, setToolButton] = useState('list');
   const [columnsAsteroidTable, setColumnsAsteroidTable] = useState([]);
   const [dialog, setDialog] = useState({
-    content: [], visible: false, title: ' ',
+    content: [],
+    visible: false,
+    title: ' ',
   });
 
   useEffect(() => {
@@ -75,7 +56,9 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       setList([
         {
           title: 'Status',
-          value: () => <CustomColumnStatus status={data.status} title={data.error_msg} />,
+          value: () => (
+            <ColumnStatus status={data.status} title={data.error_msg} />
+          ),
         },
         {
           title: 'Process',
@@ -107,16 +90,46 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
         { name: 'Success', value: data.count_success, color: '#009900' },
         { name: 'Warning', value: data.count_warning, color: '#D79F15' },
         { name: 'Failure', value: data.count_failed, color: '#ff1a1a' },
-        { name: 'Not Executed', value: data.count_not_executed, color: '#ABA6A2' },
+        {
+          name: 'Not Executed',
+          value: data.count_not_executed,
+          color: '#ABA6A2',
+        },
       ]);
 
       setExecutionTimeDonutData([
-        { name: 'Dates', value: Math.round(moment.duration(data.execution_dates).asSeconds()) },
-        { name: 'Ephemeris', value: Math.round(moment.duration(data.execution_ephemeris).asSeconds()) },
-        { name: 'Gaia', value: Math.round(moment.duration(data.execution_catalog).asSeconds()) },
-        { name: 'Search Candidates', value: Math.round(moment.duration(data.execution_search_candidate).asSeconds()) },
-        { name: 'Maps', value: Math.round(moment.duration(data.execution_maps).asSeconds()) },
-        { name: 'Register', value: Math.round(moment.duration(data.execution_register).asSeconds()) },
+        {
+          name: 'Dates',
+          value: Math.round(moment.duration(data.execution_dates).asSeconds()),
+        },
+        {
+          name: 'Ephemeris',
+          value: Math.round(
+            moment.duration(data.execution_ephemeris).asSeconds()
+          ),
+        },
+        {
+          name: 'Gaia',
+          value: Math.round(
+            moment.duration(data.execution_catalog).asSeconds()
+          ),
+        },
+        {
+          name: 'Search Candidates',
+          value: Math.round(
+            moment.duration(data.execution_search_candidate).asSeconds()
+          ),
+        },
+        {
+          name: 'Maps',
+          value: Math.round(moment.duration(data.execution_maps).asSeconds()),
+        },
+        {
+          name: 'Register',
+          value: Math.round(
+            moment.duration(data.execution_register).asSeconds()
+          ),
+        },
       ]);
     });
 
@@ -131,8 +144,13 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       title: 'Details',
       width: 100,
       sortingEnabled: false,
-      icon: <Tooltip title="Details"><Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} /></Tooltip>,
-      action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
+      icon: (
+        <Tooltip title="Details">
+          <Icon className="fas fa-info-circle" />
+        </Tooltip>
+      ),
+      action: (el) =>
+        history.push(`/prediction-of-occultation/asteroid/${el.id}`),
       align: 'center',
     },
     {
@@ -141,7 +159,9 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       width: 140,
       align: 'center',
       sortingEnabled: false,
-      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
+      customElement: (row) => (
+        <ColumnStatus status={row.status} title={row.error_msg} />
+      ),
     },
     {
       name: 'name',
@@ -169,7 +189,9 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       align: 'center',
       customElement: (row) => (
         <span>
-          {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ''}
+          {row.execution_time
+            ? moment.utc(row.execution_time * 1000).format('HH:mm:ss')
+            : ''}
         </span>
       ),
       width: 140,
@@ -182,8 +204,13 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       name: 'id',
       title: 'Details',
       width: 100,
-      icon: <Tooltip title="Details"><Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} /></Tooltip>,
-      action: (el) => history.push(`/prediction-of-occultation/asteroid/${el.id}`),
+      icon: (
+        <Tooltip title="Details">
+          <Icon className="fas fa-info-circle" />
+        </Tooltip>
+      ),
+      action: (el) =>
+        history.push(`/prediction-of-occultation/asteroid/${el.id}`),
       align: 'center',
       sortingEnabled: false,
     },
@@ -193,7 +220,9 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       width: 140,
       align: 'center',
       sortingEnabled: false,
-      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
+      customElement: (row) => (
+        <ColumnStatus status={row.status} title={row.error_msg} />
+      ),
     },
     {
       name: 'name',
@@ -215,9 +244,16 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
   ];
 
   const loadTableData = async ({
-    sorting, pageSize, currentPage, filter, searchValue,
+    sorting,
+    pageSize,
+    currentPage,
+    filter,
+    searchValue,
   }) => {
-    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
+    const ordering =
+      sorting[0].direction === 'desc'
+        ? `-${sorting[0].columnName}`
+        : sorting[0].columnName;
 
     const asteroids = await getAsteroids({
       ordering,
@@ -227,10 +263,13 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
       //   property: 'orbit_run',
       //   value: id,
       // }].concat(filters),
-      filters: [{
-        property: 'predict_run',
-        value: id,
-      }, ...filter],
+      filters: [
+        {
+          property: 'predict_run',
+          value: id,
+        },
+        ...filter,
+      ],
       search: searchValue,
     });
 
@@ -244,109 +283,87 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
 
   const handleChangeToolButton = (event, value) => {
     value === 'list'
-      ? setColumnsAsteroidTable(tableListArray) : setColumnsAsteroidTable(bugLogArray);
+      ? setColumnsAsteroidTable(tableListArray)
+      : setColumnsAsteroidTable(bugLogArray);
     setToolButton(value);
     //  loadTableData();
   };
 
   return (
     <>
-      <Grid
-        container
-        justify="space-between"
-        alignItems="center"
-        spacing={2}
-      >
+      <Grid container justify="space-between" alignItems="center" spacing={2}>
         <Grid item xs={12} md={4}>
           <Button
             variant="contained"
             color="primary"
             title="Back"
-            className={classes.button}
             onClick={handleBackNavigation}
           >
-            <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+            <Icon className="fas fa-undo" />
             <span>Back</span>
           </Button>
         </Grid>
       </Grid>
       <Grid container spacing={2}>
-        <Grid item xs={12} lg={6} className={classes.block}>
+        <Grid item xs={12} lg={6}>
           <Card>
             <CardHeader title="Summary" />
             <CardContent>
-              <CustomList data={list} />
+              <List data={list} />
             </CardContent>
           </Card>
         </Grid>
         {Object.entries(timeProfile).length > 0 ? (
-          <Grid item xs={12} md={9} className={classes.block}>
+          <Grid item xs={12} md={9}>
             <Card>
-              <CardHeader
-                title="Time Profile"
-              />
+              <CardHeader title="Time Profile" />
               <CardContent>
-                <TimeProfile
-                  width={773}
-                  height={363}
-                  data={timeProfile}
-                />
+                <TimeProfile width={773} height={363} data={timeProfile} />
               </CardContent>
             </Card>
           </Grid>
         ) : null}
       </Grid>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6} className={classes.block}>
+        <Grid item xs={12} md={6}>
           <Card>
             <CardHeader title="Status" />
             <CardContent>
-              <Donut
-                data={statusDonutData}
-              />
+              <Donut data={statusDonutData} />
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={6} className={classes.block}>
+        <Grid item xs={12} md={6}>
           <Card>
-            <CardHeader
-              title="Execution Time"
-            />
+            <CardHeader title="Execution Time" />
             <CardContent>
-              <Donut
-                data={executionTimeDonutData}
-              />
+              <Donut data={executionTimeDonutData} />
             </CardContent>
           </Card>
         </Grid>
       </Grid>
 
       <Grid container spacing={2}>
-        <Grid item xs={12} className={clsx(classes.block, classes.tableWrapper)}>
+        <Grid item xs={12}>
           <Card>
             <CardHeader title="Asteroids" />
             <CardContent>
-              <ToolBar>
+              <Toolbar>
                 <ToggleButtonGroup
-                  className={classes.toggleButton}
                   value={toolButton}
                   onChange={handleChangeToolButton}
                   exclusive
                 >
-                  <ToggleButton
-                    value="list"
-                  >
+                  <ToggleButton value="list">
                     <ListIcon />
                   </ToggleButton>
-                  <ToggleButton
-                    value="bugLog"
-                  >
-                    <BugIcon />
+                  <ToggleButton value="bugLog">
+                    <BugReportIcon />
                   </ToggleButton>
                 </ToggleButtonGroup>
-              </ToolBar>
-              <CustomTable
+              </Toolbar>
+              <Table
                 columns={columnsAsteroidTable}
                 data={tableData}
                 loadData={loadTableData}
@@ -359,11 +376,13 @@ function PredictionOccultationDetail({ history, match, setTitle }) {
             </CardContent>
           </Card>
         </Grid>
-        <CustomDialog
+        <Dialog
           visible={dialog.visible}
           title={dialog.title}
-          content={<CustomLog data={dialog.content} />}
-          setVisible={() => setDialog({ visible: false, content: [], title: ' ' })}
+          content={<Log data={dialog.content} />}
+          setVisible={() =>
+            setDialog({ visible: false, content: [], title: ' ' })
+          }
         />
       </Grid>
     </>

@@ -1,34 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Grid, Card, makeStyles, CardHeader, CardContent,
-} from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
 import { withRouter } from 'react-router';
-import clsx from 'clsx';
 import moment from 'moment';
-import CustomTable from '../../components/helpers/CustomTable';
+import { Grid, Card, CardHeader, CardContent, Icon } from '@material-ui/core';
+import Table from '../../components/Table';
 import { getPointingsList } from '../../services/api/Pointings';
 
-
-const useStyles = makeStyles({
-  block: {
-    marginBottom: 15,
-  },
-  cardContentWrapper: {
-    overflow: 'auto',
-  },
-  iconDetail: {
-    fontSize: 18,
-  },
-});
-
 function Pointings({ setTitle, history }) {
-  const classes = useStyles();
   const [pointingsTableData, setPointingsTableData] = useState([]);
   const [pointingsTableCount, setPointingsTableCount] = useState(0);
   const [loading, setLoading] = useState(false);
-
 
   const handleValues = (value) => {
     const roundValue = parseFloat(value).toFixed(3);
@@ -42,7 +23,7 @@ function Pointings({ setTitle, history }) {
       title: 'Details',
       align: 'center',
       width: 100,
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className="fas fa-info-circle" />,
       action: (el) => history.push(`/pointings/${el.id}`),
       sortingEnabled: false,
     },
@@ -63,11 +44,7 @@ function Pointings({ setTitle, history }) {
       name: 'filename',
       title: 'Filename',
       width: 170,
-      customElement: (el) => (
-        <span title={el.filename}>
-          {el.filename}
-        </span>
-      ),
+      customElement: (el) => <span title={el.filename}>{el.filename}</span>,
       headerTooltip: 'Name of FITS file with a CCD image',
       sortingEnabled: false,
     },
@@ -102,9 +79,7 @@ function Pointings({ setTitle, history }) {
       headerTooltip: 'Right Ascension of the center of the CCD image',
       sortingEnabled: false,
       customElement: (row) => (
-        <span>
-          {row.ra_cent ? handleValues(row.ra_cent) : ''}
-        </span>
+        <span>{row.ra_cent ? handleValues(row.ra_cent) : ''}</span>
       ),
     },
     {
@@ -114,42 +89,50 @@ function Pointings({ setTitle, history }) {
       headerTooltip: 'Declination of the center of the CCD image',
       sortingEnabled: false,
       customElement: (row) => (
-        <span>
-          {row.dec_cent ? handleValues(row.dec_cent) : ''}
-        </span>
+        <span>{row.dec_cent ? handleValues(row.dec_cent) : ''}</span>
       ),
     },
     {
       name: 'downloaded',
       title: 'Downloaded',
       align: 'center',
-      headerTooltip: 'flag indicating whether the image was downloaded from DES',
+      headerTooltip:
+        'flag indicating whether the image was downloaded from DES',
       sortingEnabled: false,
-      customElement: (el) => (el.downloaded ? (
-        <span title={el.downloaded}>
-          <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
-        </span>
-      ) : (
-        <span title={el.downloaded}>
-          <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
-        </span>
-      )),
+      customElement: (el) =>
+        el.downloaded ? (
+          <span title={el.downloaded}>
+            <Icon className="fas fa-check" style={{ color: '#009900' }} />
+          </span>
+        ) : (
+          <span title={el.downloaded}>
+            <Icon className="fas fa-times" style={{ color: '#ff1a1a' }} />
+          </span>
+        ),
     },
   ];
 
   const loadPointingsTableData = ({
-    currentPage, pageSize, searchValue, filters = [],
+    currentPage,
+    pageSize,
+    searchValue,
+    filters = [],
   }) => {
     setLoading(true);
     getPointingsList({
-      page: currentPage + 1, pageSize, search: searchValue, filters,
-    }).then((res) => {
-      setPointingsTableCount(res.count);
-      setPointingsTableData(res.results);
-      setLoading(false);
-    }).catch((err) => {
-      setLoading(false);
-    });
+      page: currentPage + 1,
+      pageSize,
+      search: searchValue,
+      filters,
+    })
+      .then((res) => {
+        setPointingsTableCount(res.count);
+        setPointingsTableData(res.results);
+        setLoading(false);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -159,11 +142,11 @@ function Pointings({ setTitle, history }) {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={12} className={classes.block}>
+        <Grid item xs={12}>
           <Card>
             <CardHeader title="List With All Pointings" />
-            <CardContent className={classes.cardContentWrapper}>
-              <CustomTable
+            <CardContent>
+              <Table
                 columns={pointingsTableColumns}
                 data={pointingsTableData}
                 loadData={loadPointingsTableData}

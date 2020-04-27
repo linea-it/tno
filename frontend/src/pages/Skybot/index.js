@@ -1,83 +1,38 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import clsx from 'clsx';
-import {
-  Card, CardHeader, CardContent, Typography, makeStyles, CircularProgress,
-} from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import MenuItem from '@material-ui/core/MenuItem';
-import Label from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import FormControl from '@material-ui/core/FormControl';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
-import SnackBar from '@material-ui/core/Snackbar';
-import Slide from '@material-ui/core/Slide';
 import moment from 'moment';
-import Skeleton from '@material-ui/lab/Skeleton';
-import { SizeMe } from 'react-sizeme';
+import { withRouter } from 'react-router-dom';
+import {
+  Grid,
+  Card,
+  CardHeader,
+  CardContent,
+  Typography,
+  CircularProgress,
+  Button,
+  MenuItem,
+  InputLabel,
+  Select,
+  FormControl,
+  Snackbar,
+  Slide,
+} from '@material-ui/core';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+import { Skeleton } from '@material-ui/lab';
+import DateFnsUtils from '@date-io/date-fns';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
+import Table from '../../components/Table';
+import ColumnStatus from '../../components/Table/ColumnStatus';
 import {
-  createSkybotRun, getSkybotRunList, getSkybotRunEstimate, getExposuresByPeriod,
+  createSkybotRun,
+  getSkybotRunList,
+  getSkybotRunEstimate,
+  getExposuresByPeriod,
 } from '../../services/api/Skybot';
-import Table from '../../components/helpers/CustomTable';
-import CustomColumnStatus from '../../components/helpers/CustomColumnStatus';
-
-
-const useStyles = makeStyles((theme) => ({
-  typography: {
-    marginBottom: 15,
-  },
-  runButton: {
-    marginTop: theme.spacing(1) + 4,
-    width: '30%',
-    marginLeft: '70%',
-  },
-  dialogButton: {
-    marginRight: '4%',
-    marginBottom: '2%',
-    float: 'right',
-    width: '15%',
-  },
-  dateSet: {
-    marginTop: 30,
-  },
-  progress: {
-    position: 'absolute',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    left: '50%',
-    marginTop: -12,
-    marginLeft: -12,
-  },
-  iconDetail: {
-    fontSize: 18,
-  },
-  logToolbar: {
-    backgroundColor: '#F1F2F5',
-    color: '#454545',
-  },
-  noExposureMessage: {
-    position: 'absolute',
-    fontSize: 22,
-    textTransform: 'uppercase',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    left: 0,
-    right: 0,
-    textAlign: 'center',
-  },
-  runEstimateText: {
-    fontSize: 18,
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(1),
-    textAlign: 'justify',
-  },
-}));
-
 
 function useInterval(callback, delay) {
   const savedCallback = useRef();
@@ -124,14 +79,11 @@ function Skybot({ setTitle, history }) {
   const [snackBarTransition, setSnackBarTransition] = useState(undefined);
   const [runEstimate, setRunEstimate] = useState({});
   const [exposuresByPeriod, setExposuresByPeriod] = useState([]);
-  const [exposuresPlotHeight, setExposuresPlotHeight] = useState([]);
   const [exposurePlotLoading, setExposurePlotLoading] = useState({
     loading: false,
     hasData: true,
   });
   const [reload, setReload] = useState(true);
-
-  const classes = useStyles();
 
   useEffect(() => {
     setTitle('Skybot Run');
@@ -151,7 +103,7 @@ function Skybot({ setTitle, history }) {
       setDisabledFinalDate(false);
     }
 
-    if ((initialDate && finalDate) && (!errorDatePicker)) {
+    if (initialDate && finalDate && !errorDatePicker) {
       setExposurePlotLoading({
         loading: true,
         hasData: false,
@@ -160,12 +112,12 @@ function Skybot({ setTitle, history }) {
       // Get the time estimate and amount of exposures based on period, before running:
       getSkybotRunEstimate(
         moment(initialDate).format('YYYY-MM-DD'),
-        moment(finalDate).format('YYYY-MM-DD'),
+        moment(finalDate).format('YYYY-MM-DD')
       ).then((res) => setRunEstimate(res));
 
       getExposuresByPeriod(
         moment(initialDate).format('YYYY-MM-DD'),
-        moment(finalDate).format('YYYY-MM-DD'),
+        moment(finalDate).format('YYYY-MM-DD')
       ).then((res) => {
         setExposurePlotLoading({
           loading: false,
@@ -185,7 +137,6 @@ function Skybot({ setTitle, history }) {
       setDisabledRunButton(true);
     }
   }, [initialDate, finalDate]);
-
 
   useEffect(() => {
     setRunEstimate({});
@@ -221,7 +172,6 @@ function Skybot({ setTitle, history }) {
     }
   }, [selectRunValue]);
 
-
   const loadData = (event) => {
     let page = null;
     let pageSize = null;
@@ -237,7 +187,10 @@ function Skybot({ setTitle, history }) {
     }
 
     getSkybotRunList({
-      page, pageSize, sortField, sortOrder,
+      page,
+      pageSize,
+      sortField,
+      sortOrder,
     })
       .then((res) => {
         const { data } = res;
@@ -250,13 +203,11 @@ function Skybot({ setTitle, history }) {
   };
 
   const handleSubmit = () => {
-    createSkybotRun(
-      {
-        type_run: selectRunValue,
-        date_initial: initialDate,
-        date_final: finalDate,
-      },
-    ).then(() => {
+    createSkybotRun({
+      type_run: selectRunValue,
+      date_initial: initialDate,
+      date_final: finalDate,
+    }).then(() => {
       loadData();
       setDisabledRunButton(false);
     });
@@ -286,11 +237,7 @@ function Skybot({ setTitle, history }) {
     ];
 
     return options.map((el, i) => (
-      <MenuItem
-        key={el.id}
-        value={el.value}
-        title={el.title}
-      >
+      <MenuItem key={el.id} value={el.value} title={el.title}>
         {el.title}
       </MenuItem>
     ));
@@ -301,7 +248,7 @@ function Skybot({ setTitle, history }) {
       name: 'id',
       title: 'Details',
       width: 110,
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <i className="fas fa-info-circle" />,
       action: (row) => history.push(`/skybot/${row.id}`),
       align: 'center',
       sortingEnabled: false,
@@ -311,10 +258,15 @@ function Skybot({ setTitle, history }) {
       title: 'Status',
       width: 140,
       align: 'center',
-      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
+      customElement: (row) => (
+        <ColumnStatus status={row.status} title={row.error_msg} />
+      ),
     },
     {
-      name: 'owner', title: 'Owner', width: 140, align: 'left',
+      name: 'owner',
+      title: 'Owner',
+      width: 140,
+      align: 'left',
     },
     {
       name: 'date_initial',
@@ -323,7 +275,9 @@ function Skybot({ setTitle, history }) {
       align: 'left',
       customElement: (row) => (
         <span>
-          {row.date_initial ? moment(row.date_initial).format('YYYY-MM-DD') : ''}
+          {row.date_initial
+            ? moment(row.date_initial).format('YYYY-MM-DD')
+            : ''}
         </span>
       ),
     },
@@ -339,16 +293,28 @@ function Skybot({ setTitle, history }) {
       ),
     },
     {
-      name: 'type_run', title: 'Run Type', width: 100, align: 'center',
+      name: 'type_run',
+      title: 'Run Type',
+      width: 100,
+      align: 'center',
     },
     {
-      name: 'start', title: 'Start', width: 200, align: 'center',
+      name: 'start',
+      title: 'Start',
+      width: 200,
+      align: 'center',
     },
     {
-      name: 'type_run', title: 'Type', width: 120, align: 'center',
+      name: 'type_run',
+      title: 'Type',
+      width: 120,
+      align: 'center',
     },
     {
-      name: 'rows', title: 'Rows', width: 100, align: 'right',
+      name: 'rows',
+      title: 'Rows',
+      width: 100,
+      align: 'right',
     },
     {
       name: 'h_execution_time',
@@ -359,7 +325,6 @@ function Skybot({ setTitle, history }) {
     },
   ];
 
-
   const transitionSnackBar = (props) => <Slide {...props} direction="left" />;
 
   const { vertical, horizontal } = snackBarPosition;
@@ -368,8 +333,10 @@ function Skybot({ setTitle, history }) {
     const currentDateMessage = 'Date should not be after current date';
     const initialDateMessage = 'Date should not be before initial date';
 
-    if (error.trim() === currentDateMessage.trim()
-      || error.trim() === initialDateMessage.trim()) {
+    if (
+      error.trim() === currentDateMessage.trim() ||
+      error.trim() === initialDateMessage.trim()
+    ) {
       setErrorDatePicker(true);
       setFinalDate(null);
     } else {
@@ -382,12 +349,18 @@ function Skybot({ setTitle, history }) {
   const toHHMMSS = (time) => {
     const secNum = parseInt(time, 10);
     let hours = Math.floor(secNum / 3600);
-    let minutes = Math.floor((secNum - (hours * 3600)) / 60);
-    let seconds = secNum - (hours * 3600) - (minutes * 60);
+    let minutes = Math.floor((secNum - hours * 3600) / 60);
+    let seconds = secNum - hours * 3600 - minutes * 60;
 
-    if (hours < 10) { hours = `0${hours}`; }
-    if (minutes < 10) { minutes = `0${minutes}`; }
-    if (seconds < 10) { seconds = `0${seconds}`; }
+    if (hours < 10) {
+      hours = `0${hours}`;
+    }
+    if (minutes < 10) {
+      minutes = `0${minutes}`;
+    }
+    if (seconds < 10) {
+      seconds = `0${seconds}`;
+    }
     return `${hours}:${minutes}:${seconds}`;
   };
 
@@ -400,13 +373,11 @@ function Skybot({ setTitle, history }) {
       <Grid container spacing={2}>
         <Grid item xs={12} lg={4} xl={3}>
           <Card>
-            <CardHeader
-              title="SkyBot Run"
-            />
-            <CardContent style={{ height: exposuresPlotHeight }}>
-              <Typography className={classes.typography}>Identification of CCDs with objects.</Typography>
+            <CardHeader title="SkyBot Run" />
+            <CardContent>
+              <Typography>Identification of CCDs with objects.</Typography>
               <FormControl fullWidth>
-                <Label>Select the type of submission</Label>
+                <InputLabel>Select the type of submission</InputLabel>
                 <Select
                   value={selectRunValue}
                   onChange={(event) => {
@@ -424,17 +395,17 @@ function Skybot({ setTitle, history }) {
                   <KeyboardDatePicker
                     disableFuture
                     disabled={disabledInitialDate}
-                    className={classes.dateSet}
                     format="yyyy-MM-dd"
                     label="Initial Date"
                     value={initialDate}
-                    onChange={(date) => { setInitialDate(date); }}
+                    onChange={(date) => {
+                      setInitialDate(date);
+                    }}
                     maxDateMessage="Date should not be after current date"
                   />
                   <KeyboardDatePicker
                     disableFuture
                     disabled={disabledFinalDate}
-                    className={classes.dateSet}
                     format="yyyy-MM-dd"
                     label="Final Date"
                     value={finalDate}
@@ -447,31 +418,28 @@ function Skybot({ setTitle, history }) {
                 </MuiPickersUtilsProvider>
                 {runEstimate.exposures && runEstimate.exposures !== 0 ? (
                   <>
-                    <span className={classes.runEstimateText}>
-                      {`The average time execution for one exposure is ${toHHMMSS(runEstimate.time_per_exposure)}`}
+                    <span>
+                      {`The average time execution for one exposure is ${toHHMMSS(
+                        runEstimate.time_per_exposure
+                      )}`}
                     </span>
-                    <span className={classes.runEstimateText}>
-                      {`The estimate time for identifying all of the CCDs with objects is ${toHHMMSS(runEstimate.estimate)}`}
+                    <span>
+                      {`The estimate time for identifying all of the CCDs with objects is ${toHHMMSS(
+                        runEstimate.estimate
+                      )}`}
                     </span>
                   </>
                 ) : null}
                 <Button
                   variant="contained"
                   color="primary"
-                  className={classes.runButton}
                   disabled={disabledRunButton}
                   onClick={handleSelectRunClick}
                 >
                   Submit
-                  {loading
-                    ? (
-                      <CircularProgress
-                        color="primary"
-                        className={classes.progress}
-                        size={24}
-                      />
-                    )
-                    : null}
+                  {loading ? (
+                    <CircularProgress color="primary" size={24} />
+                  ) : null}
                 </Button>
               </FormControl>
             </CardContent>
@@ -479,62 +447,48 @@ function Skybot({ setTitle, history }) {
         </Grid>
         <Grid item xs={12} lg={8} xl={9}>
           <Card>
-            <CardHeader
-              title="Unique Exposures By Period"
-            />
-            <SizeMe monitorHeight>
-              {({ size }) => {
-                setExposuresPlotHeight(size.height);
-                return (
-                  <CardContent>
-                    {exposuresByPeriod.length > 0 ? (
-                      <Plot
-                        data={[{
-                          x: exposuresByPeriod.map((rows) => rows.date_obs),
-                          y: exposuresByPeriod.map((rows) => rows.exposures),
-                          type: 'bar',
-                          name: `${runEstimate.exposures} exposures`,
-                          showlegend: true,
-                          fixedrange: true,
-                          hoverinfo: 'y',
-                        }]}
-                        className={classes.plotWrapper}
-                        layout={{
-                          hovermode: 'closest',
-                          autosize: true,
-                          bargap: 0.05,
-                          bargroupgap: 0.2,
-                          xaxis: { title: 'Period' },
-                          yaxis: { title: 'Exposures' },
-                        }}
-                        config={{
-                          scrollZoom: true,
-                          displaylogo: false,
-                          responsive: true,
-                        }}
-                      />
-                    ) : (
-                      <>
-                        <Skeleton height={440} />
-                        {exposurePlotLoading.loading ? (
-                          <CircularProgress
-                            color="primary"
-                            className={classes.progress}
-                            size={24}
-                          />
-                        ) : null}
-                        {exposurePlotLoading.loading === false
-                          && exposurePlotLoading.hasData === false ? (
-                            <span className={classes.noExposureMessage}>
-                              No exposure was found in this period
-                            </span>
-                          ) : null}
-                      </>
-                    )}
-                  </CardContent>
-                );
-              }}
-            </SizeMe>
+            <CardHeader title="Unique Exposures By Period" />
+            <CardContent>
+              {exposuresByPeriod.length > 0 ? (
+                <Plot
+                  data={[
+                    {
+                      x: exposuresByPeriod.map((rows) => rows.date_obs),
+                      y: exposuresByPeriod.map((rows) => rows.exposures),
+                      type: 'bar',
+                      name: `${runEstimate.exposures} exposures`,
+                      showlegend: true,
+                      fixedrange: true,
+                      hoverinfo: 'y',
+                    },
+                  ]}
+                  layout={{
+                    hovermode: 'closest',
+                    autosize: true,
+                    bargap: 0.05,
+                    bargroupgap: 0.2,
+                    xaxis: { title: 'Period' },
+                    yaxis: { title: 'Exposures' },
+                  }}
+                  config={{
+                    scrollZoom: true,
+                    displaylogo: false,
+                    responsive: true,
+                  }}
+                />
+              ) : (
+                <>
+                  <Skeleton height={440} />
+                  {exposurePlotLoading.loading ? (
+                    <CircularProgress color="primary" size={24} />
+                  ) : null}
+                  {exposurePlotLoading.loading === false &&
+                  exposurePlotLoading.hasData === false ? (
+                    <span>No exposure was found in this period</span>
+                  ) : null}
+                </>
+              )}
+            </CardContent>
           </Card>
         </Grid>
       </Grid>
@@ -542,9 +496,7 @@ function Skybot({ setTitle, history }) {
       <Grid container spacing={6}>
         <Grid item xs={12}>
           <Card>
-            <CardHeader
-              title="History"
-            />
+            <CardHeader title="History" />
             <CardContent>
               <Table
                 columns={tableColumns}
@@ -563,7 +515,7 @@ function Skybot({ setTitle, history }) {
           </Card>
         </Grid>
       </Grid>
-      <SnackBar
+      <Snackbar
         open={snackBarVisible}
         autoHideDuration={3500}
         TransitionComponent={snackBarTransition}

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import PropTypes from 'prop-types';
 
@@ -19,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function DateAndTimePickers(props) {
+export default function DatePredict(props) {
   const classes = useStyles();
   const { label } = props;
 
@@ -54,6 +57,6 @@ export default function DateAndTimePickers(props) {
   );
 }
 
-DateAndTimePickers.propTypes = {
+DatePredict.propTypes = {
   label: PropTypes.string.isRequired,
 };

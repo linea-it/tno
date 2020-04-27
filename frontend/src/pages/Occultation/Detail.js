@@ -1,34 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Grid, Card, makeStyles, CardHeader, CardContent,
-} from '@material-ui/core';
 import moment from 'moment';
-import CustomList from '../../components/helpers/CustomList';
-import CustomSkymap from '../../components/helpers/CustomSkymap';
+
+import { Grid, Card, CardHeader, CardContent } from '@material-ui/core';
+
+import List from '../../components/List';
+import Aladin from '../../components/Aladin';
+
 import { url } from '../../services/api/Auth';
 import { getOccultationById } from '../../services/api/Occultation';
 
-const useStyles = makeStyles((theme) => ({
-  block: {
-    marginBottom: 15,
-  },
-  imgResponsive: {
-    maxWidth: 640,
-    height: 'auto',
-    margin: 'auto',
-    display: 'block',
-  },
-  standardHeight: {
-    [theme.breakpoints.up('md')]: {
-      minHeight: 740,
-    },
-  },
-}));
-
 function OccultationDetail({ setTitle, match }) {
   const { id } = match.params;
-  const classes = useStyles();
   const [occultation, setOccultation] = useState({});
   const [circumstances, setCircumstances] = useState([]);
   const [star, setStar] = useState([]);
@@ -50,12 +33,13 @@ function OccultationDetail({ setTitle, match }) {
       {
         title: 'Date',
         value: moment(occultation.occ_date).format(
-          'ddd. DD MMMM YYYY HH:mm:ss',
+          'ddd. DD MMMM YYYY HH:mm:ss'
         ),
       },
       {
         title: 'Star position (ICRF)',
-        tooltip: 'Right ascension and declination with assumed proper motion in ICRF/J2000',
+        tooltip:
+          'Right ascension and declination with assumed proper motion in ICRF/J2000',
         value: `${occultation.ra_star_candidate} ${occultation.dec_star_candidate}`,
       },
       {
@@ -70,7 +54,8 @@ function OccultationDetail({ setTitle, match }) {
       },
       {
         title: 'Velocity',
-        tooltip: 'Velocity in plane of sky (positive= prograde, negative= retrograde)',
+        tooltip:
+          'Velocity in plane of sky (positive= prograde, negative= retrograde)',
         value: `${occultation.velocity} km/s`,
       },
       {
@@ -101,7 +86,6 @@ function OccultationDetail({ setTitle, match }) {
         value: '-',
       },
     ]);
-
 
     setStar([
       {
@@ -157,7 +141,6 @@ function OccultationDetail({ setTitle, match }) {
         value: '-',
       },
     ]);
-
 
     setObject([
       {
@@ -222,7 +205,7 @@ function OccultationDetail({ setTitle, match }) {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={12} className={classes.block}>
+        <Grid item xs={12}>
           <Card>
             <CardHeader title="Occultation Map" />
             <CardContent>
@@ -230,51 +213,44 @@ function OccultationDetail({ setTitle, match }) {
                 src={occultation.source}
                 alt={occultation.asteroid_name}
                 title={occultation.asteroid_name}
-                className={classes.imgResponsive}
               />
             </CardContent>
           </Card>
         </Grid>
       </Grid>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6} className={classes.block}>
+        <Grid item xs={12} md={6}>
           <Card>
             <CardHeader title="Occultation Circumstances" />
-            <CardContent className={classes.standardHeight}>
-              <CustomList
-                data={circumstances}
-              />
+            <CardContent>
+              <List data={circumstances} />
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} md={6} className={classes.block}>
+        <Grid item xs={12} md={6}>
           <Card>
             <CardHeader title="Occulted star" />
             <CardContent>
-              <CustomList
-                data={star}
-              />
+              <List data={star} />
             </CardContent>
           </Card>
         </Grid>
       </Grid>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6} className={classes.block}>
+        <Grid item xs={12} md={6}>
           <Card>
             <CardHeader title="Object" />
             <CardContent>
-              <CustomList
-                data={object}
-              />
+              <List data={object} />
             </CardContent>
           </Card>
         </Grid>
         {occultation.ra_star_candidate && occultation.dec_star_candidate ? (
-          <Grid item xs={12} md={6} className={classes.block}>
+          <Grid item xs={12} md={6}>
             <Card>
               <CardHeader title="Sky map (Aladin)" />
               <CardContent>
-                <CustomSkymap
+                <Aladin
                   ra={occultation.ra_star_candidate}
                   dec={occultation.dec_star_candidate}
                 />

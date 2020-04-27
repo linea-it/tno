@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Grid, Card, CardHeader, CardContent } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import histogramExposures from '../../assets/img/dashboard/histogramExposures.png';
@@ -7,7 +7,7 @@ import exposuresbyclass from '../../assets/img/dashboard/ExposuresByClass.png';
 import histogramSemimajoraxis from '../../assets/img/dashboard/histogramSemimajoraxis.png';
 import histogramBands from '../../assets/img/dashboard/histogramBands.png';
 import animation from '../../assets/img/dashboard/animation.gif';
-import CustomTable from '../../components/helpers/CustomTable';
+import Table from '../../components/Table';
 
 function Dashboard({ setTitle }) {
   useEffect(() => {
@@ -29,7 +29,7 @@ function Dashboard({ setTitle }) {
                 />
               </Grid>
               <Grid item xs={12}>
-                <CustomTable
+                <Table
                   columns={[
                     {
                       name: 'year',
@@ -95,7 +95,7 @@ function Dashboard({ setTitle }) {
                 />
               </Grid>
               <Grid xs={12}>
-                <CustomTable
+                <Table
                   columns={[
                     {
                       name: 'exposure_time',
@@ -161,7 +161,7 @@ function Dashboard({ setTitle }) {
                 />
               </Grid>
               <Grid item xs={12}>
-                <CustomTable
+                <Table
                   columns={[
                     {
                       name: 'year',

@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -29,11 +24,18 @@ import {
   TableColumnVisibility,
   TableGroupRow,
 } from '@devexpress/dx-react-grid-material-ui';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import CustomColumnChooser from './CustomColumnChooser';
-import CustomTableHeaderRowCell from './CustomTableHeaderRowCell';
+import {
+  Input,
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Select,
+  Button,
+  Dialog,
+  CircularProgress,
+} from '@material-ui/core';
+import ColumnChooser from './ColumnChooser';
+import HeaderRowCell from './HeaderRowCell';
 
 const useStyles = makeStyles({
   wrapPaper: {
@@ -65,14 +67,22 @@ function CustomNoDataCellComponent({ ...noDatProps }, customLoading) {
   const classes = useStyles();
 
   return (
-    <td className={clsx(classes.noDataCell, 'MuiTableCell-root', 'MuiTableCell-body')} {...noDatProps}>
+    <td
+      className={clsx(
+        classes.noDataCell,
+        'MuiTableCell-root',
+        'MuiTableCell-body'
+      )}
+      {...noDatProps}
+    >
       <div className={classes.noDataWrapper}>
-        <big className={classes.noDataText}>{customLoading ? 'Loading...' : 'No Data'}</big>
+        <big className={classes.noDataText}>
+          {customLoading ? 'Loading...' : 'No Data'}
+        </big>
       </div>
     </td>
   );
 }
-
 
 function CustomTable({
   columns,
@@ -109,12 +119,14 @@ function CustomTable({
     columnName: column.name,
     width: !column.width ? 120 : column.width,
     maxWidth: column.maxWidth ? column.maxWidth : '',
-    sortingEnabled:
-      !!(!('sortingEnabled' in column) || column.sortingEnabled === true),
+    sortingEnabled: !!(
+      !('sortingEnabled' in column) || column.sortingEnabled === true
+    ),
     align:
       !('align' in column) || column.align === 'left' ? 'left' : column.align,
-    wordWrapEnabled:
-      !(!('wordWrapEnabled' in column) || column.wordWrapEnabled === false),
+    wordWrapEnabled: !(
+      !('wordWrapEnabled' in column) || column.wordWrapEnabled === false
+    ),
   }));
 
   const customDefaultColumnWidths = columns.map((column) => ({
@@ -123,13 +135,20 @@ function CustomTable({
   }));
 
   const customSorting = () => {
-    if (defaultSorting && defaultSorting[0].columnName && defaultSorting[0].direction) {
+    if (
+      defaultSorting &&
+      defaultSorting[0].columnName &&
+      defaultSorting[0].direction
+    ) {
       return defaultSorting;
-    } if (columns && columns[0]) {
-      return [{
-        columnName: columns[0].name,
-        direction: 'asc',
-      }];
+    }
+    if (columns && columns[0]) {
+      return [
+        {
+          columnName: columns[0].name,
+          direction: 'asc',
+        },
+      ];
     }
     return null;
   };
@@ -152,10 +171,23 @@ function CustomTable({
   useEffect(() => {
     if (remote === true) {
       loadData({
-        sorting, pageSize, currentPage, after, filter, searchValue,
+        sorting,
+        pageSize,
+        currentPage,
+        after,
+        filter,
+        searchValue,
       });
     }
-  }, [sorting, currentPage, currentPage, reload, pageSize, filter, searchValue]);
+  }, [
+    sorting,
+    currentPage,
+    currentPage,
+    reload,
+    pageSize,
+    filter,
+    searchValue,
+  ]);
 
   const clearData = () => {
     setCustomData([]);
@@ -173,7 +205,6 @@ function CustomTable({
   useEffect(() => {
     if (loading !== null) setCustomLoading(loading);
   }, [loading]);
-
 
   useEffect(() => {
     setCustomModalContent(modalContent);
@@ -289,46 +320,49 @@ function CustomTable({
       return (
         <>
           <Grid rows={rows} columns={customColumns}>
-            {hasSearching ? <SearchState onValueChange={changeSearchValue} /> : null}
-            {hasSorting ? <SortingState sorting={sorting} onSortingChange={changeSorting} columnExtensions={customColumnExtensions} /> : null}
-            {hasPagination
-              ? (
-                <PagingState
-                  currentPage={currentPage}
-                  onCurrentPageChange={changeCurrentPage}
-                  pageSize={customPageSize}
-                  onPageSizeChange={changePageSize}
-                />
-              ) : null}
-            {hasPagination
-              ? <CustomPaging totalCount={customTotalCount} />
-              : null}
+            {hasSearching ? (
+              <SearchState onValueChange={changeSearchValue} />
+            ) : null}
+            {hasSorting ? (
+              <SortingState
+                sorting={sorting}
+                onSortingChange={changeSorting}
+                columnExtensions={customColumnExtensions}
+              />
+            ) : null}
+            {hasPagination ? (
+              <PagingState
+                currentPage={currentPage}
+                onCurrentPageChange={changeCurrentPage}
+                pageSize={customPageSize}
+                onPageSizeChange={changePageSize}
+              />
+            ) : null}
+            {hasPagination ? (
+              <CustomPaging totalCount={customTotalCount} />
+            ) : null}
             {hasSelection ? (
               <SelectionState
                 selection={selection}
                 onSelectionChange={changeSelection}
               />
-            )
-              : null}
+            ) : null}
             {hasGrouping ? (
               <GroupingState
                 grouping={grouping}
                 defaultExpandedGroups={defaultExpandedGroups}
-
               />
-            )
-              : null}
+            ) : null}
             {hasGrouping ? <IntegratedGrouping /> : null}
             {loading !== null ? (
               <Table
                 columnExtensions={customColumnExtensions}
-                noDataCellComponent={(props) => CustomNoDataCellComponent({ ...props }, customLoading)}
+                noDataCellComponent={(props) =>
+                  CustomNoDataCellComponent({ ...props }, customLoading)
+                }
               />
-
             ) : (
-              <Table
-                columnExtensions={customColumnExtensions}
-              />
+              <Table columnExtensions={customColumnExtensions} />
             )}
             {hasSelection ? (
               <TableSelection
@@ -337,21 +371,18 @@ function CustomTable({
                 showSelectionColumn={false}
               />
             ) : null}
-            {hasResizing ? <TableColumnResizing defaultColumnWidths={customDefaultColumnWidths} /> : null}
-            <CustomTableHeaderRowCell hasSorting={hasSorting} />
-            {hasGrouping ? (
-              <TableGroupRow />
-            )
-              : null}
+            {hasResizing ? (
+              <TableColumnResizing
+                defaultColumnWidths={customDefaultColumnWidths}
+              />
+            ) : null}
+            <HeaderRowCell hasSorting={hasSorting} />
+            {hasGrouping ? <TableGroupRow /> : null}
             {hasPagination ? <PagingPanel pageSizes={pageSizes} /> : null}
             {hasToolbar ? <Toolbar /> : null}
             {hasSearching ? <SearchPanel /> : null}
-            {hasColumnVisibility
-              ? (<TableColumnVisibility />)
-              : null}
-            {hasColumnVisibility
-              ? (<CustomColumnChooser />)
-              : null}
+            {hasColumnVisibility ? <TableColumnVisibility /> : null}
+            {hasColumnVisibility ? <ColumnChooser /> : null}
           </Grid>
           {renderModal()}
         </>
@@ -361,54 +392,45 @@ function CustomTable({
       <>
         <Grid rows={rows} columns={customColumns}>
           {hasSearching ? <SearchState /> : null}
-          {hasSorting
-            ? (
-              <SortingState
-                sorting={sorting}
-                onSortingChange={changeSorting}
-                columnExtensions={customColumnExtensions}
-              />
-            )
-            : null}
+          {hasSorting ? (
+            <SortingState
+              sorting={sorting}
+              onSortingChange={changeSorting}
+              columnExtensions={customColumnExtensions}
+            />
+          ) : null}
           {hasSorting ? <IntegratedSorting /> : null}
-          {hasPagination
-            ? (
-              <PagingState
-                currentPage={currentPage}
-                onCurrentPageChange={setCurrentPage}
-                onPageSizeChange={setCustomPageSize}
-                pageSize={customPageSize}
-              />
-            ) : null}
-          {hasPagination
-            ? (
-              <IntegratedPaging />
-            ) : null}
+          {hasPagination ? (
+            <PagingState
+              currentPage={currentPage}
+              onCurrentPageChange={setCurrentPage}
+              onPageSizeChange={setCustomPageSize}
+              pageSize={customPageSize}
+            />
+          ) : null}
+          {hasPagination ? <IntegratedPaging /> : null}
           {hasSelection ? (
             <SelectionState
               selection={selection}
               onSelectionChange={changeSelection}
             />
-          )
-            : null}
+          ) : null}
           {hasGrouping ? (
             <GroupingState
               grouping={grouping}
               defaultExpandedGroups={defaultExpandedGroups}
             />
-          )
-            : null}
+          ) : null}
           {hasGrouping ? <IntegratedGrouping /> : null}
           {loading !== null ? (
             <Table
               columnExtensions={customColumnExtensions}
-              noDataCellComponent={(props) => CustomNoDataCellComponent({ ...props }, customLoading)}
+              noDataCellComponent={(props) =>
+                CustomNoDataCellComponent({ ...props }, customLoading)
+              }
             />
-
           ) : (
-            <Table
-              columnExtensions={customColumnExtensions}
-            />
+            <Table columnExtensions={customColumnExtensions} />
           )}
 
           {hasSelection ? (
@@ -418,21 +440,22 @@ function CustomTable({
               showSelectionColumn={false}
             />
           ) : null}
-          {hasResizing ? <TableColumnResizing defaultColumnWidths={customDefaultColumnWidths} /> : null}
-          <CustomTableHeaderRowCell hasLineBreak={hasLineBreak} hasSorting={hasSorting} remote={remote} />
-          {hasGrouping ? (
-            <TableGroupRow />
-          )
-            : null}
+          {hasResizing ? (
+            <TableColumnResizing
+              defaultColumnWidths={customDefaultColumnWidths}
+            />
+          ) : null}
+          <HeaderRowCell
+            hasLineBreak={hasLineBreak}
+            hasSorting={hasSorting}
+            remote={remote}
+          />
+          {hasGrouping ? <TableGroupRow /> : null}
           {hasPagination ? <PagingPanel pageSizes={pageSizes} /> : null}
           {hasToolbar ? <Toolbar /> : null}
           {hasSearching ? <SearchPanel /> : null}
-          {hasColumnVisibility
-            ? (<TableColumnVisibility />)
-            : null}
-          {hasColumnVisibility
-            ? (<CustomColumnChooser />)
-            : null}
+          {hasColumnVisibility ? <TableColumnVisibility /> : null}
+          {hasColumnVisibility ? <ColumnChooser /> : null}
         </Grid>
         {renderModal()}
       </>
@@ -445,16 +468,17 @@ function CustomTable({
       const column = columns.filter((el) => el.name === key)[0];
       if (key in row) {
         if (
-          (column && column.icon && typeof row[key] !== 'object')
+          (column && column.icon && typeof row[key] !== 'object') ||
           /*
           If the current row is an array or object, then verify if its length is higher than 1.
           This was created for the "Release" column,
           that sometimes has multiple releases for a single dataset.
           */
-          || (column
-            && column.icon
-            && (typeof row[key] === 'object' && row[key].length > 1)
-            && !column.customElement)
+          (column &&
+            column.icon &&
+            typeof row[key] === 'object' &&
+            row[key].length > 1 &&
+            !column.customElement)
         ) {
           if (column.action) {
             line[key] = (
@@ -516,7 +540,6 @@ CustomTable.defaultProps = {
   grouping: [{}],
   loading: null,
 };
-
 
 CustomTable.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.object).isRequired,

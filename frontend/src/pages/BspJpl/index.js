@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { Grid, Card, CardContent, CardHeader } from '@material-ui/core';
+import Table from '../../components/Table';
 import { getBspJpl } from '../../services/api/Input';
-import CustomTable from '../../components/helpers/CustomTable';
 
 function BspJpl({ setTitle }) {
   const [tableData, setTableData] = useState([]);
@@ -84,7 +84,7 @@ function BspJpl({ setTitle }) {
         <Card>
           <CardHeader title="List with the BSP JPL Files" />
           <CardContent>
-            <CustomTable
+            <Table
               data={tableData}
               columns={columnsTable}
               loadData={loadTableData}

@@ -1,29 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { withRouter } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import {
-  Card, CardHeader, CardContent, Button,
-} from '@material-ui/core';
-import clsx from 'clsx';
-import Icon from '@material-ui/core/Icon';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+import {
+  Grid,
+  Card,
+  CardHeader,
+  CardContent,
+  Button,
+  Icon,
+} from '@material-ui/core';
+import List from '../../components/List';
 import { getSkybotRecord } from '../../services/api/SearchSsso';
-import CustomList from '../../components/helpers/CustomList';
 
 function SearchSSSoDetail({ history, setTitle, match: { params } }) {
   const [listData, setListData] = useState([{}]);
 
   const id = params ? params.id : 0;
 
+  const loadData = () => {
+    getSkybotRecord({ id }).then((res) => {
+      setListData(res ? res.data : []);
+    });
+  };
+
   useEffect(() => {
     setTitle('Search SSSo Detail');
     loadData();
   }, []);
 
-  const loadData = () => {
-    getSkybotRecord({ id }).then((res) => {
-      setListData(res ? res.data : []);
-    });
+  const checkLink = () => {
+    let resp = '';
+
+    if (!listData.externallink === 'link') {
+      resp = (
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href={listData.externallink}
+        >
+          Open Link
+        </a>
+      );
+    } else {
+      resp = 'no link';
+    }
+    return resp;
   };
 
   const listColumns = [
@@ -48,25 +69,18 @@ function SearchSSSoDetail({ history, setTitle, match: { params } }) {
     { title: 'Vector position in x (AU/d): ', value: listData.vx },
     { title: 'Vector position in y (AU/d): ', value: listData.vy },
     { title: 'Vector position in z (AU/d): ', value: listData.vz },
-    { title: 'Epoch of the position vector (Julien Day): ', value: listData.jdref },
+    {
+      title: 'Epoch of the position vector (Julien Day): ',
+      value: listData.jdref,
+    },
     { title: 'Band: ', value: listData.band },
     { title: 'Exposure: ', value: listData.expnum },
     { title: 'CCD number: ', value: listData.ccdnum },
     {
-      title: 'External Link: ', value: () => checkLink(),
+      title: 'External Link: ',
+      value: () => checkLink(),
     },
   ];
-
-  const checkLink = () => {
-    let resp = '';
-
-    if (!listData.externallink === 'link') {
-      resp = <a target="_blank" href={listData.externallink}> Open Link</a>;
-    } else {
-      resp = 'no link';
-    }
-    return resp;
-  };
 
   const handleBackNavigation = () => {
     history.push('/ssso');
@@ -82,19 +96,15 @@ function SearchSSSoDetail({ history, setTitle, match: { params } }) {
             title="Back"
             onClick={handleBackNavigation}
           >
-            <Icon className={clsx('fas', 'fa-undo')} />
+            <Icon className="fas fa-undo" />
             <span style={{ paddingLeft: '10px' }}> Back </span>
           </Button>
         </Grid>
         <Grid item xs={12}>
           <Card>
-            <CardHeader
-              title="SkyBot Output"
-            />
+            <CardHeader title="SkyBot Output" />
             <CardContent>
-              <CustomList
-                data={listColumns}
-              />
+              <List data={listColumns} />
             </CardContent>
           </Card>
         </Grid>

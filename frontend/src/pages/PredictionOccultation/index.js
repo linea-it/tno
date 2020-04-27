@@ -1,58 +1,36 @@
 import React, { useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import { makeStyles } from '@material-ui/core/styles';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import InputNumber from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Icon from '@material-ui/core/Icon';
-import { withRouter } from 'react-router';
-import clsx from 'clsx';
 import moment from 'moment';
-import DateTime from './DateTimePrediction';
-import InputSelect from './InputSelect';
+import PropTypes from 'prop-types';
 import {
-  getPredictionRuns, getCatalogs, getLeapSeconds, getBspPlanetary, createPredictRun,
+  CardHeader,
+  Card,
+  TextField,
+  Button,
+  Grid,
+  Icon,
+} from '@material-ui/core';
+import { withRouter } from 'react-router';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+/*
+TODO: These, under, are very bad refactor!
+For now, I exported the components to another folder (where they should be)
+and, later on, I'll create specific input components, generic, to suffice similar necessities.
+*/
+import SelectPredict from '../../components/Input/SelectPredict';
+import DatePredict from '../../components/Input/DatePredict';
+
+import {
+  getPredictionRuns,
+  getCatalogs,
+  getLeapSeconds,
+  getBspPlanetary,
+  createPredictRun,
 } from '../../services/api/Prediction';
-import CustomTable from '../../components/helpers/CustomTable';
+import Table from '../../components/Table';
 import { getOrbitRuns } from '../../services/api/Orbit';
-import Dialog from '../../components/helpers/CustomDialog';
-import CustomColumnStatus from '../../components/helpers/CustomColumnStatus';
-
-const useStyles = makeStyles((theme) => ({
-  iconList: {
-    fontSize: 24,
-    cursor: 'pointer',
-  },
-  button: {
-    marginBottom: theme.spacing(1),
-    marginRight: theme.spacing(6),
-    float: 'right',
-
-  },
-  input: {
-    margin: 0,
-  },
-  gridWrapper: {
-    marginBottom: theme.spacing(3),
-  },
-  iconDetail: {
-    fontSize: 18,
-  },
-  tableWrapper: {
-    maxWidth: '100%',
-  },
-  inputNumber: {
-    marginTop: 9,
-    marginBottom: 18,
-    width: '90%',
-    [theme.breakpoints.down('lg')]: {
-      marginLeft: '5%',
-    },
-  },
-}));
+import Dialog from '../../components/Dialog';
+import ColumnStatus from '../../components/Table/ColumnStatus';
 
 function useInterval(callback, delay) {
   const savedCallback = useRef();
@@ -76,14 +54,12 @@ function useInterval(callback, delay) {
 }
 
 function PredictionOccultation({ history, setTitle }) {
-  const classes = useStyles();
-
   const columns = [
     {
       name: 'id',
       title: 'Details',
       width: 100,
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className="fas fa-info-circle" />,
       action: (el) => history.push(`/prediction-of-occultation/${el.id}`),
       align: 'center',
       sortingEnabled: false,
@@ -94,7 +70,9 @@ function PredictionOccultation({ history, setTitle }) {
       width: 140,
       align: 'center',
       sortingEnabled: false,
-      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
+      customElement: (row) => (
+        <ColumnStatus status={row.status} title={row.error_msg} />
+      ),
     },
     {
       name: 'process_displayname',
@@ -122,7 +100,9 @@ function PredictionOccultation({ history, setTitle }) {
       headerTooltip: 'Execution time',
       customElement: (row) => (
         <span>
-          {row.execution_time && typeof row.execution_time === 'string' ? row.execution_time.substring(0, 8) : ''}
+          {row.execution_time && typeof row.execution_time === 'string'
+            ? row.execution_time.substring(0, 8)
+            : ''}
         </span>
       ),
       width: 140,
@@ -146,9 +126,16 @@ function PredictionOccultation({ history, setTitle }) {
   }, []);
 
   const loadTableData = async ({
-    sorting, pageSize, currentPage, filter, searchValue,
+    sorting,
+    pageSize,
+    currentPage,
+    filter,
+    searchValue,
   }) => {
-    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
+    const ordering =
+      sorting[0].direction === 'desc'
+        ? `-${sorting[0].columnName}`
+        : sorting[0].columnName;
     const predictions = await getPredictionRuns({
       ordering,
       pageSize,
@@ -223,7 +210,9 @@ function PredictionOccultation({ history, setTitle }) {
     if (valueSubmition.submit) {
       setActionButton(true);
       setValueSubmition({ ...valueSubmition, submit: false });
-      setDialogContent('The task has been submitted and will be executed in the background...');
+      setDialogContent(
+        'The task has been submitted and will be executed in the background...'
+      );
       setDialogVisible(true);
 
       // Calls APi for creation of prediction run
@@ -254,10 +243,9 @@ function PredictionOccultation({ history, setTitle }) {
           value: 'success',
         },
       ],
-    })
-      .then((res) => {
-        setInputArray(res.results);
-      });
+    }).then((res) => {
+      setInputArray(res.results);
+    });
 
     // Load Catalogs
     getCatalogs().then((res) => {
@@ -276,25 +264,29 @@ function PredictionOccultation({ history, setTitle }) {
   };
 
   useEffect(() => {
-    if (typeof (catalogArray[0]) !== 'undefined') {
-      setValueSubmition(
-        {
-          ...valueSubmition,
-          catalogId: catalogArray[0].id,
-        },
-      );
+    if (typeof catalogArray[0] !== 'undefined') {
+      setValueSubmition({
+        ...valueSubmition,
+        catalogId: catalogArray[0].id,
+      });
     }
   }, [catalogArray]);
 
   useEffect(() => {
-    if (typeof (leapSecondsArray[0]) !== 'undefined') {
-      setValueSubmition({ ...valueSubmition, leap_secondsId: leapSecondsArray[0].id });
+    if (typeof leapSecondsArray[0] !== 'undefined') {
+      setValueSubmition({
+        ...valueSubmition,
+        leap_secondsId: leapSecondsArray[0].id,
+      });
     }
   }, [leapSecondsArray]);
 
   useEffect(() => {
-    if (typeof (bspPlanetaryArray[0]) !== 'undefined') {
-      setValueSubmition({ ...valueSubmition, bsp_planetaryId: bspPlanetaryArray[0].id });
+    if (typeof bspPlanetaryArray[0] !== 'undefined') {
+      setValueSubmition({
+        ...valueSubmition,
+        bsp_planetaryId: bspPlanetaryArray[0].id,
+      });
     }
   }, [bspPlanetaryArray]);
 
@@ -321,53 +313,76 @@ function PredictionOccultation({ history, setTitle }) {
 
   return (
     <Grid>
-
       <Grid container spacing={6}>
         <Grid item xs={12}>
           <Card>
-            <CardHeader
-              title={(
-                <span>Prediction Occutation</span>
-              )}
-            />
+            <CardHeader title={<span>Prediction Occutation</span>} />
             <Grid container>
               <Grid item xs={12} lg={6}>
-                <InputSelect title="input" width="90%" setActionButton={setActionButton} valueSubmition={valueSubmition} setSubmition={setValueSubmition} marginTop={10} data={inputArray} value="el.id" display="el.proccess_displayname" />
-                <InputSelect title="catalog" width="90%" setSubmition={setValueSubmition} marginTop={10} data={catalogArray} value="el.id" display="el.display_name" />
-                <InputSelect title="leapSeconds" width="90%" marginTop={10} data={leapSecondsArray} value="el.id" display="el.name" />
-                <InputSelect title="bspPlanetary" width="90%" marginTop={10} data={bspPlanetaryArray} value="el.id" display="el.display_name" />
-
+                <SelectPredict
+                  title="input"
+                  width="90%"
+                  setActionButton={setActionButton}
+                  valueSubmition={valueSubmition}
+                  setSubmition={setValueSubmition}
+                  marginTop={10}
+                  data={inputArray}
+                  value="el.id"
+                  display="el.proccess_displayname"
+                />
+                <SelectPredict
+                  title="catalog"
+                  width="90%"
+                  setSubmition={setValueSubmition}
+                  marginTop={10}
+                  data={catalogArray}
+                  value="el.id"
+                  display="el.display_name"
+                />
+                <SelectPredict
+                  title="leapSeconds"
+                  width="90%"
+                  marginTop={10}
+                  data={leapSecondsArray}
+                  value="el.id"
+                  display="el.name"
+                />
+                <SelectPredict
+                  title="bspPlanetary"
+                  width="90%"
+                  marginTop={10}
+                  data={bspPlanetaryArray}
+                  value="el.id"
+                  display="el.display_name"
+                />
               </Grid>
               <Grid item xs={12} lg={6}>
-                <InputNumber
+                <TextField
                   ref={inputNumber}
                   type="number"
                   label="Catalog Radius"
-                  className={classes.inputNumber}
                   onChange={handleInputNumberChange}
                   inputProps={{ min: 0.15, max: 2.0, step: 0.01 }}
                   value={inputRadiusValue}
                 />
-                <InputNumber
+                <TextField
                   ref={ephemerisNumber}
                   label="Ephemeris Step"
                   type="number"
-                  placeholder="    Ephemeris Step"
-                  className={classes.inputNumber}
+                  placeholder="Ephemeris Step"
                   inputProps={{ min: 60, max: 1800, step: 10 }}
                   onChange={handleEphemerisNumberChange}
                   value={ephemerisNumberValue}
                 />
-                <DateTime
+                <DatePredict
                   defaultDate={initialDate}
                   label="Ephemeris Initial Date"
                   valueSubmition={valueSubmition}
                   setSubmition={setValueSubmition}
                   setInitialDate={setInitialDate}
                   titleId="initialDate"
-                  className={classes.inputNumber}
                 />
-                <DateTime
+                <DatePredict
                   defaultDate={finalDate}
                   label="Ephemeris Final Date"
                   valueSubmition={valueSubmition}
@@ -375,13 +390,10 @@ function PredictionOccultation({ history, setTitle }) {
                   setFinalDate={setFinalDate}
                   titleId="finalDate"
                   width="90%"
-                  className={classes.inputNumber}
-
                 />
                 <Button
                   variant="contained"
                   color="primary"
-                  className={classes.button}
                   onClick={handleSubmitClick}
                   disabled={actionButton}
                 >
@@ -396,13 +408,9 @@ function PredictionOccultation({ history, setTitle }) {
       <Grid container spacing={6}>
         <Grid item xs={12}>
           <Card>
-            <CardHeader
-              title={
-                <span>History</span>
-              }
-            />
+            <CardHeader title={<span>History</span>} />
 
-            <CustomTable
+            <Table
               columns={columns}
               data={tableData}
               loadData={loadTableData}

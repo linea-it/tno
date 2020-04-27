@@ -1,27 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { Drawer as MuiDrawer } from '@material-ui/core';
-import List from '@material-ui/core/List';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ListItem from '@material-ui/core/ListItem';
 import { Link } from 'react-router-dom';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import Collapse from '@material-ui/core/Collapse';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import Icon from '@material-ui/core/Icon';
+import {
+  Drawer as MuiDrawer,
+  List,
+  CssBaseline,
+  Divider,
+  IconButton,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+  Icon,
+} from '@material-ui/core';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ExpandLess,
+  ExpandMore,
+} from '@material-ui/icons';
+
+import Footer from '../Footer';
+import Toolbar from '../Toolbar';
+
 import Logo from '../../assets/img/linea.png';
-import CustomFooter from '../helpers/CustomFooter';
-import { loggedUser } from '../../services/api/Auth';
-import CustomToolbar from '../helpers/CustomToolbar';
 import useStyles from './styles';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+import { loggedUser } from '../../services/api/Auth';
 
 const drawerWidth = 240;
 
@@ -54,7 +61,7 @@ function Drawer({ children, title, open, setOpen }) {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <CustomToolbar
+      <Toolbar
         title={title}
         open={open}
         drawerWidth={drawerWidth}
@@ -598,7 +605,7 @@ function Drawer({ children, title, open, setOpen }) {
             )}
             title={open ? 'Close' : 'Open'}
           >
-            {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            {open ? <ChevronLeft /> : <ChevronRight />}
           </IconButton>
         </div>
       </MuiDrawer>
@@ -610,7 +617,7 @@ function Drawer({ children, title, open, setOpen }) {
       >
         <main className={classes.content}>{children}</main>
       </div>
-      <CustomFooter drawerOpen={open} />
+      <Footer drawerOpen={open} />
     </div>
   );
 }

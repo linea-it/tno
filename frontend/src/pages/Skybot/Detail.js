@@ -1,40 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Grid, Card, makeStyles, CardHeader, CardContent,
+  Grid,
+  Card,
+  CardHeader,
+  CardContent,
+  Icon,
+  Button,
 } from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
-import Button from '@material-ui/core/Button';
-import clsx from 'clsx';
 import { withRouter } from 'react-router';
 import moment from 'moment';
-import CustomList from '../../components/helpers/CustomList';
-import CustomTable from '../../components/helpers/CustomTable';
-import { Donut } from '../../components/helpers/CustomChart';
+import List from '../../components/List';
+import Table from '../../components/Table';
+import Donut from '../../components/Chart/Donut';
+import ColumnStatus from '../../components/Table/ColumnStatus';
 import {
-  getSkybotRunById, getStatistic, getSkybotRunResults, stopSkybotRunById,
+  getSkybotRunById,
+  getStatistic,
+  getSkybotRunResults,
+  stopSkybotRunById,
 } from '../../services/api/Skybot';
-import CustomColumnStatus from '../../components/helpers/CustomColumnStatus';
-
-const useStyles = makeStyles({
-  cardContentWrapper: {
-    overflow: 'auto',
-  },
-  iconDetail: {
-    fontSize: 18,
-  },
-  buttonIcon: {
-    margin: '0 10px 0 0',
-  },
-});
 
 function SkybotDetail({ setTitle, match, history }) {
-  const classes = useStyles();
   const { id } = match.params;
   const [skybotRunDetailList, setSkybotRunDetailList] = useState([]);
   const [timeProfile, setTimeProfile] = useState([]);
   const [skybotDetailTableData, setSkybotDetailTableData] = useState([]);
-  const [skybotDetailTableTotalCount, setSkybotDetailTableTotalCount] = useState(0);
+  const [
+    skybotDetailTableTotalCount,
+    setSkybotDetailTableTotalCount,
+  ] = useState(0);
   const [currentSkybotRunStatus, setCurrentSkybotRunStatus] = useState('');
 
   const skybotDetailTableColumns = [
@@ -42,7 +37,7 @@ function SkybotDetail({ setTitle, match, history }) {
       name: 'ccd_time',
       title: 'Details',
       width: 100,
-      icon: <i className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <i className="fas fa-info-circle" />,
       action: (row) => history.push(`/skybot/${id}/asteroid/${row.expnum}`),
       align: 'center',
       sortingEnabled: false,
@@ -52,7 +47,9 @@ function SkybotDetail({ setTitle, match, history }) {
       title: 'Status',
       align: 'center',
       sortingEnabled: false,
-      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
+      customElement: (row) => (
+        <ColumnStatus status={row.status} title={row.error_msg} />
+      ),
       width: 140,
     },
     {
@@ -127,7 +124,9 @@ function SkybotDetail({ setTitle, match, history }) {
       setSkybotRunDetailList([
         {
           title: 'Status',
-          value: () => <CustomColumnStatus status={res.status} title={res.error_msg} />,
+          value: () => (
+            <ColumnStatus status={res.status} title={res.error_msg} />
+          ),
         },
         {
           title: 'Owner',
@@ -174,7 +173,9 @@ function SkybotDetail({ setTitle, match, history }) {
 
   const loadSkybotDetailTableData = ({ currentPage, pageSize }) => {
     getSkybotRunResults({
-      id, page: currentPage + 1, pageSize,
+      id,
+      page: currentPage + 1,
+      pageSize,
     }).then((res) => {
       setSkybotDetailTableTotalCount(res.totalCount);
       setSkybotDetailTableData(res.data);
@@ -188,14 +189,12 @@ function SkybotDetail({ setTitle, match, history }) {
   };
 
   const handleStopRun = () => {
-    stopSkybotRunById(id)
-      .then(() => {
-        clearData();
-        loadSkybotDetailSummary();
-        loadSkybotDetailExecutionTime();
-        loadSkybotDetailTableData({ currentPage: 0, pageSize: 10 });
-      })
-      .catch((err) => console.error(err));
+    stopSkybotRunById(id).then(() => {
+      clearData();
+      loadSkybotDetailSummary();
+      loadSkybotDetailExecutionTime();
+      loadSkybotDetailTableData({ currentPage: 0, pageSize: 10 });
+    });
   };
 
   useEffect(() => {
@@ -208,11 +207,7 @@ function SkybotDetail({ setTitle, match, history }) {
     <>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Grid
-            container
-            alignItems="center"
-            spacing={2}
-          >
+          <Grid container alignItems="center" spacing={2}>
             <Grid item>
               <Button
                 variant="contained"
@@ -220,7 +215,7 @@ function SkybotDetail({ setTitle, match, history }) {
                 title="Back"
                 onClick={handleBackNavigation}
               >
-                <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+                <Icon className="fas fa-undo" />
                 <span>Back</span>
               </Button>
             </Grid>
@@ -231,9 +226,8 @@ function SkybotDetail({ setTitle, match, history }) {
                   color="secondary"
                   title="Stop"
                   onClick={handleStopRun}
-                  className={classes.btnFailure}
                 >
-                  <Icon className={clsx('fas', 'fa-stop', classes.buttonIcon)} />
+                  <Icon className="fas fa-stop" />
                   <span>Stop</span>
                 </Button>
               </Grid>
@@ -244,26 +238,17 @@ function SkybotDetail({ setTitle, match, history }) {
           <Grid container spacing={2}>
             <Grid item xs={4}>
               <Card>
-                <CardHeader
-                  title="Summary"
-                />
-                <CardContent className={classes.cardContentWrapper}>
-                  <CustomList
-                    data={skybotRunDetailList}
-                  />
+                <CardHeader title="Summary" />
+                <CardContent>
+                  <List data={skybotRunDetailList} />
                 </CardContent>
               </Card>
             </Grid>
             <Grid item xs={8}>
               <Card>
-                <CardHeader
-                  title="Execution Time"
-                />
-                <CardContent className={classes.cardContentWrapper}>
-                  <Donut
-                    data={timeProfile}
-                    height={315}
-                  />
+                <CardHeader title="Execution Time" />
+                <CardContent>
+                  <Donut data={timeProfile} height={315} />
                 </CardContent>
               </Card>
             </Grid>
@@ -273,11 +258,9 @@ function SkybotDetail({ setTitle, match, history }) {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Card>
-                <CardHeader
-                  title="Skybot Results by Pointings"
-                />
-                <CardContent className={classes.cardContentWrapper}>
-                  <CustomTable
+                <CardHeader title="Skybot Results by Pointings" />
+                <CardContent>
+                  <Table
                     columns={skybotDetailTableColumns}
                     data={skybotDetailTableData}
                     totalCount={skybotDetailTableTotalCount}

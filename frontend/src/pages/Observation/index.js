@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Grid, Card, CardContent, CardHeader } from '@material-ui/core';
+import PropTypes from 'prop-types';
+import { Grid, Card, CardContent, CardHeader, Icon } from '@material-ui/core';
 import moment from 'moment';
-import Icon from '@material-ui/core/Icon';
 import { getObservationFiles } from '../../services/api/Input';
-import CustomTable from '../../components/helpers/CustomTable';
-import CustomDialog from '../../components/helpers/CustomDialog';
-import CustomLog from '../../components/helpers/CustomLog';
+import Table from '../../components/Table';
+import Dialog from '../../components/Dialog';
+import Log from '../../components/Log';
 import { readFile } from '../../services/api/Orbit';
 
-function ObservFiles({ setTitle }) {
+function Observation({ setTitle }) {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tableDataCount, setTableDataCount] = useState(true);
@@ -149,7 +149,7 @@ function ObservFiles({ setTitle }) {
         <Card>
           <CardHeader title="List with the Observation Files" />
           <CardContent>
-            <CustomTable
+            <Table
               data={tableData}
               columns={tableColumns}
               loadData={loadTableData}
@@ -159,11 +159,11 @@ function ObservFiles({ setTitle }) {
           </CardContent>
         </Card>
       </Grid>
-      <CustomDialog
+      <Dialog
         maxWidth={1700}
         visible={dialog.visible}
         title={dialog.title}
-        content={<CustomLog data={dialog.content} />}
+        content={<Log data={dialog.content} />}
         setVisible={() =>
           setDialog({ visible: false, content: [], title: ' ' })
         }
@@ -171,4 +171,9 @@ function ObservFiles({ setTitle }) {
     </Grid>
   );
 }
-export default ObservFiles;
+
+Observation.propTypes = {
+  setTitle: PropTypes.func.isRequired,
+};
+
+export default Observation;

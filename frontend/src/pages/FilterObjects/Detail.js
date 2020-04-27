@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Card, CardHeader, CardContent } from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
-import Divider from '@material-ui/core/Divider';
-import clsx from 'clsx';
-import Highlight from 'react-syntax-highlight';
 import moment from 'moment';
+import {
+  Grid,
+  Card,
+  CardHeader,
+  CardContent,
+  Icon,
+  Divider,
+  Switch,
+} from '@material-ui/core';
+import Highlight from 'react-syntax-highlight';
+import sqlFormatter from 'sql-formatter';
+import Table from '../../components/Table';
+import { getStatsById, getObjectsList } from '../../services/api/Filter';
 import 'highlight.js/styles/default.css';
 import 'highlight.js/styles/atom-one-light.css';
-import sqlFormatter from 'sql-formatter';
-import Switch from '@material-ui/core/Switch';
-import CustomTable from '../../components/helpers/CustomTable';
-import CustomCardStats from '../../components/helpers/CustomCardStats';
-import { getStatsById, getObjectsList } from '../../services/api/Filter';
 
 function FilterObjectsDetail({ setTitle, match }) {
   const { id } = match.params;
@@ -294,7 +297,7 @@ function FilterObjectsDetail({ setTitle, match }) {
           <Card>
             <CardHeader title="Objects" />
             <CardContent>
-              <CustomTable
+              <Table
                 columns={objectsColumns}
                 data={objectsTableData}
                 totalCount={objectsTableCount}

@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Card, CardContent, CardHeader, Icon } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import SnackBar from '@material-ui/core/Snackbar';
+import {
+  Grid,
+  Card,
+  CardContent,
+  CardHeader,
+  Icon,
+  Button,
+  Snackbar,
+} from '@material-ui/core';
 import moment from 'moment';
-import clsx from 'clsx';
 import {
   getJohnstonArchives,
   updateJohnstonList,
 } from '../../services/api/Input';
-import CustomTable from '../../components/helpers/CustomTable';
+import Table from '../../components/Table';
 
 function JohnstonArchive({ setTitle, history }) {
   const [tableData, setTableData] = useState([]);
@@ -131,7 +136,7 @@ function JohnstonArchive({ setTitle, history }) {
     setTableData([]);
     setSnackBarVisible(true);
 
-    // ????
+    // ! ???
     updateJohnstonList()
       .then((res) => {
         console.log(res);
@@ -153,12 +158,9 @@ function JohnstonArchive({ setTitle, history }) {
 
       <Grid item xs={12}>
         <Card>
-          <CardHeader
-            title="List of Known Trans-Neptunian Objects
-                             and other outer Solar System Objects "
-          />
+          <CardHeader title="List of Known Trans-Neptunian Objects and other outer Solar System Objects " />
           <CardContent>
-            <CustomTable
+            <Table
               data={tableData}
               columns={tableColumns}
               loadData={loadTableData}
@@ -168,7 +170,7 @@ function JohnstonArchive({ setTitle, history }) {
           </CardContent>
         </Card>
       </Grid>
-      <SnackBar
+      <Snackbar
         open={snackBarVisible}
         autoHideDuration={7000}
         TransitionComponent={snackBarTransition}

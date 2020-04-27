@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 30,
     minWidth: 120,
     width: (props) => props.width,
-
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
@@ -30,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SimpleSelect(props) {
+function SelectPredict(props) {
   const classes = useStyles();
   const [values, setValues] = useState({
     input: '',
@@ -50,7 +49,10 @@ export default function SimpleSelect(props) {
     [event.target.name] para o valor que foi selecionado no select.
     */
 
-    setValues((oldValues) => ({ ...oldValues, [event.target.name]: event.target.value }));
+    setValues((oldValues) => ({
+      ...oldValues,
+      [event.target.name]: event.target.value,
+    }));
 
     setDefaultValue(event.target.value);
 
@@ -59,7 +61,9 @@ export default function SimpleSelect(props) {
         props.setActionButton(false); // Turns the submit button active
 
         const process_id = event.currentTarget.getAttribute('process_id');
-        const orbit_input_list_id = event.currentTarget.getAttribute('orbit_input_list_id');
+        const orbit_input_list_id = event.currentTarget.getAttribute(
+          'orbit_input_list_id'
+        );
         const orbit_run_id = event.currentTarget.getAttribute('orbit_run_id');
 
         props.setSubmition({
@@ -125,7 +129,6 @@ export default function SimpleSelect(props) {
         ));
       }
 
-
       return generalArray.map((el, i) => (
         <MenuItem
           key={i}
@@ -151,9 +154,7 @@ export default function SimpleSelect(props) {
           inputProps={{ name: 'input', id: 'input-simple' }}
           displayEmpty
         >
-
           Sets the defaulValue each SELECT
-
           {/* Load here the menuItems automatically */}
           {loadMenuItems()}
         </Select>
@@ -162,6 +163,8 @@ export default function SimpleSelect(props) {
   );
 }
 
-SimpleSelect.propTypes = {
+SelectPredict.propTypes = {
   title: PropTypes.string.isRequired,
 };
+
+export default SelectPredict;

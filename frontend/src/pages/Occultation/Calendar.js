@@ -1,47 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
+import moment from 'moment';
+
 import FullCalendar from '@fullcalendar/react';
 import DayGridPlugin from '@fullcalendar/daygrid';
 import InteractionPlugin from '@fullcalendar/interaction';
 import ListPlugin from '@fullcalendar/list';
+
+import { CircularProgress, TextField } from '@material-ui/core';
+import { Search as SearchIcon } from '@material-ui/icons';
+
+import { getOccultations } from '../../services/api/Occultation';
+
 import '@fullcalendar/core/main.css';
 import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/list/main.css';
-import { makeStyles } from '@material-ui/core/styles';
-import moment from 'moment';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { getOccultations } from '../../services/api/Occultation';
-import AppBar from './AppBarCalendario';
-
-const useStyles = makeStyles(() => ({
-  loading: {
-    position: 'fixed',
-    top: '50%',
-    left: 'calc(50% + 120px)',
-    zIndex: 100,
-    transform: 'translate(-50%, -50%)',
-    animation: 'none',
-  },
-  label: {
-    float: 'right',
-  },
-  labelBlue: {
-    color: '#3788D8',
-  },
-  labelGreen: {
-    color: '#008000',
-  },
-}));
 
 function OccultationCalendar({ history, setTitle, match: { params } }) {
   const [events, setEvents] = useState([]);
-  const [initialDate, setInitialDate] = useState(params.sDate ? params.sDate : moment(new Date()).startOf('month').format('YYYY-MM-DD'));
-  const [finalDate, setFinalDate] = useState(moment(new Date()).endOf('month').format('YYYY-MM-DD'));
+  const [initialDate, setInitialDate] = useState(
+    params.sDate
+      ? params.sDate
+      : moment(new Date()).startOf('month').format('YYYY-MM-DD')
+  );
+  const [finalDate, setFinalDate] = useState(
+    moment(new Date()).endOf('month').format('YYYY-MM-DD')
+  );
   const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState(params.searching ? params.searching : '');
-  const [hasSearch, setHasSearch] = useState(false);
-
-  const classes = useStyles();
+  const [search, setSearch] = useState(
+    params.searching ? params.searching : ''
+  );
 
   const loadData = () => {
     setLoading(true);
@@ -64,26 +52,31 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
       });
     }
 
-    getOccultations({ filters, pageSize: 3000 }).then((res) => {
-      const data = res.results;
-      const result = [];
+    getOccultations({ filters, pageSize: 3000 })
+      .then((res) => {
+        const data = res.results;
+        const result = [];
 
-      data.map((resp) => {
-        // Se o asteroid tiver numero, o nome do asteroid passa a ser NAME(Number) se nao so NAME.
-        const asteroid_name = parseInt(resp.asteroid_number) > 0 ? `${resp.asteroid_name} (${resp.asteroid_number})` : resp.asteroid_name;
+        data.map((resp) => {
+          // Se o asteroid tiver numero, o nome do asteroid passa a ser NAME(Number) se nao so NAME.
+          const asteroid_name =
+            parseInt(resp.asteroid_number) > 0
+              ? `${resp.asteroid_name} (${resp.asteroid_number})`
+              : resp.asteroid_name;
 
-        result.push({
-          id: resp.id,
-          title: asteroid_name,
-          date: resp.date_time,
-          textColor: 'white',
+          result.push({
+            id: resp.id,
+            title: asteroid_name,
+            date: resp.date_time,
+            textColor: 'white',
+          });
         });
-      });
 
-      setEvents(result);
-    }).finally(() => {
-      setLoading(false);
-    });
+        setEvents(result);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -106,7 +99,9 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
 
   const handleDateRender = (arg) => {
     const start_date = moment(arg.view.currentStart).format('YYYY-MM-DD');
-    const end_date = moment(arg.view.currentEnd).subtract(1, 'days').format('YYYY-MM-DD');
+    const end_date = moment(arg.view.currentEnd)
+      .subtract(1, 'days')
+      .format('YYYY-MM-DD');
 
     // Um problema que surgiu nesta página foi o seguinte:
     // Quando o calendário renderiza, ele traz consigo uma data default que é especificada
@@ -155,10 +150,29 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     }
   };
 
+  const handleChange = (event) => {
+    const fetch = event.target.value;
+    setSearch(fetch === '' ? '' : fetch);
+  };
+
   return (
     <div>
-      {loading && <CircularProgress size={120} thickness={0.8} className={classes.loading} />}
-      <AppBar setSearch={setSearch} setHasSearch={setHasSearch} value={search} />
+      {loading && <CircularProgress size={120} thickness={0.8} />}
+      <div>
+        <SearchIcon />
+
+        <TextField
+          id="standard-search"
+          label=""
+          placeholder="Search…"
+          onChange={handleChange}
+          value={search}
+          inputProps={{ 'aria-label': 'search' }}
+          autoFocus
+          type="search"
+          fullWidth={false}
+        />
+      </div>
 
       {/* params.date is coming back from occulation.
       It's being used to maintain data that went from calendar to occultation.

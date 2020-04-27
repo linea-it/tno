@@ -1,64 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
 import { withRouter } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import {
-  Card, CardContent, Typography,
-} from '@material-ui/core';
-import Slider from '@material-ui/core/Slider';
-import DateFnsUtils from '@date-io/date-fns';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
 import moment from 'moment';
+import {
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  Slider,
+  TextField,
+  MenuItem,
+} from '@material-ui/core';
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 import { url } from '../../services/api/Auth';
 import { getOccultations } from '../../services/api/Occultation';
-import CustomGridList from '../../components/helpers/CustomGridList';
-
-const useStyles = makeStyles((theme) => ({
-  filtersContainer: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  filterField: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    width: 200,
-    [theme.breakpoints.down('md')]: {
-      width: '100%',
-    },
-  },
-  filterSlider: {
-    width: 200,
-    [theme.breakpoints.down('md')]: {
-      width: '100%',
-    },
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    marginTop: theme.spacing(3),
-  },
-  filterSliderLabel: {
-    color: theme.palette.text.secondary,
-  },
-  occMapImg: {
-    minWidth: 352,
-    minHeight: 290,
-    width: '100%',
-    cursor: 'pointer',
-  },
-}));
+import Image from '../../components/List/Image';
 
 function Occultation({ setTitle, history, ...props }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPagesize] = useState(25);
   const [loading, setLoading] = useState();
   const [data, setData] = useState();
-  const [startDate, setStartDate] = useState(moment().startOf('year').format('YYYY-MM-DD'));
-  const [endDate, setEndDate] = useState(moment().endOf('year').format('YYYY-MM-DD'));
+  const [startDate, setStartDate] = useState(
+    moment().startOf('year').format('YYYY-MM-DD')
+  );
+  const [endDate, setEndDate] = useState(
+    moment().endOf('year').format('YYYY-MM-DD')
+  );
   const [magnitude, setMagnitude] = useState([4, 23]);
   const [diameter, setDiameter] = useState([0, 600]);
   const [objectName, setObjectName] = useState();
@@ -76,7 +48,10 @@ function Occultation({ setTitle, history, ...props }) {
       if (endDate) {
         filters.push({
           property: 'date_time__range',
-          value: [moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD')].join(),
+          value: [
+            moment(startDate).format('YYYY-MM-DD'),
+            moment(endDate).format('YYYY-MM-DD'),
+          ].join(),
         });
       } else {
         // Se nao tiver endDate buca por datas maiores que o start date.
@@ -124,16 +99,18 @@ function Occultation({ setTitle, history, ...props }) {
       setData([]);
       setLoading(false);
     } else {
-      getOccultations({ filters, pageSize }).then((res) => {
-        res.results.map((row) => ({
-          ...row,
-          src: row.src ? url + row.src : null,
-        }));
+      getOccultations({ filters, pageSize })
+        .then((res) => {
+          res.results.map((row) => ({
+            ...row,
+            src: row.src ? url + row.src : null,
+          }));
 
-        setData(res.results);
-      }).finally(() => {
-        setLoading(false);
-      });
+          setData(res.results);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   };
 
@@ -144,8 +121,6 @@ function Occultation({ setTitle, history, ...props }) {
   useEffect(() => {
     loadData();
   }, [startDate, endDate, objectName, magnitude]);
-
-  const classes = useStyles();
 
   const handleStartDateChange = (date) => {
     setStartDate(date);
@@ -182,9 +157,17 @@ function Occultation({ setTitle, history, ...props }) {
 
   const zoneArray = [
     { name: 'East-Asia', value: 'East-Asia', title: 'East-Asia' },
-    { name: 'Europe & North Africa', value: 'Europe & North Africa', title: 'Europe & North Africa' },
+    {
+      name: 'Europe & North Africa',
+      value: 'Europe & North Africa',
+      title: 'Europe & North Africa',
+    },
     { name: 'Oceania', value: 'Oceania', title: 'Oceania' },
-    { name: 'Southern Africa', value: 'Southern Africa', title: 'Southern Africa' },
+    {
+      name: 'Southern Africa',
+      value: 'Southern Africa',
+      title: 'Southern Africa',
+    },
     { name: 'North America', value: 'North America', title: 'North America' },
     { name: 'South America', value: 'South America', title: 'South America' },
   ];
@@ -192,11 +175,7 @@ function Occultation({ setTitle, history, ...props }) {
   const loadDynamicClassMenuItems = () => {
     if (dynamicClassArray && dynamicClassArray.length > 0) {
       return dynamicClassArray.map((el, i) => (
-        <MenuItem
-          key={i}
-          value={i}
-          title={el.title}
-        >
+        <MenuItem key={i} value={i} title={el.title}>
           {el.value}
         </MenuItem>
       ));
@@ -206,11 +185,7 @@ function Occultation({ setTitle, history, ...props }) {
   const loadZoneMenuItems = () => {
     if (zoneArray && zoneArray.length > 0) {
       return zoneArray.map((el, i) => (
-        <MenuItem
-          key={i}
-          value={i}
-          title={el.title}
-        >
+        <MenuItem key={i} value={i} title={el.title}>
           {el.value}
         </MenuItem>
       ));
@@ -225,10 +200,9 @@ function Occultation({ setTitle, history, ...props }) {
         <Grid item lg={12}>
           <Card>
             <CardContent>
-              <form className={classes.filtersContainer} noValidate autoComplete="off">
+              <form noValidate autoComplete="off">
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
-                    className={classes.filterField}
                     disableToolbar
                     variant="inline"
                     format="yyyy-MM-dd"
@@ -238,7 +212,6 @@ function Occultation({ setTitle, history, ...props }) {
                     onChange={handleStartDateChange}
                   />
                   <KeyboardDatePicker
-                    className={classes.filterField}
                     disableToolbar
                     variant="inline"
                     format="yyyy-MM-dd"
@@ -249,14 +222,13 @@ function Occultation({ setTitle, history, ...props }) {
                   />
                 </MuiPickersUtilsProvider>
                 <TextField
-                  className={classes.filterField}
                   label="Object Name"
                   value={objectName}
                   onChange={handleChangeobjectName}
                   margin="normal"
                 />
-                <div className={classes.filterSlider}>
-                  <Typography gutterBottom variant="body2" className={classes.filterSliderLabel}>
+                <div>
+                  <Typography gutterBottom variant="body2">
                     {`Magnitude(g): ${magnitude}`}
                   </Typography>
                   <Slider
@@ -268,8 +240,8 @@ function Occultation({ setTitle, history, ...props }) {
                     onChange={handleChangeMagnitudeValue}
                   />
                 </div>
-                <div className={classes.filterSlider}>
-                  <Typography gutterBottom variant="body2" className={classes.filterSliderLabel}>
+                <div>
+                  <Typography gutterBottom variant="body2">
                     {`Diameter(Km): ${diameter}`}
                   </Typography>
                   <Slider
@@ -285,7 +257,6 @@ function Occultation({ setTitle, history, ...props }) {
                 <TextField
                   select
                   label="Dynamic Class"
-                  className={classes.filterField}
                   value={dynamicClass}
                   onChange={handleChangeDynamicClass}
                   margin="normal"
@@ -296,7 +267,6 @@ function Occultation({ setTitle, history, ...props }) {
                 <TextField
                   select
                   label="Zone"
-                  className={classes.filterField}
                   value={zoneValue}
                   onChange={handleChangeZone}
                   margin="normal"
@@ -311,7 +281,7 @@ function Occultation({ setTitle, history, ...props }) {
         {data ? (
           <Grid item lg={12} xl={12}>
             <Grid container spacing={2}>
-              <CustomGridList
+              <Image
                 data={data}
                 baseUrl={url}
                 handleImageClick={handleRecordClick}

@@ -1,31 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Icon from '@material-ui/core/Icon';
-import Divider from '@material-ui/core/Divider';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
-import InputLabel from '@material-ui/core/InputLabel';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import Button from '@material-ui/core/Button';
-import clsx from 'clsx';
-import Grid from '@material-ui/core/Grid';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Chip from '@material-ui/core/Chip';
-import Checkbox from '@material-ui/core/Checkbox';
-import Input from '@material-ui/core/Input';
-import { SizeMe } from 'react-sizeme';
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  Icon,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  MenuItem,
+  Select,
+  TextField,
+  InputLabel,
+  Button,
+  Grid,
+  CircularProgress,
+  Chip,
+  Checkbox,
+  Input,
+} from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import moment from 'moment';
-import CustomSnackbar from '../../components/helpers/CustomSnackbar';
-import CustomDialog from '../../components/helpers/CustomDialog';
-import CustomTable from '../../components/helpers/CustomTable';
 import {
   getCustomList,
   getSkybotOutput,
@@ -33,7 +29,11 @@ import {
   postCustomList,
   checkTableName,
 } from '../../services/api/Filter';
-import CustomColumnStatus from '../../components/helpers/CustomColumnStatus';
+import Snackbar from '../../components/Snackbar';
+import Dialog from '../../components/Dialog';
+import Table from '../../components/Table';
+import ColumnStatus from '../../components/Table/ColumnStatus';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function FilterObjects({ setTitle, drawerOpen, history }) {
   const [searchFilter, setSearchFilter] = useState('');
@@ -48,12 +48,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
   const [timeMinimumCheck, setTimeMinimumCheck] = useState(false);
   const [timeMinimum, setTimeMinimum] = useState(0);
   const [sameObjectsCheck, setSameObjectsCheck] = useState(false);
-  const [filterFormSize, setFilterFormSize] = useState({
-    height: 0,
-  });
-  const [resultTableSize, setResultTableSize] = useState({
-    height: 0,
-  });
   const [historyTableData, setHistoryTableData] = useState([]);
   const [historyCount, setHistoryCount] = useState(0);
   const [resultTableData, setResultTableData] = useState([]);
@@ -351,7 +345,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
       align: 'center',
       width: 140,
       customElement: (row) => (
-        <CustomColumnStatus status={row.status} title={row.error_msg} />
+        <ColumnStatus status={row.status} title={row.error_msg} />
       ),
     },
     {
@@ -657,7 +651,6 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         setResultLoading(false);
       })
       .catch((err) => {
-        console.error(err);
         setResultLoading(false);
         return err;
       });
@@ -865,7 +858,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                 {resultTableData.length > 0 ? (
                   <form autoComplete="off">
                     <FormControl fullWidth>
-                      <CustomTable
+                      <Table
                         columns={resultTableColumns}
                         data={resultTableData}
                         totalCount={resultTableData.length}
@@ -879,7 +872,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
                   </form>
                 ) : (
                   <div>
-                    <Skeleton height={filterFormSize.height - 95 || 0} />
+                    <Skeleton height={350} />
                     {objectsCount > 0 ? (
                       <span>
                         {objectsCount > 1
@@ -903,7 +896,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
             <Card>
               <CardHeader title={<span>History</span>} />
               <CardContent>
-                <CustomTable
+                <Table
                   columns={historyTableColumns}
                   data={historyTableData}
                   loadData={loadHistoryTableData}
@@ -919,7 +912,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
         </Grid>
       </Grid>
 
-      <CustomDialog
+      <Dialog
         maxWidth="md"
         visible={saveDialogVisible}
         setVisible={handleSaveDialogClose}
@@ -970,7 +963,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
       />
 
       {tableNameValidation.status ? (
-        <CustomSnackbar
+        <Snackbar
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           open={tableNameSnackbarVisible}
           autoHideDuration={5000} // Auto hide is not working, so I improvised with a "setTimeout".

@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import { Select as MuiSelect } from '@material-ui/core';
 import PropTypes from 'prop-types';
 
-export default function SimpleSelect(props) {
+function SelectAstrometry(props) {
   const [values, setValues] = useState({
     input: '',
     name: '',
@@ -87,22 +87,23 @@ export default function SimpleSelect(props) {
     <form autoComplete="off">
       <FormControl>
         <InputLabel htmlFor="input">{title}</InputLabel>
-        <Select
+        <MuiSelect
           // value={values.input}
           value={defaultValue}
           onChange={handleChange}
           inputProps={{ name: 'input', id: 'input-simple' }}
           displayEmpty
         >
-          Sets the defaulValue each SELECT
           {/* Load here the menuItems automatically */}
           {loadMenuItems()}
-        </Select>
+        </MuiSelect>
       </FormControl>
     </form>
   );
 }
 
-SimpleSelect.propTypes = {
+SelectAstrometry.propTypes = {
   title: PropTypes.string.isRequired,
 };
+
+export default SelectAstrometry;

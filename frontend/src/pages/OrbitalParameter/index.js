@@ -1,31 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import Card from '@material-ui/core/Card';
-import { makeStyles } from '@material-ui/styles';
-import Grid from '@material-ui/core/Grid';
-import { CardHeader, CardContent } from '@material-ui/core';
 import moment from 'moment';
-import Icon from '@material-ui/core/Icon';
-import clsx from 'clsx';
+import { Grid, CardHeader, Card, CardContent, Icon } from '@material-ui/core';
+import Table from '../../components/Table';
+import Dialog from '../../components/Dialog';
+import Log from '../../components/Log';
 import { getOrbitalParameterFiles } from '../../services/api/Input';
-import CustomTable from '../../components/helpers/CustomTable';
 import { readOrbitalFile } from '../../services/api/Orbit';
-import CustomDialog from '../../components/helpers/CustomDialog';
-import CustomLog from '../../components/helpers/CustomLog';
 
-const useStyles = makeStyles((theme) => ({
-  iconDetail: {
-    fontSize: 18,
-  },
-  dialogBodyStyle: {
-    backgroundColor: '#1D4455',
-    color: '#FFFFFF',
-    border: 'none',
-    height: 600,
-    width: 1600,
-  },
-}));
-
-function OrbitalParameterFiles({ setTitle }) {
+function OrbitalParameter({ setTitle }) {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tableDataCount, setTableDataCount] = useState(true);
@@ -39,23 +21,28 @@ function OrbitalParameterFiles({ setTitle }) {
     setTitle('Orbital Parameter Files');
   }, [setTitle]);
 
-  const classes = useStyles();
-
   const loadTableData = (event) => {
     setLoading(true);
 
     const page = typeof event === 'undefined' ? 1 : event.currentPage + 1;
     const pageSize = typeof event === 'undefined' ? 10 : event.pageSize;
     const search = typeof event === 'undefined' ? '' : event.searchValue;
-    const ordering = event.sorting[0].direction === 'desc' ? `-${event.sorting[0].columnName}` : event.sorting[0].columnName;
+    const ordering =
+      event.sorting[0].direction === 'desc'
+        ? `-${event.sorting[0].columnName}`
+        : event.sorting[0].columnName;
 
     getOrbitalParameterFiles({
-      page, pageSize, search, ordering,
+      page,
+      pageSize,
+      search,
+      ordering,
     })
       .then((res) => {
         setTableData(res.data.results);
         setTableDataCount(res.data.count);
-      }).finally(() => {
+      })
+      .finally(() => {
         setLoading(false);
       });
   };
@@ -65,7 +52,7 @@ function OrbitalParameterFiles({ setTitle }) {
       name: 'id',
       title: 'Details',
       width: 100,
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className="fas fa-info-circle" />,
       action: (el) => handleFileReading(el.download_url),
       align: 'center',
       sortingEnabled: false,
@@ -90,7 +77,9 @@ function OrbitalParameterFiles({ setTitle }) {
       width: 200,
       customElement: (row) => (
         <span>
-          {row.download_start_time ? moment(row.download_start_time).format('YYYY-MM-DD HH:mm:ss') : ''}
+          {row.download_start_time
+            ? moment(row.download_start_time).format('YYYY-MM-DD HH:mm:ss')
+            : ''}
         </span>
       ),
       sortingEnabled: false,
@@ -101,7 +90,9 @@ function OrbitalParameterFiles({ setTitle }) {
       width: 200,
       customElement: (row) => (
         <span>
-          {row.download_start_time ? moment(row.download_finish_time).format('YYYY-MM-DD HH:mm:ss') : ''}
+          {row.download_start_time
+            ? moment(row.download_finish_time).format('YYYY-MM-DD HH:mm:ss')
+            : ''}
         </span>
       ),
       sortingEnabled: false,
@@ -150,7 +141,7 @@ function OrbitalParameterFiles({ setTitle }) {
         <Card>
           <CardHeader title="List with the Orbital Parameter Files" />
           <CardContent>
-            <CustomTable
+            <Table
               data={tableData}
               columns={tableColumns}
               hasColumnVisibility={false}
@@ -161,16 +152,17 @@ function OrbitalParameterFiles({ setTitle }) {
           </CardContent>
         </Card>
       </Grid>
-      <CustomDialog
+      <Dialog
         maxWidth={1700}
         visible={dialog.visible}
         title={dialog.title}
-        content={<CustomLog data={dialog.content} />}
-        setVisible={() => setDialog({ visible: false, content: [], title: ' ' })}
-        bodyStyle={classes.dialogBodyStyle}
+        content={<Log data={dialog.content} />}
+        setVisible={() =>
+          setDialog({ visible: false, content: [], title: ' ' })
+        }
       />
     </Grid>
   );
 }
 
-export default OrbitalParameterFiles;
+export default OrbitalParameter;

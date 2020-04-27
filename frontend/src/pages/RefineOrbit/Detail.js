@@ -1,67 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
-import {
-  Grid, Card, makeStyles, CardHeader, CardContent,
-} from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
-import clsx from 'clsx';
-import DescriptionIcon from '@material-ui/icons/Description';
-import ListIcon from '@material-ui/icons/List';
-import BugIcon from '@material-ui/icons/BugReport';
-import Toolbar from '@material-ui/core/Toolbar';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import moment from 'moment';
-import CustomList from '../../components/helpers/CustomList';
+import {
+  Grid,
+  Card,
+  CardHeader,
+  Icon,
+  Toolbar,
+  Button,
+  CardContent,
+} from '@material-ui/core';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import {
+  Description as DescriptionIcon,
+  List as ListIcon,
+  BugReport as BugReportIcon,
+} from '@material-ui/icons';
+import List from '../../components/List';
+import Donut from '../../components/Chart/Donut';
+import TimeProfile from '../../components/Chart/TimeProfile';
+import Table from '../../components/Table';
+import Dialog from '../../components/Dialog';
+import Log from '../../components/Log';
+import ColumnStatus from '../../components/Table/ColumnStatus';
 import {
   getOrbitRunById,
   getOrbitRunTimeProfile,
   getAsteroids,
   getAsteroidLog,
 } from '../../services/api/Orbit';
-import { Donut, TimeProfile } from '../../components/helpers/CustomChart';
-import CustomTable from '../../components/helpers/CustomTable';
-import CustomDialog from '../../components/helpers/CustomDialog';
-import CustomLog from '../../components/helpers/CustomLog';
-import CustomColumnStatus from '../../components/helpers/CustomColumnStatus';
-
-const useStyles = makeStyles((theme) => ({
-  button: {
-    margin: theme.spacing(1),
-  },
-  buttonIcon: {
-    margin: '0 10px 0 0 ',
-  },
-  block: {
-    marginBottom: 15,
-  },
-  iconDetail: {
-    fontSize: 18,
-  },
-  logToolbar: {
-    backgroundColor: '#F1F2F5',
-    color: '#454545',
-  },
-  logBody: {
-    backgroundColor: '#1D4455',
-    color: '#FFFFFF',
-  },
-  tableWrapper: {
-    maxWidth: '100%',
-  },
-  toggleButtonTableWrapper: {
-    textAlign: 'right',
-    width: '100%',
-    display: 'block',
-  },
-}));
-
 
 function RefineOrbitDetail({ history, match, setTitle }) {
-  const classes = useStyles();
-
   const { id } = match.params;
   const [listTitle, setListTitle] = useState([]);
   const [list, setList] = useState([]);
@@ -80,7 +50,7 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       name: 'id',
       title: 'Details',
       width: 100,
-      icon: <Icon className={clsx(`fas fa-info-circle ${classes.iconDetail}`)} />,
+      icon: <Icon className="fas fa-info-circle" />,
       action: (el) => history.push(`/refine-orbit/asteroid/${el.id}`),
       align: 'center',
       sortingEnabled: false,
@@ -91,7 +61,9 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       width: 140,
       align: 'center',
       sortingEnabled: false,
-      customElement: (row) => <CustomColumnStatus status={row.status} title={row.error_msg} />,
+      customElement: (row) => (
+        <ColumnStatus status={row.status} title={row.error_msg} />
+      ),
     },
     {
       name: 'name',
@@ -111,7 +83,9 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       align: 'center',
       customElement: (row) => (
         <span>
-          {row.execution_time ? moment.utc(row.execution_time * 1000).format('HH:mm:ss') : ''}
+          {row.execution_time
+            ? moment.utc(row.execution_time * 1000).format('HH:mm:ss')
+            : ''}
         </span>
       ),
       width: 140,
@@ -161,7 +135,9 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       setList([
         {
           title: 'Status',
-          value: () => <CustomColumnStatus status={data.status} title={data.error_msg} />,
+          value: () => (
+            <ColumnStatus status={data.status} title={data.error_msg} />
+          ),
         },
         {
           title: 'Process',
@@ -189,24 +165,38 @@ function RefineOrbitDetail({ history, match, setTitle }) {
         { name: 'Success', value: data.count_success, color: '#009900' },
         { name: 'Warning', value: data.count_warning, color: '#D79F15' },
         { name: 'Failure', value: data.count_failed, color: '#ff1a1a' },
-        { name: 'Not Executed', value: data.count_not_executed, color: '#ABA6A2' },
+        {
+          name: 'Not Executed',
+          value: data.count_not_executed,
+          color: '#ABA6A2',
+        },
       ]);
     });
     getOrbitRunTimeProfile({ id }).then((res) => setTimeProfile(res));
   }, []);
 
   const loadTableData = async ({
-    sorting, pageSize, currentPage, filter, searchValue,
+    sorting,
+    pageSize,
+    currentPage,
+    filter,
+    searchValue,
   }) => {
-    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
+    const ordering =
+      sorting[0].direction === 'desc'
+        ? `-${sorting[0].columnName}`
+        : sorting[0].columnName;
     const asteroids = await getAsteroids({
       ordering,
       pageSize,
       page: currentPage !== 0 ? currentPage + 1 : 1,
-      filters: [{
-        property: 'orbit_run',
-        value: id,
-      }, ...filter],
+      filters: [
+        {
+          property: 'orbit_run',
+          value: id,
+        },
+        ...filter,
+      ],
       search: searchValue,
     });
 
@@ -224,59 +214,44 @@ function RefineOrbitDetail({ history, match, setTitle }) {
 
   return (
     <>
-      <Grid
-        container
-        justify="space-between"
-        alignItems="center"
-        spacing={2}
-      >
+      <Grid container justify="space-between" alignItems="center" spacing={2}>
         <Grid item xs={12} md={4}>
           <Button
             variant="contained"
             color="primary"
             title="Back"
-            className={classes.button}
             onClick={handleBackNavigation}
           >
-            <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+            <Icon className="fas fa-undo" />
             <span>Back</span>
           </Button>
         </Grid>
       </Grid>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6} xl={timeProfile.length > 0 ? 4 : 6} className={classes.block}>
+        <Grid item xs={12} md={6} xl={timeProfile.length > 0 ? 4 : 6}>
           <Card>
             <CardHeader title={listTitle} />
             <CardContent>
-              <CustomList data={list} />
+              <List data={list} />
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={6} xl={timeProfile.length > 0 ? 4 : 6} className={classes.block}>
+        <Grid item xs={12} md={6} xl={timeProfile.length > 0 ? 4 : 6}>
           <Card>
             <CardHeader title="Execution Statistics" />
             <CardContent>
-              <Donut
-                width={400}
-                height={315}
-                data={donutData}
-              />
+              <Donut width={400} height={315} data={donutData} />
             </CardContent>
           </Card>
         </Grid>
 
         {timeProfile.length > 0 ? (
-          <Grid item xs={12} xl={4} className={classes.block}>
+          <Grid item xs={12} xl={4}>
             <Card>
-              <CardHeader
-                title="Execution Time"
-              />
+              <CardHeader title="Execution Time" />
               <CardContent>
-                <TimeProfile
-                  height={315}
-                  data={timeProfile}
-                />
+                <TimeProfile height={315} data={timeProfile} />
               </CardContent>
             </Card>
           </Grid>
@@ -284,30 +259,25 @@ function RefineOrbitDetail({ history, match, setTitle }) {
       </Grid>
 
       <Grid container spacing={2}>
-        <Grid item lg={12} className={clsx(classes.block, classes.tableWrapper)}>
+        <Grid item lg={12}>
           <Card>
             <CardHeader title="Asteroids" />
             <CardContent>
               <Toolbar>
                 <ToggleButtonGroup
-                  className={classes.toggleButtonTableWrapper}
                   value={toggleButton}
                   onChange={handleToggleButton}
                   exclusive
                 >
-                  <ToggleButton
-                    value={0}
-                  >
+                  <ToggleButton value={0}>
                     <ListIcon />
                   </ToggleButton>
-                  <ToggleButton
-                    value={1}
-                  >
-                    <BugIcon />
+                  <ToggleButton value={1}>
+                    <BugReportIcon />
                   </ToggleButton>
                 </ToggleButtonGroup>
               </Toolbar>
-              <CustomTable
+              <Table
                 columns={toggleButton === 0 ? columnsList : columnsBug}
                 data={tableData}
                 loadData={loadTableData}
@@ -321,14 +291,12 @@ function RefineOrbitDetail({ history, match, setTitle }) {
           </Card>
         </Grid>
       </Grid>
-      <CustomDialog
+      <Dialog
         maxWidth="md"
         visible={asteroidLog.visible}
         setVisible={handleDialogClose}
         title="NIMA Log"
-        content={<CustomLog data={asteroidLog.data} />}
-        headerStyle={classes.logToolbar}
-        bodyStyle={classes.logBody}
+        content={<Log data={asteroidLog.data} />}
       />
     </>
   );

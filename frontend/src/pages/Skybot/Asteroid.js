@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Grid,
-  Card,
-  makeStyles,
-  CardHeader,
-  CardContent,
-} from '@material-ui/core';
+import { Grid, Card, CardHeader, CardContent } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
 import Icon from '@material-ui/core/Icon';
 import clsx from 'clsx';
@@ -14,48 +8,20 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
-import CustomTable from '../../components/helpers/CustomTable';
-import { CCD } from '../../components/helpers/CustomChart';
-import { getExposurePlot, getOutputByExposure, getAsteroidsInsideCCD } from '../../services/api/Skybot';
-
-
-const useStyles = makeStyles({
-  cardContentWrapper: {
-    overflow: 'auto',
-  },
-  iconDetail: {
-    fontSize: 18,
-  },
-  buttonIcon: {
-    margin: '0 10px 0 0',
-  },
-  invisibleButton: {
-    backgroundColor: 'transparent',
-    cursor: 'pointer',
-    color: 'rgb(85, 85, 85)',
-    '&:hover': {
-      color: 'rgba(0, 0, 0, 0.87)',
-    },
-    padding: 0,
-    fontSize: '1rem',
-    lineHeight: 1.75,
-    fontHeight: 500,
-    letterSpacing: '0.02857em',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    maxWidth: '100%',
-  },
-});
+import Table from '../../components/Table';
+import CCD from '../../components/Chart/CCD';
+import {
+  getExposurePlot,
+  getOutputByExposure,
+  getAsteroidsInsideCCD,
+} from '../../services/api/Skybot';
 
 function SkybotAsteroid({ setTitle, match, history }) {
-  const classes = useStyles();
   const coneSearchRadius = 1.2; // ! Cone search radius in Degres.
   const { id, runId } = match.params;
   const [ccdsPlotData, setCcdsPlotData] = useState({});
   const [exposuresTableData, setExposuresTableData] = useState([]);
   const [asteroidsOnlyInsideCcds, setAsteroidsOnlyInsideCcds] = useState(true);
-
 
   const handleValues = (value) => {
     const roundValue = parseFloat(value).toFixed(3);
@@ -63,236 +29,197 @@ function SkybotAsteroid({ setTitle, match, history }) {
     return stringValue;
   };
 
-  const exposuresTableColumns = [{
-    title: 'Point',
-    name: 'pointing',
-    headerTooltip: 'Pointings',
-  },
-  {
-    title: 'Name',
-    name: 'name',
-    headerTooltip: 'Object Name',
-  },
-  {
-    title: 'Num',
-    name: 'num',
-    align: 'right',
-    headerTooltip: 'Object Number',
-  },
-  {
-    title: 'Dyn Class',
-    name: 'dynclass',
-    headerTooltip: 'Dynamic Class',
-  },
-  {
-    title: 'RA  (deg)',
-    name: 'raj2000',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.raj2000 ? handleValues(row.raj2000) : ''}
-      </span>
-    ),
-    headerTooltip: 'Right Ascension',
-  },
-  {
-    title: 'Dec (deg)',
-    name: 'decj2000',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.decj2000 ? handleValues(row.decj2000) : ''}
-      </span>
-    ),
-    headerTooltip: 'Declination',
-  },
-  {
-    title: 'Visual Mag ',
-    name: 'mv',
-    align: 'right',
-  },
-  {
-    title: 'Error',
-    name: 'errpos',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.errpos ? handleValues(row.errpos) : ''}
-      </span>
-    ),
-  },
-  {
-    title: 'Ang Dist (arcsec)',
-    name: 'd',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.d ? handleValues(row.d) : ''}
-      </span>
-    ),
-    headerTooltip: 'Angular Distance',
-  },
-  {
-    title: 'dRAcosDec (arcsec/h)',
-    name: 'dracosdec',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.dracosdec ? handleValues(row.dracosdec) : ''}
-      </span>
-    ),
-  },
-  {
-    title: 'dDEC  (arcsec/h)',
-    name: 'd',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.d ? handleValues(row.d) : ''}
-      </span>
-    ),
-  },
-  {
-    title: 'Geoc Dist (AU)',
-    name: 'dgeo',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.dgeo ? handleValues(row.dgeo) : ''}
-      </span>
-    ),
-    headerTooltip: 'Geocentric Distance',
-  },
-  {
-    title: 'Hel Dist (AU)',
-    name: 'dhelio',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.dhelio ? handleValues(row.dhelio) : ''}
-      </span>
-    ),
-    headerTooltip: 'Heliocentric Distance',
-  },
-  {
-    title: 'Phase Angle (deg)',
-    name: 'phase',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.phase ? handleValues(row.phase) : ''}
-      </span>
-    ),
-  },
-  {
-    title: 'Solar Elong',
-    name: 'solelong',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.solelong ? handleValues(row.solelong) : ''}
-      </span>
-    ),
-    headerTooltip: 'Solar Elongantion',
-  },
-  {
-    title: 'Vec Pos x (AU)',
-    name: 'px',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.px ? handleValues(row.px) : ''}
-      </span>
-    ),
-    headerTooltip: 'Vector Position in x',
-  },
-  {
-    title: 'Vec pos y (AU)',
-    name: 'py',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.py ? handleValues(row.py) : ''}
-      </span>
-    ),
-    headerTooltip: 'Vector Position in y',
-  },
-  {
-    title: 'Vec Pos z (AU)',
-    name: 'pz',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.pz ? handleValues(row.pz) : ''}
-      </span>
-    ),
-    headerTooltip: 'Vector Position in z',
-  },
-  {
-    title: 'Vec Pos x [AU/d]',
-    name: 'vx',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.vx ? handleValues(row.vx) : ''}
-      </span>
-    ),
-    headerTooltip: 'Vector Position in x',
-  },
-  {
-    title: 'Vec Pos y [AU/d]',
-    name: 'vy',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.vy ? handleValues(row.vy) : ''}
-      </span>
-    ),
-    headerTooltip: 'Vector Position in y',
-  },
-  {
-    title: 'Vec Pos z [AU/d]',
-    name: 'vz',
-    align: 'right',
-    customElement: (row) => (
-      <span>
-        {row.vz ? handleValues(row.vz) : ''}
-      </span>
-    ),
-    headerTooltip: 'Vector Position in z',
-  },
-  {
-    title: 'Epo Pos Vec (Julien Day)',
-    name: 'jdref',
-    align: 'right',
-    headerTooltip: 'Epoch of the position vector (Julian Day)',
-  },
-  {
-    title: 'Band',
-    name: 'band',
-    align: 'center',
-  },
-  {
-    title: 'Exp Num',
-    name: 'expnum',
-    align: 'right',
-    headerTooltip: 'Exposute Number',
-  },
-  {
-    title: 'CCD Num',
-    name: 'ccdnum',
-    align: 'right',
-  },
-  {
-    name: 'externallink',
-    title: 'VizieR',
-    customElement: (el) => (el.externallink !== 'link' ? (
-      <a href={el.externallink} target="_blank" rel="noopener noreferrer" className={classes.invisibleButton} title={el.externallink}>
-        <Icon className={clsx(`fas fa-external-link-square-alt ${classes.iconDetail}`)} />
-      </a>
-    ) : '-'),
-    align: 'center',
-  },
+  const exposuresTableColumns = [
+    {
+      title: 'Point',
+      name: 'pointing',
+      headerTooltip: 'Pointings',
+    },
+    {
+      title: 'Name',
+      name: 'name',
+      headerTooltip: 'Object Name',
+    },
+    {
+      title: 'Num',
+      name: 'num',
+      align: 'right',
+      headerTooltip: 'Object Number',
+    },
+    {
+      title: 'Dyn Class',
+      name: 'dynclass',
+      headerTooltip: 'Dynamic Class',
+    },
+    {
+      title: 'RA  (deg)',
+      name: 'raj2000',
+      align: 'right',
+      customElement: (row) => (
+        <span>{row.raj2000 ? handleValues(row.raj2000) : ''}</span>
+      ),
+      headerTooltip: 'Right Ascension',
+    },
+    {
+      title: 'Dec (deg)',
+      name: 'decj2000',
+      align: 'right',
+      customElement: (row) => (
+        <span>{row.decj2000 ? handleValues(row.decj2000) : ''}</span>
+      ),
+      headerTooltip: 'Declination',
+    },
+    {
+      title: 'Visual Mag ',
+      name: 'mv',
+      align: 'right',
+    },
+    {
+      title: 'Error',
+      name: 'errpos',
+      align: 'right',
+      customElement: (row) => (
+        <span>{row.errpos ? handleValues(row.errpos) : ''}</span>
+      ),
+    },
+    {
+      title: 'Ang Dist (arcsec)',
+      name: 'd',
+      align: 'right',
+      customElement: (row) => <span>{row.d ? handleValues(row.d) : ''}</span>,
+      headerTooltip: 'Angular Distance',
+    },
+    {
+      title: 'dRAcosDec (arcsec/h)',
+      name: 'dracosdec',
+      align: 'right',
+      customElement: (row) => (
+        <span>{row.dracosdec ? handleValues(row.dracosdec) : ''}</span>
+      ),
+    },
+    {
+      title: 'dDEC  (arcsec/h)',
+      name: 'd',
+      align: 'right',
+      customElement: (row) => <span>{row.d ? handleValues(row.d) : ''}</span>,
+    },
+    {
+      title: 'Geoc Dist (AU)',
+      name: 'dgeo',
+      align: 'right',
+      customElement: (row) => (
+        <span>{row.dgeo ? handleValues(row.dgeo) : ''}</span>
+      ),
+      headerTooltip: 'Geocentric Distance',
+    },
+    {
+      title: 'Hel Dist (AU)',
+      name: 'dhelio',
+      align: 'right',
+      customElement: (row) => (
+        <span>{row.dhelio ? handleValues(row.dhelio) : ''}</span>
+      ),
+      headerTooltip: 'Heliocentric Distance',
+    },
+    {
+      title: 'Phase Angle (deg)',
+      name: 'phase',
+      align: 'right',
+      customElement: (row) => (
+        <span>{row.phase ? handleValues(row.phase) : ''}</span>
+      ),
+    },
+    {
+      title: 'Solar Elong',
+      name: 'solelong',
+      align: 'right',
+      customElement: (row) => (
+        <span>{row.solelong ? handleValues(row.solelong) : ''}</span>
+      ),
+      headerTooltip: 'Solar Elongantion',
+    },
+    {
+      title: 'Vec Pos x (AU)',
+      name: 'px',
+      align: 'right',
+      customElement: (row) => <span>{row.px ? handleValues(row.px) : ''}</span>,
+      headerTooltip: 'Vector Position in x',
+    },
+    {
+      title: 'Vec pos y (AU)',
+      name: 'py',
+      align: 'right',
+      customElement: (row) => <span>{row.py ? handleValues(row.py) : ''}</span>,
+      headerTooltip: 'Vector Position in y',
+    },
+    {
+      title: 'Vec Pos z (AU)',
+      name: 'pz',
+      align: 'right',
+      customElement: (row) => <span>{row.pz ? handleValues(row.pz) : ''}</span>,
+      headerTooltip: 'Vector Position in z',
+    },
+    {
+      title: 'Vec Pos x [AU/d]',
+      name: 'vx',
+      align: 'right',
+      customElement: (row) => <span>{row.vx ? handleValues(row.vx) : ''}</span>,
+      headerTooltip: 'Vector Position in x',
+    },
+    {
+      title: 'Vec Pos y [AU/d]',
+      name: 'vy',
+      align: 'right',
+      customElement: (row) => <span>{row.vy ? handleValues(row.vy) : ''}</span>,
+      headerTooltip: 'Vector Position in y',
+    },
+    {
+      title: 'Vec Pos z [AU/d]',
+      name: 'vz',
+      align: 'right',
+      customElement: (row) => <span>{row.vz ? handleValues(row.vz) : ''}</span>,
+      headerTooltip: 'Vector Position in z',
+    },
+    {
+      title: 'Epo Pos Vec (Julien Day)',
+      name: 'jdref',
+      align: 'right',
+      headerTooltip: 'Epoch of the position vector (Julian Day)',
+    },
+    {
+      title: 'Band',
+      name: 'band',
+      align: 'center',
+    },
+    {
+      title: 'Exp Num',
+      name: 'expnum',
+      align: 'right',
+      headerTooltip: 'Exposute Number',
+    },
+    {
+      title: 'CCD Num',
+      name: 'ccdnum',
+      align: 'right',
+    },
+    {
+      name: 'externallink',
+      title: 'VizieR',
+      customElement: (el) =>
+        el.externallink !== 'link' ? (
+          <a
+            href={el.externallink}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={el.externallink}
+          >
+            <Icon className="fas fa-external-link-square-alt" />
+          </a>
+        ) : (
+          '-'
+        ),
+      align: 'center',
+    },
   ];
 
   const circleCoordinatesPlaneFormat = (x) => {
@@ -300,7 +227,8 @@ function SkybotAsteroid({ setTitle, match, history }) {
     return x.map((n) => (n > 180 ? n - 360 : n));
   };
 
-  const round = (value, decimals) => Number(`${Math.round(`${value}e${decimals}`)}e-${decimals}`);
+  const round = (value, decimals) =>
+    Number(`${Math.round(`${value}e${decimals}`)}e-${decimals}`);
 
   useEffect(() => {
     setTitle('Skybot Run');
@@ -328,10 +256,7 @@ function SkybotAsteroid({ setTitle, match, history }) {
             circleCoordinatesPlaneFormat(center.x - coneSearchRadius),
             circleCoordinatesPlaneFormat(center.x + coneSearchRadius),
           ],
-          y: [
-            center.y - coneSearchRadius,
-            center.y + coneSearchRadius,
-          ],
+          y: [center.y - coneSearchRadius, center.y + coneSearchRadius],
         },
       });
     });
@@ -348,8 +273,13 @@ function SkybotAsteroid({ setTitle, match, history }) {
               customElement: (el) => {
                 if (el.externallink === 'link') return '-';
                 return (
-                  <a href={el.externallink} target="_blank" rel="noopener noreferrer" className={classes.invisibleButton} title={el.externallink}>
-                    <Icon className={clsx(`fas fa-external-link-square-alt ${classes.iconDetail}`)} />
+                  <a
+                    href={el.externallink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={el.externallink}
+                  >
+                    <Icon className="fas fa-external-link-square-alt" />
                   </a>
                 );
               },
@@ -361,23 +291,25 @@ function SkybotAsteroid({ setTitle, match, history }) {
           };
         });
 
-        setExposuresTableData(res.rows.map((row) => ({
-          ...row,
-          raj2000: row.raj2000 ? round(row.raj2000, 3) : '-',
-          decj2000: row.decj2000 ? round(row.decj2000, 3) : '-',
-          d: row.d ? round(row.d, 3) : '-',
-          dracosdec: row.dracosdec ? round(row.dracosdec, 3) : '-',
-          ddec: row.ddec ? round(row.ddec, 3) : '-',
-          dgeo: row.dgeo ? round(row.dgeo, 3) : '-',
-          dhelio: row.dhelio ? round(row.dhelio, 3) : '-',
-          px: row.px ? round(row.px, 3) : '-',
-          py: row.py ? round(row.py, 3) : '-',
-          pz: row.pz ? round(row.pz, 3) : '-',
-          vx: row.vx ? round(row.vx, 3) : '-',
-          vy: row.vy ? round(row.vy, 3) : '-',
-          vz: row.vz ? round(row.vz, 3) : '-',
-          jdref: row.jdref ? round(row.jdref, 3) : '-',
-        })));
+        setExposuresTableData(
+          res.rows.map((row) => ({
+            ...row,
+            raj2000: row.raj2000 ? round(row.raj2000, 3) : '-',
+            decj2000: row.decj2000 ? round(row.decj2000, 3) : '-',
+            d: row.d ? round(row.d, 3) : '-',
+            dracosdec: row.dracosdec ? round(row.dracosdec, 3) : '-',
+            ddec: row.ddec ? round(row.ddec, 3) : '-',
+            dgeo: row.dgeo ? round(row.dgeo, 3) : '-',
+            dhelio: row.dhelio ? round(row.dhelio, 3) : '-',
+            px: row.px ? round(row.px, 3) : '-',
+            py: row.py ? round(row.py, 3) : '-',
+            pz: row.pz ? round(row.pz, 3) : '-',
+            vx: row.vx ? round(row.vx, 3) : '-',
+            vy: row.vy ? round(row.vy, 3) : '-',
+            vz: row.vz ? round(row.vz, 3) : '-',
+            jdref: row.jdref ? round(row.jdref, 3) : '-',
+          }))
+        );
       });
     } else {
       getAsteroidsInsideCCD(id).then((res) => {
@@ -388,8 +320,13 @@ function SkybotAsteroid({ setTitle, match, history }) {
               customElement: (el) => {
                 if (el.externallink === 'link') return '-';
                 return (
-                  <a href={el.externallink} target="_blank" rel="noopener noreferrer" className={classes.invisibleButton} title={el.externallink}>
-                    <Icon className={clsx(`fas fa-external-link-square-alt ${classes.iconDetail}`)} />
+                  <a
+                    href={el.externallink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={el.externallink}
+                  >
+                    <Icon className="fas fa-external-link-square-alt" />
                   </a>
                 );
               },
@@ -399,28 +336,31 @@ function SkybotAsteroid({ setTitle, match, history }) {
             name: column,
           };
         });
-        setExposuresTableData(res.rows.map((row) => ({
-          ...row,
-          raj2000: row.raj2000 ? round(row.raj2000, 3) : '-',
-          decj2000: row.decj2000 ? round(row.decj2000, 3) : '-',
-          d: row.d ? round(row.d, 3) : '-',
-          dracosdec: row.dracosdec ? round(row.dracosdec, 3) : '-',
-          ddec: row.ddec ? round(row.ddec, 3) : '-',
-          dgeo: row.dgeo ? round(row.dgeo, 3) : '-',
-          dhelio: row.dhelio ? round(row.dhelio, 3) : '-',
-          px: row.px ? round(row.px, 3) : '-',
-          py: row.py ? round(row.py, 3) : '-',
-          pz: row.pz ? round(row.pz, 3) : '-',
-          vx: row.vx ? round(row.vx, 3) : '-',
-          vy: row.vy ? round(row.vy, 3) : '-',
-          vz: row.vz ? round(row.vz, 3) : '-',
-          jdref: row.jdref ? round(row.jdref, 3) : '-',
-        })));
+        setExposuresTableData(
+          res.rows.map((row) => ({
+            ...row,
+            raj2000: row.raj2000 ? round(row.raj2000, 3) : '-',
+            decj2000: row.decj2000 ? round(row.decj2000, 3) : '-',
+            d: row.d ? round(row.d, 3) : '-',
+            dracosdec: row.dracosdec ? round(row.dracosdec, 3) : '-',
+            ddec: row.ddec ? round(row.ddec, 3) : '-',
+            dgeo: row.dgeo ? round(row.dgeo, 3) : '-',
+            dhelio: row.dhelio ? round(row.dhelio, 3) : '-',
+            px: row.px ? round(row.px, 3) : '-',
+            py: row.py ? round(row.py, 3) : '-',
+            pz: row.pz ? round(row.pz, 3) : '-',
+            vx: row.vx ? round(row.vx, 3) : '-',
+            vy: row.vy ? round(row.vy, 3) : '-',
+            vz: row.vz ? round(row.vz, 3) : '-',
+            jdref: row.jdref ? round(row.jdref, 3) : '-',
+          }))
+        );
       });
     }
   }, [asteroidsOnlyInsideCcds]);
 
-  const handleAsteroidInCcds = () => setAsteroidsOnlyInsideCcds(!asteroidsOnlyInsideCcds);
+  const handleAsteroidInCcds = () =>
+    setAsteroidsOnlyInsideCcds(!asteroidsOnlyInsideCcds);
 
   return (
     <Grid container spacing={2}>
@@ -432,21 +372,16 @@ function SkybotAsteroid({ setTitle, match, history }) {
               color="primary"
               onClick={() => history.push(`/skybot/${runId}`)}
             >
-              <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+              <Icon className="fas fa-undo" />
               <span>Back</span>
             </Button>
           </Grid>
           <Grid item xs={12} md={12}>
             <Card>
-              <CardHeader
-                title="Asteroids Inside CCD"
-              />
-              <CardContent className={classes.cardContentWrapper}>
+              <CardHeader title="Asteroids Inside CCD" />
+              <CardContent>
                 {ccdsPlotData.ccds ? (
-                  <CCD
-                    data={ccdsPlotData}
-                    height={550}
-                  />
+                  <CCD data={ccdsPlotData} height={550} />
                 ) : null}
               </CardContent>
             </Card>
@@ -457,25 +392,23 @@ function SkybotAsteroid({ setTitle, match, history }) {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Card>
-              <CardHeader
-                title="Asteroids"
-              />
-              <CardContent className={classes.cardContentWrapper}>
+              <CardHeader title="Asteroids" />
+              <CardContent>
                 <Toolbar>
                   <FormControlLabel
-                    control={(
+                    control={
                       <Switch
                         checked={asteroidsOnlyInsideCcds}
                         onChange={handleAsteroidInCcds}
                         value={asteroidsOnlyInsideCcds}
                         color="primary"
                       />
-                    )}
+                    }
                     label="Only Asteroids Inside CCDs"
                   />
                 </Toolbar>
                 {exposuresTableData.length > 0 ? (
-                  <CustomTable
+                  <Table
                     columns={exposuresTableColumns}
                     data={exposuresTableData}
                     totalCount={exposuresTableData.length}

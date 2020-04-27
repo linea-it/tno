@@ -1,30 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Grid, Card, makeStyles, CardHeader, CardContent,
-} from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
-import Button from '@material-ui/core/Button';
-import clsx from 'clsx';
 import { withRouter } from 'react-router';
 import moment from 'moment';
-import CustomList from '../../components/helpers/CustomList';
+import {
+  Grid,
+  Card,
+  CardHeader,
+  CardContent,
+  Icon,
+  Button,
+} from '@material-ui/core';
+import List from '../../components/List';
 import { getPointing } from '../../services/api/Pointings';
 
-const useStyles = makeStyles({
-  cardContentWrapper: {
-    overflow: 'auto',
-  },
-  iconDetail: {
-    fontSize: 18,
-  },
-  buttonIcon: {
-    margin: '0 2px',
-  },
-});
-
 function PointingsDetail({ setTitle, match, history }) {
-  const classes = useStyles();
   const { id } = match.params;
 
   const [pointingDetailsList, setPointingDetailsList] = useState([]);
@@ -36,7 +25,8 @@ function PointingsDetail({ setTitle, match, history }) {
       setPointingDetailsList([
         {
           title: 'Image Id',
-          tooltip: 'Unique identifier for each image (1 image is composed by 62 CCDs)',
+          tooltip:
+            'Unique identifier for each image (1 image is composed by 62 CCDs)',
           value: res.pfw_attempt_id,
         },
         {
@@ -56,7 +46,8 @@ function PointingsDetail({ setTitle, match, history }) {
         },
         {
           title: 'Exposure (s)',
-          tooltip: 'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
+          tooltip:
+            'Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
           value: res.expnum,
         },
         {
@@ -92,15 +83,15 @@ function PointingsDetail({ setTitle, match, history }) {
         },
         {
           title: 'Cross RA 0',
-          value: (res.crossra0 ? (
+          value: res.crossra0 ? (
             <span title={res.crossra0}>
-              <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
+              <Icon className="fas fa-check" style={{ color: '#009900' }} />
             </span>
           ) : (
             <span title="False">
-              <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+              <Icon className="fas fa-times" style={{ color: '#ff1a1a' }} />
             </span>
-          )),
+          ),
         },
         {
           title: 'RA (deg)',
@@ -210,15 +201,15 @@ function PointingsDetail({ setTitle, match, history }) {
         {
           title: 'Downloaded',
           tooltip: 'flag indicating whether the image was downloaded from DES.',
-          value: (res.downloaded ? (
+          value: res.downloaded ? (
             <span title={res.downloaded}>
-              <Icon className={clsx(`fas fa-check ${classes.iconDetail}`)} style={{ color: '#009900' }} />
+              <Icon className="fas fa-check" style={{ color: '#009900' }} />
             </span>
           ) : (
             <span title="Has not been downloaded">
-              <Icon className={clsx(`fas fa-times ${classes.iconDetail}`)} style={{ color: '#ff1a1a' }} />
+              <Icon className="fas fa-times" style={{ color: '#ff1a1a' }} />
             </span>
-          )),
+          ),
         },
       ]);
     });
@@ -226,13 +217,10 @@ function PointingsDetail({ setTitle, match, history }) {
 
   const handleBackNavigation = () => history.push('/pointings');
 
-
-  console.log('Pointings:', pointingDetailsList);
-
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={12} className={classes.block}>
+        <Grid item xs={12}>
           <Grid
             container
             justify="space-between"
@@ -244,27 +232,24 @@ function PointingsDetail({ setTitle, match, history }) {
                 variant="contained"
                 color="primary"
                 title="Back"
-                className={classes.button}
                 onClick={handleBackNavigation}
               >
-                <Icon className={clsx('fas', 'fa-undo', classes.buttonIcon)} />
+                <Icon className="fas fa-undo" />
                 <span>Back</span>
               </Button>
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={12} className={classes.block}>
+        <Grid item xs={12}>
           <Grid container spacing={2}>
-            <Grid item xs={12} className={classes.block}>
+            <Grid item xs={12}>
               <Card>
                 <CardHeader
                   title="Pointing Details"
-                // subheader="These are the details of the object named Lorem Ipsum and number 000"
+                  // subheader="These are the details of the object named Lorem Ipsum and number 000"
                 />
-                <CardContent className={classes.cardContentWrapper}>
-                  <CustomList
-                    data={pointingDetailsList}
-                  />
+                <CardContent>
+                  <List data={pointingDetailsList} />
                 </CardContent>
               </Card>
             </Grid>

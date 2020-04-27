@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Card, CardHeader, CardContent } from '@material-ui/core';
-import clsx from 'clsx';
 import moment from 'moment';
+import {
+  Grid,
+  Card,
+  CardHeader,
+  CardContent,
+  Button,
+  ButtonGroup,
+  Icon,
+} from '@material-ui/core';
 import Carousel, { Modal, ModalGateway } from 'react-images';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
 import { withRouter } from 'react-router';
 import filesize from 'filesize';
-import CustomList from '../../components/helpers/CustomList';
-import CustomTable from '../../components/helpers/CustomTable';
-import {
-  Donut,
-  AstrometryTimeProfile,
-} from '../../components/helpers/CustomChart';
-import { url } from '../../services/api/Auth';
+import List from '../../components/List';
+import Table from '../../components/Table';
+import Donut from '../../components/Chart/Donut';
+import AstrometryTimeProfile from '../../components/Chart/AstrometryTimeProfile';
 import {
   getAsteroidById,
   getAsteroidNeighbors,
@@ -28,8 +29,9 @@ import {
   getCSV,
   getAsteroidTimeProfile,
 } from '../../services/api/Praia';
-import CustomDialog from '../../components/helpers/CustomDialog';
-import CustomLog from '../../components/helpers/CustomLog';
+import { url } from '../../services/api/Auth';
+import Dialog from '../../components/Dialog';
+import Log from '../../components/Log';
 
 function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
   const { id } = match.params;
@@ -496,7 +498,7 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
             <Card>
               <CardHeader title="Asteroid" />
               <CardContent>
-                <CustomList data={asteroidList} />
+                <List data={asteroidList} />
               </CardContent>
             </Card>
           </Grid>
@@ -535,7 +537,7 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
               <Card>
                 <CardHeader title="Astrometry" />
                 <CardContent>
-                  <CustomTable
+                  <Table
                     columns={astrometryColumns}
                     data={astrometryTable}
                     totalCount={astrometryTable.length}
@@ -582,7 +584,7 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
               <Card>
                 <CardHeader title="Input" />
                 <CardContent>
-                  <CustomTable
+                  <Table
                     columns={inputColumns}
                     data={inputTable}
                     hasPagination={false}
@@ -605,7 +607,7 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
               <Card>
                 <CardHeader title="Output" />
                 <CardContent>
-                  <CustomTable
+                  <Table
                     columns={outputColumns}
                     data={outputTable}
                     hasGrouping
@@ -636,25 +638,25 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
         </Grid>
       </Grid>
 
-      <CustomDialog
+      <Dialog
         maxWidth="md"
         visible={outputLog.visible}
         setVisible={handleOutputLogClose}
         title={outputLog.title}
-        content={<CustomLog data={outputLog.content} />}
+        content={<Log data={outputLog.content} />}
         wrapperStyle={{
           marginLeft: drawerOpen ? '240px' : '64px',
           marginBottom: 64,
         }}
       />
 
-      <CustomDialog
+      <Dialog
         maxWidth="lg"
         visible={inputCsvVisible}
         setVisible={handleInputCsvClose}
         title={inputCsv.title}
         content={() => (
-          <CustomTable
+          <Table
             columns={inputCsvTable.columns}
             data={inputCsvTable.rows}
             totalCount={inputCsvTable.count}

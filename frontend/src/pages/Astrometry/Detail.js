@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Grid, Card, CardHeader } from '@material-ui/core';
-import clsx from 'clsx';
 import Toolbar from '@material-ui/core/Toolbar';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
@@ -13,8 +12,8 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
-import CustomLog from '../../components/helpers/CustomLog';
-import CustomDialog from '../../components/helpers/CustomDialog';
+import Log from '../../components/Log';
+import Dialog from '../../components/Dialog';
 import {
   readCondorFile,
   getPraiaRunById,
@@ -22,11 +21,11 @@ import {
   getAsteroidStatus,
   getAsteroids,
 } from '../../services/api/Praia';
-import CustomTable from '../../components/helpers/CustomTable';
-import { Donut } from '../../components/helpers/CustomChart';
-import ListStat from '../../components/helpers/CustomList';
-import Stepper from './AstrometryStepper';
-import CustomColumnStatus from '../../components/helpers/CustomColumnStatus';
+import Table from '../../components/Table';
+import Donut from '../../components/Chart/Donut';
+import Stats from '../../components/List';
+import Stepper from '../../components/Stepper';
+import ColumnStatus from '../../components/Table/ColumnStatus';
 
 function useInterval(callback, delay) {
   const savedCallback = useRef();
@@ -76,7 +75,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         {
           title: 'Status',
           value: () => (
-            <CustomColumnStatus status={data.status} title={data.error_msg} />
+            <ColumnStatus status={data.status} title={data.error_msg} />
           ),
         },
         { title: 'Process', value: data.id },
@@ -158,7 +157,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       align: 'center',
       width: 130,
       customElement: (row) => (
-        <CustomColumnStatus status={row.status} title={row.error_msg} />
+        <ColumnStatus status={row.status} title={row.error_msg} />
       ),
       sortingEnabled: false,
     },
@@ -239,7 +238,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       align: 'center',
       width: 130,
       customElement: (row) => (
-        <CustomColumnStatus status={row.status} title={row.error_msg} />
+        <ColumnStatus status={row.status} title={row.error_msg} />
       ),
       sortingEnabled: false,
     },
@@ -403,7 +402,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
           <Grid item xs={12} lg={6} xl={12}>
             <Card>
               <CardHeader title={`Astrometry - ${runId} `} />
-              <ListStat data={list} />
+              <Stats data={list} />
             </Card>
           </Grid>
         </Grid>
@@ -460,7 +459,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                   </ToggleButton>
                 </ToggleButtonGroup>
               </Toolbar>
-              <CustomTable
+              <Table
                 columns={
                   toggleBug === 'list' ? listColumnsTable : bugColumnsTable
                 }
@@ -473,10 +472,10 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
                 hasResizing={false}
                 reload={reload}
               />
-              <CustomDialog
+              <Dialog
                 visible={dialog.visible}
                 title={dialog.title}
-                content={<CustomLog data={dialog.content} />}
+                content={<Log data={dialog.content} />}
                 setVisible={() =>
                   setDialog({ visible: false, content: [], title: ' ' })
                 }

@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Grid, Card, makeStyles, CardHeader, CardContent,
-} from '@material-ui/core';
-import clsx from 'clsx';
 import moment from 'moment';
+import {
+  Grid,
+  Card,
+  CardHeader,
+  CardContent,
+  Icon,
+  Button,
+  CircularProgress,
+} from '@material-ui/core';
 import Carousel, { Modal, ModalGateway } from 'react-images';
-import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { withRouter } from 'react-router';
-import CustomGridList from '../../components/helpers/CustomGridList';
-import CustomList from '../../components/helpers/CustomList';
-import CustomTable from '../../components/helpers/CustomTable';
+import Image from '../../components/List/Image';
+import List from '../../components/List';
+import Table from '../../components/Table';
+import ColumnStatus from '../../components/Table/ColumnStatus';
 import { url } from '../../services/api/Auth';
+import { getOccultations } from '../../services/api/Occultation';
 import {
   getAsteroidById,
   getAsteroidInputs,
@@ -21,95 +25,6 @@ import {
   getAsteroidDownloadLink,
   getAsteroidNeighbors,
 } from '../../services/api/Prediction';
-import { getOccultations } from '../../services/api/Occultation';
-import loading from '../../assets/img/loading.gif';
-import CustomColumnStatus from '../../components/helpers/CustomColumnStatus';
-
-const useStyles = makeStyles((theme) => ({
-  button: {
-    margin: theme.spacing(1),
-  },
-  backButtonIcon: {
-    margin: '0 10px 0 0',
-  },
-  downloadButtonIcon: {
-    margin: '0 0 0 10px',
-  },
-  buttonProgress: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginTop: -12,
-    marginLeft: -12,
-  },
-  btn: {
-    textTransform: 'none',
-    padding: '1px 5px',
-    width: '7em',
-    minHeight: '1em',
-    display: 'block',
-    textAlign: 'center',
-    lineHeight: '2',
-    boxShadow: `0px 1px 5px 0px rgba(0, 0, 0, 0.2),
-      0px 2px 2px 0px rgba(0, 0, 0, 0.14),
-      0px 3px 1px -2px rgba(0, 0, 0, 0.12)`,
-    borderRadius: '4px',
-    boxSizing: 'border-box',
-  },
-  block: {
-    marginBottom: 15,
-  },
-  iconDetail: {
-    fontSize: 18,
-  },
-  logToolbar: {
-    backgroundColor: '#F1F2F5',
-    color: '#454545',
-  },
-  logBody: {
-    backgroundColor: '#1D4455',
-    color: '#FFFFFF',
-  },
-  tableWrapper: {
-    maxWidth: '100%',
-  },
-  plotsWrapper: {
-    alignItems: 'center',
-  },
-  imgResponsive: {
-    width: '100%',
-    maxWidth: '100%',
-    height: 'auto',
-  },
-  lightboxImage: {
-    cursor: 'pointer',
-  },
-  root: {
-    width: '100%',
-    maxWidth: '100%',
-    position: 'relative',
-    overflow: 'auto',
-    maxHeight: 218,
-    [theme.breakpoints.up('xl')]: {
-      maxHeight: 285,
-    },
-    backgroundColor: '#fff',
-  },
-  listSection: {
-    backgroundColor: 'inherit',
-  },
-  ul: {
-    backgroundColor: 'inherit',
-    padding: 0,
-  },
-  cardContentWrapper: {
-    maxHeight: 440,
-    overflow: 'auto',
-  },
-  containerWrap: {
-    flexWrap: 'inherit',
-  },
-}));
 
 function PredictionOccultationAsteroid({
   history,
@@ -117,7 +32,6 @@ function PredictionOccultationAsteroid({
   match,
   drawerOpen,
 }) {
-  const classes = useStyles();
   const { id } = match.params;
   const [asteroidData, setAsteroidData] = useState([]);
   const [asteroidList, setAsteroidList] = useState([]);
@@ -139,8 +53,6 @@ function PredictionOccultationAsteroid({
     next: null,
   });
   const [reload, setReload] = useState(false);
-  const [pageSize, setPageSize] = useState(10);
-
 
   const occultationsColumns = [
     {
@@ -165,7 +77,6 @@ function PredictionOccultationAsteroid({
       name: 'ra_target',
       title: 'RA Target',
       align: 'center',
-
     },
     {
       name: 'dec_target',
@@ -232,7 +143,6 @@ function PredictionOccultationAsteroid({
     },
   ];
 
-
   const outputColumns = [
     {
       name: 'filename',
@@ -271,18 +181,18 @@ function PredictionOccultationAsteroid({
       next: null,
     });
 
-
     getAsteroidById({ id }).then((res) => setAsteroidData(res));
     getOccultations({
-      filters: [{
-        property: 'asteroid',
-        value: id,
-      }],
+      filters: [
+        {
+          property: 'asteroid',
+          value: id,
+        },
+      ],
       pageSize: null,
     }).then((data) => {
       setOccultationData(data.results);
     });
-
 
     getAsteroidInputs({ id }).then((data) => {
       const tableData = data.results.map((res) => ({
@@ -299,10 +209,15 @@ function PredictionOccultationAsteroid({
         file_type: res.file_type,
       }));
 
-      const neighborhoodStars = data.results.filter((el) => el.type === 'neighborhood_stars')[0];
-      const asteroidOrbit = data.results.filter((el) => el.type === 'asteroid_orbit')[0];
+      const neighborhoodStars = data.results.filter(
+        (el) => el.type === 'neighborhood_stars'
+      )[0];
+      const asteroidOrbit = data.results.filter(
+        (el) => el.type === 'asteroid_orbit'
+      )[0];
 
-      if (neighborhoodStars) setNeighborhoodStarsPlot(url + neighborhoodStars.src);
+      if (neighborhoodStars)
+        setNeighborhoodStarsPlot(url + neighborhoodStars.src);
       if (asteroidOrbit) setAsteroidOrbitPlot(url + asteroidOrbit.src);
 
       setOutputTableData(tableData);
@@ -316,7 +231,6 @@ function PredictionOccultationAsteroid({
     });
   }, [reload, history.location]);
 
-
   const formatExecutionTime = (duration) => {
     const seconds = Math.round(moment.duration(duration).asSeconds());
     return moment.utc(seconds * 1000).format('HH:mm:ss');
@@ -326,7 +240,12 @@ function PredictionOccultationAsteroid({
     setAsteroidList([
       {
         title: 'Status',
-        value: () => <CustomColumnStatus status={asteroidData.status} title={asteroidData.error_msg} />,
+        value: () => (
+          <ColumnStatus
+            status={asteroidData.status}
+            title={asteroidData.error_msg}
+          />
+        ),
       },
       {
         title: 'Asteroid',
@@ -393,14 +312,6 @@ function PredictionOccultationAsteroid({
     ]);
   }, [asteroidData, occultationData]);
 
-  const openLightbox = (i, e) => {
-    e.preventDefault();
-    setLightbox({
-      currentImage: i,
-      isOpen: true,
-    });
-  };
-
   const closeLightbox = () => {
     setLightbox({
       currentImage: 0,
@@ -434,45 +345,36 @@ function PredictionOccultationAsteroid({
     setReload(!reload);
   };
 
-  const handleBackNavigation = () => history.push(`/prediction-of-occultation/${asteroidData.predict_run}`);
+  const handleBackNavigation = () =>
+    history.push(`/prediction-of-occultation/${asteroidData.predict_run}`);
 
-  const handleImageClick = (occultationId) => history.push(`/occultation/${occultationId}`);
+  const handleImageClick = (occultationId) =>
+    history.push(`/occultation/${occultationId}`);
 
   return (
     <>
-      <Grid
-        container
-        justify="space-between"
-        alignItems="center"
-        spacing={2}
-      >
+      <Grid container justify="space-between" alignItems="center" spacing={2}>
         <Grid item xs={6}>
           <Button
             variant="contained"
             color="primary"
             title="Back"
-            className={classes.button}
             onClick={handleBackNavigation}
           >
-            <Icon className={clsx('fas', 'fa-undo', classes.backButtonIcon)} />
+            <Icon className="fas fa-undo" />
             <span>Back</span>
           </Button>
           <Button
             variant="contained"
             color="secondary"
             title="Download"
-            className={classes.button}
             disabled={downloading}
             onClick={handleDownload}
           >
             <span>Download</span>
-            <Icon className={clsx('fas', 'fa-download', classes.downloadButtonIcon)} />
+            <Icon className="fas fa-download" />
             {downloading ? (
-              <CircularProgress
-                color="secondary"
-                className={classes.buttonProgress}
-                size={24}
-              />
+              <CircularProgress color="secondary" size={24} />
             ) : null}
           </Button>
         </Grid>
@@ -483,52 +385,50 @@ function PredictionOccultationAsteroid({
                 variant="contained"
                 color="primary"
                 title="Previous"
-                className={classes.button}
                 disabled={neighbors.prev === null}
                 onClick={() => handleAsteroidsNavigation(neighbors.prev)}
               >
-                <Icon className={clsx('fas', 'fa-arrow-left', classes.buttonIcon)} />
+                <Icon className="fas fa-arrow-left" />
                 <span>Prev</span>
               </Button>
               <Button
                 variant="contained"
                 color="primary"
                 title="Next"
-                className={classes.button}
                 disabled={neighbors.next === null}
                 onClick={() => handleAsteroidsNavigation(neighbors.next)}
               >
                 <span>Next</span>
-                <Icon className={clsx('fas', 'fa-arrow-right', classes.buttonIcon)} />
+                <Icon className="fas fa-arrow-right" />
               </Button>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4} className={classes.block}>
+        <Grid item xs={12} md={4}>
           <Card>
             <CardHeader title="Asteroid" />
             <CardContent>
-              <CustomList data={asteroidList} />
+              <List data={asteroidList} />
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4} className={classes.block}>
+        <Grid item xs={12} md={4}>
           <Card>
             <CardHeader title="Info" />
             <CardContent>
-              <CustomList data={infoList} height={316} />
+              <List data={infoList} height={316} />
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4} className={classes.block}>
+        <Grid item xs={12} md={4}>
           <Card>
             <CardHeader title="Time Execution" />
             <CardContent>
-              <CustomList data={timeList} height={316} />
+              <List data={timeList} height={316} />
             </CardContent>
           </Card>
         </Grid>
@@ -536,16 +436,15 @@ function PredictionOccultationAsteroid({
 
       {occultationData.length > 0 ? (
         <Grid container spacing={2}>
-          <Grid item lg={12} className={clsx(classes.block, classes.tableWrapper)}>
+          <Grid item lg={12}>
             <Card>
               <CardHeader title="Occultations" />
 
-              <CardContent className={classes.cardContentWrapper}>
-                <CustomTable
+              <CardContent>
+                <Table
                   columns={occultationsColumns}
                   data={occultationData}
                   hasPagination={false}
-                  pageSize={pageSize}
                   hasSearching={false}
                   hasColumnVisibility={false}
                   hasToolbar={false}
@@ -557,12 +456,11 @@ function PredictionOccultationAsteroid({
         </Grid>
       ) : null}
       {occultationData.length > 0 ? (
-
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Card>
               <CardContent>
-                <CustomGridList
+                <Image
                   data={occultationData}
                   baseUrl={url}
                   handleImageClick={handleImageClick}
@@ -575,16 +473,15 @@ function PredictionOccultationAsteroid({
 
       {neighborhoodStarsPlot !== '' || asteroidOrbitPlot !== '' ? (
         <Grid container spacing={2}>
-          <Grid item xs={12} className={classes.block}>
+          <Grid item xs={12}>
             <Card>
               <CardHeader title="Catalog" />
               <CardContent>
-                <Grid container spacing={2} className={classes.plotsWrapper}>
+                <Grid container spacing={2}>
                   {neighborhoodStarsPlot ? (
                     <Grid item xs={12} md={asteroidOrbitPlot ? 6 : 12}>
                       <img
                         src={neighborhoodStarsPlot}
-                        className={classes.imgResponsive}
                         title="Neighborhood Stars"
                         alt="Neighborhood Stars"
                       />
@@ -594,7 +491,6 @@ function PredictionOccultationAsteroid({
                     <Grid item xs={12} md={neighborhoodStarsPlot ? 6 : 12}>
                       <img
                         src={asteroidOrbitPlot}
-                        className={classes.imgResponsive}
                         title="Asteroid Orbit"
                         alt="Asteroid Orbit"
                       />
@@ -607,18 +503,13 @@ function PredictionOccultationAsteroid({
         </Grid>
       ) : null}
       {inputTableData.length > 0 || outputTableData.length > 0 ? (
-        <Grid container spacing={2} className={classes.containerWrap}>
+        <Grid container spacing={2}>
           {inputTableData.length > 0 ? (
-            <Grid
-              item
-              xs={12}
-              md={outputTableData.length > 0 ? 6 : 12}
-              className={clsx(classes.block, classes.tableWrapper)}
-            >
+            <Grid item xs={12} md={outputTableData.length > 0 ? 6 : 12}>
               <Card>
                 <CardHeader title="Inputs" />
-                <CardContent className={classes.cardContentWrapper}>
-                  <CustomTable
+                <CardContent>
+                  <Table
                     columns={inputColumns}
                     data={inputTableData}
                     hasPagination={false}
@@ -632,16 +523,11 @@ function PredictionOccultationAsteroid({
             </Grid>
           ) : null}
           {outputTableData.length > 0 ? (
-            <Grid
-              item
-              xs={12}
-              md={inputTableData.length > 0 ? 6 : 12}
-              className={clsx(classes.block, classes.tableWrapper)}
-            >
+            <Grid item xs={12} md={inputTableData.length > 0 ? 6 : 12}>
               <Card>
                 <CardHeader title="Outputs" />
-                <CardContent className={classes.cardContentWrapper}>
-                  <CustomTable
+                <CardContent>
+                  <Table
                     columns={outputColumns}
                     data={outputTableData}
                     hasPagination={false}
@@ -666,7 +552,9 @@ function PredictionOccultationAsteroid({
               onClose={closeLightbox}
               styles={{
                 container: () => ({
-                  maxWidth: drawerOpen ? 'calc(100% - 240px)' : 'calc(100% - 64px)',
+                  maxWidth: drawerOpen
+                    ? 'calc(100% - 240px)'
+                    : 'calc(100% - 64px)',
                   marginLeft: drawerOpen ? '240px' : '64px',
                 }),
               }}
