@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { withRouter } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import FullCalendar from '@fullcalendar/react';
@@ -16,7 +17,10 @@ import '@fullcalendar/core/main.css';
 import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/list/main.css';
 
-function OccultationCalendar({ history, setTitle, match: { params } }) {
+// TODO: This whole component needs a refactor!
+function OccultationCalendar({ setTitle }) {
+  const params = useParams();
+  const history = useHistory();
   const [events, setEvents] = useState([]);
   const [initialDate, setInitialDate] = useState(
     params.sDate
@@ -31,7 +35,11 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
     params.searching ? params.searching : ''
   );
 
-  const loadData = () => {
+  useEffect(() => {
+    setTitle('Occultation Calendar');
+  }, [setTitle]);
+
+  useEffect(() => {
     setLoading(true);
 
     const filters = [
@@ -57,16 +65,16 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
         const data = res.results;
         const result = [];
 
-        data.map((resp) => {
+        data.forEach((resp) => {
           // Se o asteroid tiver numero, o nome do asteroid passa a ser NAME(Number) se nao so NAME.
-          const asteroid_name =
+          const asteroidName =
             parseInt(resp.asteroid_number) > 0
               ? `${resp.asteroid_name} (${resp.asteroid_number})`
               : resp.asteroid_name;
 
           result.push({
             id: resp.id,
-            title: asteroid_name,
+            title: asteroidName,
             date: resp.date_time,
             textColor: 'white',
           });
@@ -77,17 +85,7 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
       .finally(() => {
         setLoading(false);
       });
-  };
-
-  useEffect(() => {
-    setTitle('Occultation Calendar');
-
-    loadData();
-  }, [initialDate, finalDate]);
-
-  useEffect(() => {
-    loadData();
-  }, [search]);
+  }, [initialDate, finalDate, search]);
 
   const header = {
     center: 'title',
@@ -198,4 +196,8 @@ function OccultationCalendar({ history, setTitle, match: { params } }) {
   );
 }
 
-export default withRouter(OccultationCalendar);
+OccultationCalendar.propTypes = {
+  setTitle: PropTypes.func.isRequired,
+};
+
+export default OccultationCalendar;

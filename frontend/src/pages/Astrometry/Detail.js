@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { withRouter } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
 import { Grid, Card, CardHeader } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
 import Icon from '@material-ui/core/Icon';
@@ -26,29 +26,11 @@ import Donut from '../../components/Chart/Donut';
 import Stats from '../../components/List';
 import Stepper from '../../components/Stepper';
 import ColumnStatus from '../../components/Table/ColumnStatus';
+import useInterval from '../../hooks/useInterval';
 
-function useInterval(callback, delay) {
-  const savedCallback = useRef();
-
-  // Remember the latest callback.
-  useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
-
-  // Set up the interval.
-  // eslint-disable-next-line consistent-return
-  useEffect(() => {
-    function tick() {
-      savedCallback.current();
-    }
-    if (delay !== null) {
-      const id = setInterval(tick, delay);
-      return () => clearInterval(id);
-    }
-  }, [delay]);
-}
-
-function AstrometryDetail({ history, setTitle, match: { params } }) {
+function AstrometryDetail({ setTitle }) {
+  const { id } = useParams();
+  const history = useHistory();
   const [list, setList] = useState([]);
   const [executionTime, setExecutionTime] = useState(null);
   const [executionStats, setExecutionStats] = useState(null);
@@ -56,7 +38,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   const [donutDataExecutionTime, setDonutDataExecutionTime] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [toggleBug, setToggleBug] = useState('list');
-  const [runData, setRunData] = useState();
+  const [runData, setRunData] = useState(null);
   const [dialog, setDialog] = useState({
     visible: false,
     content: [],
@@ -65,42 +47,6 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
   const [totalCount, setTotalCount] = useState(0);
   const [reload, setReload] = useState(true);
 
-  const runId = params.id;
-
-  const loadPraiaRun = () => {
-    getPraiaRunById({ id: runId }).then((res) => {
-      const data = res;
-      setRunData(res);
-      setList([
-        {
-          title: 'Status',
-          value: () => (
-            <ColumnStatus status={data.status} title={data.error_msg} />
-          ),
-        },
-        { title: 'Process', value: data.id },
-        { title: 'Process Name', value: data.input_displayname },
-        { title: 'Owner', value: data.owner },
-        { title: 'Start', value: data.h_time },
-        { title: 'Execution', value: data.h_execution_time },
-        { title: 'Asteroids', value: data.count_objects },
-        { title: 'Reference Catalog', value: data.catalog_name },
-      ]);
-    });
-  };
-
-  const loadExecutionTime = () => {
-    getExecutionTimeById({ id: params.id }).then((res) => {
-      setExecutionTime(res.execution_time);
-    });
-  };
-
-  const loadExecutionStatistics = () => {
-    getAsteroidStatus({ id: params.id }).then((res) => {
-      setExecutionStats(res.status);
-    });
-  };
-
   const loadTableData = async ({ pageSize, currentPage, searchValue }) => {
     const asteroids = await getAsteroids({
       sizePerPage: pageSize,
@@ -108,7 +54,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       filters: [
         {
           property: 'astrometry_run',
-          value: runId,
+          value: id,
         },
       ],
       search: searchValue,
@@ -272,10 +218,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       align: 'center',
       customElement: (row) => (
         <Tooltip title="Condor Log">
-          <IconButton
-            onClick={() => handleLogReading(row.condor_log)}
-            style={{ padding: 0 }} // ! Button style was compromising the ultimate layout
-          >
+          <IconButton onClick={() => handleLogReading(row.condor_log)}>
             <DescriptionIcon />
           </IconButton>
         </Tooltip>
@@ -289,10 +232,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       align: 'center',
       customElement: (row) => (
         <Tooltip title="Condor Error">
-          <IconButton
-            onClick={() => handleLogReading(row.condor_err_log)}
-            style={{ padding: 0 }} // ! Button style was compromising the ultimate layout
-          >
+          <IconButton onClick={() => handleLogReading(row.condor_err_log)}>
             <DescriptionIcon />
           </IconButton>
         </Tooltip>
@@ -306,10 +246,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
       align: 'center',
       customElement: (row) => (
         <Tooltip title="Condor Output">
-          <IconButton
-            onClick={() => handleLogReading(row.condor_out_log)}
-            style={{ padding: 0 }} // ! Button style was compromising the ultimate layout
-          >
+          <IconButton onClick={() => handleLogReading(row.condor_out_log)}>
             <DescriptionIcon />
           </IconButton>
         </Tooltip>
@@ -320,17 +257,54 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
 
   useEffect(() => {
     setTitle('Astrometry Run');
-    loadPraiaRun();
-    loadExecutionTime();
-    loadExecutionStatistics();
-    setReload(!reload);
-  }, []);
+  }, [setTitle]);
+
+  const loadPraiaRun = (runId) => {
+    getPraiaRunById({ id: runId }).then((data) => {
+      setRunData(data);
+      setList([
+        {
+          title: 'Status',
+          value: () => (
+            <ColumnStatus status={data.status} title={data.error_msg} />
+          ),
+        },
+        { title: 'Process', value: data.id },
+        { title: 'Process Name', value: data.input_displayname },
+        { title: 'Owner', value: data.owner },
+        { title: 'Start', value: data.h_time },
+        { title: 'Execution', value: data.h_execution_time },
+        { title: 'Asteroids', value: data.count_objects },
+        { title: 'Reference Catalog', value: data.catalog_name },
+      ]);
+    });
+  };
+
+  const loadExecutionTime = (runId) => {
+    getExecutionTimeById({ id: runId }).then((res) => {
+      setExecutionTime(res.execution_time);
+    });
+  };
+
+  const loadExecutionStatistics = (runId) => {
+    getAsteroidStatus({ id: runId }).then((res) => {
+      setExecutionStats(res.status);
+    });
+  };
+
+  useEffect(() => {
+    loadPraiaRun(id);
+    loadExecutionTime(id);
+    loadExecutionStatistics(id);
+  }, [id]);
 
   useInterval(() => {
-    setReload(!reload);
-    loadPraiaRun();
-    loadExecutionTime();
-    loadExecutionStatistics();
+    if (runData && runData.status === 'running') {
+      setReload(!reload);
+      loadPraiaRun(id);
+      loadExecutionTime(id);
+      loadExecutionStatistics(id);
+    }
   }, 30000);
 
   useEffect(() => {
@@ -401,7 +375,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
         <Grid item xs={12} xl={4}>
           <Grid item xs={12} lg={6} xl={12}>
             <Card>
-              <CardHeader title={`Astrometry - ${runId} `} />
+              <CardHeader title={`Astrometry - ${id} `} />
               <Stats data={list} />
             </Card>
           </Grid>
@@ -489,15 +463,7 @@ function AstrometryDetail({ history, setTitle, match: { params } }) {
 }
 
 AstrometryDetail.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
   setTitle: PropTypes.func.isRequired,
 };
 
-export default withRouter(AstrometryDetail);
+export default AstrometryDetail;

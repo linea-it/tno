@@ -1,5 +1,5 @@
-import moment from 'moment';
 import axios from 'axios';
+import moment from 'moment';
 
 export const createSkybotRun = ({ type_run, date_initial, date_final }) => {
   date_initial =
@@ -18,12 +18,7 @@ export const createSkybotRun = ({ type_run, date_initial, date_final }) => {
 export const getSkybotRunById = ({ id }) =>
   axios.get(`/skybot_run/${id}`).then((res) => res.data);
 
-export const getSkybotRunList = ({ page, pageSize, sortField, sortOrder }) => {
-  let ordering = sortField;
-  if (sortOrder === -1) {
-    ordering = `-${sortField}`;
-  }
-
+export const getSkybotRunList = ({ page, pageSize, ordering }) => {
   const params = {
     page,
     pageSize,

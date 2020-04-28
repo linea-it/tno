@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import {
@@ -31,27 +31,6 @@ import Table from '../../components/Table';
 import { getOrbitRuns } from '../../services/api/Orbit';
 import Dialog from '../../components/Dialog';
 import ColumnStatus from '../../components/Table/ColumnStatus';
-
-function useInterval(callback, delay) {
-  const savedCallback = useRef();
-
-  // Remember the latest callback.
-  useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
-
-  // Set up the interval.
-  // eslint-disable-next-line consistent-return
-  useEffect(() => {
-    function tick() {
-      savedCallback.current();
-    }
-    if (delay !== null) {
-      const id = setInterval(tick, delay);
-      return () => clearInterval(id);
-    }
-  }, [delay]);
-}
 
 function PredictionOccultation({ setTitle }) {
   const history = useHistory();
@@ -150,10 +129,6 @@ function PredictionOccultation({ setTitle }) {
     }
   };
 
-  useInterval(() => {
-    setReload(!reload);
-  }, 30000);
-
   const [inputArray, setInputArray] = useState([]);
   const [catalogArray, setCatalogArray] = useState([]);
   const [leapSecondsArray, setLeapSecondsArray] = useState([]);
@@ -180,7 +155,7 @@ function PredictionOccultation({ setTitle }) {
     submit: false,
   });
 
-  const handleSubmitClick = (e) => {
+  const handleSubmitClick = () => {
     // ***** Values referring to Refine Orbit run. Only success ones ****//
     //  process - processId
     //  input_list_id - input id from object list
@@ -195,21 +170,24 @@ function PredictionOccultation({ setTitle }) {
     // ephemeris_final_date
     // ephemeris_step
 
-    setValueSubmition({
-      ...valueSubmition,
+    setValueSubmition((oldValues) => ({
+      ...oldValues,
       catalog_radius: inputRadiusValue,
       ephemeris_step: ephemerisNumberValue,
       ephemeris_initial_date: initialDate,
       ephemeris_final_date: finalDate,
       submit: true,
-    });
+    }));
   };
 
   // When submit button is clicked so calls the function below
   useEffect(() => {
     if (valueSubmition.submit) {
       setActionButton(true);
-      setValueSubmition({ ...valueSubmition, submit: false });
+      setValueSubmition((oldValues) => ({
+        ...oldValues,
+        submit: false,
+      }));
       setDialogContent(
         'The task has been submitted and will be executed in the background...'
       );
@@ -233,7 +211,34 @@ function PredictionOccultation({ setTitle }) {
     }
   }, [valueSubmition, reload]);
 
-  const loadData = () => {
+  useCallback(() => {
+    if (catalogArray.length > 0) {
+      setValueSubmition((oldValues) => ({
+        ...oldValues,
+        catalogId: catalogArray[0].id,
+      }));
+    }
+  }, [catalogArray]);
+
+  useCallback(() => {
+    if (leapSecondsArray.length > 0) {
+      setValueSubmition((oldValues) => ({
+        ...oldValues,
+        leap_secondsId: leapSecondsArray[0].id,
+      }));
+    }
+  }, [leapSecondsArray]);
+
+  useCallback(() => {
+    if (bspPlanetaryArray.length > 0) {
+      setValueSubmition((oldValues) => ({
+        ...oldValues,
+        bsp_planetaryId: bspPlanetaryArray[0].id,
+      }));
+    }
+  }, [bspPlanetaryArray]);
+
+  useEffect(() => {
     // Load Input Array
     getOrbitRuns({
       ordering: '-start_time', // - Lista de Inputs deve estar ordenada com o mais recente primeiro. Ok
@@ -261,37 +266,6 @@ function PredictionOccultation({ setTitle }) {
     getBspPlanetary().then((res) => {
       setBspPlanetaryArray(res.results);
     });
-  };
-
-  useEffect(() => {
-    if (typeof catalogArray[0] !== 'undefined') {
-      setValueSubmition({
-        ...valueSubmition,
-        catalogId: catalogArray[0].id,
-      });
-    }
-  }, [catalogArray]);
-
-  useEffect(() => {
-    if (typeof leapSecondsArray[0] !== 'undefined') {
-      setValueSubmition({
-        ...valueSubmition,
-        leap_secondsId: leapSecondsArray[0].id,
-      });
-    }
-  }, [leapSecondsArray]);
-
-  useEffect(() => {
-    if (typeof bspPlanetaryArray[0] !== 'undefined') {
-      setValueSubmition({
-        ...valueSubmition,
-        bsp_planetaryId: bspPlanetaryArray[0].id,
-      });
-    }
-  }, [bspPlanetaryArray]);
-
-  useEffect(() => {
-    loadData();
   }, []);
 
   const inputNumber = React.createRef();
@@ -299,12 +273,12 @@ function PredictionOccultation({ setTitle }) {
 
   const handleInputNumberChange = (event) => {
     setInputRadiusValue(event.target.value);
-    ephemerisNumberValue ? setActionButton(false) : setActionButton(true);
+    setActionButton(!ephemerisNumberValue);
   };
 
   const handleEphemerisNumberChange = (event) => {
     setEphemerisNumberValue(event.target.value);
-    inputRadiusValue ? setActionButton(false) : setActionButton(true);
+    setActionButton(!inputRadiusValue);
   };
 
   const handleDialogClose = () => {
@@ -319,7 +293,7 @@ function PredictionOccultation({ setTitle }) {
             <CardHeader title={<span>Prediction Occutation</span>} />
             <Grid container>
               <Grid item xs={12} lg={6}>
-                <SelectPredict
+                {/* <SelectPredict
                   title="input"
                   width="90%"
                   setActionButton={setActionButton}
@@ -354,7 +328,7 @@ function PredictionOccultation({ setTitle }) {
                   data={bspPlanetaryArray}
                   value="el.id"
                   display="el.display_name"
-                />
+                /> */}
               </Grid>
               <Grid item xs={12} lg={6}>
                 <TextField

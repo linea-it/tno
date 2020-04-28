@@ -11,7 +11,7 @@ import {
   Icon,
 } from '@material-ui/core';
 import Carousel, { Modal, ModalGateway } from 'react-images';
-import { withRouter } from 'react-router';
+import { useParams, useHistory } from 'react-router-dom';
 import filesize from 'filesize';
 import List from '../../components/List';
 import Table from '../../components/Table';
@@ -33,8 +33,9 @@ import { url } from '../../services/api/Auth';
 import Dialog from '../../components/Dialog';
 import Log from '../../components/Log';
 
-function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
-  const { id } = match.params;
+function AstrometryAsteroid({ setTitle, drawerOpen }) {
+  const { id } = useParams();
+  const history = useHistory();
   const [asteroidData, setAsteroidData] = useState([]);
   const [asteroidList, setAsteroidList] = useState([]);
   const [astrometryTable, setAstrometryTable] = useState([]);
@@ -142,6 +143,7 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
             />
           );
         }
+        return '-';
       },
     },
   ];
@@ -160,13 +162,11 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
     {
       name: 'ccd_num',
       title: 'CCD',
-
       width: 80,
     },
     {
       name: 'band',
       title: 'Band',
-
       width: 80,
     },
     {
@@ -198,6 +198,9 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
 
   useEffect(() => {
     setTitle('Astrometry Asteroid');
+  }, [setTitle]);
+
+  useEffect(() => {
     setAsteroidData([]);
 
     setLightbox({
@@ -260,7 +263,7 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
     getAsteroidTimeProfile(id).then((res) =>
       setAstrometryTimeProfile(res.rows)
     );
-  }, [reload, history.location]);
+  }, [reload, id, history.location]);
 
   useEffect(() => {
     setAsteroidList([
@@ -433,13 +436,6 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
       setInputCsvVisible(true);
     });
   };
-
-  useEffect(() => {}, [astrometryPlots]);
-
-  useEffect(() => {
-    if (inputCsv.content !== '')
-      loadInputCsvTableData({ currentPage: 0, pageSize: 10 });
-  }, [inputCsv]);
 
   const handleOutputLogClose = () =>
     setOutputLog({ visible: false, content: '', title: '' });
@@ -696,16 +692,8 @@ function AstrometryAsteroid({ history, setTitle, match, drawerOpen }) {
 }
 
 AstrometryAsteroid.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
   setTitle: PropTypes.func.isRequired,
   drawerOpen: PropTypes.bool.isRequired,
 };
 
-export default withRouter(AstrometryAsteroid);
+export default AstrometryAsteroid;

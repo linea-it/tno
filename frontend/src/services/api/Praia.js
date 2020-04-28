@@ -32,7 +32,7 @@ export const getConfigurations = ({ page, pageSize, search, ordering }) =>
     })
     .then((res) => res.data);
 
-export const getCatalogs = ({ search }) =>
+export const getCatalogs = (search) =>
   axios
     .get('/catalog/', {
       params: {

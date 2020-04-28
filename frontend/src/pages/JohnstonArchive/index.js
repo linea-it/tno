@@ -21,6 +21,7 @@ function JohnstonArchive({ setTitle }) {
   const history = useHistory();
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [reload, setReload] = useState(false);
   const [dataTotalCount, setDataTotalCount] = useState(0);
   const [snackBarVisible, setSnackBarVisible] = useState(false);
   const [snackBarPosition] = useState({
@@ -30,16 +31,16 @@ function JohnstonArchive({ setTitle }) {
 
   useEffect(() => {
     setTitle('Johnston Archives');
-  }, []);
+  }, [setTitle]);
 
-  const loadTableData = (event) => {
+  const loadTableData = ({ currentPage, pageSize, searchValue }) => {
     setLoading(true);
 
-    const page = typeof event === 'undefined' ? 1 : event.currentPage + 1;
-    const pageSize = typeof event === 'undefined' ? 10 : event.pageSize;
-    const search = typeof event === 'undefined' ? ' ' : event.searchValue;
-
-    getJohnstonArchives({ page, pageSize, search })
+    getJohnstonArchives({
+      page: currentPage + 1,
+      pageSize,
+      search: searchValue,
+    })
       .then((res) => {
         setTableData(res.data.results);
         setDataTotalCount(res.data.count);
@@ -138,14 +139,7 @@ function JohnstonArchive({ setTitle }) {
     setTableData([]);
     setSnackBarVisible(true);
 
-    // ! ???
-    updateJohnstonList()
-      .then((res) => {
-        console.log(res);
-      })
-      .finally(() => {
-        loadTableData();
-      });
+    updateJohnstonList().then(() => setReload(!reload));
   };
 
   const { vertical, horizontal } = snackBarPosition;
@@ -168,6 +162,7 @@ function JohnstonArchive({ setTitle }) {
               loadData={loadTableData}
               totalCount={dataTotalCount}
               loading={loading}
+              reload={reload}
             />
           </CardContent>
         </Card>

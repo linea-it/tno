@@ -161,25 +161,6 @@ function PredictionOccultationAsteroid({ setTitle, drawerOpen }) {
   }, [setTitle]);
 
   useEffect(() => {
-    setAsteroidData([]);
-    setAsteroidList([]);
-    setInfoList([]);
-    setTimeList([]);
-    setOccultationData([]);
-    setInputTableData([]);
-    setOutputTableData([]);
-    setNeighborhoodStarsPlot('');
-    setAsteroidOrbitPlot('');
-    setLightbox({
-      isOpen: false,
-      currentImage: 0,
-    });
-    setDownloading(false);
-    setNeighbors({
-      prev: null,
-      next: null,
-    });
-
     getAsteroidById({ id }).then((res) => setAsteroidData(res));
     getOccultations({
       filters: [

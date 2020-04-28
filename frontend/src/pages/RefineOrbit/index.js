@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import {
@@ -15,30 +15,11 @@ import {
 } from '@material-ui/core';
 import Table from '../../components/Table';
 import ColumnStatus from '../../components/Table/ColumnStatus';
+import useInterval from '../../hooks/useInterval';
 import { getPraiaRuns } from '../../services/api/Praia';
 import { getOrbitRuns, createOrbitRun } from '../../services/api/Orbit';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
-function useInterval(callback, delay) {
-  const savedCallback = useRef();
-
-  // Remember the latest callback.
-  useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
-
-  // Set up the interval.
-  // eslint-disable-next-line consistent-return
-  useEffect(() => {
-    function tick() {
-      savedCallback.current();
-    }
-    if (delay !== null) {
-      const id = setInterval(tick, delay);
-      return () => clearInterval(id);
-    }
-  }, [delay]);
-}
 function RefineOrbit({ setTitle }) {
   const history = useHistory();
   const [tableData, setTableData] = useState([]);

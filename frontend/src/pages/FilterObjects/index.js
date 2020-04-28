@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import {
   Card,
   CardHeader,
@@ -35,7 +35,8 @@ import Table from '../../components/Table';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
-function FilterObjects({ setTitle, drawerOpen, history }) {
+function FilterObjects({ setTitle, drawerOpen }) {
+  const history = useHistory();
   const [searchFilter, setSearchFilter] = useState('');
   const [dynamicClass, setDynamicClass] = useState([]);
   const [sublevelDynamicClassList, setSublevelDynamicClassList] = useState([]);
@@ -382,9 +383,9 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
 
   useEffect(() => {
     setTitle('Filter Objects');
-  }, []);
+  }, [setTitle]);
 
-  useEffect(() => {
+  useCallback(() => {
     let currentSublevelList = [];
     dynamicClass.forEach((i) => {
       const current = optionsClassFirstLevel[i];
@@ -393,11 +394,14 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
       );
       currentSublevelList = currentSublevelList.concat(currentChildren);
     });
-    setSublevelDynamicClassSelected(
-      Object.keys(currentSublevelList).map((el) => Number(el))
+
+    const sublevelSelected = Object.keys(currentSublevelList).map((el) =>
+      Number(el)
     );
+
+    setSublevelDynamicClassSelected(sublevelSelected);
     setSublevelDynamicClassList(currentSublevelList);
-  }, [dynamicClass]);
+  }, [dynamicClass, optionsClassFirstLevel, optionsClassSecondLevel]);
 
   const loadSkybotOutputCount = ({
     objectTable = null,
@@ -453,6 +457,8 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
     timeMinimumCheck,
     timeMinimum,
     sameObjectsCheck,
+    optionsClassFirstLevel,
+    optionsClassSecondLevel,
   ]);
 
   const handleSearchFilter = (e) => setSearchFilter(e.target.value);
@@ -978,10 +984,7 @@ function FilterObjects({ setTitle, drawerOpen, history }) {
 
 FilterObjects.propTypes = {
   setTitle: PropTypes.func.isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
   drawerOpen: PropTypes.bool.isRequired,
 };
 
-export default withRouter(FilterObjects);
+export default FilterObjects;

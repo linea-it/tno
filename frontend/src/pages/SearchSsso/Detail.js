@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import {
   Grid,
   Card,
@@ -12,21 +12,21 @@ import {
 import List from '../../components/List';
 import { getSkybotRecord } from '../../services/api/SearchSsso';
 
-function SearchSSSoDetail({ history, setTitle, match: { params } }) {
+function SearchSSSoDetail({ setTitle }) {
+  const { id } = useParams();
+  const history = useHistory();
+
   const [listData, setListData] = useState([{}]);
-
-  const id = params ? params.id : 0;
-
-  const loadData = () => {
-    getSkybotRecord({ id }).then((res) => {
-      setListData(res ? res.data : []);
-    });
-  };
 
   useEffect(() => {
     setTitle('Search SSSo Detail');
-    loadData();
-  }, []);
+  }, [setTitle]);
+
+  useEffect(() => {
+    getSkybotRecord({ id }).then((res) => {
+      setListData(res ? res.data : []);
+    });
+  }, [id]);
 
   const checkLink = () => {
     let resp = '';
@@ -114,15 +114,7 @@ function SearchSSSoDetail({ history, setTitle, match: { params } }) {
 }
 
 SearchSSSoDetail.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
   setTitle: PropTypes.func.isRequired,
 };
 
-export default withRouter(SearchSSSoDetail);
+export default SearchSSSoDetail;

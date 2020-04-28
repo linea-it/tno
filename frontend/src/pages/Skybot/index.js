@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import {
   Grid,
   Card,
@@ -27,6 +27,7 @@ import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
 import Table from '../../components/Table';
 import ColumnStatus from '../../components/Table/ColumnStatus';
+import useInterval from '../../hooks/useInterval';
 import {
   createSkybotRun,
   getSkybotRunList,
@@ -34,39 +35,14 @@ import {
   getExposuresByPeriod,
 } from '../../services/api/Skybot';
 
-function useInterval(callback, delay) {
-  const savedCallback = useRef();
-
-  // Remember the latest callback.
-  useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
-
-  // Set up the interval.
-  // eslint-disable-next-line consistent-return
-  useEffect(() => {
-    function tick() {
-      savedCallback.current();
-    }
-    if (delay !== null) {
-      const id = setInterval(tick, delay);
-      return () => clearInterval(id);
-    }
-  }, [delay]);
-}
-
-function Skybot({ setTitle, history }) {
+function Skybot({ setTitle }) {
+  const history = useHistory();
   const [selectRunValue, setSelectRunValue] = useState('period');
   const [initialDate, setInitialDate] = useState(null);
   const [finalDate, setFinalDate] = useState(null);
   const [errorDatePicker, setErrorDatePicker] = useState(false);
-  const [tablePage, setTablePage] = useState(1);
-  const [tablePageSize, setTablePageSize] = useState(10);
-  const [totalSize, setTotalSize] = useState(0);
-  const [sortField] = useState('-start');
-  const [sortOrder] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const [tableData, setTableData] = useState([]);
-  const pageSizes = [5, 10, 15];
   const [disabledRunButton, setDisabledRunButton] = useState(true);
   const [disabledInitialDate, setDisabledInitialDate] = useState(true);
   const [disabledFinalDate, setDisabledFinalDate] = useState(true);
@@ -87,8 +63,7 @@ function Skybot({ setTitle, history }) {
 
   useEffect(() => {
     setTitle('Skybot Run');
-    loadData();
-  }, []);
+  }, [setTitle]);
 
   useEffect(() => {
     if (errorDatePicker) {
@@ -136,7 +111,7 @@ function Skybot({ setTitle, history }) {
     if (!finalDate || finalDate.toString() === 'Invalid Date') {
       setDisabledRunButton(true);
     }
-  }, [initialDate, finalDate]);
+  }, [initialDate, finalDate, errorDatePicker]);
 
   useEffect(() => {
     setRunEstimate({});
@@ -172,30 +147,16 @@ function Skybot({ setTitle, history }) {
     }
   }, [selectRunValue]);
 
-  const loadData = (event) => {
-    let page = null;
-    let pageSize = null;
-
-    if (event) {
-      page = event.currentPage + 1;
-      pageSize = event.pageSize;
-      setTablePage(page);
-      setTablePageSize(event.pageSize);
-    } else {
-      page = tablePage;
-      pageSize = tablePageSize;
-    }
-
+  const loadData = ({ sorting, pageSize, currentPage }) => {
     getSkybotRunList({
-      page,
+      page: currentPage + 1,
       pageSize,
-      sortField,
-      sortOrder,
+      ordering: sorting,
     })
       .then((res) => {
         const { data } = res;
         setTableData(data.results);
-        setTotalSize(data.count);
+        setTotalCount(data.count);
       })
       .finally(() => {
         setLoading(false);
@@ -213,20 +174,19 @@ function Skybot({ setTitle, history }) {
     });
   };
 
+  const transitionSnackBar = (props) => <Slide {...props} direction="left" />;
+
   const handleSelectRunClick = () => {
-    switch (selectRunValue) {
-      case 'all':
-        setDisabledRunButton(true);
-        setLoading(true);
-        handleSubmit();
-        break;
-      case 'period':
-        setSnackBarVisible(true);
-        setSnackBarTransition(() => transitionSnackBar);
-        setDisabledRunButton(true);
-        setLoading(true);
-        handleSubmit();
-        break;
+    if (selectRunValue === 'all') {
+      setDisabledRunButton(true);
+      setLoading(true);
+      handleSubmit();
+    } else if (selectRunValue === 'period') {
+      setSnackBarVisible(true);
+      setSnackBarTransition(() => transitionSnackBar);
+      setDisabledRunButton(true);
+      setLoading(true);
+      handleSubmit();
     }
   };
 
@@ -324,8 +284,6 @@ function Skybot({ setTitle, history }) {
       headerTooltip: 'Execution time',
     },
   ];
-
-  const transitionSnackBar = (props) => <Slide {...props} direction="left" />;
 
   const { vertical, horizontal } = snackBarPosition;
 
@@ -502,13 +460,12 @@ function Skybot({ setTitle, history }) {
                 columns={tableColumns}
                 data={tableData}
                 loadData={loadData}
-                pageSizes={pageSizes}
                 hasSearching={false}
                 hasPagination
                 hasColumnVisibility={false}
                 hasToolbar={false}
                 reload={reload}
-                totalCount={totalSize}
+                totalCount={totalCount}
                 loading
               />
             </CardContent>
@@ -529,9 +486,6 @@ function Skybot({ setTitle, history }) {
 
 Skybot.propTypes = {
   setTitle: PropTypes.func.isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
 };
 
-export default withRouter(Skybot);
+export default Skybot;

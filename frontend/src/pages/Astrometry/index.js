@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import moment from 'moment';
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Card, CardHeader, Button, Icon, Grid } from '@material-ui/core';
 import PropTypes from 'prop-types';
 /*
@@ -20,7 +20,8 @@ import {
   getPraiaRuns,
 } from '../../services/api/Praia';
 
-function Astrometry({ history, setTitle }) {
+function Astrometry({ setTitle }) {
+  const history = useHistory();
   const [objectList, setObjectList] = useState([]);
   const [catalogs, setCatalogs] = useState([]);
   const [configurations, setConfigurations] = useState([]);
@@ -32,6 +33,10 @@ function Astrometry({ history, setTitle }) {
   const [loading, setLoading] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
+
+  useEffect(() => {
+    setTitle('Astrometry');
+  }, [setTitle]);
 
   const loadTableData = ({ pageSize, currentPage, searchValue }) => {
     setLoading(true);
@@ -132,53 +137,50 @@ function Astrometry({ history, setTitle }) {
     },
   ];
 
-  const loadData = (inputValue) => {
-    getListsByStatus({ status: 'success', search: inputValue }).then((res) => {
+  const loadData = () => {
+    getListsByStatus({ status: 'success' }).then((res) => {
       setObjectList(res.results);
     });
 
-    getCatalogs({ search: inputValue }).then((res) => {
+    getCatalogs().then((res) => {
       setCatalogs(res.results);
     });
 
-    getConfigurations({ search: inputValue, ordering: '-creation_date' }).then(
-      (res) => {
-        setConfigurations(res.results);
-      }
-    );
+    getConfigurations({ ordering: '-creation_date' }).then((res) => {
+      setConfigurations(res.results);
+    });
   };
 
   useEffect(() => {
+    loadData();
+  }, []);
+
+  useCallback(() => {
     if (objectList.length > 0 && typeof objectList[0] !== 'undefined') {
       setValueSubmition({
         ...valueSubmition,
         inputId: objectList[0].id,
       });
     }
-  }, [objectList]);
+  }, [objectList, valueSubmition]);
 
-  useEffect(() => {
+  useCallback(() => {
     if (catalogs.length > 0 && typeof catalogs[0] !== 'undefined') {
       setValueSubmition({
         ...valueSubmition,
         refCatalogId: catalogs[0].id,
       });
     }
-  }, [catalogs]);
+  }, [catalogs, valueSubmition]);
 
-  useEffect(() => {
+  useCallback(() => {
     if (configurations.length > 0 && typeof configurations[0] !== 'undefined') {
       setValueSubmition({
         ...valueSubmition,
         configId: configurations[0].id,
       });
     }
-  }, [configurations]);
-
-  useEffect(() => {
-    setTitle('Astrometry');
-    loadData();
-  }, []);
+  }, [configurations, valueSubmition]);
 
   const handleSubmit = () => {
     createPraiaRun({
@@ -256,6 +258,7 @@ function Astrometry({ history, setTitle }) {
                 totalCount={totalCount}
                 hasSearching={false}
                 hasColumnVisibility={false}
+                loading={loading}
               />
             </Card>
           </Grid>
@@ -266,10 +269,7 @@ function Astrometry({ history, setTitle }) {
 }
 
 Astrometry.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
   setTitle: PropTypes.func.isRequired,
 };
 
-export default withRouter(Astrometry);
+export default Astrometry;

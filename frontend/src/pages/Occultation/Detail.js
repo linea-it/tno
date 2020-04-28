@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
@@ -10,8 +11,8 @@ import Aladin from '../../components/Aladin';
 import { url } from '../../services/api/Auth';
 import { getOccultationById } from '../../services/api/Occultation';
 
-function OccultationDetail({ setTitle, match }) {
-  const { id } = match.params;
+function OccultationDetail({ setTitle }) {
+  const { id } = useParams();
   const [occultation, setOccultation] = useState({});
   const [circumstances, setCircumstances] = useState([]);
   const [star, setStar] = useState([]);
@@ -19,14 +20,16 @@ function OccultationDetail({ setTitle, match }) {
 
   useEffect(() => {
     setTitle('Occultations');
+  }, [setTitle]);
 
+  useEffect(() => {
     getOccultationById({ id }).then((res) => {
       setOccultation({
         ...res,
         source: url + res.src,
       });
     });
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     setCircumstances([
@@ -265,11 +268,6 @@ function OccultationDetail({ setTitle, match }) {
 
 OccultationDetail.propTypes = {
   setTitle: PropTypes.func.isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
 };
 
 export default OccultationDetail;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import {
   Grid,
@@ -20,10 +20,8 @@ import { url } from '../../services/api/Auth';
 import { getOccultations } from '../../services/api/Occultation';
 import Image from '../../components/List/Image';
 
-function Occultation({ setTitle, history, ...props }) {
-  const [page, setPage] = useState(1);
-  const [pageSize, setPagesize] = useState(25);
-  const [loading, setLoading] = useState();
+function Occultation({ setTitle }) {
+  const history = useHistory();
   const [data, setData] = useState();
   const [startDate, setStartDate] = useState(
     moment().startOf('year').format('YYYY-MM-DD')
@@ -36,11 +34,13 @@ function Occultation({ setTitle, history, ...props }) {
   const [objectName, setObjectName] = useState();
   const [dynamicClass, setDynamicClass] = useState('');
   const [zoneValue, setZoneValue] = useState('');
-  const [sortGridListValue, setSortGridListValue] = useState();
+  const pageSize = 25;
 
-  const loadData = () => {
-    setLoading(true);
+  useEffect(() => {
+    setTitle('Occultations');
+  }, [setTitle]);
 
+  useEffect(() => {
     const filters = [];
     // Busca por Periodo, necessario pelo menos o start date.
     if (startDate) {
@@ -77,49 +77,26 @@ function Occultation({ setTitle, history, ...props }) {
         value: objectName,
       });
 
-      // Por enquanto nao pode filtrar por numero, backend nao aceita OR ainda so and.
-      //  TODO no backend criar um filtro customizado para a identificacao do asteroid.
-      // try {
-      //   // tenta converter para Numero, se conseguir adiciona um filtro para Asteroid Number.
-      //   parseInt(objectName)
-      //   filters.push({
-      //     property: 'asteroid__number__icontains',
-      //     value: objectName,
-      //   });
-      // } catch {}
+      // Por enquanto nao pode filtrar por numero, backend nao aceita OR ainda so AND.
     }
 
-    // TODO Busca por Dynclass, precisa de alteracao no backend
-
-    // TODO Busca por Zona ou Regiao, precisa de alteracao no backend
-
-    // TODO Busca por Diametro, precisa de alteracao no backend
+    // TODO no backend criar um filtro customizado para a identificacao do asteroid.
+    // TODO Busca por Dynclass, precisa de alteracao no backend.
+    // TODO Busca por Zona ou Regiao, precisa de alteracao no backend.
+    // TODO Busca por Diametro, precisa de alteracao no backend.
 
     if (filters.length === 0) {
       setData([]);
-      setLoading(false);
     } else {
-      getOccultations({ filters, pageSize })
-        .then((res) => {
-          res.results.map((row) => ({
-            ...row,
-            src: row.src ? url + row.src : null,
-          }));
+      getOccultations({ filters, pageSize }).then((res) => {
+        res.results.map((row) => ({
+          ...row,
+          src: row.src ? url + row.src : null,
+        }));
 
-          setData(res.results);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+        setData(res.results);
+      });
     }
-  };
-
-  useEffect(() => {
-    setTitle('Occultations');
-  }, []);
-
-  useEffect(() => {
-    loadData();
   }, [startDate, endDate, objectName, magnitude]);
 
   const handleStartDateChange = (date) => {
@@ -295,10 +272,7 @@ function Occultation({ setTitle, history, ...props }) {
 }
 
 Occultation.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
   setTitle: PropTypes.func.isRequired,
 };
 
-export default withRouter(Occultation);
+export default Occultation;

@@ -39,7 +39,7 @@ function SelectPredict(props) {
 
   const [defaultValue, setDefaultValue] = useState(0);
 
-  function handleChange(event) {
+  const handleChange = (event) => {
     /*
     A linha abaixo quer dizer:
     Pegue todas as propriedades do objeto e copie-as novamente.

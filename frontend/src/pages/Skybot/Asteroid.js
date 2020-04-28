@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, Card, CardHeader, CardContent } from '@material-ui/core';
-import Toolbar from '@material-ui/core/Toolbar';
-import Icon from '@material-ui/core/Icon';
-import clsx from 'clsx';
-import Skeleton from '@material-ui/lab/Skeleton';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import Button from '@material-ui/core/Button';
+import { useParams, useHistory } from 'react-router-dom';
+import {
+  Grid,
+  Card,
+  CardHeader,
+  CardContent,
+  Toolbar,
+  Icon,
+  Switch,
+  Button,
+  FormControlLabel,
+} from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 import Table from '../../components/Table';
 import CCD from '../../components/Chart/CCD';
 import {
@@ -16,9 +21,10 @@ import {
   getAsteroidsInsideCCD,
 } from '../../services/api/Skybot';
 
-function SkybotAsteroid({ setTitle, match, history }) {
+function SkybotAsteroid({ setTitle }) {
   const coneSearchRadius = 1.2; // ! Cone search radius in Degres.
-  const { id, runId } = match.params;
+  const { id, runId } = useParams();
+  const history = useHistory();
   const [ccdsPlotData, setCcdsPlotData] = useState({});
   const [exposuresTableData, setExposuresTableData] = useState([]);
   const [asteroidsOnlyInsideCcds, setAsteroidsOnlyInsideCcds] = useState(true);
@@ -232,7 +238,9 @@ function SkybotAsteroid({ setTitle, match, history }) {
 
   useEffect(() => {
     setTitle('Skybot Run');
+  }, [setTitle]);
 
+  useEffect(() => {
     getExposurePlot(runId, id).then((res) => {
       const center = { x: res.ra, y: res.dec };
 
@@ -260,36 +268,36 @@ function SkybotAsteroid({ setTitle, match, history }) {
         },
       });
     });
-  }, []);
+  }, [runId, id]);
 
   useEffect(() => {
     setExposuresTableData([]);
     if (asteroidsOnlyInsideCcds === false) {
       getOutputByExposure(runId, id).then((res) => {
-        const columns = Object.keys(res.rows[0]).map((column) => {
-          if (column === 'externallink') {
-            return {
-              name: column,
-              customElement: (el) => {
-                if (el.externallink === 'link') return '-';
-                return (
-                  <a
-                    href={el.externallink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={el.externallink}
-                  >
-                    <Icon className="fas fa-external-link-square-alt" />
-                  </a>
-                );
-              },
-            };
-          }
+        // const columns = Object.keys(res.rows[0]).map((column) => {
+        //   if (column === 'externallink') {
+        //     return {
+        //       name: column,
+        //       customElement: (el) => {
+        //         if (el.externallink === 'link') return '-';
+        //         return (
+        //           <a
+        //             href={el.externallink}
+        //             target="_blank"
+        //             rel="noopener noreferrer"
+        //             title={el.externallink}
+        //           >
+        //             <Icon className="fas fa-external-link-square-alt" />
+        //           </a>
+        //         );
+        //       },
+        //     };
+        //   }
 
-          return {
-            name: column,
-          };
-        });
+        //   return {
+        //     name: column,
+        //   };
+        // });
 
         setExposuresTableData(
           res.rows.map((row) => ({
@@ -313,29 +321,29 @@ function SkybotAsteroid({ setTitle, match, history }) {
       });
     } else {
       getAsteroidsInsideCCD(id).then((res) => {
-        const columns = Object.keys(res.rows[0]).map((column) => {
-          if (column === 'externallink') {
-            return {
-              name: column,
-              customElement: (el) => {
-                if (el.externallink === 'link') return '-';
-                return (
-                  <a
-                    href={el.externallink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={el.externallink}
-                  >
-                    <Icon className="fas fa-external-link-square-alt" />
-                  </a>
-                );
-              },
-            };
-          }
-          return {
-            name: column,
-          };
-        });
+        // Object.keys(res.rows[0]).map((column) => {
+        //   if (column === 'externallink') {
+        //     return {
+        //       name: column,
+        //       customElement: (el) => {
+        //         if (el.externallink === 'link') return '-';
+        //         return (
+        //           <a
+        //             href={el.externallink}
+        //             target="_blank"
+        //             rel="noopener noreferrer"
+        //             title={el.externallink}
+        //           >
+        //             <Icon className="fas fa-external-link-square-alt" />
+        //           </a>
+        //         );
+        //       },
+        //     };
+        //   }
+        //   return {
+        //     name: column,
+        //   };
+        // });
         setExposuresTableData(
           res.rows.map((row) => ({
             ...row,
@@ -357,7 +365,7 @@ function SkybotAsteroid({ setTitle, match, history }) {
         );
       });
     }
-  }, [asteroidsOnlyInsideCcds]);
+  }, [asteroidsOnlyInsideCcds, runId, id]);
 
   const handleAsteroidInCcds = () =>
     setAsteroidsOnlyInsideCcds(!asteroidsOnlyInsideCcds);
@@ -428,11 +436,6 @@ function SkybotAsteroid({ setTitle, match, history }) {
 }
 
 SkybotAsteroid.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
   setTitle: PropTypes.func.isRequired,
 };
 

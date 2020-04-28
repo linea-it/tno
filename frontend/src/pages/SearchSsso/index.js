@@ -21,8 +21,6 @@ import { getSkybotLists } from '../../services/api/SearchSsso';
 
 function SearchSsso({ history, setTitle }) {
   const [tableData, setTableData] = useState([{}]);
-  const [tablePage] = useState(1);
-  const [tablePageSize] = useState(10);
   const [tableLoading, setTableLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [vMagnitude, setVmagnitude] = useState([4, 18]);
@@ -38,195 +36,7 @@ function SearchSsso({ history, setTitle }) {
 
   useEffect(() => {
     setTitle('Search SSSO');
-  }, []);
-
-  useEffect(() => {
-    loadTableData();
-  }, [vMagnitude]);
-
-  useEffect(() => {
-    let currentSublevelList = [];
-    dynamicClass.forEach((i) => {
-      const current = optionsClassFirstLevel[i];
-      const currentChildren = optionsClassSecondLevel.filter(
-        (option) => option.parentId === current.id
-      );
-      currentSublevelList = currentSublevelList.concat(currentChildren);
-    });
-    setSubLevelDynamicClassSelected(
-      Object.keys(currentSublevelList).map((el) => Number(el))
-    );
-    setSubLevelDynamicClassList(currentSublevelList);
-  }, [dynamicClass]);
-
-  useEffect(() => {
-    if (dynamicClass.length > 0) {
-      const dynamicClassSelected = dynamicClass
-        .map((i) => optionsClassFirstLevel[i].value)
-        .concat(
-          subLevelDynamicClassSelected.map(
-            (i) => subLevelDynamicClassList[i].value
-          )
-        )
-        .join(',');
-      setObjectCompiled(dynamicClassSelected);
-    }
-  }, [subLevelDynamicClassSelected]);
-
-  useEffect(() => {
-    loadTableData();
-  }, [objectCompiled]);
-
-  const loadTableData = (event) => {
-    setTableLoading(true);
-    const page =
-      typeof event === 'undefined' ? tablePage : event.currentPage + 1;
-    const pageSize =
-      typeof event === 'undefined' ? tablePageSize : event.pageSize;
-    const searchValue =
-      typeof event === 'undefined' && !event ? ' ' : event.searchValue;
-
-    const options = [
-      {
-        property: 'dynclass__in',
-        value: objectCompiled,
-      },
-      {
-        property: 'mv__range',
-        value: vMagnitude.join(),
-      },
-      {
-        property: 'ccdnum__isnull',
-        value: false,
-      },
-    ];
-
-    options.map((option) => {
-      filters.push({
-        property: option.property,
-        value: option.value,
-      });
-    });
-
-    getSkybotLists({
-      page,
-      pageSize,
-      search: searchValue,
-      filters,
-    })
-      .then((res) => {
-        setTotalCount(res.data.count);
-        setTableData(res.data.results);
-      })
-      .finally(() => {
-        setTableLoading(false);
-      });
-  };
-
-  const handleClearFilters = () => {
-    setVmagnitude([4, 18]);
-    setObjectCompiled('');
-    setDynamicClass([]);
-  };
-
-  const handleSearchSssoDetail = (row) => {
-    history.push(`search-ssso-detail/${row.id}`);
-  };
-
-  const handleValues = (value) => {
-    const roundValue = parseFloat(value).toFixed(3);
-    const stringValue = roundValue.toString();
-    return stringValue;
-  };
-
-  const tableColumns = [
-    {
-      name: 'id',
-      title: 'Details',
-      width: 100,
-      icon: <Icon className="fas fa-info-circle" />,
-      action: handleSearchSssoDetail,
-      sortingEnabled: false,
-    },
-    {
-      name: 'name',
-      title: 'Obj Name',
-      width: 100,
-      align: 'left',
-      headerTooltip: 'Object Name',
-    },
-    {
-      name: 'num',
-      title: 'Obj Num',
-      width: 130,
-      align: 'right',
-      headerTooltip: 'Object Number',
-    },
-    {
-      name: 'raj2000',
-      title: 'RA (deg)',
-      width: 120,
-      align: 'right',
-      headerTooltip: 'Right Ascension',
-      customElement: (row) => (
-        <span>{row.raj2000 ? handleValues(row.raj2000) : ''}</span>
-      ),
-    },
-    {
-      name: 'decj2000',
-      title: 'Dec (deg)',
-      width: 120,
-      align: 'right',
-      headerTooltip: 'Declination',
-      customElement: (row) => (
-        <span>{row.decj2000 ? handleValues(row.decj2000) : ''}</span>
-      ),
-    },
-    {
-      name: 'ccdnum',
-      title: 'CCD Num',
-      width: 120,
-      align: 'right',
-      headerTooltip: 'CCD Number',
-    },
-    {
-      name: 'band',
-      title: 'Band',
-      width: 60,
-      align: 'center',
-    },
-    {
-      name: 'expnum',
-      title: 'Exp Num',
-      width: 130,
-      align: 'right',
-      headerTooltip: 'Esposure Number',
-    },
-    {
-      name: 'dynclass',
-      title: 'Dyn Class',
-      width: 100,
-      align: 'left',
-      headerTooltip: 'Dynamic Class',
-    },
-    {
-      name: 'mv',
-      title: 'Visual Mag',
-      width: 120,
-      align: 'right',
-      headerTooltip: 'Visual Magnitude',
-    },
-    {
-      name: 'errpos',
-      title: 'Error (arcsec)',
-      headerTooltip: 'Error on the position (arcsec)',
-      width: 150,
-      align: 'right',
-      customElement: (row) => (
-        <span>{row.errpos ? handleValues(row.errpos) : ''}</span>
-      ),
-    },
-  ];
+  }, [setTitle]);
 
   const optionsClassFirstLevel = [
     { id: 1, label: 'Centaur', value: 'Centaur' },
@@ -436,6 +246,186 @@ function SearchSsso({ history, setTitle }) {
       parentId: 4,
       label: 'Shallow',
       value: 'Mars-Crosser>Shallow',
+    },
+  ];
+
+  useEffect(() => {
+    let currentSublevelList = [];
+    dynamicClass.forEach((i) => {
+      const current = optionsClassFirstLevel[i];
+      const currentChildren = optionsClassSecondLevel.filter(
+        (option) => option.parentId === current.id
+      );
+      currentSublevelList = currentSublevelList.concat(currentChildren);
+    });
+    setSubLevelDynamicClassSelected(
+      Object.keys(currentSublevelList).map((el) => Number(el))
+    );
+    setSubLevelDynamicClassList(currentSublevelList);
+  }, [dynamicClass, optionsClassFirstLevel, optionsClassSecondLevel]);
+
+  useEffect(() => {
+    if (dynamicClass.length > 0) {
+      const dynamicClassSelected = dynamicClass
+        .map((i) => optionsClassFirstLevel[i].value)
+        .concat(
+          subLevelDynamicClassSelected.map(
+            (i) => subLevelDynamicClassList[i].value
+          )
+        )
+        .join(',');
+      setObjectCompiled(dynamicClassSelected);
+    }
+  }, [
+    subLevelDynamicClassSelected,
+    subLevelDynamicClassList,
+    optionsClassFirstLevel,
+    optionsClassSecondLevel,
+    dynamicClass,
+  ]);
+
+  const loadTableData = ({ pageSize, currentPage, searchValue }) => {
+    setTableLoading(true);
+
+    const options = [
+      {
+        property: 'dynclass__in',
+        value: objectCompiled,
+      },
+      {
+        property: 'mv__range',
+        value: vMagnitude.join(),
+      },
+      {
+        property: 'ccdnum__isnull',
+        value: false,
+      },
+    ];
+
+    options.forEach((option) => {
+      filters.push({
+        property: option.property,
+        value: option.value,
+      });
+    });
+
+    getSkybotLists({
+      page: currentPage + 1,
+      pageSize,
+      search: searchValue,
+      filters,
+    })
+      .then((res) => {
+        setTotalCount(res.data.count);
+        setTableData(res.data.results);
+      })
+      .finally(() => {
+        setTableLoading(false);
+      });
+  };
+
+  const handleClearFilters = () => {
+    setVmagnitude([4, 18]);
+    setObjectCompiled('');
+    setDynamicClass([]);
+  };
+
+  const handleSearchSssoDetail = (row) => {
+    history.push(`search-ssso-detail/${row.id}`);
+  };
+
+  const handleValues = (value) => {
+    const roundValue = parseFloat(value).toFixed(3);
+    const stringValue = roundValue.toString();
+    return stringValue;
+  };
+
+  const tableColumns = [
+    {
+      name: 'id',
+      title: 'Details',
+      width: 100,
+      icon: <Icon className="fas fa-info-circle" />,
+      action: handleSearchSssoDetail,
+      sortingEnabled: false,
+    },
+    {
+      name: 'name',
+      title: 'Obj Name',
+      width: 100,
+      align: 'left',
+      headerTooltip: 'Object Name',
+    },
+    {
+      name: 'num',
+      title: 'Obj Num',
+      width: 130,
+      align: 'right',
+      headerTooltip: 'Object Number',
+    },
+    {
+      name: 'raj2000',
+      title: 'RA (deg)',
+      width: 120,
+      align: 'right',
+      headerTooltip: 'Right Ascension',
+      customElement: (row) => (
+        <span>{row.raj2000 ? handleValues(row.raj2000) : ''}</span>
+      ),
+    },
+    {
+      name: 'decj2000',
+      title: 'Dec (deg)',
+      width: 120,
+      align: 'right',
+      headerTooltip: 'Declination',
+      customElement: (row) => (
+        <span>{row.decj2000 ? handleValues(row.decj2000) : ''}</span>
+      ),
+    },
+    {
+      name: 'ccdnum',
+      title: 'CCD Num',
+      width: 120,
+      align: 'right',
+      headerTooltip: 'CCD Number',
+    },
+    {
+      name: 'band',
+      title: 'Band',
+      width: 60,
+      align: 'center',
+    },
+    {
+      name: 'expnum',
+      title: 'Exp Num',
+      width: 130,
+      align: 'right',
+      headerTooltip: 'Esposure Number',
+    },
+    {
+      name: 'dynclass',
+      title: 'Dyn Class',
+      width: 100,
+      align: 'left',
+      headerTooltip: 'Dynamic Class',
+    },
+    {
+      name: 'mv',
+      title: 'Visual Mag',
+      width: 120,
+      align: 'right',
+      headerTooltip: 'Visual Magnitude',
+    },
+    {
+      name: 'errpos',
+      title: 'Error (arcsec)',
+      headerTooltip: 'Error on the position (arcsec)',
+      width: 150,
+      align: 'right',
+      customElement: (row) => (
+        <span>{row.errpos ? handleValues(row.errpos) : ''}</span>
+      ),
     },
   ];
 
