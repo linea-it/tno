@@ -103,7 +103,7 @@ docker exec -it $(docker ps -q -f name=database) psql -h localhost -U postgres -
 
 #### Skybot Output
 ```
-docker exec -it $(docker ps -q -f name=database) psql -h localhost -U postgres -c "\\copy tno_skybotoutput from '/data/tno_skybotoutput.csv' DELIMITER ';' CSV HEADER"
+docker exec -it $(docker ps -q -f name=database) psql -h localhost -U postgres -c "\\copy tno_skybotoutput from '/data/tno_skybotoutput.csv' fDELIMITER ';' CSV HEADER"
 ```
 
 ### Run
@@ -114,7 +114,7 @@ docker-compose up -d
 
 Run Frontend
 ```
-cd dashboard
+cd frontend
 yarn
 yarn run start
 ```
