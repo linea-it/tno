@@ -27,6 +27,11 @@ from django.contrib.auth import logout
 def teste(request):
     if request.method == 'GET':
         
+        # Test Skybot load data daemon
+        from tno.skybot.new_load_data import DesImportSkybotOutput
+
+        result = DesImportSkybotOutput().import_output_file("/archive/skybot_output/1/808801_Y.csv")
+
         # check_astrometry_running()
 
         # Registro de resultado da astrometria.
@@ -46,9 +51,9 @@ def teste(request):
         #      'end': end
         #  })
             
-        result = dict({
-            'success': True,
-        })
+        # result = dict({
+        #     'success': True,
+        # })
 
         return Response(result)
 

@@ -180,9 +180,9 @@ class SkybotOutput(models.Model):
     )
 
     num = models.CharField(
-        max_length=6, default=None, null=True, blank=True,
-        verbose_name='Num',
-        help_text='(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).'
+        max_length=35, default=None, null=True, blank=True,
+        verbose_name='Number',
+        help_text='(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).',
     )
 
     name = models.CharField(
@@ -221,87 +221,104 @@ class SkybotOutput(models.Model):
 
     mv = models.FloatField(
         verbose_name='Mv',
-        help_text='(ucd=“phot.mag;em.opt.V”) Visual magnitude'
+        help_text='(ucd=“phot.mag;em.opt.V”) Visual magnitude',
+        default=None, null=True, blank=True
     )
 
     errpos = models.FloatField(
         verbose_name='ErrPos',
-        help_text='(ucd=“stat.error.sys”) Uncertainty on the (RA,DEC) coordinates'
+        help_text='(ucd=“stat.error.sys”) Uncertainty on the (RA,DEC) coordinates',
+        default=None, null=True, blank=True
     )
 
     d = models.FloatField(
         verbose_name='d',
-        help_text='(ucd="pos.ang") Body-to-center angular distance'
+        help_text='(ucd="pos.ang") Body-to-center angular distance',
+        default=None, null=True, blank=True
     )
 
     dracosdec = models.FloatField(
         verbose_name='dRAcosDec',
-        help_text='(ucd=“pos.pm;pos.eq.ra”) Motion in right ascension d(RA)cos(DEC)'
+        help_text='(ucd=“pos.pm;pos.eq.ra”) Motion in right ascension d(RA)cos(DEC)',
+        default=None, null=True, blank=True
     )
 
     ddec = models.FloatField(
         verbose_name='dDEC',
-        help_text='(ucd=“pos.pm;pos.eq.dec”) Motion in declination d(DEC)'
+        help_text='(ucd=“pos.pm;pos.eq.dec”) Motion in declination d(DEC)',
+        default=None, null=True, blank=True
     )
 
     dgeo = models.FloatField(
         verbose_name='Dgeo',
-        help_text='(ucd=“phys.distance”) Distance from observer'
+        help_text='(ucd=“phys.distance”) Distance from observer',
+        default=None, null=True, blank=True
     )
 
     dhelio = models.FloatField(
         verbose_name='Dhelio',
-        help_text='(ucd=“phys.distance”) Distance from the Sun'
+        help_text='(ucd=“phys.distance”) Distance from the Sun',
+        default=None, null=True, blank=True
     )
 
     phase = models.FloatField(
         verbose_name='Phase',
-        help_text='(ucd=“pos.phaseAng”) Phase angle, e.g. elongation of earth from sun as seen from object'
+        help_text='(ucd=“pos.phaseAng”) Phase angle, e.g. elongation of earth from sun as seen from object',
+        default=None, null=True, blank=True
     )
 
     solelong = models.FloatField(
         verbose_name='SolElong',
-        help_text='(ucd=“pos.angDistance”) Solar elongation, e.g. elongation of object from sun as seen from Earth'
+        help_text='(ucd=“pos.angDistance”) Solar elongation, e.g. elongation of object from sun as seen from Earth',
+        default=None, null=True, blank=True
     )
 
     px = models.FloatField(
         verbose_name='Px',
-        help_text='(ucd=“src.orbital.pos;meta.id.x”) Mean J2000 heliocentric position vector, x component'
+        help_text='(ucd=“src.orbital.pos;meta.id.x”) Mean J2000 heliocentric position vector, x component',
+        default=None, null=True, blank=True
     )
 
     py = models.FloatField(
         verbose_name='Py',
-        help_text='(ucd=“src.orbital.pos;meta.id.y”) Mean J2000 heliocentric position vector, y component'
+        help_text='(ucd=“src.orbital.pos;meta.id.y”) Mean J2000 heliocentric position vector, y component',
+        default=None, null=True, blank=True        
     )
 
     pz = models.FloatField(
         verbose_name='Pz',
-        help_text='(ucd=“src.orbital.pos;meta.id.z”) Mean J2000 heliocentric position vector, z component'
+        help_text='(ucd=“src.orbital.pos;meta.id.z”) Mean J2000 heliocentric position vector, z component',
+        default=None, null=True, blank=True
     )
 
     vx = models.FloatField(
         verbose_name='Vx',
-        help_text='(ucd=“src.veloc.orbital;meta.id.x”) Mean J2000 heliocentric velocity vector, x component'
+        help_text='(ucd=“src.veloc.orbital;meta.id.x”) Mean J2000 heliocentric velocity vector, x component',
+        default=None, null=True, blank=True        
     )
 
     vy = models.FloatField(
         verbose_name='Vy',
-        help_text='(ucd=“src.veloc.orbital;meta.id.y”) Mean J2000 heliocentric velocity vector, y component'
+        help_text='(ucd=“src.veloc.orbital;meta.id.y”) Mean J2000 heliocentric velocity vector, y component',
+        default=None, null=True, blank=True        
     )
 
     vz = models.FloatField(
         verbose_name='Vz',
-        help_text='(ucd=“src.veloc.orbital;meta.id.z”) Mean J2000 heliocentric velocity vector, z component'
+        help_text='(ucd=“src.veloc.orbital;meta.id.z”) Mean J2000 heliocentric velocity vector, z component',
+        default=None, null=True, blank=True
     )
 
     jdref = models.FloatField(
         verbose_name='JDRef',
-        help_text='(ucd=“time.epoch”) Reference epoch of the position/velocity vector'
+        help_text='(ucd=“time.epoch”) Reference epoch of the position/velocity vector',
+        default=None, null=True, blank=True
     )
 
     externallink = models.URLField(
         verbose_name='ExternalLink',
-        help_text='(ucd=“meta.ref.url”) External link to hint the target'
+        help_text='(ucd=“meta.ref.url”) External link to hint the target',
+        default=None, null=True, blank=True        
     )
 
     expnum = models.BigIntegerField(
@@ -325,7 +342,6 @@ class SkybotOutput(models.Model):
     class Meta:
         unique_together = ('num', 'name', 'expnum')
         indexes = [
-
             models.Index(fields=['num']),
             models.Index(fields=['name']),
             models.Index(fields=['dynclass']),
@@ -337,7 +353,7 @@ class SkybotOutput(models.Model):
         ]
 
     def __str__(self):
-        return str(self.id)
+        return str(self.name)
 
 
 class CcdImage(models.Model):
