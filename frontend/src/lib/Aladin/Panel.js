@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { uniqueId } from 'lodash';
 import sizeMe from 'react-sizeme';
-import { desfootprint } from './DesFootprint';
 import PropTypes from 'prop-types';
+import { desfootprint } from './DesFootprint';
 
 class Panel extends Component {
   constructor(props) {
@@ -60,7 +60,6 @@ class Panel extends Component {
   }
 
   componentDidMount = () => {
-
     this.create_aladin();
   };
 
@@ -92,7 +91,7 @@ class Panel extends Component {
 
     this.aladin = this.libA.aladin(
       // Id da div que recebera o aladin
-      '#' + this.id,
+      `#${this.id}`,
       // opcoes do aladin
       options
     );
@@ -106,16 +105,16 @@ class Panel extends Component {
   };
 
   footprint = (footprint = [], name = 'footprint', visible = true) => {
-    const aladin = this.aladin;
+    const { aladin } = this;
 
     let overlay;
 
     if (aladin.view.overlays[0] !== undefined) {
-      const overlays = aladin.view.overlays;
+      const { overlays } = aladin.view;
 
       let plotDes = false;
 
-      for (var i = overlays.length - 1; i >= 0; i--) {
+      for (let i = overlays.length - 1; i >= 0; i--) {
         if (overlays[i].name === name) {
           plotDes = true;
 
@@ -140,7 +139,7 @@ class Panel extends Component {
       overlay = this.libA.graphicOverlay({
         color: '#ee2345',
         lineWidth: 2,
-        name: name,
+        name,
       });
 
       aladin.addOverlay(overlay);
@@ -149,7 +148,7 @@ class Panel extends Component {
   };
 
   plot_exposures = (exposures = [], name = 'Exposures') => {
-    const aladin = this.aladin;
+    const { aladin } = this;
 
     // Verificar se os ccds ja foram plotados
     let overlay = this.getOverlayByName(name);
@@ -166,7 +165,7 @@ class Panel extends Component {
 
       aladin.addOverlay(overlay);
 
-      exposures.forEach(item => {
+      exposures.forEach((item) => {
         // const exposure = this.libA.circle(item.ra_cent, item.dec_cent, 2.2,{});
         const exposure = this.libA.circle(item.radeg, item.decdeg, 1.1, {});
         overlay.add(exposure);
@@ -175,7 +174,7 @@ class Panel extends Component {
   };
 
   plot_ccds = (ccds = [], name = 'CCDs') => {
-    const aladin = this.aladin;
+    const { aladin } = this;
 
     // Verificar se os ccds ja foram plotados
     let overlay = this.getOverlayByName(name);
@@ -192,7 +191,7 @@ class Panel extends Component {
 
       aladin.addOverlay(overlay);
 
-      ccds.forEach(item => {
+      ccds.forEach((item) => {
         const tPath = [
           [item.rac4, item.decc4],
           [item.rac3, item.decc3],
@@ -205,9 +204,9 @@ class Panel extends Component {
     }
   };
 
-  getOverlayByName = name => {
-    const aladin = this.aladin;
-    const overlays = aladin.view.overlays;
+  getOverlayByName = (name) => {
+    const { aladin } = this;
+    const { overlays } = aladin.view;
     let result = null;
 
     if (overlays.length > 0) {
@@ -221,7 +220,7 @@ class Panel extends Component {
     return result;
   };
 
-  markPosition = position => {
+  markPosition = (position) => {
     const cat = this.libA.catalog({ name: 'Target', sourceSize: 18 });
     this.aladin.addCatalog(cat);
     cat.addSources([this.libA.marker(position)]);
@@ -238,7 +237,7 @@ class Panel extends Component {
       <div
         id={this.id}
         className="aladin-container"
-        style={{ width: width, height: height }}
+        style={{ width, height }}
       />
     );
   }
