@@ -1,12 +1,11 @@
 module.exports = {
+  parser: 'babel-eslint',
   env: {
     browser: true,
     es6: true,
-    jest: true
+    jest: true,
   },
-  extends: [
-    'airbnb',
-  ],
+  extends: ['airbnb', 'prettier', 'prettier/react'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
@@ -18,20 +17,20 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  plugins: [
-    'react',
-  ],
+  plugins: ['react', 'jsx-a11y', 'import', 'react-hooks', 'prettier'],
   rules: {
-    'react/jsx-filename-extension': [1, {
-      extensions: ['.js', '.jsx']
-    }],
-    'jsx-a11y/click-events-have-key-events': 0,
-    'jsx-a11y/no-static-element-interactions': 0,
-    'jsx-a11y/no-noninteractive-element-interactions': 0,
-    'array-callback-return': 0,
-    'react/destructuring-assignment': 0,
+    'prettier/prettier': 'error',
+    'react/jsx-filename-extension': [
+      1,
+      {
+        extensions: ['.js', '.jsx'],
+      },
+    ],
     'react/jsx-props-no-spreading': 0,
-    'import/prefer-default-export': 0,
-    'no-console': 0,
+    'react/no-array-index-key': 0,
+    'no-plusplus': 0,
+    'jsx-a11y/no-noninteractive-element-interactions': 0,
+    'jsx-a11y/click-events-have-key-events': 0,
+    'radix': 0,
   },
 };
