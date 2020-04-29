@@ -129,14 +129,11 @@ class SkybotRunSerializer(serializers.ModelSerializer):
 
 
 class SkybotOutputSerializer(serializers.ModelSerializer):
-    pointing = serializers.PrimaryKeyRelatedField(
-        queryset=Pointing.objects.all(), many=False)
 
     class Meta:
         model = SkybotOutput
         fields = (
             'id',
-            'pointing',
             'num',
             'name',
             'dynclass',
@@ -160,10 +157,6 @@ class SkybotOutputSerializer(serializers.ModelSerializer):
             'vy',
             'vz',
             'jdref',
-            'externallink',
-            'expnum',
-            'ccdnum',
-            'band',
         )
 
 

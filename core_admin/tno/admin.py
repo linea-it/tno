@@ -11,16 +11,15 @@ class PointingAdmin(admin.ModelAdmin):
 
 @admin.register(SkybotOutput)
 class SkybotOutputAdmin(admin.ModelAdmin):
-    list_display = ('id', 'pointing', 'name', 'dynclass', 'raj2000',
-                    'decj2000', 'expnum', 'ccdnum', 'band',)
-    search_fields = ('name', 'dynclass', 'expnum')
+    list_display = ('id', 'name', 'dynclass', 'raj2000', 'decj2000', )
+    search_fields = ('name', 'dynclass', )
 
     # Retira do Formulario a campo de chave estrangeira "pointing"
     # que tem milhares de registros e causa tavamento da interface
     # exclude = ('pointing',)
 
     # Troca o tipo de imput de Select para um text field com botao de busca
-    raw_id_fields = ('pointing',)
+    # raw_id_fields = ('pointing',)
 
 
 @admin.register(CcdImage)

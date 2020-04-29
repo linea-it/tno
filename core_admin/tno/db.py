@@ -1,18 +1,19 @@
-from sqlalchemy import create_engine, inspect, MetaData, func, Table, Column, Integer, String, Float, Boolean
-from sqlalchemy import exc as sa_exc
-# from sqlalchemy.dialects import oracle
-from sqlalchemy.dialects import sqlite
-from sqlalchemy.dialects import postgresql
-from sqlalchemy.ext.compiler import compiles
-from sqlalchemy.sql import select, and_, text
-from sqlalchemy.sql.expression import Executable, ClauseElement
-from sqlalchemy.sql.expression import literal_column, between
-from sqlalchemy.schema import Sequence
-
 import collections
-import os
-from django.conf import settings
 import logging
+import os
+
+from django.conf import settings
+from sqlalchemy import (Boolean, Column, Float, Integer, MetaData, String,
+                        Table, create_engine)
+from sqlalchemy import exc as sa_exc
+from sqlalchemy import func, inspect
+# from sqlalchemy.dialects import oracle
+from sqlalchemy.dialects import postgresql, sqlite
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.schema import Sequence
+from sqlalchemy.sql import and_, select, text
+from sqlalchemy.sql.expression import (ClauseElement, Executable, between,
+                                       literal_column)
 
 
 class DBBase():
@@ -51,6 +52,9 @@ class DBBase():
             schema = os.environ['DB_SCHEMA']
 
         return schema
+
+    def get_engine(self):
+        return self.engine
 
     def get_table(self, tablename, schema=None):
         tbl = Table(
@@ -278,6 +282,40 @@ class DBBase():
         self.table_bsp_jpl_file = self.get_table('orbit_bspjplfile', schema)
 
         return self.table_bsp_jpl_file
+
+    def import_with_copy_expert(self, sql, data):
+        """
+            This method is recommended for importing large volumes of data. using the postgresql COPY method.
+
+            The method is useful to handle all the parameters that PostgreSQL makes available 
+            in COPY statement: https://www.postgresql.org/docs/current/sql-copy.html
+
+            it is necessary that the from clause is reading from STDIN.
+            
+            example: 
+            sql = COPY <table> (<columns) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);
+
+            Parameters:
+                sql (str): The sql statement should be in the form COPY table '.
+                data (file-like ): a file-like object to read or write
+            Returns:
+                rowcount (int):  the number of rows that the last execute*() produced (for DQL statements like SELECT) or affected (for DML statements like UPDATE or INSERT)
+
+        References: 
+            https://www.psycopg.org/docs/cursor.html#cursor.copy_from
+            https://stackoverflow.com/questions/30050097/copy-data-from-csv-to-postgresql-using-python
+            https://stackoverflow.com/questions/13125236/sqlalchemy-psycopg2-and-postgresql-copy
+        """
+        connection = self.engine.raw_connection()
+        try:
+            with connection.cursor() as cursor:
+                cursor.copy_expert(sql, data)
+                connection.commit()
+
+            return cursor.rowcount
+        except Exception as e:
+            connection.rollback()
+            raise (e)
 
 
 class CatalogDB(DBBase):

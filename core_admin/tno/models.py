@@ -315,41 +315,14 @@ class SkybotOutput(models.Model):
         default=None, null=True, blank=True
     )
 
-    externallink = models.URLField(
-        verbose_name='ExternalLink',
-        help_text='(ucd=“meta.ref.url”) External link to hint the target',
-        default=None, null=True, blank=True        
-    )
-
-    expnum = models.BigIntegerField(
-        verbose_name='Exposure',
-        help_text='Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
-        default=None, null=True, blank=True
-    )
-    ccdnum = models.IntegerField(
-        verbose_name='CCD', help_text='CCD Number (1, 2, ..., 62)',
-        default=None, null=True, blank=True
-    )
-
-    band = models.CharField(
-        max_length=1,
-        verbose_name='Filter', help_text='Filter used to do the observation (u, g, r, i, z, Y).',
-        default=None, null=True, blank=True,
-        choices=(('u', 'u'), ('g', 'g'), ('r', 'r'),
-                 ('i', 'i'), ('z', 'z'), ('Y', 'Y'))
-    )
-
     class Meta:
-        unique_together = ('num', 'name', 'expnum')
+        unique_together = ('name', 'raj2000', 'decj2000')
         indexes = [
             models.Index(fields=['num']),
             models.Index(fields=['name']),
             models.Index(fields=['dynclass']),
             models.Index(fields=['raj2000']),
             models.Index(fields=['decj2000']),
-            models.Index(fields=['expnum']),
-            models.Index(fields=['expnum', 'ccdnum']),
-            models.Index(fields=['expnum', 'ccdnum', 'band']),
         ]
 
     def __str__(self):
