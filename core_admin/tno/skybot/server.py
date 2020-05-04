@@ -40,7 +40,7 @@ class SkybotServer():
             "-------------------------- Skybot Run: %s --------------------------" % skybotrun.id)
 
         # DEBUG LIMIT
-        self.debug_limit = 1
+        self.debug_limit = 2
 
         try:
             self.dbsk = SkybotOutputDB()

@@ -1,51 +1,67 @@
 import logging
-from io import StringIO 
-import pandas as pd
-from django.conf import settings
-from tno.db import DBBase
-
-from tno.skybotoutput import SkybotOutput as SkybotOutputDB
+from datetime import datetime, timedelta, timezone
+from io import StringIO
 
 import humanize
-from datetime import datetime,timedelta, timezone
+import pandas as pd
+from django.conf import settings
+
+from tno.db import DBBase
+from tno.skybotoutput import SkybotOutput as SkybotOutputDB
+from tno.skybotoutput import Pointing as PointingDB
+import linecache
 
 class DesImportSkybotOutput():
 
     def __init__(self):
         self.logger = logging.getLogger("skybot_load_data")
 
-        # try:
-        #     self.dbsk = SkybotOutputDB()
-        # except Exception as e:
-        #     self.logger.error(e)
-
     def import_output_file(self, filepath):
         self.logger.info("----------------------------------------------")
         self.logger.info("Importing Skybot Output: [%s]" % filepath)
 
         try:
+
+            # TODO: Recuperar o pfw_attempt_id do nome do arquivo. 
+            pfw_attempt_id = 2450858
+
             # Le o arquivo de outputs e gera um pandas dataframe
             df = self.read_output_file(filepath)
+
+            # Importa os resultados na tabela skybot
+            try:
+                t0 = datetime.now(timezone.utc)
+
+                # rowcount = self.import_data(df)
+                rowcount = 0
+                t1 = datetime.now(timezone.utc)
+                tdelta = t1 - t0
+
+                self.logger.info("Imported %s records in %s" % (
+                    rowcount, humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))
+            except Exception as e:
+                raise(e)
+
+            # # Recuperar as linhas inseridas
+            # ticket = self.read_ticket_from_output(filepath)
+
+            # self.positions_by_ticket(ticket)
+
+            # Recupera os CCDs da exposição 
+            ccds = self.ccds_by_pfw_attempt_id(pfw_attempt_id)
+
+            # Para cada CCD associa as posições do skybot com os apontamentos do DES.
+            
+
+            # Exemplo da query para associar os CCDs. 
+            # select id, 2450858 as pfw_attempt_id, 808801 as expnum, 'Y' as band, 21 as ccdnum  from tno_skybotoutput ts where q3c_poly_query("raj2000", "decj2000", '{359.694601, 0.32033, 359.694368, 0.170513, 359.994289, 0.1702, 359.994431, 0.32008}')
+
+
 
             # TODO: Adiciona informação sobre a exposição.
             # Colunas pfw_attempt_id, expnum, ccdnum, band
             # CCDnum sera preenchida depois usando Q3C.
 
-            # TODO: Talvez seja interessante inserir a coluna id já preenchica.
-
-            # TODO: Exemplo da query COPY que funcionou.
-
-            try:
-                t0 = datetime.now(timezone.utc)
-
-                rowcount = self.import_data(df)
-
-                t1 = datetime.now(timezone.utc)
-                tdelta = t1 - t0
-
-                self.logger.info("Imported %s records in %s" % (rowcount, humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))
-            except Exception as e:
-                raise(e)
 
 
             # Apenas para debug
@@ -63,9 +79,12 @@ class DesImportSkybotOutput():
 
         except Exception as e:
             self.logger.error(e)
-            raise e
+            raise (e)
 
     def read_output_file(self, filepath):
+        """
+
+        """
         self.logger.debug("Reading Skybot Output: [%s]" % filepath)
 
         # Headers que estão no arquivo e na ordem correta de leitura.
@@ -89,10 +108,14 @@ class DesImportSkybotOutput():
         # Retirar os espaços entre os valores
         df = df.applymap(lambda x: x.strip() if type(x) == str else x)
 
+
+        # Adicionar uma coluna com o Ticket do Skybot
+        df['ticket'] = self.read_ticket_from_output(filepath)
+
         # Mudar a ordem das colunas de arcordo com a ordem  da tabela.
         # Isso facilita a importacao por csv.
         columns = ['num', 'name', 'dynclass', 'ra', 'dec', 'raj2000', 'decj2000', 'mv', 'errpos', 'd', 'dracosdec',
-                   'ddec', 'dgeo', 'dhelio', 'phase', 'solelong', 'px', 'py', 'pz', 'vx', 'vy', 'vz', 'jdref', ]
+                   'ddec', 'dgeo', 'dhelio', 'phase', 'solelong', 'px', 'py', 'pz', 'vx', 'vy', 'vz', 'jdref', 'ticket']
         # 'externallink','expnum', 'ccdnum', 'band', 'pointing_id'
         df = df.reindex(columns=columns)
 
@@ -116,7 +139,7 @@ class DesImportSkybotOutput():
         """
         # Converte o Data frame para csv e depois para arquivo em memória.
         # Mantem o header do csv para que seja possivel escolher na query COPY quais colunas
-        # serão importadas. 
+        # serão importadas.
         # Desabilita o index para o pandas não criar uma coluna a mais com id que não corresponde a tabela.
         self.logger.debug("Converting the pandas dataframe to csv")
         data = StringIO()
@@ -136,9 +159,9 @@ class DesImportSkybotOutput():
             # Recupera o nome da tabela skybot output
             table = str(dbbase.get_table_skybot())
             # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
-            sql = "COPY %s (num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
+            sql = "COPY %s (num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref, ticket) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
 
-            # Executa o metodo que importa o arquivo csv na tabela. 
+            # Executa o metodo que importa o arquivo csv na tabela.
             rowcount = dbbase.import_with_copy_expert(sql, data)
 
             self.logger.debug("Successfully imported")
@@ -147,7 +170,63 @@ class DesImportSkybotOutput():
             return rowcount
 
         except Exception as e:
-            raise("Failed to import data. Error: [%s]" % e)
+            raise Exception("Failed to import data. Error: [%s]" % e)
+
+    def read_ticket_from_output(self, filepath):
+        """
+            Read the output file and retrieve the ticket number on the second line. 
+            this ticket identifies the request that was made for the Skybot service.
+
+            Converte Dec em HMS para Degrees.
+            Parameters:
+                filepath (str): Output file returned by the skybot service.
+
+            Returns:
+                ticket (int): Ticket number, example: 166515392791779001
+        """
+
+        # Le o arquivo de outputs e recupera o ticket.
+        # ticket é um id que identifica a requisição feita no skybot. 
+        # serve para agrupar todos os resultados a mesma requisição.
+        line = linecache.getline(filepath, 2)
+        ticket = int(line.split(':')[1].strip())
+        self.logger.debug("Skybot Ticket: [%s]" % ticket)
+
+        return ticket
+
+    # def positions_by_ticket(self, ticket):
+
+    #     # Abre conexão com o banco usando sqlAlchemy
+    #     db = SkybotOutputDB()
+    #     # Recupera o nome da tabela skybot output
+    #     rows = db.positions_by_ticket(ticket)
+
+    #     # Converte o resultado para um pandas df.
+    #     df = pd.DataFrame(rows)
+    #     df = df.set_index('id')
+
+    #     self.logger.debug(df.head())
+
+    def ccds_by_pfw_attempt_id(self, pfw_attempt_id):
+        """
+            Retorna todos os ccds de uma exposição. 
+            uma exposição igual N ccds normalmente 61. 
+        """
+        self.logger.debug("Retrieving the CCDs. pfw_attempt_id[%s]" % pfw_attempt_id)
+
+
+        try:
+            # Abre conexão com o banco de dados usando a Classe Pointing
+            db = PointingDB()
+            # Faz a query de todos os CCDs por pfw_attempt_id
+            rows = db.exposure_by_pfw_attempt_id(pfw_attempt_id)
+
+            self.logger.debug("CCDs [%s]" % len(rows))
+
+            return rows
+
+        except Exception as e:
+            raise Exception("Failed to retrieve CCDs for exposure with pfw_attempt_id=%s. Error: [%s]" % (pfw_attempt_id, e))
 
     def convert_ra_hms_deg(self, ra=''):
         """
@@ -180,36 +259,3 @@ class DesImportSkybotOutput():
         DEC = ds*(D + M/60. + S/3600.)
 
         return float("{0:.4f}".format(DEC))
-
-
-
-# https://stackoverflow.com/questions/13125236/sqlalchemy-psycopg2-and-postgresql-copy
-# def to_sql(engine, df, table, if_exists='fail', sep='\t', encoding='utf8'):
-#     # Create Table
-#     df[:0].to_sql(table, engine, if_exists=if_exists)
-
-#     # Prepare data
-#     output = cStringIO.StringIO()
-#     df.to_csv(output, sep=sep, header=False, encoding=encoding)
-#     output.seek(0)
-
-#     # Insert data
-#     connection = engine.raw_connection()
-#     cursor = connection.cursor()
-#     cursor.copy_from(output, table, sep=sep, null='')
-#     connection.commit()
-#     cursor.close()
-
-
-# ----------------------
-# Outra solução Usando copy expert
-# https://stackoverflow.com/questions/30050097/copy-data-from-csv-to-postgresql-using-python
-# csv_file_name = '/home/user/some_file.csv'
-# sql = "COPY table_name FROM STDIN DELIMITER '|' CSV HEADER"
-# cursor.copy_expert(sql, open(csv_file_name, "r"))
-
-# Lista de boas soluções
-# https://www.codementor.io/@bruce3557/graceful-data-ingestion-with-sqlalchemy-and-pandas-pft7ddcy6
-
-# Exemplo usando SQLAlchemy Core
-# https://docs.sqlalchemy.org/en/13/faq/performance.html#i-m-inserting-400-000-rows-with-the-orm-and-it-s-really-slow

@@ -588,6 +588,23 @@ class SkybotOutput(DBBase):
         return rows, totalSize
 
 
+    def positions_by_ticket(self, ticket):
+        """
+            Retorna todas as linhas da tabela skybotoutput 
+            relacionadas a um skybot Ticket. 
+        """
+        tbl = self.get_table_skybot()
+
+        stm = select(tbl.c).where(and_(tbl.c.ticket == ticket))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows
+
+
+
 class Pointing(DBBase):
     def __init__(self):
         super(Pointing, self).__init__()
@@ -730,3 +747,29 @@ class Pointing(DBBase):
             return rows
         except Exception as e:
             return None
+
+    def exposure_by_pfw_attempt_id(self, pfw_attempt_id):
+        """
+            Retorna todos os CCDs que compoem uma mesma exposição. 
+            um pfw_attempt_id expecifica = 61 ou N (expnum, ccdnum, band).
+        """
+        tbl = self.tbl
+
+        stm = select([
+            tbl.c.pfw_attempt_id, tbl.c.expnum, tbl.c.ccdnum, tbl.c.band, 
+            tbl.c.ra_cent, tbl.c.dec_cent, 
+            tbl.c.rac1, tbl.c.rac2, tbl.c.rac3, tbl.c.rac4,
+            tbl.c.decc1, tbl.c.decc2, tbl.c.decc3, tbl.c.decc4 
+        ])
+
+        stm = stm.where(and_(tbl.c.pfw_attempt_id == pfw_attempt_id))
+
+        stm = stm.order_by(tbl.c.ccdnum)
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows
+
+            
