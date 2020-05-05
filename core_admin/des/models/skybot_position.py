@@ -45,5 +45,9 @@ class SkybotPosition(models.Model):
 
     # TODO: Talvez seja necessário acrescentar uma relação com a execução que identificou esses CCD/Posição.
 
+    class Meta:
+        # A mesma posição não pode se repetir em um mesmo ccd.
+        unique_together = ('position', 'exposure', 'ccd')
+
     def __str__(self):
         return str(self.id)
