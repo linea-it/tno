@@ -116,7 +116,8 @@ INSTALLED_APPS = [
     'tno',
     'praia',
     'orbit',
-    'predict'
+    'predict',
+    'des'
 ]
 
 MIDDLEWARE = [

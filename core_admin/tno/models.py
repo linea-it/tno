@@ -1,15 +1,19 @@
-from django.db import models
-from current_user import get_current_user
 from django.conf import settings
+from django.db import models
+
+from current_user import get_current_user
 from praia.models import Run as PraiaRun
 
 
 class Pointing(models.Model):
     pfw_attempt_id = models.BigIntegerField(
-        verbose_name='Image Id', help_text='Unique identifier for each image (1 image is composed by 62 CCDs)')
+        verbose_name='Exposure Id', help_text='Unique identifier for each image (1 image is composed by 62 CCDs)')
 
     desfile_id = models.BigIntegerField(
-        verbose_name='CCD Id', help_text='Unique identifier for each CCD.')
+        verbose_name='CCD Id',
+        help_text='Unique identifier for each CCD.',
+        unique=True
+    )
 
     nite = models.DateField(
         verbose_name="Night", help_text='Night at which the observation was made.'
@@ -20,8 +24,8 @@ class Pointing(models.Model):
     )
 
     expnum = models.BigIntegerField(
-        verbose_name='Exposure',
-        help_text='Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)'
+        verbose_name='Expnum',
+        help_text='identifier for each image.'
     )
     ccdnum = models.IntegerField(
         verbose_name='CCD', help_text='CCD Number (1, 2, ..., 62)'
@@ -148,21 +152,10 @@ class Pointing(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['expnum']),
-            models.Index(fields=['expnum', 'ccdnum']),
-            models.Index(fields=['expnum', 'ccdnum', 'band']),
-            models.Index(fields=['date_obs']),
-            # models.Index(fields=['rac1']),
-            # models.Index(fields=['rac2']),
-            # models.Index(fields=['rac3']),
-            # models.Index(fields=['rac4']),
-            # models.Index(fields=['decc1']),
-            # models.Index(fields=['decc2']),
-            # models.Index(fields=['decc3']),
-            # models.Index(fields=['decc4']),
             models.Index(fields=['pfw_attempt_id']),
             models.Index(fields=['desfile_id']),
-            models.Index(fields=['filename']),
+            models.Index(fields=['date_obs']),
+            models.Index(fields=['filename'])
         ]
 
     def __str__(self):
@@ -277,7 +270,7 @@ class SkybotOutput(models.Model):
     py = models.FloatField(
         verbose_name='Py',
         help_text='(ucd=“src.orbital.pos;meta.id.y”) Mean J2000 heliocentric position vector, y component',
-        default=None, null=True, blank=True        
+        default=None, null=True, blank=True
     )
 
     pz = models.FloatField(
@@ -289,13 +282,13 @@ class SkybotOutput(models.Model):
     vx = models.FloatField(
         verbose_name='Vx',
         help_text='(ucd=“src.veloc.orbital;meta.id.x”) Mean J2000 heliocentric velocity vector, x component',
-        default=None, null=True, blank=True        
+        default=None, null=True, blank=True
     )
 
     vy = models.FloatField(
         verbose_name='Vy',
         help_text='(ucd=“src.veloc.orbital;meta.id.y”) Mean J2000 heliocentric velocity vector, y component',
-        default=None, null=True, blank=True        
+        default=None, null=True, blank=True
     )
 
     vz = models.FloatField(

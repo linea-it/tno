@@ -50,28 +50,25 @@ class DesImportSkybotOutput():
             # Recupera os CCDs da exposição 
             ccds = self.ccds_by_pfw_attempt_id(pfw_attempt_id)
 
-            # Para cada CCD associa as posições do skybot com os apontamentos do DES.
+            # TODO: Para cada CCD associa as posições do skybot com os apontamentos do DES.
             
-
             # Exemplo da query para associar os CCDs. 
             # select id, 2450858 as pfw_attempt_id, 808801 as expnum, 'Y' as band, 21 as ccdnum  from tno_skybotoutput ts where q3c_poly_query("raj2000", "decj2000", '{359.694601, 0.32033, 359.694368, 0.170513, 359.994289, 0.1702, 359.994431, 0.32008}')
 
 
+            # Exemplo da query que faz a associação com CCD inserindo na tabela de Posições do DES.
+            # insert
+            #     into
+            #     des_skybotposition (exposure, ccd_id , position_id ) 
+            # select
+            #     2450858 as exposure,
+            #     1415975826 as ccd_id,
+            #     id as "position_id"
+            # from
+            #     tno_skybotoutput ts
+            # where
+            #     q3c_poly_query("raj2000","decj2000",'{359.694601, 0.32033, 359.694368, 0.170513, 359.994289, 0.1702, 359.994431, 0.32008}');        
 
-            # TODO: Adiciona informação sobre a exposição.
-            # Colunas pfw_attempt_id, expnum, ccdnum, band
-            # CCDnum sera preenchida depois usando Q3C.
-
-
-
-            # Apenas para debug
-            # i = 0
-            # for row in df.itertuples():
-            #     self.logger.debug("Row: [%s] Name: [%s] Num: [%s]" % (i, getattr(row, "name"), getattr(row, "num")))
-            #     # self.logger.debug("Row: [%s] RA: [%s -> %s] Dec: [%s -> %s]" % (i, getattr(row, "ra"), getattr(row, "raj2000"), getattr(row, "dec"), getattr(row, "decj2000")))
-            #     i += 1
-            # self.logger.debug("Total: [%s]" % i)
-            # self.logger.debug("Total2: [%s]" % df.shape[0])
 
             return dict({
                 "filepath": filepath
