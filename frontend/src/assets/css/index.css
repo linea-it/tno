@@ -33,3 +33,44 @@ th.MuiTableCell-root.MuiTableCell-head {
 code.hljs.sql {
   background-color: #fff;
 }
+
+.js-plotly-plot,
+.js-plotly-plot .plot-container.plotly {
+  width: 100%;
+}
+
+.js-plotly-plot .plot-container.plotly .svg-container {
+  width: 100% !important;
+  /* height: 'auto' !important; */
+  /* min-height: 400px; */
+  margin: auto;
+}
+
+/* #svg {
+  height: 185px;
+  width: 835px;
+} */
+
+.contrib-legend {
+  float: right;
+  margin-top: -3%;
+}
+
+.text-gray {
+  color: #586069;
+}
+
+.contrib-legend .legend {
+  position: relative;
+  bottom: -1px;
+  display: inline-block;
+  margin: 0 5px;
+  list-style: none;
+  padding: 0;
+}
+
+.contrib-legend .legend li {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+}

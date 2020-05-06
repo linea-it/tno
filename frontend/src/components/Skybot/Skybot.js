@@ -17,14 +17,14 @@ import SnackBar from '@material-ui/core/Snackbar';
 import Slide from '@material-ui/core/Slide';
 import moment from 'moment';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { SizeMe } from 'react-sizeme';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
 import {
-  createSkybotRun, getSkybotRunList, getSkybotRunEstimate, getExposuresByPeriod,
+  createSkybotRun, getSkybotRunList, getSkybotRunEstimate, getExposuresByPeriod, getYearsWithExposure,
 } from '../../api/Skybot';
 import Table from '../helpers/CustomTable';
 import CustomColumnStatus from '../helpers/CustomColumnStatus';
+import Heatmap from '../Plot/Heatmap';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -76,6 +76,29 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
     textAlign: 'justify',
   },
+  yearItemText: {
+    fontSize: 12,
+  },
+  yearListItem: {
+    padding: 0,
+  },
+  yearListItemText: {
+    margin: 0,
+  },
+  borderDrawer: {
+    width: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  selectedExposureYear: {
+    background: theme.palette.action.active,
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
 }));
 
 
@@ -102,8 +125,8 @@ function useInterval(callback, delay) {
 
 function Skybot({ setTitle, history }) {
   const [selectRunValue, setSelectRunValue] = useState('period');
-  const [initialDate, setInitialDate] = useState(null);
-  const [finalDate, setFinalDate] = useState(null);
+  const [initialDate, setInitialDate] = useState('2012-01-01');
+  const [finalDate, setFinalDate] = useState('2012-12-31');
   const [errorDatePicker, setErrorDatePicker] = useState(false);
   const [tablePage, setTablePage] = useState(1);
   const [tablePageSize, setTablePageSize] = useState(10);
@@ -123,20 +146,35 @@ function Skybot({ setTitle, history }) {
   });
   const [snackBarTransition, setSnackBarTransition] = useState(undefined);
   const [runEstimate, setRunEstimate] = useState({});
-  const [exposuresByPeriod, setExposuresByPeriod] = useState([]);
-  const [exposuresPlotHeight, setExposuresPlotHeight] = useState([]);
-  const [exposurePlotLoading, setExposurePlotLoading] = useState({
-    loading: false,
-    hasData: true,
-  });
   const [reload, setReload] = useState(true);
+  const [yearsWithExposure, setYearsWithExposure] = useState([]);
+  const [selectedExposureYear, setSelectedExposureYear] = useState({
+    year: '2016',
+    start_date: '2016-01-01',
+    end_date: '2016-12-31',
+  });
+  const [exposuresByYear, setExposuresByYear] = useState([]);
 
   const classes = useStyles();
 
   useEffect(() => {
     setTitle('Skybot Run');
     loadData();
+    console.log('helloooo');
+    getYearsWithExposure()
+      .then((res) => {
+        setYearsWithExposure(res.years.sort().reverse().map((year) => String(year)));
+      });
   }, []);
+
+  useEffect(() => {
+    getExposuresByPeriod(
+      selectedExposureYear.start_date,
+      selectedExposureYear.end_date,
+    ).then((res) => {
+      setExposuresByYear(res.rows);
+    });
+  }, [selectedExposureYear]);
 
   useEffect(() => {
     if (errorDatePicker) {
@@ -145,34 +183,18 @@ function Skybot({ setTitle, history }) {
   }, [errorDatePicker]);
 
   useEffect(() => {
-    setExposuresByPeriod([]);
     setRunEstimate({});
     if (initialDate) {
       setDisabledFinalDate(false);
     }
 
     if ((initialDate && finalDate) && (!errorDatePicker)) {
-      setExposurePlotLoading({
-        loading: true,
-        hasData: false,
-      });
-
       // Get the time estimate and amount of exposures based on period, before running:
       getSkybotRunEstimate(
         moment(initialDate).format('YYYY-MM-DD'),
         moment(finalDate).format('YYYY-MM-DD'),
       ).then((res) => setRunEstimate(res));
 
-      getExposuresByPeriod(
-        moment(initialDate).format('YYYY-MM-DD'),
-        moment(finalDate).format('YYYY-MM-DD'),
-      ).then((res) => {
-        setExposurePlotLoading({
-          loading: false,
-          hasData: res.rows.length > 0,
-        });
-        setExposuresByPeriod(res.rows);
-      });
       setDisabledRunButton(false);
     }
 
@@ -189,31 +211,15 @@ function Skybot({ setTitle, history }) {
 
   useEffect(() => {
     setRunEstimate({});
-    setExposuresByPeriod([]);
     if (selectRunValue === 'all') {
-      setExposurePlotLoading({
-        loading: true,
-        hasData: false,
-      });
       setRunEstimate({});
       setDisabledInitialDate(true);
       setDisabledFinalDate(true);
       getSkybotRunEstimate().then((res) => setRunEstimate(res));
-      getExposuresByPeriod().then((res) => {
-        setExposurePlotLoading({
-          loading: false,
-          hasData: res.rows.length > 0,
-        });
-        setExposuresByPeriod(res.rows);
-      });
       setDisabledRunButton(false);
     }
 
     if (selectRunValue === 'period') {
-      setExposurePlotLoading({
-        loading: false,
-        hasData: true,
-      });
       setDisabledInitialDate(false);
       setDisabledRunButton(true);
       setInitialDate(null);
@@ -263,25 +269,22 @@ function Skybot({ setTitle, history }) {
   };
 
   const handleSelectRunClick = () => {
-    switch (selectRunValue) {
-      case 'all':
-        setDisabledRunButton(true);
-        setLoading(true);
-        handleSubmit();
-        break;
-      case 'period':
-        setSnackBarVisible(true);
-        setSnackBarTransition(() => transitionSnackBar);
-        setDisabledRunButton(true);
-        setLoading(true);
-        handleSubmit();
-        break;
+    if (selectRunValue === 'all') {
+      setDisabledRunButton(true);
+      setLoading(true);
+      handleSubmit();
+    } else {
+      setSnackBarVisible(true);
+      setSnackBarTransition(() => transitionSnackBar);
+      setDisabledRunButton(true);
+      setLoading(true);
+      handleSubmit();
     }
   };
 
   const loadMenuItems = () => {
     const options = [
-      { id: 1, title: 'All Pointings', value: 'all' },
+      // { id: 1, title: 'All Pointings', value: 'all' },
       { id: 2, title: 'By Period', value: 'period' },
     ];
 
@@ -391,9 +394,21 @@ function Skybot({ setTitle, history }) {
     return `${hours}:${minutes}:${seconds}`;
   };
 
-  useInterval(() => {
-    setReload(!reload);
-  }, [30000]);
+  // useInterval(() => {
+  //   setReload(!reload);
+  // }, [30000]);
+
+  const handleExposureYearChange = (e) => {
+    const year = e.target.value;
+    if (selectedExposureYear.year !== year) {
+      setExposuresByYear([]);
+      setSelectedExposureYear({
+        year,
+        start_date: `${year}-01-01`,
+        end_date: `${year}-12-31`,
+      });
+    }
+  };
 
   return (
     <Grid>
@@ -403,8 +418,10 @@ function Skybot({ setTitle, history }) {
             <CardHeader
               title="SkyBot Run"
             />
-            <CardContent style={{ height: exposuresPlotHeight }}>
-              <Typography className={classes.typography}>Identification of CCDs with objects.</Typography>
+            <CardContent>
+              <Typography className={classes.typography}>
+                Identification of CCDs with objects
+              </Typography>
               <FormControl fullWidth>
                 <Label>Select the type of submission</Label>
                 <Select
@@ -477,64 +494,64 @@ function Skybot({ setTitle, history }) {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} lg={8} xl={9}>
+        <Grid item xs={12}>
           <Card>
-            <CardHeader
-              title="Unique Exposures By Period"
-            />
-            <SizeMe monitorHeight>
-              {({ size }) => {
-                setExposuresPlotHeight(size.height);
-                return (
-                  <CardContent>
-                    {exposuresByPeriod.length > 0 ? (
-                      <Plot
-                        data={[{
-                          x: exposuresByPeriod.map((rows) => rows.date_obs),
-                          y: exposuresByPeriod.map((rows) => rows.exposures),
-                          type: 'bar',
-                          name: `${runEstimate.exposures} exposures`,
-                          showlegend: true,
-                          fixedrange: true,
-                          hoverinfo: 'y',
-                        }]}
-                        className={classes.plotWrapper}
-                        layout={{
-                          hovermode: 'closest',
-                          autosize: true,
-                          bargap: 0.05,
-                          bargroupgap: 0.2,
-                          xaxis: { title: 'Period' },
-                          yaxis: { title: 'Exposures' },
-                        }}
-                        config={{
-                          scrollZoom: true,
-                          displaylogo: false,
-                          responsive: true,
-                        }}
-                      />
-                    ) : (
-                      <>
-                        <Skeleton height={440} />
-                        {exposurePlotLoading.loading ? (
-                          <CircularProgress
-                            color="primary"
-                            className={classes.progress}
-                            size={24}
-                          />
-                        ) : null}
-                        {exposurePlotLoading.loading === false
-                          && exposurePlotLoading.hasData === false ? (
-                            <span className={classes.noExposureMessage}>
-                              No exposure was found in this period
-                            </span>
-                          ) : null}
-                      </>
-                    )}
-                  </CardContent>
-                );
-              }}
-            </SizeMe>
+            <CardHeader title="Report" />
+            <CardContent>
+              <FormControl variant="filled" className={classes.formControl}>
+                <Label>Years</Label>
+                <Select
+                  value={selectedExposureYear.year}
+                  onChange={handleExposureYearChange}
+                >
+                  {yearsWithExposure.map((year) => (
+                    <MenuItem value={year}>{year}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              {exposuresByYear.length > 0 ? (
+                <Plot
+                  data={[{
+                    x: exposuresByYear.map((rows) => rows.date_obs),
+                    y: exposuresByYear.map((rows) => rows.exposures),
+                    type: 'bar',
+                    showlegend: true,
+                    fixedrange: true,
+                    hoverinfo: 'y',
+                  }]}
+                  className={classes.plotWrapper}
+                  layout={{
+                    margin: {
+                      // l: 0,
+                      r: 0,
+                      t: 0,
+                      // b: 0,
+                      pad: 0,
+                      autoexpand: true,
+                    },
+                    showlegend: false,
+                    hovermode: 'closest',
+                    autosize: true,
+                    bargap: 0.05,
+                    bargroupgap: 0.2,
+                    xaxis: { title: 'Period' },
+                    yaxis: { title: 'Exposures' },
+                  }}
+                  config={{
+                    scrollZoom: true,
+                    displaylogo: false,
+                    responsive: true,
+                  }}
+                />
+              ) : <Skeleton height={440} />}
+              {exposuresByYear.length > 0
+                ? (
+                  <Heatmap
+                    data={exposuresByYear}
+                  />
+                ) : <Skeleton height={160} />}
+
+            </CardContent>
           </Card>
         </Grid>
       </Grid>
