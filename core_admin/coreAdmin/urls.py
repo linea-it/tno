@@ -36,6 +36,8 @@ from tno.views import (CatalogViewSet, CcdImageViewSet, CustomListViewSet,
                        PointingViewSet, ProccessViewSet, SkybotOutputViewSet,
                        SkybotRunViewSet, UserViewSet)
 
+from des.views import (SkybotJobViewSet)
+
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'pointing', PointingViewSet)
@@ -75,6 +77,8 @@ router.register(r'astrometry_output', AstrometryOutputViewSet)
 
 
 router.register(r'catalog', CatalogViewSet)
+
+router.register(r'des/skybot_job', SkybotJobViewSet)
 
 
 urlpatterns = [

@@ -27,6 +27,13 @@ class CcdDao(DBBase):
             possuem a mesma date_obs, band, expnum mas com ccdnum diferentes.
             o id da Exposição no DES é o pfw_attempt_id.
             o id do CCD no DES é o desfile_id.
+
+            Parameters:
+                exposure_id (int): primary key from des_exposure table. 
+
+            Returns:
+                rows (array): Array with ccds that belong to the exposure
+
         """
         tbl = self.get_table_ccd()
 

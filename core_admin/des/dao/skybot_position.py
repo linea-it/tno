@@ -1,4 +1,4 @@
-from sqlalchemy import literal_column, text, column, literal
+from sqlalchemy import column, literal, literal_column, text
 from sqlalchemy.sql import and_, select
 
 from tno.db import DBBase
@@ -23,7 +23,6 @@ class SkybotPositionDao(DBBase):
     # TODO: Mover esse metodo para DBBase.
     def count_ccds(self):
         return self.get_count(self.get_table_skybot_position())
-
 
     # TODO: Criar um metodo que retorne todas as posições para uma exposição
 
@@ -63,7 +62,7 @@ class SkybotPositionDao(DBBase):
             # usando Q3C para recuperar as posições que estão dentro do ccd.
             # Este statement gera uma query como esta
             # select
-            #     1415975651 as ccd_id,            
+            #     1415975651 as ccd_id,
             #     2450858 as exposure_id,
             #     tno_skybotoutput.id as position_id
             # from
@@ -102,9 +101,9 @@ class SkybotPositionDao(DBBase):
             #     and q3c_poly_query("raj2000",
             #     "decj2000",
             #     '{0.160099, -0.831899, 0.159831, -0.980955, 0.458933, -0.981232, 0.459265, -0.832037}')
-            
+
             stm_insert = tbl.insert().from_select(
-                ['ccd_id', 'exposure_id', 'position_id'], 
+                ['ccd_id', 'exposure_id', 'position_id'],
                 stm_sel
             )
 

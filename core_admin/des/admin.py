@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Ccd, Exposure, SkybotPosition
+from .models import Ccd, Exposure, SkybotJob, SkybotPosition
 
 
 @admin.register(Exposure)
@@ -78,3 +78,9 @@ class SkybotPositionAdmin(admin.ModelAdmin):
         extra_context['show_save_and_continue'] = False
         extra_context['show_save'] = False
         return super(SkybotPositionAdmin, self).changeform_view(request, object_id, extra_context=extra_context)
+
+
+@admin.register(SkybotJob)
+class SkybotJobAdmin(admin.ModelAdmin):
+    list_display = ('id', 'status', 'owner', 'date_initial',
+                    'date_final', 'execution_time', 'exposures',)
