@@ -58,6 +58,8 @@ HOST_ARCHIVE=
 # O IP do Host aparece no atributo "Network"->"Gateway": "172.19.0.1",
 # A porta tem que ser a definida no arquivo: /etc/systemd/system/docker.service.d/startup_options.conf
 #DOCKER_HOST=tcp://0.0.0.0:2376
+# Ou compartilhando o docker.sock como explicado neste link /var/run/docker.sock:/var/run/docker.sock
+DOCKER_HOST=unix:///var/run/docker.sock
 
 # Autenticao Gidlab Shibboleth
 # Url para pagina de login do Shibboleth, usar None para desativar o login institucional
