@@ -130,6 +130,8 @@ class DesSkybotPipeline():
 
     def run_job(self, job_id):
         try:
+            t0 = datetime.now()
+
             # Recupera o Model pelo ID
             job = SkybotJob.objects.get(pk=job_id)
 
@@ -151,9 +153,10 @@ class DesSkybotPipeline():
             df_exposures = self.get_exposures(
                 job_id, job.date_initial, job.date_final)
 
-            # TODO: Continuar daqui, os arquivos já estão sendo baixados.
-            # Falta criar o heartbeat com a evolução do processo.
-            # Falta criar o time profile. e adicionar os tempos de cada execução. Pode ser feito no final?
+            # Guarda o total de exposures
+            t_exposures = df_exposures.shape[0]
+            job.exposures = t_exposures
+            job.save()
 
             # Aqui inicia as requisições para o serviço do Skybot.
 
@@ -199,6 +202,20 @@ class DesSkybotPipeline():
             requests_csv = os.path.join(job_path, "requests.csv")
             df_requests = self.create_request_dataframe(requests, requests_csv)
 
+            # Totais de sucesso e falha.
+            t_requests = df_requests.shape[0] 
+            t_success = df_requests.success.sum()
+            t_failure = t_requests - t_success
+
+            # tempo de execução
+            t1 = datetime.now()
+            tdelta = t1 - t0
+
+            self.logger.info("Exposures: [%s] Requests: [%s] Success: [%s] Failure: [%s] in %s" % (
+                t_exposures, t_requests, t_success, t_failure, humanize.naturaldelta(tdelta, minimum_unit="seconds")))
+
+
+
         except Exception as e:
             self.logger.error(e)
 
@@ -210,34 +227,34 @@ class DesSkybotPipeline():
         self.reset_job_for_test(job_id)
 
     def reset_job_for_test(self, job_id):
-        job = SkybotJob.objects.get(pk=job_id)
+        job=SkybotJob.objects.get(pk=job_id)
 
         # Exclui o diretório do job.
         self.delete_job_dir(job_id)
 
-        job.status = 1
+        job.status=1
         job.save()
 
     def check_execution_queue(self):
         """
-            Verifica a fila de jobs, 
-            se tiver algum job com status idle. inicia a execução do job. 
+            Verifica a fila de jobs,
+            se tiver algum job com status idle. inicia a execução do job.
 
         """
 
         # Verificar se já existe algum job com status Running.
-        running = SkybotJob.objects.filter(status=2)
+        running=SkybotJob.objects.filter(status=2)
 
         if len(running) == 0:
             # Se nao tiver nenhum job executando verifica se tem jobs com status Idle
             # esperando para serem executados.
-            idle = running = SkybotJob.objects.filter(status=1)
+            idle=running=SkybotJob.objects.filter(status=1)
             if idle.count() > 0:
                 self.logger.info(
                     "There are %s jobs waiting to run" % idle.count())
 
                 # Recupera o job mais antigo na fila.
-                to_run = idle.order_by('-start')[0]
+                to_run=idle.order_by('-start')[0]
                 self.logger.info("Starting the job with id %s" % to_run.id)
 
                 self.run_job(to_run.id)
