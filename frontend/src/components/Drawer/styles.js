@@ -136,6 +136,9 @@ const useStyles = makeStyles((theme) => ({
   nested: {
     paddingLeft: theme.spacing(4),
   },
+  doublenested: {
+    paddingLeft: theme.spacing(6),
+  },
 }));
 
 export default useStyles;

@@ -67,7 +67,12 @@ export default function Routes() {
         path="/astrometry/:id"
         component={AstrometryDetail}
       />
-      <Route isPrivate exact path="/astrometry" component={Astrometry} />
+      <Route
+        isPrivate
+        exact
+        path="/astrometry/object/"
+        component={Astrometry}
+      />
       <Route
         isPrivate
         exact
@@ -106,7 +111,12 @@ export default function Routes() {
         component={OccultationDetail}
       />
 
-      <Route isPrivate exact path="/skybot" component={Skybot} />
+      <Route
+        isPrivate
+        exact
+        path="/data-preparation/des/skybot"
+        component={Skybot}
+      />
       <Route isPrivate exact path="/bsp-jpl" component={BspJpl} />
       <Route isPrivate exact path="/observation" component={Observation} />
       <Route
