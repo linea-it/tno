@@ -3,6 +3,7 @@ from datetime import datetime
 from urllib.parse import urljoin
 
 import requests
+from requests.exceptions import HTTPError
 
 
 # TODO:  Esta classe deve ir para um app separado. 
@@ -133,9 +134,9 @@ class SkybotServer():
                 'success': False,
                 'ticket': None,               # Identificação retornada pelo skybot.
                 'positions': 0,               # Quantidade de posições encontradas.
-                'download_start': None,       # Inicio do Download.
-                'download_finish': None,      # Fim do Download
-                'download_execution_time': 0, # Tempo de execução do download.
+                'start': None,                # Inicio do Download.
+                'finish': None,               # Fim do Download
+                'execution_time': 0,          # Tempo de execução do download.
                 'output': None,               # Filepath do arquivo criado. 
                 'file_size': 0,               # Tamanho do arquivo criado
                 'skybot_url': None,           # Url usada na requisição ao skybot
@@ -174,6 +175,10 @@ class SkybotServer():
                 '-filter': float(position_error),                
             })
 
+            # Checa o status da requisição
+            # If the response was successful, no Exception will be raised
+            r.raise_for_status()
+
             # Cria um arquivo com o resultado 
             with open(output, 'w+') as csv:
                 csv.write(r.text)
@@ -185,6 +190,12 @@ class SkybotServer():
                 'file_size': os.path.getsize(output),
                 'ticket': self.__get_ticket_from_response(r.text),
                 'positions': len(r.text.splitlines()) - 3,
+            })
+
+        except HTTPError as http_err:
+            result.update({
+                'success': False,
+                'error': "HTTP error occurred: %s" % http_err
             })
 
         except Exception as e:

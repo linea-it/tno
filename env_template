@@ -81,9 +81,9 @@ DES_PASSWORD=rca2017
 
 
 # Skybot Server
-# Url para o serviço do skybot, deve apontar para a pagina principal do serviço sem a barra no final. 
+# Url para o serviço do skybot sempre com a barra no final. 
 # exemplo para usar o skybot do linea:
-# SKYBOT_SERVER=http://srvskybot.linea.gov.br/webservices/skybot
+# SKYBOT_SERVER=http://srvskybot.linea.gov.br/webservices/skybot/
 # Ou para usar o skybot na França
-# SKYBOT_SERVER=http://vo.imcce.fr/webservices/skybot
-SKYBOT_SERVER=http://srvskybot.linea.gov.br/webservices/skybot
+# SKYBOT_SERVER=http://vo.imcce.fr/webservices/skybot/
+SKYBOT_SERVER=http://srvskybot.linea.gov.br/webservices/skybot/

@@ -1,13 +1,16 @@
 import logging
 import os
 import shutil
+from datetime import datetime, timedelta
 
+import humanize
 import pandas as pd
 from django.conf import settings
 
 from des.dao import ExposureDao
 from des.models import SkybotJob
 from des.skybot.skybot_server import SkybotServer
+
 
 class DesSkybotPipeline():
 
@@ -26,7 +29,6 @@ class DesSkybotPipeline():
 
         # Filter to retrieve only objects with a position error lesser than the given value
         self.position_error = 0
-
 
     def get_base_path(self):
         return self.base_path
@@ -95,12 +97,8 @@ class DesSkybotPipeline():
         return df
 
     def create_exposure_dataframe(self, rows, filepath):
-        """
 
-        """
         df = pd.DataFrame(rows, columns=['id', 'date_obs', 'radeg', 'decdeg'])
-        df.set_index('id')
-        # TODO: Adicionar ao dataframe as colunas para guardar as estatisticas.
 
         # Escreve o dataframe em arquivo.
         df.to_csv(filepath, sep=';', header=True)
@@ -111,16 +109,26 @@ class DesSkybotPipeline():
         return df
 
     def read_exposure_dataframe(self, filepath):
-        """
-        """
         df = pd.read_csv(filepath, delimiter=';')
 
         return df
 
-    def run_job(self, job_id):
-        """
+    def create_request_dataframe(self, rows, filepath):
 
-        """
+        df = pd.DataFrame(rows, columns=[
+            'exposure', 'success', 'ticket', 'positions', 'start',
+            'finish', 'execution_time', 'output', 'file_size',
+            'skybot_url', 'error'])
+
+        # Escreve o dataframe em arquivo.
+        df.to_csv(filepath, sep=';', header=True)
+
+        self.logger.info("An archive was created with the Skybot Requests.")
+        self.logger.debug("Requests File: [%s]" % filepath)
+
+        return df
+
+    def run_job(self, job_id):
         try:
             # Recupera o Model pelo ID
             job = SkybotJob.objects.get(pk=job_id)
@@ -140,44 +148,61 @@ class DesSkybotPipeline():
 
             # Criar um dataframe com as exposições a serem executadas.
             # este dataframe vai guardar também as estatisticas de cada execução.
-            df_exposures = self.get_exposures(job_id, job.date_initial, job.date_final)
-
-            self.logger.debug(df_exposures.head)
-
+            df_exposures = self.get_exposures(
+                job_id, job.date_initial, job.date_final)
 
             # TODO: Continuar daqui, os arquivos já estão sendo baixados.
-            # Falta guardar as estatistica individuais. 
             # Falta criar o heartbeat com a evolução do processo.
             # Falta criar o time profile. e adicionar os tempos de cada execução. Pode ser feito no final?
+
+            # Aqui inicia as requisições para o serviço do Skybot.
 
             # Instancia da classe SkybotServer para fazer as requisições.
             # A url para o serviço do skybot fica na settings.SKYBOT_SERVER
             self.logger.debug("Skybot Server: [%s]" % settings.SKYBOT_SERVER)
             ss = SkybotServer(url=settings.SKYBOT_SERVER)
 
-            # Para cada exposição faz a requisição no serviço do Skybot. 
-            self.logger.debug("Fazendo a requisição")
-            for exp in df_exposures.to_dict('records', )[0:1]:
-                self.logger.debug(exp)
+            # Para cada exposição faz a requisição no serviço do Skybot.
+            requests = list([])
+            for exp in df_exposures.to_dict('records', )[0:3]:
 
+                # caminho para o arquivo com os resultados retornados pelo skyubot.
                 output = os.path.join(job_path, "%s.temp" % exp['id'])
-                self.logger.debug(output)
 
+                # Executa o consulta usando a função cone_search.
                 result = ss.cone_search(
                     date=exp['date_obs'],
-                    ra=exp['radeg'], 
+                    ra=exp['radeg'],
                     dec=exp['decdeg'],
                     radius=self.radius,
                     observer_location=self.observer_location,
-                    position_error=self.position_error, 
+                    position_error=self.position_error,
                     output=output
-                    )
+                )
 
-                self.logger.debug(result)
+                # guarda o resultado do dataframe de requisições.
+                result.update({'exposure': exp['id']})
+                requests.append(result)
 
+                if result['success']:
+                    self.logger.info("Exposure [%s] returned [%s] positions in %s." % (
+                        result['exposure'], result['positions'], humanize.naturaldelta(
+                            timedelta(seconds=result['execution_time']), minimum_unit="milliseconds")
+                    ))
+                else:
+                    self.logger.warning("Exposure [%s]: %s" % (
+                        result['exposure'], result['error']))
+
+                # self.logger.debug(result)
+
+            # Criar um dataframe para guardar as estatisticas de cada requisição.
+            requests_csv = os.path.join(job_path, "requests.csv")
+            df_requests = self.create_request_dataframe(requests, requests_csv)
 
         except Exception as e:
             self.logger.error(e)
+
+            #  TODO: tratar os erros e alterar o status do job
             raise(e)
 
         self.logger.debug("Fim do Teste")
