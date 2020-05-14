@@ -7,7 +7,7 @@ from django.conf import settings
 
 from des.dao import ExposureDao
 from des.models import SkybotJob
-
+from des.skybot.skybot_server import SkybotServer
 
 class DesSkybotPipeline():
 
@@ -16,6 +16,17 @@ class DesSkybotPipeline():
 
         # Diretorio onde ficam os csv baixados do skybot
         self.base_path = settings.SKYBOT_OUTPUT
+
+        # Radius usado na query do skybot com tamanho suficiente para a exposição do des.
+        # Cone search radius in Degres
+        self.radius = 1.2
+
+        # Observer Code for Cerro Tololo-DECam
+        self.observer_location = 'w84'
+
+        # Filter to retrieve only objects with a position error lesser than the given value
+        self.position_error = 0
+
 
     def get_base_path(self):
         return self.base_path
@@ -71,8 +82,10 @@ class DesSkybotPipeline():
         if not os.path.exists(filepath):
             # Se não existir faz a query, cria um pandas dataframe e salva em arquivo.
 
+            # Executa a query para saber todas as exposições para este periodo.
             rows = self.query_exposures_by_period(start, end)
 
+            # Cria um pandas dataframe com as exposições.
             df = self.create_exposure_dataframe(rows, filepath)
 
         else:
@@ -86,7 +99,7 @@ class DesSkybotPipeline():
 
         """
         df = pd.DataFrame(rows, columns=['id', 'date_obs', 'radeg', 'decdeg'])
-        df = df.set_index('id')
+        df.set_index('id')
         # TODO: Adicionar ao dataframe as colunas para guardar as estatisticas.
 
         # Escreve o dataframe em arquivo.
@@ -108,31 +121,66 @@ class DesSkybotPipeline():
         """
 
         """
-        # Recupera o Model pelo ID
-        job = SkybotJob.objects.get(pk=job_id)
+        try:
+            # Recupera o Model pelo ID
+            job = SkybotJob.objects.get(pk=job_id)
 
-        self.logger.info("".ljust(50, '-'))
-        self.logger.info("Stating DES Skybot Job ID: [%s]" % job.id)
-        self.logger.info("Period Start: [%s] End: [%s]" % (
-            job.date_initial, job.date_final))
+            self.logger.info("".ljust(50, '-'))
+            self.logger.info("Stating DES Skybot Job ID: [%s]" % job.id)
+            self.logger.info("Period Start: [%s] End: [%s]" % (
+                job.date_initial, job.date_final))
 
-        # Altera o Status do Job para Running
-        job.status = 2
-        job.save()
+            # Altera o Status do Job para Running
+            job.status = 2
+            job.save()
 
-        # Cria o diretório onde o job será executado e onde ficaram os outputs.
-        job_path = self.create_job_dir(job_id)
-        self.logger.debug("Job Path: [%s]" % job_path)
+            # Cria o diretório onde o job será executado e onde ficaram os outputs.
+            job_path = self.create_job_dir(job_id)
+            self.logger.debug("Job Path: [%s]" % job_path)
 
-        # Executa a query para saber todas as exposições para este periodo.
-        exposures = self.query_exposures_by_period(
-            job.date_initial, job.date_final)
+            # Criar um dataframe com as exposições a serem executadas.
+            # este dataframe vai guardar também as estatisticas de cada execução.
+            df_exposures = self.get_exposures(job_id, job.date_initial, job.date_final)
 
-        self.logger.debug(exposures[0:1])
+            self.logger.debug(df_exposures.head)
 
-        # Criar um dataframe com as exposições a serem executadas.
-        # este dataframe vai guardar também as estatisticas de cada execução.
-        self.get_exposures(job_id, job.date_initial, job.date_final)
+
+            # TODO: Continuar daqui, os arquivos já estão sendo baixados.
+            # Falta guardar as estatistica individuais. 
+            # Falta criar o heartbeat com a evolução do processo.
+            # Falta criar o time profile. e adicionar os tempos de cada execução. Pode ser feito no final?
+
+            # Instancia da classe SkybotServer para fazer as requisições.
+            # A url para o serviço do skybot fica na settings.SKYBOT_SERVER
+            self.logger.debug("Skybot Server: [%s]" % settings.SKYBOT_SERVER)
+            ss = SkybotServer(url=settings.SKYBOT_SERVER)
+
+            # Para cada exposição faz a requisição no serviço do Skybot. 
+            self.logger.debug("Fazendo a requisição")
+            for exp in df_exposures.to_dict('records', )[0:1]:
+                self.logger.debug(exp)
+
+                output = os.path.join(job_path, "%s.temp" % exp['id'])
+                self.logger.debug(output)
+
+                result = ss.cone_search(
+                    date=exp['date_obs'],
+                    ra=exp['radeg'], 
+                    dec=exp['decdeg'],
+                    radius=self.radius,
+                    observer_location=self.observer_location,
+                    position_error=self.position_error, 
+                    output=output
+                    )
+
+                self.logger.debug(result)
+
+
+        except Exception as e:
+            self.logger.error(e)
+            raise(e)
+
+        self.logger.debug("Fim do Teste")
 
         self.reset_job_for_test(job_id)
 
@@ -148,7 +196,7 @@ class DesSkybotPipeline():
     def check_execution_queue(self):
         """
             Verifica a fila de jobs, 
-            se tiver algum job com status idle. inicia o job. 
+            se tiver algum job com status idle. inicia a execução do job. 
 
         """
 

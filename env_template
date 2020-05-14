@@ -78,3 +78,12 @@ DES_ARCHIVE_URL=https://desar2.cosmology.illinois.edu/DESFiles/desarchive/
 # DES username e Password para fazer o download. 
 DES_USERNAME=rcampisa
 DES_PASSWORD=rca2017
+
+
+# Skybot Server
+# Url para o serviço do skybot, deve apontar para a pagina principal do serviço sem a barra no final. 
+# exemplo para usar o skybot do linea:
+# SKYBOT_SERVER=http://srvskybot.linea.gov.br/webservices/skybot
+# Ou para usar o skybot na França
+# SKYBOT_SERVER=http://vo.imcce.fr/webservices/skybot
+SKYBOT_SERVER=http://srvskybot.linea.gov.br/webservices/skybot

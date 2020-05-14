@@ -204,7 +204,6 @@ class DesImportSkybotOutput():
             Read the output file and retrieve the ticket number on the second line. 
             this ticket identifies the request that was made for the Skybot service.
 
-            Converte Dec em HMS para Degrees.
             Parameters:
                 filepath (str): Output file returned by the skybot service.
 
