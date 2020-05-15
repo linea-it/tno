@@ -137,7 +137,6 @@ class SkybotServer():
                 'start': None,                # Inicio do Download.
                 'finish': None,               # Fim do Download
                 'execution_time': 0,          # Tempo de execução do download.
-                'output': None,               # Filepath do arquivo criado. 
                 'file_size': 0,               # Tamanho do arquivo criado
                 'skybot_url': None,           # Url usada na requisição ao skybot
                 'error': None                 # Caso ocorra alguma excessão ela sera colocada neste campo.
@@ -211,8 +210,7 @@ class SkybotServer():
         result.update({
             'start': t0.strftime("%Y-%m-%d %H:%M:%S"),
             'finish': t1.strftime("%Y-%m-%d %H:%M:%S"),
-            'execution_time': tdelta.total_seconds(),
-            'output': output
+            'execution_time': tdelta.total_seconds()
         })
 
         return result

@@ -35,7 +35,11 @@ def teste(request):
         from des.skybot.pipeline import DesSkybotPipeline
 
 
-        DesSkybotPipeline().run_job(1)
+        # DesSkybotPipeline().run_job(1)
+
+
+        DesSkybotPipeline().check_load_data_queue()
+        
 
         # check_astrometry_running()
 
