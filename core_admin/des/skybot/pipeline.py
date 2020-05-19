@@ -34,6 +34,25 @@ class DesSkybotPipeline():
         # Filter to retrieve only objects with a position error lesser than the given value
         self.position_error = 0
 
+    def create_skybot_log(self, job_path):
+        # Adiciona um Log Handle para fazer uma copia do log no diretório do processo.
+        fh = logging.FileHandler(os.path.join(job_path, 'skybot_requests.log'))
+        formatter = logging.Formatter(
+            '%(asctime)s [%(levelname)s] %(message)s')
+        fh.setFormatter(formatter)
+        # TODO: Duvida se não setar o Level será que herda o level do logger primario do Django?
+        # fh.setLevel(logging.DEBUG)
+        self.logger.addHandler(fh)
+
+    def create_loaddata_log(self, job_path):
+        # Adiciona um Log Handle para fazer uma copia do log no diretório do processo.
+        fh = logging.FileHandler(os.path.join(job_path, 'skybot_loaddata.log'))
+        formatter = logging.Formatter(
+            '%(asctime)s [%(levelname)s] %(message)s')
+        fh.setFormatter(formatter)
+        # fh.setLevel(logging.DEBUG)
+        self.logger_import.addHandler(fh)
+
     def get_base_path(self):
         return self.base_path
 
@@ -47,6 +66,17 @@ class DesSkybotPipeline():
         if not os.path.exists(path):
             os.mkdir(path)
             self.logger.info("A directory has been created for the job.")
+
+        return path
+
+    def get_positions_path(self, job_id):
+        return os.path.join(self.get_job_path(job_id), 'outputs')
+
+    def create_positions_path(self, job_id):
+        path = self.get_positions_path(job_id)
+        if not os.path.exists(path):
+            os.mkdir(path)
+            self.logger.info("A directory has been created for the Outputs.")
 
         return path
 
@@ -127,11 +157,6 @@ class DesSkybotPipeline():
             # Recupera o Model pelo ID
             job = SkybotJob.objects.get(pk=job_id)
 
-            self.logger.info("".ljust(50, '-'))
-            self.logger.info("Stating DES Skybot Job ID: [%s]" % job.id)
-            self.logger.info("Period Start: [%s] End: [%s]" % (
-                job.date_initial, job.date_final))
-
             # Altera o Status do Job para Running
             job.status = 2
             job.save()
@@ -140,6 +165,19 @@ class DesSkybotPipeline():
             job_path = self.create_job_dir(job_id)
             job.path = job_path
             self.logger.debug("Job Path: [%s]" % job_path)
+
+            positions_path = self.create_positions_path(job_id)
+            self.logger.debug("Positions Path: [%s]" % positions_path)
+
+            # Adiciona um Log handler a mais, duplicando o log no diretório do processo.
+            # ATENÇÂO: Os handles de logs devem ser criados no inicio do job em uma fase que não se repita.
+            self.create_skybot_log(job_path)
+            self.create_loaddata_log(job.path)
+
+            self.logger.info("".ljust(50, '-'))
+            self.logger.info("Stating DES Skybot Job ID: [%s]" % job.id)
+            self.logger.info("Period Start: [%s] End: [%s]" % (
+                job.date_initial, job.date_final))
 
             # Criar um dataframe com as exposições a serem executadas.
             # este dataframe vai guardar também as estatisticas de cada execução.
@@ -161,7 +199,8 @@ class DesSkybotPipeline():
 
             # Para cada exposição faz a requisição no serviço do Skybot.
             requests = list([])
-            for exp in df_exposures.to_dict('records', )[0:3]:
+            for exp in df_exposures.to_dict('records', )[0:100]:
+                # for exp in df_exposures.to_dict('records', ):
 
                 # caminho para o arquivo com os resultados retornados pelo skyubot.
                 filename = "%s.temp" % exp['id']
@@ -231,10 +270,7 @@ class DesSkybotPipeline():
             self.logger.error(trace)
             self.logger.error(e)
 
-            #  TODO: tratar os erros e alterar o status do job
-            raise(e)
-
-        self.logger.debug("Fim do Teste")
+            self.on_error(job_id, e)
 
         # self.reset_job_for_test(job_id)
 
@@ -245,10 +281,11 @@ class DesSkybotPipeline():
         self.delete_job_dir(job_id)
 
         job.status = 1
+        job.error = None
         job.save()
 
     def check_execution_queue(self):
-        """Verifica a fila de jobs, se tiver algum job com status idle. 
+        """Verifica a fila de jobs, se tiver algum job com status idle.
         inicia a execução do job.
 
         """
@@ -270,10 +307,10 @@ class DesSkybotPipeline():
 
                 self.run_job(to_run.id)
 
-        else:
-            # Se já existir um job executando não faz nada
-            # TODO este print vai sair
-            self.logger.info("Já existe um job executando")
+        # else:
+        #     # Se já existir um job executando não faz nada
+        #     # TODO este print vai sair
+        #     self.logger.info("Já existe um job executando")
 
     def check_load_data_queue(self):
 
@@ -285,16 +322,12 @@ class DesSkybotPipeline():
         if running:
             self.logger_import.info("Tem um job executando.")
 
-            # de uma vez ao mesmo tempo.
             if self.check_lock_load_data(running.path):
                 self.logger_import.info("Não está importando dados.")
                 # Se não exisitir arquivo de lock
                 # significa que não tem nenhum importação acontecendo
-                try:
-                    self.run_import_positions(running.id)
-                except Exception as e:
-                    self.logger_import.error(e)
-                    raise(e)
+                self.run_import_positions(running.id)
+
             else:
                 # Já existe um arquivo de lock não faz nada.
                 # por que não pode haver 2 importações simultaneas.
@@ -302,12 +335,21 @@ class DesSkybotPipeline():
 
         else:
             # Se não tiver nenhum job executando.
-            # TODO este print vai sair
             self.logger_import.info("Não tem nenhum job executando")
 
     def check_lock_load_data(self, job_path):
+        """Verificar se existe um arquivo de lock para a taks de load data.
+        Se exisir retorna False, se não existir cria o arquivo de lock e retorna True.
 
-        # Verificar se existe um arquivo de lock para a taks de load data.
+        True nesta função significa que o job pode ser executado.
+
+        Arguments:
+            job_path {string} -- Diretório onde o job esta sendo executado.
+
+        Returns:
+            Bool -- True se o lock não existir e False se existir.
+        """
+        #
         filepath = os.path.join(job_path, 'load_data.lock')
         if os.path.exists(filepath):
             return False
@@ -317,12 +359,20 @@ class DesSkybotPipeline():
             self.logger_import.debug("Lock file created.")
             return True
 
+    def get_files_to_import(self, job_path):
+        # Lista de arquivos csv que podem estar no mesmo diretório mais que não são outputs do skybot.
+        ignore_list = ['exposures.csv', 'requests.csv', 'loaddata.csv']
+
+        a_files = []
+        for f in pathlib.Path(job_path).glob('*.csv'):
+            if f.name not in ignore_list:
+                a_files.append(f)
+
+        return a_files
+
     def run_import_positions(self, job_id):
 
         t0 = datetime.now()
-
-        # Lista de arquivos csv que podem estar no mesmo diretório mais que não são outputs do skybot.
-        ignore_list = ['exposures.csv', 'requests.csv']
 
         # Recupera o Model pelo ID
         try:
@@ -331,39 +381,126 @@ class DesSkybotPipeline():
             self.logger_import.error(e)
             raise(e)
 
+        # Diretório onde vão ficar os arquivos de posição que foram importados corretamente.
+        positions_path = self.get_positions_path(job_id)
+
         try:
+            self.logger_import.info(
+                "----------------------------------------------")
             # Instancia da Classe de Importação.
             loaddata = DESImportSkybotPositions()
 
-            # Varre o diretório, lista todos os arquivos de posições 
-            # gerados pelo skybot. 
-            # para cada arquivo executa o metodo de importação. 
-            for pos_file in pathlib.Path(job.path).glob('*.csv'):
-                # self.logger_import.debug(pos_file)
-                if pos_file.name not in ignore_list:
+            # Varre o diretório, lista todos os arquivos de posições
+            # gerados pelo skybot.
+            # para cada arquivo executa o metodo de importação.
+            results = list([])
 
-                    # Nome do arquivo é composto por ExposureId_Ticket.csv
-                    # Recuperar o Exposure id 
-                    exposure_id = pos_file.name.split("_")[0].strip()
-                    # Recuperar o Ticket
-                    ticket = pos_file.name.split("_")[1].split(".")[0].strip()
+            # Esta funcao get_files poderia ser um unico loop,
+            # escolhi fazer separado, para ter acesso ao total de arquivos no inicio da iteração.
+            # este array a_files já ignora os outros arquivos csv no diretório.
+            a_files = self.get_files_to_import(job.path)
+            # a_files = a_files[0:20]  # TODO: Testando de um em um
+            to_import = len(a_files)
+            self.logger_import.debug(
+                "Number of files to be imported [%s]." % to_import)
 
-                    # self.logger_import.debug("Exposure: [%s] Ticket: [%s] Filepath: [%s]" % (exposure_id, ticket, pos_file))
-                    loaddata.import_des_skybot_positions(exposure_id, ticket, pos_file)
+            # Para cada arquivo a ser importado executa o metodo de importação
+            # guarda o resultado no dataframe e move o arquivo para o diretório de outputs.
+            for idx, pos_file in enumerate(a_files, start=1):
+                self.logger_import.debug("Importing file [%s] of [%s]  Filename: [%s]" % (
+                    idx, to_import, pos_file.name))
 
-                    # TODO: guardar os resultados
-                    # TODO: Mover os arquivos para outro diretório.
+                # Nome do arquivo é composto por ExposureId_Ticket.csv
+                # Recupera o Exposure id
+                exposure_id = pos_file.name.split("_")[0].strip()
+                # Recupera o Ticket
+                ticket = pos_file.name.split("_")[1].split(".")[0].strip()
+
+                # Executa o Metódo de importação.
+                result = loaddata.import_des_skybot_positions(
+                    exposure_id, ticket, pos_file)
+
+                # Mover os arquivos para diretório de outputs.
+                if result['success']:
+                    # Em caso de sucesso o nome do arquivo permanece o mesmo.
+                    new_filepath = os.path.join(
+                        positions_path, pos_file.name)
+                else:
+                    # Em caso de falha o arquivo recebe a extensão .err
+                    new_filepath = os.path.join(
+                        positions_path, pos_file.name.replace('.csv', '.err'))
+
+                # Move para o diretório de outputs
+                shutil.move(pos_file, new_filepath)
+
+                self.logger_import.debug(
+                    "File moved to: [%s]" % new_filepath)
+
+                result.update({'output': str(new_filepath)})
+                results.append(result)
+
+                self.logger_import.debug("Exposure: [%s] Success: [%s] Filepath: [%s]" % (
+                    exposure_id, result['success'], result['output']))
+
+            filepath = os.path.join(job.path, 'loaddata.csv')
+            df_loaddata = self.create_loaddata_dataframe(results, filepath)
+
+            # Totais de sucesso e falha.
+            t_files = len(results)
+            t_success = df_loaddata.success.sum()
+            t_failure = t_files - t_success
+
+            # tempo de execução
+            t1 = datetime.now()
+            tdelta = t1 - t0
+
+            self.logger_import.info("Total files to be imported: [%s] Success: [%s] Failure: [%s] in %s" % (
+                t_files, t_success, t_failure, humanize.naturaldelta(tdelta, minimum_unit="seconds")))
+
+        except IndexError:
+            self.logger_import.info("No files to import.")
 
         except Exception as e:
             trace = traceback.format_exc()
             self.logger_import.error(trace)
             self.logger_import.error(e)
 
-            #  TODO: tratar os erros e alterar o status do job
-            raise(e)
+            self.on_error(job_id, e)
 
         finally:
             # Apagar o arquivo de lock
             filepath = os.path.join(job.path, 'load_data.lock')
             os.remove(filepath)
             self.logger_import.debug("Lock file removed.")
+
+    def create_loaddata_dataframe(self, rows, filepath):
+
+        df = pd.DataFrame(rows, columns=[
+            'exposure', 'success', 'ticket', 'positions', 'ccds', 'inside_ccd', 'outside_ccd',
+            'output', 'start', 'finish', 'execution_time', 'import_pos_exec_time', 'ccd_assoc_exec_time',
+            'error', 'tracebak'])
+
+        if not os.path.exists(filepath):
+            # Escreve o dataframe em arquivo.
+            df.to_csv(filepath, sep=';', header=True)
+
+            self.logger_import.info(
+                "An archive was created with the Load Data Statistics.")
+            self.logger_import.debug("Load Data File: [%s]" % filepath)
+
+            return df
+        else:
+            # TODO: aqui pode haver um erro, caso o seja executado mais de uma vez pode duplicar linhas.
+            # o ideal seria juntar os dataframes usando como index o exposure.
+            # Se o Dataframe já existir apenas inclui as linhas.
+            df.to_csv(filepath, sep=';', header=False, mode='a')
+
+            self.logger_import.debug(
+                "Import data has been updated in the Load Data file.")
+
+            return df
+
+
+    def on_error(self, job_id, e):
+        # TODO mudar o status do job e o tempo de execução
+        pass

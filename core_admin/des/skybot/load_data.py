@@ -1,76 +1,126 @@
+import traceback
 from datetime import datetime, timedelta, timezone
 
 import humanize
+import pandas
 
 from des.dao import CcdDao, SkybotPositionDao
 from tno.skybot.new_load_data import ImportSkybotPositions
-import pandas 
+
 
 class DESImportSkybotPositions(ImportSkybotPositions):
 
-    def teste(self):
-        self.logger.info("TESTE DES Import Skybot Positions")
-
     def import_des_skybot_positions(self, exposure_id, ticket, filepath):
 
-        # Inicio da Associação com CCDs
+        result = dict({
+            'success': False,
+            'exposure': exposure_id,
+            'ticket': ticket,
+            'positions': 0,
+            'ccds': 0,
+            'inside_ccd': 0,
+            'outside_ccd': 0,
+            'start': None,
+            'finish': None,
+            'execution_time': None,
+            'import_pos_exec_time': None,
+            'ccd_assoc_exec_time': None,
+            'error': None,
+            'traceback': None
+        })
+
         a_t0 = datetime.now(timezone.utc)
 
-        df = self.import_output_file(filepath)
+        try:
+            # Importa as posições no Skybot
+            t0_copy = datetime.now(timezone.utc)
 
-        # Recupera os CCDs da exposição
-        ccds = self.ccds_by_exposure_id(exposure_id)
+            df = self.import_output_file(filepath)
 
-        # Para cada CCD associa as posições do skybot com os apontamentos do DES.
-        self.logger.info(
-            "Making the association for CCDs: [ %s ]" % str(len(ccds)).ljust(2, ' '))
+            t1_copy = datetime.now(timezone.utc)
+            tdelta_copy = t1_copy - t0_copy
 
-        # Total de posições retornadas pelo Skybot
-        total_position = df.shape[0]
+            # Total de posições importadas na tabela skybot
+            total_position = df.shape[0]
 
-        # Total de posições que estão dentro de algum CCD.
-        total_inside_ccd = 0
+            # Aqui inicia a fase de associação com os CCDS
 
-        for ccd in ccds:
-            # for idx, ccd in enumerate(ccds[0:1], start=1):
-            try:
-                t0 = datetime.now(timezone.utc)
+            # Recupera os CCDs da exposição
+            ccds = self.ccds_by_exposure_id(exposure_id)
 
-                count = self.associate_position_ccd(
-                    ticket, exposure_id, ccd)
+            # Total de posições que estão dentro de algum CCD.
+            total_inside_ccd = 0
 
-                total_inside_ccd += count
+            # tempo total da associação.
+            t0_ccds = datetime.now(timezone.utc)
 
-                t1 = datetime.now(timezone.utc)
-                tdelta = t1 - t0
+            # Para cada CCD associa as posições do skybot com os apontamentos do DES.
+            for ccd in ccds:
+                try:
+                    t0 = datetime.now(timezone.utc)
 
-                self.logger.debug(
-                    "CCD NUM: [ %s ] had [ %s ] positions associated in %s" % (
-                        str(ccd['ccdnum']).rjust(2, ' '),
-                        str(count).rjust(4, ' '),
-                        humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))
+                    count = self.associate_position_ccd(
+                        ticket, exposure_id, ccd)
 
-            except Exception as e:
-                msg = "Failed to make ccd association CCD ID: [%s] CCD Num: [%s] Error: %s" % (
-                    ccd['id'], ccd['ccdnum'], e)
-                raise Exception(msg)
+                    total_inside_ccd += count
 
-        # Total de  posições fora do CCD mas dentro da area da exposição.
-        total_outside_ccd = total_position - total_inside_ccd
+                    t1 = datetime.now(timezone.utc)
+                    tdelta = t1 - t0
 
-        self.logger.info("Positions inside the CCDs:[ %s ] Positions outside: [ %s ] Total positions: [ %s ]" % (
-            str(total_inside_ccd).rjust(4, ' '),
-            str(total_outside_ccd).rjust(4, ' '),
-            str(total_position).rjust(4, ' '),
-        ))
+                    self.logger.debug(
+                        "CCD NUM: [ %s ] had [ %s ] positions associated in %s" % (
+                            str(ccd['ccdnum']).rjust(2, ' '),
+                            str(count).rjust(4, ' '),
+                            humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))
 
-        a_t1 = datetime.now(timezone.utc)
-        a_tdelta = a_t1 - a_t0
+                except Exception as e:
+                    msg = "Failed to make ccd association CCD ID: [%s] CCD Num: [%s] Error: %s" % (
+                        ccd['id'], ccd['ccdnum'], e)
+                    raise Exception(msg)
 
-        self.logger.info("CCD association completed in %s" % humanize.naturaldelta(
-            a_tdelta, minimum_unit="milliseconds"))
+            # Total de  posições fora do CCD mas dentro da area da exposição.
+            total_outside_ccd = total_position - total_inside_ccd
 
-        # TODO retornar um dict com os resultados da importação.
+            t1_ccds = datetime.now(timezone.utc)
+            tdelta_ccds = t1_ccds - t0_ccds
+
+            self.logger.info("Positions Inside CCDs: [ %s ] Outside: [ %s ] Total: [ %s ] in %s" % (
+                str(total_inside_ccd),
+                str(total_outside_ccd),
+                str(total_position),
+                humanize.naturaldelta(tdelta_ccds, minimum_unit="milliseconds")
+            ))
+
+            result.update({
+                'success': True,
+                'positions': total_position,
+                'ccds': len(ccds),
+                'inside_ccd': total_inside_ccd,
+                'outside_ccd': total_outside_ccd,
+                'import_pos_exec_time': tdelta_copy.total_seconds(),
+                'ccd_assoc_exec_time': tdelta_ccds.total_seconds()
+            })
+
+        except Exception as e:
+            trace = traceback.format_exc()
+            result.update({
+                'error': str(e),
+                'traceback': trace
+            })
+        finally:
+            a_t1 = datetime.now(timezone.utc)
+            a_tdelta = a_t1 - a_t0
+
+            self.logger.info("Completed data import for exposure [%s] in %s" % (exposure_id, humanize.naturaldelta(
+                a_tdelta, minimum_unit="milliseconds")))
+
+            result.update({
+                'start': a_t0.strftime("%Y-%m-%d %H:%M:%S"),
+                'finish': a_t1.strftime("%Y-%m-%d %H:%M:%S"),
+                'execution_time': a_tdelta.total_seconds(),
+            })
+
+            return result
 
     def ccds_by_exposure_id(self, exposure_id):
         """
@@ -91,8 +141,6 @@ class DESImportSkybotPositions(ImportSkybotPositions):
             db = CcdDao()
             # Faz a query de todos os CCDs por pfw_attempt_id
             rows = db.ccds_by_exposure(exposure_id)
-
-            self.logger.debug("CCDs [%s]" % len(rows))
 
             return rows
 
