@@ -33,7 +33,56 @@ def teste(request):
         # result = DesImportSkybotOutput().import_output_file("/archive/skybot_output/1/808801_Y.csv")
 
         from des.skybot.pipeline import DesSkybotPipeline
+        from des.models import SkybotJob
+        import logging
 
+        # try:
+        #     log = logging.getLogger('skybot_load_data')
+
+        #     log.info("TESTE1")
+
+        #     job = SkybotJob.objects.get(pk=5)
+
+        #     dsp = DesSkybotPipeline()
+        #     exposures = dsp.read_exposure_dataframe(job.path)
+        #     exposures = exposures.set_index('id')
+
+        #     # requests = dsp.read_request_dataframe(job.path, usecols=['exposure', 'success', 'ticket', 'positions'])
+        #     requests = dsp.read_request_dataframe(job.path)
+        #     requests = requests.set_index('exposure')
+        #     requests = requests.add_prefix('request_')
+            
+        #     loaddata = dsp.read_loaddata_dataframe( 
+        #         dsp.get_loaddata_dataframe_filepath(job.path))            
+        #     loaddata = loaddata.set_index('exposure')
+        #     loaddata = loaddata.add_prefix('loaddata_')
+
+        #     n_requests = exposures.join(requests)
+        #     n_requests = n_requests.join(loaddata)
+
+        #     n_requests = n_requests.rename(columns={
+        #         'request_ticket': 'ticket',
+        #         'request_positions': 'positions',
+        #         'request_filename': 'filename',
+        #         'request_file_size': 'file_size',
+        #         'request_skybot_url': 'skybot_url',
+        #         'loaddata_ccds': 'ccds',
+        #         'loaddata_inside_ccd': 'inside_ccd',
+        #         'loaddata_outside_ccd': 'outside_ccd',
+        #         'loaddata_output': 'output',
+        #     })
+
+        #     n_requests = n_requests.drop(['request_output', 'loaddata_ticket', 'loaddata_positions'], axis=1)
+
+        #     n_requests['success'] = (n_requests.request_success & n_requests.loaddata_success)
+        #     n_requests['execution_time'] = (n_requests.request_execution_time + n_requests.loaddata_execution_time)
+        #     # log.info(n_requests.head)
+
+        #     log.info("---------------------")
+        #     log.info(n_requests.loc[[2452848]].to_dict('records'))
+
+        # except Exception as e:
+        #     log.error(e)
 
         # DesSkybotPipeline().run_job(1)
 

@@ -13,23 +13,23 @@ def start_des_skybot_daemon():
 
     # Daemon que verifica se tem Jobs a serem executados, 
     # se tiver inicia a etapa de consulta ao skybot.
-    # scheduler.add_job(
-    #     pipeline.check_request_queue, 
-    #     'interval', 
-    #     # minutes=1
-    #     seconds=15
-    #     )
+    scheduler.add_job(
+        pipeline.check_request_queue, 
+        'interval', 
+        # minutes=1
+        seconds=15
+        )
 
-    # # Deamon que verifica se tem Jobs EXECUTANDO se tiver 
-    # # executa o import dos dados.
-    # scheduler.add_job(
-    #     pipeline.check_loaddata_queue, 
-    #     'interval', 
-    #     # minutes=1
-    #     seconds=15
-    #     )
+    # Deamon que verifica se tem Jobs EXECUTANDO se tiver 
+    # executa o import dos dados.
+    scheduler.add_job(
+        pipeline.check_loaddata_queue, 
+        'interval', 
+        # minutes=1
+        seconds=30
+        )
 
-    scheduler.start()
+    # scheduler.start()
 
 
 

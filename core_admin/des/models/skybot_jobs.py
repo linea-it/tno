@@ -70,9 +70,19 @@ class SkybotJob(models.Model):
     )
 
     # Pasta onde estão os dados do Job.
-    path = models.TextField(
+    path = models.CharField(
+        max_length=2048,
         verbose_name='Path',
         help_text='Path to the directory where the job data is located.'
+    )
+
+    results = models.CharField(
+        max_length=2048,
+        verbose_name='Results',
+        help_text='Filepath to the results.csv. this file contains the results of the job.',
+        null=True, 
+        blank=True, 
+        default=None
     )
 
     # Em caso de erro o Job fica com status 'Failed'

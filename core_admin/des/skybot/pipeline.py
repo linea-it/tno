@@ -96,15 +96,15 @@ class DesSkybotPipeline():
             "[%s] Exposures for the period were found." % len(rows))
         return rows
 
-    def get_expouses_filepath(self, job_id):
-        filepath = os.path.join(self.get_job_path(job_id), 'exposures.csv')
+    def get_expouses_filepath(self, job_path):
+        filepath = os.path.join(job_path, 'exposures.csv')
         return filepath
 
     def get_exposures(self, job_id, start, end):
 
         # Verifica se já existe um arquivo com as exposições criado.
-        filepath = self.get_expouses_filepath(job_id)
-
+        job_path = self.get_job_path(job_id)
+        filepath = self.get_expouses_filepath(job_path)
         if not os.path.exists(filepath):
             # Se não existir faz a query, cria um pandas dataframe e salva em arquivo.
 
@@ -112,32 +112,41 @@ class DesSkybotPipeline():
             rows = self.query_exposures_by_period(start, end)
 
             # Cria um pandas dataframe com as exposições.
-            df = self.create_exposure_dataframe(rows, filepath)
+            df = self.create_exposure_dataframe(rows, job_path)
 
         else:
             # Se existir le o arquivo e retorna o pandas dataframe.
-            df = self.read_exposure_dataframe(filepath)
+            df = self.read_exposure_dataframe(job_path)
 
         return df
 
-    def create_exposure_dataframe(self, rows, filepath):
+    def create_exposure_dataframe(self, rows, job_path):
+
+        filepath = self.get_expouses_filepath(job_path)
 
         df = pd.DataFrame(rows, columns=['id', 'date_obs', 'radeg', 'decdeg'])
 
         # Escreve o dataframe em arquivo.
-        df.to_csv(filepath, sep=';', header=True)
+        df.to_csv(filepath, sep=';', header=True, index=False)
 
         self.logger.info("An archive was created with the Exposures.")
         self.logger.debug("Exposures File: [%s]" % filepath)
 
         return df
 
-    def read_exposure_dataframe(self, filepath):
+    def read_exposure_dataframe(self, job_path):
+        filepath = self.get_expouses_filepath(job_path)
+
         df = pd.read_csv(filepath, delimiter=';')
 
         return df
 
-    def create_request_dataframe(self, rows, filepath):
+    def get_request_dataframe_filepath(self, job_path):
+        filepath = os.path.join(job_path, "requests.csv")
+        return filepath
+
+    def create_request_dataframe(self, rows, job_path):
+        filepath = self.get_request_dataframe_filepath(job_path)
 
         df = pd.DataFrame(rows, columns=[
             'exposure', 'success', 'ticket', 'positions', 'start',
@@ -145,10 +154,17 @@ class DesSkybotPipeline():
             'skybot_url', 'error'])
 
         # Escreve o dataframe em arquivo.
-        df.to_csv(filepath, sep=';', header=True)
+        df.to_csv(filepath, sep=';', header=True, index=False)
 
         self.logger.info("An archive was created with the Skybot Requests.")
         self.logger.debug("Requests File: [%s]" % filepath)
+
+        return df
+
+    def read_request_dataframe(self, job_path, usecols=None):
+        filepath = self.get_request_dataframe_filepath(job_path)
+
+        df = pd.read_csv(filepath, delimiter=';', usecols=usecols)
 
         return df
 
@@ -205,7 +221,7 @@ class DesSkybotPipeline():
             requests = list([])
 
             # Lista de exposições que serão executadas.
-            a_exposures = df_exposures.to_dict('records', )[0:15]
+            a_exposures = df_exposures.to_dict('records', )[0:20]
 
             # Guarda o total de tempo de execução para calcular o tempo médio.
             t_exec_time = []
@@ -215,7 +231,7 @@ class DesSkybotPipeline():
 
             # Cria o arquivo de Heartbeat
             self.update_request_heartbeat(
-                    heartbeat, 'running', 0, len(a_exposures), 0)
+                heartbeat, 'running', 0, len(a_exposures), 0)
 
             for idx, exp in enumerate(a_exposures, start=1):
                 # caminho para o arquivo com os resultados retornados pelo skyubot.
@@ -275,8 +291,7 @@ class DesSkybotPipeline():
                 heartbeat, 'completed', idx, len(a_exposures), mean(t_exec_time))
 
             # Criar um dataframe para guardar as estatisticas de cada requisição.
-            requests_csv = os.path.join(job_path, "requests.csv")
-            df_requests = self.create_request_dataframe(requests, requests_csv)
+            df_requests = self.create_request_dataframe(requests, job_path)
 
             # Totais de sucesso e falha.
             t_requests = df_requests.shape[0]
@@ -507,11 +522,10 @@ class DesSkybotPipeline():
             heartbeat = self.get_loadata_heartbeat_filepath(job.path)
 
             # Ler o dataframe
-            df_filepath = os.path.join(job.path, 'loaddata.csv')
-
+            df_filepath = self.get_loaddata_dataframe_filepath(job.path)
 
             try:
-                # Ler o Dataframe loaddata para saber quantas já foram executaas. 
+                # Ler o Dataframe loaddata para saber quantas já foram executaas.
                 # Na primeira execução o arquivo não existe por isso este bloco entre try/except.
                 df_loaddata = self.read_loaddata_dataframe(df_filepath)
 
@@ -526,15 +540,13 @@ class DesSkybotPipeline():
 
             # Total a ser executado ler do heartbead da etapa anterior
             try:
-                # Na primeira execução pode ocorrer ao mesmo tempo que o componente requests. 
-                # e o arquivo heartbeat pode ainda não ter sido criado. 
+                # Na primeira execução pode ocorrer ao mesmo tempo que o componente requests.
+                # e o arquivo heartbeat pode ainda não ter sido criado.
                 # o valor do execute vai estar errado, mas é corrigido na segunda execução.
                 request_heartbeat = self.read_request_heartbeat(job.path)
                 t_to_execute = request_heartbeat['exposures']
             except FileNotFoundError:
                 t_to_execute = 0
-
-
 
             # Para cada arquivo a ser importado executa o metodo de importação
             # guarda o resultado no dataframe e move o arquivo para o diretório de outputs.
@@ -622,6 +634,10 @@ class DesSkybotPipeline():
             os.remove(filepath)
             self.logger_import.debug("Lock file removed.")
 
+    def get_loaddata_dataframe_filepath(self, job_path):
+        filepath = os.path.join(job_path, 'loaddata.csv')
+        return filepath
+
     def update_loaddata_dataframe(self, rows, filepath):
 
         columns = [
@@ -656,7 +672,7 @@ class DesSkybotPipeline():
 
             return df
 
-    def read_loaddata_dataframe(self, filepath):
+    def read_loaddata_dataframe(self, filepath, usecols=None):
         """Le o arquivo csv com os dados da execução do componente loaddata, 
         Retorna um pandas dataframe. 
 
@@ -666,7 +682,7 @@ class DesSkybotPipeline():
         Returns:
             Pandas.DataFrame -- Retorna um dataframe om os resultados do loaddata.
         """
-        df = pd.read_csv(filepath, sep=';')
+        df = pd.read_csv(filepath, sep=';', usecols=usecols)
         return df
 
     def get_loadata_heartbeat_filepath(self, job_path):
@@ -722,38 +738,98 @@ class DesSkybotPipeline():
 
             # Le os arquivos de heartbeat para checar se o Job acabaou.
 
-            # Na primeira execução pode ocorrer ao mesmo tempo que o componente requests. 
-            # e o arquivo heartbeat pode ainda não ter sido criado. 
+            # Na primeira execução pode ocorrer ao mesmo tempo que o componente requests.
+            # e o arquivo heartbeat pode ainda não ter sido criado.
             # o valor do execute vai estar errado, mas é corrigido na segunda execução.
             request_heartbeat = self.read_request_heartbeat(job.path)
-                
-            loaddata_heartbeat = self.read_loaddata_heartbeat(job.path)                
+
+            loaddata_heartbeat = self.read_loaddata_heartbeat(job.path)
 
             # Se ambos os componentes tiverem executado todas as exposições.
             if request_heartbeat['current'] == request_heartbeat['exposures'] and loaddata_heartbeat['current'] == loaddata_heartbeat['exposures']:
 
-                # faz a consolidação
-                # TODO: Consolidar os arquivos de estatisticas.
+                # Consolidar os arquivos de estatisticas.
 
-                # self.logger_import.info("TESTE ACABOU O JOB")
-                # Altera o Status do Job para complete.
+                # Le o dataframe de exposições.
+                exposures = self.read_exposure_dataframe(job.path)
+                exposures = exposures.set_index('id')
+
+                # Le o dataframe de requests, Configura a exposure_id como index.
+                # adiciona o prefixo 'request_' as colunas deste dataframe..
+                requests = self.read_request_dataframe(job.path)
+                requests = requests.set_index('exposure')
+                requests = requests.add_prefix('request_')
+
+                # Le o arquivo com os resultados da etapa loaddata.
+                # Configura a exposure_id como index
+                # Adiciona o prefixo 'loaddata_' as coluns deste dataframe
+                loaddata = self.read_loaddata_dataframe(
+                    self.get_loaddata_dataframe_filepath(job.path))
+                loaddata = loaddata.set_index('exposure')
+                loaddata = loaddata.add_prefix('loaddata_')
+
+                # Faz um join exposures + requests usando o exposure como atributo para fazer o ON.
+                df_results = exposures.join(requests)
+                # Faz um join exposures/requests + loaddata usando o exposure como atributo para fazer o ON.
+                df_results = df_results.join(loaddata)
+
+                # Neste ponto df_results é um dataframe que contem todas as linhas
+                # e colunas dos 3 dataframes. cada exposure tem todos os atributos
+                # independente de ter valor.
+
+                # Organiza as colunas renomeando alguns atributos.
+                df_results = df_results.rename(columns={
+                    'request_ticket': 'ticket',
+                    'request_positions': 'positions',
+                    'request_filename': 'filename',
+                    'request_file_size': 'file_size',
+                    'request_skybot_url': 'skybot_url',
+                    'loaddata_ccds': 'ccds',
+                    'loaddata_inside_ccd': 'inside_ccd',
+                    'loaddata_outside_ccd': 'outside_ccd',
+                    'loaddata_output': 'output',
+                })
+
+                # Remove algumas colunas desnecessárias
+                df_results = df_results.drop(
+                    ['request_output', 'loaddata_ticket', 'loaddata_positions'], axis=1)
+
+                # Adiciona uma coluna success, esta coluna considera o status dos 2 componentes
+                # para cada exposure, seu valor é True se a exposure for executada corretamente
+                # nos 2 componentes, e False se tiver falhado em um deles.
+                df_results['success'] = (
+                    df_results.request_success & df_results.loaddata_success)
+
+                # Adiciona uma coluna com o tempo total de execução de cada exposure.
+                # Somando o tempo de execução das 2 etapas.
+                df_results['execution_time'] = (
+                    df_results.request_execution_time + df_results.loaddata_execution_time)
+
+                # Escreve o resultado geral do Job no arquivo.
+                # TODO: Rever esta parte o csv de resultado não estava completo.
+                filepath = os.path.join(job.path, 'results.csv')
+                results = pd.DataFrame(df_results)
+                results.to_csv(filepath, sep=';', header=True, index=True)
+
+                self.logger_import.info("Results file created: [%s]" % filepath)
+
+                # Guarda o filepath do arquivo de resultados no model Job.
+                job.results = filepath
+
+                # Calcula o tempo total de execução do Job.
                 t0 = job.start
-                
-                # TODO COnferir se as datas estão em UTC ou NAIVE. no banco de dados.
-                # t1 = datetime.now()
                 t1 = datetime.now(timezone.utc)
                 tdelta = t1 - t0
-
                 job.finish = t1
                 job.execution_time = tdelta
+                # Altera o Status do Job para complete.
                 job.status = 3
                 job.save()
 
-
-                self.logger_import.info("TOOD: ACABOU O JOB Fazer o consolidado.")
+                self.logger_import.info("Job successfully completed %s" % humanize.naturaldelta(tdelta, minimum_unit="seconds"))
 
         except FileNotFoundError as e:
-            # A primeira vez que é executado o arquivo request heartbeat pode não existir. 
+            # A primeira vez que é executado o arquivo request heartbeat pode não existir.
             self.logger_import.debug(e)
 
         except Exception as e:
@@ -769,8 +845,6 @@ class DesSkybotPipeline():
 
             # Altera o Status do Job para Failed.
             t0 = job.start
-            # TODO COnferir se as datas estão em UTC ou NAIVE. no banco de dados.
-            # t1 = datetime.now()
             t1 = datetime.now(timezone.utc)
             tdelta = t1 - t0
 
