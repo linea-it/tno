@@ -54,6 +54,8 @@ class DESImportSkybotPositions(ImportSkybotPositions):
             # tempo total da associação.
             t0_ccds = datetime.now(timezone.utc)
 
+            # TODO:  Se não tiver nenhuma posição não fazer associação por cccd.
+
             # Para cada CCD associa as posições do skybot com os apontamentos do DES.
             for ccd in ccds:
                 try:
@@ -84,12 +86,13 @@ class DESImportSkybotPositions(ImportSkybotPositions):
             t1_ccds = datetime.now(timezone.utc)
             tdelta_ccds = t1_ccds - t0_ccds
 
-            self.logger.info("Positions Inside CCDs: [ %s ] Outside: [ %s ] Total: [ %s ] in %s" % (
+            self.logger.info("Exposure: [%s] Positions [ %s ] Inside CCDs: [ %s ] Outside: [ %s ] in %s" % (
+                exposure_id,
+                str(total_position),
                 str(total_inside_ccd),
                 str(total_outside_ccd),
-                str(total_position),
                 humanize.naturaldelta(tdelta_ccds, minimum_unit="milliseconds")
-            ))
+            ))            
 
             result.update({
                 'success': True,
@@ -111,7 +114,7 @@ class DESImportSkybotPositions(ImportSkybotPositions):
             a_t1 = datetime.now(timezone.utc)
             a_tdelta = a_t1 - a_t0
 
-            self.logger.info("Completed data import for exposure [%s] in %s" % (exposure_id, humanize.naturaldelta(
+            self.logger.debug("Completed data import for exposure [%s] in %s" % (exposure_id, humanize.naturaldelta(
                 a_tdelta, minimum_unit="milliseconds")))
 
             result.update({

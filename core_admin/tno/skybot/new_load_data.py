@@ -19,7 +19,7 @@ class ImportSkybotPositions():
         self.logger = logging.getLogger("skybot_load_data")
 
     def import_output_file(self, filepath):
-        self.logger.info("Importing Skybot Output: [%s]" % filepath)
+        self.logger.debug("Importing Skybot Output: [%s]" % filepath)
 
         try:
 
@@ -35,7 +35,7 @@ class ImportSkybotPositions():
                 t1 = datetime.now(timezone.utc)
                 tdelta = t1 - t0
 
-                self.logger.info("Imported Skybot [%s] Positions in %s" % (
+                self.logger.debug("Imported Skybot [%s] Positions in %s" % (
                     rowcount, humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))                    
 
             except Exception as e:

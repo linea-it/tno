@@ -1,5 +1,6 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
+
 
 class SkybotJob(models.Model):
     """
@@ -28,7 +29,7 @@ class SkybotJob(models.Model):
         auto_now_add=False,
     )
 
-    # Status da execução. 
+    # Status da execução.
     status = models.IntegerField(
         verbose_name='Status',
         default=1,
@@ -70,7 +71,7 @@ class SkybotJob(models.Model):
 
     # Pasta onde estão os dados do Job.
     path = models.TextField(
-        verbose_name='Path', 
+        verbose_name='Path',
         help_text='Path to the directory where the job data is located.'
     )
 
@@ -83,7 +84,7 @@ class SkybotJob(models.Model):
     )
 
     class Meta:
-        # Não pode ter Jobs iguais para o mesmo periodo. 
+        # Não pode ter Jobs iguais para o mesmo periodo.
         unique_together = ('date_initial', 'date_final')
 
     def __str__(self):

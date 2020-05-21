@@ -37,9 +37,9 @@ def teste(request):
 
         # DesSkybotPipeline().run_job(1)
 
-        DesSkybotPipeline().reset_job_for_test(1)
-        # DesSkybotPipeline().run_job(1)
-        # DesSkybotPipeline().check_load_data_queue()
+        DesSkybotPipeline().reset_job_for_test(5)
+        # DesSkybotPipeline().run_job(5)
+        # DesSkybotPipeline().check_loaddata_queue()
         
 
         # check_astrometry_running()
