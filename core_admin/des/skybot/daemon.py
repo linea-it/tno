@@ -29,7 +29,7 @@ def start_des_skybot_daemon():
         seconds=30
         )
 
-    # scheduler.start()
+    scheduler.start()
 
 
 

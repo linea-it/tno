@@ -30,7 +30,11 @@ class ImportSkybotPositions():
                 # Le o arquivo de outputs e gera um pandas dataframe
                 df = self.read_output_file(filepath)
 
-                rowcount = self.import_data(df)
+                # só executa a função de importação se tiver dados. 
+                if df.shape[0] > 0:
+                    rowcount = self.import_data(df)
+                else:
+                    rowcount = 0 
 
                 t1 = datetime.now(timezone.utc)
                 tdelta = t1 - t0
