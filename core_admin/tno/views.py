@@ -24,7 +24,7 @@ from django.http import HttpResponse
 import csv
 from .johnstons import JhonstonArchive
 from django.utils import timezone
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
 from django.db.models import Sum
@@ -418,7 +418,7 @@ class CustomListViewSet(viewsets.ModelViewSet):
     @detail_route(methods=['GET'])
     def download_ccds_by_list(self, request, pk):
         """
-            Verifica quais ccds relacionados com a lista precisam ser baixados. 
+            Verifica quais ccds relacionados com a lista precisam ser baixados.
             e executa o download destes ccds.
         """
         record = self.get_object()
@@ -426,7 +426,7 @@ class CustomListViewSet(viewsets.ModelViewSet):
         # Todos os CCDs relacioandos com a lista que não foram baixados.
         not_download = self.ccds_not_downloaded_by_list(record)
 
-        # Executa a função de Download em background. 
+        # Executa a função de Download em background.
         with futures.ProcessPoolExecutor(max_workers=1) as ex:
             ex.submit(download_des_ccds, not_download)
 
@@ -1073,6 +1073,19 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
             'estimate': execution_estimate,
         })
 
+    def get_days_interval(self, start_date, end_date):
+        """
+            Retorna todos os dias entre a data final e inicial
+        """
+        start = datetime.strptime(start_date, '%Y-%m-%d')
+        end = datetime.strptime(end_date, '%Y-%m-%d')
+        delta = end - start
+        days = list()
+        for i in range(delta.days + 1):
+            day = start + timedelta(days=i)
+            days.append(day.date())
+        return days
+
     @list_route()
     def exposures_by_period(self, request):
         """
@@ -1091,8 +1104,11 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
 
         db = PointingDB()
 
+
         initial_date = request.query_params.get('initial_date', None)
         final_date = request.query_params.get('final_date', None)
+
+        days_interval = self.get_days_interval(initial_date, final_date)
 
         # If the execution is by period, then convert them into a datetime notation:
         if initial_date and final_date:
@@ -1103,11 +1119,41 @@ class SkybotRunViewSet(viewsets.ModelViewSet):
         else:
             exposures = db.unique_exposures()
 
+
+        days_with_exposures = list(map(lambda x: x['date_obs'], exposures))
+
+        for day in days_interval:
+            if day not in days_with_exposures:
+                exposures.append({
+                    'exposures': 0,
+                    'date_obs': day,
+                })
+
+        exposures = sorted(exposures, key=lambda x: x['date_obs'])
+
+
         return Response({
             'success': True,
             'rows': exposures,
         })
 
+
+
+    @list_route()
+    def exposures_years(self, request):
+        db = PointingDB()
+        exposures = db.unique_exposures()
+
+        years = list()
+
+        for exposure in exposures:
+            years.append(exposure['date_obs'].year)
+
+
+        return Response({
+            'succes': True,
+            'years': set(years)
+        })
 
 class CcdImageViewSet(viewsets.ModelViewSet):
     queryset = CcdImage.objects.all()

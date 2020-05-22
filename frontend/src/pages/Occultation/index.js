@@ -11,10 +11,7 @@ import {
   TextField,
   MenuItem,
 } from '@material-ui/core';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
+import { LocalizationProvider, DatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { url } from '../../services/api/Auth';
 import { getOccultations } from '../../services/api/Occultation';
@@ -178,8 +175,8 @@ function Occultation({ setTitle }) {
           <Card>
             <CardContent>
               <form noValidate autoComplete="off">
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDatePicker
+                <LocalizationProvider utils={DateFnsUtils}>
+                  <DatePicker
                     disableToolbar
                     variant="inline"
                     format="yyyy-MM-dd"
@@ -188,7 +185,7 @@ function Occultation({ setTitle }) {
                     value={startDate}
                     onChange={handleStartDateChange}
                   />
-                  <KeyboardDatePicker
+                  <DatePicker
                     disableToolbar
                     variant="inline"
                     format="yyyy-MM-dd"
@@ -197,7 +194,7 @@ function Occultation({ setTitle }) {
                     value={endDate}
                     onChange={handleEndDateChange}
                   />
-                </MuiPickersUtilsProvider>
+                </LocalizationProvider>
                 <TextField
                   label="Object Name"
                   value={objectName}
