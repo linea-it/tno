@@ -109,7 +109,9 @@ class DesSkybotPipeline():
             # Se não existir faz a query, cria um pandas dataframe e salva em arquivo.
 
             # Executa a query para saber todas as exposições para este periodo.
-            rows = self.query_exposures_by_period(start, end)
+            rows = self.query_exposures_by_period(
+                start.strftime("%Y-%m-%d 00:00:00"), 
+                end.strftime("%Y-%m-%d 23:59:59"))
 
             # Cria um pandas dataframe com as exposições.
             df = self.create_exposure_dataframe(rows, job_path)
@@ -221,7 +223,8 @@ class DesSkybotPipeline():
             requests = list([])
 
             # Lista de exposições que serão executadas.
-            a_exposures = df_exposures.to_dict('records', )[0:20]
+            a_exposures = df_exposures.to_dict('records', )
+            # a_exposures = df_exposures.to_dict('records', )[0:3]
 
             # Guarda o total de tempo de execução para calcular o tempo médio.
             t_exec_time = []
@@ -229,74 +232,89 @@ class DesSkybotPipeline():
             # Arquivo onde sera gravados o andamento da execução.
             heartbeat = self.get_request_heartbeat_filename(job_path)
 
-            # Cria o arquivo de Heartbeat
-            self.update_request_heartbeat(
-                heartbeat, 'running', 0, len(a_exposures), 0)
+            # Caso não tenha nenhum exposição para executar 
+            if len(a_exposures) == 0:
 
-            for idx, exp in enumerate(a_exposures, start=1):
-                # caminho para o arquivo com os resultados retornados pelo skyubot.
-                filename = "%s.temp" % exp['id']
-                output = os.path.join(job_path, filename)
-
-                # Executa o consulta usando a função cone_search.
-                result = ss.cone_search(
-                    date=exp['date_obs'],
-                    ra=exp['radeg'],
-                    dec=exp['decdeg'],
-                    radius=self.radius,
-                    observer_location=self.observer_location,
-                    position_error=self.position_error,
-                    output=output
-                )
-
-                # Adiciona o id da exposição ao resultado.
-                result.update({'exposure': exp['id']})
-
-                if result['success']:
-                    # o Nome do arquivo agora é composto por exposure_id + ticket.
-                    # e a extensão passa a ser .csv, mudando o nome do arquivo depois que ele
-                    # já foi escrito eu garanto que ele está pronto para ser importado.
-                    filename = "%s_%s.csv" % (exp['id'], result['ticket'])
-                    filepath = os.path.join(job_path, filename)
-
-                    # renomea o arquivo
-                    os.rename(output, filepath)
-
-                    # guarda o novo filepath e filename
-                    result.update({
-                        'output': filepath,
-                        'filename': filename
-                    })
-
-                    self.logger.info("Exposure [%s] returned [%s] positions in %s." % (
-                        result['exposure'], result['positions'], humanize.naturaldelta(
-                            timedelta(seconds=result['execution_time']), minimum_unit="milliseconds")
-                    ))
-                else:
-                    self.logger.warning("Exposure [%s]: %s" % (
-                        result['exposure'], result['error']))
-
-                # guarda o resultado do dataframe de requisições.
-                requests.append(result)
-
-                # Incremeta o tempo total de execução.
-                t_exec_time.append(result['execution_time'])
-
-                # Atualiza o arquivo de heartbeat
+                # Cria o arquivo de Heartbeat
                 self.update_request_heartbeat(
-                    heartbeat, 'running', idx, len(a_exposures), mean(t_exec_time))
+                    heartbeat, 'completed', 0, 0, 0)
 
-            # Quando termina de baixar todas as exposições atualiza o heartbeat com status done
-            self.update_request_heartbeat(
-                heartbeat, 'completed', idx, len(a_exposures), mean(t_exec_time))
+                # Criar um dataframe para guardar as estatisticas de cada requisição.
+                df_requests = self.create_request_dataframe([], job_path)
 
-            # Criar um dataframe para guardar as estatisticas de cada requisição.
-            df_requests = self.create_request_dataframe(requests, job_path)
+                t_requests = 0
+                t_success = 0
+                t_failure = 0
 
-            # Totais de sucesso e falha.
-            t_requests = df_requests.shape[0]
-            t_success = df_requests.success.sum()
-            t_failure = t_requests - t_success
+            else:
+                # Cria o arquivo de Heartbeat
+                self.update_request_heartbeat(
+                    heartbeat, 'running', 0, len(a_exposures), 0)
+
+                for idx, exp in enumerate(a_exposures, start=1):
+                    # caminho para o arquivo com os resultados retornados pelo skyubot.
+                    filename = "%s.temp" % exp['id']
+                    output = os.path.join(job_path, filename)
+
+                    # Executa o consulta usando a função cone_search.
+                    result = ss.cone_search(
+                        date=exp['date_obs'],
+                        ra=exp['radeg'],
+                        dec=exp['decdeg'],
+                        radius=self.radius,
+                        observer_location=self.observer_location,
+                        position_error=self.position_error,
+                        output=output
+                    )
+
+                    # Adiciona o id da exposição ao resultado.
+                    result.update({'exposure': exp['id']})
+
+                    if result['success']:
+                        # o Nome do arquivo agora é composto por exposure_id + ticket.
+                        # e a extensão passa a ser .csv, mudando o nome do arquivo depois que ele
+                        # já foi escrito eu garanto que ele está pronto para ser importado.
+                        filename = "%s_%s.csv" % (exp['id'], result['ticket'])
+                        filepath = os.path.join(job_path, filename)
+
+                        # renomea o arquivo
+                        os.rename(output, filepath)
+
+                        # guarda o novo filepath e filename
+                        result.update({
+                            'output': filepath,
+                            'filename': filename
+                        })
+
+                        self.logger.info("Exposure [%s] returned [%s] positions in %s." % (
+                            result['exposure'], result['positions'], humanize.naturaldelta(
+                                timedelta(seconds=result['execution_time']), minimum_unit="milliseconds")
+                        ))
+                    else:
+                        self.logger.warning("Exposure [%s]: %s" % (
+                            result['exposure'], result['error']))
+
+                    # guarda o resultado do dataframe de requisições.
+                    requests.append(result)
+
+                    # Incremeta o tempo total de execução.
+                    t_exec_time.append(result['execution_time'])
+
+                    # Atualiza o arquivo de heartbeat
+                    self.update_request_heartbeat(
+                        heartbeat, 'running', idx, len(a_exposures), mean(t_exec_time))
+
+                # Quando termina de baixar todas as exposições atualiza o heartbeat com status done
+                self.update_request_heartbeat(
+                    heartbeat, 'completed', idx, len(a_exposures), mean(t_exec_time))
+
+                # Criar um dataframe para guardar as estatisticas de cada requisição.
+                df_requests = self.create_request_dataframe(requests, job_path)
+
+                # Totais de sucesso e falha.
+                t_requests = df_requests.shape[0]
+                t_success = df_requests.success.sum()
+                t_failure = t_requests - t_success
 
             # tempo de execução
             t1 = datetime.now()
@@ -497,46 +515,6 @@ class DesSkybotPipeline():
         try:
             self.logger_import.info(
                 "----------------------------------------------")
-            # Instancia da Classe de Importação.
-            loaddata = DESImportSkybotPositions()
-
-            # Varre o diretório, lista todos os arquivos de posições
-            # gerados pelo skybot.
-            # para cada arquivo executa o metodo de importação.
-            results = list([])
-
-            # Esta funcao get_files poderia ser um unico loop,
-            # escolhi fazer separado, para ter acesso ao total de arquivos no inicio da iteração.
-            # este array a_files já ignora os outros arquivos csv no diretório.
-            a_files = self.get_files_to_import(job.path)
-            # a_files = a_files[0:5]  # TODO: Testando de um em um
-            to_import = len(a_files)
-
-            self.logger_import.debug(
-                "Number of files to be imported [%s]." % to_import)
-
-            # Total de arquivos importados com sucesso nesta rodada.
-            t_success = 0
-
-            #  Arquivo que controla o andamento do job.
-            heartbeat = self.get_loadata_heartbeat_filepath(job.path)
-
-            # Ler o dataframe
-            df_filepath = self.get_loaddata_dataframe_filepath(job.path)
-
-            try:
-                # Ler o Dataframe loaddata para saber quantas já foram executaas.
-                # Na primeira execução o arquivo não existe por isso este bloco entre try/except.
-                df_loaddata = self.read_loaddata_dataframe(df_filepath)
-
-                # Total de exposição que já foram importadas.
-                t_executed = int(df_loaddata.execution_time.count())
-                # Tempo total de execução das exposições já executadas.
-                t_exec_time = df_loaddata.execution_time.to_list()
-
-            except:
-                t_executed = 0
-                t_exec_time = []
 
             # Total a ser executado ler do heartbead da etapa anterior
             try:
@@ -548,65 +526,122 @@ class DesSkybotPipeline():
             except FileNotFoundError:
                 t_to_execute = 0
 
-            # Para cada arquivo a ser importado executa o metodo de importação
-            # guarda o resultado no dataframe e move o arquivo para o diretório de outputs.
-            for idx, pos_file in enumerate(a_files, start=1):
-                self.logger_import.debug("Importing file [%s] of [%s]  Filename: [%s]" % (
-                    idx, to_import, pos_file.name))
 
-                # Nome do arquivo é composto por ExposureId_Ticket.csv
-                # Recupera o Exposure id
-                exposure_id = pos_file.name.split("_")[0].strip()
-                # Recupera o Ticket
-                ticket = pos_file.name.split("_")[1].split(".")[0].strip()
+            #  Arquivo que controla o andamento do job.
+            heartbeat = self.get_loadata_heartbeat_filepath(job.path)
 
-                # Executa o Metódo de importação.
-                result = loaddata.import_des_skybot_positions(
-                    exposure_id, ticket, pos_file)
+            # Ler o dataframe
+            df_filepath = self.get_loaddata_dataframe_filepath(job.path)
 
-                # Mover os arquivos para diretório de outputs.
-                if result['success']:
-                    t_success += 1
+            if  t_to_execute == 0 :
 
-                    # Em caso de sucesso o nome do arquivo permanece o mesmo.
-                    new_filepath = os.path.join(
-                        positions_path, pos_file.name)
-                else:
-                    # Em caso de falha o arquivo recebe a extensão .err
-                    new_filepath = os.path.join(
-                        positions_path, pos_file.name.replace('.csv', '.err'))
-
-                # Move para o diretório de outputs
-                shutil.move(pos_file, new_filepath)
-
-                self.logger_import.debug(
-                    "File moved to: [%s]" % new_filepath)
-
-                result.update({'output': str(new_filepath)})
-                results.append(result)
-
-                self.logger_import.debug("Exposure: [%s] Success: [%s] Filepath: [%s]" % (
-                    exposure_id, result['success'], result['output']))
-
-                # Incrementa os totais.
-                t_executed += 1
-                t_exec_time.append(result['execution_time'])
+                t_success = 0
+                t_failure = 0
+                t_files = 0
 
                 # Atualiza o Heartbeat do loaddata.
                 self.update_loaddata_heartbeat(
-                    heartbeat, 'running', t_executed, t_to_execute, mean(t_exec_time))
+                        heartbeat, 'completed', 0, 0, 0)
 
-            # Se já tiver executado todas as exposições. atualiza o heartbeat com status done.
-            if t_executed == t_to_execute:
-                self.update_loaddata_heartbeat(
-                    heartbeat, 'completed', t_executed, t_to_execute, mean(t_exec_time))
+                df_loaddata = self.update_loaddata_dataframe([], df_filepath)
 
-            df_loaddata = self.update_loaddata_dataframe(results, df_filepath)
+            else:
 
-            # Totais de sucesso e falha.
-            t_files = len(results)
-            # t_success = df_loaddata.success.sum()
-            t_failure = t_files - t_success
+                # Instancia da Classe de Importação.
+                loaddata = DESImportSkybotPositions()
+
+                # Varre o diretório, lista todos os arquivos de posições
+                # gerados pelo skybot.
+                # para cada arquivo executa o metodo de importação.
+                results = list([])
+
+                # Esta funcao get_files poderia ser um unico loop,
+                # escolhi fazer separado, para ter acesso ao total de arquivos no inicio da iteração.
+                # este array a_files já ignora os outros arquivos csv no diretório.
+                a_files = self.get_files_to_import(job.path)
+                # a_files = a_files[0:5]  # TODO: Testando de um em um
+                to_import = len(a_files)
+
+                self.logger_import.debug(
+                    "Number of files to be imported [%s]." % to_import)
+
+                # Total de arquivos importados com sucesso nesta rodada.
+                t_success = 0
+
+                try:
+                    # Ler o Dataframe loaddata para saber quantas já foram executaas.
+                    # Na primeira execução o arquivo não existe por isso este bloco entre try/except.
+                    df_loaddata = self.read_loaddata_dataframe(df_filepath)
+
+                    # Total de exposição que já foram importadas.
+                    t_executed = int(df_loaddata.execution_time.count())
+                    # Tempo total de execução das exposições já executadas.
+                    t_exec_time = df_loaddata.execution_time.to_list()
+
+                except:
+                    t_executed = 0
+                    t_exec_time = []
+
+                # Para cada arquivo a ser importado executa o metodo de importação
+                # guarda o resultado no dataframe e move o arquivo para o diretório de outputs.
+                for idx, pos_file in enumerate(a_files, start=1):
+                    self.logger_import.debug("Importing file [%s] of [%s]  Filename: [%s]" % (
+                        idx, to_import, pos_file.name))
+
+                    # Nome do arquivo é composto por ExposureId_Ticket.csv
+                    # Recupera o Exposure id
+                    exposure_id = pos_file.name.split("_")[0].strip()
+                    # Recupera o Ticket
+                    ticket = pos_file.name.split("_")[1].split(".")[0].strip()
+
+                    # Executa o Metódo de importação.
+                    result = loaddata.import_des_skybot_positions(
+                        exposure_id, ticket, pos_file)
+
+                    # Mover os arquivos para diretório de outputs.
+                    if result['success']:
+                        t_success += 1
+
+                        # Em caso de sucesso o nome do arquivo permanece o mesmo.
+                        new_filepath = os.path.join(
+                            positions_path, pos_file.name)
+                    else:
+                        # Em caso de falha o arquivo recebe a extensão .err
+                        new_filepath = os.path.join(
+                            positions_path, pos_file.name.replace('.csv', '.err'))
+
+                    # Move para o diretório de outputs
+                    shutil.move(pos_file, new_filepath)
+
+                    self.logger_import.debug(
+                        "File moved to: [%s]" % new_filepath)
+
+                    result.update({'output': str(new_filepath)})
+                    results.append(result)
+
+                    self.logger_import.debug("Exposure: [%s] Success: [%s] Filepath: [%s]" % (
+                        exposure_id, result['success'], result['output']))
+
+                    # Incrementa os totais.
+                    t_executed += 1
+                    t_exec_time.append(result['execution_time'])
+
+                    # Atualiza o Heartbeat do loaddata.
+                    self.update_loaddata_heartbeat(
+                        heartbeat, 'running', t_executed, t_to_execute, mean(t_exec_time))
+
+                # Se já tiver executado todas as exposições. atualiza o heartbeat com status done.
+                if t_executed == t_to_execute:
+                    self.update_loaddata_heartbeat(
+                        heartbeat, 'completed', t_executed, t_to_execute, mean(t_exec_time))
+
+                df_loaddata = self.update_loaddata_dataframe(results, df_filepath)
+
+                # Totais de sucesso e falha.
+                t_files = len(results)
+                # t_success = df_loaddata.success.sum()
+                t_failure = t_files - t_success
+
 
             # tempo de execução
             t1 = datetime.now()
