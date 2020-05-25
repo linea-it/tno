@@ -159,6 +159,18 @@ class DESImportSkybotPositions(ImportSkybotPositions):
                 "Failed to retrieve CCDs for exposure with exposure_id=%s. Error: [%s]" % (exposure_id, e))
 
     def associate_position_ccd(self, ticket, exposure_id, ccd):
+        """Faz a associação das posições com um Des/CCD 
+        executa a função de insert/select cada posição que cair 
+        dentro do ccd sera inserida na tabela DES/SkybotPositions.
+
+        Arguments:
+            ticket {int} -- Id que identifica a requisição feita no skybot
+            exposure_id {[type]} -- [description]
+            ccd {[type]} -- [description]
+
+        Returns:
+            [type] -- [description]
+        """
         try:
             # Abre conexão com o banco usando da DAO SkybotPosition
             db = SkybotPositionDao()

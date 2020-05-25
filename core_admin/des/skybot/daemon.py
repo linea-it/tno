@@ -8,9 +8,6 @@ def start_des_skybot_daemon():
     pipeline = DesSkybotPipeline()
     scheduler = BackgroundScheduler()
 
-    # ATENÇÂO: Por algum motivo que eu não sei explicar jobs com interval diferentes
-    # não funcionou corretamente
-
     # Daemon que verifica se tem Jobs a serem executados, 
     # se tiver inicia a etapa de consulta ao skybot.
     scheduler.add_job(

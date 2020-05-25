@@ -37,33 +37,67 @@ class DesSkybotPipeline():
         self.position_error = 0
 
     def create_skybot_log(self, job_path):
+        """Cria um arquivo de log no diretório execução do Job. 
+        Este log é uma cópia do log definido no settings. 
+        Neste log estão as informações sobre as requisições.
+        Arguments:
+            job_path {str} -- Path onde o job está sendo executado. normalmente Model Job.path
+        """
         # Adiciona um Log Handle para fazer uma copia do log no diretório do processo.
         fh = logging.FileHandler(os.path.join(job_path, 'skybot_requests.log'))
         formatter = logging.Formatter(
             '%(asctime)s [%(levelname)s] %(message)s')
         fh.setFormatter(formatter)
-        # TODO: Duvida se não setar o Level será que herda o level do logger primario do Django?
-        # fh.setLevel(logging.DEBUG)
         self.logger.addHandler(fh)
 
     def create_loaddata_log(self, job_path):
+        """Cria um arquivo de log no diretório execução do Job. 
+        Este log é uma cópia do log definido no settings. 
+        Neste log estão as informações sobre a importaçao dos dados no banco de dados.
+        Arguments:
+            job_path {str} -- Path onde o job está sendo executado. normalmente Model Job.path
+        """
         # Adiciona um Log Handle para fazer uma copia do log no diretório do processo.
         fh = logging.FileHandler(os.path.join(job_path, 'skybot_loaddata.log'))
         formatter = logging.Formatter(
             '%(asctime)s [%(levelname)s] %(message)s')
         fh.setFormatter(formatter)
-        # fh.setLevel(logging.DEBUG)
         self.logger_import.addHandler(fh)
 
     def get_base_path(self):
+        """Retorna o diretório onde estão todos os jobs do skybot. 
+        este diretório está expecificado na settings.SKYBOT_OUTPUT
+
+        Returns:
+            str -- Path onde ficam os resultados de todos os jobs skybot. 
+        """
         return self.base_path
 
     def get_job_path(self, job_id):
+        """Retorna o path para o Job baseado em seu id. 
+        o diretório de um job é composto por base_path/des_skybot_<job_id>
+
+        Arguments:
+            job_id {int} -- Id do Job que está sendo executado
+
+        Returns:
+            str -- Path onde o job está sendo executado.
+        """
+
         output_path = os.path.join(
             self.get_base_path(), "des_skybot_%s" % str(job_id))
         return output_path
 
     def create_job_dir(self, job_id):
+        """Cria o Diretório para o job se não existir. 
+
+        Arguments:
+            job_id {int} -- Id do Job que está sendo executado
+
+        Returns:
+            job_path {str} -- Path onde o job está sendo executado.
+        """
+
         path = self.get_job_path(job_id)
         if not os.path.exists(path):
             os.mkdir(path)
@@ -72,9 +106,25 @@ class DesSkybotPipeline():
         return path
 
     def get_positions_path(self, job_id):
+        """Retorna o path onde os arquivos de resultado do skybot vão ficar no final da execução.
+        Durante a execução os arquivos ficam no job_path, mas depois de importados ficam neste diretório.
+        Arguments:
+            job_id {int} -- Id do Job que está sendo executado
+
+        Returns:
+            str -- O diretório de outputs é o job_path/outputs. 
+        """
         return os.path.join(self.get_job_path(job_id), 'outputs')
 
     def create_positions_path(self, job_id):
+        """Cria um diretório de outputs se não existir. 
+
+        Arguments:
+            job_id {int} -- Id do Job que está sendo executado
+
+        Returns:
+            str -- O diretório de outputs é o job_path/outputs. 
+        """
         path = self.get_positions_path(job_id)
         if not os.path.exists(path):
             os.mkdir(path)
@@ -83,12 +133,26 @@ class DesSkybotPipeline():
         return path
 
     def delete_job_dir(self, job_id):
+        """Apaga um diretório de Job com todo seu conteudo.
+
+        Arguments:
+            job_id {int} -- Id do Job que sera apagado.
+        """
         path = self.get_job_path(job_id)
         if os.path.exists(path) and os.path.isdir(path):
             shutil.rmtree(path)
             self.logger.debug("Job directory has been deleted.")
 
     def query_exposures_by_period(self, start, end):
+        """Retorna todas as Des/Exposures que tenham date_obs entre o periodo start, end. 
+
+        Arguments:
+            start {date} -- Data Inicial do periodo
+            end {date} -- Data Final do periodo
+
+        Returns:
+            Array -- Array com as exposições que atendem ao periodo. cada exposição tem o mesmo conteudo do model des.Exposures
+        """
         db = ExposureDao()
         rows = db.exposures_by_period(start, end)
 
@@ -97,10 +161,29 @@ class DesSkybotPipeline():
         return rows
 
     def get_expouses_filepath(self, job_path):
+        """Retorna o filepath para o arquivo csv que guarda as informações das exposições.
+
+        Arguments:
+            job_path {str} -- Path onde o job está sendo executado. normalmente Model Job.path
+
+        Returns:
+            str -- filepath para exposures.csv, é a junção de job_path/exposures.csv
+        """
         filepath = os.path.join(job_path, 'exposures.csv')
         return filepath
 
     def get_exposures(self, job_id, start, end):
+        """Retorna todas as exposições para um job, executa a query uma unica vez e guarda o resultado 
+        no arquivo exposures.csv. se o arquivo exisitir não executa a query novamente.
+
+        Arguments:
+            job_id {int} -- Id do Job que está sendo executado.
+            start {date} -- Data Inicial do periodo
+            end {date} -- Data Final do periodo
+
+        Returns:
+            pandas.Dataframe -- Retorna um dataframe com as exposições.
+        """
 
         # Verifica se já existe um arquivo com as exposições criado.
         job_path = self.get_job_path(job_id)
@@ -110,7 +193,7 @@ class DesSkybotPipeline():
 
             # Executa a query para saber todas as exposições para este periodo.
             rows = self.query_exposures_by_period(
-                start.strftime("%Y-%m-%d 00:00:00"), 
+                start.strftime("%Y-%m-%d 00:00:00"),
                 end.strftime("%Y-%m-%d 23:59:59"))
 
             # Cria um pandas dataframe com as exposições.
@@ -123,6 +206,15 @@ class DesSkybotPipeline():
         return df
 
     def create_exposure_dataframe(self, rows, job_path):
+        """Cria um dataframe para as exposições. 
+
+        Arguments:
+            rows {Array} -- Uma lista de exposições
+            job_path {str} -- Path onde o job está sendo executado. normalmente Model Job.path
+
+        Returns:
+            pandas.Dataframe -- Retorna um dataframe com as exposições.
+        """
 
         filepath = self.get_expouses_filepath(job_path)
 
@@ -137,6 +229,14 @@ class DesSkybotPipeline():
         return df
 
     def read_exposure_dataframe(self, job_path):
+        """Retorna o conteudo do dataframe de exposições. 
+
+        Arguments:
+            job_path {str} -- Path onde o job está sendo executado. normalmente Model Job.path
+
+        Returns:
+            pandas.Dataframe -- Retorna um dataframe com as exposições.
+        """
         filepath = self.get_expouses_filepath(job_path)
 
         df = pd.read_csv(filepath, delimiter=';')
@@ -144,10 +244,28 @@ class DesSkybotPipeline():
         return df
 
     def get_request_dataframe_filepath(self, job_path):
+        """Retorna o filepath do arquivo requests.csv
+
+        Arguments:
+            job_path {str} -- Path onde o job está sendo executado. normalmente Model Job.path
+
+        Returns:
+            str -- Filepath for job_path/requests.csv
+        """
         filepath = os.path.join(job_path, "requests.csv")
         return filepath
 
     def create_request_dataframe(self, rows, job_path):
+        """Cria um dataframe com os dados das requisições feitas ao skybot. 
+        cada linha representa uma exposição. 
+
+        Arguments:
+            rows {Array} -- Uma lista de exposições e os dados da requisição ao skybot.
+            job_path {str} -- Path onde o job está sendo executado. normalmente Model Job.path
+
+        Returns:
+            pandas.Dataframe -- Retorna um dataframe com as requisições..
+        """
         filepath = self.get_request_dataframe_filepath(job_path)
 
         df = pd.DataFrame(rows, columns=[
@@ -164,6 +282,17 @@ class DesSkybotPipeline():
         return df
 
     def read_request_dataframe(self, job_path, usecols=None):
+        """Retorna o conteudo do dataframe de requisições.
+
+        Arguments:
+            job_path {str} -- Path onde o job está sendo executado. normalmente Model Job.path
+
+        Keyword Arguments:
+            usecols {Array} -- Lista de colunas que serão retornadas, None retorn todas. (default: {None})
+
+        Returns:
+            pandas.Dataframe -- Retorna um dataframe com as requisições.
+        """
         filepath = self.get_request_dataframe_filepath(job_path)
 
         df = pd.read_csv(filepath, delimiter=';', usecols=usecols)
@@ -171,6 +300,13 @@ class DesSkybotPipeline():
         return df
 
     def run_job(self, job_id):
+        """Este método executa as etapas de request ao skybot. 
+        é executado em um unico loop, itera sobre todas as exposições 
+        e faz a requisição no serviço do skybot, 
+
+        Arguments:
+            job_id {int} -- Id do Job que está sendo executado.
+        """
         try:
             t0 = datetime.now()
 
@@ -232,7 +368,7 @@ class DesSkybotPipeline():
             # Arquivo onde sera gravados o andamento da execução.
             heartbeat = self.get_request_heartbeat_filename(job_path)
 
-            # Caso não tenha nenhum exposição para executar 
+            # Caso não tenha nenhum exposição para executar
             if len(a_exposures) == 0:
 
                 # Cria o arquivo de Heartbeat
@@ -342,6 +478,15 @@ class DesSkybotPipeline():
         return os.path.join(job_path, "request_heartbeat.json")
 
     def update_request_heartbeat(self, filepath, status, current, total, average):
+        """Atualiza o arquivo heartbeat com a situação atual do Job na etapa de request.
+
+        Arguments:
+            filepath {str} -- Path retornado pelo metodo get_request_heartbeat_filename
+            status {str} -- running or completed
+            current {int} -- Indice da exposição que esta sendo executada no momento
+            total {int} -- Total de exposições a serem executadas
+            average {float} -- tempo médio de execução por exposição.
+        """
         #  Calcaula o tempo estimado para as exposições que ainda faltam baixar.
         estimate = (total - current) * average
 
@@ -377,6 +522,12 @@ class DesSkybotPipeline():
             return json.load(f)
 
     def reset_job_for_test(self, job_id):
+        """Volta o Job para o estado inicial, 
+        util apenas para testes. durante o desenvolvimento
+
+        Arguments:
+            job_id {int} -- Id do Job que sera apagado.
+        """
         job = SkybotJob.objects.get(pk=job_id)
 
         # Exclui o diretório do job.
@@ -396,8 +547,8 @@ class DesSkybotPipeline():
         inicia a execução do job.
         ATENÇÂO: Este metodo está associado a Daemon, ele é executado de tempos em tempos. 
         segundo definido no arquivo skybot/daemon.
-        """
 
+        """
         # Verificar se já existe algum job com status Running.
         running = SkybotJob.objects.filter(status=2)
 
@@ -414,11 +565,6 @@ class DesSkybotPipeline():
                 self.logger.info("Starting the job with id %s" % to_run.id)
 
                 self.run_job(to_run.id)
-
-        # else:
-        #     # Se já existir um job executando não faz nada
-        #     # TODO este print vai sair
-        #     self.logger.info("Já existe um job executando")
 
     def check_loaddata_queue(self):
         """Verifica se a fila de jobs, se tiver algum job com status running. 
@@ -441,15 +587,6 @@ class DesSkybotPipeline():
                 # Se não exisitir arquivo de lock
                 # significa que não tem nenhum importação acontecendo
                 self.run_import_positions(running.id)
-
-        #     else:
-        #         # Já existe um arquivo de lock não faz nada.
-        #         # por que não pode haver 2 importações simultaneas.
-        #         self.logger_import.info("Já Está importando dados.")
-
-        # else:
-        #     # Se não tiver nenhum job executando.
-        #     self.logger_import.info("Não tem nenhum job executando")
 
     def check_lock_load_data(self, job_path):
         """Verifica se existe um arquivo de lock para a taks de load data.
@@ -499,6 +636,16 @@ class DesSkybotPipeline():
         return a_files
 
     def run_import_positions(self, job_id):
+        """Este metodo executa a etapa de importação de dados. 
+        é executada pela daemon de tempos em tempos. varre o diretório do job 
+        e caso tenha arquivos de output no diretório do job executa a importação 
+        para cada arquivo. conforme vai importando vai atualizando os arquivos de resultado. 
+        cada arquivo imporado é movido para a pasta de outputs. se der erro na importação 
+        o arquivo é renomeado com a extensão .err 
+
+        Arguments:
+            job_id {int} -- Id do Job que está sendo executado.
+        """
 
         t0 = datetime.now()
 
@@ -526,14 +673,13 @@ class DesSkybotPipeline():
             except FileNotFoundError:
                 t_to_execute = 0
 
-
             #  Arquivo que controla o andamento do job.
             heartbeat = self.get_loadata_heartbeat_filepath(job.path)
 
             # Ler o dataframe
             df_filepath = self.get_loaddata_dataframe_filepath(job.path)
 
-            if  t_to_execute == 0 :
+            if t_to_execute == 0:
 
                 t_success = 0
                 t_failure = 0
@@ -541,7 +687,7 @@ class DesSkybotPipeline():
 
                 # Atualiza o Heartbeat do loaddata.
                 self.update_loaddata_heartbeat(
-                        heartbeat, 'completed', 0, 0, 0)
+                    heartbeat, 'completed', 0, 0, 0)
 
                 df_loaddata = self.update_loaddata_dataframe([], df_filepath)
 
@@ -635,13 +781,13 @@ class DesSkybotPipeline():
                     self.update_loaddata_heartbeat(
                         heartbeat, 'completed', t_executed, t_to_execute, mean(t_exec_time))
 
-                df_loaddata = self.update_loaddata_dataframe(results, df_filepath)
+                df_loaddata = self.update_loaddata_dataframe(
+                    results, df_filepath)
 
                 # Totais de sucesso e falha.
                 t_files = len(results)
                 # t_success = df_loaddata.success.sum()
                 t_failure = t_files - t_success
-
 
             # tempo de execução
             t1 = datetime.now()
@@ -670,11 +816,28 @@ class DesSkybotPipeline():
             self.logger_import.debug("Lock file removed.")
 
     def get_loaddata_dataframe_filepath(self, job_path):
+        """Retorna o filepath para o dataframe que contem os resultados da etapa de loaddata.
+
+        Arguments:
+            job_path {str} -- Path onde o job está sendo executado. normalmente Model Job.path
+
+        Returns:
+            str -- Filepath for job_path/loaddata.csv
+        """
         filepath = os.path.join(job_path, 'loaddata.csv')
         return filepath
 
     def update_loaddata_dataframe(self, rows, filepath):
+        """Cria ou atualiza o dataframe com os resultados da etapa de loaddata.
+        se o arquivo loaddata.csv não existir ele é criado. 
+        se existir é  lido seu conteudo, adicionado as novas rows e retorna o dataframe. 
+        Arguments:
+            rows {Array} -- Resultados do loaddata uma linha para cada exposição.
+            filepath {str} -- Filepath retornado pelo metodo get_loaddata_dataframe_filepath
 
+        Returns:
+            pandas.Dataframe -- Dataframe com os resultados da etapa loaddata.
+        """
         columns = [
             'exposure', 'success', 'ticket', 'positions', 'ccds', 'inside_ccd', 'outside_ccd',
             'output', 'start', 'finish', 'execution_time', 'import_pos_exec_time', 'ccd_assoc_exec_time',
@@ -732,6 +895,15 @@ class DesSkybotPipeline():
         return os.path.join(job_path, "loaddata_heartbeat.json")
 
     def update_loaddata_heartbeat(self, filepath, status, current, total, average):
+        """Atualiza o arquivo de heatbeat da etapa loaddata. 
+
+        Arguments:
+            filepath {str} -- filepath retornado pelo metodo get_loadata_heartbeat_filepath
+            status {str} -- running ou completed.
+            current {int} -- indice da exposição que está sendo executada no momento.
+            total {int} -- Total de exposições a ser executado.
+            average {float} -- tempo médio de execução da etapa loaddata para cada exposição.
+        """
         #  Calcaula o tempo estimado para as exposições que ainda faltam baixar.
         estimate = (total - current) * average
 
@@ -767,6 +939,15 @@ class DesSkybotPipeline():
             return json.load(f)
 
     def consolidate(self, job_id):
+        """Faz a checagem para saber se o Job completou as 2 etapas. 
+        Verifica se todas as exposições do job passaram pelas 2 etapas. 
+        caso tenha acabado, cria um arquivo com os resultados e encerra o job.
+
+        Le os 3 dataframes, exposures, requests e loaddata junta seus resultados usando o exposure id. 
+
+        Arguments:
+            job_id {int} -- Id do job que está sendo executado.
+        """
         # Recupera o Model pelo ID
         try:
             job = SkybotJob.objects.get(pk=job_id)
@@ -841,12 +1022,12 @@ class DesSkybotPipeline():
                     df_results.request_execution_time + df_results.loaddata_execution_time)
 
                 # Escreve o resultado geral do Job no arquivo.
-                # TODO: Rever esta parte o csv de resultado não estava completo.
                 filepath = os.path.join(job.path, 'results.csv')
                 results = pd.DataFrame(df_results)
                 results.to_csv(filepath, sep=';', header=True, index=True)
 
-                self.logger_import.info("Results file created: [%s]" % filepath)
+                self.logger_import.info(
+                    "Results file created: [%s]" % filepath)
 
                 # Guarda o filepath do arquivo de resultados no model Job.
                 job.results = filepath
@@ -861,7 +1042,8 @@ class DesSkybotPipeline():
                 job.status = 3
                 job.save()
 
-                self.logger_import.info("Job successfully completed %s" % humanize.naturaldelta(tdelta, minimum_unit="seconds"))
+                self.logger_import.info("Job successfully completed %s" % humanize.naturaldelta(
+                    tdelta, minimum_unit="seconds"))
 
         except FileNotFoundError as e:
             # A primeira vez que é executado o arquivo request heartbeat pode não existir.
@@ -872,6 +1054,13 @@ class DesSkybotPipeline():
             self.on_error(job_id, e)
 
     def on_error(self, job_id, e):
+        """Encerra o job com status de erro. 
+        é chamada nas funções de controle do pipeline. ao ocorrer uma excessão não tratada.
+
+        Arguments:
+            job_id {int} -- Id do job que está sendo executado.
+            e {Exception} -- Execessão lançada durante a execução. 
+        """
         try:
             # Recupera o Model pelo ID
             job = SkybotJob.objects.get(pk=job_id)
