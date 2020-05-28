@@ -114,10 +114,12 @@ INSTALLED_APPS = [
     # Project Apps
     'common',
     'tno',
+    'skybot',    
     'praia',
     'orbit',
     'predict',
-    'des'
+    'des',
+
 ]
 
 MIDDLEWARE = [

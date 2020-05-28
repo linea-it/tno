@@ -499,7 +499,7 @@ class FilterObjects(DBBase):
 
         return rows
 
-
+# TODO: Esta classe deve ser excluida, foi criada uma nova em skybot.dao.skybot_positions
 class SkybotOutput(DBBase):
     def __init__(self):
         super(SkybotOutput, self).__init__()

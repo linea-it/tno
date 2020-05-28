@@ -1,4 +1,4 @@
 
 from .ccd import CcdDao
 from .exposure import ExposureDao
-from .skybot_position import SkybotPositionDao
+from .skybot_position import DesSkybotPositionDao

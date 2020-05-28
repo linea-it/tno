@@ -13,8 +13,8 @@ from django.conf import settings
 
 from des.dao import ExposureDao
 from des.models import SkybotJob
-from des.skybot.load_data import DESImportSkybotPositions
-from des.skybot.skybot_server import SkybotServer
+from des.skybot.import_positions import DESImportSkybotPositions
+from skybot.skybot_server import SkybotServer
 
 
 class DesSkybotPipeline():
@@ -360,7 +360,7 @@ class DesSkybotPipeline():
 
             # Lista de exposições que serão executadas.
             a_exposures = df_exposures.to_dict('records', )
-            # a_exposures = df_exposures.to_dict('records', )[0:3]
+            # a_exposures = df_exposures.to_dict('records', )[0:2]
 
             # Guarda o total de tempo de execução para calcular o tempo médio.
             t_exec_time = []

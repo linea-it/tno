@@ -2,12 +2,11 @@ from sqlalchemy import column, literal, literal_column, text
 from sqlalchemy.sql import and_, select
 
 from tno.db import DBBase
-from tno.skybotoutput import SkybotOutput as SkybotOutputDao
+from skybot.dao.skybot_positions import SkybotPositionsDao
 
-
-class SkybotPositionDao(DBBase):
+class DesSkybotPositionDao(DBBase):
     def __init__(self):
-        super(SkybotPositionDao, self).__init__()
+        super(DesSkybotPositionDao, self).__init__()
 
         schema = self.get_base_schema()
         self.tablename = 'des_skybotposition'
@@ -17,12 +16,6 @@ class SkybotPositionDao(DBBase):
     def get_tablename(self):
         return self.tablename
 
-    def get_table_skybot_position(self):
-        return self.tbl
-
-    # TODO: Mover esse metodo para DBBase.
-    def count_ccds(self):
-        return self.get_count(self.get_table_skybot_position())
 
     # TODO: Criar um metodo que retorne todas as posições para uma exposição
 
@@ -49,10 +42,10 @@ class SkybotPositionDao(DBBase):
         """
         try:
             # tabela Des Skybot Position
-            tbl = self.get_table_skybot_position()
+            tbl = self.tbl
 
             # Recupera a tabela do skubot
-            tbl_skybot = SkybotOutputDao().get_table_skybot()
+            tbl_skybot = SkybotPositionsDao().get_tbl()
 
             # ATENÇÃO: A ordem das colunas no select e no insert deve ser a mesma
             # que está na tabela fisica do banco de dados neste caso:

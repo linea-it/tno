@@ -4,9 +4,8 @@ from datetime import datetime, timedelta, timezone
 import humanize
 import pandas
 
-from des.dao import CcdDao, SkybotPositionDao
-from tno.skybot.new_load_data import ImportSkybotPositions
-
+from des.dao import CcdDao, DesSkybotPositionDao
+from skybot.import_positions import ImportSkybotPositions
 
 class DESImportSkybotPositions(ImportSkybotPositions):
 
@@ -55,13 +54,12 @@ class DESImportSkybotPositions(ImportSkybotPositions):
                 # Recupera os CCDs da exposição
                 ccds = self.ccds_by_exposure_id(exposure_id)
 
+                self.logger.debug("CCDs: [%s] for Exposure: [%s]" % (len(ccds), exposure_id))
                 # Total de posições que estão dentro de algum CCD.
                 total_inside_ccd = 0
 
                 # tempo total da associação.
                 t0_ccds = datetime.now(timezone.utc)
-
-                # TODO:  Se não tiver nenhuma posição não fazer associação por cccd.
 
                 # Para cada CCD associa as posições do skybot com os apontamentos do DES.
                 for ccd in ccds:
@@ -117,6 +115,8 @@ class DESImportSkybotPositions(ImportSkybotPositions):
                 'error': str(e),
                 'traceback': trace
             })
+            self.logger.error(trace)
+            self.logger.error(e)
         finally:
             a_t1 = datetime.now(timezone.utc)
             a_tdelta = a_t1 - a_t0
@@ -173,7 +173,7 @@ class DESImportSkybotPositions(ImportSkybotPositions):
         """
         try:
             # Abre conexão com o banco usando da DAO SkybotPosition
-            db = SkybotPositionDao()
+            db = DesSkybotPositionDao()
 
             # Faz um Insert/Select, na tabela DES/skybot_positons
             # Inserindo uma linha para cada posição que esta dentro do ccd.
