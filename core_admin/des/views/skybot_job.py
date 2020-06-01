@@ -64,7 +64,7 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         return Response(result.data)
 
     @action(detail=True)
-    def job_heartbeat(self, request, pk=None):
+    def heartbeat(self, request, pk=None):
         """
             Este endpoint monitora o progresso de um job.
 

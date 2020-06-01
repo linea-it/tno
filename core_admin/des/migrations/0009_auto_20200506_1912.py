@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_initial', models.DateField(verbose_name='Date Initial')),
                 ('date_final', models.DateField(verbose_name='Date Final')),
-                ('status', models.IntegerField(choices=[(1, 'Idle'), (2, 'Running'), (3, 'Completed'), (4, 'Failed'), (5, 'Aborted'), (6, 'Stoped')], default=1, verbose_name='Status')),
+                ('status', models.IntegerField(choices=[(1, 'Idle'), (2, 'Running'), (3, 'Completed'), (4, 'Failed'), (5, 'Aborted'), (6, 'Stopped')], default=1, verbose_name='Status')),
                 ('start', models.DateTimeField(auto_now_add=True, verbose_name='Start')),
                 ('finish', models.DateTimeField(blank=True, null=True, verbose_name='Finish')),
                 ('execution_time', models.DurationField(blank=True, null=True, verbose_name='Execution Time')),

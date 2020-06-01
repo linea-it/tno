@@ -234,10 +234,8 @@ function Skybot({ setTitle }) {
       width: 100,
       align: 'left',
       customElement: (row) => (
-        <span>
-          {row.date_initial
-            ? moment(row.date_initial).format('YYYY-MM-DD')
-            : ''}
+        <span title={moment(row.start).format('HH:mm:ss')}>
+          {row.date_initial}
         </span>
       ),
     },
@@ -247,41 +245,23 @@ function Skybot({ setTitle }) {
       width: 100,
       align: 'left',
       customElement: (row) => (
-        <span>
-          {row.date_final ? moment(row.date_final).format('YYYY-MM-DD') : ''}
+        <span title={moment(row.finish).format('HH:mm:ss')}>
+          {row.date_final}
         </span>
       ),
     },
     {
-      name: 'type_run',
-      title: 'Run Type',
-      width: 100,
-      align: 'center',
-    },
-    {
-      name: 'start',
-      title: 'Start',
-      width: 200,
-      align: 'center',
-    },
-    {
-      name: 'type_run',
-      title: 'Type',
-      width: 120,
-      align: 'center',
-    },
-    {
-      name: 'rows',
-      title: 'Rows',
-      width: 100,
-      align: 'right',
-    },
-    {
-      name: 'h_execution_time',
-      title: 'Exec Time',
+      name: 'execution_time',
+      title: 'Execution Time',
       width: 150,
       align: 'center',
       headerTooltip: 'Execution time',
+    },
+    {
+      name: 'exposures',
+      title: 'Exposures',
+      width: 100,
+      align: 'right',
     },
   ];
 
