@@ -1,6 +1,7 @@
 from tno.db import DBBase
 
 from sqlalchemy.sql import and_, select
+from sqlalchemy import func
 
 class SkybotPositionsDao(DBBase):
 
@@ -65,9 +66,7 @@ class SkybotPositionsDao(DBBase):
             Retorna todas as linhas da tabela skybotoutput 
             relacionadas a um skybot Ticket. 
         """
-        tbl = self.get_table_skybot()
-
-        stm = select(tbl.c).where(and_(tbl.c.ticket == ticket))
+        stm = select(self.tbl.c).where(and_(self.tbl.c.ticket == ticket))
 
         self.debug_query(stm, True)
 

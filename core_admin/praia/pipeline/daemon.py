@@ -7,12 +7,13 @@ def start_astrometry_daemon():
 
     # print("Start Check Jobs")
 
-    logger = logging.getLogger("condor")
+    # logger = logging.getLogger("condor")
 
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(check_astrometry_running, 'interval', minutes=1)
-    scheduler.start()
+    # scheduler = BackgroundScheduler()
+    # scheduler.add_job(check_astrometry_running, 'interval', minutes=1)
+    # scheduler.start()
 
-    logger.debug("Start Check Jobs")
+    # logger.debug("Start Check Jobs")
 
-    pass                
+
+    pass

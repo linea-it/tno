@@ -308,14 +308,18 @@ class DBBase():
         """
         connection = self.engine.raw_connection()
         try:
-            with connection.cursor() as cursor:
-                cursor.copy_expert(sql, data)
-                connection.commit()
+            cursor = connection.cursor()
+            cursor.copy_expert(sql, data)
+            connection.commit()
 
+            cursor.close()
             return cursor.rowcount
         except Exception as e:
             connection.rollback()
             raise (e)
+        finally:
+            connection.close()
+
 
 
 class CatalogDB(DBBase):

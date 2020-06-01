@@ -32,7 +32,7 @@ def teste(request):
 
         # result = DesImportSkybotOutput().import_output_file("/archive/skybot_output/1/808801_Y.csv")
 
-        from des.skybot.pipeline import DesSkybotPipeline
+        from des.skybot.pipeline import DESImportSkybotPositions
         from des.models import SkybotJob
         import logging
 
@@ -86,9 +86,15 @@ def teste(request):
 
         # DesSkybotPipeline().run_job(1)
 
-        DesSkybotPipeline().reset_job_for_test(5)
+        # DesSkybotPipeline().reset_job_for_test(5)
         # DesSkybotPipeline().run_job(5)
         # DesSkybotPipeline().check_loaddata_queue()
+
+        exposure_id = 2453859
+        ticket = 166796687473278401
+        filepath = "/archive/skybot_output/des_skybot_35/2453859_166796687473278401.csv"
+
+        result = DESImportSkybotPositions().import_des_skybot_positions(exposure_id, ticket, filepath)
         
 
         # check_astrometry_running()
@@ -110,9 +116,9 @@ def teste(request):
         #      'end': end
         #  })
             
-        result = dict({
-            'success': True,
-        })
+        # result = dict({
+        #     'success': True,
+        # })
 
         return Response(result)
 
