@@ -5,8 +5,6 @@ from urllib.parse import urljoin
 import requests
 from requests.exceptions import HTTPError
 
-
-# TODO:  Esta classe deve ir para um app separado. 
 class SkybotServer():
     """Esta classe tem a função de facilitar consultas ao serviço Skybot. 
 

@@ -7,11 +7,7 @@ import humanize
 import pandas as pd
 from django.conf import settings
 
-from des.dao import CcdDao, SkybotPositionDao
 from tno.db import DBBase
-from tno.skybotoutput import Pointing as PointingDB
-from tno.skybotoutput import SkybotOutput as SkybotOutputDB
-
 
 class ImportSkybotPositions():
 
@@ -19,31 +15,40 @@ class ImportSkybotPositions():
         self.logger = logging.getLogger("skybot_load_data")
 
     def import_output_file(self, filepath):
+        """Importa os resultados na tabela skybot
+
+        Arguments:
+            filepath {str} -- Filepath do arquio de outputs do skybot.
+
+        Returns:
+            pandas.Dataframe -- Dataframe com o conteudo do arquivo.
+        """
         self.logger.debug("Importing Skybot Output: [%s]" % filepath)
 
         try:
 
-            # Importa os resultados na tabela skybot
-            try:
-                t0 = datetime.now(timezone.utc)
+            t0 = datetime.now(timezone.utc)
+
+            flag = self.read_flag_from_output(filepath)
+
+            # só executa a função de importação se tiver dados. 
+            if flag > 0: 
 
                 # Le o arquivo de outputs e gera um pandas dataframe
                 df = self.read_output_file(filepath)
+                rowcount = self.import_data(df)
 
-                # só executa a função de importação se tiver dados. 
-                if df.shape[0] > 0:
-                    rowcount = self.import_data(df)
-                else:
-                    rowcount = 0 
 
-                t1 = datetime.now(timezone.utc)
-                tdelta = t1 - t0
+            else:
+                self.logger.debug("Skybot returned 0 Positions. means that no body has been found")                
+                df = self.create_empty_dataframe()
+                rowcount = 0
 
-                self.logger.debug("Imported Skybot [%s] Positions in %s" % (
-                    rowcount, humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))                    
+            t1 = datetime.now(timezone.utc)
+            tdelta = t1 - t0
 
-            except Exception as e:
-                raise(e)
+            self.logger.debug("Imported Skybot [%s] Positions in %s" % (
+                rowcount, humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))
 
             return df
 
@@ -56,13 +61,13 @@ class ImportSkybotPositions():
         # self.logger.debug("Reading Skybot Output: [%s]" % filepath)
 
         # Headers que estão no arquivo e na ordem correta de leitura.
-        headers = ["num", "name", "ra", "dec", "dynclass", "mv", "errpos", "d", "dracosdec",
+        headers = ["number", "name", "ra", "dec", "dynclass", "mv", "errpos", "d", "dracosdec",
                    "ddec", "dgeo", "dhelio", "phase", "solelong", "px", "py", "pz", "vx", "vy", "vz", "jdref"]
 
         df = pd.read_csv(filepath, skiprows=3, delimiter='|', names=headers)
 
         # Tratar o campo num para retirar os caracteres -
-        df['num'] = df['num'].apply(
+        df['number'] = df['number'].apply(
             lambda x: x if str(x).strip() is not '-' else '')
 
         # Adiciona colunas para RA e Dec em graus.
@@ -81,12 +86,23 @@ class ImportSkybotPositions():
 
         # Mudar a ordem das colunas de arcordo com a ordem  da tabela.
         # Isso facilita a importacao por csv.
-        columns = ['num', 'name', 'dynclass', 'ra', 'dec', 'raj2000', 'decj2000', 'mv', 'errpos', 'd', 'dracosdec',
-                   'ddec', 'dgeo', 'dhelio', 'phase', 'solelong', 'px', 'py', 'pz', 'vx', 'vy', 'vz', 'jdref', 'ticket']
+        columns = self.get_columns()
 
         df = df.reindex(columns=columns)
 
+
         # self.logger.debug(df.head)
+
+        return df
+
+    def get_columns(self):
+        columns = ['name', 'number', 'dynclass', 'ra', 'dec', 'raj2000', 'decj2000', 'mv', 'errpos', 'd', 'dracosdec',
+            'ddec', 'dgeo', 'dhelio', 'phase', 'solelong', 'px', 'py', 'pz', 'vx', 'vy', 'vz', 'jdref', 'ticket']
+
+        return columns
+
+    def create_empty_dataframe(self):
+        df = pd.DataFrame(columns=self.get_columns())        
 
         return df
 
@@ -126,7 +142,7 @@ class ImportSkybotPositions():
             # Recupera o nome da tabela skybot output
             table = str(dbbase.get_table_skybot())
             # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
-            sql = "COPY %s (num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref, ticket) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
+            sql = "COPY %s (name, number, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref, ticket) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
 
             # Executa o metodo que importa o arquivo csv na tabela.
             rowcount = dbbase.import_with_copy_expert(sql, data)
@@ -159,6 +175,26 @@ class ImportSkybotPositions():
         self.logger.debug("Skybot Ticket: [%s]" % ticket)
 
         return ticket
+
+    def read_flag_from_output(self, filepath):
+        """ Le o arquivo de outputs e recupera o flag.
+
+        Arguments:
+            filepath {[type]} -- [description]
+
+        Returns:
+            int -- the status of the response: 
+                flag=1 means that a body has been found; 
+                flag=0 means that no body has been found; 
+                flag=-1 means that an error occured 'ticket'            
+        """
+        line = linecache.getline(str(filepath), 1)
+        flag = int(line.split(':')[1].strip())
+        self.logger.debug("Skybot Flag: [%s]" % flag)
+
+        return flag
+
+
 
     def convert_ra_hms_deg(self, ra=''):
         """

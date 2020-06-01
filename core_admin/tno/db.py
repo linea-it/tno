@@ -253,7 +253,7 @@ class DBBase():
 
     def get_table_skybot(self):
         schema = self.get_base_schema()
-        self.tbl_skybot = self.get_table('tno_skybotoutput', schema)
+        self.tbl_skybot = self.get_table('skybot_position', schema)
 
         return self.tbl_skybot
 

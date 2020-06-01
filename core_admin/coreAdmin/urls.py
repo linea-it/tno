@@ -23,63 +23,64 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 
 from common import views as common_views
-from orbit.views import (BspJplViewSet, ObservationFileViewSet,
-                         OrbitalParameterViewSet, OrbitRunViewSet,
-                         RefinedAsteroidViewSet, RefinedOrbitInputViewSet,
-                         RefinedOrbitViewSet)
-from praia.views import (AstrometryAsteroidViewSet, AstrometryInputViewSet,
-                         AstrometryOutputViewSet, PraiaConfigurationViewSet,
-                         PraiaRunViewSet)
-from predict.views import *
-from tno.views import (CatalogViewSet, CcdImageViewSet, CustomListViewSet,
-                       JohnstonArchiveViewSet, ObjectClassViewSet,
-                       PointingViewSet, ProccessViewSet, SkybotOutputViewSet,
-                       SkybotRunViewSet, UserViewSet)
+from des.views import SkybotJobViewSet
+from skybot.views import PositionViewSet
+from tno.views import (UserViewSet)
 
-from des.views import (SkybotJobViewSet)
+# from orbit.views import (BspJplViewSet, ObservationFileViewSet,
+#                          OrbitalParameterViewSet, OrbitRunViewSet,
+#                          RefinedAsteroidViewSet, RefinedOrbitInputViewSet,
+#                          RefinedOrbitViewSet)
+# from praia.views import (AstrometryAsteroidViewSet, AstrometryInputViewSet,
+#                          AstrometryOutputViewSet, PraiaConfigurationViewSet,
+#                          PraiaRunViewSet)
+# from predict.views import *
+
+# from tno.views import (CatalogViewSet, CcdImageViewSet, CustomListViewSet,
+#                        JohnstonArchiveViewSet, ObjectClassViewSet,
+#                        PointingViewSet, ProccessViewSet, SkybotOutputViewSet,
+#                        SkybotRunViewSet, UserViewSet)
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
-router.register(r'pointing', PointingViewSet)
-router.register(r'ccd_image', CcdImageViewSet)
-router.register(r'skybotoutput', SkybotOutputViewSet)
-router.register(r'known_tnos_johnston', JohnstonArchiveViewSet)
+# router.register(r'pointing', PointingViewSet)
+# router.register(r'ccd_image', CcdImageViewSet)
+# router.register(r'skybotoutput', SkybotOutputViewSet)
+# router.register(r'known_tnos_johnston', JohnstonArchiveViewSet)
 
 
-router.register(r'orbit_run', OrbitRunViewSet)
-router.register(r'refined_asteroid', RefinedAsteroidViewSet)
-router.register(r'refined_orbit', RefinedOrbitViewSet)
-router.register(r'refined_input', RefinedOrbitInputViewSet)
+# router.register(r'orbit_run', OrbitRunViewSet)
+# router.register(r'refined_asteroid', RefinedAsteroidViewSet)
+# router.register(r'refined_orbit', RefinedOrbitViewSet)
+# router.register(r'refined_input', RefinedOrbitInputViewSet)
 
-router.register(r'predict_run', PredictRunViewSet)
-router.register(r'predict_asteroid', PredictAsteroidViewSet)
-router.register(r'predict_input', PredictInputViewSet)
-router.register(r'predict_output', PredictOutputViewSet)
-router.register(r'occultation', OccultationViewSet, base_name='occultations')
-router.register(r'leap_seconds', LeapSecondsViewSet)
-router.register(r'bsp_planetary', BspPlanetaryViewSet)
-router.register(r'skybot_run', SkybotRunViewSet)
-router.register(r'bsp_jpl', BspJplViewSet)
-router.register(r'observation_files', ObservationFileViewSet)
-router.register(r'orbital_parameter', OrbitalParameterViewSet)
-
-
-# router.register(r'observation', ObservationViewSet)
+# router.register(r'predict_run', PredictRunViewSet)
+# router.register(r'predict_asteroid', PredictAsteroidViewSet)
+# router.register(r'predict_input', PredictInputViewSet)
+# router.register(r'predict_output', PredictOutputViewSet)
+# router.register(r'occultation', OccultationViewSet, base_name='occultations')
+# router.register(r'leap_seconds', LeapSecondsViewSet)
+# router.register(r'bsp_planetary', BspPlanetaryViewSet)
+# router.register(r'skybot_run', SkybotRunViewSet)
+# router.register(r'bsp_jpl', BspJplViewSet)
+# router.register(r'observation_files', ObservationFileViewSet)
 # router.register(r'orbital_parameter', OrbitalParameterViewSet)
 
-router.register(r'customlist', CustomListViewSet)
-router.register(r'proccess', ProccessViewSet)
-router.register(r'praia_run', PraiaRunViewSet)
-router.register(r'praia_configuration', PraiaConfigurationViewSet)
-router.register(r'astrometry_asteroids', AstrometryAsteroidViewSet)
-router.register(r'astrometry_input', AstrometryInputViewSet)
-router.register(r'astrometry_output', AstrometryOutputViewSet)
+
+# router.register(r'customlist', CustomListViewSet)
+# router.register(r'proccess', ProccessViewSet)
+# router.register(r'praia_run', PraiaRunViewSet)
+# router.register(r'praia_configuration', PraiaConfigurationViewSet)
+# router.register(r'astrometry_asteroids', AstrometryAsteroidViewSet)
+# router.register(r'astrometry_input', AstrometryInputViewSet)
+# router.register(r'astrometry_output', AstrometryOutputViewSet)
 
 
-router.register(r'catalog', CatalogViewSet)
+# router.register(r'catalog', CatalogViewSet)
 
 router.register(r'des/skybot_job', SkybotJobViewSet)
 
+router.register(r'skybot/position', PositionViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

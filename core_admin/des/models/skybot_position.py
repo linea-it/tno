@@ -2,6 +2,7 @@ from django.db import models
 
 from des.models import Ccd, Exposure
 from tno.models import SkybotOutput
+from skybot.models import Position
 
 
 class SkybotPosition(models.Model):
@@ -15,7 +16,7 @@ class SkybotPosition(models.Model):
     # Uma posição, é um Objeto que no momento de uma exposição
     # estava na area da exposição.
     position = models.ForeignKey(
-        SkybotOutput,
+        Position,
         on_delete=models.CASCADE,
         verbose_name='Position',
         help_text='Represents a specific position in the Skybot result.'
