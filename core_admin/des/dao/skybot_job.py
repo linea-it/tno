@@ -62,7 +62,8 @@ class DesSkybotJobDao(DBBase):
             where(self.tbl.c.id == int(id)).\
             values(
                 status=job['status'],
-                finish=datetime.strptime(job['finish'], '%Y-%m-%d %H:%M:%S'),
+                # finish=job['finish'].strftime('%Y-%m-%d %H:%M:%S'),
+                finish=job['finish'],
                 execution_time=job['execution_time'],
                 error=job.get('error', "")
         )

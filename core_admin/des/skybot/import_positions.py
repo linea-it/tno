@@ -15,6 +15,8 @@ class DESImportSkybotPositions(ImportSkybotPositions):
 
     def __init__(self):
 
+        super(DESImportSkybotPositions, self).__init__()
+
         self.logger = logging.getLogger("skybot_load_data")
 
         # Abre conexão com o banco de dados usando a Classe Pointing

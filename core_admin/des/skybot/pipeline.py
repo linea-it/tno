@@ -567,7 +567,7 @@ class DesSkybotPipeline():
         """
         # Verificar se já existe algum job com status Running.
         running = self.spdao.get_by_status(2)
-        self.logger.info("Checando a Fila: Running [%s]" % len(running))
+        # self.logger.info("Checando a Fila: Running [%s]" % len(running))
 
         if len(running) == 0:
             # Se nao tiver nenhum job executando verifica se tem jobs com status Idle
@@ -682,7 +682,7 @@ class DesSkybotPipeline():
         positions_path = self.get_positions_path(job_id)
 
         try:
-            self.logger_import.info(
+            self.logger_import.debug(
                 "----------------------------------------------")
 
             # Total a ser executado ler do heartbead da etapa anterior
@@ -817,7 +817,7 @@ class DesSkybotPipeline():
             t1 = datetime.now()
             tdelta = t1 - t0
 
-            self.logger_import.info("Total files to be imported: [%s] Success: [%s] Failure: [%s] in %s" % (
+            self.logger_import.debug("Total files to be imported: [%s] Success: [%s] Failure: [%s] in %s" % (
                 t_files, t_success, t_failure, humanize.naturaldelta(tdelta, minimum_unit="seconds")))
 
             # Verificar quando o Processo efetivamente acabou.
@@ -825,6 +825,8 @@ class DesSkybotPipeline():
 
         except IndexError:
             self.logger_import.info("No files to import.")
+            # Verificar se o job acabou
+            self.consolidate(job_id)
 
         except Exception as e:
             trace = traceback.format_exc()

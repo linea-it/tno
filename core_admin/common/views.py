@@ -84,7 +84,7 @@ def teste(request):
         # except Exception as e:
         #     log.error(e)
 
-        from des.skybot import DESImportSkybotPositions
+        # from des.skybot import DESImportSkybotPositions
 
         # from des.skybot import DesSkybotPipeline
         # DesSkybotPipeline().run_job(1)

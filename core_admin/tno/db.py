@@ -76,10 +76,6 @@ class DBBase():
 
     def execute(self, stm):
         with self.engine.connect() as con:
-
-            if settings.DEBUG:
-                self.debug_query(stm, True)
-
             return con.execute(stm)
 
     def fetch_all_dict(self, stm):
