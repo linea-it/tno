@@ -28,7 +28,7 @@ from datetime import datetime
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
 from django.db.models import Sum
-from tno.skybot.plot_ccds_objects import ccds_objects, read_skybot_output, get_circle_from_ra_dec
+from skybot.plot_ccds_objects import ccds_objects, read_skybot_output, get_circle_from_ra_dec
 import urllib
 from rest_framework.decorators import detail_route
 import fnmatch
