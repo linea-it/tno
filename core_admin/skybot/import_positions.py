@@ -14,6 +14,9 @@ class ImportSkybotPositions():
     def __init__(self):
         self.logger = logging.getLogger("skybot_load_data")
 
+        # Abre conexão com o banco usando sqlAlchemy
+        self.dbbase = DBBase(pool=False)
+
     def import_output_file(self, filepath):
         """Importa os resultados na tabela skybot
 
@@ -137,15 +140,13 @@ class ImportSkybotPositions():
         try:
             self.logger.debug("Executing the import function on the database.")
 
-            # Abre conexão com o banco usando sqlAlchemy
-            dbbase = DBBase()
             # Recupera o nome da tabela skybot output
-            table = str(dbbase.get_table_skybot())
+            table = str(self.dbbase.get_table_skybot())
             # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
             sql = "COPY %s (name, number, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref, ticket) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
 
             # Executa o metodo que importa o arquivo csv na tabela.
-            rowcount = dbbase.import_with_copy_expert(sql, data)
+            rowcount = self.dbbase.import_with_copy_expert(sql, data)
 
             self.logger.debug("Successfully imported")
 

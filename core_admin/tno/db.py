@@ -10,6 +10,7 @@ from sqlalchemy import func, inspect
 # from sqlalchemy.dialects import oracle
 from sqlalchemy.dialects import postgresql, sqlite
 from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.pool import NullPool
 from sqlalchemy.schema import Sequence
 from sqlalchemy.sql import and_, select, text
 from sqlalchemy.sql.expression import (ClauseElement, Executable, between,
@@ -17,9 +18,17 @@ from sqlalchemy.sql.expression import (ClauseElement, Executable, between,
 
 
 class DBBase():
-    def __init__(self):
+    def __init__(self, pool=True):
 
-        self.engine = create_engine(self.get_db_uri(), use_batch_mode=True)
+        if pool is False:
+            self.engine = create_engine(
+                self.get_db_uri(),
+                poolclass=NullPool
+            )
+        else:
+            self.engine = create_engine(
+                self.get_db_uri()
+            )
 
         self.current_dialect = None
 
@@ -65,28 +74,39 @@ class DBBase():
     def to_dict(self, row):
         return dict(collections.OrderedDict(row))
 
+    def execute(self, stm):
+        with self.engine.connect() as con:
+
+            if settings.DEBUG:
+                self.debug_query(stm, True)
+
+            return con.execute(stm)
+
     def fetch_all_dict(self, stm):
-        if settings.DEBUG:
-            self.debug_query(stm, True)
 
-        queryset = self.engine.execute(stm)
+        with self.engine.connect() as con:
+            queryset = con.execute(stm)
 
-        rows = list()
-        for row in queryset:
-            rows.append(self.to_dict(row))
+            if settings.DEBUG:
+                self.debug_query(stm, True)
 
-        return rows
+            rows = list()
+            for row in queryset:
+                rows.append(self.to_dict(row))
+
+            return rows
 
     def fetch_one_dict(self, stm):
-        if settings.DEBUG:
-            self.debug_query(stm, True)
+        with self.engine.connect() as con:
+            queryset = con.execute(stm).fetchone()
 
-        queryset = self.engine.execute(stm).fetchone()
+            if settings.DEBUG:
+                self.debug_query(stm, True)
 
-        if queryset is not None:
-            return self.to_dict(queryset)
-        else:
-            return None
+            if queryset is not None:
+                return self.to_dict(queryset)
+            else:
+                return None
 
     def fetch_scalar(self, stm):
         if settings.DEBUG:
@@ -291,7 +311,7 @@ class DBBase():
             in COPY statement: https://www.postgresql.org/docs/current/sql-copy.html
 
             it is necessary that the from clause is reading from STDIN.
-            
+
             example: 
             sql = COPY <table> (<columns) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);
 
@@ -321,10 +341,18 @@ class DBBase():
             connection.close()
 
 
-
 class CatalogDB(DBBase):
-    def __init__(self):
-        self.engine = create_engine(self.get_db_uri(), use_batch_mode=True)
+    def __init__(self, pool=True):
+
+        if pool is False:
+            self.engine = create_engine(
+                self.get_db_uri(),
+                poolclass=NullPool
+            )
+        else:
+            self.engine = create_engine(
+                self.get_db_uri()
+            )
 
         self.current_dialect = None
 

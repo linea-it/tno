@@ -4,8 +4,8 @@ from tno.db import DBBase
 
 
 class ExposureDao(DBBase):
-    def __init__(self):
-        super(ExposureDao, self).__init__()
+    def __init__(self, pool=True):
+        super(ExposureDao, self).__init__(pool)
 
         schema = self.get_base_schema()
         self.tablename = 'des_exposure'

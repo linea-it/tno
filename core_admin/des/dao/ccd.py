@@ -4,8 +4,8 @@ from tno.db import DBBase
 
 
 class CcdDao(DBBase):
-    def __init__(self):
-        super(CcdDao, self).__init__()
+    def __init__(self, pool=True):
+        super(CcdDao, self).__init__(pool)
 
         schema = self.get_base_schema()
         self.tablename = 'des_ccd'

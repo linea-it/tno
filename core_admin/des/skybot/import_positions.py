@@ -14,15 +14,16 @@ from skybot.import_positions import ImportSkybotPositions
 class DESImportSkybotPositions(ImportSkybotPositions):
 
     def __init__(self):
-        
+
         self.logger = logging.getLogger("skybot_load_data")
-        
+
         # Abre conexão com o banco de dados usando a Classe Pointing
-        self.ccd_dao = CcdDao()
+        self.ccd_dao = CcdDao(pool=False)
 
         # Abre conexão com o banco usando sqlAlchemy
-        self.des_sp_dao = DesSkybotPositionDao()
+        self.des_sp_dao = DesSkybotPositionDao(pool=False)
 
+        self.skybot_pos_dao = SkybotPositionsDao(pool=False)
 
     def import_des_skybot_positions_q3c(self, exposure_id, ticket, filepath):
 
@@ -234,7 +235,7 @@ class DESImportSkybotPositions(ImportSkybotPositions):
             tdelta_copy = t1_copy - t0_copy
 
             # Ler as posições para o ticket, necessário ler da tabela para ter os ids.
-            positions = SkybotPositionsDao().positions_by_ticket(ticket)
+            positions = self.skybot_pos_dao.positions_by_ticket(ticket)
             # Total de posições que foram importadas na tabela skybot
             total_position = len(positions)
 

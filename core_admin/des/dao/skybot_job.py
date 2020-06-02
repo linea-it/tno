@@ -1,11 +1,12 @@
-from sqlalchemy.sql import and_, select
 from sqlalchemy import desc
-from tno.db import DBBase
+from sqlalchemy.sql import and_, select
 
+from tno.db import DBBase
+from datetime import datetime
 
 class DesSkybotJobDao(DBBase):
-    def __init__(self):
-        super(DesSkybotJobDao, self).__init__()
+    def __init__(self, pool=True):
+        super(DesSkybotJobDao, self).__init__(pool)
 
         schema = self.get_base_schema()
         self.tablename = 'des_skybotjob'
@@ -28,12 +29,42 @@ class DesSkybotJobDao(DBBase):
         return row
 
     def get_by_status(self, status):
+        """Retorna os jobs pelo status 
+        ATENÇÃO: Os jobs estão ordenados pela data de criação em ordem decrescente. está ordem é importante para o pipeline. 
 
-        stm = select(self.tbl.c).where(and_(self.tbl.c.status == int(status))).order_by(desc(self.tbl.c.status))
+        Arguments:
+            status {int} -- Status do job, como está definido no Model des/SkybotJob
 
-        self.debug_query(stm, True)
+        Returns:
+            [array] -- Um Array com os jobs, tem a mesma estrutura do Model des/SkybotJob
+        """
+        stm = select(self.tbl.c).where(and_(self.tbl.c.status ==
+                                            int(status))).order_by(desc(self.tbl.c.start))
 
         rows = self.fetch_all_dict(stm)
 
         return rows
 
+    def update_by_id(self, id, job):
+        stm = self.tbl.update().\
+            where(self.tbl.c.id == int(id)).\
+            values(
+                status=job['status'],
+                exposures=job['exposures'],
+                path=job['path'],
+                results=job['results'],
+        )
+
+        return self.execute(stm)
+
+    def complete_job(self, id, job):
+        stm = self.tbl.update().\
+            where(self.tbl.c.id == int(id)).\
+            values(
+                status=job['status'],
+                finish=datetime.strptime(job['finish'], '%Y-%m-%d %H:%M:%S'),
+                execution_time=job['execution_time'],
+                error=job.get('error', "")
+        )
+
+        return self.execute(stm)

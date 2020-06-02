@@ -1,5 +1,6 @@
 from django.apps import AppConfig
 
+
 class DesConfig(AppConfig):
     name = 'des'
 
@@ -9,6 +10,10 @@ class DesConfig(AppConfig):
             inicia tambem a scheduler dos pipelines 
             
         """
-        from des.skybot.daemon import start_des_skybot_daemon
-        start_des_skybot_daemon()
-        print("Des Skybot Pipeline Daemon - Ok")
+
+
+        import des.skybot.daemon 
+        # start_des_skybot_daemon()
+        # print("Des Skybot Pipeline Daemon - Ok")
+
+

@@ -191,7 +191,7 @@ class RefineOrbit():
             self.logger.debug(
                 "---------------------- Observations --------------------------------------------------------------------------")
             # Pesquisando as observacoes que precisam ser baixadas
-            observations = RefineOrbitDB().get_observations(
+            observations = RefineOrbitDB(pool=False).get_observations(
                 self.input_list.tablename, self.input_list.schema, max_age)
 
             self.observations_input_file = os.path.join(
@@ -209,7 +209,7 @@ class RefineOrbit():
             self.logger.debug(
                 "---------------------- Orbital Parameters --------------------------------------------------------------------")
             # Pesquisando os parametros orbitais que precisam ser baixadas
-            orbital_parameters = RefineOrbitDB().get_orbital_parameters(self.input_list.tablename, self.input_list.schema,
+            orbital_parameters = RefineOrbitDB(pool=False).get_orbital_parameters(self.input_list.tablename, self.input_list.schema,
                                                                         max_age)
 
             self.orbital_parameters_input_file = os.path.join(
@@ -227,7 +227,7 @@ class RefineOrbit():
             self.logger.debug(
                 "---------------------- BSPs ----------------------------------------------------------------------------------")
             # Pesquisando os bsp_jpl que precisam ser baixadas
-            bsp_jpl = RefineOrbitDB().get_bsp_jpl(
+            bsp_jpl = RefineOrbitDB(pool=False).get_bsp_jpl(
                 self.input_list.tablename, self.input_list.schema, max_age)
 
             self.bsp_jpl_input_file = os.path.join(
@@ -1205,6 +1205,7 @@ class RefineOrbit():
 
 
 class RefineOrbitDB(DBBase):
+    
     def get_observations(self, tablename, schema=None, max_age=None):
         """
             SELECT a.name, a.num, b.download_finish_time, CASE WHEN (b.download_finish_time < now() - INTERVAL '30 DAY') THEN true ELSE false END AS need_download  FROM martin_test_list AS a LEFT OUTER JOIN orbit_observationfile AS b ON a.name = b.name GROUP BY a.name, a.num, b.download_finish_time ORDER BY a.name

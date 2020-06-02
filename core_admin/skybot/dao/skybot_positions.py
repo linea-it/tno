@@ -5,8 +5,8 @@ from sqlalchemy import func
 
 class SkybotPositionsDao(DBBase):
 
-    def __init__(self):
-        super(SkybotPositionsDao, self).__init__()
+    def __init__(self, pool=True):
+        super(SkybotPositionsDao, self).__init__(pool)
         schema = self.get_base_schema()
         self.tablename = 'skybot_position'
         self.tbl = self.get_table(self.tablename, schema)

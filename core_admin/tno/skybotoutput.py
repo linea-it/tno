@@ -16,8 +16,8 @@ class FilterObjects(DBBase):
         - SELECT name, count(name) as freq, (SELECT COUNT(DISTINCT(band)) FROM tno.skybot_output WHERE name = a.name) as filters FROM tno.skybot_output a  GROUP BY name LIMIT 5
     """
 
-    def __init__(self):
-        super(FilterObjects, self).__init__()
+    def __init__(self, pool=True):
+        super(FilterObjects, self).__init__(pool)
 
         self.table = None
 
@@ -501,8 +501,8 @@ class FilterObjects(DBBase):
 
 # TODO: Esta classe deve ser excluida, foi criada uma nova em skybot.dao.skybot_positions
 class SkybotOutput(DBBase):
-    def __init__(self):
-        super(SkybotOutput, self).__init__()
+    def __init__(self, pool):
+        super(SkybotOutput, self).__init__(pool)
         self.tbl = self.get_table_skybot()
 
     def count_lines(self):
@@ -606,8 +606,8 @@ class SkybotOutput(DBBase):
 
 
 class Pointing(DBBase):
-    def __init__(self):
-        super(Pointing, self).__init__()
+    def __init__(self, pool=True):
+        super(Pointing, self).__init__(pool)
         self.tbl = self.get_table_pointing()
 
     def count_pointings(self):

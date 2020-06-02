@@ -12,8 +12,8 @@ import shutil
 
 
 class StellarCatalog(CatalogDB):
-    def __init__(self):
-        super(StellarCatalog, self).__init__()
+    def __init__(self, pool=True):
+        super(StellarCatalog, self).__init__(pool)
 
         self.catalog = None
         self.radius = 0.05

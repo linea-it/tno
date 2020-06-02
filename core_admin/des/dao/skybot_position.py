@@ -5,8 +5,8 @@ from tno.db import DBBase
 from skybot.dao.skybot_positions import SkybotPositionsDao
 
 class DesSkybotPositionDao(DBBase):
-    def __init__(self):
-        super(DesSkybotPositionDao, self).__init__()
+    def __init__(self, pool=True):
+        super(DesSkybotPositionDao, self).__init__(pool)
 
         schema = self.get_base_schema()
         self.tablename = 'des_skybotposition'

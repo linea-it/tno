@@ -12,7 +12,6 @@ import pandas as pd
 from django.conf import settings
 
 from des.dao import ExposureDao, DesSkybotJobDao
-# from des.models import SkybotJob
 from des.skybot.import_positions import DESImportSkybotPositions
 from skybot.skybot_server import SkybotServer
 
@@ -36,13 +35,19 @@ class DesSkybotPipeline():
         # Filter to retrieve only objects with a position error lesser than the given value
         self.position_error = 0
 
+        self.spdao = DesSkybotJobDao(pool=False)
 
-        self.spdao = DesSkybotJobDao()
-
-        self.epdao = ExposureDao()
+        self.epdao = ExposureDao(pool=False)
 
     def get_job_by_id(self, id):
         return self.spdao.get_by_id(id)
+
+    def update_job(self, job):
+        return self.spdao.update_by_id(job['id'], job)
+
+    def complete_job(self, job):
+        return self.spdao.complete_job(job['id'], job)
+        
 
     def create_skybot_log(self, job_path):
         """Cria um arquivo de log no diretório execução do Job. 
@@ -322,8 +327,7 @@ class DesSkybotPipeline():
             job = self.get_job_by_id(job_id)
 
             # Altera o Status do Job para Running
-            job.status = 2
-            job.save()
+            job['status'] = 2
 
             # Cria o diretório onde o job será executado e onde ficaram os outputs.
             job_path = self.create_job_dir(job_id)
@@ -333,6 +337,9 @@ class DesSkybotPipeline():
             positions_path = self.create_positions_path(job_id)
             self.logger.debug("Positions Path: [%s]" % positions_path)
 
+            # File path para o arquivo de resultados.
+            results_filepath = os.path.join(job['path'], 'results.csv')
+            job['results'] = results_filepath
             # Adiciona um Log handler a mais, duplicando o log no diretório do processo.
             # ATENÇÂO: Os handles de logs devem ser criados no inicio do job em uma fase que não se repita.
             self.create_skybot_log(job['path'])
@@ -351,8 +358,8 @@ class DesSkybotPipeline():
             # Guarda o total de exposures
             t_exposures = df_exposures.shape[0]
 
-            job.exposures = t_exposures
-            job.save()
+            job['exposures'] = t_exposures
+            self.update_job(job)
 
             # Aqui inicia as requisições para o serviço do Skybot.
 
@@ -559,8 +566,8 @@ class DesSkybotPipeline():
 
         """
         # Verificar se já existe algum job com status Running.
-        # running = SkybotJob.objects.filter(status=2)
         running = self.spdao.get_by_status(2)
+        self.logger.info("Checando a Fila: Running [%s]" % len(running))
 
         if len(running) == 0:
             # Se nao tiver nenhum job executando verifica se tem jobs com status Idle
@@ -578,8 +585,6 @@ class DesSkybotPipeline():
 
                 self.run_job(to_run['id'])
 
-            
-
     def check_loaddata_queue(self):
         """Verifica se a fila de jobs, se tiver algum job com status running. 
         Inicia a execução do componente loaddata. está função é executada pela daemon. 
@@ -590,14 +595,14 @@ class DesSkybotPipeline():
 
         # Verifica se já existe algum job com status Running.
         # running = SkybotJob.objects.filter(status=2).order_by('-start').first()
-        running = self.spdao.get_by_status(1)
+        a_running = self.spdao.get_by_status(2)
         # TODO: Vai quebrar aqui pq a query retorna resultado diferente.
 
         # Se tiver algum job executando, verifica se tem arquivos
         # a serem importados no banco de dados.
-        if running:
+        if len(a_running) > 0:
             # self.logger_import.info("Tem um job executando.")
-
+            running = a_running[0]
             if self.check_lock_load_data(running['path']):
                 # self.logger_import.info("Não está importando dados.")
                 # Se não exisitir arquivo de lock
@@ -1042,27 +1047,23 @@ class DesSkybotPipeline():
                     df_results.request_execution_time + df_results.loaddata_execution_time)
 
                 # Escreve o resultado geral do Job no arquivo.
-                filepath = os.path.join(job['path'], 'results.csv')
+                results_filepath = job['results']
                 results = pd.DataFrame(df_results)
-                results.to_csv(filepath, sep=';', header=True, index=True)
+                results.to_csv(results_filepath, sep=';', header=True, index=True)
 
                 self.logger_import.info(
-                    "Results file created: [%s]" % filepath)
-
-                # TODO: Atualizar o status do job usando sqlalchemy
-
-                # Guarda o filepath do arquivo de resultados no model Job.
-                job.results = filepath
+                    "Results file created: [%s]" % results_filepath)
 
                 # Calcula o tempo total de execução do Job.
-                t0 = job.start
+                t0 = job['start']
                 t1 = datetime.now(timezone.utc)
                 tdelta = t1 - t0
-                job.finish = t1
-                job.execution_time = tdelta
+                job['finish'] = t1
+                job['execution_time'] = tdelta
                 # Altera o Status do Job para complete.
-                job.status = 3
-                job.save()
+                job['status'] = 3
+                # Grava as informações do job no banco de dados.
+                self.complete_job(job)
 
                 self.logger_import.info("Job successfully completed %s" % humanize.naturaldelta(
                     tdelta, minimum_unit="seconds"))
@@ -1091,15 +1092,16 @@ class DesSkybotPipeline():
             # TODO: Criar uma flag para parar os 2 componentes.
 
             # Altera o Status do Job para Failed.
-            t0 = job.start
+            t0 = job['start']
             t1 = datetime.now(timezone.utc)
             tdelta = t1 - t0
 
-            job.finish = t1
-            job.execution_time = tdelta
-            job.status = 4
-            job.error = e
-            job.save()
+            job['finish'] = t1
+            job['execution_time'] = tdelta
+            job['status'] = 4
+            job['error'] = e
+
+            self.complete_job(job)
 
         except Exception as e:
             self.logger_import.error(e)

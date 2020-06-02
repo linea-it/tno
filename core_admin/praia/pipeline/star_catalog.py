@@ -30,7 +30,7 @@ def create_star_catalog(run_id, name, ccd_images_file, output_filepath, schema, 
                 coordinates = [
                     row['rac1'], row['decc1'], row['rac2'], row['decc2'], row['rac3'], row['decc3'], row['rac4'], row['decc4']]
 
-                resultset = CatalogDB().poly_query(
+                resultset = CatalogDB(pool=False).poly_query(
                     schema=schema,
                     tablename=tablename,
                     ra_property=ra_property,

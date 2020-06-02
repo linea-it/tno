@@ -84,17 +84,20 @@ def teste(request):
         # except Exception as e:
         #     log.error(e)
 
-        # DesSkybotPipeline().run_job(1)
+        from des.skybot import DESImportSkybotPositions
 
+        # from des.skybot import DesSkybotPipeline
+        # DesSkybotPipeline().run_job(1)
+        # DesSkybotPipeline().check_request_queue()
         # DesSkybotPipeline().reset_job_for_test(5)
         # DesSkybotPipeline().run_job(5)
         # DesSkybotPipeline().check_loaddata_queue()
 
-        exposure_id = 2453859
-        ticket = 166796687473278401
-        filepath = "/archive/skybot_output/des_skybot_35/2453859_166796687473278401.csv"
+        # exposure_id = 2453859
+        # ticket = 166796687473278401
+        # filepath = "/archive/skybot_output/des_skybot_35/2453859_166796687473278401.csv"
 
-        result = DESImportSkybotPositions().import_des_skybot_positions(exposure_id, ticket, filepath)
+        # result = DESImportSkybotPositions().import_des_skybot_positions(exposure_id, ticket, filepath)
         
 
         # check_astrometry_running()
@@ -116,9 +119,9 @@ def teste(request):
         #      'end': end
         #  })
             
-        # result = dict({
-        #     'success': True,
-        # })
+        result = dict({
+            'success': True,
+        })
 
         return Response(result)
 

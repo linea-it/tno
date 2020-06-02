@@ -498,7 +498,7 @@ class CatalogViewSet(viewsets.ModelViewSet):
                 'msg': "The ra and dec parameters are mandatory"
             })
 
-        db = CatalogDB()
+        db = CatalogDB(pool=False)
 
         rows = db.radial_query(
             schema=catalog.schema,

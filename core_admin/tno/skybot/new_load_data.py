@@ -122,7 +122,7 @@ class ImportSkybotPositions():
             self.logger.debug("Executing the import function on the database.")
 
             # Abre conexão com o banco usando sqlAlchemy
-            dbbase = DBBase()
+            dbbase = DBBase(pool=False)
             # Recupera o nome da tabela skybot output
             table = str(dbbase.get_table_skybot())
             # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
