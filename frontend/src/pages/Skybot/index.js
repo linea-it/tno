@@ -10,23 +10,15 @@ import {
   Typography,
   CircularProgress,
   Button,
-  MenuItem,
-  InputLabel,
-  Select,
-  FormControl,
   Snackbar,
   Slide,
 } from '@material-ui/core';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
 import { Skeleton } from '@material-ui/lab';
-import DateFnsUtils from '@date-io/date-fns';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
 import Table from '../../components/Table';
 import ColumnStatus from '../../components/Table/ColumnStatus';
+import DateRangePicker from '../../components/Date/DateRangePicker';
 import useInterval from '../../hooks/useInterval';
 import {
   createSkybotRun,
@@ -34,18 +26,13 @@ import {
   getSkybotRunEstimate,
   getExposuresByPeriod,
 } from '../../services/api/Skybot';
+import CalendarHeatmap from '../../components/Chart/CalendarHeatmap';
 
 function Skybot({ setTitle }) {
   const history = useHistory();
-  const [selectRunValue, setSelectRunValue] = useState('period');
-  const [initialDate, setInitialDate] = useState(null);
-  const [finalDate, setFinalDate] = useState(null);
-  const [errorDatePicker, setErrorDatePicker] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [tableData, setTableData] = useState([]);
-  const [disabledRunButton, setDisabledRunButton] = useState(true);
-  const [disabledInitialDate, setDisabledInitialDate] = useState(true);
-  const [disabledFinalDate, setDisabledFinalDate] = useState(true);
+  const [disableSubmit, setDisableSubmit] = useState(true);
   const [loading, setLoading] = useState(false);
   const [snackBarVisible, setSnackBarVisible] = useState(false);
   const [snackBarPosition] = useState({
@@ -60,25 +47,42 @@ function Skybot({ setTitle }) {
     hasData: true,
   });
   const [reload, setReload] = useState(true);
+  const [selectedDate, setSelectedDate] = useState([
+    '2012-01-01',
+    '2015-12-31',
+  ]);
+  // const [yearsWithExposure, setYearsWithExposure] = useState([]);
+  // const [exposuresByYear, setExposuresByYear] = useState([]);
 
   useEffect(() => {
     setTitle('Skybot Run');
   }, [setTitle]);
 
-  useEffect(() => {
-    if (errorDatePicker) {
-      setDisabledRunButton(true);
-    }
-  }, [errorDatePicker]);
+  // useEffect(() => {
+  //   getYearsWithExposure().then((res) => {
+  //     setYearsWithExposure(
+  //       res.years
+  //         .sort()
+  //         .reverse()
+  //         .map((year) => String(year))
+  //     );
+  //   });
+  // }, []);
+
+  // useEffect(() => {
+  //   getExposuresByPeriod(
+  //     selectedExposureYear.start_date,
+  //     selectedExposureYear.end_date
+  //   ).then((res) => {
+  //     setExposuresByYear(res.rows);
+  //   });
+  // }, [selectedExposureYear]);
 
   useEffect(() => {
     setExposuresByPeriod([]);
     setRunEstimate({});
-    if (initialDate) {
-      setDisabledFinalDate(false);
-    }
 
-    if (initialDate && finalDate && !errorDatePicker) {
+    if (selectedDate[0] && selectedDate[1]) {
       setExposurePlotLoading({
         loading: true,
         hasData: false,
@@ -86,13 +90,13 @@ function Skybot({ setTitle }) {
 
       // Get the time estimate and amount of exposures based on period, before running:
       getSkybotRunEstimate(
-        moment(initialDate).format('YYYY-MM-DD'),
-        moment(finalDate).format('YYYY-MM-DD')
+        moment(selectedDate[0]).format('YYYY-MM-DD'),
+        moment(selectedDate[1]).format('YYYY-MM-DD')
       ).then((res) => setRunEstimate(res));
 
       getExposuresByPeriod(
-        moment(initialDate).format('YYYY-MM-DD'),
-        moment(finalDate).format('YYYY-MM-DD')
+        moment(selectedDate[0]).format('YYYY-MM-DD'),
+        moment(selectedDate[1]).format('YYYY-MM-DD')
       ).then((res) => {
         setExposurePlotLoading({
           loading: false,
@@ -100,52 +104,18 @@ function Skybot({ setTitle }) {
         });
         setExposuresByPeriod(res.rows);
       });
-      setDisabledRunButton(false);
+
+      setDisableSubmit(false);
     }
 
-    if (!initialDate || initialDate.toString() === 'Invalid Date') {
-      setDisabledRunButton(true);
-      setDisabledFinalDate(true);
+    if (!selectedDate[0]) {
+      setDisableSubmit(true);
     }
 
-    if (!finalDate || finalDate.toString() === 'Invalid Date') {
-      setDisabledRunButton(true);
+    if (!selectedDate[1]) {
+      setDisableSubmit(true);
     }
-  }, [initialDate, finalDate, errorDatePicker]);
-
-  useEffect(() => {
-    setRunEstimate({});
-    setExposuresByPeriod([]);
-    if (selectRunValue === 'all') {
-      setExposurePlotLoading({
-        loading: true,
-        hasData: false,
-      });
-      setRunEstimate({});
-      setDisabledInitialDate(true);
-      setDisabledFinalDate(true);
-      getSkybotRunEstimate().then((res) => setRunEstimate(res));
-      getExposuresByPeriod().then((res) => {
-        setExposurePlotLoading({
-          loading: false,
-          hasData: res.rows.length > 0,
-        });
-        setExposuresByPeriod(res.rows);
-      });
-      setDisabledRunButton(false);
-    }
-
-    if (selectRunValue === 'period') {
-      setExposurePlotLoading({
-        loading: false,
-        hasData: true,
-      });
-      setDisabledInitialDate(false);
-      setDisabledRunButton(true);
-      setInitialDate(null);
-      setFinalDate(null);
-    }
-  }, [selectRunValue]);
+  }, [selectedDate]);
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
     getSkybotRunList({
@@ -165,42 +135,22 @@ function Skybot({ setTitle }) {
 
   const handleSubmit = () => {
     createSkybotRun({
-      type_run: selectRunValue,
-      date_initial: initialDate,
-      date_final: finalDate,
+      date_initial: selectedDate[0],
+      date_final: selectedDate[1],
     }).then(() => {
       loadData();
-      setDisabledRunButton(false);
+      setDisableSubmit(false);
     });
   };
 
   const transitionSnackBar = (props) => <Slide {...props} direction="left" />;
 
   const handleSelectRunClick = () => {
-    if (selectRunValue === 'all') {
-      setDisabledRunButton(true);
-      setLoading(true);
-      handleSubmit();
-    } else if (selectRunValue === 'period') {
-      setSnackBarVisible(true);
-      setSnackBarTransition(() => transitionSnackBar);
-      setDisabledRunButton(true);
-      setLoading(true);
-      handleSubmit();
-    }
-  };
-
-  const loadMenuItems = () => {
-    const options = [
-      { id: 1, title: 'All Pointings', value: 'all' },
-      { id: 2, title: 'By Period', value: 'period' },
-    ];
-
-    return options.map((el, i) => (
-      <MenuItem key={el.id} value={el.value} title={el.title}>
-        {el.title}
-      </MenuItem>
-    ));
+    setSnackBarVisible(true);
+    setSnackBarTransition(() => transitionSnackBar);
+    setDisableSubmit(true);
+    setLoading(true);
+    handleSubmit();
   };
 
   const tableColumns = [
@@ -287,166 +237,126 @@ function Skybot({ setTitle }) {
 
   const { vertical, horizontal } = snackBarPosition;
 
-  const handleFinalDateError = (error) => {
-    const currentDateMessage = 'Date should not be after current date';
-    const initialDateMessage = 'Date should not be before initial date';
-
-    if (
-      error.trim() === currentDateMessage.trim() ||
-      error.trim() === initialDateMessage.trim()
-    ) {
-      setErrorDatePicker(true);
-      setFinalDate(null);
-    } else {
-      setErrorDatePicker(false);
-    }
-  };
-
   const Plot = createPlotlyComponent(Plotly);
 
-  const toHHMMSS = (time) => {
-    const secNum = parseInt(time, 10);
-    let hours = Math.floor(secNum / 3600);
-    let minutes = Math.floor((secNum - hours * 3600) / 60);
-    let seconds = secNum - hours * 3600 - minutes * 60;
+  // Reload data if we have any Skybot job running,
+  // so we can follow its progress in real time.
+  useInterval(() => {
+    const hasStatusRunning =
+      tableData.filter((row) => row.status === 'running').length > 0;
 
-    if (hours < 10) {
-      hours = `0${hours}`;
+    if (hasStatusRunning) {
+      setReload(!reload);
     }
-    if (minutes < 10) {
-      minutes = `0${minutes}`;
+  }, 30000);
+
+  const renderEstimate = () => {
+    if (runEstimate.exposures && runEstimate.exposures !== 0) {
+      return (
+        <>
+          <Typography paragraph variant="button" color="textSecondary">
+            {`The average time execution for one exposure is ${moment
+              .utc(runEstimate.time_per_exposure * 1000)
+              .format('HH:mm:ss')}`}
+          </Typography>
+          <Typography variant="button" color="textSecondary">
+            {`The estimate time for identifying all of the CCDs with objects is ${moment
+              .utc(runEstimate.estimate * 1000)
+              .format('HH:mm:ss')}`}
+          </Typography>
+        </>
+      );
     }
-    if (seconds < 10) {
-      seconds = `0${seconds}`;
-    }
-    return `${hours}:${minutes}:${seconds}`;
+    return null;
   };
 
-  useInterval(() => {
-    setReload(!reload);
-  }, [30000]);
+  const renderExposurePlot = () => {
+    if (exposuresByPeriod.length > 0) {
+      return (
+        <>
+          <Plot
+            data={[
+              {
+                x: exposuresByPeriod.map((rows) => rows.date_obs),
+                y: exposuresByPeriod.map((rows) => rows.exposures),
+                type: 'bar',
+                name: `${runEstimate.exposures} exposures`,
+                showlegend: true,
+                fixedrange: true,
+                hoverinfo: 'y',
+              },
+            ]}
+            layout={{
+              hovermode: 'closest',
+              autosize: true,
+              bargap: 0.05,
+              bargroupgap: 0.2,
+              xaxis: { title: 'Period' },
+              yaxis: { title: 'Exposures' },
+            }}
+            config={{
+              scrollZoom: true,
+              displaylogo: false,
+              responsive: true,
+            }}
+          />
+          <CalendarHeatmap data={exposuresByPeriod} />
+        </>
+      );
+    }
+    return (
+      <>
+        <Skeleton variant="rect" animation={false} height={440} />
+        {exposurePlotLoading.loading ? (
+          <CircularProgress color="primary" size={24} />
+        ) : null}
+        {exposurePlotLoading.loading === false &&
+        exposurePlotLoading.hasData === false ? (
+          <span>No exposure was found in this period</span>
+        ) : null}
+      </>
+    );
+  };
 
   return (
     <Grid>
-      <Grid container spacing={2}>
-        <Grid item xs={12} lg={4} xl={3}>
+      <Grid container spacing={2} alignItems="stretch">
+        <Grid item xs={12} md={6} lg={4} xl={3}>
           <Card>
-            <CardHeader title="SkyBot Run" />
+            <CardHeader title="Skybot Run" />
             <CardContent>
-              <Typography>Identification of CCDs with objects.</Typography>
-              <FormControl fullWidth>
-                <InputLabel>Select the type of submission</InputLabel>
-                <Select
-                  value={selectRunValue}
-                  onChange={(event) => {
-                    if (event.target.value === 'all') {
-                      setInitialDate(null);
-                      setFinalDate(null);
-                    }
-                    setSelectRunValue(event.target.value);
-                  }}
-                >
-                  {loadMenuItems()}
-                </Select>
-
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDatePicker
-                    disableFuture
-                    disabled={disabledInitialDate}
-                    format="yyyy-MM-dd"
-                    label="Initial Date"
-                    value={initialDate}
-                    onChange={(date) => {
-                      setInitialDate(date);
-                    }}
-                    maxDateMessage="Date should not be after current date"
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <DateRangePicker
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
                   />
-                  <KeyboardDatePicker
-                    disableFuture
-                    disabled={disabledFinalDate}
-                    format="yyyy-MM-dd"
-                    label="Final Date"
-                    value={finalDate}
-                    minDate={initialDate}
-                    minDateMessage=" Date should not be before initial date"
-                    maxDateMessage="Date should not be after current date"
-                    onChange={(date) => setFinalDate(date)}
-                    onError={handleFinalDateError}
-                  />
-                </MuiPickersUtilsProvider>
-                {runEstimate.exposures && runEstimate.exposures !== 0 ? (
-                  <>
-                    <span>
-                      {`The average time execution for one exposure is ${toHHMMSS(
-                        runEstimate.time_per_exposure
-                      )}`}
-                    </span>
-                    <span>
-                      {`The estimate time for identifying all of the CCDs with objects is ${toHHMMSS(
-                        runEstimate.estimate
-                      )}`}
-                    </span>
-                  </>
-                ) : null}
-                <Button
-                  variant="contained"
-                  color="primary"
-                  disabled={disabledRunButton}
-                  onClick={handleSelectRunClick}
-                >
-                  Submit
-                  {loading ? (
-                    <CircularProgress color="primary" size={24} />
-                  ) : null}
-                </Button>
-              </FormControl>
+                </Grid>
+                <Grid item xs={12}>
+                  {renderEstimate()}
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    disabled={disableSubmit}
+                    onClick={handleSelectRunClick}
+                  >
+                    Submit
+                    {loading ? (
+                      <CircularProgress color="primary" size={24} />
+                    ) : null}
+                  </Button>
+                </Grid>
+              </Grid>
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} lg={8} xl={9}>
+        <Grid item xs={12} md={6} lg={8} xl={9}>
           <Card>
             <CardHeader title="Unique Exposures By Period" />
-            <CardContent>
-              {exposuresByPeriod.length > 0 ? (
-                <Plot
-                  data={[
-                    {
-                      x: exposuresByPeriod.map((rows) => rows.date_obs),
-                      y: exposuresByPeriod.map((rows) => rows.exposures),
-                      type: 'bar',
-                      name: `${runEstimate.exposures} exposures`,
-                      showlegend: true,
-                      fixedrange: true,
-                      hoverinfo: 'y',
-                    },
-                  ]}
-                  layout={{
-                    hovermode: 'closest',
-                    autosize: true,
-                    bargap: 0.05,
-                    bargroupgap: 0.2,
-                    xaxis: { title: 'Period' },
-                    yaxis: { title: 'Exposures' },
-                  }}
-                  config={{
-                    scrollZoom: true,
-                    displaylogo: false,
-                    responsive: true,
-                  }}
-                />
-              ) : (
-                <>
-                  <Skeleton height={440} />
-                  {exposurePlotLoading.loading ? (
-                    <CircularProgress color="primary" size={24} />
-                  ) : null}
-                  {exposurePlotLoading.loading === false &&
-                  exposurePlotLoading.hasData === false ? (
-                    <span>No exposure was found in this period</span>
-                  ) : null}
-                </>
-              )}
-            </CardContent>
+            <CardContent>{renderExposurePlot()}</CardContent>
           </Card>
         </Grid>
       </Grid>

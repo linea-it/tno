@@ -64,6 +64,25 @@ const useStyles = makeStyles((theme) => ({
       overflow: 'auto',
     },
   },
+
+  legendWrapper: {
+    float: 'right',
+    color: '#586069',
+  },
+
+  legend: {
+    bottom: '-1px',
+    display: 'inline-block',
+    margin: '0 5px',
+    listStyle: 'none',
+    padding: 0,
+  },
+
+  legendItem: {
+    display: 'inline-block',
+    width: 10,
+    height: 10,
+  },
 }));
 
 export default useStyles;
