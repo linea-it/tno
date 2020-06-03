@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
     overflowX: 'hidden',
-    width: theme.spacing(7),
+    width: 0,
   },
   drawerControlWrapper: {
     display: 'flex',
@@ -65,9 +65,6 @@ const useStyles = makeStyles((theme) => ({
   bodyWrapperOpen: (props) => ({
     maxWidth: `calc(100% - ${props.drawerWidth}px)`,
   }),
-  bodyWrapperClose: {
-    maxWidth: `calc(100% - ${theme.spacing(7)}px)`,
-  },
   homeBtn: {
     fontSize: 18,
     fontWeight: 'bold !important',
@@ -88,7 +85,10 @@ const useStyles = makeStyles((theme) => ({
   },
   textDrawer: {
     color: 'white',
-    fontWeight: 500,
+    // fontWeight: 500,
+  },
+  textDrawerParent: {
+    fontWeight: 'bold',
   },
   ListIconDrawer: {
     minWidth: 40,
@@ -135,6 +135,9 @@ const useStyles = makeStyles((theme) => ({
   },
   nested: {
     paddingLeft: theme.spacing(4),
+  },
+  doublenested: {
+    paddingLeft: theme.spacing(6),
   },
 }));
 

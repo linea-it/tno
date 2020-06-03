@@ -1,35 +1,19 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import {
+  List as MuiList,
+  ListItem,
+  ListItemText,
+  Icon,
+} from '@material-ui/core';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import Icon from '@material-ui/core/Icon';
+import useStyles from './styles';
 
-const useStyles = makeStyles({
-  root: {
-    maxWidth: '100%',
-  },
-  itemText: {
-    flex: '1 1',
-  },
-  tooltip: {
-    borderBottom: '1px dotted #888',
-    cursor: 'help',
-  },
-  tooltipIcon: {
-    fontSize: 10,
-    opacity: 0.8,
-    marginLeft: 2,
-  },
-});
-
-function CustomList({ data, height, width }) {
+function List({ data, height, width }) {
   const classes = useStyles();
 
   return (
-    <List className={classes.root} style={{ height, width }}>
+    <MuiList className={classes.root} style={{ height, width }}>
       {data.map((item, i, arr) => (
         <ListItem
           key={i}
@@ -66,19 +50,19 @@ function CustomList({ data, height, width }) {
           />
         </ListItem>
       ))}
-    </List>
+    </MuiList>
   );
 }
 
-CustomList.defaultProps = {
+List.defaultProps = {
   height: 'auto',
   width: '100%',
 };
 
-CustomList.propTypes = {
+List.propTypes = {
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
-export default CustomList;
+export default List;

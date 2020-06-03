@@ -1,16 +1,16 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-function Dashboard({ setTitle }) {
+function Download({ setTitle }) {
   useEffect(() => {
-    setTitle('Dashboard');
+    setTitle('Download');
   }, [setTitle]);
 
-  return <h1>Dashboard</h1>;
+  return <h1>Download</h1>;
 }
 
-Dashboard.propTypes = {
+Download.propTypes = {
   setTitle: PropTypes.func.isRequired,
 };
 
-export default Dashboard;
+export default Download;
