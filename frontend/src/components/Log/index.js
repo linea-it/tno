@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-function CustomLog({ data }) {
+function Log({ data }) {
   return (
     <pre style={{ border: 'none' }}>
       {data
@@ -11,8 +11,8 @@ function CustomLog({ data }) {
   );
 }
 
-CustomLog.propTypes = {
+Log.propTypes = {
   data: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default CustomLog;
+export default Log;

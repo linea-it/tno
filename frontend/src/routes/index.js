@@ -5,8 +5,7 @@ import Route from './Route';
 
 import Dashboard from '../pages/Dashboard';
 
-import Pointings from '../pages/Pointings';
-import PointingsDetail from '../pages/Pointings/Detail';
+import Download from '../pages/Download';
 
 import SearchSsso from '../pages/SearchSsso';
 import SearchSssoDetail from '../pages/SearchSsso/Detail';
@@ -68,7 +67,12 @@ export default function Routes() {
         path="/astrometry/:id"
         component={AstrometryDetail}
       />
-      <Route isPrivate exact path="/astrometry" component={Astrometry} />
+      <Route
+        isPrivate
+        exact
+        path="/astrometry/object/"
+        component={Astrometry}
+      />
       <Route
         isPrivate
         exact
@@ -106,8 +110,13 @@ export default function Routes() {
         path="/occultation/:id"
         component={OccultationDetail}
       />
-      <Route isPrivate exact path="/pointings" component={Pointings} />
-      <Route isPrivate exact path="/skybot" component={Skybot} />
+
+      <Route
+        isPrivate
+        exact
+        path="/data-preparation/des/skybot"
+        component={Skybot}
+      />
       <Route isPrivate exact path="/bsp-jpl" component={BspJpl} />
       <Route isPrivate exact path="/observation" component={Observation} />
       <Route
@@ -146,15 +155,10 @@ export default function Routes() {
       <Route
         isPrivate
         exact
-        path="/pointings/:id"
-        component={PointingsDetail}
-      />
-      <Route
-        isPrivate
-        exact
         path="/search-ssso-detail/:id"
         component={SearchSssoDetail}
       />
+      <Route isPrivate exact path="/download/" component={Download} />
       <Route isPrivate exact path="/dashboard" component={Dashboard} />
       <Redirect path="/" to="/dashboard" />
     </Switch>

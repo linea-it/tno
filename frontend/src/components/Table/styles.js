@@ -14,11 +14,11 @@ const useStyles = makeStyles({
   },
   noDataCell: {
     padding: '48px 0px',
+    textAlign: 'center',
   },
   noDataWrapper: {
     left: '50%',
     display: 'inline-block',
-    // position: 'sticky',
   },
   noDataText: {
     display: 'inline-block',

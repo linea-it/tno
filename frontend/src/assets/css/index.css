@@ -33,3 +33,15 @@ th.MuiTableCell-root.MuiTableCell-head {
 code.hljs.sql {
   background-color: #fff;
 }
+
+.js-plotly-plot,
+.js-plotly-plot .plot-container.plotly {
+  width: 100%;
+}
+
+.js-plotly-plot .plot-container.plotly .svg-container {
+  width: 100% !important;
+  /* height: 'auto' !important; */
+  /* min-height: 400px; */
+  margin: auto;
+}

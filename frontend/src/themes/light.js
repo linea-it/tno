@@ -20,6 +20,11 @@ const light = createMuiTheme({
         color: pink[500],
       },
     },
+    // MuiCard: {
+    //   root: {
+    //     height: '100%',
+    //   },
+    // },
     MuiCardHeader: {
       root: {
         backgroundColor: 'rgb(248, 249, 252)',
@@ -49,6 +54,11 @@ const light = createMuiTheme({
         marginBottom: 0,
       },
     },
+    // MuiCollapse: {
+    //   wrapperInner: {
+    //     paddingLeft: 15,
+    //   },
+    // },
   },
 });
 

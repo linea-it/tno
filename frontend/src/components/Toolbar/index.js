@@ -1,56 +1,27 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import Grid from '@material-ui/core/Grid';
-import Avatar from '@material-ui/core/Avatar';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Button from '@material-ui/core/Button';
-import { deepOrange } from '@material-ui/core/colors';
+import {
+  AppBar,
+  Toolbar as MuiToolbar,
+  Typography,
+  Grid,
+  Avatar,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Button,
+  IconButton,
+} from '@material-ui/core';
+import {
+  ExitToApp as ExitToAppIcon,
+  Menu as MenuIcon,
+} from '@material-ui/icons';
+
 import { logout } from '../../services/api/Auth';
+import useStyles from './styles';
 
-const useStyles = makeStyles((theme) => ({
-  appBar: {
-    backgroundColor: '#fff',
-    boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2)',
-    color: '#000',
-    width: (drawerWidth) =>
-      drawerWidth === 0 ? '100%' : `calc(100% - ${theme.spacing(7) + 1}px)`,
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    marginLeft: (drawerWidth) => drawerWidth,
-    width: (drawerWidth) => `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  sectionButtons: {
-    display: 'flex',
-  },
-  avatar: {
-    margin: 10,
-    cursor: 'pointer',
-    color: theme.palette.getContrastText(deepOrange[500]),
-    backgroundColor: deepOrange[500],
-  },
-  listItemIcon: {
-    minWidth: theme.spacing(4),
-  },
-}));
-
-function CustomToolbar({ title, open, drawerWidth, currentUser }) {
+function Toolbar({ title, open, drawerWidth, currentUser, handleDrawerClick }) {
   const classes = useStyles(drawerWidth);
   const [userSettingsAnchorEl, setUserSettingsAnchorEl] = useState(null);
 
@@ -64,12 +35,28 @@ function CustomToolbar({ title, open, drawerWidth, currentUser }) {
         [classes.appBarShift]: open,
       })}
     >
-      <Toolbar>
+      <MuiToolbar>
         <Grid container justify="space-between" alignItems="center">
           <Grid item>
-            <Typography variant="h6" component="h1">
-              {title}
-            </Typography>
+            <Grid container alignItems="center" spacing={2}>
+              {!open ? (
+                <Grid item>
+                  <IconButton
+                    color="inherit"
+                    aria-label="Open Drawer"
+                    onClick={handleDrawerClick}
+                    edge="start"
+                  >
+                    <MenuIcon />
+                  </IconButton>
+                </Grid>
+              ) : null}
+              <Grid>
+                <Typography variant="h6" component="h1">
+                  {title}
+                </Typography>
+              </Grid>
+            </Grid>
           </Grid>
           <Grid item>
             <div className={classes.sectionButtons}>
@@ -96,24 +83,25 @@ function CustomToolbar({ title, open, drawerWidth, currentUser }) {
             </div>
           </Grid>
         </Grid>
-      </Toolbar>
+      </MuiToolbar>
     </AppBar>
   );
 }
 
-CustomToolbar.defaultProps = {
+Toolbar.defaultProps = {
   open: null,
   drawerWidth: 0,
   currentUser: { username: '' },
 };
 
-CustomToolbar.propTypes = {
+Toolbar.propTypes = {
   title: PropTypes.string.isRequired,
   open: PropTypes.bool,
   drawerWidth: PropTypes.number,
   currentUser: PropTypes.shape({
     username: PropTypes.string,
   }),
+  handleDrawerClick: PropTypes.func.isRequired,
 };
 
-export default CustomToolbar;
+export default Toolbar;

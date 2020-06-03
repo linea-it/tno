@@ -1,18 +1,15 @@
 import axios from 'axios';
 import moment from 'moment';
 
-export const createSkybotRun = ({ type_run, date_initial, date_final }) => {
-  date_initial =
-    date_initial !== '' ? moment(date_initial).format('YYYY-MM-DD') : null;
-  date_final =
-    date_final !== '' ? moment(date_final).format('YYYY-MM-DD') : null;
-
-  return axios.post('/skybot_run/', {
-    type_run,
+export const createSkybotRun = ({ date_initial, date_final }) => {
+  const params = {
+    type_run: 'period',
     status: 'pending',
-    date_initial,
-    date_final,
-  });
+    date_initial: moment(date_initial).format('YYYY-MM-DD'),
+    date_final: moment(date_final).format('YYYY-MM-DD'),
+  };
+
+  return axios.post('/skybot_run/', { params });
 };
 
 export const getSkybotRunById = ({ id }) =>
@@ -78,10 +75,10 @@ export const getExposuresByPeriod = (initialDate, finalDate) =>
     .get('/skybot_run/exposures_by_period/', {
       params: { initial_date: initialDate, final_date: finalDate },
     })
-    .then((res) => {
-      console.log(res.data.rows);
-      return res.data;
-    });
+    .then((res) => res.data);
+
+export const getYearsWithExposure = () =>
+  axios.get('/skybot_run/exposures_years/').then((res) => res.data);
 
 export const stopSkybotRunById = (id) =>
   axios
