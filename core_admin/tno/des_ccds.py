@@ -9,7 +9,7 @@ from urllib.parse import urljoin
 from common.download import Download
 import os
 # from tno.models import Pointing, CcdImage
-from tno.models import Pointing
+# from tno.models import Pointing
 import subprocess
 
 

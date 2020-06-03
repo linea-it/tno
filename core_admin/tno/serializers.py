@@ -2,7 +2,8 @@ import humanize
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Pointing, CustomList, Proccess, Catalog, JohnstonArchive 
+from .models import CustomList, Proccess, Catalog, JohnstonArchive 
+# from .models import Pointing
 # from .models import SkybotOutput
 # from .models import SkybotRun 
 # from .models import CcdImage
@@ -14,54 +15,54 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username',)
 
 
-class PointingSerializer(serializers.ModelSerializer):
-    date_obs = serializers.SerializerMethodField()
+# class PointingSerializer(serializers.ModelSerializer):
+#     date_obs = serializers.SerializerMethodField()
 
-    class Meta:
-        model = Pointing
-        fields = (
-            'id',
-            'pfw_attempt_id',
-            'desfile_id',
-            'nite',
-            'date_obs',
-            'expnum',
-            'ccdnum',
-            'band',
-            'exptime',
-            'cloud_apass',
-            'cloud_nomad',
-            't_eff',
-            'crossra0',
-            'radeg',
-            'decdeg',
-            'racmin',
-            'racmax',
-            'deccmin',
-            'deccmax',
-            'ra_cent',
-            'dec_cent',
-            'rac1',
-            'rac2',
-            'rac3',
-            'rac4',
-            'decc1',
-            'decc2',
-            'decc3',
-            'decc4',
-            'ra_size',
-            'dec_size',
-            'path',
-            'filename',
-            'compression',
-            'downloaded',
-        )
+#     class Meta:
+#         model = Pointing
+#         fields = (
+#             'id',
+#             'pfw_attempt_id',
+#             'desfile_id',
+#             'nite',
+#             'date_obs',
+#             'expnum',
+#             'ccdnum',
+#             'band',
+#             'exptime',
+#             'cloud_apass',
+#             'cloud_nomad',
+#             't_eff',
+#             'crossra0',
+#             'radeg',
+#             'decdeg',
+#             'racmin',
+#             'racmax',
+#             'deccmin',
+#             'deccmax',
+#             'ra_cent',
+#             'dec_cent',
+#             'rac1',
+#             'rac2',
+#             'rac3',
+#             'rac4',
+#             'decc1',
+#             'decc2',
+#             'decc3',
+#             'decc4',
+#             'ra_size',
+#             'dec_size',
+#             'path',
+#             'filename',
+#             'compression',
+#             'downloaded',
+#         )
 
-    def get_date_obs(self, obj):
-        try:
-            return obj.date_obs.strftime('%Y/%m/%d')
-        except:
-            return None
+#     def get_date_obs(self, obj):
+#         try:
+#             return obj.date_obs.strftime('%Y/%m/%d')
+#         except:
+#             return None
 
 
 # class SkybotRunSerializer(serializers.ModelSerializer):

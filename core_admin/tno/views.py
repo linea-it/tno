@@ -68,90 +68,90 @@ class UserViewSet(viewsets.ModelViewSet):
         return super(UserViewSet, self).retrieve(request, pk)
 
 
-class PointingViewSet(viewsets.ModelViewSet):
-    queryset = Pointing.objects.all()
-    serializer_class = PointingSerializer
-    filter_fields = ('id', 'desfile_id', 'expnum', 'band',
-                     'exptime', 'date_obs', 'downloaded')
-    search_fields = ('id', 'filename', 'desfile_id', 'expnum')
-    ordering_fields = ('id', 'expnum', 'date_obs', 'nite', 'expnum', 'ccdnum',
-                       'band', 'filename', 'exposure_time', 'radeg', 'decdeg', 'downloaded')
-    ordering = ('-date_obs', 'expnum', 'ccdnum')
+# class PointingViewSet(viewsets.ModelViewSet):
+#     queryset = Pointing.objects.all()
+#     serializer_class = PointingSerializer
+#     filter_fields = ('id', 'desfile_id', 'expnum', 'band',
+#                      'exptime', 'date_obs', 'downloaded')
+#     search_fields = ('id', 'filename', 'desfile_id', 'expnum')
+#     ordering_fields = ('id', 'expnum', 'date_obs', 'nite', 'expnum', 'ccdnum',
+#                        'band', 'filename', 'exposure_time', 'radeg', 'decdeg', 'downloaded')
+#     ordering = ('-date_obs', 'expnum', 'ccdnum')
 
-    @list_route()
-    def histogram_exposure(self, request):
+#     @list_route()
+#     def histogram_exposure(self, request):
 
-        queryset = Pointing.objects.annotate(date=TruncMonth('date_obs')).values(
-            'date').annotate(count=Count('id')).values('date', 'count').order_by('date')
+#         queryset = Pointing.objects.annotate(date=TruncMonth('date_obs')).values(
+#             'date').annotate(count=Count('id')).values('date', 'count').order_by('date')
 
-        rows = list()
-        for row in queryset:
-            rows.append(dict({
-                'date': row['date'].strftime('%Y-%m-%d'),
-                'count': row['count']
-            }))
+#         rows = list()
+#         for row in queryset:
+#             rows.append(dict({
+#                 'date': row['date'].strftime('%Y-%m-%d'),
+#                 'count': row['count']
+#             }))
 
-        result = dict({
-            'success': True,
-            'data': rows
-        })
+#         result = dict({
+#             'success': True,
+#             'data': rows
+#         })
 
-        return Response(result)
+#         return Response(result)
 
-    def generate_statistics(self):
-        db = PointingDB()
+#     def generate_statistics(self):
+#         db = PointingDB()
 
-        pointings = db.count_pointings()
-        downloaded = db.count_downloaded()
-        not_downloaded = db.count_not_downloaded()
-        bands = db.counts_by_bands()
-        last = db.last()
-        first = db.first()
-        exposures = db.count_unique_exposures()
-        exp_range = db.counts_range_exposures()
+#         pointings = db.count_pointings()
+#         downloaded = db.count_downloaded()
+#         not_downloaded = db.count_not_downloaded()
+#         bands = db.counts_by_bands()
+#         last = db.last()
+#         first = db.first()
+#         exposures = db.count_unique_exposures()
+#         exp_range = db.counts_range_exposures()
 
-        statistics = dict({
-            'success': True,
-            'count_pointings': pointings,
-            'downloaded': downloaded,
-            'not_downloaded': not_downloaded,
-            'band': bands,
-            'last': last.get("date_obs").strftime('%Y/%m/%d'),
-            'first': first.get("date_obs").strftime('%Y/%m/%d'),
-            'exposures': exposures,
-            'updated': 'xxxx-xx-xx',
-            'size': 'xx Gb',
-            'exp_range': exp_range,
-            'histogram_exposure': self.histogram_exposure()
+#         statistics = dict({
+#             'success': True,
+#             'count_pointings': pointings,
+#             'downloaded': downloaded,
+#             'not_downloaded': not_downloaded,
+#             'band': bands,
+#             'last': last.get("date_obs").strftime('%Y/%m/%d'),
+#             'first': first.get("date_obs").strftime('%Y/%m/%d'),
+#             'exposures': exposures,
+#             'updated': 'xxxx-xx-xx',
+#             'size': 'xx Gb',
+#             'exp_range': exp_range,
+#             'histogram_exposure': self.histogram_exposure()
 
-        })
+#         })
 
-        # Escrever o Arquivo de cache com as informações
-        temp_file = os.path.join(
-            settings.MEDIA_TMP_DIR, 'pointings_statistics.json')
-        JsonFile().write(statistics, temp_file)
+#         # Escrever o Arquivo de cache com as informações
+#         temp_file = os.path.join(
+#             settings.MEDIA_TMP_DIR, 'pointings_statistics.json')
+#         JsonFile().write(statistics, temp_file)
 
-        JsonFile().write(statistics, temp_file)
+#         JsonFile().write(statistics, temp_file)
 
-        return statistics
+#         return statistics
 
-    @list_route()
-    def statistics(self, request):
-        refresh = request.query_params.get('refresh', False)
+#     @list_route()
+#     def statistics(self, request):
+#         refresh = request.query_params.get('refresh', False)
 
-        statistics = dict()
-        if refresh:
-            statistics = self.generate_statistics()
+#         statistics = dict()
+#         if refresh:
+#             statistics = self.generate_statistics()
 
-        else:
-            temp_file = os.path.join(
-                settings.MEDIA_TMP_DIR, 'pointings_statistics.json')
-            if (os.path.exists(temp_file)):
-                statistics = JsonFile().read(temp_file)
-            else:
-                statistics = self.generate_statistics()
+#         else:
+#             temp_file = os.path.join(
+#                 settings.MEDIA_TMP_DIR, 'pointings_statistics.json')
+#             if (os.path.exists(temp_file)):
+#                 statistics = JsonFile().read(temp_file)
+#             else:
+#                 statistics = self.generate_statistics()
 
-        return Response(statistics)
+#         return Response(statistics)
 
 
 # class SkybotOutputViewSet(viewsets.ModelViewSet):

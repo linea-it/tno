@@ -1,13 +1,14 @@
 from django.contrib import admin
 
-from .models import Pointing, CustomList, Proccess, Catalog, JohnstonArchive 
+from .models import CustomList, Proccess, Catalog, JohnstonArchive 
+# from .models import Pointing
 # from .models import SkybotOutput
 
 
-@admin.register(Pointing)
-class PointingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'date_obs', 'expnum', 'ccdnum', 'band', 'filename',)
-    search_fields = ('expnum', 'ccdnum', 'filename',)
+# @admin.register(Pointing)
+# class PointingAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'date_obs', 'expnum', 'ccdnum', 'band', 'filename',)
+#     search_fields = ('expnum', 'ccdnum', 'filename',)
 
 
 # @admin.register(SkybotOutput)
