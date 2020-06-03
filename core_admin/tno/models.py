@@ -324,45 +324,45 @@ class SkybotOutput(models.Model):
         return str(self.name)
 
 
-class CcdImage(models.Model):
-    """
-        This table stores information about the images of CCDs that have already been
-        downloaded from the DES and are available for the application.
-        the images are linked to table pointings.
-    """
-    # Relation With Pointings
-    pointing = models.ForeignKey(
-        Pointing, on_delete=models.CASCADE, verbose_name='Pointing',
-        null=True, blank=True, default=None
-    )
+# class CcdImage(models.Model):
+#     """
+#         This table stores information about the images of CCDs that have already been
+#         downloaded from the DES and are available for the application.
+#         the images are linked to table pointings.
+#     """
+#     # Relation With Pointings
+#     pointing = models.ForeignKey(
+#         Pointing, on_delete=models.CASCADE, verbose_name='Pointing',
+#         null=True, blank=True, default=None
+#     )
 
-    desfile_id = models.BigIntegerField(
-        null=True, blank=True, default=None,
-        verbose_name='CCD Id', help_text='Unique identifier for each CCD.')
+#     desfile_id = models.BigIntegerField(
+#         null=True, blank=True, default=None,
+#         verbose_name='CCD Id', help_text='Unique identifier for each CCD.')
 
-    filename = models.CharField(
-        max_length=256,
-        verbose_name='Filename', help_text='Name of FITS file with a CCD image.'
-    )
+#     filename = models.CharField(
+#         max_length=256,
+#         verbose_name='Filename', help_text='Name of FITS file with a CCD image.'
+#     )
 
-    download_start_time = models.DateTimeField(
-        verbose_name='Download Start',
-        auto_now_add=True, null=True, blank=True)
+#     download_start_time = models.DateTimeField(
+#         verbose_name='Download Start',
+#         auto_now_add=True, null=True, blank=True)
 
-    download_finish_time = models.DateTimeField(
-        verbose_name='Download finish',
-        auto_now_add=False, null=True, blank=True)
+#     download_finish_time = models.DateTimeField(
+#         verbose_name='Download finish',
+#         auto_now_add=False, null=True, blank=True)
 
-    download_time = models.DurationField(
-        verbose_name='Download time',
-        null=True, blank=True)
+#     download_time = models.DurationField(
+#         verbose_name='Download time',
+#         null=True, blank=True)
 
-    file_size = models.PositiveIntegerField(
-        verbose_name='File Size',
-        null=True, blank=True, default=None, help_text='File Size in bytes')
+#     file_size = models.PositiveIntegerField(
+#         verbose_name='File Size',
+#         null=True, blank=True, default=None, help_text='File Size in bytes')
 
-    def __str__(self):
-        return str(self.id)
+#     def __str__(self):
+#         return str(self.id)
 
 
 class CustomList(models.Model):
@@ -705,182 +705,182 @@ class JohnstonArchive(models.Model):
         auto_now_add=True, null=True, blank=True)
 
 
-class SkybotRun(models.Model):
+# class SkybotRun(models.Model):
 
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, default=None, verbose_name='Owner', null=True, blank=True, related_name='skybot_owner')
+#     owner = models.ForeignKey(
+#         settings.AUTH_USER_MODEL,
+#         on_delete=models.CASCADE, default=None, verbose_name='Owner', null=True, blank=True, related_name='skybot_owner')
 
-    exposure = models.BigIntegerField(
-        verbose_name='Exposure',
-        null=True,
-        blank=True
-    )
+#     exposure = models.BigIntegerField(
+#         verbose_name='Exposure',
+#         null=True,
+#         blank=True
+#     )
 
-    rows = models.BigIntegerField(
-        verbose_name='Rows',
-        null=True,
-        blank=True
-    )
+#     rows = models.BigIntegerField(
+#         verbose_name='Rows',
+#         null=True,
+#         blank=True
+#     )
 
-    status = models.CharField(
-        max_length=15,
-        verbose_name='Status',
-        default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success',
-                                                                  'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'), ('canceled', 'Canceled'))
-    )
+#     status = models.CharField(
+#         max_length=15,
+#         verbose_name='Status',
+#         default='pending', null=True, blank=True,
+#         choices=(('pending', 'Pending'), ('running', 'Running'), ('success',
+#                                                                   'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'), ('canceled', 'Canceled'))
+#     )
 
-    start = models.DateTimeField(
-        verbose_name='Start',
-        auto_now_add=False, null=True, blank=True)
+#     start = models.DateTimeField(
+#         verbose_name='Start',
+#         auto_now_add=False, null=True, blank=True)
 
-    finish = models.DateTimeField(
-        verbose_name='Finish',
-        auto_now_add=False, null=True, blank=True)
+#     finish = models.DateTimeField(
+#         verbose_name='Finish',
+#         auto_now_add=False, null=True, blank=True)
 
-    execution_time = models.DurationField(
-        verbose_name='Execution Time',
-        null=True, blank=True
-    )
+#     execution_time = models.DurationField(
+#         verbose_name='Execution Time',
+#         null=True, blank=True
+#     )
 
-    type_run = models.CharField(
-        max_length=30,
-        verbose_name='Type Run',
-        default='all',
-        choices=(('all', 'All'), ('period', 'Period'),
-                 ('circle', 'Circle'), ('square', 'Square'))
-    )
+#     type_run = models.CharField(
+#         max_length=30,
+#         verbose_name='Type Run',
+#         default='all',
+#         choices=(('all', 'All'), ('period', 'Period'),
+#                  ('circle', 'Circle'), ('square', 'Square'))
+#     )
 
-    ra_cent = models.FloatField(
-        verbose_name='Ra Cent',
-        null=True,
-        blank=True,
-    )
+#     ra_cent = models.FloatField(
+#         verbose_name='Ra Cent',
+#         null=True,
+#         blank=True,
+#     )
 
-    dec_cent = models.FloatField(
-        verbose_name='Dec Cent',
-        null=True,
-        blank=True,
-    )
+#     dec_cent = models.FloatField(
+#         verbose_name='Dec Cent',
+#         null=True,
+#         blank=True,
+#     )
 
-    ra_ul = models.FloatField(
-        verbose_name='RA Upper Left',
-        null=True,
-        blank=True,
-    )
+#     ra_ul = models.FloatField(
+#         verbose_name='RA Upper Left',
+#         null=True,
+#         blank=True,
+#     )
 
-    dec_ul = models.FloatField(
-        verbose_name='DEC Upper Left',
-        null=True,
-        blank=True,
-    )
+#     dec_ul = models.FloatField(
+#         verbose_name='DEC Upper Left',
+#         null=True,
+#         blank=True,
+#     )
 
-    ra_ur = models.FloatField(
-        verbose_name='RA Upper Right',
-        null=True,
-        blank=True,
-    )
+#     ra_ur = models.FloatField(
+#         verbose_name='RA Upper Right',
+#         null=True,
+#         blank=True,
+#     )
 
-    dec_ur = models.FloatField(
-        verbose_name='DEC Upper Right',
-        null=True,
-        blank=True,
-    )
+#     dec_ur = models.FloatField(
+#         verbose_name='DEC Upper Right',
+#         null=True,
+#         blank=True,
+#     )
 
-    ra_lr = models.FloatField(
-        verbose_name='RA Lower Right',
-        null=True,
-        blank=True,
-    )
+#     ra_lr = models.FloatField(
+#         verbose_name='RA Lower Right',
+#         null=True,
+#         blank=True,
+#     )
 
-    dec_lr = models.FloatField(
-        verbose_name='DEC Lower Right',
-        null=True,
-        blank=True,
-    )
+#     dec_lr = models.FloatField(
+#         verbose_name='DEC Lower Right',
+#         null=True,
+#         blank=True,
+#     )
 
-    ra_ll = models.FloatField(
-        verbose_name='RA Lower Left',
-        null=True,
-        blank=True,
-    )
+#     ra_ll = models.FloatField(
+#         verbose_name='RA Lower Left',
+#         null=True,
+#         blank=True,
+#     )
 
-    dec_ll = models.FloatField(
-        verbose_name='DEC Lower Left',
-        null=True,
-        blank=True,
-    )
+#     dec_ll = models.FloatField(
+#         verbose_name='DEC Lower Left',
+#         null=True,
+#         blank=True,
+#     )
 
-    radius = models.FloatField(
-        verbose_name='Radius',
-        null=True,
-        blank=True,
-    )
+#     radius = models.FloatField(
+#         verbose_name='Radius',
+#         null=True,
+#         blank=True,
+#     )
 
-    date_initial = models.DateField(
-        verbose_name='Date Initial',
-        auto_now_add=False, null=True, blank=True)
+#     date_initial = models.DateField(
+#         verbose_name='Date Initial',
+#         auto_now_add=False, null=True, blank=True)
 
-    date_final = models.DateField(
-        verbose_name='Date Final',
-        auto_now_add=False, null=True, blank=True)
+#     date_final = models.DateField(
+#         verbose_name='Date Final',
+#         auto_now_add=False, null=True, blank=True)
 
-    ra_ul = models.CharField(
-        max_length=30,
-        verbose_name='RA UL',
-        null=True,
-        blank=True,
-    )
+#     ra_ul = models.CharField(
+#         max_length=30,
+#         verbose_name='RA UL',
+#         null=True,
+#         blank=True,
+#     )
 
-    dec_ul = models.FloatField(
-        verbose_name='DEC UL',
-        null=True,
-        blank=True,
-    )
+#     dec_ul = models.FloatField(
+#         verbose_name='DEC UL',
+#         null=True,
+#         blank=True,
+#     )
 
-    ra_ur = models.CharField(
-        max_length=30,
-        verbose_name='RA UR',
-        null=True,
-        blank=True,
-    )
-    dec_ur = models.FloatField(
-        verbose_name='DEC UR',
-        null=True,
-        blank=True,
-    )
+#     ra_ur = models.CharField(
+#         max_length=30,
+#         verbose_name='RA UR',
+#         null=True,
+#         blank=True,
+#     )
+#     dec_ur = models.FloatField(
+#         verbose_name='DEC UR',
+#         null=True,
+#         blank=True,
+#     )
 
-    ra_lr = models.CharField(
-        max_length=30,
-        verbose_name='RA LR',
-        null=True,
-        blank=True,
-    )
-    dec_lr = models.FloatField(
-        verbose_name='DEC LR',
-        null=True,
-        blank=True,
-    )
+#     ra_lr = models.CharField(
+#         max_length=30,
+#         verbose_name='RA LR',
+#         null=True,
+#         blank=True,
+#     )
+#     dec_lr = models.FloatField(
+#         verbose_name='DEC LR',
+#         null=True,
+#         blank=True,
+#     )
 
-    ra_ll = models.CharField(
-        max_length=30,
-        verbose_name='RA LL',
-        null=True,
-        blank=True,
-    )
+#     ra_ll = models.CharField(
+#         max_length=30,
+#         verbose_name='RA LL',
+#         null=True,
+#         blank=True,
+#     )
 
-    dec_ll = models.FloatField(
-        verbose_name='DEC LL',
-        null=True,
-        blank=True,
-    )
+#     dec_ll = models.FloatField(
+#         verbose_name='DEC LL',
+#         null=True,
+#         blank=True,
+#     )
 
-    error = models.TextField(
-        verbose_name="Error",
-        null=True,
-        blank=True
-    )
+#     error = models.TextField(
+#         verbose_name="Error",
+#         null=True,
+#         blank=True
+#     )
 
-    def __str__(self):
-        return str(self.id)
+#     def __str__(self):
+#         return str(self.id)

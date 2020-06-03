@@ -3,7 +3,7 @@ from django.db.models.signals import post_save, pre_delete
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
-from .models import CustomList, Proccess, SkybotRun
+from .models import CustomList, Proccess 
 from .skybotoutput import FilterObjects
 from tno.proccess import ProccessManager
 import logging

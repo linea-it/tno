@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Pointing, SkybotOutput, CcdImage, CustomList, Proccess, Catalog, JohnstonArchive, SkybotRun
+from .models import Pointing, SkybotOutput,  CustomList, Proccess, Catalog, JohnstonArchive 
 
 
 @admin.register(Pointing)
@@ -22,14 +22,14 @@ class SkybotOutputAdmin(admin.ModelAdmin):
     # raw_id_fields = ('pointing',)
 
 
-@admin.register(CcdImage)
-class CcdImageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'desfile_id', 'filename', 'download_start_time',
-                    'download_finish_time', 'file_size',)
-    search_fields = ('desfile_id', 'filename',)
+# @admin.register(CcdImage)
+# class CcdImageAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'desfile_id', 'filename', 'download_start_time',
+#                     'download_finish_time', 'file_size',)
+#     search_fields = ('desfile_id', 'filename',)
 
-    # Troca o tipo de imput de Select para um text field com botao de busca
-    raw_id_fields = ('pointing',)
+#     # Troca o tipo de imput de Select para um text field com botao de busca
+#     raw_id_fields = ('pointing',)
 
 
 @admin.register(CustomList)
@@ -57,7 +57,7 @@ class JohnstonArchiveAdmin(admin.ModelAdmin):
                     'dynamical_class', 'diameter', 'density', 'updated')
 
 
-@admin.register(SkybotRun)
-class SkybotRunAdmin(admin.ModelAdmin):
-    list_display = ('id', 'owner', 'start', 'finish', 'status', 'exposure', 'date_initial', 'date_final', 'ra_cent', 'dec_cent', 'radius', 'type_run', 'ra_ul', 'dec_ul',
-                    'ra_ur', 'dec_ur', 'ra_lr', 'dec_lr', 'ra_ll', 'dec_ll')
+# @admin.register(SkybotRun)
+# class SkybotRunAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'owner', 'start', 'finish', 'status', 'exposure', 'date_initial', 'date_final', 'ra_cent', 'dec_cent', 'radius', 'type_run', 'ra_ul', 'dec_ul',
+#                     'ra_ur', 'dec_ur', 'ra_lr', 'dec_lr', 'ra_ll', 'dec_ll')
