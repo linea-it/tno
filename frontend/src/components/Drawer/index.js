@@ -12,9 +12,8 @@ import {
   ListItemIcon,
   ListItemText,
   Collapse,
-  Icon,
 } from '@material-ui/core';
-import { ChevronLeft, ChevronRight } from '@material-ui/icons';
+import { ChevronLeft } from '@material-ui/icons';
 
 import Footer from '../Footer';
 import Toolbar from '../Toolbar';
@@ -63,6 +62,7 @@ function Drawer({ children, title, open, setOpen }) {
       <Toolbar
         title={title}
         open={open}
+        handleDrawerClick={handleDrawerClick}
         drawerWidth={drawerWidth}
         currentUser={currentUser}
       />
@@ -113,7 +113,11 @@ function Drawer({ children, title, open, setOpen }) {
           <Divider className={classes.borderDrawer} />
           <ListItem button onClick={handleDataPreparationClick}>
             <ListItemText
-              primary="Data Preparation"
+              primary={
+                <span className={classes.textDrawerParent}>
+                  Data Preparation
+                </span>
+              }
               className={classes.textDrawer}
             />
           </ListItem>
@@ -124,7 +128,12 @@ function Drawer({ children, title, open, setOpen }) {
                 onClick={handleDesClick}
                 className={open ? classes.nested : ''}
               >
-                <ListItemText primary="DES" className={classes.textDrawer} />
+                <ListItemText
+                  primary={
+                    <span className={classes.textDrawerParent}>DES</span>
+                  }
+                  className={classes.textDrawer}
+                />
               </ListItem>
             </List>
           </Collapse>
@@ -218,7 +227,12 @@ function Drawer({ children, title, open, setOpen }) {
             title="Download of images which have observations of specific objects."
           >
             <ListItem button selected={currentPage === 'filter-objects'}>
-              <ListItemText primary="Filter" className={classes.textDrawer} />
+              <ListItemText
+                primary={
+                  <span className={classes.textDrawerParent}>Filter</span>
+                }
+                className={classes.textDrawer}
+              />
             </ListItem>
           </Link>
           <Divider className={classes.borderDrawer} />
@@ -229,7 +243,9 @@ function Drawer({ children, title, open, setOpen }) {
           >
             <ListItem button selected={currentPage === 'refine-orbit'}>
               <ListItemText
-                primary="Refine Orbit"
+                primary={
+                  <span className={classes.textDrawerParent}>Refine Orbit</span>
+                }
                 className={classes.textDrawer}
               />
             </ListItem>
@@ -245,7 +261,11 @@ function Drawer({ children, title, open, setOpen }) {
               selected={currentPage === 'prediction-of-occultation'}
             >
               <ListItemText
-                primary="Prediction of Occultation"
+                primary={
+                  <span className={classes.textDrawerParent}>
+                    Prediction of Occultation
+                  </span>
+                }
                 className={classes.textDrawer}
               />
             </ListItem>
@@ -258,7 +278,9 @@ function Drawer({ children, title, open, setOpen }) {
           >
             <ListItem button selected={currentPage === 'astrometry'}>
               <ListItemText
-                primary="Astrometry"
+                primary={
+                  <span className={classes.textDrawerParent}>Astrometry</span>
+                }
                 className={classes.textDrawer}
               />
             </ListItem>
@@ -271,7 +293,9 @@ function Drawer({ children, title, open, setOpen }) {
           >
             <ListItem button selected={currentPage === 'occultation'}>
               <ListItemText
-                primary="Occultation"
+                primary={
+                  <span className={classes.textDrawerParent}>Occultation</span>
+                }
                 className={classes.textDrawer}
               />
             </ListItem>
@@ -284,7 +308,11 @@ function Drawer({ children, title, open, setOpen }) {
           >
             <ListItem button selected={currentPage === 'occultation-calendar'}>
               <ListItemText
-                primary="Occultation Calendar"
+                primary={
+                  <span className={classes.textDrawerParent}>
+                    Occultation Calendar
+                  </span>
+                }
                 className={classes.textDrawer}
               />
             </ListItem>
@@ -298,16 +326,16 @@ function Drawer({ children, title, open, setOpen }) {
               classes.ListIconDrawer,
               classes.ListIconControlDrawer
             )}
-            title={open ? 'Close' : 'Open'}
+            title="Close"
           >
-            {open ? <ChevronLeft /> : <ChevronRight />}
+            <ChevronLeft />
           </IconButton>
         </div>
       </MuiDrawer>
       <div
         className={clsx(
           classes.bodyWrapper,
-          open ? classes.bodyWrapperOpen : classes.bodyWrapperClose
+          open ? classes.bodyWrapperOpen : null
         )}
       >
         <main className={classes.content}>{children}</main>

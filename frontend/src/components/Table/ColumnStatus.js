@@ -40,7 +40,7 @@ const useStyles = makeStyles({
   },
 });
 
-function CustomColumnStatus({ status, title }) {
+function ColumnStatus({ status, title }) {
   const classes = useStyles();
 
   let statusColor = classes.btnNotExecuted;
@@ -71,13 +71,13 @@ function CustomColumnStatus({ status, title }) {
   );
 }
 
-CustomColumnStatus.propTypes = {
+ColumnStatus.propTypes = {
   status: PropTypes.string.isRequired,
   title: PropTypes.string,
 };
 
-CustomColumnStatus.defaultProps = {
+ColumnStatus.defaultProps = {
   title: null,
 };
 
-export default CustomColumnStatus;
+export default ColumnStatus;

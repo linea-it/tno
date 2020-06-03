@@ -19,19 +19,15 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
   },
-  appBarDrawerClose: (props) => ({
+  appBarDrawerClose: {
     top: 'auto',
     bottom: 0,
     backgroundColor: '#6A6A6A',
-    width:
-      props.drawerOpen === null
-        ? '100%'
-        : `calc(100% - ${theme.spacing(7) - 1}px)`,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-  }),
+  },
   toolbar: {
     alignItems: 'center',
     justifyContent: 'space-between',
