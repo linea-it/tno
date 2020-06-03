@@ -154,147 +154,147 @@ class PointingViewSet(viewsets.ModelViewSet):
         return Response(statistics)
 
 
-class SkybotOutputViewSet(viewsets.ModelViewSet):
-    queryset = SkybotOutput.objects.select_related().all()
-    serializer_class = SkybotOutputSerializer
-    filter_fields = ('id', 'name', 'expnum', 'dynclass', 'mv', 'ccdnum')
-    search_fields = ('name', 'num', 'dynclass', 'mv')
-    ordering_fields = ('name', 'dynclass', 'num', 'raj2000',
-                       'decj2000', 'expnum', 'ccdnum', 'band', 'mv', 'errpos')
-    ordering = ('expnum', 'ccdnum')
+# class SkybotOutputViewSet(viewsets.ModelViewSet):
+#     queryset = SkybotOutput.objects.select_related().all()
+#     serializer_class = SkybotOutputSerializer
+#     filter_fields = ('id', 'name', 'expnum', 'dynclass', 'mv', 'ccdnum')
+#     search_fields = ('name', 'num', 'dynclass', 'mv')
+#     ordering_fields = ('name', 'dynclass', 'num', 'raj2000',
+#                        'decj2000', 'expnum', 'ccdnum', 'band', 'mv', 'errpos')
+#     ordering = ('expnum', 'ccdnum')
 
-    @list_route()
-    def objects(self, request):
-        """
-            Especifica para tela de Filter Objects que utiliza a query agrupada por objetos.
-        """
-        # Retrive Params
-        name = request.query_params.get('name')
+#     @list_route()
+#     def objects(self, request):
+#         """
+#             Especifica para tela de Filter Objects que utiliza a query agrupada por objetos.
+#         """
+#         # Retrive Params
+#         name = request.query_params.get('name')
 
-        objectTable = request.query_params.get('objectTable')
+#         objectTable = request.query_params.get('objectTable')
 
-        magnitude = None
-        if request.query_params.get('useMagnitude') and float(request.query_params.get('magnitude')) > 0:
-            magnitude = float(request.query_params.get('magnitude'))
+#         magnitude = None
+#         if request.query_params.get('useMagnitude') and float(request.query_params.get('magnitude')) > 0:
+#             magnitude = float(request.query_params.get('magnitude'))
 
-        diffDateNights = None
-        if request.query_params.get('useDifferenceTime') and float(request.query_params.get('diffDateNights')) > 0:
-            diffDateNights = float(request.query_params.get('diffDateNights'))
+#         diffDateNights = None
+#         if request.query_params.get('useDifferenceTime') and float(request.query_params.get('diffDateNights')) > 0:
+#             diffDateNights = float(request.query_params.get('diffDateNights'))
 
-        moreFilter = request.query_params.get('moreFilter')
+#         moreFilter = request.query_params.get('moreFilter')
 
-        page = request.query_params.get('page', 1)
+#         page = request.query_params.get('page', 1)
 
-        pageSize = request.query_params.get('pageSize')
+#         pageSize = request.query_params.get('pageSize')
 
-        if(pageSize):
-            pageSize = int(request.query_params.get(
-                'pageSize', self.pagination_class.page_size))
-        else:
-            pageSize = None
+#         if(pageSize):
+#             pageSize = int(request.query_params.get(
+#                 'pageSize', self.pagination_class.page_size))
+#         else:
+#             pageSize = None
 
-        rows, count = FilterObjects().get_objects(
-            name, objectTable, magnitude, diffDateNights,
-            moreFilter, int(page), pageSize)
+#         rows, count = FilterObjects().get_objects(
+#             name, objectTable, magnitude, diffDateNights,
+#             moreFilter, int(page), pageSize)
 
-        return Response({
-            'success': True,
-            "results": rows,
-            "count": count
-        })
+#         return Response({
+#             'success': True,
+#             "results": rows,
+#             "count": count
+#         })
 
-    @list_route()
-    def objects_count(self, request):
-        """
-            Especifica para tela de Filter Objects que utiliza a query agrupada por objetos.
-        """
-        name = request.query_params.get('name')
+#     @list_route()
+#     def objects_count(self, request):
+#         """
+#             Especifica para tela de Filter Objects que utiliza a query agrupada por objetos.
+#         """
+#         name = request.query_params.get('name')
 
-        objectTable = request.query_params.get('objectTable')
+#         objectTable = request.query_params.get('objectTable')
 
-        magnitude = None
-        if request.query_params.get('useMagnitude') and float(request.query_params.get('magnitude')) > 0:
-            magnitude = float(request.query_params.get('magnitude'))
+#         magnitude = None
+#         if request.query_params.get('useMagnitude') and float(request.query_params.get('magnitude')) > 0:
+#             magnitude = float(request.query_params.get('magnitude'))
 
-        diffDateNights = None
-        if request.query_params.get('useDifferenceTime') and float(request.query_params.get('diffDateNights')) > 0:
-            diffDateNights = float(request.query_params.get('diffDateNights'))
+#         diffDateNights = None
+#         if request.query_params.get('useDifferenceTime') and float(request.query_params.get('diffDateNights')) > 0:
+#             diffDateNights = float(request.query_params.get('diffDateNights'))
 
-        moreFilter = request.query_params.get('moreFilter')
+#         moreFilter = request.query_params.get('moreFilter')
 
-        # Total de Objetos unicos que atendem aos filtros da query
-        count_objects = FilterObjects().get_objects_count(
-            name, objectTable, magnitude, diffDateNights,
-            moreFilter
-        )
-        # Total de Observações que atendem aos filtros da query
-        count_observations = FilterObjects().get_observations_count(
-            name, objectTable, magnitude, diffDateNights,
-            moreFilter
-        )
+#         # Total de Objetos unicos que atendem aos filtros da query
+#         count_objects = FilterObjects().get_objects_count(
+#             name, objectTable, magnitude, diffDateNights,
+#             moreFilter
+#         )
+#         # Total de Observações que atendem aos filtros da query
+#         count_observations = FilterObjects().get_observations_count(
+#             name, objectTable, magnitude, diffDateNights,
+#             moreFilter
+#         )
 
-        return Response({
-            'success': True,
-            "count_objects": count_objects,
-            "count_observations": count_observations
-        })
+#         return Response({
+#             'success': True,
+#             "count_objects": count_objects,
+#             "count_observations": count_observations
+#         })
 
-    def generate_statistics(self):
+#     def generate_statistics(self):
 
-        db = SkybotOutputDB()
-        unique_ccds = db.count_unique_ccds()
-        asteroids = db.count_asteroids()
-        dynclass = db.distinct_dynclass()
-        asteroids_by_dynclass = db.count_asteroids_by_dynclass()
-        asteroids_by_class = db.count_asteroids_by_class()
+#         db = SkybotOutputDB()
+#         unique_ccds = db.count_unique_ccds()
+#         asteroids = db.count_asteroids()
+#         dynclass = db.distinct_dynclass()
+#         asteroids_by_dynclass = db.count_asteroids_by_dynclass()
+#         asteroids_by_class = db.count_asteroids_by_class()
 
-        histogram = db.histogram('dhelio', 10)
+#         histogram = db.histogram('dhelio', 10)
 
-        statistics = dict({
-            'success': True,
-            'unique_ccds': unique_ccds,
-            'count_asteroids': asteroids,
-            'dynclass': dynclass,
-            'asteroids_by_dynclass': asteroids_by_dynclass,
-            'asteroids_by_class': asteroids_by_class,
-            'histogram': histogram
-        })
+#         statistics = dict({
+#             'success': True,
+#             'unique_ccds': unique_ccds,
+#             'count_asteroids': asteroids,
+#             'dynclass': dynclass,
+#             'asteroids_by_dynclass': asteroids_by_dynclass,
+#             'asteroids_by_class': asteroids_by_class,
+#             'histogram': histogram
+#         })
 
-        # Escrever o Arquivo de cache com as informações
-        temp_file = os.path.join(
-            settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
-        JsonFile().write(statistics, temp_file)
+#         # Escrever o Arquivo de cache com as informações
+#         temp_file = os.path.join(
+#             settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
+#         JsonFile().write(statistics, temp_file)
 
-        JsonFile().write(statistics, temp_file)
+#         JsonFile().write(statistics, temp_file)
 
-        return statistics
+#         return statistics
 
-    @list_route()
-    def statistics(self, request):
-        refresh = request.query_params.get('refresh', False)
+#     @list_route()
+#     def statistics(self, request):
+#         refresh = request.query_params.get('refresh', False)
 
-        statistics = dict()
-        if refresh:
-            statistics = self.generate_statistics()
+#         statistics = dict()
+#         if refresh:
+#             statistics = self.generate_statistics()
 
-        else:
-            temp_file = os.path.join(
-                settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
-            if (os.path.exists(temp_file)):
-                statistics = JsonFile().read(temp_file)
-            else:
-                statistics = self.generate_statistics()
+#         else:
+#             temp_file = os.path.join(
+#                 settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
+#             if (os.path.exists(temp_file)):
+#                 statistics = JsonFile().read(temp_file)
+#             else:
+#                 statistics = self.generate_statistics()
 
-        return Response(statistics)
+#         return Response(statistics)
 
 
-class ObjectClassViewSet(viewsets.GenericViewSet,
-                         mixins.ListModelMixin):
-    queryset = SkybotOutput.objects.select_related().order_by(
-        'dynclass').distinct('dynclass')
-    serializer_class = ObjectClassSerializer
-    # Turn off pagination Class
-    pagination_class = None
+# class ObjectClassViewSet(viewsets.GenericViewSet,
+#                          mixins.ListModelMixin):
+#     queryset = SkybotOutput.objects.select_related().order_by(
+#         'dynclass').distinct('dynclass')
+#     serializer_class = ObjectClassSerializer
+#     # Turn off pagination Class
+#     pagination_class = None
 
 
 class CustomListViewSet(viewsets.ModelViewSet):

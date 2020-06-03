@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import Pointing, SkybotOutput,  CustomList, Proccess, Catalog, JohnstonArchive 
+from .models import Pointing, CustomList, Proccess, Catalog, JohnstonArchive 
+# from .models import SkybotOutput
 
 
 @admin.register(Pointing)
@@ -9,10 +10,10 @@ class PointingAdmin(admin.ModelAdmin):
     search_fields = ('expnum', 'ccdnum', 'filename',)
 
 
-@admin.register(SkybotOutput)
-class SkybotOutputAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'dynclass', 'raj2000', 'decj2000', 'ticket' )
-    search_fields = ('name', 'ticket')
+# @admin.register(SkybotOutput)
+# class SkybotOutputAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'name', 'dynclass', 'raj2000', 'decj2000', 'ticket' )
+#     search_fields = ('name', 'ticket')
 
     # Retira do Formulario a campo de chave estrangeira "pointing"
     # que tem milhares de registros e causa tavamento da interface

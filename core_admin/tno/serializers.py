@@ -2,7 +2,8 @@ import humanize
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Pointing, SkybotOutput, CustomList, Proccess, Catalog, JohnstonArchive 
+from .models import Pointing, CustomList, Proccess, Catalog, JohnstonArchive 
+# from .models import SkybotOutput
 # from .models import SkybotRun 
 # from .models import CcdImage
 
@@ -130,42 +131,42 @@ class PointingSerializer(serializers.ModelSerializer):
 #             return None
 
 
-class SkybotOutputSerializer(serializers.ModelSerializer):
+# class SkybotOutputSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = SkybotOutput
-        fields = (
-            'id',
-            'num',
-            'name',
-            'dynclass',
-            'ra',
-            'dec',
-            'raj2000',
-            'decj2000',
-            'mv',
-            'errpos',
-            'd',
-            'dracosdec',
-            'ddec',
-            'dgeo',
-            'dhelio',
-            'phase',
-            'solelong',
-            'px',
-            'py',
-            'pz',
-            'vx',
-            'vy',
-            'vz',
-            'jdref',
-        )
+#     class Meta:
+#         model = SkybotOutput
+#         fields = (
+#             'id',
+#             'num',
+#             'name',
+#             'dynclass',
+#             'ra',
+#             'dec',
+#             'raj2000',
+#             'decj2000',
+#             'mv',
+#             'errpos',
+#             'd',
+#             'dracosdec',
+#             'ddec',
+#             'dgeo',
+#             'dhelio',
+#             'phase',
+#             'solelong',
+#             'px',
+#             'py',
+#             'pz',
+#             'vx',
+#             'vy',
+#             'vz',
+#             'jdref',
+#         )
 
 
-class ObjectClassSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SkybotOutput
-        fields = ('dynclass',)
+# class ObjectClassSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = SkybotOutput
+#         fields = ('dynclass',)
 
 
 class CustomListSerializer(serializers.ModelSerializer):

@@ -1,7 +1,6 @@
 from django.db import models
 
 from des.models import Ccd, Exposure
-from tno.models import SkybotOutput
 from skybot.models import Position
 
 
