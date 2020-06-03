@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Panel from '../../lib/Aladin/Panel';
+import Panel from '../../libs/Aladin/Panel';
 import useStyles from './styles';
 
 function Aladin({ ra, dec }) {

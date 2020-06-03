@@ -4,7 +4,7 @@ import logging
 import os
 import urllib
 from concurrent import futures
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import humanize
 import pandas as pd
@@ -421,7 +421,7 @@ class CustomListViewSet(viewsets.ModelViewSet):
     @detail_route(methods=['GET'])
     def download_ccds_by_list(self, request, pk):
         """
-            Verifica quais ccds relacionados com a lista precisam ser baixados. 
+            Verifica quais ccds relacionados com a lista precisam ser baixados.
             e executa o download destes ccds.
         """
         record = self.get_object()
@@ -429,7 +429,7 @@ class CustomListViewSet(viewsets.ModelViewSet):
         # Todos os CCDs relacioandos com a lista que não foram baixados.
         not_download = self.ccds_not_downloaded_by_list(record)
 
-        # Executa a função de Download em background. 
+        # Executa a função de Download em background.
         with futures.ProcessPoolExecutor(max_workers=1) as ex:
             ex.submit(download_des_ccds, not_download)
 

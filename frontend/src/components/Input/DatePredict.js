@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
+  LocalizationProvider,
+  DatePicker,
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import PropTypes from 'prop-types';
@@ -46,15 +46,15 @@ export default function DatePredict(props) {
   };
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <KeyboardDatePicker
+    <LocalizationProvider utils={DateFnsUtils}>
+      <DatePicker
         className={classes.date}
         format="yyyy-MM-dd"
         label={label}
         value={props.defaultDate}
         onChange={handleChange}
       />
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 }
 
