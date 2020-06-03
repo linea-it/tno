@@ -54,6 +54,11 @@ const light = createMuiTheme({
         marginBottom: 0,
       },
     },
+    // MuiCollapse: {
+    //   wrapperInner: {
+    //     paddingLeft: 15,
+    //   },
+    // },
   },
 });
 
