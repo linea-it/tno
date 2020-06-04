@@ -13,7 +13,7 @@ export const createSkybotRun = ({ date_initial, date_final }) => {
 };
 
 export const getSkybotRunById = ({ id }) =>
-  axios.get(`/skybot_run/${id}`).then((res) => res.data);
+  axios.get(`/des/skybot_job/${id}`).then((res) => res.data);
 
 export const getSkybotRunList = ({ page, pageSize, ordering }) => {
   const params = {
@@ -22,7 +22,7 @@ export const getSkybotRunList = ({ page, pageSize, ordering }) => {
     ordering,
   };
 
-  return axios.get('/skybot_run/', { params });
+  return axios.get('/des/skybot_job/', { params });
 };
 
 export const getStatistic = ({ id }) =>
@@ -86,3 +86,6 @@ export const stopSkybotRunById = (id) =>
       status: 'canceled',
     })
     .then((res) => res);
+
+export const getSkybotProgress = (id) =>
+  axios.get(`/des/skybot_job/${id}/heartbeat/`).then((res) => res.data);

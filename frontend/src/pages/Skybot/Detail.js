@@ -7,6 +7,8 @@ import {
   CardContent,
   Icon,
   Button,
+  Chip,
+  Typography,
 } from '@material-ui/core';
 import { useParams, useHistory } from 'react-router-dom';
 import moment from 'moment';
@@ -14,116 +16,45 @@ import List from '../../components/List';
 import Table from '../../components/Table';
 import Donut from '../../components/Chart/Donut';
 import ColumnStatus from '../../components/Table/ColumnStatus';
-import {
-  getSkybotRunById,
-  getStatistic,
-  getSkybotRunResults,
-  stopSkybotRunById,
-} from '../../services/api/Skybot';
+import Progress from '../../components/Progress';
+import { getSkybotRunById, getSkybotProgress } from '../../services/api/Skybot';
+import useInterval from '../../hooks/useInterval';
 
 function SkybotDetail({ setTitle }) {
   const { id } = useParams();
   const history = useHistory();
-  const [skybotRunDetailList, setSkybotRunDetailList] = useState([]);
-  const [timeProfile, setTimeProfile] = useState([]);
-  const [skybotDetailTableData, setSkybotDetailTableData] = useState([]);
-  const [
-    skybotDetailTableTotalCount,
-    setSkybotDetailTableTotalCount,
-  ] = useState(0);
-  const [currentSkybotRunStatus, setCurrentSkybotRunStatus] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const skybotDetailTableColumns = [
-    {
-      name: 'ccd_time',
-      title: 'Details',
-      width: 100,
-      icon: <i className="fas fa-info-circle" />,
-      action: (row) => history.push(`/skybot/${id}/asteroid/${row.expnum}`),
-      align: 'center',
-      sortingEnabled: false,
+  const [summary, setSummary] = useState([]);
+  const [progress, setProgress] = useState({
+    request: {
+      status: 'completed',
+      exposures: 0,
+      current: 0,
+      average_time: 0,
+      time_estimate: 0,
     },
-    {
-      name: 'status',
-      title: 'Status',
-      align: 'center',
-      sortingEnabled: false,
-      customElement: (row) => (
-        <ColumnStatus status={row.status} title={row.error_msg} />
-      ),
-      width: 140,
+    loaddata: {
+      status: 'completed',
+      exposures: 0,
+      current: 0,
+      average_time: 0,
+      time_estimate: 0,
     },
-    {
-      name: 'expnum',
-      title: 'Exp Num',
-      sortingEnabled: false,
-      width: 100,
-      align: 'right',
-      headerTooltip: 'Exposure Number',
-    },
-    {
-      name: 'band',
-      title: 'Band',
-      sortingEnabled: false,
-      width: 70,
-      align: 'center',
-    },
-    {
-      name: 'date_obs',
-      title: 'Obs Date',
-      sortingEnabled: false,
-      customElement: (el) => (
-        <span>
-          {el.date_obs ? moment(el.date_obs).format('YYYY-MM-DD') : ''}
-        </span>
-      ),
-      headerTooltip: 'Observation Date',
-      align: 'center',
-    },
-    {
-      name: 'execution_time',
-      title: 'Exec Time ',
-      headerTooltip: 'Execution time',
-      sortingEnabled: false,
-      width: 150,
-      align: 'right',
-    },
-    {
-      name: 'count_rows',
-      title: 'Skybot Rows',
-      sortingEnabled: false,
-      align: 'right',
-    },
-    {
-      name: 'created',
-      title: 'Created',
-      sortingEnabled: false,
-      align: 'right',
-    },
-    {
-      name: 'updated',
-      title: 'Updated',
-      sortingEnabled: false,
-      width: 100,
-      align: 'right',
-    },
-    {
-      name: 'ccd_count_rows',
-      title: 'Inside CCD',
-      sortingEnabled: false,
-      width: 100,
-      align: 'right',
-      headerTooltip: 'Objects inside CCD',
-    },
-  ];
+  });
+  const [loadProgress, setLoadProgress] = useState(false);
 
   const handleBackNavigation = () => history.push('/skybot');
 
   useEffect(() => {
+    setTitle('Skybot Run');
+  }, [setTitle]);
+
+  useEffect(() => {
+    getSkybotProgress(id).then((data) => setProgress(data));
+  }, [loadProgress]);
+
+  useEffect(() => {
     getSkybotRunById({ id }).then((res) => {
-      setCurrentSkybotRunStatus(res.status);
-      setSkybotRunDetailList([
+      setSummary([
         {
           title: 'Status',
           value: () => (
@@ -136,143 +67,164 @@ function SkybotDetail({ setTitle }) {
         },
         {
           title: 'Start',
-          value: res.start,
+          value: moment(res.start).format('YYYY-MM-DD HH:mm:ss'),
         },
         {
           title: 'Execution',
-          value: res.h_execution_time,
+          value: res.execution_time ? res.execution_time.split('.')[0] : 0,
         },
         {
-          title: 'Pointings',
-          value: res.exposure,
-        },
-        {
-          title: 'Type',
-          value: res.type_run,
+          title: 'Exposures',
+          value: res.exposures,
         },
       ]);
     });
-  }, [id, loading]);
+  }, [loadProgress]);
 
-  useEffect(() => {
-    getStatistic({ id }).then((res) => {
-      setTimeProfile([
-        {
-          name: 'Download ',
-          value: res.download_time,
-        },
-        {
-          name: 'Import',
-          value: res.import_time,
-        },
-        {
-          name: 'Associate CCD',
-          value: res.ccd_time,
-        },
-      ]);
-    });
-  }, [id, loading]);
+  const formatSeconds = (value) =>
+    moment().startOf('day').seconds(value).format('HH:mm:ss');
 
-  const loadSkybotDetailTableData = ({ currentPage, pageSize }) => {
-    getSkybotRunResults({
-      id,
-      page: currentPage + 1,
-      pageSize,
-    }).then((res) => {
-      setSkybotDetailTableTotalCount(res.totalCount);
-      setSkybotDetailTableData(res.data);
-    });
-  };
-
-  const clearData = () => {
-    setTimeProfile([]);
-    setSkybotDetailTableData([]);
-    setSkybotDetailTableTotalCount(0);
-  };
-
-  const handleStopRun = () => {
-    stopSkybotRunById(id).then(() => {
-      clearData();
-      setLoading(!loading);
-    });
-  };
-
-  useEffect(() => {
-    setTitle('Skybot Run');
-  }, [setTitle]);
+  useInterval(() => {
+    if (
+      progress.request.status !== 'completed' ||
+      progress.loaddata.status !== 'completed'
+    ) {
+      setLoadProgress((prevState) => !prevState);
+    }
+  }, [10000]);
 
   return (
-    <>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Grid container alignItems="center" spacing={2}>
-            <Grid item>
-              <Button
-                variant="contained"
-                color="primary"
-                title="Back"
-                onClick={handleBackNavigation}
-              >
-                <Icon className="fas fa-undo" />
-                <span>Back</span>
-              </Button>
-            </Grid>
-            {currentSkybotRunStatus === 'running' ? (
-              <Grid item>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  title="Stop"
-                  onClick={handleStopRun}
-                >
-                  <Icon className="fas fa-stop" />
-                  <span>Stop</span>
-                </Button>
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Grid container alignItems="center" spacing={2}>
+          <Grid item>
+            <Button
+              variant="contained"
+              color="primary"
+              title="Back"
+              onClick={handleBackNavigation}
+            >
+              <Icon className="fas fa-undo" fontSize="inherit" />
+              <Typography variant="button" style={{ margin: '0 5px' }}>
+                Back
+              </Typography>
+            </Button>
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container spacing={3} direction="column">
+          <Grid item>
+            <Progress
+              title="Retrieving data from Skybot"
+              variant="determinate"
+              label={`${progress.request.exposures} exposures`}
+              total={progress.request.exposures}
+              current={progress.request.current}
+            />
+            {progress.request.status !== 'completed' ? (
+              <Grid container spacing="2">
+                <Grid item>
+                  <Chip
+                    label={`Average: ${progress.request.average_time.toFixed(
+                      2
+                    )}s`}
+                    color="primary"
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item>
+                  <Chip
+                    label={`Estimate: ${formatSeconds(
+                      progress.request.time_estimate
+                    )}`}
+                    color="primary"
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item>
+                  <Chip
+                    label={`Progress: ${progress.request.current}/${progress.request.exposures}`}
+                    color="primary"
+                    variant="outlined"
+                  />
+                </Grid>
+              </Grid>
+            ) : null}
+          </Grid>
+          <Grid item>
+            <Progress
+              title="Importing positions to database"
+              variant="determinate"
+              label={`${progress.loaddata.exposures} exposures`}
+              total={progress.loaddata.exposures}
+              current={progress.loaddata.current}
+            />
+            {progress.loaddata.status !== 'completed' ? (
+              <Grid container spacing="2">
+                <Grid item>
+                  <Chip
+                    label={`Average: ${progress.loaddata.average_time.toFixed(
+                      2
+                    )}s`}
+                    color="primary"
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item>
+                  <Chip
+                    label={`Estimate: ${formatSeconds(
+                      progress.loaddata.time_estimate
+                    )}`}
+                    color="primary"
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item>
+                  <Chip
+                    label={`Progress: ${progress.loaddata.current}/${progress.loaddata.exposures}`}
+                    color="primary"
+                    variant="outlined"
+                  />
+                </Grid>
               </Grid>
             ) : null}
           </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <Card>
-                <CardHeader title="Summary" />
-                <CardContent>
-                  <List data={skybotRunDetailList} />
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={8}>
-              <Card>
-                <CardHeader title="Execution Time" />
-                <CardContent>
-                  <Donut data={timeProfile} height={315} />
-                </CardContent>
-              </Card>
-            </Grid>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container alignItems="stretch" spacing={2}>
+          <Grid item xs={4}>
+            <Card>
+              <CardHeader title="Summary" />
+              <CardContent>
+                <List data={summary} />
+              </CardContent>
+            </Card>
           </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Card>
-                <CardHeader title="Skybot Results by Pointings" />
-                <CardContent>
-                  <Table
-                    columns={skybotDetailTableColumns}
-                    data={skybotDetailTableData}
-                    totalCount={skybotDetailTableTotalCount}
-                    loadData={loadSkybotDetailTableData}
-                    hasSearching={false}
-                    loading={loading}
-                  />
-                </CardContent>
-              </Card>
-            </Grid>
+          <Grid item xs={8}>
+            <Card>
+              <CardHeader title="Execution Time" />
+              <CardContent>
+                <Donut data={[]} height={300} />
+              </CardContent>
+            </Card>
           </Grid>
         </Grid>
       </Grid>
-    </>
+      <Grid item xs={12}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader title="Skybot Results" />
+              <CardContent>
+                <Table columns={[]} data={[]} totalCount={0} loading={false} />
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 }
 
