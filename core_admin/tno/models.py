@@ -1,384 +1,368 @@
-from django.db import models
-from current_user import get_current_user
 from django.conf import settings
+from django.db import models
+
+from current_user import get_current_user
 from praia.models import Run as PraiaRun
 
 
-class Pointing(models.Model):
-    pfw_attempt_id = models.BigIntegerField(
-        verbose_name='Image Id', help_text='Unique identifier for each image (1 image is composed by 62 CCDs)')
-
-    desfile_id = models.BigIntegerField(
-        verbose_name='CCD Id', help_text='Unique identifier for each CCD.')
-
-    nite = models.DateField(
-        verbose_name="Night", help_text='Night at which the observation was made.'
-    )
-
-    date_obs = models.DateTimeField(
-        verbose_name='Observation Date', help_text='Date and time of observation'
-    )
-
-    expnum = models.BigIntegerField(
-        verbose_name='Exposure',
-        help_text='Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)'
-    )
-    ccdnum = models.IntegerField(
-        verbose_name='CCD', help_text='CCD Number (1, 2, ..., 62)'
-    )
-
-    band = models.CharField(
-        max_length=1,
-        verbose_name='Filter', help_text='Filter used to do the observation (u, g, r, i, z, Y).',
-        choices=(('u', 'u'), ('g', 'g'), ('r', 'r'),
-                 ('i', 'i'), ('z', 'z'), ('Y', 'Y'))
-    )
-
-    exptime = models.FloatField(
-        verbose_name='Exposure time', help_text='Exposure time of observation.'
-    )
-
-    cloud_apass = models.FloatField(
-        verbose_name='Cloud apass', help_text='Atmospheric extinction in magnitudes'
-    )
-
-    cloud_nomad = models.FloatField(
-        verbose_name='Cloud nomad', help_text='Atmospheric extinction in magnitudes'
-    )
-
-    t_eff = models.FloatField(
-        verbose_name='t_eff', help_text='Parameter related to image quality'
-    )
-
-    crossra0 = models.BooleanField(
-        default=False, verbose_name='Cross RA 0'
-    )
-
-    radeg = models.FloatField(
-        verbose_name='RA (deg)'
-    )
-
-    decdeg = models.FloatField(
-        verbose_name='Dec (deg)'
-    )
-
-    racmin = models.FloatField(
-        verbose_name='racmin', help_text='Minimal and maximum right ascension respectively of the CCD cover.'
-    )
-
-    racmax = models.FloatField(
-        verbose_name='racmax', help_text='Minimal and maximum right ascension respectively of the CCD cover.'
-    )
-
-    deccmin = models.FloatField(
-        verbose_name='deccmin', help_text='Minimum and maximum declination respectively of the CCD cover.'
-    )
-
-    deccmax = models.FloatField(
-        verbose_name='deccmax', help_text='Minimum and maximum declination respectively of the CCD cover.'
-    )
-
-    ra_cent = models.FloatField(
-        verbose_name='ra_cent', help_text='Right ascension of the CCD center'
-    )
-
-    dec_cent = models.FloatField(
-        verbose_name='dec_cent', help_text='Declination of the CCD center'
-    )
-
-    rac1 = models.FloatField(
-        verbose_name='rac1', help_text='CCD Corner Coordinates 1 - upper left.'
-    )
-
-    rac2 = models.FloatField(
-        verbose_name='rac2', help_text='CCD Corner Coordinates 2 - lower left.'
-    )
-
-    rac3 = models.FloatField(
-        verbose_name='rac3', help_text='CCD Corner Coordinates 3 - lower right.'
-    )
-
-    rac4 = models.FloatField(
-        verbose_name='rac4', help_text='CCD Corner Coordinates 4 - upper right).'
-    )
-
-    decc1 = models.FloatField(
-        verbose_name='decc1', help_text='CCD Corner Coordinates 1 - upper left.'
-    )
-
-    decc2 = models.FloatField(
-        verbose_name='decc2', help_text='CCD Corner Coordinates 2 - lower left.'
-    )
-
-    decc3 = models.FloatField(
-        verbose_name='decc3', help_text='CCD Corner Coordinates 3 - lower right.'
-    )
-
-    decc4 = models.FloatField(
-        verbose_name='decc4', help_text='CCD Corner Coordinates 4 - upper right).'
-    )
-
-    ra_size = models.DecimalField(
-        verbose_name='ra_size', help_text='CCD dimensions in degrees (width × height).',
-        decimal_places=7, max_digits=10
-    )
-
-    dec_size = models.DecimalField(
-        verbose_name='dec_size', help_text='CCD dimensions in degrees (width × height).',
-        decimal_places=7, max_digits=10
-    )
-
-    path = models.TextField(
-        verbose_name='Path', help_text='Path in the DES database where the image is stored.'
-    )
-
-    filename = models.CharField(
-        max_length=256,
-        verbose_name='Filename', help_text='Name of FITS file with a CCD image.'
-    )
-
-    compression = models.CharField(
-        max_length=5,
-        verbose_name='Compression', help_text='Compression format (.fz) used in FITS files'
-    )
-
-    downloaded = models.BooleanField(
-        default=False, verbose_name='Downloaded', help_text='flag indicating whether the image was downloaded from DES.'
-    )
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['expnum']),
-            models.Index(fields=['expnum', 'ccdnum']),
-            models.Index(fields=['expnum', 'ccdnum', 'band']),
-            models.Index(fields=['date_obs']),
-            # models.Index(fields=['rac1']),
-            # models.Index(fields=['rac2']),
-            # models.Index(fields=['rac3']),
-            # models.Index(fields=['rac4']),
-            # models.Index(fields=['decc1']),
-            # models.Index(fields=['decc2']),
-            # models.Index(fields=['decc3']),
-            # models.Index(fields=['decc4']),
-            models.Index(fields=['pfw_attempt_id']),
-            models.Index(fields=['desfile_id']),
-            models.Index(fields=['filename']),
-        ]
-
-    def __str__(self):
-        return str(self.id)
-
-
-class SkybotOutput(models.Model):
-    """
-        Table generated by SkyBoT which has the solar system objects identified
-        in DES images (for more detailssee:http://vo.imcce.fr/webservices/skybot/?conesearch)
-    """
-    # Relation With Pointings
-    pointing = models.ForeignKey(
-        Pointing, on_delete=models.CASCADE, verbose_name='Pointing', default=None, null=True, blank=True
-    )
-
-    num = models.CharField(
-        max_length=6, default=None, null=True, blank=True,
-        verbose_name='Num',
-        help_text='(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).'
-    )
-
-    name = models.CharField(
-        max_length=32,
-        verbose_name='Name',
-        help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).'
-    )
-
-    dynclass = models.CharField(
-        max_length=24,
-        verbose_name='Object classification',
-        help_text='(ucd=“meta.code.class;src.class”) Object class (TNO, Centaur, Trojan, etc.).'
-    )
-
-    ra = models.CharField(
-        max_length=20,
-        verbose_name='RA',
-        help_text='(ucd=“pos.eq.ra;meta.main”) Right ascension of the identified object.'
-    )
-
-    dec = models.CharField(
-        max_length=20,
-        verbose_name='Dec',
-        help_text='(ucd=“pos.eq.dec;meta.main”) Declination of the identified object.'
-    )
-
-    raj2000 = models.FloatField(
-        verbose_name='RA (deg)',
-        help_text='(ucd=“pos.eq.ra;meta.main”) Right ascension of the identified object in degrees.'
-    )
-
-    decj2000 = models.FloatField(
-        verbose_name='Dec (deg)',
-        help_text='(ucd=“pos.eq.dec;meta.main”) Declination of the identified object in degrees.'
-    )
-
-    mv = models.FloatField(
-        verbose_name='Mv',
-        help_text='(ucd=“phot.mag;em.opt.V”) Visual magnitude'
-    )
-
-    errpos = models.FloatField(
-        verbose_name='ErrPos',
-        help_text='(ucd=“stat.error.sys”) Uncertainty on the (RA,DEC) coordinates'
-    )
-
-    d = models.FloatField(
-        verbose_name='d',
-        help_text='(ucd="pos.ang") Body-to-center angular distance'
-    )
-
-    dracosdec = models.FloatField(
-        verbose_name='dRAcosDec',
-        help_text='(ucd=“pos.pm;pos.eq.ra”) Motion in right ascension d(RA)cos(DEC)'
-    )
-
-    ddec = models.FloatField(
-        verbose_name='dDEC',
-        help_text='(ucd=“pos.pm;pos.eq.dec”) Motion in declination d(DEC)'
-    )
-
-    dgeo = models.FloatField(
-        verbose_name='Dgeo',
-        help_text='(ucd=“phys.distance”) Distance from observer'
-    )
-
-    dhelio = models.FloatField(
-        verbose_name='Dhelio',
-        help_text='(ucd=“phys.distance”) Distance from the Sun'
-    )
-
-    phase = models.FloatField(
-        verbose_name='Phase',
-        help_text='(ucd=“pos.phaseAng”) Phase angle, e.g. elongation of earth from sun as seen from object'
-    )
-
-    solelong = models.FloatField(
-        verbose_name='SolElong',
-        help_text='(ucd=“pos.angDistance”) Solar elongation, e.g. elongation of object from sun as seen from Earth'
-    )
-
-    px = models.FloatField(
-        verbose_name='Px',
-        help_text='(ucd=“src.orbital.pos;meta.id.x”) Mean J2000 heliocentric position vector, x component'
-    )
-
-    py = models.FloatField(
-        verbose_name='Py',
-        help_text='(ucd=“src.orbital.pos;meta.id.y”) Mean J2000 heliocentric position vector, y component'
-    )
-
-    pz = models.FloatField(
-        verbose_name='Pz',
-        help_text='(ucd=“src.orbital.pos;meta.id.z”) Mean J2000 heliocentric position vector, z component'
-    )
-
-    vx = models.FloatField(
-        verbose_name='Vx',
-        help_text='(ucd=“src.veloc.orbital;meta.id.x”) Mean J2000 heliocentric velocity vector, x component'
-    )
-
-    vy = models.FloatField(
-        verbose_name='Vy',
-        help_text='(ucd=“src.veloc.orbital;meta.id.y”) Mean J2000 heliocentric velocity vector, y component'
-    )
-
-    vz = models.FloatField(
-        verbose_name='Vz',
-        help_text='(ucd=“src.veloc.orbital;meta.id.z”) Mean J2000 heliocentric velocity vector, z component'
-    )
-
-    jdref = models.FloatField(
-        verbose_name='JDRef',
-        help_text='(ucd=“time.epoch”) Reference epoch of the position/velocity vector'
-    )
-
-    externallink = models.URLField(
-        verbose_name='ExternalLink',
-        help_text='(ucd=“meta.ref.url”) External link to hint the target'
-    )
-
-    expnum = models.BigIntegerField(
-        verbose_name='Exposure',
-        help_text='Unique identifier for each image, same function as pfw_attenp_id (it also recorded in the file name)',
-        default=None, null=True, blank=True
-    )
-    ccdnum = models.IntegerField(
-        verbose_name='CCD', help_text='CCD Number (1, 2, ..., 62)',
-        default=None, null=True, blank=True
-    )
-
-    band = models.CharField(
-        max_length=1,
-        verbose_name='Filter', help_text='Filter used to do the observation (u, g, r, i, z, Y).',
-        default=None, null=True, blank=True,
-        choices=(('u', 'u'), ('g', 'g'), ('r', 'r'),
-                 ('i', 'i'), ('z', 'z'), ('Y', 'Y'))
-    )
-
-    class Meta:
-        unique_together = ('num', 'name', 'expnum')
-        indexes = [
-
-            models.Index(fields=['num']),
-            models.Index(fields=['name']),
-            models.Index(fields=['dynclass']),
-            models.Index(fields=['raj2000']),
-            models.Index(fields=['decj2000']),
-            models.Index(fields=['expnum']),
-            models.Index(fields=['expnum', 'ccdnum']),
-            models.Index(fields=['expnum', 'ccdnum', 'band']),
-        ]
-
-    def __str__(self):
-        return str(self.id)
-
-
-class CcdImage(models.Model):
-    """
-        This table stores information about the images of CCDs that have already been
-        downloaded from the DES and are available for the application.
-        the images are linked to table pointings.
-    """
-    # Relation With Pointings
-    pointing = models.ForeignKey(
-        Pointing, on_delete=models.CASCADE, verbose_name='Pointing',
-        null=True, blank=True, default=None
-    )
-
-    desfile_id = models.BigIntegerField(
-        null=True, blank=True, default=None,
-        verbose_name='CCD Id', help_text='Unique identifier for each CCD.')
-
-    filename = models.CharField(
-        max_length=256,
-        verbose_name='Filename', help_text='Name of FITS file with a CCD image.'
-    )
-
-    download_start_time = models.DateTimeField(
-        verbose_name='Download Start',
-        auto_now_add=True, null=True, blank=True)
-
-    download_finish_time = models.DateTimeField(
-        verbose_name='Download finish',
-        auto_now_add=False, null=True, blank=True)
-
-    download_time = models.DurationField(
-        verbose_name='Download time',
-        null=True, blank=True)
-
-    file_size = models.PositiveIntegerField(
-        verbose_name='File Size',
-        null=True, blank=True, default=None, help_text='File Size in bytes')
-
-    def __str__(self):
-        return str(self.id)
+# class Pointing(models.Model):
+#     pfw_attempt_id = models.BigIntegerField(
+#         verbose_name='Exposure Id', help_text='Unique identifier for each image (1 image is composed by 62 CCDs)')
+
+#     desfile_id = models.BigIntegerField(
+#         verbose_name='CCD Id',
+#         help_text='Unique identifier for each CCD.',
+#         unique=True
+#     )
+
+#     nite = models.DateField(
+#         verbose_name="Night", help_text='Night at which the observation was made.'
+#     )
+
+#     date_obs = models.DateTimeField(
+#         verbose_name='Observation Date', help_text='Date and time of observation'
+#     )
+
+#     expnum = models.BigIntegerField(
+#         verbose_name='Expnum',
+#         help_text='identifier for each image.'
+#     )
+#     ccdnum = models.IntegerField(
+#         verbose_name='CCD', help_text='CCD Number (1, 2, ..., 62)'
+#     )
+
+#     band = models.CharField(
+#         max_length=1,
+#         verbose_name='Filter', help_text='Filter used to do the observation (u, g, r, i, z, Y).',
+#         choices=(('u', 'u'), ('g', 'g'), ('r', 'r'),
+#                  ('i', 'i'), ('z', 'z'), ('Y', 'Y'))
+#     )
+
+#     exptime = models.FloatField(
+#         verbose_name='Exposure time', help_text='Exposure time of observation.'
+#     )
+
+#     cloud_apass = models.FloatField(
+#         verbose_name='Cloud apass', help_text='Atmospheric extinction in magnitudes'
+#     )
+
+#     cloud_nomad = models.FloatField(
+#         verbose_name='Cloud nomad', help_text='Atmospheric extinction in magnitudes'
+#     )
+
+#     t_eff = models.FloatField(
+#         verbose_name='t_eff', help_text='Parameter related to image quality'
+#     )
+
+#     crossra0 = models.BooleanField(
+#         default=False, verbose_name='Cross RA 0'
+#     )
+
+#     radeg = models.FloatField(
+#         verbose_name='RA (deg)'
+#     )
+
+#     decdeg = models.FloatField(
+#         verbose_name='Dec (deg)'
+#     )
+
+#     racmin = models.FloatField(
+#         verbose_name='racmin', help_text='Minimal and maximum right ascension respectively of the CCD cover.'
+#     )
+
+#     racmax = models.FloatField(
+#         verbose_name='racmax', help_text='Minimal and maximum right ascension respectively of the CCD cover.'
+#     )
+
+#     deccmin = models.FloatField(
+#         verbose_name='deccmin', help_text='Minimum and maximum declination respectively of the CCD cover.'
+#     )
+
+#     deccmax = models.FloatField(
+#         verbose_name='deccmax', help_text='Minimum and maximum declination respectively of the CCD cover.'
+#     )
+
+#     ra_cent = models.FloatField(
+#         verbose_name='ra_cent', help_text='Right ascension of the CCD center'
+#     )
+
+#     dec_cent = models.FloatField(
+#         verbose_name='dec_cent', help_text='Declination of the CCD center'
+#     )
+
+#     rac1 = models.FloatField(
+#         verbose_name='rac1', help_text='CCD Corner Coordinates 1 - upper left.'
+#     )
+
+#     rac2 = models.FloatField(
+#         verbose_name='rac2', help_text='CCD Corner Coordinates 2 - lower left.'
+#     )
+
+#     rac3 = models.FloatField(
+#         verbose_name='rac3', help_text='CCD Corner Coordinates 3 - lower right.'
+#     )
+
+#     rac4 = models.FloatField(
+#         verbose_name='rac4', help_text='CCD Corner Coordinates 4 - upper right).'
+#     )
+
+#     decc1 = models.FloatField(
+#         verbose_name='decc1', help_text='CCD Corner Coordinates 1 - upper left.'
+#     )
+
+#     decc2 = models.FloatField(
+#         verbose_name='decc2', help_text='CCD Corner Coordinates 2 - lower left.'
+#     )
+
+#     decc3 = models.FloatField(
+#         verbose_name='decc3', help_text='CCD Corner Coordinates 3 - lower right.'
+#     )
+
+#     decc4 = models.FloatField(
+#         verbose_name='decc4', help_text='CCD Corner Coordinates 4 - upper right).'
+#     )
+
+#     ra_size = models.DecimalField(
+#         verbose_name='ra_size', help_text='CCD dimensions in degrees (width × height).',
+#         decimal_places=7, max_digits=10
+#     )
+
+#     dec_size = models.DecimalField(
+#         verbose_name='dec_size', help_text='CCD dimensions in degrees (width × height).',
+#         decimal_places=7, max_digits=10
+#     )
+
+#     path = models.TextField(
+#         verbose_name='Path', help_text='Path in the DES database where the image is stored.'
+#     )
+
+#     filename = models.CharField(
+#         max_length=256,
+#         verbose_name='Filename', help_text='Name of FITS file with a CCD image.'
+#     )
+
+#     compression = models.CharField(
+#         max_length=5,
+#         verbose_name='Compression', help_text='Compression format (.fz) used in FITS files'
+#     )
+
+#     downloaded = models.BooleanField(
+#         default=False, verbose_name='Downloaded', help_text='flag indicating whether the image was downloaded from DES.'
+#     )
+
+#     class Meta:
+#         indexes = [
+#             models.Index(fields=['pfw_attempt_id']),
+#             models.Index(fields=['desfile_id']),
+#             models.Index(fields=['date_obs']),
+#             models.Index(fields=['filename'])
+#         ]
+
+#     def __str__(self):
+#         return str(self.id)
+
+
+# class SkybotOutput(models.Model):
+#     """
+#         Table generated by SkyBoT which has the solar system objects identified
+#         in DES images (for more detailssee:http://vo.imcce.fr/webservices/skybot/?conesearch)
+#     """
+#     num = models.CharField(
+#         max_length=35, default=None, null=True, blank=True,
+#         verbose_name='Number',
+#         help_text='(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).',
+#     )
+
+#     name = models.CharField(
+#         max_length=32,
+#         verbose_name='Name',
+#         help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).'
+#     )
+
+#     dynclass = models.CharField(
+#         max_length=24,
+#         verbose_name='Object classification',
+#         help_text='(ucd=“meta.code.class;src.class”) Object class (TNO, Centaur, Trojan, etc.).'
+#     )
+
+#     ra = models.CharField(
+#         max_length=20,
+#         verbose_name='RA',
+#         help_text='(ucd=“pos.eq.ra;meta.main”) Right ascension of the identified object.'
+#     )
+
+#     dec = models.CharField(
+#         max_length=20,
+#         verbose_name='Dec',
+#         help_text='(ucd=“pos.eq.dec;meta.main”) Declination of the identified object.'
+#     )
+
+#     raj2000 = models.FloatField(
+#         verbose_name='RA (deg)',
+#         help_text='(ucd=“pos.eq.ra;meta.main”) Right ascension of the identified object in degrees.'
+#     )
+
+#     decj2000 = models.FloatField(
+#         verbose_name='Dec (deg)',
+#         help_text='(ucd=“pos.eq.dec;meta.main”) Declination of the identified object in degrees.'
+#     )
+
+#     mv = models.FloatField(
+#         verbose_name='Mv',
+#         help_text='(ucd=“phot.mag;em.opt.V”) Visual magnitude',
+#         default=None, null=True, blank=True
+#     )
+
+#     errpos = models.FloatField(
+#         verbose_name='ErrPos',
+#         help_text='(ucd=“stat.error.sys”) Uncertainty on the (RA,DEC) coordinates',
+#         default=None, null=True, blank=True
+#     )
+
+#     d = models.FloatField(
+#         verbose_name='d',
+#         help_text='(ucd="pos.ang") Body-to-center angular distance',
+#         default=None, null=True, blank=True
+#     )
+
+#     dracosdec = models.FloatField(
+#         verbose_name='dRAcosDec',
+#         help_text='(ucd=“pos.pm;pos.eq.ra”) Motion in right ascension d(RA)cos(DEC)',
+#         default=None, null=True, blank=True
+#     )
+
+#     ddec = models.FloatField(
+#         verbose_name='dDEC',
+#         help_text='(ucd=“pos.pm;pos.eq.dec”) Motion in declination d(DEC)',
+#         default=None, null=True, blank=True
+#     )
+
+#     dgeo = models.FloatField(
+#         verbose_name='Dgeo',
+#         help_text='(ucd=“phys.distance”) Distance from observer',
+#         default=None, null=True, blank=True
+#     )
+
+#     dhelio = models.FloatField(
+#         verbose_name='Dhelio',
+#         help_text='(ucd=“phys.distance”) Distance from the Sun',
+#         default=None, null=True, blank=True
+#     )
+
+#     phase = models.FloatField(
+#         verbose_name='Phase',
+#         help_text='(ucd=“pos.phaseAng”) Phase angle, e.g. elongation of earth from sun as seen from object',
+#         default=None, null=True, blank=True
+#     )
+
+#     solelong = models.FloatField(
+#         verbose_name='SolElong',
+#         help_text='(ucd=“pos.angDistance”) Solar elongation, e.g. elongation of object from sun as seen from Earth',
+#         default=None, null=True, blank=True
+#     )
+
+#     px = models.FloatField(
+#         verbose_name='Px',
+#         help_text='(ucd=“src.orbital.pos;meta.id.x”) Mean J2000 heliocentric position vector, x component',
+#         default=None, null=True, blank=True
+#     )
+
+#     py = models.FloatField(
+#         verbose_name='Py',
+#         help_text='(ucd=“src.orbital.pos;meta.id.y”) Mean J2000 heliocentric position vector, y component',
+#         default=None, null=True, blank=True
+#     )
+
+#     pz = models.FloatField(
+#         verbose_name='Pz',
+#         help_text='(ucd=“src.orbital.pos;meta.id.z”) Mean J2000 heliocentric position vector, z component',
+#         default=None, null=True, blank=True
+#     )
+
+#     vx = models.FloatField(
+#         verbose_name='Vx',
+#         help_text='(ucd=“src.veloc.orbital;meta.id.x”) Mean J2000 heliocentric velocity vector, x component',
+#         default=None, null=True, blank=True
+#     )
+
+#     vy = models.FloatField(
+#         verbose_name='Vy',
+#         help_text='(ucd=“src.veloc.orbital;meta.id.y”) Mean J2000 heliocentric velocity vector, y component',
+#         default=None, null=True, blank=True
+#     )
+
+#     vz = models.FloatField(
+#         verbose_name='Vz',
+#         help_text='(ucd=“src.veloc.orbital;meta.id.z”) Mean J2000 heliocentric velocity vector, z component',
+#         default=None, null=True, blank=True
+#     )
+
+#     jdref = models.FloatField(
+#         verbose_name='JDRef',
+#         help_text='(ucd=“time.epoch”) Reference epoch of the position/velocity vector',
+#         default=None, null=True, blank=True
+#     )
+
+#     ticket = models.BigIntegerField(
+#         verbose_name='Skybot Ticket',
+#         help_text='Id of the request made in the skybot. it serves to group all the positions that are of the same request.',
+#         default=0
+#     )
+
+#     class Meta:
+#         # A mesma posição não pode se repetir no resultado de uma requisição.
+#         unique_together = ('name', 'raj2000', 'decj2000', 'ticket')
+
+#         indexes = [
+#             models.Index(fields=['num']),
+#             models.Index(fields=['name']),
+#             models.Index(fields=['dynclass']),
+#             models.Index(fields=['ticket']),
+#         ]
+
+#     def __str__(self):
+#         return str(self.name)
+
+
+# class CcdImage(models.Model):
+#     """
+#         This table stores information about the images of CCDs that have already been
+#         downloaded from the DES and are available for the application.
+#         the images are linked to table pointings.
+#     """
+#     # Relation With Pointings
+#     pointing = models.ForeignKey(
+#         Pointing, on_delete=models.CASCADE, verbose_name='Pointing',
+#         null=True, blank=True, default=None
+#     )
+
+#     desfile_id = models.BigIntegerField(
+#         null=True, blank=True, default=None,
+#         verbose_name='CCD Id', help_text='Unique identifier for each CCD.')
+
+#     filename = models.CharField(
+#         max_length=256,
+#         verbose_name='Filename', help_text='Name of FITS file with a CCD image.'
+#     )
+
+#     download_start_time = models.DateTimeField(
+#         verbose_name='Download Start',
+#         auto_now_add=True, null=True, blank=True)
+
+#     download_finish_time = models.DateTimeField(
+#         verbose_name='Download finish',
+#         auto_now_add=False, null=True, blank=True)
+
+#     download_time = models.DurationField(
+#         verbose_name='Download time',
+#         null=True, blank=True)
+
+#     file_size = models.PositiveIntegerField(
+#         verbose_name='File Size',
+#         null=True, blank=True, default=None, help_text='File Size in bytes')
+
+#     def __str__(self):
+#         return str(self.id)
 
 
 class CustomList(models.Model):
@@ -721,182 +705,182 @@ class JohnstonArchive(models.Model):
         auto_now_add=True, null=True, blank=True)
 
 
-class SkybotRun(models.Model):
+# class SkybotRun(models.Model):
 
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, default=None, verbose_name='Owner', null=True, blank=True, related_name='skybot_owner')
+#     owner = models.ForeignKey(
+#         settings.AUTH_USER_MODEL,
+#         on_delete=models.CASCADE, default=None, verbose_name='Owner', null=True, blank=True, related_name='skybot_owner')
 
-    exposure = models.BigIntegerField(
-        verbose_name='Exposure',
-        null=True,
-        blank=True
-    )
+#     exposure = models.BigIntegerField(
+#         verbose_name='Exposure',
+#         null=True,
+#         blank=True
+#     )
 
-    rows = models.BigIntegerField(
-        verbose_name='Rows',
-        null=True,
-        blank=True
-    )
+#     rows = models.BigIntegerField(
+#         verbose_name='Rows',
+#         null=True,
+#         blank=True
+#     )
 
-    status = models.CharField(
-        max_length=15,
-        verbose_name='Status',
-        default='pending', null=True, blank=True,
-        choices=(('pending', 'Pending'), ('running', 'Running'), ('success',
-                                                                  'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'), ('canceled', 'Canceled'))
-    )
+#     status = models.CharField(
+#         max_length=15,
+#         verbose_name='Status',
+#         default='pending', null=True, blank=True,
+#         choices=(('pending', 'Pending'), ('running', 'Running'), ('success',
+#                                                                   'Success'), ('failure', 'Failure'), ('not_executed', 'Not Executed'), ('canceled', 'Canceled'))
+#     )
 
-    start = models.DateTimeField(
-        verbose_name='Start',
-        auto_now_add=False, null=True, blank=True)
+#     start = models.DateTimeField(
+#         verbose_name='Start',
+#         auto_now_add=False, null=True, blank=True)
 
-    finish = models.DateTimeField(
-        verbose_name='Finish',
-        auto_now_add=False, null=True, blank=True)
+#     finish = models.DateTimeField(
+#         verbose_name='Finish',
+#         auto_now_add=False, null=True, blank=True)
 
-    execution_time = models.DurationField(
-        verbose_name='Execution Time',
-        null=True, blank=True
-    )
+#     execution_time = models.DurationField(
+#         verbose_name='Execution Time',
+#         null=True, blank=True
+#     )
 
-    type_run = models.CharField(
-        max_length=30,
-        verbose_name='Type Run',
-        default='all',
-        choices=(('all', 'All'), ('period', 'Period'),
-                 ('circle', 'Circle'), ('square', 'Square'))
-    )
+#     type_run = models.CharField(
+#         max_length=30,
+#         verbose_name='Type Run',
+#         default='all',
+#         choices=(('all', 'All'), ('period', 'Period'),
+#                  ('circle', 'Circle'), ('square', 'Square'))
+#     )
 
-    ra_cent = models.FloatField(
-        verbose_name='Ra Cent',
-        null=True,
-        blank=True,
-    )
+#     ra_cent = models.FloatField(
+#         verbose_name='Ra Cent',
+#         null=True,
+#         blank=True,
+#     )
 
-    dec_cent = models.FloatField(
-        verbose_name='Dec Cent',
-        null=True,
-        blank=True,
-    )
+#     dec_cent = models.FloatField(
+#         verbose_name='Dec Cent',
+#         null=True,
+#         blank=True,
+#     )
 
-    ra_ul = models.FloatField(
-        verbose_name='RA Upper Left',
-        null=True,
-        blank=True,
-    )
+#     ra_ul = models.FloatField(
+#         verbose_name='RA Upper Left',
+#         null=True,
+#         blank=True,
+#     )
 
-    dec_ul = models.FloatField(
-        verbose_name='DEC Upper Left',
-        null=True,
-        blank=True,
-    )
+#     dec_ul = models.FloatField(
+#         verbose_name='DEC Upper Left',
+#         null=True,
+#         blank=True,
+#     )
 
-    ra_ur = models.FloatField(
-        verbose_name='RA Upper Right',
-        null=True,
-        blank=True,
-    )
+#     ra_ur = models.FloatField(
+#         verbose_name='RA Upper Right',
+#         null=True,
+#         blank=True,
+#     )
 
-    dec_ur = models.FloatField(
-        verbose_name='DEC Upper Right',
-        null=True,
-        blank=True,
-    )
+#     dec_ur = models.FloatField(
+#         verbose_name='DEC Upper Right',
+#         null=True,
+#         blank=True,
+#     )
 
-    ra_lr = models.FloatField(
-        verbose_name='RA Lower Right',
-        null=True,
-        blank=True,
-    )
+#     ra_lr = models.FloatField(
+#         verbose_name='RA Lower Right',
+#         null=True,
+#         blank=True,
+#     )
 
-    dec_lr = models.FloatField(
-        verbose_name='DEC Lower Right',
-        null=True,
-        blank=True,
-    )
+#     dec_lr = models.FloatField(
+#         verbose_name='DEC Lower Right',
+#         null=True,
+#         blank=True,
+#     )
 
-    ra_ll = models.FloatField(
-        verbose_name='RA Lower Left',
-        null=True,
-        blank=True,
-    )
+#     ra_ll = models.FloatField(
+#         verbose_name='RA Lower Left',
+#         null=True,
+#         blank=True,
+#     )
 
-    dec_ll = models.FloatField(
-        verbose_name='DEC Lower Left',
-        null=True,
-        blank=True,
-    )
+#     dec_ll = models.FloatField(
+#         verbose_name='DEC Lower Left',
+#         null=True,
+#         blank=True,
+#     )
 
-    radius = models.FloatField(
-        verbose_name='Radius',
-        null=True,
-        blank=True,
-    )
+#     radius = models.FloatField(
+#         verbose_name='Radius',
+#         null=True,
+#         blank=True,
+#     )
 
-    date_initial = models.DateField(
-        verbose_name='Date Initial',
-        auto_now_add=False, null=True, blank=True)
+#     date_initial = models.DateField(
+#         verbose_name='Date Initial',
+#         auto_now_add=False, null=True, blank=True)
 
-    date_final = models.DateField(
-        verbose_name='Date Final',
-        auto_now_add=False, null=True, blank=True)
+#     date_final = models.DateField(
+#         verbose_name='Date Final',
+#         auto_now_add=False, null=True, blank=True)
 
-    ra_ul = models.CharField(
-        max_length=30,
-        verbose_name='RA UL',
-        null=True,
-        blank=True,
-    )
+#     ra_ul = models.CharField(
+#         max_length=30,
+#         verbose_name='RA UL',
+#         null=True,
+#         blank=True,
+#     )
 
-    dec_ul = models.FloatField(
-        verbose_name='DEC UL',
-        null=True,
-        blank=True,
-    )
+#     dec_ul = models.FloatField(
+#         verbose_name='DEC UL',
+#         null=True,
+#         blank=True,
+#     )
 
-    ra_ur = models.CharField(
-        max_length=30,
-        verbose_name='RA UR',
-        null=True,
-        blank=True,
-    )
-    dec_ur = models.FloatField(
-        verbose_name='DEC UR',
-        null=True,
-        blank=True,
-    )
+#     ra_ur = models.CharField(
+#         max_length=30,
+#         verbose_name='RA UR',
+#         null=True,
+#         blank=True,
+#     )
+#     dec_ur = models.FloatField(
+#         verbose_name='DEC UR',
+#         null=True,
+#         blank=True,
+#     )
 
-    ra_lr = models.CharField(
-        max_length=30,
-        verbose_name='RA LR',
-        null=True,
-        blank=True,
-    )
-    dec_lr = models.FloatField(
-        verbose_name='DEC LR',
-        null=True,
-        blank=True,
-    )
+#     ra_lr = models.CharField(
+#         max_length=30,
+#         verbose_name='RA LR',
+#         null=True,
+#         blank=True,
+#     )
+#     dec_lr = models.FloatField(
+#         verbose_name='DEC LR',
+#         null=True,
+#         blank=True,
+#     )
 
-    ra_ll = models.CharField(
-        max_length=30,
-        verbose_name='RA LL',
-        null=True,
-        blank=True,
-    )
+#     ra_ll = models.CharField(
+#         max_length=30,
+#         verbose_name='RA LL',
+#         null=True,
+#         blank=True,
+#     )
 
-    dec_ll = models.FloatField(
-        verbose_name='DEC LL',
-        null=True,
-        blank=True,
-    )
+#     dec_ll = models.FloatField(
+#         verbose_name='DEC LL',
+#         null=True,
+#         blank=True,
+#     )
 
-    error = models.TextField(
-        verbose_name="Error",
-        null=True,
-        blank=True
-    )
+#     error = models.TextField(
+#         verbose_name="Error",
+#         null=True,
+#         blank=True
+#     )
 
-    def __str__(self):
-        return str(self.id)
+#     def __str__(self):
+#         return str(self.id)

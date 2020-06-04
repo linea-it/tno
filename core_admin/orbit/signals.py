@@ -3,7 +3,7 @@ from django.dispatch import receiver
 from .models import OrbitRun, BspJplFile
 import os
 import logging
-from orbit.refine_orbit import RefineOrbit, RefineOrbitDB
+from orbit.refine_orbit import RefineOrbit
 import shutil
 from datetime import datetime
 import threading

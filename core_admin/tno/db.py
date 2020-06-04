@@ -1,24 +1,34 @@
-from sqlalchemy import create_engine, inspect, MetaData, func, Table, Column, Integer, String, Float, Boolean
-from sqlalchemy import exc as sa_exc
-# from sqlalchemy.dialects import oracle
-from sqlalchemy.dialects import sqlite
-from sqlalchemy.dialects import postgresql
-from sqlalchemy.ext.compiler import compiles
-from sqlalchemy.sql import select, and_, text
-from sqlalchemy.sql.expression import Executable, ClauseElement
-from sqlalchemy.sql.expression import literal_column, between
-from sqlalchemy.schema import Sequence
-
 import collections
-import os
-from django.conf import settings
 import logging
+import os
+
+from django.conf import settings
+from sqlalchemy import (Boolean, Column, Float, Integer, MetaData, String,
+                        Table, create_engine)
+from sqlalchemy import exc as sa_exc
+from sqlalchemy import func, inspect
+# from sqlalchemy.dialects import oracle
+from sqlalchemy.dialects import postgresql, sqlite
+from sqlalchemy.ext.compiler import compiles
+from sqlalchemy.pool import NullPool
+from sqlalchemy.schema import Sequence
+from sqlalchemy.sql import and_, select, text
+from sqlalchemy.sql.expression import (ClauseElement, Executable, between,
+                                       literal_column)
 
 
 class DBBase():
-    def __init__(self):
+    def __init__(self, pool=True):
 
-        self.engine = create_engine(self.get_db_uri(), use_batch_mode=True)
+        if pool is False:
+            self.engine = create_engine(
+                self.get_db_uri(),
+                poolclass=NullPool
+            )
+        else:
+            self.engine = create_engine(
+                self.get_db_uri()
+            )
 
         self.current_dialect = None
 
@@ -52,6 +62,9 @@ class DBBase():
 
         return schema
 
+    def get_engine(self):
+        return self.engine
+
     def get_table(self, tablename, schema=None):
         tbl = Table(
             tablename, MetaData(self.engine), autoload=True, schema=schema)
@@ -61,28 +74,35 @@ class DBBase():
     def to_dict(self, row):
         return dict(collections.OrderedDict(row))
 
+    def execute(self, stm):
+        with self.engine.connect() as con:
+            return con.execute(stm)
+
     def fetch_all_dict(self, stm):
-        if settings.DEBUG:
-            self.debug_query(stm, True)
 
-        queryset = self.engine.execute(stm)
+        with self.engine.connect() as con:
+            queryset = con.execute(stm)
 
-        rows = list()
-        for row in queryset:
-            rows.append(self.to_dict(row))
+            if settings.DEBUG:
+                self.debug_query(stm, True)
 
-        return rows
+            rows = list()
+            for row in queryset:
+                rows.append(self.to_dict(row))
+
+            return rows
 
     def fetch_one_dict(self, stm):
-        if settings.DEBUG:
-            self.debug_query(stm, True)
+        with self.engine.connect() as con:
+            queryset = con.execute(stm).fetchone()
 
-        queryset = self.engine.execute(stm).fetchone()
+            if settings.DEBUG:
+                self.debug_query(stm, True)
 
-        if queryset is not None:
-            return self.to_dict(queryset)
-        else:
-            return None
+            if queryset is not None:
+                return self.to_dict(queryset)
+            else:
+                return None
 
     def fetch_scalar(self, stm):
         if settings.DEBUG:
@@ -249,7 +269,7 @@ class DBBase():
 
     def get_table_skybot(self):
         schema = self.get_base_schema()
-        self.tbl_skybot = self.get_table('tno_skybotoutput', schema)
+        self.tbl_skybot = self.get_table('skybot_position', schema)
 
         return self.tbl_skybot
 
@@ -279,10 +299,56 @@ class DBBase():
 
         return self.table_bsp_jpl_file
 
+    def import_with_copy_expert(self, sql, data):
+        """
+            This method is recommended for importing large volumes of data. using the postgresql COPY method.
+
+            The method is useful to handle all the parameters that PostgreSQL makes available 
+            in COPY statement: https://www.postgresql.org/docs/current/sql-copy.html
+
+            it is necessary that the from clause is reading from STDIN.
+
+            example: 
+            sql = COPY <table> (<columns) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);
+
+            Parameters:
+                sql (str): The sql statement should be in the form COPY table '.
+                data (file-like ): a file-like object to read or write
+            Returns:
+                rowcount (int):  the number of rows that the last execute*() produced (for DQL statements like SELECT) or affected (for DML statements like UPDATE or INSERT)
+
+        References: 
+            https://www.psycopg.org/docs/cursor.html#cursor.copy_from
+            https://stackoverflow.com/questions/30050097/copy-data-from-csv-to-postgresql-using-python
+            https://stackoverflow.com/questions/13125236/sqlalchemy-psycopg2-and-postgresql-copy
+        """
+        connection = self.engine.raw_connection()
+        try:
+            cursor = connection.cursor()
+            cursor.copy_expert(sql, data)
+            connection.commit()
+
+            cursor.close()
+            return cursor.rowcount
+        except Exception as e:
+            connection.rollback()
+            raise (e)
+        finally:
+            connection.close()
+
 
 class CatalogDB(DBBase):
-    def __init__(self):
-        self.engine = create_engine(self.get_db_uri(), use_batch_mode=True)
+    def __init__(self, pool=True):
+
+        if pool is False:
+            self.engine = create_engine(
+                self.get_db_uri(),
+                poolclass=NullPool
+            )
+        else:
+            self.engine = create_engine(
+                self.get_db_uri()
+            )
 
         self.current_dialect = None
 

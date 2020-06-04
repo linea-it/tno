@@ -1,41 +1,44 @@
-from rest_framework import viewsets, response, mixins
+import csv
+import fnmatch
+import logging
+import os
+import urllib
+from concurrent import futures
+from datetime import datetime, timedelta
 
 import humanize
-from django.contrib.auth.models import User
-from rest_framework import viewsets, response, mixins
-from rest_framework.decorators import list_route, permission_classes
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
-from django.conf import settings
 import pandas as pd
+from dateutil.parser import parse
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count, Sum
+from django.db.models.functions import TruncMonth
+from django.http import HttpResponse
+from django.utils import timezone
+from rest_framework import mixins, response, viewsets
+from rest_framework.authentication import (BasicAuthentication,
+                                           SessionAuthentication,
+                                           TokenAuthentication)
+from rest_framework.decorators import (detail_route, list_route,
+                                       permission_classes)
+from rest_framework.permissions import (IsAdminUser, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
+
+from common.jsonfile import JsonFile
+from skybot.plot_ccds_objects import (ccds_objects, get_circle_from_ra_dec,
+                                      read_skybot_output)
+from tno.db import CatalogDB
+from tno.des_ccds import download_des_ccds
+from tno.models import Catalog
+
+from .johnstons import JhonstonArchive
 from .models import *
 from .serializers import *
 from .skybotoutput import FilterObjects
-from .skybotoutput import SkybotOutput as SkybotOutputDB
 from .skybotoutput import Pointing as PointingDB
-from common.jsonfile import JsonFile
-import os
-from django.core.exceptions import ObjectDoesNotExist
-from tno.db import CatalogDB
-from tno.models import Catalog
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
-from django.http import HttpResponse
-import csv
-from .johnstons import JhonstonArchive
-from django.utils import timezone
-from datetime import datetime, timedelta
-from django.db.models import Count
-from django.db.models.functions import TruncMonth
-from django.db.models import Sum
-from tno.skybot.plot_ccds_objects import ccds_objects, read_skybot_output, get_circle_from_ra_dec
-import urllib
-from rest_framework.decorators import detail_route
-import fnmatch
-import logging
-from dateutil.parser import parse
-from concurrent import futures
-from tno.des_ccds import download_des_ccds
+from .skybotoutput import SkybotOutput as SkybotOutputDB
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -65,233 +68,233 @@ class UserViewSet(viewsets.ModelViewSet):
         return super(UserViewSet, self).retrieve(request, pk)
 
 
-class PointingViewSet(viewsets.ModelViewSet):
-    queryset = Pointing.objects.all()
-    serializer_class = PointingSerializer
-    filter_fields = ('id', 'desfile_id', 'expnum', 'band',
-                     'exptime', 'date_obs', 'downloaded')
-    search_fields = ('id', 'filename', 'desfile_id', 'expnum')
-    ordering_fields = ('id', 'expnum', 'date_obs', 'nite', 'expnum', 'ccdnum',
-                       'band', 'filename', 'exposure_time', 'radeg', 'decdeg', 'downloaded')
-    ordering = ('-date_obs', 'expnum', 'ccdnum')
+# class PointingViewSet(viewsets.ModelViewSet):
+#     queryset = Pointing.objects.all()
+#     serializer_class = PointingSerializer
+#     filter_fields = ('id', 'desfile_id', 'expnum', 'band',
+#                      'exptime', 'date_obs', 'downloaded')
+#     search_fields = ('id', 'filename', 'desfile_id', 'expnum')
+#     ordering_fields = ('id', 'expnum', 'date_obs', 'nite', 'expnum', 'ccdnum',
+#                        'band', 'filename', 'exposure_time', 'radeg', 'decdeg', 'downloaded')
+#     ordering = ('-date_obs', 'expnum', 'ccdnum')
 
-    @list_route()
-    def histogram_exposure(self, request):
+#     @list_route()
+#     def histogram_exposure(self, request):
 
-        queryset = Pointing.objects.annotate(date=TruncMonth('date_obs')).values(
-            'date').annotate(count=Count('id')).values('date', 'count').order_by('date')
+#         queryset = Pointing.objects.annotate(date=TruncMonth('date_obs')).values(
+#             'date').annotate(count=Count('id')).values('date', 'count').order_by('date')
 
-        rows = list()
-        for row in queryset:
-            rows.append(dict({
-                'date': row['date'].strftime('%Y-%m-%d'),
-                'count': row['count']
-            }))
+#         rows = list()
+#         for row in queryset:
+#             rows.append(dict({
+#                 'date': row['date'].strftime('%Y-%m-%d'),
+#                 'count': row['count']
+#             }))
 
-        result = dict({
-            'success': True,
-            'data': rows
-        })
+#         result = dict({
+#             'success': True,
+#             'data': rows
+#         })
 
-        return Response(result)
+#         return Response(result)
 
-    def generate_statistics(self):
-        db = PointingDB()
+#     def generate_statistics(self):
+#         db = PointingDB()
 
-        pointings = db.count_pointings()
-        downloaded = db.count_downloaded()
-        not_downloaded = db.count_not_downloaded()
-        bands = db.counts_by_bands()
-        last = db.last()
-        first = db.first()
-        exposures = db.count_unique_exposures()
-        exp_range = db.counts_range_exposures()
+#         pointings = db.count_pointings()
+#         downloaded = db.count_downloaded()
+#         not_downloaded = db.count_not_downloaded()
+#         bands = db.counts_by_bands()
+#         last = db.last()
+#         first = db.first()
+#         exposures = db.count_unique_exposures()
+#         exp_range = db.counts_range_exposures()
 
-        statistics = dict({
-            'success': True,
-            'count_pointings': pointings,
-            'downloaded': downloaded,
-            'not_downloaded': not_downloaded,
-            'band': bands,
-            'last': last.get("date_obs").strftime('%Y/%m/%d'),
-            'first': first.get("date_obs").strftime('%Y/%m/%d'),
-            'exposures': exposures,
-            'updated': 'xxxx-xx-xx',
-            'size': 'xx Gb',
-            'exp_range': exp_range,
-            'histogram_exposure': self.histogram_exposure()
+#         statistics = dict({
+#             'success': True,
+#             'count_pointings': pointings,
+#             'downloaded': downloaded,
+#             'not_downloaded': not_downloaded,
+#             'band': bands,
+#             'last': last.get("date_obs").strftime('%Y/%m/%d'),
+#             'first': first.get("date_obs").strftime('%Y/%m/%d'),
+#             'exposures': exposures,
+#             'updated': 'xxxx-xx-xx',
+#             'size': 'xx Gb',
+#             'exp_range': exp_range,
+#             'histogram_exposure': self.histogram_exposure()
 
-        })
+#         })
 
-        # Escrever o Arquivo de cache com as informações
-        temp_file = os.path.join(
-            settings.MEDIA_TMP_DIR, 'pointings_statistics.json')
-        JsonFile().write(statistics, temp_file)
+#         # Escrever o Arquivo de cache com as informações
+#         temp_file = os.path.join(
+#             settings.MEDIA_TMP_DIR, 'pointings_statistics.json')
+#         JsonFile().write(statistics, temp_file)
 
-        JsonFile().write(statistics, temp_file)
+#         JsonFile().write(statistics, temp_file)
 
-        return statistics
+#         return statistics
 
-    @list_route()
-    def statistics(self, request):
-        refresh = request.query_params.get('refresh', False)
+#     @list_route()
+#     def statistics(self, request):
+#         refresh = request.query_params.get('refresh', False)
 
-        statistics = dict()
-        if refresh:
-            statistics = self.generate_statistics()
+#         statistics = dict()
+#         if refresh:
+#             statistics = self.generate_statistics()
 
-        else:
-            temp_file = os.path.join(
-                settings.MEDIA_TMP_DIR, 'pointings_statistics.json')
-            if (os.path.exists(temp_file)):
-                statistics = JsonFile().read(temp_file)
-            else:
-                statistics = self.generate_statistics()
+#         else:
+#             temp_file = os.path.join(
+#                 settings.MEDIA_TMP_DIR, 'pointings_statistics.json')
+#             if (os.path.exists(temp_file)):
+#                 statistics = JsonFile().read(temp_file)
+#             else:
+#                 statistics = self.generate_statistics()
 
-        return Response(statistics)
-
-
-class SkybotOutputViewSet(viewsets.ModelViewSet):
-    queryset = SkybotOutput.objects.select_related().all()
-    serializer_class = SkybotOutputSerializer
-    filter_fields = ('id', 'name', 'expnum', 'dynclass', 'mv', 'ccdnum')
-    search_fields = ('name', 'num', 'dynclass', 'mv')
-    ordering_fields = ('name', 'dynclass', 'num', 'raj2000',
-                       'decj2000', 'expnum', 'ccdnum', 'band', 'mv', 'errpos')
-    ordering = ('expnum', 'ccdnum')
-
-    @list_route()
-    def objects(self, request):
-        """
-            Especifica para tela de Filter Objects que utiliza a query agrupada por objetos.
-        """
-        # Retrive Params
-        name = request.query_params.get('name')
-
-        objectTable = request.query_params.get('objectTable')
-
-        magnitude = None
-        if request.query_params.get('useMagnitude') and float(request.query_params.get('magnitude')) > 0:
-            magnitude = float(request.query_params.get('magnitude'))
-
-        diffDateNights = None
-        if request.query_params.get('useDifferenceTime') and float(request.query_params.get('diffDateNights')) > 0:
-            diffDateNights = float(request.query_params.get('diffDateNights'))
-
-        moreFilter = request.query_params.get('moreFilter')
-
-        page = request.query_params.get('page', 1)
-
-        pageSize = request.query_params.get('pageSize')
-
-        if(pageSize):
-            pageSize = int(request.query_params.get(
-                'pageSize', self.pagination_class.page_size))
-        else:
-            pageSize = None
-
-        rows, count = FilterObjects().get_objects(
-            name, objectTable, magnitude, diffDateNights,
-            moreFilter, int(page), pageSize)
-
-        return Response({
-            'success': True,
-            "results": rows,
-            "count": count
-        })
-
-    @list_route()
-    def objects_count(self, request):
-        """
-            Especifica para tela de Filter Objects que utiliza a query agrupada por objetos.
-        """
-        name = request.query_params.get('name')
-
-        objectTable = request.query_params.get('objectTable')
-
-        magnitude = None
-        if request.query_params.get('useMagnitude') and float(request.query_params.get('magnitude')) > 0:
-            magnitude = float(request.query_params.get('magnitude'))
-
-        diffDateNights = None
-        if request.query_params.get('useDifferenceTime') and float(request.query_params.get('diffDateNights')) > 0:
-            diffDateNights = float(request.query_params.get('diffDateNights'))
-
-        moreFilter = request.query_params.get('moreFilter')
-
-        # Total de Objetos unicos que atendem aos filtros da query
-        count_objects = FilterObjects().get_objects_count(
-            name, objectTable, magnitude, diffDateNights,
-            moreFilter
-        )
-        # Total de Observações que atendem aos filtros da query
-        count_observations = FilterObjects().get_observations_count(
-            name, objectTable, magnitude, diffDateNights,
-            moreFilter
-        )
-
-        return Response({
-            'success': True,
-            "count_objects": count_objects,
-            "count_observations": count_observations
-        })
-
-    def generate_statistics(self):
-
-        db = SkybotOutputDB()
-        unique_ccds = db.count_unique_ccds()
-        asteroids = db.count_asteroids()
-        dynclass = db.distinct_dynclass()
-        asteroids_by_dynclass = db.count_asteroids_by_dynclass()
-        asteroids_by_class = db.count_asteroids_by_class()
-
-        histogram = db.histogram('dhelio', 10)
-
-        statistics = dict({
-            'success': True,
-            'unique_ccds': unique_ccds,
-            'count_asteroids': asteroids,
-            'dynclass': dynclass,
-            'asteroids_by_dynclass': asteroids_by_dynclass,
-            'asteroids_by_class': asteroids_by_class,
-            'histogram': histogram
-        })
-
-        # Escrever o Arquivo de cache com as informações
-        temp_file = os.path.join(
-            settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
-        JsonFile().write(statistics, temp_file)
-
-        JsonFile().write(statistics, temp_file)
-
-        return statistics
-
-    @list_route()
-    def statistics(self, request):
-        refresh = request.query_params.get('refresh', False)
-
-        statistics = dict()
-        if refresh:
-            statistics = self.generate_statistics()
-
-        else:
-            temp_file = os.path.join(
-                settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
-            if (os.path.exists(temp_file)):
-                statistics = JsonFile().read(temp_file)
-            else:
-                statistics = self.generate_statistics()
-
-        return Response(statistics)
+#         return Response(statistics)
 
 
-class ObjectClassViewSet(viewsets.GenericViewSet,
-                         mixins.ListModelMixin):
-    queryset = SkybotOutput.objects.select_related().order_by(
-        'dynclass').distinct('dynclass')
-    serializer_class = ObjectClassSerializer
-    # Turn off pagination Class
-    pagination_class = None
+# class SkybotOutputViewSet(viewsets.ModelViewSet):
+#     queryset = SkybotOutput.objects.select_related().all()
+#     serializer_class = SkybotOutputSerializer
+#     filter_fields = ('id', 'name', 'expnum', 'dynclass', 'mv', 'ccdnum')
+#     search_fields = ('name', 'num', 'dynclass', 'mv')
+#     ordering_fields = ('name', 'dynclass', 'num', 'raj2000',
+#                        'decj2000', 'expnum', 'ccdnum', 'band', 'mv', 'errpos')
+#     ordering = ('expnum', 'ccdnum')
+
+#     @list_route()
+#     def objects(self, request):
+#         """
+#             Especifica para tela de Filter Objects que utiliza a query agrupada por objetos.
+#         """
+#         # Retrive Params
+#         name = request.query_params.get('name')
+
+#         objectTable = request.query_params.get('objectTable')
+
+#         magnitude = None
+#         if request.query_params.get('useMagnitude') and float(request.query_params.get('magnitude')) > 0:
+#             magnitude = float(request.query_params.get('magnitude'))
+
+#         diffDateNights = None
+#         if request.query_params.get('useDifferenceTime') and float(request.query_params.get('diffDateNights')) > 0:
+#             diffDateNights = float(request.query_params.get('diffDateNights'))
+
+#         moreFilter = request.query_params.get('moreFilter')
+
+#         page = request.query_params.get('page', 1)
+
+#         pageSize = request.query_params.get('pageSize')
+
+#         if(pageSize):
+#             pageSize = int(request.query_params.get(
+#                 'pageSize', self.pagination_class.page_size))
+#         else:
+#             pageSize = None
+
+#         rows, count = FilterObjects().get_objects(
+#             name, objectTable, magnitude, diffDateNights,
+#             moreFilter, int(page), pageSize)
+
+#         return Response({
+#             'success': True,
+#             "results": rows,
+#             "count": count
+#         })
+
+#     @list_route()
+#     def objects_count(self, request):
+#         """
+#             Especifica para tela de Filter Objects que utiliza a query agrupada por objetos.
+#         """
+#         name = request.query_params.get('name')
+
+#         objectTable = request.query_params.get('objectTable')
+
+#         magnitude = None
+#         if request.query_params.get('useMagnitude') and float(request.query_params.get('magnitude')) > 0:
+#             magnitude = float(request.query_params.get('magnitude'))
+
+#         diffDateNights = None
+#         if request.query_params.get('useDifferenceTime') and float(request.query_params.get('diffDateNights')) > 0:
+#             diffDateNights = float(request.query_params.get('diffDateNights'))
+
+#         moreFilter = request.query_params.get('moreFilter')
+
+#         # Total de Objetos unicos que atendem aos filtros da query
+#         count_objects = FilterObjects().get_objects_count(
+#             name, objectTable, magnitude, diffDateNights,
+#             moreFilter
+#         )
+#         # Total de Observações que atendem aos filtros da query
+#         count_observations = FilterObjects().get_observations_count(
+#             name, objectTable, magnitude, diffDateNights,
+#             moreFilter
+#         )
+
+#         return Response({
+#             'success': True,
+#             "count_objects": count_objects,
+#             "count_observations": count_observations
+#         })
+
+#     def generate_statistics(self):
+
+#         db = SkybotOutputDB()
+#         unique_ccds = db.count_unique_ccds()
+#         asteroids = db.count_asteroids()
+#         dynclass = db.distinct_dynclass()
+#         asteroids_by_dynclass = db.count_asteroids_by_dynclass()
+#         asteroids_by_class = db.count_asteroids_by_class()
+
+#         histogram = db.histogram('dhelio', 10)
+
+#         statistics = dict({
+#             'success': True,
+#             'unique_ccds': unique_ccds,
+#             'count_asteroids': asteroids,
+#             'dynclass': dynclass,
+#             'asteroids_by_dynclass': asteroids_by_dynclass,
+#             'asteroids_by_class': asteroids_by_class,
+#             'histogram': histogram
+#         })
+
+#         # Escrever o Arquivo de cache com as informações
+#         temp_file = os.path.join(
+#             settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
+#         JsonFile().write(statistics, temp_file)
+
+#         JsonFile().write(statistics, temp_file)
+
+#         return statistics
+
+#     @list_route()
+#     def statistics(self, request):
+#         refresh = request.query_params.get('refresh', False)
+
+#         statistics = dict()
+#         if refresh:
+#             statistics = self.generate_statistics()
+
+#         else:
+#             temp_file = os.path.join(
+#                 settings.MEDIA_TMP_DIR, 'skybot_statistics.json')
+#             if (os.path.exists(temp_file)):
+#                 statistics = JsonFile().read(temp_file)
+#             else:
+#                 statistics = self.generate_statistics()
+
+#         return Response(statistics)
+
+
+# class ObjectClassViewSet(viewsets.GenericViewSet,
+#                          mixins.ListModelMixin):
+#     queryset = SkybotOutput.objects.select_related().order_by(
+#         'dynclass').distinct('dynclass')
+#     serializer_class = ObjectClassSerializer
+#     # Turn off pagination Class
+#     pagination_class = None
 
 
 class CustomListViewSet(viewsets.ModelViewSet):
@@ -498,7 +501,7 @@ class CatalogViewSet(viewsets.ModelViewSet):
                 'msg': "The ra and dec parameters are mandatory"
             })
 
-        db = CatalogDB()
+        db = CatalogDB(pool=False)
 
         rows = db.radial_query(
             schema=catalog.schema,
@@ -658,596 +661,550 @@ class JohnstonArchiveViewSet(viewsets.ModelViewSet):
             raise e
 
 
-class SkybotRunViewSet(viewsets.ModelViewSet):
-    queryset = SkybotRun.objects.all()
-    serializer_class = SkybotRunSerializer
-    filter_fields = ('id',)
-    # search_fields = ('id',)
-    ordering_fields = ('id', 'type_run', 'start', 'exposure', 'rows',)
-    ordering = ('-start',)
+# class SkybotRunViewSet(viewsets.ModelViewSet):
+#     queryset = SkybotRun.objects.all()
+#     serializer_class = SkybotRunSerializer
+#     filter_fields = ('id',)
+#     # search_fields = ('id',)
+#     ordering_fields = ('id', 'type_run', 'start', 'exposure', 'rows',)
+#     ordering = ('-start',)
 
-    def perform_create(self, serializer):
-        # Adiconar usuario logado
-        if not self.request.user.pk:
-            raise Exception(
-                'It is necessary an active login to perform this operation.')
-        serializer.save(
-            owner=self.request.user,
-            start=datetime.now()
-        )
-
-    def perform_update(self, serializer):
-        instance = serializer.save()
-        if instance.status == 'pending':
-            instance.start = datetime.now()
-            instance.finish = None
-            instance.execution_time = None
-            instance.exposure = None
-            instance.rows = None
-            instance.error = None
-            instance.save()
+#     def perform_create(self, serializer):
+#         # Adiconar usuario logado
+#         if not self.request.user.pk:
+#             raise Exception(
+#                 'It is necessary an active login to perform this operation.')
+#         serializer.save(
+#             owner=self.request.user,
+#             start=datetime.now()
+#         )
+
+#     def perform_update(self, serializer):
+#         instance = serializer.save()
+#         if instance.status == 'pending':
+#             instance.start = datetime.now()
+#             instance.finish = None
+#             instance.execution_time = None
+#             instance.exposure = None
+#             instance.rows = None
+#             instance.error = None
+#             instance.save()
 
-        if instance.status == 'cancel':
-            instance.finish = None
-            instance.save()
+#         if instance.status == 'cancel':
+#             instance.finish = None
+#             instance.save()
 
-    def get_output_path(self, skybotrun):
-        # Diretorio onde ficam os csv baixados do skybot
-        self.base_path = settings.SKYBOT_OUTPUT
+#     def get_output_path(self, skybotrun):
+#         # Diretorio onde ficam os csv baixados do skybot
+#         self.base_path = settings.SKYBOT_OUTPUT
 
-        output_path = os.path.join(self.base_path, str(skybotrun.id))
-        if not os.path.exists(output_path):
-            os.mkdir(output_path)
+#         output_path = os.path.join(self.base_path, str(skybotrun.id))
+#         if not os.path.exists(output_path):
+#             os.mkdir(output_path)
 
-        return output_path
+#         return output_path
 
-    def read_result_csv(self, skybotrun, page=1, pageSize=None):
+#     def read_result_csv(self, skybotrun, page=1, pageSize=None):
 
-        output_path = self.get_output_path(skybotrun)
+#         output_path = self.get_output_path(skybotrun)
 
-        results_file = os.path.join(output_path, 'results.csv')
+#         results_file = os.path.join(output_path, 'results.csv')
 
-        headers = ['expnum', 'band', 'date_obs', 'skybot_downloaded', 'skybot_url', 'download_start', 'download_finish', 'download_time', 'filename',
-                   'file_size', 'file_path', 'import_start', 'import_finish', 'import_time', 'count_created', 'count_updated', 'count_rows',
-                   'ccd_count', 'ccd_count_rows', 'ccd_start', 'ccd_finish', 'ccd_time', 'error']
+#         headers = ['expnum', 'band', 'date_obs', 'skybot_downloaded', 'skybot_url', 'download_start', 'download_finish', 'download_time', 'filename',
+#                    'file_size', 'file_path', 'import_start', 'import_finish', 'import_time', 'count_created', 'count_updated', 'count_rows',
+#                    'ccd_count', 'ccd_count_rows', 'ccd_start', 'ccd_finish', 'ccd_time', 'error']
 
-        if page == 1:
-            skiprows = 1
-        else:
-            skiprows = (page * pageSize) - pageSize
+#         if page == 1:
+#             skiprows = 1
+#         else:
+#             skiprows = (page * pageSize) - pageSize
 
-        df = pd.read_csv(
-            results_file,
-            skiprows=skiprows,
-            delimiter=';',
-            names=headers,
-            nrows=pageSize)
-
-        return df
-
-    def read_skybotoutput_csv(self, filepath):
-
-        headers = ["num", "name", "ra", "dec", "dynclass", "mv", "errpos", "d", "dra", "ddec",
-                   "dg", "dh", "phase", "sunelong", "x", "y", "z", "vx", "vy", "vz", "epoch"]
-
-        df = pd.read_csv(filepath, skiprows=3, delimiter='|', names=headers)
-
-        rows = list()
-        for record in df.itertuples():
-            row = dict({})
-            for header in headers:
-                row[header] = getattr(record, header)
-
-            rows.append(row)
-            # rows.append(dict((y, x) for x, y in row))
-
-        return rows
-
-    @list_route()
-    def time_profile(self, request):
-
-        run_id = request.query_params.get('run_id', None)
-
-        skybotrun = None
-        try:
-            skybotrun = SkybotRun.objects.get(pk=int(run_id))
-
-        except ObjectDoesNotExist:
-            return Response({
-                'success': False,
-                'msg': "SkybotRun not found. run_id %s" % run_id
-            })
-
-        output_path = self.get_output_path(skybotrun)
-
-        time_profile = os.path.join(output_path, 'time_profile.csv')
-
-        headers = ["expnum", "operation", "start", "finish"]
-
-        df = pd.read_csv(time_profile, skiprows=1,
-                         delimiter=';', names=headers)
-
-        rows = list()
-        for row in df.itertuples():
-            rows.append([row[1], row[2], row[3], row[4]])
-
-        return Response({
-            'success': True,
-            'headers': headers,
-            'data': rows
-        })
-
-    @list_route()
-    def results(self, request):
-
-        run_id = int(request.query_params.get('run_id', None))
-        page = int(request.query_params.get('page', 1))
-        pageSize = int(request.query_params.get('pageSize', 100))
-
-        skybotrun = None
-        try:
-            skybotrun = SkybotRun.objects.get(pk=int(run_id))
-
-        except ObjectDoesNotExist:
-            return Response({
-                'success': False,
-                'msg': "SkybotRun not found. run_id %s" % run_id
-            })
-
-        df = self.read_result_csv(skybotrun, page, pageSize)
-
-        rows = list()
-        for row in df.itertuples():
-
-            d_time = float("{0:.2f}".format(getattr(row, "download_time")))
-            i_time = float("{0:.2f}".format(getattr(row, "import_time")))
-            a_time = float("{0:.2f}".format(getattr(row, "ccd_time")))
-
-            exec_time = float("{0:.2f}".format(d_time + i_time + a_time))
-
-            # Define status
-            status = 'failure'
-            if getattr(row, "skybot_downloaded") is True and getattr(row, "count_rows") > 0:
-                status = 'success'
-            elif getattr(row, "skybot_downloaded") is True and getattr(row, "count_rows") == 0:
-                status = 'warning'
-
-            date_obs = getattr(row, "date_obs")
-
-            rows.append(dict({
-                'expnum': getattr(row, "expnum"),
-                'band': getattr(row, "band"),
-                'date_obs': date_obs.split('.')[0],
-                'status': status,
-                'download_time': d_time,
-                'import_time': i_time,
-                'ccd_time': a_time,
-                'created': getattr(row, "count_created"),
-                'updated': getattr(row, "count_updated"),
-                'count_rows': getattr(row, "count_rows"),
-                'ccd_count_rows': getattr(row, "ccd_count_rows"),
-                'execution_time': exec_time,
-                # 'error': getattr(row, "error", None),
-            }))
-
-        return Response({
-            'success': True,
-            'totalCount': skybotrun.exposure,
-            'data': rows
-        })
-
-    @list_route()
-    def statistic(self, request):
-
-        run_id = int(request.query_params.get('run_id', None))
-
-        skybotrun = None
-        try:
-            skybotrun = SkybotRun.objects.get(pk=int(run_id))
-
-        except ObjectDoesNotExist:
-            return Response({
-                'success': False,
-                'msg': "SkybotRun not found. run_id %s" % run_id
-            })
-
-        df = self.read_result_csv(skybotrun)
-
-        d_time = df['download_time'].sum()
-        i_time = df['import_time'].sum()
-        a_time = df['ccd_time'].sum()
-
-        return Response({
-            'success': True,
-            'download_time': d_time,
-            'import_time': i_time,
-            'ccd_time': a_time,
-            'created': df['count_created'].sum(),
-            'updated': df['count_updated'].sum(),
-            'h_download_time': humanize.naturaldelta(d_time),
-            'h_import_time': humanize.naturaldelta(i_time),
-            'rows': df['count_rows'].sum()
-        })
-
-    @list_route()
-    def skybot_output_by_exposure(self, request):
-
-        run_id = int(request.query_params.get('run_id', None))
-        expnum = int(request.query_params.get('expnum', None))
-
-        skybotrun = None
-        try:
-            skybotrun = SkybotRun.objects.get(pk=int(run_id))
-
-        except ObjectDoesNotExist:
-            return Response({
-                'success': False,
-                'msg': "SkybotRun not found. run_id %s" % run_id
-            })
-
-        if expnum is None:
-            return Response({
-                'success': False,
-                'msg': "Expnum is required"
-            })
-
-        df = self.read_result_csv(skybotrun)
-
-        # Pega o primeiro resultado da busca
-        first = df[df.expnum == expnum].iloc[0]
-
-        filename = getattr(first, 'filename')
-        output_path = self.get_output_path(skybotrun)
-        filepath = os.path.join(output_path, filename)
-
-        rows = self.read_skybotoutput_csv(filepath)
-
-        return Response({
-            'success': True,
-            'filepath': filepath,
-            'rows': rows
-        })
-
-    @list_route()
-    def skybot_output_plot(self, request):
-
-        run_id = int(request.query_params.get('run_id', None))
-        expnum = int(request.query_params.get('expnum', None))
-        image = bool(request.query_params.get('image', False))
-
-        skybotrun = None
-        try:
-            skybotrun = SkybotRun.objects.get(pk=int(run_id))
-
-        except ObjectDoesNotExist:
-            return Response({
-                'success': False,
-                'msg': "SkybotRun not found. run_id %s" % run_id
-            })
-
-        if expnum is None:
-            return Response({
-                'success': False,
-                'msg': "Expnum is required"
-            })
-
-        # lista de CCDs da exposicao
-        ccdModels = Pointing.objects.filter(expnum=expnum)
-        serializer = PointingSerializer(ccdModels, many=True)
-        ccds = serializer.data
-
-        # Exposure center
-        ra = ccds[0]['radeg']
-        dec = ccds[0]['decdeg']
-
-        # Objetos dentro de ccd.
-        mAsteroids = SkybotOutput.objects.filter(
-            expnum=expnum, ccdnum__isnull=False)
-
-        # Objetos retornados skybot
-        df = self.read_result_csv(skybotrun)
-
-        # Pega o primeiro resultado da busca por expnum
-        first = df[df.expnum == expnum].iloc[0]
-
-        # Recupera o path para o arquivo de saida do skybot
-        filename = getattr(first, 'filename')
-        output_path = self.get_output_path(skybotrun)
-        skybot_output_file = os.path.join(output_path, filename)
-
-        # O arquivo de plot deve ficar no diretorio tmp, para ficar disponivel para as interfaces.
-        plot_filename = 'ccd_object_%s.png' % expnum
-        plot_file_path = os.path.join(settings.MEDIA_TMP_DIR, plot_filename)
-        plot_src = urllib.parse.urljoin(settings.MEDIA_TMP_URL, plot_filename)
-
-        if image:
-            plot = ccds_objects(
-                ra=ra,
-                dec=dec,
-                ccds=ccds,
-                skybot_file=skybot_output_file,
-                file_path=plot_file_path)
-
-            return Response({
-                'success': True,
-                'expnum': expnum,
-                'ccds': len(ccds),
-                'asteroids_ccd': len(mAsteroids),
-                'skybot_output_file': skybot_output_file,
-                'plot_file_path': plot_file_path,
-                'plot_src': plot_src,
-                'plot_filename': plot_filename,
-            })
-
-        else:
-
-            skybotRa, skybotDec = read_skybot_output(skybot_output_file)
-            # circleRa, circleDec = get_circle_from_ra_dec(ra, dec)
-
-            return Response({
-                'success': True,
-                'expnum': expnum,
-                'ccds': len(ccds),
-                'ra': ra,
-                'dec': dec,
-                'ccds': ccds,
-                'skybot_output': dict({
-                    'ra': skybotRa,
-                    'dec': skybotDec
-                }),
-            })
-
-    @list_route()
-    def asteroids_ccd(self, request):
-        expnum = int(request.query_params.get('expnum', None))
-
-        if expnum is None:
-            return Response({
-                'success': False,
-                'msg': "Expnum is required"
-            })
-
-        asteroids = SkybotOutput.objects.filter(
-            expnum=expnum, ccdnum__isnull=False).order_by('ccdnum')
-        serializer = SkybotOutputSerializer(asteroids, many=True)
-        rows = serializer.data
-
-        return Response({
-            'success': True,
-            'rows': rows,
-            'count': len(rows)
-        })
-
-    @list_route()
-    def execution_time_estimate(self, request):
-        """
-        Returns a time estimation (in seconds) based on Skybot's previous runs.
-
-        You can have an estimate based on ALL unique exposures, by not passing any parameter:
-        Example: /skybot_run/execution_time_estimate/
-
-        Or you can have an estimate by a particular period, by passing an initial date (YYYY-MM-DD) and a final date (YYYY-MM-DD):
-        Example: /skybot_run/execution_time_estimate/?initial_date=2010-01-20&final_date=2019-02-13
-
-        Use the format=json attribute to have the result in JSON:
-        Example: /skybot_run/execution_time_estimate/?format=json
-        """
-        exposures = 0
-
-        db = PointingDB()
-
-        initial_date = request.query_params.get('initial_date', None)
-        final_date = request.query_params.get('final_date', None)
-
-        # If the execution is by period, then convert them into a datetime notation:
-        if initial_date and final_date:
-            initial_date = datetime.strptime(initial_date, "%Y-%m-%d")
-            final_date = datetime.strptime(final_date, "%Y-%m-%d")
-
-            exposures = db.count_unique_exposures_by_period(
-                initial_date, final_date)
-        else:
-            exposures = db.count_unique_exposures()
-
-        # Get the summation of all successful exposures and their respective execution time:
-        exposure_and_time_sum = dict(
-            SkybotRun.objects
-            .filter(status='success')
-            .aggregate(
-                exposure=Sum('exposure'),
-                execution_time=Sum('execution_time')
-            )
-        )
-
-        # A rough average: divide the amount of exposures by their execution time (s):
-        execution_mean = exposure_and_time_sum['exposure'] / \
-            exposure_and_time_sum['execution_time'].seconds
-
-        # The estimate should, then, be the amount of exposures that I want to submit multiplied by the average:
-        execution_estimate = exposures * execution_mean
-
-        return Response({
-            'success': True,
-            'exposures': exposures,
-            'time_per_exposure': execution_mean,
-            'estimate': execution_estimate,
-        })
-
-    def get_days_interval(self, start_date, end_date):
-        """
-            Retorna todos os dias entre a data final e inicial
-        """
-        start = datetime.strptime(start_date, '%Y-%m-%d')
-        end = datetime.strptime(end_date, '%Y-%m-%d')
-        delta = end - start
-        days = list()
-        for i in range(delta.days + 1):
-            day = start + timedelta(days=i)
-            days.append(day.date())
-        return days
-
-    @list_route()
-    def exposures_by_period(self, request):
-        """
-        Returns exposures and their respective observation date.
-
-        You can have ALL unique exposures, by not passing any parameter:
-        Example: /skybot_run/exposures_by_period/
-
-        Or you can have exposures by a particular period, by passing an initial date (YYYY-MM-DD) and a final date (YYYY-MM-DD):
-        Example: /skybot_run/exposures_by_period/?initial_date=2010-01-20&final_date=2019-02-13
-
-        Use the format=json attribute to have the result in JSON:
-        Example: /skybot_run/exposures_by_period/?format=json
-        """
-        exposures = 0
-
-        db = PointingDB()
-
-
-        initial_date = request.query_params.get('initial_date', None)
-        final_date = request.query_params.get('final_date', None)
-
-        days_interval = self.get_days_interval(initial_date, final_date)
-
-        # If the execution is by period, then convert them into a datetime notation:
-        if initial_date and final_date:
-            initial_date = datetime.strptime(initial_date, "%Y-%m-%d")
-            final_date = datetime.strptime(final_date, "%Y-%m-%d")
-
-            exposures = db.unique_exposures_by_period(initial_date, final_date)
-        else:
-            exposures = db.unique_exposures()
-
-
-        days_with_exposures = list(map(lambda x: x['date_obs'], exposures))
-
-        for day in days_interval:
-            if day not in days_with_exposures:
-                exposures.append({
-                    'exposures': 0,
-                    'date_obs': day,
-                })
-
-        exposures = sorted(exposures, key=lambda x: x['date_obs'])
-
-
-        return Response({
-            'success': True,
-            'rows': exposures,
-        })
-
-
-
-    @list_route()
-    def exposures_years(self, request):
-        db = PointingDB()
-        exposures = db.unique_exposures()
-
-        years = list()
-
-        for exposure in exposures:
-            years.append(exposure['date_obs'].year)
-
-
-        return Response({
-            'succes': True,
-            'years': set(years)
-        })
-
-class CcdImageViewSet(viewsets.ModelViewSet):
-    queryset = CcdImage.objects.all()
-    serializer_class = CcdImageSerializer
-    filter_fields = ('id', 'desfile_id', 'filename')
-    search_fields = ('desfile_id', 'filename')
-
-    @list_route()
-    def import_download_logs(self, request):
-        logger = logging.getLogger('django')
-        default_path = os.path.join(settings.CCD_IMAGES_DIR, 'log')
-
-        path = request.query_params.get('path', None)
-
-        if path is None:
-            path = default_path
-
-        # Recuperar todos os arquivos com extensao .csv
-        listOfFiles = os.listdir(path)
-        pattern = "*.csv"
-
-        files = list([])
-
-        for filename in listOfFiles:
-            if fnmatch.fnmatch(filename, pattern):
-                files.append(filename)
-
-        logger.info("--------------------------------------------------")
-        logger.info("Importando logs de download CCD")
-
-        files_not_downloaded = list()
-
-        # Para cada imagem inserir na tabela CCD_IMAGE
-        for logname in files:
-            logpath = os.path.join(path, logname)
-
-            ccd_filename = logname.replace('.fz.csv', '')
-
-            # Double Check, conferir se o arquivo de ccd realmente existe no diretorio.
-            # e se o seu tamanho e maior que 0
-            image_filepath = os.path.join(
-                settings.CCD_IMAGES_DIR, ccd_filename)
-            if os.path.exists(image_filepath) and os.path.getsize(image_filepath) > 0:
-
-                # Ler o log em csv
-                df = pd.read_csv(logpath, sep=';', header=None, index_col=False, names=[
-                                 'download_start_time', 'download_finish_time', 'file_size'])
-
-                download_start_time, download_finish_time, file_size = df.iloc[0]
-
-                logger.info("CCD Filename %s" % ccd_filename)
-                logger.info("Start %s" % download_start_time)
-                logger.info("Finish %s" % download_finish_time)
-                logger.info("File Size %s" % file_size)
-
-                download_time = parse(download_finish_time) - \
-                    parse(download_start_time)
-                logger.info("Download Time %s" % download_time)
-
-                # Recuperar o Apontamento
-                try:
-                    pointing = Pointing.objects.get(filename=ccd_filename)
-                    logger.info("Pointing Id: %s" % pointing.id)
-
-                    record, created = CcdImage.objects.update_or_create(
-                        desfile_id=pointing.desfile_id,
-                        filename=ccd_filename,
-                        defaults={
-                            'pointing': pointing,
-                            'download_start_time': download_start_time,
-                            'download_finish_time': download_finish_time,
-                            'download_time': download_time,
-                            'file_size': file_size,
-                        }
-                    )
-
-                    record.save()
-                    pointing.downloaded = True
-                    pointing.save()
-
-                    logger.info("CCD Image [ %s ] Created: [ %s ]" % (
-                        ccd_filename, created))
-
-                except Pointing.DoesNotExist:
-                    logger.warning("Nao encontrou: %s" % ccd_filename)
-            else:
-                # Se o arquivo de imagem nao existir no diretorio coloca na mensagem de retorno
-                files_not_downloaded.append(ccd_filename)
-
-        logger.info("--------------------------------------------------")
-        return Response({
-            'success': True,
-            'path': path,
-            'count_logs': len(files),
-            'count_not_downloaded': len(files_not_downloaded),
-            'files_not_downloaded': files_not_downloaded
-        })
+#         df = pd.read_csv(
+#             results_file,
+#             skiprows=skiprows,
+#             delimiter=';',
+#             names=headers,
+#             nrows=pageSize)
+
+#         return df
+
+#     def read_skybotoutput_csv(self, filepath):
+
+#         headers = ["num", "name", "ra", "dec", "dynclass", "mv", "errpos", "d", "dra", "ddec",
+#                    "dg", "dh", "phase", "sunelong", "x", "y", "z", "vx", "vy", "vz", "epoch"]
+
+#         df = pd.read_csv(filepath, skiprows=3, delimiter='|', names=headers)
+
+#         rows = list()
+#         for record in df.itertuples():
+#             row = dict({})
+#             for header in headers:
+#                 row[header] = getattr(record, header)
+
+#             rows.append(row)
+#             # rows.append(dict((y, x) for x, y in row))
+
+#         return rows
+
+#     @list_route()
+#     def time_profile(self, request):
+
+#         run_id = request.query_params.get('run_id', None)
+
+#         skybotrun = None
+#         try:
+#             skybotrun = SkybotRun.objects.get(pk=int(run_id))
+
+#         except ObjectDoesNotExist:
+#             return Response({
+#                 'success': False,
+#                 'msg': "SkybotRun not found. run_id %s" % run_id
+#             })
+
+#         output_path = self.get_output_path(skybotrun)
+
+#         time_profile = os.path.join(output_path, 'time_profile.csv')
+
+#         headers = ["expnum", "operation", "start", "finish"]
+
+#         df = pd.read_csv(time_profile, skiprows=1,
+#                          delimiter=';', names=headers)
+
+#         rows = list()
+#         for row in df.itertuples():
+#             rows.append([row[1], row[2], row[3], row[4]])
+
+#         return Response({
+#             'success': True,
+#             'headers': headers,
+#             'data': rows
+#         })
+
+#     @list_route()
+#     def results(self, request):
+
+#         run_id = int(request.query_params.get('run_id', None))
+#         page = int(request.query_params.get('page', 1))
+#         pageSize = int(request.query_params.get('pageSize', 100))
+
+#         skybotrun = None
+#         try:
+#             skybotrun = SkybotRun.objects.get(pk=int(run_id))
+
+#         except ObjectDoesNotExist:
+#             return Response({
+#                 'success': False,
+#                 'msg': "SkybotRun not found. run_id %s" % run_id
+#             })
+
+#         df = self.read_result_csv(skybotrun, page, pageSize)
+
+#         rows = list()
+#         for row in df.itertuples():
+
+#             d_time = float("{0:.2f}".format(getattr(row, "download_time")))
+#             i_time = float("{0:.2f}".format(getattr(row, "import_time")))
+#             a_time = float("{0:.2f}".format(getattr(row, "ccd_time")))
+
+#             exec_time = float("{0:.2f}".format(d_time + i_time + a_time))
+
+#             # Define status
+#             status = 'failure'
+#             if getattr(row, "skybot_downloaded") is True and getattr(row, "count_rows") > 0:
+#                 status = 'success'
+#             elif getattr(row, "skybot_downloaded") is True and getattr(row, "count_rows") == 0:
+#                 status = 'warning'
+
+#             date_obs = getattr(row, "date_obs")
+
+#             rows.append(dict({
+#                 'expnum': getattr(row, "expnum"),
+#                 'band': getattr(row, "band"),
+#                 'date_obs': date_obs.split('.')[0],
+#                 'status': status,
+#                 'download_time': d_time,
+#                 'import_time': i_time,
+#                 'ccd_time': a_time,
+#                 'created': getattr(row, "count_created"),
+#                 'updated': getattr(row, "count_updated"),
+#                 'count_rows': getattr(row, "count_rows"),
+#                 'ccd_count_rows': getattr(row, "ccd_count_rows"),
+#                 'execution_time': exec_time,
+#                 # 'error': getattr(row, "error", None),
+#             }))
+
+#         return Response({
+#             'success': True,
+#             'totalCount': skybotrun.exposure,
+#             'data': rows
+#         })
+
+#     @list_route()
+#     def statistic(self, request):
+
+#         run_id = int(request.query_params.get('run_id', None))
+
+#         skybotrun = None
+#         try:
+#             skybotrun = SkybotRun.objects.get(pk=int(run_id))
+
+#         except ObjectDoesNotExist:
+#             return Response({
+#                 'success': False,
+#                 'msg': "SkybotRun not found. run_id %s" % run_id
+#             })
+
+#         df = self.read_result_csv(skybotrun)
+
+#         d_time = df['download_time'].sum()
+#         i_time = df['import_time'].sum()
+#         a_time = df['ccd_time'].sum()
+
+#         return Response({
+#             'success': True,
+#             'download_time': d_time,
+#             'import_time': i_time,
+#             'ccd_time': a_time,
+#             'created': df['count_created'].sum(),
+#             'updated': df['count_updated'].sum(),
+#             'h_download_time': humanize.naturaldelta(d_time),
+#             'h_import_time': humanize.naturaldelta(i_time),
+#             'rows': df['count_rows'].sum()
+#         })
+
+#     @list_route()
+#     def skybot_output_by_exposure(self, request):
+
+#         run_id = int(request.query_params.get('run_id', None))
+#         expnum = int(request.query_params.get('expnum', None))
+
+#         skybotrun = None
+#         try:
+#             skybotrun = SkybotRun.objects.get(pk=int(run_id))
+
+#         except ObjectDoesNotExist:
+#             return Response({
+#                 'success': False,
+#                 'msg': "SkybotRun not found. run_id %s" % run_id
+#             })
+
+#         if expnum is None:
+#             return Response({
+#                 'success': False,
+#                 'msg': "Expnum is required"
+#             })
+
+#         df = self.read_result_csv(skybotrun)
+
+#         # Pega o primeiro resultado da busca
+#         first = df[df.expnum == expnum].iloc[0]
+
+#         filename = getattr(first, 'filename')
+#         output_path = self.get_output_path(skybotrun)
+#         filepath = os.path.join(output_path, filename)
+
+#         rows = self.read_skybotoutput_csv(filepath)
+
+#         return Response({
+#             'success': True,
+#             'filepath': filepath,
+#             'rows': rows
+#         })
+
+#     @list_route()
+#     def skybot_output_plot(self, request):
+
+#         run_id = int(request.query_params.get('run_id', None))
+#         expnum = int(request.query_params.get('expnum', None))
+#         image = bool(request.query_params.get('image', False))
+
+#         skybotrun = None
+#         try:
+#             skybotrun = SkybotRun.objects.get(pk=int(run_id))
+
+#         except ObjectDoesNotExist:
+#             return Response({
+#                 'success': False,
+#                 'msg': "SkybotRun not found. run_id %s" % run_id
+#             })
+
+#         if expnum is None:
+#             return Response({
+#                 'success': False,
+#                 'msg': "Expnum is required"
+#             })
+
+#         # lista de CCDs da exposicao
+#         ccdModels = Pointing.objects.filter(expnum=expnum)
+#         serializer = PointingSerializer(ccdModels, many=True)
+#         ccds = serializer.data
+
+#         # Exposure center
+#         ra = ccds[0]['radeg']
+#         dec = ccds[0]['decdeg']
+
+#         # Objetos dentro de ccd.
+#         mAsteroids = SkybotOutput.objects.filter(
+#             expnum=expnum, ccdnum__isnull=False)
+
+#         # Objetos retornados skybot
+#         df = self.read_result_csv(skybotrun)
+
+#         # Pega o primeiro resultado da busca por expnum
+#         first = df[df.expnum == expnum].iloc[0]
+
+#         # Recupera o path para o arquivo de saida do skybot
+#         filename = getattr(first, 'filename')
+#         output_path = self.get_output_path(skybotrun)
+#         skybot_output_file = os.path.join(output_path, filename)
+
+#         # O arquivo de plot deve ficar no diretorio tmp, para ficar disponivel para as interfaces.
+#         plot_filename = 'ccd_object_%s.png' % expnum
+#         plot_file_path = os.path.join(settings.MEDIA_TMP_DIR, plot_filename)
+#         plot_src = urllib.parse.urljoin(settings.MEDIA_TMP_URL, plot_filename)
+
+#         if image:
+#             plot = ccds_objects(
+#                 ra=ra,
+#                 dec=dec,
+#                 ccds=ccds,
+#                 skybot_file=skybot_output_file,
+#                 file_path=plot_file_path)
+
+#             return Response({
+#                 'success': True,
+#                 'expnum': expnum,
+#                 'ccds': len(ccds),
+#                 'asteroids_ccd': len(mAsteroids),
+#                 'skybot_output_file': skybot_output_file,
+#                 'plot_file_path': plot_file_path,
+#                 'plot_src': plot_src,
+#                 'plot_filename': plot_filename,
+#             })
+
+#         else:
+
+#             skybotRa, skybotDec = read_skybot_output(skybot_output_file)
+#             # circleRa, circleDec = get_circle_from_ra_dec(ra, dec)
+
+#             return Response({
+#                 'success': True,
+#                 'expnum': expnum,
+#                 'ccds': len(ccds),
+#                 'ra': ra,
+#                 'dec': dec,
+#                 'ccds': ccds,
+#                 'skybot_output': dict({
+#                     'ra': skybotRa,
+#                     'dec': skybotDec
+#                 }),
+#             })
+
+#     @list_route()
+#     def asteroids_ccd(self, request):
+#         expnum = int(request.query_params.get('expnum', None))
+
+#         if expnum is None:
+#             return Response({
+#                 'success': False,
+#                 'msg': "Expnum is required"
+#             })
+
+#         asteroids = SkybotOutput.objects.filter(
+#             expnum=expnum, ccdnum__isnull=False).order_by('ccdnum')
+#         serializer = SkybotOutputSerializer(asteroids, many=True)
+#         rows = serializer.data
+
+#         return Response({
+#             'success': True,
+#             'rows': rows,
+#             'count': len(rows)
+#         })
+
+#     @list_route()
+#     def execution_time_estimate(self, request):
+#         """
+#         Returns a time estimation (in seconds) based on Skybot's previous runs.
+
+#         You can have an estimate based on ALL unique exposures, by not passing any parameter:
+#         Example: /skybot_run/execution_time_estimate/
+
+#         Or you can have an estimate by a particular period, by passing an initial date (YYYY-MM-DD) and a final date (YYYY-MM-DD):
+#         Example: /skybot_run/execution_time_estimate/?initial_date=2010-01-20&final_date=2019-02-13
+
+#         Use the format=json attribute to have the result in JSON:
+#         Example: /skybot_run/execution_time_estimate/?format=json
+#         """
+#         exposures = 0
+
+#         db = PointingDB()
+
+#         initial_date = request.query_params.get('initial_date', None)
+#         final_date = request.query_params.get('final_date', None)
+
+#         # If the execution is by period, then convert them into a datetime notation:
+#         if initial_date and final_date:
+#             initial_date = datetime.strptime(initial_date, "%Y-%m-%d")
+#             final_date = datetime.strptime(final_date, "%Y-%m-%d")
+
+#             exposures = db.count_unique_exposures_by_period(
+#                 initial_date, final_date)
+#         else:
+#             exposures = db.count_unique_exposures()
+
+#         # Get the summation of all successful exposures and their respective execution time:
+#         exposure_and_time_sum = dict(
+#             SkybotRun.objects
+#             .filter(status='success')
+#             .aggregate(
+#                 exposure=Sum('exposure'),
+#                 execution_time=Sum('execution_time')
+#             )
+#         )
+
+#         # A rough average: divide the amount of exposures by their execution time (s):
+#         execution_mean = exposure_and_time_sum['exposure'] / \
+#             exposure_and_time_sum['execution_time'].seconds
+
+#         # The estimate should, then, be the amount of exposures that I want to submit multiplied by the average:
+#         execution_estimate = exposures * execution_mean
+
+#         return Response({
+#             'success': True,
+#             'exposures': exposures,
+#             'time_per_exposure': execution_mean,
+#             'estimate': execution_estimate,
+#         })
+
+#     @list_route()
+#     def exposures_by_period(self, request):
+#         """
+#         Returns exposures and their respective observation date.
+
+#         You can have ALL unique exposures, by not passing any parameter:
+#         Example: /skybot_run/exposures_by_period/
+
+#         Or you can have exposures by a particular period, by passing an initial date (YYYY-MM-DD) and a final date (YYYY-MM-DD):
+#         Example: /skybot_run/exposures_by_period/?initial_date=2010-01-20&final_date=2019-02-13
+
+#         Use the format=json attribute to have the result in JSON:
+#         Example: /skybot_run/exposures_by_period/?format=json
+#         """
+#         exposures = 0
+
+#         db = PointingDB()
+
+#         initial_date = request.query_params.get('initial_date', None)
+#         final_date = request.query_params.get('final_date', None)
+
+#         # If the execution is by period, then convert them into a datetime notation:
+#         if initial_date and final_date:
+#             initial_date = datetime.strptime(initial_date, "%Y-%m-%d")
+#             final_date = datetime.strptime(final_date, "%Y-%m-%d")
+
+#             exposures = db.unique_exposures_by_period(initial_date, final_date)
+#         else:
+#             exposures = db.unique_exposures()
+
+#         return Response({
+#             'success': True,
+#             'rows': exposures,
+#         })
+
+
+# class CcdImageViewSet(viewsets.ModelViewSet):
+#     queryset = CcdImage.objects.all()
+#     serializer_class = CcdImageSerializer
+#     filter_fields = ('id', 'desfile_id', 'filename')
+#     search_fields = ('desfile_id', 'filename')
+
+#     @list_route()
+#     def import_download_logs(self, request):
+#         logger = logging.getLogger('django')
+#         default_path = os.path.join(settings.CCD_IMAGES_DIR, 'log')
+
+#         path = request.query_params.get('path', None)
+
+#         if path is None:
+#             path = default_path
+
+#         # Recuperar todos os arquivos com extensao .csv
+#         listOfFiles = os.listdir(path)
+#         pattern = "*.csv"
+
+#         files = list([])
+
+#         for filename in listOfFiles:
+#             if fnmatch.fnmatch(filename, pattern):
+#                 files.append(filename)
+
+#         logger.info("--------------------------------------------------")
+#         logger.info("Importando logs de download CCD")
+
+#         files_not_downloaded = list()
+
+#         # Para cada imagem inserir na tabela CCD_IMAGE
+#         for logname in files:
+#             logpath = os.path.join(path, logname)
+
+#             ccd_filename = logname.replace('.fz.csv', '')
+
+#             # Double Check, conferir se o arquivo de ccd realmente existe no diretorio.
+#             # e se o seu tamanho e maior que 0
+#             image_filepath = os.path.join(
+#                 settings.CCD_IMAGES_DIR, ccd_filename)
+#             if os.path.exists(image_filepath) and os.path.getsize(image_filepath) > 0:
+
+#                 # Ler o log em csv
+#                 df = pd.read_csv(logpath, sep=';', header=None, index_col=False, names=[
+#                                  'download_start_time', 'download_finish_time', 'file_size'])
+
+#                 download_start_time, download_finish_time, file_size = df.iloc[0]
+
+#                 logger.info("CCD Filename %s" % ccd_filename)
+#                 logger.info("Start %s" % download_start_time)
+#                 logger.info("Finish %s" % download_finish_time)
+#                 logger.info("File Size %s" % file_size)
+
+#                 download_time = parse(download_finish_time) - \
+#                     parse(download_start_time)
+#                 logger.info("Download Time %s" % download_time)
+
+#                 # Recuperar o Apontamento
+#                 try:
+#                     pointing = Pointing.objects.get(filename=ccd_filename)
+#                     logger.info("Pointing Id: %s" % pointing.id)
+
+#                     record, created = CcdImage.objects.update_or_create(
+#                         desfile_id=pointing.desfile_id,
+#                         filename=ccd_filename,
+#                         defaults={
+#                             'pointing': pointing,
+#                             'download_start_time': download_start_time,
+#                             'download_finish_time': download_finish_time,
+#                             'download_time': download_time,
+#                             'file_size': file_size,
+#                         }
+#                     )
+
+#                     record.save()
+#                     pointing.downloaded = True
+#                     pointing.save()
+
+#                     logger.info("CCD Image [ %s ] Created: [ %s ]" % (
+#                         ccd_filename, created))
+
+#                 except Pointing.DoesNotExist:
+#                     logger.warning("Nao encontrou: %s" % ccd_filename)
+#             else:
+#                 # Se o arquivo de imagem nao existir no diretorio coloca na mensagem de retorno
+#                 files_not_downloaded.append(ccd_filename)
+
+#         logger.info("--------------------------------------------------")
+#         return Response({
+#             'success': True,
+#             'path': path,
+#             'count_logs': len(files),
+#             'count_not_downloaded': len(files_not_downloaded),
+#             'files_not_downloaded': files_not_downloaded
+#         })

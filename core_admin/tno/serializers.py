@@ -2,7 +2,11 @@ import humanize
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Pointing, SkybotOutput, CustomList, Proccess, Catalog, JohnstonArchive, SkybotRun, CcdImage
+from .models import CustomList, Proccess, Catalog, JohnstonArchive 
+# from .models import Pointing
+# from .models import SkybotOutput
+# from .models import SkybotRun 
+# from .models import CcdImage
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -11,166 +15,159 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('username',)
 
 
-class PointingSerializer(serializers.ModelSerializer):
-    date_obs = serializers.SerializerMethodField()
+# class PointingSerializer(serializers.ModelSerializer):
+#     date_obs = serializers.SerializerMethodField()
 
-    class Meta:
-        model = Pointing
-        fields = (
-            'id',
-            'pfw_attempt_id',
-            'desfile_id',
-            'nite',
-            'date_obs',
-            'expnum',
-            'ccdnum',
-            'band',
-            'exptime',
-            'cloud_apass',
-            'cloud_nomad',
-            't_eff',
-            'crossra0',
-            'radeg',
-            'decdeg',
-            'racmin',
-            'racmax',
-            'deccmin',
-            'deccmax',
-            'ra_cent',
-            'dec_cent',
-            'rac1',
-            'rac2',
-            'rac3',
-            'rac4',
-            'decc1',
-            'decc2',
-            'decc3',
-            'decc4',
-            'ra_size',
-            'dec_size',
-            'path',
-            'filename',
-            'compression',
-            'downloaded',
-        )
+#     class Meta:
+#         model = Pointing
+#         fields = (
+#             'id',
+#             'pfw_attempt_id',
+#             'desfile_id',
+#             'nite',
+#             'date_obs',
+#             'expnum',
+#             'ccdnum',
+#             'band',
+#             'exptime',
+#             'cloud_apass',
+#             'cloud_nomad',
+#             't_eff',
+#             'crossra0',
+#             'radeg',
+#             'decdeg',
+#             'racmin',
+#             'racmax',
+#             'deccmin',
+#             'deccmax',
+#             'ra_cent',
+#             'dec_cent',
+#             'rac1',
+#             'rac2',
+#             'rac3',
+#             'rac4',
+#             'decc1',
+#             'decc2',
+#             'decc3',
+#             'decc4',
+#             'ra_size',
+#             'dec_size',
+#             'path',
+#             'filename',
+#             'compression',
+#             'downloaded',
+#         )
 
-    def get_date_obs(self, obj):
-        try:
-            return obj.date_obs.strftime('%Y/%m/%d')
-        except:
-            return None
+#     def get_date_obs(self, obj):
+#         try:
+#             return obj.date_obs.strftime('%Y/%m/%d')
+#         except:
+#             return None
 
 
-class SkybotRunSerializer(serializers.ModelSerializer):
+# class SkybotRunSerializer(serializers.ModelSerializer):
 
-    owner = serializers.SerializerMethodField()
-    h_execution_time = serializers.SerializerMethodField()
-    start = serializers.SerializerMethodField()
-    finish = serializers.SerializerMethodField()
+#     owner = serializers.SerializerMethodField()
+#     h_execution_time = serializers.SerializerMethodField()
+#     start = serializers.SerializerMethodField()
+#     finish = serializers.SerializerMethodField()
    
 
-    class Meta:
-        model = SkybotRun
-        fields = (
-            'id',
-            'owner',
-            'exposure',
-            'rows',
-            'start',
-            'finish',
-            'status',
-            'date_initial',
-            'date_final',
-            'type_run',
-            'ra_cent',
-            'dec_cent',
-            'ra_ul',
-            'dec_ul',
-            'ra_ur',
-            'dec_ur',
-            'ra_lr',
-            'dec_lr',
-            'ra_ll',
-            'dec_ll',
-            'radius',
-            'h_execution_time',
-            'execution_time',
-        )
+#     class Meta:
+#         model = SkybotRun
+#         fields = (
+#             'id',
+#             'owner',
+#             'exposure',
+#             'rows',
+#             'start',
+#             'finish',
+#             'status',
+#             'date_initial',
+#             'date_final',
+#             'type_run',
+#             'ra_cent',
+#             'dec_cent',
+#             'ra_ul',
+#             'dec_ul',
+#             'ra_ur',
+#             'dec_ur',
+#             'ra_lr',
+#             'dec_lr',
+#             'ra_ll',
+#             'dec_ll',
+#             'radius',
+#             'h_execution_time',
+#             'execution_time',
+#         )
 
-    def get_owner(self, obj):
-        try:
-            return obj.owner.username
-        except:
-            return None
+#     def get_owner(self, obj):
+#         try:
+#             return obj.owner.username
+#         except:
+#             return None
 
-    def get_start(self, obj):
-        try:
-            return obj.start.strftime('%Y-%m-%d %H:%M:%S')
-        except:
-            return None
+#     def get_start(self, obj):
+#         try:
+#             return obj.start.strftime('%Y-%m-%d %H:%M:%S')
+#         except:
+#             return None
 
-    def get_finish(self, obj):
-        try:
-            return obj.finish.strftime('%Y-%m-%d %H:%M:%S')
-        except:
-            return None
+#     def get_finish(self, obj):
+#         try:
+#             return obj.finish.strftime('%Y-%m-%d %H:%M:%S')
+#         except:
+#             return None
 
-    def get_h_execution_time(self, obj):
-        try:
-            return humanize.naturaldelta(obj.execution_time)
-        except:
-            return None
+#     def get_h_execution_time(self, obj):
+#         try:
+#             return humanize.naturaldelta(obj.execution_time)
+#         except:
+#             return None
 
-    def get_execution_time(self, obj):
-        try:
-            return obj.execution_time
-        except:
-            return None
-
-
-class SkybotOutputSerializer(serializers.ModelSerializer):
-    pointing = serializers.PrimaryKeyRelatedField(
-        queryset=Pointing.objects.all(), many=False)
-
-    class Meta:
-        model = SkybotOutput
-        fields = (
-            'id',
-            'pointing',
-            'num',
-            'name',
-            'dynclass',
-            'ra',
-            'dec',
-            'raj2000',
-            'decj2000',
-            'mv',
-            'errpos',
-            'd',
-            'dracosdec',
-            'ddec',
-            'dgeo',
-            'dhelio',
-            'phase',
-            'solelong',
-            'px',
-            'py',
-            'pz',
-            'vx',
-            'vy',
-            'vz',
-            'jdref',
-            'externallink',
-            'expnum',
-            'ccdnum',
-            'band',
-        )
+#     def get_execution_time(self, obj):
+#         try:
+#             return obj.execution_time
+#         except:
+#             return None
 
 
-class ObjectClassSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SkybotOutput
-        fields = ('dynclass',)
+# class SkybotOutputSerializer(serializers.ModelSerializer):
+
+#     class Meta:
+#         model = SkybotOutput
+#         fields = (
+#             'id',
+#             'num',
+#             'name',
+#             'dynclass',
+#             'ra',
+#             'dec',
+#             'raj2000',
+#             'decj2000',
+#             'mv',
+#             'errpos',
+#             'd',
+#             'dracosdec',
+#             'ddec',
+#             'dgeo',
+#             'dhelio',
+#             'phase',
+#             'solelong',
+#             'px',
+#             'py',
+#             'pz',
+#             'vx',
+#             'vy',
+#             'vz',
+#             'jdref',
+#         )
+
+
+# class ObjectClassSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = SkybotOutput
+#         fields = ('dynclass',)
 
 
 class CustomListSerializer(serializers.ModelSerializer):
@@ -275,17 +272,17 @@ class JohnstonArchiveSerializer(serializers.ModelSerializer):
         )
 
 
-class CcdImageSerializer(serializers.ModelSerializer):
+# class CcdImageSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = CcdImage
-        fields = (
-            'id',
-            'pointing',
-            'desfile_id',
-            'filename',
-            'download_start_time',
-            'download_finish_time',
-            'download_time',
-            'file_size',
-        )
+#     class Meta:
+#         model = CcdImage
+#         fields = (
+#             'id',
+#             'pointing',
+#             'desfile_id',
+#             'filename',
+#             'download_start_time',
+#             'download_finish_time',
+#             'download_time',
+#             'file_size',
+#         )

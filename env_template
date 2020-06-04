@@ -58,6 +58,8 @@ HOST_ARCHIVE=
 # O IP do Host aparece no atributo "Network"->"Gateway": "172.19.0.1",
 # A porta tem que ser a definida no arquivo: /etc/systemd/system/docker.service.d/startup_options.conf
 #DOCKER_HOST=tcp://0.0.0.0:2376
+# Ou compartilhando o docker.sock como explicado neste link /var/run/docker.sock:/var/run/docker.sock
+DOCKER_HOST=unix:///var/run/docker.sock
 
 # Autenticao Gidlab Shibboleth
 # Url para pagina de login do Shibboleth, usar None para desativar o login institucional
@@ -76,3 +78,12 @@ DES_ARCHIVE_URL=https://desar2.cosmology.illinois.edu/DESFiles/desarchive/
 # DES username e Password para fazer o download. 
 DES_USERNAME=rcampisa
 DES_PASSWORD=rca2017
+
+
+# Skybot Server
+# Url para o serviço do skybot sempre com a barra no final. 
+# exemplo para usar o skybot do linea:
+# SKYBOT_SERVER=http://srvskybot.linea.gov.br/webservices/skybot/
+# Ou para usar o skybot na França
+# SKYBOT_SERVER=http://vo.imcce.fr/webservices/skybot/
+SKYBOT_SERVER=http://srvskybot.linea.gov.br/webservices/skybot/

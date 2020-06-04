@@ -1006,7 +1006,7 @@ class PredictionOccultation():
 
     def run_gaia_catalog(self, id, catalog, positions, radius, logger):
         try:
-            db = CatalogDB()
+            db = CatalogDB(pool=False)
 
             if catalog.schema is not None:
                 tablename = "%s.%s" % (catalog.schema, catalog.tablename)

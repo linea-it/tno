@@ -114,9 +114,12 @@ INSTALLED_APPS = [
     # Project Apps
     'common',
     'tno',
+    'skybot',    
     'praia',
     'orbit',
-    'predict'
+    'predict',
+    'des',
+
 ]
 
 MIDDLEWARE = [
@@ -326,6 +329,16 @@ if DES_ARCHIVE_URL is not None:
         DES_PASSWORD = os.getenv('DES_PASSWORD')
     except Exception as e:
         raise ("DES user settings are required in .env file")
+
+
+# Skybot Server URL 
+SKYBOT_SERVER = None
+try:
+    SKYBOT_SERVER = os.environ["SKYBOT_SERVER"]
+
+except Exception as e:
+    raise ("SKYBOT_SERVER settings are required in .env file")
+
 
 SETTINGS_EXPORT = [
     'AUTH_SHIB_URL',

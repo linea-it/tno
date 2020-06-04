@@ -3,14 +3,13 @@ from django.db.models.signals import post_save, pre_delete
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
-from .models import CustomList, Proccess, SkybotRun
+from .models import CustomList, Proccess 
 from .skybotoutput import FilterObjects
 from tno.proccess import ProccessManager
 import logging
 import os
 import errno
 from django.conf import settings
-from tno.skybot.skybot import ImportSkybotManagement
 from concurrent import futures
 @receiver(post_save, sender=User)
 def init_new_user(sender, instance, signal, created, **kwargs):
@@ -102,21 +101,3 @@ def delete_proccess(sender, instance, using, **kwargs):
 
 
 
-def submit_skybot_run(skybotrun_id):
-    ImportSkybotManagement().start_import_skybot(skybotrun_id)
-
-@receiver(post_save, sender=SkybotRun)
-def create_skybotrun(sender, instance, signal, created, **kwargs):
-    """
-        Executada toda vez que um registro de SkybotRun e criado.
-    """
-    if created:
-        # Executa em background
-        with futures.ProcessPoolExecutor(max_workers=1) as ex:
-            ex.submit(submit_skybot_run, instance.pk)
-
-    # else:
-    #     if instance.status == 'pending':
-    #         # Executa em background
-    #         with futures.ProcessPoolExecutor(max_workers=1) as ex:
-    #             ex.submit(submit_skybot_run, instance.pk)
