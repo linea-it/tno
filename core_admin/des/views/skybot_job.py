@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from des.models import SkybotJob
 from des.serializers import SkybotJobSerializer
 
+from des.skybot.pipeline import DesSkybotPipeline
+
 
 class SkybotJobViewSet(mixins.RetrieveModelMixin,
                        mixins.ListModelMixin,
