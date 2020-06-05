@@ -7,7 +7,7 @@ from des.serializers import SkybotJobSerializer
 
 from des.skybot.pipeline import DesSkybotPipeline
 
-
+from common.read_csv import csv_to_dataframe
 class SkybotJobViewSet(mixins.RetrieveModelMixin,
                        mixins.ListModelMixin,
                        viewsets.GenericViewSet):
@@ -15,7 +15,7 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         Este end point esta com os metodos de Create, Update, Delete desabilitados.
         estas operações vão ficar na responsabilidades do pipeline des/skybot.
 
-        o Endpoint xxx é responsavel por iniciar o pipeline que será executado em background.
+        o Endpoint submit_job é responsavel por iniciar o pipeline que será executado em background.
     """
     queryset = SkybotJob.objects.all()
     serializer_class = SkybotJobSerializer
@@ -93,3 +93,17 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
             "request": request,
             "loaddata": loaddata
         })
+
+    @action(detail=True)
+    def job_results(self, request, pk=None):
+
+        job = self.get_object()
+
+        rows, totalcount = csv_to_dataframe(job.results)
+
+
+        return Response(dict({
+            'results': rows,
+            'count': totalcount
+        }))
+
