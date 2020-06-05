@@ -138,6 +138,21 @@ class DBBase():
 
             return con.scalar(stm)
 
+    def histogram(self, column, bin):
+        """
+
+        :param column: Nome da coluna
+        :param bin: Intervalo que sera criado os grupos
+        :return:
+        """
+
+        stm = select([
+            (func.floor(self.tbl.c[column] / bin) *
+             bin).label('bin'), func.count('*').label('count')
+        ]).group_by('1')
+
+        return self.fetch_all_dict(stm)
+
     def get_table_columns(self, tablename, schema):
         """
             Args:
