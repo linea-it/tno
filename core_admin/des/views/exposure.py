@@ -28,7 +28,6 @@ class ExposureViewSet(viewsets.ModelViewSet):
         Returns:
             [array]: um array com todas as datas do periodo no formato [{date: '2019-01-01', count: 0}]
         """
-
         start = request.query_params.get('start')
         end = request.query_params.get('end')
 
@@ -40,7 +39,13 @@ class ExposureViewSet(viewsets.ModelViewSet):
 
         resultset = ExposureDao().count_by_period(start, end)
 
-        df2 = pd.DataFrame(resultset)
+        if len(resultset) > 0:
+            df2 = pd.DataFrame(resultset)
+        else:
+            df2 = pd.DataFrame()
+            df2['dates'] = []
+            df2['count'] = 0
+
         df2 = df2.set_index('dates')
 
         df = pd.concat([df1, df2], axis=1)
@@ -51,18 +56,3 @@ class ExposureViewSet(viewsets.ModelViewSet):
         result = df.to_dict('records')
 
         return Response(result)
-
-
-    # def exposures_years(self, request):
-    #     db = PointingDB()
-    #     exposures = db.unique_exposures()
-
-    #     years = list()
-
-    #     for exposure in exposures:
-    #         years.append(exposure['date_obs'].year)
-
-    #     return Response({
-    #         'succes': True,
-    #         'years': set(years)
-    #     })
