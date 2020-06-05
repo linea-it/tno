@@ -9,10 +9,12 @@ function CalendarHeatmap({ data }) {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
+    console.log('data', data);
+
     setRows(
       data.map((row) => ({
-        date: d3.timeDay(new Date(`${row.date_obs} 00:00`)),
-        value: row.exposures,
+        date: d3.timeDay(new Date(`${row.date} 00:00`)),
+        value: row.count,
       }))
     );
   }, [data]);
@@ -48,7 +50,12 @@ function CalendarHeatmap({ data }) {
       .attr('y', -5)
       .attr('font-weight', 'bold')
       .attr('text-anchor', 'end')
-      .text((d) => d.key);
+      .text((d) => {
+        if (d.key === 'NaN') {
+          return moment(data[0].dates).format('YYYY');
+        }
+        return d.key;
+      });
 
     const formatDay = (d) =>
       ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getUTCDay()];

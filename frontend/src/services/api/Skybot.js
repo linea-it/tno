@@ -3,13 +3,11 @@ import moment from 'moment';
 
 export const createSkybotRun = ({ date_initial, date_final }) => {
   const params = {
-    type_run: 'period',
-    status: 'pending',
     date_initial: moment(date_initial).format('YYYY-MM-DD'),
     date_final: moment(date_final).format('YYYY-MM-DD'),
   };
 
-  return axios.post('/skybot_run/', { params });
+  return axios.post('/des/skybot_job/submit_job/', params);
 };
 
 export const getSkybotRunById = ({ id }) =>
@@ -72,8 +70,8 @@ export const getSkybotRunEstimate = (initialDate, finalDate) =>
 
 export const getExposuresByPeriod = (initialDate, finalDate) =>
   axios
-    .get('/skybot_run/exposures_by_period/', {
-      params: { initial_date: initialDate, final_date: finalDate },
+    .get('/des/exposure/count_by_period/', {
+      params: { start: initialDate, end: finalDate },
     })
     .then((res) => res.data);
 
@@ -89,3 +87,14 @@ export const stopSkybotRunById = (id) =>
 
 export const getSkybotProgress = (id) =>
   axios.get(`/des/skybot_job/${id}/heartbeat/`).then((res) => res.data);
+
+export const getSkybotResult = ({ id, pageSize, currentPage }) => {
+  const params = {
+    pageSize,
+    currentPage,
+  };
+
+  return axios
+    .get(`/des/skybot_job/${id}/job_results/`, { params })
+    .then((res) => res.data);
+};

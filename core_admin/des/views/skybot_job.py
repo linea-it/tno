@@ -78,7 +78,7 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
          """
 
         # Instãncia do model SkybotJob pela chave primária:
-        job = SkybotJob.objects.get(pk=pk)
+        job = self.get_object()
 
         # Instância do DesSkybotPipeline
         pipeline = DesSkybotPipeline()

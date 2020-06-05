@@ -222,21 +222,6 @@ function Drawer({ children, title, open, setOpen }) {
           </Collapse>
           <Divider className={classes.borderDrawer} />
           <Link
-            to="filter-objects"
-            className={classes.invisibleLink}
-            title="Download of images which have observations of specific objects."
-          >
-            <ListItem button selected={currentPage === 'filter-objects'}>
-              <ListItemText
-                primary={
-                  <span className={classes.textDrawerParent}>Filter</span>
-                }
-                className={classes.textDrawer}
-              />
-            </ListItem>
-          </Link>
-          <Divider className={classes.borderDrawer} />
-          <Link
             to="/refine-orbit"
             className={classes.invisibleLink}
             title="Refinement of Orbits of specifics objects using NIMA code."

@@ -17,7 +17,11 @@ import Table from '../../components/Table';
 import Donut from '../../components/Chart/Donut';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import Progress from '../../components/Progress';
-import { getSkybotRunById, getSkybotProgress } from '../../services/api/Skybot';
+import {
+  getSkybotResult,
+  getSkybotRunById,
+  getSkybotProgress,
+} from '../../services/api/Skybot';
 import useInterval from '../../hooks/useInterval';
 
 function SkybotDetail({ setTitle }) {
@@ -41,6 +45,8 @@ function SkybotDetail({ setTitle }) {
     },
   });
   const [loadProgress, setLoadProgress] = useState(false);
+  const [tableData, setTableData] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
 
   const handleBackNavigation = () => history.push('/skybot');
 
@@ -81,8 +87,83 @@ function SkybotDetail({ setTitle }) {
     });
   }, [loadProgress]);
 
+  const tableColumns = [
+    {
+      name: 'ccds',
+      title: 'Details',
+      width: 110,
+      customElement: (row) => {
+        if (row.ccds === 0) {
+          return <span>-</span>;
+        }
+        return (
+          <Button
+            onClick={() =>
+              history.push(
+                `/data-preparation/des/skybot/${id}/asteroid/${row.id}`
+              )
+            }
+          >
+            <i className="fas fa-info-circle" />
+          </Button>
+        );
+      },
+      align: 'center',
+    },
+    {
+      name: 'id',
+      title: 'Exposure',
+      width: 120,
+      align: 'center',
+    },
+    {
+      name: 'success',
+      title: 'Status',
+      align: 'center',
+
+      customElement: (row) => (
+        <ColumnStatus status={row.success ? 'success' : 'failure'} />
+      ),
+      width: 130,
+    },
+    {
+      name: 'positions',
+      title: 'Positions',
+    },
+    {
+      name: 'date_obs',
+      title: 'Observation Date',
+
+      customElement: (el) => (
+        <span>
+          {el.date_obs ? moment(el.date_obs).format('YYYY-MM-DD') : ''}
+        </span>
+      ),
+      width: 150,
+    },
+    {
+      name: 'inside_ccd',
+      title: 'Inside CCD',
+    },
+    {
+      name: 'outside_ccd',
+      title: 'Outside CCD',
+    },
+  ];
+
+  const loadData = ({ pageSize, currentPage }) => {
+    getSkybotResult({ id, pageSize, currentPage }).then((res) => {
+      setTableData(res.results);
+      setTotalCount(res.count);
+    });
+  };
+
   const formatSeconds = (value) =>
     moment().startOf('day').seconds(value).format('HH:mm:ss');
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   useInterval(() => {
     if (
@@ -218,7 +299,15 @@ function SkybotDetail({ setTitle }) {
             <Card>
               <CardHeader title="Skybot Results" />
               <CardContent>
-                <Table columns={[]} data={[]} totalCount={0} loading={false} />
+                <Table
+                  columns={tableColumns}
+                  data={tableData}
+                  loadData={loadData}
+                  totalCount={totalCount}
+                  loading
+                  hasSearching={false}
+                  hasSorting={false}
+                />
               </CardContent>
             </Card>
           </Grid>
