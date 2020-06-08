@@ -98,9 +98,11 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
     def job_results(self, request, pk=None):
 
         job = self.get_object()
+        page = int(request.query_params.get('page', 1))
+        pageSize = int(request.query_params.get('pageSize', 100))
 
-        rows, totalcount = csv_to_dataframe(job.results)
-
+        rows, totalcount = csv_to_dataframe(
+            job.results, delimiter=';', header=True, page=page, pageSize=pageSize)
 
         return Response(dict({
             'results': rows,

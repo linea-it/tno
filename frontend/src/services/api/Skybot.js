@@ -88,10 +88,10 @@ export const stopSkybotRunById = (id) =>
 export const getSkybotProgress = (id) =>
   axios.get(`/des/skybot_job/${id}/heartbeat/`).then((res) => res.data);
 
-export const getSkybotResult = ({ id, pageSize, currentPage }) => {
+export const getSkybotResult = ({ id, pageSize, page }) => {
   const params = {
+    page,
     pageSize,
-    currentPage,
   };
 
   return axios

@@ -256,6 +256,8 @@ function Skybot({ setTitle }) {
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <DateRangePicker
+                    // First day of Skybot:
+                    minDate={new Date('2012-11-10 04:09')}
                     selectedDate={selectedDate}
                     setSelectedDate={setSelectedDate}
                   />

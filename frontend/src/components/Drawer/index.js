@@ -140,22 +140,6 @@ function Drawer({ children, title, open, setOpen }) {
           <Collapse in={desOpen} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               <Link
-                to="/data-preparation/des/dashboard"
-                className={classes.invisibleLink}
-                title="Dashboard"
-              >
-                <ListItem
-                  button
-                  selected={currentPage === 'dashboard'}
-                  className={open ? classes.doublenested : ''}
-                >
-                  <ListItemText
-                    primary="Dashboard"
-                    className={classes.textDrawer}
-                  />
-                </ListItem>
-              </Link>
-              <Link
                 to="/data-preparation/des/skybot"
                 className={classes.invisibleLink}
                 title="Skybot"
@@ -166,23 +150,7 @@ function Drawer({ children, title, open, setOpen }) {
                   selected={currentPage === 'skybot'}
                 >
                   <ListItemText
-                    primary="Execute Skybot"
-                    className={classes.textDrawer}
-                  />
-                </ListItem>
-              </Link>
-              <Link
-                to="/data-preparation/des/filter"
-                className={classes.invisibleLink}
-                title="Download of images which have observations of specific objects."
-              >
-                <ListItem
-                  button
-                  selected={currentPage === 'filter'}
-                  className={open ? classes.doublenested : ''}
-                >
-                  <ListItemText
-                    primary="Filter"
+                    primary="Skybot"
                     className={classes.textDrawer}
                   />
                 </ListItem>

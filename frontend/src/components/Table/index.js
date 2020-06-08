@@ -143,14 +143,14 @@ function Table({
     if (remote === true) {
       loadData({
         sorting,
-        pageSize,
+        pageSize: customPageSize,
         currentPage,
         after,
         filter,
         searchValue,
       });
     }
-  }, [sorting, currentPage, reload, pageSize, filter, searchValue]); // eslint-disable-line
+  }, [sorting, currentPage, reload, customPageSize, filter, searchValue]); // eslint-disable-line
 
   const clearData = () => {
     setCustomData([]);

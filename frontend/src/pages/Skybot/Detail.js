@@ -151,8 +151,11 @@ function SkybotDetail({ setTitle }) {
     },
   ];
 
-  const loadData = ({ pageSize, currentPage }) => {
-    getSkybotResult({ id, pageSize, currentPage }).then((res) => {
+  const loadData = ({ currentPage, pageSize }) => {
+    // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
+    const page = currentPage + 1;
+
+    getSkybotResult({ id, page: page, pageSize }).then((res) => {
       setTableData(res.results);
       setTotalCount(res.count);
     });
@@ -160,10 +163,6 @@ function SkybotDetail({ setTitle }) {
 
   const formatSeconds = (value) =>
     moment().startOf('day').seconds(value).format('HH:mm:ss');
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   useInterval(() => {
     if (
