@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import pandas as pd
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -32,10 +34,22 @@ class ExposureViewSet(viewsets.ModelViewSet):
         end = request.query_params.get('end')
 
         all_dates = get_days_interval(start, end)
-        
+
+        # Verificar a quantidade de dias entre o start e end. 
+        if len(all_dates) < 7:
+            dt_start = datetime.strptime(start, '%Y-%m-%d')
+            dt_end = dt_start.replace(day=dt_start.day + 7)
+
+            all_dates = get_days_interval(dt_start.strftime("%Y-%m-%d"), dt_end.strftime("%Y-%m-%d"))
+
+
         df1 = pd.DataFrame()
         df1['dates'] = all_dates
         df1 = df1.set_index('dates')
+
+        # adicionar a hora inicial e final as datas
+        start = datetime.strptime(start, '%Y-%m-%d').strftime("%Y-%m-%d 00:00:00")
+        end = datetime.strptime(end, '%Y-%m-%d').strftime("%Y-%m-%d 23:59:59")
 
         resultset = ExposureDao().count_by_period(start, end)
 
