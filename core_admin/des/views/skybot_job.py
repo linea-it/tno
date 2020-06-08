@@ -109,3 +109,43 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
             'count': totalcount
         }))
 
+
+
+    @action(detail=True)
+    def time_profile(self, request, pk=None):
+        """Retorna o Time Profile para um job que já foi concluido. 
+        le os arquivos requests e loaddata que estão no diretório do job, 
+        e retonra um array para cada um deles. no seguinte formato
+
+        request: [['exposure', 'start', 'finish', 'positions', 'execution_time'],...]
+        loaddata: [['exposure', 'start', 'finish', 'positions', 'execution_time'],...]
+
+        """
+        job = self.get_object()
+
+        if job.status != 3:
+            return Response(dict({
+                'success': False,
+                'message': "Time profile is only available for jobs with status completed."
+            }))
+
+        # Instância do DesSkybotPipeline
+        pipeline = DesSkybotPipeline()
+
+        # Ler o arquivo de requests
+        df_request = pipeline.read_request_dataframe(job.path)
+        d_request = df_request.filter(['exposure', 'start', 'finish', 'positions', 'execution_time'], axis=1).values
+        a_request = d_request.tolist()
+
+        # Ler o arquivo de loaddata 
+        l_filepath = pipeline.get_loaddata_dataframe_filepath(job.path)
+        df_loaddata = pipeline.read_loaddata_dataframe(l_filepath)
+        d_loaddata = df_loaddata.filter(['exposure', 'start', 'finish', 'positions', 'execution_time'], axis=1).values
+        a_loaddata = d_loaddata.tolist()
+
+        return Response(dict({
+                'success': True,
+                'columns': ['exposure', 'start', 'finish', 'positions', 'execution_time'],
+                'requests': a_request,
+                'loaddata': a_loaddata
+            }))
