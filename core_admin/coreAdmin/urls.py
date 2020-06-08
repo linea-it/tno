@@ -24,6 +24,7 @@ from rest_framework.routers import DefaultRouter
 
 from common import views as common_views
 from des.views import SkybotJobViewSet
+from des.views import SkybotJobResultViewSet
 from skybot.views import PositionViewSet
 from tno.views import (UserViewSet)
 
@@ -79,6 +80,8 @@ router.register(r'users', UserViewSet)
 # router.register(r'catalog', CatalogViewSet)
 
 router.register(r'des/skybot_job', SkybotJobViewSet)
+router.register(r'des/skybot_job_result', SkybotJobResultViewSet)
+
 
 router.register(r'skybot/position', PositionViewSet)
 
