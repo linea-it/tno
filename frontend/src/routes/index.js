@@ -154,8 +154,8 @@ export default function Routes() {
         component={SearchSssoDetail}
       />
       <Route isPrivate exact path="/download/" component={Download} />
-      <Route isPrivate exact path="/dashboard" component={Dashboard} />
-      <Redirect path="/" to="/dashboard" />
+      <Route isPrivate exact path="/" component={Dashboard} />
+      <Redirect path="/" to="/" />
     </Switch>
   );
 }

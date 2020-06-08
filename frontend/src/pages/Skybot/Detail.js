@@ -27,6 +27,7 @@ import useInterval from '../../hooks/useInterval';
 function SkybotDetail({ setTitle }) {
   const { id } = useParams();
   const history = useHistory();
+  const [status, setStatus] = useState(0);
   const [summary, setSummary] = useState([]);
   const [progress, setProgress] = useState({
     request: {
@@ -48,10 +49,10 @@ function SkybotDetail({ setTitle }) {
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
 
-  const handleBackNavigation = () => history.push('/skybot');
+  const handleBackNavigation = () => history.goBack();
 
   useEffect(() => {
-    setTitle('Skybot Run');
+    setTitle('Skybot');
   }, [setTitle]);
 
   useEffect(() => {
@@ -60,6 +61,8 @@ function SkybotDetail({ setTitle }) {
 
   useEffect(() => {
     getSkybotRunById({ id }).then((res) => {
+      console.log('res.status', res.status);
+      setStatus(res.status);
       setSummary([
         {
           title: 'Status',
@@ -127,10 +130,6 @@ function SkybotDetail({ setTitle }) {
       width: 130,
     },
     {
-      name: 'positions',
-      title: 'Positions',
-    },
-    {
       name: 'date_obs',
       title: 'Observation Date',
 
@@ -142,6 +141,10 @@ function SkybotDetail({ setTitle }) {
       width: 150,
     },
     {
+      name: 'positions',
+      title: 'Positions',
+    },
+    {
       name: 'inside_ccd',
       title: 'Inside CCD',
     },
@@ -149,13 +152,19 @@ function SkybotDetail({ setTitle }) {
       name: 'outside_ccd',
       title: 'Outside CCD',
     },
+    {
+      name: 'execution_time',
+      title: 'Execution Time',
+      customElement: (row) =>
+        moment.utc(row.execution_time * 1000).format('HH:mm:ss'),
+    },
   ];
 
   const loadData = ({ currentPage, pageSize }) => {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1;
 
-    getSkybotResult({ id, page: page, pageSize }).then((res) => {
+    getSkybotResult({ id, page, pageSize }).then((res) => {
       setTableData(res.results);
       setTotalCount(res.count);
     });
@@ -166,6 +175,7 @@ function SkybotDetail({ setTitle }) {
 
   useInterval(() => {
     if (
+      ![3, 4, 5, 6].includes(status) ||
       progress.request.status !== 'completed' ||
       progress.loaddata.status !== 'completed'
     ) {
@@ -192,126 +202,143 @@ function SkybotDetail({ setTitle }) {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <Grid container spacing={3} direction="column">
-          <Grid item>
-            <Progress
-              title="Retrieving data from Skybot"
-              variant="determinate"
-              label={`${progress.request.exposures} exposures`}
-              total={progress.request.exposures}
-              current={progress.request.current}
-            />
-            {progress.request.status !== 'completed' ? (
-              <Grid container spacing="2">
-                <Grid item>
-                  <Chip
-                    label={`Average: ${progress.request.average_time.toFixed(
-                      2
-                    )}s`}
-                    color="primary"
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item>
-                  <Chip
-                    label={`Estimate: ${formatSeconds(
-                      progress.request.time_estimate
-                    )}`}
-                    color="primary"
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item>
-                  <Chip
-                    label={`Progress: ${progress.request.current}/${progress.request.exposures}`}
-                    color="primary"
-                    variant="outlined"
-                  />
-                </Grid>
-              </Grid>
-            ) : null}
-          </Grid>
-          <Grid item>
-            <Progress
-              title="Importing positions to database"
-              variant="determinate"
-              label={`${progress.loaddata.exposures} exposures`}
-              total={progress.loaddata.exposures}
-              current={progress.loaddata.current}
-            />
-            {progress.loaddata.status !== 'completed' ? (
-              <Grid container spacing="2">
-                <Grid item>
-                  <Chip
-                    label={`Average: ${progress.loaddata.average_time.toFixed(
-                      2
-                    )}s`}
-                    color="primary"
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item>
-                  <Chip
-                    label={`Estimate: ${formatSeconds(
-                      progress.loaddata.time_estimate
-                    )}`}
-                    color="primary"
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item>
-                  <Chip
-                    label={`Progress: ${progress.loaddata.current}/${progress.loaddata.exposures}`}
-                    color="primary"
-                    variant="outlined"
-                  />
-                </Grid>
-              </Grid>
-            ) : null}
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid item xs={12}>
-        <Grid container alignItems="stretch" spacing={2}>
-          <Grid item xs={4}>
-            <Card>
-              <CardHeader title="Summary" />
-              <CardContent>
-                <List data={summary} />
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={8}>
-            <Card>
-              <CardHeader title="Execution Time" />
-              <CardContent>
-                <Donut data={[]} height={300} />
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid item xs={12}>
-        <Grid container spacing={2}>
+
+      {
+        // Completed, Failed, Aborted and Stopped Statuses:
+        ![3, 4, 5, 6].includes(status) ||
+        progress.request.status !== 'completed' ||
+        progress.loaddata.status !== 'completed' ? (
           <Grid item xs={12}>
             <Card>
-              <CardHeader title="Skybot Results" />
+              <CardHeader title="Progress" />
               <CardContent>
-                <Table
-                  columns={tableColumns}
-                  data={tableData}
-                  loadData={loadData}
-                  totalCount={totalCount}
-                  loading
-                  hasSearching={false}
-                  hasSorting={false}
-                />
+                <Grid container spacing={3} direction="column">
+                  {progress.request.status !== 'completed' ? (
+                    <Grid item>
+                      <Progress
+                        title="Retrieving data from Skybot"
+                        variant="determinate"
+                        label={`${progress.request.exposures} exposures`}
+                        total={progress.request.exposures}
+                        current={progress.request.current}
+                      />
+                      <Grid container spacing="2">
+                        <Grid item>
+                          <Chip
+                            label={`Average: ${progress.request.average_time.toFixed(
+                              2
+                            )}s`}
+                            color="primary"
+                            variant="outlined"
+                          />
+                        </Grid>
+                        <Grid item>
+                          <Chip
+                            label={`Estimate: ${formatSeconds(
+                              progress.request.time_estimate
+                            )}`}
+                            color="primary"
+                            variant="outlined"
+                          />
+                        </Grid>
+                        <Grid item>
+                          <Chip
+                            label={`Progress: ${progress.request.current}/${progress.request.exposures}`}
+                            color="primary"
+                            variant="outlined"
+                          />
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  ) : null}
+                  {progress.loaddata.status !== 'completed' ? (
+                    <Grid item>
+                      <Progress
+                        title="Importing positions to database"
+                        variant="determinate"
+                        label={`${progress.loaddata.exposures} exposures`}
+                        total={progress.loaddata.exposures}
+                        current={progress.loaddata.current}
+                      />
+                      <Grid container spacing="2">
+                        <Grid item>
+                          <Chip
+                            label={`Average: ${progress.loaddata.average_time.toFixed(
+                              2
+                            )}s`}
+                            color="primary"
+                            variant="outlined"
+                          />
+                        </Grid>
+                        <Grid item>
+                          <Chip
+                            label={`Estimate: ${formatSeconds(
+                              progress.loaddata.time_estimate
+                            )}`}
+                            color="primary"
+                            variant="outlined"
+                          />
+                        </Grid>
+                        <Grid item>
+                          <Chip
+                            label={`Progress: ${progress.loaddata.current}/${progress.loaddata.exposures}`}
+                            color="primary"
+                            variant="outlined"
+                          />
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  ) : null}
+                </Grid>
               </CardContent>
             </Card>
           </Grid>
-        </Grid>
-      </Grid>
+        ) : (
+          <>
+            <Grid item xs={12}>
+              <Grid container alignItems="stretch" spacing={2}>
+                <Grid item xs={4}>
+                  <Card>
+                    <CardHeader title="Summary" />
+                    <CardContent>
+                      <List data={summary} />
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={8}>
+                  <Card>
+                    <CardHeader title="Execution Time" />
+                    <CardContent>
+                      <Donut data={[]} height={300} />
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <Card>
+                    <CardHeader title="Skybot Results" />
+                    <CardContent>
+                      <Table
+                        columns={tableColumns}
+                        data={tableData}
+                        loadData={loadData}
+                        totalCount={totalCount}
+                        hasSearching={false}
+                        hasSorting={false}
+                        hasColumnVisibility={false}
+                        hasToolbar={false}
+                      />
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Grid>
+          </>
+        )
+      }
     </Grid>
   );
 }

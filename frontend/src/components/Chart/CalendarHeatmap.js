@@ -9,8 +9,6 @@ function CalendarHeatmap({ data }) {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    console.log('data', data);
-
     setRows(
       data.map((row) => ({
         date: d3.timeDay(new Date(`${row.date} 00:00`)),
@@ -98,9 +96,7 @@ function CalendarHeatmap({ data }) {
       .attr('y', (d) => countDay(d.date) * cellSize + 0.5)
       .attr('fill', (d) => colorFn(d.value))
       .append('title')
-      .text(
-        (d) => `${d.value} exposures on ${moment(d.date).format('MMM Do YYYY')}`
-      );
+      .text((d) => `${d.value} exposures on ${moment(d.date).format('MMM Do YYYY')}`);
 
     const month = year
       .append('g')

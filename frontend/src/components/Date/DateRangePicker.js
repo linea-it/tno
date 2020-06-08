@@ -13,10 +13,9 @@ function DateRangePicker({
   maxDate
 }) {
   const handleChange = ({ selection }) => {
-    console.log(selection);
-
     const startDate = moment(selection.startDate).format('YYYY-MM-DD');
     const endDate = moment(selection.endDate).format('YYYY-MM-DD');
+
     setSelectedDate([startDate, endDate]);
   };
 

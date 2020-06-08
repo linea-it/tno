@@ -44,10 +44,13 @@ function Skybot({ setTitle }) {
     hasData: true,
   });
   const [reload, setReload] = useState(true);
-  const [selectedDate, setSelectedDate] = useState(['', '']);
+  const [selectedDate, setSelectedDate] = useState([
+    '2012-11-10',
+    '2012-12-10',
+  ]);
 
   useEffect(() => {
-    setTitle('Skybot Run');
+    setTitle('Skybot');
   }, [setTitle]);
 
   useEffect(() => {
@@ -102,10 +105,16 @@ function Skybot({ setTitle }) {
     createSkybotRun({
       date_initial: selectedDate[0],
       date_final: selectedDate.length === 1 ? selectedDate[0] : selectedDate[1],
-    }).then(() => {
-      setReload((prevState) => !prevState);
-      setDisableSubmit(false);
-    });
+    })
+      .then((response) => {
+        const { id } = response.data;
+
+        history.push(`/data-preparation/des/skybot/${id}`);
+      })
+      .catch(() => {
+        setReload((prevState) => !prevState);
+        setDisableSubmit(false);
+      });
   };
 
   const transitionSnackBar = (props) => <Slide {...props} direction="left" />;
