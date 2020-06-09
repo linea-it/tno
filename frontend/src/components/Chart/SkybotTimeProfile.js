@@ -66,7 +66,7 @@ function SkybotTimeProfile({ data }) {
       data={rows}
       layout={{
         // width: 400,
-        // height: 400,
+        height: 400,
         xaxis: {
           automargin: true,
           autorange: true,
