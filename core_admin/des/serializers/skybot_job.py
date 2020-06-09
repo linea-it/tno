@@ -7,6 +7,7 @@ class SkybotJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = SkybotJob
         fields = (
+            'id',
             'owner',
             'date_initial',
             'date_final',

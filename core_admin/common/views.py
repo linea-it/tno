@@ -92,7 +92,7 @@ def teste(request):
         # DesSkybotPipeline().reset_job_for_test(5)
         # DesSkybotPipeline().run_job(5)
         # DesSkybotPipeline().check_loaddata_queue()
-
+        # DesSkybotPipeline().consolidate(job_id=87)
         # exposure_id = 2453859
         # ticket = 166796687473278401
         # filepath = "/archive/skybot_output/des_skybot_35/2453859_166796687473278401.csv"

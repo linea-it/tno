@@ -21,7 +21,7 @@ class SkybotJobResult(models.Model):
     exposure = models.ForeignKey(
         Exposure,
         on_delete=models.CASCADE,
-        verbose_name='Exposure',
+        verbose_name='Exposure'
     )
 
     # Ticket retornado pelo, serve para ligar com a tabela Skybot_Position.Ticket

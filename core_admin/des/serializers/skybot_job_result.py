@@ -3,7 +3,7 @@ from rest_framework import serializers
 from des.models import Exposure, SkybotJob, SkybotJobResult
 
 
-class SkybotJobSerializer(serializers.ModelSerializer):
+class SkybotJobResultSerializer(serializers.ModelSerializer):
 
     job = serializers.PrimaryKeyRelatedField(
         queryset=SkybotJob.objects.all(), many=False)
