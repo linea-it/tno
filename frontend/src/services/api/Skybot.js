@@ -98,3 +98,6 @@ export const getSkybotResult = ({ id, pageSize, page }) => {
     .get(`/des/skybot_job/${id}/job_results/`, { params })
     .then((res) => res.data);
 };
+
+export const getSkybotTimeProfile = (id) =>
+  axios.get(`/des/skybot_job/${id}/time_profile/`).then((res) => res.data);

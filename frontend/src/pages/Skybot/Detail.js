@@ -14,13 +14,14 @@ import { useParams, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import List from '../../components/List';
 import Table from '../../components/Table';
-import Donut from '../../components/Chart/Donut';
+import SkybotTimeProfile from '../../components/Chart/SkybotTimeProfile';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import Progress from '../../components/Progress';
 import {
   getSkybotResult,
   getSkybotRunById,
   getSkybotProgress,
+  getSkybotTimeProfile,
 } from '../../services/api/Skybot';
 import useInterval from '../../hooks/useInterval';
 
@@ -29,6 +30,10 @@ function SkybotDetail({ setTitle }) {
   const history = useHistory();
   const [status, setStatus] = useState(0);
   const [summary, setSummary] = useState([]);
+  const [timeProfile, setTimeProfile] = useState({
+    requests: [],
+    loaddata: [],
+  });
   const [progress, setProgress] = useState({
     request: {
       status: 'completed',
@@ -61,7 +66,6 @@ function SkybotDetail({ setTitle }) {
 
   useEffect(() => {
     getSkybotRunById({ id }).then((res) => {
-      console.log('res.status', res.status);
       setStatus(res.status);
       setSummary([
         {
@@ -89,6 +93,30 @@ function SkybotDetail({ setTitle }) {
       ]);
     });
   }, [loadProgress]);
+
+  useEffect(() => {
+    getSkybotTimeProfile(id).then((res) => {
+      const { requests, loaddata } = res;
+
+      setTimeProfile({
+        requests: requests.map((request) => ({
+          [res.columns[0]]: request[0],
+          [res.columns[1]]: request[1],
+          [res.columns[2]]: request[2],
+          [res.columns[3]]: request[3],
+          [res.columns[4]]: request[4],
+        })),
+
+        loaddata: loaddata.map((request) => ({
+          [res.columns[0]]: request[0],
+          [res.columns[1]]: request[1],
+          [res.columns[2]]: request[2],
+          [res.columns[3]]: request[3],
+          [res.columns[4]]: request[4],
+        })),
+      });
+    });
+  }, []);
 
   const tableColumns = [
     {
@@ -309,7 +337,7 @@ function SkybotDetail({ setTitle }) {
                   <Card>
                     <CardHeader title="Execution Time" />
                     <CardContent>
-                      <Donut data={[]} height={300} />
+                      <SkybotTimeProfile data={timeProfile} />
                     </CardContent>
                   </Card>
                 </Grid>
