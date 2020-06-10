@@ -35,7 +35,7 @@ class ExposureViewSet(viewsets.ModelViewSet):
 
         all_dates = get_days_interval(start, end)
 
-        # Verificar a quantidade de dias entre o start e end. 
+        # Verificar a quantidade de dias entre o start e end.
         if len(all_dates) < 7:
             dt_start = datetime.strptime(start, '%Y-%m-%d')
             dt_end = dt_start.replace(day=dt_start.day + 7)
@@ -66,7 +66,7 @@ class ExposureViewSet(viewsets.ModelViewSet):
         df = df.fillna(0)
         df = df.reset_index()
         df = df.rename(columns={'index': 'date'})
-        
+
         result = df.to_dict('records')
 
         return Response(result)
