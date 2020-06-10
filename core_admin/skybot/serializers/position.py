@@ -32,4 +32,5 @@ class PositionSerializer(serializers.ModelSerializer):
             'vy',
             'vz',
             'jdref',
+            'ticket',
         )
