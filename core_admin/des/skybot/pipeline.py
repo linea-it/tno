@@ -11,7 +11,7 @@ import humanize
 import pandas as pd
 from django.conf import settings
 
-from des.dao import ExposureDao, DesSkybotJobDao
+from des.dao import DesSkybotJobDao, DesSkybotJobResultDao, ExposureDao
 from des.skybot.import_positions import DESImportSkybotPositions
 from skybot.skybot_server import SkybotServer
 
@@ -47,7 +47,6 @@ class DesSkybotPipeline():
 
     def complete_job(self, job):
         return self.spdao.complete_job(job['id'], job)
-        
 
     def create_skybot_log(self, job_path):
         """Cria um arquivo de log no diretório execução do Job. 
@@ -1051,10 +1050,33 @@ class DesSkybotPipeline():
                 # Escreve o resultado geral do Job no arquivo.
                 results_filepath = job['results']
                 results = pd.DataFrame(df_results)
-                results.to_csv(results_filepath, sep=';', header=True, index=True)
+                results.to_csv(results_filepath, sep=';',
+                               header=True, index=True)
 
                 self.logger_import.info(
                     "Results file created: [%s]" % results_filepath)
+
+
+                self.logger_import.debug("Recording the results of each exposure in the database.")
+                # Opitei por ler o arquivo csv recem criado, por que tive dificuldade
+                # em usar o dataset result, deu problemas na coluna exposure que estava sendo usada como index.
+                # le o arquivo results e cria um dataframe contendo só as colunas referente ao model Des/SkybotJobResult
+                df = pd.read_csv(results_filepath, sep=';', usecols=['id', 'ticket', 'success', 'execution_time',
+                                                                     'positions', 'inside_ccd', 'outside_ccd', 'filename'])
+                # Renomeia a coluna exposure para exposure_id
+                df.rename(columns={'id': 'exposure_id'}, inplace=True)
+                # Adiciona uma coluna com o id do Des/SkybotJob
+                df['job_id'] = int(job_id)
+                # Muda a ordem das colunas para ficar igual a tabela des_skybotjobresutl
+                df = df.reindex(columns=['ticket', 'success', 'execution_time', 'positions',
+                                         'inside_ccd', 'outside_ccd', 'filename', 'exposure_id', 'job_id'])
+
+                # Printa a primeira linha do dataset para debug
+                # self.logger_import.info(df.iloc[0])
+
+                # Importa o conteudo do dataframe para a tabela.
+                imported = DesSkybotJobResultDao(pool=False).import_data(df)
+                self.logger_import.debug("Rows Imported: %s" % imported)
 
                 # Calcula o tempo total de execução do Job.
                 t0 = job['start']
