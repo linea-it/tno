@@ -90,12 +90,13 @@ export const getSkybotProgress = (id) =>
 
 export const getSkybotResult = ({ id, pageSize, page }) => {
   const params = {
+    job: id,
     page,
     pageSize,
   };
 
   return axios
-    .get(`/des/skybot_job/${id}/job_results/`, { params })
+    .get(`/des/skybot_job_result/`, { params })
     .then((res) => res.data);
 };
 

@@ -120,11 +120,11 @@ function SkybotDetail({ setTitle }) {
 
   const tableColumns = [
     {
-      name: 'ccds',
+      name: 'job',
       title: 'Details',
       width: 110,
       customElement: (row) => {
-        if (row.ccds === 0) {
+        if (row.positions === 0) {
           return <span>-</span>;
         }
         return (
@@ -158,17 +158,6 @@ function SkybotDetail({ setTitle }) {
       width: 130,
     },
     {
-      name: 'date_obs',
-      title: 'Observation Date',
-
-      customElement: (el) => (
-        <span>
-          {el.date_obs ? moment(el.date_obs).format('YYYY-MM-DD') : ''}
-        </span>
-      ),
-      width: 150,
-    },
-    {
       name: 'positions',
       title: 'Positions',
     },
@@ -183,8 +172,7 @@ function SkybotDetail({ setTitle }) {
     {
       name: 'execution_time',
       title: 'Execution Time',
-      customElement: (row) =>
-        moment.utc(row.execution_time * 1000).format('HH:mm:ss'),
+      customElement: (row) => row.execution_time ? row.execution_time.split('.')[0] : '-',
     },
   ];
 
