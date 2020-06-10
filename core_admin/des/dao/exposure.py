@@ -1,4 +1,5 @@
 from sqlalchemy.sql import and_, select
+from sqlalchemy import func, Date, cast
 
 from tno.db import DBBase
 
@@ -42,6 +43,22 @@ class ExposureDao(DBBase):
         stm = select(tbl.c).\
             where(and_(tbl.c.date_obs.between(str(start), str(end)))).\
             order_by(tbl.c.date_obs)
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows
+
+
+    def count_by_period(self, start, end):
+
+        tbl = self.tbl
+
+        stm = select([cast(tbl.c.date_obs, Date).label('dates'), func.count('*').label('count')]).\
+                where(and_(tbl.c.date_obs.between(str(start), str(end)))).\
+                group_by(cast(tbl.c.date_obs, Date)).\
+                order_by(cast(tbl.c.date_obs, Date))
 
         self.debug_query(stm, True)
 

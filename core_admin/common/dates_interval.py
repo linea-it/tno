@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 
 
-def get_days_interval(self, start_date, end_date):
+def get_days_interval(start_date, end_date):
     """
         Retorna todos os dias entre a data final e inicial
     """

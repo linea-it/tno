@@ -7,7 +7,6 @@ import {
   Card,
   CardHeader,
   CardContent,
-  Typography,
   CircularProgress,
   Button,
   Snackbar,
@@ -23,7 +22,6 @@ import useInterval from '../../hooks/useInterval';
 import {
   createSkybotRun,
   getSkybotRunList,
-  getSkybotRunEstimate,
   getExposuresByPeriod,
 } from '../../services/api/Skybot';
 import CalendarHeatmap from '../../components/Chart/CalendarHeatmap';
@@ -40,7 +38,6 @@ function Skybot({ setTitle }) {
     horizontal: 'right',
   });
   const [snackBarTransition, setSnackBarTransition] = useState(undefined);
-  const [runEstimate, setRunEstimate] = useState({});
   const [exposuresByPeriod, setExposuresByPeriod] = useState([]);
   const [exposurePlotLoading, setExposurePlotLoading] = useState({
     loading: false,
@@ -48,39 +45,16 @@ function Skybot({ setTitle }) {
   });
   const [reload, setReload] = useState(true);
   const [selectedDate, setSelectedDate] = useState([
-    '2012-01-01',
-    '2015-12-31',
+    '2012-11-10',
+    '2012-12-10',
   ]);
-  // const [yearsWithExposure, setYearsWithExposure] = useState([]);
-  // const [exposuresByYear, setExposuresByYear] = useState([]);
 
   useEffect(() => {
-    setTitle('Skybot Run');
+    setTitle('Skybot');
   }, [setTitle]);
-
-  // useEffect(() => {
-  //   getYearsWithExposure().then((res) => {
-  //     setYearsWithExposure(
-  //       res.years
-  //         .sort()
-  //         .reverse()
-  //         .map((year) => String(year))
-  //     );
-  //   });
-  // }, []);
-
-  // useEffect(() => {
-  //   getExposuresByPeriod(
-  //     selectedExposureYear.start_date,
-  //     selectedExposureYear.end_date
-  //   ).then((res) => {
-  //     setExposuresByYear(res.rows);
-  //   });
-  // }, [selectedExposureYear]);
 
   useEffect(() => {
     setExposuresByPeriod([]);
-    setRunEstimate({});
 
     if (selectedDate[0] && selectedDate[1]) {
       setExposurePlotLoading({
@@ -88,21 +62,15 @@ function Skybot({ setTitle }) {
         hasData: false,
       });
 
-      // Get the time estimate and amount of exposures based on period, before running:
-      getSkybotRunEstimate(
-        moment(selectedDate[0]).format('YYYY-MM-DD'),
-        moment(selectedDate[1]).format('YYYY-MM-DD')
-      ).then((res) => setRunEstimate(res));
-
       getExposuresByPeriod(
         moment(selectedDate[0]).format('YYYY-MM-DD'),
         moment(selectedDate[1]).format('YYYY-MM-DD')
       ).then((res) => {
         setExposurePlotLoading({
           loading: false,
-          hasData: res.rows.length > 0,
+          hasData: res.length > 0,
         });
-        setExposuresByPeriod(res.rows);
+        setExposuresByPeriod(res);
       });
 
       setDisableSubmit(false);
@@ -136,11 +104,17 @@ function Skybot({ setTitle }) {
   const handleSubmit = () => {
     createSkybotRun({
       date_initial: selectedDate[0],
-      date_final: selectedDate[1],
-    }).then(() => {
-      loadData();
-      setDisableSubmit(false);
-    });
+      date_final: selectedDate.length === 1 ? selectedDate[0] : selectedDate[1],
+    })
+      .then((response) => {
+        const { id } = response.data;
+
+        history.push(`/data-preparation/des/skybot/${id}`);
+      })
+      .catch(() => {
+        setReload((prevState) => !prevState);
+        setDisableSubmit(false);
+      });
   };
 
   const transitionSnackBar = (props) => <Slide {...props} direction="left" />;
@@ -159,15 +133,14 @@ function Skybot({ setTitle }) {
       title: 'Details',
       width: 110,
       icon: <i className="fas fa-info-circle" />,
-      action: (row) => history.push(`/skybot/${row.id}`),
+      action: (row) => history.push(`/data-preparation/des/skybot/${row.id}`),
       align: 'center',
       sortingEnabled: false,
     },
     {
       name: 'status',
       title: 'Status',
-      width: 140,
-      align: 'center',
+      width: 150,
       customElement: (row) => (
         <ColumnStatus status={row.status} title={row.error_msg} />
       ),
@@ -175,63 +148,44 @@ function Skybot({ setTitle }) {
     {
       name: 'owner',
       title: 'Owner',
-      width: 140,
+      width: 180,
       align: 'left',
     },
     {
       name: 'date_initial',
       title: 'Initial Date',
-      width: 100,
+      width: 130,
       align: 'left',
       customElement: (row) => (
-        <span>
-          {row.date_initial
-            ? moment(row.date_initial).format('YYYY-MM-DD')
-            : ''}
+        <span title={moment(row.start).format('HH:mm:ss')}>
+          {row.date_initial}
         </span>
       ),
     },
     {
       name: 'date_final',
       title: 'Final Date',
-      width: 100,
+      width: 130,
       align: 'left',
       customElement: (row) => (
-        <span>
-          {row.date_final ? moment(row.date_final).format('YYYY-MM-DD') : ''}
+        <span title={moment(row.finish).format('HH:mm:ss')}>
+          {row.date_final}
         </span>
       ),
     },
     {
-      name: 'type_run',
-      title: 'Run Type',
-      width: 100,
-      align: 'center',
-    },
-    {
-      name: 'start',
-      title: 'Start',
-      width: 200,
-      align: 'center',
-    },
-    {
-      name: 'type_run',
-      title: 'Type',
-      width: 120,
-      align: 'center',
-    },
-    {
-      name: 'rows',
-      title: 'Rows',
-      width: 100,
-      align: 'right',
-    },
-    {
-      name: 'h_execution_time',
-      title: 'Exec Time',
+      name: 'execution_time',
+      title: 'Execution Time',
       width: 150,
-      align: 'center',
       headerTooltip: 'Execution time',
+      align: 'center',
+      customElement: (row) =>
+        row.execution_time ? row.execution_time.split('.')[0] : null,
+    },
+    {
+      name: 'exposures',
+      title: 'Exposures',
+      width: 100,
     },
   ];
 
@@ -250,26 +204,6 @@ function Skybot({ setTitle }) {
     }
   }, 30000);
 
-  const renderEstimate = () => {
-    if (runEstimate.exposures && runEstimate.exposures !== 0) {
-      return (
-        <>
-          <Typography paragraph variant="button" color="textSecondary">
-            {`The average time execution for one exposure is ${moment
-              .utc(runEstimate.time_per_exposure * 1000)
-              .format('HH:mm:ss')}`}
-          </Typography>
-          <Typography variant="button" color="textSecondary">
-            {`The estimate time for identifying all of the CCDs with objects is ${moment
-              .utc(runEstimate.estimate * 1000)
-              .format('HH:mm:ss')}`}
-          </Typography>
-        </>
-      );
-    }
-    return null;
-  };
-
   const renderExposurePlot = () => {
     if (exposuresByPeriod.length > 0) {
       return (
@@ -277,10 +211,13 @@ function Skybot({ setTitle }) {
           <Plot
             data={[
               {
-                x: exposuresByPeriod.map((rows) => rows.date_obs),
-                y: exposuresByPeriod.map((rows) => rows.exposures),
+                x: exposuresByPeriod.map((rows) => rows.date),
+                y: exposuresByPeriod.map((rows) => rows.count),
                 type: 'bar',
-                name: `${runEstimate.exposures} exposures`,
+                name: `${exposuresByPeriod.reduce(
+                  (a, b) => a + (b.count || 0),
+                  0
+                )} exposures`,
                 showlegend: true,
                 fixedrange: true,
                 hoverinfo: 'y',
@@ -307,9 +244,9 @@ function Skybot({ setTitle }) {
     return (
       <>
         <Skeleton variant="rect" animation={false} height={440} />
-        {exposurePlotLoading.loading ? (
+        {/* {exposurePlotLoading.loading ? (
           <CircularProgress color="primary" size={24} />
-        ) : null}
+        ) : null} */}
         {exposurePlotLoading.loading === false &&
         exposurePlotLoading.hasData === false ? (
           <span>No exposure was found in this period</span>
@@ -328,12 +265,11 @@ function Skybot({ setTitle }) {
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <DateRangePicker
+                    // First day of Skybot:
+                    minDate={new Date('2012-11-10 04:09')}
                     selectedDate={selectedDate}
                     setSelectedDate={setSelectedDate}
                   />
-                </Grid>
-                <Grid item xs={12}>
-                  {renderEstimate()}
                 </Grid>
                 <Grid item xs={12}>
                   <Button

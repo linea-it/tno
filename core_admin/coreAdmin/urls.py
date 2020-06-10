@@ -23,10 +23,11 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 
 from common import views as common_views
+from des.views import ExposureViewSet
 from des.views import SkybotJobViewSet
 from des.views import SkybotJobResultViewSet
 from skybot.views import PositionViewSet
-from tno.views import (UserViewSet)
+from tno.views import UserViewSet
 
 # from orbit.views import (BspJplViewSet, ObservationFileViewSet,
 #                          OrbitalParameterViewSet, OrbitRunViewSet,
@@ -80,6 +81,7 @@ router.register(r'users', UserViewSet)
 # router.register(r'catalog', CatalogViewSet)
 
 router.register(r'des/skybot_job', SkybotJobViewSet)
+router.register(r'des/exposure', ExposureViewSet)
 router.register(r'des/skybot_job_result', SkybotJobResultViewSet)
 
 

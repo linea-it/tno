@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 
 function Dashboard({ setTitle }) {
   useEffect(() => {
-    setTitle('Dashboard');
+    setTitle('');
   }, [setTitle]);
 
-  return <h1>Dashboard</h1>;
+  return <div />;
 }
 
 Dashboard.propTypes = {

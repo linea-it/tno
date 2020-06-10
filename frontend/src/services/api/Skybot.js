@@ -3,17 +3,15 @@ import moment from 'moment';
 
 export const createSkybotRun = ({ date_initial, date_final }) => {
   const params = {
-    type_run: 'period',
-    status: 'pending',
     date_initial: moment(date_initial).format('YYYY-MM-DD'),
     date_final: moment(date_final).format('YYYY-MM-DD'),
   };
 
-  return axios.post('/skybot_run/', { params });
+  return axios.post('/des/skybot_job/submit_job/', params);
 };
 
 export const getSkybotRunById = ({ id }) =>
-  axios.get(`/skybot_run/${id}`).then((res) => res.data);
+  axios.get(`/des/skybot_job/${id}`).then((res) => res.data);
 
 export const getSkybotRunList = ({ page, pageSize, ordering }) => {
   const params = {
@@ -22,7 +20,7 @@ export const getSkybotRunList = ({ page, pageSize, ordering }) => {
     ordering,
   };
 
-  return axios.get('/skybot_run/', { params });
+  return axios.get('/des/skybot_job/', { params });
 };
 
 export const getStatistic = ({ id }) =>
@@ -72,8 +70,8 @@ export const getSkybotRunEstimate = (initialDate, finalDate) =>
 
 export const getExposuresByPeriod = (initialDate, finalDate) =>
   axios
-    .get('/skybot_run/exposures_by_period/', {
-      params: { initial_date: initialDate, final_date: finalDate },
+    .get('/des/exposure/count_by_period/', {
+      params: { start: initialDate, end: finalDate },
     })
     .then((res) => res.data);
 
@@ -86,3 +84,21 @@ export const stopSkybotRunById = (id) =>
       status: 'canceled',
     })
     .then((res) => res);
+
+export const getSkybotProgress = (id) =>
+  axios.get(`/des/skybot_job/${id}/heartbeat/`).then((res) => res.data);
+
+export const getSkybotResult = ({ id, pageSize, page }) => {
+  const params = {
+    job: id,
+    page,
+    pageSize,
+  };
+
+  return axios
+    .get(`/des/skybot_job_result/`, { params })
+    .then((res) => res.data);
+};
+
+export const getSkybotTimeProfile = (id) =>
+  axios.get(`/des/skybot_job/${id}/time_profile/`).then((res) => res.data);

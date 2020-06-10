@@ -17,6 +17,7 @@ class SkybotJobSerializer(serializers.ModelSerializer):
             'execution_time',
             'exposures',
             'path',
+            'results',
             'error'
         )
 

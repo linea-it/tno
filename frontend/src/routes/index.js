@@ -14,9 +14,6 @@ import Skybot from '../pages/Skybot';
 import SkybotDetail from '../pages/Skybot/Detail';
 import SkybotAsteroid from '../pages/Skybot/Asteroid';
 
-import FilterObjects from '../pages/FilterObjects';
-import FilterObjectsDetail from '../pages/FilterObjects/Detail';
-
 import Astrometry from '../pages/Astrometry';
 import AstrometryDetail from '../pages/Astrometry/Detail';
 import AstrometryAsteroid from '../pages/Astrometry/Asteroid';
@@ -117,6 +114,18 @@ export default function Routes() {
         path="/data-preparation/des/skybot"
         component={Skybot}
       />
+      <Route
+        isPrivate
+        exact
+        path="/data-preparation/des/skybot/:id"
+        component={SkybotDetail}
+      />
+      <Route
+        isPrivate
+        exact
+        path="/data-preparation/des/skybot/:runId/asteroid/:id"
+        component={SkybotAsteroid}
+      />
       <Route isPrivate exact path="/bsp-jpl" component={BspJpl} />
       <Route isPrivate exact path="/observation" component={Observation} />
       <Route
@@ -138,20 +147,6 @@ export default function Routes() {
         component={JohnstonArchiveDetail}
       />
       <Route isPrivate exact path="/ssso" component={SearchSsso} />
-      <Route isPrivate exact path="/filter-objects" component={FilterObjects} />
-      <Route
-        isPrivate
-        exact
-        path="/filter-objects/:id"
-        component={FilterObjectsDetail}
-      />
-      <Route isPrivate exact path="/skybot/:id" component={SkybotDetail} />
-      <Route
-        isPrivate
-        exact
-        path="/skybot/:runId/asteroid/:id"
-        component={SkybotAsteroid}
-      />
       <Route
         isPrivate
         exact
@@ -159,8 +154,8 @@ export default function Routes() {
         component={SearchSssoDetail}
       />
       <Route isPrivate exact path="/download/" component={Download} />
-      <Route isPrivate exact path="/dashboard" component={Dashboard} />
-      <Redirect path="/" to="/dashboard" />
+      <Route isPrivate exact path="/" component={Dashboard} />
+      <Redirect path="/" to="/" />
     </Switch>
   );
 }

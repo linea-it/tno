@@ -26,7 +26,7 @@ from django.contrib.auth import logout
 @api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
-        
+
         # Test Skybot load data daemon
         # from tno.skybot.new_load_data import DesImportSkybotOutput
 
@@ -51,9 +51,9 @@ def teste(request):
         #     requests = dsp.read_request_dataframe(job.path)
         #     requests = requests.set_index('exposure')
         #     requests = requests.add_prefix('request_')
-            
-        #     loaddata = dsp.read_loaddata_dataframe( 
-        #         dsp.get_loaddata_dataframe_filepath(job.path))            
+
+        #     loaddata = dsp.read_loaddata_dataframe(
+        #         dsp.get_loaddata_dataframe_filepath(job.path))
         #     loaddata = loaddata.set_index('exposure')
         #     loaddata = loaddata.add_prefix('loaddata_')
 
@@ -98,7 +98,7 @@ def teste(request):
         # filepath = "/archive/skybot_output/des_skybot_35/2453859_166796687473278401.csv"
 
         # result = DESImportSkybotPositions().import_des_skybot_positions(exposure_id, ticket, filepath)
-        
+
 
         # check_astrometry_running()
 
@@ -118,7 +118,7 @@ def teste(request):
         #      'start': start,
         #      'end': end
         #  })
-            
+
         result = dict({
             'success': True,
         })

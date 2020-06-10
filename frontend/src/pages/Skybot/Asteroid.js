@@ -29,204 +29,204 @@ function SkybotAsteroid({ setTitle }) {
   const [exposuresTableData, setExposuresTableData] = useState([]);
   const [asteroidsOnlyInsideCcds, setAsteroidsOnlyInsideCcds] = useState(true);
 
-  const handleValues = (value) => {
+  const Values = (value) => {
     const roundValue = parseFloat(value).toFixed(3);
     const stringValue = roundValue.toString();
     return stringValue;
   };
 
-  const exposuresTableColumns = [
-    {
-      title: 'Point',
-      name: 'pointing',
-      headerTooltip: 'Pointings',
-    },
-    {
-      title: 'Name',
-      name: 'name',
-      headerTooltip: 'Object Name',
-    },
-    {
-      title: 'Num',
-      name: 'num',
-      align: 'right',
-      headerTooltip: 'Object Number',
-    },
-    {
-      title: 'Dyn Class',
-      name: 'dynclass',
-      headerTooltip: 'Dynamic Class',
-    },
-    {
-      title: 'RA  (deg)',
-      name: 'raj2000',
-      align: 'right',
-      customElement: (row) => (
-        <span>{row.raj2000 ? handleValues(row.raj2000) : ''}</span>
-      ),
-      headerTooltip: 'Right Ascension',
-    },
-    {
-      title: 'Dec (deg)',
-      name: 'decj2000',
-      align: 'right',
-      customElement: (row) => (
-        <span>{row.decj2000 ? handleValues(row.decj2000) : ''}</span>
-      ),
-      headerTooltip: 'Declination',
-    },
-    {
-      title: 'Visual Mag ',
-      name: 'mv',
-      align: 'right',
-    },
-    {
-      title: 'Error',
-      name: 'errpos',
-      align: 'right',
-      customElement: (row) => (
-        <span>{row.errpos ? handleValues(row.errpos) : ''}</span>
-      ),
-    },
-    {
-      title: 'Ang Dist (arcsec)',
-      name: 'd',
-      align: 'right',
-      customElement: (row) => <span>{row.d ? handleValues(row.d) : ''}</span>,
-      headerTooltip: 'Angular Distance',
-    },
-    {
-      title: 'dRAcosDec (arcsec/h)',
-      name: 'dracosdec',
-      align: 'right',
-      customElement: (row) => (
-        <span>{row.dracosdec ? handleValues(row.dracosdec) : ''}</span>
-      ),
-    },
-    {
-      title: 'dDEC  (arcsec/h)',
-      name: 'd',
-      align: 'right',
-      customElement: (row) => <span>{row.d ? handleValues(row.d) : ''}</span>,
-    },
-    {
-      title: 'Geoc Dist (AU)',
-      name: 'dgeo',
-      align: 'right',
-      customElement: (row) => (
-        <span>{row.dgeo ? handleValues(row.dgeo) : ''}</span>
-      ),
-      headerTooltip: 'Geocentric Distance',
-    },
-    {
-      title: 'Hel Dist (AU)',
-      name: 'dhelio',
-      align: 'right',
-      customElement: (row) => (
-        <span>{row.dhelio ? handleValues(row.dhelio) : ''}</span>
-      ),
-      headerTooltip: 'Heliocentric Distance',
-    },
-    {
-      title: 'Phase Angle (deg)',
-      name: 'phase',
-      align: 'right',
-      customElement: (row) => (
-        <span>{row.phase ? handleValues(row.phase) : ''}</span>
-      ),
-    },
-    {
-      title: 'Solar Elong',
-      name: 'solelong',
-      align: 'right',
-      customElement: (row) => (
-        <span>{row.solelong ? handleValues(row.solelong) : ''}</span>
-      ),
-      headerTooltip: 'Solar Elongantion',
-    },
-    {
-      title: 'Vec Pos x (AU)',
-      name: 'px',
-      align: 'right',
-      customElement: (row) => <span>{row.px ? handleValues(row.px) : ''}</span>,
-      headerTooltip: 'Vector Position in x',
-    },
-    {
-      title: 'Vec pos y (AU)',
-      name: 'py',
-      align: 'right',
-      customElement: (row) => <span>{row.py ? handleValues(row.py) : ''}</span>,
-      headerTooltip: 'Vector Position in y',
-    },
-    {
-      title: 'Vec Pos z (AU)',
-      name: 'pz',
-      align: 'right',
-      customElement: (row) => <span>{row.pz ? handleValues(row.pz) : ''}</span>,
-      headerTooltip: 'Vector Position in z',
-    },
-    {
-      title: 'Vec Pos x [AU/d]',
-      name: 'vx',
-      align: 'right',
-      customElement: (row) => <span>{row.vx ? handleValues(row.vx) : ''}</span>,
-      headerTooltip: 'Vector Position in x',
-    },
-    {
-      title: 'Vec Pos y [AU/d]',
-      name: 'vy',
-      align: 'right',
-      customElement: (row) => <span>{row.vy ? handleValues(row.vy) : ''}</span>,
-      headerTooltip: 'Vector Position in y',
-    },
-    {
-      title: 'Vec Pos z [AU/d]',
-      name: 'vz',
-      align: 'right',
-      customElement: (row) => <span>{row.vz ? handleValues(row.vz) : ''}</span>,
-      headerTooltip: 'Vector Position in z',
-    },
-    {
-      title: 'Epo Pos Vec (Julien Day)',
-      name: 'jdref',
-      align: 'right',
-      headerTooltip: 'Epoch of the position vector (Julian Day)',
-    },
-    {
-      title: 'Band',
-      name: 'band',
-      align: 'center',
-    },
-    {
-      title: 'Exp Num',
-      name: 'expnum',
-      align: 'right',
-      headerTooltip: 'Exposute Number',
-    },
-    {
-      title: 'CCD Num',
-      name: 'ccdnum',
-      align: 'right',
-    },
-    {
-      name: 'externallink',
-      title: 'VizieR',
-      customElement: (el) =>
-        el.externallink !== 'link' ? (
-          <a
-            href={el.externallink}
-            target="_blank"
-            rel="noopener noreferrer"
-            title={el.externallink}
-          >
-            <Icon className="fas fa-external-link-square-alt" />
-          </a>
-        ) : (
-          '-'
-        ),
-      align: 'center',
-    },
-  ];
+  // const exposuresTableColumns = [
+  //   {
+  //     title: 'Point',
+  //     name: 'pointing',
+  //     headerTooltip: 'Pointings',
+  //   },
+  //   {
+  //     title: 'Name',
+  //     name: 'name',
+  //     headerTooltip: 'Object Name',
+  //   },
+  //   {
+  //     title: 'Num',
+  //     name: 'num',
+  //     align: 'right',
+  //     headerTooltip: 'Object Number',
+  //   },
+  //   {
+  //     title: 'Dyn Class',
+  //     name: 'dynclass',
+  //     headerTooltip: 'Dynamic Class',
+  //   },
+  //   {
+  //     title: 'RA  (deg)',
+  //     name: 'raj2000',
+  //     align: 'right',
+  //     customElement: (row) => (
+  //       <span>{row.raj2000 ? handleValues(row.raj2000) : ''}</span>
+  //     ),
+  //     headerTooltip: 'Right Ascension',
+  //   },
+  //   {
+  //     title: 'Dec (deg)',
+  //     name: 'decj2000',
+  //     align: 'right',
+  //     customElement: (row) => (
+  //       <span>{row.decj2000 ? handleValues(row.decj2000) : ''}</span>
+  //     ),
+  //     headerTooltip: 'Declination',
+  //   },
+  //   {
+  //     title: 'Visual Mag ',
+  //     name: 'mv',
+  //     align: 'right',
+  //   },
+  //   {
+  //     title: 'Error',
+  //     name: 'errpos',
+  //     align: 'right',
+  //     customElement: (row) => (
+  //       <span>{row.errpos ? handleValues(row.errpos) : ''}</span>
+  //     ),
+  //   },
+  //   {
+  //     title: 'Ang Dist (arcsec)',
+  //     name: 'd',
+  //     align: 'right',
+  //     customElement: (row) => <span>{row.d ? handleValues(row.d) : ''}</span>,
+  //     headerTooltip: 'Angular Distance',
+  //   },
+  //   {
+  //     title: 'dRAcosDec (arcsec/h)',
+  //     name: 'dracosdec',
+  //     align: 'right',
+  //     customElement: (row) => (
+  //       <span>{row.dracosdec ? handleValues(row.dracosdec) : ''}</span>
+  //     ),
+  //   },
+  //   {
+  //     title: 'dDEC  (arcsec/h)',
+  //     name: 'd',
+  //     align: 'right',
+  //     customElement: (row) => <span>{row.d ? handleValues(row.d) : ''}</span>,
+  //   },
+  //   {
+  //     title: 'Geoc Dist (AU)',
+  //     name: 'dgeo',
+  //     align: 'right',
+  //     customElement: (row) => (
+  //       <span>{row.dgeo ? handleValues(row.dgeo) : ''}</span>
+  //     ),
+  //     headerTooltip: 'Geocentric Distance',
+  //   },
+  //   {
+  //     title: 'Hel Dist (AU)',
+  //     name: 'dhelio',
+  //     align: 'right',
+  //     customElement: (row) => (
+  //       <span>{row.dhelio ? handleValues(row.dhelio) : ''}</span>
+  //     ),
+  //     headerTooltip: 'Heliocentric Distance',
+  //   },
+  //   {
+  //     title: 'Phase Angle (deg)',
+  //     name: 'phase',
+  //     align: 'right',
+  //     customElement: (row) => (
+  //       <span>{row.phase ? handleValues(row.phase) : ''}</span>
+  //     ),
+  //   },
+  //   {
+  //     title: 'Solar Elong',
+  //     name: 'solelong',
+  //     align: 'right',
+  //     customElement: (row) => (
+  //       <span>{row.solelong ? handleValues(row.solelong) : ''}</span>
+  //     ),
+  //     headerTooltip: 'Solar Elongantion',
+  //   },
+  //   {
+  //     title: 'Vec Pos x (AU)',
+  //     name: 'px',
+  //     align: 'right',
+  //     customElement: (row) => <span>{row.px ? handleValues(row.px) : ''}</span>,
+  //     headerTooltip: 'Vector Position in x',
+  //   },
+  //   {
+  //     title: 'Vec pos y (AU)',
+  //     name: 'py',
+  //     align: 'right',
+  //     customElement: (row) => <span>{row.py ? handleValues(row.py) : ''}</span>,
+  //     headerTooltip: 'Vector Position in y',
+  //   },
+  //   {
+  //     title: 'Vec Pos z (AU)',
+  //     name: 'pz',
+  //     align: 'right',
+  //     customElement: (row) => <span>{row.pz ? handleValues(row.pz) : ''}</span>,
+  //     headerTooltip: 'Vector Position in z',
+  //   },
+  //   {
+  //     title: 'Vec Pos x [AU/d]',
+  //     name: 'vx',
+  //     align: 'right',
+  //     customElement: (row) => <span>{row.vx ? handleValues(row.vx) : ''}</span>,
+  //     headerTooltip: 'Vector Position in x',
+  //   },
+  //   {
+  //     title: 'Vec Pos y [AU/d]',
+  //     name: 'vy',
+  //     align: 'right',
+  //     customElement: (row) => <span>{row.vy ? handleValues(row.vy) : ''}</span>,
+  //     headerTooltip: 'Vector Position in y',
+  //   },
+  //   {
+  //     title: 'Vec Pos z [AU/d]',
+  //     name: 'vz',
+  //     align: 'right',
+  //     customElement: (row) => <span>{row.vz ? handleValues(row.vz) : ''}</span>,
+  //     headerTooltip: 'Vector Position in z',
+  //   },
+  //   {
+  //     title: 'Epo Pos Vec (Julien Day)',
+  //     name: 'jdref',
+  //     align: 'right',
+  //     headerTooltip: 'Epoch of the position vector (Julian Day)',
+  //   },
+  //   {
+  //     title: 'Band',
+  //     name: 'band',
+  //     align: 'center',
+  //   },
+  //   {
+  //     title: 'Exp Num',
+  //     name: 'expnum',
+  //     align: 'right',
+  //     headerTooltip: 'Exposute Number',
+  //   },
+  //   {
+  //     title: 'CCD Num',
+  //     name: 'ccdnum',
+  //     align: 'right',
+  //   },
+  //   {
+  //     name: 'externallink',
+  //     title: 'VizieR',
+  //     customElement: (el) =>
+  //       el.externallink !== 'link' ? (
+  //         <a
+  //           href={el.externallink}
+  //           target="_blank"
+  //           rel="noopener noreferrer"
+  //           title={el.externallink}
+  //         >
+  //           <Icon className="fas fa-external-link-square-alt" />
+  //         </a>
+  //       ) : (
+  //         '-'
+  //       ),
+  //     align: 'center',
+  //   },
+  // ];
 
   const circleCoordinatesPlaneFormat = (x) => {
     if (typeof x === 'number') return x > 180 ? x - 360 : x;
@@ -237,7 +237,7 @@ function SkybotAsteroid({ setTitle }) {
     Number(`${Math.round(`${value}e${decimals}`)}e-${decimals}`);
 
   useEffect(() => {
-    setTitle('Skybot Run');
+    setTitle('Skybot');
   }, [setTitle]);
 
   useEffect(() => {
@@ -378,7 +378,7 @@ function SkybotAsteroid({ setTitle }) {
             <Button
               variant="contained"
               color="primary"
-              onClick={() => history.push(`/skybot/${runId}`)}
+              onClick={() => history.goBack()}
             >
               <Icon className="fas fa-undo" />
               <span>Back</span>
@@ -417,8 +417,8 @@ function SkybotAsteroid({ setTitle }) {
                 </Toolbar>
                 {exposuresTableData.length > 0 ? (
                   <Table
-                    columns={exposuresTableColumns}
-                    data={exposuresTableData}
+                    columns={[]}
+                    data={[]}
                     totalCount={exposuresTableData.length}
                     hasSearching={false}
                     remote={false}
