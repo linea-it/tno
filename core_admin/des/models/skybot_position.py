@@ -43,6 +43,13 @@ class SkybotPosition(models.Model):
         help_text='Field that identifies an CCD in the DES CCD table. represents desfile_id'
     )
 
+    ticket = models.BigIntegerField(
+        verbose_name='Skybot Ticket',
+        help_text='Id of the request made in the skybot. it serves to group all the positions that are of the same request.',
+        default=0,
+        db_index=True
+    )
+
     # TODO: Talvez seja necessário acrescentar uma relação com a execução que identificou esses CCD/Posição.
 
     class Meta:

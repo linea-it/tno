@@ -295,9 +295,11 @@ class DESImportSkybotPositions(ImportSkybotPositions):
                     # Renomeia a coluna id para position_id
                     df_inside.rename(
                         columns={'id': 'position_id'}, inplace=True)
+                    # Adiciona uma coluna Ticket
+                    df_inside['ticket'] = ticket
                     # Ordena as colunas na mesma ordem que a tabela des/skybot_positions
                     df_inside = df_inside.reindex(
-                        columns=['ccd_id', 'exposure_id', 'position_id'])
+                        columns=['ccd_id', 'exposure_id', 'position_id', 'ticket'])
                     # Convert todas as colunas para inteiro
                     df_inside = df_inside.astype(int)
 
@@ -386,7 +388,7 @@ class DESImportSkybotPositions(ImportSkybotPositions):
             # Recupera o nome da tabela des/skybot_positions
             table = self.des_sp_dao.get_tablename()
             # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
-            sql = "COPY %s (ccd_id, exposure_id, position_id) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
+            sql = "COPY %s (ccd_id, exposure_id, position_id, ticket) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
 
             # Executa o metodo que importa o arquivo csv na tabela.
             rowcount = self.des_sp_dao.import_with_copy_expert(sql, data)

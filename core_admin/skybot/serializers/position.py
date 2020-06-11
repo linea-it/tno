@@ -38,6 +38,6 @@ class PositionSerializer(serializers.ModelSerializer):
         
     def get_ticket(self, obj):
         try:
-            return str(obj.position.ticket)
+            return str(obj.ticket)
         except:
             return None
