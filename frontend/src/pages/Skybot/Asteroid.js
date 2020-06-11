@@ -15,14 +15,14 @@ import {
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import Table from '../../components/Table';
-import CCD from '../../components/Chart/CCD';
 import {
   getSkybotTicketById,
-  getAsteroidByTicket,
+  getPositionsByTicket,
+  getAsteroidsInsideCcdByTicket
 } from '../../services/api/Skybot';
 
 function SkybotAsteroid({ setTitle }) {
-  const { id, idRun } = useParams();
+  const { id } = useParams();
   const history = useHistory();
 
   const [ticket, setTicket] = useState(0);
@@ -31,7 +31,7 @@ function SkybotAsteroid({ setTitle }) {
     data: [],
     count: 0,
   });
-  const [insideCcdSwitch, setInsideCcdSwitch] = useState(true);
+  const [insideCcdOnly, setInsideCcdOnly] = useState(false);
 
   useEffect(() => {
     setTitle('Skybot');
@@ -166,22 +166,6 @@ function SkybotAsteroid({ setTitle }) {
       align: 'right',
       headerTooltip: 'Epoch of the position vector (Julian Day)',
     },
-    {
-      title: 'Band',
-      name: 'band',
-      align: 'center',
-    },
-    {
-      title: 'Exp Num',
-      name: 'expnum',
-      align: 'right',
-      headerTooltip: 'Exposute Number',
-    },
-    {
-      title: 'CCD Num',
-      name: 'ccdnum',
-      align: 'right',
-    },
   ];
 
   const loadData = ({ sorting, currentPage, pageSize }) => {
@@ -189,26 +173,36 @@ function SkybotAsteroid({ setTitle }) {
     const ordering = `${sorting[0].direction === 'desc' ? '-' : ''}${
       sorting[0].columnName
     }`;
-
-    getAsteroidByTicket({
-      ticket,
-      page,
-      pageSize,
-      ordering,
-    }).then((res) => {
-      setTableData({
-        count: res.count,
-        data: res.results,
-      });
-    });
+    if (insideCcdOnly) {
+      getAsteroidsInsideCcdByTicket({
+        ticket,
+        page,
+        pageSize,
+        ordering,
+      }).then(res => {
+        setTableData({
+          data: res.results,
+          count: res.count
+        })
+      })
+    } else {
+      getPositionsByTicket({
+        ticket,
+        page,
+        pageSize,
+        ordering,
+      }).then(res => {
+        setTableData({
+          data: res.results,
+          count: res.count
+        })
+      })
+    }
   };
 
-  useEffect(() => {
-    console.log(tableData);
-  }, [tableData]);
   const handleBackNavigation = () => history.goBack();
 
-  const handleAsteroidInCcds = () => setInsideCcdSwitch(!insideCcdSwitch);
+  const handleAsteroidInCcds = () => setInsideCcdOnly(!insideCcdOnly);
 
   return (
     <Grid container spacing={2}>
@@ -237,9 +231,9 @@ function SkybotAsteroid({ setTitle }) {
               <FormControlLabel
                 control={
                   <Switch
-                    checked={insideCcdSwitch}
+                    checked={insideCcdOnly}
                     onChange={handleAsteroidInCcds}
-                    value={insideCcdSwitch}
+                    value={insideCcdOnly}
                     color="primary"
                   />
                 }
@@ -253,6 +247,7 @@ function SkybotAsteroid({ setTitle }) {
                 totalCount={tableData.count}
                 loadData={loadData}
                 hasSearching={false}
+                reload={insideCcdOnly}
               />
             ) : (
               <Skeleton variant="rect" height={540} />

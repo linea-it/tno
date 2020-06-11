@@ -107,8 +107,14 @@ export const getSkybotTimeProfile = (id) =>
 export const getSkybotTicketById = (id) =>
   axios.get(`/des/skybot_job_result/${id}/`).then((res) => res.data.ticket);
 
-export const getAsteroidByTicket = ({ ticket, page, pageSize, ordering }) => {
+export const getPositionsByTicket = ({ ticket, page, pageSize, ordering }) => {
   const params = { ticket, page, pageSize, ordering };
 
   return axios.get('/skybot/position/', { params }).then((res) => res.data);
+};
+
+export const getAsteroidsInsideCcdByTicket = ({ ticket, page, pageSize, ordering }) => {
+  const params = { ticket, page, pageSize, ordering };
+
+  return axios.get('/des/skybot_position/', { params }).then((res) => res.data);
 };

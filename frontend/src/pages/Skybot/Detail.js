@@ -132,7 +132,7 @@ function SkybotDetail({ setTitle }) {
           <Button
             onClick={() =>
               history.push(
-                `/data-preparation/des/skybot/${row.id}/asteroid/${id}`
+                `/data-preparation/des/skybot/asteroid/${row.id}`
               )
             }
           >
