@@ -239,6 +239,6 @@ class SkybotPositionSerializer(serializers.ModelSerializer):
 
     def get_ticket(self, obj):
         try:
-            return obj.position.ticket
+            return str(obj.position.ticket)
         except:
             return None

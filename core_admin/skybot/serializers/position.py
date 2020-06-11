@@ -5,6 +5,7 @@ from skybot.models.position import Position
 
 class PositionSerializer(serializers.ModelSerializer):
 
+    ticket = serializers.SerializerMethodField()
     class Meta:
         model = Position
         fields = (
@@ -34,3 +35,9 @@ class PositionSerializer(serializers.ModelSerializer):
             'jdref',
             'ticket',
         )
+        
+    def get_ticket(self, obj):
+        try:
+            return str(obj.position.ticket)
+        except:
+            return None
