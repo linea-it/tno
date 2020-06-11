@@ -144,7 +144,8 @@ class Position(models.Model):
     ticket = models.BigIntegerField(
         verbose_name='Skybot Ticket',
         help_text='Id of the request made in the skybot. it serves to group all the positions that are of the same request.',
-        default=0
+        default=0,
+        db_index=True
     )
 
     class Meta:

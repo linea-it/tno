@@ -11,6 +11,8 @@ class SkybotJobResultSerializer(serializers.ModelSerializer):
     exposure = serializers.PrimaryKeyRelatedField(
         queryset=Exposure.objects.all(), many=False)
 
+    ticket = serializers.SerializerMethodField()
+
     class Meta:
         model = SkybotJobResult
         fields = (
@@ -25,3 +27,9 @@ class SkybotJobResultSerializer(serializers.ModelSerializer):
             'outside_ccd',
             'filename',
         )
+
+    def get_ticket(self, obj):
+        try:
+            return str(obj.ticket)
+        except:
+            return None

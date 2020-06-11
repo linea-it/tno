@@ -2,12 +2,12 @@ from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from common.read_csv import csv_to_dataframe
 from des.models import SkybotJob
 from des.serializers import SkybotJobSerializer
-
 from des.skybot.pipeline import DesSkybotPipeline
 
-from common.read_csv import csv_to_dataframe
+
 class SkybotJobViewSet(mixins.RetrieveModelMixin,
                        mixins.ListModelMixin,
                        viewsets.GenericViewSet):
@@ -44,7 +44,6 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         # e checar se o periodo ainda não foi executado.
         date_initial = params['date_initial']
         date_final = params['date_final']
-
 
         # Recuperar o usuario que submeteu o Job.
         owner = self.request.user
@@ -95,23 +94,6 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         })
 
     @action(detail=True)
-    def job_results(self, request, pk=None):
-
-        job = self.get_object()
-        page = int(request.query_params.get('page', 1))
-        pageSize = int(request.query_params.get('pageSize', 100))
-
-        rows, totalcount = csv_to_dataframe(
-            job.results, delimiter=';', header=True, page=page, pageSize=pageSize)
-
-        return Response(dict({
-            'results': rows,
-            'count': totalcount
-        }))
-
-
-
-    @action(detail=True)
     def time_profile(self, request, pk=None):
         """Retorna o Time Profile para um job que já foi concluido. 
         le os arquivos requests e loaddata que estão no diretório do job, 
@@ -134,18 +116,20 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
 
         # Ler o arquivo de requests
         df_request = pipeline.read_request_dataframe(job.path)
-        d_request = df_request.filter(['exposure', 'start', 'finish', 'positions', 'execution_time'], axis=1).values
+        d_request = df_request.filter(
+            ['exposure', 'start', 'finish', 'positions', 'execution_time'], axis=1).values
         a_request = d_request.tolist()
 
-        # Ler o arquivo de loaddata 
+        # Ler o arquivo de loaddata
         l_filepath = pipeline.get_loaddata_dataframe_filepath(job.path)
         df_loaddata = pipeline.read_loaddata_dataframe(l_filepath)
-        d_loaddata = df_loaddata.filter(['exposure', 'start', 'finish', 'positions', 'execution_time'], axis=1).values
+        d_loaddata = df_loaddata.filter(
+            ['exposure', 'start', 'finish', 'positions', 'execution_time'], axis=1).values
         a_loaddata = d_loaddata.tolist()
 
         return Response(dict({
-                'success': True,
-                'columns': ['exposure', 'start', 'finish', 'positions', 'execution_time'],
-                'requests': a_request,
-                'loaddata': a_loaddata
-            }))
+            'success': True,
+            'columns': ['exposure', 'start', 'finish', 'positions', 'execution_time'],
+            'requests': a_request,
+            'loaddata': a_loaddata
+        }))
