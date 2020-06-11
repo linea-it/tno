@@ -18,7 +18,7 @@ import SkybotTimeProfile from '../../components/Chart/SkybotTimeProfile';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import Progress from '../../components/Progress';
 import {
-  getSkybotResult,
+  getSkybotResultById,
   getSkybotRunById,
   getSkybotProgress,
   getSkybotTimeProfile,
@@ -97,26 +97,27 @@ function SkybotDetail({ setTitle }) {
   useEffect(() => {
     getSkybotTimeProfile(id).then((res) => {
       const { requests, loaddata } = res;
+      if (res.success) {
+        setTimeProfile({
+          requests: requests.map((request) => ({
+            [res.columns[0]]: request[0],
+            [res.columns[1]]: request[1],
+            [res.columns[2]]: request[2],
+            [res.columns[3]]: request[3],
+            [res.columns[4]]: request[4],
+          })),
 
-      setTimeProfile({
-        requests: requests.map((request) => ({
-          [res.columns[0]]: request[0],
-          [res.columns[1]]: request[1],
-          [res.columns[2]]: request[2],
-          [res.columns[3]]: request[3],
-          [res.columns[4]]: request[4],
-        })),
-
-        loaddata: loaddata.map((request) => ({
-          [res.columns[0]]: request[0],
-          [res.columns[1]]: request[1],
-          [res.columns[2]]: request[2],
-          [res.columns[3]]: request[3],
-          [res.columns[4]]: request[4],
-        })),
-      });
+          loaddata: loaddata.map((request) => ({
+            [res.columns[0]]: request[0],
+            [res.columns[1]]: request[1],
+            [res.columns[2]]: request[2],
+            [res.columns[3]]: request[3],
+            [res.columns[4]]: request[4],
+          })),
+        });
+      }
     });
-  }, []);
+  }, [id]);
 
   const tableColumns = [
     {
@@ -131,7 +132,7 @@ function SkybotDetail({ setTitle }) {
           <Button
             onClick={() =>
               history.push(
-                `/data-preparation/des/skybot/${id}/asteroid/${row.id}`
+                `/data-preparation/des/skybot/${row.id}/asteroid/${id}`
               )
             }
           >
@@ -139,10 +140,17 @@ function SkybotDetail({ setTitle }) {
           </Button>
         );
       },
+      sortingEnabled: false,
       align: 'center',
     },
     {
       name: 'id',
+      title: 'ID',
+      width: 120,
+      align: 'center',
+    },
+    {
+      name: 'exposure',
       title: 'Exposure',
       width: 120,
       align: 'center',
@@ -172,15 +180,24 @@ function SkybotDetail({ setTitle }) {
     {
       name: 'execution_time',
       title: 'Execution Time',
-      customElement: (row) => row.execution_time ? row.execution_time.split('.')[0] : '-',
+      customElement: (row) =>
+        row.execution_time ? row.execution_time.split('.')[0] : '-',
+    },
+    {
+      name: 'ticket',
+      title: 'Ticket',
+    customElement: (row) => <span title={row.ticket}>{row.ticket}</span>
     },
   ];
 
-  const loadData = ({ currentPage, pageSize }) => {
+  const loadData = ({ currentPage, pageSize, sorting }) => {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1;
+    const ordering = `${sorting[0].direction === 'desc' ? '-' : ''}${
+      sorting[0].columnName
+    }`;
 
-    getSkybotResult({ id, page, pageSize }).then((res) => {
+    getSkybotResultById({ id, page, pageSize, ordering }).then((res) => {
       setTableData(res.results);
       setTotalCount(res.count);
     });
@@ -343,7 +360,10 @@ function SkybotDetail({ setTitle }) {
                         loadData={loadData}
                         totalCount={totalCount}
                         hasSearching={false}
-                        hasSorting={false}
+                        defaultSorting={[
+                          { columnName: 'id', direction: 'asc' },
+                        ]}
+                        // hasSorting={false}
                         hasColumnVisibility={false}
                         hasToolbar={false}
                       />

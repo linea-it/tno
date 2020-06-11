@@ -88,11 +88,12 @@ export const stopSkybotRunById = (id) =>
 export const getSkybotProgress = (id) =>
   axios.get(`/des/skybot_job/${id}/heartbeat/`).then((res) => res.data);
 
-export const getSkybotResult = ({ id, pageSize, page }) => {
+export const getSkybotResultById = ({ id, pageSize, page, ordering }) => {
   const params = {
     job: id,
     page,
     pageSize,
+    ordering,
   };
 
   return axios
@@ -102,3 +103,12 @@ export const getSkybotResult = ({ id, pageSize, page }) => {
 
 export const getSkybotTimeProfile = (id) =>
   axios.get(`/des/skybot_job/${id}/time_profile/`).then((res) => res.data);
+
+export const getSkybotTicketById = (id) =>
+  axios.get(`/des/skybot_job_result/${id}/`).then((res) => res.data.ticket);
+
+export const getAsteroidByTicket = ({ ticket, page, pageSize, ordering }) => {
+  const params = { ticket, page, pageSize, ordering };
+
+  return axios.get('/skybot/position/', { params }).then((res) => res.data);
+};
