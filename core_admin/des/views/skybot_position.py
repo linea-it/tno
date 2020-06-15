@@ -11,6 +11,6 @@ class DesSkybotPositionViewSet(viewsets.ModelViewSet):
     serializer_class = SkybotPositionSerializer
     filter_fields = ('id', 'position', 'exposure', 'ccd', 'ticket',)
     ordering_fields = ('id', 'position__name', 'position__number',
-                       'position__dynclass', 'position__ra', 'position__dec', 'position__mv',)
+                       'position__dynclass', 'position__raj2000', 'position__decj2000', 'position__mv',)
     ordering = ('id',)
     search_fields = ('position__name', 'position__number',)
