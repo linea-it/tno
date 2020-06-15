@@ -12,6 +12,7 @@ import {
 } from '@material-ui/core';
 import { useParams, useHistory } from 'react-router-dom';
 import moment from 'moment';
+import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons';
 import List from '../../components/List';
 import Table from '../../components/Table';
 import SkybotTimeProfile from '../../components/Chart/SkybotTimeProfile';
@@ -134,12 +135,22 @@ function SkybotDetail({ setTitle }) {
               history.push(`/data-preparation/des/skybot/asteroid/${row.id}`)
             }
           >
-            <i className="fas fa-info-circle" />
+            <InfoOutlinedIcon />
           </Button>
         );
       },
       sortingEnabled: false,
       align: 'center',
+    },
+    {
+      name: 'success',
+      title: 'Status',
+      align: 'center',
+
+      customElement: (row) => (
+        <ColumnStatus status={row.success ? 'success' : 'failure'} />
+      ),
+      width: 130,
     },
     {
       name: 'id',
@@ -152,16 +163,6 @@ function SkybotDetail({ setTitle }) {
       title: 'Exposure',
       width: 120,
       align: 'center',
-    },
-    {
-      name: 'success',
-      title: 'Status',
-      align: 'center',
-
-      customElement: (row) => (
-        <ColumnStatus status={row.success ? 'success' : 'failure'} />
-      ),
-      width: 130,
     },
     {
       name: 'positions',

@@ -18,7 +18,7 @@ import Table from '../../components/Table';
 import {
   getSkybotTicketById,
   getPositionsByTicket,
-  getAsteroidsInsideCcdByTicket
+  getAsteroidsInsideCcdByTicket,
 } from '../../services/api/Skybot';
 
 function SkybotAsteroid({ setTitle }) {
@@ -31,7 +31,7 @@ function SkybotAsteroid({ setTitle }) {
     data: [],
     count: 0,
   });
-  const [insideCcdOnly, setInsideCcdOnly] = useState(false);
+  const [insideCcdOnly, setInsideCcdOnly] = useState(true);
 
   useEffect(() => {
     setTitle('Skybot');
@@ -42,11 +42,6 @@ function SkybotAsteroid({ setTitle }) {
   }, [id]);
 
   const tableColumns = [
-    {
-      title: 'ID',
-      name: 'id',
-      headerTooltip: 'Pointings',
-    },
     {
       title: 'Name',
       name: 'name',
@@ -84,87 +79,102 @@ function SkybotAsteroid({ setTitle }) {
       title: 'Error',
       name: 'errpos',
       align: 'right',
+      sortingEnabled: false,
     },
     {
       title: 'Ang Dist (arcsec)',
       name: 'd',
       align: 'right',
       headerTooltip: 'Angular Distance',
+      sortingEnabled: false,
     },
     {
       title: 'dRAcosDec (arcsec/h)',
       name: 'dracosdec',
       align: 'right',
+      sortingEnabled: false,
     },
     {
       title: 'dDEC  (arcsec/h)',
       name: 'ddec',
       align: 'right',
+      sortingEnabled: false,
     },
     {
       title: 'Geoc Dist (AU)',
       name: 'dgeo',
       align: 'right',
       headerTooltip: 'Geocentric Distance',
+      sortingEnabled: false,
     },
     {
       title: 'Hel Dist (AU)',
       name: 'dhelio',
       align: 'right',
       headerTooltip: 'Heliocentric Distance',
+      sortingEnabled: false,
     },
     {
       title: 'Phase Angle (deg)',
       name: 'phase',
       align: 'right',
+      sortingEnabled: false,
     },
     {
       title: 'Solar Elong',
       name: 'solelong',
       align: 'right',
       headerTooltip: 'Solar Elongantion',
+      sortingEnabled: false,
     },
     {
       title: 'Vec Pos x (AU)',
       name: 'px',
       align: 'right',
       headerTooltip: 'Vector Position in x',
+      sortingEnabled: false,
     },
     {
       title: 'Vec pos y (AU)',
       name: 'py',
       align: 'right',
       headerTooltip: 'Vector Position in y',
+      sortingEnabled: false,
     },
     {
       title: 'Vec Pos z (AU)',
       name: 'pz',
       align: 'right',
       headerTooltip: 'Vector Position in z',
+      sortingEnabled: false,
     },
     {
       title: 'Vec Pos x [AU/d]',
       name: 'vx',
       align: 'right',
       headerTooltip: 'Vector Position in x',
+      sortingEnabled: false,
     },
     {
       title: 'Vec Pos y [AU/d]',
       name: 'vy',
       align: 'right',
       headerTooltip: 'Vector Position in y',
+      sortingEnabled: false,
     },
     {
       title: 'Vec Pos z [AU/d]',
       name: 'vz',
       align: 'right',
       headerTooltip: 'Vector Position in z',
+      sortingEnabled: false,
     },
     {
       title: 'Epo Pos Vec (Julien Day)',
       name: 'jdref',
       align: 'right',
       headerTooltip: 'Epoch of the position vector (Julian Day)',
+      sortingEnabled: false,
     },
   ];
 
@@ -178,25 +188,25 @@ function SkybotAsteroid({ setTitle }) {
         ticket,
         page,
         pageSize,
-        ordering,
-      }).then(res => {
+        ordering: sorting,
+      }).then((res) => {
         setTableData({
           data: res.results,
-          count: res.count
-        })
-      })
+          count: res.count,
+        });
+      });
     } else {
       getPositionsByTicket({
         ticket,
         page,
         pageSize,
         ordering,
-      }).then(res => {
+      }).then((res) => {
         setTableData({
           data: res.results,
-          count: res.count
-        })
-      })
+          count: res.count,
+        });
+      });
     }
   };
 

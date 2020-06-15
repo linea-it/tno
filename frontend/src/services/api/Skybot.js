@@ -113,8 +113,27 @@ export const getPositionsByTicket = ({ ticket, page, pageSize, ordering }) => {
   return axios.get('/skybot/position/', { params }).then((res) => res.data);
 };
 
-export const getAsteroidsInsideCcdByTicket = ({ ticket, page, pageSize, ordering }) => {
-  const params = { ticket, page, pageSize, ordering };
+export const getAsteroidsInsideCcdByTicket = ({
+  ticket,
+  page,
+  pageSize,
+  ordering,
+}) => {
+  const positionProperties = ['name', 'number', 'dynclass', 'ra', 'dec', 'mv'];
+
+  let sorting = '';
+
+  if (positionProperties.includes(ordering[0].columnName)) {
+    sorting = `${ordering[0].direction === 'desc' ? '-' : ''}position__${
+      ordering[0].columnName
+    }`;
+  } else {
+    sorting = `${ordering[0].direction === 'desc' ? '-' : ''}${
+      ordering[0].columnName
+    }`;
+  }
+
+  const params = { ticket, page, pageSize, ordering: sorting };
 
   return axios.get('/des/skybot_position/', { params }).then((res) => res.data);
 };
