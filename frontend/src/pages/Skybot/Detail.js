@@ -12,13 +12,14 @@ import {
 } from '@material-ui/core';
 import { useParams, useHistory } from 'react-router-dom';
 import moment from 'moment';
+import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons';
 import List from '../../components/List';
 import Table from '../../components/Table';
 import SkybotTimeProfile from '../../components/Chart/SkybotTimeProfile';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import Progress from '../../components/Progress';
 import {
-  getSkybotResult,
+  getSkybotResultById,
   getSkybotRunById,
   getSkybotProgress,
   getSkybotTimeProfile,
@@ -97,26 +98,27 @@ function SkybotDetail({ setTitle }) {
   useEffect(() => {
     getSkybotTimeProfile(id).then((res) => {
       const { requests, loaddata } = res;
+      if (res.success) {
+        setTimeProfile({
+          requests: requests.map((request) => ({
+            [res.columns[0]]: request[0],
+            [res.columns[1]]: request[1],
+            [res.columns[2]]: request[2],
+            [res.columns[3]]: request[3],
+            [res.columns[4]]: request[4],
+          })),
 
-      setTimeProfile({
-        requests: requests.map((request) => ({
-          [res.columns[0]]: request[0],
-          [res.columns[1]]: request[1],
-          [res.columns[2]]: request[2],
-          [res.columns[3]]: request[3],
-          [res.columns[4]]: request[4],
-        })),
-
-        loaddata: loaddata.map((request) => ({
-          [res.columns[0]]: request[0],
-          [res.columns[1]]: request[1],
-          [res.columns[2]]: request[2],
-          [res.columns[3]]: request[3],
-          [res.columns[4]]: request[4],
-        })),
-      });
+          loaddata: loaddata.map((request) => ({
+            [res.columns[0]]: request[0],
+            [res.columns[1]]: request[1],
+            [res.columns[2]]: request[2],
+            [res.columns[3]]: request[3],
+            [res.columns[4]]: request[4],
+          })),
+        });
+      }
     });
-  }, []);
+  }, [id]);
 
   const tableColumns = [
     {
@@ -130,21 +132,14 @@ function SkybotDetail({ setTitle }) {
         return (
           <Button
             onClick={() =>
-              history.push(
-                `/data-preparation/des/skybot/${id}/asteroid/${row.id}`
-              )
+              history.push(`/data-preparation/des/skybot/asteroid/${row.id}`)
             }
           >
-            <i className="fas fa-info-circle" />
+            <InfoOutlinedIcon />
           </Button>
         );
       },
-      align: 'center',
-    },
-    {
-      name: 'id',
-      title: 'Exposure',
-      width: 120,
+      sortingEnabled: false,
       align: 'center',
     },
     {
@@ -156,6 +151,18 @@ function SkybotDetail({ setTitle }) {
         <ColumnStatus status={row.success ? 'success' : 'failure'} />
       ),
       width: 130,
+    },
+    {
+      name: 'id',
+      title: 'ID',
+      width: 120,
+      align: 'center',
+    },
+    {
+      name: 'exposure',
+      title: 'Exposure',
+      width: 120,
+      align: 'center',
     },
     {
       name: 'positions',
@@ -172,15 +179,20 @@ function SkybotDetail({ setTitle }) {
     {
       name: 'execution_time',
       title: 'Execution Time',
-      customElement: (row) => row.execution_time ? row.execution_time.split('.')[0] : '-',
+      width: 150,
+      customElement: (row) =>
+        row.execution_time ? row.execution_time.split('.')[0] : '-',
     },
   ];
 
-  const loadData = ({ currentPage, pageSize }) => {
+  const loadData = ({ currentPage, pageSize, sorting }) => {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1;
+    const ordering = `${sorting[0].direction === 'desc' ? '-' : ''}${
+      sorting[0].columnName
+    }`;
 
-    getSkybotResult({ id, page, pageSize }).then((res) => {
+    getSkybotResultById({ id, page, pageSize, ordering }).then((res) => {
       setTableData(res.results);
       setTotalCount(res.count);
     });
@@ -343,7 +355,10 @@ function SkybotDetail({ setTitle }) {
                         loadData={loadData}
                         totalCount={totalCount}
                         hasSearching={false}
-                        hasSorting={false}
+                        defaultSorting={[
+                          { columnName: 'id', direction: 'asc' },
+                        ]}
+                        // hasSorting={false}
                         hasColumnVisibility={false}
                         hasToolbar={false}
                       />

@@ -15,6 +15,7 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
+import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons';
 import Table from '../../components/Table';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import DateRangePicker from '../../components/Date/DateRangePicker';
@@ -132,7 +133,7 @@ function Skybot({ setTitle }) {
       name: 'id',
       title: 'Details',
       width: 110,
-      icon: <i className="fas fa-info-circle" />,
+      icon: <InfoOutlinedIcon />,
       action: (row) => history.push(`/data-preparation/des/skybot/${row.id}`),
       align: 'center',
       sortingEnabled: false,

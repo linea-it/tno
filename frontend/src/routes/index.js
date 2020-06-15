@@ -123,7 +123,7 @@ export default function Routes() {
       <Route
         isPrivate
         exact
-        path="/data-preparation/des/skybot/:runId/asteroid/:id"
+        path="/data-preparation/des/skybot/asteroid/:id"
         component={SkybotAsteroid}
       />
       <Route isPrivate exact path="/bsp-jpl" component={BspJpl} />
