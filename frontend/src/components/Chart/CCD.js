@@ -84,7 +84,7 @@ function CCD({ data, width, height }) {
         ],
       }}
       config={{
-        scrollZoom: true,
+        scrollZoom: false,
         displaylogo: false,
         responsive: true,
       }}
@@ -93,7 +93,7 @@ function CCD({ data, width, height }) {
 }
 
 CCD.defaultProps = {
-  width: 'auto',
+  width: null,
   height: 'auto',
 };
 

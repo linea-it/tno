@@ -19,22 +19,27 @@ import {
   getSkybotTicketById,
   getPositionsByTicket,
   getAsteroidsInsideCcdByTicket,
+  getCcdsByExposure,
+  getExposureById,
 } from '../../services/api/Skybot';
+import CCD from '../../components/Chart/CCD';
 
 function SkybotAsteroid({ setTitle }) {
-  const { id, idRun } = useParams();
+  const { id } = useParams();
 
   const coneSearchRadius = 1.2; // ! Cone search radius in Degres.
 
   const history = useHistory();
-
   const [ticket, setTicket] = useState(0);
-
   const [tableData, setTableData] = useState({
     data: [],
     count: 0,
   });
   const [insideCcdOnly, setInsideCcdOnly] = useState(true);
+  const [ccds, setCcds] = useState([]);
+  const [ccdsPlotData, setCcdsPlotData] = useState({});
+  const [positions, setPositions] = useState([]);
+  const [exposure, setExposure] = useState({ radeg: null, decdeg: null });
 
   useEffect(() => {
     setTitle('Skybot');
@@ -218,46 +223,81 @@ function SkybotAsteroid({ setTitle }) {
     return x.map((n) => (n > 180 ? n - 360 : n));
   };
 
-  const round = (value, decimals) =>
-    Number(`${Math.round(`${value}e${decimals}`)}e-${decimals}`);
+  useEffect(() => {
+    getPositionsByTicket({
+      ticket,
+      page: 1,
+      pageSize: 9999,
+    }).then((res) => {
+      setPositions(res.results);
+    });
+  }, [ticket]);
 
   useEffect(() => {
     if (tableData.data.length > 0) {
-      console.log(idRun, id);
+      const idExposure = tableData.data[0].exposure;
 
-      const asteroids = {
-        x: tableData.data.map((res) => circleCoordinatesPlaneFormat(res.ra)),
-        y: tableData.data.map((res) => res.dec),
+      getCcdsByExposure(idExposure).then((res) => {
+        setCcds(res.results);
+      });
+    }
+  }, [tableData]);
+
+  useEffect(() => {
+    if (tableData.data.length > 0) {
+      const idExposure = tableData.data[0].exposure;
+
+      getExposureById(idExposure).then((res) => {
+        setExposure(res);
+      });
+    }
+  }, [tableData]);
+
+  useEffect(() => {
+    if (
+      positions.length > 0 &&
+      ccds.length > 0 &&
+      exposure.radeg !== null &&
+      exposure.decdeg !== null
+    ) {
+      const center = {
+        x: exposure.radeg,
+        y: exposure.decdeg,
       };
 
-      // getExposurePlot(runId, id).then((res) => {
-      //   const center = { x: res.ra, y: res.dec };
-      //   setCcdsPlotData({
-      //     ccds: res.ccds.map((row) => ({
-      //       x: [
-      //         circleCoordinatesPlaneFormat(row.rac1),
-      //         circleCoordinatesPlaneFormat(row.rac2),
-      //         circleCoordinatesPlaneFormat(row.rac3),
-      //         circleCoordinatesPlaneFormat(row.rac4),
-      //         circleCoordinatesPlaneFormat(row.rac1),
-      //       ],
-      //       y: [row.decc1, row.decc2, row.decc3, row.decc4, row.decc1],
-      //     })),
-      //     asteroids: {
-      //       x: circleCoordinatesPlaneFormat(res.skybot_output.ra),
-      //       y: res.skybot_output.dec,
-      //     },
-      //     asteroidsLimit: {
-      //       x: [
-      //         circleCoordinatesPlaneFormat(center.x - coneSearchRadius),
-      //         circleCoordinatesPlaneFormat(center.x + coneSearchRadius),
-      //       ],
-      //       y: [center.y - coneSearchRadius, center.y + coneSearchRadius],
-      //     },
-      //   });
-      // });
+      const ccdRows = ccds.map((ccd) => ({
+        x: [
+          circleCoordinatesPlaneFormat(Number(ccd.rac1)),
+          circleCoordinatesPlaneFormat(Number(ccd.rac2)),
+          circleCoordinatesPlaneFormat(Number(ccd.rac3)),
+          circleCoordinatesPlaneFormat(Number(ccd.rac4)),
+          circleCoordinatesPlaneFormat(Number(ccd.rac1)),
+        ],
+        y: [ccd.decc1, ccd.decc2, ccd.decc3, ccd.decc4, ccd.decc1],
+      }));
+
+      const asteroidRows = {
+        x: positions.map((res) =>
+          circleCoordinatesPlaneFormat(Number(res.raj2000))
+        ),
+        y: positions.map((res) => res.decj2000),
+      };
+
+      const asteroidLimitRows = {
+        x: [
+          circleCoordinatesPlaneFormat(center.x - coneSearchRadius),
+          circleCoordinatesPlaneFormat(center.x + coneSearchRadius),
+        ],
+        y: [center.y - coneSearchRadius, center.y + coneSearchRadius],
+      };
+
+      setCcdsPlotData({
+        ccds: ccdRows,
+        asteroids: asteroidRows,
+        asteroidsLimit: asteroidLimitRows,
+      });
     }
-  }, [idRun, id, tableData]);
+  }, [positions, ccds, exposure]);
 
   const handleBackNavigation = () => history.goBack();
 
@@ -281,6 +321,18 @@ function SkybotAsteroid({ setTitle }) {
             </Button>
           </Grid>
         </Grid>
+      </Grid>
+      <Grid item xs={12}>
+        <Card>
+          <CardHeader title="Asteroids Inside CCD" />
+          <CardContent>
+            {'ccds' in ccdsPlotData ? (
+              <CCD data={ccdsPlotData} height={550} />
+            ) : (
+              <Skeleton variant="rect" height={550} />
+            )}
+          </CardContent>
+        </Card>
       </Grid>
       <Grid item xs={12}>
         <Card>

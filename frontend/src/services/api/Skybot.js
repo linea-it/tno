@@ -144,3 +144,12 @@ export const getAsteroidsInsideCcdByTicket = ({
 
   return axios.get('/des/skybot_position/', { params }).then((res) => res.data);
 };
+
+export const getCcdsByExposure = (exposure) => {
+  const params = { exposure };
+
+  return axios.get('/des/ccd/', { params }).then((res) => res.data);
+};
+
+export const getExposureById = (id) =>
+  axios.get(`/des/exposure/${id}`).then((res) => res.data);
