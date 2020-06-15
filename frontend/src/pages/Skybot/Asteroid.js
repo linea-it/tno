@@ -22,7 +22,10 @@ import {
 } from '../../services/api/Skybot';
 
 function SkybotAsteroid({ setTitle }) {
-  const { id } = useParams();
+  const { id, idRun } = useParams();
+
+  const coneSearchRadius = 1.2; // ! Cone search radius in Degres.
+
   const history = useHistory();
 
   const [ticket, setTicket] = useState(0);
@@ -209,6 +212,52 @@ function SkybotAsteroid({ setTitle }) {
       });
     }
   };
+
+  const circleCoordinatesPlaneFormat = (x) => {
+    if (typeof x === 'number') return x > 180 ? x - 360 : x;
+    return x.map((n) => (n > 180 ? n - 360 : n));
+  };
+
+  const round = (value, decimals) =>
+    Number(`${Math.round(`${value}e${decimals}`)}e-${decimals}`);
+
+  useEffect(() => {
+    if (tableData.data.length > 0) {
+      console.log(idRun, id);
+
+      const asteroids = {
+        x: tableData.data.map((res) => circleCoordinatesPlaneFormat(res.ra)),
+        y: tableData.data.map((res) => res.dec),
+      };
+
+      // getExposurePlot(runId, id).then((res) => {
+      //   const center = { x: res.ra, y: res.dec };
+      //   setCcdsPlotData({
+      //     ccds: res.ccds.map((row) => ({
+      //       x: [
+      //         circleCoordinatesPlaneFormat(row.rac1),
+      //         circleCoordinatesPlaneFormat(row.rac2),
+      //         circleCoordinatesPlaneFormat(row.rac3),
+      //         circleCoordinatesPlaneFormat(row.rac4),
+      //         circleCoordinatesPlaneFormat(row.rac1),
+      //       ],
+      //       y: [row.decc1, row.decc2, row.decc3, row.decc4, row.decc1],
+      //     })),
+      //     asteroids: {
+      //       x: circleCoordinatesPlaneFormat(res.skybot_output.ra),
+      //       y: res.skybot_output.dec,
+      //     },
+      //     asteroidsLimit: {
+      //       x: [
+      //         circleCoordinatesPlaneFormat(center.x - coneSearchRadius),
+      //         circleCoordinatesPlaneFormat(center.x + coneSearchRadius),
+      //       ],
+      //       y: [center.y - coneSearchRadius, center.y + coneSearchRadius],
+      //     },
+      //   });
+      // });
+    }
+  }, [idRun, id, tableData]);
 
   const handleBackNavigation = () => history.goBack();
 

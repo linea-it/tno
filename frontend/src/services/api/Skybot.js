@@ -119,7 +119,14 @@ export const getAsteroidsInsideCcdByTicket = ({
   pageSize,
   ordering,
 }) => {
-  const positionProperties = ['name', 'number', 'dynclass', 'raj2000', 'decj2000', 'mv'];
+  const positionProperties = [
+    'name',
+    'number',
+    'dynclass',
+    'raj2000',
+    'decj2000',
+    'mv',
+  ];
 
   let sorting = '';
 
