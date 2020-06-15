@@ -178,6 +178,7 @@ function SkybotDetail({ setTitle }) {
     {
       name: 'execution_time',
       title: 'Execution Time',
+      width: 150,
       customElement: (row) =>
         row.execution_time ? row.execution_time.split('.')[0] : '-',
     },
