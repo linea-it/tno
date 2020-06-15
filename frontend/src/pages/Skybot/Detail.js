@@ -131,9 +131,7 @@ function SkybotDetail({ setTitle }) {
         return (
           <Button
             onClick={() =>
-              history.push(
-                `/data-preparation/des/skybot/asteroid/${row.id}`
-              )
+              history.push(`/data-preparation/des/skybot/asteroid/${row.id}`)
             }
           >
             <i className="fas fa-info-circle" />
@@ -182,11 +180,6 @@ function SkybotDetail({ setTitle }) {
       title: 'Execution Time',
       customElement: (row) =>
         row.execution_time ? row.execution_time.split('.')[0] : '-',
-    },
-    {
-      name: 'ticket',
-      title: 'Ticket',
-    customElement: (row) => <span title={row.ticket}>{row.ticket}</span>
     },
   ];
 
