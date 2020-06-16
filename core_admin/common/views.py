@@ -18,7 +18,6 @@ from django.shortcuts import redirect
 from praia.models import Run
 from praia.pipeline.register import check_astrometry_running, register_astrometry_outputs
 from django.contrib.auth import authenticate, login
-from tno.auth_shibboleth import ShibbolethBackend
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 
@@ -330,68 +329,3 @@ def download_file(request):
                     os.path.basename(filepath)
                 return response
 
-
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def auth_shibboleth(request):
-
-    logger = logging.getLogger('auth_shibboleth')
-    logger.info("---------------------------------------------------------")
-    logger.info("Shibboleth Authentication Endpoint")
-
-    if request.method == 'GET':
-        logger.debug(request.query_params)
-
-        logger.debug("Is Authenticated: %s" % request.user.is_authenticated)
-
-        if not request.user.is_authenticated:
-            try:
-                data = request.query_params
-                sid = data['sid']
-                logger.debug("Session ID: %s" % sid)
-
-            except KeyError:
-                logger.error("Parameter \"sid\"  session id  is unknown.")
-
-            # Fazer o parse do arquivo de sessao antes de chamar o authenticate
-            try:
-                session_data = ShibbolethBackend().read_session_file(sid)
-            except Exception as e:
-                logger.error(e)
-            finally:
-                # Deletar o aquivo de sessao
-                ShibbolethBackend().destroy_session_file(sid)
-
-            try:
-                # TODO: melhorar a checagem de authenticacao. verificar mais atributos como a origem por exemplo.
-                # Tenta autenticar o usuario com os dados da sessao
-                user = ShibbolethBackend().authenticate(
-                    request, session_data, username=None, password=None)
-
-                # Setar o tempo de expiracao da sessao, necessario ser feito antes do login
-                # baseado nesta resposta https://stackoverflow.com/a/27062144/9063237
-                # a data de expiração está em Unix epoch time. conversor de epoch online util para testes: https://www.epochconverter.com/
-                request.session.expire_date = session_data.get(
-                    'Shib-Session-Expires')
-
-                # Efetua o Login
-                login(request, user, backend='tno.auth_shibboleth.ShibbolethBackend')
-
-            except Exception as e:
-                logger.error(e)
-                logger.error("User not found, authentication failed.")
-
-        else:
-            # TODO: Revisar esta parte pode haver inconsistencias.
-            logger.info("User is already logged in does nothing.")
-
-        # Just Checking if is authenticated
-        logger.info("Is Authenticated: %s" %
-                    request.user.is_authenticated)
-
-    # Redireciona para a home
-    home = settings.HOST_URL
-    logger.info("Redirect to Home: [ %s:%s ]" % (request.scheme, home))
-    response = redirect(home)
-
-    return response

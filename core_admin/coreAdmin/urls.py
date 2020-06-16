@@ -102,7 +102,3 @@ urlpatterns = [
     url(r'^api/teste/', common_views.teste),
 ] + static('api'+settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-# Adiciona a rota de authenticacao com Shibboleth se a variavel AUTH_SHIB_URL tiver valor
-if settings.AUTH_SHIB_URL is not None:
-    urlpatterns.append(url(r'^api/auth_shibboleth/',
-                           common_views.auth_shibboleth))
