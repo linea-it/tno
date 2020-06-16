@@ -145,6 +145,14 @@ export const getAsteroidsInsideCcdByTicket = ({
   return axios.get('/des/skybot_position/', { params }).then((res) => res.data);
 };
 
+export const getPositionsInsideCcdByTicket = ({ ticket, page, pageSize }) => {
+  const params = { ticket, page, pageSize };
+
+  return axios
+    .get('/des/skybot_position/', { params })
+    .then((res) => res.data.results.map((row) => row.position));
+};
+
 export const getCcdsByExposure = (exposure) => {
   const params = { exposure };
 

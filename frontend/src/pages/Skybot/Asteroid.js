@@ -19,6 +19,7 @@ import {
   getSkybotTicketById,
   getPositionsByTicket,
   getAsteroidsInsideCcdByTicket,
+  getPositionsInsideCcdByTicket,
   getCcdsByExposure,
   getExposureById,
 } from '../../services/api/Skybot';
@@ -40,6 +41,7 @@ function SkybotAsteroid({ setTitle }) {
   const [ccdsPlotData, setCcdsPlotData] = useState({});
   const [positions, setPositions] = useState([]);
   const [exposure, setExposure] = useState({ radeg: null, decdeg: null });
+  const [asteroidsInsideCcd, setAsteroidsInsideCcd] = useState([]);
 
   useEffect(() => {
     setTitle('Skybot');
@@ -231,6 +233,13 @@ function SkybotAsteroid({ setTitle }) {
     }).then((res) => {
       setPositions(res.results);
     });
+    getPositionsInsideCcdByTicket({
+      ticket,
+      page: 1,
+      pageSize: 9999,
+    }).then((res) => {
+      setAsteroidsInsideCcd(res);
+    });
   }, [ticket]);
 
   useEffect(() => {
@@ -258,7 +267,8 @@ function SkybotAsteroid({ setTitle }) {
       positions.length > 0 &&
       ccds.length > 0 &&
       exposure.radeg !== null &&
-      exposure.decdeg !== null
+      exposure.decdeg !== null &&
+      asteroidsInsideCcd.length > 0
     ) {
       const center = {
         x: exposure.radeg,
@@ -276,8 +286,24 @@ function SkybotAsteroid({ setTitle }) {
         y: [ccd.decc1, ccd.decc2, ccd.decc3, ccd.decc4, ccd.decc1],
       }));
 
-      const asteroidRows = {
-        x: positions.map((res) =>
+      const asteroids = {
+        inside: positions.filter((position) =>
+          asteroidsInsideCcd.includes(position.id)
+        ),
+        outside: positions.filter(
+          (position) => !asteroidsInsideCcd.includes(position.id)
+        ),
+      };
+
+      const asteroidInsideCcdRows = {
+        x: asteroids.inside.map((res) =>
+          circleCoordinatesPlaneFormat(Number(res.raj2000))
+        ),
+        y: positions.map((res) => res.decj2000),
+      };
+
+      const asteroidOutsideCcdRows = {
+        x: asteroids.outside.map((res) =>
           circleCoordinatesPlaneFormat(Number(res.raj2000))
         ),
         y: positions.map((res) => res.decj2000),
@@ -293,11 +319,12 @@ function SkybotAsteroid({ setTitle }) {
 
       setCcdsPlotData({
         ccds: ccdRows,
-        asteroids: asteroidRows,
+        asteroidsInside: asteroidInsideCcdRows,
+        asteroidsOutside: asteroidOutsideCcdRows,
         asteroidsLimit: asteroidLimitRows,
       });
     }
-  }, [positions, ccds, exposure]);
+  }, [positions, asteroidsInsideCcd, ccds, exposure]);
 
   const handleBackNavigation = () => history.goBack();
 

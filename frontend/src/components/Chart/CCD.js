@@ -31,11 +31,19 @@ function CCD({ data, width, height }) {
   });
 
   rows.push({
-    x: data.asteroids.x,
-    y: data.asteroids.y,
+    x: data.asteroidsInside.x,
+    y: data.asteroidsInside.y,
     mode: 'markers',
     type: 'scatter',
-    name: 'Asteroids',
+    name: 'Asteroids Inside CCD',
+  });
+
+  rows.push({
+    x: data.asteroidsOutside.x,
+    y: data.asteroidsOutside.y,
+    mode: 'markers',
+    type: 'scatter',
+    name: 'Asteroids Outside CCD',
   });
 
   rows.push({
