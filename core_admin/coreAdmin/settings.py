@@ -220,7 +220,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 AUTHENTICATION_BACKENDS = (
-    'tno.auth_shibboleth.ShibbolethBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
