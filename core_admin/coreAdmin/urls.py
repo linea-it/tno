@@ -102,3 +102,7 @@ urlpatterns = [
     url(r'^api/teste/', common_views.teste),
 ] + static('api'+settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+if settings.DEBUG:
+    urlpatterns += [
+        url(r'^api/shib/', include('shibboleth.urls', namespace='shibboleth')),
+    ]

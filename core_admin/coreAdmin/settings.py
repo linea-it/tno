@@ -110,6 +110,7 @@ INSTALLED_APPS = [
     'django_filters',
     'url_filter',
     'corsheaders',
+    'shibboleth',
 
     # Project Apps
     'common',
@@ -129,7 +130,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    # 'shibboleth.middleware.ShibbolethRemoteUserMiddleware',
+    'shibboleth.middleware.ShibbolethRemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'current_user.CurrentUserMiddleware',
@@ -149,6 +150,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django_settings_export.settings_export',
+                # 'shibboleth.context_processors.login_link',
+                # 'shibboleth.context_processors.logout_link',                
             ],
         },
     },
@@ -222,7 +225,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    # 'shibboleth.backends.ShibbolethRemoteUserBackend',
+    'shibboleth.backends.ShibbolethRemoteUserBackend',
 )
 
 REST_FRAMEWORK = {
@@ -307,14 +310,28 @@ if HOST_URL is not None:
 
 
 # Auth Shibboleth
+# https://github.com/Brown-University-Library/django-shibboleth-remoteuser
+SHIBBOLETH_ATTRIBUTE_MAP = {
+    "eppn": (True, "username"),
+    "cn": (True, "first_name"),
+    "sn": (True, "last_name"),
+    "mail": (True, "email"),
+}
+# Auth Shibboleth
 # Variaveis de configuração para o Login Institucional usando Shibboleth e Gidlab.
 # se AUTH_SHIB_URL usar None para desativar o login institucional, isto remove o botão da tela de login.
 AUTH_SHIB_URL = None
 try:
     AUTH_SHIB_URL = os.getenv('AUTH_SHIB_URL')
+
     if AUTH_SHIB_URL is not None:
-        AUTH_SHIB_SESSIONS = "/auth_shib_sessions"
-        AUTH_SHIB_CRYPT_KEY = os.getenv('AUTH_SHIB_CRYPT_KEY')
+        
+        # LOGIN_URL = 'https://gidlabdemo.linea.gov.br/Shibboleth.sso/Login'
+        LOGIN_URL = AUTH_SHIB_URL
+
+        AUTHENTICATION_BACKENDS += (
+            'shibboleth.backends.ShibbolethRemoteUserBackend',
+        )
 
 except Exception as e:
     raise ("Auth Shibboleth settings are required in .env file")

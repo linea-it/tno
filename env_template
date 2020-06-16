@@ -63,21 +63,15 @@ DOCKER_HOST=unix:///var/run/docker.sock
 
 # Autenticao Gidlab Shibboleth
 # Url para pagina de login do Shibboleth, usar None para desativar o login institucional
-AUTH_SHIB_URL=http://gidlabdemo.linea.gov.br/Shibboleth.sso/Login
-# Diretório onde ficam os arquivos de sessão.
-# é necessario que os 2 containers possam escrever neste diretório.
-AUTH_SHIB_SESSIONS=./auth_shib_sessions
-# Chave para criptografar os arquivos de sessao. 
-# gerada randomicamente por este site por exemplo: https://randomkeygen.com/
-AUTH_SHIB_CRYPT_KEY=
+AUTH_SHIB_URL=https://gidlabdemo.linea.gov.br/Shibboleth.sso/Login
 
 # DES Acesso para download de imagens (CCDs)
 # ARCHIVE_URL = Endereco http para donwload dos ccds, ex: 'https://desar2.cosmology.illinois.edu/DESFiles/desarchive/'. 
 # usar None para desabilitar o download de ccds
 DES_ARCHIVE_URL=https://desar2.cosmology.illinois.edu/DESFiles/desarchive/
 # DES username e Password para fazer o download. 
-DES_USERNAME=rcampisa
-DES_PASSWORD=rca2017
+DES_USERNAME=
+DES_PASSWORD=
 
 
 # Skybot Server
