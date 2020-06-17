@@ -19,26 +19,35 @@ import {
   getSkybotTicketById,
   getPositionsByTicket,
   getAsteroidsInsideCcdByTicket,
+  getCcdsByExposure,
+  getExposureById,
 } from '../../services/api/Skybot';
+import CCD from '../../components/Chart/CCD';
 
 function SkybotAsteroid({ setTitle }) {
   const { id } = useParams();
+
+  const coneSearchRadius = 1.2; // ! Cone search radius in Degres.
+
   const history = useHistory();
-
   const [ticket, setTicket] = useState(0);
-
-  const [tableData, setTableData] = useState({
-    data: [],
-    count: 0,
-  });
+  const [idExposure, setIdExposure] = useState(0);
   const [insideCcdOnly, setInsideCcdOnly] = useState(true);
+  const [ccds, setCcds] = useState([]);
+  const [ccdsPlotData, setCcdsPlotData] = useState({});
+  const [positions, setPositions] = useState([]);
+  const [exposure, setExposure] = useState({ radeg: null, decdeg: null });
+  const [asteroidsInsideCcd, setAsteroidsInsideCcd] = useState([]);
 
   useEffect(() => {
     setTitle('Skybot');
   }, [setTitle]);
 
   useEffect(() => {
-    getSkybotTicketById(id).then((res) => setTicket(res));
+    getSkybotTicketById(id).then((res) => {
+      setIdExposure(res.exposure);
+      setTicket(res.ticket);
+    });
   }, [id]);
 
   const tableColumns = [
@@ -178,37 +187,104 @@ function SkybotAsteroid({ setTitle }) {
     },
   ];
 
-  const loadData = ({ sorting, currentPage, pageSize }) => {
-    const page = currentPage + 1;
-    const ordering = `${sorting[0].direction === 'desc' ? '-' : ''}${
-      sorting[0].columnName
-    }`;
-    if (insideCcdOnly) {
-      getAsteroidsInsideCcdByTicket({
-        ticket,
-        page,
-        pageSize,
-        ordering: sorting,
-      }).then((res) => {
-        setTableData({
-          data: res.results,
-          count: res.count,
-        });
+  const circleCoordinatesPlaneFormat = (x) => {
+    if (typeof x === 'number') return x > 180 ? x - 360 : x;
+    return x.map((n) => (n > 180 ? n - 360 : n));
+  };
+
+  useEffect(() => {
+    if (ticket !== 0) {
+      getPositionsByTicket(ticket).then((res) => {
+        setPositions(res.results);
       });
-    } else {
-      getPositionsByTicket({
-        ticket,
-        page,
-        pageSize,
-        ordering,
-      }).then((res) => {
-        setTableData({
-          data: res.results,
-          count: res.count,
-        });
+      getAsteroidsInsideCcdByTicket(ticket).then((res) => {
+        setAsteroidsInsideCcd(res.results);
       });
     }
-  };
+  }, [ticket]);
+
+  useEffect(() => {
+    if (idExposure !== 0) {
+      getCcdsByExposure(idExposure).then((res) => {
+        setCcds(res.results);
+      });
+    }
+  }, [idExposure]);
+
+  useEffect(() => {
+    if (idExposure !== 0) {
+      getExposureById(idExposure).then((res) => {
+        setExposure(res);
+      });
+    }
+  }, [idExposure]);
+
+  useEffect(() => {
+    if (
+      positions.length > 0 &&
+      ccds.length > 0 &&
+      exposure.radeg !== null &&
+      exposure.decdeg !== null &&
+      asteroidsInsideCcd.length > 0
+    ) {
+      const center = {
+        x: exposure.radeg,
+        y: exposure.decdeg,
+      };
+
+      const ccdRows = ccds.map((ccd) => ({
+        x: [
+          circleCoordinatesPlaneFormat(Number(ccd.rac1)),
+          circleCoordinatesPlaneFormat(Number(ccd.rac2)),
+          circleCoordinatesPlaneFormat(Number(ccd.rac3)),
+          circleCoordinatesPlaneFormat(Number(ccd.rac4)),
+          circleCoordinatesPlaneFormat(Number(ccd.rac1)),
+        ],
+        y: [ccd.decc1, ccd.decc2, ccd.decc3, ccd.decc4, ccd.decc1],
+      }));
+
+      const asteroidsIdInsideCcd = asteroidsInsideCcd.map(
+        (res) => res.position
+      );
+
+      const asteroidsInside = positions.filter((position) =>
+        asteroidsIdInsideCcd.includes(position.id)
+      );
+
+      const asteroidsOutside = positions.filter(
+        (position) => !asteroidsIdInsideCcd.includes(position.id)
+      );
+
+      const asteroidInsideCcdRows = {
+        x: asteroidsInside.map((res) =>
+          circleCoordinatesPlaneFormat(Number(res.raj2000))
+        ),
+        y: asteroidsInside.map((res) => res.decj2000),
+      };
+
+      const asteroidOutsideCcdRows = {
+        x: asteroidsOutside.map((res) =>
+          circleCoordinatesPlaneFormat(Number(res.raj2000))
+        ),
+        y: asteroidsOutside.map((res) => res.decj2000),
+      };
+
+      const asteroidLimitRows = {
+        x: [
+          circleCoordinatesPlaneFormat(center.x - coneSearchRadius),
+          circleCoordinatesPlaneFormat(center.x + coneSearchRadius),
+        ],
+        y: [center.y - coneSearchRadius, center.y + coneSearchRadius],
+      };
+
+      setCcdsPlotData({
+        ccds: ccdRows,
+        asteroidsInside: asteroidInsideCcdRows,
+        asteroidsOutside: asteroidOutsideCcdRows,
+        asteroidsLimit: asteroidLimitRows,
+      });
+    }
+  }, [positions, asteroidsInsideCcd, ccds, exposure]);
 
   const handleBackNavigation = () => history.goBack();
 
@@ -235,6 +311,18 @@ function SkybotAsteroid({ setTitle }) {
       </Grid>
       <Grid item xs={12}>
         <Card>
+          <CardHeader title="Asteroids Inside CCD" />
+          <CardContent>
+            {'ccds' in ccdsPlotData ? (
+              <CCD data={ccdsPlotData} height={550} />
+            ) : (
+              <Skeleton variant="rect" height={550} />
+            )}
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item xs={12}>
+        <Card>
           <CardHeader title="Asteroids" />
           <CardContent>
             <Toolbar>
@@ -253,11 +341,12 @@ function SkybotAsteroid({ setTitle }) {
             {ticket !== 0 ? (
               <Table
                 columns={tableColumns}
-                data={tableData.data}
-                totalCount={tableData.count}
-                loadData={loadData}
+                data={insideCcdOnly ? asteroidsInsideCcd : positions}
+                totalCount={
+                  insideCcdOnly ? asteroidsInsideCcd.length : positions.length
+                }
                 hasSearching={false}
-                reload={insideCcdOnly}
+                remote={false}
               />
             ) : (
               <Skeleton variant="rect" height={540} />
