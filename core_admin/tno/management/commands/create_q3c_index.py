@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection
-from tno.models import Pointing
 from des.models import Exposure, Ccd
 from skybot.models import Position
 
