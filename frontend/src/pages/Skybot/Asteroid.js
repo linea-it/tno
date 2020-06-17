@@ -299,14 +299,14 @@ function SkybotAsteroid({ setTitle }) {
         x: asteroids.inside.map((res) =>
           circleCoordinatesPlaneFormat(Number(res.raj2000))
         ),
-        y: positions.map((res) => res.decj2000),
+        y: asteroids.inside.map((res) => res.decj2000),
       };
 
       const asteroidOutsideCcdRows = {
         x: asteroids.outside.map((res) =>
           circleCoordinatesPlaneFormat(Number(res.raj2000))
         ),
-        y: positions.map((res) => res.decj2000),
+        y: asteroids.outside.map((res) => res.decj2000),
       };
 
       const asteroidLimitRows = {
