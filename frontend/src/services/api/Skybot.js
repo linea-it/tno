@@ -105,52 +105,18 @@ export const getSkybotTimeProfile = (id) =>
   axios.get(`/des/skybot_job/${id}/time_profile/`).then((res) => res.data);
 
 export const getSkybotTicketById = (id) =>
-  axios.get(`/des/skybot_job_result/${id}/`).then((res) => res.data.ticket);
+  axios.get(`/des/skybot_job_result/${id}/`).then((res) => res.data);
 
-export const getPositionsByTicket = ({ ticket, page, pageSize, ordering }) => {
-  const params = { ticket, page, pageSize, ordering };
+export const getPositionsByTicket = (ticket) => {
+  const params = { ticket, page: 1, pageSize: 9999 };
 
   return axios.get('/skybot/position/', { params }).then((res) => res.data);
 };
 
-export const getAsteroidsInsideCcdByTicket = ({
-  ticket,
-  page,
-  pageSize,
-  ordering,
-}) => {
-  const positionProperties = [
-    'name',
-    'number',
-    'dynclass',
-    'raj2000',
-    'decj2000',
-    'mv',
-  ];
-
-  let sorting = '';
-
-  if (positionProperties.includes(ordering[0].columnName)) {
-    sorting = `${ordering[0].direction === 'desc' ? '-' : ''}position__${
-      ordering[0].columnName
-    }`;
-  } else {
-    sorting = `${ordering[0].direction === 'desc' ? '-' : ''}${
-      ordering[0].columnName
-    }`;
-  }
-
-  const params = { ticket, page, pageSize, ordering: sorting };
+export const getAsteroidsInsideCcdByTicket = (ticket) => {
+  const params = { ticket, page: 1, pageSize: 9999 };
 
   return axios.get('/des/skybot_position/', { params }).then((res) => res.data);
-};
-
-export const getPositionsInsideCcdByTicket = ({ ticket, page, pageSize }) => {
-  const params = { ticket, page, pageSize };
-
-  return axios
-    .get('/des/skybot_position/', { params })
-    .then((res) => res.data.results.map((row) => row.position));
 };
 
 export const getCcdsByExposure = (exposure) => {
