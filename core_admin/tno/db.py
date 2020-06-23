@@ -78,12 +78,12 @@ class DBBase():
         with self.engine.connect() as con:
             return con.execute(stm)
 
-    def fetch_all_dict(self, stm):
+    def fetch_all_dict(self, stm, log=True):
 
         with self.engine.connect() as con:
             queryset = con.execute(stm)
 
-            if settings.DEBUG:
+            if settings.DEBUG is True and log is True:
                 self.debug_query(stm, True)
 
             rows = list()
@@ -217,7 +217,7 @@ class DBBase():
         if settings.DEBUG:
             sql = self.stm_to_str(stm, with_parameters)
 
-            print(sql)
+            # print(sql)
             self.logger.info(sql)
 
     def stm_to_str(self, stm, with_parameters=False):

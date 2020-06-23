@@ -1,7 +1,7 @@
 from datetime import datetime
 from io import StringIO
 
-from sqlalchemy import desc
+from sqlalchemy import Date, cast, desc, func
 from sqlalchemy.sql import and_, select
 
 from tno.db import DBBase
@@ -14,7 +14,6 @@ class DesSkybotJobResultDao(DBBase):
         schema = self.get_base_schema()
         self.tablename = 'des_skybotjobresult'
         self.tbl = self.get_table(self.tablename, schema)
-
 
     def import_data(self, dataframe):
         """
@@ -58,3 +57,46 @@ class DesSkybotJobResultDao(DBBase):
 
         except Exception as e:
             raise Exception("Failed to import data. Error: [%s]" % e)
+
+    def count_exec_by_period(self, start, end):
+        """
+            Esta query retorna o total de exposições executadas dentro do periodo. agrupadas por data. 
+            Faz um left join com a tabela de exposições para retornar todas as datas que tem exposição, 
+            mas a contagem e feita na tabela skybot_job_result que são as exposições que já foram executadas.
+
+            select
+                distinct date(de.date_obs),
+                count(ds.exposure_id) as count
+            from
+                des_exposure de
+            left join des_skybotjobresult ds on
+                (de.id = ds.exposure_id )
+            where
+                de.date_obs between '2019-01-01 00:00:00' and '2019-01-31 23:59:50'
+            group by
+                date(de.date_obs)
+            order by
+                date(de.date_obs);
+        """
+        # des_exposure
+        de_tbl = self.get_table('des_exposure', self.get_base_schema())
+
+        # des_skybotjobresult
+        ds_tbl = self.tbl
+
+        stm_join = de_tbl.join(ds_tbl, de_tbl.c.id ==
+                               ds_tbl.c.exposure_id, isouter=True)
+
+        stm = select([
+            cast(de_tbl.c.date_obs, Date).distinct().label('dates'),
+            func.count(ds_tbl.c.exposure_id).label('count')]).\
+            select_from(stm_join).\
+            where(and_(de_tbl.c.date_obs.between(str(start), str(end)))).\
+            group_by(cast(de_tbl.c.date_obs, Date)).\
+            order_by(cast(de_tbl.c.date_obs, Date))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows
