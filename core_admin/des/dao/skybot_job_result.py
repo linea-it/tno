@@ -114,6 +114,19 @@ class DesSkybotJobResultDao(DBBase):
             Returns:
                 rows (array) Exposições que ainda não foram executadas pelo skybot.
 
+
+        select
+            de.*
+        from
+            des_exposure de
+        where
+            de.date_obs between '2019-01-01 00:00:00' and '2019-01-31 23:59:50'
+            and de.id not in (
+            select
+                ds.exposure_id
+            from
+                des_skybotjobresult ds)
+
         """
         # des_exposure
         de_tbl = self.get_table('des_exposure', self.get_base_schema())
