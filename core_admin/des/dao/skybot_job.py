@@ -30,7 +30,7 @@ class DesSkybotJobDao(DBBase):
 
     def get_by_status(self, status):
         """Retorna os jobs pelo status
-        ATENÇÃO: Os jobs estão ordenados pela data de criação em ordem decrescente. está ordem é importante para o pipeline.
+        ATENÇÃO: Os jobs estão ordenados pela data de criação em ordem ascendente. está ordem é importante para o pipeline.
 
         Arguments:
             status {int} -- Status do job, como está definido no Model des/SkybotJob
