@@ -39,6 +39,8 @@ class DesSkybotPipeline():
 
         self.epdao = ExposureDao(pool=False)
 
+        self.dsdao = DesSkybotJobResultDao(pool=False)
+
     def get_job_by_id(self, id):
         return self.spdao.get_by_id(id)
 
@@ -158,6 +160,8 @@ class DesSkybotPipeline():
     def query_exposures_by_period(self, start, end):
         """Retorna todas as Des/Exposures que tenham date_obs entre o periodo start, end. 
 
+        23/06/2020 - Foi modificada a query para retornar somente as exposições que ainda não foram executadas.        
+
         Arguments:
             start {date} -- Data Inicial do periodo
             end {date} -- Data Final do periodo
@@ -165,7 +169,12 @@ class DesSkybotPipeline():
         Returns:
             Array -- Array com as exposições que atendem ao periodo. cada exposição tem o mesmo conteudo do model des.Exposures
         """
-        rows = self.epdao.exposures_by_period(start, end)
+
+        #  Esta query retorna todas as exposições independente de terem sido executadas ou não
+        # rows = self.epdao.exposures_by_period(start, end)
+
+        # Esta query retorna todas as exposições que ainda não foram executadas pelo skybot
+        rows = self.dsdao.not_exec_by_period(start, end)
 
         self.logger.info(
             "[%s] Exposures for the period were found." % len(rows))
@@ -1056,8 +1065,8 @@ class DesSkybotPipeline():
                 self.logger_import.info(
                     "Results file created: [%s]" % results_filepath)
 
-
-                self.logger_import.debug("Recording the results of each exposure in the database.")
+                self.logger_import.debug(
+                    "Recording the results of each exposure in the database.")
                 # Opitei por ler o arquivo csv recem criado, por que tive dificuldade
                 # em usar o dataset result, deu problemas na coluna exposure que estava sendo usada como index.
                 # le o arquivo results e cria um dataframe contendo só as colunas referente ao model Des/SkybotJobResult

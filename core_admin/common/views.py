@@ -32,14 +32,20 @@ def teste(request):
 
         # result = DesImportSkybotOutput().import_output_file("/archive/skybot_output/1/808801_Y.csv")
 
-        from des.skybot.pipeline import DESImportSkybotPositions
-        from des.models import SkybotJob
-        import logging
+        # from des.skybot.pipeline import DESImportSkybotPositions
+        # from des.models import SkybotJob
+        # import logging
 
-        # try:
-        #     log = logging.getLogger('skybot_load_data')
+        # # try:
+        # log = logging.getLogger('skybot')
 
-        #     log.info("TESTE1")
+        # log.info("TESTE1")
+
+        # from des.dao import DesSkybotJobResultDao
+
+        # a = DesSkybotJobResultDao().not_exec_by_period('2019-01-01 00:00:00', '2019-01-31 23:59:59')
+
+        # log.info("COUNT: %s" % len(a))
 
         #     job = SkybotJob.objects.get(pk=5)
 

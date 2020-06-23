@@ -23,7 +23,7 @@ class DesSkybotJobResultDao(DBBase):
                 dataframe (dataframe): Pandas Dataframe with the information to be imported.
 
             Returns:
-                rowcount (int):  the number of rows imported. 
+                rowcount (int):  the number of rows imported.
 
             Example SQL Copy:
                 COPY tno_skybotoutput (num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
@@ -60,8 +60,8 @@ class DesSkybotJobResultDao(DBBase):
 
     def count_exec_by_period(self, start, end):
         """
-            Esta query retorna o total de exposições executadas dentro do periodo. agrupadas por data. 
-            Faz um left join com a tabela de exposições para retornar todas as datas que tem exposição, 
+            Esta query retorna o total de exposições executadas dentro do periodo. agrupadas por data.
+            Faz um left join com a tabela de exposições para retornar todas as datas que tem exposição,
             mas a contagem e feita na tabela skybot_job_result que são as exposições que já foram executadas.
 
             select
@@ -94,6 +94,43 @@ class DesSkybotJobResultDao(DBBase):
             where(and_(de_tbl.c.date_obs.between(str(start), str(end)))).\
             group_by(cast(de_tbl.c.date_obs, Date)).\
             order_by(cast(de_tbl.c.date_obs, Date))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows
+
+    def not_exec_by_period(self, start, end):
+        """
+            Retorna todas as exposições que não foram executadas pelo skybot
+            para um periodo.
+
+            Parameters:
+                start (datetime): Periodo inicial que sera usado na seleção.
+
+                end (datetime): Periodo final que sera usado na seleção.
+
+            Returns:
+                rows (array) Exposições que ainda não foram executadas pelo skybot.
+
+        """
+        # des_exposure
+        de_tbl = self.get_table('des_exposure', self.get_base_schema())
+
+        # des_skybotjobresult
+        ds_tbl = self.tbl
+
+        stm = select(de_tbl.c).\
+            where(
+                and_(
+                    de_tbl.c.date_obs.between(str(start), str(end)),
+                    de_tbl.c.id.notin_(
+                        select([ds_tbl.c.exposure_id])
+                    )
+                )
+        ).\
+            order_by(de_tbl.c.date_obs)
 
         self.debug_query(stm, True)
 
