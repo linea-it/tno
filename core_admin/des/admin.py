@@ -83,7 +83,7 @@ class SkybotPositionAdmin(admin.ModelAdmin):
 @admin.register(SkybotJob)
 class SkybotJobAdmin(admin.ModelAdmin):
     list_display = ('id', 'status', 'owner', 'date_initial',
-                    'date_final', 'execution_time', 'exposures',)
+                    'date_final', 'execution_time', 'exposures', 'ccds', 'nights')
 
 
 @admin.register(SkybotJobResult)

@@ -72,6 +72,10 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
             date_final=date_final,
             # Job começa com Status Idle.
             status=1,
+            # Total de noites com exposições.
+            nights=t_nights,
+            # Total de CCDs no periodo
+            ccds=t_ccds,
         )
         job.save()
 
