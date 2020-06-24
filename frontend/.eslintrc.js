@@ -33,5 +33,6 @@ module.exports = {
     'jsx-a11y/click-events-have-key-events': 0,
     'radix': 0,
     'camelcase': 0,
+    'no-restricted-globals': 0,
   },
 };

@@ -2,23 +2,22 @@ import * as d3 from 'd3';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import useStyles from './styles';
 
-function CalendarHeatmap({ data }) {
-  const classes = useStyles();
+function CalendarExecutedNight({ data }) {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
     setRows(
       data.map((row) => ({
         date: d3.timeDay(new Date(`${row.date} 00:00`)),
-        value: row.count,
+        value: row.executed,
+        count: row.count,
       }))
     );
   }, [data]);
 
   function drawCalendar(dateValues) {
-    const svg = d3.select('#heatmap-svg');
+    const svg = d3.select('#executed-night-svg');
 
     const years = d3
       .nest()
@@ -60,9 +59,9 @@ function CalendarHeatmap({ data }) {
     const timeWeek = d3.utcSunday;
 
     const colorFn = d3
-      .scaleOrdinal()
-      .domain([Math.floor(minValue), Math.ceil(maxValue)])
-      .range(['#ebedf0', '#c6e48b', '#7bc96f', '#239a3b', '#196127']);
+      .scaleLinear()
+      .domain([0, 1, 2])
+      .range(['#ebedf0', '#939497', '#212121']);
 
     year
       .append('g')
@@ -91,9 +90,25 @@ function CalendarHeatmap({ data }) {
       .attr('y', (d) => countDay(d.date) * cellSize + 0.5)
       .attr('fill', (d) => colorFn(d.value))
       .append('title')
-      .text(
-        (d) => `${d.value} exposures on ${moment(d.date).format('MMM Do YYYY')}`
-      );
+      .text((d) => {
+        let hoverText = '';
+
+        switch (parseInt(d.value)) {
+          case 0:
+            hoverText = 'not executed';
+            break;
+          case 1:
+            hoverText = 'executed, but no exposure was found';
+            break;
+          case 2:
+            hoverText = `executed and it has ${d.count} exposures`;
+            break;
+          default:
+            break;
+        }
+
+        return `${moment(d.date).format('MMM Do YYYY')} was ${hoverText}`;
+      });
 
     const month = year
       .append('g')
@@ -116,7 +131,7 @@ function CalendarHeatmap({ data }) {
 
   useEffect(() => {
     drawCalendar(rows);
-    const svg = document.getElementById('heatmap-svg');
+    const svg = document.getElementById('executed-night-svg');
 
     // Get the bounds of the SVG content
     const bbox = svg.getBBox();
@@ -128,42 +143,13 @@ function CalendarHeatmap({ data }) {
 
   return (
     <div>
-      <svg id="heatmap-svg" />
-      <div
-        className={classes.legendWrapper}
-        title="A summary of exposures by date."
-      >
-        Less
-        <ul className={classes.legend}>
-          <li
-            className={classes.legendItem}
-            style={{ backgroundColor: '#ebedf0' }}
-          />
-          <li
-            className={classes.legendItem}
-            style={{ backgroundColor: '#c6e48b' }}
-          />
-          <li
-            className={classes.legendItem}
-            style={{ backgroundColor: '#7bc96f' }}
-          />
-          <li
-            className={classes.legendItem}
-            style={{ backgroundColor: '#239a3b' }}
-          />
-          <li
-            className={classes.legendItem}
-            style={{ backgroundColor: '#196127' }}
-          />
-        </ul>
-        More
-      </div>
+      <svg id="executed-night-svg" />
     </div>
   );
 }
 
-CalendarHeatmap.propTypes = {
+CalendarExecutedNight.propTypes = {
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
-export default CalendarHeatmap;
+export default CalendarExecutedNight;

@@ -24,15 +24,16 @@ import {
   createSkybotRun,
   getSkybotRunList,
   getExposuresByPeriod,
+  getExecutedNightsByPeriod,
 } from '../../services/api/Skybot';
 import CalendarHeatmap from '../../components/Chart/CalendarHeatmap';
+import CalendarExecutedNight from '../../components/Chart/CalendarExecutedNight';
 
 function Skybot({ setTitle }) {
   const history = useHistory();
   const [totalCount, setTotalCount] = useState(0);
   const [tableData, setTableData] = useState([]);
   const [disableSubmit, setDisableSubmit] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [snackBarVisible, setSnackBarVisible] = useState(false);
   const [snackBarPosition] = useState({
     vertical: 'bottom',
@@ -40,6 +41,7 @@ function Skybot({ setTitle }) {
   });
   const [snackBarTransition, setSnackBarTransition] = useState(undefined);
   const [exposuresByPeriod, setExposuresByPeriod] = useState([]);
+  const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([]);
   const [exposurePlotLoading, setExposurePlotLoading] = useState({
     loading: false,
     hasData: true,
@@ -86,20 +88,27 @@ function Skybot({ setTitle }) {
     }
   }, [selectedDate]);
 
+  useEffect(() => {
+    if (selectedDate[0] && selectedDate[1]) {
+      getExecutedNightsByPeriod(
+        moment(selectedDate[0]).format('YYYY-MM-DD'),
+        moment(selectedDate[1]).format('YYYY-MM-DD')
+      ).then((res) => {
+        setExecutedNightsByPeriod(res);
+      });
+    }
+  }, [selectedDate]);
+
   const loadData = ({ sorting, pageSize, currentPage }) => {
     getSkybotRunList({
       page: currentPage + 1,
       pageSize,
       ordering: sorting,
-    })
-      .then((res) => {
-        const { data } = res;
-        setTableData(data.results);
-        setTotalCount(data.count);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    }).then((res) => {
+      const { data } = res;
+      setTableData(data.results);
+      setTotalCount(data.count);
+    });
   };
 
   const handleSubmit = () => {
@@ -124,7 +133,6 @@ function Skybot({ setTitle }) {
     setSnackBarVisible(true);
     setSnackBarTransition(() => transitionSnackBar);
     setDisableSubmit(true);
-    setLoading(true);
     handleSubmit();
   };
 
@@ -233,11 +241,12 @@ function Skybot({ setTitle }) {
               yaxis: { title: 'Exposures' },
             }}
             config={{
-              scrollZoom: true,
+              scrollZoom: false,
               displaylogo: false,
               responsive: true,
             }}
           />
+          <CalendarExecutedNight data={executedNightsByPeriod} />
           <CalendarHeatmap data={exposuresByPeriod} />
         </>
       );
@@ -245,9 +254,6 @@ function Skybot({ setTitle }) {
     return (
       <>
         <Skeleton variant="rect" animation={false} height={440} />
-        {/* {exposurePlotLoading.loading ? (
-          <CircularProgress color="primary" size={24} />
-        ) : null} */}
         {exposurePlotLoading.loading === false &&
         exposurePlotLoading.hasData === false ? (
           <span>No exposure was found in this period</span>
@@ -281,9 +287,6 @@ function Skybot({ setTitle }) {
                     onClick={handleSelectRunClick}
                   >
                     Submit
-                    {loading ? (
-                      <CircularProgress color="primary" size={24} />
-                    ) : null}
                   </Button>
                 </Grid>
               </Grid>
