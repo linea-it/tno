@@ -1,8 +1,12 @@
+from datetime import datetime
+
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from common.dates_interval import get_days_interval
 from common.read_csv import csv_to_dataframe
+from des.dao import ExposureDao, CcdDao
 from des.models import SkybotJob
 from des.serializers import SkybotJobSerializer
 from des.skybot.pipeline import DesSkybotPipeline
@@ -47,6 +51,19 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
 
         # Recuperar o usuario que submeteu o Job.
         owner = self.request.user
+
+        # adicionar a hora inicial e final as datas
+        start = datetime.strptime(
+            date_initial, '%Y-%m-%d').strftime("%Y-%m-%d 00:00:00")
+        end = datetime.strptime(
+            date_final, '%Y-%m-%d').strftime("%Y-%m-%d 23:59:59")
+
+        # Recuperar o total de noites com exposição no periodo
+        t_nights = ExposureDao().count_nights_by_period(start, end)
+
+        # Recuperar o total de ccds no periodo.
+        t_ccds = CcdDao().count_ccds_by_period(
+            '2019-01-01 00:00:00', '2019-01-31 23:59:59')
 
         # Criar um model Skybot Job
         job = SkybotJob(
