@@ -29,8 +29,8 @@ class DesSkybotJobDao(DBBase):
         return row
 
     def get_by_status(self, status):
-        """Retorna os jobs pelo status 
-        ATENÇÃO: Os jobs estão ordenados pela data de criação em ordem decrescente. está ordem é importante para o pipeline. 
+        """Retorna os jobs pelo status
+        ATENÇÃO: Os jobs estão ordenados pela data de criação em ordem decrescente. está ordem é importante para o pipeline.
 
         Arguments:
             status {int} -- Status do job, como está definido no Model des/SkybotJob
@@ -65,7 +65,7 @@ class DesSkybotJobDao(DBBase):
                 # finish=job['finish'].strftime('%Y-%m-%d %H:%M:%S'),
                 finish=job['finish'],
                 execution_time=job['execution_time'],
-                error=job.get('error', "")
+                error=job['error']
         )
 
         return self.execute(stm)
