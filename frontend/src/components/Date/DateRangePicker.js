@@ -6,12 +6,7 @@ import 'react-date-range/dist/styles.css'; // main css file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import './styles.css';
 
-function DateRangePicker({
-  selectedDate,
-  setSelectedDate,
-  minDate,
-  maxDate
-}) {
+function DateRangePicker({ selectedDate, setSelectedDate, minDate, maxDate }) {
   const handleChange = ({ selection }) => {
     const startDate = moment(selection.startDate).format('YYYY-MM-DD');
     const endDate = moment(selection.endDate).format('YYYY-MM-DD');
@@ -29,16 +24,17 @@ function DateRangePicker({
       editableDateInputs
       onChange={handleChange}
       moveRangeOnFirstSelection={false}
+      color="#34465d"
       ranges={[
         {
           startDate:
             selectedDate[0] !== ''
               ? new Date(`${selectedDate[0]} 00:00`)
-              : new Date(),
+              : minDate,
           endDate:
             selectedDate[1] !== ''
               ? new Date(`${selectedDate[1]} 00:00`)
-              : new Date(),
+              : minDate,
           key: 'selection',
         },
       ]}
@@ -46,17 +42,16 @@ function DateRangePicker({
   );
 }
 
-
 DateRangePicker.propTypes = {
   selectedDate: PropTypes.arrayOf(PropTypes.string).isRequired,
   setSelectedDate: PropTypes.func.isRequired,
   minDate: PropTypes.instanceOf(Date),
-  maxDate: PropTypes.instanceOf(Date)
+  maxDate: PropTypes.instanceOf(Date),
 };
 
 DateRangePicker.defaultProps = {
   minDate: null,
-  maxDate: new Date()
-}
+  maxDate: new Date(),
+};
 
 export default DateRangePicker;
