@@ -7,7 +7,6 @@ import {
   Card,
   CardHeader,
   CardContent,
-  CircularProgress,
   Button,
   Typography,
 } from '@material-ui/core';
@@ -23,25 +22,24 @@ import {
   createSkybotRun,
   getSkybotRunList,
   getExposuresByPeriod,
+  getExecutedNightsByPeriod,
 } from '../../services/api/Skybot';
 import CalendarHeatmap from '../../components/Chart/CalendarHeatmap';
+import CalendarExecutedNight from '../../components/Chart/CalendarExecutedNight';
 
 function Skybot({ setTitle }) {
   const history = useHistory();
   const [totalCount, setTotalCount] = useState(0);
   const [tableData, setTableData] = useState([]);
   const [disableSubmit, setDisableSubmit] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [reload, setReload] = useState(true);
   const [exposuresByPeriod, setExposuresByPeriod] = useState([]);
+  const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([]);
   const [exposurePlotLoading, setExposurePlotLoading] = useState({
     loading: false,
     hasData: true,
   });
-  const [selectedDate, setSelectedDate] = useState([
-    '2012-11-10',
-    '2012-12-10',
-  ]);
+  const [selectedDate, setSelectedDate] = useState(['', '']);
 
   useEffect(() => {
     setTitle('Skybot');
@@ -49,11 +47,19 @@ function Skybot({ setTitle }) {
 
   useEffect(() => {
     setExposuresByPeriod([]);
+    setExecutedNightsByPeriod([]);
 
     if (selectedDate[0] && selectedDate[1]) {
       setExposurePlotLoading({
         loading: true,
         hasData: false,
+      });
+
+      getExecutedNightsByPeriod(
+        moment(selectedDate[0]).format('YYYY-MM-DD'),
+        moment(selectedDate[1]).format('YYYY-MM-DD')
+      ).then((res) => {
+        setExecutedNightsByPeriod(res);
       });
 
       getExposuresByPeriod(
@@ -84,15 +90,11 @@ function Skybot({ setTitle }) {
       page: currentPage + 1,
       pageSize,
       ordering: sorting,
-    })
-      .then((res) => {
-        const { data } = res;
-        setTableData(data.results);
-        setTotalCount(data.count);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    }).then((res) => {
+      const { data } = res;
+      setTableData(data.results);
+      setTotalCount(data.count);
+    });
   };
 
   const handleSubmit = () => {
@@ -113,7 +115,6 @@ function Skybot({ setTitle }) {
 
   const handleSelectRunClick = () => {
     setDisableSubmit(true);
-    setLoading(true);
     handleSubmit();
   };
 
@@ -220,11 +221,12 @@ function Skybot({ setTitle }) {
               yaxis: { title: 'Exposures' },
             }}
             config={{
-              scrollZoom: true,
+              scrollZoom: false,
               displaylogo: false,
               responsive: true,
             }}
           />
+          <CalendarExecutedNight data={executedNightsByPeriod} />
           <CalendarHeatmap data={exposuresByPeriod} />
         </>
       );
@@ -232,9 +234,6 @@ function Skybot({ setTitle }) {
     return (
       <>
         <Skeleton variant="rect" animation={false} height={440} />
-        {/* {exposurePlotLoading.loading ? (
-          <CircularProgress color="primary" size={24} />
-        ) : null} */}
         {exposurePlotLoading.loading === false &&
         exposurePlotLoading.hasData === false ? (
           <span>No exposure was found in this period</span>
@@ -264,6 +263,7 @@ function Skybot({ setTitle }) {
                   <DateRangePicker
                     // First day of Skybot:
                     minDate={new Date('2012-11-10 04:09')}
+                    maxDate={new Date('2019-02-28 00:00')}
                     selectedDate={selectedDate}
                     setSelectedDate={setSelectedDate}
                   />
@@ -277,9 +277,6 @@ function Skybot({ setTitle }) {
                     onClick={handleSelectRunClick}
                   >
                     Submit
-                    {loading ? (
-                      <CircularProgress color="primary" size={24} />
-                    ) : null}
                   </Button>
                 </Grid>
               </Grid>
@@ -309,7 +306,6 @@ function Skybot({ setTitle }) {
                 hasToolbar={false}
                 reload={reload}
                 totalCount={totalCount}
-                loading
               />
             </CardContent>
           </Card>

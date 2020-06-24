@@ -3,12 +3,15 @@ import PropTypes from 'prop-types';
 import { LinearProgress, Box, Typography } from '@material-ui/core';
 import useStyles from './styles';
 
-function Progress({ title, variant, label, total, current }) {
+function Progress({ title, variant, total, current }) {
   const classes = useStyles();
   const [currentPercentage, setCurrentPercentage] = useState(0);
 
   useEffect(() => {
-    setCurrentPercentage((current * 100) / total);
+    const percentage = (current * 100) / total;
+    const value = !isNaN(percentage) ? percentage : 0;
+
+    setCurrentPercentage(value);
   }, [total, current]);
 
   return (
