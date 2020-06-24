@@ -48,8 +48,8 @@ function Skybot({ setTitle }) {
   });
   const [reload, setReload] = useState(true);
   const [selectedDate, setSelectedDate] = useState([
-    '2012-11-10',
-    '2012-12-10',
+    '2019-01-10',
+    '2019-12-31',
   ]);
 
   useEffect(() => {
@@ -58,11 +58,19 @@ function Skybot({ setTitle }) {
 
   useEffect(() => {
     setExposuresByPeriod([]);
+    setExecutedNightsByPeriod([]);
 
     if (selectedDate[0] && selectedDate[1]) {
       setExposurePlotLoading({
         loading: true,
         hasData: false,
+      });
+
+      getExecutedNightsByPeriod(
+        moment(selectedDate[0]).format('YYYY-MM-DD'),
+        moment(selectedDate[1]).format('YYYY-MM-DD')
+      ).then((res) => {
+        setExecutedNightsByPeriod(res);
       });
 
       getExposuresByPeriod(
@@ -85,17 +93,6 @@ function Skybot({ setTitle }) {
 
     if (!selectedDate[1]) {
       setDisableSubmit(true);
-    }
-  }, [selectedDate]);
-
-  useEffect(() => {
-    if (selectedDate[0] && selectedDate[1]) {
-      getExecutedNightsByPeriod(
-        moment(selectedDate[0]).format('YYYY-MM-DD'),
-        moment(selectedDate[1]).format('YYYY-MM-DD')
-      ).then((res) => {
-        setExecutedNightsByPeriod(res);
-      });
     }
   }, [selectedDate]);
 

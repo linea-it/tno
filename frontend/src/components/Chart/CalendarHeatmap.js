@@ -48,7 +48,12 @@ function CalendarHeatmap({ data }) {
       .attr('y', -5)
       .attr('font-weight', 'bold')
       .attr('text-anchor', 'end')
-      .text((d) => d.key);
+      .text((d) => {
+        if (d.key === 'NaN') {
+          return moment(data[0].dates).format('YYYY');
+        }
+        return d.key;
+      });
 
     const formatDay = (d) =>
       ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getUTCDay()];

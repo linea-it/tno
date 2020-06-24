@@ -25,10 +25,6 @@ function CalendarExecutedNight({ data }) {
       .entries(dateValues)
       .reverse();
 
-    const values = dateValues.map((c) => c.value);
-    const maxValue = d3.max(values);
-    const minValue = d3.min(values);
-
     const cellSize = 15;
     const height = 185;
 
@@ -47,7 +43,12 @@ function CalendarExecutedNight({ data }) {
       .attr('y', -5)
       .attr('font-weight', 'bold')
       .attr('text-anchor', 'end')
-      .text((d) => d.key);
+      .text((d) => {
+        if (d.key === 'NaN') {
+          return moment(data[0].dates).format('YYYY');
+        }
+        return d.key;
+      });
 
     const formatDay = (d) =>
       ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getUTCDay()];
