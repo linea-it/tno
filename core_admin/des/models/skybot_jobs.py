@@ -93,9 +93,9 @@ class SkybotJob(models.Model):
         blank=True
     )
 
-    class Meta:
-        # Não pode ter Jobs iguais para o mesmo periodo.
-        unique_together = ('date_initial', 'date_final')
+    # class Meta:
+    #     # Não pode ter Jobs iguais para o mesmo periodo.
+    #     unique_together = ('date_initial', 'date_final')
 
     def __str__(self):
         return str(self.id)

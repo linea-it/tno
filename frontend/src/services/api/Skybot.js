@@ -75,6 +75,13 @@ export const getExposuresByPeriod = (initialDate, finalDate) =>
     })
     .then((res) => res.data);
 
+export const getExecutedNightsByPeriod = (initialDate, finalDate) =>
+  axios
+    .get('/des/skybot_job_result/nites_executed_by_period/', {
+      params: { start: initialDate, end: finalDate },
+    })
+    .then((res) => res.data);
+
 export const getYearsWithExposure = () =>
   axios.get('/skybot_run/exposures_years/').then((res) => res.data);
 
