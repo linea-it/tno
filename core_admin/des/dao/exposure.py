@@ -16,13 +16,9 @@ class ExposureDao(DBBase):
     def get_tablename(self):
         return self.tablename
 
-    # TODO: Mover esse metodo get para a DBBase.
-    def get_table_ccd(self):
-        return self.tbl
-
     # TODO: Mover esse metodo DBBase.
     def count_ccds(self):
-        return self.get_count(self.get_table_ccd())
+        return self.get_count(self.tbl)
 
     def exposures_by_period(self, start, end):
         """
@@ -38,7 +34,7 @@ class ExposureDao(DBBase):
                 rows (array) Exposições com data de observação entre o periodo.
 
         """
-        tbl = self.get_table_ccd()
+        tbl = self.tbl
 
         stm = select(tbl.c).\
             where(and_(tbl.c.date_obs.between(str(start), str(end)))).\

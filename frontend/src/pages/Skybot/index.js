@@ -8,8 +8,7 @@ import {
   CardHeader,
   CardContent,
   Button,
-  Snackbar,
-  Slide,
+  Typography,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import createPlotlyComponent from 'react-plotly.js/factory';
@@ -33,19 +32,13 @@ function Skybot({ setTitle }) {
   const [totalCount, setTotalCount] = useState(0);
   const [tableData, setTableData] = useState([]);
   const [disableSubmit, setDisableSubmit] = useState(true);
-  const [snackBarVisible, setSnackBarVisible] = useState(false);
-  const [snackBarPosition] = useState({
-    vertical: 'bottom',
-    horizontal: 'right',
-  });
-  const [snackBarTransition, setSnackBarTransition] = useState(undefined);
+  const [reload, setReload] = useState(true);
   const [exposuresByPeriod, setExposuresByPeriod] = useState([]);
   const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([]);
   const [exposurePlotLoading, setExposurePlotLoading] = useState({
     loading: false,
     hasData: true,
   });
-  const [reload, setReload] = useState(true);
   const [selectedDate, setSelectedDate] = useState(['', '']);
 
   useEffect(() => {
@@ -120,11 +113,7 @@ function Skybot({ setTitle }) {
       });
   };
 
-  const transitionSnackBar = (props) => <Slide {...props} direction="left" />;
-
   const handleSelectRunClick = () => {
-    setSnackBarVisible(true);
-    setSnackBarTransition(() => transitionSnackBar);
     setDisableSubmit(true);
     handleSubmit();
   };
@@ -191,8 +180,6 @@ function Skybot({ setTitle }) {
     },
   ];
 
-  const { vertical, horizontal } = snackBarPosition;
-
   const Plot = createPlotlyComponent(Plotly);
 
   // Reload data if we have any Skybot job running,
@@ -204,7 +191,7 @@ function Skybot({ setTitle }) {
     if (hasStatusRunning) {
       setReload(!reload);
     }
-  }, 30000);
+  }, 10000);
 
   const renderExposurePlot = () => {
     if (exposuresByPeriod.length > 0) {
@@ -255,8 +242,17 @@ function Skybot({ setTitle }) {
     );
   };
 
-  return (
-    <Grid>
+  return totalCount === 0 ? (
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Typography variant="h6">
+          No exposure was found or all exposures were already executed in this
+          period.
+        </Typography>
+      </Grid>
+    </Grid>
+  ) : (
+    <>
       <Grid container spacing={2} alignItems="stretch">
         <Grid item xs={12} md={6} lg={4} xl={3}>
           <Card>
@@ -270,7 +266,6 @@ function Skybot({ setTitle }) {
                     maxDate={new Date('2019-02-28 00:00')}
                     selectedDate={selectedDate}
                     setSelectedDate={setSelectedDate}
-                    initialFocusedRange={[0, 0]}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -311,21 +306,12 @@ function Skybot({ setTitle }) {
                 hasToolbar={false}
                 reload={reload}
                 totalCount={totalCount}
-                loading
               />
             </CardContent>
           </Card>
         </Grid>
       </Grid>
-      <Snackbar
-        open={snackBarVisible}
-        autoHideDuration={3500}
-        TransitionComponent={snackBarTransition}
-        anchorOrigin={{ vertical, horizontal }}
-        message="Executing... Check progress on history table ."
-        onClose={() => setSnackBarVisible(false)}
-      />
-    </Grid>
+    </>
   );
 }
 
