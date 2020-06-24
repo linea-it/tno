@@ -96,19 +96,19 @@ function CalendarExecutedNight({ data }) {
 
         switch (parseInt(d.value)) {
           case 0:
-            hoverText = 'not executed';
+            hoverText = 'has no exposure';
             break;
           case 1:
-            hoverText = 'executed, but no exposure was found';
+            hoverText = "has exposure(s), but it wasn't executed";
             break;
           case 2:
-            hoverText = `executed and it has ${d.count} exposures`;
+            hoverText = `was executed and it has ${d.count} exposure(s)`;
             break;
           default:
             break;
         }
 
-        return `${moment(d.date).format('MMM Do YYYY')} was ${hoverText}`;
+        return `${moment(d.date).format('MMM Do YYYY')} ${hoverText}`;
       });
 
     const month = year

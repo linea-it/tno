@@ -7,7 +7,6 @@ import {
   Card,
   CardHeader,
   CardContent,
-  CircularProgress,
   Button,
   Snackbar,
   Slide,
@@ -47,10 +46,7 @@ function Skybot({ setTitle }) {
     hasData: true,
   });
   const [reload, setReload] = useState(true);
-  const [selectedDate, setSelectedDate] = useState([
-    '2019-01-10',
-    '2019-12-31',
-  ]);
+  const [selectedDate, setSelectedDate] = useState(['', '']);
 
   useEffect(() => {
     setTitle('Skybot');
@@ -271,8 +267,10 @@ function Skybot({ setTitle }) {
                   <DateRangePicker
                     // First day of Skybot:
                     minDate={new Date('2012-11-10 04:09')}
+                    maxDate={new Date('2019-02-28 00:00')}
                     selectedDate={selectedDate}
                     setSelectedDate={setSelectedDate}
+                    initialFocusedRange={[0, 0]}
                   />
                 </Grid>
                 <Grid item xs={12}>
