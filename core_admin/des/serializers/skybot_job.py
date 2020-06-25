@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from des.models import SkybotJob
 
+
 class SkybotJobSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
 
@@ -16,6 +17,8 @@ class SkybotJobSerializer(serializers.ModelSerializer):
             'finish',
             'execution_time',
             'exposures',
+            'ccds',
+            'nights',
             'path',
             'results',
             'error'

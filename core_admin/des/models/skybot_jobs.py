@@ -66,6 +66,21 @@ class SkybotJob(models.Model):
     # Total de exposições executadas neste job.
     exposures = models.BigIntegerField(
         verbose_name='Exposures',
+        help_text='total exposures that were run in this job',
+        default=0
+    )
+
+    # Total de nights com exposures no periodo deste job.
+    ccds = models.BigIntegerField(
+        verbose_name='CCDs',
+        help_text='total ccds in the period of this job',
+        default=0
+    )
+
+    # Total de nights com exposures no periodo deste job.
+    nights = models.BigIntegerField(
+        verbose_name='Nights',
+        help_text='total nights with exhibitions in the period of this job.',
         default=0
     )
 
@@ -80,8 +95,8 @@ class SkybotJob(models.Model):
         max_length=2048,
         verbose_name='Results',
         help_text='Filepath to the results.csv. this file contains the results of the job.',
-        null=True, 
-        blank=True, 
+        null=True,
+        blank=True,
         default=None
     )
 

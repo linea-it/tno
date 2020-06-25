@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.sql import and_, select
 
 from tno.db import DBBase
@@ -43,5 +44,45 @@ class CcdDao(DBBase):
         self.debug_query(stm, True)
 
         rows = self.fetch_all_dict(stm)
+
+        return rows
+
+    def count_ccds_by_period(self, start, end):
+        """
+            Retorna a quantidade de ccds dentro do periodo
+            Parameters:
+                start (datetime): Periodo inicial que sera usado na seleção.
+
+                end (datetime): Periodo final que sera usado na seleção.
+
+            Returns:
+                count (int) Quantidade de ccds no periodo
+
+            select
+                count(dc.id)
+            from
+                des_ccd dc
+            inner join des_exposure de on
+                (dc.exposure_id = de.id)
+            where
+                de.date_obs between '2019-01-01 00:00:00' and '2019-01-31 23:59:50'
+
+        """
+        # des_ccd
+        dc_tbl = self.tbl
+
+        # des_exposure
+        de_tbl = self.get_table('des_exposure', self.get_base_schema())
+
+        stm = select([func.count(dc_tbl.c.id)]).\
+            select_from(
+                dc_tbl.join(
+                    de_tbl, dc_tbl.c.exposure_id == de_tbl.c.id
+                )).\
+            where(and_(de_tbl.c.date_obs.between(str(start), str(end))))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalar(stm)
 
         return rows

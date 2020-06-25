@@ -53,7 +53,10 @@ function SkybotDetail({ setTitle }) {
   });
   const [loadProgress, setLoadProgress] = useState(false);
   const [tableData, setTableData] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
+
+  // Initiating totalCount as null so that it passes the conditional rendering
+  // , in case of nor exposure, and calls the function loadData.
+  const [totalCount, setTotalCount] = useState(null);
 
   const handleBackNavigation = () => history.goBack();
 
@@ -237,143 +240,153 @@ function SkybotDetail({ setTitle }) {
           </Grid>
         </Grid>
       </Grid>
+      {totalCount === 0 ? (
+        <Grid item xs={12}>
+          <Typography variant="h6">
+            No exposure was found or all exposures were already executed in this
+            period.
+          </Typography>
+        </Grid>
+      ) : (
+        <>
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader title="Progress" />
+              <CardContent>
+                <Grid container spacing={3} direction="column">
+                  <Grid item>
+                    <Progress
+                      title="Retrieving data from Skybot"
+                      variant="determinate"
+                      label={`${progress.request.exposures} exposures`}
+                      total={progress.request.exposures}
+                      current={progress.request.current}
+                    />
+                    <Grid container spacing={2}>
+                      <Grid item>
+                        <Chip
+                          label={`Average: ${progress.request.average_time.toFixed(
+                            2
+                          )}s`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Chip
+                          label={`Estimate: ${formatSeconds(
+                            progress.request.time_estimate
+                          )}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Chip
+                          label={`Progress: ${progress.request.current}/${progress.request.exposures}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
 
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title="Progress" />
-          <CardContent>
-            <Grid container spacing={3} direction="column">
-              <Grid item>
-                <Progress
-                  title="Retrieving data from Skybot"
-                  variant="determinate"
-                  label={`${progress.request.exposures} exposures`}
-                  total={progress.request.exposures}
-                  current={progress.request.current}
-                />
-                <Grid container spacing="2">
                   <Grid item>
-                    <Chip
-                      label={`Average: ${progress.request.average_time.toFixed(
-                        2
-                      )}s`}
-                      color="primary"
-                      variant="outlined"
+                    <Progress
+                      title="Importing positions to database"
+                      variant="determinate"
+                      label={`${progress.loaddata.exposures} exposures`}
+                      total={progress.loaddata.exposures}
+                      current={progress.loaddata.current}
                     />
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      label={`Estimate: ${formatSeconds(
-                        progress.request.time_estimate
-                      )}`}
-                      color="primary"
-                      variant="outlined"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      label={`Progress: ${progress.request.current}/${progress.request.exposures}`}
-                      color="primary"
-                      variant="outlined"
-                    />
+                    <Grid container spacing={2}>
+                      <Grid item>
+                        <Chip
+                          label={`Average: ${progress.loaddata.average_time.toFixed(
+                            2
+                          )}s`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Chip
+                          label={`Estimate: ${formatSeconds(
+                            progress.loaddata.time_estimate
+                          )}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Chip
+                          label={`Progress: ${progress.loaddata.current}/${progress.loaddata.exposures}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
 
-              <Grid item>
-                <Progress
-                  title="Importing positions to database"
-                  variant="determinate"
-                  label={`${progress.loaddata.exposures} exposures`}
-                  total={progress.loaddata.exposures}
-                  current={progress.loaddata.current}
-                />
-                <Grid container spacing="2">
-                  <Grid item>
-                    <Chip
-                      label={`Average: ${progress.loaddata.average_time.toFixed(
-                        2
-                      )}s`}
-                      color="primary"
-                      variant="outlined"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      label={`Estimate: ${formatSeconds(
-                        progress.loaddata.time_estimate
-                      )}`}
-                      color="primary"
-                      variant="outlined"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      label={`Progress: ${progress.loaddata.current}/${progress.loaddata.exposures}`}
-                      color="primary"
-                      variant="outlined"
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      {
-        // Completed, Failed, Aborted and Stopped Statuses:
-        ![3, 4, 5, 6].includes(status) ||
-        progress.request.status !== 'completed' ||
-        progress.loaddata.status !== 'completed' ? null : (
-          <>
-            <Grid item xs={12}>
-              <Grid container alignItems="stretch" spacing={2}>
-                <Grid item xs={4}>
-                  <Card>
-                    <CardHeader title="Summary" />
-                    <CardContent>
-                      <List data={summary} />
-                    </CardContent>
-                  </Card>
-                </Grid>
-                {/* <Grid item xs={8}>
-                  <Card>
-                    <CardHeader title="Execution Time" />
-                    <CardContent>
-                      <SkybotTimeProfile data={timeProfile} />
-                    </CardContent>
-                  </Card>
-                </Grid> */}
-              </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <Grid container spacing={2}>
+          {
+            // Completed, Failed, Aborted and Stopped Statuses:
+            ![3, 4, 5, 6].includes(status) ||
+            progress.request.status !== 'completed' ||
+            progress.loaddata.status !== 'completed' ? null : (
+              <>
                 <Grid item xs={12}>
-                  <Card>
-                    <CardHeader title="Skybot Results" />
-                    <CardContent>
-                      <Table
-                        columns={tableColumns}
-                        data={tableData}
-                        loadData={loadData}
-                        totalCount={totalCount}
-                        hasSearching={false}
-                        defaultSorting={[
-                          { columnName: 'id', direction: 'asc' },
-                        ]}
-                        // hasSorting={false}
-                        hasColumnVisibility={false}
-                        hasToolbar={false}
-                      />
-                    </CardContent>
-                  </Card>
+                  <Grid container alignItems="stretch" spacing={2}>
+                    <Grid item xs={4}>
+                      <Card>
+                        <CardHeader title="Summary" />
+                        <CardContent>
+                          <List data={summary} />
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                    {/* <Grid item xs={8}>
+                      <Card>
+                        <CardHeader title="Execution Time" />
+                        <CardContent>
+                          <SkybotTimeProfile data={timeProfile} />
+                        </CardContent>
+                      </Card>
+                    </Grid> */}
+                  </Grid>
                 </Grid>
-              </Grid>
-            </Grid>
-          </>
-        )
-      }
+                <Grid item xs={12}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <Card>
+                        <CardHeader title="Skybot Results" />
+                        <CardContent>
+                          <Table
+                            columns={tableColumns}
+                            data={tableData}
+                            loadData={loadData}
+                            totalCount={totalCount || 0}
+                            hasSearching={false}
+                            defaultSorting={[
+                              { columnName: 'id', direction: 'asc' },
+                            ]}
+                            // hasSorting={false}
+                            hasColumnVisibility={false}
+                            hasToolbar={false}
+                          />
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
+            )
+          }
+        </>
+      )}
     </Grid>
   );
 }

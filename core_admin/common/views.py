@@ -32,98 +32,21 @@ def teste(request):
 
         # result = DesImportSkybotOutput().import_output_file("/archive/skybot_output/1/808801_Y.csv")
 
-        # from des.skybot.pipeline import DESImportSkybotPositions
-        # from des.models import SkybotJob
-        # import logging
+        from des.skybot.pipeline import DESImportSkybotPositions
+        from des.models import SkybotJob
+        import logging
+        log = logging.getLogger('django')
+        log.info("-----------TESTE----------------")
 
-        # # try:
-        # log = logging.getLogger('skybot')
+        # from des.dao import ExposureDao, CcdDao
 
-        # log.info("TESTE1")
+        # a = ExposureDao().count_nights_by_period(
+        #     '2019-01-01 00:00:00', '2019-01-31 23:59:59')
 
-        # from des.dao import DesSkybotJobResultDao
+        # log.debug(a)
 
-        # a = DesSkybotJobResultDao().not_exec_by_period('2019-01-01 00:00:00', '2019-01-31 23:59:59')
-
-        # log.info("COUNT: %s" % len(a))
-
-        #     job = SkybotJob.objects.get(pk=5)
-
-        #     dsp = DesSkybotPipeline()
-        #     exposures = dsp.read_exposure_dataframe(job.path)
-        #     exposures = exposures.set_index('id')
-
-        #     # requests = dsp.read_request_dataframe(job.path, usecols=['exposure', 'success', 'ticket', 'positions'])
-        #     requests = dsp.read_request_dataframe(job.path)
-        #     requests = requests.set_index('exposure')
-        #     requests = requests.add_prefix('request_')
-
-        #     loaddata = dsp.read_loaddata_dataframe(
-        #         dsp.get_loaddata_dataframe_filepath(job.path))
-        #     loaddata = loaddata.set_index('exposure')
-        #     loaddata = loaddata.add_prefix('loaddata_')
-
-        #     n_requests = exposures.join(requests)
-        #     n_requests = n_requests.join(loaddata)
-
-        #     n_requests = n_requests.rename(columns={
-        #         'request_ticket': 'ticket',
-        #         'request_positions': 'positions',
-        #         'request_filename': 'filename',
-        #         'request_file_size': 'file_size',
-        #         'request_skybot_url': 'skybot_url',
-        #         'loaddata_ccds': 'ccds',
-        #         'loaddata_inside_ccd': 'inside_ccd',
-        #         'loaddata_outside_ccd': 'outside_ccd',
-        #         'loaddata_output': 'output',
-        #     })
-
-        #     n_requests = n_requests.drop(['request_output', 'loaddata_ticket', 'loaddata_positions'], axis=1)
-
-        #     n_requests['success'] = (n_requests.request_success & n_requests.loaddata_success)
-        #     n_requests['execution_time'] = (n_requests.request_execution_time + n_requests.loaddata_execution_time)
-        #     # log.info(n_requests.head)
-
-        #     log.info("---------------------")
-        #     log.info(n_requests.loc[[2452848]].to_dict('records'))
-
-        # except Exception as e:
-        #     log.error(e)
-
-        # from des.skybot import DESImportSkybotPositions
-
-        # from des.skybot import DesSkybotPipeline
-        # DesSkybotPipeline().run_job(1)
-        # DesSkybotPipeline().check_request_queue()
-        # DesSkybotPipeline().reset_job_for_test(5)
-        # DesSkybotPipeline().run_job(5)
-        # DesSkybotPipeline().check_loaddata_queue()
-        # DesSkybotPipeline().consolidate(job_id=87)
-        # exposure_id = 2453859
-        # ticket = 166796687473278401
-        # filepath = "/archive/skybot_output/des_skybot_35/2453859_166796687473278401.csv"
-
-        # result = DESImportSkybotPositions().import_des_skybot_positions(exposure_id, ticket, filepath)
-
-
-        # check_astrometry_running()
-
-        # Registro de resultado da astrometria.
-        # register_astrometry_outputs(108, 'Eris')
-
-        # Exemplo de criacao da lista de ccds.
-        # from praia.pipeline.ccd_image import create_ccd_images_list
-        # filepath = os.path.join(settings.MEDIA_TMP_DIR, 'teste_Eris_ccd.csv')
-        # result = create_ccd_images_list(178, 'Eris', filepath, max_workers=1)
-
-        # from orbit.refine_orbit import RefineOrbit
-        # start, end = RefineOrbit().get_plot_period(
-        #     astrometry='/proccess/106/objects/Eris/Eris.txt')
-        # result = dict({
-        #      'success': True,
-        #      'start': start,
-        #      'end': end
-        #  })
+        # b = CcdDao().count_ccds_by_period('2019-01-01 00:00:00', '2019-01-31 23:59:59')
+        # log.debug(b)
 
         result = dict({
             'success': True,
