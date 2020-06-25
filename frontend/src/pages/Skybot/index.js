@@ -2,14 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { useHistory } from 'react-router-dom';
-import {
-  Grid,
-  Card,
-  CardHeader,
-  CardContent,
-  Button,
-  Typography,
-} from '@material-ui/core';
+import { Grid, Card, CardHeader, CardContent, Button } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
@@ -242,16 +235,7 @@ function Skybot({ setTitle }) {
     );
   };
 
-  return totalCount === 0 ? (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Typography variant="h6">
-          No exposure was found or all exposures were already executed in this
-          period.
-        </Typography>
-      </Grid>
-    </Grid>
-  ) : (
+  return (
     <>
       <Grid container spacing={2} alignItems="stretch">
         <Grid item xs={12} md={6} lg={4} xl={3}>
