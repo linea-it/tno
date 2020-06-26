@@ -54,8 +54,8 @@ function SkybotDetail({ setTitle }) {
   const [loadProgress, setLoadProgress] = useState(false);
   const [tableData, setTableData] = useState([]);
 
-  // Initiating totalCount as null so that it passes the conditional rendering
-  // , in case of nor exposure, and calls the function loadData.
+  // Initiating totalCount as null so that it passes the conditional rendering,
+  // in case of nor exposure, and calls the function loadData.
   const [totalCount, setTotalCount] = useState(null);
 
   const handleBackNavigation = () => history.goBack();
