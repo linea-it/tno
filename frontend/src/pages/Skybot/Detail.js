@@ -96,6 +96,14 @@ function SkybotDetail({ setTitle }) {
           title: 'Exposures',
           value: res.exposures,
         },
+        {
+          title: 'CCDs',
+          value: res.ccds,
+        },
+        {
+          title: 'Nights',
+          value: res.nights,
+        },
       ]);
     });
   }, [loadProgress]);
@@ -340,7 +348,7 @@ function SkybotDetail({ setTitle }) {
               <>
                 <Grid item xs={12}>
                   <Grid container alignItems="stretch" spacing={2}>
-                    <Grid item xs={4}>
+                    <Grid item xs={12} sm={4}>
                       <Card>
                         <CardHeader title="Summary" />
                         <CardContent>
@@ -348,7 +356,7 @@ function SkybotDetail({ setTitle }) {
                         </CardContent>
                       </Card>
                     </Grid>
-                    {/* <Grid item xs={8}>
+                    {/* <Grid item xs={12} sm={8}>
                       <Card>
                         <CardHeader title="Execution Time" />
                         <CardContent>
