@@ -1,3 +1,5 @@
+import json
+import os
 from datetime import datetime
 
 from rest_framework import mixins, viewsets
@@ -6,7 +8,7 @@ from rest_framework.response import Response
 
 from common.dates_interval import get_days_interval
 from common.read_csv import csv_to_dataframe
-from des.dao import ExposureDao, CcdDao
+from des.dao import CcdDao, ExposureDao
 from des.models import SkybotJob
 from des.serializers import SkybotJobSerializer
 from des.skybot.pipeline import DesSkybotPipeline
@@ -81,6 +83,36 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
 
         result = SkybotJobSerializer(job)
 
+        return Response(result.data)
+
+    # @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['get'])
+    def cancel_job(self, request, pk=None):
+        """
+            Altera o Status do job para Aborted, as daemons do pipeline checam este status e cancelam a execução.
+        """
+
+        job = self.get_object()
+
+        # Se o job estiver idle=1 ou running=2
+        if job.status <= 2:
+
+            # Criar um arquivo no diretório do Job para indicar ao pipeline que foi abortado.
+            data = dict({
+                'status': 'aborted',
+                'request': False,
+                'loaddata': False,
+            })
+
+            filepath = os.path.join(job.path, 'status.json')
+            with open(filepath, 'w') as f:
+                json.dump(data, f)
+
+            # Altera o status para Aborted
+            job.status = 5
+            job.save()
+
+        result = SkybotJobSerializer(job)
         return Response(result.data)
 
     @action(detail=True)

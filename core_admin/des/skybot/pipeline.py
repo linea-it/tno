@@ -16,6 +16,10 @@ from des.skybot.import_positions import DESImportSkybotPositions
 from skybot.skybot_server import SkybotServer
 
 
+class AbortSkybotJobError(Exception):
+    pass
+
+
 class DesSkybotPipeline():
 
     def __init__(self):
@@ -319,6 +323,22 @@ class DesSkybotPipeline():
 
         return df
 
+    def check_status(self, job_path):
+
+        filepath = os.path.join(job_path, 'status.json')
+
+        if os.path.exists(filepath):
+            with open(filepath) as f:
+
+                status = json.load(filepath)
+
+                if status['status'] == 'aborted':
+                    # Lanca uma exeção para abortar o job.
+                    raise AbortSkybotJobError(
+                        'The job was aborted by the user.')
+
+                # TODO: Aducionar a opção de Pausar o Job
+
     def run_job(self, job_id):
         """Este método executa as etapas de request ao skybot.
         é executado em um unico loop, itera sobre todas as exposições
@@ -411,6 +431,11 @@ class DesSkybotPipeline():
                     heartbeat, 'running', 0, len(a_exposures), 0)
 
                 for idx, exp in enumerate(a_exposures, start=1):
+
+                    # Antes de fazer o download, verifica qual o status do job
+                    # se ele não foi Abortado ou Pausado.
+                    self.check_status(job_path)
+
                     # caminho para o arquivo com os resultados retornados pelo skyubot.
                     filename = "%s.temp" % exp['id']
                     output = os.path.join(job_path, filename)
@@ -481,6 +506,15 @@ class DesSkybotPipeline():
 
             self.logger.info("Exposures: [%s] Requests: [%s] Success: [%s] Failure: [%s] in %s" % (
                 t_exposures, t_requests, t_success, t_failure, humanize.naturaldelta(tdelta, minimum_unit="seconds")))
+
+        except AbortSkybotJobError as e:
+
+            # Atualiza o arquivo de heartbeat com o status aborted.
+            self.update_request_heartbeat(heartbeat, 'aborted', 0, 0, 0)
+
+            # Vai parar de fazer as requisições mais ainda vai continuar executando o load data.
+            # O load data fica responsavel por finalizar o job e guardar os resultados.
+            self.logger.info('The job was aborted by the user.')
 
         except Exception as e:
             trace = traceback.format_exc()
@@ -691,6 +725,9 @@ class DesSkybotPipeline():
             self.logger_import.debug(
                 "----------------------------------------------")
 
+            # Verificar se status do Job se foi Abortado
+            self.check_status(job['path'])
+
             # Total a ser executado ler do heartbead da etapa anterior
             try:
                 # Na primeira execução pode ocorrer ao mesmo tempo que o componente requests.
@@ -733,7 +770,6 @@ class DesSkybotPipeline():
                 # escolhi fazer separado, para ter acesso ao total de arquivos no inicio da iteração.
                 # este array a_files já ignora os outros arquivos csv no diretório.
                 a_files = self.get_files_to_import(job['path'])
-                # a_files = a_files[0:5]  # TODO: Testando de um em um
                 to_import = len(a_files)
 
                 self.logger_import.debug(
@@ -828,6 +864,15 @@ class DesSkybotPipeline():
 
             # Verificar quando o Processo efetivamente acabou.
             self.consolidate(job_id)
+
+        except AbortSkybotJobError as e:
+            # Vai parar de fazer as importações e vai registrar o termino do job
+            self.logger_import.info('The job was aborted by the user.')
+
+            self.update_loaddata_heartbeat(heartbeat, 'aborted', 0, 0, 0)
+
+            # Consolida o Job
+            self.consolidate(job_id, aborted=True)
 
         except IndexError:
             self.logger_import.info("No files to import.")
@@ -970,7 +1015,7 @@ class DesSkybotPipeline():
         with open(filepath) as f:
             return json.load(f)
 
-    def consolidate(self, job_id):
+    def consolidate(self, job_id, aborted=False):
         """Faz a checagem para saber se o Job completou as 2 etapas.
         Verifica se todas as exposições do job passaram pelas 2 etapas.
         caso tenha acabado, cria um arquivo com os resultados e encerra o job.
@@ -994,8 +1039,11 @@ class DesSkybotPipeline():
 
             loaddata_heartbeat = self.read_loaddata_heartbeat(job['path'])
 
+            # Job Acaba se tiver executado todas as exposições ou se tiver sido abortado.
+            # no caso de abortado é registrado todos os resultados até o momento.
+
             # Se ambos os componentes tiverem executado todas as exposições.
-            if request_heartbeat['current'] == request_heartbeat['exposures'] and loaddata_heartbeat['current'] == loaddata_heartbeat['exposures']:
+            if request_heartbeat['current'] == request_heartbeat['exposures'] and loaddata_heartbeat['current'] == loaddata_heartbeat['exposures'] or aborted is True:
 
                 # Consolidar os arquivos de estatisticas.
 
@@ -1085,19 +1133,25 @@ class DesSkybotPipeline():
                 imported = DesSkybotJobResultDao(pool=False).import_data(df)
                 self.logger_import.debug("Rows Imported: %s" % imported)
 
-                # Calcula o tempo total de execução do Job.
-                t0 = job['start']
-                t1 = datetime.now(timezone.utc)
-                tdelta = t1 - t0
-                job['finish'] = t1
-                job['execution_time'] = tdelta
-                # Altera o Status do Job para complete.
-                job['status'] = 3
-                # Grava as informações do job no banco de dados.
-                self.complete_job(job)
+                if aborted is True:
+                    self.on_abort(job_id)
 
-                self.logger_import.info("Job successfully completed %s" % humanize.naturaldelta(
-                    tdelta, minimum_unit="seconds"))
+                else:
+                    # Altera o Status do Job para complete.
+                    job['status'] = 3
+
+                    # Calcula o tempo total de execução do Job.
+                    t0 = job['start']
+                    t1 = datetime.now(timezone.utc)
+                    tdelta = t1 - t0
+                    job['finish'] = t1
+                    job['execution_time'] = tdelta
+
+                    # Grava as informações do job no banco de dados.
+                    self.complete_job(job)
+
+                    self.logger_import.info("Job successfully completed %s" % humanize.naturaldelta(
+                        tdelta, minimum_unit="seconds"))
 
         except FileNotFoundError as e:
             # A primeira vez que é executado o arquivo request heartbeat pode não existir.
@@ -1117,10 +1171,7 @@ class DesSkybotPipeline():
         """
         try:
             # Recupera o Model pelo ID
-            # job = SkybotJob.objects.get(pk=job_id)
             job = self.get_job_by_id(job_id)
-
-            # TODO: Criar uma flag para parar os 2 componentes.
 
             # Altera o Status do Job para Failed.
             t0 = job['start']
@@ -1131,6 +1182,32 @@ class DesSkybotPipeline():
             job['execution_time'] = tdelta
             job['status'] = 4
             job['error'] = e
+
+            self.complete_job(job)
+
+        except Exception as e:
+            self.logger_import.error(e)
+
+    def on_abort(self, job_id):
+        """Encerra o job com status de Abortado.
+        é chamada nas funções de controle do pipeline. ao ocorrer uma AbortSkybotJobError.
+
+        Arguments:
+            job_id {int} -- Id do job que está sendo executado.
+        """
+        try:
+            # Recupera o Model pelo ID
+            job = self.get_job_by_id(job_id)
+
+            # Altera o Status do Job para Failed.
+            t0 = job['start']
+            t1 = datetime.now(timezone.utc)
+            tdelta = t1 - t0
+
+            job['finish'] = t1
+            job['execution_time'] = tdelta
+            job['status'] = 5
+            job['error'] = 'The job was aborted by the user.'
 
             self.complete_job(job)
 
