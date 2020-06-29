@@ -89,7 +89,8 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
     @action(detail=True, methods=['get'])
     def cancel_job(self, request, pk=None):
         """
-            Altera o Status do job para Aborted, as daemons do pipeline checam este status e cancelam a execução.
+            Aborta um Skybot job,
+            cria um arquivo com o status 'aborted' e as daemons do pipeline checam este status e cancelam a execução.
         """
 
         job = self.get_object()
@@ -100,17 +101,11 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
             # Criar um arquivo no diretório do Job para indicar ao pipeline que foi abortado.
             data = dict({
                 'status': 'aborted',
-                'request': False,
-                'loaddata': False,
             })
 
             filepath = os.path.join(job.path, 'status.json')
             with open(filepath, 'w') as f:
                 json.dump(data, f)
-
-            # Altera o status para Aborted
-            job.status = 5
-            job.save()
 
         result = SkybotJobSerializer(job)
         return Response(result.data)
