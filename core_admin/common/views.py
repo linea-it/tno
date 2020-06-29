@@ -38,15 +38,24 @@ def teste(request):
         log = logging.getLogger('django')
         log.info("-----------TESTE----------------")
 
-        # from des.dao import ExposureDao, CcdDao
+        from des.dao import ExposureDao, CcdDao
 
         # a = ExposureDao().count_nights_by_period(
         #     '2019-01-01 00:00:00', '2019-01-31 23:59:59')
 
         # log.debug(a)
+        from des.ccd import download_des_ccds
 
-        # b = CcdDao().count_ccds_by_period('2019-01-01 00:00:00', '2019-01-31 23:59:59')
-        # log.debug(b)
+        ccds = CcdDao().ccds_by_period('2019-01-01 00:00:00', '2019-01-31 23:59:59')
+        log.debug(len(ccds))
+
+        download_des_ccds(ccds[0:2])
+
+        # for ccd in ccds[0:10]:
+        #     log.debug(ccd['filename'])
+
+        # for ccd in ccds:
+        #     log.debug(ccd)
 
         result = dict({
             'success': True,
