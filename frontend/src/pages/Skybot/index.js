@@ -226,7 +226,7 @@ function Skybot({ setTitle }) {
     }
     return (
       <>
-        <Skeleton variant="rect" animation={false} height={440} />
+        <Skeleton variant="rect" animation={false} height={399} />
         {exposurePlotLoading.loading === false &&
         exposurePlotLoading.hasData === false ? (
           <span>No exposure was found in this period</span>
