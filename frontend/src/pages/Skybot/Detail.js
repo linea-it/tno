@@ -9,6 +9,7 @@ import {
   Button,
   Chip,
   Typography,
+  CircularProgress,
 } from '@material-ui/core';
 import { useParams, useHistory } from 'react-router-dom';
 import moment from 'moment';
@@ -25,10 +26,12 @@ import {
   // getSkybotTimeProfile,
 } from '../../services/api/Skybot';
 import useInterval from '../../hooks/useInterval';
+import useStyles from './styles';
 
 function SkybotDetail({ setTitle }) {
   const { id } = useParams();
   const history = useHistory();
+  const classes = useStyles();
   const [status, setStatus] = useState(0);
   const [summary, setSummary] = useState([]);
   // const [timeProfile, setTimeProfile] = useState({
@@ -53,6 +56,7 @@ function SkybotDetail({ setTitle }) {
   });
   const [loadProgress, setLoadProgress] = useState(false);
   const [tableData, setTableData] = useState([]);
+  const [hasCircularProgress, setHasCircularProgress] = useState(true);
 
   // Initiating totalCount as null so that it passes the conditional rendering
   // , in case of nor exposure, and calls the function loadData.
@@ -65,8 +69,10 @@ function SkybotDetail({ setTitle }) {
   }, [setTitle]);
 
   useEffect(() => {
+    setHasCircularProgress(false);
     getSkybotProgress(id).then((data) => {
       setProgress(data);
+      setHasCircularProgress(true);
     });
   }, [loadProgress]);
 
@@ -221,6 +227,18 @@ function SkybotDetail({ setTitle }) {
     }
   }, [10000]);
 
+  useEffect(() => {
+    console.log('hasCircularProgress', hasCircularProgress);
+    console.log(
+      '![3, 4, 5, 6].includes(status)',
+      ![3, 4, 5, 6].includes(status)
+    );
+    console.log(
+      'status',
+      hasCircularProgress || ![3, 4, 5, 6].includes(status)
+    );
+  }, [status, hasCircularProgress]);
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -253,7 +271,12 @@ function SkybotDetail({ setTitle }) {
             <Card>
               <CardHeader title="Progress" />
               <CardContent>
-                <Grid container spacing={3} direction="column">
+                <Grid
+                  container
+                  spacing={3}
+                  direction="column"
+                  className={classes.progressWrapper}
+                >
                   <Grid item>
                     <Progress
                       title="Retrieving data from Skybot"
@@ -327,6 +350,13 @@ function SkybotDetail({ setTitle }) {
                       </Grid>
                     </Grid>
                   </Grid>
+                  {hasCircularProgress && ![3, 4, 5, 6].includes(status) ? (
+                    <CircularProgress
+                      className={classes.circularProgress}
+                      disableShrink
+                      size={20}
+                    />
+                  ) : null}
                 </Grid>
               </CardContent>
             </Card>
