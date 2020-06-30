@@ -227,18 +227,6 @@ function SkybotDetail({ setTitle }) {
     }
   }, [10000]);
 
-  useEffect(() => {
-    console.log('hasCircularProgress', hasCircularProgress);
-    console.log(
-      '![3, 4, 5, 6].includes(status)',
-      ![3, 4, 5, 6].includes(status)
-    );
-    console.log(
-      'status',
-      hasCircularProgress || ![3, 4, 5, 6].includes(status)
-    );
-  }, [status, hasCircularProgress]);
-
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
