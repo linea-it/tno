@@ -93,16 +93,16 @@ function SkybotDetail({ setTitle }) {
           value: res.execution_time ? res.execution_time.split('.')[0] : 0,
         },
         {
+          title: 'Nights',
+          value: res.nights,
+        },
+        {
           title: 'Exposures',
           value: res.exposures,
         },
         {
           title: 'CCDs',
           value: res.ccds,
-        },
-        {
-          title: 'Nights',
-          value: res.nights,
         },
       ]);
     });
