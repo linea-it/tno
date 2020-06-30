@@ -7,6 +7,7 @@ import {
   CardContent,
   Icon,
   Button,
+  ButtonGroup,
   Chip,
   Typography,
   CircularProgress,
@@ -19,10 +20,12 @@ import Table from '../../components/Table';
 // import SkybotTimeProfile from '../../components/Chart/SkybotTimeProfile';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import Progress from '../../components/Progress';
+import CalendarExecutedNight from '../../components/Chart/CalendarExecutedNight';
 import {
   getSkybotResultById,
   getSkybotRunById,
   getSkybotProgress,
+  getExecutedNightsByPeriod,
   // getSkybotTimeProfile,
 } from '../../services/api/Skybot';
 import useInterval from '../../hooks/useInterval';
@@ -62,6 +65,15 @@ function SkybotDetail({ setTitle }) {
   // , in case of nor exposure, and calls the function loadData.
   const [totalCount, setTotalCount] = useState(null);
 
+  const [executedDate, setExecutedDate] = useState(['', '']);
+  const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([]);
+  const [currentYearExecutedNights, setCurrentYearExecutedNights] = useState(
+    []
+  );
+
+  const [currentSelectedDateYear, setCurrentSelectedDateYear] = useState('');
+  const [selectedDateYears, setSelectedDateYears] = useState([]);
+
   const handleBackNavigation = () => history.goBack();
 
   useEffect(() => {
@@ -96,13 +108,15 @@ function SkybotDetail({ setTitle }) {
         },
         {
           title: 'Execution',
-          value: res.execution_time ? res.execution_time.split('.')[0] : 0,
+          value: res.execution_time ? res.execution_time.split('.')[0] : '-',
         },
         {
           title: 'Exposures',
           value: res.exposures,
         },
       ]);
+
+      setExecutedDate([res.date_initial, res.date_final]);
     });
   }, [loadProgress]);
 
@@ -227,6 +241,35 @@ function SkybotDetail({ setTitle }) {
     }
   }, [10000]);
 
+  useEffect(() => {
+    if (executedDate[0] !== '' && executedDate[1] !== '') {
+      getExecutedNightsByPeriod(
+        moment(executedDate[0]).format('YYYY-MM-DD'),
+        moment(executedDate[1]).format('YYYY-MM-DD')
+      ).then((res) => {
+        const selectedYears = res
+          .map((year) => moment(year.date).format('YYYY'))
+          .filter((year, i, yearArr) => yearArr.indexOf(year) === i);
+
+        setSelectedDateYears(selectedYears);
+        setCurrentSelectedDateYear(selectedYears[0]);
+
+        setExecutedNightsByPeriod(res);
+      });
+    }
+  }, [executedDate]);
+
+  useEffect(() => {
+    if (executedNightsByPeriod.length > 0) {
+      const nights = executedNightsByPeriod.filter(
+        (exposure) =>
+          moment(exposure.date).format('YYYY') === currentSelectedDateYear
+      );
+
+      setCurrentYearExecutedNights(nights);
+    }
+  }, [executedNightsByPeriod, currentSelectedDateYear]);
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -349,6 +392,59 @@ function SkybotDetail({ setTitle }) {
               </CardContent>
             </Card>
           </Grid>
+          <Grid item xs={12}>
+            <Grid container alignItems="stretch" spacing={2}>
+              <Grid item xs={4}>
+                <Card>
+                  <CardHeader title="Summary" />
+                  <CardContent>
+                    <List data={summary} />
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={8}>
+                <Card>
+                  <CardHeader title="Executed Nights" />
+                  <CardContent>
+                    <Grid container spacing={2} direction="column">
+                      <Grid item>
+                        {selectedDateYears.length > 1 ? (
+                          <ButtonGroup
+                            variant="contained"
+                            color="primary"
+                            className={classes.buttonGroupYear}
+                          >
+                            {selectedDateYears.map((year) => (
+                              <Button
+                                key={year}
+                                onClick={() => setCurrentSelectedDateYear(year)}
+                                disabled={currentSelectedDateYear === year}
+                              >
+                                {year}
+                              </Button>
+                            ))}
+                          </ButtonGroup>
+                        ) : null}
+                      </Grid>
+                      <Grid item>
+                        <CalendarExecutedNight
+                          data={currentYearExecutedNights}
+                        />
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                </Card>
+              </Grid>
+              {/* <Grid item xs={8}>
+                <Card>
+                  <CardHeader title="Execution Time" />
+                  <CardContent>
+                    <SkybotTimeProfile data={timeProfile} />
+                  </CardContent>
+                </Card>
+              </Grid> */}
+            </Grid>
+          </Grid>
 
           {
             // Completed, Failed, Aborted and Stopped Statuses:
@@ -356,26 +452,6 @@ function SkybotDetail({ setTitle }) {
             progress.request.status !== 'completed' ||
             progress.loaddata.status !== 'completed' ? null : (
               <>
-                <Grid item xs={12}>
-                  <Grid container alignItems="stretch" spacing={2}>
-                    <Grid item xs={4}>
-                      <Card>
-                        <CardHeader title="Summary" />
-                        <CardContent>
-                          <List data={summary} />
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                    {/* <Grid item xs={8}>
-                      <Card>
-                        <CardHeader title="Execution Time" />
-                        <CardContent>
-                          <SkybotTimeProfile data={timeProfile} />
-                        </CardContent>
-                      </Card>
-                    </Grid> */}
-                  </Grid>
-                </Grid>
                 <Grid item xs={12}>
                   <Grid container spacing={2}>
                     <Grid item xs={12}>

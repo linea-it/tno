@@ -122,6 +122,7 @@ function Skybot({ setTitle }) {
       ordering: sorting,
     }).then((res) => {
       const { data } = res;
+
       setTableData(data.results);
       setTotalCount(data.count);
     });
@@ -135,7 +136,15 @@ function Skybot({ setTitle }) {
       .then((response) => {
         const { id } = response.data;
 
-        history.push(`/data-preparation/des/skybot/${id}`);
+        const hasStatusRunning =
+          tableData.filter((row) => row.status === 2).length > 0;
+
+        if (hasStatusRunning) {
+          setHasRunningFeedback(true);
+          setReload((prevState) => !prevState);
+        } else {
+          history.push(`/data-preparation/des/skybot/${id}`);
+        }
       })
       .catch(() => {
         setReload((prevState) => !prevState);
@@ -146,23 +155,21 @@ function Skybot({ setTitle }) {
   const handleSubmitJob = () => {
     setDisableSubmit(true);
 
-    const hasStatusRunning =
-      tableData.filter((row) => row.status === 2).length > 0;
-
-    if (hasStatusRunning) {
-      setHasRunningFeedback(true);
-    } else {
-      handleSubmit();
-    }
+    handleSubmit();
   };
 
   const tableColumns = [
     {
-      name: 'id',
+      name: 'results',
       title: 'Details',
       width: 110,
-      icon: <InfoOutlinedIcon />,
-      action: (row) => history.push(`/data-preparation/des/skybot/${row.id}`),
+      customElement: (row) => (
+        <Button
+          onClick={() => history.push(`/data-preparation/des/skybot/${row.id}`)}
+        >
+          <InfoOutlinedIcon />
+        </Button>
+      ),
       align: 'center',
       sortingEnabled: false,
     },
@@ -175,16 +182,18 @@ function Skybot({ setTitle }) {
       ),
     },
     {
+      name: 'id',
+      title: 'ID',
+    },
+    {
       name: 'owner',
       title: 'Owner',
       width: 180,
-      align: 'left',
     },
     {
       name: 'date_initial',
       title: 'Initial Date',
       width: 130,
-      align: 'left',
       customElement: (row) => (
         <span title={moment(row.start).format('HH:mm:ss')}>
           {row.date_initial}
@@ -195,10 +204,19 @@ function Skybot({ setTitle }) {
       name: 'date_final',
       title: 'Final Date',
       width: 130,
-      align: 'left',
       customElement: (row) => (
         <span title={moment(row.finish).format('HH:mm:ss')}>
           {row.date_final}
+        </span>
+      ),
+    },
+    {
+      name: 'start',
+      title: 'Start Date',
+      width: 130,
+      customElement: (row) => (
+        <span title={moment(row.start).format('HH:mm:ss')}>
+          {moment(row.start).format('YYYY-MM-DD')}
         </span>
       ),
     },
@@ -398,6 +416,7 @@ function Skybot({ setTitle }) {
                 hasToolbar={false}
                 reload={reload}
                 totalCount={totalCount}
+                defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
               />
             </CardContent>
           </Card>
