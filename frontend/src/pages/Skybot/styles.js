@@ -1,6 +1,9 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
+  formControl: {
+    minWidth: 113,
+  },
   buttonGroupYear: {
     height: 'calc(100% - 1px)',
   },

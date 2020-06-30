@@ -14,6 +14,7 @@ import {
   Select,
   InputLabel,
   Typography,
+  Snackbar,
 } from '@material-ui/core';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
@@ -49,6 +50,7 @@ function Skybot({ setTitle }) {
   const [currentYearExecutedNights, setCurrentYearExecutedNights] = useState(
     []
   );
+  const [hasRunningFeedback, setHasRunningFeedback] = useState(false);
 
   useEffect(() => {
     setTitle('Skybot');
@@ -73,14 +75,12 @@ function Skybot({ setTitle }) {
       moment(selectedDate[0]).format('YYYY-MM-DD'),
       moment(selectedDate[1]).format('YYYY-MM-DD')
     ).then((res) => {
-      if (chartType !== 0) {
-        const selectedYears = res
-          .map((year) => moment(year.date).format('YYYY'))
-          .filter((year, i, yearArr) => yearArr.indexOf(year) === i);
+      const selectedYears = res
+        .map((year) => moment(year.date).format('YYYY'))
+        .filter((year, i, yearArr) => yearArr.indexOf(year) === i);
 
-        setSelectedDateYears(selectedYears);
-        setCurrentSelectedDateYear(selectedYears[0]);
-      }
+      setSelectedDateYears(selectedYears);
+      setCurrentSelectedDateYear(selectedYears[0]);
 
       setExposuresByPeriod(res);
     });
@@ -143,9 +143,17 @@ function Skybot({ setTitle }) {
       });
   };
 
-  const handleExecuteJob = () => {
+  const handleSubmitJob = () => {
     setDisableSubmit(true);
-    handleSubmit();
+
+    const hasStatusRunning =
+      tableData.filter((row) => row.status === 2).length > 0;
+
+    if (hasStatusRunning) {
+      setHasRunningFeedback(true);
+    } else {
+      handleSubmit();
+    }
   };
 
   const tableColumns = [
@@ -216,7 +224,7 @@ function Skybot({ setTitle }) {
   // so we can follow its progress in real time.
   useInterval(() => {
     const hasStatusRunning =
-      tableData.filter((row) => row.status === 'running').length > 0;
+      tableData.filter((row) => row.status === 2).length > 0;
 
     if (hasStatusRunning) {
       setReload(!reload);
@@ -232,7 +240,7 @@ function Skybot({ setTitle }) {
       return (
         <Grid container spacing={2} alignItems="stretch">
           <Grid item>
-            <FormControl variant="outlined">
+            <FormControl variant="outlined" className={classes.formControl}>
               <InputLabel>Chart Type</InputLabel>
               <Select
                 label="Chart Type"
@@ -282,7 +290,7 @@ function Skybot({ setTitle }) {
                 ]}
                 layout={{
                   hovermode: 'closest',
-                  height: 322,
+                  height: 465,
                   margin: {
                     t: 30,
                     b: 20,
@@ -357,7 +365,7 @@ function Skybot({ setTitle }) {
                     color="primary"
                     fullWidth
                     disabled={disableSubmit}
-                    onClick={handleExecuteJob}
+                    onClick={handleSubmitJob}
                   >
                     Submit
                   </Button>
@@ -395,6 +403,13 @@ function Skybot({ setTitle }) {
           </Card>
         </Grid>
       </Grid>
+      <Snackbar
+        open={hasRunningFeedback}
+        autoHideDuration={5000}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        message="There's already a job running, so your job is currently idle."
+        onClose={() => setHasRunningFeedback(false)}
+      />
     </>
   );
 }
