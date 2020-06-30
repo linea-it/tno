@@ -297,6 +297,8 @@ class DesSkybotPipeline():
             'finish', 'execution_time', 'output', 'filename', 'file_size',
             'skybot_url', 'error'])
 
+        df['ticket'] = df.ticket.astype('int64')
+
         # Escreve o dataframe em arquivo.
         df.to_csv(filepath, sep=';', header=True, index=False)
 
@@ -319,7 +321,11 @@ class DesSkybotPipeline():
         """
         filepath = self.get_request_dataframe_filepath(job_path)
 
-        df = pd.read_csv(filepath, delimiter=';', usecols=usecols)
+        df = pd.read_csv(filepath, delimiter=';',
+                         usecols=usecols, dtype={
+                             'ticket': 'int64',
+                             'positions': 'int32',
+                         })
 
         return df
 
@@ -518,6 +524,9 @@ class DesSkybotPipeline():
 
             # Atualiza o arquivo de heartbeat com o status aborted.
             self.update_request_heartbeat(heartbeat, 'aborted', 0, 0, 0)
+
+            # Criar um dataframe para guardar as estatisticas de cada requisição.
+            df_requests = self.create_request_dataframe(requests, job_path)
 
             # Vai parar de fazer as requisições mais ainda vai continuar executando o load data.
             # O load data fica responsavel por finalizar o job e guardar os resultados.
@@ -732,7 +741,6 @@ class DesSkybotPipeline():
             self.logger_import.debug(
                 "----------------------------------------------")
 
-
             # Total a ser executado ler do heartbead da etapa anterior
             try:
                 # Na primeira execução pode ocorrer ao mesmo tempo que o componente requests.
@@ -867,8 +875,7 @@ class DesSkybotPipeline():
             self.logger_import.debug("Total files to be imported: [%s] Success: [%s] Failure: [%s] in %s" % (
                 t_files, t_success, t_failure, humanize.naturaldelta(tdelta, minimum_unit="seconds")))
 
-
-            # Verificar se status do Job 
+            # Verificar se status do Job
             self.check_status(job['path'])
 
             # Verificar quando o Processo efetivamente acabou.
@@ -967,7 +974,14 @@ class DesSkybotPipeline():
         Returns:
             Pandas.DataFrame -- Retorna um dataframe om os resultados do loaddata.
         """
-        df = pd.read_csv(filepath, sep=';', usecols=usecols)
+        df = pd.read_csv(filepath, sep=';', usecols=usecols,
+                         dtype={
+                             'ticket': 'int64',
+                             'positions': 'int32',
+                             'ccds': 'int32',
+                             'inside_ccd': 'int32',
+                             'outside_ccd': 'int32'
+                         })
         return df
 
     def get_loadata_heartbeat_filepath(self, job_path):
@@ -1115,6 +1129,9 @@ class DesSkybotPipeline():
                 # Escreve o resultado geral do Job no arquivo.
                 results_filepath = job['results']
                 results = pd.DataFrame(df_results)
+                results['ticket'] = results.ticket.fillna(0)
+                results['ticket'] = results.ticket.astype('int64')
+
                 results.to_csv(results_filepath, sep=';',
                                header=True, index=True)
 
@@ -1123,13 +1140,27 @@ class DesSkybotPipeline():
 
                 self.logger_import.debug(
                     "Recording the results of each exposure in the database.")
+
                 # Opitei por ler o arquivo csv recem criado, por que tive dificuldade
                 # em usar o dataset result, deu problemas na coluna exposure que estava sendo usada como index.
                 # le o arquivo results e cria um dataframe contendo só as colunas referente ao model Des/SkybotJobResult
-                df = pd.read_csv(results_filepath, sep=';', usecols=['id', 'ticket', 'success', 'execution_time',
-                                                                     'positions', 'inside_ccd', 'outside_ccd', 'filename'])
+                df = pd.read_csv(
+                    results_filepath,
+                    sep=';',
+                    usecols=['id', 'ticket', 'success', 'execution_time',
+                             'positions', 'inside_ccd', 'outside_ccd', 'filename'])
+
+                # Se tiver sido aborted registra só as que tiveram sucesso.
+                if aborted is True:
+                    df = df[df['success'] == True]
+                    df = pd.DataFrame(df)
+
+                df = df.astype({'ticket': 'int64', 'positions': 'int32',
+                                'inside_ccd': 'int32', 'outside_ccd': 'int32'})
+
                 # Renomeia a coluna exposure para exposure_id
                 df.rename(columns={'id': 'exposure_id'}, inplace=True)
+
                 # Adiciona uma coluna com o id do Des/SkybotJob
                 df['job_id'] = int(job_id)
                 # Muda a ordem das colunas para ficar igual a tabela des_skybotjobresutl
@@ -1191,7 +1222,8 @@ class DesSkybotPipeline():
             job['finish'] = t1
             job['execution_time'] = tdelta
             job['status'] = 4
-            job['error'] = e.replace('"', '\\"')
+            # job['error'] = str(e).replace('"', '\\"')
+            job['error'] = str(e)
 
             self.complete_job(job)
 
