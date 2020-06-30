@@ -85,8 +85,7 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
 
         return Response(result.data)
 
-    # @action(detail=True, methods=['post'])
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['post'])
     def cancel_job(self, request, pk=None):
         """
             Aborta um Skybot job,
@@ -143,8 +142,8 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
 
     @action(detail=True)
     def time_profile(self, request, pk=None):
-        """Retorna o Time Profile para um job que já foi concluido. 
-        le os arquivos requests e loaddata que estão no diretório do job, 
+        """Retorna o Time Profile para um job que já foi concluido.
+        le os arquivos requests e loaddata que estão no diretório do job,
         e retonra um array para cada um deles. no seguinte formato
 
         request: [['exposure', 'start', 'finish', 'positions', 'execution_time'],...]

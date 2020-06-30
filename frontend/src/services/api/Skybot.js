@@ -134,3 +134,6 @@ export const getCcdsByExposure = (exposure) => {
 
 export const getExposureById = (id) =>
   axios.get(`/des/exposure/${id}`).then((res) => res.data);
+
+export const cancelSkybotJobById = (id) =>
+  axios.post(`/des/skybot_job/${id}/cancel_job/`).then((res) => res.data);
