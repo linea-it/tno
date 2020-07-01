@@ -344,7 +344,7 @@ function SkybotDetail({ setTitle }) {
               <Button
                 variant="contained"
                 color="secondary"
-                title="Stop"
+                title="Abort"
                 onClick={handleStopRun}
                 disabled={isJobCanceled}
               >
@@ -354,7 +354,7 @@ function SkybotDetail({ setTitle }) {
                   <Icon className="fas fa-stop" fontSize="inherit" />
                 )}
                 <Typography variant="button" style={{ margin: '0 5px' }}>
-                  Stop
+                  Abort
                 </Typography>
               </Button>
             </Grid>
