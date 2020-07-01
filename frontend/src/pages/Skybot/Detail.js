@@ -61,8 +61,8 @@ function SkybotDetail({ setTitle }) {
   const [tableData, setTableData] = useState([]);
   const [hasCircularProgress, setHasCircularProgress] = useState(true);
 
-  // Initiating totalCount as null so that it passes the conditional rendering
-  // , in case of nor exposure, and calls the function loadData.
+  // Initiating totalCount as null so that it passes the conditional rendering,
+  // in case of nor exposure, and calls the function loadData.
   const [totalCount, setTotalCount] = useState(null);
 
   const [executedDate, setExecutedDate] = useState(['', '']);
@@ -111,8 +111,16 @@ function SkybotDetail({ setTitle }) {
           value: res.execution_time ? res.execution_time.split('.')[0] : '-',
         },
         {
+          title: 'Nights',
+          value: res.nights,
+        },
+        {
           title: 'Exposures',
           value: res.exposures,
+        },
+        {
+          title: 'CCDs',
+          value: res.ccds,
         },
       ]);
 
@@ -452,6 +460,16 @@ function SkybotDetail({ setTitle }) {
             progress.request.status !== 'completed' ||
             progress.loaddata.status !== 'completed' ? null : (
               <>
+                <Grid item xs={12}>
+                  {/* <Grid item xs={12} sm={8}>
+                      <Card>
+                        <CardHeader title="Execution Time" />
+                        <CardContent>
+                          <SkybotTimeProfile data={timeProfile} />
+                        </CardContent>
+                      </Card>
+                    </Grid> */}
+                </Grid>
                 <Grid item xs={12}>
                   <Grid container spacing={2}>
                     <Grid item xs={12}>

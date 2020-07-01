@@ -176,7 +176,6 @@ function Skybot({ setTitle }) {
     {
       name: 'status',
       title: 'Status',
-      width: 150,
       customElement: (row) => (
         <ColumnStatus status={row.status} title={row.error_msg} />
       ),
@@ -188,7 +187,19 @@ function Skybot({ setTitle }) {
     {
       name: 'owner',
       title: 'Owner',
-      width: 180,
+      width: 130,
+    },
+    {
+      name: 'exposures',
+      title: 'Exposures',
+    },
+    {
+      name: 'ccds',
+      title: 'CCDs',
+    },
+    {
+      name: 'nights',
+      title: 'Nights',
     },
     {
       name: 'date_initial',
