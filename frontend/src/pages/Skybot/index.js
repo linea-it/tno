@@ -124,7 +124,6 @@ function Skybot({ setTitle }) {
     {
       name: 'status',
       title: 'Status',
-      width: 150,
       customElement: (row) => (
         <ColumnStatus status={row.status} title={row.error_msg} />
       ),
@@ -132,14 +131,24 @@ function Skybot({ setTitle }) {
     {
       name: 'owner',
       title: 'Owner',
-      width: 180,
-      align: 'left',
+      width: 130,
+    },
+    {
+      name: 'exposures',
+      title: 'Exposures',
+    },
+    {
+      name: 'ccds',
+      title: 'CCDs',
+    },
+    {
+      name: 'nights',
+      title: 'Nights',
     },
     {
       name: 'date_initial',
       title: 'Initial Date',
       width: 130,
-      align: 'left',
       customElement: (row) => (
         <span title={moment(row.start).format('HH:mm:ss')}>
           {row.date_initial}
@@ -150,7 +159,6 @@ function Skybot({ setTitle }) {
       name: 'date_final',
       title: 'Final Date',
       width: 130,
-      align: 'left',
       customElement: (row) => (
         <span title={moment(row.finish).format('HH:mm:ss')}>
           {row.date_final}

@@ -23,6 +23,7 @@ import {
   getExposureById,
 } from '../../services/api/Skybot';
 import CCD from '../../components/Chart/CCD';
+import List from '../../components/List';
 
 function SkybotAsteroid({ setTitle }) {
   const { id } = useParams();
@@ -38,6 +39,7 @@ function SkybotAsteroid({ setTitle }) {
   const [positions, setPositions] = useState([]);
   const [exposure, setExposure] = useState({ radeg: null, decdeg: null });
   const [asteroidsInsideCcd, setAsteroidsInsideCcd] = useState([]);
+  const [summary, setSummary] = useState([]);
 
   useEffect(() => {
     setTitle('Skybot');
@@ -286,6 +288,37 @@ function SkybotAsteroid({ setTitle }) {
     }
   }, [positions, asteroidsInsideCcd, ccds, exposure]);
 
+  useEffect(() => {
+    if (
+      'ccds' in ccdsPlotData &&
+      'asteroidsInside' in ccdsPlotData &&
+      'asteroidsOutside' in ccdsPlotData
+    ) {
+      setSummary([
+        {
+          title: 'ID',
+          value: id,
+        },
+        {
+          title: 'CCDs',
+          value: ccdsPlotData.ccds.length,
+        },
+        {
+          title: 'Asteroids Inside',
+          value: ccdsPlotData.asteroidsInside.x.length,
+        },
+        {
+          title: 'Asteroids Outside',
+          value: ccdsPlotData.asteroidsOutside.x.length,
+        },
+        {
+          title: 'Cone Search Radius',
+          value: coneSearchRadius,
+        },
+      ]);
+    }
+  }, [ccdsPlotData]);
+
   const handleBackNavigation = () => history.goBack();
 
   const handleAsteroidInCcds = () => setInsideCcdOnly(!insideCcdOnly);
@@ -309,7 +342,15 @@ function SkybotAsteroid({ setTitle }) {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} sm={4}>
+        <Card>
+          <CardHeader title="Summary" />
+          <CardContent>
+            <List data={summary} />
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item xs={12} sm={8}>
         <Card>
           <CardHeader title="Asteroids Inside CCD" />
           <CardContent>
@@ -321,7 +362,7 @@ function SkybotAsteroid({ setTitle }) {
           </CardContent>
         </Card>
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} sm={8}>
         <Card>
           <CardHeader title="Asteroids" />
           <CardContent>
