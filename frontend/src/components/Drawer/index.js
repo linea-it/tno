@@ -22,7 +22,7 @@ import {
 import Footer from '../Footer';
 import Toolbar from '../Toolbar';
 
-import Logo from '../../assets/img/linea.png';
+import Logo from '../../assets/img/logo.png';
 import useStyles from './styles';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 

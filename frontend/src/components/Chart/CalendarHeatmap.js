@@ -18,6 +18,7 @@ function CalendarHeatmap({ data }) {
   }, [data]);
 
   function drawCalendar(dateValues) {
+    d3.selectAll('#heatmap-svg > *').remove();
     const svg = d3.select('#heatmap-svg');
 
     const years = d3
@@ -50,7 +51,7 @@ function CalendarHeatmap({ data }) {
       .attr('text-anchor', 'end')
       .text((d) => {
         if (d.key === 'NaN') {
-          return moment(data[0].dates).format('YYYY');
+          return moment(rows[0].date).format('YYYY');
         }
         return d.key;
       });
@@ -65,9 +66,8 @@ function CalendarHeatmap({ data }) {
     const timeWeek = d3.utcSunday;
 
     const colorFn = d3
-      .scaleOrdinal()
-      .domain([Math.floor(minValue), Math.ceil(maxValue)])
-      .range(['#ebedf0', '#c6e48b', '#7bc96f', '#239a3b', '#196127']);
+      .scaleSequential(d3.interpolateGreens)
+      .domain([Math.floor(minValue), Math.ceil(maxValue)]);
 
     year
       .append('g')
@@ -121,6 +121,7 @@ function CalendarHeatmap({ data }) {
 
   useEffect(() => {
     drawCalendar(rows);
+
     const svg = document.getElementById('heatmap-svg');
 
     // Get the bounds of the SVG content
@@ -142,7 +143,7 @@ function CalendarHeatmap({ data }) {
         <ul className={classes.legend}>
           <li
             className={classes.legendItem}
-            style={{ backgroundColor: '#ebedf0' }}
+            style={{ backgroundColor: '#f7fcf5' }}
           />
           <li
             className={classes.legendItem}

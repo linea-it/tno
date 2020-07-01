@@ -20,11 +20,13 @@ const light = createMuiTheme({
         color: pink[500],
       },
     },
-    // MuiCard: {
-    //   root: {
-    //     height: '100%',
-    //   },
-    // },
+    MuiCard: {
+      root: {
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+      },
+    },
     MuiCardHeader: {
       root: {
         backgroundColor: 'rgb(248, 249, 252)',
