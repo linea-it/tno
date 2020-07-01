@@ -1039,6 +1039,12 @@ class DesSkybotPipeline():
         with open(filepath) as f:
             return json.load(f)
 
+    def check_exposure_status(self, row):
+        if bool(row['request_success']) is True and bool(row['loaddata_success'] is True):
+            return True
+        else:
+            return False
+
     def consolidate(self, job_id, aborted=False):
         """Faz a checagem para saber se o Job completou as 2 etapas.
         Verifica se todas as exposições do job passaram pelas 2 etapas.
@@ -1118,8 +1124,8 @@ class DesSkybotPipeline():
                 # Adiciona uma coluna success, esta coluna considera o status dos 2 componentes
                 # para cada exposure, seu valor é True se a exposure for executada corretamente
                 # nos 2 componentes, e False se tiver falhado em um deles.
-                df_results['success'] = (
-                    df_results.request_success & df_results.loaddata_success)
+                df_results['success'] = df_results.apply(
+                    self.check_exposure_status, axis=1)
 
                 # Adiciona uma coluna com o tempo total de execução de cada exposure.
                 # Somando o tempo de execução das 2 etapas.
