@@ -128,16 +128,19 @@ const useStyles = makeStyles((theme) => ({
   logoBlock: {
     display: 'block',
   },
-  '@global': {
-    '.MuiListItem-root.Mui-selected, .MuiListItem-root.Mui-selected:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.34)',
-    },
-  },
+  // '@global': {
+  //   '.MuiListItem-root.Mui-selected, .MuiListItem-root.Mui-selected:hover': {
+  //     backgroundColor: 'rgba(0, 0, 0, 0.34)',
+  //   },
+  // },
   nested: {
     paddingLeft: theme.spacing(4),
   },
   doublenested: {
     paddingLeft: theme.spacing(6),
+  },
+  menuItemIcon: {
+    color: '#fff',
   },
 }));
 

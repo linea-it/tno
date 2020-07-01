@@ -14,7 +14,7 @@ export default function AstrometryStepper({ activeStep }) {
   return (
     <>
       <Stepper activeStep={activeStep}>
-        {steps.map((label, index) => {
+        {steps.map((label) => {
           const stepProps = {};
           const labelProps = {};
 

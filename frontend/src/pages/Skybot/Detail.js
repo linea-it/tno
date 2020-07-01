@@ -7,6 +7,7 @@ import {
   CardContent,
   Icon,
   Button,
+  ButtonGroup,
   Chip,
   Typography,
   CircularProgress,
@@ -19,18 +20,22 @@ import Table from '../../components/Table';
 // import SkybotTimeProfile from '../../components/Chart/SkybotTimeProfile';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import Progress from '../../components/Progress';
+import CalendarExecutedNight from '../../components/Chart/CalendarExecutedNight';
 import {
   getSkybotResultById,
   getSkybotRunById,
   getSkybotProgress,
   cancelSkybotJobById,
+  getExecutedNightsByPeriod,
   // getSkybotTimeProfile,
 } from '../../services/api/Skybot';
 import useInterval from '../../hooks/useInterval';
+import useStyles from './styles';
 
 function SkybotDetail({ setTitle }) {
   const { id } = useParams();
   const history = useHistory();
+  const classes = useStyles();
   const [status, setStatus] = useState(0);
   const [summary, setSummary] = useState([]);
   // const [timeProfile, setTimeProfile] = useState({
@@ -56,10 +61,20 @@ function SkybotDetail({ setTitle }) {
   const [loadProgress, setLoadProgress] = useState(false);
   const [isJobCanceled, setIsJobCanceled] = useState(false);
   const [tableData, setTableData] = useState([]);
+  const [hasCircularProgress, setHasCircularProgress] = useState(true);
 
-  // Initiating totalCount as null so that it passes the conditional rendering
-  // , in case of nor exposure, and calls the function loadData.
+  // Initiating totalCount as null so that it passes the conditional rendering,
+  // in case of nor exposure, and calls the function loadData.
   const [totalCount, setTotalCount] = useState(null);
+
+  const [executedDate, setExecutedDate] = useState(['', '']);
+  const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([]);
+  const [currentYearExecutedNights, setCurrentYearExecutedNights] = useState(
+    []
+  );
+
+  const [currentSelectedDateYear, setCurrentSelectedDateYear] = useState('');
+  const [selectedDateYears, setSelectedDateYears] = useState([]);
 
   const handleBackNavigation = () => history.goBack();
 
@@ -68,10 +83,46 @@ function SkybotDetail({ setTitle }) {
   }, [setTitle]);
 
   useEffect(() => {
-    getSkybotProgress(id).then((data) => {
-      setProgress(data);
-    });
+    setHasCircularProgress(false);
+    getSkybotProgress(id)
+      .then((data) => {
+        setProgress(data);
+        setHasCircularProgress(true);
+      })
+      .catch(() => {
+        setHasCircularProgress(true);
+      });
   }, [loadProgress]);
+
+  // useEffect(() => {
+  //   if (
+  //     progress.request.status === 'completed' &&
+  //     progress.loaddata.status === 'completed'
+  //   ) {
+  //     getSkybotTimeProfile(id).then((res) => {
+  //       const { requests, loaddata } = res;
+  //       if (res.success) {
+  //         setTimeProfile({
+  //           requests: requests.map((request) => ({
+  //             [res.columns[0]]: request[0],
+  //             [res.columns[1]]: request[1],
+  //             [res.columns[2]]: request[2],
+  //             [res.columns[3]]: request[3],
+  //             [res.columns[4]]: request[4],
+  //           })),
+
+  //           loaddata: loaddata.map((request) => ({
+  //             [res.columns[0]]: request[0],
+  //             [res.columns[1]]: request[1],
+  //             [res.columns[2]]: request[2],
+  //             [res.columns[3]]: request[3],
+  //             [res.columns[4]]: request[4],
+  //           })),
+  //         });
+  //       }
+  //     });
+  //   }
+  // }, [id, progress]);
 
   const tableColumns = [
     {
@@ -174,10 +225,20 @@ function SkybotDetail({ setTitle }) {
           value: res.execution_time ? res.execution_time.split('.')[0] : 0,
         },
         {
+          title: 'Nights',
+          value: res.nights,
+        },
+        {
           title: 'Exposures',
           value: res.exposures,
         },
+        {
+          title: 'CCDs',
+          value: res.ccds,
+        },
       ]);
+
+      setExecutedDate([res.date_initial, res.date_final]);
     });
     loadData({
       currentPage: 0,
@@ -232,6 +293,35 @@ function SkybotDetail({ setTitle }) {
     });
   };
 
+  useEffect(() => {
+    if (executedDate[0] !== '' && executedDate[1] !== '') {
+      getExecutedNightsByPeriod(
+        moment(executedDate[0]).format('YYYY-MM-DD'),
+        moment(executedDate[1]).format('YYYY-MM-DD')
+      ).then((res) => {
+        const selectedYears = res
+          .map((year) => moment(year.date).format('YYYY'))
+          .filter((year, i, yearArr) => yearArr.indexOf(year) === i);
+
+        setSelectedDateYears(selectedYears);
+        setCurrentSelectedDateYear(selectedYears[0]);
+
+        setExecutedNightsByPeriod(res);
+      });
+    }
+  }, [executedDate]);
+
+  useEffect(() => {
+    if (executedNightsByPeriod.length > 0) {
+      const nights = executedNightsByPeriod.filter(
+        (exposure) =>
+          moment(exposure.date).format('YYYY') === currentSelectedDateYear
+      );
+
+      setCurrentYearExecutedNights(nights);
+    }
+  }, [executedNightsByPeriod, currentSelectedDateYear]);
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -284,7 +374,12 @@ function SkybotDetail({ setTitle }) {
             <Card>
               <CardHeader title="Progress" />
               <CardContent>
-                <Grid container spacing={3} direction="column">
+                <Grid
+                  container
+                  spacing={3}
+                  direction="column"
+                  className={classes.progressWrapper}
+                >
                   <Grid item>
                     <Progress
                       title="Retrieving data from Skybot"
@@ -358,25 +453,77 @@ function SkybotDetail({ setTitle }) {
                       </Grid>
                     </Grid>
                   </Grid>
+                  {hasCircularProgress && [1, 2].includes(status) ? (
+                    <CircularProgress
+                      className={classes.circularProgress}
+                      disableShrink
+                      size={20}
+                    />
+                  ) : null}
                 </Grid>
               </CardContent>
             </Card>
           </Grid>
+          <Grid item xs={12}>
+            <Grid container alignItems="stretch" spacing={2}>
+              <Grid item xs={4}>
+                <Card>
+                  <CardHeader title="Summary" />
+                  <CardContent>
+                    <List data={summary} />
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={8}>
+                <Card>
+                  <CardHeader title="Executed Nights" />
+                  <CardContent>
+                    <Grid container spacing={2} direction="column">
+                      <Grid item>
+                        {selectedDateYears.length > 1 ? (
+                          <ButtonGroup
+                            variant="contained"
+                            color="primary"
+                            className={classes.buttonGroupYear}
+                          >
+                            {selectedDateYears.map((year) => (
+                              <Button
+                                key={year}
+                                onClick={() => setCurrentSelectedDateYear(year)}
+                                disabled={currentSelectedDateYear === year}
+                              >
+                                {year}
+                              </Button>
+                            ))}
+                          </ButtonGroup>
+                        ) : null}
+                      </Grid>
+                      <Grid item>
+                        <CalendarExecutedNight
+                          data={currentYearExecutedNights}
+                        />
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                </Card>
+              </Grid>
+              {/* <Grid item xs={8}>
+                <Card>
+                  <CardHeader title="Execution Time" />
+                  <CardContent>
+                    <SkybotTimeProfile data={timeProfile} />
+                  </CardContent>
+                </Card>
+              </Grid> */}
+            </Grid>
+          </Grid>
+
           {
             // Idle and Running Statuses:
             ![1, 2].includes(status) ? (
               <>
                 <Grid item xs={12}>
-                  <Grid container alignItems="stretch" spacing={2}>
-                    <Grid item xs={4}>
-                      <Card>
-                        <CardHeader title="Summary" />
-                        <CardContent>
-                          <List data={summary} />
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                    {/* <Grid item xs={8}>
+                  {/* <Grid item xs={12} sm={8}>
                       <Card>
                         <CardHeader title="Execution Time" />
                         <CardContent>
@@ -384,7 +531,6 @@ function SkybotDetail({ setTitle }) {
                         </CardContent>
                       </Card>
                     </Grid> */}
-                  </Grid>
                 </Grid>
                 <Grid item xs={12}>
                   <Grid container spacing={2}>

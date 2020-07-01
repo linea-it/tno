@@ -7,16 +7,17 @@ function CalendarExecutedNight({ data }) {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    setRows(
-      data.map((row) => ({
-        date: d3.timeDay(new Date(`${row.date} 00:00`)),
-        value: row.executed,
-        count: row.count,
-      }))
-    );
+    const exposures = data.map((row) => ({
+      date: d3.timeDay(new Date(`${row.date} 00:00`)),
+      value: row.executed,
+      count: row.count,
+    }));
+
+    setRows(exposures);
   }, [data]);
 
   function drawCalendar(dateValues) {
+    d3.selectAll('#executed-night-svg > *').remove();
     const svg = d3.select('#executed-night-svg');
 
     const years = d3
@@ -45,7 +46,7 @@ function CalendarExecutedNight({ data }) {
       .attr('text-anchor', 'end')
       .text((d) => {
         if (d.key === 'NaN') {
-          return moment(data[0].dates).format('YYYY');
+          return moment(rows[0].date).format('YYYY');
         }
         return d.key;
       });
