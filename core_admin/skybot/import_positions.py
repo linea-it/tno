@@ -9,6 +9,7 @@ from django.conf import settings
 
 from tno.db import DBBase
 
+
 class ImportSkybotPositions():
 
     def __init__(self):
@@ -34,16 +35,16 @@ class ImportSkybotPositions():
 
             flag = self.read_flag_from_output(filepath)
 
-            # só executa a função de importação se tiver dados. 
-            if flag > 0: 
+            # só executa a função de importação se tiver dados.
+            if flag > 0:
 
                 # Le o arquivo de outputs e gera um pandas dataframe
                 df = self.read_output_file(filepath)
                 rowcount = self.import_data(df)
 
-
             else:
-                self.logger.debug("Skybot returned 0 Positions. means that no body has been found")                
+                self.logger.debug(
+                    "Skybot returned 0 Positions. means that no body has been found")
                 df = self.create_empty_dataframe()
                 rowcount = 0
 
@@ -93,19 +94,18 @@ class ImportSkybotPositions():
 
         df = df.reindex(columns=columns)
 
-
         # self.logger.debug(df.head)
 
         return df
 
     def get_columns(self):
         columns = ['name', 'number', 'dynclass', 'ra', 'dec', 'raj2000', 'decj2000', 'mv', 'errpos', 'd', 'dracosdec',
-            'ddec', 'dgeo', 'dhelio', 'phase', 'solelong', 'px', 'py', 'pz', 'vx', 'vy', 'vz', 'jdref', 'ticket']
+                   'ddec', 'dgeo', 'dhelio', 'phase', 'solelong', 'px', 'py', 'pz', 'vx', 'vy', 'vz', 'jdref', 'ticket']
 
         return columns
 
     def create_empty_dataframe(self):
-        df = pd.DataFrame(columns=self.get_columns())        
+        df = pd.DataFrame(columns=self.get_columns())
 
         return df
 
@@ -128,6 +128,7 @@ class ImportSkybotPositions():
         # serão importadas.
         # Desabilita o index para o pandas não criar uma coluna a mais com id que não corresponde a tabela.
         self.logger.debug("Converting the pandas dataframe to csv")
+
         data = StringIO()
         dataframe.to_csv(
             data,
@@ -194,8 +195,6 @@ class ImportSkybotPositions():
         self.logger.debug("Skybot Flag: [%s]" % flag)
 
         return flag
-
-
 
     def convert_ra_hms_deg(self, ra=''):
         """

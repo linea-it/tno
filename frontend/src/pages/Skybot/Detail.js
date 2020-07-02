@@ -25,6 +25,7 @@ import {
   getSkybotResultById,
   getSkybotRunById,
   getSkybotProgress,
+  cancelSkybotJobById,
   getExecutedNightsByPeriod,
   // getSkybotTimeProfile,
 } from '../../services/api/Skybot';
@@ -58,6 +59,7 @@ function SkybotDetail({ setTitle }) {
     },
   });
   const [loadProgress, setLoadProgress] = useState(false);
+  const [isJobCanceled, setIsJobCanceled] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [hasCircularProgress, setHasCircularProgress] = useState(true);
 
@@ -82,50 +84,14 @@ function SkybotDetail({ setTitle }) {
 
   useEffect(() => {
     setHasCircularProgress(false);
-    getSkybotProgress(id).then((data) => {
-      setProgress(data);
-      setHasCircularProgress(true);
-    });
-  }, [loadProgress]);
-
-  useEffect(() => {
-    getSkybotRunById({ id }).then((res) => {
-      setStatus(res.status);
-      setSummary([
-        {
-          title: 'Status',
-          value: () => (
-            <ColumnStatus status={res.status} title={res.error_msg} />
-          ),
-        },
-        {
-          title: 'Owner',
-          value: res.owner,
-        },
-        {
-          title: 'Start',
-          value: moment(res.start).format('YYYY-MM-DD HH:mm:ss'),
-        },
-        {
-          title: 'Execution',
-          value: res.execution_time ? res.execution_time.split('.')[0] : '-',
-        },
-        {
-          title: 'Nights',
-          value: res.nights,
-        },
-        {
-          title: 'Exposures',
-          value: res.exposures,
-        },
-        {
-          title: 'CCDs',
-          value: res.ccds,
-        },
-      ]);
-
-      setExecutedDate([res.date_initial, res.date_final]);
-    });
+    getSkybotProgress(id)
+      .then((data) => {
+        setProgress(data);
+        setHasCircularProgress(true);
+      })
+      .catch(() => {
+        setHasCircularProgress(true);
+      });
   }, [loadProgress]);
 
   // useEffect(() => {
@@ -236,18 +202,96 @@ function SkybotDetail({ setTitle }) {
     });
   };
 
+  useEffect(() => {
+    getSkybotRunById({ id }).then((res) => {
+      setStatus(res.status);
+      setSummary([
+        {
+          title: 'Status',
+          value: () => (
+            <ColumnStatus status={res.status} title={res.error_msg} />
+          ),
+        },
+        {
+          title: 'Owner',
+          value: res.owner,
+        },
+        {
+          title: 'Start',
+          value: moment(res.start).format('YYYY-MM-DD HH:mm:ss'),
+        },
+        {
+          title: 'Execution',
+          value: res.execution_time ? res.execution_time.split('.')[0] : 0,
+        },
+        {
+          title: 'Nights',
+          value: res.nights,
+        },
+        {
+          title: 'Exposures',
+          value: res.exposures,
+        },
+        {
+          title: 'CCDs',
+          value: res.ccds,
+        },
+      ]);
+
+      setExecutedDate([res.date_initial, res.date_final]);
+    });
+    loadData({
+      currentPage: 0,
+      pageSize: 10,
+      sorting: [{ columnName: 'id', direction: 'asc' }],
+    });
+  }, [loadProgress]);
+
+  // useEffect(() => {
+  //   if (
+  //     progress.request.status === 'completed' &&
+  //     progress.loaddata.status === 'completed'
+  //   ) {
+  //     getSkybotTimeProfile(id).then((res) => {
+  //       const { requests, loaddata } = res;
+  //       if (res.success) {
+  //         setTimeProfile({
+  //           requests: requests.map((request) => ({
+  //             [res.columns[0]]: request[0],
+  //             [res.columns[1]]: request[1],
+  //             [res.columns[2]]: request[2],
+  //             [res.columns[3]]: request[3],
+  //             [res.columns[4]]: request[4],
+  //           })),
+
+  //           loaddata: loaddata.map((request) => ({
+  //             [res.columns[0]]: request[0],
+  //             [res.columns[1]]: request[1],
+  //             [res.columns[2]]: request[2],
+  //             [res.columns[3]]: request[3],
+  //             [res.columns[4]]: request[4],
+  //           })),
+  //         });
+  //       }
+  //     });
+  //   }
+  // }, [id, progress]);
+
   const formatSeconds = (value) =>
     moment().startOf('day').seconds(value).format('HH:mm:ss');
 
   useInterval(() => {
-    if (
-      ![3, 4, 5, 6].includes(status) ||
-      progress.request.status !== 'completed' ||
-      progress.loaddata.status !== 'completed'
-    ) {
+    if ([1, 2].includes(status)) {
       setLoadProgress((prevState) => !prevState);
     }
-  }, [10000]);
+  }, [5000]);
+
+  const handleStopRun = () => {
+    cancelSkybotJobById(id).then(() => {
+      setIsJobCanceled(true);
+      setLoadProgress((prevState) => !prevState);
+    });
+  };
 
   useEffect(() => {
     if (executedDate[0] !== '' && executedDate[1] !== '') {
@@ -295,9 +339,29 @@ function SkybotDetail({ setTitle }) {
               </Typography>
             </Button>
           </Grid>
+          {[1, 2].includes(status) ? (
+            <Grid item>
+              <Button
+                variant="contained"
+                color="secondary"
+                title="Abort"
+                onClick={handleStopRun}
+                disabled={isJobCanceled}
+              >
+                {isJobCanceled ? (
+                  <CircularProgress size={15} color="secondary" />
+                ) : (
+                  <Icon className="fas fa-stop" fontSize="inherit" />
+                )}
+                <Typography variant="button" style={{ margin: '0 5px' }}>
+                  Abort
+                </Typography>
+              </Button>
+            </Grid>
+          ) : null}
         </Grid>
       </Grid>
-      {totalCount === 0 ? (
+      {totalCount === 0 && ![1, 2].includes(status) ? (
         <Grid item xs={12}>
           <Typography variant="h6">
             No exposure was found or all exposures were already executed in this
@@ -389,7 +453,7 @@ function SkybotDetail({ setTitle }) {
                       </Grid>
                     </Grid>
                   </Grid>
-                  {hasCircularProgress && ![3, 4, 5, 6].includes(status) ? (
+                  {hasCircularProgress && [1, 2].includes(status) ? (
                     <CircularProgress
                       className={classes.circularProgress}
                       disableShrink
@@ -455,10 +519,8 @@ function SkybotDetail({ setTitle }) {
           </Grid>
 
           {
-            // Completed, Failed, Aborted and Stopped Statuses:
-            ![3, 4, 5, 6].includes(status) ||
-            progress.request.status !== 'completed' ||
-            progress.loaddata.status !== 'completed' ? null : (
+            // Idle and Running Statuses:
+            ![1, 2].includes(status) ? (
               <>
                 <Grid item xs={12}>
                   {/* <Grid item xs={12} sm={8}>
@@ -495,7 +557,7 @@ function SkybotDetail({ setTitle }) {
                   </Grid>
                 </Grid>
               </>
-            )
+            ) : null
           }
         </>
       )}
