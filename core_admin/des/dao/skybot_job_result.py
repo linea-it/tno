@@ -88,7 +88,7 @@ class DesSkybotJobResultDao(DBBase):
                                ds_tbl.c.exposure_id, isouter=True)
 
         stm = select([
-            cast(de_tbl.c.date_obs, Date).distinct().label('dates'),
+            cast(de_tbl.c.date_obs, Date).distinct().label('date'),
             func.count(ds_tbl.c.exposure_id).label('count')]).\
             select_from(stm_join).\
             where(and_(de_tbl.c.date_obs.between(str(start), str(end)))).\
