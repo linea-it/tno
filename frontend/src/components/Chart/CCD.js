@@ -36,6 +36,9 @@ function CCD({ data, width, height }) {
     mode: 'markers',
     type: 'scatter',
     name: 'Asteroids Inside CCD',
+    marker: {
+      color: '#008000',
+    },
   });
 
   rows.push({
@@ -44,6 +47,9 @@ function CCD({ data, width, height }) {
     mode: 'markers',
     type: 'scatter',
     name: 'Asteroids Outside CCD',
+    marker: {
+      color: '#a6a6a6',
+    },
   });
 
   rows.push({
