@@ -6,3 +6,4 @@ from .skybot_jobs import SkybotJob
 from .skybot_job_result import SkybotJobResult
 
 from .download_ccd_job import DownloadCcdJob
+from .download_ccd_result import DownloadCcdJobResult

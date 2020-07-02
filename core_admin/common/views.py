@@ -39,23 +39,32 @@ def teste(request):
         log.info("-----------TESTE----------------")
 
         from des.dao import ExposureDao, CcdDao
+        from des.models import DownloadCcdJobResult
+        import os
+        import shutil
 
-        # a = ExposureDao().count_nights_by_period(
-        #     '2019-01-01 00:00:00', '2019-01-31 23:59:59')
+        # Limpara o diretório antes do teste
 
-        # log.debug(a)
+        folder = '/archive/ccd_images'
+        for filename in os.listdir(folder):
+            file_path = os.path.join(folder, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))
+
         from des.ccd import download_des_ccds
 
         ccds = CcdDao().ccds_by_period('2019-01-01 00:00:00', '2019-01-31 23:59:59')
         log.debug(len(ccds))
 
-        download_des_ccds(ccds[0:2])
+        # Limpa a tabela de resultados antes do teste.
+        DownloadCcdJobResult.objects.all().delete()
 
-        # for ccd in ccds[0:10]:
-        #     log.debug(ccd['filename'])
-
-        # for ccd in ccds:
-        #     log.debug(ccd)
+        download_des_ccds(1, ccds[0:10])
 
         result = dict({
             'success': True,

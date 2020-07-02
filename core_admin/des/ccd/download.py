@@ -8,9 +8,24 @@ from django.conf import settings
 
 from common.download import Download
 from common.unpack_fz import funpack
+from des.dao import DownloadCcdJobResultDao
 
 
 def download_ccd(idx, ccd, base_url, ccd_image_dir, auth):
+    """Faz o Download de um CCD do serviço do DES.
+
+    Args:
+        idx (int): Posição do registro no array de ccds a serem baixados
+        ccd (dict): Um dicionario que representa uma instancia do Model des/Ccd
+        base_url (str): referece ao valor da settings.DES_ARCHIVE_URL
+        ccd_image_dir (str): diretório onde o arquivo sera baixado, settings.CCD_IMAGES_DIR
+        auth (tuple): uma tupla com os dados de authenticação do serviço DES (settings.DES_USERNAME, settings.DES_PASSWORD)
+
+
+    Returns:
+        dict: Um dicionario que representa uma instancia do Model des/Ccd + atributo 'download_stats' 
+    """
+
     logger = logging.getLogger('download_ccds')
     logger.info("Downloading IDX: [%s] CCD_ID: [%s] Filename: [%s]" % (
         idx, ccd['id'], ccd['filename']))
@@ -54,44 +69,74 @@ def download_ccd(idx, ccd, base_url, ccd_image_dir, auth):
         return ccd
 
 
-def register_download(ccd):
+def register_download(job_id, ccd):
+    """Registra os dados do Download na tabela des_downloadccdjobresult. 
+
+    Args:
+        job_id (int): Id referente ao Model des/DownloadCcdJob
+        ccd (dict): Um dicionario que representa uma instancia do Model des/Ccd + atributo 'download_stats'  que é adicioando pela função de download.
+    """
     logger = logging.getLogger('download_ccds')
 
     logger.debug("Register download: %s" % ccd['id'])
 
-    # try:
-    #     # Recuperar o Apontamento
-    #     pointing = Pointing.objects.get(id=ccd['id'])
-    #     logger.debug("Pointing Id: %s" % pointing.id)
+    try:
 
-    # except Pointing.DoesNotExist:
-    #     logger.warning("DoesNotExist: ID [ %s ] Filename: [ %s ]" % (
-    #         ccd['id'], ccd['filename']))
+        # Conect in database with SqlAlchemy
+        db = DownloadCcdJobResultDao(pool=False)
 
-    # try:
-    #     record, created = CcdImage.objects.update_or_create(
-    #         desfile_id=pointing.desfile_id,
-    #         filename=ccd['filename'],
-    #         defaults={
-    #             'pointing': pointing,
-    #             'download_start_time': ccd['download_stats']['start_time'],
-    #             'download_finish_time': ccd['download_stats']['finish_time'],
-    #             'download_time': timedelta(seconds=ccd['download_stats']['download_time']),
-    #             'file_size': ccd['download_stats']['file_size'],
-    #         }
-    #     )
+        record = dict({
+            'job': job_id,
+            'ccd': ccd['id'],
+            'start': ccd['download_stats']['start_time'],
+            'finish': ccd['download_stats']['finish_time'],
+            'execution_time': timedelta(seconds=ccd['download_stats']['download_time']),
+            'file_size': ccd['download_stats']['file_size'],
+        })
 
-    #     record.save()
-    #     pointing.downloaded = True
-    #     pointing.save()
+        db.create(record)
 
-    #     logger.info("CCD Image: ID [ %s ] Created: [ %s ] Filename: [ %s ]" %
-    #                 (record.id, created, record.filename))
-    # except Exception as e:
-    #     logger.error(e)
+        logger.debug("CCD Image: ID [ %s ] Created: [ %s ] Filename: [ %s ]" %
+                     (ccd['id'], True, ccd['filename']))
+    except Exception as e:
+        logger.error("CCD Image: ID [ %s ] Created: [ %s ] Filename: [ %s ]" %
+                     (ccd['id'], False, ccd['filename']))
+
+        logger.error(e)
 
 
-def download_des_ccds(ccds, max_workers=10):
+def download_and_register(job_id, idx, ccd, base_url, ccd_image_dir, auth):
+    """Executa as funções de download e registro em sequencia.
+
+    Args:
+        job_id (int): Id referente ao Model des/DownloadCcdJob
+        idx (int): Posição do registro no array de ccds a serem baixados
+        ccd (dict): Um dicionario que representa uma instancia do Model des/Ccd
+        base_url (str): referece ao valor da settings.DES_ARCHIVE_URL
+        ccd_image_dir (str): diretório onde o arquivo sera baixado, settings.CCD_IMAGES_DIR
+        auth (tuple): uma tupla com os dados de authenticação do serviço DES (settings.DES_USERNAME, settings.DES_PASSWORD)
+
+    Returns:
+        dict: retorna o dict do ccd com um atributo a mais 'download_stats' com as infos do download
+    """
+    ccd = download_ccd(idx, ccd, base_url, ccd_image_dir, auth)
+
+    register_download(job_id, ccd)
+
+    return ccd
+
+
+def download_des_ccds(job_id, ccds, max_workers=10):
+    """ Esta função funciona como um workflow para o job Download Des CCD. 
+        recebe uma lista de ccds e efetua o download e o registro do tempo de download. 
+        os downloads podem ser feitas em paralelo utilizando max_workers.
+
+    Args:
+        job_id (int): Id referente ao Model des/DownloadCcdJob
+        ccds (array): Um Array de Models des/Ccd
+        max_workers (int, optional): quantidade de downloads que podem ser feitos em paralelo. Defaults to 10.
+
+    """
 
     logger = logging.getLogger('download_ccds')
     logger.info("--------------------------------------------------")
@@ -124,7 +169,8 @@ def download_des_ccds(ccds, max_workers=10):
         filepath = os.path.join(ccd_image_dir, ccd['filename'])
         if not os.path.exists(filepath):
             futures.append(pool.submit(
-                download_ccd,
+                download_and_register,
+                job_id,
                 idx,
                 ccd,
                 base_url,
@@ -146,7 +192,7 @@ def download_des_ccds(ccds, max_workers=10):
     for ccd in results:
         if 'download_stats' in ccd:
             downloaded += 1
-            register_download(ccd)
+            # register_download(job_id, ccd)
         else:
             failed += 1
 
@@ -156,5 +202,3 @@ def download_des_ccds(ccds, max_workers=10):
     logger.debug("Downloaded [%s] CCDs In %s. \nNot Downloaded [%s]" % (
         downloaded, humanize.naturaldelta(tdelta), failed))
     logger.info("Done!")
-
-    return downloaded
