@@ -31,7 +31,7 @@ class SkybotJobResultViewSet(viewsets.ModelViewSet):
 
         Returns:
             [array]: um array com todas as datas do periodo no formato [{date: '2019-01-01', count: 0, executed: 0}]
-                O atributo executed pode ter 3 valores: 
+                O atributo executed pode ter 3 valores:
                     0 - para datas que não tem exposição
                     1 - para datas que tem exposição mas não foram executadas
                     2 - para datas que tem exposição e foram executadas.
@@ -51,8 +51,8 @@ class SkybotJobResultViewSet(viewsets.ModelViewSet):
                 "%Y-%m-%d"), dt_end.strftime("%Y-%m-%d"))
 
         df1 = pd.DataFrame()
-        df1['dates'] = all_dates
-        df1 = df1.set_index('dates')
+        df1['date'] = all_dates
+        df1 = df1.set_index('date')
 
         # adicionar a hora inicial e final as datas
         start = datetime.strptime(
@@ -68,11 +68,11 @@ class SkybotJobResultViewSet(viewsets.ModelViewSet):
                 lambda x: 2 if int(x) > 0 else 1)
         else:
             df2 = pd.DataFrame()
-            df2['dates'] = []
+            df2['date'] = []
             df2['count'] = 0
             df2['executed'] = 1
 
-        df2 = df2.set_index('dates')
+        df2 = df2.set_index('date')
 
         df = pd.concat([df1, df2], axis=1)
 
