@@ -296,8 +296,8 @@ function SkybotAsteroid({ setTitle }) {
     ) {
       setSummary([
         {
-          title: 'ID',
-          value: id,
+          title: 'Exposure',
+          value: idExposure,
         },
         {
           title: 'CCDs',

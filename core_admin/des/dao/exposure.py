@@ -50,7 +50,7 @@ class ExposureDao(DBBase):
 
         tbl = self.tbl
 
-        stm = select([cast(tbl.c.date_obs, Date).label('dates'), func.count('*').label('count')]).\
+        stm = select([cast(tbl.c.date_obs, Date).label('date'), func.count('*').label('count')]).\
             where(and_(tbl.c.date_obs.between(str(start), str(end)))).\
             group_by(cast(tbl.c.date_obs, Date)).\
             order_by(cast(tbl.c.date_obs, Date))

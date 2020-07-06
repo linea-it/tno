@@ -50,7 +50,10 @@ function Skybot({ setTitle }) {
   const [currentYearExecutedNights, setCurrentYearExecutedNights] = useState(
     []
   );
-  const [hasRunningFeedback, setHasRunningFeedback] = useState(false);
+  const [
+    hasJobRunningOrIdleFeedback,
+    setHasJobRunningOrIdleFeedback,
+  ] = useState(false);
 
   useEffect(() => {
     setTitle('Skybot');
@@ -136,11 +139,11 @@ function Skybot({ setTitle }) {
       .then((response) => {
         const { id } = response.data;
 
-        const hasStatusRunning =
-          tableData.filter((row) => row.status === 2).length > 0;
+        const hasStatusRunningOrIdle =
+          tableData.filter((row) => [1, 2].includes(row.status)).length > 0;
 
-        if (hasStatusRunning) {
-          setHasRunningFeedback(true);
+        if (hasStatusRunningOrIdle) {
+          setHasJobRunningOrIdleFeedback(true);
           setReload((prevState) => !prevState);
         } else {
           history.push(`/data-preparation/des/skybot/${id}`);
@@ -160,7 +163,7 @@ function Skybot({ setTitle }) {
 
   const tableColumns = [
     {
-      name: 'results',
+      name: 'id',
       title: 'Details',
       width: 110,
       customElement: (row) => (
@@ -181,13 +184,19 @@ function Skybot({ setTitle }) {
       ),
     },
     {
-      name: 'id',
-      title: 'ID',
-    },
-    {
       name: 'owner',
       title: 'Owner',
       width: 130,
+    },
+    {
+      name: 'start',
+      title: 'Date',
+      width: 130,
+      customElement: (row) => (
+        <span title={moment(row.start).format('HH:mm:ss')}>
+          {moment(row.start).format('YYYY-MM-DD')}
+        </span>
+      ),
     },
     {
       name: 'exposures',
@@ -218,16 +227,6 @@ function Skybot({ setTitle }) {
       customElement: (row) => (
         <span title={moment(row.finish).format('HH:mm:ss')}>
           {row.date_final}
-        </span>
-      ),
-    },
-    {
-      name: 'start',
-      title: 'Start Date',
-      width: 130,
-      customElement: (row) => (
-        <span title={moment(row.start).format('HH:mm:ss')}>
-          {moment(row.start).format('YYYY-MM-DD')}
         </span>
       ),
     },
@@ -276,7 +275,7 @@ function Skybot({ setTitle }) {
                 value={chartType}
                 onChange={handleChangeChartType}
               >
-                <MenuItem value={0}>Bars</MenuItem>
+                <MenuItem value={0}>Histogram</MenuItem>
                 <MenuItem value={1}>Calendar</MenuItem>
               </Select>
             </FormControl>
@@ -339,6 +338,12 @@ function Skybot({ setTitle }) {
             ) : null}
             {chartType === 1 ? (
               <>
+                <Typography gutterBottom>
+                  {`${currentYearExecutedNights.reduce(
+                    (accum, item) => accum + item.count,
+                    0
+                  )} exposure(s)`}
+                </Typography>
                 <CalendarExecutedNight data={currentYearExecutedNights} />
                 <CalendarHeatmap data={currentYearExposures} />
               </>
@@ -434,11 +439,11 @@ function Skybot({ setTitle }) {
         </Grid>
       </Grid>
       <Snackbar
-        open={hasRunningFeedback}
+        open={hasJobRunningOrIdleFeedback}
         autoHideDuration={5000}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         message="There's already a job running, so your job is currently idle."
-        onClose={() => setHasRunningFeedback(false)}
+        onClose={() => setHasJobRunningOrIdleFeedback(false)}
       />
     </>
   );
