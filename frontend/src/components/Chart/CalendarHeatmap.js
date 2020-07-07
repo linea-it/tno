@@ -65,9 +65,14 @@ function CalendarHeatmap({ data }) {
 
     const timeWeek = d3.utcSunday;
 
+    // const colorFn = d3
+    //   .scaleSequential(d3.interpolateViridis)
+    //   .domain([Math.floor(minValue), Math.ceil(maxValue)]);
+
     const colorFn = d3
-      .scaleSequential(d3.interpolateGreens)
-      .domain([Math.floor(minValue), Math.ceil(maxValue)]);
+      .scaleQuantize()
+      .domain([Math.floor(minValue), Math.ceil(maxValue)])
+      .range(['#ebedf0', '#c6e48b', '#7bc96f', '#239a3b', '#196127']);
 
     year
       .append('g')
@@ -143,7 +148,7 @@ function CalendarHeatmap({ data }) {
         <ul className={classes.legend}>
           <li
             className={classes.legendItem}
-            style={{ backgroundColor: '#f7fcf5' }}
+            style={{ backgroundColor: '#ebedf0' }}
           />
           <li
             className={classes.legendItem}
