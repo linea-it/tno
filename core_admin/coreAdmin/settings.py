@@ -90,7 +90,7 @@ if not EMAIL_NOTIFICATIONS:
 SECRET_KEY = 'm=5=08^4a(il)bba)$cd%f*#wrcammi(r(q#($b$n^-jz8%+j0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', False)
+DEBUG = bool(os.getenv('DEBUG', False))
 
 ALLOWED_HOSTS = ['*']
 
@@ -114,7 +114,7 @@ INSTALLED_APPS = [
     # Project Apps
     'common',
     'tno',
-    'skybot',    
+    'skybot',
     'praia',
     'orbit',
     'predict',
@@ -331,7 +331,7 @@ if DES_ARCHIVE_URL is not None:
         raise ("DES user settings are required in .env file")
 
 
-# Skybot Server URL 
+# Skybot Server URL
 SKYBOT_SERVER = None
 try:
     SKYBOT_SERVER = os.environ["SKYBOT_SERVER"]

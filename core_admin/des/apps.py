@@ -8,12 +8,11 @@ class DesConfig(AppConfig):
         """
             Ao iniciar o app des, 
             inicia tambem a scheduler dos pipelines 
-            
+
         """
 
+        # Inicia a Scheduler do Skybot
+        import des.skybot.daemon
 
-        import des.skybot.daemon 
-        # start_des_skybot_daemon()
-        # print("Des Skybot Pipeline Daemon - Ok")
-
-
+        # Inicia a Scheduler do Download CCD
+        import des.ccd.daemon

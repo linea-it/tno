@@ -1,8 +1,9 @@
-from sqlalchemy import column, literal, literal_column, text
+from sqlalchemy import Date, cast, column, literal, literal_column, text
 from sqlalchemy.sql import and_, select
 
-from tno.db import DBBase
 from skybot.dao.skybot_positions import SkybotPositionsDao
+from tno.db import DBBase
+
 
 class DesSkybotPositionDao(DBBase):
     def __init__(self, pool=True):
@@ -16,26 +17,25 @@ class DesSkybotPositionDao(DBBase):
     def get_tablename(self):
         return self.tablename
 
-
     # TODO: Criar um metodo que retorne todas as posições para uma exposição
 
     # TODO: Criar um metodo que retorne todas as posições para um ccd.
 
     def insert_positions_by_ccd(self, ticket, exposure_id, ccd_id, corners):
         """
-            Insere as posições do skybot output que caem dentro de um dos CCDs do des. 
-            Utiliza o Ticket da requisição do skybot, para agilizar a query, fazendo que leia só os objetos de interesse e não a tabela toda. 
-            O Select é feito usando Q3C Poly query com as posições dos 4 cantos do CCD. 
-            A estrátegia é: Insere nesta tabela apenas as posições do skybot_output que caem dentro de um ccd. 
+            Insere as posições do skybot output que caem dentro de um dos CCDs do des.
+            Utiliza o Ticket da requisição do skybot, para agilizar a query, fazendo que leia só os objetos de interesse e não a tabela toda.
+            O Select é feito usando Q3C Poly query com as posições dos 4 cantos do CCD.
+            A estrátegia é: Insere nesta tabela apenas as posições do skybot_output que caem dentro de um ccd.
 
             Parameters:
                 ticket (int): Skybot ticket number example: 166515392791779001
 
-                exposure_id (int): primary key from des_exposure table. 
+                exposure_id (int): primary key from des_exposure table.
 
                 ccd_id (int): primary key from des_ccd table.
 
-                corners (array): An array with the positions of the corners of the ccd, 
+                corners (array): An array with the positions of the corners of the ccd,
                     in the following order: [ccd['rac1'], ccd['decc1'], ccd['rac2'], ccd['decc2'], ccd['rac3'], ccd['decc3'],ccd['rac4'], ccd['decc4']]
             Returns:
                 rowcount (int): Total rows inserted
@@ -109,3 +109,77 @@ class DesSkybotPositionDao(DBBase):
 
         except Exception as e:
             raise(e)
+
+    def ccds_for_position(self, start, end, dynclass=None, name=None):
+        """Retorna os DES/CCDs  relacionados as posições filtrados por tipo de objeto nome do objeto e periodo.
+        O filtro por periodo é obrigatório, classe e nome são opcionais e podem ser combinados.
+        Args:
+            start (datetime): Periodo inicial que sera usado na seleção.
+            end (datetime): Periodo final que sera usado na seleção.
+            dynclass (str, optional): Classe dinamica do objeto a query é feita com like dynclass%. Defaults to None.
+            name (str, optional): Nome do objeto como está na tabela skybot_position. Defaults to None.
+
+
+        Query de exemplo:
+
+            select
+                dc.*
+            from
+                des_ccd dc
+            inner join des_exposure de on
+                dc.exposure_id = de.id
+            inner join des_skybotposition ds on
+                dc.id = ds.ccd_id
+            inner join skybot_position sp on ds.position_id = sp.id
+            where
+                sp.dynclass like 'KBO%' and
+                sp.name = '1999 RG215' and
+                de.date_obs between '2019-01-01 00:00:00' and '2019-01-31 23:59:50'
+            group by dc.id, date(de.date_obs)
+            order by
+                date(de.date_obs);
+
+        Returns:
+            [array]: com o conteudo da tabela des_ccd com as linhas que atendem aos critérios.
+        """
+        # des_ccd
+        dc = self.get_table('des_ccd', self.get_base_schema())
+
+        # des_exposure
+        de = self.get_table('des_exposure', self.get_base_schema())
+
+        # Des skybot position
+        ds = self.tbl
+
+        # Skybot Position
+        sp = self.get_table('skybot_position', self.get_base_schema())
+
+        # Clausula where pelo periodo que é obrigatório
+        clause = list([de.c.date_obs.between(str(start), str(end))])
+
+        # Clausula where pela classe dos objetos.
+        if dynclass is not None:
+            clause.append(sp.c.dynclass.ilike(dynclass + '%'))
+
+        # Clausula where pelo nome dos objetos.
+        if name is not None:
+            clause.append(sp.c.name == name)
+
+        stm = select(dc.c).\
+            select_from(
+            dc.join(
+                de, dc.c.exposure_id == de.c.id
+            ).join(
+                ds, dc.c.id == ds.c.ccd_id
+            ).join(
+                sp, ds.c.position_id == sp.c.id
+            )).\
+            where(and_(and_(*clause))).\
+            group_by(dc.c.id, cast(de.c.date_obs, Date)).\
+            order_by(cast(de.c.date_obs, Date))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows

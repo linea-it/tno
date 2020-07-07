@@ -33,18 +33,25 @@ def teste(request):
         # result = DesImportSkybotOutput().import_output_file("/archive/skybot_output/1/808801_Y.csv")
 
         from des.skybot.pipeline import DESImportSkybotPositions
+        from des.models import DownloadCcdJobResult
         from des.models import SkybotJob
+        from datetime import datetime, timedelta, timezone
         import logging
         log = logging.getLogger('django')
         log.info("-----------TESTE----------------")
 
-        from des.dao import ExposureDao, CcdDao
-        from des.models import DownloadCcdJobResult
-        import os
-        import shutil
+        from des.ccd import start_pipeline
+        from des.dao import DownloadCcdJobDao
 
-        # Limpara o diretório antes do teste
+        #  Resetando o Job antes do teste
+        db = DownloadCcdJobDao(pool=False)
+        job = db.get_by_id(1)
+        job['status'] = 1
+        job['start'] = datetime.now(timezone.utc)
+        job['path'] = None
+        db = db.update_record(job)
 
+        # Limpando o diretório antes do teste
         folder = '/archive/ccd_images'
         for filename in os.listdir(folder):
             file_path = os.path.join(folder, filename)
@@ -56,15 +63,46 @@ def teste(request):
             except Exception as e:
                 print('Failed to delete %s. Reason: %s' % (file_path, e))
 
-        from des.ccd import download_des_ccds
-
-        ccds = CcdDao().ccds_by_period('2019-01-01 00:00:00', '2019-01-31 23:59:59')
-        log.debug(len(ccds))
-
         # Limpa a tabela de resultados antes do teste.
         DownloadCcdJobResult.objects.all().delete()
 
-        download_des_ccds(1, ccds[0:10])
+        #  Iniciando o Pipeline
+        start_pipeline()
+        # from des.dao import DesSkybotPositionDao
+
+        # rows = DesSkybotPositionDao().ccds_for_position(
+        #     '2019-01-01 00:00:00', '2019-01-31 23:59:59', 'KBO')
+
+        # log.info(len(rows))
+        # log.info(rows[0:5])
+
+        # from des.dao import ExposureDao, CcdDao
+        # from des.models import DownloadCcdJobResult
+        # import os
+        # import shutil
+
+        # # Limpara o diretório antes do teste
+
+        # folder = '/archive/ccd_images'
+        # for filename in os.listdir(folder):
+        #     file_path = os.path.join(folder, filename)
+        #     try:
+        #         if os.path.isfile(file_path) or os.path.islink(file_path):
+        #             os.unlink(file_path)
+        #         elif os.path.isdir(file_path):
+        #             shutil.rmtree(file_path)
+        #     except Exception as e:
+        #         print('Failed to delete %s. Reason: %s' % (file_path, e))
+
+        # from des.ccd import download_des_ccds
+
+        # ccds = CcdDao().ccds_by_period('2019-01-01 00:00:00', '2019-01-31 23:59:59')
+        # log.debug(len(ccds))
+
+        # # Limpa a tabela de resultados antes do teste.
+        # DownloadCcdJobResult.objects.all().delete()
+
+        # download_des_ccds(1, ccds[0:10])
 
         result = dict({
             'success': True,

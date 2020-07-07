@@ -12,12 +12,15 @@ class DownloadCcdJobSerializer(serializers.ModelSerializer):
             'owner',
             'date_initial',
             'date_final',
+            'dynclass',
+            'name',
             'status',
             'start',
             'finish',
             'execution_time',
             'ccds',
             't_size_downloaded',
+            'path',
             'error'
         )
 

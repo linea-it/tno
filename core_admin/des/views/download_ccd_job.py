@@ -43,6 +43,8 @@ class DownloadCcdJobViewSet(mixins.RetrieveModelMixin,
 
         date_initial = params['date_initial']
         date_final = params['date_final']
+        dynclass = params.get('dynclass', None)
+        name = params.get('name', None)
 
         # Recuperar o usuario que submeteu o Job.
         owner = self.request.user
@@ -53,9 +55,9 @@ class DownloadCcdJobViewSet(mixins.RetrieveModelMixin,
         end = datetime.strptime(
             date_final, '%Y-%m-%d').strftime("%Y-%m-%d 23:59:59")
 
-        # Recuperar o total de ccds no periodo.
-        t_ccds = CcdDao().count_ccds_by_period(
-            '2019-01-01 00:00:00', '2019-01-31 23:59:59')
+        # # Recuperar o total de ccds no periodo.
+        # t_ccds = CcdDao().count_ccds_by_period(
+        #     '2019-01-01 00:00:00', '2019-01-31 23:59:59')
 
         # Criar um model Skybot Job
         job = DownloadCcdJob(
@@ -64,8 +66,9 @@ class DownloadCcdJobViewSet(mixins.RetrieveModelMixin,
             date_final=date_final,
             # Job começa com Status Idle.
             status=1,
-            # Total de CCDs no periodo
-            ccds=t_ccds,
+
+            dynclass=dynclass,
+            name=name
         )
         job.save()
 

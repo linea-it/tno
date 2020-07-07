@@ -1,5 +1,6 @@
 import logging
 import os
+import shutil
 from concurrent.futures import ThreadPoolExecutor, as_completed, wait
 from datetime import datetime, timedelta, timezone
 
@@ -8,7 +9,11 @@ from django.conf import settings
 
 from common.download import Download
 from common.unpack_fz import funpack
-from des.dao import DownloadCcdJobResultDao
+from des.dao import DownloadCcdJobDao, DownloadCcdJobResultDao
+from des.dao import DesSkybotPositionDao
+import traceback
+
+logger = logging.getLogger('download_ccds')
 
 
 def download_ccd(idx, ccd, base_url, ccd_image_dir, auth):
@@ -23,10 +28,8 @@ def download_ccd(idx, ccd, base_url, ccd_image_dir, auth):
 
 
     Returns:
-        dict: Um dicionario que representa uma instancia do Model des/Ccd + atributo 'download_stats' 
+        dict: Um dicionario que representa uma instancia do Model des/Ccd + atributo 'download_stats'
     """
-
-    logger = logging.getLogger('download_ccds')
     logger.info("Downloading IDX: [%s] CCD_ID: [%s] Filename: [%s]" % (
         idx, ccd['id'], ccd['filename']))
 
@@ -70,14 +73,12 @@ def download_ccd(idx, ccd, base_url, ccd_image_dir, auth):
 
 
 def register_download(job_id, ccd):
-    """Registra os dados do Download na tabela des_downloadccdjobresult. 
+    """Registra os dados do Download na tabela des_downloadccdjobresult.
 
     Args:
         job_id (int): Id referente ao Model des/DownloadCcdJob
         ccd (dict): Um dicionario que representa uma instancia do Model des/Ccd + atributo 'download_stats'  que é adicioando pela função de download.
     """
-    logger = logging.getLogger('download_ccds')
-
     logger.debug("Register download: %s" % ccd['id'])
 
     try:
@@ -127,8 +128,8 @@ def download_and_register(job_id, idx, ccd, base_url, ccd_image_dir, auth):
 
 
 def download_des_ccds(job_id, ccds, max_workers=10):
-    """ Esta função funciona como um workflow para o job Download Des CCD. 
-        recebe uma lista de ccds e efetua o download e o registro do tempo de download. 
+    """ Esta função funciona como um workflow para o job Download Des CCD.
+        recebe uma lista de ccds e efetua o download e o registro do tempo de download.
         os downloads podem ser feitas em paralelo utilizando max_workers.
 
     Args:
@@ -137,11 +138,9 @@ def download_des_ccds(job_id, ccds, max_workers=10):
         max_workers (int, optional): quantidade de downloads que podem ser feitos em paralelo. Defaults to 10.
 
     """
-
-    logger = logging.getLogger('download_ccds')
-    logger.info("--------------------------------------------------")
-    logger.info("Started Download DES CCDs")
-    logger.info("CCDs: [%s]" % len(ccds))
+    db = DownloadCcdJobDao(pool=False)
+    logger.info("Started Download CCDs")
+    logger.debug("CCDs to Download: [%s]" % len(ccds))
 
     start = datetime.now(timezone.utc)
 
@@ -199,6 +198,176 @@ def download_des_ccds(job_id, ccds, max_workers=10):
     # Termino do Download
     finish = datetime.now(timezone.utc)
     tdelta = finish - start
-    logger.debug("Downloaded [%s] CCDs In %s. \nNot Downloaded [%s]" % (
-        downloaded, humanize.naturaldelta(tdelta), failed))
-    logger.info("Done!")
+    logger.debug("Downloaded [%s] CCDs In %s." % (
+        downloaded, humanize.naturaldelta(tdelta)))
+
+    if failed > 0:
+        logger.warning(
+            "%s CCDs have failed and have not been downloaded." % failed)
+
+    return results
+
+
+def run_job(job_id):
+
+    logger.info("Starting the job with id %s" % job_id)
+
+    # Recuperar o Job
+    db = DownloadCcdJobDao(pool=False)
+    try:
+        # Recupera os dados do job atualizado
+        job = db.get_by_id(job_id)
+
+        # Criar um diretório para o Job
+        basedir = os.path.join(settings.CCD_IMAGES_DIR, 'download_jobs')
+        if not os.path.exists(basedir):
+            os.mkdir(basedir)
+
+        jobpath = os.path.join(basedir, 'job_%s' % job['id'])
+
+        # Se o diretório já existir e o debug estiver ligado remover o diretório
+        if os.path.exists(jobpath) and settings.DEBUG is True:
+            logger.info(
+                "Job directory already exists. JobPath: [%s]" % jobpath)
+            try:
+                shutil.rmtree(jobpath)
+                logger.info("Directory deleted. JobPath: [%s]" % jobpath)
+            except OSError as e:
+                logger.error("%s : %s" % (jobpath, e.strerror))
+
+        # Cria o diretório
+        os.mkdir(jobpath)
+
+        # Configura o log para escrever uma copia no diretório.
+        fh = logging.FileHandler(os.path.join(jobpath, 'download.log'))
+        formatter = logging.Formatter(
+            '%(asctime)s [%(levelname)s] %(message)s')
+        fh.setFormatter(formatter)
+        logger.addHandler(fh)
+
+        # Alterar o status do job para running
+        logger.info("Changing job status to running. JobId: [%s]" % job_id)
+        job['status'] = 2
+        job['path'] = jobpath
+        job = db.update_record(job)
+
+        logger.debug(job)
+
+        # fazer a query para gerar a lista de ccds
+        logger.info("Running the query to retrieve the ccds.")
+
+        t0 = datetime.now()
+
+        spdao = DesSkybotPositionDao(pool=True)
+
+        ccds = spdao.ccds_for_position(
+            start=job['date_initial'].strftime("%Y-%m-%d 00:00:00"),
+            end=job['date_final'].strftime("%Y-%m-%d 23:59:59"),
+            dynclass=job['dynclass'],
+            name=job['name'])
+
+        t1 = datetime.now()
+        tdelta = tdelta = t1 - t0
+
+        # Atualiza no job a quantidade de ccds;
+        job['ccds'] = len(ccds)
+        job = db.update_record(job)
+
+        logger.info("%s CCDs returned in %s." %
+                    (len(ccds), humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))
+
+        # Iniciando o Download dos CCDs
+        results = download_des_ccds(job['id'], ccds[0:2])
+
+        # TODO: Guardar os resultados do Job no arquivo
+        logger.debug("----------------------")
+        logger.debug(results[0])
+        logger.debug("----------------------")
+
+        # Recupera os dados do job atualizado
+        job = db.get_by_id(job_id)
+        # Altera para o status para Completed
+        job['status'] = 3
+        job['t_size_downloaded'] = 0  # TODO somar o total
+        job = db.update_record(job)
+
+        logger.debug(job)
+
+    except Exception as e:
+        trace = traceback.format_exc()
+        logger.error(trace)
+        logger.error(e)
+        # Recupera os dados do job atualizado
+        job = db.get_by_id(job_id)
+        # Altera o status para Failed
+        job['status'] = 4
+        # Guarda o erro
+        job['error'] = str(e)
+
+        db.complete_job(job)
+
+    finally:
+        # Recupera os dados do job atualizado
+        job = db.get_by_id(job_id)
+
+        # Calcula o tempo total de execução do Job.
+        t0 = job['start']
+        t1 = datetime.now(timezone.utc)
+        tdelta = t1 - t0
+        job['finish'] = t1
+        job['execution_time'] = tdelta
+
+        db.complete_job(job)
+        logger.info("Job completed %s" %
+                    humanize.naturaldelta(tdelta, minimum_unit="seconds"))
+        logger.info("Done!")
+
+
+def start_pipeline():
+
+    logger.info("------------ Start Pipeline ------------")
+
+    db = DownloadCcdJobDao(pool=False)
+
+    # Verificar se já existe algum job com status Running.
+    running = db.get_by_status(2)
+    # self.logger.info("Checando a Fila: Running [%s]" % len(running))
+
+    if len(running) == 0:
+        # Se nao tiver nenhum job executando verifica se tem jobs com status Idle
+        # esperando para serem executados.
+        idle = db.get_by_status(1)
+        if len(idle) > 0:
+
+            logger.debug(
+                "There are %s jobs waiting to run" % len(idle))
+
+            to_run = idle[0]
+
+            run_job(to_run['id'])
+        else:
+            logger.debug(
+                "No jobs in the queue to run.")
+    else:
+        logger.debug(
+            "There is already a job running.")
+
+
+def plot_time_profile():
+
+    # https://stackoverflow.com/questions/31820578/how-to-plot-stacked-event-duration-gantt-charts-using-python-pandas
+    # https://stackoverflow.com/questions/18066781/create-gantt-plot-with-python-matplotlib
+
+    # from datetime import datetime
+    # import pandas as pd
+    # import matplotlib.pyplot as plt
+    # import matplotlib.dates as dt
+
+    # df = pd.read_csv('data.csv')
+    # df.amin = pd.to_datetime(df.amin).astype(datetime)
+    # df.amax = pd.to_datetime(df.amax).astype(datetime)
+
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111)
+    # ax = ax.xaxis_date()
+    # ax = plt.hlines(df.index, dt.date2num(df.amin), dt.date2num(df.amax))

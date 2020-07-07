@@ -29,6 +29,23 @@ class DownloadCcdJob(models.Model):
         auto_now_add=False,
     )
 
+    # dynclass Classe dos objetos que sera usada como filtro no Job
+    dynclass = models.CharField(
+        max_length=24,
+        verbose_name='Object classification',
+        help_text='(ucd=“meta.code.class;src.class”) Object class (TNO, Centaur, Trojan, etc.)',
+        null=True,
+        blank=True
+    )
+
+    name = models.CharField(
+        max_length=32,
+        verbose_name='Name',
+        help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).',
+        null=True,
+        blank=True
+    )
+
     # Status da execução.
     status = models.IntegerField(
         verbose_name='Status',
@@ -76,6 +93,15 @@ class DownloadCcdJob(models.Model):
         help_text='Total size downloaded in this job.',
         null=True, blank=True,
         default=0
+    )
+
+    # Pasta onde estão os dados do Job.
+    path = models.CharField(
+        max_length=2048,
+        verbose_name='Path',
+        help_text='Path to the directory where the job data is located.',
+        null=True,
+        blank=True
     )
 
     # Em caso de erro o Job fica com status 'Failed'
