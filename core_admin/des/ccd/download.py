@@ -1,17 +1,20 @@
 import logging
 import os
 import shutil
+import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed, wait
 from datetime import datetime, timedelta, timezone
 
 import humanize
+import matplotlib.dates as dt
+import matplotlib.pyplot as plt
+import pandas as pd
 from django.conf import settings
 
 from common.download import Download
 from common.unpack_fz import funpack
-from des.dao import DownloadCcdJobDao, DownloadCcdJobResultDao
-from des.dao import DesSkybotPositionDao
-import traceback
+from des.dao import (DesSkybotPositionDao, DownloadCcdJobDao,
+                     DownloadCcdJobResultDao)
 
 logger = logging.getLogger('download_ccds')
 
@@ -208,12 +211,64 @@ def download_des_ccds(job_id, ccds, max_workers=10):
     return results
 
 
+def save_result(results, job_path):
+
+    filepath = os.path.join(job_path, 'results.csv')
+
+    df = pd.DataFrame(results, columns=[
+                      'id', 'start_time', 'finish_time', 'download_time', 'file_size', 'filename', 'file_path'])
+
+    # Escreve o dataframe em arquivo.
+    df.to_csv(filepath, sep=';', header=True, index=False)
+
+    logger.info("An archive was created with the Results.")
+    logger.debug("Results File: [%s]" % filepath)
+
+    return filepath
+
+
+def plot_time_profile(filepath, job_path):
+    """Cria um plot de time profile, usando o arquivo de resultado do job.
+    o arquivo csv, precisa ter as colunas start_time e finish_time.
+
+    Args:
+        filepath (str): Filepath para o arquivo CSV de resultados do job.
+        job_path (str): path para o diretório do job.
+
+    based in:
+        https://stackoverflow.com/questions/31820578/how-to-plot-stacked-event-duration-gantt-charts-using-python-pandas
+        https://stackoverflow.com/questions/18066781/create-gantt-plot-with-python-matplotlib
+    """
+
+    df = pd.read_csv(filepath, delimiter=';', usecols=[
+                     'start_time', 'finish_time'])
+
+    df.start_time = pd.to_datetime(df.start_time)
+    df.finish_time = pd.to_datetime(df.finish_time)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax = ax.xaxis_date()
+    ax = plt.hlines(df.index, dt.date2num(df.start_time),
+                    dt.date2num(df.finish_time))
+
+    output = os.path.join(job_path, 'time_profile.png')
+
+    fig.savefig(output)
+
+    logger.info("A time profile plot was created for this job.")
+    logger.debug("Time Profile File: [%s]" % output)
+
+    return output
+
+
 def run_job(job_id):
 
     logger.info("Starting the job with id %s" % job_id)
 
     # Recuperar o Job
     db = DownloadCcdJobDao(pool=False)
+    cjrdao = DownloadCcdJobResultDao(pool=False)
     try:
         # Recupera os dados do job atualizado
         job = db.get_by_id(job_id)
@@ -277,18 +332,46 @@ def run_job(job_id):
                     (len(ccds), humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))
 
         # Iniciando o Download dos CCDs
-        results = download_des_ccds(job['id'], ccds[0:25])
+        results = download_des_ccds(job['id'], ccds[0:70])
 
-        # TODO: Guardar os resultados do Job no arquivo
-        logger.debug("----------------------")
-        logger.debug(results[0])
-        logger.debug("----------------------")
+        #  Guardar os resultados do Job em arquivo
+        rows = []
+        for row in results:
+            record = dict({
+                'id': row['id'],
+                'start_time': None,
+                'finish_time': None,
+                'download_time': 0,
+                'file_size': 0,
+                'filename': None,
+                'file_path': None,
+            })
+            if 'download_stats' in row:
+                record.update({
+                    'start_time': row['download_stats']['start_time'],
+                    'finish_time': row['download_stats']['finish_time'],
+                    'download_time': row['download_stats']['download_time'],
+                    'file_size': row['download_stats']['file_size'],
+                    'filename': row['download_stats']['filename'],
+                    'file_path': row['download_stats']['file_path'],
+                })
+            rows.append(record)
+
+        # Salva os resultados em um arquivo csv.
+        file_result = save_result(rows, job['path'])
+
+        # Cria o Time profile
+        plot_time_profile(file_result, job['path'])
 
         # Recupera os dados do job atualizado
         job = db.get_by_id(job_id)
+
+        # Total em bytes baixados neste job
+        t_size_downloaded = cjrdao.file_size_by_job(job['id'])
+
         # Altera para o status para Completed
         job['status'] = 3
-        job['t_size_downloaded'] = 0  # TODO somar o total
+        job['t_size_downloaded'] = t_size_downloaded
         job = db.update_record(job)
 
         logger.debug(job)
@@ -351,23 +434,3 @@ def start_pipeline():
     else:
         logger.debug(
             "There is already a job running.")
-
-
-# def plot_time_profile():
-
-    # https://stackoverflow.com/questions/31820578/how-to-plot-stacked-event-duration-gantt-charts-using-python-pandas
-    # https://stackoverflow.com/questions/18066781/create-gantt-plot-with-python-matplotlib
-
-    # from datetime import datetime
-    # import pandas as pd
-    # import matplotlib.pyplot as plt
-    # import matplotlib.dates as dt
-
-    # df = pd.read_csv('data.csv')
-    # df.amin = pd.to_datetime(df.amin).astype(datetime)
-    # df.amax = pd.to_datetime(df.amax).astype(datetime)
-
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111)
-    # ax = ax.xaxis_date()
-    # ax = plt.hlines(df.index, dt.date2num(df.amin), dt.date2num(df.amax))

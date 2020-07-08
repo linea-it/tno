@@ -40,38 +40,43 @@ def teste(request):
         log = logging.getLogger('django')
         log.info("-----------TESTE----------------")
 
-        from des.ccd import start_pipeline
+        from des.ccd import start_pipeline, plot_time_profile
         from des.dao import DownloadCcdJobDao
         from des.dao import DownloadCcdJobResultDao
 
-        a = DownloadCcdJobResultDao().execution_time_by_job(1)
-        log.info(a)
+        # a = DownloadCcdJobResultDao().execution_time_by_job(1)
+        # log.info(a)
 
-        # #  Resetando o Job antes do teste
-        # db = DownloadCcdJobDao(pool=False)
-        # job = db.get_by_id(1)
-        # job['status'] = 1
-        # job['start'] = datetime.now(timezone.utc)
-        # job['path'] = None
-        # db = db.update_record(job)
+        # plot_time_profile('/ccd_images/download_jobs/job_1/results.csv',
+        #                   '/ccd_images/download_jobs/job_1/')
 
-        # # Limpando o diretório antes do teste
-        # folder = '/archive/ccd_images'
-        # for filename in os.listdir(folder):
-        #     file_path = os.path.join(folder, filename)
-        #     try:
-        #         if os.path.isfile(file_path) or os.path.islink(file_path):
-        #             os.unlink(file_path)
-        #         elif os.path.isdir(file_path):
-        #             shutil.rmtree(file_path)
-        #     except Exception as e:
-        #         print('Failed to delete %s. Reason: %s' % (file_path, e))
+        #  ----------------------------------------------------------
+        #  Resetando o Job antes do teste
+        db = DownloadCcdJobDao(pool=False)
+        job = db.get_by_id(1)
+        job['status'] = 1
+        job['start'] = datetime.now(timezone.utc)
+        job['path'] = None
+        db = db.update_record(job)
 
-        # # Limpa a tabela de resultados antes do teste.
-        # DownloadCcdJobResult.objects.all().delete()
+        # Limpando o diretório antes do teste
+        folder = '/archive/ccd_images'
+        for filename in os.listdir(folder):
+            file_path = os.path.join(folder, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))
 
-        # #  Iniciando o Pipeline
-        # start_pipeline()
+        # Limpa a tabela de resultados antes do teste.
+        DownloadCcdJobResult.objects.all().delete()
+
+        #  Iniciando o Pipeline
+        start_pipeline()
+        #  ----------------------------------------------------------
 
         # from des.dao import DesSkybotPositionDao
 
