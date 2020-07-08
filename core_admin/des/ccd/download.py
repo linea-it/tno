@@ -248,9 +248,12 @@ def plot_time_profile(filepath, job_path):
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax = ax.xaxis_date()
-    ax = plt.hlines(df.index, dt.date2num(df.start_time),
-                    dt.date2num(df.finish_time))
+    ax.xaxis_date()
+    plt.hlines(df.index, dt.date2num(df.start_time),
+               dt.date2num(df.finish_time))
+
+    # Remove os ticks do eixo X
+    plt.xticks([], [])
 
     output = os.path.join(job_path, 'time_profile.png')
 
