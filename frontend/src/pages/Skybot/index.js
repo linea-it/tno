@@ -40,6 +40,7 @@ function Skybot({ setTitle }) {
   const [tableData, setTableData] = useState([]);
   const [disableSubmit, setDisableSubmit] = useState(true);
   const [reload, setReload] = useState(true);
+  const [allExposures, setAllExposures] = useState([]);
   const [exposuresByPeriod, setExposuresByPeriod] = useState([]);
   const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([]);
   const [selectedDate, setSelectedDate] = useState(['', '']);
@@ -61,30 +62,11 @@ function Skybot({ setTitle }) {
 
   const handleSelectPeriodClick = () => {
     setExposuresByPeriod([]);
-    setExecutedNightsByPeriod([]);
-    setSelectedDateYears([]);
-    setCurrentSelectedDateYear('');
-    setCurrentYearExposures([]);
-    setCurrentYearExecutedNights([]);
-
-    getExecutedNightsByPeriod(
-      moment(selectedDate[0]).format('YYYY-MM-DD'),
-      moment(selectedDate[1]).format('YYYY-MM-DD')
-    ).then((res) => {
-      setExecutedNightsByPeriod(res);
-    });
 
     getExposuresByPeriod(
       moment(selectedDate[0]).format('YYYY-MM-DD'),
       moment(selectedDate[1]).format('YYYY-MM-DD')
     ).then((res) => {
-      const selectedYears = res
-        .map((year) => moment(year.date).format('YYYY'))
-        .filter((year, i, yearArr) => yearArr.indexOf(year) === i);
-
-      setSelectedDateYears(selectedYears);
-      setCurrentSelectedDateYear(selectedYears[0]);
-
       setExposuresByPeriod(res);
     });
 
@@ -92,13 +74,29 @@ function Skybot({ setTitle }) {
   };
 
   useEffect(() => {
+    getExposuresByPeriod('2012-11-10', '2019-02-28').then((res) => {
+      const selectedYears = res
+        .map((year) => moment(year.date).format('YYYY'))
+        .filter((year, i, yearArr) => yearArr.indexOf(year) === i);
+
+      setSelectedDateYears(selectedYears);
+      setCurrentSelectedDateYear(selectedYears[0]);
+      setAllExposures(res);
+    });
+
+    getExecutedNightsByPeriod('2012-11-10', '2019-02-28').then((res) => {
+      setExecutedNightsByPeriod(res);
+    });
+  }, []);
+
+  useEffect(() => {
     if (
       chartType !== 0 &&
       currentSelectedDateYear !== '' &&
-      exposuresByPeriod.length > 0 &&
+      allExposures.length > 0 &&
       executedNightsByPeriod.length > 0
     ) {
-      const exposures = exposuresByPeriod.filter(
+      const exposures = allExposures.filter(
         (exposure) =>
           moment(exposure.date).format('YYYY') === currentSelectedDateYear
       );
@@ -112,7 +110,7 @@ function Skybot({ setTitle }) {
       setCurrentYearExecutedNights(nights);
     }
   }, [
-    exposuresByPeriod,
+    allExposures,
     executedNightsByPeriod,
     currentSelectedDateYear,
     chartType,
@@ -264,7 +262,7 @@ function Skybot({ setTitle }) {
   };
 
   const renderExposurePlot = () => {
-    if (exposuresByPeriod.length > 0) {
+    if (allExposures.length > 0) {
       return (
         <Grid container spacing={2} alignItems="stretch">
           <Grid item>
@@ -339,13 +337,13 @@ function Skybot({ setTitle }) {
             {chartType === 1 ? (
               <>
                 <Typography gutterBottom>
-                  {`${currentYearExecutedNights.reduce(
-                    (accum, item) => accum + item.count,
+                  {`${currentYearExposures.reduce(
+                    (a, b) => a + (b.count || 0),
                     0
                   )} exposure(s)`}
                 </Typography>
-                <CalendarExecutedNight data={currentYearExecutedNights} />
                 <CalendarHeatmap data={currentYearExposures} />
+                <CalendarExecutedNight data={currentYearExecutedNights} />
               </>
             ) : null}
           </Grid>
@@ -358,7 +356,7 @@ function Skybot({ setTitle }) {
   return (
     <>
       <Grid container spacing={2} alignItems="stretch">
-        <Grid item xs={12} md={6} lg={4} xl={3}>
+        <Grid item xs={12} md={4} lg={3}>
           <Grid container direction="column" spacing={2}>
             <Grid item>
               <Card>
@@ -409,7 +407,7 @@ function Skybot({ setTitle }) {
           </Grid>
         </Grid>
 
-        <Grid item xs={12} md={6} lg={8} xl={9}>
+        <Grid item xs={12} md={8} lg={9}>
           <Card>
             <CardHeader title="Exposures By Period" />
             <CardContent>{renderExposurePlot()}</CardContent>

@@ -94,7 +94,12 @@ function CalendarHeatmap({ data }) {
         (d) => timeWeek.count(d3.utcYear(d.date), d.date) * cellSize + 0.5
       )
       .attr('y', (d) => countDay(d.date) * cellSize + 0.5)
-      .attr('fill', (d) => colorFn(d.value))
+      .attr('fill', (d) => {
+        if (d.value === 0) {
+          return '#ebedf0';
+        }
+        return colorFn(d.value);
+      })
       .append('title')
       .text(
         (d) => `${d.value} exposures on ${moment(d.date).format('MMM Do YYYY')}`
@@ -143,7 +148,7 @@ function CalendarHeatmap({ data }) {
         <ul className={classes.legend}>
           <li
             className={classes.legendItem}
-            style={{ backgroundColor: '#f7fcf5' }}
+            style={{ backgroundColor: '#ebedf0' }}
           />
           <li
             className={classes.legendItem}
