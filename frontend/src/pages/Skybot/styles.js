@@ -9,11 +9,13 @@ const useStyles = makeStyles((theme) => ({
   },
   progressWrapper: {
     position: 'relative',
+    paddingBottom: theme.spacing(1),
   },
   circularProgress: {
     position: 'absolute',
-    right: theme.spacing(2),
-    bottom: theme.spacing(1),
+    left: theme.spacing(2),
+    bottom: -6,
+    // bottom: theme.spacing(1),
   },
 }));
 
