@@ -14,7 +14,8 @@ const useStyles = makeStyles((theme) => ({
   circularProgress: {
     position: 'absolute',
     left: theme.spacing(2),
-    bottom: theme.spacing(1),
+    bottom: -6,
+    // bottom: theme.spacing(1),
   },
 }));
 

@@ -65,14 +65,9 @@ function CalendarHeatmap({ data }) {
 
     const timeWeek = d3.utcSunday;
 
-    // const colorFn = d3
-    //   .scaleSequential(d3.interpolateViridis)
-    //   .domain([Math.floor(minValue), Math.ceil(maxValue)]);
-
     const colorFn = d3
-      .scaleQuantize()
-      .domain([Math.floor(minValue), Math.ceil(maxValue)])
-      .range(['#ebedf0', '#c6e48b', '#7bc96f', '#239a3b', '#196127']);
+      .scaleSequential(d3.interpolateGreens)
+      .domain([Math.floor(minValue), Math.ceil(maxValue)]);
 
     year
       .append('g')
@@ -99,7 +94,12 @@ function CalendarHeatmap({ data }) {
         (d) => timeWeek.count(d3.utcYear(d.date), d.date) * cellSize + 0.5
       )
       .attr('y', (d) => countDay(d.date) * cellSize + 0.5)
-      .attr('fill', (d) => colorFn(d.value))
+      .attr('fill', (d) => {
+        if (d.value === 0) {
+          return '#ebedf0';
+        }
+        return colorFn(d.value);
+      })
       .append('title')
       .text(
         (d) => `${d.value} exposures on ${moment(d.date).format('MMM Do YYYY')}`
