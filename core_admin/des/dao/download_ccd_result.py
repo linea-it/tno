@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import desc
+from sqlalchemy import desc, func
+from sqlalchemy.sql import and_, select
 
 from tno.db import DBBase
 
@@ -31,3 +32,36 @@ class DownloadCcdJobResultDao(DBBase):
         )
 
         return self.execute(stm)
+
+    def count_by_job(self, job_id):
+
+        stm = select([func.count(self.tbl.c.id)]).\
+            where(and_(self.tbl.c.job_id == int(job_id)))
+
+        self.debug_query(stm, True)
+
+        row = self.fetch_scalar(stm)
+
+        return row
+
+    def file_size_by_job(self, job_id):
+
+        stm = select([func.sum(self.tbl.c.file_size)]).\
+            where(and_(self.tbl.c.job_id == int(job_id)))
+
+        self.debug_query(stm, True)
+
+        row = self.fetch_scalar(stm)
+
+        return row
+
+    def execution_time_by_job(self, job_id):
+
+        stm = select([func.sum(self.tbl.c.execution_time)]).\
+            where(and_(self.tbl.c.job_id == int(job_id)))
+
+        self.debug_query(stm, True)
+
+        row = self.fetch_scalar(stm)
+
+        return row

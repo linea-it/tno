@@ -277,7 +277,7 @@ def run_job(job_id):
                     (len(ccds), humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))
 
         # Iniciando o Download dos CCDs
-        results = download_des_ccds(job['id'], ccds[0:2])
+        results = download_des_ccds(job['id'], ccds[0:25])
 
         # TODO: Guardar os resultados do Job no arquivo
         logger.debug("----------------------")
@@ -353,7 +353,7 @@ def start_pipeline():
             "There is already a job running.")
 
 
-def plot_time_profile():
+# def plot_time_profile():
 
     # https://stackoverflow.com/questions/31820578/how-to-plot-stacked-event-duration-gantt-charts-using-python-pandas
     # https://stackoverflow.com/questions/18066781/create-gantt-plot-with-python-matplotlib

@@ -4,7 +4,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from des.dao import CcdDao
+from des.dao import CcdDao, DownloadCcdJobResultDao
 from des.models import DownloadCcdJob
 from des.serializers import DownloadCcdJobSerializer
 
@@ -75,3 +75,40 @@ class DownloadCcdJobViewSet(mixins.RetrieveModelMixin,
         result = DownloadCcdJobSerializer(job)
 
         return Response(result.data)
+
+    @action(detail=True, methods=['get'])
+    def heartbeat(self, request, pk=None):
+
+        db = DownloadCcdJobResultDao()
+
+        # Recupera o Job
+        job = self.get_object()
+
+        # Total de ccds já baixados.
+        t_executed = db.count_by_job(job.id)
+        # Tamanho total em bytes dos ccds já baixados.
+        t_size = db.file_size_by_job(job.id)
+        # Tempo total gasto com download dos ccds.
+        t_execution_time = db.execution_time_by_job(job.id).total_seconds()
+        # tamanho médio de cada download.
+        average_size = float(t_size / t_executed)
+        # Tempo médio de cada download
+        average_time = float(t_execution_time / t_executed)
+        # Estimativa em bytes de quanto falta baixar
+        estimated_size = float(average_size * (job.ccds - t_executed))
+        # Estimativa em segundos de quanto tempo ainda vai levar os downloads.
+        estimated_time = float(average_time * (job.ccds - t_executed))
+
+        result = dict({
+            'status': job.status,
+            'ccds': job.ccds,
+            't_executed': t_executed,
+            't_size': t_size,
+            't_execution_time': t_execution_time,
+            'average_size': average_size,
+            'average_time': average_time,
+            'estimated_size': estimated_size,
+            'estimated_time': estimated_time
+        })
+
+        return Response(result)
