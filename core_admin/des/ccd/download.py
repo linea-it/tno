@@ -6,10 +6,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed, wait
 from datetime import datetime, timedelta, timezone
 
 import humanize
-import matplotlib.dates as dt
-import matplotlib.pyplot as plt
 import pandas as pd
 from django.conf import settings
+from matplotlib import dates as dt
+from matplotlib import pyplot as plt
 
 from common.download import Download
 from common.unpack_fz import funpack
@@ -246,17 +246,23 @@ def plot_time_profile(filepath, job_path):
     df.start_time = pd.to_datetime(df.start_time)
     df.finish_time = pd.to_datetime(df.finish_time)
 
+    # Com eixo X Formatado
+    # locator = dt.AutoDateLocator()
+    # fig, ax = plt.subplots()
+    # ax.hlines(df.index, dt.date2num(df.start_time),
+    #           dt.date2num(df.finish_time))
+    # ax.xaxis.set_major_locator(dt.YearLocator())
+    # ax.xaxis.set_major_formatter(dt.AutoDateFormatter(locator))
+
+    # Sem o Eixo X
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.xaxis_date()
     plt.hlines(df.index, dt.date2num(df.start_time),
                dt.date2num(df.finish_time))
-
-    # Remove os ticks do eixo X
     plt.xticks([], [])
 
     output = os.path.join(job_path, 'time_profile.png')
-
     fig.savefig(output)
 
     logger.info("A time profile plot was created for this job.")
