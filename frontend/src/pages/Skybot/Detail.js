@@ -83,11 +83,10 @@ function SkybotDetail({ setTitle }) {
   }, [setTitle]);
 
   useEffect(() => {
-    setHasCircularProgress(false);
     getSkybotProgress(id)
       .then((data) => {
         setProgress(data);
-        setHasCircularProgress(true);
+        setHasCircularProgress(false);
       })
       .catch(() => {
         setHasCircularProgress(true);
