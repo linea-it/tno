@@ -450,6 +450,17 @@ function SkybotDetail({ setTitle }) {
                           variant="outlined"
                         />
                       </Grid>
+                      <Grid item>
+                        <Chip
+                          label={`Executed CCDs: ${
+                            progress.loaddata.executed_ccds
+                              ? progress.loaddata.executed_ccds
+                              : 0
+                          }`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
                     </Grid>
                   </Grid>
                   {hasCircularProgress && [1, 2].includes(status) ? (
