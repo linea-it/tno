@@ -765,7 +765,7 @@ class DesSkybotPipeline():
 
                 # Atualiza o Heartbeat do loaddata.
                 self.update_loaddata_heartbeat(
-                    heartbeat, 'completed', 0, 0, 0)
+                    heartbeat, 'completed', 0, 0, 0, 0)
 
                 df_loaddata = self.update_loaddata_dataframe([], df_filepath)
 
@@ -798,11 +798,16 @@ class DesSkybotPipeline():
 
                     # Total de exposição que já foram importadas.
                     t_executed = int(df_loaddata.execution_time.count())
+
                     # Tempo total de execução das exposições já executadas.
                     t_exec_time = df_loaddata.execution_time.to_list()
 
+                    # Total de CCDs já executados
+                    t_ccds = int(df_loaddata.ccds.sum())
+
                 except:
                     t_executed = 0
+                    t_ccds = 0
                     t_exec_time = []
 
                 # Para cada arquivo a ser importado executa o metodo de importação
@@ -850,15 +855,16 @@ class DesSkybotPipeline():
                     # Incrementa os totais.
                     t_executed += 1
                     t_exec_time.append(result['execution_time'])
+                    t_ccds += result['ccds']
 
                     # Atualiza o Heartbeat do loaddata.
                     self.update_loaddata_heartbeat(
-                        heartbeat, 'running', t_executed, t_to_execute, mean(t_exec_time))
+                        heartbeat, 'running', t_executed, t_to_execute, mean(t_exec_time), t_ccds)
 
                 # Se já tiver executado todas as exposições. atualiza o heartbeat com status done.
                 if t_executed == t_to_execute:
                     self.update_loaddata_heartbeat(
-                        heartbeat, 'completed', t_executed, t_to_execute, mean(t_exec_time))
+                        heartbeat, 'completed', t_executed, t_to_execute, mean(t_exec_time), t_ccds)
 
                 df_loaddata = self.update_loaddata_dataframe(
                     results, df_filepath)
@@ -883,7 +889,7 @@ class DesSkybotPipeline():
 
         except AbortSkybotJobError as e:
 
-            self.update_loaddata_heartbeat(heartbeat, 'aborted', 0, 0, 0)
+            self.update_loaddata_heartbeat(heartbeat, 'aborted', 0, 0, 0, 0)
 
             # Consolida o Job
             self.consolidate(job_id, aborted=True)
@@ -980,7 +986,7 @@ class DesSkybotPipeline():
                              'positions': 'int32',
                              'ccds': 'int32',
                              'inside_ccd': 'int32',
-                             'outside_ccd': 'int32'
+                             'outside_ccd': 'int32',
                          })
         return df
 
@@ -995,7 +1001,7 @@ class DesSkybotPipeline():
         """
         return os.path.join(job_path, "loaddata_heartbeat.json")
 
-    def update_loaddata_heartbeat(self, filepath, status, current, total, average):
+    def update_loaddata_heartbeat(self, filepath, status, current, total, average, t_ccds=0):
         """Atualiza o arquivo de heatbeat da etapa loaddata.
 
         Arguments:
@@ -1013,7 +1019,8 @@ class DesSkybotPipeline():
             'exposures': int(total),
             'current': int(current),
             'average_time': float(average),
-            'time_estimate':  float(estimate)
+            'time_estimate':  float(estimate),
+            'executed_ccds': t_ccds,
         })
 
         with open(filepath, 'w') as f:
