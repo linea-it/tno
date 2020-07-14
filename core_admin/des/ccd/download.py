@@ -341,7 +341,7 @@ def run_job(job_id):
                     (len(ccds), humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))
 
         # Iniciando o Download dos CCDs
-        results = download_des_ccds(job['id'], ccds[0:70])
+        results = download_des_ccds(job['id'], ccds)
 
         #  Guardar os resultados do Job em arquivo
         rows = []

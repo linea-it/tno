@@ -43,7 +43,7 @@ class DownloadCcdJobViewSet(mixins.RetrieveModelMixin,
 
         date_initial = params['date_initial']
         date_final = params['date_final']
-        dynclass = params.get('dynclass', None)
+        dynclass = params.get('dynclass')
         name = params.get('name', None)
 
         # Recuperar o usuario que submeteu o Job.
