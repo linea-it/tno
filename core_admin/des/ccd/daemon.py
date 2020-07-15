@@ -17,4 +17,4 @@ scheduler.add_job(
     id='des_download_ccd'
 )
 
-# scheduler.start()
+scheduler.start()
