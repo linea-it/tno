@@ -83,11 +83,10 @@ function SkybotDetail({ setTitle }) {
   }, [setTitle]);
 
   useEffect(() => {
-    setHasCircularProgress(false);
     getSkybotProgress(id)
       .then((data) => {
         setProgress(data);
-        setHasCircularProgress(true);
+        setHasCircularProgress(false);
       })
       .catch(() => {
         setHasCircularProgress(true);
@@ -447,6 +446,17 @@ function SkybotDetail({ setTitle }) {
                       <Grid item>
                         <Chip
                           label={`Progress: ${progress.loaddata.current}/${progress.loaddata.exposures}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Chip
+                          label={`Executed CCDs: ${
+                            progress.loaddata.executed_ccds
+                              ? progress.loaddata.executed_ccds
+                              : 0
+                          }`}
                           color="primary"
                           variant="outlined"
                         />

@@ -44,7 +44,7 @@ function Skybot({ setTitle }) {
   const [exposuresByPeriod, setExposuresByPeriod] = useState([]);
   const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([]);
   const [selectedDate, setSelectedDate] = useState(['', '']);
-  const [chartType, setChartType] = useState(1);
+  const [chartType, setChartType] = useState(0);
   const [selectedDateYears, setSelectedDateYears] = useState([]);
   const [currentSelectedDateYear, setCurrentSelectedDateYear] = useState('');
   const [currentYearExposures, setCurrentYearExposures] = useState([]);
@@ -237,11 +237,6 @@ function Skybot({ setTitle }) {
       customElement: (row) =>
         row.execution_time ? row.execution_time.split('.')[0] : null,
     },
-    {
-      name: 'exposures',
-      title: 'Exposures',
-      width: 100,
-    },
   ];
 
   const Plot = createPlotlyComponent(Plotly);
@@ -298,7 +293,7 @@ function Skybot({ setTitle }) {
             </Grid>
           ) : null}
           <Grid item xs={12}>
-            {chartType === 0 ? (
+            {chartType === 0 && exposuresByPeriod.length > 0 ? (
               <Plot
                 data={[
                   {
