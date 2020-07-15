@@ -64,8 +64,7 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         t_nights = ExposureDao().count_nights_by_period(start, end)
 
         # Recuperar o total de ccds no periodo.
-        t_ccds = CcdDao().count_ccds_by_period(
-            '2019-01-01 00:00:00', '2019-01-31 23:59:59')
+        t_ccds = CcdDao().count_ccds_by_period(start, end)
 
         # Criar um model Skybot Job
         job = SkybotJob(
