@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import Ccd, Exposure, SkybotJob, SkybotPosition, SkybotJobResult
+from .models import (Ccd, DownloadCcdJob, DownloadCcdJobResult, Exposure,
+                     SkybotJob, SkybotJobResult, SkybotPosition)
 
 
 @admin.register(Exposure)
@@ -94,3 +95,19 @@ class SkybotJobResultAdmin(admin.ModelAdmin):
     # Troca o tipo de imput de Select para um text field com botao de busca
     # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
     raw_id_fields = ('job', 'exposure',)
+
+
+@admin.register(DownloadCcdJob)
+class DownloadCcdJobAdmin(admin.ModelAdmin):
+    list_display = ('id', 'status', 'owner', 'date_initial',
+                    'date_final', 'execution_time', 'ccds', 't_size_downloaded')
+
+
+@admin.register(DownloadCcdJobResult)
+class DownloadCcdJobResultAdmin(admin.ModelAdmin):
+    list_display = ('id', 'job', 'ccd', 'start',
+                    'finish', 'execution_time', 'file_size',)
+
+    # Troca o tipo de imput de Select para um text field com botao de busca
+    # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
+    raw_id_fields = ('job', 'ccd',)

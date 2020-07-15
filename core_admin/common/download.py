@@ -35,10 +35,13 @@ class Download():
         if not os.path.exists(file_path):
 
             try:
+                requests.packages.urllib3.disable_warnings()
                 # Resolve problema de SSL precisa da lib pyopenssl.
                 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':RC4-SHA'
+                requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':HIGH:!DH:!aNULL'
                 try:
                     requests.packages.urllib3.contrib.pyopenssl.DEFAULT_SSL_CIPHER_LIST += ':RC4-SHA'
+                    requests.packages.urllib3.contrib.pyopenssl.DEFAULT_SSL_CIPHER_LIST += ':HIGH:!DH:!aNULL'
                 except AttributeError:
                     # no pyopenssl support used / needed / available
                     pass
