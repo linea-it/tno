@@ -70,12 +70,13 @@ class CcdViewSet(viewsets.ModelViewSet):
             df2 = pd.DataFrame()
             df2['date'] = []
             df2['count'] = 0
+            df2['downloaded'] = 0
 
         df2 = df2.set_index('date')
 
         df = pd.concat([df1, df2], axis=1)
         df = df.fillna(0)
-        df = df.astype({"count": int})
+        df = df.astype({"count": int, "downloaded": int})
         df = df.reset_index()
         df = df.rename(columns={'index': 'date'})
 
