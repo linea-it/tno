@@ -1,10 +1,9 @@
 import axios from 'axios';
-import moment from 'moment';
 
 export const createSkybotRun = ({ date_initial, date_final }) => {
   const params = {
-    date_initial: moment(date_initial).format('YYYY-MM-DD'),
-    date_final: moment(date_final).format('YYYY-MM-DD'),
+    date_initial: date_initial,
+    date_final: date_final,
   };
 
   return axios.post('/des/skybot_job/submit_job/', params);

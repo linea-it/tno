@@ -95,7 +95,12 @@ export default function Routes() {
         path="/data-preparation/des/skybot/asteroid/:id"
         component={SkybotAsteroid}
       />
-      <Route isPrivate exact path="/download/" component={Download} />
+      <Route
+        isPrivate
+        exact
+        path="/data-preparation/des/download"
+        component={Download}
+      />
       <Route isPrivate exact path="/" component={Dashboard} />
       <Redirect path="/" to="/" />
     </Switch>
