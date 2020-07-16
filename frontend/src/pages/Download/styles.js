@@ -1,20 +1,8 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    minWidth: '100%',
-  },
+const useStyles = makeStyles({
   buttonGroupYear: {
     height: 'calc(100% - 1px)',
-  },
-  progressWrapper: {
-    position: 'relative',
-    paddingBottom: theme.spacing(1),
-  },
-  circularProgress: {
-    position: 'absolute',
-    left: theme.spacing(2),
-    bottom: -6,
   },
   relativePosition: {
     position: 'relative',
@@ -29,6 +17,6 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 4,
     zIndex: 1,
   },
-}));
+});
 
 export default useStyles;

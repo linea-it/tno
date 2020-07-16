@@ -272,7 +272,7 @@ function Download({ setTitle }) {
                             {...params}
                             label="Object Name"
                             variant="outlined"
-                            className={classes.formControl}
+                            fullWidth
                             disabled={!objectNameFocus}
                           />
                         )}
@@ -290,10 +290,7 @@ function Download({ setTitle }) {
                       {objectNameFocus ? (
                         <div className={classes.disabledArea} />
                       ) : null}
-                      <FormControl
-                        variant="outlined"
-                        className={classes.formControl}
-                      >
+                      <FormControl variant="outlined" fullWidth>
                         <InputLabel>Dynamic Class</InputLabel>
                         <Select
                           label="Dynamic Class"
