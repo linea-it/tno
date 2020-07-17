@@ -24,11 +24,11 @@ class CcdViewSet(viewsets.ModelViewSet):
     def count_by_period(self, request):
         """Retorna todas as datas dentro do periodo, com o total de CCDs e quantos já foram downloaded.
 
-        exemplo: http://localhost/api/des/ccd/count_by_period/?date_initial=2019-01-01&date_final=2019-01-31&dynclass=kbo
+        exemplo: http://localhost/api/des/ccd/count_by_period/?start=2019-01-01&end=2019-01-31&dynclass=kbo
 
         Args:
-            date_initial (str): Data inicial do periodo no formato YYYY-MM-DD
-            date_final (str): Data Final do periodo no formato YYYY-MM-DD
+            start (str): Data inicial do periodo no formato YYYY-MM-DD
+            end (str): Data Final do periodo no formato YYYY-MM-DD
             dynclass (str): Classe dinamica atributo dynclass da tabela Skybot Position
             name (str): Nome de um objeto, como está na tabela Skybot Position
 
@@ -37,8 +37,8 @@ class CcdViewSet(viewsets.ModelViewSet):
 
         """
 
-        start = request.query_params['date_initial']
-        end = request.query_params['date_final']
+        start = request.query_params['start']
+        end = request.query_params['end']
         dynclass = request.query_params.get('dynclass', None)
         name = request.query_params.get('name', None)
 

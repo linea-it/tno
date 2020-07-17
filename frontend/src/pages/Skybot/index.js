@@ -353,7 +353,7 @@ function Skybot({ setTitle }) {
       <Grid container spacing={2} alignItems="stretch">
         <Grid item xs={12} md={4} lg={3}>
           <Grid container direction="column" spacing={2}>
-            <Grid item>
+            <Grid item xs={12}>
               <Card>
                 <CardHeader title="Skybot Run" />
                 <CardContent>
@@ -381,7 +381,7 @@ function Skybot({ setTitle }) {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item>
+            <Grid item xs={12}>
               <Card>
                 <CardContent>
                   <Typography color="textSecondary" gutterBottom>
