@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core';
 import { useParams, useHistory } from 'react-router-dom';
 import moment from 'moment';
+import filesize from 'filesize';
 import List from '../../components/List';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import Progress from '../../components/Progress';
@@ -22,7 +23,6 @@ import {
   cancelDownloadJobById,
 } from '../../services/api/Download';
 import useInterval from '../../hooks/useInterval';
-import { bytesToSize } from '../../services/math';
 import useStyles from './styles';
 
 function DownloadDetail({ setTitle }) {
@@ -96,7 +96,7 @@ function DownloadDetail({ setTitle }) {
         },
         {
           title: 'Size',
-          value: bytesToSize(res.t_size_downloaded),
+          value: filesize(res.t_size_downloaded),
         },
       ]);
     });
@@ -187,9 +187,7 @@ function DownloadDetail({ setTitle }) {
                   </Grid>
                   <Grid item>
                     <Chip
-                      label={`Average Size: ${bytesToSize(
-                        progress.average_size
-                      )}`}
+                      label={`Average Size: ${filesize(progress.average_size)}`}
                       color="primary"
                       variant="outlined"
                     />
@@ -205,7 +203,7 @@ function DownloadDetail({ setTitle }) {
                   </Grid>
                   <Grid item>
                     <Chip
-                      label={`Estimated Size: ${bytesToSize(
+                      label={`Estimated Size: ${filesize(
                         progress.estimated_size
                       )}`}
                       color="primary"
