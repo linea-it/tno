@@ -6,6 +6,7 @@ import Route from './Route';
 import Dashboard from '../pages/Dashboard';
 
 import Download from '../pages/Download';
+import DownloadDetail from '../pages/Download/Detail';
 
 import Skybot from '../pages/Skybot';
 import SkybotDetail from '../pages/Skybot/Detail';
@@ -100,6 +101,12 @@ export default function Routes() {
         exact
         path="/data-preparation/des/download"
         component={Download}
+      />
+      <Route
+        isPrivate
+        exact
+        path="/data-preparation/des/download/:id"
+        component={DownloadDetail}
       />
       <Route isPrivate exact path="/" component={Dashboard} />
       <Redirect path="/" to="/" />

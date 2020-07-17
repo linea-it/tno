@@ -34,13 +34,19 @@ export const getDownloadJobs = ({ page, pageSize, ordering }) => {
   return axios.get('/des/download_ccd/job/', { params });
 };
 
+export const getDownloadJobById = (id) =>
+  axios.get(`/des/download_ccd/job/${id}/`)
+    .then(res => res.data);
+
+export const cancelDownloadJobById = (id) =>
+  axios.post(`/des/download_ccd/job/${id}/cancel_job/`).then((res) => res.data);
+
 export const getObjectByName = (objectName) => {
   const params = { search: objectName, pageSize: 1 };
 
   return axios.get('/des/skybot_position/', { params })
     .then(res => res.data.results[0])
 }
-
 
 export const getAllObjects = () => {
   const params = { pageSize: 999999  };
@@ -55,3 +61,7 @@ export const getAllObjects = () => {
         )
     })
 }
+
+export const getDownloadProgress = (id) =>
+  axios.get(`/des/download_ccd/job/${id}/heartbeat/`)
+    .then(res => res.data)

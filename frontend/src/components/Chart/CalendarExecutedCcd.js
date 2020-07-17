@@ -108,15 +108,13 @@ function CalendarExecutedCcd({ data }) {
 
         switch (parseInt(d.value)) {
           case 0:
-            hoverText = 'has no objects';
+            hoverText = 'has no CCD';
             break;
           case 1:
-            hoverText = `has ${
-              d.count - d.downloaded
-            } object(s) missing download`;
+            hoverText = `has ${d.count - d.downloaded} CCD(s) missing download`;
             break;
           case 2:
-            hoverText = `was downloaded and it has ${d.downloaded} object(s)`;
+            hoverText = `was downloaded and it has ${d.downloaded} CCD(s)`;
             break;
           default:
             break;

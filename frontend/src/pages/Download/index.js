@@ -31,6 +31,7 @@ import {
   getAllObjects,
 } from '../../services/api/Download';
 import CalendarExecutedCcd from '../../components/Chart/CalendarExecutedCcd';
+import CcdsDownloadedGrouped from '../../components/Chart/CcdsDownloadedGrouped';
 import useStyles from './styles';
 
 function Download({ setTitle }) {
@@ -69,7 +70,9 @@ function Download({ setTitle }) {
         .filter((year, i, yearArr) => yearArr.indexOf(year) === i);
 
       setCcdYears(selectedYears);
-      setSelectedCcdYear(selectedYears[0]);
+      if (selectedCcdYear === '') {
+        setSelectedCcdYear(selectedYears[0]);
+      }
       setAllCcds(res);
     });
 
@@ -354,7 +357,7 @@ function Download({ setTitle }) {
 
         <Grid item xs={12} md={8} lg={9}>
           <Card>
-            <CardHeader title="Exposures By Period" />
+            <CardHeader title="CCDs By Period" />
             <CardContent>
               <Grid container spacing={2} alignItems="stretch">
                 {ccdYears.length > 1 ? (
@@ -377,8 +380,13 @@ function Download({ setTitle }) {
                   </Grid>
                 ) : null}
                 <Grid item xs={12}>
-                  <CalendarExecutedCcd hoverTitle="object" data={ccdsOfYear} />
+                  <CalendarExecutedCcd data={ccdsOfYear} />
                 </Grid>
+                {ccdsOfYear.length > 0 ? (
+                  <Grid item xs={12}>
+                    <CcdsDownloadedGrouped data={ccdsOfYear} height={260} />
+                  </Grid>
+                ) : null}
               </Grid>
             </CardContent>
           </Card>
