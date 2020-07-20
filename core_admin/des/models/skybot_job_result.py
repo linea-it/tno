@@ -3,13 +3,14 @@ from django.db import models
 from des.models import SkybotJob, Exposure
 from skybot.models import Position
 
+
 class SkybotJobResult(models.Model):
     """Este model representa cada exposição que foi executada em uma Des/SkybotJob 
     o conteudo desta tabela está em arquivo no diretório do job. 
 
     ATENÇÂO: Ainda não tenho certeza se esta tabela será necessária. vou deixar o código comentado.
     """
-    # Des Skybot Job 
+    # Des Skybot Job
     job = models.ForeignKey(
         SkybotJob,
         on_delete=models.CASCADE,
@@ -28,7 +29,8 @@ class SkybotJobResult(models.Model):
     ticket = models.BigIntegerField(
         verbose_name='Skybot Ticket',
         help_text='Id of the request made in the skybot. it serves to group all the positions that are of the same request.',
-        default=0
+        default=0,
+        db_index=True
     )
 
     # Indica se a execução da exposição teve sucesso.
@@ -70,7 +72,6 @@ class SkybotJobResult(models.Model):
         verbose_name='Filename',
         help_text='name of the file with the results returned by skybot.'
     )
-
 
     def __str__(self):
         return str(self.id)

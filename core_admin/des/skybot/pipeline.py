@@ -7,8 +7,10 @@ import traceback
 from datetime import datetime, timedelta, timezone
 from statistics import mean
 
+import dateutil.parser
 import humanize
 import pandas as pd
+import pytz
 from django.conf import settings
 
 from des.dao import DesSkybotJobDao, DesSkybotJobResultDao, ExposureDao
@@ -32,6 +34,9 @@ class DesSkybotPipeline():
         # Radius usado na query do skybot com tamanho suficiente para a exposição do des.
         # Cone search radius in Degres
         self.radius = 1.2
+
+        # Date Correction for DECam
+        self.date_correction = 1.05
 
         # Observer Code for Cerro Tololo-DECam
         self.observer_location = 'w84'
@@ -164,7 +169,7 @@ class DesSkybotPipeline():
     def query_exposures_by_period(self, start, end):
         """Retorna todas as Des/Exposures que tenham date_obs entre o periodo start, end.
 
-        23/06/2020 - Foi modificada a query para retornar somente as exposições que ainda não foram executadas.        
+        23/06/2020 - Foi modificada a query para retornar somente as exposições que ainda não foram executadas.
 
         Arguments:
             start {date} -- Data Inicial do periodo
@@ -229,6 +234,31 @@ class DesSkybotPipeline():
 
         return df
 
+    def apply_corection_in_date_obs(self, date_obs, exptime):
+        """Aplica uma correção a data de observação das exposições 
+        esta correção é :
+        date_obs = date_obs + (exptime + correction)/2
+        no caso da DECam o valor de correction é: 1.05
+
+        Args:
+            date_obs (datetime): Data de observação da exposição no formato iso: '2012-11-10 04:09:45.855327+00:00'
+            exptime (float): Temnpo  da exposição, atributo exptime da tabela des/exposure
+
+        Returns:
+            datetime: Data de observação mais o valor da correção.
+        """
+
+        date = dateutil.parser.parse(str(date_obs))
+
+        correction = (float(exptime + float(self.date_correction)))/2
+
+        date = date + timedelta(seconds=correction)
+
+        # Converter a data para UTC
+        date = date.astimezone(pytz.UTC)
+
+        return date
+
     def create_exposure_dataframe(self, rows, job_path):
         """Cria um dataframe para as exposições.
 
@@ -242,7 +272,21 @@ class DesSkybotPipeline():
 
         filepath = self.get_expouses_filepath(job_path)
 
-        df = pd.DataFrame(rows, columns=['id', 'date_obs', 'radeg', 'decdeg'])
+        df = pd.DataFrame(
+            rows, columns=['id', 'date_obs', 'radeg', 'decdeg', 'exptime'])
+
+        # 20-07-2020 Martin solicitou que fosse aplicado uma correção ao campo date_obs.
+        # date_obs = date_obs + (exptime + correction)/2
+        # onde correction para DECam é 1.05
+        df['date_with_correction'] = df.apply(
+            lambda row: self.apply_corection_in_date_obs(row['date_obs'], row['exptime']), axis=1)
+
+        # Adicionar os campos que serão enviados para o Skybot
+        df['radius'] = self.radius
+
+        df['observer_location'] = self.observer_location
+
+        df['position_error'] = self.position_error
 
         # Escreve o dataframe em arquivo.
         df.to_csv(filepath, sep=';', header=True, index=False)
@@ -297,6 +341,7 @@ class DesSkybotPipeline():
             'finish', 'execution_time', 'output', 'filename', 'file_size',
             'skybot_url', 'error'])
 
+        df = df.fillna(0)
         df['ticket'] = df.ticket.astype('int64')
 
         # Escreve o dataframe em arquivo.
@@ -455,12 +500,12 @@ class DesSkybotPipeline():
 
                     # Executa o consulta usando a função cone_search.
                     result = ss.cone_search(
-                        date=exp['date_obs'],
+                        date=exp['date_with_correction'],
                         ra=exp['radeg'],
                         dec=exp['decdeg'],
-                        radius=self.radius,
-                        observer_location=self.observer_location,
-                        position_error=self.position_error,
+                        radius=exp['radius'],
+                        observer_location=exp['observer_location'],
+                        position_error=exp['position_error'],
                         output=output
                     )
 
@@ -517,7 +562,7 @@ class DesSkybotPipeline():
             t1 = datetime.now()
             tdelta = t1 - t0
 
-            self.logger.info("Exposures: [%s] Requests: [%s] Success: [%s] Failure: [%s] in %s" % (
+            self.logger.info(" [%s] Exposures,  [%s] Requests, [%s] Success and [%s] Failure:  in %s" % (
                 t_exposures, t_requests, t_success, t_failure, humanize.naturaldelta(tdelta, minimum_unit="seconds")))
 
         except AbortSkybotJobError as e:
@@ -1168,6 +1213,7 @@ class DesSkybotPipeline():
                     df = df[df['success'] == True]
                     df = pd.DataFrame(df)
 
+                df = df.fillna(0)
                 df = df.astype({'ticket': 'int64', 'positions': 'int32',
                                 'inside_ccd': 'int32', 'outside_ccd': 'int32'})
 
