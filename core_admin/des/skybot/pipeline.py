@@ -5,11 +5,12 @@ import pathlib
 import shutil
 import traceback
 from datetime import datetime, timedelta, timezone
-import dateutil.parser
 from statistics import mean
 
+import dateutil.parser
 import humanize
 import pandas as pd
+import pytz
 from django.conf import settings
 
 from des.dao import DesSkybotJobDao, DesSkybotJobResultDao, ExposureDao
@@ -253,6 +254,9 @@ class DesSkybotPipeline():
 
         date = date + timedelta(seconds=correction)
 
+        # Converter a data para UTC
+        date = date.astimezone(pytz.UTC)
+
         return date
 
     def create_exposure_dataframe(self, rows, job_path):
@@ -276,6 +280,13 @@ class DesSkybotPipeline():
         # onde correction para DECam é 1.05
         df['date_with_correction'] = df.apply(
             lambda row: self.apply_corection_in_date_obs(row['date_obs'], row['exptime']), axis=1)
+
+        # Adicionar os campos que serão enviados para o Skybot
+        df['radius'] = self.radius
+
+        df['observer_location'] = self.observer_location
+
+        df['position_error'] = self.position_error
 
         # Escreve o dataframe em arquivo.
         df.to_csv(filepath, sep=';', header=True, index=False)
@@ -492,9 +503,9 @@ class DesSkybotPipeline():
                         date=exp['date_with_correction'],
                         ra=exp['radeg'],
                         dec=exp['decdeg'],
-                        radius=self.radius,
-                        observer_location=self.observer_location,
-                        position_error=self.position_error,
+                        radius=exp['radius'],
+                        observer_location=exp['observer_location'],
+                        position_error=exp['position_error'],
                         output=output
                     )
 
