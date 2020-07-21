@@ -25,7 +25,7 @@ function CcdsDownloadedGrouped({ data, height }) {
       {
         x,
         y: y1,
-        name: `Count (${sumY1})`,
+        name: `CCDs (${sumY1})`,
         type: 'bar',
       },
       {

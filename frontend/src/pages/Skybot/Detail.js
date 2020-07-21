@@ -437,7 +437,11 @@ function SkybotDetail({ setTitle }) {
                       <Grid item>
                         <Chip
                           label={`Estimate: ${formatSeconds(
-                            progress.loaddata.time_estimate
+                            moment
+                              .duration(progress.loaddata.time_estimate)
+                              .add(
+                                moment.duration(progress.request.time_estimate)
+                              )
                           )}`}
                           color="primary"
                           variant="outlined"
