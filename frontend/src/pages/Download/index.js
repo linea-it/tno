@@ -277,6 +277,11 @@ function Download({ setTitle }) {
                             variant="outlined"
                             fullWidth
                             disabled={!objectNameFocus}
+                            InputLabelProps={{
+                              classes: {
+                                shrink: classes.shrinkLabel,
+                              }
+                            }}
                           />
                         )}
                       />
@@ -294,7 +299,7 @@ function Download({ setTitle }) {
                         <div className={classes.disabledArea} />
                       ) : null}
                       <FormControl variant="outlined" fullWidth>
-                        <InputLabel>Dynamic Class</InputLabel>
+                        <InputLabel classes={{ shrink: classes.shrinkLabel }}>Dynamic Class</InputLabel>
                         <Select
                           label="Dynamic Class"
                           value={dynclass}
