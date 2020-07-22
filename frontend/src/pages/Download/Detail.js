@@ -67,8 +67,6 @@ function DownloadDetail({ setTitle }) {
     getDownloadJobById(id).then((res) => {
       setStatus(res.status);
 
-      console.dir(res);
-
       setSummary([
         {
           title: 'Status',
