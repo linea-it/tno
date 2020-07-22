@@ -48,7 +48,7 @@ function CcdsDownloadedGrouped({ data }) {
         margin: {
           t: 30,
           l: 20,
-          b: 0,
+          b: 20,
         },
       }}
       config={{
