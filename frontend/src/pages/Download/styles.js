@@ -17,6 +17,9 @@ const useStyles = makeStyles({
     borderRadius: 4,
     zIndex: 1,
   },
+  shrinkLabel: {
+    transform: 'translate(14px, -1px) scale(0.75) !important',
+  },
 });
 
 export default useStyles;

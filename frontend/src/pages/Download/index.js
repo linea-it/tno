@@ -277,6 +277,11 @@ function Download({ setTitle }) {
                             variant="outlined"
                             fullWidth
                             disabled={!objectNameFocus}
+                            InputLabelProps={{
+                              classes: {
+                                shrink: classes.shrinkLabel,
+                              },
+                            }}
                           />
                         )}
                       />
@@ -294,7 +299,9 @@ function Download({ setTitle }) {
                         <div className={classes.disabledArea} />
                       ) : null}
                       <FormControl variant="outlined" fullWidth>
-                        <InputLabel>Dynamic Class</InputLabel>
+                        <InputLabel classes={{ shrink: classes.shrinkLabel }}>
+                          Dynamic Class
+                        </InputLabel>
                         <Select
                           label="Dynamic Class"
                           value={dynclass}
@@ -384,7 +391,7 @@ function Download({ setTitle }) {
                 </Grid>
                 {ccdsOfYear.length > 0 ? (
                   <Grid item xs={12}>
-                    <CcdsDownloadedGrouped data={ccdsOfYear} height={260} />
+                    <CcdsDownloadedGrouped data={ccdsOfYear} />
                   </Grid>
                 ) : null}
               </Grid>
