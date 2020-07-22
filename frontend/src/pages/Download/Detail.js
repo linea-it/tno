@@ -67,6 +67,8 @@ function DownloadDetail({ setTitle }) {
     getDownloadJobById(id).then((res) => {
       setStatus(res.status);
 
+      console.dir(res);
+
       setSummary([
         {
           title: 'Status',
@@ -79,8 +81,20 @@ function DownloadDetail({ setTitle }) {
           value: res.owner,
         },
         {
+          title: 'Period',
+          value: `${moment(res.date_initial).format('YYYY-MM-DD')} / ${moment(
+            res.date_final
+          ).format('YYYY-MM-DD')}`,
+        },
+        {
           title: 'Start',
           value: moment(res.start).format('YYYY-MM-DD HH:mm:ss'),
+        },
+        {
+          title: 'Finish',
+          value: res.finish
+            ? moment(res.finish).format('YYYY-MM-DD HH:mm:ss')
+            : '-',
         },
         {
           title: 'Dynamic Class',
