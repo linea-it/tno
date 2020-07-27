@@ -161,6 +161,69 @@ function Skybot({ setTitle }) {
 
   const tableColumns = [
     {
+      name: 'owner',
+      title: 'Owner',
+      width: 130,
+    },
+    {
+      name: 'start',
+      title: 'Execution Date',
+      width: 130,
+      customElement: (row) => (
+        <span title={moment(row.start).format('HH:mm:ss')}>
+          {moment(row.start).format('YYYY-MM-DD')}
+        </span>
+      ),
+    },
+    {
+      name: 'date_initial',
+      title: 'First Night',
+      width: 130,
+      customElement: (row) => (
+        <span title={moment(row.start).format('HH:mm:ss')}>
+          {row.date_initial}
+        </span>
+      ),
+    },
+    {
+      name: 'date_final',
+      title: 'Last Night',
+      width: 130,
+      customElement: (row) => (
+        <span title={moment(row.finish).format('HH:mm:ss')}>
+          {row.date_final}
+        </span>
+      ),
+    },
+    {
+      name: 'nights',
+      title: 'Nights',
+    },
+    {
+      name: 'exposures',
+      title: 'Exposures',
+    },
+    {
+      name: 'ccds',
+      title: 'Number of CCDs',
+    },
+    {
+      name: 'execution_time',
+      title: 'Execution Time',
+      width: 150,
+      headerTooltip: 'Execution time',
+      align: 'center',
+      customElement: (row) =>
+        row.execution_time ? row.execution_time.split('.')[0] : null,
+    },
+    {
+      name: 'status',
+      title: 'Status',
+      customElement: (row) => (
+        <ColumnStatus status={row.status} title={row.error_msg} />
+      ),
+    },
+    {
       name: 'id',
       title: 'Details',
       width: 110,
@@ -173,69 +236,6 @@ function Skybot({ setTitle }) {
       ),
       align: 'center',
       sortingEnabled: false,
-    },
-    {
-      name: 'status',
-      title: 'Status',
-      customElement: (row) => (
-        <ColumnStatus status={row.status} title={row.error_msg} />
-      ),
-    },
-    {
-      name: 'owner',
-      title: 'Owner',
-      width: 130,
-    },
-    {
-      name: 'start',
-      title: 'Date',
-      width: 130,
-      customElement: (row) => (
-        <span title={moment(row.start).format('HH:mm:ss')}>
-          {moment(row.start).format('YYYY-MM-DD')}
-        </span>
-      ),
-    },
-    {
-      name: 'exposures',
-      title: 'Exposures',
-    },
-    {
-      name: 'ccds',
-      title: 'CCDs',
-    },
-    {
-      name: 'nights',
-      title: 'Nights',
-    },
-    {
-      name: 'date_initial',
-      title: 'Initial Date',
-      width: 130,
-      customElement: (row) => (
-        <span title={moment(row.start).format('HH:mm:ss')}>
-          {row.date_initial}
-        </span>
-      ),
-    },
-    {
-      name: 'date_final',
-      title: 'Final Date',
-      width: 130,
-      customElement: (row) => (
-        <span title={moment(row.finish).format('HH:mm:ss')}>
-          {row.date_final}
-        </span>
-      ),
-    },
-    {
-      name: 'execution_time',
-      title: 'Execution Time',
-      width: 150,
-      headerTooltip: 'Execution time',
-      align: 'center',
-      customElement: (row) =>
-        row.execution_time ? row.execution_time.split('.')[0] : null,
     },
   ];
 

@@ -39,7 +39,7 @@ function Download({ setTitle }) {
   const classes = useStyles();
   const [totalCount, setTotalCount] = useState(0);
   const [tableData, setTableData] = useState([]);
-  const [dynclass, setDynclass] = useState('Centaur');
+  const [dynclass, setDynclass] = useState('');
   const [objects, setObjects] = useState([]);
   const [object, setObject] = useState({});
   const [disableSubmit, setDisableSubmit] = useState(true);
@@ -80,7 +80,7 @@ function Download({ setTitle }) {
   };
 
   useEffect(() => {
-    handleSelectPeriodClick();
+    // handleSelectPeriodClick();
     setDisableSubmit(true);
   }, []);
 
@@ -106,7 +106,6 @@ function Download({ setTitle }) {
       ordering: sorting,
     }).then((res) => {
       const { data } = res;
-
       setTableData(data.results);
       setTotalCount(data.count);
     });
@@ -274,9 +273,13 @@ function Download({ setTitle }) {
                           <TextField
                             {...params}
                             label="Object Name"
-                            variant="outlined"
                             fullWidth
                             disabled={!objectNameFocus}
+                            // InputLabelProps={{
+                            //   classes: {
+                            //     shrink: classes.shrinkLabel,
+                            //   },
+                            // }}
                           />
                         )}
                       />
@@ -293,8 +296,12 @@ function Download({ setTitle }) {
                       {objectNameFocus ? (
                         <div className={classes.disabledArea} />
                       ) : null}
-                      <FormControl variant="outlined" fullWidth>
-                        <InputLabel>Dynamic Class</InputLabel>
+                      <FormControl fullWidth>
+                        <InputLabel
+                        // classes={{ shrink: classes.shrinkLabel }}
+                        >
+                          Dynamic Class
+                        </InputLabel>
                         <Select
                           label="Dynamic Class"
                           value={dynclass}
