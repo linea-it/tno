@@ -4,7 +4,7 @@ import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
 import useStyles from './styles';
 
-function CcdsDownloadedGrouped({ data, height }) {
+function CcdsDownloadedGrouped({ data }) {
   const classes = useStyles();
   const Plot = createPlotlyComponent(Plotly);
   const [rows, setRows] = useState([]);
@@ -25,7 +25,7 @@ function CcdsDownloadedGrouped({ data, height }) {
       {
         x,
         y: y1,
-        name: `Count (${sumY1})`,
+        name: `CCDs (${sumY1})`,
         type: 'bar',
       },
       {
@@ -42,13 +42,13 @@ function CcdsDownloadedGrouped({ data, height }) {
       data={rows}
       className={classes.plotWrapper}
       layout={{
-        height,
         barmode: 'group',
         autosize: true,
         hovermode: 'closest',
         margin: {
           t: 30,
           l: 20,
+          b: 20,
         },
       }}
       config={{
@@ -60,10 +60,6 @@ function CcdsDownloadedGrouped({ data, height }) {
   );
 }
 
-CcdsDownloadedGrouped.defaultProps = {
-  height: 'auto',
-};
-
 CcdsDownloadedGrouped.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
@@ -72,7 +68,6 @@ CcdsDownloadedGrouped.propTypes = {
       downloaded: PropTypes.number,
     })
   ).isRequired,
-  height: PropTypes.number,
 };
 
 export default CcdsDownloadedGrouped;

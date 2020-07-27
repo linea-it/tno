@@ -391,7 +391,7 @@ function Download({ setTitle }) {
                 </Grid>
                 {ccdsOfYear.length > 0 ? (
                   <Grid item xs={12}>
-                    <CcdsDownloadedGrouped data={ccdsOfYear} height={260} />
+                    <CcdsDownloadedGrouped data={ccdsOfYear} />
                   </Grid>
                 ) : null}
               </Grid>
