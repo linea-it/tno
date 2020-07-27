@@ -19,6 +19,10 @@ class SkybotJobSerializer(serializers.ModelSerializer):
             'exposures',
             'ccds',
             'nights',
+            'positions',
+            'asteroids',
+            'exposures_with_asteroid',
+            'ccds_with_asteroid',
             'path',
             'results',
             'error'
