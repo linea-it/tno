@@ -150,3 +150,139 @@ class DesSkybotJobResultDao(DBBase):
         rows = self.fetch_all_dict(stm)
 
         return rows
+
+    def t_positions_des_by_job(self, job_id):
+        """Retorna o Total de posições 
+        retornadas pelo skybot que estão em ccds do DES para um Job especifico.
+
+        select
+            count(sp.id)
+        from
+            skybot_position sp
+        inner join des_skybotjobresult ds on
+            sp.ticket = ds.ticket
+        where
+            ds.job_id = 72;
+
+        Args:
+            job_id ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+
+        # des_skybotjobresult
+        ds = self.tbl
+
+        # skybot_position
+        sp = self.get_table('skybot_position', self.get_base_schema())
+
+        stm = select([func.count(sp.c.id).label('count')]).\
+            select_from(sp.join(ds,  sp.c.ticket == ds.c.ticket)).\
+            where(and_(ds.c.job_id == int(job_id)))
+
+        rows = self.fetch_scalar(stm)
+
+        return rows
+
+    def t_unique_objects_by_job(self, job_id):
+        """Total de Objetos unicos que estão no DES,
+        retornados pelo skybot para um Job especifico.
+
+        select
+            count(distinct(sp.name))
+        from
+            skybot_position sp
+        inner join des_skybotjobresult ds on
+            sp.ticket = ds.ticket
+        where
+            ds.job_id = 72;
+
+        Args:
+            job_id ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+
+        # des_skybotjobresult
+        ds = self.tbl
+
+        # skybot_position
+        sp = self.get_table('skybot_position', self.get_base_schema())
+
+        stm = select([func.count(sp.c.name.distinct()).label('count')]).\
+            select_from(sp.join(ds,  sp.c.ticket == ds.c.ticket)).\
+            where(and_(ds.c.job_id == int(job_id)))
+
+        rows = self.fetch_scalar(stm)
+
+        return rows
+
+    def t_exposures_with_objects_by_job(self, job_id):
+        """Total de Exposições do DES 
+        que tem pelo menos 1 objeto pelo skybot para um Job especifico.
+
+        select
+            count(distinct(dsp.exposure_id))
+        from
+            des_skybotposition dsp
+        inner join des_skybotjobresult ds on
+            dsp.ticket = ds.ticket
+        where
+            ds.job_id = 72;
+
+        Args:
+            job_id ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+
+        # des_skybotjobresult
+        ds = self.tbl
+
+        # des_skybotposition
+        dsp = self.get_table('des_skybotposition', self.get_base_schema())
+
+        stm = select([func.count(dsp.c.exposure_id.distinct()).label('count')]).\
+            select_from(dsp.join(ds,  dsp.c.ticket == ds.c.ticket)).\
+            where(and_(ds.c.job_id == int(job_id)))
+
+        rows = self.fetch_scalar(stm)
+
+        return rows
+
+    def t_ccds_with_objects_by_job(self, job_id):
+        """Total de CCDs do DES 
+        que tem pelo menos 1 objeto pelo skybot para um Job especifico.
+
+        select
+            count(distinct(dsp.ccd_id))
+        from
+            des_skybotposition dsp
+        inner join des_skybotjobresult ds on
+            dsp.ticket = ds.ticket
+        where
+            ds.job_id = 72;
+
+        Args:
+            job_id ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+
+        # des_skybotjobresult
+        ds = self.tbl
+
+        # des_skybotposition
+        dsp = self.get_table('des_skybotposition', self.get_base_schema())
+
+        stm = select([func.count(dsp.c.ccd_id.distinct()).label('count')]).\
+            select_from(dsp.join(ds,  dsp.c.ticket == ds.c.ticket)).\
+            where(and_(ds.c.job_id == int(job_id)))
+
+        rows = self.fetch_scalar(stm)
+
+        return rows
