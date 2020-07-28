@@ -18,7 +18,7 @@ from sqlalchemy.sql.expression import (ClauseElement, Executable, between,
 
 
 class DBBase():
-    def __init__(self, pool=True):
+    def __init__(self, pool=False):
 
         if pool is False:
             self.engine = create_engine(

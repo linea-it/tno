@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 from common.dates_interval import get_days_interval
 from common.read_csv import csv_to_dataframe
-from des.dao import CcdDao, ExposureDao
+from des.dao import CcdDao, ExposureDao, DesSkybotJobResultDao
 from des.models import SkybotJob
 from des.serializers import SkybotJobSerializer
 from des.skybot.pipeline import DesSkybotPipeline
@@ -179,3 +179,20 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
             'requests': a_request,
             'loaddata': a_loaddata
         }))
+
+    @action(detail=True)
+    def dynclass_asteroids(self, request, pk=None):
+        """Retorna a quantidade de objetos relacionado a dynamic class.
+
+        Exemplo: http://localhost/api/des/skybot_job/72/dynclass_asteroids/
+
+        Returns:
+            [array]: um array de objetos com a dynamic class e a quantidade de objetos associadas a ela.
+        """
+
+        job_id = self.get_object().id
+
+        result = DesSkybotJobResultDao(
+            pool=False).dynclass_asteroids_by_job(job_id)
+
+        return Response(result)
