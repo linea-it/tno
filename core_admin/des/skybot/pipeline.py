@@ -255,7 +255,8 @@ class DesSkybotPipeline():
         date = date + timedelta(seconds=correction)
 
         # Converter a data para UTC
-        date = date.astimezone(pytz.UTC)
+        # TODO: Rever esta parte a data está errada mesmo convertendo para UTC
+        # date = date.astimezone(pytz.UTC)
 
         return date
 
@@ -1237,6 +1238,18 @@ class DesSkybotPipeline():
                     self.on_abort(job_id)
 
                 else:
+                    # Atualiza os totais do job
+                    job['positions'] = self.dsdao.t_positions_des_by_job(
+                        job['id'])
+                    job['asteroids'] = self.dsdao.t_unique_objects_by_job(
+                        job['id'])
+                    job['exposures_with_asteroid'] = self.dsdao.t_exposures_with_objects_by_job(
+                        job['id'])
+                    job['ccds_with_asteroid'] = self.dsdao.t_ccds_with_objects_by_job(
+                        job['id'])
+
+                    self.update_job(job)
+
                     # Altera o Status do Job para complete.
                     job['status'] = 3
 

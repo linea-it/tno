@@ -84,6 +84,32 @@ class SkybotJob(models.Model):
         default=0
     )
 
+    # Total de posições retornadas pelo skybot que estão em ccds do DES.
+    positions = models.BigIntegerField(
+        verbose_name='Positions',
+        help_text='Total positions returned by skybot that are in DES ccds.',
+        default=0
+    )
+
+    # Total de Objetos unicos retornados pelo skybot
+    asteroids = models.BigIntegerField(
+        verbose_name='Asteroids',
+        help_text='Total unique objects returned by skybot',
+        default=0
+    )
+    # Total de Exposições que tem pelo menos 1 objeto pelo skybot
+    exposures_with_asteroid = models.BigIntegerField(
+        verbose_name='Exposures with Asteroid',
+        help_text='Total Exposures that have at least one object through the skybot',
+        default=0
+    )
+
+    ccds_with_asteroid = models.BigIntegerField(
+        verbose_name='CCDs with Asteroid',
+        help_text='Total CCDs that have at least one object through the skybot',
+        default=0
+    )
+
     # Pasta onde estão os dados do Job.
     path = models.CharField(
         max_length=2048,
