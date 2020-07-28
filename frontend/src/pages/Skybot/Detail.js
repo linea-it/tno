@@ -125,40 +125,7 @@ function SkybotDetail({ setTitle }) {
 
   const tableColumns = [
     {
-      name: 'exposure',
-      title: 'Exposure',
-    },
-    {
-      name: 'positions',
-      title: 'Number of Identification',
-    },
-    {
-      name: 'inside_ccd',
-      title: 'SSOs In CCDs',
-    },
-    {
-      name: 'outside_ccd',
-      title: 'SSOs Out CCDs',
-    },
-    {
-      name: 'execution_time',
-      title: 'Execution Time',
-      width: 150,
-      customElement: (row) =>
-        row.execution_time ? row.execution_time.split('.')[0] : '-',
-    },
-    {
-      name: 'success',
-      title: 'Status',
-      align: 'center',
-
-      customElement: (row) => (
-        <ColumnStatus status={row.success ? 'success' : 'failure'} />
-      ),
-      width: 130,
-    },
-    {
-      name: 'id',
+      name: 'job',
       title: 'Details',
       width: 110,
       customElement: (row) => {
@@ -177,6 +144,47 @@ function SkybotDetail({ setTitle }) {
       },
       sortingEnabled: false,
       align: 'center',
+    },
+    {
+      name: 'success',
+      title: 'Status',
+      align: 'center',
+
+      customElement: (row) => (
+        <ColumnStatus status={row.success ? 'success' : 'failure'} />
+      ),
+      width: 130,
+    },
+    {
+      name: 'id',
+      title: 'ID',
+      width: 120,
+      align: 'center',
+    },
+    {
+      name: 'exposure',
+      title: 'Exposure',
+      width: 120,
+      align: 'center',
+    },
+    {
+      name: 'positions',
+      title: 'Positions',
+    },
+    {
+      name: 'inside_ccd',
+      title: 'Inside CCD',
+    },
+    {
+      name: 'outside_ccd',
+      title: 'Outside CCD',
+    },
+    {
+      name: 'execution_time',
+      title: 'Execution Time',
+      width: 150,
+      customElement: (row) =>
+        row.execution_time ? row.execution_time.split('.')[0] : '-',
     },
   ];
 
@@ -208,12 +216,6 @@ function SkybotDetail({ setTitle }) {
           value: res.owner,
         },
         {
-          title: 'Execution Date',
-          value: `${moment(res.date_initial).format('YYYY-MM-DD')} / ${moment(
-            res.date_final
-          ).format('YYYY-MM-DD')}`,
-        },
-        {
           title: 'Start',
           value: moment(res.start).format('YYYY-MM-DD HH:mm:ss'),
         },
@@ -230,7 +232,7 @@ function SkybotDetail({ setTitle }) {
           value: res.exposures,
         },
         {
-          title: 'Number of CCDs',
+          title: 'CCDs',
           value: res.ccds,
         },
       ]);
@@ -452,6 +454,17 @@ function SkybotDetail({ setTitle }) {
                           variant="outlined"
                         />
                       </Grid>
+                      <Grid item>
+                        <Chip
+                          label={`Executed CCDs: ${
+                            progress.loaddata.executed_ccds
+                              ? progress.loaddata.executed_ccds
+                              : 0
+                          }`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
                     </Grid>
                   </Grid>
                   {hasCircularProgress && [1, 2].includes(status) ? (
@@ -545,6 +558,9 @@ function SkybotDetail({ setTitle }) {
                             loadData={loadData}
                             totalCount={totalCount || 0}
                             hasSearching={false}
+                            defaultSorting={[
+                              { columnName: 'id', direction: 'asc' },
+                            ]}
                             // hasSorting={false}
                             hasColumnVisibility={false}
                             hasToolbar={false}
