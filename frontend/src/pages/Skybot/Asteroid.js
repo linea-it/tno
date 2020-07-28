@@ -8,9 +8,7 @@ import {
   CardContent,
   Toolbar,
   Icon,
-  Switch,
   Button,
-  FormControlLabel,
   Typography,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -24,6 +22,7 @@ import {
 } from '../../services/api/Skybot';
 import CCD from '../../components/Chart/CCD';
 import List from '../../components/List';
+import Switch from '../../components/Switch';
 
 function SkybotAsteroid({ setTitle }) {
   const { id } = useParams();
@@ -292,23 +291,33 @@ function SkybotAsteroid({ setTitle }) {
     if (
       'ccds' in ccdsPlotData &&
       'asteroidsInside' in ccdsPlotData &&
-      'asteroidsOutside' in ccdsPlotData
+      'asteroidsOutside' in ccdsPlotData &&
+      asteroidsInsideCcd.length > 0
     ) {
+      const ccdsWithAsteroids = asteroidsInsideCcd.filter(
+        (value, i, self) =>
+          self.map((x) => x.ccdnum).indexOf(value.ccdnum) === i
+      );
+
       setSummary([
         {
           title: 'Exposure',
           value: idExposure,
         },
         {
-          title: 'CCDs',
-          value: ccdsPlotData.ccds.length,
+          title: 'CCDs With SSOs',
+          value: ccdsWithAsteroids.length,
         },
         {
-          title: 'Asteroids Inside',
+          title: 'CCDs Without SSOs',
+          value: ccdsPlotData.ccds.length - ccdsWithAsteroids.length,
+        },
+        {
+          title: 'SSOs Inside',
           value: ccdsPlotData.asteroidsInside.x.length,
         },
         {
-          title: 'Asteroids Outside',
+          title: 'SSOs Outside',
           value: ccdsPlotData.asteroidsOutside.x.length,
         },
         {
@@ -317,11 +326,11 @@ function SkybotAsteroid({ setTitle }) {
         },
       ]);
     }
-  }, [ccdsPlotData]);
+  }, [ccdsPlotData, asteroidsInsideCcd]);
 
   const handleBackNavigation = () => history.goBack();
 
-  const handleAsteroidInCcds = () => setInsideCcdOnly(!insideCcdOnly);
+  // const handleAsteroidInCcds = () => setInsideCcdOnly(!insideCcdOnly);
 
   return (
     <Grid container spacing={2}>
@@ -352,7 +361,7 @@ function SkybotAsteroid({ setTitle }) {
       </Grid>
       <Grid item xs={12} sm={8}>
         <Card>
-          <CardHeader title="Asteroids Inside CCD" />
+          <CardHeader title="SSOs Inside CCD" />
           <CardContent>
             {'ccds' in ccdsPlotData ? (
               <CCD data={ccdsPlotData} height={550} />
@@ -364,19 +373,14 @@ function SkybotAsteroid({ setTitle }) {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title="Asteroids" />
+          <CardHeader title="SSOs" />
           <CardContent>
             <Toolbar>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={insideCcdOnly}
-                    onChange={handleAsteroidInCcds}
-                    value={insideCcdOnly}
-                    color="primary"
-                  />
-                }
-                label="Only Asteroids Inside CCDs"
+              <Switch
+                isGrid={insideCcdOnly}
+                setIsGrid={setInsideCcdOnly}
+                titleOn="Inside CCD"
+                titleOff="All"
               />
             </Toolbar>
             {ticket !== 0 ? (
