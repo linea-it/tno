@@ -314,7 +314,7 @@ class DesSkybotJobResultDao(DBBase):
             [type]: [description]
         """
 
-        stm = text("""SElECT split_part(dynclass, '>', 1), count(distinct(sp.name)) FROM skybot_position sp INNER JOIN des_skybotjobresult ds ON sp.ticket = ds.ticket where ds.job_id=%s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);""" % int(job_id))
+        stm = text("""SElECT split_part(dynclass, '>', 1) as dynclass, count(distinct(sp.name)) FROM skybot_position sp INNER JOIN des_skybotjobresult ds ON sp.ticket = ds.ticket where ds.job_id=%s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);""" % int(job_id))
 
         self.debug_query(stm, True)
 

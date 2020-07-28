@@ -180,12 +180,11 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
             'loaddata': a_loaddata
         }))
 
-
     @action(detail=True)
-    def dynclass_asteroids_by_job(self, request, pk=None):
+    def dynclass_asteroids(self, request, pk=None):
         """Retorna a quantidade de objetos relacionado a dynamic class.
 
-        Exemplo: http://localhost/api/des/skybot_job/1/dynclass_asteroids_by_job/
+        Exemplo: http://localhost/api/des/skybot_job/72/dynclass_asteroids/
 
         Returns:
             [array]: um array de objetos com a dynamic class e a quantidade de objetos associadas a ela.
@@ -193,6 +192,7 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
 
         job_id = self.get_object().id
 
-        result = DesSkybotJobResultDao().dynclass_asteroids_by_job(job_id)
+        result = DesSkybotJobResultDao(
+            pool=False).dynclass_asteroids_by_job(job_id)
 
         return Response(result)
