@@ -5,8 +5,8 @@ from skybot.models import Position
 
 
 class SkybotJobResult(models.Model):
-    """Este model representa cada exposição que foi executada em uma Des/SkybotJob 
-    o conteudo desta tabela está em arquivo no diretório do job. 
+    """Este model representa cada exposição que foi executada em uma Des/SkybotJob
+    o conteudo desta tabela está em arquivo no diretório do job.
 
     ATENÇÂO: Ainda não tenho certeza se esta tabela será necessária. vou deixar o código comentado.
     """
