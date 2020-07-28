@@ -2,7 +2,7 @@ from datetime import datetime
 from io import StringIO
 
 from sqlalchemy import Date, cast, desc, func
-from sqlalchemy.sql import and_, select
+from sqlalchemy.sql import and_, select, text
 
 from tno.db import DBBase
 
@@ -284,5 +284,40 @@ class DesSkybotJobResultDao(DBBase):
             where(and_(ds.c.job_id == int(job_id)))
 
         rows = self.fetch_scalar(stm)
+
+        return rows
+
+    def dynclass_asteroids_by_job(self, job_id):
+        """Total de objetos unicos por classe para um Job especifico
+
+        OBS: Está query não foi possivel fazer usando sqlalchemy. 
+
+        select
+            split_part(dynclass, '>', 1),
+            count(distinct(sp.name))
+        from
+            skybot_position sp
+        inner join des_skybotjobresult ds on
+            sp.ticket = ds.ticket
+        where
+            ds.job_id = 72
+        group by
+            split_part(dynclass, '>', 1)
+        order by
+            split_part(dynclass, '>', 1);
+
+
+        Args:
+            job_id ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+
+        stm = text("""SElECT split_part(dynclass, '>', 1), count(distinct(sp.name)) FROM skybot_position sp INNER JOIN des_skybotjobresult ds ON sp.ticket = ds.ticket where ds.job_id=%s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);""" % int(job_id))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
 
         return rows
