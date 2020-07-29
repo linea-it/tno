@@ -324,3 +324,69 @@ class DesSkybotJobResultDao(DBBase):
         rows = self.fetch_all_dict(stm)
 
         return rows
+
+    def t_ccds_with_objects_by_id(self, id):
+        """Total de CCDs com pelo menos 1 asteroid para uma exposição, query pelo id da des_skybotjobresult.
+
+        select
+            count(distinct(dsp.ccd_id)) as ccds
+        from
+            des_skybotposition dsp
+        inner join des_skybotjobresult ds on
+            ds.exposure_id = dsp.exposure_id
+        where
+            ds.id = 7643;
+
+        Args:
+            id ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+
+        ds = self.tbl
+
+        # des_skybotposition
+        dsp = self.get_table('des_skybotposition', self.get_base_schema())
+
+        stm = select([func.count(dsp.c.ccd_id.distinct()).label('count')]).\
+            select_from(dsp.join(ds,  dsp.c.exposure_id == ds.c.exposure_id)).\
+            where(and_(ds.c.id == int(id)))
+
+        rows = self.fetch_scalar(stm)
+
+        return rows
+
+    def dynclass_asteroids_by_id(self, id):
+        """ Total de Objetos por classe para uma exposição, query pelo id da des_skybotjobresult. 
+
+        select
+            split_part(sp.dynclass, '>', 1) as dynclass,
+            count(distinct(sp.name)) as asteroids
+        from
+            des_skybotposition dsp
+        inner join des_skybotjobresult ds on
+            ds.exposure_id = dsp.exposure_id
+        inner join skybot_position sp on
+            sp.id = dsp.position_id
+        where
+            ds.id = 7643
+        group by
+            split_part(dynclass, '>', 1)
+        order by
+            split_part(dynclass, '>', 1);
+
+        Args:
+            id ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+
+        stm = text("select split_part(sp.dynclass, '>', 1) as dynclass, count(distinct(sp.name)) as asteroids from des_skybotposition dsp inner join des_skybotjobresult ds on ds.exposure_id = dsp.exposure_id inner join skybot_position sp on sp.id = dsp.position_id where ds.id = %s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);" % int(id))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows
