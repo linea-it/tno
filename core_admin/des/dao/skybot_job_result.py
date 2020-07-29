@@ -288,15 +288,18 @@ class DesSkybotJobResultDao(DBBase):
         return rows
 
     def dynclass_asteroids_by_job(self, job_id):
-        """Total de objetos unicos por classe para um Job especifico
+        """Total de objetos unicos e ccds por classe para um Job especifico
 
         OBS: Está query não foi possivel fazer usando sqlalchemy. 
 
         select
-            split_part(dynclass, '>', 1),
-            count(distinct(sp.name))
+            split_part(dynclass, '>', 1) as dynclass,
+            count(distinct(sp.name)) as asteroids,
+            count(distinct(dsp.ccd_id)) as ccds
         from
-            skybot_position sp
+            des_skybotposition dsp
+        inner join skybot_position sp on
+            sp.ticket = dsp.ticket
         inner join des_skybotjobresult ds on
             sp.ticket = ds.ticket
         where
@@ -314,7 +317,7 @@ class DesSkybotJobResultDao(DBBase):
             [type]: [description]
         """
 
-        stm = text("""SElECT split_part(dynclass, '>', 1) as dynclass, count(distinct(sp.name)) FROM skybot_position sp INNER JOIN des_skybotjobresult ds ON sp.ticket = ds.ticket where ds.job_id=%s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);""" % int(job_id))
+        stm = text("""SElECT split_part(dynclass, '>', 1) as dynclass, count(distinct(sp.name)) as asteroids,  count(distinct(dsp.ccd_id)) as ccds from des_skybotposition dsp  inner join skybot_position sp on sp.ticket = dsp.ticket inner join des_skybotjobresult ds on sp.ticket = ds.ticket where ds.job_id=%s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);""" % int(job_id))
 
         self.debug_query(stm, True)
 
