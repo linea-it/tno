@@ -30,7 +30,8 @@ function DownloadDetail({ setTitle }) {
   const history = useHistory();
   const classes = useStyles();
   const [status, setStatus] = useState(0);
-  const [summary, setSummary] = useState([]);
+  const [summaryExecution, setSummaryExecution] = useState([]);
+  const [summaryResults, setSummaryResults] = useState([]);
   const [progress, setProgress] = useState({
     status: 0,
     ccds: 0,
@@ -45,6 +46,7 @@ function DownloadDetail({ setTitle }) {
   const [loadProgress, setLoadProgress] = useState(false);
   const [isJobCanceled, setIsJobCanceled] = useState(false);
   const [hasCircularProgress, setHasCircularProgress] = useState(true);
+  const [ccds, setCcds] = useState(0);
 
   const handleBackNavigation = () => history.goBack();
 
@@ -66,8 +68,8 @@ function DownloadDetail({ setTitle }) {
   useEffect(() => {
     getDownloadJobById(id).then((res) => {
       setStatus(res.status);
-
-      setSummary([
+      setCcds(res.ccds)
+      setSummaryExecution([
         {
           title: 'Status',
           value: () => (
@@ -95,15 +97,18 @@ function DownloadDetail({ setTitle }) {
             : '-',
         },
         {
+          title: 'Execution',
+          value: res.execution_time ? res.execution_time.split('.')[0] : 0,
+        },
+      ]);
+
+      setSummaryResults([
+        {
           title: 'Dynamic Class',
           value: res.dynclass,
         },
         {
-          title: 'Execution',
-          value: res.execution_time ? res.execution_time.split('.')[0] : 0,
-        },
-        {
-          title: 'CCDs',
+          title: 'Downloaded CCDs',
           value: res.ccds,
         },
         {
@@ -169,91 +174,106 @@ function DownloadDetail({ setTitle }) {
           ) : null}
         </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title="Progress" />
-          <CardContent>
-            <Grid
-              container
-              spacing={3}
-              direction="column"
-              className={classes.progressWrapper}
-            >
-              <Grid item>
-                <Progress
-                  title="Downloading CCDs"
-                  variant="determinate"
-                  label={`${progress.ccds} CCDs`}
-                  total={progress.ccds}
-                  current={progress.t_executed}
-                />
-                <Grid container spacing={2}>
-                  <Grid item>
-                    <Chip
-                      label={`Average Time: ${progress.average_time.toFixed(
-                        2
-                      )}s`}
-                      color="primary"
-                      variant="outlined"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      label={`Average Size: ${filesize(progress.average_size)}`}
-                      color="primary"
-                      variant="outlined"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      label={`Estimated Time: ${formatSeconds(
-                        progress.estimated_time
-                      )}`}
-                      color="primary"
-                      variant="outlined"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      label={`Estimated Size: ${filesize(
-                        progress.estimated_size
-                      )}`}
-                      color="primary"
-                      variant="outlined"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      label={`Progress: ${progress.t_executed}/${progress.ccds}`}
-                      color="primary"
-                      variant="outlined"
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-              {hasCircularProgress && [1, 2].includes(status) ? (
-                <CircularProgress
-                  className={classes.circularProgress}
-                  disableShrink
-                  size={20}
-                />
-              ) : null}
-            </Grid>
-          </CardContent>
-        </Card>
-      </Grid>
-      <Grid item xs={12}>
-        <Grid container alignItems="stretch" spacing={2}>
-          <Grid item xs={12} md={4}>
+      {ccds === 0 && ![1, 2].includes(status) ? (
+        <Grid item xs={12}>
+          <Typography variant="h6">
+            No CCD was found or all CCDs were already downloaded in this
+            period.
+          </Typography>
+        </Grid>
+      ) : (
+        <>
+          <Grid item xs={12} md={4} lg={3}>
             <Card>
-              <CardHeader title="Summary" />
+              <CardHeader title="Summary Execution" />
               <CardContent>
-                <List data={summary} />
+                <List data={summaryExecution} />
               </CardContent>
             </Card>
           </Grid>
-        </Grid>
-      </Grid>
+          <Grid item xs={12} md={8} lg={9}>
+            <Card>
+              <CardHeader title="Progress" />
+              <CardContent>
+                <Grid
+                  container
+                  spacing={3}
+                  direction="column"
+                  className={classes.progressWrapper}
+                >
+                  <Grid item>
+                    <Progress
+                      title="Downloading CCDs"
+                      variant="determinate"
+                      label={`${progress.ccds} CCDs`}
+                      total={progress.ccds}
+                      current={progress.t_executed}
+                    />
+                    <Grid container spacing={2}>
+                      <Grid item>
+                        <Chip
+                          label={`Average Time: ${progress.average_time.toFixed(
+                            2
+                          )}s`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Chip
+                          label={`Average Size: ${filesize(progress.average_size)}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Chip
+                          label={`Estimated Time: ${formatSeconds(
+                            progress.estimated_time
+                          )}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Chip
+                          label={`Estimated Size: ${filesize(
+                            progress.estimated_size
+                          )}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Chip
+                          label={`Progress: ${progress.t_executed}/${progress.ccds}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  {hasCircularProgress && [1, 2].includes(status) ? (
+                    <CircularProgress
+                      className={classes.circularProgress}
+                      disableShrink
+                      size={20}
+                    />
+                  ) : null}
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={4} lg={3}>
+            <Card>
+              <CardHeader title="Summary Results" />
+              <CardContent>
+                <List data={summaryResults} />
+              </CardContent>
+            </Card>
+          </Grid>
+        </>
+      )}
     </Grid>
   );
 }

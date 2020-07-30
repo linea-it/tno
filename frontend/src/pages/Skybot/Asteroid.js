@@ -14,7 +14,7 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import Table from '../../components/Table';
 import {
-  getSkybotTicketById,
+  getSkybotJobResultById,
   getPositionsByTicket,
   getAsteroidsInsideCcdByTicket,
   getCcdsByExposure,
@@ -30,8 +30,12 @@ function SkybotAsteroid({ setTitle }) {
   const coneSearchRadius = 1.2; // ! Cone search radius in Degres.
 
   const history = useHistory();
-  const [ticket, setTicket] = useState(0);
-  const [idExposure, setIdExposure] = useState(0);
+  const [skybotResult, setSkybotResult] = useState({
+    ticket: 0,
+    exposure: 0,
+    inside_ccd: 0,
+    outside_ccd: 0
+  });
   const [insideCcdOnly, setInsideCcdOnly] = useState(true);
   const [ccds, setCcds] = useState([]);
   const [ccdsPlotData, setCcdsPlotData] = useState({});
@@ -45,9 +49,9 @@ function SkybotAsteroid({ setTitle }) {
   }, [setTitle]);
 
   useEffect(() => {
-    getSkybotTicketById(id).then((res) => {
-      setIdExposure(res.exposure);
-      setTicket(res.ticket);
+    getSkybotJobResultById(id).then((res) => {
+      setSkybotResult(res);
+
     });
   }, [id]);
 
@@ -194,31 +198,31 @@ function SkybotAsteroid({ setTitle }) {
   };
 
   useEffect(() => {
-    if (ticket !== 0) {
-      getPositionsByTicket(ticket).then((res) => {
+    if (skybotResult.ticket !== 0) {
+      getPositionsByTicket(skybotResult.ticket).then((res) => {
         setPositions(res.results);
       });
-      getAsteroidsInsideCcdByTicket(ticket).then((res) => {
+      getAsteroidsInsideCcdByTicket(skybotResult.ticket).then((res) => {
         setAsteroidsInsideCcd(res.results);
       });
     }
-  }, [ticket]);
+  }, [skybotResult.ticket]);
 
   useEffect(() => {
-    if (idExposure !== 0) {
-      getCcdsByExposure(idExposure).then((res) => {
+    if (skybotResult.exposure !== 0) {
+      getCcdsByExposure(skybotResult.exposure).then((res) => {
         setCcds(res.results);
       });
     }
-  }, [idExposure]);
+  }, [skybotResult.exposure]);
 
   useEffect(() => {
-    if (idExposure !== 0) {
-      getExposureById(idExposure).then((res) => {
+    if (skybotResult.exposure !== 0) {
+      getExposureById(skybotResult.exposure).then((res) => {
         setExposure(res);
       });
     }
-  }, [idExposure]);
+  }, [skybotResult.exposure]);
 
   useEffect(() => {
     if (
@@ -285,15 +289,17 @@ function SkybotAsteroid({ setTitle }) {
         asteroidsLimit: asteroidLimitRows,
       });
     }
-  }, [positions, asteroidsInsideCcd, ccds, exposure]);
+  }, [positions, asteroidsInsideCcd]);
 
   useEffect(() => {
     if (
       'ccds' in ccdsPlotData &&
       'asteroidsInside' in ccdsPlotData &&
       'asteroidsOutside' in ccdsPlotData &&
-      asteroidsInsideCcd.length > 0
+      skybotResult
     ) {
+
+      console.log('exposure', exposure)
       const ccdsWithAsteroids = asteroidsInsideCcd.filter(
         (value, i, self) =>
           self.map((x) => x.ccdnum).indexOf(value.ccdnum) === i
@@ -302,7 +308,7 @@ function SkybotAsteroid({ setTitle }) {
       setSummary([
         {
           title: 'Exposure',
-          value: idExposure,
+          value: skybotResult.exposure,
         },
         {
           title: 'CCDs With SSOs',
@@ -326,7 +332,7 @@ function SkybotAsteroid({ setTitle }) {
         },
       ]);
     }
-  }, [ccdsPlotData, asteroidsInsideCcd]);
+  }, [ccdsPlotData, asteroidsInsideCcd, skybotResult]);
 
   const handleBackNavigation = () => history.goBack();
 
@@ -383,7 +389,7 @@ function SkybotAsteroid({ setTitle }) {
                 titleOff="All"
               />
             </Toolbar>
-            {ticket !== 0 ? (
+            {skybotResult.ticket !== 0 ? (
               <Table
                 columns={tableColumns}
                 data={insideCcdOnly ? asteroidsInsideCcd : positions}

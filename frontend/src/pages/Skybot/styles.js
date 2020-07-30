@@ -17,6 +17,12 @@ const useStyles = makeStyles((theme) => ({
     bottom: -6,
     // bottom: theme.spacing(1),
   },
+  gridTable: {
+    display: 'table',
+  },
+  gridTableRow: {
+    display: 'table-row',
+  },
 }));
 
 export default useStyles;

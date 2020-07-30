@@ -55,7 +55,7 @@ export const getSkybotResultById = ({ id, pageSize, page, ordering }) => {
 export const getSkybotTimeProfile = (id) =>
   axios.get(`/des/skybot_job/${id}/time_profile/`).then((res) => res.data);
 
-export const getSkybotTicketById = (id) =>
+export const getSkybotJobResultById = (id) =>
   axios.get(`/des/skybot_job_result/${id}/`).then((res) => res.data);
 
 export const getPositionsByTicket = (ticket) => {
@@ -81,3 +81,6 @@ export const getExposureById = (id) =>
 
 export const cancelSkybotJobById = (id) =>
   axios.post(`/des/skybot_job/${id}/cancel_job/`).then((res) => res.data);
+
+export const getDynclassAsteroids = id =>
+  axios.get(`/des/skybot_job/${id}/dynclass_asteroids/`).then(res => res.data)

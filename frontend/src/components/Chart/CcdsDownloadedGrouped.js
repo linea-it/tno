@@ -47,8 +47,8 @@ function CcdsDownloadedGrouped({ data }) {
         hovermode: 'closest',
         margin: {
           t: 30,
-          l: 20,
-          b: 20,
+          l: 30,
+          b: 30,
         },
       }}
       config={{

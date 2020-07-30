@@ -161,6 +161,27 @@ function Skybot({ setTitle }) {
 
   const tableColumns = [
     {
+      name: 'id',
+      title: 'Details',
+      width: 110,
+      customElement: (row) => (
+        <Button
+          onClick={() => history.push(`/data-preparation/des/skybot/${row.id}`)}
+        >
+          <InfoOutlinedIcon />
+        </Button>
+      ),
+      align: 'center',
+      sortingEnabled: false,
+    },
+    {
+      name: 'status',
+      title: 'Status',
+      customElement: (row) => (
+        <ColumnStatus status={row.status} title={row.error_msg} />
+      ),
+    },
+    {
       name: 'owner',
       title: 'Owner',
       width: 130,
@@ -197,11 +218,11 @@ function Skybot({ setTitle }) {
     },
     {
       name: 'nights',
-      title: 'Nights',
+      title: 'Number of Nights',
     },
     {
       name: 'exposures',
-      title: 'Exposures',
+      title: 'Number of Exposures',
     },
     {
       name: 'ccds',
@@ -215,27 +236,6 @@ function Skybot({ setTitle }) {
       align: 'center',
       customElement: (row) =>
         row.execution_time ? row.execution_time.split('.')[0] : null,
-    },
-    {
-      name: 'status',
-      title: 'Status',
-      customElement: (row) => (
-        <ColumnStatus status={row.status} title={row.error_msg} />
-      ),
-    },
-    {
-      name: 'id',
-      title: 'Details',
-      width: 110,
-      customElement: (row) => (
-        <Button
-          onClick={() => history.push(`/data-preparation/des/skybot/${row.id}`)}
-        >
-          <InfoOutlinedIcon />
-        </Button>
-      ),
-      align: 'center',
-      sortingEnabled: false,
     },
   ];
 
