@@ -893,6 +893,9 @@ class DesSkybotPipeline():
                         "File moved to: [%s]" % new_filepath)
 
                     result.update({'output': str(new_filepath)})
+
+                    self.logger_import.debug(result)
+
                     results.append(result)
 
                     self.logger_import.debug("Exposure: [%s] Success: [%s] Filepath: [%s]" % (
@@ -985,7 +988,7 @@ class DesSkybotPipeline():
             pandas.Dataframe -- Dataframe com os resultados da etapa loaddata.
         """
         columns = [
-            'exposure', 'success', 'ticket', 'positions', 'ccds', 'inside_ccd', 'outside_ccd',
+            'exposure', 'success', 'ticket', 'positions', 'ccds', 'ccds_with_asteroids', 'inside_ccd', 'outside_ccd',
             'output', 'start', 'finish', 'execution_time', 'import_pos_exec_time', 'ccd_assoc_exec_time',
             'error', 'tracebak']
 
@@ -1031,6 +1034,7 @@ class DesSkybotPipeline():
                              'ticket': 'int64',
                              'positions': 'int32',
                              'ccds': 'int32',
+                             'ccds_with_asteroids': 'int32',
                              'inside_ccd': 'int32',
                              'outside_ccd': 'int32',
                          })
@@ -1165,6 +1169,7 @@ class DesSkybotPipeline():
                     'request_file_size': 'file_size',
                     'request_skybot_url': 'skybot_url',
                     'loaddata_ccds': 'ccds',
+                    'loaddata_ccds_with_asteroids': 'ccds_with_asteroids',
                     'loaddata_inside_ccd': 'inside_ccd',
                     'loaddata_outside_ccd': 'outside_ccd',
                     'loaddata_output': 'output',
@@ -1206,7 +1211,7 @@ class DesSkybotPipeline():
                 df = pd.read_csv(
                     results_filepath,
                     sep=';',
-                    usecols=['id', 'ticket', 'success', 'execution_time',
+                    usecols=['id', 'ticket', 'success', 'execution_time', 'ccds_with_asteroids',
                              'positions', 'inside_ccd', 'outside_ccd', 'filename'])
 
                 # Se tiver sido aborted registra só as que tiveram sucesso.
@@ -1215,8 +1220,12 @@ class DesSkybotPipeline():
                     df = pd.DataFrame(df)
 
                 df = df.fillna(0)
-                df = df.astype({'ticket': 'int64', 'positions': 'int32',
-                                'inside_ccd': 'int32', 'outside_ccd': 'int32'})
+                df = df.astype({
+                    'ticket': 'int64',
+                    'ccds_with_asteroids': 'int32',
+                    'positions': 'int32',
+                    'inside_ccd': 'int32',
+                    'outside_ccd': 'int32'})
 
                 # Renomeia a coluna exposure para exposure_id
                 df.rename(columns={'id': 'exposure_id'}, inplace=True)
@@ -1225,7 +1234,7 @@ class DesSkybotPipeline():
                 df['job_id'] = int(job_id)
                 # Muda a ordem das colunas para ficar igual a tabela des_skybotjobresutl
                 df = df.reindex(columns=['ticket', 'success', 'execution_time', 'positions',
-                                         'inside_ccd', 'outside_ccd', 'filename', 'exposure_id', 'job_id'])
+                                         'inside_ccd', 'outside_ccd', 'filename', 'exposure_id', 'job_id', 'ccds_with_asteroids'])
 
                 # Printa a primeira linha do dataset para debug
                 # self.logger_import.info(df.iloc[0])
