@@ -21,6 +21,8 @@ import {
   getAsteroidsInsideCcdByTicket,
   getCcdsByExposure,
   getExposureById,
+  getDynclassAsteroidsById,
+  getCcdsWithAsteroidsById,
 } from '../../services/api/Skybot';
 import CCD from '../../components/Chart/CCD';
 import List from '../../components/List';
@@ -39,7 +41,10 @@ function SkybotAsteroid({ setTitle }) {
   const [positions, setPositions] = useState([]);
   const [exposure, setExposure] = useState({ radeg: null, decdeg: null });
   const [asteroidsInsideCcd, setAsteroidsInsideCcd] = useState([]);
+  const [dynclassAsteroids, setDynclassAsteroids] = useState([]);
+  const [ccdsWithAsteroids, setCcdsWithAsteroids] = useState(null);
   const [summary, setSummary] = useState([]);
+  const [summaryClass, setSummaryClass] = useState([]);
 
   useEffect(() => {
     setTitle('Skybot');
@@ -289,11 +294,27 @@ function SkybotAsteroid({ setTitle }) {
   }, [positions, asteroidsInsideCcd, ccds, exposure]);
 
   useEffect(() => {
+    getDynclassAsteroidsById(id)
+      .then(res => {
+        setDynclassAsteroids(res)
+      })
+  }, []);
+
+  useEffect(() => {
+    getCcdsWithAsteroidsById(id)
+      .then(res => {
+        setCcdsWithAsteroids(res.ccds_with_asteroid)
+      })
+  }, []);
+
+  useEffect(() => {
     if (
       'ccds' in ccdsPlotData &&
       'asteroidsInside' in ccdsPlotData &&
-      'asteroidsOutside' in ccdsPlotData
+      'asteroidsOutside' in ccdsPlotData &&
+      ccdsWithAsteroids !== null
     ) {
+
       setSummary([
         {
           title: 'Exposure',
@@ -311,6 +332,11 @@ function SkybotAsteroid({ setTitle }) {
           title: 'Asteroids Outside',
           value: ccdsPlotData.asteroidsOutside.x.length,
         },
+
+        {
+          title: 'CCDs with Exposure',
+          value: ccdsWithAsteroids,
+        },
         {
           title: 'Cone Search Radius',
           value: coneSearchRadius,
@@ -318,6 +344,16 @@ function SkybotAsteroid({ setTitle }) {
       ]);
     }
   }, [ccdsPlotData]);
+
+  useEffect(() => {
+    if(dynclassAsteroids.length > 0) {
+      const dynclasses = dynclassAsteroids.map(row => ({
+        title: row.dynclass,
+        value: row.asteroids,
+      }));
+      setSummaryClass(dynclasses)
+    }
+  }, [dynclassAsteroids])
 
   const handleBackNavigation = () => history.goBack();
 
@@ -343,12 +379,24 @@ function SkybotAsteroid({ setTitle }) {
         </Grid>
       </Grid>
       <Grid item xs={12} sm={4}>
-        <Card>
-          <CardHeader title="Summary" />
-          <CardContent>
-            <List data={summary} />
-          </CardContent>
-        </Card>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader title="Summary" />
+              <CardContent>
+                <List data={summary} />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader title="Summary Class" />
+              <CardContent>
+                <List data={summaryClass} />
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
       </Grid>
       <Grid item xs={12} sm={8}>
         <Card>
