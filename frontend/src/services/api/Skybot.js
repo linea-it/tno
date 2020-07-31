@@ -86,9 +86,6 @@ export const getSkybotJobResultById = (id) =>
     axios.get(`/des/skybot_job_result/${id}/dynclass_asteroids/`)
       .then((res) => res.data);
 
-export const cancelSkybotJobById = (id) =>
-  axios.post(`/des/skybot_job/${id}/cancel_job/`).then((res) => res.data);
-
 export const getDynclassAsteroids = id =>
   axios.get(`/des/skybot_job/${id}/dynclass_asteroids/`).then(res => res.data)
 
