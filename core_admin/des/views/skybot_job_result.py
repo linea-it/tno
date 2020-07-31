@@ -84,3 +84,35 @@ class SkybotJobResultViewSet(viewsets.ModelViewSet):
         result = df.to_dict('records')
 
         return Response(result)
+
+    @action(detail=True)
+    def ccds_with_asteroids(self, request, pk=None):
+        """Retorna o total de CCDs que tem pelo menos 1 asteroid.
+
+        Args:
+            request ([type]): [description]
+        """
+
+        exposure_result = self.get_object()
+
+        total = DesSkybotJobResultDao(
+            pool=False).t_ccds_with_objects_by_id(exposure_result.id)
+
+        return Response(dict({
+            'ccds_with_asteroid': total
+        }))
+
+    @action(detail=True)
+    def dynclass_asteroids(self, request, pk=None):
+        """Total de Objetos por classe para uma exposição.
+
+        Args:
+            request ([type]): [description]
+        """
+
+        exposure_result = self.get_object()
+
+        result = DesSkybotJobResultDao(
+            pool=False).dynclass_asteroids_by_id(exposure_result.id)
+
+        return Response(result)
