@@ -214,6 +214,7 @@ class DESImportSkybotPositions(ImportSkybotPositions):
             'ticket': ticket,
             'positions': 0,
             'ccds': 0,
+            'ccds_with_asteroids': 0,
             'inside_ccd': 0,
             'outside_ccd': 0,
             'start': None,
@@ -287,6 +288,10 @@ class DESImportSkybotPositions(ImportSkybotPositions):
 
                 df_inside = pd.DataFrame(df_inside)
 
+                ccds_with_asteroids = df_inside['ccd_id'].nunique()
+                self.logger.debug(
+                    "CCDS With Asteroids: %s" % ccds_with_asteroids)
+
                 # Só faz insert se ouver pelo menos uma posição dentro de algum ccd.
                 if total_inside_ccd > 0:
                     # Adiciona a coluna exposure id
@@ -320,6 +325,7 @@ class DESImportSkybotPositions(ImportSkybotPositions):
                     'success': True,
                     'positions': int(total_position),
                     'ccds': int(len(ccds)),
+                    'ccds_with_asteroids': int(ccds_with_asteroids),
                     'inside_ccd': int(total_inside_ccd),
                     'outside_ccd': int(total_outside_ccd),
                     'import_pos_exec_time': tdelta_copy.total_seconds(),

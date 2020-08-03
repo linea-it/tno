@@ -334,7 +334,7 @@ function SkybotAsteroid({ setTitle }) {
         },
 
         {
-          title: 'CCDs with Exposure',
+          title: 'CCDs with Asteroids',
           value: ccdsWithAsteroids,
         },
         {
@@ -346,7 +346,7 @@ function SkybotAsteroid({ setTitle }) {
   }, [ccdsPlotData]);
 
   useEffect(() => {
-    if(dynclassAsteroids.length > 0) {
+    if (dynclassAsteroids.length > 0) {
       const dynclasses = dynclassAsteroids.map(row => ({
         title: row.dynclass,
         value: row.asteroids,
@@ -405,8 +405,8 @@ function SkybotAsteroid({ setTitle }) {
             {'ccds' in ccdsPlotData ? (
               <CCD data={ccdsPlotData} height={550} />
             ) : (
-              <Skeleton variant="rect" height={550} />
-            )}
+                <Skeleton variant="rect" height={550} />
+              )}
           </CardContent>
         </Card>
       </Grid>
@@ -438,8 +438,8 @@ function SkybotAsteroid({ setTitle }) {
                 remote={false}
               />
             ) : (
-              <Skeleton variant="rect" height={540} />
-            )}
+                <Skeleton variant="rect" height={540} />
+              )}
           </CardContent>
         </Card>
       </Grid>

@@ -47,7 +47,7 @@ class DesSkybotJobResultDao(DBBase):
             table = str(self.tbl)
 
             # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
-            sql = "COPY %s (ticket, success, execution_time, positions, inside_ccd, outside_ccd, filename, exposure_id, job_id) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
+            sql = "COPY %s (ticket, success, execution_time, positions, inside_ccd, outside_ccd, filename, exposure_id, job_id, ccds_with_asteroids) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
 
             # Executa o metodo que importa o arquivo csv na tabela.
             rowcount = self.import_with_copy_expert(sql, data)

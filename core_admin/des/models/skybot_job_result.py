@@ -45,10 +45,16 @@ class SkybotJobResult(models.Model):
         null=True, blank=True
     )
 
+    ccds_with_asteroids = models.PositiveIntegerField(
+        verbose_name='CCDs With Asteroids',
+        help_text='number of CCDs with Asteroids for this exposure',
+        default=0
+    )
+
     # Quantidade de posições retornadas pelo skybot
     positions = models.PositiveIntegerField(
         verbose_name='Positions',
-        help_text='number of positions returned by skybot for this exhibition',
+        help_text='number of positions returned by skybot for this exposure',
         default=0
     )
 
