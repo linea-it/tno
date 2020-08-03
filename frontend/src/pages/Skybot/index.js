@@ -189,7 +189,7 @@ function Skybot({ setTitle }) {
     {
       name: 'start',
       title: 'Execution Date',
-      width: 130,
+      width: 150,
       customElement: (row) => (
         <span title={moment(row.start).format('HH:mm:ss')}>
           {moment(row.start).format('YYYY-MM-DD')}
@@ -218,15 +218,15 @@ function Skybot({ setTitle }) {
     },
     {
       name: 'nights',
-      title: 'Number of Nights',
+      title: '# Nights',
     },
     {
       name: 'exposures',
-      title: 'Number of Exposures',
+      title: '# Exposures',
     },
     {
       name: 'ccds',
-      title: 'Number of CCDs',
+      title: '# CCDs',
     },
     {
       name: 'execution_time',

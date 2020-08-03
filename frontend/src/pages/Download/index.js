@@ -62,8 +62,8 @@ function Download({ setTitle }) {
     nights: 0,
     ccds: 0,
     estimatedTime: 0,
-    estimatedSize: 0
-  })
+    estimatedSize: 0,
+  });
 
   useEffect(() => {
     setTitle('Download');
@@ -85,22 +85,20 @@ function Download({ setTitle }) {
       }
       setAllCcds(res);
 
-      setExecutionSummary(prevState => ({
+      setExecutionSummary((prevState) => ({
         ...prevState,
         visible: true,
         selectedDate: [selectedDate[0], selectedDate[1]],
-        nights: moment.duration(moment(selectedDate[1]).diff(moment(selectedDate[0]))).asDays(),
+        nights: moment
+          .duration(moment(selectedDate[1]).diff(moment(selectedDate[0])))
+          .asDays(),
         dynclass: objectNameFocus ? object.dynclass.split('>')[0] : dynclass,
-        ccds: res.map(ccd => ccd.count).reduce((prev, curr) => prev + curr),
-      }))
+        ccds: res.map((ccd) => ccd.count).reduce((prev, curr) => prev + curr),
+      }));
     });
 
     setDisableSubmit(false);
   };
-
-  useEffect(() => {
-    console.log('executionSummary', executionSummary)
-  }, [executionSummary])
 
   const handleSelectAllPeriodClick = () => {
     getCCDCountByPeriodAndDynClass(
@@ -212,7 +210,7 @@ function Download({ setTitle }) {
     {
       name: 'start',
       title: 'Execution Date',
-      width: 130,
+      width: 150,
       customElement: (row) => (
         <span title={moment(row.start).format('HH:mm:ss')}>
           {moment(row.start).format('YYYY-MM-DD')}
@@ -226,7 +224,7 @@ function Download({ setTitle }) {
     },
     {
       name: 'objects',
-      title: 'Objects',
+      title: 'Object(s)',
       // customElement: row => (
       //   {row.objects.length === 1 ? row.objects[0] : row.objects.length}
       // ),
@@ -253,15 +251,15 @@ function Download({ setTitle }) {
     },
     {
       name: 'nights',
-      title: 'Number of Nights',
+      title: '# Nights',
     },
     {
       name: 'exposures',
-      title: 'Number of Exposures'
+      title: '# Exposures',
     },
     {
       name: 'ccds',
-      title: 'Number of CCDs',
+      title: '# CCDs',
     },
     {
       name: 'execution_time',
@@ -471,12 +469,20 @@ function Download({ setTitle }) {
                 ) : null}
                 {executionSummary.visible ? (
                   <ul>
-                  <li>Object(s): {executionSummary.objects.length === 1 ? executionSummary.objects[0] : executionSummary.objects.length}</li>
-                  <li>Dynamic Class: {executionSummary.dynclass}</li>
-                  <li>Selected Period: {executionSummary.selectedDate[0]} / {executionSummary.selectedDate[1]}</li>
-                  <li>CCDs: {executionSummary.ccds}</li>
-                  <li>Estimated Time: {executionSummary.estimatedTime}</li>
-                  <li>Estimated Size: {executionSummary.estimatedSize}</li>
+                    <li>
+                      Object(s):{' '}
+                      {executionSummary.objects.length === 1
+                        ? executionSummary.objects[0]
+                        : executionSummary.objects.length}
+                    </li>
+                    <li>Dynamic Class: {executionSummary.dynclass}</li>
+                    <li>
+                      Selected Period: {executionSummary.selectedDate[0]} /{' '}
+                      {executionSummary.selectedDate[1]}
+                    </li>
+                    <li>CCDs: {executionSummary.ccds}</li>
+                    <li>Estimated Time: {executionSummary.estimatedTime}</li>
+                    <li>Estimated Size: {executionSummary.estimatedSize}</li>
                   </ul>
                 ) : null}
               </Grid>

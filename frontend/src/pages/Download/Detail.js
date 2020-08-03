@@ -68,7 +68,7 @@ function DownloadDetail({ setTitle }) {
   useEffect(() => {
     getDownloadJobById(id).then((res) => {
       setStatus(res.status);
-      setCcds(res.ccds)
+      setCcds(res.ccds);
       setSummaryExecution([
         {
           title: 'Status',
@@ -177,8 +177,7 @@ function DownloadDetail({ setTitle }) {
       {ccds === 0 && ![1, 2].includes(status) ? (
         <Grid item xs={12}>
           <Typography variant="h6">
-            No CCD was found or all CCDs were already downloaded in this
-            period.
+            No CCD was found or all CCDs were already downloaded in this period.
           </Typography>
         </Grid>
       ) : (
@@ -221,7 +220,9 @@ function DownloadDetail({ setTitle }) {
                       </Grid>
                       <Grid item>
                         <Chip
-                          label={`Average Size: ${filesize(progress.average_size)}`}
+                          label={`Average Size: ${filesize(
+                            progress.average_size
+                          )}`}
                           color="primary"
                           variant="outlined"
                         />

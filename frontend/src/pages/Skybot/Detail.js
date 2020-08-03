@@ -161,19 +161,19 @@ function SkybotDetail({ setTitle }) {
     },
     {
       name: 'exposure',
-      title: 'Exposure Number'
+      title: 'Exposure #',
     },
     {
       name: 'positions',
-      title: 'Number of Identification',
+      title: '# Identifications',
     },
     {
       name: 'inside_ccd',
-      title: 'SSOs In CCDs',
+      title: '# SSOs In CCDs',
     },
     {
       name: 'outside_ccd',
-      title: 'SSOs Out CCDs',
+      title: '# SSOs Out CCDs',
     },
     {
       name: 'execution_time',
@@ -193,17 +193,17 @@ function SkybotDetail({ setTitle }) {
     },
     {
       name: 'ccds',
-      title: 'Number of CCD',
+      title: '# CCDs',
       width: 200,
       sortingEnabled: false,
     },
     {
-      name: 'count',
-      title: 'Number of SSO',
+      name: 'asteroids',
+      title: '# SSOs',
       width: 200,
       sortingEnabled: false,
-    }
-  ]
+    },
+  ];
 
   const loadData = ({ currentPage, pageSize, sorting }) => {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
@@ -256,16 +256,24 @@ function SkybotDetail({ setTitle }) {
 
       setSummaryResults([
         {
-          title: 'Nights with Exposure',
+          title: '# CCDs with SSOs',
+          value: res.ccds_with_asteroid,
+        },
+        {
+          title: '# Nights with Exposure',
           value: res.nights,
         },
         {
-          title: 'SSOs in Asteroids',
+          title: '# CCDs',
+          value: res.ccds,
+        },
+        {
+          title: '# SSOs',
           value: res.asteroids,
         },
         {
-          title: 'CCDs with SSOs',
-          value: res.ccds_with_asteroid,
+          title: '# Positions',
+          value: res.positions,
         },
       ]);
 
@@ -279,10 +287,9 @@ function SkybotDetail({ setTitle }) {
   }, [loadProgress]);
 
   useEffect(() => {
-    getDynclassAsteroids(id)
-      .then(res => {
-        setDynclassAsteroids(res)
-      })
+    getDynclassAsteroids(id).then((res) => {
+      setDynclassAsteroids(res);
+    });
   }, [loadProgress]);
 
   // useEffect(() => {
@@ -602,6 +609,7 @@ function SkybotDetail({ setTitle }) {
                         hasColumnVisibility={false}
                         hasToolbar={false}
                         remote={false}
+                        loading
                       />
                     </CardContent>
                   </Card>

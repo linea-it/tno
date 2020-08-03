@@ -36,7 +36,7 @@ function SkybotAsteroid({ setTitle }) {
     ticket: 0,
     exposure: 0,
     inside_ccd: 0,
-    outside_ccd: 0
+    outside_ccd: 0,
   });
   const [insideCcdOnly, setInsideCcdOnly] = useState(true);
   const [ccds, setCcds] = useState([]);
@@ -56,7 +56,6 @@ function SkybotAsteroid({ setTitle }) {
   useEffect(() => {
     getSkybotJobResultById(id).then((res) => {
       setSkybotResult(res);
-
     });
   }, [id]);
 
@@ -294,55 +293,48 @@ function SkybotAsteroid({ setTitle }) {
         asteroidsLimit: asteroidLimitRows,
       });
     }
-  }, [positions, asteroidsInsideCcd]);
+  }, [positions, ccds, exposure, asteroidsInsideCcd]);
 
   useEffect(() => {
-    getDynclassAsteroidsById(id)
-      .then(res => {
-        setDynclassAsteroids(res)
-      })
+    getDynclassAsteroidsById(id).then((res) => {
+      setDynclassAsteroids(res);
+    });
   }, []);
 
   useEffect(() => {
-    getCcdsWithAsteroidsById(id)
-      .then(res => {
-        setCcdsWithAsteroids(res.ccds_with_asteroid)
-      })
+    getCcdsWithAsteroidsById(id).then((res) => {
+      setCcdsWithAsteroids(res.ccds_with_asteroid);
+    });
   }, []);
 
   useEffect(() => {
     if (
       'ccds' in ccdsPlotData &&
       'asteroidsInside' in ccdsPlotData &&
-      'asteroidsOutside' in ccdsPlotData &&
-      ccdsWithAsteroids !== null
+      'asteroidsOutside' in ccdsPlotData
     ) {
-
       setSummary([
         {
-          title: 'Exposure',
+          title: 'Exposure #',
           value: skybotResult.exposure,
         },
         {
-          title: 'CCDs With SSOs',
-          value: ccdsWithAsteroids.length,
+          title: '# CCDs With SSOs',
+          value: ccdsWithAsteroids || '-',
         },
         {
-          title: 'CCDs Without SSOs',
-          value: ccdsPlotData.ccds.length - ccdsWithAsteroids.length,
+          title: '# CCDs Without SSOs',
+          value: ccdsWithAsteroids
+            ? ccdsPlotData.ccds.length - ccdsWithAsteroids
+            : '-',
         },
         {
-          title: 'SSOs Inside',
+          title: '# SSOs Inside',
           value: ccdsPlotData.asteroidsInside.x.length,
         },
         {
-          title: 'SSOs Outside',
+          title: '# SSOs Outside',
           value: ccdsPlotData.asteroidsOutside.x.length,
-        },
-
-        {
-          title: 'CCDs with Exposure',
-          value: ccdsWithAsteroids,
         },
         {
           title: 'Cone Search Radius',
@@ -350,17 +342,17 @@ function SkybotAsteroid({ setTitle }) {
         },
       ]);
     }
-  }, [ccdsPlotData, asteroidsInsideCcd, skybotResult]);
+  }, [ccdsPlotData, skybotResult, ccdsWithAsteroids]);
 
   useEffect(() => {
-    if(dynclassAsteroids.length > 0) {
-      const dynclasses = dynclassAsteroids.map(row => ({
+    if (dynclassAsteroids.length > 0) {
+      const dynclasses = dynclassAsteroids.map((row) => ({
         title: row.dynclass,
         value: row.asteroids,
       }));
-      setSummaryClass(dynclasses)
+      setSummaryClass(dynclasses);
     }
-  }, [dynclassAsteroids])
+  }, [dynclassAsteroids]);
 
   const handleBackNavigation = () => history.goBack();
 
