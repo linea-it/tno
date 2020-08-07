@@ -288,27 +288,23 @@ class DesSkybotJobResultDao(DBBase):
         return rows
 
     def dynclass_asteroids_by_job(self, job_id):
-        """Total de objetos unicos e ccds por classe para um Job especifico
+        """Total de objetos unicos por classe para um Job especifico
 
         OBS: Está query não foi possivel fazer usando sqlalchemy. 
 
         select
             split_part(dynclass, '>', 1) as dynclass,
-            count(distinct(sp.name)) as asteroids,
-            count(distinct(dsp.ccd_id)) as ccds
-        from
-            des_skybotposition dsp
-        inner join skybot_position sp on
-            sp.ticket = dsp.ticket
+            count(distinct(sp.name)) as asteroids
+        --	count(distinct(dsp.ccd_id)) as ccds
+        from skybot_position sp 
         inner join des_skybotjobresult ds on
             sp.ticket = ds.ticket
         where
-            ds.job_id = 72
+            ds.job_id = 91
         group by
             split_part(dynclass, '>', 1)
         order by
             split_part(dynclass, '>', 1);
-
 
         Args:
             job_id ([type]): [description]
@@ -317,7 +313,74 @@ class DesSkybotJobResultDao(DBBase):
             [type]: [description]
         """
 
-        stm = text("""SElECT split_part(dynclass, '>', 1) as dynclass, count(distinct(sp.name)) as asteroids,  count(distinct(dsp.ccd_id)) as ccds from des_skybotposition dsp  inner join skybot_position sp on sp.ticket = dsp.ticket inner join des_skybotjobresult ds on sp.ticket = ds.ticket where ds.job_id=%s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);""" % int(job_id))
+        stm = text("""select split_part(dynclass, '>', 1) as dynclass, count(distinct(sp.name)) as asteroids from skybot_position sp inner join des_skybotjobresult ds on sp.ticket = ds.ticket where ds.job_id = %s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);""" % int(job_id))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows
+
+    def dynclass_ccds_by_job(self, job_id):
+        """Total de CCDs unicos por classe para um Job especifico
+
+        OBS: Está query não foi possivel fazer usando sqlalchemy. 
+
+        select
+            split_part(dynclass, '>', 1) as dynclass,
+            count(distinct(dsp.ccd_id)) as ccds
+        from skybot_position sp 
+        inner join des_skybotjobresult ds on
+            sp.ticket = ds.ticket
+        inner join des_skybotposition dsp on sp.id = dsp.position_id 
+        where
+            ds.job_id = 91
+        group by
+            split_part(dynclass, '>', 1)
+        order by
+            split_part(dynclass, '>', 1);
+
+        Args:
+            job_id ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+
+        stm = text("""select split_part(dynclass, '>', 1) as dynclass, count(distinct(dsp.ccd_id)) as ccds from skybot_position sp inner join des_skybotjobresult ds on sp.ticket = ds.ticket inner join des_skybotposition dsp on sp.id = dsp.position_id where ds.job_id = %s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);""" % int(job_id))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows
+
+    def dynclass_positions_by_job(self, job_id):
+        """Total de Posicoes unicas por classe para um Job especifico
+
+        OBS: Está query não foi possivel fazer usando sqlalchemy. 
+
+        select
+            split_part(dynclass, '>', 1) as dynclass,
+            count(sp.id) as positions
+        from skybot_position sp 
+        inner join des_skybotjobresult ds on
+            sp.ticket = ds.ticket
+        where
+            ds.job_id = 91
+        group by
+            split_part(dynclass, '>', 1)
+        order by
+            split_part(dynclass, '>', 1);
+
+        Args:
+            job_id ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+
+        stm = text("""select split_part(dynclass, '>', 1) as dynclass, count(sp.id) as positions from skybot_position sp inner join des_skybotjobresult ds on sp.ticket = ds.ticket where ds.job_id = %s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1); """ % int(job_id))
 
         self.debug_query(stm, True)
 

@@ -247,16 +247,11 @@ class DesSkybotPipeline():
         Returns:
             datetime: Data de observação mais o valor da correção.
         """
-
         date = dateutil.parser.parse(str(date_obs))
 
         correction = (float(exptime + float(self.date_correction)))/2
 
         date = date + timedelta(seconds=correction)
-
-        # Converter a data para UTC
-        # TODO: Rever esta parte a data está errada mesmo convertendo para UTC
-        # date = date.astimezone(pytz.UTC)
 
         return date
 
