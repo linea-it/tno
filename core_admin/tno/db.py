@@ -27,7 +27,8 @@ class DBBase():
             )
         else:
             self.engine = create_engine(
-                self.get_db_uri()
+                self.get_db_uri(),
+                connect_args={"options": "-c timezone=utc"}
             )
 
         self.current_dialect = None
