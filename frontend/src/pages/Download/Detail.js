@@ -265,7 +265,7 @@ function DownloadDetail({ setTitle }) {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={4} lg={3}>
+          <Grid item xs={12} md={5} xl={3}>
             <Card>
               <CardHeader title="Summary Results" />
               <CardContent>
