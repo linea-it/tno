@@ -27,6 +27,45 @@ from django.contrib.auth import logout
 def teste(request):
     if request.method == 'GET':
 
+        # from des.dao import DesSkybotJobResultDao
+
+        # asteroids = DesSkybotJobResultDao(
+        #     pool=False).dynclass_asteroids_by_job(91)
+        # ccds = DesSkybotJobResultDao(pool=False).dynclass_ccds_by_job(91)
+        # positions = DesSkybotJobResultDao(
+        #     pool=False).dynclass_positions_by_job(91)
+
+        # import pandas as pd
+
+        # df_asteroids = pd.DataFrame(asteroids)
+        # df_asteroids.set_index('dynclass')
+        # df_asteroids = df_asteroids.fillna(0)
+
+        # df_ccds = pd.DataFrame(ccds)
+        # df_ccds.set_index('dynclass')
+        # df_ccds = df_ccds.fillna(0)
+
+        # df_positions = pd.DataFrame(positions)
+        # df_positions.set_index('dynclass')
+        # df_positions = df_positions.fillna(0)
+
+        # df = pd.concat([df_asteroids, df_ccds, df_positions], axis=1)
+        # df = df.fillna(0)
+        # df = df.rename(columns={'index': 'dynclass'})
+
+        # result = df.to_dict('records')
+
+        #     pool=False).t_exposures_with_objects_by_job(72)
+        # d = DesSkybotJobResultDao(
+        #     pool=False).t_ccds_with_objects_by_job(72)
+
+        # e = DesSkybotJobResultDao(
+        #     pool=False).dynclass_asteroids_by_job(72)
+
+        # a = DesSkybotJobResultDao(pool=False).t_ccds_with_objects_by_id(7643)
+
+        # b = DesSkybotJobResultDao(pool=False).dynclass_asteroids_by_id(7643)
+
         # # Test Skybot load request
         # from des.skybot import DesSkybotPipeline
         # DesSkybotPipeline().run_job(53)

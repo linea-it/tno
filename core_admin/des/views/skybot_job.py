@@ -2,13 +2,14 @@ import json
 import os
 from datetime import datetime
 
+import pandas as pd
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from common.dates_interval import get_days_interval
 from common.read_csv import csv_to_dataframe
-from des.dao import CcdDao, ExposureDao, DesSkybotJobResultDao
+from des.dao import CcdDao, DesSkybotJobResultDao, ExposureDao
 from des.models import SkybotJob
 from des.serializers import SkybotJobSerializer
 from des.skybot.pipeline import DesSkybotPipeline
@@ -181,18 +182,40 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         }))
 
     @action(detail=True)
-    def dynclass_asteroids(self, request, pk=None):
-        """Retorna a quantidade de objetos relacionado a dynamic class.
+    def dynclass_counts(self, request, pk=None):
+        """Retorna a quantidade de objetos unicos, ccds e posições agrupados por dynamic class.
 
-        Exemplo: http://localhost/api/des/skybot_job/72/dynclass_asteroids/
+        Exemplo: http://localhost/api/des/skybot_job/91/dynclass_asteroids/
 
         Returns:
-            [array]: um array de objetos com a dynamic class e a quantidade de objetos associadas a ela.
+            [array]: um array de objetos com a dynamic class e a quantidade de objetos, ccds e possições associadas a ela.
+                [{"dynclass": "Centaur","asteroids": 1,"ccds": 35,"positions": 35}, {...},]
         """
-
         job_id = self.get_object().id
 
-        result = DesSkybotJobResultDao(
+        asteroids = DesSkybotJobResultDao(
             pool=False).dynclass_asteroids_by_job(job_id)
+        ccds = DesSkybotJobResultDao(
+            pool=False).dynclass_ccds_by_job(job_id)
+        positions = DesSkybotJobResultDao(
+            pool=False).dynclass_positions_by_job(job_id)
+
+        df_asteroids = pd.DataFrame(asteroids)
+        df_asteroids.set_index('dynclass')
+        df_asteroids = df_asteroids.fillna(0)
+
+        df_ccds = pd.DataFrame(ccds)
+        df_ccds.set_index('dynclass')
+        df_ccds = df_ccds.fillna(0)
+
+        df_positions = pd.DataFrame(positions)
+        df_positions.set_index('dynclass')
+        df_positions = df_positions.fillna(0)
+
+        df = pd.concat([df_asteroids, df_ccds, df_positions], axis=1)
+        df = df.fillna(0)
+        df = df.rename(columns={'index': 'dynclass'})
+
+        result = df.to_dict('records')
 
         return Response(result)
