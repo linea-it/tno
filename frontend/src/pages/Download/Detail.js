@@ -182,7 +182,7 @@ function DownloadDetail({ setTitle }) {
         </Grid>
       ) : (
         <>
-          <Grid item xs={12} md={5} lg={3}>
+          <Grid item xs={12} md={5} xl={3}>
             <Card>
               <CardHeader title="Summary Execution" />
               <CardContent>
@@ -190,7 +190,7 @@ function DownloadDetail({ setTitle }) {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={7} lg={9}>
+          <Grid item xs={12} md={7} xl={9}>
             <Card>
               <CardHeader title="Progress" />
               <CardContent>
