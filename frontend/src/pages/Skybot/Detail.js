@@ -192,14 +192,20 @@ function SkybotDetail({ setTitle }) {
       sortingEnabled: false,
     },
     {
-      name: 'ccds',
-      title: '# CCDs',
+      name: 'asteroids',
+      title: '# SSOs',
       width: 200,
       sortingEnabled: false,
     },
     {
-      name: 'asteroids',
-      title: '# SSOs',
+      name: 'positions',
+      title: '# Observations',
+      width: 200,
+      sortingEnabled: false,
+    },
+    {
+      name: 'ccds',
+      title: '# CCDs',
       width: 200,
       sortingEnabled: false,
     },
@@ -256,15 +262,11 @@ function SkybotDetail({ setTitle }) {
 
       setSummaryResults([
         {
-          title: '# CCDs with SSOs',
-          value: res.ccds_with_asteroid,
-        },
-        {
-          title: '# Nights with Exposure',
+          title: '# Nights',
           value: res.nights,
         },
         {
-          title: '# CCDs',
+          title: '# CCDs Analyzed',
           value: res.ccds,
         },
         {
@@ -272,8 +274,12 @@ function SkybotDetail({ setTitle }) {
           value: res.asteroids,
         },
         {
-          title: '# Positions',
+          title: '# Observations',
           value: res.positions,
+        },
+        {
+          title: '# CCDs with SSOs',
+          value: res.ccds_with_asteroid,
         },
       ]);
 
