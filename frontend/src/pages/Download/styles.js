@@ -15,11 +15,13 @@ const useStyles = makeStyles({
     top: 8,
     bottom: 8,
     borderRadius: 4,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
     zIndex: 1,
   },
-  shrinkLabel: {
-    transform: 'translate(14px, -1px) scale(0.75) !important',
-  },
+  // shrinkLabel: {
+  //   transform: 'translate(14px, -1px) scale(0.75) !important',
+  // },
 });
 
 export default useStyles;

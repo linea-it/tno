@@ -39,7 +39,7 @@ function Download({ setTitle }) {
   const classes = useStyles();
   const [totalCount, setTotalCount] = useState(0);
   const [tableData, setTableData] = useState([]);
-  const [dynclass, setDynclass] = useState('Centaur');
+  const [dynclass, setDynclass] = useState('');
   const [objects, setObjects] = useState([]);
   const [object, setObject] = useState({});
   const [disableSubmit, setDisableSubmit] = useState(true);
@@ -54,12 +54,53 @@ function Download({ setTitle }) {
     hasJobRunningOrIdleFeedback,
     setHasJobRunningOrIdleFeedback,
   ] = useState(false);
+  const [executionSummary, setExecutionSummary] = useState({
+    visible: false,
+    objects: [],
+    dynclaass: '',
+    selectedDate: ['', ''],
+    nights: 0,
+    ccds: 0,
+    estimatedTime: 0,
+    estimatedSize: 0,
+  });
 
   useEffect(() => {
     setTitle('Download');
   }, [setTitle]);
 
   const handleSelectPeriodClick = () => {
+    getCCDCountByPeriodAndDynClass(
+      selectedDate[0],
+      selectedDate[1],
+      objectNameFocus ? object.dynclass.split('>')[0] : dynclass
+    ).then((res) => {
+      const selectedYears = res
+        .map((year) => moment(year.date).format('YYYY'))
+        .filter((year, i, yearArr) => yearArr.indexOf(year) === i);
+
+      setCcdYears(selectedYears);
+      if (selectedCcdYear === '') {
+        setSelectedCcdYear(selectedYears[0]);
+      }
+      setAllCcds(res);
+
+      setExecutionSummary((prevState) => ({
+        ...prevState,
+        visible: true,
+        selectedDate: [selectedDate[0], selectedDate[1]],
+        nights: moment
+          .duration(moment(selectedDate[1]).diff(moment(selectedDate[0])))
+          .asDays(),
+        dynclass: objectNameFocus ? object.dynclass.split('>')[0] : dynclass,
+        ccds: res.map((ccd) => ccd.count).reduce((prev, curr) => prev + curr),
+      }));
+    });
+
+    setDisableSubmit(false);
+  };
+
+  const handleSelectAllPeriodClick = () => {
     getCCDCountByPeriodAndDynClass(
       '2012-11-10',
       '2019-02-28',
@@ -75,12 +116,10 @@ function Download({ setTitle }) {
       }
       setAllCcds(res);
     });
-
-    setDisableSubmit(false);
   };
 
   useEffect(() => {
-    handleSelectPeriodClick();
+    // handleSelectPeriodClick();
     setDisableSubmit(true);
   }, []);
 
@@ -106,7 +145,6 @@ function Download({ setTitle }) {
       ordering: sorting,
     }).then((res) => {
       const { data } = res;
-
       setTableData(data.results);
       setTotalCount(data.count);
     });
@@ -171,8 +209,8 @@ function Download({ setTitle }) {
     },
     {
       name: 'start',
-      title: 'Date',
-      width: 130,
+      title: 'Execution Date',
+      width: 150,
       customElement: (row) => (
         <span title={moment(row.start).format('HH:mm:ss')}>
           {moment(row.start).format('YYYY-MM-DD')}
@@ -185,12 +223,15 @@ function Download({ setTitle }) {
       width: 140,
     },
     {
-      name: 'ccds',
-      title: 'CCDs',
+      name: 'objects',
+      title: 'Object(s)',
+      // customElement: row => (
+      //   {row.objects.length === 1 ? row.objects[0] : row.objects.length}
+      // ),
     },
     {
       name: 'date_initial',
-      title: 'Initial Date',
+      title: 'First Night',
       width: 130,
       customElement: (row) => (
         <span title={moment(row.start).format('HH:mm:ss')}>
@@ -200,13 +241,25 @@ function Download({ setTitle }) {
     },
     {
       name: 'date_final',
-      title: 'Final Date',
+      title: 'Last Night',
       width: 130,
       customElement: (row) => (
         <span title={moment(row.finish).format('HH:mm:ss')}>
           {row.date_final}
         </span>
       ),
+    },
+    {
+      name: 'nights',
+      title: '# Nights',
+    },
+    {
+      name: 'exposures',
+      title: '# Exposures',
+    },
+    {
+      name: 'ccds',
+      title: '# CCDs',
     },
     {
       name: 'execution_time',
@@ -274,14 +327,13 @@ function Download({ setTitle }) {
                           <TextField
                             {...params}
                             label="Object Name"
-                            variant="outlined"
                             fullWidth
                             disabled={!objectNameFocus}
-                            InputLabelProps={{
-                              classes: {
-                                shrink: classes.shrinkLabel,
-                              },
-                            }}
+                            // InputLabelProps={{
+                            //   classes: {
+                            //     shrink: classes.shrinkLabel,
+                            //   },
+                            // }}
                           />
                         )}
                       />
@@ -298,8 +350,10 @@ function Download({ setTitle }) {
                       {objectNameFocus ? (
                         <div className={classes.disabledArea} />
                       ) : null}
-                      <FormControl variant="outlined" fullWidth>
-                        <InputLabel classes={{ shrink: classes.shrinkLabel }}>
+                      <FormControl fullWidth>
+                        <InputLabel
+                        // classes={{ shrink: classes.shrinkLabel }}
+                        >
                           Dynamic Class
                         </InputLabel>
                         <Select
@@ -319,6 +373,19 @@ function Download({ setTitle }) {
                       </FormControl>
                     </Grid>
                     <Grid item xs={12}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        onClick={handleSelectAllPeriodClick}
+                        disabled={
+                          dynclass === '' && Object.keys(object).length === 0
+                        }
+                      >
+                        Select
+                      </Button>
+                    </Grid>
+                    <Grid item xs={12}>
                       <DateRangePicker
                         // First day of Skybot:
                         minDate={new Date('2012-11-10 04:09')}
@@ -333,6 +400,12 @@ function Download({ setTitle }) {
                         color="primary"
                         fullWidth
                         onClick={handleSelectPeriodClick}
+                        disabled={
+                          (dynclass === '' &&
+                            Object.keys(object).length === 0) ||
+                          selectedDate[0] === '' ||
+                          selectedDate[1] === ''
+                        }
                       >
                         Select
                       </Button>
@@ -393,6 +466,24 @@ function Download({ setTitle }) {
                   <Grid item xs={12}>
                     <CcdsDownloadedGrouped data={ccdsOfYear} />
                   </Grid>
+                ) : null}
+                {executionSummary.visible ? (
+                  <ul>
+                    <li>
+                      Object(s):{' '}
+                      {executionSummary.objects.length === 1
+                        ? executionSummary.objects[0]
+                        : executionSummary.objects.length}
+                    </li>
+                    <li>Dynamic Class: {executionSummary.dynclass}</li>
+                    <li>
+                      Selected Period: {executionSummary.selectedDate[0]} /{' '}
+                      {executionSummary.selectedDate[1]}
+                    </li>
+                    <li>CCDs: {executionSummary.ccds}</li>
+                    <li>Estimated Time: {executionSummary.estimatedTime}</li>
+                    <li>Estimated Size: {executionSummary.estimatedSize}</li>
+                  </ul>
                 ) : null}
               </Grid>
             </CardContent>

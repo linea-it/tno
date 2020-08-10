@@ -33,8 +33,8 @@ const drawerWidth = 240;
 function Drawer({ children, title, open, setOpen }) {
   const location = useLocation();
   const classes = useStyles({ drawerWidth });
-  const [dataPreparationOpen, setDataPreparationOpen] = useState(true);
-  const [desOpen, setDesOpen] = useState(true);
+  const [dataPreparationOpen, setDataPreparationOpen] = useState(false);
+  const [desOpen, setDesOpen] = useState(false);
 
   const [currentPage, setCurrentPage] = useState('');
   const [currentUser, setCurrentUser] = useState({ username: '' });

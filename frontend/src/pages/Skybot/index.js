@@ -188,8 +188,8 @@ function Skybot({ setTitle }) {
     },
     {
       name: 'start',
-      title: 'Date',
-      width: 130,
+      title: 'Execution Date',
+      width: 150,
       customElement: (row) => (
         <span title={moment(row.start).format('HH:mm:ss')}>
           {moment(row.start).format('YYYY-MM-DD')}
@@ -197,20 +197,8 @@ function Skybot({ setTitle }) {
       ),
     },
     {
-      name: 'exposures',
-      title: 'Exposures',
-    },
-    {
-      name: 'ccds',
-      title: 'CCDs',
-    },
-    {
-      name: 'nights',
-      title: 'Nights',
-    },
-    {
       name: 'date_initial',
-      title: 'Initial Date',
+      title: 'First Night',
       width: 130,
       customElement: (row) => (
         <span title={moment(row.start).format('HH:mm:ss')}>
@@ -220,13 +208,25 @@ function Skybot({ setTitle }) {
     },
     {
       name: 'date_final',
-      title: 'Final Date',
+      title: 'Last Night',
       width: 130,
       customElement: (row) => (
         <span title={moment(row.finish).format('HH:mm:ss')}>
           {row.date_final}
         </span>
       ),
+    },
+    {
+      name: 'nights',
+      title: '# Nights',
+    },
+    {
+      name: 'exposures',
+      title: '# Exposures',
+    },
+    {
+      name: 'ccds',
+      title: '# CCDs',
     },
     {
       name: 'execution_time',

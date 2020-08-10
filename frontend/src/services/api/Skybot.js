@@ -55,37 +55,40 @@ export const getSkybotResultById = ({ id, pageSize, page, ordering }) => {
 export const getSkybotTimeProfile = (id) =>
   axios.get(`/des/skybot_job/${id}/time_profile/`).then((res) => res.data);
 
-export const getSkybotTicketById = (id) =>
+export const getSkybotJobResultById = (id) =>
   axios.get(`/des/skybot_job_result/${id}/`).then((res) => res.data);
 
-  export const getPositionsByTicket = (ticket) => {
-    const params = { ticket, page: 1, pageSize: 9999 };
+export const getPositionsByTicket = (ticket) => {
+  const params = { ticket, page: 1, pageSize: 9999 };
 
-    return axios.get('/skybot/position/', { params }).then((res) => res.data);
-  };
+  return axios.get('/skybot/position/', { params }).then((res) => res.data);
+};
 
-  export const getAsteroidsInsideCcdByTicket = (ticket) => {
-    const params = { ticket, page: 1, pageSize: 9999 };
+export const getAsteroidsInsideCcdByTicket = (ticket) => {
+  const params = { ticket, page: 1, pageSize: 9999 };
 
-    return axios.get('/des/skybot_position/', { params }).then((res) => res.data);
-  };
+  return axios.get('/des/skybot_position/', { params }).then((res) => res.data);
+};
 
-  export const getCcdsByExposure = (exposure) => {
-    const params = { exposure };
+export const getCcdsByExposure = (exposure) => {
+  const params = { exposure };
 
-    return axios.get('/des/ccd/', { params }).then((res) => res.data);
-  };
+  return axios.get('/des/ccd/', { params }).then((res) => res.data);
+};
 
-  export const getExposureById = (id) =>
-    axios.get(`/des/exposure/${id}`).then((res) => res.data);
+export const getExposureById = (id) =>
+  axios.get(`/des/exposure/${id}`).then((res) => res.data);
 
-  export const cancelSkybotJobById = (id) =>
-    axios.post(`/des/skybot_job/${id}/cancel_job/`).then((res) => res.data);
+export const cancelSkybotJobById = (id) =>
+  axios.post(`/des/skybot_job/${id}/cancel_job/`).then((res) => res.data);
 
-  export const getDynclassAsteroidsById = (id) =>
-    axios.get(`/des/skybot_job_result/${id}/dynclass_asteroids/`)
-      .then((res) => res.data);
+export const getDynclassAsteroidsById = (id) =>
+  axios.get(`/des/skybot_job_result/${id}/dynclass_asteroids/`)
+    .then((res) => res.data);
 
-  export const getCcdsWithAsteroidsById = (id) =>
-    axios.get(`/des/skybot_job_result/${id}/ccds_with_asteroids/`)
-      .then((res) => res.data);
+export const getDynclassAsteroids = id =>
+  axios.get(`/des/skybot_job/${id}/dynclass_counts/`).then(res => res.data)
+
+export const getCcdsWithAsteroidsById = (id) =>
+  axios.get(`/des/skybot_job_result/${id}/ccds_with_asteroids/`)
+    .then((res) => res.data);

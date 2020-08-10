@@ -27,6 +27,7 @@ import {
   getSkybotProgress,
   cancelSkybotJobById,
   getExecutedNightsByPeriod,
+  getDynclassAsteroids,
   // getSkybotTimeProfile,
 } from '../../services/api/Skybot';
 import useInterval from '../../hooks/useInterval';
@@ -37,7 +38,8 @@ function SkybotDetail({ setTitle }) {
   const history = useHistory();
   const classes = useStyles();
   const [status, setStatus] = useState(0);
-  const [summary, setSummary] = useState([]);
+  const [summaryExecution, setSummaryExecution] = useState([]);
+  const [summaryResults, setSummaryResults] = useState([]);
   // const [timeProfile, setTimeProfile] = useState({
   //   requests: [],
   //   loaddata: [],
@@ -75,6 +77,8 @@ function SkybotDetail({ setTitle }) {
 
   const [currentSelectedDateYear, setCurrentSelectedDateYear] = useState('');
   const [selectedDateYears, setSelectedDateYears] = useState([]);
+
+  const [dynclassAsteroids, setDynclassAsteroids] = useState([]);
 
   const handleBackNavigation = () => history.goBack();
 
@@ -125,7 +129,7 @@ function SkybotDetail({ setTitle }) {
 
   const tableColumns = [
     {
-      name: 'job',
+      name: 'id',
       title: 'Details',
       width: 110,
       customElement: (row) => {
@@ -156,28 +160,20 @@ function SkybotDetail({ setTitle }) {
       width: 130,
     },
     {
-      name: 'id',
-      title: 'ID',
-      width: 120,
-      align: 'center',
-    },
-    {
       name: 'exposure',
-      title: 'Exposure',
-      width: 120,
-      align: 'center',
+      title: 'Exposure #',
     },
     {
       name: 'positions',
-      title: 'Positions',
+      title: '# Identifications',
     },
     {
       name: 'inside_ccd',
-      title: 'Inside CCD',
+      title: '# SSOs In CCDs',
     },
     {
       name: 'outside_ccd',
-      title: 'Outside CCD',
+      title: '# SSOs Out CCDs',
     },
     {
       name: 'execution_time',
@@ -185,6 +181,33 @@ function SkybotDetail({ setTitle }) {
       width: 150,
       customElement: (row) =>
         row.execution_time ? row.execution_time.split('.')[0] : '-',
+    },
+  ];
+
+  const dynclassAsteroidsColumns = [
+    {
+      name: 'dynclass',
+      title: 'Dynamic Class',
+      width: 200,
+      sortingEnabled: false,
+    },
+    {
+      name: 'asteroids',
+      title: '# SSOs',
+      width: 200,
+      sortingEnabled: false,
+    },
+    {
+      name: 'positions',
+      title: '# Observations',
+      width: 200,
+      sortingEnabled: false,
+    },
+    {
+      name: 'ccds',
+      title: '# CCDs',
+      width: 200,
+      sortingEnabled: false,
     },
   ];
 
@@ -204,7 +227,7 @@ function SkybotDetail({ setTitle }) {
   useEffect(() => {
     getSkybotRunById({ id }).then((res) => {
       setStatus(res.status);
-      setSummary([
+      setSummaryExecution([
         {
           title: 'Status',
           value: () => (
@@ -216,24 +239,47 @@ function SkybotDetail({ setTitle }) {
           value: res.owner,
         },
         {
+          title: 'Execution Date',
+          value: `${moment(res.date_initial).format('YYYY-MM-DD')} / ${moment(
+            res.date_final
+          ).format('YYYY-MM-DD')}`,
+        },
+        {
           title: 'Start',
           value: moment(res.start).format('YYYY-MM-DD HH:mm:ss'),
+        },
+        {
+          title: 'Finish',
+          value: res.finish
+            ? moment(res.finish).format('YYYY-MM-DD HH:mm:ss')
+            : '-',
         },
         {
           title: 'Execution',
           value: res.execution_time ? res.execution_time.split('.')[0] : 0,
         },
+      ]);
+
+      setSummaryResults([
         {
-          title: 'Nights',
+          title: '# Nights',
           value: res.nights,
         },
         {
-          title: 'Exposures',
-          value: res.exposures,
+          title: '# CCDs Analyzed',
+          value: res.ccds,
         },
         {
-          title: 'CCDs',
-          value: res.ccds,
+          title: '# SSOs',
+          value: res.asteroids,
+        },
+        {
+          title: '# Observations',
+          value: res.positions,
+        },
+        {
+          title: '# CCDs with SSOs',
+          value: res.ccds_with_asteroid,
         },
       ]);
 
@@ -243,6 +289,12 @@ function SkybotDetail({ setTitle }) {
       currentPage: 0,
       pageSize: 10,
       sorting: [{ columnName: 'id', direction: 'asc' }],
+    });
+  }, [loadProgress]);
+
+  useEffect(() => {
+    getDynclassAsteroids(id).then((res) => {
+      setDynclassAsteroids(res);
     });
   }, [loadProgress]);
 
@@ -369,7 +421,15 @@ function SkybotDetail({ setTitle }) {
         </Grid>
       ) : (
         <>
-          <Grid item xs={12}>
+          <Grid item xs={12} md={5} xl={3}>
+            <Card>
+              <CardHeader title="Summary Execution" />
+              <CardContent>
+                <List data={summaryExecution} />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={7} xl={9}>
             <Card>
               <CardHeader title="Progress" />
               <CardContent>
@@ -454,17 +514,6 @@ function SkybotDetail({ setTitle }) {
                           variant="outlined"
                         />
                       </Grid>
-                      <Grid item>
-                        <Chip
-                          label={`Executed CCDs: ${
-                            progress.loaddata.executed_ccds
-                              ? progress.loaddata.executed_ccds
-                              : 0
-                          }`}
-                          color="primary"
-                          variant="outlined"
-                        />
-                      </Grid>
                     </Grid>
                   </Grid>
                   {hasCircularProgress && [1, 2].includes(status) ? (
@@ -480,19 +529,24 @@ function SkybotDetail({ setTitle }) {
           </Grid>
           <Grid item xs={12}>
             <Grid container alignItems="stretch" spacing={2}>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={5} xl={3}>
                 <Card>
-                  <CardHeader title="Summary" />
+                  <CardHeader title="Summary Results" />
                   <CardContent>
-                    <List data={summary} />
+                    <List data={summaryResults} />
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} md={8}>
+              <Grid item xs={12} md={7} xl={9}>
                 <Card>
                   <CardHeader title="Executed Nights" />
                   <CardContent>
-                    <Grid container spacing={2} direction="column">
+                    <Grid
+                      container
+                      spacing={2}
+                      direction="column"
+                      className={classes.gridTable}
+                    >
                       <Grid item>
                         {selectedDateYears.length > 1 ? (
                           <ButtonGroup
@@ -512,7 +566,7 @@ function SkybotDetail({ setTitle }) {
                           </ButtonGroup>
                         ) : null}
                       </Grid>
-                      <Grid item>
+                      <Grid item className={classes.gridTableRow}>
                         <CalendarExecutedNight
                           data={currentYearExecutedNights}
                         />
@@ -547,28 +601,41 @@ function SkybotDetail({ setTitle }) {
                     </Grid> */}
                 </Grid>
                 <Grid item xs={12}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      <Card>
-                        <CardHeader title="Skybot Results" />
-                        <CardContent>
-                          <Table
-                            columns={tableColumns}
-                            data={tableData}
-                            loadData={loadData}
-                            totalCount={totalCount || 0}
-                            hasSearching={false}
-                            defaultSorting={[
-                              { columnName: 'id', direction: 'asc' },
-                            ]}
-                            // hasSorting={false}
-                            hasColumnVisibility={false}
-                            hasToolbar={false}
-                          />
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  </Grid>
+                  <Card>
+                    <CardHeader title="Summary Dynamic Class" />
+                    <CardContent>
+                      <Table
+                        columns={dynclassAsteroidsColumns}
+                        data={dynclassAsteroids}
+                        totalCount={dynclassAsteroids.length}
+                        hasSearching={false}
+                        hasPagination={false}
+                        // hasSorting={false}
+                        // defaultSorting={[{ columnName: 'dynclass', direction: 'asc' }]}
+                        hasColumnVisibility={false}
+                        hasToolbar={false}
+                        remote={false}
+                        loading
+                      />
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12}>
+                  <Card>
+                    <CardHeader title="Skybot Results" />
+                    <CardContent>
+                      <Table
+                        columns={tableColumns}
+                        data={tableData}
+                        loadData={loadData}
+                        totalCount={totalCount || 0}
+                        hasSearching={false}
+                        // hasSorting={false}
+                        hasColumnVisibility={false}
+                        hasToolbar={false}
+                      />
+                    </CardContent>
+                  </Card>
                 </Grid>
               </>
             ) : null

@@ -45,7 +45,7 @@ class SkybotJobResultViewSet(viewsets.ModelViewSet):
         # Verificar a quantidade de dias entre o start e end.
         if len(all_dates) < 7:
             dt_start = datetime.strptime(start, '%Y-%m-%d')
-            dt_end = dt_start.replace(day=dt_start.day + 7)
+            dt_end = dt_start + timedelta(days=6)
 
             all_dates = get_days_interval(dt_start.strftime(
                 "%Y-%m-%d"), dt_end.strftime("%Y-%m-%d"))

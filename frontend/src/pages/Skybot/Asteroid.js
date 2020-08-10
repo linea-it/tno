@@ -8,15 +8,13 @@ import {
   CardContent,
   Toolbar,
   Icon,
-  Switch,
   Button,
-  FormControlLabel,
   Typography,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import Table from '../../components/Table';
 import {
-  getSkybotTicketById,
+  getSkybotJobResultById,
   getPositionsByTicket,
   getAsteroidsInsideCcdByTicket,
   getCcdsByExposure,
@@ -26,6 +24,7 @@ import {
 } from '../../services/api/Skybot';
 import CCD from '../../components/Chart/CCD';
 import List from '../../components/List';
+import Switch from '../../components/Switch';
 
 function SkybotAsteroid({ setTitle }) {
   const { id } = useParams();
@@ -33,8 +32,12 @@ function SkybotAsteroid({ setTitle }) {
   const coneSearchRadius = 1.2; // ! Cone search radius in Degres.
 
   const history = useHistory();
-  const [ticket, setTicket] = useState(0);
-  const [idExposure, setIdExposure] = useState(0);
+  const [skybotResult, setSkybotResult] = useState({
+    ticket: 0,
+    exposure: 0,
+    inside_ccd: 0,
+    outside_ccd: 0,
+  });
   const [insideCcdOnly, setInsideCcdOnly] = useState(true);
   const [ccds, setCcds] = useState([]);
   const [ccdsPlotData, setCcdsPlotData] = useState({});
@@ -51,9 +54,8 @@ function SkybotAsteroid({ setTitle }) {
   }, [setTitle]);
 
   useEffect(() => {
-    getSkybotTicketById(id).then((res) => {
-      setIdExposure(res.exposure);
-      setTicket(res.ticket);
+    getSkybotJobResultById(id).then((res) => {
+      setSkybotResult(res);
     });
   }, [id]);
 
@@ -200,31 +202,31 @@ function SkybotAsteroid({ setTitle }) {
   };
 
   useEffect(() => {
-    if (ticket !== 0) {
-      getPositionsByTicket(ticket).then((res) => {
+    if (skybotResult.ticket !== 0) {
+      getPositionsByTicket(skybotResult.ticket).then((res) => {
         setPositions(res.results);
       });
-      getAsteroidsInsideCcdByTicket(ticket).then((res) => {
+      getAsteroidsInsideCcdByTicket(skybotResult.ticket).then((res) => {
         setAsteroidsInsideCcd(res.results);
       });
     }
-  }, [ticket]);
+  }, [skybotResult.ticket]);
 
   useEffect(() => {
-    if (idExposure !== 0) {
-      getCcdsByExposure(idExposure).then((res) => {
+    if (skybotResult.exposure !== 0) {
+      getCcdsByExposure(skybotResult.exposure).then((res) => {
         setCcds(res.results);
       });
     }
-  }, [idExposure]);
+  }, [skybotResult.exposure]);
 
   useEffect(() => {
-    if (idExposure !== 0) {
-      getExposureById(idExposure).then((res) => {
+    if (skybotResult.exposure !== 0) {
+      getExposureById(skybotResult.exposure).then((res) => {
         setExposure(res);
       });
     }
-  }, [idExposure]);
+  }, [skybotResult.exposure]);
 
   useEffect(() => {
     if (
@@ -291,73 +293,76 @@ function SkybotAsteroid({ setTitle }) {
         asteroidsLimit: asteroidLimitRows,
       });
     }
-  }, [positions, asteroidsInsideCcd, ccds, exposure]);
+  }, [positions, ccds, exposure, asteroidsInsideCcd]);
 
   useEffect(() => {
-    getDynclassAsteroidsById(id)
-      .then(res => {
-        setDynclassAsteroids(res)
-      })
+    getDynclassAsteroidsById(id).then((res) => {
+      setDynclassAsteroids(res);
+    });
   }, []);
 
   useEffect(() => {
-    getCcdsWithAsteroidsById(id)
-      .then(res => {
-        setCcdsWithAsteroids(res.ccds_with_asteroid)
-      })
+    getCcdsWithAsteroidsById(id).then((res) => {
+      setCcdsWithAsteroids(res.ccds_with_asteroid);
+    });
   }, []);
 
   useEffect(() => {
     if (
       'ccds' in ccdsPlotData &&
       'asteroidsInside' in ccdsPlotData &&
-      'asteroidsOutside' in ccdsPlotData &&
-      ccdsWithAsteroids !== null
+      'asteroidsOutside' in ccdsPlotData
     ) {
-
       setSummary([
-        {
-          title: 'Exposure',
-          value: idExposure,
-        },
-        {
-          title: 'CCDs',
-          value: ccdsPlotData.ccds.length,
-        },
-        {
-          title: 'Asteroids Inside',
-          value: ccdsPlotData.asteroidsInside.x.length,
-        },
-        {
-          title: 'Asteroids Outside',
-          value: ccdsPlotData.asteroidsOutside.x.length,
-        },
-
-        {
-          title: 'CCDs with Asteroids',
-          value: ccdsWithAsteroids,
-        },
         {
           title: 'Cone Search Radius',
           value: coneSearchRadius,
         },
+        {
+          title: '# CCDs',
+          value: ccdsPlotData.ccds.length,
+        },
+        {
+          title: '# SSOs',
+          value:
+            ccdsPlotData.asteroidsInside.x.length +
+            ccdsPlotData.asteroidsOutside.x.length,
+        },
+        {
+          title: '# SSOs Inside',
+          value: ccdsPlotData.asteroidsInside.x.length,
+        },
+        {
+          title: '# SSOs Outside',
+          value: ccdsPlotData.asteroidsOutside.x.length,
+        },
+        {
+          title: '# CCDs With SSOs',
+          value: ccdsWithAsteroids || '-',
+        },
+        {
+          title: '# CCDs Without SSOs',
+          value: ccdsWithAsteroids
+            ? ccdsPlotData.ccds.length - ccdsWithAsteroids
+            : '-',
+        },
       ]);
     }
-  }, [ccdsPlotData]);
+  }, [ccdsPlotData, skybotResult, ccdsWithAsteroids]);
 
   useEffect(() => {
     if (dynclassAsteroids.length > 0) {
-      const dynclasses = dynclassAsteroids.map(row => ({
+      const dynclasses = dynclassAsteroids.map((row) => ({
         title: row.dynclass,
         value: row.asteroids,
       }));
-      setSummaryClass(dynclasses)
+      setSummaryClass(dynclasses);
     }
-  }, [dynclassAsteroids])
+  }, [dynclassAsteroids]);
 
   const handleBackNavigation = () => history.goBack();
 
-  const handleAsteroidInCcds = () => setInsideCcdOnly(!insideCcdOnly);
+  // const handleAsteroidInCcds = () => setInsideCcdOnly(!insideCcdOnly);
 
   return (
     <Grid container spacing={2}>
@@ -400,34 +405,29 @@ function SkybotAsteroid({ setTitle }) {
       </Grid>
       <Grid item xs={12} sm={8}>
         <Card>
-          <CardHeader title="Asteroids Inside CCD" />
+          <CardHeader title="SSOs Inside CCD" />
           <CardContent>
             {'ccds' in ccdsPlotData ? (
               <CCD data={ccdsPlotData} height={550} />
             ) : (
-                <Skeleton variant="rect" height={550} />
-              )}
+              <Skeleton variant="rect" hght={550} />
+            )}
           </CardContent>
         </Card>
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title="Asteroids" />
+          <CardHeader title="SSOs" />
           <CardContent>
             <Toolbar>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={insideCcdOnly}
-                    onChange={handleAsteroidInCcds}
-                    value={insideCcdOnly}
-                    color="primary"
-                  />
-                }
-                label="Only Asteroids Inside CCDs"
+              <Switch
+                isGrid={insideCcdOnly}
+                setIsGrid={setInsideCcdOnly}
+                titleOn="Inside CCD"
+                titleOff="All"
               />
             </Toolbar>
-            {ticket !== 0 ? (
+            {skybotResult.ticket !== 0 ? (
               <Table
                 columns={tableColumns}
                 data={insideCcdOnly ? asteroidsInsideCcd : positions}
@@ -438,8 +438,8 @@ function SkybotAsteroid({ setTitle }) {
                 remote={false}
               />
             ) : (
-                <Skeleton variant="rect" height={540} />
-              )}
+              <Skeleton variant="rect" hght={540} />
+            )}
           </CardContent>
         </Card>
       </Grid>
