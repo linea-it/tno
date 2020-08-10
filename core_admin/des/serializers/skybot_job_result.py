@@ -22,6 +22,7 @@ class SkybotJobResultSerializer(serializers.ModelSerializer):
             'ticket',
             'success',
             'execution_time',
+            'ccds_with_asteroids',
             'positions',
             'inside_ccd',
             'outside_ccd',

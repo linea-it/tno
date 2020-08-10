@@ -335,6 +335,8 @@ function SkybotAsteroid({ setTitle }) {
         {
           title: '# SSOs Outside',
           value: ccdsPlotData.asteroidsOutside.x.length,
+          title: 'CCDs with Asteroids',
+          value: ccdsWithAsteroids,
         },
         {
           title: 'Cone Search Radius',
@@ -404,8 +406,8 @@ function SkybotAsteroid({ setTitle }) {
             {'ccds' in ccdsPlotData ? (
               <CCD data={ccdsPlotData} height={550} />
             ) : (
-              <Skeleton variant="rect" height={550} />
-            )}
+                <Skeleton variant="rect" height={550} />
+              )}
           </CardContent>
         </Card>
       </Grid>
@@ -432,8 +434,8 @@ function SkybotAsteroid({ setTitle }) {
                 remote={false}
               />
             ) : (
-              <Skeleton variant="rect" height={540} />
-            )}
+                <Skeleton variant="rect" height={540} />
+              )}
           </CardContent>
         </Card>
       </Grid>
