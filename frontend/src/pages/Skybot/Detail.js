@@ -529,7 +529,7 @@ function SkybotDetail({ setTitle }) {
           </Grid>
           <Grid item xs={12}>
             <Grid container alignItems="stretch" spacing={2}>
-              <Grid item xs={12} md={4} lg={3}>
+              <Grid item xs={12} md={5} lg={3}>
                 <Card>
                   <CardHeader title="Summary Results" />
                   <CardContent>
@@ -537,7 +537,7 @@ function SkybotDetail({ setTitle }) {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} md={8} lg={9}>
+              <Grid item xs={12} md={7} lg={9}>
                 <Card>
                   <CardHeader title="Executed Nights" />
                   <CardContent>
