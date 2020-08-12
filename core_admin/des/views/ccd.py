@@ -145,8 +145,14 @@ class CcdViewSet(viewsets.ModelViewSet):
         # Estimativas de download
         de = DownloadCcdJobResultDao(pool=False).download_estimate()
 
-        average_time = de['t_exec_time'] / de['total']
-        average_size = de['t_file_size'] / de['total']
+        average_time = 0
+        average_size = 0
+
+        if de['t_exec_time']:
+            average_time = de['t_exec_time'] / de['total']
+
+        if de['t_file_size']:
+            average_size = de['t_file_size'] / de['total']
 
         to_download = count_ccds - count_ccds_downloaded
 

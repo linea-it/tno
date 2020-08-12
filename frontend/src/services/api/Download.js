@@ -65,3 +65,15 @@ export const getAllObjects = () => {
 export const getDownloadProgress = (id) =>
   axios.get(`/des/download_ccd/job/${id}/heartbeat/`)
     .then(res => res.data)
+
+export const getSummaryByPeriodAndDynclass = ({ start, end, dynclass }) => {
+
+  const params = {
+    start,
+    end,
+    dynclass
+  }
+
+  return axios.get('/des/ccd/summary_by_period/', { params })
+    .then(res => res.data)
+}

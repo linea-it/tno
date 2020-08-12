@@ -17,9 +17,13 @@ import {
   Button,
   Typography,
   Snackbar,
+  List,
+  ListItem,
+  ListItemText,
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons';
+import filesize from 'filesize';
 import Table from '../../components/Table';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import DateRangePicker from '../../components/Date/DateRangePicker';
@@ -29,6 +33,7 @@ import {
   getCCDCountByPeriodAndDynClass,
   createDownloadJob,
   getAllObjects,
+  getSummaryByPeriodAndDynclass
 } from '../../services/api/Download';
 import CalendarExecutedCcd from '../../components/Chart/CalendarExecutedCcd';
 import CcdsDownloadedGrouped from '../../components/Chart/CcdsDownloadedGrouped';
@@ -56,14 +61,17 @@ function Download({ setTitle }) {
   ] = useState(false);
   const [executionSummary, setExecutionSummary] = useState({
     visible: false,
-    objects: [],
-    dynclaass: '',
-    selectedDate: ['', ''],
-    nights: 0,
+    dynclass: '',
+    start: '',
+    end: '',
+    asteroids: 0,
     ccds: 0,
-    estimatedTime: 0,
-    estimatedSize: 0,
+    ccds_downloaded: 0,
+    estimated_time: '0',
+    estimated_size: 0,
+    ccds_to_download: 0,
   });
+
 
   useEffect(() => {
     setTitle('Download');
@@ -85,17 +93,18 @@ function Download({ setTitle }) {
       }
       setAllCcds(res);
 
-      setExecutionSummary((prevState) => ({
-        ...prevState,
-        visible: true,
-        selectedDate: [selectedDate[0], selectedDate[1]],
-        nights: moment
-          .duration(moment(selectedDate[1]).diff(moment(selectedDate[0])))
-          .asDays(),
-        dynclass: objectNameFocus ? object.dynclass.split('>')[0] : dynclass,
-        ccds: res.map((ccd) => ccd.count).reduce((prev, curr) => prev + curr),
-      }));
     });
+
+    getSummaryByPeriodAndDynclass({
+      start: selectedDate[0],
+      end: selectedDate[1],
+      dynclass: objectNameFocus ? object.dynclass.split('>')[0] : dynclass
+    }).then(res => {
+      setExecutionSummary({
+        visible: true,
+        ...res,
+      });
+    })
 
     setDisableSubmit(false);
   };
@@ -468,22 +477,56 @@ function Download({ setTitle }) {
                   </Grid>
                 ) : null}
                 {executionSummary.visible ? (
-                  <ul>
-                    <li>
-                      Object(s):{' '}
-                      {executionSummary.objects.length === 1
-                        ? executionSummary.objects[0]
-                        : executionSummary.objects.length}
-                    </li>
-                    <li>Dynamic Class: {executionSummary.dynclass}</li>
-                    <li>
-                      Selected Period: {executionSummary.selectedDate[0]} /{' '}
-                      {executionSummary.selectedDate[1]}
-                    </li>
-                    <li>CCDs: {executionSummary.ccds}</li>
-                    <li>Estimated Time: {executionSummary.estimatedTime}</li>
-                    <li>Estimated Size: {executionSummary.estimatedSize}</li>
-                  </ul>
+                  <List dense={true}>
+                    <ListItem>
+                      <ListItemText
+                        primary="Dynamic Class"
+                        secondary={executionSummary.dynclass}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText
+                        primary="Selected Period"
+                        secondary={`${executionSummary.start} / ${executionSummary.end}`}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText
+                        primary="Asteroids"
+                        secondary={executionSummary.asteroids}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText
+                        primary="CCDs"
+                        secondary={executionSummary.ccds}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText
+                        primary="CCDs Downloaded"
+                        secondary={executionSummary.ccds_downloaded}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText
+                        primary="CCDs to Download"
+                        secondary={executionSummary.ccds_to_download}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText
+                        primary="Estimated Time"
+                        secondary={moment.utc(executionSummary.estimated_time * 1000).format('HH:mm:ss')}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText
+                        primary="Estimated Size"
+                        secondary={filesize(executionSummary.estimated_size)}
+                      />
+                    </ListItem>
+                  </List>
                 ) : null}
               </Grid>
             </CardContent>
