@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from common.dates_interval import get_days_interval
-from des.dao import CcdDao
+from des.dao import CcdDao, DesSkybotPositionDao, DownloadCcdJobResultDao
 from des.models import Ccd
 from des.serializers import CcdSerializer
 
@@ -80,5 +80,61 @@ class CcdViewSet(viewsets.ModelViewSet):
         df = df.rename(columns={'index': 'date'})
 
         result = df.to_dict('records')
+
+        return Response(result)
+
+    @action(detail=False)
+    def summary_by_period(self, request):
+
+        start = request.query_params['start']
+        end = request.query_params['end']
+        dynclass = request.query_params.get('dynclass', None)
+        name = request.query_params.get('name', None)
+
+        result = dict({
+            'dynclass': dynclass,
+            'start': start,
+            'end': end,
+            'asteroids': 0,
+            'ccds': 0,
+            'ccds_downloaded': 0,
+            'estimated_time': 0,
+            'estimated_size': 0,
+            'to_download': 0
+        })
+
+        # adicionar a hora inicial e final as datas
+        start = datetime.strptime(
+            start, '%Y-%m-%d').strftime("%Y-%m-%d 00:00:00")
+        end = datetime.strptime(end, '%Y-%m-%d').strftime("%Y-%m-%d 23:59:59")
+
+        count_asteroids = DesSkybotPositionDao(pool=False).count_asteroids_by_dynclass(
+            start=start, end=end, dynclass=dynclass)
+
+        result.update({'asteroids': count_asteroids})
+
+        count_ccds = DesSkybotPositionDao(pool=False).count_ccds_by_dynclass(
+            start=start, end=end, dynclass=dynclass)
+
+        result.update({'ccds': count_ccds})
+
+        count_ccds_downloaded = DesSkybotPositionDao(pool=False).count_ccds_downloaded_by_dynclass(
+            start=start, end=end, dynclass=dynclass)
+
+        result.update({'ccds_downloaded': count_ccds_downloaded})
+
+        # Estimativas de download
+        de = DownloadCcdJobResultDao(pool=False).download_estimate()
+
+        average_time = de['t_exec_time'] / de['total']
+        average_size = de['t_file_size'] / de['total']
+
+        to_download = count_ccds - count_ccds_downloaded
+
+        result.update({
+            'estimated_time': to_download * average_time,
+            'estimated_size': to_download * average_size,
+            'to_download': to_download,
+        })
 
         return Response(result)

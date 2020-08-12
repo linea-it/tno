@@ -1,4 +1,4 @@
-from sqlalchemy import Date, cast, column, literal, literal_column, text
+from sqlalchemy import Date, cast, column, literal, literal_column, text, func
 from sqlalchemy.sql import and_, select
 
 from skybot.dao.skybot_positions import SkybotPositionsDao
@@ -181,5 +181,173 @@ class DesSkybotPositionDao(DBBase):
         self.debug_query(stm, True)
 
         rows = self.fetch_all_dict(stm)
+
+        return rows
+
+    def count_asteroids_by_dynclass(self, dynclass, start=None, end=None):
+        """Retorna o total de Asteroids unicos em um periodo pela dynclass
+
+        Args:
+            dynclass ([type]): [description]
+            start ([type], optional): [description]. Defaults to None.
+            end ([type], optional): [description]. Defaults to None.
+
+        select
+            count(distinct(sp.name)) as asteroids
+        from
+            des_skybotposition ds
+        inner join skybot_position sp on
+            ds.position_id = sp.id
+        inner join des_exposure de on
+            ds.exposure_id = de.id
+        where
+            sp.dynclass like 'KBO%'
+            and de.date_obs between '2012-11-01 00:00:00' and '2012-11-30 23:59:50'
+
+        Returns:
+            int: Total de Asteroids
+        """
+
+        # des_exposure
+        de = self.get_table('des_exposure', self.get_base_schema())
+        # Des skybot position
+        ds = self.get_table('des_skybotposition', self.get_base_schema())
+        # Skybot Position
+        sp = self.get_table('skybot_position', self.get_base_schema())
+
+        # Clausula where pela classe dos objetos OBRIGATORIO.
+        clause = list([sp.c.dynclass.ilike(dynclass + '%')])
+
+        # Clausula where pelo periodo que é opicional
+        if start is not None and end is not None:
+            clause.append(de.c.date_obs.between(str(start), str(end)))
+
+        stm = select([func.count(sp.c.name).label('asteroid')]).\
+            select_from(
+            ds.join(
+                sp, ds.c.position_id == sp.c.id
+            ).join(
+                de, ds.c.exposure_id == de.c.id
+            )
+        ).\
+            where(and_(and_(*clause)))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalar(stm)
+
+        return rows
+
+    def count_ccds_by_dynclass(self, dynclass, start=None, end=None):
+        """Retorna o total de CCDs unicos em um periodo pela dynclass
+
+        Args:
+            dynclass ([type]): [description]
+            start ([type], optional): [description]. Defaults to None.
+            end ([type], optional): [description]. Defaults to None.
+
+        select
+            count(distinct(ds.ccd_id)) as ccds
+        from
+            des_skybotposition ds
+        inner join skybot_position sp on
+            ds.position_id = sp.id
+        inner join des_exposure de on
+            ds.exposure_id = de.id
+        where
+            sp.dynclass like 'Centaur%'
+            and de.date_obs between '2012-11-01 00:00:00' and '2012-11-30 23:59:50'
+
+        Returns:
+            int: Total de CCDs
+        """
+
+        # des_exposure
+        de = self.get_table('des_exposure', self.get_base_schema())
+        # Des skybot position
+        ds = self.get_table('des_skybotposition', self.get_base_schema())
+        # Skybot Position
+        sp = self.get_table('skybot_position', self.get_base_schema())
+
+        # Clausula where pela classe dos objetos OBRIGATORIO.
+        clause = list([sp.c.dynclass.ilike(dynclass + '%')])
+
+        # Clausula where pelo periodo que é opicional
+        if start is not None and end is not None:
+            clause.append(de.c.date_obs.between(str(start), str(end)))
+
+        stm = select([func.count(ds.c.ccd_id).label('ccds')]).\
+            select_from(
+            ds.join(
+                sp, ds.c.position_id == sp.c.id
+            ).join(
+                de, ds.c.exposure_id == de.c.id
+            )
+        ).\
+            where(and_(and_(*clause)))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalar(stm)
+
+        return rows
+
+    def count_ccds_downloaded_by_dynclass(self, dynclass, start=None, end=None):
+        """Retorna o total de CCDs que já foram baixados em um periodo pela dynclass
+
+        Args:
+            dynclass ([type]): [description]
+            start ([type], optional): [description]. Defaults to None.
+            end ([type], optional): [description]. Defaults to None.
+
+            select
+                count(distinct (dd.id)) as ccds_downloaded
+            from
+                des_skybotposition ds
+            inner join skybot_position sp on
+                ds.position_id = sp.id
+            inner join des_exposure de on
+                ds.exposure_id = de.id
+            left join des_downloadccdjobresult dd on
+                ds.ccd_id = dd.ccd_id
+            where
+                sp.dynclass like 'Centaur%'
+                and de.date_obs between '2012-11-01 00:00:00' and '2012-11-30 23:59:50'	
+
+        Returns:
+            int: Total de CCDs Downloaded
+        """
+
+        # des_exposure
+        de = self.get_table('des_exposure', self.get_base_schema())
+        # Des skybot position
+        ds = self.get_table('des_skybotposition', self.get_base_schema())
+        # Skybot Position
+        sp = self.get_table('skybot_position', self.get_base_schema())
+        # Des Downloaded CCD Job Result
+        dd = self.get_table('des_downloadccdjobresult', self.get_base_schema())
+
+        # Clausula where pela classe dos objetos OBRIGATORIO.
+        clause = list([sp.c.dynclass.ilike(dynclass + '%')])
+
+        # Clausula where pelo periodo que é opicional
+        if start is not None and end is not None:
+            clause.append(de.c.date_obs.between(str(start), str(end)))
+
+        stm = select([func.count(dd.c.id).label('ccds_downloaded')]).\
+            select_from(
+            ds.join(
+                sp, ds.c.position_id == sp.c.id
+            ).join(
+                de, ds.c.exposure_id == de.c.id
+            ).join(
+                dd, ds.c.ccd_id == dd.c.ccd_id, isouter=True
+            )
+        ).\
+            where(and_(and_(*clause)))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalar(stm)
 
         return rows

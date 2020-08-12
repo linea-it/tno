@@ -65,3 +65,17 @@ class DownloadCcdJobResultDao(DBBase):
         row = self.fetch_scalar(stm)
 
         return row
+
+    def download_estimate(self):
+
+        stm = select([
+            func.sum(self.tbl.c.execution_time).label('t_exec_time'),
+            func.sum(self.tbl.c.file_size).label('t_file_size'),
+            func.count(self.tbl.c.id).label('total'),
+        ])
+
+        self.debug_query(stm, True)
+
+        row = self.fetch_one_dict(stm)
+
+        return row
