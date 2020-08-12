@@ -33,7 +33,7 @@ import {
   getCCDCountByPeriodAndDynClass,
   createDownloadJob,
   getAllObjects,
-  getSummaryByPeriodAndDynclass
+  getSummaryByPeriodAndDynclass,
 } from '../../services/api/Download';
 import CalendarExecutedCcd from '../../components/Chart/CalendarExecutedCcd';
 import CcdsDownloadedGrouped from '../../components/Chart/CcdsDownloadedGrouped';
@@ -72,7 +72,6 @@ function Download({ setTitle }) {
     ccds_to_download: 0,
   });
 
-
   useEffect(() => {
     setTitle('Download');
   }, [setTitle]);
@@ -92,19 +91,18 @@ function Download({ setTitle }) {
         setSelectedCcdYear(selectedYears[0]);
       }
       setAllCcds(res);
-
     });
 
     getSummaryByPeriodAndDynclass({
       start: selectedDate[0],
       end: selectedDate[1],
-      dynclass: objectNameFocus ? object.dynclass.split('>')[0] : dynclass
-    }).then(res => {
+      dynclass: objectNameFocus ? object.dynclass.split('>')[0] : dynclass,
+    }).then((res) => {
       setExecutionSummary({
         visible: true,
         ...res,
       });
-    })
+    });
 
     setDisableSubmit(false);
   };
@@ -477,56 +475,80 @@ function Download({ setTitle }) {
                   </Grid>
                 ) : null}
                 {executionSummary.visible ? (
-                  <List dense={true}>
-                    <ListItem>
-                      <ListItemText
-                        primary="Dynamic Class"
-                        secondary={executionSummary.dynclass}
-                      />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText
-                        primary="Selected Period"
-                        secondary={`${executionSummary.start} / ${executionSummary.end}`}
-                      />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText
-                        primary="Asteroids"
-                        secondary={executionSummary.asteroids}
-                      />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText
-                        primary="CCDs"
-                        secondary={executionSummary.ccds}
-                      />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText
-                        primary="CCDs Downloaded"
-                        secondary={executionSummary.ccds_downloaded}
-                      />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText
-                        primary="CCDs to Download"
-                        secondary={executionSummary.ccds_to_download}
-                      />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText
-                        primary="Estimated Time"
-                        secondary={moment.utc(executionSummary.estimated_time * 1000).format('HH:mm:ss')}
-                      />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText
-                        primary="Estimated Size"
-                        secondary={filesize(executionSummary.estimated_size)}
-                      />
-                    </ListItem>
-                  </List>
+                  <Grid item xs={12}>
+                    <List dense>
+                      <Grid container>
+                        <Grid item xs={12} sm={6} md={4} xl={3}>
+                          <ListItem>
+                            <ListItemText
+                              primary="Dynamic Class"
+                              secondary={executionSummary.dynclass}
+                            />
+                          </ListItem>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4} xl={3}>
+                          <ListItem>
+                            <ListItemText
+                              primary="Selected Period"
+                              secondary={`${executionSummary.start} / ${executionSummary.end}`}
+                            />
+                          </ListItem>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4} xl={3}>
+                          <ListItem>
+                            <ListItemText
+                              primary="Asteroids"
+                              secondary={executionSummary.asteroids}
+                            />
+                          </ListItem>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4} xl={3}>
+                          <ListItem>
+                            <ListItemText
+                              primary="CCDs"
+                              secondary={executionSummary.ccds}
+                            />
+                          </ListItem>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4} xl={3}>
+                          <ListItem>
+                            <ListItemText
+                              primary="CCDs Downloaded"
+                              secondary={executionSummary.ccds_downloaded}
+                            />
+                          </ListItem>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4} xl={3}>
+                          <ListItem>
+                            <ListItemText
+                              primary="CCDs to Download"
+                              secondary={executionSummary.ccds_to_download}
+                            />
+                          </ListItem>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4} xl={3}>
+                          <ListItem>
+                            <ListItemText
+                              primary="Estimated Time"
+                              secondary={moment
+                                .utc(executionSummary.estimated_time * 1000)
+                                .format('HH:mm:ss')}
+                            />
+                          </ListItem>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4} xl={3}>
+                          <ListItem>
+                            <ListItemText
+                              primary="Estimated Size"
+                              secondary={filesize(
+                                executionSummary.estimated_size
+                              )}
+                            />
+                          </ListItem>
+                        </Grid>
+                      </Grid>
+                    </List>
+                  </Grid>
                 ) : null}
               </Grid>
             </CardContent>
