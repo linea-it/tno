@@ -85,7 +85,26 @@ class CcdViewSet(viewsets.ModelViewSet):
 
     @action(detail=False)
     def summary_by_period(self, request):
+        """Retona as estimativas de download, para um periodo especifico.
 
+        exemplo: http://localhost/api/des/ccd/summary_by_period/?start=2012-11-01&end=2012-11-30&dynclass=Centaur
+
+        Args:
+            request ([type]): [description]
+
+        Returns:
+        dict: {
+            "dynclass": "Centaur",    # Dynclass usada no filtro
+            "start": "2012-11-01",    # Periodo Inicial
+            "end": "2012-11-30",      # Periodo Final
+            "asteroids": 48,          # Quantidade de Asteroids unicos
+            "ccds": 48,               # Quantidade de CCDs no periodo
+            "ccds_downloaded": 5,     # Quantidade de CCDs baixados
+            "estimated_time": "2398.919432", # Tempo estimado de download para os CCDs que faltam
+            "estimated_size": 639782208.0,   # Tamanho estimado para o download
+            "ccds_to_download": 43           # Quantidade de CCDs a serem baixados.
+        }
+        """
         start = request.query_params['start']
         end = request.query_params['end']
         dynclass = request.query_params.get('dynclass', None)
@@ -100,7 +119,7 @@ class CcdViewSet(viewsets.ModelViewSet):
             'ccds_downloaded': 0,
             'estimated_time': 0,
             'estimated_size': 0,
-            'to_download': 0
+            'ccds_to_download': 0
         })
 
         # adicionar a hora inicial e final as datas
@@ -134,7 +153,7 @@ class CcdViewSet(viewsets.ModelViewSet):
         result.update({
             'estimated_time': to_download * average_time,
             'estimated_size': to_download * average_size,
-            'to_download': to_download,
+            'ccds_to_download': to_download,
         })
 
         return Response(result)
