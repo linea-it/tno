@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from common.dates_interval import get_days_interval
-from des.dao import CcdDao
+from des.dao import CcdDao, DesSkybotPositionDao, DownloadCcdJobResultDao
 from des.models import Ccd
 from des.serializers import CcdSerializer
 
@@ -80,5 +80,86 @@ class CcdViewSet(viewsets.ModelViewSet):
         df = df.rename(columns={'index': 'date'})
 
         result = df.to_dict('records')
+
+        return Response(result)
+
+    @action(detail=False)
+    def summary_by_period(self, request):
+        """Retona as estimativas de download, para um periodo especifico.
+
+        exemplo: http://localhost/api/des/ccd/summary_by_period/?start=2012-11-01&end=2012-11-30&dynclass=Centaur
+
+        Args:
+            request ([type]): [description]
+
+        Returns:
+        dict: {
+            "dynclass": "Centaur",    # Dynclass usada no filtro
+            "start": "2012-11-01",    # Periodo Inicial
+            "end": "2012-11-30",      # Periodo Final
+            "asteroids": 48,          # Quantidade de Asteroids unicos
+            "ccds": 48,               # Quantidade de CCDs no periodo
+            "ccds_downloaded": 5,     # Quantidade de CCDs baixados
+            "estimated_time": "2398.919432", # Tempo estimado de download para os CCDs que faltam
+            "estimated_size": 639782208.0,   # Tamanho estimado para o download
+            "ccds_to_download": 43           # Quantidade de CCDs a serem baixados.
+        }
+        """
+        start = request.query_params['start']
+        end = request.query_params['end']
+        dynclass = request.query_params.get('dynclass', None)
+        name = request.query_params.get('name', None)
+
+        result = dict({
+            'dynclass': dynclass,
+            'start': start,
+            'end': end,
+            'asteroids': 0,
+            'ccds': 0,
+            'ccds_downloaded': 0,
+            'estimated_time': 0,
+            'estimated_size': 0,
+            'ccds_to_download': 0
+        })
+
+        # adicionar a hora inicial e final as datas
+        start = datetime.strptime(
+            start, '%Y-%m-%d').strftime("%Y-%m-%d 00:00:00")
+        end = datetime.strptime(end, '%Y-%m-%d').strftime("%Y-%m-%d 23:59:59")
+
+        count_asteroids = DesSkybotPositionDao(pool=False).count_asteroids_by_dynclass(
+            start=start, end=end, dynclass=dynclass)
+
+        result.update({'asteroids': count_asteroids})
+
+        count_ccds = DesSkybotPositionDao(pool=False).count_ccds_by_dynclass(
+            start=start, end=end, dynclass=dynclass)
+
+        result.update({'ccds': count_ccds})
+
+        count_ccds_downloaded = DesSkybotPositionDao(pool=False).count_ccds_downloaded_by_dynclass(
+            start=start, end=end, dynclass=dynclass)
+
+        result.update({'ccds_downloaded': count_ccds_downloaded})
+
+        # Estimativas de download
+        de = DownloadCcdJobResultDao(pool=False).download_estimate()
+
+        average_time = 0
+        average_size = 0
+
+        if de['t_exec_time']:
+            average_time = de['t_exec_time'] / de['total']
+
+        if de['t_file_size']:
+            average_size = de['t_file_size'] / de['total']
+
+        to_download = count_ccds - count_ccds_downloaded
+
+        result.update({
+            'estimated_time': to_download * average_time,
+            'estimated_size': to_download * average_size,
+            'ccds_to_download': to_download,
+        })
 
         return Response(result)
