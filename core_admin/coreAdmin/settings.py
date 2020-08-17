@@ -79,10 +79,24 @@ MEDIA_TMP_URL = urllib.parse.urljoin(MEDIA_URL, 'tmp/')
 
 # Emails
 # Notifications Email
-EMAIL_NOTIFICATIONS = os.environ.get('EMAIL_NOTIFICATIONS', None)
-if not EMAIL_NOTIFICATIONS:
-    raise ("Environment variable EMAIL_NOTIFICATIONS can not be null.")
+EMAIL_NOTIFICATION = os.environ.get('EMAIL_NOTIFICATION', None)
+if not EMAIL_NOTIFICATION:
+    raise ("Environment variable EMAIL_NOTIFICATION can not be null.")
 
+# TODO devem ser variaveis de ambiente.
+EMAIL_NOTIFICATION_COPY_TO = list([])
+EMAIL_HELPDESK = 'helpdesk@linea.gov.br'
+
+ENVIRONMENT_NAME = 'Development'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.linea.gov.br'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'glauber.costa@linea.gov.br'
+EMAIL_HOST_PASSWORD = '123456'
+
+APPLICATION_NAME = 'SSSO - Solar System Small Object'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 

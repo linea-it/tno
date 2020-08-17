@@ -13,6 +13,7 @@ import pandas as pd
 import pytz
 from django.conf import settings
 
+from common.notify import Notify
 from des.dao import DesSkybotJobDao, DesSkybotJobResultDao, ExposureDao
 from des.skybot.import_positions import DESImportSkybotPositions
 from skybot.skybot_server import SkybotServer
@@ -1331,3 +1332,25 @@ class DesSkybotPipeline():
 
         except Exception as e:
             self.logger_import.error(e)
+
+    def notify_start_job(job_id):
+
+        # Recupera o Model pelo ID
+        job = self.get_job_by_id(job_id)
+        username = self.spdao.get_user(job['owner'])
+
+        context = dict({
+            "username": username,
+            "job_id": job['id'],
+            "start": job['date_initial'],
+            "end": job['date_final'],
+            "nights": job['nights'],
+            "ccds": job['ccds'],
+            "job_link": "http://localhost/data-preparation/des/skybot/93"
+        })
+
+        Notify().send_html_email(
+            subject="Skybot Job",
+            to=job['email'],
+            template="notification_skybot_start.html",
+            context=context)

@@ -27,6 +27,35 @@ from django.contrib.auth import logout
 def teste(request):
     if request.method == 'GET':
 
+        # Teste de envio de email
+        from common.notify import Notify
+        from django.template.loader import render_to_string
+
+        context = dict({
+            "username": 'gverde',
+            "target_display_name": 'TESTE display name',
+            "cutoutjob_display_name": 'TESTE Cutout Job',
+            "job_id": 93,
+            "start": '2012-11-01 00:00:00',
+            "end": '2012-11-30 23:59:59',
+            "nights": 3,
+            "ccds": 16165,
+            "job_link": "http://localhost/data-preparation/des/skybot/93"
+        })
+
+        # message = render_to_string("notification_skybot_start.html", context)
+
+        # Notify().send_email("TESTE de email", message, 'glauber.vila.verde@gmail.com')
+
+        Notify().send_html_email(
+            subject="Teste de Email",
+            to="glauber.vila.verde@gmail.com",
+            template="notification_skybot_start.html",
+            context=context)
+
+        # send_mail("Teste TNO envio de email", "Isto é um teste", settings.EMAIL_HOST_USER, [
+        #           'glauber.vila.verde@gmail.com'], fail_silently=False)
+
         # from des.dao import DesSkybotJobResultDao
 
         # asteroids = DesSkybotJobResultDao(
@@ -161,7 +190,7 @@ def teste(request):
         return Response(result)
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def logout_view(request):
     logout(request)
 
@@ -172,7 +201,7 @@ def logout_view(request):
     return response
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def import_skybot(request):
     """
     """
@@ -193,7 +222,7 @@ def import_skybot(request):
     return Response(result)
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def read_file(request):
     """
     Function to read .log file
@@ -238,7 +267,7 @@ def read_file(request):
             }))
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def read_csv(request):
     """
     Function to read .csv file
@@ -315,7 +344,7 @@ def read_csv(request):
     return Response(result)
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def download_file(request):
     """
     Function to download a file and zip.
@@ -366,8 +395,8 @@ def download_file(request):
                 return response
 
 
-@api_view(['GET'])
-@permission_classes([AllowAny])
+@ api_view(['GET'])
+@ permission_classes([AllowAny])
 def auth_shibboleth(request):
 
     logger = logging.getLogger('auth_shibboleth')

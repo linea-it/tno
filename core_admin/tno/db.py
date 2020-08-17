@@ -139,6 +139,18 @@ class DBBase():
 
             return con.scalar(stm)
 
+    def get_username(self, user_id):
+
+        # select au.username from auth_user au where id = 1;
+        au = self.get_table('auth_user', self.get_base_schema())
+
+        stm = select([au.c.username, au.c.email]).\
+            where(and_(au.c.id == int(user_id)))
+
+        value = self.fetch_one_dict(stm)
+
+        return value
+
     def histogram(self, column, bin):
         """
 
