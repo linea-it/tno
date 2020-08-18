@@ -209,6 +209,36 @@ function SkybotDetail({ setTitle }) {
       width: 200,
       sortingEnabled: false,
     },
+    {
+      name: 'g',
+      title: 'g',
+      sortingEnabled: false,
+    },
+    {
+      name: 'r',
+      title: 'r',
+      sortingEnabled: false,
+    },
+    {
+      name: 'i',
+      title: 'i',
+      sortingEnabled: false,
+    },
+    {
+      name: 'z',
+      title: 'z',
+      sortingEnabled: false,
+    },
+    {
+      name: 'Y',
+      title: 'Y',
+      sortingEnabled: false,
+    },
+    {
+      name: 'u',
+      title: 'u',
+      sortingEnabled: false,
+    },
   ];
 
   const loadData = ({ currentPage, pageSize, sorting }) => {
