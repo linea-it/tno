@@ -146,8 +146,10 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         le os arquivos requests e loaddata que estão no diretório do job,
         e retonra um array para cada um deles. no seguinte formato
 
-        request: [['exposure', 'start', 'finish', 'positions', 'execution_time'],...]
-        loaddata: [['exposure', 'start', 'finish', 'positions', 'execution_time'],...]
+        request: [['exposure', 'start', 'finish',
+            'positions', 'execution_time'],...]
+        loaddata: [['exposure', 'start', 'finish',
+            'positions', 'execution_time'],...]
 
         """
         job = self.get_object()
@@ -189,16 +191,16 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
 
         Returns:
             [array]: um array de objetos com a dynamic class e a quantidade de objetos, ccds e possições associadas a ela.
-                [{"dynclass": "Centaur","asteroids": 1,"ccds": 35,"positions": 35}, {...},]
+                [{"dynclass": "Centaur","asteroids": 1,
+                    "ccds": 35,"positions": 35}, {...},]
         """
         job_id = self.get_object().id
 
-        asteroids = DesSkybotJobResultDao(
-            pool=False).dynclass_asteroids_by_job(job_id)
-        ccds = DesSkybotJobResultDao(
-            pool=False).dynclass_ccds_by_job(job_id)
-        positions = DesSkybotJobResultDao(
-            pool=False).dynclass_positions_by_job(job_id)
+        dao = DesSkybotJobResultDao(pool=False)
+
+        asteroids = dao.dynclass_asteroids_by_job(job_id)
+        ccds = dao.dynclass_ccds_by_job(job_id)
+        positions = dao.dynclass_positions_by_job(job_id)
 
         df_asteroids = pd.DataFrame(asteroids)
         df_asteroids.set_index('dynclass')
@@ -215,6 +217,23 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         df = pd.concat([df_asteroids, df_ccds, df_positions], axis=1)
         df = df.fillna(0)
         df = df.rename(columns={'index': 'dynclass'})
+
+        df['g'] = 0
+        df['r'] = 0
+        df['i'] = 0
+        df['z'] = 0
+        df['Y'] = 0
+        df['u'] = 0
+
+        # Remove as colunas duplicadas
+        df = df.loc[:, ~df.columns.duplicated()]
+
+        for i in range(len(df)):
+            dynclass = str(df.iloc[i, 0])
+            bands = dao.dynclass_band_by_job(job_id, dynclass)
+
+            for band in bands:
+                df.at[i, str(band['band'])] = int(band['positions'])
 
         result = df.to_dict('records')
 

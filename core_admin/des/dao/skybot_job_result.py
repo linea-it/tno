@@ -362,16 +362,20 @@ class DesSkybotJobResultDao(DBBase):
 
         select
             split_part(dynclass, '>', 1) as dynclass,
-            count(sp.id) as positions
-        from skybot_position sp 
+            count(dsp.id) as positions
+        from
+            skybot_position sp
         inner join des_skybotjobresult ds on
             sp.ticket = ds.ticket
+        inner join des_skybotposition dsp on
+            dsp.position_id = sp.id
         where
-            ds.job_id = 91
+            ds.job_id = 94
         group by
             split_part(dynclass, '>', 1)
         order by
             split_part(dynclass, '>', 1);
+
 
         Args:
             job_id ([type]): [description]
@@ -380,7 +384,45 @@ class DesSkybotJobResultDao(DBBase):
             [type]: [description]
         """
 
-        stm = text("""select split_part(dynclass, '>', 1) as dynclass, count(sp.id) as positions from skybot_position sp inner join des_skybotjobresult ds on sp.ticket = ds.ticket where ds.job_id = %s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1); """ % int(job_id))
+        stm = text("""select split_part(dynclass, '>', 1) as dynclass, count(dsp.id) as positions from skybot_position sp inner join des_skybotjobresult ds on sp.ticket = ds.ticket inner join des_skybotposition dsp on dsp.position_id = sp.id where ds.job_id = %s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);""" % int(job_id))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows
+
+    def dynclass_band_by_job(self, job_id, dynclass):
+        """Total de Posicoes por banda para um Job e classe especifico
+
+        OBS: Está query não foi possivel fazer usando sqlalchemy. 
+
+        select
+            de.band,
+            count(sp.id) as positions
+        from
+            des_exposure de
+        inner join des_skybotposition dsp on
+            dsp.exposure_id = de.id
+        inner join des_skybotjobresult ds on
+            ds.exposure_id = dsp.exposure_id
+        inner join skybot_position sp on
+            dsp.position_id = sp.id
+        where
+            ds.job_id = 94
+            and split_part(dynclass, '>', 1) = 'KBO'
+        group by
+            de.band 
+
+        Args:
+            job_id ([type]): [description]
+            dynclass ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+
+        stm = text("select de.band, count(sp.id) as positions from des_exposure de inner join des_skybotposition dsp on dsp.exposure_id = de.id inner join des_skybotjobresult ds on ds.exposure_id = dsp.exposure_id inner join skybot_position sp on dsp.position_id = sp.id where ds.job_id = %s and split_part(dynclass, '>', 1) = '%s' group by de.band;" % (int(job_id), dynclass))
 
         self.debug_query(stm, True)
 
