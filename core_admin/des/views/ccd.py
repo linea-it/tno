@@ -148,18 +148,15 @@ class CcdViewSet(viewsets.ModelViewSet):
         # Estimativas de download
         de = dcjr_dao.download_estimate()
 
-        import logging
-        log = logging.getLogger('django')
-        log.debug("-----------------------------------------")
-
         to_download = int(count_ccds) - int(count_ccds_downloaded)
 
         try:
-            # exec_time = datetime.strptime(de['t_exec_time'], '%H:%M:%S')
-
             average_time = de['t_exec_time'] / int(de['total'])
             estimated_time = (to_download * average_time).total_seconds()
-            log.debug(estimated_time)
+
+            # Dividir por 10 por que os downloads são paralelizados em um fator 10
+            estimated_time = (estimated_time / 10)
+
         except:
             estimated_time = 0
 

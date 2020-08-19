@@ -187,8 +187,8 @@ class CcdDao(DBBase):
 
         stm = select([
             cast(de.c.date_obs, Date).label('date'),
-            func.count(dc.c.id).label('count'),
-            func.count(dd.c.id).label('downloaded')
+            func.count(dc.c.id.distinct()).label('count'),
+            func.count(dd.c.id.distinct()).label('downloaded')
         ]).\
             select_from(
             dc.join(
