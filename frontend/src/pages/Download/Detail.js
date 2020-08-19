@@ -81,7 +81,7 @@ function DownloadDetail({ setTitle }) {
           value: res.owner,
         },
         {
-          title: 'Period',
+          title: 'Selected Period',
           value: `${moment(res.date_initial).format('YYYY-MM-DD')} / ${moment(
             res.date_final
           ).format('YYYY-MM-DD')}`,
@@ -110,6 +110,14 @@ function DownloadDetail({ setTitle }) {
         {
           title: 'Downloaded CCDs',
           value: res.ccds,
+        },
+        {
+          title: 'Downloaded CCDs',
+          value: res.ccds,
+        },
+        {
+          title: 'Path',
+          value: res.path,
         },
         {
           title: 'Size',

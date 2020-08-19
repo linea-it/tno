@@ -165,7 +165,7 @@ function SkybotDetail({ setTitle }) {
     },
     {
       name: 'positions',
-      title: '# Identifications',
+      title: '# Observations',
     },
     {
       name: 'inside_ccd',
@@ -269,7 +269,7 @@ function SkybotDetail({ setTitle }) {
           value: res.owner,
         },
         {
-          title: 'Execution Date',
+          title: 'Selected Period',
           value: `${moment(res.date_initial).format('YYYY-MM-DD')} / ${moment(
             res.date_final
           ).format('YYYY-MM-DD')}`,
