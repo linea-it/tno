@@ -127,39 +127,51 @@ class CcdViewSet(viewsets.ModelViewSet):
             start, '%Y-%m-%d').strftime("%Y-%m-%d 00:00:00")
         end = datetime.strptime(end, '%Y-%m-%d').strftime("%Y-%m-%d 23:59:59")
 
-        count_asteroids = DesSkybotPositionDao(pool=False).count_asteroids_by_dynclass(
+        dsp_dao = DesSkybotPositionDao(pool=False)
+        dcjr_dao = DownloadCcdJobResultDao(pool=False)
+
+        count_asteroids = dsp_dao.count_asteroids_by_dynclass(
             start=start, end=end, dynclass=dynclass)
 
         result.update({'asteroids': count_asteroids})
 
-        count_ccds = DesSkybotPositionDao(pool=False).count_ccds_by_dynclass(
+        count_ccds = dsp_dao.count_ccds_by_dynclass(
             start=start, end=end, dynclass=dynclass)
 
         result.update({'ccds': count_ccds})
 
-        count_ccds_downloaded = DesSkybotPositionDao(pool=False).count_ccds_downloaded_by_dynclass(
+        count_ccds_downloaded = dsp_dao.count_ccds_downloaded_by_dynclass(
             start=start, end=end, dynclass=dynclass)
 
         result.update({'ccds_downloaded': count_ccds_downloaded})
 
         # Estimativas de download
-        de = DownloadCcdJobResultDao(pool=False).download_estimate()
+        de = dcjr_dao.download_estimate()
 
-        average_time = 0
-        average_size = 0
+        import logging
+        log = logging.getLogger('django')
+        log.debug("-----------------------------------------")
 
-        if de['t_exec_time']:
-            average_time = de['t_exec_time'] / de['total']
+        to_download = int(count_ccds) - int(count_ccds_downloaded)
 
-        if de['t_file_size']:
-            average_size = de['t_file_size'] / de['total']
+        try:
+            # exec_time = datetime.strptime(de['t_exec_time'], '%H:%M:%S')
 
-        to_download = count_ccds - count_ccds_downloaded
+            average_time = de['t_exec_time'] / int(de['total'])
+            estimated_time = (to_download * average_time).total_seconds()
+            log.debug(estimated_time)
+        except:
+            estimated_time = 0
+
+        try:
+            average_size = float(de['t_file_size']) / int(de['total'])
+        except:
+            average_size = 0
 
         result.update({
-            'estimated_time': to_download * average_time,
-            'estimated_size': to_download * average_size,
-            'ccds_to_download': to_download,
+            'estimated_time': float(estimated_time),
+            'estimated_size': float(to_download * average_size),
+            'ccds_to_download': float(to_download),
         })
 
         return Response(result)
