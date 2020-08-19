@@ -6,17 +6,11 @@ import Route from './Route';
 import Dashboard from '../pages/Dashboard';
 
 import Download from '../pages/Download';
-
-import SearchSsso from '../pages/SearchSsso';
-import SearchSssoDetail from '../pages/SearchSsso/Detail';
+import DownloadDetail from '../pages/Download/Detail';
 
 import Skybot from '../pages/Skybot';
 import SkybotDetail from '../pages/Skybot/Detail';
 import SkybotAsteroid from '../pages/Skybot/Asteroid';
-
-import Astrometry from '../pages/Astrometry';
-import AstrometryDetail from '../pages/Astrometry/Detail';
-import AstrometryAsteroid from '../pages/Astrometry/Asteroid';
 
 import RefineOrbit from '../pages/RefineOrbit';
 import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
@@ -29,12 +23,6 @@ import PredictionOccultationAsteroid from '../pages/PredictionOccultation/Astero
 import Occultation from '../pages/Occultation';
 import OccultationDetail from '../pages/Occultation/Detail';
 import OccultationCalendar from '../pages/Occultation/Calendar';
-
-import BspJpl from '../pages/BspJpl';
-import Observation from '../pages/Observation';
-import OrbitalParameter from '../pages/OrbitalParameter';
-import JohnstonArchive from '../pages/JohnstonArchive';
-import JohnstonArchiveDetail from '../pages/JohnstonArchive/Detail';
 
 export default function Routes() {
   return (
@@ -51,24 +39,6 @@ export default function Routes() {
         exact
         path="/refine-orbit/asteroid/:id"
         component={RefineOrbitAsteroid}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/astrometry/asteroid/:id"
-        component={AstrometryAsteroid}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/astrometry/:id"
-        component={AstrometryDetail}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/astrometry/object/"
-        component={Astrometry}
       />
       <Route
         isPrivate
@@ -126,34 +96,18 @@ export default function Routes() {
         path="/data-preparation/des/skybot/asteroid/:id"
         component={SkybotAsteroid}
       />
-      <Route isPrivate exact path="/bsp-jpl" component={BspJpl} />
-      <Route isPrivate exact path="/observation" component={Observation} />
       <Route
         isPrivate
         exact
-        path="/orbital-parameter"
-        component={OrbitalParameter}
+        path="/data-preparation/des/download"
+        component={Download}
       />
       <Route
         isPrivate
         exact
-        path="/johnston-archive"
-        component={JohnstonArchive}
+        path="/data-preparation/des/download/:id"
+        component={DownloadDetail}
       />
-      <Route
-        isPrivate
-        exact
-        path="/johnston-archive/:id"
-        component={JohnstonArchiveDetail}
-      />
-      <Route isPrivate exact path="/ssso" component={SearchSsso} />
-      <Route
-        isPrivate
-        exact
-        path="/search-ssso-detail/:id"
-        component={SearchSssoDetail}
-      />
-      <Route isPrivate exact path="/download/" component={Download} />
       <Route isPrivate exact path="/" component={Dashboard} />
       <Redirect path="/" to="/" />
     </Switch>

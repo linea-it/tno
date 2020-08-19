@@ -66,6 +66,47 @@ class SkybotJob(models.Model):
     # Total de exposições executadas neste job.
     exposures = models.BigIntegerField(
         verbose_name='Exposures',
+        help_text='total exposures that were run in this job',
+        default=0
+    )
+
+    # Total de nights com exposures no periodo deste job.
+    ccds = models.BigIntegerField(
+        verbose_name='CCDs',
+        help_text='total ccds in the period of this job',
+        default=0
+    )
+
+    # Total de nights com exposures no periodo deste job.
+    nights = models.BigIntegerField(
+        verbose_name='Nights',
+        help_text='total nights with exhibitions in the period of this job.',
+        default=0
+    )
+
+    # Total de posições retornadas pelo skybot que estão em ccds do DES.
+    positions = models.BigIntegerField(
+        verbose_name='Positions',
+        help_text='Total positions returned by skybot that are in DES ccds.',
+        default=0
+    )
+
+    # Total de Objetos unicos retornados pelo skybot
+    asteroids = models.BigIntegerField(
+        verbose_name='Asteroids',
+        help_text='Total unique objects returned by skybot',
+        default=0
+    )
+    # Total de Exposições que tem pelo menos 1 objeto pelo skybot
+    exposures_with_asteroid = models.BigIntegerField(
+        verbose_name='Exposures with Asteroid',
+        help_text='Total Exposures that have at least one object through the skybot',
+        default=0
+    )
+
+    ccds_with_asteroid = models.BigIntegerField(
+        verbose_name='CCDs with Asteroid',
+        help_text='Total CCDs that have at least one object through the skybot',
         default=0
     )
 
@@ -80,8 +121,8 @@ class SkybotJob(models.Model):
         max_length=2048,
         verbose_name='Results',
         help_text='Filepath to the results.csv. this file contains the results of the job.',
-        null=True, 
-        blank=True, 
+        null=True,
+        blank=True,
         default=None
     )
 
@@ -92,10 +133,6 @@ class SkybotJob(models.Model):
         null=True,
         blank=True
     )
-
-    class Meta:
-        # Não pode ter Jobs iguais para o mesmo periodo.
-        unique_together = ('date_initial', 'date_final')
 
     def __str__(self):
         return str(self.id)

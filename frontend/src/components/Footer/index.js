@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import { Typography, Toolbar } from '@material-ui/core';
-import logo from '../../assets/img/linea-logo-mini.png';
+import logo from '../../assets/img/logo-mini.png';
 import useStyles from './styles';
 
 function Footer({ drawerOpen }) {

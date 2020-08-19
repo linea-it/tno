@@ -18,7 +18,7 @@ from sqlalchemy.sql.expression import (ClauseElement, Executable, between,
 
 
 class DBBase():
-    def __init__(self, pool=True):
+    def __init__(self, pool=False):
 
         if pool is False:
             self.engine = create_engine(
@@ -27,7 +27,8 @@ class DBBase():
             )
         else:
             self.engine = create_engine(
-                self.get_db_uri()
+                self.get_db_uri(),
+                connect_args={"options": "-c timezone=utc"}
             )
 
         self.current_dialect = None
@@ -78,12 +79,12 @@ class DBBase():
         with self.engine.connect() as con:
             return con.execute(stm)
 
-    def fetch_all_dict(self, stm):
+    def fetch_all_dict(self, stm, log=True):
 
         with self.engine.connect() as con:
             queryset = con.execute(stm)
 
-            if settings.DEBUG:
+            if settings.DEBUG is True and log is True:
                 self.debug_query(stm, True)
 
             rows = list()
@@ -217,7 +218,7 @@ class DBBase():
         if settings.DEBUG:
             sql = self.stm_to_str(stm, with_parameters)
 
-            print(sql)
+            # print(sql)
             self.logger.info(sql)
 
     def stm_to_str(self, stm, with_parameters=False):

@@ -4,6 +4,7 @@ from sqlalchemy.sql import and_, select
 from tno.db import DBBase
 from datetime import datetime
 
+
 class DesSkybotJobDao(DBBase):
     def __init__(self, pool=True):
         super(DesSkybotJobDao, self).__init__(pool)
@@ -29,8 +30,8 @@ class DesSkybotJobDao(DBBase):
         return row
 
     def get_by_status(self, status):
-        """Retorna os jobs pelo status 
-        ATENÇÃO: Os jobs estão ordenados pela data de criação em ordem decrescente. está ordem é importante para o pipeline. 
+        """Retorna os jobs pelo status
+        ATENÇÃO: Os jobs estão ordenados pela data de criação em ordem ascendente. está ordem é importante para o pipeline.
 
         Arguments:
             status {int} -- Status do job, como está definido no Model des/SkybotJob
@@ -39,7 +40,7 @@ class DesSkybotJobDao(DBBase):
             [array] -- Um Array com os jobs, tem a mesma estrutura do Model des/SkybotJob
         """
         stm = select(self.tbl.c).where(and_(self.tbl.c.status ==
-                                            int(status))).order_by(desc(self.tbl.c.start))
+                                            int(status))).order_by(self.tbl.c.start)
 
         rows = self.fetch_all_dict(stm)
 
@@ -51,6 +52,10 @@ class DesSkybotJobDao(DBBase):
             values(
                 status=job['status'],
                 exposures=job['exposures'],
+                positions=job['positions'],
+                asteroids=job['asteroids'],
+                exposures_with_asteroid=job['exposures_with_asteroid'],
+                ccds_with_asteroid=job['ccds_with_asteroid'],
                 path=job['path'],
                 results=job['results'],
         )
@@ -65,7 +70,7 @@ class DesSkybotJobDao(DBBase):
                 # finish=job['finish'].strftime('%Y-%m-%d %H:%M:%S'),
                 finish=job['finish'],
                 execution_time=job['execution_time'],
-                error=job.get('error', "")
+                error=job['error']
         )
 
         return self.execute(stm)

@@ -18,7 +18,8 @@ function CalendarHeatmap({ data }) {
   }, [data]);
 
   function drawCalendar(dateValues) {
-    const svg = d3.select('#svg');
+    d3.selectAll('#heatmap-svg > *').remove();
+    const svg = d3.select('#heatmap-svg');
 
     const years = d3
       .nest()
@@ -50,7 +51,7 @@ function CalendarHeatmap({ data }) {
       .attr('text-anchor', 'end')
       .text((d) => {
         if (d.key === 'NaN') {
-          return moment(data[0].dates).format('YYYY');
+          return moment(rows[0].date).format('YYYY');
         }
         return d.key;
       });
@@ -65,9 +66,8 @@ function CalendarHeatmap({ data }) {
     const timeWeek = d3.utcSunday;
 
     const colorFn = d3
-      .scaleOrdinal()
-      .domain([Math.floor(minValue), Math.ceil(maxValue)])
-      .range(['#ebedf0', '#c6e48b', '#7bc96f', '#239a3b', '#196127']);
+      .scaleSequential(d3.interpolateGreens)
+      .domain([Math.floor(minValue), Math.ceil(maxValue)]);
 
     year
       .append('g')
@@ -94,9 +94,16 @@ function CalendarHeatmap({ data }) {
         (d) => timeWeek.count(d3.utcYear(d.date), d.date) * cellSize + 0.5
       )
       .attr('y', (d) => countDay(d.date) * cellSize + 0.5)
-      .attr('fill', (d) => colorFn(d.value))
+      .attr('fill', (d) => {
+        if (d.value === 0) {
+          return '#ebedf0';
+        }
+        return colorFn(d.value);
+      })
       .append('title')
-      .text((d) => `${d.value} exposures on ${moment(d.date).format('MMM Do YYYY')}`);
+      .text(
+        (d) => `${d.value} exposures on ${moment(d.date).format('MMM Do YYYY')}`
+      );
 
     const month = year
       .append('g')
@@ -119,7 +126,8 @@ function CalendarHeatmap({ data }) {
 
   useEffect(() => {
     drawCalendar(rows);
-    const svg = document.getElementById('svg');
+
+    const svg = document.getElementById('heatmap-svg');
 
     // Get the bounds of the SVG content
     const bbox = svg.getBBox();
@@ -131,7 +139,7 @@ function CalendarHeatmap({ data }) {
 
   return (
     <div>
-      <svg id="svg" />
+      <svg id="heatmap-svg" />
       <div
         className={classes.legendWrapper}
         title="A summary of exposures by date."

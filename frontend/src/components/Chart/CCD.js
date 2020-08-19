@@ -31,11 +31,25 @@ function CCD({ data, width, height }) {
   });
 
   rows.push({
-    x: data.asteroids.x,
-    y: data.asteroids.y,
+    x: data.asteroidsInside.x,
+    y: data.asteroidsInside.y,
     mode: 'markers',
     type: 'scatter',
-    name: 'Asteroids',
+    name: 'Small Bodies Inside CCD',
+    marker: {
+      color: '#008000',
+    },
+  });
+
+  rows.push({
+    x: data.asteroidsOutside.x,
+    y: data.asteroidsOutside.y,
+    mode: 'markers',
+    type: 'scatter',
+    name: 'Small Bodies Outside CCD',
+    marker: {
+      color: '#a6a6a6',
+    },
   });
 
   rows.push({
@@ -84,7 +98,7 @@ function CCD({ data, width, height }) {
         ],
       }}
       config={{
-        scrollZoom: true,
+        scrollZoom: false,
         displaylogo: false,
         responsive: true,
       }}
@@ -93,7 +107,7 @@ function CCD({ data, width, height }) {
 }
 
 CCD.defaultProps = {
-  width: 'auto',
+  width: null,
   height: 'auto',
 };
 

@@ -26,97 +26,132 @@ from django.contrib.auth import logout
 def teste(request):
     if request.method == 'GET':
 
-        # Test Skybot load data daemon
-        # from tno.skybot.new_load_data import DesImportSkybotOutput
+        # from des.dao import DesSkybotJobResultDao
+
+        # asteroids = DesSkybotJobResultDao(
+        #     pool=False).dynclass_asteroids_by_job(91)
+        # ccds = DesSkybotJobResultDao(pool=False).dynclass_ccds_by_job(91)
+        # positions = DesSkybotJobResultDao(
+        #     pool=False).dynclass_positions_by_job(91)
+
+        # import pandas as pd
+
+        # df_asteroids = pd.DataFrame(asteroids)
+        # df_asteroids.set_index('dynclass')
+        # df_asteroids = df_asteroids.fillna(0)
+
+        # df_ccds = pd.DataFrame(ccds)
+        # df_ccds.set_index('dynclass')
+        # df_ccds = df_ccds.fillna(0)
+
+        # df_positions = pd.DataFrame(positions)
+        # df_positions.set_index('dynclass')
+        # df_positions = df_positions.fillna(0)
+
+        # df = pd.concat([df_asteroids, df_ccds, df_positions], axis=1)
+        # df = df.fillna(0)
+        # df = df.rename(columns={'index': 'dynclass'})
+
+        # result = df.to_dict('records')
+
+        #     pool=False).t_exposures_with_objects_by_job(72)
+        # d = DesSkybotJobResultDao(
+        #     pool=False).t_ccds_with_objects_by_job(72)
+
+        # e = DesSkybotJobResultDao(
+        #     pool=False).dynclass_asteroids_by_job(72)
+
+        # a = DesSkybotJobResultDao(pool=False).t_ccds_with_objects_by_id(7643)
+
+        # b = DesSkybotJobResultDao(pool=False).dynclass_asteroids_by_id(7643)
+
+        # # Test Skybot load request
+        # from des.skybot import DesSkybotPipeline
+        # DesSkybotPipeline().run_job(53)
 
         # result = DesImportSkybotOutput().import_output_file("/archive/skybot_output/1/808801_Y.csv")
 
-        from des.skybot.pipeline import DESImportSkybotPositions
-        from des.models import SkybotJob
-        import logging
+        # from des.skybot.pipeline import DESImportSkybotPositions
+        # from des.models import DownloadCcdJobResult
+        # from des.models import SkybotJob
+        # from datetime import datetime, timedelta, timezone
+        # import logging
+        # log = logging.getLogger('django')
+        # log.info("-----------TESTE----------------")
 
-        # try:
-        #     log = logging.getLogger('skybot_load_data')
+        # from des.ccd import start_pipeline, plot_time_profile
+        # from des.dao import DownloadCcdJobDao
+        # from des.dao import DownloadCcdJobResultDao
 
-        #     log.info("TESTE1")
+        # # a = DownloadCcdJobResultDao().execution_time_by_job(1)
+        # # log.info(a)
 
-        #     job = SkybotJob.objects.get(pk=5)
+        # # plot_time_profile('/ccd_images/download_jobs/job_1/results.csv',
+        # #                   '/ccd_images/download_jobs/job_1/')
 
-        #     dsp = DesSkybotPipeline()
-        #     exposures = dsp.read_exposure_dataframe(job.path)
-        #     exposures = exposures.set_index('id')
+        # #  ----------------------------------------------------------
+        # #  Resetando o Job antes do teste
+        # db = DownloadCcdJobDao(pool=False)
+        # job = db.get_by_id(1)
+        # job['status'] = 1
+        # job['start'] = datetime.now(timezone.utc)
+        # job['path'] = None
+        # db = db.update_record(job)
 
-        #     # requests = dsp.read_request_dataframe(job.path, usecols=['exposure', 'success', 'ticket', 'positions'])
-        #     requests = dsp.read_request_dataframe(job.path)
-        #     requests = requests.set_index('exposure')
-        #     requests = requests.add_prefix('request_')
+        # # Limpando o diretório antes do teste
+        # folder = '/archive/ccd_images'
+        # for filename in os.listdir(folder):
+        #     file_path = os.path.join(folder, filename)
+        #     try:
+        #         if os.path.isfile(file_path) or os.path.islink(file_path):
+        #             os.unlink(file_path)
+        #         elif os.path.isdir(file_path):
+        #             shutil.rmtree(file_path)
+        #     except Exception as e:
+        #         print('Failed to delete %s. Reason: %s' % (file_path, e))
 
-        #     loaddata = dsp.read_loaddata_dataframe(
-        #         dsp.get_loaddata_dataframe_filepath(job.path))
-        #     loaddata = loaddata.set_index('exposure')
-        #     loaddata = loaddata.add_prefix('loaddata_')
+        # # Limpa a tabela de resultados antes do teste.
+        # DownloadCcdJobResult.objects.all().delete()
 
-        #     n_requests = exposures.join(requests)
-        #     n_requests = n_requests.join(loaddata)
+        # #  Iniciando o Pipeline
+        # start_pipeline()
+        # #  ----------------------------------------------------------
 
-        #     n_requests = n_requests.rename(columns={
-        #         'request_ticket': 'ticket',
-        #         'request_positions': 'positions',
-        #         'request_filename': 'filename',
-        #         'request_file_size': 'file_size',
-        #         'request_skybot_url': 'skybot_url',
-        #         'loaddata_ccds': 'ccds',
-        #         'loaddata_inside_ccd': 'inside_ccd',
-        #         'loaddata_outside_ccd': 'outside_ccd',
-        #         'loaddata_output': 'output',
-        #     })
+        # from des.dao import DesSkybotPositionDao
 
-        #     n_requests = n_requests.drop(['request_output', 'loaddata_ticket', 'loaddata_positions'], axis=1)
+        # rows = DesSkybotPositionDao().ccds_for_position(
+        #     '2019-01-01 00:00:00', '2019-01-31 23:59:59', 'KBO')
 
-        #     n_requests['success'] = (n_requests.request_success & n_requests.loaddata_success)
-        #     n_requests['execution_time'] = (n_requests.request_execution_time + n_requests.loaddata_execution_time)
-        #     # log.info(n_requests.head)
+        # log.info(len(rows))
+        # log.info(rows[0:5])
 
-        #     log.info("---------------------")
-        #     log.info(n_requests.loc[[2452848]].to_dict('records'))
+        # from des.dao import ExposureDao, CcdDao
+        # from des.models import DownloadCcdJobResult
+        # import os
+        # import shutil
 
-        # except Exception as e:
-        #     log.error(e)
+        # # Limpara o diretório antes do teste
 
-        # from des.skybot import DESImportSkybotPositions
+        # folder = '/archive/ccd_images'
+        # for filename in os.listdir(folder):
+        #     file_path = os.path.join(folder, filename)
+        #     try:
+        #         if os.path.isfile(file_path) or os.path.islink(file_path):
+        #             os.unlink(file_path)
+        #         elif os.path.isdir(file_path):
+        #             shutil.rmtree(file_path)
+        #     except Exception as e:
+        #         print('Failed to delete %s. Reason: %s' % (file_path, e))
 
-        # from des.skybot import DesSkybotPipeline
-        # DesSkybotPipeline().run_job(1)
-        # DesSkybotPipeline().check_request_queue()
-        # DesSkybotPipeline().reset_job_for_test(5)
-        # DesSkybotPipeline().run_job(5)
-        # DesSkybotPipeline().check_loaddata_queue()
-        # DesSkybotPipeline().consolidate(job_id=87)
-        # exposure_id = 2453859
-        # ticket = 166796687473278401
-        # filepath = "/archive/skybot_output/des_skybot_35/2453859_166796687473278401.csv"
+        # from des.ccd import download_des_ccds
 
-        # result = DESImportSkybotPositions().import_des_skybot_positions(exposure_id, ticket, filepath)
+        # ccds = CcdDao().ccds_by_period('2019-01-01 00:00:00', '2019-01-31 23:59:59')
+        # log.debug(len(ccds))
 
+        # # Limpa a tabela de resultados antes do teste.
+        # DownloadCcdJobResult.objects.all().delete()
 
-        # check_astrometry_running()
-
-        # Registro de resultado da astrometria.
-        # register_astrometry_outputs(108, 'Eris')
-
-        # Exemplo de criacao da lista de ccds.
-        # from praia.pipeline.ccd_image import create_ccd_images_list
-        # filepath = os.path.join(settings.MEDIA_TMP_DIR, 'teste_Eris_ccd.csv')
-        # result = create_ccd_images_list(178, 'Eris', filepath, max_workers=1)
-
-        # from orbit.refine_orbit import RefineOrbit
-        # start, end = RefineOrbit().get_plot_period(
-        #     astrometry='/proccess/106/objects/Eris/Eris.txt')
-        # result = dict({
-        #      'success': True,
-        #      'start': start,
-        #      'end': end
-        #  })
+        # download_des_ccds(1, ccds[0:10])
 
         result = dict({
             'success': True,

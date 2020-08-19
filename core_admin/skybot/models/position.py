@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+
 
 class Position(models.Model):
     """
@@ -146,6 +148,14 @@ class Position(models.Model):
         help_text='Id of the request made in the skybot. it serves to group all the positions that are of the same request.',
         default=0,
         db_index=True
+    )
+
+    # Momento em que o registro da posição aconteceu
+    created = models.DateTimeField(
+        verbose_name='Created',
+        auto_now_add=True,
+        null=True,
+        blank=True
     )
 
     class Meta:

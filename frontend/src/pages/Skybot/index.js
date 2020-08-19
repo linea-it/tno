@@ -7,12 +7,15 @@ import {
   Card,
   CardHeader,
   CardContent,
-  CircularProgress,
+  ButtonGroup,
   Button,
+  FormControl,
+  MenuItem,
+  Select,
+  InputLabel,
+  Typography,
   Snackbar,
-  Slide,
 } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons';
@@ -24,82 +27,106 @@ import {
   createSkybotRun,
   getSkybotRunList,
   getExposuresByPeriod,
+  getExecutedNightsByPeriod,
 } from '../../services/api/Skybot';
 import CalendarHeatmap from '../../components/Chart/CalendarHeatmap';
+import CalendarExecutedNight from '../../components/Chart/CalendarExecutedNight';
+import useStyles from './styles';
 
 function Skybot({ setTitle }) {
   const history = useHistory();
+  const classes = useStyles();
   const [totalCount, setTotalCount] = useState(0);
   const [tableData, setTableData] = useState([]);
   const [disableSubmit, setDisableSubmit] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [snackBarVisible, setSnackBarVisible] = useState(false);
-  const [snackBarPosition] = useState({
-    vertical: 'bottom',
-    horizontal: 'right',
-  });
-  const [snackBarTransition, setSnackBarTransition] = useState(undefined);
-  const [exposuresByPeriod, setExposuresByPeriod] = useState([]);
-  const [exposurePlotLoading, setExposurePlotLoading] = useState({
-    loading: false,
-    hasData: true,
-  });
   const [reload, setReload] = useState(true);
-  const [selectedDate, setSelectedDate] = useState([
-    '2012-11-10',
-    '2012-12-10',
-  ]);
+  const [allExposures, setAllExposures] = useState([]);
+  const [exposuresByPeriod, setExposuresByPeriod] = useState([]);
+  const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(['', '']);
+  const [chartType, setChartType] = useState(0);
+  const [selectedDateYears, setSelectedDateYears] = useState([]);
+  const [currentSelectedDateYear, setCurrentSelectedDateYear] = useState('');
+  const [currentYearExposures, setCurrentYearExposures] = useState([]);
+  const [currentYearExecutedNights, setCurrentYearExecutedNights] = useState(
+    []
+  );
+  const [
+    hasJobRunningOrIdleFeedback,
+    setHasJobRunningOrIdleFeedback,
+  ] = useState(false);
 
   useEffect(() => {
     setTitle('Skybot');
   }, [setTitle]);
 
-  useEffect(() => {
+  const handleSelectPeriodClick = () => {
     setExposuresByPeriod([]);
 
-    if (selectedDate[0] && selectedDate[1]) {
-      setExposurePlotLoading({
-        loading: true,
-        hasData: false,
-      });
+    getExposuresByPeriod(
+      moment(selectedDate[0]).format('YYYY-MM-DD'),
+      moment(selectedDate[1]).format('YYYY-MM-DD')
+    ).then((res) => {
+      setExposuresByPeriod(res);
+    });
 
-      getExposuresByPeriod(
-        moment(selectedDate[0]).format('YYYY-MM-DD'),
-        moment(selectedDate[1]).format('YYYY-MM-DD')
-      ).then((res) => {
-        setExposurePlotLoading({
-          loading: false,
-          hasData: res.length > 0,
-        });
-        setExposuresByPeriod(res);
-      });
+    setDisableSubmit(false);
+  };
 
-      setDisableSubmit(false);
+  useEffect(() => {
+    getExposuresByPeriod('2012-11-10', '2019-02-28').then((res) => {
+      const selectedYears = res
+        .map((year) => moment(year.date).format('YYYY'))
+        .filter((year, i, yearArr) => yearArr.indexOf(year) === i);
+
+      setSelectedDateYears(selectedYears);
+      setCurrentSelectedDateYear(selectedYears[0]);
+      setAllExposures(res);
+    });
+
+    getExecutedNightsByPeriod('2012-11-10', '2019-02-28').then((res) => {
+      setExecutedNightsByPeriod(res);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (
+      chartType !== 0 &&
+      currentSelectedDateYear !== '' &&
+      allExposures.length > 0 &&
+      executedNightsByPeriod.length > 0
+    ) {
+      const exposures = allExposures.filter(
+        (exposure) =>
+          moment(exposure.date).format('YYYY') === currentSelectedDateYear
+      );
+
+      const nights = executedNightsByPeriod.filter(
+        (exposure) =>
+          moment(exposure.date).format('YYYY') === currentSelectedDateYear
+      );
+
+      setCurrentYearExposures(exposures);
+      setCurrentYearExecutedNights(nights);
     }
-
-    if (!selectedDate[0]) {
-      setDisableSubmit(true);
-    }
-
-    if (!selectedDate[1]) {
-      setDisableSubmit(true);
-    }
-  }, [selectedDate]);
+  }, [
+    allExposures,
+    executedNightsByPeriod,
+    currentSelectedDateYear,
+    chartType,
+  ]);
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
     getSkybotRunList({
       page: currentPage + 1,
       pageSize,
       ordering: sorting,
-    })
-      .then((res) => {
-        const { data } = res;
-        setTableData(data.results);
-        setTotalCount(data.count);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    }).then((res) => {
+      const { data } = res;
+
+      setTableData(data.results);
+      setTotalCount(data.count);
+    });
   };
 
   const handleSubmit = () => {
@@ -110,7 +137,15 @@ function Skybot({ setTitle }) {
       .then((response) => {
         const { id } = response.data;
 
-        history.push(`/data-preparation/des/skybot/${id}`);
+        const hasStatusRunningOrIdle =
+          tableData.filter((row) => [1, 2].includes(row.status)).length > 0;
+
+        if (hasStatusRunningOrIdle) {
+          setHasJobRunningOrIdleFeedback(true);
+          setReload((prevState) => !prevState);
+        } else {
+          history.push(`/data-preparation/des/skybot/${id}`);
+        }
       })
       .catch(() => {
         setReload((prevState) => !prevState);
@@ -118,13 +153,9 @@ function Skybot({ setTitle }) {
       });
   };
 
-  const transitionSnackBar = (props) => <Slide {...props} direction="left" />;
-
-  const handleSelectRunClick = () => {
-    setSnackBarVisible(true);
-    setSnackBarTransition(() => transitionSnackBar);
+  const handleSubmitJob = () => {
     setDisableSubmit(true);
-    setLoading(true);
+
     handleSubmit();
   };
 
@@ -133,15 +164,19 @@ function Skybot({ setTitle }) {
       name: 'id',
       title: 'Details',
       width: 110,
-      icon: <InfoOutlinedIcon />,
-      action: (row) => history.push(`/data-preparation/des/skybot/${row.id}`),
+      customElement: (row) => (
+        <Button
+          onClick={() => history.push(`/data-preparation/des/skybot/${row.id}`)}
+        >
+          <InfoOutlinedIcon />
+        </Button>
+      ),
       align: 'center',
       sortingEnabled: false,
     },
     {
       name: 'status',
       title: 'Status',
-      width: 150,
       customElement: (row) => (
         <ColumnStatus status={row.status} title={row.error_msg} />
       ),
@@ -149,14 +184,22 @@ function Skybot({ setTitle }) {
     {
       name: 'owner',
       title: 'Owner',
-      width: 180,
-      align: 'left',
+      width: 130,
+    },
+    {
+      name: 'start',
+      title: 'Execution Date',
+      width: 150,
+      customElement: (row) => (
+        <span title={moment(row.start).format('HH:mm:ss')}>
+          {moment(row.start).format('YYYY-MM-DD')}
+        </span>
+      ),
     },
     {
       name: 'date_initial',
-      title: 'Initial Date',
+      title: 'First Night',
       width: 130,
-      align: 'left',
       customElement: (row) => (
         <span title={moment(row.start).format('HH:mm:ss')}>
           {row.date_initial}
@@ -165,14 +208,25 @@ function Skybot({ setTitle }) {
     },
     {
       name: 'date_final',
-      title: 'Final Date',
+      title: 'Last Night',
       width: 130,
-      align: 'left',
       customElement: (row) => (
         <span title={moment(row.finish).format('HH:mm:ss')}>
           {row.date_final}
         </span>
       ),
+    },
+    {
+      name: 'nights',
+      title: '# Nights',
+    },
+    {
+      name: 'exposures',
+      title: '# Exposures',
+    },
+    {
+      name: 'ccds',
+      title: '# CCDs',
     },
     {
       name: 'execution_time',
@@ -183,14 +237,7 @@ function Skybot({ setTitle }) {
       customElement: (row) =>
         row.execution_time ? row.execution_time.split('.')[0] : null,
     },
-    {
-      name: 'exposures',
-      title: 'Exposures',
-      width: 100,
-    },
   ];
-
-  const { vertical, horizontal } = snackBarPosition;
 
   const Plot = createPlotlyComponent(Plotly);
 
@@ -198,101 +245,166 @@ function Skybot({ setTitle }) {
   // so we can follow its progress in real time.
   useInterval(() => {
     const hasStatusRunning =
-      tableData.filter((row) => row.status === 'running').length > 0;
+      tableData.filter((row) => row.status === 2).length > 0;
 
     if (hasStatusRunning) {
       setReload(!reload);
     }
-  }, 30000);
+  }, 10000);
+
+  const handleChangeChartType = (e) => {
+    setChartType(Number(e.target.value));
+  };
 
   const renderExposurePlot = () => {
-    if (exposuresByPeriod.length > 0) {
+    if (allExposures.length > 0) {
       return (
-        <>
-          <Plot
-            data={[
-              {
-                x: exposuresByPeriod.map((rows) => rows.date),
-                y: exposuresByPeriod.map((rows) => rows.count),
-                type: 'bar',
-                name: `${exposuresByPeriod.reduce(
-                  (a, b) => a + (b.count || 0),
-                  0
-                )} exposures`,
-                showlegend: true,
-                fixedrange: true,
-                hoverinfo: 'y',
-              },
-            ]}
-            layout={{
-              hovermode: 'closest',
-              autosize: true,
-              bargap: 0.05,
-              bargroupgap: 0.2,
-              xaxis: { title: 'Period' },
-              yaxis: { title: 'Exposures' },
-            }}
-            config={{
-              scrollZoom: true,
-              displaylogo: false,
-              responsive: true,
-            }}
-          />
-          <CalendarHeatmap data={exposuresByPeriod} />
-        </>
+        <Grid container spacing={2} alignItems="stretch">
+          <Grid item>
+            <FormControl variant="outlined" className={classes.formControl}>
+              <InputLabel>Chart Type</InputLabel>
+              <Select
+                label="Chart Type"
+                value={chartType}
+                onChange={handleChangeChartType}
+              >
+                <MenuItem value={0}>Histogram</MenuItem>
+                <MenuItem value={1}>Calendar</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          {chartType === 1 && selectedDateYears.length > 1 ? (
+            <Grid item>
+              <ButtonGroup
+                variant="contained"
+                color="primary"
+                className={classes.buttonGroupYear}
+              >
+                {selectedDateYears.map((year) => (
+                  <Button
+                    key={year}
+                    onClick={() => setCurrentSelectedDateYear(year)}
+                    disabled={currentSelectedDateYear === year}
+                  >
+                    {year}
+                  </Button>
+                ))}
+              </ButtonGroup>
+            </Grid>
+          ) : null}
+          <Grid item xs={12}>
+            {chartType === 0 && exposuresByPeriod.length > 0 ? (
+              <Plot
+                data={[
+                  {
+                    x: exposuresByPeriod.map((rows) => rows.date),
+                    y: exposuresByPeriod.map((rows) => rows.count),
+                    type: 'bar',
+                    name: `${exposuresByPeriod.reduce(
+                      (a, b) => a + (b.count || 0),
+                      0
+                    )} exposures`,
+                    showlegend: true,
+                    fixedrange: true,
+                    hoverinfo: 'y',
+                  },
+                ]}
+                layout={{
+                  hovermode: 'closest',
+                  height: 465,
+                  margin: {
+                    t: 30,
+                    b: 20,
+                  },
+                  autosize: true,
+                  bargap: 0.05,
+                  bargroupgap: 0.2,
+                  xaxis: { title: 'Period' },
+                  yaxis: { title: 'Exposures' },
+                }}
+                config={{
+                  scrollZoom: false,
+                  displaylogo: false,
+                  responsive: true,
+                }}
+              />
+            ) : null}
+            {chartType === 1 ? (
+              <>
+                <Typography gutterBottom>
+                  {`${currentYearExposures.reduce(
+                    (a, b) => a + (b.count || 0),
+                    0
+                  )} exposure(s)`}
+                </Typography>
+                <CalendarHeatmap data={currentYearExposures} />
+                <CalendarExecutedNight data={currentYearExecutedNights} />
+              </>
+            ) : null}
+          </Grid>
+        </Grid>
       );
     }
-    return (
-      <>
-        <Skeleton variant="rect" animation={false} height={440} />
-        {/* {exposurePlotLoading.loading ? (
-          <CircularProgress color="primary" size={24} />
-        ) : null} */}
-        {exposurePlotLoading.loading === false &&
-        exposurePlotLoading.hasData === false ? (
-          <span>No exposure was found in this period</span>
-        ) : null}
-      </>
-    );
+    return null;
   };
 
   return (
-    <Grid>
+    <>
       <Grid container spacing={2} alignItems="stretch">
-        <Grid item xs={12} md={6} lg={4} xl={3}>
-          <Card>
-            <CardHeader title="Skybot Run" />
-            <CardContent>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <DateRangePicker
-                    // First day of Skybot:
-                    minDate={new Date('2012-11-10 04:09')}
-                    selectedDate={selectedDate}
-                    setSelectedDate={setSelectedDate}
-                  />
-                </Grid>
-                <Grid item xs={12}>
+        <Grid item xs={12} md={4} lg={3}>
+          <Grid container direction="column" spacing={2}>
+            <Grid item xs={12}>
+              <Card>
+                <CardHeader title="Skybot Run" />
+                <CardContent>
+                  <Grid container spacing={2} alignItems="stretch">
+                    <Grid item xs={12}>
+                      <DateRangePicker
+                        // First day of Skybot:
+                        minDate={new Date('2012-11-10 04:09')}
+                        maxDate={new Date('2019-02-28 00:00')}
+                        selectedDate={selectedDate}
+                        setSelectedDate={setSelectedDate}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        onClick={handleSelectPeriodClick}
+                      >
+                        Select
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12}>
+              <Card>
+                <CardContent>
+                  <Typography color="textSecondary" gutterBottom>
+                    Click here to submit a job on the selected period
+                  </Typography>
                   <Button
                     variant="contained"
                     color="primary"
                     fullWidth
                     disabled={disableSubmit}
-                    onClick={handleSelectRunClick}
+                    onClick={handleSubmitJob}
                   >
                     Submit
-                    {loading ? (
-                      <CircularProgress color="primary" size={24} />
-                    ) : null}
                   </Button>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6} lg={8} xl={9}>
+
+        <Grid item xs={12} md={8} lg={9}>
           <Card>
-            <CardHeader title="Unique Exposures By Period" />
+            <CardHeader title="Exposures By Period" />
             <CardContent>{renderExposurePlot()}</CardContent>
           </Card>
         </Grid>
@@ -313,21 +425,20 @@ function Skybot({ setTitle }) {
                 hasToolbar={false}
                 reload={reload}
                 totalCount={totalCount}
-                loading
+                defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
               />
             </CardContent>
           </Card>
         </Grid>
       </Grid>
       <Snackbar
-        open={snackBarVisible}
-        autoHideDuration={3500}
-        TransitionComponent={snackBarTransition}
-        anchorOrigin={{ vertical, horizontal }}
-        message="Executing... Check progress on history table ."
-        onClose={() => setSnackBarVisible(false)}
+        open={hasJobRunningOrIdleFeedback}
+        autoHideDuration={5000}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        message="There's already a job running, so your job is currently idle."
+        onClose={() => setHasJobRunningOrIdleFeedback(false)}
       />
-    </Grid>
+    </>
   );
 }
 

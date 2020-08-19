@@ -13,12 +13,16 @@ import {
   ListItemText,
   Collapse,
 } from '@material-ui/core';
-import { ChevronLeft } from '@material-ui/icons';
+import {
+  ChevronLeft,
+  ArrowDropUp as ArrowDropUpIcon,
+  ArrowDropDown as ArrowDropDownIcon,
+} from '@material-ui/icons';
 
 import Footer from '../Footer';
 import Toolbar from '../Toolbar';
 
-import Logo from '../../assets/img/linea.png';
+import Logo from '../../assets/img/logo.png';
 import useStyles from './styles';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
@@ -29,8 +33,8 @@ const drawerWidth = 240;
 function Drawer({ children, title, open, setOpen }) {
   const location = useLocation();
   const classes = useStyles({ drawerWidth });
-  const [dataPreparationOpen, setDataPreparationOpen] = useState(true);
-  const [desOpen, setDesOpen] = useState(true);
+  const [dataPreparationOpen, setDataPreparationOpen] = useState(false);
+  const [desOpen, setDesOpen] = useState(false);
 
   const [currentPage, setCurrentPage] = useState('');
   const [currentUser, setCurrentUser] = useState({ username: '' });
@@ -120,8 +124,13 @@ function Drawer({ children, title, open, setOpen }) {
               }
               className={classes.textDrawer}
             />
+            {dataPreparationOpen ? (
+              <ArrowDropUpIcon className={classes.menuItemIcon} />
+            ) : (
+              <ArrowDropDownIcon className={classes.menuItemIcon} />
+            )}
           </ListItem>
-          <Collapse in={dataPreparationOpen} timeout="auto" unmountOnExit>
+          <Collapse in={dataPreparationOpen} unmountOnExit>
             <List component="div" disablePadding>
               <ListItem
                 button
@@ -134,10 +143,15 @@ function Drawer({ children, title, open, setOpen }) {
                   }
                   className={classes.textDrawer}
                 />
+                {desOpen ? (
+                  <ArrowDropUpIcon className={classes.menuItemIcon} />
+                ) : (
+                  <ArrowDropDownIcon className={classes.menuItemIcon} />
+                )}
               </ListItem>
             </List>
           </Collapse>
-          <Collapse in={desOpen} timeout="auto" unmountOnExit>
+          <Collapse in={desOpen} unmountOnExit>
             <List component="div" disablePadding>
               <Link
                 to="/data-preparation/des/skybot"
@@ -207,7 +221,7 @@ function Drawer({ children, title, open, setOpen }) {
           <Link
             to="/prediction-of-occultation"
             className={classes.invisibleLink}
-            title="Comparison of objects��� ephemeris and positions of stars to predict events of stellar occultation using Gaia catalogue like reference."
+            title="Comparison of objects ephemeris and positions of stars to predict events of stellar occultation using Gaia catalogue like reference."
           >
             <ListItem
               button
@@ -218,21 +232,6 @@ function Drawer({ children, title, open, setOpen }) {
                   <span className={classes.textDrawerParent}>
                     Prediction of Occultation
                   </span>
-                }
-                className={classes.textDrawer}
-              />
-            </ListItem>
-          </Link>
-          <Divider className={classes.borderDrawer} />
-          <Link
-            to="/astrometry"
-            className={classes.invisibleLink}
-            title="Astrometric reduction using PRAIA package and stellar catalogue Gaia like reference to detect and determine positions of objects from CCD frame."
-          >
-            <ListItem button selected={currentPage === 'astrometry'}>
-              <ListItemText
-                primary={
-                  <span className={classes.textDrawerParent}>Astrometry</span>
                 }
                 className={classes.textDrawer}
               />

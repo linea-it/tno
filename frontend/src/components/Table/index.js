@@ -242,10 +242,11 @@ function Table({
 
   const renderLoading = () => (
     <CircularProgress
+      size={20}
       style={{
         position: 'absolute',
-        top: 'calc(50% - 40px)',
-        left: 'calc(50% - 20px)',
+        top: 'calc(50% + 20px)',
+        left: 'calc(50%)',
         marginTop: 'translateY(-50%)',
         zIndex: '99',
       }}
@@ -472,11 +473,11 @@ function Table({
   });
 
   return (
-    <>
+    <div className={classes.container}>
       {hasFiltering ? renderFilter() : null}
       {renderTable(rows)}
       {customLoading && renderLoading()}
-    </>
+    </div>
   );
 }
 

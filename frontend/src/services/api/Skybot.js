@@ -1,10 +1,9 @@
 import axios from 'axios';
-import moment from 'moment';
 
 export const createSkybotRun = ({ date_initial, date_final }) => {
   const params = {
-    date_initial: moment(date_initial).format('YYYY-MM-DD'),
-    date_final: moment(date_final).format('YYYY-MM-DD'),
+    date_initial: date_initial,
+    date_final: date_final,
   };
 
   return axios.post('/des/skybot_job/submit_job/', params);
@@ -23,51 +22,6 @@ export const getSkybotRunList = ({ page, pageSize, ordering }) => {
   return axios.get('/des/skybot_job/', { params });
 };
 
-export const getStatistic = ({ id }) =>
-  axios
-    .get('/skybot_run/statistic/', {
-      params: { run_id: id },
-    })
-    .then((res) => res.data);
-
-export const getSkybotRunResults = ({ id, page, pageSize, search }) => {
-  const params = {
-    run_id: id,
-    page,
-    pageSize,
-    search,
-  };
-  return axios.get('/skybot_run/results/', { params }).then((res) => res.data);
-};
-
-export const getExposurePlot = (skybotrun, expnum) =>
-  axios
-    .get('/skybot_run/skybot_output_plot/', {
-      params: { run_id: skybotrun, expnum },
-    })
-    .then((res) => res.data);
-
-export const getOutputByExposure = (run_id, expnum) =>
-  axios
-    .get('/skybot_run/skybot_output_by_exposure/', {
-      params: { run_id, expnum },
-    })
-    .then((res) => res.data);
-
-export const getAsteroidsInsideCCD = (expnum) =>
-  axios
-    .get('/skybot_run/asteroids_ccd/', {
-      params: { expnum },
-    })
-    .then((res) => res.data);
-
-export const getSkybotRunEstimate = (initialDate, finalDate) =>
-  axios
-    .get('/skybot_run/execution_time_estimate/', {
-      params: { initial_date: initialDate, final_date: finalDate },
-    })
-    .then((res) => res.data);
-
 export const getExposuresByPeriod = (initialDate, finalDate) =>
   axios
     .get('/des/exposure/count_by_period/', {
@@ -75,15 +29,12 @@ export const getExposuresByPeriod = (initialDate, finalDate) =>
     })
     .then((res) => res.data);
 
-export const getYearsWithExposure = () =>
-  axios.get('/skybot_run/exposures_years/').then((res) => res.data);
-
-export const stopSkybotRunById = (id) =>
+export const getExecutedNightsByPeriod = (initialDate, finalDate) =>
   axios
-    .patch(`/skybot_run/${id}/`, {
-      status: 'canceled',
+    .get('/des/skybot_job_result/nites_executed_by_period/', {
+      params: { start: initialDate, end: finalDate },
     })
-    .then((res) => res);
+    .then((res) => res.data);
 
 export const getSkybotProgress = (id) =>
   axios.get(`/des/skybot_job/${id}/heartbeat/`).then((res) => res.data);
@@ -104,36 +55,40 @@ export const getSkybotResultById = ({ id, pageSize, page, ordering }) => {
 export const getSkybotTimeProfile = (id) =>
   axios.get(`/des/skybot_job/${id}/time_profile/`).then((res) => res.data);
 
-export const getSkybotTicketById = (id) =>
-  axios.get(`/des/skybot_job_result/${id}/`).then((res) => res.data.ticket);
+export const getSkybotJobResultById = (id) =>
+  axios.get(`/des/skybot_job_result/${id}/`).then((res) => res.data);
 
-export const getPositionsByTicket = ({ ticket, page, pageSize, ordering }) => {
-  const params = { ticket, page, pageSize, ordering };
+export const getPositionsByTicket = (ticket) => {
+  const params = { ticket, page: 1, pageSize: 9999 };
 
   return axios.get('/skybot/position/', { params }).then((res) => res.data);
 };
 
-export const getAsteroidsInsideCcdByTicket = ({
-  ticket,
-  page,
-  pageSize,
-  ordering,
-}) => {
-  const positionProperties = ['name', 'number', 'dynclass', 'raj2000', 'decj2000', 'mv'];
-
-  let sorting = '';
-
-  if (positionProperties.includes(ordering[0].columnName)) {
-    sorting = `${ordering[0].direction === 'desc' ? '-' : ''}position__${
-      ordering[0].columnName
-    }`;
-  } else {
-    sorting = `${ordering[0].direction === 'desc' ? '-' : ''}${
-      ordering[0].columnName
-    }`;
-  }
-
-  const params = { ticket, page, pageSize, ordering: sorting };
+export const getAsteroidsInsideCcdByTicket = (ticket) => {
+  const params = { ticket, page: 1, pageSize: 9999 };
 
   return axios.get('/des/skybot_position/', { params }).then((res) => res.data);
 };
+
+export const getCcdsByExposure = (exposure) => {
+  const params = { exposure };
+
+  return axios.get('/des/ccd/', { params }).then((res) => res.data);
+};
+
+export const getExposureById = (id) =>
+  axios.get(`/des/exposure/${id}`).then((res) => res.data);
+
+export const cancelSkybotJobById = (id) =>
+  axios.post(`/des/skybot_job/${id}/cancel_job/`).then((res) => res.data);
+
+export const getDynclassAsteroidsById = (id) =>
+  axios.get(`/des/skybot_job_result/${id}/dynclass_asteroids/`)
+    .then((res) => res.data);
+
+export const getDynclassAsteroids = id =>
+  axios.get(`/des/skybot_job/${id}/dynclass_counts/`).then(res => res.data)
+
+export const getCcdsWithAsteroidsById = (id) =>
+  axios.get(`/des/skybot_job_result/${id}/ccds_with_asteroids/`)
+    .then((res) => res.data);
