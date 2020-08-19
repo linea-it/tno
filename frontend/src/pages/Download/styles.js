@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   buttonGroupYear: {
     height: 'calc(100% - 1px)',
   },
@@ -19,9 +19,16 @@ const useStyles = makeStyles({
     borderBottomRightRadius: 0,
     zIndex: 1,
   },
-  // shrinkLabel: {
-  //   transform: 'translate(14px, -1px) scale(0.75) !important',
-  // },
-});
+  progressWrapper: {
+    position: 'relative',
+    paddingBottom: theme.spacing(1),
+  },
+  circularProgress: {
+    position: 'absolute',
+    left: theme.spacing(2),
+    bottom: -6,
+    // bottom: theme.spacing(1),
+  },
+}));
 
 export default useStyles;

@@ -231,7 +231,7 @@ function Download({ setTitle }) {
     },
     {
       name: 'objects',
-      title: 'Object(s)',
+      title: '# SSOs',
       // customElement: row => (
       //   {row.objects.length === 1 ? row.objects[0] : row.objects.length}
       // ),
@@ -497,7 +497,7 @@ function Download({ setTitle }) {
                         <Grid item xs={12} sm={6} md={4} xl={3}>
                           <ListItem>
                             <ListItemText
-                              primary="Asteroids"
+                              primary="SSOs"
                               secondary={executionSummary.asteroids}
                             />
                           </ListItem>
