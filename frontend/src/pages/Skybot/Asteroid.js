@@ -316,7 +316,7 @@ function SkybotAsteroid({ setTitle }) {
       setSummary([
         {
           title: 'Cone Search Radius',
-          value: coneSearchRadius,
+          value: `${coneSearchRadius} (degree)`,
         },
         {
           title: '# CCDs',
