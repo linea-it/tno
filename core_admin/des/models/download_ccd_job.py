@@ -80,10 +80,35 @@ class DownloadCcdJob(models.Model):
         null=True, blank=True
     )
 
-    # Total de ccds com exposures no periodo deste job.
-    ccds = models.BigIntegerField(
-        verbose_name='CCDs',
-        help_text='total ccds that were run in this job',
+    # Total de ccds a serem baixados no job.
+    ccds_to_download = models.BigIntegerField(
+        verbose_name='CCDs to Download',
+        help_text='Total CCDs to be downloaded by this job.',
+        null=True, blank=True,
+        default=0
+    )
+
+    # Total de ccds Baixados
+    ccds_downloaded = models.BigIntegerField(
+        verbose_name='CCDs Downloaded',
+        help_text='Total CCDs downloaded in this job.',
+        null=True, blank=True,
+        default=0
+    )
+
+    # Total de nights com ccds a serem baixados neste job.
+    nights = models.BigIntegerField(
+        verbose_name='Nights',
+        help_text='Total nights with ccds to be downloaded in this job.',
+        null=True, blank=True,
+        default=0
+    )
+
+    # Total de Objetos unicos retornados
+    asteroids = models.BigIntegerField(
+        verbose_name='Asteroids',
+        help_text='Total unique objects  in this job.',
+        null=True, blank=True,
         default=0
     )
 
