@@ -230,8 +230,8 @@ function Download({ setTitle }) {
       width: 140,
     },
     {
-      name: 'objects',
-      title: 'Object(s)',
+      name: 'asteroids',
+      title: '# SSOs',
       // customElement: row => (
       //   {row.objects.length === 1 ? row.objects[0] : row.objects.length}
       // ),
@@ -261,12 +261,16 @@ function Download({ setTitle }) {
       title: '# Nights',
     },
     {
-      name: 'exposures',
-      title: '# Exposures',
+      name: 'ccds_to_download',
+      title: '# CCDs to Download',
+      width: 180,
+      sortingEnabled: false,
     },
     {
-      name: 'ccds',
-      title: '# CCDs',
+      name: 'ccds_downloaded',
+      title: '# CCDs Downloaded',
+      width: 180,
+      sortingEnabled: false,
     },
     {
       name: 'execution_time',
@@ -497,7 +501,7 @@ function Download({ setTitle }) {
                         <Grid item xs={12} sm={6} md={4} xl={3}>
                           <ListItem>
                             <ListItemText
-                              primary="Asteroids"
+                              primary="SSOs"
                               secondary={executionSummary.asteroids}
                             />
                           </ListItem>

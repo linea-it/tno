@@ -29,7 +29,6 @@ function DownloadDetail({ setTitle }) {
   const { id } = useParams();
   const history = useHistory();
   const classes = useStyles();
-  const [status, setStatus] = useState(0);
   const [summaryExecution, setSummaryExecution] = useState([]);
   const [summaryResults, setSummaryResults] = useState([]);
   const [progress, setProgress] = useState({
@@ -58,7 +57,10 @@ function DownloadDetail({ setTitle }) {
     getDownloadProgress(id)
       .then((data) => {
         setProgress(data);
-        setHasCircularProgress(false);
+
+        if (![1, 2].includes(data.status)) {
+          setHasCircularProgress(false);
+        }
       })
       .catch(() => {
         setHasCircularProgress(true);
@@ -67,7 +69,6 @@ function DownloadDetail({ setTitle }) {
 
   useEffect(() => {
     getDownloadJobById(id).then((res) => {
-      setStatus(res.status);
       setCcds(res.ccds);
       setSummaryExecution([
         {
@@ -81,7 +82,7 @@ function DownloadDetail({ setTitle }) {
           value: res.owner,
         },
         {
-          title: 'Period',
+          title: 'Selected Period',
           value: `${moment(res.date_initial).format('YYYY-MM-DD')} / ${moment(
             res.date_final
           ).format('YYYY-MM-DD')}`,
@@ -108,8 +109,16 @@ function DownloadDetail({ setTitle }) {
           value: res.dynclass,
         },
         {
-          title: 'Downloaded CCDs',
-          value: res.ccds,
+          title: '# CCDs to Download',
+          value: res.ccds_to_download,
+        },
+        {
+          title: '# CCDs Downloaded',
+          value: res.ccds_downloaded,
+        },
+        {
+          title: 'Path',
+          value: res.path,
         },
         {
           title: 'Size',
@@ -123,7 +132,7 @@ function DownloadDetail({ setTitle }) {
     moment().startOf('day').seconds(value).format('HH:mm:ss');
 
   useInterval(() => {
-    if ([1, 2].includes(status)) {
+    if ([1, 2].includes(progress.status)) {
       setLoadProgress((prevState) => !prevState);
     }
   }, [5000]);
@@ -152,7 +161,7 @@ function DownloadDetail({ setTitle }) {
               </Typography>
             </Button>
           </Grid>
-          {[1, 2].includes(status) ? (
+          {[1, 2].includes(progress.status) ? (
             <Grid item>
               <Button
                 variant="contained"
@@ -174,7 +183,7 @@ function DownloadDetail({ setTitle }) {
           ) : null}
         </Grid>
       </Grid>
-      {ccds === 0 && ![1, 2].includes(status) ? (
+      {ccds === 0 && ![1, 2].includes(progress.status) ? (
         <Grid item xs={12}>
           <Typography variant="h6">
             No CCD was found or all CCDs were already downloaded in this period.
@@ -254,7 +263,7 @@ function DownloadDetail({ setTitle }) {
                       </Grid>
                     </Grid>
                   </Grid>
-                  {hasCircularProgress && [1, 2].includes(status) ? (
+                  {hasCircularProgress && [1, 2].includes(progress.status) ? (
                     <CircularProgress
                       className={classes.circularProgress}
                       disableShrink

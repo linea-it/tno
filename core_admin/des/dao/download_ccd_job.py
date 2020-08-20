@@ -52,7 +52,10 @@ class DownloadCcdJobDao(DBBase):
             where(self.tbl.c.id == int(record['id'])).\
             values(
                 status=record['status'],
-                ccds=record['ccds'],
+                ccds_to_download=record['ccds_to_download'],
+                ccds_downloaded=record['ccds_downloaded'],
+                nights=record['nights'],
+                asteroids=record['asteroids'],
                 path=record['path'],
                 t_size_downloaded=record['t_size_downloaded'],
         )

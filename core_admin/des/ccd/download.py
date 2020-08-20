@@ -324,17 +324,39 @@ def run_job(job_id):
 
         spdao = DesSkybotPositionDao(pool=True)
 
+        dt_start = job['date_initial'].strftime("%Y-%m-%d 00:00:00")
+        dt_end = job['date_final'].strftime("%Y-%m-%d 23:59:59")
         ccds = spdao.ccds_for_position(
-            start=job['date_initial'].strftime("%Y-%m-%d 00:00:00"),
-            end=job['date_final'].strftime("%Y-%m-%d 23:59:59"),
+            start=dt_start,
+            end=dt_end,
             dynclass=job['dynclass'],
             name=job['name'])
+
+        df = pd.DataFrame(ccds)
 
         t1 = datetime.now()
         tdelta = tdelta = t1 - t0
 
         # Atualiza no job a quantidade de ccds;
-        job['ccds'] = len(ccds)
+        job['ccds_to_download'] = len(ccds)
+
+        # Atualizar no job a quantidade de nights
+        t_nights = 0
+        if len(ccds) > 0:
+            t_nights = df['date_obs'].nunique()
+
+        job['nights'] = t_nights
+
+        # Atualizar o total de Asteroids relacionados ao job
+        if job['name'] is not None:
+            t_asteroids = 1
+        else:
+            t_asteroids = spdao.count_asteroids_by_dynclass(
+                start=dt_start,
+                end=dt_end,
+                dynclass=job['dynclass'])
+        job['asteroids'] = t_asteroids
+
         job = db.update_record(job)
 
         logger.info("%s CCDs returned in %s." %
@@ -378,8 +400,12 @@ def run_job(job_id):
         # Total em bytes baixados neste job
         t_size_downloaded = cjrdao.file_size_by_job(job['id'])
 
+        # Total de CCDs baixados no Job
+        ccds_downloaded = cjrdao.count_by_job(job['id'])
+
         # Altera para o status para Completed
         job['status'] = 3
+        job['ccds_downloaded'] = ccds_downloaded
         job['t_size_downloaded'] = t_size_downloaded
         job = db.update_record(job)
 
