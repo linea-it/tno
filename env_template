@@ -1,15 +1,26 @@
 # FOR DEVELOPMENT WITH docker-compose
 
-# the hostname and port number of the current Server URL
-HOST_URL=//localhost
-
-EMAIL_NOTIFICATIONS=
-
 # Modo de Debug do backend, usar DEBUG=False para desligar.
 DEBUG=False
 
 # Level do Log (INFO, DEBUG, WARNING, ERROR, CRITICAL)
 LOGGING_LEVEL=INFO
+
+# the hostname and port number of the current Server URL
+HOST_URL=//localhost
+
+# Environment name
+ENVIRONMENT_NAME=Development
+
+# Email Configs
+EMAIL_NOTIFICATION=noreply@linea.gov.br
+EMAIL_HELPDESK=helpdesk@linea.gov.br
+EMAIL_HOST=smtp.linea.gov.br
+EMAIL_PORT=587
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
+
+
 
 # Database Settings for Django Backend "CoreAdmin"
 DB_NAME=postgres
