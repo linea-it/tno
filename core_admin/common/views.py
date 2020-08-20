@@ -31,27 +31,72 @@ def teste(request):
         from common.notify import Notify
         from django.template.loader import render_to_string
 
-        context = dict({
-            "username": 'gverde',
-            "target_display_name": 'TESTE display name',
-            "cutoutjob_display_name": 'TESTE Cutout Job',
-            "job_id": 93,
-            "start": '2012-11-01 00:00:00',
-            "end": '2012-11-30 23:59:59',
-            "nights": 3,
-            "ccds": 16165,
-            "job_link": "http://localhost/data-preparation/des/skybot/93"
-        })
+        # context = dict({
+        #     "username": 'gverde',
+        #     "start": '2012-11-01 00:00:00',
+        #     "end": '2012-11-30 23:59:59',
+        #     "nights": 3,
+        #     "ccds": 16165,
+        #     "job_id": 97
+        # })
 
-        # message = render_to_string("notification_skybot_start.html", context)
+        # Notify().send_html_email(
+        #     subject="Teste de Email",
+        #     to="glauber.vila.verde@gmail.com",
+        #     template="notification_skybot_finish.html",
+        #     context=context)
 
-        # Notify().send_email("TESTE de email", message, 'glauber.vila.verde@gmail.com')
+        # Skybot Finish
+        # from datetime import datetime
+        # now = datetime.now()
+        # import time
+        # time.sleep(2)
+        # now2 = datetime.now()
+        # delta = now2 - now
 
-        Notify().send_html_email(
-            subject="Teste de Email",
-            to="glauber.vila.verde@gmail.com",
-            template="notification_skybot_start.html",
-            context=context)
+        # context = dict({
+        #     "username": 'gverde',
+        #     "start": '2012-11-01 00:00:00',
+        #     "end": '2012-11-30 23:59:59',
+        #     "nights": 3,
+        #     "ccds": 16165,
+        #     "job_id": 97,
+        #     "job_start": now.strftime("%Y-%m-%d %H:%M:%S"),
+        #     "job_end": now2.strftime("%Y-%m-%d %H:%M:%S"),
+        #     "execution_time": str(delta).split(".")[0],
+        #     "nights": 13,
+        #     "ccds": 85703,
+        #     "asteroids": 2469,
+        #     "ccds_with_asteroid": 23777
+        # })
+
+        # Notify().send_html_email(
+        #     subject="Teste de Email",
+        #     to="glauber.vila.verde@gmail.com",
+        #     template="notification_skybot_finish.html",
+        #     context=context)
+
+        # Skybot Fail
+        # from datetime import datetime
+        # now = datetime.now()
+        # import time
+        # time.sleep(2)
+        # now2 = datetime.now()
+        # delta = now2 - now
+
+        # context = dict({
+        #     "username": 'gverde',
+        #     "job_id": 97,
+        #     "job_start": now.strftime("%Y-%m-%d %H:%M:%S"),
+        #     "job_end": now2.strftime("%Y-%m-%d %H:%M:%S"),
+        #     "execution_time": str(delta).split(".")[0],
+        # })
+
+        # Notify().send_html_email(
+        #     subject="Teste de Email",
+        #     to="glauber.vila.verde@gmail.com",
+        #     template="notification_skybot_fail.html",
+        #     context=context)
 
         # send_mail("Teste TNO envio de email", "Isto é um teste", settings.EMAIL_HOST_USER, [
         #           'glauber.vila.verde@gmail.com'], fail_silently=False)

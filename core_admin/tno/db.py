@@ -139,7 +139,7 @@ class DBBase():
 
             return con.scalar(stm)
 
-    def get_username(self, user_id):
+    def get_user(self, user_id):
 
         # select au.username from auth_user au where id = 1;
         au = self.get_table('auth_user', self.get_base_schema())

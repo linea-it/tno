@@ -52,8 +52,8 @@
                           your <spam style="font-weight: bold;"> Skybot Job </spam> has started. You can follow the
                           progress on the link below
                           </br>
-                          <a style="text-decoration: none" href={{host_url}}>
-                            <spam>{{job_link}}</spam>
+                          <a style="text-decoration: none" href={{host_url}}/data-preparation/des/skybot/{{job_id}} />
+                          <spam>{{host_url}}/data-preparation/des/skybot/{{job_id}}</spam>
                           </a>
                         </td>
                       </tr>
@@ -67,14 +67,18 @@
                                 <td>{{job_id}}</td>
                               </tr>
                               <tr style="background-color: #f2f2f2;">
-                                <td>Period:</td>
-                                <td>{{start}} - {{end}}</td>
+                                <td>Start date:</td>
+                                <td>{{start}}</td>
                               </tr>
                               <tr>
+                                <td>End date:</td>
+                                <td>{{end}}</td>
+                              </tr>
+                              <tr style="background-color: #f2f2f2;">
                                 <td>#Nights:</td>
                                 <td>{{nights}}</td>
                               </tr>
-                              <tr style="background-color: #f2f2f2;">
+                              <tr>
                                 <td>#CCDs:</td>
                                 <td>{{ccds}}</td>
                               </tr>
