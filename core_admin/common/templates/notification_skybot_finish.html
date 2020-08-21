@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+    <table border="0" align="center" width="680" valign="top" cellspacing="0" cellpadding="0" align="center"
+        style="background-color: #f0f0f0">
+        <tbody>
+            <tr>
+                <!-- Margin Right -->
+                <td width="40"></td>
+                <!-- Center -->
+                <td width="600">
+                    <table border="0" width="600" cellpadding="0" cellspacing="0" align="center">
+                        <tbody>
+                            <!-- Margin Top -->
+                            <tr>
+                                <td height="30"></td>
+                            </tr>
+                            <!-- Header -->
+                            <tr style="background-color: #fafafa">
+                                <td>
+                                    <header style="background-color: #009900; max-height: 60px;">
+                                        <a style="color: #e1e1e1; display: flex; justify-content: space-between; align-items: center; max-width: 90%; margin: 0 auto; text-decoration: none"
+                                            href={{host_url}} title={{application_name}} rel="home">
+
+                                            <h1
+                                                style="font-family: Bitter, Georgia, serif; font-size: 16px; font-weight: bold">
+                                                {{application_name}}</h1>
+                                        </a>
+                                    </header>
+                                </td>
+                            </tr>
+                            <!-- Padding -->
+                            <tr>
+                                <td height="20" style="background-color: #FFF"></td>
+                            </tr>
+                            <!-- Content -->
+                            <tr>
+                                <td style="background-color: #FFF">
+                                    <!-- Aqui ja entra o que vai ser substituido no template -->
+                                    <table border="0" width="600" cellpadding="0" cellspacing="0" align="center"
+                                        valign="top">
+                                        <tbody>
+                                            <!-- Nome do Usuario -->
+                                            <tr>
+                                                <td
+                                                    style="font-family:arial,Arial,sans-serif;font-size:16px;line-height:18px;letter-spacing:0px;color:#777;text-decoration:none; padding-left: 10px;">
+                                                    Dear {{username}},
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td
+                                                    style="font-family:arial,Arial,sans-serif;font-size:16px;line-height:18px;letter-spacing:0px;color:#777;text-decoration:none; padding-left: 10px;">
+                                                    your <span style="font-weight: bold;"> Skybot Job </span> has ended
+                                                    successfully. You can check the results at the
+                                                    link below.
+                                                    </br>
+                                                    <a style="text-decoration: none"
+                                                        href={{host_url}}/data-preparation/des/skybot/{{job_id}}>
+                                                    <span>{{host_url}}/data-preparation/des/skybot/{{job_id}}</span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding-left: 10px;">
+                                                    <table style="color: #777; padding: 5px;">
+                                                        <!-- <table border="1" cellpadding="0" cellspacing="0" align="center" valign="top"> -->
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>Job ID:</td>
+                                                                <td>{{job_id}}</td>
+                                                            </tr>
+                                                            <tr style="background-color: #f2f2f2;">
+                                                                <td>Start date:</td>
+                                                                <td>{{start}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>End date:</td>
+                                                                <td>{{end}}</td>
+                                                            </tr>
+                                                            <tr style="background-color: #f2f2f2;">
+                                                                <td>Start:</td>
+                                                                <td>{{job_start}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Finish:</td>
+                                                                <td>{{job_end}}</td>
+                                                            </tr>
+                                                            <tr style="background-color: #f2f2f2;">
+                                                                <td>Execution:</td>
+                                                                <td>{{execution_time}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>#Nights:</td>
+                                                                <td>{{nights}}</td>
+                                                            </tr>
+                                                            <tr style="background-color: #f2f2f2;">
+                                                                <td>#CCDs Analyzed:</td>
+                                                                <td>{{ccds}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>#SSOs:</td>
+                                                                <td>{{asteroids}}</td>
+                                                            </tr>
+                                                            <tr style="background-color: #f2f2f2;">
+                                                                <td>#CCDs with SSOs:</td>
+                                                                <td>{{ccds_with_asteroid}}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <!-- Quebra de Linha -->
+                                            <tr>
+                                                <td height="20"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                </td>
+                            </tr>
+                            <!-- Footer -->
+                            <tr>
+                                <td height="30"
+                                    style="background-color: #009900;color:#FFF;font-size:13px;line-height:15px;font-family:arial,Arial,sans-serif;letter-spacing:0px;text-decoration:none"
+                                    align="center">
+                                    Powered by LIneA
+                                </td>
+                            </tr>
+                            <!-- Margin botton -->
+                            <tr>
+                                <td height="30"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <!-- Margin Left -->
+                <td width="40"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>
