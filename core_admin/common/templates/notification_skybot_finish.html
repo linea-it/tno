@@ -57,7 +57,7 @@
                                                     </br>
                                                     <a style="text-decoration: none"
                                                         href={{host_url}}/data-preparation/des/skybot/{{job_id}}>
-                                                    <span>{{host_url}}/data-preparation/des/skybot/{{job_id}}</span>
+                                                        <span>{{host_url}}/data-preparation/des/skybot/{{job_id}}</span>
                                                     </a>
                                                 </td>
                                             </tr>
@@ -95,16 +95,28 @@
                                                                 <td>{{nights}}</td>
                                                             </tr>
                                                             <tr style="background-color: #f2f2f2;">
+                                                                <td>#Exposures:</td>
+                                                                <td>{{exposures}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>#Exposures with SSOs:</td>
+                                                                <td>{{exposures_with_asteroid}}</td>
+                                                            </tr>
+                                                            <tr style="background-color: #f2f2f2;">
                                                                 <td>#CCDs Analyzed:</td>
                                                                 <td>{{ccds}}</td>
                                                             </tr>
                                                             <tr>
-                                                                <td>#SSOs:</td>
-                                                                <td>{{asteroids}}</td>
-                                                            </tr>
-                                                            <tr style="background-color: #f2f2f2;">
                                                                 <td>#CCDs with SSOs:</td>
                                                                 <td>{{ccds_with_asteroid}}</td>
+                                                            </tr>
+                                                            <tr style="background-color: #f2f2f2;">
+                                                                <td>#Observations:</td>
+                                                                <td>{{positions}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>#SSOs:</td>
+                                                                <td>{{asteroids}}</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>

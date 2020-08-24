@@ -1388,9 +1388,12 @@ class DesSkybotPipeline():
                 "job_end": job['finish'].strftime("%Y-%m-%d %H:%M:%S"),
                 "execution_time": str(job['execution_time']).split(".")[0],
                 "nights": job['nights'],
+                "exposures": job['exposures'],
+                "exposures_with_asteroid": job['exposures_with_asteroid'],
                 "ccds": job['ccds'],
-                "asteroids": job['asteroids'],
-                "ccds_with_asteroid": job['ccds_with_asteroid']
+                "ccds_with_asteroid": job['ccds_with_asteroid'],
+                "positions": job['positions'],
+                "asteroids": job['asteroids']
             })
 
             Notify().send_html_email(
