@@ -295,12 +295,13 @@ class DesSkybotJobResultDao(DBBase):
         select
             split_part(dynclass, '>', 1) as dynclass,
             count(distinct(sp.name)) as asteroids
-        --	count(distinct(dsp.ccd_id)) as ccds
         from skybot_position sp 
+        inner join des_skybotposition dsp on
+            sp.id = dsp.position_id 
         inner join des_skybotjobresult ds on
             sp.ticket = ds.ticket
         where
-            ds.job_id = 91
+            ds.job_id = 109
         group by
             split_part(dynclass, '>', 1)
         order by
@@ -313,7 +314,7 @@ class DesSkybotJobResultDao(DBBase):
             [type]: [description]
         """
 
-        stm = text("""select split_part(dynclass, '>', 1) as dynclass, count(distinct(sp.name)) as asteroids from skybot_position sp inner join des_skybotjobresult ds on sp.ticket = ds.ticket where ds.job_id = %s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);""" % int(job_id))
+        stm = text("""select split_part(dynclass, '>', 1) as dynclass, count(distinct(sp.name)) as asteroids from skybot_position sp inner join des_skybotposition dsp on	sp.id = dsp.position_id inner join des_skybotjobresult ds on sp.ticket = ds.ticket where ds.job_id = %s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);""" % int(job_id))
 
         self.debug_query(stm, True)
 
