@@ -453,6 +453,7 @@ function SkybotAsteroid({ setTitle }) {
                   insideCcdOnly ? asteroidsInsideCcd.length : positions.length
                 }
                 hasSearching={false}
+                hasRowNumberer
                 remote={false}
               />
             ) : (

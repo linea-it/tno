@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 import urllib.parse
 
+import ldap
+from django_auth_ldap.config import LDAPSearch
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -240,6 +243,34 @@ AUTHENTICATION_BACKENDS = (
     'tno.auth_shibboleth.ShibbolethBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+
+# LDAP Authentication
+# Responsible for turn on and off the LDAP authentication:
+AUTH_LDAP_ENABLED = os.environ.get('AUTH_LDAP_ENABLED')
+
+if AUTH_LDAP_ENABLED == 'True':
+
+    # The address of the LDAP server:
+    AUTH_LDAP_SERVER_URI = os.environ.get('AUTH_LDAP_SERVER_URI')
+
+    # The password of the LDAP server (leave empty if anonymous requests are available):
+    AUTH_LDAP_BIND_PASSWORD = os.environ.get('AUTH_LDAP_BIND_PASSWORD')
+
+    # The distinguishable name, used to identify entries:
+    AUTH_LDAP_BIND_DN = os.environ.get('AUTH_LDAP_BIND_DN')
+
+    # The distinguishable name for searching users, used to identify entries:
+    AUTH_LDAP_USER_SEARCH_DN = os.environ.get('AUTH_LDAP_USER_SEARCH_DN')
+
+    AUTH_LDAP_USER_SEARCH = LDAPSearch(
+        AUTH_LDAP_USER_SEARCH_DN,
+        ldap.SCOPE_SUBTREE, "(uid=%(user)s)"
+    )
+
+    # Adding LDAP as an authentication method:
+    AUTHENTICATION_BACKENDS += ('django_auth_ldap.backend.LDAPBackend',)
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
