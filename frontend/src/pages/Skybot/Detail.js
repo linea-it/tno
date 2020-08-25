@@ -164,6 +164,20 @@ function SkybotDetail({ setTitle }) {
       title: 'Exposure #',
     },
     {
+      name: 'band',
+      title: 'Band',
+      width: 80,
+    },
+    {
+      name: 'date_obs',
+      title: 'Date Obs',
+      width: 150,
+      customElement: (row) =>
+        row.execution_time
+          ? moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss')
+          : '-',
+    },
+    {
       name: 'positions',
       title: '# Observations',
     },

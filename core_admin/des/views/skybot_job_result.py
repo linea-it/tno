@@ -17,7 +17,7 @@ class SkybotJobResultViewSet(viewsets.ModelViewSet):
     serializer_class = SkybotJobResultSerializer
     filter_fields = ('id', 'job', 'exposure',)
     ordering_fields = ('id', 'job', 'exposure', 'positions',
-                       'inside_ccd', 'outside_ccd', 'success', 'execution_time')
+                       'inside_ccd', 'outside_ccd', 'success', 'execution_time', 'exposure__date_obs')
     ordering = ('exposure',)
 
     @action(detail=False)
