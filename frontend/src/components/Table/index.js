@@ -236,7 +236,8 @@ function Table({
       clearData();
       setCustomLoading(true);
     }
-    setSorting(value);
+
+    setSorting([value[value.length - 1]]);
   };
 
   const changeCurrentPage = (value) => {

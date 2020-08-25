@@ -164,16 +164,33 @@ function SkybotDetail({ setTitle }) {
       title: 'Exposure #',
     },
     {
+      name: 'band',
+      title: 'Band',
+      width: 80,
+    },
+    {
+      name: 'date_obs',
+      title: 'Observation Date',
+      width: 150,
+      customElement: (row) =>
+        row.execution_time
+          ? moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss')
+          : '-',
+    },
+    {
       name: 'positions',
       title: '# Observations',
+      width: 140,
     },
     {
       name: 'inside_ccd',
       title: '# SSOs In CCDs',
+      width: 150,
     },
     {
       name: 'outside_ccd',
       title: '# SSOs Out CCDs',
+      width: 160,
     },
     {
       name: 'execution_time',
