@@ -63,6 +63,13 @@ class SkybotJob(models.Model):
         null=True, blank=True
     )
 
+    # Tempo de duração estimado no começo do Job
+    estimated_execution_time = models.DurationField(
+        verbose_name='Estimated Execution Time',
+        null=True,
+        blank=True
+    )
+
     # Total de exposições executadas neste job.
     exposures = models.BigIntegerField(
         verbose_name='Exposures',

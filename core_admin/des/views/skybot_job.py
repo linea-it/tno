@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
 from rest_framework import mixins, viewsets
@@ -28,6 +28,21 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
     serializer_class = SkybotJobSerializer
     ordering_fields = ('id', 'status', 'start', 'finish')
     ordering = ('-start',)
+
+    def estimate_execution_time(self, to_execute):
+
+        dao = DesSkybotJobResultDao(pool=False)
+
+        se = dao.skybot_estimate()
+
+        # try:
+        average_time = se['t_exec_time'] / int(se['total'])
+        estimated_time = (int(to_execute) * average_time).total_seconds()
+
+        # except:
+        # estimated_time = 0
+
+        return estimated_time
 
     @action(detail=False, methods=['post'])
     def submit_job(self, request, pk=None):
@@ -62,10 +77,15 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
             date_final, '%Y-%m-%d').strftime("%Y-%m-%d 23:59:59")
 
         # Recuperar o total de noites com exposição no periodo
-        t_nights = ExposureDao().count_nights_by_period(start, end)
+        t_nights = ExposureDao(pool=False).count_nights_by_period(start, end)
+
+        t_exposures = DesSkybotJobResultDao(
+            pool=False).count_not_exec_by_period(start, end)
 
         # Recuperar o total de ccds no periodo.
         t_ccds = CcdDao().count_ccds_by_period(start, end)
+
+        estimated_time = self.estimate_execution_time(t_exposures)
 
         # Criar um model Skybot Job
         job = SkybotJob(
@@ -78,6 +98,10 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
             nights=t_nights,
             # Total de CCDs no periodo
             ccds=t_ccds,
+            # Total de exposures a serem executadas.
+            exposures=t_exposures,
+            # Tempo de execução estimado
+            estimated_execution_time=timedelta(seconds=estimated_time)
         )
         job.save()
 
@@ -135,9 +159,29 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         # Ler arquivo loaddata_heartbeat.json
         loaddata = pipeline.read_loaddata_heartbeat(job.path)
 
+        estimated_time = self.estimate_execution_time(job.exposures)
+
         return Response({
             "request": request,
-            "loaddata": loaddata
+            "loaddata": loaddata,
+        })
+
+    @action(detail=False)
+    def calc_execution_time(self, request):
+        """
+            Calcula o tempo estimado de execução para o skybot baseado na quantidade de exposições a serem executadas. 
+
+            Exemplo: http://localhost/api/des/skybot_job/calc_execution_time/?to_execute=500
+
+            Parameters:
+                to_execute (int): Quantidade de exposições a serem executadas.
+        """
+        to_execute = request.query_params.get('to_execute')
+
+        estimated_time = self.estimate_execution_time(to_execute)
+
+        return Response({
+            'estimated_time': estimated_time
         })
 
     @action(detail=True)

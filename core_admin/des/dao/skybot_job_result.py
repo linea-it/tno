@@ -151,6 +151,55 @@ class DesSkybotJobResultDao(DBBase):
 
         return rows
 
+    def count_not_exec_by_period(self, start, end):
+        """
+            Retorna o Total de exposições que não foram executadas pelo skybot
+            para um periodo.
+
+            Parameters:
+                start (datetime): Periodo inicial que sera usado na seleção.
+
+                end (datetime): Periodo final que sera usado na seleção.
+
+            Returns:
+                rows (array) Exposições que ainda não foram executadas pelo skybot.
+
+
+        select
+            count(de.id) as total
+        from
+            des_exposure de
+        where
+            de.date_obs between '2019-01-01 00:00:00' and '2019-01-31 23:59:50'
+            and de.id not in (
+            select
+                ds.exposure_id
+            from
+                des_skybotjobresult ds)
+
+        """
+        # des_exposure
+        de_tbl = self.get_table('des_exposure', self.get_base_schema())
+
+        # des_skybotjobresult
+        ds_tbl = self.tbl
+
+        stm = select([func.count(de_tbl.c.id).label('total')]).\
+            where(
+                and_(
+                    de_tbl.c.date_obs.between(str(start), str(end)),
+                    de_tbl.c.id.notin_(
+                        select([ds_tbl.c.exposure_id])
+                    )
+                )
+        )
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalar(stm)
+
+        return rows
+
     def t_positions_des_by_job(self, job_id):
         """Retorna o Total de posições 
         retornadas pelo skybot que estão em ccds do DES para um Job especifico.
@@ -497,3 +546,16 @@ class DesSkybotJobResultDao(DBBase):
         rows = self.fetch_all_dict(stm)
 
         return rows
+
+    def skybot_estimate(self):
+
+        stm = select([
+            func.sum(self.tbl.c.execution_time).label('t_exec_time'),
+            func.count(self.tbl.c.exposure_id).label('total'),
+        ])
+
+        self.debug_query(stm, True)
+
+        row = self.fetch_one_dict(stm)
+
+        return row
