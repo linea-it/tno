@@ -170,7 +170,7 @@ function SkybotDetail({ setTitle }) {
     },
     {
       name: 'date_obs',
-      title: 'Date Obs',
+      title: 'Observation Date',
       width: 150,
       customElement: (row) =>
         row.execution_time
@@ -180,14 +180,17 @@ function SkybotDetail({ setTitle }) {
     {
       name: 'positions',
       title: '# Observations',
+      width: 140,
     },
     {
       name: 'inside_ccd',
       title: '# SSOs In CCDs',
+      width: 150,
     },
     {
       name: 'outside_ccd',
       title: '# SSOs Out CCDs',
+      width: 160,
     },
     {
       name: 'execution_time',
@@ -260,7 +263,7 @@ function SkybotDetail({ setTitle }) {
     const page = currentPage + 1;
     const ordering = `${sorting[0].direction === 'desc' ? '-' : ''}${
       sorting[0].columnName
-      }`;
+    }`;
 
     getSkybotResultById({ id, page, pageSize, ordering }).then((res) => {
       setTableData(res.results);
@@ -454,8 +457,8 @@ function SkybotDetail({ setTitle }) {
                 {isJobCanceled ? (
                   <CircularProgress size={15} color="secondary" />
                 ) : (
-                    <Icon className="fas fa-stop" fontSize="inherit" />
-                  )}
+                  <Icon className="fas fa-stop" fontSize="inherit" />
+                )}
                 <Typography variant="button" style={{ margin: '0 5px' }}>
                   Abort
                 </Typography>
@@ -472,162 +475,162 @@ function SkybotDetail({ setTitle }) {
           </Typography>
         </Grid>
       ) : (
-          <>
-            <Grid item xs={12} md={5} xl={3}>
-              <Card>
-                <CardHeader title="Summary Execution" />
-                <CardContent>
-                  <List data={summaryExecution} />
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={7} xl={9}>
-              <Card>
-                <CardHeader title="Progress" />
-                <CardContent>
-                  <Grid
-                    container
-                    spacing={3}
-                    direction="column"
-                    className={classes.progressWrapper}
-                  >
-                    <Grid item>
-                      <Progress
-                        title="Retrieving data from Skybot"
-                        variant="determinate"
-                        label={`${progress.request.exposures} exposures`}
-                        total={progress.request.exposures}
-                        current={progress.request.current}
-                      />
-                      <Grid container spacing={2}>
-                        <Grid item>
-                          <Chip
-                            label={`Average: ${progress.request.average_time.toFixed(
-                              2
-                            )}s`}
-                            color="primary"
-                            variant="outlined"
-                          />
-                        </Grid>
-                        <Grid item>
-                          <Chip
-                            label={`Estimate: ${formatSeconds(
-                              progress.request.time_estimate
-                            )}`}
-                            color="primary"
-                            variant="outlined"
-                          />
-                        </Grid>
-                        <Grid item>
-                          <Chip
-                            label={`Progress: ${progress.request.current}/${progress.request.exposures}`}
-                            color="primary"
-                            variant="outlined"
-                          />
-                        </Grid>
+        <>
+          <Grid item xs={12} md={5} xl={3}>
+            <Card>
+              <CardHeader title="Summary Execution" />
+              <CardContent>
+                <List data={summaryExecution} />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={7} xl={9}>
+            <Card>
+              <CardHeader title="Progress" />
+              <CardContent>
+                <Grid
+                  container
+                  spacing={3}
+                  direction="column"
+                  className={classes.progressWrapper}
+                >
+                  <Grid item>
+                    <Progress
+                      title="Retrieving data from Skybot"
+                      variant="determinate"
+                      label={`${progress.request.exposures} exposures`}
+                      total={progress.request.exposures}
+                      current={progress.request.current}
+                    />
+                    <Grid container spacing={2}>
+                      <Grid item>
+                        <Chip
+                          label={`Average: ${progress.request.average_time.toFixed(
+                            2
+                          )}s`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Chip
+                          label={`Estimate: ${formatSeconds(
+                            progress.request.time_estimate
+                          )}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Chip
+                          label={`Progress: ${progress.request.current}/${progress.request.exposures}`}
+                          color="primary"
+                          variant="outlined"
+                        />
                       </Grid>
                     </Grid>
-
-                    <Grid item>
-                      <Progress
-                        title="Importing positions to database"
-                        variant="determinate"
-                        label={`${progress.loaddata.exposures} exposures`}
-                        total={progress.loaddata.exposures}
-                        current={progress.loaddata.current}
-                      />
-                      <Grid container spacing={2}>
-                        <Grid item>
-                          <Chip
-                            label={`Average: ${progress.loaddata.average_time.toFixed(
-                              2
-                            )}s`}
-                            color="primary"
-                            variant="outlined"
-                          />
-                        </Grid>
-                        <Grid item>
-                          <Chip
-                            label={`Estimate: ${formatSeconds(
-                              moment
-                                .duration(progress.loaddata.time_estimate)
-                                .add(
-                                  moment.duration(progress.request.time_estimate)
-                                )
-                            )}`}
-                            color="primary"
-                            variant="outlined"
-                          />
-                        </Grid>
-                        <Grid item>
-                          <Chip
-                            label={`Progress: ${progress.loaddata.current}/${progress.loaddata.exposures}`}
-                            color="primary"
-                            variant="outlined"
-                          />
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                    {hasCircularProgress && [1, 2].includes(status) ? (
-                      <CircularProgress
-                        className={classes.circularProgress}
-                        disableShrink
-                        size={20}
-                      />
-                    ) : null}
                   </Grid>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12}>
-              <Grid container alignItems="stretch" spacing={2}>
-                <Grid item xs={12} md={5} xl={3}>
-                  <Card>
-                    <CardHeader title="Summary Results" />
-                    <CardContent>
-                      <List data={summaryResults} />
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} md={7} xl={9}>
-                  <Card>
-                    <CardHeader title="Executed Nights" />
-                    <CardContent>
-                      <Grid
-                        container
-                        spacing={2}
-                        direction="column"
-                        className={classes.gridTable}
-                      >
-                        <Grid item>
-                          {selectedDateYears.length > 1 ? (
-                            <ButtonGroup
-                              variant="contained"
-                              color="primary"
-                              className={classes.buttonGroupYear}
-                            >
-                              {selectedDateYears.map((year) => (
-                                <Button
-                                  key={year}
-                                  onClick={() => setCurrentSelectedDateYear(year)}
-                                  disabled={currentSelectedDateYear === year}
-                                >
-                                  {year}
-                                </Button>
-                              ))}
-                            </ButtonGroup>
-                          ) : null}
-                        </Grid>
-                        <Grid item className={classes.gridTableRow}>
-                          <CalendarExecutedNight
-                            data={currentYearExecutedNights}
-                          />
-                        </Grid>
+
+                  <Grid item>
+                    <Progress
+                      title="Importing positions to database"
+                      variant="determinate"
+                      label={`${progress.loaddata.exposures} exposures`}
+                      total={progress.loaddata.exposures}
+                      current={progress.loaddata.current}
+                    />
+                    <Grid container spacing={2}>
+                      <Grid item>
+                        <Chip
+                          label={`Average: ${progress.loaddata.average_time.toFixed(
+                            2
+                          )}s`}
+                          color="primary"
+                          variant="outlined"
+                        />
                       </Grid>
-                    </CardContent>
-                  </Card>
+                      <Grid item>
+                        <Chip
+                          label={`Estimate: ${formatSeconds(
+                            moment
+                              .duration(progress.loaddata.time_estimate)
+                              .add(
+                                moment.duration(progress.request.time_estimate)
+                              )
+                          )}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                      <Grid item>
+                        <Chip
+                          label={`Progress: ${progress.loaddata.current}/${progress.loaddata.exposures}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  {hasCircularProgress && [1, 2].includes(status) ? (
+                    <CircularProgress
+                      className={classes.circularProgress}
+                      disableShrink
+                      size={20}
+                    />
+                  ) : null}
                 </Grid>
-                {/* <Grid item xs={8}>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12}>
+            <Grid container alignItems="stretch" spacing={2}>
+              <Grid item xs={12} md={5} xl={3}>
+                <Card>
+                  <CardHeader title="Summary Results" />
+                  <CardContent>
+                    <List data={summaryResults} />
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={7} xl={9}>
+                <Card>
+                  <CardHeader title="Executed Nights" />
+                  <CardContent>
+                    <Grid
+                      container
+                      spacing={2}
+                      direction="column"
+                      className={classes.gridTable}
+                    >
+                      <Grid item>
+                        {selectedDateYears.length > 1 ? (
+                          <ButtonGroup
+                            variant="contained"
+                            color="primary"
+                            className={classes.buttonGroupYear}
+                          >
+                            {selectedDateYears.map((year) => (
+                              <Button
+                                key={year}
+                                onClick={() => setCurrentSelectedDateYear(year)}
+                                disabled={currentSelectedDateYear === year}
+                              >
+                                {year}
+                              </Button>
+                            ))}
+                          </ButtonGroup>
+                        ) : null}
+                      </Grid>
+                      <Grid item className={classes.gridTableRow}>
+                        <CalendarExecutedNight
+                          data={currentYearExecutedNights}
+                        />
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                </Card>
+              </Grid>
+              {/* <Grid item xs={8}>
                 <Card>
                   <CardHeader title="Execution Time" />
                   <CardContent>
@@ -635,15 +638,15 @@ function SkybotDetail({ setTitle }) {
                   </CardContent>
                 </Card>
               </Grid> */}
-              </Grid>
             </Grid>
+          </Grid>
 
-            {
-              // Idle and Running Statuses:
-              ![1, 2].includes(status) ? (
-                <>
-                  <Grid item xs={12}>
-                    {/* <Grid item xs={12} sm={8}>
+          {
+            // Idle and Running Statuses:
+            ![1, 2].includes(status) ? (
+              <>
+                <Grid item xs={12}>
+                  {/* <Grid item xs={12} sm={8}>
                       <Card>
                         <CardHeader title="Execution Time" />
                         <CardContent>
@@ -651,49 +654,49 @@ function SkybotDetail({ setTitle }) {
                         </CardContent>
                       </Card>
                     </Grid> */}
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Card>
-                      <CardHeader title="Summary Dynamic Class" />
-                      <CardContent>
-                        <Table
-                          columns={dynclassAsteroidsColumns}
-                          data={dynclassAsteroids}
-                          totalCount={dynclassAsteroids.length}
-                          hasSearching={false}
-                          hasPagination={false}
-                          // hasSorting={false}
-                          // defaultSorting={[{ columnName: 'dynclass', direction: 'asc' }]}
-                          hasColumnVisibility={false}
-                          hasToolbar={false}
-                          remote={false}
-                          loading
-                        />
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Card>
-                      <CardHeader title="Skybot Results" />
-                      <CardContent>
-                        <Table
-                          columns={tableColumns}
-                          data={tableData}
-                          loadData={loadData}
-                          totalCount={totalCount || 0}
-                          hasSearching={false}
-                          // hasSorting={false}
-                          hasColumnVisibility={false}
-                          hasToolbar={false}
-                        />
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                </>
-              ) : null
-            }
-          </>
-        )}
+                </Grid>
+                <Grid item xs={12}>
+                  <Card>
+                    <CardHeader title="Summary Dynamic Class" />
+                    <CardContent>
+                      <Table
+                        columns={dynclassAsteroidsColumns}
+                        data={dynclassAsteroids}
+                        totalCount={dynclassAsteroids.length}
+                        hasSearching={false}
+                        hasPagination={false}
+                        // hasSorting={false}
+                        // defaultSorting={[{ columnName: 'dynclass', direction: 'asc' }]}
+                        hasColumnVisibility={false}
+                        hasToolbar={false}
+                        remote={false}
+                        loading
+                      />
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item xs={12}>
+                  <Card>
+                    <CardHeader title="Skybot Results" />
+                    <CardContent>
+                      <Table
+                        columns={tableColumns}
+                        data={tableData}
+                        loadData={loadData}
+                        totalCount={totalCount || 0}
+                        hasSearching={false}
+                        // hasSorting={false}
+                        hasColumnVisibility={false}
+                        hasToolbar={false}
+                      />
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </>
+            ) : null
+          }
+        </>
+      )}
     </Grid>
   );
 }
