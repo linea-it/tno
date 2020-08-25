@@ -296,6 +296,10 @@ function SkybotDetail({ setTitle }) {
           value: res.nights,
         },
         {
+          title: '# Exposures Analyzed',
+          value: res.exposures,
+        },
+        {
           title: '# CCDs Analyzed',
           value: res.ccds,
         },
@@ -306,6 +310,10 @@ function SkybotDetail({ setTitle }) {
         {
           title: '# Observations',
           value: res.positions,
+        },
+        {
+          title: '# Exposures with SSOs',
+          value: res.exposures_with_asteroid,
         },
         {
           title: '# CCDs with SSOs',

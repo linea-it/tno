@@ -47,7 +47,6 @@ function SkybotAsteroid({ setTitle }) {
   const [dynclassAsteroids, setDynclassAsteroids] = useState([]);
   const [ccdsWithAsteroids, setCcdsWithAsteroids] = useState(null);
   const [summary, setSummary] = useState([]);
-  const [summaryClass, setSummaryClass] = useState([]);
 
   useEffect(() => {
     setTitle('Skybot');
@@ -350,19 +349,28 @@ function SkybotAsteroid({ setTitle }) {
     }
   }, [ccdsPlotData, skybotResult, ccdsWithAsteroids]);
 
-  useEffect(() => {
-    if (dynclassAsteroids.length > 0) {
-      const dynclasses = dynclassAsteroids.map((row) => ({
-        title: row.dynclass,
-        value: row.asteroids,
-      }));
-      setSummaryClass(dynclasses);
-    }
-  }, [dynclassAsteroids]);
+  const summaryClassColumns = [
+    {
+      title: 'Dynamic Class',
+      name: 'dynclass',
+      width: 215,
+      sortingEnabled: false,
+    },
+    {
+      title: '# SSOs',
+      name: 'asteroids',
+      width: 150,
+      sortingEnabled: false,
+    },
+    {
+      title: '# CCDs',
+      name: 'ccds',
+      width: 150,
+      sortingEnabled: false,
+    },
+  ];
 
   const handleBackNavigation = () => history.goBack();
-
-  // const handleAsteroidInCcds = () => setInsideCcdOnly(!insideCcdOnly);
 
   return (
     <Grid container spacing={2}>
@@ -383,7 +391,7 @@ function SkybotAsteroid({ setTitle }) {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={12} sm={4}>
+      <Grid item xs={12} md={4}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Card>
@@ -397,13 +405,23 @@ function SkybotAsteroid({ setTitle }) {
             <Card>
               <CardHeader title="Summary Class" />
               <CardContent>
-                <List data={summaryClass} />
+                <Table
+                  columns={summaryClassColumns}
+                  data={dynclassAsteroids}
+                  totalCount={dynclassAsteroids.length}
+                  hasSearching={false}
+                  hasPagination={false}
+                  defaultSorting={[{ columnName: 'dynclass', ordering: 'asc' }]}
+                  hasColumnVisibility={false}
+                  hasToolbar={false}
+                  remote={false}
+                />
               </CardContent>
             </Card>
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={12} sm={8}>
+      <Grid item xs={12} md={8}>
         <Card>
           <CardHeader title="SSOs Inside CCD" />
           <CardContent>
