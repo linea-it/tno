@@ -159,8 +159,6 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         # Ler arquivo loaddata_heartbeat.json
         loaddata = pipeline.read_loaddata_heartbeat(job.path)
 
-        estimated_time = self.estimate_execution_time(job.exposures)
-
         return Response({
             "request": request,
             "loaddata": loaddata,
@@ -169,7 +167,7 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
     @action(detail=False)
     def calc_execution_time(self, request):
         """
-            Calcula o tempo estimado de execução para o skybot baseado na quantidade de exposições a serem executadas. 
+            Calcula o tempo estimado de execução para o skybot baseado na quantidade de exposições a serem executadas.
 
             Exemplo: http://localhost/api/des/skybot_job/calc_execution_time/?to_execute=500
 

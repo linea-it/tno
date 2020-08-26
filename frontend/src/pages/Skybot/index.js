@@ -15,6 +15,9 @@ import {
   InputLabel,
   Typography,
   Snackbar,
+  List,
+  ListItem,
+  ListItemText,
 } from '@material-ui/core';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
@@ -28,6 +31,7 @@ import {
   getSkybotRunList,
   getExposuresByPeriod,
   getExecutedNightsByPeriod,
+  getSkybotCalcExecutionTime,
 } from '../../services/api/Skybot';
 import CalendarHeatmap from '../../components/Chart/CalendarHeatmap';
 import CalendarExecutedNight from '../../components/Chart/CalendarExecutedNight';
@@ -55,6 +59,13 @@ function Skybot({ setTitle }) {
     hasJobRunningOrIdleFeedback,
     setHasJobRunningOrIdleFeedback,
   ] = useState(false);
+  const [executionSummary, setExecutionSummary] = useState({
+    visible: false,
+    start: '',
+    end: '',
+    exposures: 0,
+    estimated_time: '0',
+  });
 
   useEffect(() => {
     setTitle('Skybot');
@@ -68,10 +79,30 @@ function Skybot({ setTitle }) {
       moment(selectedDate[1]).format('YYYY-MM-DD')
     ).then((res) => {
       setExposuresByPeriod(res);
+
+
+      setExecutionSummary({
+        visible: true,
+        exposures: res.length,
+        start: selectedDate[0],
+        end: selectedDate[1],
+        estimated_time: 0,
+      });
     });
 
     setDisableSubmit(false);
   };
+
+  useEffect(() => {
+    if(exposuresByPeriod.length > 0) {
+      getSkybotCalcExecutionTime(exposuresByPeriod.length).then(res => {
+        setExecutionSummary(prevExecutionSummaray => ({
+          ...prevExecutionSummaray,
+          estimated_time: res,
+        }));
+      });
+    }
+  }, [exposuresByPeriod])
 
   useEffect(() => {
     getExposuresByPeriod('2012-11-10', '2019-02-28').then((res) => {
@@ -342,6 +373,40 @@ function Skybot({ setTitle }) {
               </>
             ) : null}
           </Grid>
+          {executionSummary.visible ? (
+            <Grid item xs={12}>
+              <List dense>
+                <Grid container>
+                  <Grid item xs={12} sm={4}>
+                    <ListItem>
+                      <ListItemText
+                        primary="Selected Period"
+                        secondary={`${executionSummary.start} / ${executionSummary.end}`}
+                      />
+                    </ListItem>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <ListItem>
+                      <ListItemText
+                        primary="Exposures"
+                        secondary={executionSummary.exposures}
+                      />
+                    </ListItem>
+                  </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <ListItem>
+                      <ListItemText
+                        primary="Estimated Time"
+                        secondary={moment
+                          .utc(executionSummary.estimated_time * 1000)
+                          .format('HH:mm:ss')}
+                      />
+                    </ListItem>
+                  </Grid>
+                </Grid>
+              </List>
+            </Grid>
+          ) : null}
         </Grid>
       );
     }
