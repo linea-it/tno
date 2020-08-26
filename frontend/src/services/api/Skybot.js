@@ -103,3 +103,7 @@ export const getDynclassAsteroids = id =>
 export const getCcdsWithAsteroidsById = (id) =>
   axios.get(`/des/skybot_job_result/${id}/ccds_with_asteroids/`)
     .then((res) => res.data);
+
+export const getSkybotCalcExecutionTime = exposures =>
+  axios.get(`/des/skybot_job/calc_execution_time?to_execute=${exposures}`)
+    .then((res) => res.data.estimated_time)
