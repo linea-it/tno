@@ -692,6 +692,7 @@ function SkybotDetail({ setTitle }) {
                         // hasSorting={false}
                         hasColumnVisibility={false}
                         hasToolbar={false}
+                        hasRowNumberer
                       />
                     </CardContent>
                   </Card>

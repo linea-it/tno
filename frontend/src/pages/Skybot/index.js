@@ -491,6 +491,7 @@ function Skybot({ setTitle }) {
                 reload={reload}
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
+                hasRowNumberer
               />
             </CardContent>
           </Card>

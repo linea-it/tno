@@ -575,7 +575,7 @@ function Download({ setTitle }) {
                 hasToolbar={false}
                 reload={reload}
                 totalCount={totalCount}
-                defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
+                hasRowNumberer
               />
             </CardContent>
           </Card>

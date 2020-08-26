@@ -98,7 +98,7 @@ function DownloadDetail({ setTitle }) {
             : '-',
         },
         {
-          title: 'Execution',
+          title: 'Execution Time',
           value: res.execution_time ? res.execution_time.split('.')[0] : 0,
         },
       ]);
