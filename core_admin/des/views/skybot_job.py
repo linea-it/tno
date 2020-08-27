@@ -35,12 +35,12 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
 
         se = dao.skybot_estimate()
 
-        # try:
-        average_time = se['t_exec_time'] / int(se['total'])
-        estimated_time = (int(to_execute) * average_time).total_seconds()
+        try:
+            average_time = se['t_exec_time'] / int(se['total'])
+            estimated_time = (int(to_execute) * average_time).total_seconds()
 
-        # except:
-        # estimated_time = 0
+        except:
+            estimated_time = 0
 
         return estimated_time
 
@@ -240,43 +240,46 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
 
         dao = DesSkybotJobResultDao(pool=False)
 
-        asteroids = dao.dynclass_asteroids_by_job(job_id)
-        ccds = dao.dynclass_ccds_by_job(job_id)
-        positions = dao.dynclass_positions_by_job(job_id)
+        try:
+            asteroids = dao.dynclass_asteroids_by_job(job_id)
+            ccds = dao.dynclass_ccds_by_job(job_id)
+            positions = dao.dynclass_positions_by_job(job_id)
 
-        df_asteroids = pd.DataFrame(asteroids)
-        df_asteroids.set_index('dynclass')
-        df_asteroids = df_asteroids.fillna(0)
+            df_asteroids = pd.DataFrame(asteroids)
+            df_asteroids.set_index('dynclass')
+            df_asteroids = df_asteroids.fillna(0)
 
-        df_ccds = pd.DataFrame(ccds)
-        df_ccds.set_index('dynclass')
-        df_ccds = df_ccds.fillna(0)
+            df_ccds = pd.DataFrame(ccds)
+            df_ccds.set_index('dynclass')
+            df_ccds = df_ccds.fillna(0)
 
-        df_positions = pd.DataFrame(positions)
-        df_positions.set_index('dynclass')
-        df_positions = df_positions.fillna(0)
+            df_positions = pd.DataFrame(positions)
+            df_positions.set_index('dynclass')
+            df_positions = df_positions.fillna(0)
 
-        df = pd.concat([df_asteroids, df_ccds, df_positions], axis=1)
-        df = df.fillna(0)
-        df = df.rename(columns={'index': 'dynclass'})
+            df = pd.concat([df_asteroids, df_ccds, df_positions], axis=1)
+            df = df.fillna(0)
+            df = df.rename(columns={'index': 'dynclass'})
 
-        df['g'] = 0
-        df['r'] = 0
-        df['i'] = 0
-        df['z'] = 0
-        df['Y'] = 0
-        df['u'] = 0
+            df['g'] = 0
+            df['r'] = 0
+            df['i'] = 0
+            df['z'] = 0
+            df['Y'] = 0
+            df['u'] = 0
 
-        # Remove as colunas duplicadas
-        df = df.loc[:, ~df.columns.duplicated()]
+            # Remove as colunas duplicadas
+            df = df.loc[:, ~df.columns.duplicated()]
 
-        for i in range(len(df)):
-            dynclass = str(df.iloc[i, 0])
-            bands = dao.dynclass_band_by_job(job_id, dynclass)
+            for i in range(len(df)):
+                dynclass = str(df.iloc[i, 0])
+                bands = dao.dynclass_band_by_job(job_id, dynclass)
 
-            for band in bands:
-                df.at[i, str(band['band'])] = int(band['positions'])
+                for band in bands:
+                    df.at[i, str(band['band'])] = int(band['positions'])
 
-        result = df.to_dict('records')
+            result = df.to_dict('records')
+        except:
+            result = list()
 
         return Response(result)
