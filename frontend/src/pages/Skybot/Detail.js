@@ -306,7 +306,7 @@ function SkybotDetail({ setTitle }) {
           value: res.estimated_execution_time ? res.estimated_execution_time.split('.')[0] : 0,
         },
         {
-          title: 'Execution',
+          title: 'Execution Time',
           value: res.execution_time ? res.execution_time.split('.')[0] : 0,
         },
       ]);
