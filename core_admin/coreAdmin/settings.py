@@ -260,6 +260,14 @@ if AUTH_LDAP_ENABLED == 'True':
     # The distinguishable name, used to identify entries:
     AUTH_LDAP_BIND_DN = os.environ.get('AUTH_LDAP_BIND_DN')
 
+    # Populate the Django user from the LDAP directory.
+    AUTH_LDAP_USER_ATTR_MAP = {
+        "first_name": "givenName",
+        "last_name": "sn",
+        "email": "mail",
+    }
+
+
     # The distinguishable name for searching users, used to identify entries:
     AUTH_LDAP_USER_SEARCH_DN = os.environ.get('AUTH_LDAP_USER_SEARCH_DN')
 
