@@ -80,10 +80,9 @@ function Skybot({ setTitle }) {
     ).then((res) => {
       setExposuresByPeriod(res);
 
-
       setExecutionSummary({
         visible: true,
-        exposures: res.length,
+        exposures: res.reduce((a, b) => a + (b.count || 0), 0),
         start: selectedDate[0],
         end: selectedDate[1],
         estimated_time: 0,
@@ -94,15 +93,15 @@ function Skybot({ setTitle }) {
   };
 
   useEffect(() => {
-    if(exposuresByPeriod.length > 0) {
-      getSkybotCalcExecutionTime(exposuresByPeriod.length).then(res => {
-        setExecutionSummary(prevExecutionSummaray => ({
+    if (exposuresByPeriod.length > 0) {
+      getSkybotCalcExecutionTime(exposuresByPeriod.length).then((res) => {
+        setExecutionSummary((prevExecutionSummaray) => ({
           ...prevExecutionSummaray,
           estimated_time: res,
         }));
       });
     }
-  }, [exposuresByPeriod])
+  }, [exposuresByPeriod]);
 
   useEffect(() => {
     getExposuresByPeriod('2012-11-10', '2019-02-28').then((res) => {
@@ -228,6 +227,15 @@ function Skybot({ setTitle }) {
       ),
     },
     {
+      name: 'execution_time',
+      title: 'Execution Time',
+      width: 150,
+      headerTooltip: 'Execution time',
+      align: 'center',
+      customElement: (row) =>
+        row.execution_time ? row.execution_time.split('.')[0] : null,
+    },
+    {
       name: 'date_initial',
       title: 'First Night',
       width: 130,
@@ -258,15 +266,6 @@ function Skybot({ setTitle }) {
     {
       name: 'ccds',
       title: '# CCDs',
-    },
-    {
-      name: 'execution_time',
-      title: 'Execution Time',
-      width: 150,
-      headerTooltip: 'Execution time',
-      align: 'center',
-      customElement: (row) =>
-        row.execution_time ? row.execution_time.split('.')[0] : null,
     },
   ];
 
@@ -377,15 +376,23 @@ function Skybot({ setTitle }) {
             <Grid item xs={12}>
               <List dense>
                 <Grid container>
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={3}>
                     <ListItem>
                       <ListItemText
-                        primary="Selected Period"
-                        secondary={`${executionSummary.start} / ${executionSummary.end}`}
+                        primary="Start Date"
+                        secondary={executionSummary.start}
                       />
                     </ListItem>
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={3}>
+                    <ListItem>
+                      <ListItemText
+                        primary="End Date"
+                        secondary={executionSummary.end}
+                      />
+                    </ListItem>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
                     <ListItem>
                       <ListItemText
                         primary="Exposures"
@@ -393,7 +400,7 @@ function Skybot({ setTitle }) {
                       />
                     </ListItem>
                   </Grid>
-                  <Grid item xs={12} sm={4}>
+                  <Grid item xs={12} sm={3}>
                     <ListItem>
                       <ListItemText
                         primary="Estimated Time"

@@ -225,6 +225,15 @@ function Download({ setTitle }) {
       ),
     },
     {
+      name: 'execution_time',
+      title: 'Execution Time',
+      width: 150,
+      headerTooltip: 'Execution time',
+      align: 'center',
+      customElement: (row) =>
+        row.execution_time ? row.execution_time.split('.')[0] : null,
+    },
+    {
       name: 'dynclass',
       title: 'Dynamic Class',
       width: 140,
@@ -271,15 +280,6 @@ function Download({ setTitle }) {
       title: '# CCDs Downloaded',
       width: 180,
       sortingEnabled: false,
-    },
-    {
-      name: 'execution_time',
-      title: 'Execution Time',
-      width: 150,
-      headerTooltip: 'Execution time',
-      align: 'center',
-      customElement: (row) =>
-        row.execution_time ? row.execution_time.split('.')[0] : null,
     },
   ];
 

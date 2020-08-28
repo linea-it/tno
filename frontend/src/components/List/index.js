@@ -9,8 +9,8 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import useStyles from './styles';
 
-function List({ data, height, width }) {
-  const classes = useStyles();
+function List({ data, height, width, align }) {
+  const classes = useStyles({ align });
 
   return (
     <MuiList className={classes.root} style={{ height, width }}>
@@ -43,7 +43,7 @@ function List({ data, height, width }) {
             className={classes.itemText}
           />
           <ListItemText
-            className={classes.itemText}
+            className={clsx(classes.itemText, classes.itemValueText)}
             secondary={
               typeof item.value === 'function' ? item.value() : item.value
             }
@@ -57,12 +57,14 @@ function List({ data, height, width }) {
 List.defaultProps = {
   height: 'auto',
   width: '100%',
+  align: 'right',
 };
 
 List.propTypes = {
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  align: PropTypes.string,
 };
 
 export default List;

@@ -7,6 +7,9 @@ const useStyles = makeStyles({
   itemText: {
     flex: '1 1',
   },
+  itemValueText: ({ align }) => ({
+    textAlign: align,
+  }),
   tooltip: {
     borderBottom: '1px dotted #888',
     cursor: 'help',

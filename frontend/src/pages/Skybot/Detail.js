@@ -278,7 +278,11 @@ function SkybotDetail({ setTitle }) {
         {
           title: 'Status',
           value: () => (
-            <ColumnStatus status={res.status} title={res.error_msg} />
+            <ColumnStatus
+              status={res.status}
+              title={res.error_msg}
+              align="right"
+            />
           ),
         },
         {
@@ -286,10 +290,12 @@ function SkybotDetail({ setTitle }) {
           value: res.owner,
         },
         {
-          title: 'Selected Period',
-          value: `${moment(res.date_initial).format('YYYY-MM-DD')} / ${moment(
-            res.date_final
-          ).format('YYYY-MM-DD')}`,
+          title: 'Start Date',
+          value: moment(res.date_initial).format('YYYY-MM-DD'),
+        },
+        {
+          title: 'End Date',
+          value: moment(res.date_final).format('YYYY-MM-DD'),
         },
         {
           title: 'Start',
@@ -303,7 +309,9 @@ function SkybotDetail({ setTitle }) {
         },
         {
           title: 'Estimated Time',
-          value: res.estimated_execution_time ? res.estimated_execution_time.split('.')[0] : 0,
+          value: res.estimated_execution_time
+            ? res.estimated_execution_time.split('.')[0]
+            : 0,
         },
         {
           title: 'Execution Time',
@@ -518,7 +526,7 @@ function SkybotDetail({ setTitle }) {
                       </Grid>
                       <Grid item>
                         <Chip
-                          label={`Estimate: ${formatSeconds(
+                          label={`Time Left: ${formatSeconds(
                             progress.request.time_estimate
                           )}`}
                           color="primary"
@@ -555,7 +563,7 @@ function SkybotDetail({ setTitle }) {
                       </Grid>
                       <Grid item>
                         <Chip
-                          label={`Estimate: ${formatSeconds(
+                          label={`Time Left: ${formatSeconds(
                             moment
                               .duration(progress.loaddata.time_estimate)
                               .add(
