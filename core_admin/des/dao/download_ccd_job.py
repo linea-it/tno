@@ -54,10 +54,13 @@ class DownloadCcdJobDao(DBBase):
                 status=record['status'],
                 ccds_to_download=record['ccds_to_download'],
                 ccds_downloaded=record['ccds_downloaded'],
+                estimated_execution_time=record['estimated_execution_time'],
+                estimated_t_size=record['estimated_t_size'],
                 nights=record['nights'],
                 asteroids=record['asteroids'],
                 path=record['path'],
                 t_size_downloaded=record['t_size_downloaded'],
+                error=record['error']
         )
 
         self.execute(stm)
@@ -68,6 +71,8 @@ class DownloadCcdJobDao(DBBase):
         stm = self.tbl.update().\
             where(self.tbl.c.id == int(record['id'])).\
             values(
+                ccds_to_download=record['ccds_to_download'],
+                ccds_downloaded=record['ccds_downloaded'],
                 status=record['status'],
                 finish=record['finish'],
                 execution_time=record['execution_time'],

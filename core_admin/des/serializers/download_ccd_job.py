@@ -21,7 +21,9 @@ class DownloadCcdJobSerializer(serializers.ModelSerializer):
             'ccds_downloaded',
             'nights',
             'asteroids',
+            'estimated_execution_time',
             'execution_time',
+            'estimated_t_size',
             't_size_downloaded',
             'path',
             'error'
