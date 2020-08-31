@@ -114,6 +114,10 @@ function DownloadDetail({ setTitle }) {
           value: filesize(res.estimated_t_size),
         },
         {
+          title: 'Size',
+          value: filesize(res.t_size_downloaded),
+        },
+        {
           title: 'Estimated Time',
           value: res.estimated_execution_time
             ? res.estimated_execution_time.split('.')[0]
@@ -137,10 +141,6 @@ function DownloadDetail({ setTitle }) {
         {
           title: '# CCDs Downloaded',
           value: res.ccds_downloaded,
-        },
-        {
-          title: 'Size',
-          value: filesize(res.t_size_downloaded),
         },
       ]);
     });

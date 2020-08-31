@@ -24,10 +24,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(1),
   },
   circularProgress: {
-    position: 'absolute',
-    left: theme.spacing(2),
-    bottom: -6,
-    // bottom: theme.spacing(1),
+    margin: '5px auto',
   },
   fullWidth: {
     width: '100%',

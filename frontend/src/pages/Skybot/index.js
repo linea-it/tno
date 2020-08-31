@@ -94,7 +94,9 @@ function Skybot({ setTitle }) {
 
   useEffect(() => {
     if (exposuresByPeriod.length > 0) {
-      getSkybotCalcExecutionTime(exposuresByPeriod.length).then((res) => {
+      getSkybotCalcExecutionTime(
+        exposuresByPeriod.reduce((a, b) => a + (b.count || 0), 0)
+      ).then((res) => {
         setExecutionSummary((prevExecutionSummaray) => ({
           ...prevExecutionSummaray,
           estimated_time: res,
@@ -476,7 +478,7 @@ function Skybot({ setTitle }) {
 
         <Grid item xs={12} md={8} lg={9}>
           <Card>
-            <CardHeader title="Exposures By Period" />
+            <CardHeader title="Number of Exposures in Selected Period" />
             <CardContent>{renderExposurePlot()}</CardContent>
           </Card>
         </Grid>
