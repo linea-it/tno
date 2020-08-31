@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
     bottom: -6,
     // bottom: theme.spacing(1),
   },
+  fullWidth: {
+    width: '100%',
+  },
 }));
 
 export default useStyles;

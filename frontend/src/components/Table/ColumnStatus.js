@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import useStyles from './styles';
 
-function ColumnStatus({ status, title }) {
-  const classes = useStyles();
+function ColumnStatus({ status, title, align }) {
+  const classes = useStyles({ align });
 
   let statusColor = classes.btnNotExecuted;
   let statusTitle = '';
@@ -42,10 +42,12 @@ function ColumnStatus({ status, title }) {
 ColumnStatus.propTypes = {
   status: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   title: PropTypes.string,
+  align: PropTypes.string,
 };
 
 ColumnStatus.defaultProps = {
   title: null,
+  align: 'left',
 };
 
 export default ColumnStatus;

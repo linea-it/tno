@@ -91,7 +91,7 @@ function Table({
   if (hasRowNumberer) {
     customColumns.unshift({
       name: 'row_number',
-      title: 'Row',
+      title: ' ',
       hasLineBreak: false,
       headerTooltip: false,
     });
@@ -114,7 +114,7 @@ function Table({
   if (hasRowNumberer) {
     customColumnExtensions.unshift({
       columnName: 'row_number',
-      width: 100,
+      width: 80,
       maxWidth: '',
       sortingEnabled: false,
       // sortingEnabled: !remote,
@@ -167,7 +167,7 @@ function Table({
   const [selection, setSelection] = useState([]);
   const [customModalContent, setCustomModalContent] = useState('');
 
-  const classes = useStyles();
+  const classes = useStyles({ hasRowNumberer });
 
   useEffect(() => {
     if (remote === true) {
