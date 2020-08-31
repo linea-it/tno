@@ -13,8 +13,12 @@ const useStyles = makeStyles((theme) => ({
   },
   circularProgress: {
     position: 'absolute',
-    left: theme.spacing(2),
+    // left: theme.spacing(2),
+    left: 0,
+    right: 0,
     bottom: -6,
+    textAlign: 'center',
+    margin: 'auto',
     // bottom: theme.spacing(1),
   },
   gridTable: {

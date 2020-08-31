@@ -493,8 +493,16 @@ function Download({ setTitle }) {
                         <Grid item xs={12} sm={6} md={4} xl={3}>
                           <ListItem>
                             <ListItemText
-                              primary="Selected Period"
-                              secondary={`${executionSummary.start} / ${executionSummary.end}`}
+                              primary="Start Date"
+                              secondary={executionSummary.start}
+                            />
+                          </ListItem>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4} xl={3}>
+                          <ListItem>
+                            <ListItemText
+                              primary="End Date"
+                              secondary={executionSummary.end}
                             />
                           </ListItem>
                         </Grid>

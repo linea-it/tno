@@ -94,7 +94,9 @@ function Skybot({ setTitle }) {
 
   useEffect(() => {
     if (exposuresByPeriod.length > 0) {
-      getSkybotCalcExecutionTime(exposuresByPeriod.length).then((res) => {
+      getSkybotCalcExecutionTime(
+        exposuresByPeriod.reduce((a, b) => a + (b.count || 0), 0)
+      ).then((res) => {
         setExecutionSummary((prevExecutionSummaray) => ({
           ...prevExecutionSummaray,
           estimated_time: res,
