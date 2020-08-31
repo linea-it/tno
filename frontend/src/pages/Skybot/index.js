@@ -478,7 +478,7 @@ function Skybot({ setTitle }) {
 
         <Grid item xs={12} md={8} lg={9}>
           <Card>
-            <CardHeader title="Exposures By Period" />
+            <CardHeader title="Number of Exposures in Selected Period" />
             <CardContent>{renderExposurePlot()}</CardContent>
           </Card>
         </Grid>

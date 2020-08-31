@@ -448,7 +448,7 @@ function Download({ setTitle }) {
 
         <Grid item xs={12} md={8} lg={9}>
           <Card>
-            <CardHeader title="CCDs By Period" />
+            <CardHeader title="Number of CCDs in Selected Period" />
             <CardContent>
               <Grid container spacing={2} alignItems="stretch">
                 {ccdYears.length > 1 ? (
