@@ -53,14 +53,14 @@ def download_ccd(idx, ccd, base_url, ccd_image_dir, auth):
         if not os.path.exists(filepath):
             raise("Failed to download the file.")
 
+        # Descompactar .fz para .fits
+        # funpack(filepath)
+
         # Termino do Download
         finish = datetime.now(timezone.utc)
         tdelta = finish - start
         logger.info("Downloaded  IDX: [%s] CCD_ID: [%s] in %s" % (
             idx, ccd['id'], humanize.naturaldelta(tdelta)))
-
-        # Descompactar .fz para .fits
-        funpack(filepath)
 
         # Remover arquico compactado.
         os.unlink(filepath)
@@ -165,7 +165,6 @@ def download_des_ccds(job_id, ccds, max_workers=10):
     idx = 0
 
     for ccd in ccds:
-
         # Verificar se o ccd ja existe,
         # So faz o download para ccd que nao existe.
         filepath = os.path.join(ccd_image_dir, ccd['filename'])
@@ -271,6 +270,32 @@ def plot_time_profile(filepath, job_path):
     return output
 
 
+def estimate_time_and_size(to_execute):
+    # Estimativas de download
+    de = DownloadCcdJobResultDao(pool=False).download_estimate()
+
+    try:
+        average_time = de['t_exec_time'] / int(de['total'])
+        estimated_time = (to_execute * average_time).total_seconds()
+
+        # Dividir por 10 por que os downloads são paralelizados em um fator 10
+        estimated_time = (estimated_time / 10)
+
+    except:
+        estimated_time = 0
+
+    try:
+        average_size = float(de['t_file_size']) / int(de['total'])
+        estimated_size = float(to_execute * average_size)
+    except:
+        estimated_size = 0
+
+    return dict({
+        'estimated_time': estimated_time,
+        'estimated_size': estimated_size
+    })
+
+
 def run_job(job_id):
 
     logger.info("Starting the job with id %s" % job_id)
@@ -340,6 +365,12 @@ def run_job(job_id):
         # Atualiza no job a quantidade de ccds;
         job['ccds_to_download'] = len(ccds)
 
+        # Estimativa de tempo e tamanho para o Job
+        download_estimative = estimate_time_and_size(job['ccds_to_download'])
+        job['estimated_execution_time'] = timedelta(
+            seconds=download_estimative['estimated_time'])
+        job['estimated_t_size'] = download_estimative['estimated_size']
+
         # Atualizar no job a quantidade de nights
         t_nights = 0
         if len(ccds) > 0:
@@ -404,9 +435,17 @@ def run_job(job_id):
         ccds_downloaded = cjrdao.count_by_job(job['id'])
 
         # Altera para o status para Completed
-        job['status'] = 3
         job['ccds_downloaded'] = ccds_downloaded
         job['t_size_downloaded'] = t_size_downloaded
+
+        if job['ccds_to_download'] == ccds_downloaded:
+            job['status'] = 3
+        else:
+            # Marca como falha
+            job['status'] = 4
+            not_downloaded = int(job['ccds_to_download'] - ccds_downloaded)
+            job['error'] = "%s CCDs have not been downloaded, please try again." % not_downloaded
+
         job = db.update_record(job)
 
         logger.debug(job)
@@ -417,16 +456,26 @@ def run_job(job_id):
         logger.error(e)
         # Recupera os dados do job atualizado
         job = db.get_by_id(job_id)
+
         # Altera o status para Failed
         job['status'] = 4
         # Guarda o erro
         job['error'] = str(e)
 
-        db.complete_job(job)
+        db.update_record(job)
 
     finally:
         # Recupera os dados do job atualizado
         job = db.get_by_id(job_id)
+
+        # Total em bytes baixados neste job
+        t_size_downloaded = cjrdao.file_size_by_job(job['id'])
+
+        # Total de CCDs baixados no Job
+        ccds_downloaded = cjrdao.count_by_job(job['id'])
+
+        job['ccds_downloaded'] = ccds_downloaded
+        job['t_size_downloaded'] = t_size_downloaded
 
         # Calcula o tempo total de execução do Job.
         t0 = job['start']
@@ -443,7 +492,7 @@ def run_job(job_id):
 
 def start_pipeline():
 
-    logger.info("------------ Start Pipeline ------------")
+    logger.debug("------------ Start Pipeline ------------")
 
     db = DownloadCcdJobDao(pool=False)
 

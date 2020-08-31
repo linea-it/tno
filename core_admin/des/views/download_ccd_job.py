@@ -64,7 +64,7 @@ class DownloadCcdJobViewSet(mixins.RetrieveModelMixin,
             status=1,
 
             dynclass=dynclass,
-            name=name
+            name=name,
         )
         job.save()
 

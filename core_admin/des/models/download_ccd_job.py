@@ -74,6 +74,13 @@ class DownloadCcdJob(models.Model):
         blank=True
     )
 
+    # Tempo de duração estimado no começo do Job
+    estimated_execution_time = models.DurationField(
+        verbose_name='Estimated Execution Time',
+        null=True,
+        blank=True
+    )
+
     # Tempo de duração do Job.
     execution_time = models.DurationField(
         verbose_name='Execution Time',
@@ -108,6 +115,14 @@ class DownloadCcdJob(models.Model):
     asteroids = models.BigIntegerField(
         verbose_name='Asteroids',
         help_text='Total unique objects  in this job.',
+        null=True, blank=True,
+        default=0
+    )
+
+    # Tamanho total dos downloads neste job
+    estimated_t_size = models.BigIntegerField(
+        verbose_name='Estimated Size to Download',
+        help_text='Total size estimated to download in this job.',
         null=True, blank=True,
         default=0
     )

@@ -110,6 +110,16 @@ function DownloadDetail({ setTitle }) {
             : '-',
         },
         {
+          title: 'Estimated Size',
+          value: filesize(res.estimated_t_size),
+        },
+        {
+          title: 'Estimated Time',
+          value: res.estimated_execution_time
+            ? res.estimated_execution_time.split('.')[0]
+            : 0,
+        },
+        {
           title: 'Execution Time',
           value: res.execution_time ? res.execution_time.split('.')[0] : 0,
         },
