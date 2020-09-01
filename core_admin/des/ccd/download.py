@@ -1,3 +1,4 @@
+from des.ccd.notify import notify_start_job, notify_fail_job, notify_finish_job, notify_abort_job
 import logging
 import os
 import shutil
@@ -393,6 +394,9 @@ def run_job(job_id):
         logger.info("%s CCDs returned in %s." %
                     (len(ccds), humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))
 
+        # Send Notify User Email
+        notify_start_job(job_id)
+
         # Iniciando o Download dos CCDs
         results = download_des_ccds(job['id'], ccds)
 
@@ -487,6 +491,18 @@ def run_job(job_id):
         db.complete_job(job)
         logger.info("Job completed %s" %
                     humanize.naturaldelta(tdelta, minimum_unit="seconds"))
+
+        # Notify finish
+        if job['status'] == 3:
+            # Job Completo com sucesso
+            notify_finish_job(job_id)
+        elif job['status'] == 4:
+            # Job com Error
+            notify_fail_job(job_id)
+        elif job['status'] == 5:
+            # Job Aborted
+            notify_abort_job(job_id)
+
         logger.info("Done!")
 
 
