@@ -18,6 +18,8 @@ import {
   List,
   ListItem,
   ListItemText,
+  Backdrop,
+  CircularProgress,
 } from '@material-ui/core';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
@@ -66,6 +68,7 @@ function Skybot({ setTitle }) {
     exposures: 0,
     estimated_time: '0',
   });
+  const [openBackdrop, setOpenBackdrop] = useState(false);
 
   useEffect(() => {
     setTitle('Skybot');
@@ -162,6 +165,7 @@ function Skybot({ setTitle }) {
   };
 
   const handleSubmit = () => {
+    setOpenBackdrop(true);
     createSkybotRun({
       date_initial: selectedDate[0],
       date_final: selectedDate.length === 1 ? selectedDate[0] : selectedDate[1],
@@ -178,10 +182,12 @@ function Skybot({ setTitle }) {
         } else {
           history.push(`/data-preparation/des/skybot/${id}`);
         }
+        setOpenBackdrop(false);
       })
       .catch(() => {
         setReload((prevState) => !prevState);
         setDisableSubmit(false);
+        setOpenBackdrop(false);
       });
   };
 
@@ -513,6 +519,9 @@ function Skybot({ setTitle }) {
         message="There's already a job running, so your job is currently idle."
         onClose={() => setHasJobRunningOrIdleFeedback(false)}
       />
+      <Backdrop className={classes.backdrop} open={openBackdrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   );
 }
