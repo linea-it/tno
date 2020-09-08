@@ -79,6 +79,7 @@ function Table({
   hasFiltering,
   hasLineBreak,
   loading,
+  hasRowNumberer,
 }) {
   const customColumns = columns.map((column) => ({
     name: column.name,
@@ -86,6 +87,16 @@ function Table({
     hasLineBreak: column.hasLineBreak ? column.hasLineBreak : false,
     headerTooltip: column.headerTooltip ? column.headerTooltip : false,
   }));
+
+  if (hasRowNumberer) {
+    customColumns.unshift({
+      name: 'row_number',
+      title: ' ',
+      hasLineBreak: false,
+      headerTooltip: false,
+    });
+  }
+
   const customColumnExtensions = columns.map((column) => ({
     columnName: column.name,
     width: !column.width ? 120 : column.width,
@@ -100,10 +111,29 @@ function Table({
     ),
   }));
 
+  if (hasRowNumberer) {
+    customColumnExtensions.unshift({
+      columnName: 'row_number',
+      width: 80,
+      maxWidth: '',
+      sortingEnabled: false,
+      // sortingEnabled: !remote,
+      align: 'center',
+      wordWrapEnabled: false,
+    });
+  }
+
   const customDefaultColumnWidths = columns.map((column) => ({
     columnName: column.name,
     width: !column.width ? 120 : column.width,
   }));
+
+  if (hasRowNumberer) {
+    customDefaultColumnWidths.unshift({
+      columnName: 'row_number',
+      width: 100,
+    });
+  }
 
   const customSorting = () => {
     if (
@@ -113,10 +143,10 @@ function Table({
     ) {
       return defaultSorting;
     }
-    if (columns && columns[0]) {
+    if (customColumns && customColumns[0]) {
       return [
         {
-          columnName: columns[0].name,
+          columnName: customColumns[0].name,
           direction: 'asc',
         },
       ];
@@ -137,7 +167,7 @@ function Table({
   const [selection, setSelection] = useState([]);
   const [customModalContent, setCustomModalContent] = useState('');
 
-  const classes = useStyles();
+  const classes = useStyles({ hasRowNumberer });
 
   useEffect(() => {
     if (remote === true) {
@@ -160,10 +190,38 @@ function Table({
   };
 
   useEffect(() => {
-    setCustomData(data);
+    if (hasRowNumberer && remote) {
+      setCustomData(
+        data.map((row, i) => ({
+          row_number: currentPage * customPageSize + i + 1,
+          ...row,
+        }))
+      );
+    }
+
+    if (hasRowNumberer && !remote) {
+      setCustomData(
+        data.map((row, i) => ({
+          row_number: i + 1,
+          ...row,
+        }))
+      );
+    }
+
+    if (!hasRowNumberer) {
+      setCustomData(data);
+    }
+
     setCustomTotalCount(totalCount);
     setCustomLoading(false);
-  }, [data, totalCount, defaultExpandedGroups]);
+  }, [
+    data,
+    totalCount,
+    defaultExpandedGroups,
+    currentPage,
+    customPageSize,
+    remote,
+  ]);
 
   useEffect(() => {
     if (loading !== null) setCustomLoading(loading);
@@ -178,7 +236,8 @@ function Table({
       clearData();
       setCustomLoading(true);
     }
-    setSorting(value);
+
+    setSorting([value[value.length - 1]]);
   };
 
   const changeCurrentPage = (value) => {
@@ -503,6 +562,7 @@ Table.defaultProps = {
   hasLineBreak: false,
   grouping: [{}],
   loading: null,
+  hasRowNumberer: false,
 };
 
 Table.propTypes = {
@@ -533,6 +593,7 @@ Table.propTypes = {
   remote: PropTypes.bool,
   grouping: PropTypes.arrayOf(PropTypes.object),
   loading: PropTypes.bool,
+  hasRowNumberer: PropTypes.bool,
 };
 
 export default Table;

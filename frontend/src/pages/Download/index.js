@@ -225,12 +225,21 @@ function Download({ setTitle }) {
       ),
     },
     {
+      name: 'execution_time',
+      title: 'Execution Time',
+      width: 150,
+      headerTooltip: 'Execution time',
+      align: 'center',
+      customElement: (row) =>
+        row.execution_time ? row.execution_time.split('.')[0] : null,
+    },
+    {
       name: 'dynclass',
       title: 'Dynamic Class',
       width: 140,
     },
     {
-      name: 'objects',
+      name: 'asteroids',
       title: '# SSOs',
       // customElement: row => (
       //   {row.objects.length === 1 ? row.objects[0] : row.objects.length}
@@ -261,21 +270,16 @@ function Download({ setTitle }) {
       title: '# Nights',
     },
     {
-      name: 'exposures',
-      title: '# Exposures',
+      name: 'ccds_to_download',
+      title: '# CCDs to Download',
+      width: 180,
+      sortingEnabled: false,
     },
     {
-      name: 'ccds',
-      title: '# CCDs',
-    },
-    {
-      name: 'execution_time',
-      title: 'Execution Time',
-      width: 150,
-      headerTooltip: 'Execution time',
-      align: 'center',
-      customElement: (row) =>
-        row.execution_time ? row.execution_time.split('.')[0] : null,
+      name: 'ccds_downloaded',
+      title: '# CCDs Downloaded',
+      width: 180,
+      sortingEnabled: false,
     },
   ];
 
@@ -444,7 +448,7 @@ function Download({ setTitle }) {
 
         <Grid item xs={12} md={8} lg={9}>
           <Card>
-            <CardHeader title="CCDs By Period" />
+            <CardHeader title="Number of CCDs in Selected Period" />
             <CardContent>
               <Grid container spacing={2} alignItems="stretch">
                 {ccdYears.length > 1 ? (
@@ -489,8 +493,16 @@ function Download({ setTitle }) {
                         <Grid item xs={12} sm={6} md={4} xl={3}>
                           <ListItem>
                             <ListItemText
-                              primary="Selected Period"
-                              secondary={`${executionSummary.start} / ${executionSummary.end}`}
+                              primary="Start Date"
+                              secondary={executionSummary.start}
+                            />
+                          </ListItem>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4} xl={3}>
+                          <ListItem>
+                            <ListItemText
+                              primary="End Date"
+                              secondary={executionSummary.end}
                             />
                           </ListItem>
                         </Grid>
@@ -571,7 +583,7 @@ function Download({ setTitle }) {
                 hasToolbar={false}
                 reload={reload}
                 totalCount={totalCount}
-                defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
+                hasRowNumberer
               />
             </CardContent>
           </Card>

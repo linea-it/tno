@@ -47,7 +47,6 @@ function SkybotAsteroid({ setTitle }) {
   const [dynclassAsteroids, setDynclassAsteroids] = useState([]);
   const [ccdsWithAsteroids, setCcdsWithAsteroids] = useState(null);
   const [summary, setSummary] = useState([]);
-  const [summaryClass, setSummaryClass] = useState([]);
 
   useEffect(() => {
     setTitle('Skybot');
@@ -66,9 +65,9 @@ function SkybotAsteroid({ setTitle }) {
       headerTooltip: 'Object Name',
     },
     {
-      title: 'Number',
+      title: 'Object Number',
       name: 'number',
-      align: 'right',
+      // align: 'right',
       headerTooltip: 'Object Number',
     },
     {
@@ -79,118 +78,118 @@ function SkybotAsteroid({ setTitle }) {
     {
       title: 'RA  (deg)',
       name: 'raj2000',
-      align: 'right',
+      // align: 'right',
       headerTooltip: 'Right Ascension',
     },
     {
       title: 'Dec (deg)',
       name: 'decj2000',
-      align: 'right',
+      // align: 'right',
       headerTooltip: 'Declination',
     },
     {
       title: 'Visual Mag',
       name: 'mv',
-      align: 'right',
+      // align: 'right',
     },
     {
-      title: 'Error',
+      title: 'Error (arcsec)',
       name: 'errpos',
-      align: 'right',
+      // align: 'right',
       sortingEnabled: false,
     },
     {
       title: 'Ang Dist (arcsec)',
       name: 'd',
-      align: 'right',
+      // align: 'right',
       headerTooltip: 'Angular Distance',
       sortingEnabled: false,
     },
     {
       title: 'dRAcosDec (arcsec/h)',
       name: 'dracosdec',
-      align: 'right',
+      // align: 'right',
       sortingEnabled: false,
     },
     {
       title: 'dDEC  (arcsec/h)',
       name: 'ddec',
-      align: 'right',
+      // align: 'right',
       sortingEnabled: false,
     },
     {
       title: 'Geoc Dist (AU)',
       name: 'dgeo',
-      align: 'right',
+      // align: 'right',
       headerTooltip: 'Geocentric Distance',
       sortingEnabled: false,
     },
     {
       title: 'Hel Dist (AU)',
       name: 'dhelio',
-      align: 'right',
+      // align: 'right',
       headerTooltip: 'Heliocentric Distance',
       sortingEnabled: false,
     },
     {
       title: 'Phase Angle (deg)',
       name: 'phase',
-      align: 'right',
+      // align: 'right',
       sortingEnabled: false,
     },
     {
       title: 'Solar Elong',
       name: 'solelong',
-      align: 'right',
+      // align: 'right',
       headerTooltip: 'Solar Elongantion',
       sortingEnabled: false,
     },
     {
       title: 'Vec Pos x (AU)',
       name: 'px',
-      align: 'right',
+      // align: 'right',
       headerTooltip: 'Vector Position in x',
       sortingEnabled: false,
     },
     {
       title: 'Vec pos y (AU)',
       name: 'py',
-      align: 'right',
+      // align: 'right',
       headerTooltip: 'Vector Position in y',
       sortingEnabled: false,
     },
     {
       title: 'Vec Pos z (AU)',
       name: 'pz',
-      align: 'right',
+      // align: 'right',
       headerTooltip: 'Vector Position in z',
       sortingEnabled: false,
     },
     {
       title: 'Vec Pos x [AU/d]',
       name: 'vx',
-      align: 'right',
+      // align: 'right',
       headerTooltip: 'Vector Position in x',
       sortingEnabled: false,
     },
     {
       title: 'Vec Pos y [AU/d]',
       name: 'vy',
-      align: 'right',
+      // align: 'right',
       headerTooltip: 'Vector Position in y',
       sortingEnabled: false,
     },
     {
       title: 'Vec Pos z [AU/d]',
       name: 'vz',
-      align: 'right',
+      // align: 'right',
       headerTooltip: 'Vector Position in z',
       sortingEnabled: false,
     },
     {
       title: 'Epo Pos Vec (Julien Day)',
       name: 'jdref',
-      align: 'right',
+      // align: 'right',
       headerTooltip: 'Epoch of the position vector (Julian Day)',
       sortingEnabled: false,
     },
@@ -350,19 +349,28 @@ function SkybotAsteroid({ setTitle }) {
     }
   }, [ccdsPlotData, skybotResult, ccdsWithAsteroids]);
 
-  useEffect(() => {
-    if (dynclassAsteroids.length > 0) {
-      const dynclasses = dynclassAsteroids.map((row) => ({
-        title: row.dynclass,
-        value: row.asteroids,
-      }));
-      setSummaryClass(dynclasses);
-    }
-  }, [dynclassAsteroids]);
+  const summaryClassColumns = [
+    {
+      title: 'Dynamic Class',
+      name: 'dynclass',
+      width: 215,
+      sortingEnabled: false,
+    },
+    {
+      title: '# SSOs',
+      name: 'asteroids',
+      width: 150,
+      sortingEnabled: false,
+    },
+    {
+      title: '# CCDs',
+      name: 'ccds',
+      width: 150,
+      sortingEnabled: false,
+    },
+  ];
 
   const handleBackNavigation = () => history.goBack();
-
-  // const handleAsteroidInCcds = () => setInsideCcdOnly(!insideCcdOnly);
 
   return (
     <Grid container spacing={2}>
@@ -383,7 +391,7 @@ function SkybotAsteroid({ setTitle }) {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={12} sm={4}>
+      <Grid item xs={12} md={4}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Card>
@@ -397,13 +405,23 @@ function SkybotAsteroid({ setTitle }) {
             <Card>
               <CardHeader title="Summary Class" />
               <CardContent>
-                <List data={summaryClass} />
+                <Table
+                  columns={summaryClassColumns}
+                  data={dynclassAsteroids}
+                  totalCount={dynclassAsteroids.length}
+                  hasSearching={false}
+                  hasPagination={false}
+                  defaultSorting={[{ columnName: 'dynclass', ordering: 'asc' }]}
+                  hasColumnVisibility={false}
+                  hasToolbar={false}
+                  remote={false}
+                />
               </CardContent>
             </Card>
           </Grid>
         </Grid>
       </Grid>
-      <Grid item xs={12} sm={8}>
+      <Grid item xs={12} md={8}>
         <Card>
           <CardHeader title="SSOs Inside CCD" />
           <CardContent>
@@ -435,6 +453,7 @@ function SkybotAsteroid({ setTitle }) {
                   insideCcdOnly ? asteroidsInsideCcd.length : positions.length
                 }
                 hasSearching={false}
+                hasRowNumberer
                 remote={false}
               />
             ) : (

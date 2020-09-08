@@ -24,7 +24,7 @@ const useStyles = makeStyles({
     display: 'inline-block',
     transform: 'translateX(-50%)',
   },
-  btn: {
+  btn: ({ align }) => ({
     textTransform: 'capitalize',
     padding: '1px 5px',
     width: '7em',
@@ -37,7 +37,9 @@ const useStyles = makeStyles({
     0px 3px 1px -2px rgba(0, 0, 0, 0.12)`,
     borderRadius: '4px',
     boxSizing: 'border-box',
-  },
+    margin: align === 'center' ? 'auto' : 'initial',
+    float: align === 'center' ? 'none' : align,
+  }),
   btnSuccess: {
     backgroundColor: '#009900',
     color: '#fff',

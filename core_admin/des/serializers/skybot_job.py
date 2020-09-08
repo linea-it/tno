@@ -16,6 +16,7 @@ class SkybotJobSerializer(serializers.ModelSerializer):
             'start',
             'finish',
             'execution_time',
+            'estimated_execution_time',
             'exposures',
             'ccds',
             'nights',

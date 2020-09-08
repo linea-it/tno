@@ -100,7 +100,7 @@ class SkybotJobResultAdmin(admin.ModelAdmin):
 @admin.register(DownloadCcdJob)
 class DownloadCcdJobAdmin(admin.ModelAdmin):
     list_display = ('id', 'status', 'owner', 'date_initial',
-                    'date_final', 'execution_time', 'ccds', 't_size_downloaded')
+                    'date_final', 'execution_time', 'ccds_to_download', 'ccds_downloaded', 't_size_downloaded')
 
 
 @admin.register(DownloadCcdJobResult)

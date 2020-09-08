@@ -55,10 +55,6 @@ class DownloadCcdJobViewSet(mixins.RetrieveModelMixin,
         end = datetime.strptime(
             date_final, '%Y-%m-%d').strftime("%Y-%m-%d 23:59:59")
 
-        # # Recuperar o total de ccds no periodo.
-        # t_ccds = CcdDao().count_ccds_by_period(
-        #     '2019-01-01 00:00:00', '2019-01-31 23:59:59')
-
         # Criar um model Skybot Job
         job = DownloadCcdJob(
             owner=owner,
@@ -68,7 +64,7 @@ class DownloadCcdJobViewSet(mixins.RetrieveModelMixin,
             status=1,
 
             dynclass=dynclass,
-            name=name
+            name=name,
         )
         job.save()
 
@@ -102,7 +98,7 @@ class DownloadCcdJobViewSet(mixins.RetrieveModelMixin,
 
         result = dict({
             'status': job.status,
-            'ccds': job.ccds,
+            'ccds': job.ccds_to_download,
             't_executed': 0,
             't_size': 0,
             't_execution_time': 0,
@@ -124,9 +120,11 @@ class DownloadCcdJobViewSet(mixins.RetrieveModelMixin,
             # Tempo médio de cada download
             average_time = float(t_execution_time / t_executed)
             # Estimativa em bytes de quanto falta baixar
-            estimated_size = float(average_size * (job.ccds - t_executed))
+            estimated_size = float(
+                average_size * (job.ccds_to_download - t_executed))
             # Estimativa em segundos de quanto tempo ainda vai levar os downloads.
-            estimated_time = float(average_time * (job.ccds - t_executed))
+            estimated_time = float(
+                average_time * (job.ccds_to_download - t_executed))
 
             result.update({
                 't_executed': t_executed,

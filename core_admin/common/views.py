@@ -26,6 +26,80 @@ from django.contrib.auth import logout
 def teste(request):
     if request.method == 'GET':
 
+        # Teste de envio de email
+        from common.notify import Notify
+        from django.template.loader import render_to_string
+
+        # context = dict({
+        #     "username": 'gverde',
+        #     "start": '2012-11-01 00:00:00',
+        #     "end": '2012-11-30 23:59:59',
+        #     "nights": 3,
+        #     "ccds": 16165,
+        #     "job_id": 97
+        # })
+
+        # Notify().send_html_email(
+        #     subject="Teste de Email",
+        #     to="glauber.vila.verde@gmail.com",
+        #     template="notification_skybot_finish.html",
+        #     context=context)
+
+        # Skybot Finish
+        # from datetime import datetime
+        # now = datetime.now()
+        # import time
+        # time.sleep(2)
+        # now2 = datetime.now()
+        # delta = now2 - now
+
+        # context = dict({
+        #     "username": 'gverde',
+        #     "start": '2012-11-01 00:00:00',
+        #     "end": '2012-11-30 23:59:59',
+        #     "nights": 3,
+        #     "ccds": 16165,
+        #     "job_id": 97,
+        #     "job_start": now.strftime("%Y-%m-%d %H:%M:%S"),
+        #     "job_end": now2.strftime("%Y-%m-%d %H:%M:%S"),
+        #     "execution_time": str(delta).split(".")[0],
+        #     "nights": 13,
+        #     "ccds": 85703,
+        #     "asteroids": 2469,
+        #     "ccds_with_asteroid": 23777
+        # })
+
+        # Notify().send_html_email(
+        #     subject="Teste de Email",
+        #     to="glauber.vila.verde@gmail.com",
+        #     template="notification_skybot_finish.html",
+        #     context=context)
+
+        # Skybot Fail
+        # from datetime import datetime
+        # now = datetime.now()
+        # import time
+        # time.sleep(2)
+        # now2 = datetime.now()
+        # delta = now2 - now
+
+        # context = dict({
+        #     "username": 'gverde',
+        #     "job_id": 97,
+        #     "job_start": now.strftime("%Y-%m-%d %H:%M:%S"),
+        #     "job_end": now2.strftime("%Y-%m-%d %H:%M:%S"),
+        #     "execution_time": str(delta).split(".")[0],
+        # })
+
+        # Notify().send_html_email(
+        #     subject="Teste de Email",
+        #     to="glauber.vila.verde@gmail.com",
+        #     template="notification_skybot_fail.html",
+        #     context=context)
+
+        # send_mail("Teste TNO envio de email", "Isto é um teste", settings.EMAIL_HOST_USER, [
+        #           'glauber.vila.verde@gmail.com'], fail_silently=False)
+
         # from des.dao import DesSkybotJobResultDao
 
         # asteroids = DesSkybotJobResultDao(
@@ -160,7 +234,7 @@ def teste(request):
         return Response(result)
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def logout_view(request):
     logout(request)
 
@@ -171,7 +245,7 @@ def logout_view(request):
     return response
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def import_skybot(request):
     """
     """
@@ -192,7 +266,7 @@ def import_skybot(request):
     return Response(result)
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def read_file(request):
     """
     Function to read .log file
@@ -237,7 +311,7 @@ def read_file(request):
             }))
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def read_csv(request):
     """
     Function to read .csv file
@@ -314,7 +388,7 @@ def read_csv(request):
     return Response(result)
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def download_file(request):
     """
     Function to download a file and zip.
@@ -363,4 +437,3 @@ def download_file(request):
                 response['Content-Disposition'] = 'inline; filename=' + \
                     os.path.basename(filepath)
                 return response
-

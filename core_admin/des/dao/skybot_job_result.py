@@ -151,6 +151,55 @@ class DesSkybotJobResultDao(DBBase):
 
         return rows
 
+    def count_not_exec_by_period(self, start, end):
+        """
+            Retorna o Total de exposições que não foram executadas pelo skybot
+            para um periodo.
+
+            Parameters:
+                start (datetime): Periodo inicial que sera usado na seleção.
+
+                end (datetime): Periodo final que sera usado na seleção.
+
+            Returns:
+                rows (array) Exposições que ainda não foram executadas pelo skybot.
+
+
+        select
+            count(de.id) as total
+        from
+            des_exposure de
+        where
+            de.date_obs between '2019-01-01 00:00:00' and '2019-01-31 23:59:50'
+            and de.id not in (
+            select
+                ds.exposure_id
+            from
+                des_skybotjobresult ds)
+
+        """
+        # des_exposure
+        de_tbl = self.get_table('des_exposure', self.get_base_schema())
+
+        # des_skybotjobresult
+        ds_tbl = self.tbl
+
+        stm = select([func.count(de_tbl.c.id).label('total')]).\
+            where(
+                and_(
+                    de_tbl.c.date_obs.between(str(start), str(end)),
+                    de_tbl.c.id.notin_(
+                        select([ds_tbl.c.exposure_id])
+                    )
+                )
+        )
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalar(stm)
+
+        return rows
+
     def t_positions_des_by_job(self, job_id):
         """Retorna o Total de posições 
         retornadas pelo skybot que estão em ccds do DES para um Job especifico.
@@ -295,12 +344,13 @@ class DesSkybotJobResultDao(DBBase):
         select
             split_part(dynclass, '>', 1) as dynclass,
             count(distinct(sp.name)) as asteroids
-        --	count(distinct(dsp.ccd_id)) as ccds
         from skybot_position sp 
+        inner join des_skybotposition dsp on
+            sp.id = dsp.position_id 
         inner join des_skybotjobresult ds on
             sp.ticket = ds.ticket
         where
-            ds.job_id = 91
+            ds.job_id = 109
         group by
             split_part(dynclass, '>', 1)
         order by
@@ -313,7 +363,7 @@ class DesSkybotJobResultDao(DBBase):
             [type]: [description]
         """
 
-        stm = text("""select split_part(dynclass, '>', 1) as dynclass, count(distinct(sp.name)) as asteroids from skybot_position sp inner join des_skybotjobresult ds on sp.ticket = ds.ticket where ds.job_id = %s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);""" % int(job_id))
+        stm = text("""select split_part(dynclass, '>', 1) as dynclass, count(distinct(sp.name)) as asteroids from skybot_position sp inner join des_skybotposition dsp on	sp.id = dsp.position_id inner join des_skybotjobresult ds on sp.ticket = ds.ticket where ds.job_id = %s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);""" % int(job_id))
 
         self.debug_query(stm, True)
 
@@ -467,7 +517,8 @@ class DesSkybotJobResultDao(DBBase):
 
         select
             split_part(sp.dynclass, '>', 1) as dynclass,
-            count(distinct(sp.name)) as asteroids
+            count(distinct(sp.name)) as asteroids,
+            count(distinct(dsp.ccd_id)) as ccds
         from
             des_skybotposition dsp
         inner join des_skybotjobresult ds on
@@ -488,10 +539,23 @@ class DesSkybotJobResultDao(DBBase):
             [type]: [description]
         """
 
-        stm = text("select split_part(sp.dynclass, '>', 1) as dynclass, count(distinct(sp.name)) as asteroids from des_skybotposition dsp inner join des_skybotjobresult ds on ds.exposure_id = dsp.exposure_id inner join skybot_position sp on sp.id = dsp.position_id where ds.id = %s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);" % int(id))
+        stm = text("select split_part(sp.dynclass, '>', 1) as dynclass, count(distinct(sp.name)) as asteroids, count(distinct(dsp.ccd_id)) as ccds from des_skybotposition dsp inner join des_skybotjobresult ds on ds.exposure_id = dsp.exposure_id inner join skybot_position sp on sp.id = dsp.position_id where ds.id = %s group by split_part(dynclass, '>', 1) order by split_part(dynclass, '>', 1);" % int(id))
 
         self.debug_query(stm, True)
 
         rows = self.fetch_all_dict(stm)
 
         return rows
+
+    def skybot_estimate(self):
+
+        stm = select([
+            func.sum(self.tbl.c.execution_time).label('t_exec_time'),
+            func.count(self.tbl.c.exposure_id).label('total'),
+        ])
+
+        self.debug_query(stm, True)
+
+        row = self.fetch_one_dict(stm)
+
+        return row

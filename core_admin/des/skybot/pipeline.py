@@ -13,6 +13,7 @@ import pandas as pd
 import pytz
 from django.conf import settings
 
+from common.notify import Notify
 from des.dao import DesSkybotJobDao, DesSkybotJobResultDao, ExposureDao
 from des.skybot.import_positions import DESImportSkybotPositions
 from skybot.skybot_server import SkybotServer
@@ -274,8 +275,10 @@ class DesSkybotPipeline():
         # 20-07-2020 Martin solicitou que fosse aplicado uma correção ao campo date_obs.
         # date_obs = date_obs + (exptime + correction)/2
         # onde correction para DECam é 1.05
-        df['date_with_correction'] = df.apply(
-            lambda row: self.apply_corection_in_date_obs(row['date_obs'], row['exptime']), axis=1)
+        df['date_with_correction'] = ""
+        if df.shape[0] > 0:
+            df['date_with_correction'] = df.apply(
+                lambda row: self.apply_corection_in_date_obs(row['date_obs'], row['exptime']), axis=1)
 
         # Adicionar os campos que serão enviados para o Skybot
         df['radius'] = self.radius
@@ -442,6 +445,9 @@ class DesSkybotPipeline():
 
             job['exposures'] = t_exposures
             self.update_job(job)
+
+            # Notify User Start Proccess
+            self.notify_start_job(job_id)
 
             # Aqui inicia as requisições para o serviço do Skybot.
 
@@ -1267,6 +1273,9 @@ class DesSkybotPipeline():
                     # Grava as informações do job no banco de dados.
                     self.complete_job(job)
 
+                    # Notify User Finish Job
+                    self.notify_finish_job(job['id'])
+
                     self.logger_import.info("Job successfully completed %s" % humanize.naturaldelta(
                         tdelta, minimum_unit="seconds"))
 
@@ -1303,6 +1312,8 @@ class DesSkybotPipeline():
 
             self.complete_job(job)
 
+            self.notify_fail_job(job_id)
+
         except Exception as e:
             self.logger_import.error(e)
 
@@ -1329,5 +1340,125 @@ class DesSkybotPipeline():
 
             self.complete_job(job)
 
+            self.notify_abort_job(job_id)
+
         except Exception as e:
+            self.logger_import.error(e)
+
+    def notify_start_job(self, job_id):
+        try:
+            # Recupera o Model pelo ID
+            job = self.get_job_by_id(job_id)
+            user = self.spdao.get_user(job['owner_id'])
+
+            context = dict({
+                "username": user['username'],
+                "job_id": job['id'],
+                "start": job['date_initial'],
+                "end": job['date_final'],
+                "nights": job['nights'],
+                "ccds": job['ccds'],
+            })
+
+            Notify().send_html_email(
+                subject="Skybot Job %s Started" % job_id,
+                to=user['email'],
+                template="notification_skybot_start.html",
+                context=context)
+
+            self.logger.info("Sending start email to the user")
+
+        except Exception as e:
+            trace = traceback.format_exc()
+            self.logger.error(trace)
+            self.logger.error(e)
+
+    def notify_finish_job(self, job_id):
+        try:
+            # Recupera o Model pelo ID
+            job = self.get_job_by_id(job_id)
+            user = self.spdao.get_user(job['owner_id'])
+
+            context = dict({
+                "username": user['username'],
+                "job_id": job['id'],
+                "start": job['date_initial'],
+                "end": job['date_final'],
+                "job_start": job['start'].strftime("%Y-%m-%d %H:%M:%S"),
+                "job_end": job['finish'].strftime("%Y-%m-%d %H:%M:%S"),
+                "execution_time": str(job['execution_time']).split(".")[0],
+                "nights": job['nights'],
+                "exposures": job['exposures'],
+                "exposures_with_asteroid": job['exposures_with_asteroid'],
+                "ccds": job['ccds'],
+                "ccds_with_asteroid": job['ccds_with_asteroid'],
+                "positions": job['positions'],
+                "asteroids": job['asteroids']
+            })
+
+            Notify().send_html_email(
+                subject="Skybot Job %s Finished" % job_id,
+                to=user['email'],
+                template="notification_skybot_finish.html",
+                context=context)
+
+            self.logger_import.info("Sending Finish email to the user")
+
+        except Exception as e:
+            trace = traceback.format_exc()
+            self.logger_import.error(trace)
+            self.logger_import.error(e)
+
+    def notify_fail_job(self, job_id):
+        try:
+            # Recupera o Model pelo ID
+            job = self.get_job_by_id(job_id)
+            user = self.spdao.get_user(job['owner_id'])
+
+            context = dict({
+                "username": user['username'],
+                "job_id": job['id'],
+                "job_start": job['start'].strftime("%Y-%m-%d %H:%M:%S"),
+                "job_end": job['finish'].strftime("%Y-%m-%d %H:%M:%S"),
+                "execution_time": str(job['execution_time']).split(".")[0],
+            })
+
+            Notify().send_html_email(
+                subject="Skybot Job %s Failed" % job_id,
+                to=user['email'],
+                template="notification_skybot_fail.html",
+                context=context)
+
+            self.logger_import.info("Sending Fail email to the user")
+
+        except Exception as e:
+            trace = traceback.format_exc()
+            self.logger_import.error(trace)
+            self.logger_import.error(e)
+
+    def notify_abort_job(self, job_id):
+        try:
+            # Recupera o Model pelo ID
+            job = self.get_job_by_id(job_id)
+            user = self.spdao.get_user(job['owner_id'])
+
+            context = dict({
+                "username": user['username'],
+                "job_id": job['id'],
+                "job_start": job['start'].strftime("%Y-%m-%d %H:%M:%S"),
+                "job_end": job['finish'].strftime("%Y-%m-%d %H:%M:%S"),
+                "execution_time": str(job['execution_time']).split(".")[0],
+            })
+
+            Notify().send_html_email(
+                subject="Skybot Job %s Aborted" % job_id,
+                to=user['email'],
+                template="notification_skybot_abort.html",
+                context=context)
+
+            self.logger_import.info("Sending Abort email to the user")
+
+        except Exception as e:
+            trace = traceback.format_exc()
+            self.logger_import.error(trace)
             self.logger_import.error(e)

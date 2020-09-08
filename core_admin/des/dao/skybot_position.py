@@ -123,7 +123,7 @@ class DesSkybotPositionDao(DBBase):
         Query de exemplo:
 
             select
-                dc.*
+                dc.*, date(de.date_obs) as date_obs 
             from
                 des_ccd dc
             inner join des_exposure de on
@@ -132,10 +132,11 @@ class DesSkybotPositionDao(DBBase):
                 dc.id = ds.ccd_id
             inner join skybot_position sp on ds.position_id = sp.id
             where
+                dc.id not in (select dd.ccd_id from des_downloadccdjobresult dd ) and
                 sp.dynclass like 'KBO%' and
-                sp.name = '1999 RG215' and
-                de.date_obs between '2019-01-01 00:00:00' and '2019-01-31 23:59:50'
-            group by dc.id, date(de.date_obs)
+            --    sp.name = '1999 RG215' and
+                de.date_obs between '2012-11-10 00:00:00' and '2012-11-11 23:59:50'
+            group by dc.id, date(de.date_obs) 
             order by
                 date(de.date_obs);
 
@@ -154,8 +155,14 @@ class DesSkybotPositionDao(DBBase):
         # Skybot Position
         sp = self.get_table('skybot_position', self.get_base_schema())
 
+        # Des Download CCD Job Result
+        dd = self.get_table('des_downloadccdjobresult', self.get_base_schema())
+
         # Clausula where pelo periodo que é obrigatório
-        clause = list([de.c.date_obs.between(str(start), str(end))])
+        clause = list([
+            dc.c.id.notin_(select([dd.c.ccd_id])),
+            de.c.date_obs.between(str(start), str(end))
+        ])
 
         # Clausula where pela classe dos objetos.
         if dynclass is not None:
@@ -165,7 +172,10 @@ class DesSkybotPositionDao(DBBase):
         if name is not None:
             clause.append(sp.c.name == name)
 
-        stm = select(dc.c).\
+        columns = list(dc.c)
+        columns.append(cast(de.c.date_obs, Date).label('date_obs'))
+
+        stm = select(columns).\
             select_from(
             dc.join(
                 de, dc.c.exposure_id == de.c.id
@@ -222,7 +232,7 @@ class DesSkybotPositionDao(DBBase):
         if start is not None and end is not None:
             clause.append(de.c.date_obs.between(str(start), str(end)))
 
-        stm = select([func.count(sp.c.name).label('asteroid')]).\
+        stm = select([func.count(sp.c.name.distinct()).label('asteroid')]).\
             select_from(
             ds.join(
                 sp, ds.c.position_id == sp.c.id
@@ -276,7 +286,7 @@ class DesSkybotPositionDao(DBBase):
         if start is not None and end is not None:
             clause.append(de.c.date_obs.between(str(start), str(end)))
 
-        stm = select([func.count(ds.c.ccd_id).label('ccds')]).\
+        stm = select([func.count(ds.c.ccd_id.distinct()).label('ccds')]).\
             select_from(
             ds.join(
                 sp, ds.c.position_id == sp.c.id
@@ -334,7 +344,7 @@ class DesSkybotPositionDao(DBBase):
         if start is not None and end is not None:
             clause.append(de.c.date_obs.between(str(start), str(end)))
 
-        stm = select([func.count(dd.c.id).label('ccds_downloaded')]).\
+        stm = select([func.count(dd.c.id.distinct()).label('ccds_downloaded')]).\
             select_from(
             ds.join(
                 sp, ds.c.position_id == sp.c.id

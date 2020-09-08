@@ -15,6 +15,9 @@ import {
   InputLabel,
   Typography,
   Snackbar,
+  List,
+  ListItem,
+  ListItemText,
 } from '@material-ui/core';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js';
@@ -28,6 +31,7 @@ import {
   getSkybotRunList,
   getExposuresByPeriod,
   getExecutedNightsByPeriod,
+  getSkybotCalcExecutionTime,
 } from '../../services/api/Skybot';
 import CalendarHeatmap from '../../components/Chart/CalendarHeatmap';
 import CalendarExecutedNight from '../../components/Chart/CalendarExecutedNight';
@@ -55,6 +59,13 @@ function Skybot({ setTitle }) {
     hasJobRunningOrIdleFeedback,
     setHasJobRunningOrIdleFeedback,
   ] = useState(false);
+  const [executionSummary, setExecutionSummary] = useState({
+    visible: false,
+    start: '',
+    end: '',
+    exposures: 0,
+    estimated_time: '0',
+  });
 
   useEffect(() => {
     setTitle('Skybot');
@@ -68,10 +79,31 @@ function Skybot({ setTitle }) {
       moment(selectedDate[1]).format('YYYY-MM-DD')
     ).then((res) => {
       setExposuresByPeriod(res);
+
+      setExecutionSummary({
+        visible: true,
+        exposures: res.reduce((a, b) => a + (b.count || 0), 0),
+        start: selectedDate[0],
+        end: selectedDate[1],
+        estimated_time: 0,
+      });
     });
 
     setDisableSubmit(false);
   };
+
+  useEffect(() => {
+    if (exposuresByPeriod.length > 0) {
+      getSkybotCalcExecutionTime(
+        exposuresByPeriod.reduce((a, b) => a + (b.count || 0), 0)
+      ).then((res) => {
+        setExecutionSummary((prevExecutionSummaray) => ({
+          ...prevExecutionSummaray,
+          estimated_time: res,
+        }));
+      });
+    }
+  }, [exposuresByPeriod]);
 
   useEffect(() => {
     getExposuresByPeriod('2012-11-10', '2019-02-28').then((res) => {
@@ -197,6 +229,15 @@ function Skybot({ setTitle }) {
       ),
     },
     {
+      name: 'execution_time',
+      title: 'Execution Time',
+      width: 150,
+      headerTooltip: 'Execution time',
+      align: 'center',
+      customElement: (row) =>
+        row.execution_time ? row.execution_time.split('.')[0] : null,
+    },
+    {
       name: 'date_initial',
       title: 'First Night',
       width: 130,
@@ -227,15 +268,6 @@ function Skybot({ setTitle }) {
     {
       name: 'ccds',
       title: '# CCDs',
-    },
-    {
-      name: 'execution_time',
-      title: 'Execution Time',
-      width: 150,
-      headerTooltip: 'Execution time',
-      align: 'center',
-      customElement: (row) =>
-        row.execution_time ? row.execution_time.split('.')[0] : null,
     },
   ];
 
@@ -342,6 +374,48 @@ function Skybot({ setTitle }) {
               </>
             ) : null}
           </Grid>
+          {executionSummary.visible ? (
+            <Grid item xs={12}>
+              <List dense>
+                <Grid container>
+                  <Grid item xs={12} sm={3}>
+                    <ListItem>
+                      <ListItemText
+                        primary="Start Date"
+                        secondary={executionSummary.start}
+                      />
+                    </ListItem>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <ListItem>
+                      <ListItemText
+                        primary="End Date"
+                        secondary={executionSummary.end}
+                      />
+                    </ListItem>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <ListItem>
+                      <ListItemText
+                        primary="Exposures"
+                        secondary={executionSummary.exposures}
+                      />
+                    </ListItem>
+                  </Grid>
+                  <Grid item xs={12} sm={3}>
+                    <ListItem>
+                      <ListItemText
+                        primary="Estimated Time"
+                        secondary={moment
+                          .utc(executionSummary.estimated_time * 1000)
+                          .format('HH:mm:ss')}
+                      />
+                    </ListItem>
+                  </Grid>
+                </Grid>
+              </List>
+            </Grid>
+          ) : null}
         </Grid>
       );
     }
@@ -404,7 +478,7 @@ function Skybot({ setTitle }) {
 
         <Grid item xs={12} md={8} lg={9}>
           <Card>
-            <CardHeader title="Exposures By Period" />
+            <CardHeader title="Number of Exposures in Selected Period" />
             <CardContent>{renderExposurePlot()}</CardContent>
           </Card>
         </Grid>
@@ -426,6 +500,7 @@ function Skybot({ setTitle }) {
                 reload={reload}
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
+                hasRowNumberer
               />
             </CardContent>
           </Card>

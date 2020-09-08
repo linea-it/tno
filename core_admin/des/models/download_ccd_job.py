@@ -74,16 +74,56 @@ class DownloadCcdJob(models.Model):
         blank=True
     )
 
+    # Tempo de duração estimado no começo do Job
+    estimated_execution_time = models.DurationField(
+        verbose_name='Estimated Execution Time',
+        null=True,
+        blank=True
+    )
+
     # Tempo de duração do Job.
     execution_time = models.DurationField(
         verbose_name='Execution Time',
         null=True, blank=True
     )
 
-    # Total de ccds com exposures no periodo deste job.
-    ccds = models.BigIntegerField(
-        verbose_name='CCDs',
-        help_text='total ccds that were run in this job',
+    # Total de ccds a serem baixados no job.
+    ccds_to_download = models.BigIntegerField(
+        verbose_name='CCDs to Download',
+        help_text='Total CCDs to be downloaded by this job.',
+        null=True, blank=True,
+        default=0
+    )
+
+    # Total de ccds Baixados
+    ccds_downloaded = models.BigIntegerField(
+        verbose_name='CCDs Downloaded',
+        help_text='Total CCDs downloaded in this job.',
+        null=True, blank=True,
+        default=0
+    )
+
+    # Total de nights com ccds a serem baixados neste job.
+    nights = models.BigIntegerField(
+        verbose_name='Nights',
+        help_text='Total nights with ccds to be downloaded in this job.',
+        null=True, blank=True,
+        default=0
+    )
+
+    # Total de Objetos unicos retornados
+    asteroids = models.BigIntegerField(
+        verbose_name='Asteroids',
+        help_text='Total unique objects  in this job.',
+        null=True, blank=True,
+        default=0
+    )
+
+    # Tamanho total dos downloads neste job
+    estimated_t_size = models.BigIntegerField(
+        verbose_name='Estimated Size to Download',
+        help_text='Total size estimated to download in this job.',
+        null=True, blank=True,
         default=0
     )
 

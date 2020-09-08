@@ -164,16 +164,33 @@ function SkybotDetail({ setTitle }) {
       title: 'Exposure #',
     },
     {
+      name: 'band',
+      title: 'Band',
+      width: 80,
+    },
+    {
+      name: 'date_obs',
+      title: 'Observation Date',
+      width: 150,
+      customElement: (row) =>
+        row.execution_time
+          ? moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss')
+          : '-',
+    },
+    {
       name: 'positions',
       title: '# Observations',
+      width: 140,
     },
     {
       name: 'inside_ccd',
       title: '# SSOs In CCDs',
+      width: 150,
     },
     {
       name: 'outside_ccd',
       title: '# SSOs Out CCDs',
+      width: 160,
     },
     {
       name: 'execution_time',
@@ -198,15 +215,20 @@ function SkybotDetail({ setTitle }) {
       sortingEnabled: false,
     },
     {
+      name: 'ccds',
+      title: '# CCDs',
+      width: 200,
+      sortingEnabled: false,
+    },
+    {
       name: 'positions',
       title: '# Observations',
       width: 200,
       sortingEnabled: false,
     },
     {
-      name: 'ccds',
-      title: '# CCDs',
-      width: 200,
+      name: 'u',
+      title: 'u',
       sortingEnabled: false,
     },
     {
@@ -234,11 +256,6 @@ function SkybotDetail({ setTitle }) {
       title: 'Y',
       sortingEnabled: false,
     },
-    {
-      name: 'u',
-      title: 'u',
-      sortingEnabled: false,
-    },
   ];
 
   const loadData = ({ currentPage, pageSize, sorting }) => {
@@ -261,7 +278,11 @@ function SkybotDetail({ setTitle }) {
         {
           title: 'Status',
           value: () => (
-            <ColumnStatus status={res.status} title={res.error_msg} />
+            <ColumnStatus
+              status={res.status}
+              title={res.error_msg}
+              align="right"
+            />
           ),
         },
         {
@@ -269,10 +290,12 @@ function SkybotDetail({ setTitle }) {
           value: res.owner,
         },
         {
-          title: 'Selected Period',
-          value: `${moment(res.date_initial).format('YYYY-MM-DD')} / ${moment(
-            res.date_final
-          ).format('YYYY-MM-DD')}`,
+          title: 'Start Date',
+          value: moment(res.date_initial).format('YYYY-MM-DD'),
+        },
+        {
+          title: 'End Date',
+          value: moment(res.date_final).format('YYYY-MM-DD'),
         },
         {
           title: 'Start',
@@ -285,7 +308,13 @@ function SkybotDetail({ setTitle }) {
             : '-',
         },
         {
-          title: 'Execution',
+          title: 'Estimated Time',
+          value: res.estimated_execution_time
+            ? res.estimated_execution_time.split('.')[0]
+            : 0,
+        },
+        {
+          title: 'Execution Time',
           value: res.execution_time ? res.execution_time.split('.')[0] : 0,
         },
       ]);
@@ -294,6 +323,10 @@ function SkybotDetail({ setTitle }) {
         {
           title: '# Nights',
           value: res.nights,
+        },
+        {
+          title: '# Exposures Analyzed',
+          value: res.exposures,
         },
         {
           title: '# CCDs Analyzed',
@@ -306,6 +339,10 @@ function SkybotDetail({ setTitle }) {
         {
           title: '# Observations',
           value: res.positions,
+        },
+        {
+          title: '# Exposures with SSOs',
+          value: res.exposures_with_asteroid,
         },
         {
           title: '# CCDs with SSOs',
@@ -489,7 +526,7 @@ function SkybotDetail({ setTitle }) {
                       </Grid>
                       <Grid item>
                         <Chip
-                          label={`Estimate: ${formatSeconds(
+                          label={`Time Left: ${formatSeconds(
                             progress.request.time_estimate
                           )}`}
                           color="primary"
@@ -526,7 +563,7 @@ function SkybotDetail({ setTitle }) {
                       </Grid>
                       <Grid item>
                         <Chip
-                          label={`Estimate: ${formatSeconds(
+                          label={`Time Left: ${formatSeconds(
                             moment
                               .duration(progress.loaddata.time_estimate)
                               .add(
@@ -663,6 +700,7 @@ function SkybotDetail({ setTitle }) {
                         // hasSorting={false}
                         hasColumnVisibility={false}
                         hasToolbar={false}
+                        hasRowNumberer
                       />
                     </CardContent>
                   </Card>
