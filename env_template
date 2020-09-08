@@ -80,7 +80,10 @@ DOCKER_HOST=unix:///var/run/docker.sock
 
 # Autenticao Gidlab Shibboleth
 # Url para pagina de login do Shibboleth, usar None para desativar o login institucional
-AUTH_SHIB_URL=https://gidlabdemo.linea.gov.br/Shibboleth.sso/Login
+# Exemplo SHIBBOLETH_LOGIN_URL=http://gidlabdemo.linea.gov.br/Shibboleth.sso/Login
+SHIBBOLETH_LOGIN_URL=
+SHIBBOLETH_LOGOUT_URL=/Shibboleth.sso/Logout?return=%s
+
 
 # DES Acesso para download de imagens (CCDs)
 # ARCHIVE_URL = Endereco http para donwload dos ccds, ex: 'https://desar2.cosmology.illinois.edu/DESFiles/desarchive/'.

@@ -240,7 +240,7 @@ def logout_view(request):
 
     # Redireciona para a home
     home = settings.HOST_URL
-    response = redirect(home)
+    response = redirect('/shib/logout/?target=%s' % home)
 
     return response
 

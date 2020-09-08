@@ -171,7 +171,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django_settings_export.settings_export',
                 # 'shibboleth.context_processors.login_link',
-                # 'shibboleth.context_processors.logout_link',                
+                'shibboleth.context_processors.logout_link',
             ],
         },
     },
@@ -271,7 +271,6 @@ if AUTH_LDAP_ENABLED == 'True':
         "email": "mail",
     }
 
-
     # The distinguishable name for searching users, used to identify entries:
     AUTH_LDAP_USER_SEARCH_DN = os.environ.get('AUTH_LDAP_USER_SEARCH_DN')
 
@@ -353,16 +352,14 @@ except:
 
 # HOST URL url para onde o app está disponivel. em desenvolvimento //localhost
 # No ambiente de testes é //tno-testing.linea.gov.br
-HOST_URL = None
+HOST_URL = '/'
 try:
     HOST_URL = os.environ["HOST_URL"]
-except:
-    raise ("Environment variable HOST_URL can not be null.")
-
-# Configurando os redirects padrao de login e logout, para apontar para o HOST_URL.
-if HOST_URL is not None:
+    # Configurando os redirects padrao de login e logout, para apontar para o HOST_URL.
     LOGOUT_REDIRECT_URL = HOST_URL
     LOGIN_REDIRECT_URL = HOST_URL
+except:
+    raise ("Environment variable HOST_URL can not be null.")
 
 
 # Auth Shibboleth
@@ -378,12 +375,16 @@ SHIBBOLETH_ATTRIBUTE_MAP = {
 # se AUTH_SHIB_URL usar None para desativar o login institucional, isto remove o botão da tela de login.
 AUTH_SHIB_URL = None
 try:
-    AUTH_SHIB_URL = os.getenv('AUTH_SHIB_URL')
+    AUTH_SHIB_URL = os.getenv('SHIBBOLETH_LOGIN_URL')
 
     if AUTH_SHIB_URL is not None:
-        
+
         # LOGIN_URL = 'https://gidlabdemo.linea.gov.br/Shibboleth.sso/Login'
         LOGIN_URL = AUTH_SHIB_URL
+
+        SHIBBOLETH_LOGOUT_URL = os.environ['SHIBBOLETH_LOGOUT_URL']
+
+        SHIBBOLETH_LOGOUT_REDIRECT_URL = HOST_URL
 
         AUTHENTICATION_BACKENDS += (
             'shibboleth.backends.ShibbolethRemoteUserBackend',
