@@ -173,6 +173,10 @@ TEMPLATES = [
     },
 ]
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'staticfiles'),
+)
+
 WSGI_APPLICATION = 'coreAdmin.wsgi.application'
 
 # Database
