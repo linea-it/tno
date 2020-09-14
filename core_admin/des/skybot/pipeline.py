@@ -411,9 +411,6 @@ class DesSkybotPipeline():
             # job = SkybotJob.objects.get(pk=job_id)
             job = self.get_job_by_id(job_id)
 
-            # Altera o Status do Job para Running
-            job['status'] = 2
-
             # Cria o diretório onde o job será executado e onde ficaram os outputs.
             job_path = self.create_job_dir(job_id)
             job['path'] = job_path
@@ -437,13 +434,13 @@ class DesSkybotPipeline():
 
             # Criar um dataframe com as exposições a serem executadas.
             # este dataframe vai guardar também as estatisticas de cada execução.
+            self.logger.info("Creating the list of exposures to be processed.")
             df_exposures = self.get_exposures(
                 job_id, job['date_initial'], job['date_final'])
 
-            # Guarda o total de exposures
-            t_exposures = df_exposures.shape[0]
+            # Altera o Status do Job para Running
+            job['status'] = 2
 
-            job['exposures'] = t_exposures
             self.update_job(job)
 
             # Notify User Start Proccess
@@ -461,9 +458,12 @@ class DesSkybotPipeline():
             # Array com os resultados de cada requisição
             requests = list([])
 
+            # Total de exposures que serão analizadas neste Job.
+            t_exposures = df_exposures.shape[0]
+
             # Lista de exposições que serão executadas.
             a_exposures = df_exposures.to_dict('records', )
-            # a_exposures = df_exposures.to_dict('records', )[0:2]
+            # a_exposures = df_exposures.to_dict('records', )[0:10]
 
             # Guarda o total de tempo de execução para calcular o tempo médio.
             t_exec_time = []
@@ -471,24 +471,24 @@ class DesSkybotPipeline():
             # Arquivo onde sera gravados o andamento da execução.
             heartbeat = self.get_request_heartbeat_filename(job_path)
 
+            t_requests = 0
+            t_success = 0
+            t_failure = 0
+
             # Caso não tenha nenhum exposição para executar
             if len(a_exposures) == 0:
 
                 # Cria o arquivo de Heartbeat
                 self.update_request_heartbeat(
-                    heartbeat, 'completed', 0, 0, 0)
+                    heartbeat, 'completed', 0, 0, 0, 0, 0)
 
                 # Criar um dataframe para guardar as estatisticas de cada requisição.
                 df_requests = self.create_request_dataframe([], job_path)
 
-                t_requests = 0
-                t_success = 0
-                t_failure = 0
-
             else:
                 # Cria o arquivo de Heartbeat
                 self.update_request_heartbeat(
-                    heartbeat, 'running', 0, len(a_exposures), 0)
+                    heartbeat, 'running', 0, len(a_exposures), 0, 0, 0)
 
                 for idx, exp in enumerate(a_exposures, start=1):
 
@@ -514,11 +514,17 @@ class DesSkybotPipeline():
                     # Adiciona o id da exposição ao resultado.
                     result.update({'exposure': exp['id']})
 
-                    if result['success']:
+                    # Se o resultado tiver gerado algum arquivo
+                    if result['file_size'] > 0:
                         # o Nome do arquivo agora é composto por exposure_id + ticket.
                         # e a extensão passa a ser .csv, mudando o nome do arquivo depois que ele
                         # já foi escrito eu garanto que ele está pronto para ser importado.
+
                         filename = "%s_%s.csv" % (exp['id'], result['ticket'])
+                        if not result['success']:
+                            # Se tiver gerado algum arquivo mas o resultado está com falha o arquivo é renomeado com a extensão '.err'
+                            filename += ".err"
+
                         filepath = os.path.join(job_path, filename)
 
                         # renomea o arquivo
@@ -530,11 +536,15 @@ class DesSkybotPipeline():
                             'filename': filename
                         })
 
+                    if result['success']:
+                        t_success += 1
+
                         self.logger.info("Exposure [%s] returned [%s] positions in %s." % (
                             result['exposure'], result['positions'], humanize.naturaldelta(
                                 timedelta(seconds=result['execution_time']), minimum_unit="milliseconds")
                         ))
                     else:
+                        t_failure += 1
                         self.logger.warning("Exposure [%s]: %s" % (
                             result['exposure'], result['error']))
 
@@ -546,19 +556,19 @@ class DesSkybotPipeline():
 
                     # Atualiza o arquivo de heartbeat
                     self.update_request_heartbeat(
-                        heartbeat, 'running', idx, len(a_exposures), mean(t_exec_time))
-
-                # Quando termina de baixar todas as exposições atualiza o heartbeat com status done
-                self.update_request_heartbeat(
-                    heartbeat, 'completed', idx, len(a_exposures), mean(t_exec_time))
+                        heartbeat, 'running', idx, len(a_exposures), mean(t_exec_time), t_success, t_failure)
 
                 # Criar um dataframe para guardar as estatisticas de cada requisição.
                 df_requests = self.create_request_dataframe(requests, job_path)
 
                 # Totais de sucesso e falha.
                 t_requests = df_requests.shape[0]
-                t_success = df_requests.success.sum()
-                t_failure = t_requests - t_success
+                # t_success = df_requests.success.sum()
+                # t_failure = t_requests - t_success
+
+                # Quando termina de baixar todas as exposições atualiza o heartbeat com status done
+                self.update_request_heartbeat(
+                    heartbeat, 'completed', idx, len(a_exposures), mean(t_exec_time), t_success, t_failure)
 
             # tempo de execução
             t1 = datetime.now()
@@ -566,6 +576,8 @@ class DesSkybotPipeline():
 
             self.logger.info(" [%s] Exposures,  [%s] Requests, [%s] Success and [%s] Failure:  in %s" % (
                 t_exposures, t_requests, t_success, t_failure, humanize.naturaldelta(tdelta, minimum_unit="seconds")))
+
+            # raise Exception("Parou AQUI!!!!")
 
         except AbortSkybotJobError as e:
 
@@ -597,7 +609,7 @@ class DesSkybotPipeline():
         """
         return os.path.join(job_path, "request_heartbeat.json")
 
-    def update_request_heartbeat(self, filepath, status, current, total, average):
+    def update_request_heartbeat(self, filepath, status, current, total, average, success=0, failed=0):
         """Atualiza o arquivo heartbeat com a situação atual do Job na etapa de request.
 
         Arguments:
@@ -615,7 +627,9 @@ class DesSkybotPipeline():
             'exposures': total,
             'current': current,
             'average_time': average,
-            'time_estimate':  estimate
+            'time_estimate':  estimate,
+            'exposures_success': success,
+            'exposures_failed': failed
         })
 
         with open(filepath, 'w') as f:
@@ -648,20 +662,25 @@ class DesSkybotPipeline():
         Arguments:
             job_id {int} -- Id do Job que sera apagado.
         """
+        self.logger.info("Resetando o Job para Iniciar o teste")
+
         # job = SkybotJob.objects.get(pk=job_id)
         job = self.get_job_by_id(job_id)
 
         # Exclui o diretório do job.
         self.delete_job_dir(job_id)
 
-        job.status = 1
-        job.error = None
-        job.start = datetime.now(timezone.utc)
-        job.finish = None
-        job.execution_time = None
-        job['path'] = ' '
-        job.exposures = 0
-        job.save()
+        job['status'] = 1
+        job['error'] = None
+        job['start'] = datetime.now(timezone.utc)
+        job['finish'] = None
+        job['execution_time'] = None
+        job['path'] = ''
+        job['exposures'] = 0
+
+        self.update_job(job)
+
+        self.logger.info("Job Resetado")
 
     def check_request_queue(self):
         """Verifica a fila de jobs, se tiver algum job com status idle.
@@ -699,7 +718,6 @@ class DesSkybotPipeline():
         # Verifica se já existe algum job com status Running.
         # running = SkybotJob.objects.filter(status=2).order_by('-start').first()
         a_running = self.spdao.get_by_status(2)
-        # TODO: Vai quebrar aqui pq a query retorna resultado diferente.
 
         # Se tiver algum job executando, verifica se tem arquivos
         # a serem importados no banco de dados.
@@ -738,7 +756,7 @@ class DesSkybotPipeline():
             return True
 
     def get_files_to_import(self, job_path):
-        """Varreo o diretório do Job procurando arquivos .csv com os outputs do componente request.
+        """Varre o diretório do Job procurando arquivos .csv com os outputs do componente request.
         Retorna uma lista com o filepath desses arquivos.
         Também leva em conta alguns arquivos csv que são ignorados por não serem outputs.
 
@@ -794,7 +812,7 @@ class DesSkybotPipeline():
                 # e o arquivo heartbeat pode ainda não ter sido criado.
                 # o valor do execute vai estar errado, mas é corrigido na segunda execução.
                 request_heartbeat = self.read_request_heartbeat(job['path'])
-                t_to_execute = request_heartbeat['exposures']
+                t_to_execute = request_heartbeat['exposures_success']
             except FileNotFoundError:
                 t_to_execute = 0
 
@@ -1130,8 +1148,11 @@ class DesSkybotPipeline():
             # Job Acaba se tiver executado todas as exposições ou se tiver sido abortado.
             # no caso de abortado é registrado todos os resultados até o momento.
 
+            self.logger_import.info(
+                "TESTE - SABER SE TODAS AS EXPOSURES BAIXADAS FORAM IMPORTADAS")
+
             # Se ambos os componentes tiverem executado todas as exposições.
-            if request_heartbeat['current'] == request_heartbeat['exposures'] and loaddata_heartbeat['current'] == loaddata_heartbeat['exposures'] or aborted is True:
+            if request_heartbeat['current'] == request_heartbeat['exposures'] and loaddata_heartbeat['current'] == loaddata_heartbeat['exposures_success'] or aborted is True:
 
                 # Consolidar os arquivos de estatisticas.
 

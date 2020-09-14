@@ -62,8 +62,6 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         """
         params = request.data
 
-        # TODO: Criar metodo para validar os perios.
-        # e checar se o periodo ainda não foi executado.
         date_initial = params['date_initial']
         date_final = params['date_final']
 
@@ -76,15 +74,19 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         end = datetime.strptime(
             date_final, '%Y-%m-%d').strftime("%Y-%m-%d 23:59:59")
 
-        # Recuperar o total de noites com exposição no periodo
-        t_nights = ExposureDao(pool=False).count_nights_by_period(start, end)
-
+        # Total de exposures não executadas no Periodo.
         t_exposures = DesSkybotJobResultDao(
             pool=False).count_not_exec_by_period(start, end)
 
+        # TODO: Esses totais deveriam ser de Noites com exposições não executadas.
+        # Recuperar o total de noites com exposição no periodo
+        t_nights = ExposureDao(pool=False).count_nights_by_period(start, end)
+
         # Recuperar o total de ccds no periodo.
+        # TODO: Esses totais deveriam ser de CCDs com exposições não executadas.
         t_ccds = CcdDao().count_ccds_by_period(start, end)
 
+        # Estimativa de tempo baseada na qtd de exposures a serem executadas.
         estimated_time = self.estimate_execution_time(t_exposures)
 
         # Criar um model Skybot Job
@@ -94,12 +96,12 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
             date_final=date_final,
             # Job começa com Status Idle.
             status=1,
-            # Total de noites com exposições.
-            nights=t_nights,
-            # Total de CCDs no periodo
-            ccds=t_ccds,
             # Total de exposures a serem executadas.
             exposures=t_exposures,
+            # Total de noites com exposições.
+            nights=t_nights,
+            # Total de CCDs no periodo.
+            ccds=t_ccds,
             # Tempo de execução estimado
             estimated_execution_time=timedelta(seconds=estimated_time)
         )

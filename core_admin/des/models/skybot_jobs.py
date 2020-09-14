@@ -70,14 +70,14 @@ class SkybotJob(models.Model):
         blank=True
     )
 
-    # Total de exposições executadas neste job.
+    # Total de exposições que serão executadas neste Job.
     exposures = models.BigIntegerField(
         verbose_name='Exposures',
         help_text='total exposures that were run in this job',
         default=0
     )
 
-    # Total de nights com exposures no periodo deste job.
+    # Total de ccds no periodo deste job.
     ccds = models.BigIntegerField(
         verbose_name='CCDs',
         help_text='total ccds in the period of this job',
@@ -104,6 +104,7 @@ class SkybotJob(models.Model):
         help_text='Total unique objects returned by skybot',
         default=0
     )
+
     # Total de Exposições que tem pelo menos 1 objeto pelo skybot
     exposures_with_asteroid = models.BigIntegerField(
         verbose_name='Exposures with Asteroid',
