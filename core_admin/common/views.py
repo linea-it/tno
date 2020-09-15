@@ -20,6 +20,7 @@ from praia.pipeline.register import check_astrometry_running, register_astrometr
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
+import requests
 
 
 @api_view(['GET'])
@@ -236,11 +237,28 @@ def teste(request):
 
 @ api_view(['GET'])
 def logout_view(request):
+    log = logging.getLogger('django')
+    log.info("Starting Logout for User [%s]" % request.user.username)
+
+    # Executa o Logout no Django
     logout(request)
 
-    # Redireciona para a home
-    home = settings.HOST_URL
-    response = redirect('/shib/logout/?target=%s' % home)
+    # Verifica nos cookies se existe o cookie de sessão do Shibboleth
+    # se existir faz um redirect para a api de logout do Shibboleht.
+    response = None
+    is_shib = False
+    for key in request.COOKIES:
+        if "_shibsession_" in str(key):
+            shib_endpoint = "/api/shib/logout"
+            log.info("Sending request Shibboleth Logout [%s]" % shib_endpoint)
+            response = redirect(shib_endpoint)
+            is_shib = True
+
+    # Caso o usuario não tenha se logado pelo shibboleht apenas é redirecionado
+    # para a Home.
+    if is_shib is False:
+        log.info("Redirect to Host")
+        response = redirect('/')
 
     return response
 

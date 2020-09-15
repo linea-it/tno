@@ -59,5 +59,5 @@ export function isAuthenticated() {
 }
 
 export function logout() {
-  window.location.replace(`${url}/auth/logout`);
+  window.location.replace(`${url}/logout`);
 }
