@@ -23,7 +23,7 @@ function ColumnStatus({ status, title, align }) {
     statusColor = classes.btnFailure;
   } else if (status === 'aborted' || status === 5) {
     statusTitle = 'Aborted';
-    statusColor = classes.btnFailure;
+    statusColor = classes.btnAborted;
   } else if (status === 'stopped' || status === 6) {
     statusTitle = 'Stopped';
     statusColor = classes.btnWarning;

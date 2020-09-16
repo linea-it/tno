@@ -51,6 +51,8 @@ class DesSkybotPipeline():
 
         self.dsdao = DesSkybotJobResultDao(pool=False)
 
+        self.attempts_on_fail_by_exposure = 1
+
     def get_job_by_id(self, id):
         return self.spdao.get_by_id(id)
 
@@ -236,7 +238,7 @@ class DesSkybotPipeline():
         return df
 
     def apply_corection_in_date_obs(self, date_obs, exptime):
-        """Aplica uma correção a data de observação das exposições 
+        """Aplica uma correção a data de observação das exposições
         esta correção é :
         date_obs = date_obs + (exptime + correction)/2
         no caso da DECam o valor de correction é: 1.05
@@ -396,6 +398,72 @@ class DesSkybotPipeline():
 
             # TODO: Aducionar a opção de Pausar o Job
 
+
+    def run_skybot_by_exposure(self, job_path, exp):
+        # Instancia da classe SkybotServer para fazer as requisições.
+        # A url para o serviço do skybot fica na settings.SKYBOT_SERVER
+        self.logger.debug("Skybot Server: [%s]" % settings.SKYBOT_SERVER)
+        ss = SkybotServer(url=settings.SKYBOT_SERVER)
+
+        # caminho para o arquivo com os resultados retornados pelo skyubot.
+        filename = "%s.temp" % exp['id']
+        output = os.path.join(job_path, filename)
+
+        # Executa o consulta usando a função cone_search.
+        result = ss.cone_search(
+            date=exp['date_with_correction'],
+            ra=exp['radeg'],
+            dec=exp['decdeg'],
+            radius=exp['radius'],
+            observer_location=exp['observer_location'],
+            position_error=exp['position_error'],
+            output=output
+        )
+
+        # Adiciona o id da exposição ao resultado.
+        result.update({'exposure': exp['id']})
+
+        if result['success']:
+            # o Nome do arquivo agora é composto por exposure_id + ticket.
+            # e a extensão passa a ser .csv, mudando o nome do arquivo depois que ele
+            # já foi escrito eu garanto que ele está pronto para ser importado.
+            filename = "%s_%s.csv" % (exp['id'], result['ticket'])
+            filepath = os.path.join(job_path, filename)
+
+            # renomea o arquivo
+            os.rename(output, filepath)
+
+            # guarda o novo filepath e filename
+            result.update({
+                'output': filepath,
+                'filename': filename
+            })
+
+            self.logger.info("Exposure [%s] returned [%s] positions in %s." % (
+                result['exposure'], result['positions'], humanize.naturaldelta(
+                    timedelta(seconds=result['execution_time']), minimum_unit="milliseconds")
+            ))
+        else:
+
+            self.logger.warning("Exposure [%s]: %s" % (
+                result['exposure'], result['error']))
+
+            # If the exposure returned an error, try again for at least 10 times:
+            if self.attempts_on_fail_by_exposure <= 10:
+                self.logger.warning("Attempts On Fail: %s of 10" % (
+                    self.attempts_on_fail_by_exposure))
+
+                # Increment the attempts variable by each recursion:
+                self.attempts_on_fail_by_exposure += 1
+
+                # Call itself:
+                self.run_skybot_by_exposure(job_path, exp)
+
+        # Reset the attempts variable to its default value:
+        self.attempts_on_fail_by_exposure = 1
+
+        return result
+
     def run_job(self, job_id):
         """Este método executa as etapas de request ao skybot.
         é executado em um unico loop, itera sobre todas as exposições
@@ -451,11 +519,6 @@ class DesSkybotPipeline():
 
             # Aqui inicia as requisições para o serviço do Skybot.
 
-            # Instancia da classe SkybotServer para fazer as requisições.
-            # A url para o serviço do skybot fica na settings.SKYBOT_SERVER
-            self.logger.debug("Skybot Server: [%s]" % settings.SKYBOT_SERVER)
-            ss = SkybotServer(url=settings.SKYBOT_SERVER)
-
             # Para cada exposição faz a requisição no serviço do Skybot.
 
             # Array com os resultados de cada requisição
@@ -496,47 +559,8 @@ class DesSkybotPipeline():
                     # se ele não foi Abortado ou Pausado.
                     self.check_status(job_path)
 
-                    # caminho para o arquivo com os resultados retornados pelo skyubot.
-                    filename = "%s.temp" % exp['id']
-                    output = os.path.join(job_path, filename)
-
-                    # Executa o consulta usando a função cone_search.
-                    result = ss.cone_search(
-                        date=exp['date_with_correction'],
-                        ra=exp['radeg'],
-                        dec=exp['decdeg'],
-                        radius=exp['radius'],
-                        observer_location=exp['observer_location'],
-                        position_error=exp['position_error'],
-                        output=output
-                    )
-
-                    # Adiciona o id da exposição ao resultado.
-                    result.update({'exposure': exp['id']})
-
-                    if result['success']:
-                        # o Nome do arquivo agora é composto por exposure_id + ticket.
-                        # e a extensão passa a ser .csv, mudando o nome do arquivo depois que ele
-                        # já foi escrito eu garanto que ele está pronto para ser importado.
-                        filename = "%s_%s.csv" % (exp['id'], result['ticket'])
-                        filepath = os.path.join(job_path, filename)
-
-                        # renomea o arquivo
-                        os.rename(output, filepath)
-
-                        # guarda o novo filepath e filename
-                        result.update({
-                            'output': filepath,
-                            'filename': filename
-                        })
-
-                        self.logger.info("Exposure [%s] returned [%s] positions in %s." % (
-                            result['exposure'], result['positions'], humanize.naturaldelta(
-                                timedelta(seconds=result['execution_time']), minimum_unit="milliseconds")
-                        ))
-                    else:
-                        self.logger.warning("Exposure [%s]: %s" % (
-                            result['exposure'], result['error']))
+                    # Função de rodar as exposures
+                    result = self.run_skybot_by_exposure(job_path, exp)
 
                     # guarda o resultado do dataframe de requisições.
                     requests.append(result)
@@ -644,24 +668,28 @@ class DesSkybotPipeline():
     def reset_job_for_test(self, job_id):
         """Volta o Job para o estado inicial,
         util apenas para testes. durante o desenvolvimento
-
         Arguments:
             job_id {int} -- Id do Job que sera apagado.
         """
+        self.logger.info("Resetando o Job para Iniciar o teste")
+
         # job = SkybotJob.objects.get(pk=job_id)
         job = self.get_job_by_id(job_id)
 
         # Exclui o diretório do job.
         self.delete_job_dir(job_id)
 
-        job.status = 1
-        job.error = None
-        job.start = datetime.now(timezone.utc)
-        job.finish = None
-        job.execution_time = None
-        job['path'] = ' '
-        job.exposures = 0
-        job.save()
+        job['status'] = 1
+        job['error'] = None
+        job['start'] = datetime.now(timezone.utc)
+        job['finish'] = None
+        job['execution_time'] = None
+        job['path'] = ''
+        job['exposures'] = 0
+
+        self.update_job(job)
+
+        self.logger.info("Job Resetado")
 
     def check_request_queue(self):
         """Verifica a fila de jobs, se tiver algum job com status idle.

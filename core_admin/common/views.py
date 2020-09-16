@@ -228,6 +228,16 @@ def teste(request):
 
         # download_des_ccds(1, ccds[0:10])
 
+        # #  ----------------------------------------------------------
+        # Test Skybot load request
+        # from des.skybot import DesSkybotPipeline
+        # import logging
+        # log = logging.getLogger('skybot')
+        # log.info("Resetando o Job para Iniciar o teste")
+        # job_id = 119
+        # DesSkybotPipeline().reset_job_for_test(job_id)
+        # DesSkybotPipeline().run_job(job_id)
+
         result = dict({
             'success': True,
         })
