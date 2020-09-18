@@ -4,9 +4,9 @@ from django.db import models
 
 class SkybotJob(models.Model):
     """
-        Representa cada Job do Skybot que foi executado. 
-        Os jobs serão executados em pedaçõs, cada pedaço 
-        representa um periodo, em um periodo podem ter N exposições. 
+        Representa cada Job do Skybot que foi executado.
+        Os jobs serão executados em pedaçõs, cada pedaço
+        representa um periodo, em um periodo podem ter N exposições.
     """
 
     # Usuario que solicitou a execução do Job.
@@ -39,7 +39,7 @@ class SkybotJob(models.Model):
             (3, 'Completed'),
             (4, 'Failed'),
             (5, 'Aborted'),
-            (6, 'Stoped')
+            (6, 'Warning')
         )
     )
 

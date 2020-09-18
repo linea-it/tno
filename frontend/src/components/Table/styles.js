@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   wrapPaper: {
     position: 'relative',
     paddingTop: '10px',
@@ -48,6 +48,10 @@ const useStyles = makeStyles({
     backgroundColor: '#ff1a1a',
     color: '#fff',
   },
+  btnAborted: {
+    backgroundColor: theme.palette.secondary[500],
+    color: '#fff',
+  },
   btnRunning: {
     backgroundColor: '#ffba01',
     color: '#000',
@@ -63,6 +67,6 @@ const useStyles = makeStyles({
   container: {
     position: 'relative',
   },
-});
+}));
 
 export default useStyles;

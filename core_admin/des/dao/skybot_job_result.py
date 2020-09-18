@@ -47,7 +47,7 @@ class DesSkybotJobResultDao(DBBase):
             table = str(self.tbl)
 
             # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
-            sql = "COPY %s (ticket, success, execution_time, positions, inside_ccd, outside_ccd, filename, exposure_id, job_id, ccds_with_asteroids) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
+            sql = "COPY %s (ticket, success, error, execution_time, positions, inside_ccd, outside_ccd, filename, exposure_id, job_id, ccds_with_asteroids) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
 
             # Executa o metodo que importa o arquivo csv na tabela.
             rowcount = self.import_with_copy_expert(sql, data)
@@ -201,7 +201,7 @@ class DesSkybotJobResultDao(DBBase):
         return rows
 
     def t_positions_des_by_job(self, job_id):
-        """Retorna o Total de posições 
+        """Retorna o Total de posições
         retornadas pelo skybot que estão em ccds do DES para um Job especifico.
 
         select
@@ -269,7 +269,7 @@ class DesSkybotJobResultDao(DBBase):
         return rows
 
     def t_exposures_with_objects_by_job(self, job_id):
-        """Total de Exposições do DES 
+        """Total de Exposições do DES
         que tem pelo menos 1 objeto pelo skybot para um Job especifico.
 
         select
@@ -303,7 +303,7 @@ class DesSkybotJobResultDao(DBBase):
         return rows
 
     def t_ccds_with_objects_by_job(self, job_id):
-        """Total de CCDs do DES 
+        """Total de CCDs do DES
         que tem pelo menos 1 objeto pelo skybot para um Job especifico.
 
         select
@@ -339,14 +339,14 @@ class DesSkybotJobResultDao(DBBase):
     def dynclass_asteroids_by_job(self, job_id):
         """Total de objetos unicos por classe para um Job especifico
 
-        OBS: Está query não foi possivel fazer usando sqlalchemy. 
+        OBS: Está query não foi possivel fazer usando sqlalchemy.
 
         select
             split_part(dynclass, '>', 1) as dynclass,
             count(distinct(sp.name)) as asteroids
-        from skybot_position sp 
+        from skybot_position sp
         inner join des_skybotposition dsp on
-            sp.id = dsp.position_id 
+            sp.id = dsp.position_id
         inner join des_skybotjobresult ds on
             sp.ticket = ds.ticket
         where
@@ -374,15 +374,15 @@ class DesSkybotJobResultDao(DBBase):
     def dynclass_ccds_by_job(self, job_id):
         """Total de CCDs unicos por classe para um Job especifico
 
-        OBS: Está query não foi possivel fazer usando sqlalchemy. 
+        OBS: Está query não foi possivel fazer usando sqlalchemy.
 
         select
             split_part(dynclass, '>', 1) as dynclass,
             count(distinct(dsp.ccd_id)) as ccds
-        from skybot_position sp 
+        from skybot_position sp
         inner join des_skybotjobresult ds on
             sp.ticket = ds.ticket
-        inner join des_skybotposition dsp on sp.id = dsp.position_id 
+        inner join des_skybotposition dsp on sp.id = dsp.position_id
         where
             ds.job_id = 91
         group by
@@ -408,7 +408,7 @@ class DesSkybotJobResultDao(DBBase):
     def dynclass_positions_by_job(self, job_id):
         """Total de Posicoes unicas por classe para um Job especifico
 
-        OBS: Está query não foi possivel fazer usando sqlalchemy. 
+        OBS: Está query não foi possivel fazer usando sqlalchemy.
 
         select
             split_part(dynclass, '>', 1) as dynclass,
@@ -445,7 +445,7 @@ class DesSkybotJobResultDao(DBBase):
     def dynclass_band_by_job(self, job_id, dynclass):
         """Total de Posicoes por banda para um Job e classe especifico
 
-        OBS: Está query não foi possivel fazer usando sqlalchemy. 
+        OBS: Está query não foi possivel fazer usando sqlalchemy.
 
         select
             de.band,
@@ -462,7 +462,7 @@ class DesSkybotJobResultDao(DBBase):
             ds.job_id = 94
             and split_part(dynclass, '>', 1) = 'KBO'
         group by
-            de.band 
+            de.band
 
         Args:
             job_id ([type]): [description]
@@ -513,7 +513,7 @@ class DesSkybotJobResultDao(DBBase):
         return rows
 
     def dynclass_asteroids_by_id(self, id):
-        """ Total de Objetos por classe para uma exposição, query pelo id da des_skybotjobresult. 
+        """ Total de Objetos por classe para uma exposição, query pelo id da des_skybotjobresult.
 
         select
             split_part(sp.dynclass, '>', 1) as dynclass,

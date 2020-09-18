@@ -9,7 +9,7 @@ from requests.exceptions import HTTPError
 
 
 class SkybotServer():
-    """Esta classe tem a função de facilitar consultas ao serviço Skybot. 
+    """Esta classe tem a função de facilitar consultas ao serviço Skybot.
 
     """
 
@@ -95,7 +95,7 @@ class SkybotServer():
                 "Radius of the FOV must be float between 0 and 10 degrees.")
 
     def __get_ticket_from_response(self, data):
-        """Read the output file and retrieve the ticket number on the second line. 
+        """Read the output file and retrieve the ticket number on the second line.
             this ticket identifies the request that was made for the Skybot service.
 
         Arguments:
@@ -116,8 +116,8 @@ class SkybotServer():
         Exemplo de uma url de requisição:
         # http://vo.imcce.fr/webservices/skybot/skybotconesearch_query.php?-ep=2012-11-10%2003:27:03&-ra=37.44875&-dec=-7.7992&-rd=1.1&-mime=text&-output=object&-loc=w84&-filter=0
 
-        a execução desta função sempre retornara o dict de resultado, mesmo que ocorra uma Excessão. 
-        neste caso o atributo success é False e error é preenchido com a Exception. 
+        a execução desta função sempre retornara o dict de resultado, mesmo que ocorra uma Excessão.
+        neste caso o atributo success é False e error é preenchido com a Exception.
 
         para os casos de sucesso, success = True e error é None todos os outros campos serão preenchidos.
 
@@ -227,7 +227,7 @@ class SkybotServer():
         return result
 
     def check_missing_values(self, data):
-        """Valida o retorno do skybot buscando por valores Nulos. 
+        """Valida o retorno do skybot buscando por valores Nulos.
         Se houver algum valor Nulo o retorno é False, o resultado não passou na validação.
         Se NÃO Houver valores Nulos o retorno é True, o resultado é valido.
 
@@ -244,9 +244,9 @@ class SkybotServer():
 
         # return not has_null_value
 
-        # TODO: REMOVER ISSO QUE É SO TESTE
+        # # TODO: REMOVER ISSO QUE É SO TESTE
         from common.random import randbool
-        return randbool(3)
+        return randbool(2)
 
     def read_output_file(self, data):
         """Le a o resultado do Skybot e retorna um dataframe.

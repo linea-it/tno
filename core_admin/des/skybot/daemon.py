@@ -15,22 +15,22 @@ def check_loaddata_queue():
 
 
 scheduler = BackgroundScheduler()
-# scheduler.add_job(
-#     check_request_queue,
-#     'interval',
-#     # minutes=1
-#     seconds=15,
-#     max_instances=1,
-#     id='des_skybot_request'
-# )
+scheduler.add_job(
+    check_request_queue,
+    'interval',
+    # minutes=1
+    seconds=15,
+    max_instances=1,
+    id='des_skybot_request'
+)
 
-# scheduler.add_job(
-#     check_loaddata_queue,
-#     'interval',
-#     # minutes=1
-#     seconds=20,
-#     max_instances=1,
-#     id='des_skybot_loaddata'
-# )
+scheduler.add_job(
+    check_loaddata_queue,
+    'interval',
+    # minutes=1
+    seconds=20,
+    max_instances=1,
+    id='des_skybot_loaddata'
+)
 
 scheduler.start()

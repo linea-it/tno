@@ -346,7 +346,7 @@ function Skybot({ setTitle }) {
                   height: 465,
                   margin: {
                     t: 30,
-                    b: 20,
+                    b: 40,
                   },
                   autosize: true,
                   bargap: 0.05,

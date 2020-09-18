@@ -14,13 +14,15 @@ import {
 } from '@material-ui/core';
 import { useParams, useHistory } from 'react-router-dom';
 import moment from 'moment';
-import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons';
+import { InfoOutlined as InfoOutlinedIcon, Error as ErrorIcon } from '@material-ui/icons';
 import List from '../../components/List';
 import Table from '../../components/Table';
 // import SkybotTimeProfile from '../../components/Chart/SkybotTimeProfile';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import Progress from '../../components/Progress';
 import CalendarExecutedNight from '../../components/Chart/CalendarExecutedNight';
+import Dialog from '../../components/Dialog';
+import Log from '../../components/Log';
 import {
   getSkybotResultById,
   getSkybotRunById,
@@ -30,6 +32,8 @@ import {
   getDynclassAsteroids,
   // getSkybotTimeProfile,
 } from '../../services/api/Skybot';
+import { readFile } from '../../services/api/Common';
+
 import useInterval from '../../hooks/useInterval';
 import useStyles from './styles';
 
@@ -37,7 +41,7 @@ function SkybotDetail({ setTitle }) {
   const { id } = useParams();
   const history = useHistory();
   const classes = useStyles();
-  const [status, setStatus] = useState(0);
+  const [skybotJob, setSkybotJob] = useState({});
   const [summaryExecution, setSummaryExecution] = useState([]);
   const [summaryResults, setSummaryResults] = useState([]);
   // const [timeProfile, setTimeProfile] = useState({
@@ -79,6 +83,13 @@ function SkybotDetail({ setTitle }) {
   const [selectedDateYears, setSelectedDateYears] = useState([]);
 
   const [dynclassAsteroids, setDynclassAsteroids] = useState([]);
+
+  const [skybotResultErrors, setSkybotResultErrors] = useState([]);
+
+  const [errorLog, setErrorLog] = useState({
+    visible: false,
+    content: []
+  });
 
   const handleBackNavigation = () => history.goBack();
 
@@ -199,6 +210,40 @@ function SkybotDetail({ setTitle }) {
       customElement: (row) =>
         row.execution_time ? row.execution_time.split('.')[0] : '-',
     },
+    {
+      name: 'error',
+      title: 'Error',
+      sortingEnabled: false,
+      width: 160,
+      customElement: (row) => {
+        if (row.error !== '0') {
+          return <span title={row.error}>{row.error}</span>;
+        }
+        return '-';
+      },
+    },
+    {
+      name: 'log',
+      title: 'Log',
+      align: 'center',
+      sortingEnabled: false,
+      width: 130,
+      customElement: row => {
+        if(row.success === false) {
+
+          const exposure = skybotResultErrors.filter(res => res.id === row.exposure)[0];
+
+          if(exposure) {
+            return (
+              <Button onClick={() => handleLogClick(exposure)}>
+                <ErrorIcon />
+              </Button>
+            )
+          }
+        }
+        return '-';
+      }
+    }
   ];
 
   const dynclassAsteroidsColumns = [
@@ -258,6 +303,20 @@ function SkybotDetail({ setTitle }) {
     },
   ];
 
+  const handleLogClick = (exposure) => {
+    if(exposure) {
+      setErrorLog({
+        visible: true,
+        content: exposure.rows,
+      })
+    } else {
+      setErrorLog({
+        visible: false,
+        content: []
+      })
+    }
+  }
+
   const loadData = ({ currentPage, pageSize, sorting }) => {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1;
@@ -266,98 +325,122 @@ function SkybotDetail({ setTitle }) {
     }`;
 
     getSkybotResultById({ id, page, pageSize, ordering }).then((res) => {
-      setTableData(res.results);
+      setTableData(res.results.map(results => ({ ...results, log: null })));
       setTotalCount(res.count);
     });
   };
 
   useEffect(() => {
+    if(tableData.length > 0 && Object.keys(skybotJob).length > 0) {
+      const path = skybotJob.path;
+      const failedExposures = tableData.filter(exposure => exposure.success === false);
+
+      if(failedExposures.length > 0) {
+        setSkybotResultErrors([]);
+
+        failedExposures.forEach(row => {
+          readFile(`${path}/${row.exposure}_${row.ticket}.csv.err`)
+            .then(res => {
+              setSkybotResultErrors(prevState => prevState.concat([{ id: row.exposure, rows: res.rows }]));
+            })
+        })
+      }
+    }
+  }, [tableData, skybotJob]);
+
+  useEffect(() => {
     getSkybotRunById({ id }).then((res) => {
-      setStatus(res.status);
-      setSummaryExecution([
-        {
-          title: 'Status',
-          value: () => (
-            <ColumnStatus
-              status={res.status}
-              title={res.error_msg}
-              align="right"
-            />
-          ),
-        },
-        {
-          title: 'Owner',
-          value: res.owner,
-        },
-        {
-          title: 'Start Date',
-          value: moment(res.date_initial).format('YYYY-MM-DD'),
-        },
-        {
-          title: 'End Date',
-          value: moment(res.date_final).format('YYYY-MM-DD'),
-        },
-        {
-          title: 'Start',
-          value: moment(res.start).format('YYYY-MM-DD HH:mm:ss'),
-        },
-        {
-          title: 'Finish',
-          value: res.finish
-            ? moment(res.finish).format('YYYY-MM-DD HH:mm:ss')
-            : '-',
-        },
-        {
-          title: 'Estimated Time',
-          value: res.estimated_execution_time
-            ? res.estimated_execution_time.split('.')[0]
-            : 0,
-        },
-        {
-          title: 'Execution Time',
-          value: res.execution_time ? res.execution_time.split('.')[0] : 0,
-        },
-      ]);
-
-      setSummaryResults([
-        {
-          title: '# Nights',
-          value: res.nights,
-        },
-        {
-          title: '# Exposures Analyzed',
-          value: res.exposures,
-        },
-        {
-          title: '# CCDs Analyzed',
-          value: res.ccds,
-        },
-        {
-          title: '# SSOs',
-          value: res.asteroids,
-        },
-        {
-          title: '# Observations',
-          value: res.positions,
-        },
-        {
-          title: '# Exposures with SSOs',
-          value: res.exposures_with_asteroid,
-        },
-        {
-          title: '# CCDs with SSOs',
-          value: res.ccds_with_asteroid,
-        },
-      ]);
-
-      setExecutedDate([res.date_initial, res.date_final]);
+      setSkybotJob(res);
     });
+
     loadData({
       currentPage: 0,
       pageSize: 10,
       sorting: [{ columnName: 'id', direction: 'asc' }],
     });
   }, [loadProgress]);
+
+  useEffect(() => {
+    if(Object.keys(skybotJob).length > 0) {
+      setSummaryExecution([
+        {
+          title: 'Status',
+          value: () => (
+            <ColumnStatus
+              status={skybotJob.status}
+              title={skybotJob.error_msg}
+              align="right"
+            />
+          ),
+        },
+        {
+          title: 'Owner',
+          value: skybotJob.owner,
+        },
+        {
+          title: 'Start Date',
+          value: moment(skybotJob.date_initial).format('YYYY-MM-DD'),
+        },
+        {
+          title: 'End Date',
+          value: moment(skybotJob.date_final).format('YYYY-MM-DD'),
+        },
+        {
+          title: 'Start',
+          value: moment(skybotJob.start).format('YYYY-MM-DD HH:mm:ss'),
+        },
+        {
+          title: 'Finish',
+          value: skybotJob.finish
+            ? moment(skybotJob.finish).format('YYYY-MM-DD HH:mm:ss')
+            : '-',
+        },
+        {
+          title: 'Estimated Time',
+          value: skybotJob.estimated_execution_time
+            ? skybotJob.estimated_execution_time.split('.')[0]
+            : 0,
+        },
+        {
+          title: 'Execution Time',
+          value: skybotJob.execution_time ? skybotJob.execution_time.split('.')[0] : 0,
+        },
+      ]);
+
+      setSummaryResults([
+        {
+          title: '# Nights',
+          value: skybotJob.nights,
+        },
+        {
+          title: '# Exposures Analyzed',
+          value: skybotJob.exposures,
+        },
+        {
+          title: '# CCDs Analyzed',
+          value: skybotJob.ccds,
+        },
+        {
+          title: '# SSOs',
+          value: skybotJob.asteroids,
+        },
+        {
+          title: '# Observations',
+          value: skybotJob.positions,
+        },
+        {
+          title: '# Exposures with SSOs',
+          value: skybotJob.exposures_with_asteroid,
+        },
+        {
+          title: '# CCDs with SSOs',
+          value: skybotJob.ccds_with_asteroid,
+        },
+      ]);
+
+      setExecutedDate([skybotJob.date_initial, skybotJob.date_final]);
+    }
+  }, [skybotJob])
 
   useEffect(() => {
     getDynclassAsteroids(id).then((res) => {
@@ -399,7 +482,7 @@ function SkybotDetail({ setTitle }) {
     moment().startOf('day').seconds(value).format('HH:mm:ss');
 
   useInterval(() => {
-    if ([1, 2].includes(status)) {
+    if ([1, 2].includes(skybotJob.status)) {
       setLoadProgress((prevState) => !prevState);
     }
   }, [5000]);
@@ -457,7 +540,7 @@ function SkybotDetail({ setTitle }) {
               </Typography>
             </Button>
           </Grid>
-          {[1, 2].includes(status) ? (
+          {[1, 2].includes(skybotJob.status) ? (
             <Grid item>
               <Button
                 variant="contained"
@@ -479,7 +562,7 @@ function SkybotDetail({ setTitle }) {
           ) : null}
         </Grid>
       </Grid>
-      {totalCount === 0 && ![1, 2].includes(status) ? (
+      {totalCount === 0 && ![1, 2].includes(skybotJob.status) ? (
         <Grid item xs={12}>
           <Typography variant="h6">
             No exposure was found or all exposures were already executed in this
@@ -583,7 +666,7 @@ function SkybotDetail({ setTitle }) {
                       </Grid>
                     </Grid>
                   </Grid>
-                  {hasCircularProgress && [1, 2].includes(status) ? (
+                  {hasCircularProgress && [1, 2].includes(skybotJob.status) ? (
                     <CircularProgress
                       className={classes.circularProgress}
                       disableShrink
@@ -655,7 +738,7 @@ function SkybotDetail({ setTitle }) {
 
           {
             // Idle and Running Statuses:
-            ![1, 2].includes(status) ? (
+            ![1, 2].includes(skybotJob.status) ? (
               <>
                 <Grid item xs={12}>
                   {/* <Grid item xs={12} sm={8}>
@@ -710,6 +793,13 @@ function SkybotDetail({ setTitle }) {
           }
         </>
       )}
+      <Dialog
+        title="Log"
+        visible={errorLog.visible}
+        setVisible={() => handleLogClick(null)}
+        content={<Log data={errorLog.content} />}
+        maxWidth="md"
+      />
     </Grid>
   );
 }

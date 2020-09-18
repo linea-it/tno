@@ -34,5 +34,6 @@ module.exports = {
     'radix': 0,
     'camelcase': 0,
     'no-restricted-globals': 0,
+    'import/prefer-default-export': 0,
   },
 };
