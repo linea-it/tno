@@ -410,41 +410,45 @@ class DesSkybotPipeline():
         output = os.path.join(job_path, filename)
 
 
-        # Executa o consulta usando a função cone_search.
-        result = ss.cone_search(
-            date=exp['date_with_correction'],
-            ra=exp['radeg'],
-            dec=exp['decdeg'],
-            radius=exp['radius'],
-            observer_location=exp['observer_location'],
-            position_error=exp['position_error'],
-            output=output
-        )
 
-        # Adiciona o id da exposição ao resultado.
-        result.update({'exposure': exp['id']})
+        try:
+            # Executa o consulta usando a função cone_search.
+            result = ss.cone_search(
+                date=exp['date_with_correction'],
+                ra=exp['radeg'],
+                dec=exp['decdeg'],
+                radius=exp['radius'],
+                observer_location=exp['observer_location'],
+                position_error=exp['position_error'],
+                output=output
+            )
 
-        # Se o resultado tiver gerado algum arquivo
-        if result['file_size'] > 0:
-            # o Nome do arquivo agora é composto por exposure_id + ticket.
-            # e a extensão passa a ser .csv, mudando o nome do arquivo depois que ele
-            # já foi escrito eu garanto que ele está pronto para ser importado.
+            # Adiciona o id da exposição ao resultado.
+            result.update({'exposure': exp['id']})
 
-            filename = "%s_%s.csv" % (exp['id'], result['ticket'])
-            if not result['success']:
-                # Se tiver gerado algum arquivo mas o resultado está com falha o arquivo é renomeado com a extensão '.err'
-                filename += ".err"
+            # Se o resultado tiver gerado algum arquivo
+            if result['file_size'] > 0:
+                # o Nome do arquivo agora é composto por exposure_id + ticket.
+                # e a extensão passa a ser .csv, mudando o nome do arquivo depois que ele
+                # já foi escrito eu garanto que ele está pronto para ser importado.
 
-            filepath = os.path.join(job_path, filename)
+                filename = "%s_%s.csv" % (exp['id'], result['ticket'])
+                if not result['success']:
+                    # Se tiver gerado algum arquivo mas o resultado está com falha o arquivo é renomeado com a extensão '.err'
+                    filename += ".err"
 
-            # renomea o arquivo
-            os.rename(output, filepath)
+                filepath = os.path.join(job_path, filename)
 
-            # guarda o novo filepath e filename
-            result.update({
-                'output': filepath,
-                'filename': filename
-            })
+                # renomea o arquivo
+                os.rename(output, filepath)
+
+                # guarda o novo filepath e filename
+                result.update({
+                    'output': filepath,
+                    'filename': filename
+                })
+        except:
+            result['success'] = False
 
         if result['success']:
 
@@ -458,8 +462,8 @@ class DesSkybotPipeline():
                 result['exposure'], result['error']))
 
             # If the exposure returned an error, try again for at least 10 times:
-            if self.attempts_on_fail_by_exposure <= 5:
-                self.logger.warning("Attempts On Fail: %s of 5" % (
+            if self.attempts_on_fail_by_exposure <= 10:
+                self.logger.warning("Attempts On Fail: %s of 10" % (
                     self.attempts_on_fail_by_exposure))
 
                 # Increment the attempts variable by each recursion:
@@ -838,9 +842,18 @@ class DesSkybotPipeline():
                 # Na primeira execução pode ocorrer ao mesmo tempo que o componente requests.
                 # e o arquivo heartbeat pode ainda não ter sido criado.
                 # o valor do execute vai estar errado, mas é corrigido na segunda execução.
+                # request_heartbeat = self.read_request_heartbeat(job['path'])
+                # t_success = request_heartbeat['exposures_success']
+                # t_failure = request_heartbeat['exposures_failed']
+
                 request_heartbeat = self.read_request_heartbeat(job['path'])
-                t_success = request_heartbeat['exposures_success']
-                t_failure = request_heartbeat['exposures_failed']
+                # t_success = request_heartbeat['exposures_success']
+                # t_failure = request_heartbeat['exposures_failed']
+
+                loaddata_heartbeat = self.read_loaddata_heartbeat(job['path'])
+                t_success = loaddata_heartbeat['exposures_success']
+                t_failure = loaddata_heartbeat['exposures_failed']
+
                 # t_to_execute = request_heartbeat['exposures_success']
 
                 t_to_execute = 0
@@ -911,8 +924,6 @@ class DesSkybotPipeline():
                     t_ccds = 0
                     t_exec_time = []
 
-                request_heartbeat = self.read_request_heartbeat(job['path'])
-
                 # Para cada arquivo a ser importado executa o metodo de importação
                 # guarda o resultado no dataframe e move o arquivo para o diretório de outputs.
                 for idx, pos_file in enumerate(a_files, start=1):
@@ -941,7 +952,7 @@ class DesSkybotPipeline():
                             positions_path, pos_file.name)
                     else:
 
-                        t_success += 1
+                        t_failure += 1
                         # Em caso de falha o arquivo recebe a extensão .err
                         new_filepath = os.path.join(
                             positions_path, pos_file.name.replace('.csv', '.err'))

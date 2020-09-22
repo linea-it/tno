@@ -14,13 +14,16 @@ import {
 } from '@material-ui/core';
 import { useParams, useHistory } from 'react-router-dom';
 import moment from 'moment';
-import { InfoOutlined as InfoOutlinedIcon, Error as ErrorIcon } from '@material-ui/icons';
+import {
+  InfoOutlined as InfoOutlinedIcon,
+  Error as ErrorIcon,
+} from '@material-ui/icons';
 import List from '../../components/List';
 import Table from '../../components/Table';
 // import SkybotTimeProfile from '../../components/Chart/SkybotTimeProfile';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import Progress from '../../components/Progress';
-import CalendarExecutedNight from '../../components/Chart/CalendarExecutedNight';
+import CalendarSuccessOrFailNight from '../../components/Chart/CalendarSuccessOrFailNight';
 import Dialog from '../../components/Dialog';
 import Log from '../../components/Log';
 import {
@@ -28,7 +31,7 @@ import {
   getSkybotRunById,
   getSkybotProgress,
   cancelSkybotJobById,
-  getExecutedNightsByPeriod,
+  getNightsSuccessOrFail,
   getDynclassAsteroids,
   // getSkybotTimeProfile,
 } from '../../services/api/Skybot';
@@ -73,7 +76,6 @@ function SkybotDetail({ setTitle }) {
   // in case of nor exposure, and calls the function loadData.
   const [totalCount, setTotalCount] = useState(null);
 
-  const [executedDate, setExecutedDate] = useState(['', '']);
   const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([]);
   const [currentYearExecutedNights, setCurrentYearExecutedNights] = useState(
     []
@@ -88,7 +90,7 @@ function SkybotDetail({ setTitle }) {
 
   const [errorLog, setErrorLog] = useState({
     visible: false,
-    content: []
+    content: [],
   });
 
   const handleBackNavigation = () => history.goBack();
@@ -228,22 +230,23 @@ function SkybotDetail({ setTitle }) {
       align: 'center',
       sortingEnabled: false,
       width: 130,
-      customElement: row => {
-        if(row.success === false) {
+      customElement: (row) => {
+        if (row.success === false) {
+          const exposure = skybotResultErrors.filter(
+            (res) => res.id === row.exposure
+          )[0];
 
-          const exposure = skybotResultErrors.filter(res => res.id === row.exposure)[0];
-
-          if(exposure) {
+          if (exposure) {
             return (
               <Button onClick={() => handleLogClick(exposure)}>
                 <ErrorIcon />
               </Button>
-            )
+            );
           }
         }
         return '-';
-      }
-    }
+      },
+    },
   ];
 
   const dynclassAsteroidsColumns = [
@@ -304,18 +307,18 @@ function SkybotDetail({ setTitle }) {
   ];
 
   const handleLogClick = (exposure) => {
-    if(exposure) {
+    if (exposure) {
       setErrorLog({
         visible: true,
         content: exposure.rows,
-      })
+      });
     } else {
       setErrorLog({
         visible: false,
-        content: []
-      })
+        content: [],
+      });
     }
-  }
+  };
 
   const loadData = ({ currentPage, pageSize, sorting }) => {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
@@ -325,25 +328,30 @@ function SkybotDetail({ setTitle }) {
     }`;
 
     getSkybotResultById({ id, page, pageSize, ordering }).then((res) => {
-      setTableData(res.results.map(results => ({ ...results, log: null })));
+      setTableData(res.results.map((results) => ({ ...results, log: null })));
       setTotalCount(res.count);
     });
   };
 
   useEffect(() => {
-    if(tableData.length > 0 && Object.keys(skybotJob).length > 0) {
-      const path = skybotJob.path;
-      const failedExposures = tableData.filter(exposure => exposure.success === false);
+    if (tableData.length > 0 && Object.keys(skybotJob).length > 0) {
+      const { path } = skybotJob;
+      const failedExposures = tableData.filter(
+        (exposure) => exposure.success === false
+      );
 
-      if(failedExposures.length > 0) {
+      if (failedExposures.length > 0) {
         setSkybotResultErrors([]);
 
-        failedExposures.forEach(row => {
-          readFile(`${path}/${row.exposure}_${row.ticket}.csv.err`)
-            .then(res => {
-              setSkybotResultErrors(prevState => prevState.concat([{ id: row.exposure, rows: res.rows }]));
-            })
-        })
+        failedExposures.forEach((row) => {
+          readFile(`${path}/${row.exposure}_${row.ticket}.csv.err`).then(
+            (res) => {
+              setSkybotResultErrors((prevState) =>
+                prevState.concat([{ id: row.exposure, rows: res.rows }])
+              );
+            }
+          );
+        });
       }
     }
   }, [tableData, skybotJob]);
@@ -361,7 +369,7 @@ function SkybotDetail({ setTitle }) {
   }, [loadProgress]);
 
   useEffect(() => {
-    if(Object.keys(skybotJob).length > 0) {
+    if (Object.keys(skybotJob).length > 0) {
       setSummaryExecution([
         {
           title: 'Status',
@@ -403,7 +411,9 @@ function SkybotDetail({ setTitle }) {
         },
         {
           title: 'Execution Time',
-          value: skybotJob.execution_time ? skybotJob.execution_time.split('.')[0] : 0,
+          value: skybotJob.execution_time
+            ? skybotJob.execution_time.split('.')[0]
+            : 0,
         },
       ]);
 
@@ -437,10 +447,8 @@ function SkybotDetail({ setTitle }) {
           value: skybotJob.ccds_with_asteroid,
         },
       ]);
-
-      setExecutedDate([skybotJob.date_initial, skybotJob.date_final]);
     }
-  }, [skybotJob])
+  }, [skybotJob]);
 
   useEffect(() => {
     getDynclassAsteroids(id).then((res) => {
@@ -495,22 +503,17 @@ function SkybotDetail({ setTitle }) {
   };
 
   useEffect(() => {
-    if (executedDate[0] !== '' && executedDate[1] !== '') {
-      getExecutedNightsByPeriod(
-        moment(executedDate[0]).format('YYYY-MM-DD'),
-        moment(executedDate[1]).format('YYYY-MM-DD')
-      ).then((res) => {
-        const selectedYears = res
-          .map((year) => moment(year.date).format('YYYY'))
-          .filter((year, i, yearArr) => yearArr.indexOf(year) === i);
+    getNightsSuccessOrFail(id).then((res) => {
+      const selectedYears = res
+        .map((year) => moment(year.date).format('YYYY'))
+        .filter((year, i, yearArr) => yearArr.indexOf(year) === i);
 
-        setSelectedDateYears(selectedYears);
-        setCurrentSelectedDateYear(selectedYears[0]);
+      setSelectedDateYears(selectedYears);
+      setCurrentSelectedDateYear(selectedYears[0]);
 
-        setExecutedNightsByPeriod(res);
-      });
-    }
-  }, [executedDate]);
+      setExecutedNightsByPeriod(res);
+    });
+  }, [id, skybotJob]);
 
   useEffect(() => {
     if (executedNightsByPeriod.length > 0) {
@@ -562,170 +565,160 @@ function SkybotDetail({ setTitle }) {
           ) : null}
         </Grid>
       </Grid>
-      {totalCount === 0 && ![1, 2].includes(skybotJob.status) ? (
-        <Grid item xs={12}>
-          <Typography variant="h6">
-            No exposure was found or all exposures were already executed in this
-            period.
-          </Typography>
-        </Grid>
-      ) : (
-        <>
+
+      <Grid item xs={12} md={5} xl={3}>
+        <Card>
+          <CardHeader title="Summary Execution" />
+          <CardContent>
+            <List data={summaryExecution} />
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item xs={12} md={7} xl={9}>
+        <Card>
+          <CardHeader title="Progress" />
+          <CardContent>
+            <Grid
+              container
+              spacing={3}
+              direction="column"
+              className={classes.progressWrapper}
+            >
+              <Grid item>
+                <Progress
+                  title="Retrieving data from Skybot"
+                  variant="determinate"
+                  label={`${progress.request.exposures} exposures`}
+                  total={progress.request.exposures}
+                  current={progress.request.current}
+                />
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <Chip
+                      label={`Average: ${progress.request.average_time.toFixed(
+                        2
+                      )}s`}
+                      color="primary"
+                      variant="outlined"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Chip
+                      label={`Time Left: ${formatSeconds(
+                        progress.request.time_estimate
+                      )}`}
+                      color="primary"
+                      variant="outlined"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Chip
+                      label={`Progress: ${progress.request.current}/${progress.request.exposures}`}
+                      color="primary"
+                      variant="outlined"
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+
+              <Grid item>
+                <Progress
+                  title="Importing positions to database"
+                  variant="determinate"
+                  label={`${progress.loaddata.exposures} exposures`}
+                  total={progress.loaddata.exposures}
+                  current={progress.loaddata.current}
+                />
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <Chip
+                      label={`Average: ${progress.loaddata.average_time.toFixed(
+                        2
+                      )}s`}
+                      color="primary"
+                      variant="outlined"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Chip
+                      label={`Time Left: ${formatSeconds(
+                        moment
+                          .duration(progress.loaddata.time_estimate)
+                          .add(moment.duration(progress.request.time_estimate))
+                      )}`}
+                      color="primary"
+                      variant="outlined"
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Chip
+                      label={`Progress: ${progress.loaddata.current}/${progress.loaddata.exposures}`}
+                      color="primary"
+                      variant="outlined"
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+              {hasCircularProgress && [1, 2].includes(skybotJob.status) ? (
+                <CircularProgress
+                  className={classes.circularProgress}
+                  disableShrink
+                  size={20}
+                />
+              ) : null}
+            </Grid>
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container alignItems="stretch" spacing={2}>
           <Grid item xs={12} md={5} xl={3}>
             <Card>
-              <CardHeader title="Summary Execution" />
+              <CardHeader title="Summary Results" />
               <CardContent>
-                <List data={summaryExecution} />
+                <List data={summaryResults} />
               </CardContent>
             </Card>
           </Grid>
           <Grid item xs={12} md={7} xl={9}>
             <Card>
-              <CardHeader title="Progress" />
+              <CardHeader title="Executed Nights" />
               <CardContent>
                 <Grid
                   container
-                  spacing={3}
+                  spacing={2}
                   direction="column"
-                  className={classes.progressWrapper}
+                  className={classes.gridTable}
                 >
                   <Grid item>
-                    <Progress
-                      title="Retrieving data from Skybot"
-                      variant="determinate"
-                      label={`${progress.request.exposures} exposures`}
-                      total={progress.request.exposures}
-                      current={progress.request.current}
-                    />
-                    <Grid container spacing={2}>
-                      <Grid item>
-                        <Chip
-                          label={`Average: ${progress.request.average_time.toFixed(
-                            2
-                          )}s`}
-                          color="primary"
-                          variant="outlined"
-                        />
-                      </Grid>
-                      <Grid item>
-                        <Chip
-                          label={`Time Left: ${formatSeconds(
-                            progress.request.time_estimate
-                          )}`}
-                          color="primary"
-                          variant="outlined"
-                        />
-                      </Grid>
-                      <Grid item>
-                        <Chip
-                          label={`Progress: ${progress.request.current}/${progress.request.exposures}`}
-                          color="primary"
-                          variant="outlined"
-                        />
-                      </Grid>
-                    </Grid>
+                    {selectedDateYears.length > 1 ? (
+                      <ButtonGroup
+                        variant="contained"
+                        color="primary"
+                        className={classes.buttonGroupYear}
+                      >
+                        {selectedDateYears.map((year) => (
+                          <Button
+                            key={year}
+                            onClick={() => setCurrentSelectedDateYear(year)}
+                            disabled={currentSelectedDateYear === year}
+                          >
+                            {year}
+                          </Button>
+                        ))}
+                      </ButtonGroup>
+                    ) : null}
                   </Grid>
-
-                  <Grid item>
-                    <Progress
-                      title="Importing positions to database"
-                      variant="determinate"
-                      label={`${progress.loaddata.exposures} exposures`}
-                      total={progress.loaddata.exposures}
-                      current={progress.loaddata.current}
+                  <Grid item className={classes.gridTableRow}>
+                    <CalendarSuccessOrFailNight
+                      data={currentYearExecutedNights}
                     />
-                    <Grid container spacing={2}>
-                      <Grid item>
-                        <Chip
-                          label={`Average: ${progress.loaddata.average_time.toFixed(
-                            2
-                          )}s`}
-                          color="primary"
-                          variant="outlined"
-                        />
-                      </Grid>
-                      <Grid item>
-                        <Chip
-                          label={`Time Left: ${formatSeconds(
-                            moment
-                              .duration(progress.loaddata.time_estimate)
-                              .add(
-                                moment.duration(progress.request.time_estimate)
-                              )
-                          )}`}
-                          color="primary"
-                          variant="outlined"
-                        />
-                      </Grid>
-                      <Grid item>
-                        <Chip
-                          label={`Progress: ${progress.loaddata.current}/${progress.loaddata.exposures}`}
-                          color="primary"
-                          variant="outlined"
-                        />
-                      </Grid>
-                    </Grid>
                   </Grid>
-                  {hasCircularProgress && [1, 2].includes(skybotJob.status) ? (
-                    <CircularProgress
-                      className={classes.circularProgress}
-                      disableShrink
-                      size={20}
-                    />
-                  ) : null}
                 </Grid>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12}>
-            <Grid container alignItems="stretch" spacing={2}>
-              <Grid item xs={12} md={5} xl={3}>
-                <Card>
-                  <CardHeader title="Summary Results" />
-                  <CardContent>
-                    <List data={summaryResults} />
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item xs={12} md={7} xl={9}>
-                <Card>
-                  <CardHeader title="Executed Nights" />
-                  <CardContent>
-                    <Grid
-                      container
-                      spacing={2}
-                      direction="column"
-                      className={classes.gridTable}
-                    >
-                      <Grid item>
-                        {selectedDateYears.length > 1 ? (
-                          <ButtonGroup
-                            variant="contained"
-                            color="primary"
-                            className={classes.buttonGroupYear}
-                          >
-                            {selectedDateYears.map((year) => (
-                              <Button
-                                key={year}
-                                onClick={() => setCurrentSelectedDateYear(year)}
-                                disabled={currentSelectedDateYear === year}
-                              >
-                                {year}
-                              </Button>
-                            ))}
-                          </ButtonGroup>
-                        ) : null}
-                      </Grid>
-                      <Grid item className={classes.gridTableRow}>
-                        <CalendarExecutedNight
-                          data={currentYearExecutedNights}
-                        />
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </Grid>
-              {/* <Grid item xs={8}>
+          {/* <Grid item xs={8}>
                 <Card>
                   <CardHeader title="Execution Time" />
                   <CardContent>
@@ -733,15 +726,15 @@ function SkybotDetail({ setTitle }) {
                   </CardContent>
                 </Card>
               </Grid> */}
-            </Grid>
-          </Grid>
+        </Grid>
+      </Grid>
 
-          {
-            // Idle and Running Statuses:
-            ![1, 2].includes(skybotJob.status) ? (
-              <>
-                <Grid item xs={12}>
-                  {/* <Grid item xs={12} sm={8}>
+      {
+        // Idle and Running Statuses:
+        ![1, 2].includes(skybotJob.status) ? (
+          <>
+            <Grid item xs={12}>
+              {/* <Grid item xs={12} sm={8}>
                       <Card>
                         <CardHeader title="Execution Time" />
                         <CardContent>
@@ -749,50 +742,48 @@ function SkybotDetail({ setTitle }) {
                         </CardContent>
                       </Card>
                     </Grid> */}
-                </Grid>
-                <Grid item xs={12}>
-                  <Card>
-                    <CardHeader title="Summary Dynamic Class" />
-                    <CardContent>
-                      <Table
-                        columns={dynclassAsteroidsColumns}
-                        data={dynclassAsteroids}
-                        totalCount={dynclassAsteroids.length}
-                        hasSearching={false}
-                        hasPagination={false}
-                        // hasSorting={false}
-                        // defaultSorting={[{ columnName: 'dynclass', direction: 'asc' }]}
-                        hasColumnVisibility={false}
-                        hasToolbar={false}
-                        remote={false}
-                        loading
-                      />
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={12}>
-                  <Card>
-                    <CardHeader title="Skybot Results" />
-                    <CardContent>
-                      <Table
-                        columns={tableColumns}
-                        data={tableData}
-                        loadData={loadData}
-                        totalCount={totalCount || 0}
-                        hasSearching={false}
-                        // hasSorting={false}
-                        hasColumnVisibility={false}
-                        hasToolbar={false}
-                        hasRowNumberer
-                      />
-                    </CardContent>
-                  </Card>
-                </Grid>
-              </>
-            ) : null
-          }
-        </>
-      )}
+            </Grid>
+            <Grid item xs={12}>
+              <Card>
+                <CardHeader title="Summary Dynamic Class" />
+                <CardContent>
+                  <Table
+                    columns={dynclassAsteroidsColumns}
+                    data={dynclassAsteroids}
+                    totalCount={dynclassAsteroids.length}
+                    hasSearching={false}
+                    hasPagination={false}
+                    // hasSorting={false}
+                    // defaultSorting={[{ columnName: 'dynclass', direction: 'asc' }]}
+                    hasColumnVisibility={false}
+                    hasToolbar={false}
+                    remote={false}
+                    loading
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12}>
+              <Card>
+                <CardHeader title="Skybot Results" />
+                <CardContent>
+                  <Table
+                    columns={tableColumns}
+                    data={tableData}
+                    loadData={loadData}
+                    totalCount={totalCount || 0}
+                    hasSearching={false}
+                    // hasSorting={false}
+                    hasColumnVisibility={false}
+                    hasToolbar={false}
+                    hasRowNumberer
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+          </>
+        ) : null
+      }
       <Dialog
         title="Log"
         visible={errorLog.visible}

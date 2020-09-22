@@ -285,3 +285,73 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
             result = list()
 
         return Response(result)
+
+
+    @action(detail=True)
+    def nites_success_or_fail(self, request, pk=None):
+        """Retorna todas as datas que executaram com sucesso por completo e as que retornaram com no mínimo uma falha, dentro do periodo, que foram executadas pelo skybot.
+
+        Exemplo: http://localhost/api/des/skybot_job/11/nites_success_or_fails/
+        Returns:
+            [array]: um array com todas as datas do periodo no formato [{date: '2019-01-01', count: 0, executed: 0}]
+                O atributo executed pode ter 3 valores:
+                    0 - para datas que não tem exposição
+                    1 - para datas que tem exposição mas não foram executadas
+                    2 - para datas que tem exposição e foram executadas.
+        """
+
+        job = self.get_object()
+
+        file_path = os.path.join(job.path, 'results.csv')
+
+        job_result = pd.read_csv(file_path, delimiter=';', usecols=['date_obs', 'success'])
+
+        job_result['date_obs'] = job_result['date_obs'].apply(lambda x: x.split()[0])
+
+        job_result['count'] = 1
+
+        df1 = job_result.groupby(by='date_obs', as_index=False).agg({ 'count': 'sum', 'success': 'all' })
+
+        df1['success'] = df1['success'].apply(lambda x: 1 if x == True else 2)
+
+
+        start = str(job.date_initial)
+        end = str(job.date_final)
+
+        all_dates = get_days_interval(start, end)
+
+        # Verificar a quantidade de dias entre o start e end.
+        if len(all_dates) < 7:
+            dt_start = datetime.strptime(start, '%Y-%m-%d')
+            dt_end = dt_start + timedelta(days=6)
+
+            all_dates = get_days_interval(dt_start.strftime(
+                "%Y-%m-%d"), dt_end.strftime("%Y-%m-%d"))
+
+
+        df2 = pd.DataFrame()
+        df2['date_obs'] = all_dates
+        df2['success'] = 0
+        df2['count'] = 0
+
+        df1['date_obs'] = df1['date_obs'].astype(str)
+        df2['date_obs'] = df2['date_obs'].astype(str)
+
+        df1['success'] = df1['success'].astype(int)
+        df2['success'] = df2['success'].astype(int)
+
+        df1['count'] = df1['count'].astype(int)
+        df2['count'] = df2['count'].astype(int)
+
+
+        for i, row in df1.iterrows():
+            df2.loc[
+                df2['date_obs'] == row['date_obs'],
+                ['success', 'count']
+            ] = row['success'], row['count']
+
+        df = df2.rename(columns={ 'date_obs': 'date', 'success': 'executed' })
+
+        result = df.to_dict('records')
+
+        return Response(result)

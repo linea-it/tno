@@ -242,11 +242,11 @@ class SkybotServer():
 
         has_null_value = df.isnull().values.any()
 
-        # return not has_null_value
+        return not has_null_value
 
-        # # TODO: REMOVER ISSO QUE É SO TESTE
-        from common.random import randbool
-        return randbool(2)
+        # # # TODO: REMOVER ISSO QUE É SO TESTE
+        # from common.random import randbool
+        # return randbool(2)
 
     def read_output_file(self, data):
         """Le a o resultado do Skybot e retorna um dataframe.

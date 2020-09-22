@@ -48,7 +48,7 @@ function Skybot({ setTitle }) {
   const [exposuresByPeriod, setExposuresByPeriod] = useState([]);
   const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([]);
   const [selectedDate, setSelectedDate] = useState(['', '']);
-  const [chartType, setChartType] = useState(0);
+  const [chartType, setChartType] = useState(1);
   const [selectedDateYears, setSelectedDateYears] = useState([]);
   const [currentSelectedDateYear, setCurrentSelectedDateYear] = useState('');
   const [currentYearExposures, setCurrentYearExposures] = useState([]);
