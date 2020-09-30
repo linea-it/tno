@@ -7,21 +7,42 @@ class Exposure(models.Model):
         Cada exposição é uma imagem composta por 62 partes que são os CCDs. 
         A exposição neste modelo é uma imagem, que tem uma area, um centro, banda e foi tirada em uma data/hora.
         essa imagem vai estar associada a cada um dos ccds. 
-        no banco de dados do DES este modelo é representado pelo campo pfw_attempt_id. 
-        aqui pfw_attempt_id é o id deste modelo.
+        no banco de dados do DES este modelo é representado pelo campo expnum. 
+        aqui expnum é o id deste modelo.
 
         -- Query com as colunas referentes a exposição e acrescentando o campo de Release 
-        select distinct (pfw_attempt_id), nite, date_obs, expnum, band, exptime, cloud_apass, cloud_nomad, t_eff, radeg, decdeg, trim(split_part("path" , '/', 3)) as release from tno_pointing tp order by date_obs asc;
+        select distinct(a."EXPNUM"), a."NITE" , a."DATE_OBS" , a."PFW_ATTEMPT_ID",  a."EXPTIME" , a."CLOUD_APASS", a."CLOUD_NOMAD", a."T_EFF", a."RADEG", a."DECDEG", trim(split_part(a."PATH", '/', 3)) as release from y6a1_metadados a order by a."DATE_OBS" limit 10;
 
         -- Preenche a tabela Des/Exposure com os dados das exposições que antes estavam na tno_pointing
-        insert into des_exposure (id,nite,date_obs,expnum,band,radeg,decdeg,exptime,cloud_apass,cloud_nomad,t_eff,"release") select distinct (pfw_attempt_id) as id, nite, date_obs, expnum, band, radeg, decdeg, exptime, cloud_apass, cloud_nomad, t_eff, trim(split_part("path" , '/', 3)) as release from tno_pointing tp order by date_obs asc;
+            insert
+                into
+                des_exposure (id, nite, date_obs, band, radeg, decdeg, exptime, cloud_apass, cloud_nomad, t_eff, "release",  pfw_attempt_id)
+            select
+                distinct(a."EXPNUM") as id,
+                a."NITE" as nite,
+                a."DATE_OBS" as date_obs,
+                a."BAND" as band,
+                a."RADEG" as radeg ,
+                a."DECDEG" as decdeg ,	
+                a."EXPTIME" as exptime ,
+                a."CLOUD_APASS" as cloud_apass ,
+                a."CLOUD_NOMAD" as cloud_nomad ,
+                a."T_EFF" as t_eff ,
+                trim(split_part(a."PATH", '/', 3)) as release,
+                a."PFW_ATTEMPT_ID" as pfw_attempt_id
+            from
+                y6a1_metadados a
+            --where
+            --	a."EXPNUM" = 154833
+            order by
+                a."DATE_OBS" asc;
     """
 
-    # id = pfw_attempt_id
+    # id = expnum
     id = models.BigIntegerField(
         primary_key=True,
-        verbose_name='Exposure Id',
-        help_text='Unique identifier for each image. pfw_attempt_id in DES database.'
+        verbose_name='Expnum',
+        help_text='Unique identifier for each image. expnum in DES database.'
     )
     nite = models.DateField(
         verbose_name="Night",
@@ -31,9 +52,9 @@ class Exposure(models.Model):
         verbose_name='Observation Date',
         help_text='Date and time of observation'
     )
-    expnum = models.BigIntegerField(
-        verbose_name='Expnum',
-        help_text='identifier for each image. (it also recorded in the file name)'
+    pfw_attempt_id = models.BigIntegerField(
+        verbose_name='Pfw Attempt Id',
+        default=0
     )
     band = models.CharField(
         max_length=1,
@@ -66,7 +87,7 @@ class Exposure(models.Model):
     release = models.CharField(
         max_length=10,
         verbose_name='Release',
-        help_text='Release has been removed from the ccd filename field. using this rule trim(split_part(path , /, 3))'
+        help_text='Release has been retrieve from the ccd filename field. using this rule trim(split_part(path , /, 3))'
     )
 
     class Meta:

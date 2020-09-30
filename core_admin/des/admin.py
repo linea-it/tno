@@ -6,7 +6,7 @@ from .models import (Ccd, DownloadCcdJob, DownloadCcdJobResult, Exposure,
 
 @admin.register(Exposure)
 class ExposureAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nite', 'date_obs', 'expnum', 'radeg', 'decdeg',
+    list_display = ('id', 'nite', 'date_obs', 'pfw_attempt_id', 'radeg', 'decdeg',
                     'exptime', 'cloud_apass', 'cloud_nomad', 't_eff', 'release',)
 
     search_fields = ('id',)
