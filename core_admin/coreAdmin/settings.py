@@ -86,11 +86,13 @@ ENVIRONMENT_NAME = os.environ.get('ENVIRONMENT_NAME', 'Development')
 # Emails
 # Notifications Email
 EMAIL_NOTIFICATION = os.environ.get(
-    'EMAIL_NOTIFICATION', 'noreply@linea.gov.br')
+    'EMAIL_NOTIFICATION', 'sso-portal@linea.gov.br')
+
 
 EMAIL_HELPDESK = os.environ.get('EMAIL_HELPDESK', 'helpdesk@linea.gov.br')
 
-EMAIL_NOTIFICATION_COPY_TO = list([])
+EMAIL_NOTIFICATION_COPY_TO = list([os.environ.get(
+    'EMAIL_NOTIFICATION', 'sso-portal@linea.gov.br')])
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
@@ -270,7 +272,6 @@ if AUTH_LDAP_ENABLED == 'True':
         "last_name": "sn",
         "email": "mail",
     }
-
 
     # The distinguishable name for searching users, used to identify entries:
     AUTH_LDAP_USER_SEARCH_DN = os.environ.get('AUTH_LDAP_USER_SEARCH_DN')
