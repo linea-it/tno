@@ -92,6 +92,10 @@ function DownloadDetail({ setTitle }) {
           value: res.owner,
         },
         {
+          title: 'Job ID',
+          value: id
+        },
+        {
           title: 'Start Date',
           value: moment(res.date_initial).format('YYYY-MM-DD'),
         },

@@ -1,13 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import createPlotlyComponent from 'react-plotly.js/factory';
-import Plotly from 'plotly.js';
+import Plot from 'react-plotly.js';
 import moment from 'moment';
 import useStyles, { colors } from './styles';
 
 function TimeProfile({ data, width, height }) {
   const classes = useStyles();
-  const Plot = createPlotlyComponent(Plotly);
   const rows = [];
 
   if (Array.isArray(data)) {

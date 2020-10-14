@@ -4,6 +4,7 @@ from io import StringIO
 from urllib.parse import urljoin
 
 import pandas as pd
+import numpy as np
 import requests
 from requests.exceptions import HTTPError
 
@@ -239,12 +240,13 @@ class SkybotServer():
         """
 
         df = self.read_output_file(data)
+        df = df.replace('', np.nan)
 
         has_null_value = df.isnull().values.any()
 
         return not has_null_value
 
-        # # # TODO: REMOVER ISSO QUE É SO TESTE
+        # # TODO: REMOVER ISSO QUE É SO TESTE
         # from common.random import randbool
         # return randbool(2)
 

@@ -386,6 +386,10 @@ function SkybotDetail({ setTitle }) {
           value: skybotJob.owner,
         },
         {
+          title: 'Job ID',
+          value: id
+        },
+        {
           title: 'Start Date',
           value: moment(skybotJob.date_initial).format('YYYY-MM-DD'),
         },
