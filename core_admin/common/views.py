@@ -1,26 +1,28 @@
 import csv
 import logging
 import os
+import shutil
 import zipfile
 import zlib
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 import humanize
 import pandas as pd
 import requests
 from django.conf import settings
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.db.models import Count
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from django.shortcuts import redirect
+
 from praia.models import Run
-from praia.pipeline.register import check_astrometry_running, register_astrometry_outputs
-from django.contrib.auth import authenticate, login
+from praia.pipeline.register import (check_astrometry_running,
+                                     register_astrometry_outputs)
 from tno.auth_shibboleth import ShibbolethBackend
-from django.contrib.auth.models import User
-from django.contrib.auth import logout
 
 
 @api_view(['GET'])
@@ -28,78 +30,8 @@ def teste(request):
     if request.method == 'GET':
 
         # Teste de envio de email
-        from common.notify import Notify
-        from django.template.loader import render_to_string
-
-        # context = dict({
-        #     "username": 'gverde',
-        #     "start": '2012-11-01 00:00:00',
-        #     "end": '2012-11-30 23:59:59',
-        #     "nights": 3,
-        #     "ccds": 16165,
-        #     "job_id": 97
-        # })
-
-        # Notify().send_html_email(
-        #     subject="Teste de Email",
-        #     to="glauber.vila.verde@gmail.com",
-        #     template="notification_skybot_finish.html",
-        #     context=context)
-
-        # Skybot Finish
-        # from datetime import datetime
-        # now = datetime.now()
-        # import time
-        # time.sleep(2)
-        # now2 = datetime.now()
-        # delta = now2 - now
-
-        # context = dict({
-        #     "username": 'gverde',
-        #     "start": '2012-11-01 00:00:00',
-        #     "end": '2012-11-30 23:59:59',
-        #     "nights": 3,
-        #     "ccds": 16165,
-        #     "job_id": 97,
-        #     "job_start": now.strftime("%Y-%m-%d %H:%M:%S"),
-        #     "job_end": now2.strftime("%Y-%m-%d %H:%M:%S"),
-        #     "execution_time": str(delta).split(".")[0],
-        #     "nights": 13,
-        #     "ccds": 85703,
-        #     "asteroids": 2469,
-        #     "ccds_with_asteroid": 23777
-        # })
-
-        # Notify().send_html_email(
-        #     subject="Teste de Email",
-        #     to="glauber.vila.verde@gmail.com",
-        #     template="notification_skybot_finish.html",
-        #     context=context)
-
-        # Skybot Fail
-        # from datetime import datetime
-        # now = datetime.now()
-        # import time
-        # time.sleep(2)
-        # now2 = datetime.now()
-        # delta = now2 - now
-
-        # context = dict({
-        #     "username": 'gverde',
-        #     "job_id": 97,
-        #     "job_start": now.strftime("%Y-%m-%d %H:%M:%S"),
-        #     "job_end": now2.strftime("%Y-%m-%d %H:%M:%S"),
-        #     "execution_time": str(delta).split(".")[0],
-        # })
-
-        # Notify().send_html_email(
-        #     subject="Teste de Email",
-        #     to="glauber.vila.verde@gmail.com",
-        #     template="notification_skybot_fail.html",
-        #     context=context)
-
-        # send_mail("Teste TNO envio de email", "Isto é um teste", settings.EMAIL_HOST_USER, [
-        #           'glauber.vila.verde@gmail.com'], fail_silently=False)
+        # from common.notify import Notify
+        # from django.template.loader import render_to_string
 
         # from des.dao import DesSkybotJobResultDao
 
@@ -140,12 +72,22 @@ def teste(request):
 
         # b = DesSkybotJobResultDao(pool=False).dynclass_asteroids_by_id(7643)
 
-        # # Test Skybot load request
-        # from des.skybot import DesSkybotPipeline
-        # DesSkybotPipeline().run_job(53)
+        # #  ----------------------------------------------------------
+        # Test Skybot load request
+        from des.skybot import DesSkybotPipeline
+        import logging
+        log = logging.getLogger('skybot')
+        log.info("Resetando o Job para Iniciar o teste")
 
-        # result = DesImportSkybotOutput().import_output_file("/archive/skybot_output/1/808801_Y.csv")
+        job_id = 119
+        DesSkybotPipeline().reset_job_for_test(job_id)
+        DesSkybotPipeline().run_job(job_id)
 
+        # DesSkybotPipeline().run_import_positions(job_id)
+
+        # DesSkybotPipeline().consolidate(job_id)
+
+        # #  ----------------------------------------------------------
         # from des.skybot.pipeline import DESImportSkybotPositions
         # from des.models import DownloadCcdJobResult
         # from des.models import SkybotJob
@@ -227,16 +169,6 @@ def teste(request):
         # DownloadCcdJobResult.objects.all().delete()
 
         # download_des_ccds(1, ccds[0:10])
-
-        # #  ----------------------------------------------------------
-        # Test Skybot load request
-        # from des.skybot import DesSkybotPipeline
-        # import logging
-        # log = logging.getLogger('skybot')
-        # log.info("Resetando o Job para Iniciar o teste")
-        # job_id = 119
-        # DesSkybotPipeline().reset_job_for_test(job_id)
-        # DesSkybotPipeline().run_job(job_id)
 
         result = dict({
             'success': True,

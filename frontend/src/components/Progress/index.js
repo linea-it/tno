@@ -27,7 +27,7 @@ function Progress({ title, variant, total, current }) {
         </Box>
         <Box minWidth={35}>
           <Typography variant="body2" color="textSecondary">
-            {`${currentPercentage.toFixed()}%`}
+            {`${Math.floor(currentPercentage)}%`}
           </Typography>
         </Box>
       </Box>

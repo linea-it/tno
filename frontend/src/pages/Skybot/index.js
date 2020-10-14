@@ -19,8 +19,7 @@ import {
   ListItem,
   ListItemText,
 } from '@material-ui/core';
-import createPlotlyComponent from 'react-plotly.js/factory';
-import Plotly from 'plotly.js';
+import Plot from 'react-plotly.js';
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons';
 import Table from '../../components/Table';
 import ColumnStatus from '../../components/Table/ColumnStatus';
@@ -44,11 +43,21 @@ function Skybot({ setTitle }) {
   const [tableData, setTableData] = useState([]);
   const [disableSubmit, setDisableSubmit] = useState(true);
   const [reload, setReload] = useState(true);
-  const [allExposures, setAllExposures] = useState([]);
   const [exposuresByPeriod, setExposuresByPeriod] = useState([]);
   const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(['', '']);
-  const [chartType, setChartType] = useState(0);
+
+  // Get stored period on local storage if it exists and set as the initial data of selectedDate state:
+  const selectedDateLocalStorage = localStorage.getItem('skybotSelectedDate');
+  const [selectedDate, setSelectedDate] = useState(
+    selectedDateLocalStorage
+      ? [
+          JSON.parse(selectedDateLocalStorage).start,
+          JSON.parse(selectedDateLocalStorage).end,
+        ]
+      : ['', '']
+  );
+
+  const [chartType, setChartType] = useState(1);
   const [selectedDateYears, setSelectedDateYears] = useState([]);
   const [currentSelectedDateYear, setCurrentSelectedDateYear] = useState('');
   const [currentYearExposures, setCurrentYearExposures] = useState([]);
@@ -73,12 +82,19 @@ function Skybot({ setTitle }) {
 
   const handleSelectPeriodClick = () => {
     setExposuresByPeriod([]);
+    setExecutedNightsByPeriod([]);
 
     getExposuresByPeriod(
       moment(selectedDate[0]).format('YYYY-MM-DD'),
       moment(selectedDate[1]).format('YYYY-MM-DD')
     ).then((res) => {
+      const selectedYears = res
+        .map((year) => moment(year.date).format('YYYY'))
+        .filter((year, i, yearArr) => yearArr.indexOf(year) === i);
+
       setExposuresByPeriod(res);
+      setSelectedDateYears(selectedYears);
+      setCurrentSelectedDateYear(selectedYears[0]);
 
       setExecutionSummary({
         visible: true,
@@ -87,6 +103,13 @@ function Skybot({ setTitle }) {
         end: selectedDate[1],
         estimated_time: 0,
       });
+    });
+
+    getExecutedNightsByPeriod(
+      moment(selectedDate[0]).format('YYYY-MM-DD'),
+      moment(selectedDate[1]).format('YYYY-MM-DD')
+    ).then((res) => {
+      setExecutedNightsByPeriod(res);
     });
 
     setDisableSubmit(false);
@@ -105,30 +128,29 @@ function Skybot({ setTitle }) {
     }
   }, [exposuresByPeriod]);
 
-  useEffect(() => {
+  const handleSelectAllPeriodClick = () => {
     getExposuresByPeriod('2012-11-10', '2019-02-28').then((res) => {
       const selectedYears = res
         .map((year) => moment(year.date).format('YYYY'))
         .filter((year, i, yearArr) => yearArr.indexOf(year) === i);
 
+      setExposuresByPeriod(res);
       setSelectedDateYears(selectedYears);
       setCurrentSelectedDateYear(selectedYears[0]);
-      setAllExposures(res);
     });
 
     getExecutedNightsByPeriod('2012-11-10', '2019-02-28').then((res) => {
       setExecutedNightsByPeriod(res);
     });
-  }, []);
+  };
 
   useEffect(() => {
     if (
       chartType !== 0 &&
       currentSelectedDateYear !== '' &&
-      allExposures.length > 0 &&
       executedNightsByPeriod.length > 0
     ) {
-      const exposures = allExposures.filter(
+      const exposures = exposuresByPeriod.filter(
         (exposure) =>
           moment(exposure.date).format('YYYY') === currentSelectedDateYear
       );
@@ -141,12 +163,7 @@ function Skybot({ setTitle }) {
       setCurrentYearExposures(exposures);
       setCurrentYearExecutedNights(nights);
     }
-  }, [
-    allExposures,
-    executedNightsByPeriod,
-    currentSelectedDateYear,
-    chartType,
-  ]);
+  }, [executedNightsByPeriod, currentSelectedDateYear, chartType]);
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
     getSkybotRunList({
@@ -171,6 +188,15 @@ function Skybot({ setTitle }) {
 
         const hasStatusRunningOrIdle =
           tableData.filter((row) => [1, 2].includes(row.status)).length > 0;
+
+        // Store last submitted period on local storage:
+        localStorage.setItem(
+          'skybotSelectedDate',
+          JSON.stringify({
+            start: selectedDate[0],
+            end: selectedDate[1],
+          })
+        );
 
         if (hasStatusRunningOrIdle) {
           setHasJobRunningOrIdleFeedback(true);
@@ -271,8 +297,6 @@ function Skybot({ setTitle }) {
     },
   ];
 
-  const Plot = createPlotlyComponent(Plotly);
-
   // Reload data if we have any Skybot job running,
   // so we can follow its progress in real time.
   useInterval(() => {
@@ -289,7 +313,7 @@ function Skybot({ setTitle }) {
   };
 
   const renderExposurePlot = () => {
-    if (allExposures.length > 0) {
+    if (exposuresByPeriod.length > 0) {
       return (
         <Grid container spacing={2} alignItems="stretch">
           <Grid item>
@@ -346,7 +370,7 @@ function Skybot({ setTitle }) {
                   height: 465,
                   margin: {
                     t: 30,
-                    b: 20,
+                    b: 40,
                   },
                   autosize: true,
                   bargap: 0.05,
@@ -432,6 +456,16 @@ function Skybot({ setTitle }) {
                 <CardHeader title="Skybot Run" />
                 <CardContent>
                   <Grid container spacing={2} alignItems="stretch">
+                    <Grid item xs={12}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        onClick={handleSelectAllPeriodClick}
+                      >
+                        Select
+                      </Button>
+                    </Grid>
                     <Grid item xs={12}>
                       <DateRangePicker
                         // First day of Skybot:

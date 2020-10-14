@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import createPlotlyComponent from 'react-plotly.js/factory';
-import Plotly from 'plotly.js';
+import Plot from 'react-plotly.js';
 import useStyles from './styles';
 
 function CcdsDownloadedGrouped({ data }) {
   const classes = useStyles();
-  const Plot = createPlotlyComponent(Plotly);
   const [rows, setRows] = useState([]);
 
   useEffect(() => {

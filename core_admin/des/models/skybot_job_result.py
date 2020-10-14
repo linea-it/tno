@@ -39,6 +39,14 @@ class SkybotJobResult(models.Model):
         help_text='true if the exposure was successfully executed.'
     )
 
+    # Em caso de erro o Job fica com status 'Failed'
+    # e a exeção e guardada neste campo.
+    error = models.TextField(
+        verbose_name="Error",
+        null=True,
+        blank=True
+    )
+
     # Tempo de execução da exposição, somando as 2 etapas.
     execution_time = models.DurationField(
         verbose_name='Execution Time',

@@ -155,15 +155,15 @@ class DESImportSkybotPositions(ImportSkybotPositions):
 
     def ccds_by_exposure_id(self, exposure_id):
         """
-            Retorna todos os ccds de uma exposição. 
-            uma exposição é igual N ccds normalmente 61. 
+            Retorna todos os ccds de uma exposição.
+            uma exposição é igual N ccds normalmente 61.
 
             Parameters:
-                exposure_id (int): primary key from des_exposure table. 
+                exposure_id (int): primary key from des_exposure table.
 
             Returns:
-                rows (array): An array with all the ccds of the exhibition 
-                    following the structure of the table des_ccds            
+                rows (array): An array with all the ccds of the exhibition
+                    following the structure of the table des_ccds
         """
         self.logger.debug("Retrieving the CCDs. Exposure ID[%s]" % exposure_id)
 
@@ -179,7 +179,7 @@ class DESImportSkybotPositions(ImportSkybotPositions):
 
     def associate_position_ccd_q3c(self, ticket, exposure_id, ccd):
         """Faz a associação das posições com um Des/CCD  Usando Q3C
-        executa a função de insert/select cada posição que cair 
+        executa a função de insert/select cada posição que cair
         dentro do ccd sera inserida na tabela DES/SkybotPositions.
 
         Arguments:
@@ -251,6 +251,7 @@ class DESImportSkybotPositions(ImportSkybotPositions):
                     exposure_id, str(total_position)))
 
             else:
+
                 # Aqui inicia a fase de associação com os CCDS
                 # Recupera os CCDs da exposição
                 ccds = self.ccds_by_exposure_id(exposure_id)
@@ -334,7 +335,9 @@ class DESImportSkybotPositions(ImportSkybotPositions):
 
         except Exception as e:
             trace = traceback.format_exc()
+
             result.update({
+                'success': False,
                 'error': str(e),
                 'traceback': trace
             })
@@ -370,7 +373,7 @@ class DESImportSkybotPositions(ImportSkybotPositions):
                 dataframe (dataframe): Pandas Dataframe with the information to be imported.
 
             Returns:
-                rowcount (int):  the number of rows imported. 
+                rowcount (int):  the number of rows imported.
 
             Example SQL Copy:
                 COPY tno_skybotoutput (num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);

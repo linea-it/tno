@@ -8,6 +8,8 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Close as CloseIcon } from '@material-ui/icons';
+import useStyles from './styles';
+
 
 function Dialog({
   visible,
@@ -19,6 +21,9 @@ function Dialog({
   bodyStyle,
   wrapperStyle,
 }) {
+
+  const classes = useStyles();
+
   return (
     <MuiDialog
       onClose={setVisible}
@@ -33,7 +38,7 @@ function Dialog({
           {title}
         </Typography>
         {visible ? (
-          <IconButton aria-label="close" onClick={setVisible}>
+          <IconButton  className={classes.closeButton} aria-label="close" onClick={setVisible}>
             <CloseIcon />
           </IconButton>
         ) : null}
@@ -41,13 +46,10 @@ function Dialog({
       <DialogContent dividers className={bodyStyle}>
         {typeof content === 'function' ? (
           content()
-        ) : (
-          <Typography gutterBottom>
-            {content || content.props.data || content.props.data.length
+        ) : content || content.props.data || content.props.data.length
               ? content
-              : 'Unable to generate log due to a lack of data!'}
-          </Typography>
-        )}
+              : 'Unable to generate log due to a lack of data!'
+        }
       </DialogContent>
     </MuiDialog>
   );

@@ -5,7 +5,7 @@ function Log({ data }) {
   return (
     <pre style={{ border: 'none' }}>
       {data
-        ? data.map((line) => <div style={{ whiteSpace: 'normal' }}>{line}</div>)
+        ? data.map((line) => <div key={line} style={{ whiteSpace: 'normal' }}>{line}</div>)
         : null}
     </pre>
   );
