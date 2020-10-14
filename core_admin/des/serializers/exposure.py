@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from des.models import Exposure
 
+
 class ExposureSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -9,7 +10,7 @@ class ExposureSerializer(serializers.ModelSerializer):
             'id',
             'nite',
             'date_obs',
-            'expnum',
+            'pfw_attempt_id',
             'band',
             'radeg',
             'decdeg',
