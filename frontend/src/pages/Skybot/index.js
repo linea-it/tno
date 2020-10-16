@@ -18,6 +18,8 @@ import {
   List,
   ListItem,
   ListItemText,
+  Backdrop,
+  CircularProgress,
 } from '@material-ui/core';
 import Plot from 'react-plotly.js';
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons';
@@ -42,6 +44,7 @@ function Skybot({ setTitle }) {
   const [totalCount, setTotalCount] = useState(0);
   const [tableData, setTableData] = useState([]);
   const [disableSubmit, setDisableSubmit] = useState(true);
+  const [backdropOpen, setBackdropOpen] = useState(false);
   const [reload, setReload] = useState(true);
   const [exposuresByPeriod, setExposuresByPeriod] = useState([]);
   const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([]);
@@ -179,6 +182,7 @@ function Skybot({ setTitle }) {
   };
 
   const handleSubmit = () => {
+    setBackdropOpen(true);
     createSkybotRun({
       date_initial: selectedDate[0],
       date_final: selectedDate.length === 1 ? selectedDate[0] : selectedDate[1],
@@ -204,10 +208,13 @@ function Skybot({ setTitle }) {
         } else {
           history.push(`/data-preparation/des/skybot/${id}`);
         }
+
+        setBackdropOpen(false);
       })
       .catch(() => {
         setReload((prevState) => !prevState);
         setDisableSubmit(false);
+        setBackdropOpen(false);
       });
   };
 
@@ -547,6 +554,9 @@ function Skybot({ setTitle }) {
         message="There's already a job running, so your job is currently idle."
         onClose={() => setHasJobRunningOrIdleFeedback(false)}
       />
+      <Backdrop className={classes.backdrop} open={backdropOpen}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   );
 }
