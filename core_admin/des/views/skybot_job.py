@@ -14,6 +14,10 @@ from des.models import SkybotJob
 from des.serializers import SkybotJobSerializer
 from des.skybot.pipeline import DesSkybotPipeline
 
+import numpy as np
+
+import logging
+
 
 class SkybotJobViewSet(mixins.RetrieveModelMixin,
                        mixins.ListModelMixin,
@@ -294,26 +298,52 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         Exemplo: http://localhost/api/des/skybot_job/11/nites_success_or_fails/
         Returns:
             [array]: um array com todas as datas do periodo no formato [{date: '2019-01-01', count: 0, executed: 0}]
-                O atributo executed pode ter 3 valores:
-                    0 - para datas que não tem exposição
-                    1 - para datas que tem exposição mas não foram executadas
-                    2 - para datas que tem exposição e foram executadas.
+                O atributo executed pode ter 4 valores:
+                    0 - para datas que não tem exposição;
+                    1 - para datas que tem exposição mas não foram executadas;
+                    2 - para datas que tem exposição, foram executadas e finalizaram com sucesso;
+                    3 - para datas que tem exposição, foram executadas e finalizaram com erro.
         """
+
+        logger = logging.getLogger("skybot")
 
         job = self.get_object()
 
         file_path = os.path.join(job.path, 'results.csv')
 
-        job_result = pd.read_csv(file_path, delimiter=';', usecols=['date_obs', 'success'])
+        job_result = pd.read_csv(file_path, delimiter=';', usecols=['date_obs', 'success', 'request_error', 'loaddata_error'])
 
         job_result['date_obs'] = job_result['date_obs'].apply(lambda x: x.split()[0])
 
         job_result['count'] = 1
 
-        df1 = job_result.groupby(by='date_obs', as_index=False).agg({ 'count': 'sum', 'success': 'all' })
+        # Sometimes the error property comes as a '0.0', even though it doesn't have an error,
+        # So in here we replace it with np.nan to treat it later
+        job_result['request_error'] = job_result['request_error'].apply(lambda x: np.nan if x == 0.0 else x)
+        job_result['loaddata_error'] = job_result['loaddata_error'].apply(lambda x: np.nan if x == 0.0 else x)
 
-        df1['success'] = df1['success'].apply(lambda x: 1 if x == True else 2)
+        # Verify if either or both request or loadata failed, fill the property is_success with False, otherwise with True
+        job_result['is_success'] = job_result[['request_error', 'loaddata_error']].apply(lambda row: True if np.isnan(row['request_error']) and np.isnan(row['loaddata_error']) else False, axis=1)
 
+        job_result.drop(columns=['request_error', 'loaddata_error'])
+
+        job_result['error'] = job_result['is_success'].apply(lambda x: 0 if x else 1)
+
+        # Group by "date_obs" so we know if that day failed or not
+        df1 = job_result.groupby(by='date_obs', as_index=False).agg({ 'count': 'sum', 'error': 'sum', 'success': 'all', 'is_success': 'all' })
+
+        # Function that applies the value of the attributes based on the comparison of 'success' and 'error' properties
+        def apply_success_value(row):
+            if row['success'] == True and row['is_success'] == True:
+                return 2
+            elif row['success'] == False and row['is_success'] == False:
+                return 3
+            else:
+                return 1
+
+        df1['success'] = df1.apply(apply_success_value, axis=1)
+
+        df1.drop(columns=['is_success'])
 
         start = str(job.date_initial)
         end = str(job.date_final)
@@ -328,11 +358,11 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
             all_dates = get_days_interval(dt_start.strftime(
                 "%Y-%m-%d"), dt_end.strftime("%Y-%m-%d"))
 
-
         df2 = pd.DataFrame()
         df2['date_obs'] = all_dates
         df2['success'] = 0
         df2['count'] = 0
+        df2['error'] = 0
 
         df1['date_obs'] = df1['date_obs'].astype(str)
         df2['date_obs'] = df2['date_obs'].astype(str)
@@ -343,6 +373,8 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         df1['count'] = df1['count'].astype(int)
         df2['count'] = df2['count'].astype(int)
 
+        df1['error'] = df1['error'].astype(int)
+        df2['error'] = df2['error'].astype(int)
 
         for i, row in df1.iterrows():
             df2.loc[

@@ -11,6 +11,7 @@ function CalendarSuccessOrFailNight({ data }) {
       date: d3.timeDay(new Date(`${row.date} 00:00`)),
       value: row.executed,
       count: row.count,
+      error: row.error,
     }));
 
     setRows(exposures);
@@ -62,8 +63,8 @@ function CalendarSuccessOrFailNight({ data }) {
 
     const colorFn = d3
       .scaleLinear()
-      .domain([0, 1, 2])
-      .range(['#ebedf0', '#212121', '#FF3333']);
+      .domain([0, 1, 2, 3])
+      .range(['#ebedf0', '#939497', '#212121', '#FF3333']);
 
     year
       .append('g')
@@ -100,10 +101,13 @@ function CalendarSuccessOrFailNight({ data }) {
             hoverText = 'has no exposure';
             break;
           case 1:
-            hoverText = `was executed and it has ${d.count} exposure(s)`;
+            hoverText = "has exposure(s), but it wasn't executed";
             break;
           case 2:
-            hoverText = `was executed but some of the ${d.count} exposures have failed`;
+            hoverText = `was executed and it has ${d.count} exposure(s)`;
+            break;
+          case 3:
+            hoverText = `was executed but ${d.error} out of ${d.count} exposures have failed`;
             break;
           default:
             break;

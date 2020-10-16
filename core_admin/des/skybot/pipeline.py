@@ -1497,6 +1497,7 @@ class DesSkybotPipeline():
                 "start": job['date_initial'],
                 "end": job['date_final'],
                 "nights": job['nights'],
+                "exposures": job['exposures'],
                 "ccds": job['ccds'],
             })
 
