@@ -26,7 +26,7 @@ class DesSkybotJobResultDao(DBBase):
                 rowcount (int):  the number of rows imported.
 
             Example SQL Copy:
-                COPY tno_skybotoutput (num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
+                COPY des_skybotjobresult (ticket, success, error, execution_time, positions, inside_ccd, outside_ccd, filename, exposure_id, job_id, ccds_with_asteroids) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
 
         """
         # Converte o Data frame para csv e depois para arquivo em memória.
