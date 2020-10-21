@@ -25,6 +25,7 @@ class SkybotJobResultSerializer(serializers.ModelSerializer):
             'exposure',
             'ticket',
             'success',
+            'error',
             'execution_time',
             'ccds_with_asteroids',
             'positions',

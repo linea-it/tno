@@ -18,14 +18,14 @@ function ColumnStatus({ status, title, align }) {
   } else if (status === 'success' || status === 3) {
     statusTitle = 'Success';
     statusColor = classes.btnSuccess;
-  } else if (status === 'failed' || status === 4) {
+  } else if (status === 'failed' || status === 'failure' || status === 4) {
     statusTitle = 'Failed';
     statusColor = classes.btnFailure;
   } else if (status === 'aborted' || status === 5) {
     statusTitle = 'Aborted';
-    statusColor = classes.btnFailure;
-  } else if (status === 'stopped' || status === 6) {
-    statusTitle = 'Stopped';
+    statusColor = classes.btnAborted;
+  } else if (status === 'warning' || status === 6) {
+    statusTitle = 'Warning';
     statusColor = classes.btnWarning;
   } else {
     statusTitle = 'Unknown';

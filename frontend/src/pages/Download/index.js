@@ -20,6 +20,8 @@ import {
   List,
   ListItem,
   ListItemText,
+  Backdrop,
+  CircularProgress,
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons';
@@ -48,6 +50,7 @@ function Download({ setTitle }) {
   const [objects, setObjects] = useState([]);
   const [object, setObject] = useState({});
   const [disableSubmit, setDisableSubmit] = useState(true);
+  const [backdropOpen, setBackdropOpen] = useState(false);
   const [reload, setReload] = useState(true);
   const [allCcds, setAllCcds] = useState([]);
   const [selectedDate, setSelectedDate] = useState(['', '']);
@@ -158,6 +161,7 @@ function Download({ setTitle }) {
   };
 
   const handleSubmit = () => {
+    setBackdropOpen(true);
     setDisableSubmit(true);
 
     createDownloadJob({
@@ -178,10 +182,12 @@ function Download({ setTitle }) {
         } else {
           history.push(`/data-preparation/des/download/${id}`);
         }
+        setBackdropOpen(false);
       })
       .catch(() => {
         setReload((prevState) => !prevState);
         setDisableSubmit(false);
+        setBackdropOpen(false);
       });
   };
 
@@ -596,6 +602,9 @@ function Download({ setTitle }) {
         message="There's already a job running, so your job is currently idle."
         onClose={() => setHasJobRunningOrIdleFeedback(false)}
       />
+      <Backdrop className={classes.backdrop} open={backdropOpen}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   );
 }

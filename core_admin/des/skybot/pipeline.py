@@ -51,6 +51,8 @@ class DesSkybotPipeline():
 
         self.dsdao = DesSkybotJobResultDao(pool=False)
 
+        self.attempts_on_fail_by_exposure = 1
+
     def get_job_by_id(self, id):
         return self.spdao.get_by_id(id)
 
@@ -190,7 +192,7 @@ class DesSkybotPipeline():
             "[%s] Exposures for the period were found." % len(rows))
         return rows
 
-    def get_expouses_filepath(self, job_path):
+    def get_exposures_filepath(self, job_path):
         """Retorna o filepath para o arquivo csv que guarda as informações das exposições.
 
         Arguments:
@@ -217,7 +219,7 @@ class DesSkybotPipeline():
 
         # Verifica se já existe um arquivo com as exposições criado.
         job_path = self.get_job_path(job_id)
-        filepath = self.get_expouses_filepath(job_path)
+        filepath = self.get_exposures_filepath(job_path)
         if not os.path.exists(filepath):
             # Se não existir faz a query, cria um pandas dataframe e salva em arquivo.
 
@@ -236,7 +238,7 @@ class DesSkybotPipeline():
         return df
 
     def apply_corection_in_date_obs(self, date_obs, exptime):
-        """Aplica uma correção a data de observação das exposições 
+        """Aplica uma correção a data de observação das exposições
         esta correção é :
         date_obs = date_obs + (exptime + correction)/2
         no caso da DECam o valor de correction é: 1.05
@@ -267,7 +269,7 @@ class DesSkybotPipeline():
             pandas.Dataframe -- Retorna um dataframe com as exposições.
         """
 
-        filepath = self.get_expouses_filepath(job_path)
+        filepath = self.get_exposures_filepath(job_path)
 
         df = pd.DataFrame(
             rows, columns=['id', 'date_obs', 'radeg', 'decdeg', 'exptime'])
@@ -304,7 +306,7 @@ class DesSkybotPipeline():
         Returns:
             pandas.Dataframe -- Retorna um dataframe com as exposições.
         """
-        filepath = self.get_expouses_filepath(job_path)
+        filepath = self.get_exposures_filepath(job_path)
 
         df = pd.read_csv(filepath, delimiter=';')
 
@@ -373,18 +375,25 @@ class DesSkybotPipeline():
 
         return df
 
-    def check_status(self, job_path):
+    def check_status(self, job_id):
 
-        filepath = os.path.join(job_path, 'status.json')
+        job = self.get_job_by_id(job_id)
+        filepath = os.path.join(job['path'], 'status.json')
+
+        if job['status'] == 4:
+            raise Exception("The job has failed.")
 
         if os.path.exists(filepath):
 
             status = None
             try:
                 with open(filepath) as json_file:
+                    # self.logger_import.debug('check_status json.load(json_file)')
                     status = json.load(json_file)
 
             except Exception as e:
+                trace = traceback.format_exc()
+                self.logger.error(trace)
                 self.logger.error(e)
                 # Pode acontecer de tentar ler o arquivo no mesmo momento em que ele está sendo criado.
                 return
@@ -395,6 +404,95 @@ class DesSkybotPipeline():
                     'The job was aborted by the user.')
 
             # TODO: Aducionar a opção de Pausar o Job
+
+
+    def run_skybot_by_exposure(self, skybot_server_url, job_path, exp):
+        # Instancia da classe SkybotServer para fazer as requisições.
+        # A url para o serviço do skybot fica na settings.SKYBOT_SERVER
+        ss = SkybotServer(url=skybot_server_url)
+
+        # caminho para o arquivo com os resultados retornados pelo skyubot.
+        filename = "%s.temp" % exp['id']
+        output = os.path.join(job_path, filename)
+
+        # Executa o consulta usando a função cone_search.
+        result = ss.cone_search(
+            date=exp['date_with_correction'],
+            ra=exp['radeg'],
+            dec=exp['decdeg'],
+            radius=exp['radius'],
+            observer_location=exp['observer_location'],
+            position_error=exp['position_error'],
+            output=output
+        )
+
+        # Adiciona o id da exposição ao resultado.
+        result.update({'exposure': exp['id']})
+
+        # Se o resultado tiver gerado algum arquivo
+        if result['file_size'] > 0:
+            # o Nome do arquivo agora é composto por exposure_id + ticket.
+            # e a extensão passa a ser .csv, mudando o nome do arquivo depois que ele
+            # já foi escrito eu garanto que ele está pronto para ser importado.
+
+            filename = "%s_%s.csv" % (exp['id'], result['ticket'])
+            if not result['success']:
+                # Se tiver gerado algum arquivo mas o resultado está com falha o arquivo é renomeado com a extensão '.err'
+                filename += ".err"
+
+            filepath = os.path.join(job_path, filename)
+
+
+            try:
+                # TODO: remove later, after debug
+                # self.logger.debug(result)
+                self.logger.debug("Output: [%s], Filepath: [%s]" % (output, filepath))
+
+                # renomea o arquivo
+                os.rename(output, filepath)
+            except:
+                result.update({
+                    'success': False,
+                    'error': 'Unable to create file'
+                })
+
+            # guarda o novo filepath e filename
+            result.update({
+                'output': filepath,
+                'filename': filename
+            })
+        else:
+            result.update({
+                'success': False,
+                'error': 'File has size equal to 0'
+            })
+
+        if result['success']:
+
+            self.logger.info("Exposure [%s] returned [%s] positions in %s." % (
+                result['exposure'], result['positions'], humanize.naturaldelta(
+                    timedelta(seconds=result['execution_time']), minimum_unit="milliseconds")
+            ))
+        else:
+
+            self.logger.warning("Exposure [%s]: %s" % (
+                result['exposure'], result['error']))
+
+            # If the exposure returned an error, try again for at least 10 times:
+            if self.attempts_on_fail_by_exposure <= 10:
+                self.logger.warning("Attempts On Fail: %s of 10" % (
+                    self.attempts_on_fail_by_exposure))
+
+                # Increment the attempts variable by each recursion:
+                self.attempts_on_fail_by_exposure += 1
+
+                # Call itself:
+                self.run_skybot_by_exposure(skybot_server_url, job_path, exp)
+
+        # Reset the attempts variable to its default value:
+        self.attempts_on_fail_by_exposure = 1
+
+        return result
 
     def run_job(self, job_id):
         """Este método executa as etapas de request ao skybot.
@@ -413,6 +511,10 @@ class DesSkybotPipeline():
 
             # Altera o Status do Job para Running
             job['status'] = 2
+
+            self.update_job(job)
+
+            self.logger.debug('Alterando status do job para running')
 
             # Cria o diretório onde o job será executado e onde ficaram os outputs.
             job_path = self.create_job_dir(job_id)
@@ -437,13 +539,10 @@ class DesSkybotPipeline():
 
             # Criar um dataframe com as exposições a serem executadas.
             # este dataframe vai guardar também as estatisticas de cada execução.
+            self.logger.info("Creating the list of exposures to be processed.")
             df_exposures = self.get_exposures(
                 job_id, job['date_initial'], job['date_final'])
 
-            # Guarda o total de exposures
-            t_exposures = df_exposures.shape[0]
-
-            job['exposures'] = t_exposures
             self.update_job(job)
 
             # Notify User Start Proccess
@@ -451,19 +550,17 @@ class DesSkybotPipeline():
 
             # Aqui inicia as requisições para o serviço do Skybot.
 
-            # Instancia da classe SkybotServer para fazer as requisições.
-            # A url para o serviço do skybot fica na settings.SKYBOT_SERVER
-            self.logger.debug("Skybot Server: [%s]" % settings.SKYBOT_SERVER)
-            ss = SkybotServer(url=settings.SKYBOT_SERVER)
-
             # Para cada exposição faz a requisição no serviço do Skybot.
 
             # Array com os resultados de cada requisição
             requests = list([])
 
+            # Total de exposures que serão analizadas neste Job.
+            t_exposures = df_exposures.shape[0]
+
             # Lista de exposições que serão executadas.
             a_exposures = df_exposures.to_dict('records', )
-            # a_exposures = df_exposures.to_dict('records', )[0:2]
+            # a_exposures = df_exposures.to_dict('records', )[0:10]
 
             # Guarda o total de tempo de execução para calcular o tempo médio.
             t_exec_time = []
@@ -471,72 +568,40 @@ class DesSkybotPipeline():
             # Arquivo onde sera gravados o andamento da execução.
             heartbeat = self.get_request_heartbeat_filename(job_path)
 
+            t_requests = 0
+            t_success = 0
+            t_failure = 0
+
             # Caso não tenha nenhum exposição para executar
             if len(a_exposures) == 0:
 
                 # Cria o arquivo de Heartbeat
                 self.update_request_heartbeat(
-                    heartbeat, 'completed', 0, 0, 0)
+                    heartbeat, 'completed', 0, 0, 0, 0, 0)
 
                 # Criar um dataframe para guardar as estatisticas de cada requisição.
                 df_requests = self.create_request_dataframe([], job_path)
 
-                t_requests = 0
-                t_success = 0
-                t_failure = 0
-
             else:
                 # Cria o arquivo de Heartbeat
                 self.update_request_heartbeat(
-                    heartbeat, 'running', 0, len(a_exposures), 0)
+                    heartbeat, 'running', 0, len(a_exposures), 0, 0, 0)
+
+                self.logger.debug("Skybot Server: [%s]" % settings.SKYBOT_SERVER)
 
                 for idx, exp in enumerate(a_exposures, start=1):
 
                     # Antes de fazer o download, verifica qual o status do job
                     # se ele não foi Abortado ou Pausado.
-                    self.check_status(job_path)
+                    self.check_status(job_id)
 
-                    # caminho para o arquivo com os resultados retornados pelo skyubot.
-                    filename = "%s.temp" % exp['id']
-                    output = os.path.join(job_path, filename)
-
-                    # Executa o consulta usando a função cone_search.
-                    result = ss.cone_search(
-                        date=exp['date_with_correction'],
-                        ra=exp['radeg'],
-                        dec=exp['decdeg'],
-                        radius=exp['radius'],
-                        observer_location=exp['observer_location'],
-                        position_error=exp['position_error'],
-                        output=output
-                    )
-
-                    # Adiciona o id da exposição ao resultado.
-                    result.update({'exposure': exp['id']})
+                    # Função de rodar as exposures
+                    result = self.run_skybot_by_exposure(settings.SKYBOT_SERVER, job_path, exp)
 
                     if result['success']:
-                        # o Nome do arquivo agora é composto por exposure_id + ticket.
-                        # e a extensão passa a ser .csv, mudando o nome do arquivo depois que ele
-                        # já foi escrito eu garanto que ele está pronto para ser importado.
-                        filename = "%s_%s.csv" % (exp['id'], result['ticket'])
-                        filepath = os.path.join(job_path, filename)
-
-                        # renomea o arquivo
-                        os.rename(output, filepath)
-
-                        # guarda o novo filepath e filename
-                        result.update({
-                            'output': filepath,
-                            'filename': filename
-                        })
-
-                        self.logger.info("Exposure [%s] returned [%s] positions in %s." % (
-                            result['exposure'], result['positions'], humanize.naturaldelta(
-                                timedelta(seconds=result['execution_time']), minimum_unit="milliseconds")
-                        ))
+                        t_success += 1
                     else:
-                        self.logger.warning("Exposure [%s]: %s" % (
-                            result['exposure'], result['error']))
+                        t_failure += 1
 
                     # guarda o resultado do dataframe de requisições.
                     requests.append(result)
@@ -546,19 +611,19 @@ class DesSkybotPipeline():
 
                     # Atualiza o arquivo de heartbeat
                     self.update_request_heartbeat(
-                        heartbeat, 'running', idx, len(a_exposures), mean(t_exec_time))
-
-                # Quando termina de baixar todas as exposições atualiza o heartbeat com status done
-                self.update_request_heartbeat(
-                    heartbeat, 'completed', idx, len(a_exposures), mean(t_exec_time))
+                        heartbeat, 'running', idx, len(a_exposures), mean(t_exec_time or [0]), t_success, t_failure)
 
                 # Criar um dataframe para guardar as estatisticas de cada requisição.
                 df_requests = self.create_request_dataframe(requests, job_path)
 
                 # Totais de sucesso e falha.
                 t_requests = df_requests.shape[0]
-                t_success = df_requests.success.sum()
-                t_failure = t_requests - t_success
+                # t_success = df_requests.success.sum()
+                # t_failure = t_requests - t_success
+
+                # Quando termina de baixar todas as exposições atualiza o heartbeat com status done
+                self.update_request_heartbeat(
+                    heartbeat, 'completed', idx, len(a_exposures), mean(t_exec_time or [0]), t_success, t_failure)
 
             # tempo de execução
             t1 = datetime.now()
@@ -566,6 +631,8 @@ class DesSkybotPipeline():
 
             self.logger.info(" [%s] Exposures,  [%s] Requests, [%s] Success and [%s] Failure:  in %s" % (
                 t_exposures, t_requests, t_success, t_failure, humanize.naturaldelta(tdelta, minimum_unit="seconds")))
+
+            # raise Exception("Parou AQUI!!!!")
 
         except AbortSkybotJobError as e:
 
@@ -578,6 +645,11 @@ class DesSkybotPipeline():
             # Vai parar de fazer as requisições mais ainda vai continuar executando o load data.
             # O load data fica responsavel por finalizar o job e guardar os resultados.
             self.logger.info('The job was aborted by the user.')
+
+        except ValueError as e:
+            trace = traceback.format_exc()
+            self.logger.error(trace)
+            self.logger.error(e)
 
         except Exception as e:
             trace = traceback.format_exc()
@@ -597,7 +669,7 @@ class DesSkybotPipeline():
         """
         return os.path.join(job_path, "request_heartbeat.json")
 
-    def update_request_heartbeat(self, filepath, status, current, total, average):
+    def update_request_heartbeat(self, filepath, status, current, total, average, success=0, failed=0):
         """Atualiza o arquivo heartbeat com a situação atual do Job na etapa de request.
 
         Arguments:
@@ -611,11 +683,13 @@ class DesSkybotPipeline():
         estimate = (total - current) * average
 
         data = dict({
-            'status': status,
-            'exposures': total,
-            'current': current,
-            'average_time': average,
-            'time_estimate':  estimate
+            'status': str(status),
+            'exposures': int(total),
+            'current': int(current),
+            'average_time': float(average),
+            'time_estimate':  float(estimate),
+            'exposures_success': int(success),
+            'exposures_failed': int(failed)
         })
 
         with open(filepath, 'w') as f:
@@ -644,24 +718,28 @@ class DesSkybotPipeline():
     def reset_job_for_test(self, job_id):
         """Volta o Job para o estado inicial,
         util apenas para testes. durante o desenvolvimento
-
         Arguments:
             job_id {int} -- Id do Job que sera apagado.
         """
+        self.logger.info("Resetando o Job para Iniciar o teste")
+
         # job = SkybotJob.objects.get(pk=job_id)
         job = self.get_job_by_id(job_id)
 
         # Exclui o diretório do job.
         self.delete_job_dir(job_id)
 
-        job.status = 1
-        job.error = None
-        job.start = datetime.now(timezone.utc)
-        job.finish = None
-        job.execution_time = None
-        job['path'] = ' '
-        job.exposures = 0
-        job.save()
+        job['status'] = 1
+        job['error'] = None
+        job['start'] = datetime.now(timezone.utc)
+        job['finish'] = None
+        job['execution_time'] = None
+        job['path'] = ''
+        job['exposures'] = 0
+
+        self.update_job(job)
+
+        self.logger.info("Job Resetado")
 
     def check_request_queue(self):
         """Verifica a fila de jobs, se tiver algum job com status idle.
@@ -699,7 +777,6 @@ class DesSkybotPipeline():
         # Verifica se já existe algum job com status Running.
         # running = SkybotJob.objects.filter(status=2).order_by('-start').first()
         a_running = self.spdao.get_by_status(2)
-        # TODO: Vai quebrar aqui pq a query retorna resultado diferente.
 
         # Se tiver algum job executando, verifica se tem arquivos
         # a serem importados no banco de dados.
@@ -738,7 +815,7 @@ class DesSkybotPipeline():
             return True
 
     def get_files_to_import(self, job_path):
-        """Varreo o diretório do Job procurando arquivos .csv com os outputs do componente request.
+        """Varre o diretório do Job procurando arquivos .csv com os outputs do componente request.
         Retorna uma lista com o filepath desses arquivos.
         Também leva em conta alguns arquivos csv que são ignorados por não serem outputs.
 
@@ -777,7 +854,10 @@ class DesSkybotPipeline():
         try:
             # job = SkybotJob.objects.get(pk=job_id)
             job = self.get_job_by_id(job_id)
+
         except Exception as e:
+            trace = traceback.format_exc()
+            self.logger.error(trace)
             self.logger_import.error(e)
             raise(e)
 
@@ -793,10 +873,43 @@ class DesSkybotPipeline():
                 # Na primeira execução pode ocorrer ao mesmo tempo que o componente requests.
                 # e o arquivo heartbeat pode ainda não ter sido criado.
                 # o valor do execute vai estar errado, mas é corrigido na segunda execução.
-                request_heartbeat = self.read_request_heartbeat(job['path'])
-                t_to_execute = request_heartbeat['exposures']
+                # request_heartbeat = self.read_request_heartbeat(job['path'])
+                # t_success = request_heartbeat['exposures_success']
+                # t_failure = request_heartbeat['exposures_failed']
+
+                loaddata_heartbeat = self.read_loaddata_heartbeat(job['path'])
+                t_success = loaddata_heartbeat['exposures_success']
+                t_failure = loaddata_heartbeat['exposures_failed']
+                t_executed = loaddata_heartbeat['current']
+
             except FileNotFoundError:
-                t_to_execute = 0
+                t_executed = 0
+                t_success = 0
+                t_failure = 0
+
+            # Total a ser executado ler do heartbead da etapa anterior
+            try:
+
+                request_heartbeat = self.read_request_heartbeat(job['path'])
+
+                # t_to_execute = 0
+                # if request_heartbeat['current'] == request_heartbeat['exposures']:
+                #     t_to_execute = request_heartbeat['exposures_success']
+                # else:
+                #     t_to_execute = request_heartbeat['exposures']
+
+
+                t_to_execute = request_heartbeat['exposures']
+                request_heartbeat_exists = True
+
+            except (FileNotFoundError, json.decoder.JSONDecodeError) as e:
+                request_heartbeat_exists = False
+                trace = traceback.format_exc()
+                self.logger_import.debug('File not found or JSONDecodeError')
+                self.logger_import.error(trace)
+                self.logger_import.error(e)
+                return
+
 
             #  Arquivo que controla o andamento do job.
             heartbeat = self.get_loadata_heartbeat_filepath(job['path'])
@@ -805,14 +918,20 @@ class DesSkybotPipeline():
             df_filepath = self.get_loaddata_dataframe_filepath(job['path'])
 
             if t_to_execute == 0:
+                # self.logger_import.debug('helelelelel to execute if')
 
                 t_success = 0
                 t_failure = 0
                 t_files = 0
 
-                # Atualiza o Heartbeat do loaddata.
-                self.update_loaddata_heartbeat(
-                    heartbeat, 'completed', 0, 0, 0, 0)
+                    # Atualiza o Heartbeat do loaddata.
+                if request_heartbeat_exists:
+                    self.update_loaddata_heartbeat(
+                        heartbeat, 'completed', 0, 0, 0, 0,)
+                else:
+                    # Atualiza o Heartbeat do loaddata.
+                    self.update_loaddata_heartbeat(
+                        heartbeat, 'running', 0, 0, 0, 0,)
 
                 df_loaddata = self.update_loaddata_dataframe([], df_filepath)
 
@@ -835,8 +954,6 @@ class DesSkybotPipeline():
                 self.logger_import.debug(
                     "Number of files to be imported [%s]." % to_import)
 
-                # Total de arquivos importados com sucesso nesta rodada.
-                t_success = 0
 
                 try:
                     # Ler o Dataframe loaddata para saber quantas já foram executaas.
@@ -844,7 +961,7 @@ class DesSkybotPipeline():
                     df_loaddata = self.read_loaddata_dataframe(df_filepath)
 
                     # Total de exposição que já foram importadas.
-                    t_executed = int(df_loaddata.execution_time.count())
+                    # t_executed = int(df_loaddata.success.count())
 
                     # Tempo total de execução das exposições já executadas.
                     t_exec_time = df_loaddata.execution_time.to_list()
@@ -853,15 +970,12 @@ class DesSkybotPipeline():
                     t_ccds = int(df_loaddata.ccds.sum())
 
                 except:
-                    t_executed = 0
                     t_ccds = 0
                     t_exec_time = []
 
                 # Para cada arquivo a ser importado executa o metodo de importação
                 # guarda o resultado no dataframe e move o arquivo para o diretório de outputs.
                 for idx, pos_file in enumerate(a_files, start=1):
-                    self.logger_import.debug("Importing file [%s] of [%s]  Filename: [%s]" % (
-                        idx, to_import, pos_file.name))
 
                     # Nome do arquivo é composto por ExposureId_Ticket.csv
                     # Recupera o Exposure id
@@ -883,6 +997,7 @@ class DesSkybotPipeline():
                         new_filepath = os.path.join(
                             positions_path, pos_file.name)
                     else:
+                        t_failure += 1
                         # Em caso de falha o arquivo recebe a extensão .err
                         new_filepath = os.path.join(
                             positions_path, pos_file.name.replace('.csv', '.err'))
@@ -895,12 +1010,10 @@ class DesSkybotPipeline():
 
                     result.update({'output': str(new_filepath)})
 
-                    self.logger_import.debug(result)
-
                     results.append(result)
 
                     self.logger_import.debug("Exposure: [%s] Success: [%s] Filepath: [%s]" % (
-                        exposure_id, result['success'], result['output']))
+                        str(exposure_id), str(result['success']), str(result['output'])))
 
                     # Incrementa os totais.
                     t_executed += 1
@@ -909,30 +1022,30 @@ class DesSkybotPipeline():
 
                     # Atualiza o Heartbeat do loaddata.
                     self.update_loaddata_heartbeat(
-                        heartbeat, 'running', t_executed, t_to_execute, mean(t_exec_time), t_ccds)
-
-                # Se já tiver executado todas as exposições. atualiza o heartbeat com status done.
-                if t_executed == t_to_execute:
-                    self.update_loaddata_heartbeat(
-                        heartbeat, 'completed', t_executed, t_to_execute, mean(t_exec_time), t_ccds)
-
-                df_loaddata = self.update_loaddata_dataframe(
-                    results, df_filepath)
+                        heartbeat, 'running', t_executed, t_to_execute, mean(t_exec_time or [0]), t_ccds, t_success, t_failure)
 
                 # Totais de sucesso e falha.
                 t_files = len(results)
                 # t_success = df_loaddata.success.sum()
-                t_failure = t_files - t_success
+                # t_failure = t_files - t_success
+
+                if t_executed == t_to_execute:
+                    self.update_loaddata_heartbeat(
+                        heartbeat, 'completed', t_executed, t_to_execute, mean(t_exec_time or [0]), t_ccds, t_success, t_failure)
+
+                df_loaddata = self.update_loaddata_dataframe(
+                    results, df_filepath)
+
 
             # tempo de execução
             t1 = datetime.now()
             tdelta = t1 - t0
 
             self.logger_import.debug("Total files to be imported: [%s] Success: [%s] Failure: [%s] in %s" % (
-                t_files, t_success, t_failure, humanize.naturaldelta(tdelta, minimum_unit="seconds")))
+                str(t_files), str(t_success), str(t_failure), str(humanize.naturaldelta(tdelta, minimum_unit="seconds"))))
 
             # Verificar se status do Job
-            self.check_status(job['path'])
+            self.check_status(job_id)
 
             # Verificar quando o Processo efetivamente acabou.
             self.consolidate(job_id)
@@ -941,6 +1054,7 @@ class DesSkybotPipeline():
 
             self.update_loaddata_heartbeat(heartbeat, 'aborted', 0, 0, 0, 0)
 
+            # Verificar quando o Processo efetivamente acabou.
             # Consolida o Job
             self.consolidate(job_id, aborted=True)
 
@@ -1052,7 +1166,7 @@ class DesSkybotPipeline():
         """
         return os.path.join(job_path, "loaddata_heartbeat.json")
 
-    def update_loaddata_heartbeat(self, filepath, status, current, total, average, t_ccds=0):
+    def update_loaddata_heartbeat(self, filepath, status, current, total, average, t_ccds=0, success=0, failed=0):
         """Atualiza o arquivo de heatbeat da etapa loaddata.
 
         Arguments:
@@ -1065,13 +1179,16 @@ class DesSkybotPipeline():
         #  Calcaula o tempo estimado para as exposições que ainda faltam baixar.
         estimate = (total - current) * average
 
+
         data = dict({
-            'status': status,
+            'status': str(status),
             'exposures': int(total),
             'current': int(current),
             'average_time': float(average),
             'time_estimate':  float(estimate),
-            'executed_ccds': t_ccds,
+            'executed_ccds': int(t_ccds),
+            'exposures_success': int(success),
+            'exposures_failed': int(failed)
         })
 
         with open(filepath, 'w') as f:
@@ -1118,6 +1235,8 @@ class DesSkybotPipeline():
             # job = SkybotJob.objects.get(pk=job_id)
             job = self.get_job_by_id(job_id)
 
+
+
             # Le os arquivos de heartbeat para checar se o Job acabaou.
 
             # Na primeira execução pode ocorrer ao mesmo tempo que o componente requests.
@@ -1126,6 +1245,7 @@ class DesSkybotPipeline():
             request_heartbeat = self.read_request_heartbeat(job['path'])
 
             loaddata_heartbeat = self.read_loaddata_heartbeat(job['path'])
+
 
             # Job Acaba se tiver executado todas as exposições ou se tiver sido abortado.
             # no caso de abortado é registrado todos os resultados até o momento.
@@ -1183,8 +1303,11 @@ class DesSkybotPipeline():
                 # Adiciona uma coluna success, esta coluna considera o status dos 2 componentes
                 # para cada exposure, seu valor é True se a exposure for executada corretamente
                 # nos 2 componentes, e False se tiver falhado em um deles.
-                df_results['success'] = df_results.apply(
-                    self.check_exposure_status, axis=1)
+                if not df_results.empty:
+                    df_results['success'] = df_results.apply(
+                        self.check_exposure_status, axis=1)
+                else:
+                    df_results['success'] = True
 
                 # Adiciona uma coluna com o tempo total de execução de cada exposure.
                 # Somando o tempo de execução das 2 etapas.
@@ -1212,7 +1335,7 @@ class DesSkybotPipeline():
                 df = pd.read_csv(
                     results_filepath,
                     sep=';',
-                    usecols=['id', 'ticket', 'success', 'execution_time', 'ccds_with_asteroids',
+                    usecols=['id', 'ticket', 'request_error', 'success', 'execution_time', 'ccds_with_asteroids',
                              'positions', 'inside_ccd', 'outside_ccd', 'filename'])
 
                 # Se tiver sido aborted registra só as que tiveram sucesso.
@@ -1229,16 +1352,19 @@ class DesSkybotPipeline():
                     'outside_ccd': 'int32'})
 
                 # Renomeia a coluna exposure para exposure_id
-                df.rename(columns={'id': 'exposure_id'}, inplace=True)
+                df.rename(columns={'id': 'exposure_id', 'request_error': 'error'}, inplace=True)
 
                 # Adiciona uma coluna com o id do Des/SkybotJob
                 df['job_id'] = int(job_id)
                 # Muda a ordem das colunas para ficar igual a tabela des_skybotjobresutl
-                df = df.reindex(columns=['ticket', 'success', 'execution_time', 'positions',
+                df = df.reindex(columns=['ticket', 'success', 'error', 'execution_time', 'positions',
                                          'inside_ccd', 'outside_ccd', 'filename', 'exposure_id', 'job_id', 'ccds_with_asteroids'])
 
                 # Printa a primeira linha do dataset para debug
                 # self.logger_import.info(df.iloc[0])
+
+                # Filtrar apenas pelas exposições com sucesso:
+                df = df[df['success'] == True]
 
                 # Importa o conteudo do dataframe para a tabela.
                 imported = DesSkybotJobResultDao(pool=False).import_data(df)
@@ -1261,7 +1387,10 @@ class DesSkybotPipeline():
                     self.update_job(job)
 
                     # Altera o Status do Job para complete.
-                    job['status'] = 3
+                    if request_heartbeat['exposures_failed'] > 0 or loaddata_heartbeat['exposures_failed'] > 0:
+                        job['status'] = 6
+                    else:
+                        job['status'] = 3
 
                     # Calcula o tempo total de execução do Job.
                     t0 = job['start']
@@ -1283,7 +1412,14 @@ class DesSkybotPipeline():
             # A primeira vez que é executado o arquivo request heartbeat pode não existir.
             self.logger_import.debug(e)
 
+        except json.decoder.JSONDecodeError as e:
+            trace = traceback.format_exc()
+            self.logger_import.error(trace)
+            self.logger_import.error(e)
+
         except Exception as e:
+            trace = traceback.format_exc()
+            self.logger_import.error(trace)
             self.logger_import.error(e)
             self.on_error(job_id, e)
 
@@ -1315,6 +1451,8 @@ class DesSkybotPipeline():
             self.notify_fail_job(job_id)
 
         except Exception as e:
+            trace = traceback.format_exc()
+            self.logger.error(trace)
             self.logger_import.error(e)
 
     def on_abort(self, job_id):
@@ -1343,6 +1481,8 @@ class DesSkybotPipeline():
             self.notify_abort_job(job_id)
 
         except Exception as e:
+            trace = traceback.format_exc()
+            self.logger.error(trace)
             self.logger_import.error(e)
 
     def notify_start_job(self, job_id):
@@ -1357,6 +1497,7 @@ class DesSkybotPipeline():
                 "start": job['date_initial'],
                 "end": job['date_final'],
                 "nights": job['nights'],
+                "exposures": job['exposures'],
                 "ccds": job['ccds'],
             })
 

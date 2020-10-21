@@ -36,6 +36,11 @@ export const getExecutedNightsByPeriod = (initialDate, finalDate) =>
     })
     .then((res) => res.data);
 
+export const getNightsSuccessOrFail = (id) =>
+  axios
+    .get(`/des/skybot_job/${id}/nites_success_or_fail/`)
+    .then((res) => res.data);
+
 export const getSkybotProgress = (id) =>
   axios.get(`/des/skybot_job/${id}/heartbeat/`).then((res) => res.data);
 

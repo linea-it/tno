@@ -14,6 +14,10 @@ from des.models import SkybotJob
 from des.serializers import SkybotJobSerializer
 from des.skybot.pipeline import DesSkybotPipeline
 
+import numpy as np
+
+import logging
+
 
 class SkybotJobViewSet(mixins.RetrieveModelMixin,
                        mixins.ListModelMixin,
@@ -62,8 +66,6 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         """
         params = request.data
 
-        # TODO: Criar metodo para validar os perios.
-        # e checar se o periodo ainda não foi executado.
         date_initial = params['date_initial']
         date_final = params['date_final']
 
@@ -76,15 +78,19 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
         end = datetime.strptime(
             date_final, '%Y-%m-%d').strftime("%Y-%m-%d 23:59:59")
 
-        # Recuperar o total de noites com exposição no periodo
-        t_nights = ExposureDao(pool=False).count_nights_by_period(start, end)
-
+        # Total de exposures não executadas no Periodo.
         t_exposures = DesSkybotJobResultDao(
             pool=False).count_not_exec_by_period(start, end)
 
+        # TODO: Esses totais deveriam ser de Noites com exposições não executadas.
+        # Recuperar o total de noites com exposição no periodo
+        t_nights = ExposureDao(pool=False).count_nights_by_period(start, end)
+
         # Recuperar o total de ccds no periodo.
+        # TODO: Esses totais deveriam ser de CCDs com exposições não executadas.
         t_ccds = CcdDao().count_ccds_by_period(start, end)
 
+        # Estimativa de tempo baseada na qtd de exposures a serem executadas.
         estimated_time = self.estimate_execution_time(t_exposures)
 
         # Criar um model Skybot Job
@@ -94,12 +100,12 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
             date_final=date_final,
             # Job começa com Status Idle.
             status=1,
-            # Total de noites com exposições.
-            nights=t_nights,
-            # Total de CCDs no periodo
-            ccds=t_ccds,
             # Total de exposures a serem executadas.
             exposures=t_exposures,
+            # Total de noites com exposições.
+            nights=t_nights,
+            # Total de CCDs no periodo.
+            ccds=t_ccds,
             # Tempo de execução estimado
             estimated_execution_time=timedelta(seconds=estimated_time)
         )
@@ -281,5 +287,103 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
             result = df.to_dict('records')
         except:
             result = list()
+
+        return Response(result)
+
+
+    @action(detail=True)
+    def nites_success_or_fail(self, request, pk=None):
+        """Retorna todas as datas que executaram com sucesso por completo e as que retornaram com no mínimo uma falha, dentro do periodo, que foram executadas pelo skybot.
+
+        Exemplo: http://localhost/api/des/skybot_job/11/nites_success_or_fails/
+        Returns:
+            [array]: um array com todas as datas do periodo no formato [{date: '2019-01-01', count: 0, executed: 0}]
+                O atributo executed pode ter 4 valores:
+                    0 - para datas que não tem exposição;
+                    1 - para datas que tem exposição mas não foram executadas;
+                    2 - para datas que tem exposição, foram executadas e finalizaram com sucesso;
+                    3 - para datas que tem exposição, foram executadas e finalizaram com erro.
+        """
+
+        logger = logging.getLogger("skybot")
+
+        job = self.get_object()
+
+        file_path = os.path.join(job.path, 'results.csv')
+
+        job_result = pd.read_csv(file_path, delimiter=';', usecols=['date_obs', 'success', 'request_error', 'loaddata_error'])
+
+        job_result['date_obs'] = job_result['date_obs'].apply(lambda x: x.split()[0])
+
+        job_result['count'] = 1
+
+        # Sometimes the error property comes as a '0.0', even though it doesn't have an error,
+        # So in here we replace it with np.nan to treat it later
+        job_result['request_error'] = job_result['request_error'].apply(lambda x: np.nan if x == 0.0 else x)
+        job_result['loaddata_error'] = job_result['loaddata_error'].apply(lambda x: np.nan if x == 0.0 else x)
+
+        # Verify if either or both request or loadata failed, fill the property is_success with False, otherwise with True
+        job_result['is_success'] = job_result[['request_error', 'loaddata_error']].apply(lambda row: True if np.isnan(row['request_error']) and np.isnan(row['loaddata_error']) else False, axis=1)
+
+        job_result.drop(columns=['request_error', 'loaddata_error'])
+
+        job_result['error'] = job_result['is_success'].apply(lambda x: 0 if x else 1)
+
+        # Group by "date_obs" so we know if that day failed or not
+        df1 = job_result.groupby(by='date_obs', as_index=False).agg({ 'count': 'sum', 'error': 'sum', 'success': 'all', 'is_success': 'all' })
+
+        # Function that applies the value of the attributes based on the comparison of 'success' and 'error' properties
+        def apply_success_value(row):
+            if row['success'] == True and row['is_success'] == True:
+                return 2
+            elif row['success'] == False and row['is_success'] == False:
+                return 3
+            else:
+                return 1
+
+        df1['success'] = df1.apply(apply_success_value, axis=1)
+
+        df1.drop(columns=['is_success'])
+
+        start = str(job.date_initial)
+        end = str(job.date_final)
+
+        all_dates = get_days_interval(start, end)
+
+        # Verificar a quantidade de dias entre o start e end.
+        if len(all_dates) < 7:
+            dt_start = datetime.strptime(start, '%Y-%m-%d')
+            dt_end = dt_start + timedelta(days=6)
+
+            all_dates = get_days_interval(dt_start.strftime(
+                "%Y-%m-%d"), dt_end.strftime("%Y-%m-%d"))
+
+        df2 = pd.DataFrame()
+        df2['date_obs'] = all_dates
+        df2['success'] = 0
+        df2['count'] = 0
+        df2['error'] = 0
+
+        df1['date_obs'] = df1['date_obs'].astype(str)
+        df2['date_obs'] = df2['date_obs'].astype(str)
+
+        df1['success'] = df1['success'].astype(int)
+        df2['success'] = df2['success'].astype(int)
+
+        df1['count'] = df1['count'].astype(int)
+        df2['count'] = df2['count'].astype(int)
+
+        df1['error'] = df1['error'].astype(int)
+        df2['error'] = df2['error'].astype(int)
+
+        for i, row in df1.iterrows():
+            df2.loc[
+                df2['date_obs'] == row['date_obs'],
+                ['success', 'count']
+            ] = row['success'], row['count']
+
+        df = df2.rename(columns={ 'date_obs': 'date', 'success': 'executed' })
+
+        result = df.to_dict('records')
 
         return Response(result)
