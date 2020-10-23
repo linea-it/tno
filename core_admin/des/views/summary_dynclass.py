@@ -95,23 +95,23 @@ class SummaryDynclassViewSet(viewsets.ModelViewSet):
 
         logger.debug('Finished with success!')
 
-    @action(detail=False, methods=['get'])
-    def update_summary_dynclass(self, request, pk=None):
-        """Retorna a quantidade de objetos unicos, ccds e posições agrupados por dynamic class.
+    # @action(detail=False, methods=['get'])
+    # def update_summary_dynclass(self, request, pk=None):
+    #     """Retorna a quantidade de objetos unicos, ccds e posições agrupados por dynamic class.
 
-        Exemplo: http://localhost/api/des/summary_dynclass/update_summary_dynclass/
+    #     Exemplo: http://localhost/api/des/summary_dynclass/update_summary_dynclass/
 
-        Returns:
-            [bool]: um True se correu tudo bem com o update na tabela
-        """
+    #     Returns:
+    #         [bool]: um True se correu tudo bem com o update na tabela
+    #     """
 
-        run_update = self.run_update()
+    #     run_update = self.run_update()
 
-        t = threading.Thread(target=run_update)
-        t.setDaemon(True)
-        t.start()
+    #     t = threading.Thread(target=run_update)
+    #     t.setDaemon(True)
+    #     t.start()
 
-        return Response({
-            'success': True
-        })
+    #     return Response({
+    #         'success': True
+    #     })
 
