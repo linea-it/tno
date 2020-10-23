@@ -300,7 +300,7 @@ function SkybotDetail({ setTitle }) {
       sortingEnabled: false,
     },
     {
-      name: 'Y',
+      name: 'y',
       title: 'Y',
       sortingEnabled: false,
     },
