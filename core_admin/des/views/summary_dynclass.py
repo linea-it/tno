@@ -12,6 +12,8 @@ from des.models import SummaryDynclass, SkybotJob
 from des.serializers import SummaryDynclassSerializer
 from des.dao import DesSkybotJobResultDao, DesSummaryDynclassDao
 
+import threading
+
 import logging
 
 
@@ -27,18 +29,15 @@ class SummaryDynclassViewSet(viewsets.ModelViewSet):
     def delete_table(self, model):
         model.objects.all().delete()
 
-    @action(detail=False, methods=['get'])
-    def update_summary_dynclass(self, request, pk=None):
-        """Retorna a quantidade de objetos unicos, ccds e posições agrupados por dynamic class.
+    def run_update(self):
+        logger = logging.getLogger("skybot")
 
-        Exemplo: http://localhost/api/des/summary_dynclass/update_summary_dynclass/
-
-        Returns:
-            [bool]: um True se correu tudo bem com o update na tabela
-        """
+        logger.debug('Started des_summarydynclass update')
 
         # Deletando todas as informações da tabela des_summarydynclass
         self.delete_table(SummaryDynclass)
+
+        logger.debug('Deleted everything from des_summarydynclass table')
 
         # Lista de IDs de todos Jobs
         job_ids = SkybotJob.objects.values_list('id', flat=True)
@@ -47,6 +46,7 @@ class SummaryDynclassViewSet(viewsets.ModelViewSet):
         daoSummaryDynclass = DesSummaryDynclassDao(pool=False)
 
         for job_id in job_ids:
+            logger.debug('Running for Job ID [%s]' % job_id)
 
             asteroids = daoJobResult.dynclass_asteroids_by_job(job_id)
 
@@ -91,7 +91,27 @@ class SummaryDynclassViewSet(viewsets.ModelViewSet):
 
                 if not df.isnull().values.any():
                     daoSummaryDynclass.import_data(df)
+                    logger.debug('Data imported!')
+
+        logger.debug('Finished with success!')
+
+    @action(detail=False, methods=['get'])
+    def update_summary_dynclass(self, request, pk=None):
+        """Retorna a quantidade de objetos unicos, ccds e posições agrupados por dynamic class.
+
+        Exemplo: http://localhost/api/des/summary_dynclass/update_summary_dynclass/
+
+        Returns:
+            [bool]: um True se correu tudo bem com o update na tabela
+        """
+
+        run_update = self.run_update()
+
+        t = threading.Thread(target=run_update)
+        t.setDaemon(True)
+        t.start()
 
         return Response({
             'success': True
         })
+
