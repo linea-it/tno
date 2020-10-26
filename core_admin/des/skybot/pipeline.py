@@ -14,9 +14,11 @@ import pytz
 from django.conf import settings
 
 from common.notify import Notify
-from des.dao import DesSkybotJobDao, DesSkybotJobResultDao, ExposureDao
+from des.dao import DesSkybotJobDao, DesSkybotJobResultDao, ExposureDao, DesSummaryDynclassDao
 from des.skybot.import_positions import DESImportSkybotPositions
 from skybot.skybot_server import SkybotServer
+
+from des.models import SummaryDynclass
 
 
 class AbortSkybotJobError(Exception):
@@ -61,6 +63,53 @@ class DesSkybotPipeline():
 
     def complete_job(self, job):
         return self.spdao.complete_job(job['id'], job)
+
+    def update_summary_dynclass(self, job_id):
+
+        dao = DesSkybotJobResultDao(pool=False)
+
+        asteroids = dao.dynclass_asteroids_by_job(job_id)
+        ccds = dao.dynclass_ccds_by_job(job_id)
+        positions = dao.dynclass_positions_by_job(job_id)
+
+        df_asteroids = pd.DataFrame(asteroids)
+        df_asteroids.set_index('dynclass')
+        df_asteroids = df_asteroids.fillna(0)
+
+        df_ccds = pd.DataFrame(ccds)
+        df_ccds.set_index('dynclass')
+        df_ccds = df_ccds.fillna(0)
+
+        df_positions = pd.DataFrame(positions)
+        df_positions.set_index('dynclass')
+        df_positions = df_positions.fillna(0)
+
+        df = pd.concat([df_asteroids, df_ccds, df_positions], axis=1)
+        df = df.fillna(0)
+        # df = df.rename(columns={'index': 'dynclass'})
+
+        df['g'] = 0
+        df['r'] = 0
+        df['i'] = 0
+        df['z'] = 0
+        df['Y'] = 0
+        df['u'] = 0
+
+        # Remove as colunas duplicadas
+        df = df.loc[:, ~df.columns.duplicated()]
+
+        for i in range(len(df)):
+            dynclass = str(df.iloc[i, 0])
+            bands = dao.dynclass_band_by_job(job_id, dynclass)
+
+            for band in bands:
+                df.at[i, str(band['band'])] = int(band['positions'])
+
+        df = df.rename(columns={'Y': 'y'})
+        df['job_id'] = job_id
+
+        return DesSummaryDynclassDao(pool=False).import_data(df)
+
 
     def create_skybot_log(self, job_path):
         """Cria um arquivo de log no diretório execução do Job.
@@ -1401,6 +1450,11 @@ class DesSkybotPipeline():
 
                     # Grava as informações do job no banco de dados.
                     self.complete_job(job)
+
+                    # Preencher a tabela Summary Dynclass apenas se tiver exposição
+                    if request_heartbeat['exposures'] > 0:
+                        self.update_summary_dynclass(job['id'])
+                        self.logger_import.info('Imported Summary by Dynamic Class')
 
                     # Notify User Finish Job
                     self.notify_finish_job(job['id'])
