@@ -141,6 +141,7 @@ INSTALLED_APPS = [
     'orbit',
     'predict',
     'des',
+    'dashboard',
 
 ]
 

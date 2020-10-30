@@ -29,6 +29,8 @@ from des.views import (CcdViewSet, DesSkybotPositionViewSet,
                        SummaryDynclassViewSet)
 from skybot.views import PositionViewSet
 from tno.views import UserViewSet
+from dashboard.views import (
+    SkybotYearResultViewSet, SkybotDynclassResultViewSet)
 
 # from orbit.views import (BspJplViewSet, ObservationFileViewSet,
 #                          OrbitalParameterViewSet, OrbitRunViewSet,
@@ -94,6 +96,10 @@ router.register(r'des/download_ccd/job', DownloadCcdJobViewSet,
 
 
 router.register(r'skybot/position', PositionViewSet)
+
+router.register(r'dashboard/skybot_year_result', SkybotYearResultViewSet)
+router.register(r'dashboard/skybot_dynclass_result',
+                SkybotDynclassResultViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

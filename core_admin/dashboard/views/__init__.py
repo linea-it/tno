@@ -1,0 +1,2 @@
+from .skybot_year_result import SkybotYearResultViewSet
+from .skybot_dynclass_result import SkybotDynclassResultViewSet

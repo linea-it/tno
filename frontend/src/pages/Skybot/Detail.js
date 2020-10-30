@@ -86,12 +86,12 @@ function SkybotDetail({ setTitle }) {
 
   const [dynclassAsteroids, setDynclassAsteroids] = useState([]);
 
-  const [skybotResultErrors, setSkybotResultErrors] = useState([]);
+  // const [skybotResultErrors, setSkybotResultErrors] = useState([]);
 
-  const [errorLog, setErrorLog] = useState({
-    visible: false,
-    content: [],
-  });
+  // const [errorLog, setErrorLog] = useState({
+  //   visible: false,
+  //   content: [],
+  // });
 
   const handleBackNavigation = () => history.goBack();
 
@@ -212,41 +212,41 @@ function SkybotDetail({ setTitle }) {
       customElement: (row) =>
         row.execution_time ? row.execution_time.split('.')[0] : '-',
     },
-    {
-      name: 'error',
-      title: 'Error',
-      sortingEnabled: false,
-      width: 160,
-      customElement: (row) => {
-        if (row.error !== '0') {
-          return <span title={row.error}>{row.error}</span>;
-        }
-        return '-';
-      },
-    },
-    {
-      name: 'log',
-      title: 'Log',
-      align: 'center',
-      sortingEnabled: false,
-      width: 130,
-      customElement: (row) => {
-        if (row.success === false) {
-          const exposure = skybotResultErrors.filter(
-            (res) => res.id === row.exposure
-          )[0];
+    // {
+    //   name: 'error',
+    //   title: 'Error',
+    //   sortingEnabled: false,
+    //   width: 160,
+    //   customElement: (row) => {
+    //     if (row.error !== '0') {
+    //       return <span title={row.error}>{row.error}</span>;
+    //     }
+    //     return '-';
+    //   },
+    // },
+    // {
+    //   name: 'log',
+    //   title: 'Log',
+    //   align: 'center',
+    //   sortingEnabled: false,
+    //   width: 130,
+    //   customElement: (row) => {
+    //     if (row.success === false) {
+    //       const exposure = skybotResultErrors.filter(
+    //         (res) => res.id === row.exposure
+    //       )[0];
 
-          if (exposure) {
-            return (
-              <Button onClick={() => handleLogClick(exposure)}>
-                <ErrorIcon />
-              </Button>
-            );
-          }
-        }
-        return '-';
-      },
-    },
+    //       if (exposure) {
+    //         return (
+    //           <Button onClick={() => handleLogClick(exposure)}>
+    //             <ErrorIcon />
+    //           </Button>
+    //         );
+    //       }
+    //     }
+    //     return '-';
+    //   },
+    // },
   ];
 
   const dynclassAsteroidsColumns = [
@@ -306,19 +306,19 @@ function SkybotDetail({ setTitle }) {
     },
   ];
 
-  const handleLogClick = (exposure) => {
-    if (exposure) {
-      setErrorLog({
-        visible: true,
-        content: exposure.rows,
-      });
-    } else {
-      setErrorLog({
-        visible: false,
-        content: [],
-      });
-    }
-  };
+  // const handleLogClick = (exposure) => {
+  //   if (exposure) {
+  //     setErrorLog({
+  //       visible: true,
+  //       content: exposure.rows,
+  //     });
+  //   } else {
+  //     setErrorLog({
+  //       visible: false,
+  //       content: [],
+  //     });
+  //   }
+  // };
 
   const loadData = ({ currentPage, pageSize, sorting }) => {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
@@ -333,28 +333,28 @@ function SkybotDetail({ setTitle }) {
     });
   };
 
-  useEffect(() => {
-    if (tableData.length > 0 && Object.keys(skybotJob).length > 0) {
-      const { path } = skybotJob;
-      const failedExposures = tableData.filter(
-        (exposure) => exposure.success === false
-      );
+  // useEffect(() => {
+  //   if (tableData.length > 0 && Object.keys(skybotJob).length > 0) {
+  //     const { path } = skybotJob;
+  //     const failedExposures = tableData.filter(
+  //       (exposure) => exposure.success === false
+  //     );
 
-      if (failedExposures.length > 0) {
-        setSkybotResultErrors([]);
+  //     if (failedExposures.length > 0) {
+  //       setSkybotResultErrors([]);
 
-        failedExposures.forEach((row) => {
-          readFile(`${path}/${row.exposure}_${row.ticket}.csv.err`).then(
-            (res) => {
-              setSkybotResultErrors((prevState) =>
-                prevState.concat([{ id: row.exposure, rows: res.rows }])
-              );
-            }
-          );
-        });
-      }
-    }
-  }, [tableData, skybotJob]);
+  //       failedExposures.forEach((row) => {
+  //         readFile(`${path}/${row.exposure}_${row.ticket}.csv.err`).then(
+  //           (res) => {
+  //             setSkybotResultErrors((prevState) =>
+  //               prevState.concat([{ id: row.exposure, rows: res.rows }])
+  //             );
+  //           }
+  //         );
+  //       });
+  //     }
+  //   }
+  // }, [tableData, skybotJob]);
 
   useEffect(() => {
     getSkybotRunById({ id }).then((res) => {
@@ -788,13 +788,13 @@ function SkybotDetail({ setTitle }) {
           </>
         ) : null
       }
-      <Dialog
+      {/* <Dialog
         title="Log"
         visible={errorLog.visible}
         setVisible={() => handleLogClick(null)}
         content={<Log data={errorLog.content} />}
         maxWidth="md"
-      />
+      /> */}
     </Grid>
   );
 }

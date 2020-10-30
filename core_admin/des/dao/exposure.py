@@ -3,6 +3,8 @@ from sqlalchemy.sql import and_, select
 
 from tno.db import DBBase
 
+import logging
+
 
 class ExposureDao(DBBase):
     def __init__(self, pool=True):
@@ -22,7 +24,7 @@ class ExposureDao(DBBase):
 
     def exposures_by_period(self, start, end):
         """
-            Retorna todas as exposições com data de observação 
+            Retorna todas as exposições com data de observação
             para um periodo.
 
             Parameters:
@@ -43,6 +45,31 @@ class ExposureDao(DBBase):
         self.debug_query(stm, True)
 
         rows = self.fetch_all_dict(stm)
+
+        return rows
+
+    def count_exposures_by_period(self, start, end):
+        """
+            Retorna todas as exposições com data de observação
+            para um periodo.
+
+            Parameters:
+                start (datetime): Periodo inicial que sera usado na seleção.
+
+                end (datetime): Periodo final que sera usado na seleção.
+
+            Returns:
+                rows (array) Exposições com data de observação entre o periodo.
+
+        """
+        tbl = self.tbl
+
+        stm = select([func.count(tbl.c.id)]).\
+            where(and_(tbl.c.date_obs.between(str(start), str(end))))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalar(stm)
 
         return rows
 
