@@ -103,7 +103,7 @@ export const getDynclassAsteroidsById = (id) =>
     .then((res) => res.data);
 
 export const getDynclassAsteroids = id =>
-  axios.get(`/des/skybot_job/${id}/dynclass_counts/`).then(res => res.data)
+  axios.get(`/des/summary_dynclass?job=${id}`).then(res => res.data.results)
 
 export const getCcdsWithAsteroidsById = (id) =>
   axios.get(`/des/skybot_job_result/${id}/ccds_with_asteroids/`)

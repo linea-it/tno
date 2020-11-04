@@ -25,7 +25,8 @@ from rest_framework.routers import DefaultRouter
 from common import views as common_views
 from des.views import (CcdViewSet, DesSkybotPositionViewSet,
                        DownloadCcdJobViewSet, ExposureViewSet,
-                       SkybotJobResultViewSet, SkybotJobViewSet)
+                       SkybotJobResultViewSet, SkybotJobViewSet,
+                       SummaryDynclassViewSet)
 from skybot.views import PositionViewSet
 from tno.views import UserViewSet
 
@@ -86,6 +87,7 @@ router.register(r'des/ccd', CcdViewSet)
 router.register(r'des/skybot_job_result', SkybotJobResultViewSet)
 router.register(r'des/skybot_position', DesSkybotPositionViewSet,
                 base_name='des_skybot_position')
+router.register(r'des/summary_dynclass', SummaryDynclassViewSet)
 
 router.register(r'des/download_ccd/job', DownloadCcdJobViewSet,
                 base_name='des_download_ccd_job')
