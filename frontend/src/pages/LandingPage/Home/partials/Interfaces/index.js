@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -8,86 +9,88 @@ import styles from './styles';
 
 function Interfaces() {
   const classes = styles();
+  const history = useHistory();
+
   const [interfaces] = useState([
     {
-      id: '01',
+      id: '1',
       app_url: 'dashboard',
       app_display_name: 'Dashboard',
     },
     {
-      id: '02',
+      id: '2',
       app_url: 'data-preparation/des/skybot',
       app_display_name: 'Skybot',
     },
     {
-      id: '03',
+      id: '3',
       app_url: 'data-preparation/des/download',
       app_display_name: 'Download',
     },
     {
-      id: '04',
+      id: '4',
       app_url: '',
       app_display_name: 'Astrometry',
     },
     {
-      id: '05',
+      id: '5',
       app_url: 'refine-orbit',
       app_display_name: 'Refine Orbits',
     },
     {
-      id: '06',
+      id: '6',
       app_url: 'prediction-of-occultation',
       app_display_name: 'Prediction of Occultation',
     },
     {
-      id: '07',
+      id: '7',
       app_url: 'occultation',
       app_display_name: 'Occultation',
     },
     {
-      id: '08',
+      id: '8',
       app_url: 'occultation-calendar',
       app_display_name: 'Occultation Calendar',
     },
   ]);
 
+  const handleCardClick = (pathname) => history.push(pathname);
+
   return (
-    <div className={classes.root}>
-      <Grid
-        container
-        spacing={2}
-        direction="row"
-        justify="center"
-        alignItems="stretch"
-      >
-        {interfaces.map((item, index) => (
-          <Grid key={item.id} item xs={12} sm={6} md={4} lg={3}>
-            <Card className={classes.card}>
-              <CardActionArea
-                href={item.app_url}
-                target={item.url ? '_blanc' : '_self'}
+    <Grid
+      container
+      spacing={2}
+      direction="row"
+      justify="center"
+      alignItems="stretch"
+    >
+      {interfaces.map((item) => (
+        <Grid key={item.id} item xs={12} sm={6} md={4} lg={3}>
+          <Card className={classes.card}>
+            <CardActionArea
+              className={classes.cardAction}
+              onClick={() => handleCardClick(item.app_url)}
+            >
+              <CardMedia
+                alt={item.app_display_name}
+                className={classes.media}
+                image={`${process.env.PUBLIC_URL}/img/card${item.id}.jpg`}
+                title={item.app_display_name}
               >
-                <CardMedia
-                  alt={item.app_display_name}
-                  className={classes.media}
-                  image={`${process.env.PUBLIC_URL}/img/card${index}.jpg`}
-                  title={item.app_display_name}
+                <Typography
+                  gutterBottom
+                  className={classes.titleItem}
+                  variant="h5"
+                  component="h2"
                 >
-                  <Typography
-                    gutterBottom
-                    className={classes.titleItem}
-                    variant="h5"
-                    component="h2"
-                  >
-                    {item.app_display_name}
-                  </Typography>
-                </CardMedia>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </div>
+                  {item.app_display_name}
+                </Typography>
+              </CardMedia>
+            </CardActionArea>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
   );
 }
 

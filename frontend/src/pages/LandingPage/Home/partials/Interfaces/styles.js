@@ -1,12 +1,12 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 const styles = makeStyles((theme) => ({
-  root: {
-    position: 'relative',
-    zIndex: 2,
-    marginTop: theme.spacing(6),
-    margin: '48px 300px 96px 300px',
-  },
+  // root: {
+  //   position: 'relative',
+  //   zIndex: 2,
+  //   marginTop: theme.spacing(6),
+  //   margin: '48px 300px 96px 300px',
+  // },
   titleItem: {
     fontFamily: 'Oxanium',
     fontSize: '2em',
@@ -23,7 +23,11 @@ const styles = makeStyles((theme) => ({
     maxWidth: 50,
   },
   card: {
+    position: 'relative',
     height: 'auto',
+  },
+  cardAction: {
+    display: 'contents',
   },
   grid: {
     margin: 'auto',

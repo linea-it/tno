@@ -4,11 +4,10 @@ const styles = makeStyles({
   particlesWrapper: {
     position: 'absolute',
     bottom: 0,
-    top: 0,
+    top: 64,
     zIndex: 1,
-    marginTop: '65px',
-    width: '100vw',
-    height: '41vh',
+    width: '100%',
+    height: 380,
   },
 });
 

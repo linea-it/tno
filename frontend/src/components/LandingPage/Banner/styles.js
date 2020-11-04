@@ -3,10 +3,15 @@ import { deepOrange } from '@material-ui/core/colors';
 
 const styles = makeStyles((theme) => ({
   root: {
+    position: 'relative',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     background: `url(${process.env.PUBLIC_URL}/img/home1.jpg)`,
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
-    paddingTop: '40px',
+    height: 380,
+    marginBottom: theme.spacing(4),
   },
   container: {
     background: 'transparent',
@@ -15,22 +20,22 @@ const styles = makeStyles((theme) => ({
     color: '#FFF',
     zIndex: 2,
     marginTop: '0',
-    minHeight: 300,
+    // minHeight: 300,
   },
   table: {
     margin: 'auto',
     paddingBottom: 8,
   },
-  logo: {
-    maxHeight: 48,
-    paddingTop: '8px',
-  },
+  // logo: {
+  //   maxHeight: 48,
+  //   paddingTop: '8px',
+  // },
   particlesWrapper: {
     position: 'absolute',
-    top: 0,
+    top: 40,
     width: '100%',
     zIndex: 1,
-    height: '530px',
+    height: 340,
   },
   userWrapper: {
     borderRadius: '50%',
@@ -44,12 +49,12 @@ const styles = makeStyles((theme) => ({
   },
   title: {
     fontFamily: 'Oxanium',
-    width: '850px',
-    marginTop: '25px',
     fontWeight: 100,
-    fontSize: 28,
-    [theme.breakpoints.up('sm')]: {
-      fontSize: 60,
+    fontSize: 60,
+    margin: 0,
+    [theme.breakpoints.down('sm')]: {
+      fontSize: 48,
+      margin: `0 ${theme.spacing(2)}px`,
     },
     textShadow: 'black 0.1em 0.1em 0.2em',
   },
@@ -70,9 +75,8 @@ const styles = makeStyles((theme) => ({
   positionTitle: {
     textAlign: '-webkit-center',
   },
-  Logo: {
+  logo: {
     position: 'relative',
-    float: 'left',
     [theme.breakpoints.up('sm')]: {
       maxWidth: 120,
     },
@@ -80,7 +84,9 @@ const styles = makeStyles((theme) => ({
   },
   titleWrapper: {
     [theme.breakpoints.up('sm')]: {
-      margin: `${theme.spacing(8)}px 0 ${theme.spacing(2)}px`,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
   },
   descriptionWrapper: {
@@ -100,6 +106,13 @@ const styles = makeStyles((theme) => ({
     width: '100%',
     textAlign: 'right',
     paddingRight: 40,
+  },
+
+  socialWrapper: {
+    color: '#fff',
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
   },
 }));
 

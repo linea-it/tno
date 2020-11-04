@@ -50,11 +50,16 @@ export default function RouteWrapper({
   return (
     <>
       {isHomePage ? (
-        <>
-          <Header />
-          <Component setTitle={setTitle} />
-          <Footer />
-        </>
+        <Route
+          {...rest}
+          render={(props) => (
+            <>
+              <Header />
+              <Component {...props} />
+              <Footer />
+            </>
+          )}
+        />
       ) : !authenticated ? (
         <Backdrop className={classes.backdrop} open>
           <CircularProgress color="inherit" />
