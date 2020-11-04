@@ -1435,13 +1435,6 @@ class DesSkybotPipeline():
                     else:
                         job['status'] = 3
 
-                    # Calcula o tempo total de execução do Job.
-                    t0 = job['start']
-                    t1 = datetime.now(timezone.utc)
-                    tdelta = t1 - t0
-                    job['finish'] = t1
-                    job['execution_time'] = tdelta
-
                     # Preencher a tabela Summary Dynclass e rodar o update do dashboard
                     # apenas se tiver exposição
                     if request_heartbeat['exposures'] > 0:
@@ -1452,6 +1445,13 @@ class DesSkybotPipeline():
                         dashboard_update = DashboardUpdate()
                         dashboard_update.run_job()
                         self.logger_import.info('Dashboard update finished!')
+
+                    # Calcula o tempo total de execução do Job.
+                    t0 = job['start']
+                    t1 = datetime.now(timezone.utc)
+                    tdelta = t1 - t0
+                    job['finish'] = t1
+                    job['execution_time'] = tdelta
 
                     # Grava as informações do job no banco de dados.
                     self.complete_job(job)
