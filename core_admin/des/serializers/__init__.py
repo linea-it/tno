@@ -6,5 +6,5 @@ from .skybot_position import SkybotPositionSerializer
 from .download_ccd_job import DownloadCcdJobSerializer
 from .summary_dynclass import SummaryDynclassSerializer
 
-from .dashboard_skybot_year_result import DashboardSkybotYearResultSerializer
-from .dashboard_skybot_dynclass_result import DashboardSkybotDynclassResultSerializer
+from .skybot_by_year import SkybotByYearSerializer
+from .skybot_by_dynclass import SkybotByDynclassSerializer

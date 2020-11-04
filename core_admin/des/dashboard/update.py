@@ -5,12 +5,12 @@ from datetime import datetime
 import humanize
 import pandas as pd
 
-from des.models import DashboardSkybotYearResult
-from des.models import DashboardSkybotDynclassResult
+from des.models import SkybotByYear
+from des.models import SkybotByDynclass
 
 from des.dao import (ExposureDao, CcdDao,
-                     DesSkybotJobResultDao, DashboardSkybotYearResultDao)
-from des.dao import DashboardSkybotDynclassResultDao, DesSkybotPositionDao
+                     DesSkybotJobResultDao, SkybotByYearDao)
+from des.dao import SkybotByDynclassDao, DesSkybotPositionDao
 
 
 class DashboardUpdate():
@@ -130,15 +130,15 @@ class DashboardUpdate():
                                        'ccds_analyzed'])
 
         # Cleaning table before import
-        DashboardSkybotYearResult.objects.all().delete()
-        self.logger.info('Deleted "des_dashboardskybotyearresult" table')
+        SkybotByYear.objects.all().delete()
+        self.logger.info('Deleted "des_skybotbyyear" table')
 
-        dydao = DashboardSkybotYearResultDao(pool=False)
+        dydao = SkybotByYearDao(pool=False)
 
         # Copying dataframe into database
         dydao.import_data(df)
         self.logger.info(
-            'Imported into "des_dashboardskybotyearresult" table')
+            'Imported into "des_skybotbyyear" table')
 
     def run_results_by_dynclass(self):
 
@@ -220,12 +220,12 @@ class DashboardUpdate():
         df.rename(columns={'Y': 'y'})
 
         # Cleaning table before import
-        DashboardSkybotDynclassResult.objects.all().delete()
-        self.logger.info('Deleted "des_dashboardskybotdynclassresult" table')
+        SkybotByDynclass.objects.all().delete()
+        self.logger.info('Deleted "des_skybotbydynclass" table')
 
-        dddao = DashboardSkybotDynclassResultDao(pool=False)
+        dddao = SkybotByDynclassDao(pool=False)
 
         # Copying dataframe into database
         dddao.import_data(df)
         self.logger.info(
-            'Imported into "des_dashboardskybotdynclassresult" table')
+            'Imported into "des_skybotbydynclass" table')

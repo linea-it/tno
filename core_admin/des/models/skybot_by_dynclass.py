@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class DashboardSkybotDynclassResult(models.Model):
+class SkybotByDynclass(models.Model):
 
     dynclass = models.CharField(
         max_length=12,

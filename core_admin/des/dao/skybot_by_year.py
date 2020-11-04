@@ -7,12 +7,12 @@ from sqlalchemy.sql import and_, select, text
 from tno.db import DBBase
 
 
-class DashboardSkybotYearResultDao(DBBase):
+class SkybotByYearDao(DBBase):
     def __init__(self, pool=True):
-        super(DashboardSkybotYearResultDao, self).__init__(pool)
+        super(SkybotByYearDao, self).__init__(pool)
 
         schema = self.get_base_schema()
-        self.tablename = 'des_dashboardskybotyearresult'
+        self.tablename = 'des_skybotbyyear'
         self.tbl = self.get_table(self.tablename, schema)
 
     def import_data(self, dataframe):
@@ -26,7 +26,7 @@ class DashboardSkybotYearResultDao(DBBase):
                 rowcount (int):  the number of rows imported.
 
             Example SQL Copy:
-                COPY dashboard_skybotyearresult (year, nights, exposures, ccds, nights_analyzed, exposures_analyzed, ccds_analyzed) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
+                COPY des_skybotbyyear (year, nights, exposures, ccds, nights_analyzed, exposures_analyzed, ccds_analyzed) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
 
         """
         # Converte o Data frame para csv e depois para arquivo em memória.

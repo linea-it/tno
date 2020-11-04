@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from des.models import DashboardSkybotDynclassResult
+from des.models import SkybotByDynclass
 
 
-class DashboardSkybotDynclassResultSerializer(serializers.ModelSerializer):
+class SkybotByDynclassSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = DashboardSkybotDynclassResult
+        model = SkybotByDynclass
         fields = (
             'id',
             'dynclass',

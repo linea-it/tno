@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class DashboardSkybotYearResult(models.Model):
+class SkybotByYear(models.Model):
     year = models.CharField(
         max_length=4,
         verbose_name='Year',

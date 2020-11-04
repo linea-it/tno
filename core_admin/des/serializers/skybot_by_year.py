@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from des.models import DashboardSkybotYearResult
+from des.models import SkybotByYear
 
 
-class DashboardSkybotYearResultSerializer(serializers.ModelSerializer):
+class SkybotByYearSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = DashboardSkybotYearResult
+        model = SkybotByYear
         fields = (
             'id',
             'year',

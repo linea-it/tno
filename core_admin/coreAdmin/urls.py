@@ -27,8 +27,8 @@ from des.views import (CcdViewSet, DesSkybotPositionViewSet,
                        DownloadCcdJobViewSet, ExposureViewSet,
                        SkybotJobResultViewSet, SkybotJobViewSet,
                        SummaryDynclassViewSet,
-                       DashboardSkybotYearResultViewSet,
-                       DashboardSkybotDynclassResultViewSet)
+                       SkybotByYearViewSet,
+                       SkybotByDynclassViewSet)
 from skybot.views import PositionViewSet
 from tno.views import UserViewSet
 
@@ -94,10 +94,10 @@ router.register(r'des/summary_dynclass', SummaryDynclassViewSet)
 router.register(r'des/download_ccd/job', DownloadCcdJobViewSet,
                 base_name='des_download_ccd_job')
 
-router.register(r'des/dashboard/skybot_year_result',
-                DashboardSkybotYearResultViewSet)
-router.register(r'des/dashboard/skybot_dynclass_result',
-                DashboardSkybotDynclassResultViewSet)
+router.register(r'des/dashboard/skybot_by_year',
+                SkybotByYearViewSet)
+router.register(r'des/dashboard/skybot_by_dynclass',
+                SkybotByDynclassViewSet)
 
 router.register(r'skybot/position', PositionViewSet)
 

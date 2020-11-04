@@ -7,12 +7,12 @@ from sqlalchemy.sql import and_, select, text
 from tno.db import DBBase
 
 
-class DashboardSkybotDynclassResultDao(DBBase):
+class SkybotByDynclassDao(DBBase):
     def __init__(self, pool=True):
-        super(DashboardSkybotDynclassResultDao, self).__init__(pool)
+        super(SkybotByDynclassDao, self).__init__(pool)
 
         schema = self.get_base_schema()
-        self.tablename = 'des_dashboardskybotdynclassresult'
+        self.tablename = 'des_skybotbydynclass'
         self.tbl = self.get_table(self.tablename, schema)
 
     def import_data(self, dataframe):
@@ -26,7 +26,7 @@ class DashboardSkybotDynclassResultDao(DBBase):
                 rowcount (int):  the number of rows imported.
 
             Example SQL Copy:
-                COPY dashboard_skybotdynclassresult (dynclass, nights, ccds,
+                COPY des_skybotbydynclass (dynclass, nights, ccds,
                 asteroids, positions, g, i, r, u, y, z) FROM '/data/teste.csv'
                 with (FORMAT CSV, DELIMITER ';', HEADER);
 
