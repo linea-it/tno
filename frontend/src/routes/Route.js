@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable no-nested-ternary */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
@@ -6,10 +8,13 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import useStyles from './styles';
 import Drawer from '../components/Drawer';
 import { isAuthenticated, url } from '../services/api/Auth';
+import Header from '../components/LandingPage/Header';
+import Footer from '../components/LandingPage/Footer';
 
 export default function RouteWrapper({
   component: Component,
   isPrivate,
+  isHomePage,
   ...rest
 }) {
   const [title, setTitle] = useState('');
@@ -44,7 +49,13 @@ export default function RouteWrapper({
 
   return (
     <>
-      {!authenticated ? (
+      {isHomePage ? (
+        <>
+          <Header />
+          <Component setTitle={setTitle} />
+          <Footer />
+        </>
+      ) : !authenticated ? (
         <Backdrop className={classes.backdrop} open>
           <CircularProgress color="inherit" />
         </Backdrop>

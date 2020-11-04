@@ -10,6 +10,7 @@ const light = createMuiTheme({
       contrastText: '#fff',
     },
     secondary: pink,
+    appbar: '#212121',
   },
   typography: {
     useNextVariants: true,
@@ -55,6 +56,10 @@ const light = createMuiTheme({
         marginTop: 0,
         marginBottom: 0,
       },
+    },
+    initContainer: {
+      paddingTop: 20,
+      paddingBottom: 100,
     },
     // MuiCollapse: {
     //   wrapperInner: {

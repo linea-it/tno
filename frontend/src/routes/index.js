@@ -24,6 +24,15 @@ import Occultation from '../pages/Occultation';
 import OccultationDetail from '../pages/Occultation/Detail';
 import OccultationCalendar from '../pages/Occultation/Calendar';
 
+import Header from '../components/LandingPage/Header';
+import Footer from '../components/LandingPage/Footer';
+import Home from '../pages/LandingPage/Home';
+import AboutUs from '../pages/LandingPage/AboutUs';
+import Help from '../pages/LandingPage/Help';
+import Tutorials from '../pages/LandingPage/Tutorials';
+import Contact from '../pages/LandingPage/Contact';
+import Notfound from '../pages/LandingPage/NotFound';
+
 export default function Routes() {
   return (
     <Switch>
@@ -108,7 +117,45 @@ export default function Routes() {
         path="/data-preparation/des/download/:id"
         component={DownloadDetail}
       />
-      <Route isPrivate exact path="/" component={Dashboard} />
+      <Route 
+        isHomePage
+        exact 
+        path="/" 
+        component={Home} 
+      />
+      <Route 
+        isHomePage
+        exact
+        path="/about-us" 
+        component={AboutUs} 
+      />
+      <Route 
+        isHomePage
+        exact
+        path="/help" 
+        component={Help} 
+      />
+      <Route 
+        isHomePage
+        exact
+        path="/tutorials" 
+        component={Tutorials} />
+      <Route 
+        isHomePage
+        exact
+        path="/contact-us" 
+        component={Contact} />
+      
+      <Route 
+        component={Notfound} 
+      />
+
+      <Route 
+        isPrivate 
+        exact 
+        path="/dashboard" 
+        component={Dashboard} />
+
       <Redirect path="/" to="/" />
     </Switch>
   );
