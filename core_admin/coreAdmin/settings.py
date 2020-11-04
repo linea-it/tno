@@ -504,15 +504,6 @@ LOGGING = {
             'filename': os.path.join(LOG_DIR, 'download_ccds.log'),
             'formatter': 'standard',
         },
-        # Skybot Load data
-        'dashboard_update': {
-            'level': LOGGING_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'filename': os.path.join(LOG_DIR, 'dashboard_update.log'),
-            'formatter': 'standard',
-        },
     },
     'loggers': {
         'django': {
@@ -567,11 +558,6 @@ LOGGING = {
         },
         'download_ccds': {
             'handlers': ['download_ccds'],
-            'level': LOGGING_LEVEL,
-            'propagate': True,
-        },
-        'dashboard_update': {
-            'handlers': ['dashboard_update'],
             'level': LOGGING_LEVEL,
             'propagate': True,
         },

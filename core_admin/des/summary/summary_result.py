@@ -9,50 +9,102 @@ from des.models import SkybotByYear
 from des.models import SkybotByDynclass
 
 from des.dao import (ExposureDao, CcdDao,
-                     DesSkybotJobResultDao, SkybotByYearDao)
+                     DesSkybotJobResultDao, SkybotByYearDao,
+                     DesSummaryDynclassDao)
 from des.dao import SkybotByDynclassDao, DesSkybotPositionDao
 
 
-class DashboardUpdate():
+class SummaryResult():
 
     def __init__(self):
-        self.logger = logging.getLogger("dashboard_update")
+        self.logger = logging.getLogger("skybot_load_data")
 
-    def run_job(self):
-        try:
-            # Job start time
-            t0 = datetime.now()
-            self.logger.info('Start [%s]' % t0.strftime("%Y-%m-%d %H:%M:%S"))
+    def by_job(self, job_id):
 
-            # Get results by year
-            results_by_year = self.run_results_by_year()
+        t0 = datetime.now()
+        self.logger.info("".ljust(50, '-'))
+        self.logger.info('By Job Started [%s]' %
+                         t0.strftime("%Y-%m-%d %H:%M:%S"))
 
-            # Get results by dynclass
-            results_by_dynclass = self.run_results_by_dynclass()
+        dao = DesSkybotJobResultDao(pool=False)
 
-            # Import results by year
-            self.import_results_by_year(results_by_year)
+        # Get asteroids by dynclass of the job
+        asteroids = dao.dynclass_asteroids_by_job(job_id)
 
-            # Import results by dynclass
-            self.import_results_by_dynclass(results_by_dynclass)
+        # Get ccds by dynclass of the job
+        ccds = dao.dynclass_ccds_by_job(job_id)
 
-            # Job end time
-            t1 = datetime.now()
+        # Get positions by dynclass of the job
+        positions = dao.dynclass_positions_by_job(job_id)
 
-            # Job time delta
-            tdelta = t1 - t0
+        # Create a dataframe of asteroids
+        df_asteroids = pd.DataFrame(asteroids)
+        df_asteroids.set_index('dynclass')
+        df_asteroids = df_asteroids.fillna(0)
 
-            self.logger.info('Finished [%s]' %
-                             t1.strftime("%Y-%m-%d %H:%M:%S"))
-            self.logger.info('Execution Time: [%s]' % humanize.naturaldelta(
-                tdelta, minimum_unit="seconds"))
+        # Create a dataframe of ccds
+        df_ccds = pd.DataFrame(ccds)
+        df_ccds.set_index('dynclass')
+        df_ccds = df_ccds.fillna(0)
 
-        except Exception as e:
-            trace = traceback.format_exc()
-            self.logger.error(trace)
-            self.logger.error(e)
+        # Create a dataframe of positions
+        df_positions = pd.DataFrame(positions)
+        df_positions.set_index('dynclass')
+        df_positions = df_positions.fillna(0)
 
-    def run_results_by_year(self):
+        # Merge all three dataframes
+        df = pd.concat([df_asteroids, df_ccds, df_positions], axis=1)
+        df = df.fillna(0)
+        # df = df.rename(columns={'index': 'dynclass'})
+
+        # Initialize bands with zero
+        df['g'] = 0
+        df['r'] = 0
+        df['i'] = 0
+        df['z'] = 0
+        df['Y'] = 0
+        df['u'] = 0
+
+        # Remove columnn duplicates
+        df = df.loc[:, ~df.columns.duplicated()]
+
+        for i in range(len(df)):
+            dynclass = str(df.iloc[i, 0])
+            bands = dao.dynclass_band_by_job(job_id, dynclass)
+
+            for band in bands:
+                df.at[i, str(band['band'])] = int(band['positions'])
+
+        # Rename the column Y to y
+        # because the database doesn't allow uppercase columns
+        df = df.rename(columns={'Y': 'y'})
+
+        # Fill Job ID column
+        df['job_id'] = job_id
+
+        dsd = DesSummaryDynclassDao(pool=False)
+        dsd.import_data(df)
+
+        self.logger.info(
+            'Imported into "des_summarydynclass" table')
+
+        # Job end time
+        t1 = datetime.now()
+
+        # Job time delta
+        tdelta = t1 - t0
+
+        self.logger.info('By Job Finished [%s]' %
+                         t1.strftime("%Y-%m-%d %H:%M:%S"))
+        self.logger.info('By Job Execution Time: [%s]' % humanize.naturaldelta(
+            tdelta, minimum_unit="seconds"))
+
+    def run_by_year(self):
+
+        t0 = datetime.now()
+        self.logger.info("".ljust(50, '-'))
+        self.logger.info('By Year Started [%s]' %
+                         t0.strftime("%Y-%m-%d %H:%M:%S"))
 
         # Years to run
         years = {
@@ -73,7 +125,6 @@ class DashboardUpdate():
         rows = []
 
         for year in years:
-            t0 = datetime.now()
 
             start = datetime.strptime(
                 years[year][0], '%Y-%m-%d').strftime("%Y-%m-%d 00:00:00")
@@ -111,18 +162,10 @@ class DashboardUpdate():
                 'ccds_analyzed': ccds_analyzed,
             })
 
-            t1 = datetime.now()
-
-            tdelta = t1 - t0
-
-            self.logger.info("[%s] Year, [%s] Nights, [%s] Exposures, [%s] CCDs, [%s] Nights Analyzed, [%s] Exposures Analyzed and [%s] CCDs Analyzed: in [%s]" % (
-                year, nights, exposures, ccds, nights_analyzed, exposures_analyzed, ccds_analyzed, humanize.naturaldelta(tdelta, minimum_unit="seconds")))
+            self.logger.info("[%s] Year, [%s] Nights, [%s] Exposures, [%s] CCDs, [%s] Nights Analyzed, [%s] Exposures Analyzed and [%s] CCDs Analyzed" % (
+                year, nights, exposures, ccds, nights_analyzed, exposures_analyzed, ccds_analyzed))
 
             self.logger.info('Year Rows [%s]' % len(rows))
-
-        return rows
-
-    def import_results_by_year(self, rows):
 
         df = pd.DataFrame.from_records(rows, columns=[
                                        'year', 'nights', 'exposures', 'ccds',
@@ -140,7 +183,23 @@ class DashboardUpdate():
         self.logger.info(
             'Imported into "des_skybotbyyear" table')
 
-    def run_results_by_dynclass(self):
+        # Job end time
+        t1 = datetime.now()
+
+        # Job time delta
+        tdelta = t1 - t0
+
+        self.logger.info('Finished By Year [%s]' %
+                         t1.strftime("%Y-%m-%d %H:%M:%S"))
+        self.logger.info('By Year Execution Time: [%s]' % humanize.naturaldelta(
+            tdelta, minimum_unit="seconds"))
+
+    def run_by_dynclass(self):
+
+        t0 = datetime.now()
+        self.logger.info("".ljust(50, '-'))
+        self.logger.info(
+            'By Dynclass Started [%s]' % t0.strftime("%Y-%m-%d %H:%M:%S"))
 
         # List of all dynamic classes
         dynclasses = ['Centaur', 'Comet', 'Hungaria', 'KBO',
@@ -151,7 +210,6 @@ class DashboardUpdate():
         dpdao = DesSkybotPositionDao(pool=False)
 
         for dynclass in dynclasses:
-            t0 = datetime.now()
 
             # Total nights analyzed by dynamic class
             nights = dpdao.count_nights_by_dynclass(dynclass)
@@ -196,18 +254,10 @@ class DashboardUpdate():
                 **bands_dict
             })
 
-            t1 = datetime.now()
-
-            tdelta = t1 - t0
-
-            self.logger.info("[%s] Dynclass, [%s] Nights, [%s] CCDs, [%s] Asteroids, [%s] Positions, [%s] Band u, [%s] Band g, [%s] Band r, [%s] Band i, [%s] Band z and [%s] Band Y: in [%s]" % (
-                dynclass, nights, ccds, asteroids, positions, bands_dict['u'], bands_dict['g'], bands_dict['r'], bands_dict['i'], bands_dict['z'], bands_dict['Y'], humanize.naturaldelta(tdelta, minimum_unit="seconds")))
+            self.logger.info("[%s] Dynclass, [%s] Nights, [%s] CCDs, [%s] Asteroids, [%s] Positions, [%s] Band u, [%s] Band g, [%s] Band r, [%s] Band i, [%s] Band z and [%s] Band Y" % (
+                dynclass, nights, ccds, asteroids, positions, bands_dict['u'], bands_dict['g'], bands_dict['r'], bands_dict['i'], bands_dict['z'], bands_dict['Y']))
 
             self.logger.info('Dynclass Rows [%s]' % len(rows))
-
-        return rows
-
-    def import_results_by_dynclass(self, rows):
 
         df = pd.DataFrame.from_records(rows, columns=['dynclass', 'nights',
                                                       'ccds', 'asteroids',
@@ -229,3 +279,14 @@ class DashboardUpdate():
         dddao.import_data(df)
         self.logger.info(
             'Imported into "des_skybotbydynclass" table')
+
+        # Job end time
+        t1 = datetime.now()
+
+        # Job time delta
+        tdelta = t1 - t0
+
+        self.logger.info('Finished [%s]' %
+                         t1.strftime("%Y-%m-%d %H:%M:%S"))
+        self.logger.info('By Dynclass Execution Time: [%s]' % humanize.naturaldelta(
+            tdelta, minimum_unit="seconds"))
