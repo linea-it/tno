@@ -1,2 +1,0 @@
-from .skybot_year_result import SkybotYearResultDao
-from .skybot_dynclass_result import SkybotDynclassResultDao

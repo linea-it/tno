@@ -19,6 +19,7 @@ from des.skybot.import_positions import DESImportSkybotPositions
 from skybot.skybot_server import SkybotServer
 
 from des.models import SummaryDynclass
+from des.dashboard import DashboardUpdate
 
 
 class AbortSkybotJobError(Exception):
@@ -109,7 +110,6 @@ class DesSkybotPipeline():
         df['job_id'] = job_id
 
         return DesSummaryDynclassDao(pool=False).import_data(df)
-
 
     def create_skybot_log(self, job_path):
         """Cria um arquivo de log no diretório execução do Job.
@@ -454,7 +454,6 @@ class DesSkybotPipeline():
 
             # TODO: Aducionar a opção de Pausar o Job
 
-
     def run_skybot_by_exposure(self, skybot_server_url, job_path, exp):
         # Instancia da classe SkybotServer para fazer as requisições.
         # A url para o serviço do skybot fica na settings.SKYBOT_SERVER
@@ -491,11 +490,11 @@ class DesSkybotPipeline():
 
             filepath = os.path.join(job_path, filename)
 
-
             try:
                 # TODO: remove later, after debug
                 # self.logger.debug(result)
-                self.logger.debug("Output: [%s], Filepath: [%s]" % (output, filepath))
+                self.logger.debug(
+                    "Output: [%s], Filepath: [%s]" % (output, filepath))
 
                 # renomea o arquivo
                 os.rename(output, filepath)
@@ -636,7 +635,8 @@ class DesSkybotPipeline():
                 self.update_request_heartbeat(
                     heartbeat, 'running', 0, len(a_exposures), 0, 0, 0)
 
-                self.logger.debug("Skybot Server: [%s]" % settings.SKYBOT_SERVER)
+                self.logger.debug(
+                    "Skybot Server: [%s]" % settings.SKYBOT_SERVER)
 
                 for idx, exp in enumerate(a_exposures, start=1):
 
@@ -645,7 +645,8 @@ class DesSkybotPipeline():
                     self.check_status(job_id)
 
                     # Função de rodar as exposures
-                    result = self.run_skybot_by_exposure(settings.SKYBOT_SERVER, job_path, exp)
+                    result = self.run_skybot_by_exposure(
+                        settings.SKYBOT_SERVER, job_path, exp)
 
                     if result['success']:
                         t_success += 1
@@ -947,7 +948,6 @@ class DesSkybotPipeline():
                 # else:
                 #     t_to_execute = request_heartbeat['exposures']
 
-
                 t_to_execute = request_heartbeat['exposures']
                 request_heartbeat_exists = True
 
@@ -958,7 +958,6 @@ class DesSkybotPipeline():
                 self.logger_import.error(trace)
                 self.logger_import.error(e)
                 return
-
 
             #  Arquivo que controla o andamento do job.
             heartbeat = self.get_loadata_heartbeat_filepath(job['path'])
@@ -973,7 +972,7 @@ class DesSkybotPipeline():
                 t_failure = 0
                 t_files = 0
 
-                    # Atualiza o Heartbeat do loaddata.
+                # Atualiza o Heartbeat do loaddata.
                 if request_heartbeat_exists:
                     self.update_loaddata_heartbeat(
                         heartbeat, 'completed', 0, 0, 0, 0,)
@@ -1002,7 +1001,6 @@ class DesSkybotPipeline():
 
                 self.logger_import.debug(
                     "Number of files to be imported [%s]." % to_import)
-
 
                 try:
                     # Ler o Dataframe loaddata para saber quantas já foram executaas.
@@ -1084,7 +1082,6 @@ class DesSkybotPipeline():
 
                 df_loaddata = self.update_loaddata_dataframe(
                     results, df_filepath)
-
 
             # tempo de execução
             t1 = datetime.now()
@@ -1228,7 +1225,6 @@ class DesSkybotPipeline():
         #  Calcaula o tempo estimado para as exposições que ainda faltam baixar.
         estimate = (total - current) * average
 
-
         data = dict({
             'status': str(status),
             'exposures': int(total),
@@ -1284,8 +1280,6 @@ class DesSkybotPipeline():
             # job = SkybotJob.objects.get(pk=job_id)
             job = self.get_job_by_id(job_id)
 
-
-
             # Le os arquivos de heartbeat para checar se o Job acabaou.
 
             # Na primeira execução pode ocorrer ao mesmo tempo que o componente requests.
@@ -1294,7 +1288,6 @@ class DesSkybotPipeline():
             request_heartbeat = self.read_request_heartbeat(job['path'])
 
             loaddata_heartbeat = self.read_loaddata_heartbeat(job['path'])
-
 
             # Job Acaba se tiver executado todas as exposições ou se tiver sido abortado.
             # no caso de abortado é registrado todos os resultados até o momento.
@@ -1401,7 +1394,8 @@ class DesSkybotPipeline():
                     'outside_ccd': 'int32'})
 
                 # Renomeia a coluna exposure para exposure_id
-                df.rename(columns={'id': 'exposure_id', 'request_error': 'error'}, inplace=True)
+                df.rename(columns={'id': 'exposure_id',
+                                   'request_error': 'error'}, inplace=True)
 
                 # Adiciona uma coluna com o id do Des/SkybotJob
                 df['job_id'] = int(job_id)
@@ -1448,13 +1442,19 @@ class DesSkybotPipeline():
                     job['finish'] = t1
                     job['execution_time'] = tdelta
 
-                    # Grava as informações do job no banco de dados.
-                    self.complete_job(job)
-
-                    # Preencher a tabela Summary Dynclass apenas se tiver exposição
+                    # Preencher a tabela Summary Dynclass e rodar o update do dashboard
+                    # apenas se tiver exposição
                     if request_heartbeat['exposures'] > 0:
                         self.update_summary_dynclass(job['id'])
-                        self.logger_import.info('Imported Summary by Dynamic Class')
+                        self.logger_import.info(
+                            'Imported Summary by Dynamic Class')
+
+                        dashboard_update = DashboardUpdate()
+                        dashboard_update.run_job()
+                        self.logger_import.info('Dashboard update finished!')
+
+                    # Grava as informações do job no banco de dados.
+                    self.complete_job(job)
 
                     # Notify User Finish Job
                     self.notify_finish_job(job['id'])

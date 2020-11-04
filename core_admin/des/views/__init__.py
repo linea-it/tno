@@ -5,3 +5,6 @@ from .skybot_job_result import SkybotJobResultViewSet
 from .skybot_position import DesSkybotPositionViewSet
 from .download_ccd_job import DownloadCcdJobViewSet
 from .summary_dynclass import SummaryDynclassViewSet
+
+from .dashboard_skybot_year_result import DashboardSkybotYearResultViewSet
+from .dashboard_skybot_dynclass_result import DashboardSkybotDynclassResultViewSet

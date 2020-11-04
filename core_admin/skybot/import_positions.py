@@ -88,6 +88,8 @@ class ImportSkybotPositions():
         # Adicionar uma coluna com o Ticket do Skybot
         df['ticket'] = self.read_ticket_from_output(filepath)
 
+        df['base_dynclass'] = df['dynclass'].apply(lambda x: x.split('>')[0])
+
         # Mudar a ordem das colunas de arcordo com a ordem  da tabela.
         # Isso facilita a importacao por csv.
         columns = self.get_columns()
@@ -100,7 +102,7 @@ class ImportSkybotPositions():
 
     def get_columns(self):
         columns = ['name', 'number', 'dynclass', 'ra', 'dec', 'raj2000', 'decj2000', 'mv', 'errpos', 'd', 'dracosdec',
-                   'ddec', 'dgeo', 'dhelio', 'phase', 'solelong', 'px', 'py', 'pz', 'vx', 'vy', 'vz', 'jdref', 'ticket']
+                   'ddec', 'dgeo', 'dhelio', 'phase', 'solelong', 'px', 'py', 'pz', 'vx', 'vy', 'vz', 'jdref', 'ticket', 'base_dynclass']
 
         return columns
 
@@ -117,7 +119,7 @@ class ImportSkybotPositions():
                 dataframe (dataframe): Pandas Dataframe with the information to be imported.
 
             Returns:
-                rowcount (int):  the number of rows imported. 
+                rowcount (int):  the number of rows imported.
 
             Example SQL Copy:
                 COPY tno_skybotoutput (num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
@@ -144,7 +146,7 @@ class ImportSkybotPositions():
             # Recupera o nome da tabela skybot output
             table = str(self.dbbase.get_table_skybot())
             # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
-            sql = "COPY %s (name, number, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref, ticket) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
+            sql = "COPY %s (name, number, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref, ticket, base_dynclass) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
 
             # Executa o metodo que importa o arquivo csv na tabela.
             rowcount = self.dbbase.import_with_copy_expert(sql, data)
@@ -159,7 +161,7 @@ class ImportSkybotPositions():
 
     def read_ticket_from_output(self, filepath):
         """
-            Read the output file and retrieve the ticket number on the second line. 
+            Read the output file and retrieve the ticket number on the second line.
             this ticket identifies the request that was made for the Skybot service.
 
             Parameters:
@@ -185,10 +187,10 @@ class ImportSkybotPositions():
             filepath {[type]} -- [description]
 
         Returns:
-            int -- the status of the response: 
-                flag=1 means that a body has been found; 
-                flag=0 means that no body has been found; 
-                flag=-1 means that an error occured 'ticket'            
+            int -- the status of the response:
+                flag=1 means that a body has been found;
+                flag=0 means that no body has been found;
+                flag=-1 means that an error occured 'ticket'
         """
         line = linecache.getline(str(filepath), 1)
         flag = int(line.split(':')[1].strip())

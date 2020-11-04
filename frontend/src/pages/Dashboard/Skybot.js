@@ -21,7 +21,7 @@ function Skybot() {
     {
       name: 'year',
       title: 'Year',
-      width: 80,
+      width: 90,
     },
     {
       name: 'nights',
@@ -47,12 +47,12 @@ function Skybot() {
     },
     {
       name: 'percentage_nights',
-      title: '÷ Nights',
+      title: '% Nights',
       width: 100,
     },
     {
       name: 'percentage_ccds',
-      title: '÷ CCDs',
+      title: '% CCDs',
       width: 100,
     },
   ];
@@ -124,8 +124,10 @@ function Skybot() {
         // ccds_analyzed: the division of the ccds_analyzed by all the ccds
         const result = res.map((row) => ({
           ...row,
-          percentage_nights: row.nights_analyzed / row.nights,
-          percentage_ccds: row.ccds_analyzed / row.ccds,
+          percentage_nights: Math.round(
+            (row.nights_analyzed / row.nights) * 100
+          ),
+          percentage_ccds: Math.round((row.ccds_analyzed / row.ccds) * 100),
         }));
 
         setResultsByYear(result);
@@ -164,7 +166,6 @@ function Skybot() {
                   remote={false}
                   hasSearching={false}
                   defaultSorting={[{ columnName: 'year', direction: 'asc' }]}
-                  hasRowNumberer
                   hasPagination={false}
                   hasColumnVisibility={false}
                   hasToolbar={false}
@@ -185,7 +186,6 @@ function Skybot() {
                   defaultSorting={[
                     { columnName: 'dynclass', direction: 'asc' },
                   ]}
-                  hasRowNumberer
                   hasPagination={false}
                   hasColumnVisibility={false}
                   hasToolbar={false}

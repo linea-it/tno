@@ -115,6 +115,26 @@ function Drawer({ children, title, open, setOpen }) {
             </ListItem>
           </Link>
           <Divider className={classes.borderDrawer} />
+          <Link
+            to="/dashboard"
+            className={classes.invisibleLink}
+            title="Dashboard"
+          >
+            <ListItem
+              button
+              selected={currentPage === 'dashboard'}
+            >
+              <ListItemText
+                primary={
+                  <span className={classes.textDrawerParent}>
+                    Dashboard
+                  </span>
+                }
+                className={classes.textDrawer}
+              />
+            </ListItem>
+          </Link>
+          <Divider className={classes.borderDrawer} />
           <ListItem button onClick={handleDataPreparationClick}>
             <ListItemText
               primary={

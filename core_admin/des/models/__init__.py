@@ -8,3 +8,6 @@ from .summary_dynclass import SummaryDynclass
 
 from .download_ccd_job import DownloadCcdJob
 from .download_ccd_result import DownloadCcdJobResult
+
+from .dashboard_skybot_year_result import DashboardSkybotYearResult
+from .dashboard_skybot_dynclass_result import DashboardSkybotDynclassResult

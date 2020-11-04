@@ -7,12 +7,12 @@ from sqlalchemy.sql import and_, select, text
 from tno.db import DBBase
 
 
-class SkybotYearResultDao(DBBase):
+class DashboardSkybotDynclassResultDao(DBBase):
     def __init__(self, pool=True):
-        super(SkybotYearResultDao, self).__init__(pool)
+        super(DashboardSkybotDynclassResultDao, self).__init__(pool)
 
         schema = self.get_base_schema()
-        self.tablename = 'dashboard_skybotyearresult'
+        self.tablename = 'des_dashboardskybotdynclassresult'
         self.tbl = self.get_table(self.tablename, schema)
 
     def import_data(self, dataframe):
@@ -26,7 +26,9 @@ class SkybotYearResultDao(DBBase):
                 rowcount (int):  the number of rows imported.
 
             Example SQL Copy:
-                COPY dashboard_skybotyearresult (year, nights, exposures, ccds, nights_analyzed, exposures_analyzed, ccds_analyzed) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
+                COPY dashboard_skybotdynclassresult (dynclass, nights, ccds,
+                asteroids, positions, g, i, r, u, y, z) FROM '/data/teste.csv'
+                with (FORMAT CSV, DELIMITER ';', HEADER);
 
         """
         # Converte o Data frame para csv e depois para arquivo em memória.
@@ -48,7 +50,7 @@ class SkybotYearResultDao(DBBase):
             table = str(self.tbl)
 
             # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
-            sql = "COPY %s (year, nights, exposures, ccds, nights_analyzed, exposures_analyzed, ccds_analyzed) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
+            sql = "COPY %s (dynclass, nights, ccds, asteroids, positions, g, i, r, u, y, z) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
 
             # Executa o metodo que importa o arquivo csv na tabela.
             rowcount = self.import_with_copy_expert(sql, data)
