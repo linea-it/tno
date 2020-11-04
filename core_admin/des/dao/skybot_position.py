@@ -123,7 +123,7 @@ class DesSkybotPositionDao(DBBase):
         Query de exemplo:
 
             select
-                dc.*, date(de.date_obs) as date_obs 
+                dc.*, date(de.date_obs) as date_obs
             from
                 des_ccd dc
             inner join des_exposure de on
@@ -136,7 +136,7 @@ class DesSkybotPositionDao(DBBase):
                 sp.dynclass like 'KBO%' and
             --    sp.name = '1999 RG215' and
                 de.date_obs between '2012-11-10 00:00:00' and '2012-11-11 23:59:50'
-            group by dc.id, date(de.date_obs) 
+            group by dc.id, date(de.date_obs)
             order by
                 date(de.date_obs);
 
@@ -322,7 +322,7 @@ class DesSkybotPositionDao(DBBase):
                 ds.ccd_id = dd.ccd_id
             where
                 sp.dynclass like 'Centaur%'
-                and de.date_obs between '2012-11-01 00:00:00' and '2012-11-30 23:59:50'	
+                and de.date_obs between '2012-11-01 00:00:00' and '2012-11-30 23:59:50'
 
         Returns:
             int: Total de CCDs Downloaded
@@ -359,5 +359,168 @@ class DesSkybotPositionDao(DBBase):
         self.debug_query(stm, True)
 
         rows = self.fetch_scalar(stm)
+
+        return rows
+
+    def count_nights_by_dynclass(self, dynclass, start=None, end=None):
+        """Retorna o total de noites unicas em um periodo pela dynclass
+
+        Args:
+            dynclass ([type]): [description]
+            start ([type], optional): [description]. Defaults to None.
+            end ([type], optional): [description]. Defaults to None.
+
+            select
+                sp.dynclass,
+                count(distinct date(de.date_obs)) as nights_analysed
+            from
+                des_skybotposition ds
+            left join skybot_position sp on
+                ds.position_id = sp.id
+            inner join des_exposure de on
+                ds.exposure_id = de.id
+            group by
+                sp.dynclass;
+
+        Returns:
+            int: Total de CCDs
+        """
+
+        # des_exposure
+        de = self.get_table('des_exposure', self.get_base_schema())
+        # Des skybot position
+        ds = self.get_table('des_skybotposition', self.get_base_schema())
+        # Skybot Position
+        sp = self.get_table('skybot_position', self.get_base_schema())
+
+        # Clausula where pela classe dos objetos OBRIGATORIO.
+        clause = list([sp.c.dynclass.ilike(dynclass + '%')])
+
+        # Clausula where pelo periodo que é opicional
+        if start is not None and end is not None:
+            clause.append(de.c.date_obs.between(str(start), str(end)))
+
+        stm = select([func.count(cast(de.c.date_obs, Date).distinct())]).\
+            select_from(
+            ds.join(
+                sp, ds.c.position_id == sp.c.id
+            ).join(
+                de, ds.c.exposure_id == de.c.id
+            )
+        ).\
+            where(and_(and_(*clause)))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalar(stm)
+
+        return rows
+
+    def count_positions_by_dynclass(self, dynclass, start=None, end=None):
+        """Retorna o total de Asteroids unicos em um periodo pela dynclass
+
+        Args:
+            dynclass ([type]): [description]
+            start ([type], optional): [description]. Defaults to None.
+            end ([type], optional): [description]. Defaults to None.
+
+        select
+            count(distinct(sp.id)) as asteroids
+        from
+            des_skybotposition ds
+        inner join skybot_position sp on
+            ds.position_id = sp.id
+        inner join des_exposure de on
+            ds.exposure_id = de.id
+        where
+            sp.dynclass like 'KBO%'
+            and de.date_obs between '2012-11-01 00:00:00' and '2012-11-30 23:59:50'
+
+        Returns:
+            int: Total de Asteroids
+        """
+
+        # des_exposure
+        de = self.get_table('des_exposure', self.get_base_schema())
+        # Des skybot position
+        ds = self.get_table('des_skybotposition', self.get_base_schema())
+        # Skybot Position
+        sp = self.get_table('skybot_position', self.get_base_schema())
+
+        # Clausula where pela classe dos objetos OBRIGATORIO.
+        clause = list([sp.c.dynclass.ilike(dynclass + '%')])
+
+        # Clausula where pelo periodo que é opicional
+        if start is not None and end is not None:
+            clause.append(de.c.date_obs.between(str(start), str(end)))
+
+        stm = select([func.count(ds.c.id)]).\
+            select_from(
+            ds.join(
+                sp, ds.c.position_id == sp.c.id
+            ).join(
+                de, ds.c.exposure_id == de.c.id
+            )
+        ).\
+            where(and_(and_(*clause)))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalar(stm)
+
+        return rows
+
+    def count_bands_by_dynclass(self, dynclass, start=None, end=None):
+        """Retorna o total de asteroides para cada banda em um periodo pela dynclass
+
+        Args:
+            dynclass ([type]): [description]
+            start ([type], optional): [description]. Defaults to None.
+            end ([type], optional): [description]. Defaults to None.
+
+        select
+            count(distinct(sp.id)) as asteroids
+        from
+            des_skybotposition ds
+        inner join skybot_position sp on
+            ds.position_id = sp.id
+        inner join des_exposure de on
+            ds.exposure_id = de.id
+        where
+            sp.dynclass like 'KBO%'
+            and de.date_obs between '2012-11-01 00:00:00' and '2012-11-30 23:59:50'
+
+        Returns:
+            int: Total de Asteroids
+        """
+
+        # des_exposure
+        de = self.get_table('des_exposure', self.get_base_schema())
+        # Des skybot position
+        ds = self.get_table('des_skybotposition', self.get_base_schema())
+        # Skybot Position
+        sp = self.get_table('skybot_position', self.get_base_schema())
+
+        # Clausula where pela classe dos objetos OBRIGATORIO.
+        clause = list([sp.c.dynclass.ilike(dynclass + '%')])
+
+        # Clausula where pelo periodo que é opicional
+        if start is not None and end is not None:
+            clause.append(de.c.date_obs.between(str(start), str(end)))
+
+        stm = select([de.c.band, func.count(ds.c.id).label('asteroids')]).\
+            select_from(
+            ds.join(
+                sp, ds.c.position_id == sp.c.id
+            ).join(
+                de, ds.c.exposure_id == de.c.id
+            )
+        ).\
+            where(and_(and_(*clause))).\
+            group_by(de.c.band)
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
 
         return rows

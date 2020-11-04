@@ -559,3 +559,103 @@ class DesSkybotJobResultDao(DBBase):
         row = self.fetch_one_dict(stm)
 
         return row
+
+    def count_nights_analyzed_by_period(self, start, end):
+        """
+            Esta query retorna o total de noites analisadas por um período.
+
+            select
+                count(distinct cast(des_exposure.date_obs as DATE))
+            from
+                des_skybotjobresult
+            left outer join des_exposure on
+                des_exposure.id = des_skybotjobresult.exposure_id
+            where
+                des_exposure.date_obs between '2019-01-01 00:00:00' and '2019-12-31 23:59:59';
+        """
+
+        de_tbl = self.get_table('des_exposure', self.get_base_schema())
+
+        # des_skybotjobresult
+        ds_tbl = self.tbl
+
+        stm = select([func.count(cast(de_tbl.c.date_obs, Date).distinct())]).\
+            select_from(
+                ds_tbl.join(de_tbl, de_tbl.c.id ==
+                            ds_tbl.c.exposure_id, isouter=True)).\
+            where(and_(de_tbl.c.date_obs.between(str(start), str(end))))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalar(stm)
+
+        return rows
+
+    def count_exposures_analyzed_by_period(self, start, end):
+        """
+            Esta query retorna o total de exposições analisadas por um período.
+
+            select
+                count(de.id)
+            from
+                des_skybotjobresult ds
+            left join des_exposure de on
+                ds.exposure_id = de.id
+            where
+                de.date_obs between '2012-01-01 00:00:00' and '2012-12-31 23:59:59';
+        """
+
+        de_tbl = self.get_table('des_exposure', self.get_base_schema())
+
+        # des_skybotjobresult
+        ds_tbl = self.tbl
+
+        stm = select([func.count(de_tbl.c.id)]).\
+            select_from(
+                ds_tbl.join(de_tbl, de_tbl.c.id ==
+                            ds_tbl.c.exposure_id, isouter=True)).\
+            where(and_(de_tbl.c.date_obs.between(str(start), str(end))))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalar(stm)
+
+        return rows
+
+    def count_ccds_analyzed_by_period(self, start, end):
+        """
+            Esta query retorna o total de ccds analisadas por um período.
+
+            select
+                count(des_ccd.id)
+            from
+                des_skybotjobresult
+            left outer join des_exposure on
+                des_exposure.id = des_skybotjobresult.exposure_id
+            left outer join des_ccd on
+                des_ccd.exposure_id = des_skybotjobresult.exposure_id
+            where
+                des_exposure.date_obs between '2012-01-01 00:00:00' and '2012-12-31 23:59:59';
+        """
+
+        de_tbl = self.get_table('des_exposure', self.get_base_schema())
+        dc_tbl = self.get_table('des_ccd', self.get_base_schema())
+
+        # des_skybotjobresult
+        ds_tbl = self.tbl
+
+        stm = select([func.count(dc_tbl.c.id)]).\
+            select_from(
+                ds_tbl.join(
+                    de_tbl, de_tbl.c.id == ds_tbl.c.exposure_id,
+                    isouter=True
+                ).join(
+                    dc_tbl, dc_tbl.c.exposure_id == ds_tbl.c.exposure_id,
+                    isouter=True
+                )).where(and_(de_tbl.c.date_obs.between(str(start), str(end))))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalar(stm)
+
+        return rows

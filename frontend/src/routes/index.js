@@ -108,8 +108,8 @@ export default function Routes() {
         path="/data-preparation/des/download/:id"
         component={DownloadDetail}
       />
-      <Route isPrivate exact path="/" component={Dashboard} />
-      <Redirect path="/" to="/" />
+      <Route isPrivate exact path="/dashboard" component={Dashboard} />
+      <Redirect path="/" to="/dashboard" />
     </Switch>
   );
 }

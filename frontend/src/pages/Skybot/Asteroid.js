@@ -67,7 +67,6 @@ function SkybotAsteroid({ setTitle }) {
     {
       title: 'Object Number',
       name: 'number',
-      // align: 'right',
       headerTooltip: 'Object Number',
     },
     {
@@ -78,120 +77,87 @@ function SkybotAsteroid({ setTitle }) {
     {
       title: 'RA  (deg)',
       name: 'raj2000',
-      // align: 'right',
       headerTooltip: 'Right Ascension',
     },
     {
       title: 'Dec (deg)',
       name: 'decj2000',
-      // align: 'right',
       headerTooltip: 'Declination',
     },
     {
       title: 'Visual Mag',
       name: 'mv',
-      // align: 'right',
     },
     {
       title: 'Error (arcsec)',
       name: 'errpos',
-      // align: 'right',
-      sortingEnabled: false,
     },
     {
       title: 'Ang Dist (arcsec)',
       name: 'd',
-      // align: 'right',
       headerTooltip: 'Angular Distance',
-      sortingEnabled: false,
     },
     {
       title: 'dRAcosDec (arcsec/h)',
       name: 'dracosdec',
-      // align: 'right',
-      sortingEnabled: false,
     },
     {
       title: 'dDEC  (arcsec/h)',
       name: 'ddec',
-      // align: 'right',
-      sortingEnabled: false,
     },
     {
       title: 'Geoc Dist (AU)',
       name: 'dgeo',
-      // align: 'right',
       headerTooltip: 'Geocentric Distance',
-      sortingEnabled: false,
     },
     {
       title: 'Hel Dist (AU)',
       name: 'dhelio',
-      // align: 'right',
       headerTooltip: 'Heliocentric Distance',
-      sortingEnabled: false,
     },
     {
       title: 'Phase Angle (deg)',
       name: 'phase',
-      // align: 'right',
-      sortingEnabled: false,
     },
     {
       title: 'Solar Elong',
       name: 'solelong',
-      // align: 'right',
       headerTooltip: 'Solar Elongantion',
-      sortingEnabled: false,
     },
     {
       title: 'Vec Pos x (AU)',
       name: 'px',
-      // align: 'right',
       headerTooltip: 'Vector Position in x',
-      sortingEnabled: false,
     },
     {
       title: 'Vec pos y (AU)',
       name: 'py',
-      // align: 'right',
       headerTooltip: 'Vector Position in y',
-      sortingEnabled: false,
     },
     {
       title: 'Vec Pos z (AU)',
       name: 'pz',
-      // align: 'right',
       headerTooltip: 'Vector Position in z',
-      sortingEnabled: false,
     },
     {
       title: 'Vec Pos x [AU/d]',
       name: 'vx',
-      // align: 'right',
       headerTooltip: 'Vector Position in x',
-      sortingEnabled: false,
     },
     {
       title: 'Vec Pos y [AU/d]',
       name: 'vy',
-      // align: 'right',
       headerTooltip: 'Vector Position in y',
-      sortingEnabled: false,
     },
     {
       title: 'Vec Pos z [AU/d]',
       name: 'vz',
-      // align: 'right',
       headerTooltip: 'Vector Position in z',
-      sortingEnabled: false,
     },
     {
       title: 'Epo Pos Vec (Julien Day)',
       name: 'jdref',
-      // align: 'right',
       headerTooltip: 'Epoch of the position vector (Julian Day)',
-      sortingEnabled: false,
     },
   ];
 
@@ -206,6 +172,7 @@ function SkybotAsteroid({ setTitle }) {
         setPositions(res.results);
       });
       getAsteroidsInsideCcdByTicket(skybotResult.ticket).then((res) => {
+        console.log(res.results)
         setAsteroidsInsideCcd(res.results);
       });
     }

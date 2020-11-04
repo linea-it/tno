@@ -128,7 +128,7 @@ class CcdDao(DBBase):
         return rows
 
     def count_by_period(self, start, end, dynclass=None, name=None):
-        """Retorna o total de ccds agrupados por data e o total de ccds já baixados. 
+        """Retorna o total de ccds agrupados por data e o total de ccds já baixados.
 
         Args:
             start (datetime): Periodo inicial que sera usado na seleção.
@@ -157,10 +157,10 @@ class CcdDao(DBBase):
             group by
                 date(de.date_obs)
             order by
-                date(de.date_obs);	        
+                date(de.date_obs);
 
         Returns:
-            [array]: Lista de datas com os totais de ccds e qtd ccds downloaded. 
+            [array]: Lista de datas com os totais de ccds e qtd ccds downloaded.
 
         """
         # des_ccd

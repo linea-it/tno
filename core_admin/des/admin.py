@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from .models import (Ccd, DownloadCcdJob, DownloadCcdJobResult, Exposure,
-                     SkybotJob, SkybotJobResult, SkybotPosition)
+                     SkybotJob, SkybotJobResult, SkybotPosition,
+                     SummaryDynclass, SkybotByYear, SkybotByDynclass)
 
 
 @admin.register(Exposure)
@@ -111,3 +112,31 @@ class DownloadCcdJobResultAdmin(admin.ModelAdmin):
     # Troca o tipo de imput de Select para um text field com botao de busca
     # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
     raw_id_fields = ('job', 'ccd',)
+
+
+@admin.register(SummaryDynclass)
+class SummaryDynclassAdmin(admin.ModelAdmin):
+    list_display = ('id', 'job', 'dynclass', 'asteroids', 'ccds',
+                    'positions', 'u', 'g', 'r', 'i', 'z', 'y',)
+
+    search_fields = ('id', 'dynclass')
+
+    # Troca o tipo de imput de Select para um text field com botao de busca
+    # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
+    raw_id_fields = ('job', )
+
+
+@admin.register(SkybotByYear)
+class SkybotByYearAdmin(admin.ModelAdmin):
+    list_display = ('id', 'year', 'nights', 'exposures', 'ccds',
+                    'nights_analyzed', 'exposures_analyzed', 'ccds_analyzed',)
+
+    search_fields = ('id', 'year',)
+
+
+@admin.register(SkybotByDynclass)
+class SkybotByDynclassAdmin(admin.ModelAdmin):
+    list_display = ('id', 'dynclass', 'nights', 'ccds', 'asteroids',
+                    'positions', 'u', 'g', 'r', 'i', 'z', 'y',)
+
+    search_fields = ('id', 'dynclass',)
