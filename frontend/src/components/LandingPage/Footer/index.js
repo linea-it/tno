@@ -12,8 +12,8 @@ function Footer() {
       <AppBar position="fixed" className={classes.appBarDrawerClose}>
         <Toolbar className={classes.toolbar}>
           <Typography color="inherit">
-            {/* <span>Testing</span> */}{' '}
-            {/* <span className={classes.versionLink}>1.0.0</span> */}
+            <span>Testing</span>{' '}
+            <span className={classes.versionLink}>1.0.0</span>
           </Typography>
           <Typography color="inherit">
             <span className={classes.poweredBy}>Powered by</span>
@@ -26,7 +26,7 @@ function Footer() {
                 src={logo}
                 title="LIneA"
                 alt="LineA"
-                style={{ cursor: 'pointer', marginLeft: '10px', width: '75px' }}
+                className={classes.logoFooter}
               />
             </a>
           </Typography>

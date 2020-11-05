@@ -114,15 +114,15 @@ function Header() {
 
   return (
     <AppBar position="static" className={classes.appbar}>
-      <Toolbar>
+      <Toolbar className={classes.toolbar}>
         <img
           src={`${process.env.PUBLIC_URL}/img/linea-dark-invert.png`}
           alt="LIneA"
           className={classes.logoLIneA}
         />
         <List className={classes.menuList}>
-          {menus.map((menu, index) => (
-            <ListItem key={index}>
+          {menus.map((menu) => (
+            <ListItem key={menu.href} className={classes.menuListItem}>
               <Link href={menu.href} className={classes.menuLink}>
                 {menu.description}
               </Link>

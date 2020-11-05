@@ -120,10 +120,8 @@ export default function Routes() {
       <Route isHomePage exact path="/help" component={Help} />
       <Route isHomePage exact path="/tutorials" component={Tutorials} />
       <Route isHomePage exact path="/contact-us" component={Contact} />
-
-      <Route component={Notfound} />
-
       <Route isPrivate exact path="/dashboard" component={Dashboard} />
+      <Route component={Notfound} />
     </Switch>
   );
 }

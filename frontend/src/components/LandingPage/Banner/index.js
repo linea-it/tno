@@ -2,6 +2,7 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import { YouTube, Twitter, GitHub } from '@material-ui/icons';
+import Stars from '../Stars';
 import styles from './styles';
 
 function Banner() {
@@ -26,59 +27,58 @@ function Banner() {
   };
 
   return (
-    <>
-      <div className={classes.root}>
-        <Grid
-          container
-          direction="row"
-          justify="space-between"
-          alignItems="flex-start"
-          spacing={1}
-          className={classes.container}
-        >
-          <Grid item xs={12} className={classes.titleWrapper}>
-            <img
-              src={`${process.env.PUBLIC_URL}/img/tno_logo_projetos.png`}
-              alt="Data Release Interface"
-              className={classes.logo}
-            />
-            <h1 className={classes.title}>LIneA Solar System Portal</h1>
-          </Grid>
+    <div className={classes.root}>
+      <Stars />
+      <Grid
+        container
+        direction="row"
+        justify="space-between"
+        alignItems="flex-start"
+        spacing={1}
+        className={classes.container}
+      >
+        <Grid item xs={12} className={classes.titleWrapper}>
+          <img
+            src={`${process.env.PUBLIC_URL}/img/tno_logo_projetos.png`}
+            alt="Data Release Interface"
+            className={classes.logo}
+          />
+          <h1 className={classes.title}>LIneA Solar System Portal</h1>
         </Grid>
-        <div className={classes.socialWrapper}>
-          <IconButton
-            onClick={() => {
-              handlerClick('Youtube');
-            }}
-            color="inherit"
-            aria-label="YouTube"
-            component="span"
-          >
-            <YouTube />
-          </IconButton>
-          <IconButton
-            onClick={() => {
-              handlerClick('Twitter');
-            }}
-            color="inherit"
-            aria-label="Twitter"
-            component="span"
-          >
-            <Twitter />
-          </IconButton>
-          <IconButton
-            onClick={() => {
-              handlerClick('GitHub');
-            }}
-            color="inherit"
-            aria-label="GitHub"
-            component="span"
-          >
-            <GitHub />
-          </IconButton>
-        </div>
+      </Grid>
+      <div className={classes.socialWrapper}>
+        <IconButton
+          onClick={() => {
+            handlerClick('Youtube');
+          }}
+          color="inherit"
+          aria-label="YouTube"
+          component="span"
+        >
+          <YouTube />
+        </IconButton>
+        <IconButton
+          onClick={() => {
+            handlerClick('Twitter');
+          }}
+          color="inherit"
+          aria-label="Twitter"
+          component="span"
+        >
+          <Twitter />
+        </IconButton>
+        <IconButton
+          onClick={() => {
+            handlerClick('GitHub');
+          }}
+          color="inherit"
+          aria-label="GitHub"
+          component="span"
+        >
+          <GitHub />
+        </IconButton>
       </div>
-    </>
+    </div>
   );
 }
 

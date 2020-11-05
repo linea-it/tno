@@ -25,6 +25,13 @@ class Position(models.Model):
         help_text='(ucd=“meta.code.class;src.class”) Object class (TNO, Centaur, Trojan, etc.).'
     )
 
+    base_dynclass = models.CharField(
+        max_length=24,
+        verbose_name='Base Object classification',
+        help_text='(ucd=“meta.code.class”) Base Object class (TNO, Centaur, Trojan, etc.).',
+        default=None, null=True, blank=True
+    )
+
     ra = models.CharField(
         max_length=20,
         verbose_name='RA',
@@ -168,6 +175,7 @@ class Position(models.Model):
             models.Index(fields=['name']),
             models.Index(fields=['dynclass']),
             models.Index(fields=['ticket']),
+            models.Index(fields=['base_dynclass']),
         ]
 
     def __str__(self):

@@ -3,11 +3,11 @@ import { makeStyles } from '@material-ui/core/styles';
 const styles = makeStyles({
   particlesWrapper: {
     position: 'absolute',
+    top: 0,
     bottom: 0,
-    top: 64,
+    left: 0,
+    right: 0,
     zIndex: 1,
-    width: '100%',
-    height: 380,
   },
 });
 

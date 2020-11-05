@@ -113,6 +113,7 @@ const styles = makeStyles((theme) => ({
     position: 'absolute',
     right: 0,
     bottom: 0,
+    zIndex: 2,
   },
 }));
 

@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   logoFooter: {
     cursor: 'pointer',
     marginLeft: '10px',
-    width: '75px',
+    maxWidth: '75px',
   },
 }));
 

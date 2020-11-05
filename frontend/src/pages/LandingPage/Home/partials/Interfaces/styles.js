@@ -1,12 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const styles = makeStyles((theme) => ({
-  // root: {
-  //   position: 'relative',
-  //   zIndex: 2,
-  //   marginTop: theme.spacing(6),
-  //   margin: '48px 300px 96px 300px',
-  // },
+const styles = makeStyles({
   titleItem: {
     fontFamily: 'Oxanium',
     fontSize: '2em',
@@ -32,6 +26,6 @@ const styles = makeStyles((theme) => ({
   grid: {
     margin: 'auto',
   },
-}));
+});
 
 export default styles;
