@@ -1,20 +1,12 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const styles = makeStyles((theme) => ({
+const styles = makeStyles(() => ({
   initContainer: {
     paddingTop: 20,
     paddingBottom: 100,
   },
   root: {
     paddingTop: 25,
-  },
-  modal: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  treeItem: {
-    padding: 6,
   },
   item: {
     cursor: 'pointer',

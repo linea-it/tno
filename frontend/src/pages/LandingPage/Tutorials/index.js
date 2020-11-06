@@ -20,12 +20,14 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import styles from './styles';
 // import { tutorials } from '../../Services/api';
 
-
 function Tutorials() {
   const classes = styles();
   const opts = { width: '100%' };
   const [idPlayer, setIdPlayer] = useState('');
-  const [videoOnDisplay, setVideoOnDisplay] = useState({ tutorial: '', video: '' });
+  const [videoOnDisplay, setVideoOnDisplay] = useState({
+    tutorial: '',
+    video: '',
+  });
   const [treeTutorial, setTreeTutorial] = useState([]);
 
   function compare(a, b) {
@@ -42,7 +44,8 @@ function Tutorials() {
 
   useEffect(() => {
     const auxTreeTutorial = [];
-    let menuFilter; let idVideo;
+    // let menuFilter;
+    // let idVideo;
     async function fetchData() {
       // tutorials().then((resTutorials) => {
       //   resTutorials.forEach((elem) => {
@@ -89,46 +92,55 @@ function Tutorials() {
           className={classes.root}
         >
           <Grid item xs={12} sm={4}>
-            {treeTutorial && treeTutorial.sort(compare).map((tutorial, index) => (
-              <ExpansionPanel
-                square
-                key={(index + 1).toString()}
-                expanded={expanded === `panel${index + 1}`}
-                onChange={handleChange(`panel${index + 1}`)}
-              >
-                <ExpansionPanelSummary aria-controls={`panel${index + 1}d-content`} id={`panel${index + 1}d-header`}>
-                  {((expanded === `panel${index + 1}`) ? <ArrowDropDownIcon /> : <ArrowRightIcon />)}
-                  <Typography>{tutorial.title}</Typography>
-                </ExpansionPanelSummary>
-                {tutorial.videos.map((video, indexVideos) => (
-                  <ListItem
-                    key={(index + 1).toString() + (indexVideos + 1).toString()}
-                    className={classes.item}
-                    onClick={() => { handleSelected(tutorial, video); }}
+            {treeTutorial &&
+              treeTutorial.sort(compare).map((tutorial, index) => (
+                <ExpansionPanel
+                  square
+                  key={(index + 1).toString()}
+                  expanded={expanded === `panel${index + 1}`}
+                  onChange={handleChange(`panel${index + 1}`)}
+                >
+                  <ExpansionPanelSummary
+                    aria-controls={`panel${index + 1}d-content`}
+                    id={`panel${index + 1}d-header`}
                   >
-                    <ListItemIcon>
-                      <MovieIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={video.title} />
-                  </ListItem>
-                ))}
-              </ExpansionPanel>
-            ))}
+                    {expanded === `panel${index + 1}` ? (
+                      <ArrowDropDownIcon />
+                    ) : (
+                      <ArrowRightIcon />
+                    )}
+                    <Typography>{tutorial.title}</Typography>
+                  </ExpansionPanelSummary>
+                  {tutorial.videos.map((video, indexVideos) => (
+                    <ListItem
+                      key={
+                        (index + 1).toString() + (indexVideos + 1).toString()
+                      }
+                      className={classes.item}
+                      onClick={() => {
+                        handleSelected(tutorial, video);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <MovieIcon />
+                      </ListItemIcon>
+                      <ListItemText primary={video.title} />
+                    </ListItem>
+                  ))}
+                </ExpansionPanel>
+              ))}
           </Grid>
           <Grid item xs={12} sm={8}>
-            { idPlayer != '0'
-              ? (
-                <>
-                  <YouTube
-                    videoId={idPlayer}
-                    opts={opts}
-                  />
-                  <Typography variant="subtitle1" align="center" gutterBottom>
-                    {`${videoOnDisplay.tutorial} - ${videoOnDisplay.video}`}
-                  </Typography>
-                </>
-              )
-              : ''}
+            {idPlayer != '0' ? (
+              <>
+                <YouTube videoId={idPlayer} opts={opts} />
+                <Typography variant="subtitle1" align="center" gutterBottom>
+                  {`${videoOnDisplay.tutorial} - ${videoOnDisplay.video}`}
+                </Typography>
+              </>
+            ) : (
+              ''
+            )}
           </Grid>
         </Grid>
       </Container>

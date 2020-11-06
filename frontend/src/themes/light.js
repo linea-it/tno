@@ -10,6 +10,7 @@ const light = createMuiTheme({
       contrastText: '#fff',
     },
     secondary: pink,
+    contrastText: '#fff',
     appbar: '#212121',
   },
   typography: {

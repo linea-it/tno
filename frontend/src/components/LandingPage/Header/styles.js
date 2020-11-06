@@ -7,14 +7,8 @@ const styles = makeStyles((theme) => ({
   avatar: {
     marginRight: 10,
   },
-  root: {
-    flexGrow: 1,
-  },
   appbar: {
     background: '#212121',
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
   },
   separator: {
     flexGrow: 1,

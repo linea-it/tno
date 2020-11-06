@@ -5,6 +5,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     float: 'right',
     height: 64,
+    position: 'fixed',
   },
   appBarDrawerClose: {
     top: 'auto',
@@ -33,11 +34,17 @@ const useStyles = makeStyles((theme) => ({
   poweredBy: {
     display: 'inline-block',
     verticalAlign: 'middle',
+    color: '#fff',
   },
   logoFooter: {
     cursor: 'pointer',
     marginLeft: '10px',
     maxWidth: '75px',
+  },
+  marginItem: {
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 5,
   },
 }));
 

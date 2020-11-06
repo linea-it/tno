@@ -5,13 +5,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'block',
     height: '100%',
   },
-  menuButton: {
-    marginRight: 36,
-    color: '#fff',
-  },
-  hide: {
-    display: 'none',
-  },
   drawerList: {
     paddingTop: 0,
   },

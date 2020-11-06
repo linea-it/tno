@@ -1,6 +1,6 @@
 import React from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import { Typography, Toolbar } from '@material-ui/core';
+import { Typography, Grid } from '@material-ui/core';
+import clsx from 'clsx';
 import logo from '../../../assets/img/linea-logo-mini.png';
 import useStyles from './styles';
 
@@ -8,14 +8,21 @@ function Footer() {
   const classes = useStyles();
 
   return (
-    <footer className={classes.root}>
-      <AppBar position="fixed" className={classes.appBarDrawerClose}>
-        <Toolbar className={classes.toolbar}>
-          <Typography color="inherit">
-            <span>Testing</span>{' '}
+    <footer className={clsx(classes.root, classes.appBarDrawerClose)}>
+      <Grid
+        container
+        direction="row"
+        justify="space-between"
+        alignItems="center"
+      >
+        <Grid item className={classes.marginItem}>
+          <Typography color="contrastText">
+            <span className={classes.poweredBy}>Testing</span>{' '}
             <span className={classes.versionLink}>1.0.0</span>
           </Typography>
-          <Typography color="inherit">
+        </Grid>
+        <Grid item className={classes.marginItem}>
+          <Typography color="contrastText">
             <span className={classes.poweredBy}>Powered by</span>
             <a
               href="http://www.linea.gov.br/"
@@ -30,8 +37,8 @@ function Footer() {
               />
             </a>
           </Typography>
-        </Toolbar>
-      </AppBar>
+        </Grid>
+      </Grid>
     </footer>
   );
 }

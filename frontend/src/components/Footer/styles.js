@@ -6,9 +6,6 @@ const useStyles = makeStyles((theme) => ({
     float: 'right',
     height: 64,
   },
-  grow: {
-    flexGrow: 1,
-  },
   appBarDrawerOpen: {
     top: 'auto',
     bottom: 0,
