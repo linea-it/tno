@@ -5,21 +5,12 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     float: 'right',
     height: 64,
-  },
-  appBarDrawerOpen: {
-    top: 'auto',
-    bottom: 0,
-    backgroundColor: '#6A6A6A',
-    width: 'calc(100% - 240px)',
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+    position: 'fixed',
   },
   appBarDrawerClose: {
     top: 'auto',
     bottom: 0,
-    backgroundColor: '#6A6A6A',
+    backgroundColor: '#212121',
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -43,6 +34,17 @@ const useStyles = makeStyles((theme) => ({
   poweredBy: {
     display: 'inline-block',
     verticalAlign: 'middle',
+    color: '#fff',
+  },
+  logoFooter: {
+    cursor: 'pointer',
+    marginLeft: '10px',
+    maxWidth: '75px',
+  },
+  marginItem: {
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 5,
   },
 }));
 

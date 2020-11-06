@@ -24,6 +24,13 @@ import Occultation from '../pages/Occultation';
 import OccultationDetail from '../pages/Occultation/Detail';
 import OccultationCalendar from '../pages/Occultation/Calendar';
 
+import Home from '../pages/LandingPage/Home';
+import AboutUs from '../pages/LandingPage/AboutUs';
+import Help from '../pages/LandingPage/Help';
+import Tutorials from '../pages/LandingPage/Tutorials';
+import Contact from '../pages/LandingPage/Contact';
+import Notfound from '../pages/LandingPage/NotFound';
+
 export default function Routes() {
   return (
     <Switch>
@@ -108,8 +115,13 @@ export default function Routes() {
         path="/data-preparation/des/download/:id"
         component={DownloadDetail}
       />
+      <Route isHomePage exact path="/" component={Home} />
+      <Route isHomePage exact path="/about-us" component={AboutUs} />
+      <Route isHomePage exact path="/help" component={Help} />
+      <Route isHomePage exact path="/tutorials" component={Tutorials} />
+      <Route isHomePage exact path="/contact-us" component={Contact} />
       <Route isPrivate exact path="/dashboard" component={Dashboard} />
-      <Redirect path="/" to="/dashboard" />
+      <Route component={Notfound} />
     </Switch>
   );
 }

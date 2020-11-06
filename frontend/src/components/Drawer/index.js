@@ -120,15 +120,10 @@ function Drawer({ children, title, open, setOpen }) {
             className={classes.invisibleLink}
             title="Dashboard"
           >
-            <ListItem
-              button
-              selected={currentPage === 'dashboard'}
-            >
+            <ListItem button selected={currentPage === 'dashboard'}>
               <ListItemText
                 primary={
-                  <span className={classes.textDrawerParent}>
-                    Dashboard
-                  </span>
+                  <span className={classes.textDrawerParent}>Dashboard</span>
                 }
                 className={classes.textDrawer}
               />
