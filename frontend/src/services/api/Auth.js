@@ -61,3 +61,7 @@ export function isAuthenticated() {
 export function logout() {
   window.location.replace(`${url}/auth/logout`);
 }
+
+export const urlLogin = `${url}/auth/login/?next=/`;
+
+export const urlLogout = `${url}/auth/logout/?next=/`;
