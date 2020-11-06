@@ -86,13 +86,6 @@ function SkybotDetail({ setTitle }) {
 
   const [dynclassAsteroids, setDynclassAsteroids] = useState([]);
 
-  // const [skybotResultErrors, setSkybotResultErrors] = useState([]);
-
-  // const [errorLog, setErrorLog] = useState({
-  //   visible: false,
-  //   content: [],
-  // });
-
   const handleBackNavigation = () => history.goBack();
 
   useEffect(() => {
@@ -109,36 +102,6 @@ function SkybotDetail({ setTitle }) {
         setHasCircularProgress(true);
       });
   }, [loadProgress]);
-
-  // useEffect(() => {
-  //   if (
-  //     progress.request.status === 'completed' &&
-  //     progress.loaddata.status === 'completed'
-  //   ) {
-  //     getSkybotTimeProfile(id).then((res) => {
-  //       const { requests, loaddata } = res;
-  //       if (res.success) {
-  //         setTimeProfile({
-  //           requests: requests.map((request) => ({
-  //             [res.columns[0]]: request[0],
-  //             [res.columns[1]]: request[1],
-  //             [res.columns[2]]: request[2],
-  //             [res.columns[3]]: request[3],
-  //             [res.columns[4]]: request[4],
-  //           })),
-
-  //           loaddata: loaddata.map((request) => ({
-  //             [res.columns[0]]: request[0],
-  //             [res.columns[1]]: request[1],
-  //             [res.columns[2]]: request[2],
-  //             [res.columns[3]]: request[3],
-  //             [res.columns[4]]: request[4],
-  //           })),
-  //         });
-  //       }
-  //     });
-  //   }
-  // }, [id, progress]);
 
   const tableColumns = [
     {
@@ -212,41 +175,6 @@ function SkybotDetail({ setTitle }) {
       customElement: (row) =>
         row.execution_time ? row.execution_time.split('.')[0] : '-',
     },
-    // {
-    //   name: 'error',
-    //   title: 'Error',
-    //   sortingEnabled: false,
-    //   width: 160,
-    //   customElement: (row) => {
-    //     if (row.error !== '0') {
-    //       return <span title={row.error}>{row.error}</span>;
-    //     }
-    //     return '-';
-    //   },
-    // },
-    // {
-    //   name: 'log',
-    //   title: 'Log',
-    //   align: 'center',
-    //   sortingEnabled: false,
-    //   width: 130,
-    //   customElement: (row) => {
-    //     if (row.success === false) {
-    //       const exposure = skybotResultErrors.filter(
-    //         (res) => res.id === row.exposure
-    //       )[0];
-
-    //       if (exposure) {
-    //         return (
-    //           <Button onClick={() => handleLogClick(exposure)}>
-    //             <ErrorIcon />
-    //           </Button>
-    //         );
-    //       }
-    //     }
-    //     return '-';
-    //   },
-    // },
   ];
 
   const dynclassAsteroidsColumns = [
@@ -306,20 +234,6 @@ function SkybotDetail({ setTitle }) {
     },
   ];
 
-  // const handleLogClick = (exposure) => {
-  //   if (exposure) {
-  //     setErrorLog({
-  //       visible: true,
-  //       content: exposure.rows,
-  //     });
-  //   } else {
-  //     setErrorLog({
-  //       visible: false,
-  //       content: [],
-  //     });
-  //   }
-  // };
-
   const loadData = ({ currentPage, pageSize, sorting }) => {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1;
@@ -332,29 +246,6 @@ function SkybotDetail({ setTitle }) {
       setTotalCount(res.count);
     });
   };
-
-  // useEffect(() => {
-  //   if (tableData.length > 0 && Object.keys(skybotJob).length > 0) {
-  //     const { path } = skybotJob;
-  //     const failedExposures = tableData.filter(
-  //       (exposure) => exposure.success === false
-  //     );
-
-  //     if (failedExposures.length > 0) {
-  //       setSkybotResultErrors([]);
-
-  //       failedExposures.forEach((row) => {
-  //         readFile(`${path}/${row.exposure}_${row.ticket}.csv.err`).then(
-  //           (res) => {
-  //             setSkybotResultErrors((prevState) =>
-  //               prevState.concat([{ id: row.exposure, rows: res.rows }])
-  //             );
-  //           }
-  //         );
-  //       });
-  //     }
-  //   }
-  // }, [tableData, skybotJob]);
 
   useEffect(() => {
     getSkybotRunById({ id }).then((res) => {
@@ -387,7 +278,7 @@ function SkybotDetail({ setTitle }) {
         },
         {
           title: 'Job ID',
-          value: id
+          value: id,
         },
         {
           title: 'Start Date',
@@ -459,36 +350,6 @@ function SkybotDetail({ setTitle }) {
       setDynclassAsteroids(res);
     });
   }, [loadProgress]);
-
-  // useEffect(() => {
-  //   if (
-  //     progress.request.status === 'completed' &&
-  //     progress.loaddata.status === 'completed'
-  //   ) {
-  //     getSkybotTimeProfile(id).then((res) => {
-  //       const { requests, loaddata } = res;
-  //       if (res.success) {
-  //         setTimeProfile({
-  //           requests: requests.map((request) => ({
-  //             [res.columns[0]]: request[0],
-  //             [res.columns[1]]: request[1],
-  //             [res.columns[2]]: request[2],
-  //             [res.columns[3]]: request[3],
-  //             [res.columns[4]]: request[4],
-  //           })),
-
-  //           loaddata: loaddata.map((request) => ({
-  //             [res.columns[0]]: request[0],
-  //             [res.columns[1]]: request[1],
-  //             [res.columns[2]]: request[2],
-  //             [res.columns[3]]: request[3],
-  //             [res.columns[4]]: request[4],
-  //           })),
-  //         });
-  //       }
-  //     });
-  //   }
-  // }, [id, progress]);
 
   const formatSeconds = (value) =>
     moment().startOf('day').seconds(value).format('HH:mm:ss');
@@ -722,14 +583,6 @@ function SkybotDetail({ setTitle }) {
               </CardContent>
             </Card>
           </Grid>
-          {/* <Grid item xs={8}>
-                <Card>
-                  <CardHeader title="Execution Time" />
-                  <CardContent>
-                    <SkybotTimeProfile data={timeProfile} />
-                  </CardContent>
-                </Card>
-              </Grid> */}
         </Grid>
       </Grid>
 
@@ -737,16 +590,7 @@ function SkybotDetail({ setTitle }) {
         // Idle and Running Statuses:
         ![1, 2].includes(skybotJob.status) ? (
           <>
-            <Grid item xs={12}>
-              {/* <Grid item xs={12} sm={8}>
-                      <Card>
-                        <CardHeader title="Execution Time" />
-                        <CardContent>
-                          <SkybotTimeProfile data={timeProfile} />
-                        </CardContent>
-                      </Card>
-                    </Grid> */}
-            </Grid>
+            <Grid item xs={12} />
             <Grid item xs={12}>
               <Card>
                 <CardHeader title="Summary Dynamic Class" />
@@ -757,8 +601,6 @@ function SkybotDetail({ setTitle }) {
                     totalCount={dynclassAsteroids.length}
                     hasSearching={false}
                     hasPagination={false}
-                    // hasSorting={false}
-                    // defaultSorting={[{ columnName: 'dynclass', direction: 'asc' }]}
                     hasColumnVisibility={false}
                     hasToolbar={false}
                     remote={false}
@@ -788,13 +630,6 @@ function SkybotDetail({ setTitle }) {
           </>
         ) : null
       }
-      {/* <Dialog
-        title="Log"
-        visible={errorLog.visible}
-        setVisible={() => handleLogClick(null)}
-        content={<Log data={errorLog.content} />}
-        maxWidth="md"
-      /> */}
     </Grid>
   );
 }

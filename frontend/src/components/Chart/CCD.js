@@ -37,6 +37,7 @@ function CCD({ data, width, height }) {
     marker: {
       color: '#008000',
     },
+    text: data.asteroidsInside.ccdnum.map((ccdnum) => `CCD Number: ${ccdnum}`),
   });
 
   rows.push({
@@ -46,7 +47,7 @@ function CCD({ data, width, height }) {
     type: 'scatter',
     name: 'Small Bodies Outside CCD',
     marker: {
-      color: '#a6a6a6',
+      color: '#333',
     },
   });
 

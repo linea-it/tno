@@ -176,7 +176,12 @@ function Skybot({ setTitle }) {
     }).then((res) => {
       const { data } = res;
 
-      setTableData(data.results);
+      setTableData(
+        data.results.map((row) => ({
+          detail: `/data-preparation/des/skybot/${row.id}`,
+          ...row,
+        }))
+      );
       setTotalCount(data.count);
     });
   };
@@ -226,13 +231,21 @@ function Skybot({ setTitle }) {
 
   const tableColumns = [
     {
+      name: 'index',
+      title: ' ',
+      width: 70,
+    },
+    {
       name: 'id',
-      title: 'Details',
-      width: 110,
+      title: 'ID',
+      width: 80,
+    },
+    {
+      name: 'detail',
+      title: 'Detail',
+      width: 80,
       customElement: (row) => (
-        <Button
-          onClick={() => history.push(`/data-preparation/des/skybot/${row.id}`)}
-        >
+        <Button onClick={() => history.push(row.detail)}>
           <InfoOutlinedIcon />
         </Button>
       ),
@@ -299,8 +312,16 @@ function Skybot({ setTitle }) {
       title: '# Exposures',
     },
     {
+      name: 'asteroids',
+      title: '# SSOs',
+    },
+    {
       name: 'ccds',
       title: '# CCDs',
+    },
+    {
+      name: 'ccds_with_asteroid',
+      title: '# CCDs with SSOs',
     },
   ];
 
@@ -470,7 +491,7 @@ function Skybot({ setTitle }) {
                         fullWidth
                         onClick={handleSelectAllPeriodClick}
                       >
-                        Select
+                        Show Observations
                       </Button>
                     </Grid>
                     <Grid item xs={12}>
@@ -541,7 +562,6 @@ function Skybot({ setTitle }) {
                 reload={reload}
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
-                hasRowNumberer
               />
             </CardContent>
           </Card>
