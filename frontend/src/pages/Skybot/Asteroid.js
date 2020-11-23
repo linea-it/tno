@@ -50,7 +50,7 @@ function SkybotAsteroid({ setTitle }) {
   const [tableColumns, setTableColumns] = useState([]);
 
   useEffect(() => {
-    setTitle('Skybot');
+    setTitle('Discovery');
   }, [setTitle]);
 
   useEffect(() => {

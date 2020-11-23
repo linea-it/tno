@@ -16,16 +16,12 @@ import { useParams, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import {
   InfoOutlined as InfoOutlinedIcon,
-  Error as ErrorIcon,
 } from '@material-ui/icons';
 import List from '../../components/List';
 import Table from '../../components/Table';
-// import SkybotTimeProfile from '../../components/Chart/SkybotTimeProfile';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import Progress from '../../components/Progress';
 import CalendarSuccessOrFailNight from '../../components/Chart/CalendarSuccessOrFailNight';
-import Dialog from '../../components/Dialog';
-import Log from '../../components/Log';
 import {
   getSkybotResultById,
   getSkybotRunById,
@@ -33,9 +29,7 @@ import {
   cancelSkybotJobById,
   getNightsSuccessOrFail,
   getDynclassAsteroids,
-  // getSkybotTimeProfile,
 } from '../../services/api/Skybot';
-import { readFile } from '../../services/api/Common';
 
 import useInterval from '../../hooks/useInterval';
 import useStyles from './styles';
@@ -47,10 +41,6 @@ function SkybotDetail({ setTitle }) {
   const [skybotJob, setSkybotJob] = useState({});
   const [summaryExecution, setSummaryExecution] = useState([]);
   const [summaryResults, setSummaryResults] = useState([]);
-  // const [timeProfile, setTimeProfile] = useState({
-  //   requests: [],
-  //   loaddata: [],
-  // });
   const [progress, setProgress] = useState({
     request: {
       status: 'completed',
@@ -89,7 +79,7 @@ function SkybotDetail({ setTitle }) {
   const handleBackNavigation = () => history.goBack();
 
   useEffect(() => {
-    setTitle('Skybot');
+    setTitle('Discovery');
   }, [setTitle]);
 
   useEffect(() => {
@@ -115,7 +105,7 @@ function SkybotDetail({ setTitle }) {
         return (
           <Button
             onClick={() =>
-              history.push(`/data-preparation/des/skybot/asteroid/${row.id}`)
+              history.push(`/data-preparation/des/discovery/asteroid/${row.id}`)
             }
           >
             <InfoOutlinedIcon />
@@ -611,7 +601,7 @@ function SkybotDetail({ setTitle }) {
             </Grid>
             <Grid item xs={12}>
               <Card>
-                <CardHeader title="Skybot Results" />
+                <CardHeader title="Discovery Results" />
                 <CardContent>
                   <Table
                     columns={tableColumns}

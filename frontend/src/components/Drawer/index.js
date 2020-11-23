@@ -169,17 +169,17 @@ function Drawer({ children, title, open, setOpen }) {
           <Collapse in={desOpen} unmountOnExit>
             <List component="div" disablePadding>
               <Link
-                to="/data-preparation/des/skybot"
+                to="/data-preparation/des/discovery"
                 className={classes.invisibleLink}
-                title="Skybot"
+                title="Discovery"
               >
                 <ListItem
                   button
                   className={open ? classes.doublenested : ''}
-                  selected={currentPage === 'skybot'}
+                  selected={currentPage === 'discovery'}
                 >
                   <ListItemText
-                    primary="Skybot"
+                    primary="Discovery"
                     className={classes.textDrawer}
                   />
                 </ListItem>
@@ -305,7 +305,9 @@ function Drawer({ children, title, open, setOpen }) {
           open ? classes.bodyWrapperOpen : null
         )}
       >
-        <main className={classes.content}>{children}</main>
+        <main className={title !== 'Dashboard' && classes.content}>
+          {children}
+        </main>
       </div>
       <Footer drawerOpen={open} />
     </div>
