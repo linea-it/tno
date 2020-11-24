@@ -12,7 +12,7 @@ function Dashboard({ setTitle }) {
 
   const tabs = [
     {
-      title: 'Summary',
+      title: 'Process Summary',
       content: <Summary />
     },
     {

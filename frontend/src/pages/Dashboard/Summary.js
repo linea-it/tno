@@ -8,17 +8,17 @@ import {
 import Table from '../../components/Table';
 
 import {
-  getResultsByDynclass,
+  getResultsByYear,
 } from '../../services/api/Dashboard';
 
-function Skybot() {
-  const [resultsByDynclass, setResultsByDynclass] = useState([]);
+function Summary() {
+  const [resultsByYear, setResultsByYear] = useState([]);
 
-  const resultsByDynclassColumns = [
+  const resultsByYearColumns = [
     {
-      name: 'dynclass',
-      title: 'Dynclass',
-      width: 140,
+      name: 'year',
+      title: 'Year',
+      width: 90,
     },
     {
       name: 'nights',
@@ -26,60 +26,53 @@ function Skybot() {
       width: 100,
     },
     {
+      name: 'exposures',
+      title: '# Exposures',
+    },
+    {
       name: 'ccds',
       title: '# CCDs',
+    },
+    {
+      name: 'nights_analyzed',
+      title: '# Nights Analyzed',
+    },
+    {
+      name: 'exposures_analyzed',
+      title: '# Exposures Analyzed',
       width: 100,
     },
     {
-      name: 'asteroids',
-      title: '# SSOs',
+      name: 'percentage_nights',
+      title: '% Nights',
       width: 100,
     },
     {
-      name: 'positions',
-      title: '# Observations',
-      width: 150,
-    },
-    {
-      name: 'u',
-      title: 'u',
-      width: 70,
-    },
-    {
-      name: 'g',
-      title: 'g',
-      width: 70,
-    },
-    {
-      name: 'r',
-      title: 'r',
-      width: 70,
-    },
-    {
-      name: 'i',
-      title: 'i',
-      width: 70,
-    },
-    {
-      name: 'z',
-      title: 'z',
-      width: 70,
-    },
-    {
-      name: 'y',
-      title: 'Y',
-      width: 70,
+      name: 'percentage_ccds',
+      title: '% CCDs',
+      width: 100,
     },
   ];
 
   useEffect(() => {
-    // Get results by dynamic class
-    getResultsByDynclass()
+    // Get results by year
+    getResultsByYear()
       .then((res) => {
-        setResultsByDynclass(res);
+        // Adding two more columns:
+        // percentage_nights: the division of the nights_analyzed by the all the nights
+        // ccds_analyzed: the division of the ccds_analyzed by all the ccds
+        const result = res.map((row) => ({
+          ...row,
+          percentage_nights: Math.round(
+            (row.nights_analyzed / row.nights) * 100
+          ),
+          percentage_ccds: Math.round((row.ccds_analyzed / row.ccds) * 100),
+        }));
+
+        setResultsByYear(result);
       })
       .catch(() => {
-        setResultsByDynclass([]);
+        setResultsByYear([]);
       });
   }, []);
 
@@ -87,17 +80,15 @@ function Skybot() {
     <Grid container spacing={2}>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title="Results By Dynamic Class" />
+          <CardHeader title="Results By Year" />
           <CardContent>
             <Table
-              columns={resultsByDynclassColumns}
-              data={resultsByDynclass}
-              totalCount={resultsByDynclass.length}
+              columns={resultsByYearColumns}
+              data={resultsByYear}
+              totalCount={resultsByYear.length}
               remote={false}
               hasSearching={false}
-              defaultSorting={[
-                { columnName: 'dynclass', direction: 'asc' },
-              ]}
+              defaultSorting={[{ columnName: 'year', direction: 'asc' }]}
               hasPagination={false}
               hasColumnVisibility={false}
               hasToolbar={false}
@@ -109,4 +100,4 @@ function Skybot() {
   );
 }
 
-export default Skybot;
+export default Summary;
