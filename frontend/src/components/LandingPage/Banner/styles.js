@@ -9,7 +9,7 @@ const styles = makeStyles((theme) => ({
     background: `url(${process.env.PUBLIC_URL}/img/home1.jpg)`,
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
-    height: 380,
+    height: 220,
     marginBottom: theme.spacing(4),
   },
   container: {
@@ -23,7 +23,7 @@ const styles = makeStyles((theme) => ({
   title: {
     fontFamily: 'Oxanium',
     fontWeight: 100,
-    fontSize: 60,
+    fontSize: 50,
     margin: 0,
     [theme.breakpoints.down('sm')]: {
       fontSize: 48,

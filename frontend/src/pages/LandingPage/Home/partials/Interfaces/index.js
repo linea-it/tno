@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
+import Container from '@material-ui/core/Container';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
@@ -57,40 +58,42 @@ function Interfaces() {
   const handleCardClick = (pathname) => history.push(pathname);
 
   return (
-    <Grid
-      container
-      spacing={2}
-      direction="row"
-      justify="center"
-      alignItems="stretch"
-    >
-      {interfaces.map((item) => (
-        <Grid key={item.id} item xs={12} sm={6} md={4} lg={3}>
-          <Card className={classes.card}>
-            <CardActionArea
-              className={classes.cardAction}
-              onClick={() => handleCardClick(item.app_url)}
-            >
-              <CardMedia
-                alt={item.app_display_name}
-                className={classes.media}
-                image={`${process.env.PUBLIC_URL}/img/card${item.id}.jpg`}
-                title={item.app_display_name}
+    <Container>
+      <Grid
+        container
+        spacing={2}
+        direction="row"
+        justify="center"
+        alignItems="stretch"
+      >
+        {interfaces.map((item) => (
+          <Grid key={item.id} item xs={12} sm={6} md={4} lg={3}>
+            <Card className={classes.card}>
+              <CardActionArea
+                className={classes.cardAction}
+                onClick={() => handleCardClick(item.app_url)}
               >
-                <Typography
-                  gutterBottom
-                  className={classes.titleItem}
-                  variant="h5"
-                  component="h2"
+                <CardMedia
+                  alt={item.app_display_name}
+                  className={classes.media}
+                  image={`${process.env.PUBLIC_URL}/img/card${item.id}.jpg`}
+                  title={item.app_display_name}
                 >
-                  {item.app_display_name}
-                </Typography>
-              </CardMedia>
-            </CardActionArea>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
+                  <Typography
+                    gutterBottom
+                    className={classes.titleItem}
+                    variant="h5"
+                    component="h2"
+                  >
+                    {item.app_display_name}
+                  </Typography>
+                </CardMedia>
+              </CardActionArea>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
   );
 }
 

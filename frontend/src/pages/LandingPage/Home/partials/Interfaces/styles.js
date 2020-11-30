@@ -10,7 +10,7 @@ const styles = makeStyles({
     textShadow: '0.1em 0.1em 0.1em black',
   },
   media: {
-    minHeight: 220,
+    minHeight: 175,
     width: '100%',
   },
   icon: {
