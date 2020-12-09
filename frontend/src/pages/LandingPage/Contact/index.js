@@ -57,7 +57,7 @@ function Contact() {
             </Link>
             <Typography color="textPrimary">Contact</Typography>
           </Breadcrumbs>
-          <Grid item xs={6} className={classes.grid}>
+          <Grid className={classes.grid}>
             <Typography variant="h3" align="center" color="textPrimary">
               Contact
             </Typography>
