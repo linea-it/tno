@@ -10,6 +10,9 @@ const styles = makeStyles((theme) => ({
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
     height: 220,
+    [theme.breakpoints.down('sm')]: {
+      height: 330,
+    },
     marginBottom: theme.spacing(4),
   },
   container: {

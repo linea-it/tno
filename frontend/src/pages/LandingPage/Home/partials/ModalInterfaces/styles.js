@@ -7,9 +7,6 @@ const styles = makeStyles(() => ({
     padding: '0px 8px',
     zIndex: 9999,
   },
-  dialog: {
-
-  },
 }));
 
 export default styles;

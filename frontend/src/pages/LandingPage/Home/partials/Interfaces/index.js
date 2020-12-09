@@ -20,8 +20,8 @@ function Interfaces() {
     },
     {
       id: '2',
-      app_url: 'data-preparation/des/skybot',
-      app_display_name: 'Skybot',
+      app_url: 'data-preparation/des/discovery',
+      app_display_name: 'Discovery',
     },
     {
       id: '3',
@@ -30,7 +30,7 @@ function Interfaces() {
     },
     {
       id: '4',
-      app_url: '',
+      app_url: 'data-preparation/des/astrometry',
       app_display_name: 'Astrometry',
     },
     {
