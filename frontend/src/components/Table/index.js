@@ -33,6 +33,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import ColumnChooser from './ColumnChooser';
 import HeaderRowCell from './HeaderRowCell';
+import RowIndexer from './plugins/RowIndexer';
 import useStyles from './styles';
 
 function CustomNoDataCellComponent({ ...noDatProps }, customLoading) {
@@ -79,7 +80,6 @@ function Table({
   hasFiltering,
   hasLineBreak,
   loading,
-  hasRowNumberer,
 }) {
   const customColumns = columns.map((column) => ({
     name: column.name,
@@ -87,15 +87,6 @@ function Table({
     hasLineBreak: column.hasLineBreak ? column.hasLineBreak : false,
     headerTooltip: column.headerTooltip ? column.headerTooltip : false,
   }));
-
-  if (hasRowNumberer) {
-    customColumns.unshift({
-      name: 'row_number',
-      title: ' ',
-      hasLineBreak: false,
-      headerTooltip: false,
-    });
-  }
 
   const customColumnExtensions = columns.map((column) => ({
     columnName: column.name,
@@ -111,29 +102,10 @@ function Table({
     ),
   }));
 
-  if (hasRowNumberer) {
-    customColumnExtensions.unshift({
-      columnName: 'row_number',
-      width: 80,
-      maxWidth: '',
-      sortingEnabled: false,
-      // sortingEnabled: !remote,
-      align: 'center',
-      wordWrapEnabled: false,
-    });
-  }
-
   const customDefaultColumnWidths = columns.map((column) => ({
     columnName: column.name,
     width: !column.width ? 120 : column.width,
   }));
-
-  if (hasRowNumberer) {
-    customDefaultColumnWidths.unshift({
-      columnName: 'row_number',
-      width: 100,
-    });
-  }
 
   const customSorting = () => {
     if (
@@ -167,7 +139,7 @@ function Table({
   const [selection, setSelection] = useState([]);
   const [customModalContent, setCustomModalContent] = useState('');
 
-  const classes = useStyles({ hasRowNumberer });
+  const classes = useStyles();
 
   useEffect(() => {
     if (remote === true) {
@@ -190,38 +162,10 @@ function Table({
   };
 
   useEffect(() => {
-    if (hasRowNumberer && remote) {
-      setCustomData(
-        data.map((row, i) => ({
-          row_number: currentPage * customPageSize + i + 1,
-          ...row,
-        }))
-      );
-    }
-
-    if (hasRowNumberer && !remote) {
-      setCustomData(
-        data.map((row, i) => ({
-          row_number: i + 1,
-          ...row,
-        }))
-      );
-    }
-
-    if (!hasRowNumberer) {
-      setCustomData(data);
-    }
-
+    setCustomData(data);
     setCustomTotalCount(totalCount);
     setCustomLoading(false);
-  }, [
-    data,
-    totalCount,
-    defaultExpandedGroups,
-    currentPage,
-    customPageSize,
-    remote,
-  ]);
+  }, [data, totalCount, defaultExpandedGroups]);
 
   useEffect(() => {
     if (loading !== null) setCustomLoading(loading);
@@ -406,6 +350,7 @@ function Table({
             {hasSearching ? <SearchPanel /> : null}
             {hasColumnVisibility ? <TableColumnVisibility /> : null}
             {hasColumnVisibility ? <ColumnChooser /> : null}
+            <RowIndexer />
           </Grid>
           {renderModal()}
         </>
@@ -479,6 +424,7 @@ function Table({
           {hasSearching ? <SearchPanel /> : null}
           {hasColumnVisibility ? <TableColumnVisibility /> : null}
           {hasColumnVisibility ? <ColumnChooser /> : null}
+          <RowIndexer />
         </Grid>
         {renderModal()}
       </>
@@ -562,7 +508,6 @@ Table.defaultProps = {
   hasLineBreak: false,
   grouping: [{}],
   loading: null,
-  hasRowNumberer: false,
 };
 
 Table.propTypes = {
@@ -593,7 +538,6 @@ Table.propTypes = {
   remote: PropTypes.bool,
   grouping: PropTypes.arrayOf(PropTypes.object),
   loading: PropTypes.bool,
-  hasRowNumberer: PropTypes.bool,
 };
 
 export default Table;

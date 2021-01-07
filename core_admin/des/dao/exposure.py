@@ -118,3 +118,42 @@ class ExposureDao(DBBase):
         rows = self.fetch_scalar(stm)
 
         return rows
+
+    def count_not_exec_nights_by_period(self, start, end):
+        """
+            Retorna a quantidade de noites com exposição no periodo
+            Parameters:
+                start (datetime): Periodo inicial que sera usado na seleção.
+
+                end (datetime): Periodo final que sera usado na seleção.
+
+            Returns:
+                count (int) Quantidade de noites com exposição
+
+            select
+                count(distinct date(de.date_obs))
+            from
+                des_exposure de
+            where
+                de.date_obs between '2019-01-01 00:00:00' and '2019-01-31 23:59:50'
+
+        """
+
+        tbl = self.tbl
+        ds_tbl = self.get_table('des_skybotjobresult', self.get_base_schema())
+
+        stm = select([func.count(cast(tbl.c.date_obs, Date).distinct())]).\
+            where(
+                and_(
+                    tbl.c.date_obs.between(str(start), str(end)),
+                    ds_tbl.c.exposure_id.notin_(
+                        select([tbl.c.id])
+                    )
+                )
+        )
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalar(stm)
+
+        return rows

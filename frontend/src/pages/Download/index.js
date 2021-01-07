@@ -155,7 +155,12 @@ function Download({ setTitle }) {
       ordering: sorting,
     }).then((res) => {
       const { data } = res;
-      setTableData(data.results);
+      setTableData(
+        data.results.map((row) => ({
+          detail: `/data-preparation/des/skybot/${row.id}`,
+          ...row,
+        }))
+      );
       setTotalCount(data.count);
     });
   };
@@ -193,9 +198,19 @@ function Download({ setTitle }) {
 
   const tableColumns = [
     {
+      name: 'index',
+      title: ' ',
+      width: 70,
+    },
+    {
       name: 'id',
-      title: 'Details',
-      width: 110,
+      title: 'ID',
+      width: 80,
+    },
+    {
+      name: 'detail',
+      title: 'Detail',
+      width: 80,
       customElement: (row) => (
         <Button
           onClick={() =>
@@ -399,7 +414,7 @@ function Download({ setTitle }) {
                           dynclass === '' && Object.keys(object).length === 0
                         }
                       >
-                        Select
+                        Show CCDs
                       </Button>
                     </Grid>
                     <Grid item xs={12}>
@@ -589,7 +604,6 @@ function Download({ setTitle }) {
                 hasToolbar={false}
                 reload={reload}
                 totalCount={totalCount}
-                hasRowNumberer
               />
             </CardContent>
           </Card>

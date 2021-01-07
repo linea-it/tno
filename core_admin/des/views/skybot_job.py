@@ -16,6 +16,11 @@ from des.skybot.pipeline import DesSkybotPipeline
 
 import numpy as np
 
+from des.summary import SummaryResult
+
+import threading
+
+
 class SkybotJobViewSet(mixins.RetrieveModelMixin,
                        mixins.ListModelMixin,
                        viewsets.GenericViewSet):
@@ -81,11 +86,12 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
 
         # TODO: Esses totais deveriam ser de Noites com exposições não executadas.
         # Recuperar o total de noites com exposição no periodo
-        t_nights = ExposureDao(pool=False).count_nights_by_period(start, end)
+        t_nights = ExposureDao(
+            pool=False).count_not_exec_nights_by_period(start, end)
 
         # Recuperar o total de ccds no periodo.
         # TODO: Esses totais deveriam ser de CCDs com exposições não executadas.
-        t_ccds = CcdDao().count_ccds_by_period(start, end)
+        t_ccds = CcdDao(pool=False).count_not_exec_ccds_by_period(start, end)
 
         # Estimativa de tempo baseada na qtd de exposures a serem executadas.
         estimated_time = self.estimate_execution_time(t_exposures)
@@ -228,7 +234,6 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
             'loaddata': a_loaddata
         }))
 
-
     @action(detail=True)
     def nites_success_or_fail(self, request, pk=None):
         """Retorna todas as datas que executaram com sucesso por completo e as que retornaram com no mínimo uma falha, dentro do periodo, que foram executadas pelo skybot.
@@ -247,26 +252,33 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
 
         file_path = os.path.join(job.path, 'results.csv')
 
-        job_result = pd.read_csv(file_path, delimiter=';', usecols=['date_obs', 'success', 'request_error', 'loaddata_error'])
+        job_result = pd.read_csv(file_path, delimiter=';', usecols=[
+                                 'date_obs', 'success', 'request_error', 'loaddata_error'])
 
-        job_result['date_obs'] = job_result['date_obs'].apply(lambda x: x.split()[0])
+        job_result['date_obs'] = job_result['date_obs'].apply(
+            lambda x: x.split()[0])
 
         job_result['count'] = 1
 
         # Sometimes the error property comes as a '0.0', even though it doesn't have an error,
         # So in here we replace it with np.nan to treat it later
-        job_result['request_error'] = job_result['request_error'].apply(lambda x: np.nan if x == 0.0 else x)
-        job_result['loaddata_error'] = job_result['loaddata_error'].apply(lambda x: np.nan if x == 0.0 else x)
+        job_result['request_error'] = job_result['request_error'].apply(
+            lambda x: np.nan if x == 0.0 else x)
+        job_result['loaddata_error'] = job_result['loaddata_error'].apply(
+            lambda x: np.nan if x == 0.0 else x)
 
         # Verify if either or both request or loadata failed, fill the property is_success with False, otherwise with True
-        job_result['is_success'] = job_result[['request_error', 'loaddata_error']].apply(lambda row: True if np.isnan(row['request_error']) and np.isnan(row['loaddata_error']) else False, axis=1)
+        job_result['is_success'] = job_result[['request_error', 'loaddata_error']].apply(
+            lambda row: True if np.isnan(row['request_error']) and np.isnan(row['loaddata_error']) else False, axis=1)
 
         job_result.drop(columns=['request_error', 'loaddata_error'])
 
-        job_result['error'] = job_result['is_success'].apply(lambda x: 0 if x else 1)
+        job_result['error'] = job_result['is_success'].apply(
+            lambda x: 0 if x else 1)
 
         # Group by "date_obs" so we know if that day failed or not
-        df1 = job_result.groupby(by='date_obs', as_index=False).agg({ 'count': 'sum', 'error': 'sum', 'success': 'all', 'is_success': 'all' })
+        df1 = job_result.groupby(by='date_obs', as_index=False).agg(
+            {'count': 'sum', 'error': 'sum', 'success': 'all', 'is_success': 'all'})
 
         # Function that applies the value of the attributes based on the comparison of 'success' and 'error' properties
         def apply_success_value(row):
@@ -318,8 +330,25 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
                 ['success', 'count']
             ] = row['success'], row['count']
 
-        df = df2.rename(columns={ 'date_obs': 'date', 'success': 'executed' })
+        df = df2.rename(columns={'date_obs': 'date', 'success': 'executed'})
 
         result = df.to_dict('records')
 
         return Response(result)
+
+    def run_summary_result(self):
+        summary_result = SummaryResult()
+
+        summary_result.run_by_year()
+        summary_result.run_by_dynclass()
+
+    @action(detail=False)
+    def test_update_dashboard(self, request, pk=None):
+
+        t = threading.Thread(target=self.run_summary_result)
+        t.setDaemon(True)
+        t.start()
+
+        return Response({
+            'success': True,
+        })

@@ -47,9 +47,10 @@ function SkybotAsteroid({ setTitle }) {
   const [dynclassAsteroids, setDynclassAsteroids] = useState([]);
   const [ccdsWithAsteroids, setCcdsWithAsteroids] = useState(null);
   const [summary, setSummary] = useState([]);
+  const [tableColumns, setTableColumns] = useState([]);
 
   useEffect(() => {
-    setTitle('Skybot');
+    setTitle('Discovery');
   }, [setTitle]);
 
   useEffect(() => {
@@ -58,7 +59,17 @@ function SkybotAsteroid({ setTitle }) {
     });
   }, [id]);
 
-  const tableColumns = [
+  const columns = [
+    {
+      title: ' ',
+      name: 'index',
+      width: 70,
+    },
+    {
+      title: 'CCD Num',
+      name: 'ccdnum',
+      headerTooltip: 'CCD Number',
+    },
     {
       title: 'Name',
       name: 'name',
@@ -161,6 +172,14 @@ function SkybotAsteroid({ setTitle }) {
     },
   ];
 
+  useEffect(() => {
+    if (insideCcdOnly) {
+      setTableColumns(columns);
+    } else {
+      setTableColumns(columns.filter((row) => row.name !== 'ccdnum'));
+    }
+  }, [insideCcdOnly]);
+
   const circleCoordinatesPlaneFormat = (x) => {
     if (typeof x === 'number') return x > 180 ? x - 360 : x;
     return x.map((n) => (n > 180 ? n - 360 : n));
@@ -172,7 +191,6 @@ function SkybotAsteroid({ setTitle }) {
         setPositions(res.results);
       });
       getAsteroidsInsideCcdByTicket(skybotResult.ticket).then((res) => {
-        console.log(res.results)
         setAsteroidsInsideCcd(res.results);
       });
     }
@@ -235,6 +253,7 @@ function SkybotAsteroid({ setTitle }) {
           circleCoordinatesPlaneFormat(Number(res.raj2000))
         ),
         y: asteroidsInside.map((res) => res.decj2000),
+        ccdnum: asteroidsInsideCcd.map((res) => res.ccdnum),
       };
 
       const asteroidOutsideCcdRows = {
@@ -277,9 +296,14 @@ function SkybotAsteroid({ setTitle }) {
     if (
       'ccds' in ccdsPlotData &&
       'asteroidsInside' in ccdsPlotData &&
-      'asteroidsOutside' in ccdsPlotData
+      'asteroidsOutside' in ccdsPlotData &&
+      skybotResult.exposure !== 0
     ) {
       setSummary([
+        {
+          title: 'Exposure',
+          value: skybotResult.exposure,
+        },
         {
           title: 'Cone Search Radius',
           value: `${coneSearchRadius} (degree)`,
@@ -419,8 +443,8 @@ function SkybotAsteroid({ setTitle }) {
                 totalCount={
                   insideCcdOnly ? asteroidsInsideCcd.length : positions.length
                 }
+                defaultSorting={[{ columnName: 'ccdnum', direction: 'asc' }]}
                 hasSearching={false}
-                hasRowNumberer
                 remote={false}
               />
             ) : (

@@ -88,19 +88,19 @@ export default function Routes() {
       <Route
         isPrivate
         exact
-        path="/data-preparation/des/skybot"
+        path="/data-preparation/des/discovery"
         component={Skybot}
       />
       <Route
         isPrivate
         exact
-        path="/data-preparation/des/skybot/:id"
+        path="/data-preparation/des/discovery/:id"
         component={SkybotDetail}
       />
       <Route
         isPrivate
         exact
-        path="/data-preparation/des/skybot/asteroid/:id"
+        path="/data-preparation/des/discovery/asteroid/:id"
         component={SkybotAsteroid}
       />
       <Route

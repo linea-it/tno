@@ -50,7 +50,7 @@ function Skybot({ setTitle }) {
   const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([]);
 
   // Get stored period on local storage if it exists and set as the initial data of selectedDate state:
-  const selectedDateLocalStorage = localStorage.getItem('skybotSelectedDate');
+  const selectedDateLocalStorage = localStorage.getItem('discoverySelectedDate');
   const [selectedDate, setSelectedDate] = useState(
     selectedDateLocalStorage
       ? [
@@ -80,7 +80,7 @@ function Skybot({ setTitle }) {
   });
 
   useEffect(() => {
-    setTitle('Skybot');
+    setTitle('Discovery');
   }, [setTitle]);
 
   const handleSelectPeriodClick = () => {
@@ -176,7 +176,12 @@ function Skybot({ setTitle }) {
     }).then((res) => {
       const { data } = res;
 
-      setTableData(data.results);
+      setTableData(
+        data.results.map((row) => ({
+          detail: `/data-preparation/des/discovery/${row.id}`,
+          ...row,
+        }))
+      );
       setTotalCount(data.count);
     });
   };
@@ -195,7 +200,7 @@ function Skybot({ setTitle }) {
 
         // Store last submitted period on local storage:
         localStorage.setItem(
-          'skybotSelectedDate',
+          'discoverySelectedDate',
           JSON.stringify({
             start: selectedDate[0],
             end: selectedDate[1],
@@ -206,7 +211,7 @@ function Skybot({ setTitle }) {
           setHasJobRunningOrIdleFeedback(true);
           setReload((prevState) => !prevState);
         } else {
-          history.push(`/data-preparation/des/skybot/${id}`);
+          history.push(`/data-preparation/des/discovery/${id}`);
         }
 
         setBackdropOpen(false);
@@ -226,13 +231,21 @@ function Skybot({ setTitle }) {
 
   const tableColumns = [
     {
+      name: 'index',
+      title: ' ',
+      width: 70,
+    },
+    {
       name: 'id',
-      title: 'Details',
-      width: 110,
+      title: 'ID',
+      width: 80,
+    },
+    {
+      name: 'detail',
+      title: 'Detail',
+      width: 80,
       customElement: (row) => (
-        <Button
-          onClick={() => history.push(`/data-preparation/des/skybot/${row.id}`)}
-        >
+        <Button onClick={() => history.push(row.detail)}>
           <InfoOutlinedIcon />
         </Button>
       ),
@@ -299,8 +312,16 @@ function Skybot({ setTitle }) {
       title: '# Exposures',
     },
     {
+      name: 'asteroids',
+      title: '# SSOs',
+    },
+    {
       name: 'ccds',
       title: '# CCDs',
+    },
+    {
+      name: 'ccds_with_asteroid',
+      title: '# CCDs with SSOs',
     },
   ];
 
@@ -460,7 +481,7 @@ function Skybot({ setTitle }) {
           <Grid container direction="column" spacing={2}>
             <Grid item xs={12}>
               <Card>
-                <CardHeader title="Skybot Run" />
+                <CardHeader title="Discovery Run" />
                 <CardContent>
                   <Grid container spacing={2} alignItems="stretch">
                     <Grid item xs={12}>
@@ -470,7 +491,7 @@ function Skybot({ setTitle }) {
                         fullWidth
                         onClick={handleSelectAllPeriodClick}
                       >
-                        Select
+                        Show Observations
                       </Button>
                     </Grid>
                     <Grid item xs={12}>
@@ -541,7 +562,6 @@ function Skybot({ setTitle }) {
                 reload={reload}
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
-                hasRowNumberer
               />
             </CardContent>
           </Card>
