@@ -14,9 +14,7 @@ import {
 } from '@material-ui/core';
 import { useParams, useHistory } from 'react-router-dom';
 import moment from 'moment';
-import {
-  InfoOutlined as InfoOutlinedIcon,
-} from '@material-ui/icons';
+import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons';
 import List from '../../components/List';
 import Table from '../../components/Table';
 import ColumnStatus from '../../components/Table/ColumnStatus';
@@ -302,9 +300,11 @@ function SkybotDetail({ setTitle }) {
         },
       ]);
 
+      console.log('skybotJob', skybotJob);
+
       setSummaryResults([
         {
-          title: '# Nights',
+          title: '# Nights Analyzed',
           value: skybotJob.nights,
         },
         {
