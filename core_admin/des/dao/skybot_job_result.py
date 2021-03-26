@@ -202,7 +202,7 @@ class DesSkybotJobResultDao(DBBase):
 
     def count_not_exec_nights_by_period(self, start, end):
         """
-            Retorna o Total de exposições que não foram executadas pelo skybot
+            Retorna o Total de noites que não foram executadas pelo skybot
             para um periodo.
 
             Parameters:
@@ -211,11 +211,11 @@ class DesSkybotJobResultDao(DBBase):
                 end (datetime): Periodo final que sera usado na seleção.
 
             Returns:
-                rows (array) Exposições que ainda não foram executadas pelo skybot.
+                count (int) Noites que ainda não foram executadas pelo skybot.
 
 
         select
-            count(de.id) as total
+            count(distinct(de.date_obs))
         from
             des_exposure de
         where
@@ -251,7 +251,7 @@ class DesSkybotJobResultDao(DBBase):
 
     def count_not_exec_ccds_by_period(self, start, end):
         """
-            Retorna o Total de exposições que não foram executadas pelo skybot
+            Retorna o Total de CCDs que não foram executadas pelo skybot
             para um periodo.
 
             Parameters:
@@ -260,13 +260,13 @@ class DesSkybotJobResultDao(DBBase):
                 end (datetime): Periodo final que sera usado na seleção.
 
             Returns:
-                rows (array) Exposições que ainda não foram executadas pelo skybot.
+                count (int) CCDs que ainda não foram executadas pelo skybot.
 
 
         select
-            count(de.id) as total
+            count(dc.id)
         from
-            des_exposure de
+            des_ccd dc
         where
             de.date_obs between '2019-01-01 00:00:00' and '2019-01-31 23:59:50'
             and de.id not in (
