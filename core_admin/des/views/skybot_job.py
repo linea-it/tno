@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from common.dates_interval import get_days_interval
 from common.read_csv import csv_to_dataframe
-from des.dao import CcdDao, DesSkybotJobResultDao, ExposureDao
+from des.dao import DesSkybotJobResultDao
 from des.models import SkybotJob
 from des.serializers import SkybotJobSerializer
 from des.skybot.pipeline import DesSkybotPipeline
@@ -86,12 +86,13 @@ class SkybotJobViewSet(mixins.RetrieveModelMixin,
 
         # TODO: Esses totais deveriam ser de Noites com exposições não executadas.
         # Recuperar o total de noites com exposição no periodo
-        t_nights = ExposureDao(
+        t_nights = DesSkybotJobResultDao(
             pool=False).count_not_exec_nights_by_period(start, end)
 
         # Recuperar o total de ccds no periodo.
         # TODO: Esses totais deveriam ser de CCDs com exposições não executadas.
-        t_ccds = CcdDao(pool=False).count_not_exec_ccds_by_period(start, end)
+        t_ccds = DesSkybotJobResultDao(
+            pool=False).count_not_exec_ccds_by_period(start, end)
 
         # Estimativa de tempo baseada na qtd de exposures a serem executadas.
         estimated_time = self.estimate_execution_time(t_exposures)
