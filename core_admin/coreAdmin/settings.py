@@ -37,6 +37,12 @@ SKYBOT_OUTPUT = os.path.join(ARCHIVE_DIR, SKYBOT_ROOT)
 if not os.path.exists(SKYBOT_OUTPUT):
     os.mkdir(SKYBOT_OUTPUT)
 
+DES_ASTROMETRY_ROOT = 'des_astrometry'
+DES_ASTROMETRY_OUTPUT = os.path.join(ARCHIVE_DIR, DES_ASTROMETRY_ROOT)
+if not os.path.exists(DES_ASTROMETRY_OUTPUT):
+    os.mkdir(DES_ASTROMETRY_OUTPUT)
+
+
 OBSERVATIONS_DIR = os.path.join(ARCHIVE_DIR, "observations")
 if not os.path.exists(OBSERVATIONS_DIR):
     os.mkdir(OBSERVATIONS_DIR)
@@ -504,6 +510,22 @@ LOGGING = {
             'filename': os.path.join(LOG_DIR, 'download_ccds.log'),
             'formatter': 'standard',
         },
+        'asteroids': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'asteroids.log'),
+            'formatter': 'standard',
+        },
+        'des_astrometry': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'des_astrometry.log'),
+            'formatter': 'standard',
+        },
     },
     'loggers': {
         'django': {
@@ -561,6 +583,15 @@ LOGGING = {
             'level': LOGGING_LEVEL,
             'propagate': True,
         },
-
+        'asteroids': {
+            'handlers': ['asteroids'],
+            'level': LOGGING_LEVEL,
+            'propagate': True,
+        },
+        'des_astrometry': {
+            'handlers': ['des_astrometry'],
+            'level': LOGGING_LEVEL,
+            'propagate': True,
+        },
     },
 }

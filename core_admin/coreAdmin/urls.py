@@ -30,7 +30,7 @@ from des.views import (CcdViewSet, DesSkybotPositionViewSet,
                        SkybotByYearViewSet,
                        SkybotByDynclassViewSet)
 from skybot.views import PositionViewSet
-from tno.views import UserViewSet
+from tno.views import UserViewSet, AsteroidViewSet
 
 # from orbit.views import (BspJplViewSet, ObservationFileViewSet,
 #                          OrbitalParameterViewSet, OrbitRunViewSet,
@@ -48,6 +48,7 @@ from tno.views import UserViewSet
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
+
 # router.register(r'pointing', PointingViewSet)
 # router.register(r'ccd_image', CcdImageViewSet)
 # router.register(r'skybotoutput', SkybotOutputViewSet)
@@ -100,6 +101,8 @@ router.register(r'des/dashboard/skybot_by_dynclass',
                 SkybotByDynclassViewSet)
 
 router.register(r'skybot/position', PositionViewSet)
+
+router.register(r'asteroids', AsteroidViewSet)
 
 
 urlpatterns = [

@@ -524,3 +524,38 @@ class DesSkybotPositionDao(DBBase):
         rows = self.fetch_all_dict(stm)
 
         return rows
+
+    def ccds_by_asteroid(self, asteroid_name):
+
+        # des_exposure
+        de = self.get_table('des_exposure', self.get_base_schema())
+        # des_ccd
+        dc = self.get_table('des_ccd', self.get_base_schema())
+        # Des skybot position
+        ds = self.get_table('des_skybotposition', self.get_base_schema())
+        # Skybot Position
+        sp = self.get_table('skybot_position', self.get_base_schema())
+
+        # Clausula where pelo nome do objeto OBRIGATORIO.
+        clause = list([sp.c.name == asteroid_name])
+
+        columns = dc.c + [de.c.id.label('expnum'),
+                          de.c.date_obs, de.c.band, de.c.release]
+
+        stm = select(columns).\
+            select_from(
+            ds.join(
+                sp, ds.c.position_id == sp.c.id
+            ).join(
+                dc, ds.c.ccd_id == dc.c.id
+            ).join(
+                de, ds.c.exposure_id == de.c.id
+            )
+        ).\
+            where(and_(and_(*clause)))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows

@@ -2,7 +2,38 @@ from django.conf import settings
 from django.db import models
 
 from current_user import get_current_user
-from praia.models import Run as PraiaRun
+# from praia.models import Run as PraiaRun
+
+
+class Asteroid(models.Model):
+
+    name = models.CharField(
+        max_length=32,
+        verbose_name='Name',
+        unique=True,
+        db_index=True,
+        help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).'
+    )
+
+    number = models.CharField(
+        max_length=35, default=None, null=True, blank=True,
+        verbose_name='Number',
+        help_text='(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).',
+    )
+
+    base_dynclass = models.CharField(
+        max_length=24,
+        verbose_name='Base Object classification',
+        help_text='(ucd=“meta.code.class”) Base Object class (TNO, Centaur, Trojan, etc.).',
+        db_index=True,
+    )
+
+    dynclass = models.CharField(
+        max_length=24,
+        verbose_name='Object classification',
+        db_index=True,
+        help_text='(ucd=“meta.code.class;src.class”) Object class (TNO, Centaur, Trojan, etc.).'
+    )
 
 
 # class Pointing(models.Model):
