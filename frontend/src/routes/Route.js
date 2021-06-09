@@ -17,7 +17,6 @@ export default function RouteWrapper({
   isHomePage,
   ...rest
 }) {
-  const [title, setTitle] = useState('');
   const [open, setOpen] = useState(window.innerWidth > 1360);
   const [authenticated, setAuthenticated] = useState(false);
   const classes = useStyles();
@@ -68,8 +67,8 @@ export default function RouteWrapper({
         <Route
           {...rest}
           render={(props) => (
-            <Drawer title={title} open={open} setOpen={setOpen}>
-              <Component setTitle={setTitle} {...props} />
+            <Drawer open={open} setOpen={setOpen}>
+              <Component {...props} />
             </Drawer>
           )}
         />

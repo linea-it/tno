@@ -27,17 +27,25 @@ import useStyles from './styles';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import { loggedUser } from '../../services/api/Auth';
+import { useTitle } from '../../contexts/title';
 
 const drawerWidth = 240;
 
-function Drawer({ children, title, open, setOpen }) {
+function Drawer({ children, open, setOpen }) {
+  const { title } = useTitle();
   const location = useLocation();
   const classes = useStyles({ drawerWidth });
   const [dataPreparationOpen, setDataPreparationOpen] = useState(false);
   const [desOpen, setDesOpen] = useState(false);
-
-  const [currentPage, setCurrentPage] = useState('');
   const [currentUser, setCurrentUser] = useState({ username: '' });
+
+  useEffect(() => {
+    if (title) {
+      document.title = `TNO Portal | ${title}`;
+    } else {
+      document.title = 'TNO Portal';
+    }
+  }, [title]);
 
   const handleDrawerClick = () => setOpen(!open);
 
@@ -54,11 +62,6 @@ function Drawer({ children, title, open, setOpen }) {
       setCurrentUser(res);
     });
   }, []);
-
-  useEffect(() => {
-    const { pathname } = location;
-    setCurrentPage(pathname.split('/')[1]);
-  }, [location]);
 
   return (
     <div className={classes.root}>
@@ -120,7 +123,7 @@ function Drawer({ children, title, open, setOpen }) {
             className={classes.invisibleLink}
             title="Dashboard"
           >
-            <ListItem button selected={currentPage === 'dashboard'}>
+            <ListItem button>
               <ListItemText
                 primary={
                   <span className={classes.textDrawerParent}>Dashboard</span>
@@ -173,11 +176,7 @@ function Drawer({ children, title, open, setOpen }) {
                 className={classes.invisibleLink}
                 title="Discovery"
               >
-                <ListItem
-                  button
-                  className={open ? classes.doublenested : ''}
-                  selected={currentPage === 'discovery'}
-                >
+                <ListItem button className={open ? classes.doublenested : ''}>
                   <ListItemText
                     primary="Discovery"
                     className={classes.textDrawer}
@@ -188,13 +187,21 @@ function Drawer({ children, title, open, setOpen }) {
                 to="/data-preparation/des/download"
                 className={classes.invisibleLink}
               >
-                <ListItem
-                  button
-                  selected={currentPage === 'download'}
-                  className={open ? classes.doublenested : ''}
-                >
+                <ListItem button className={open ? classes.doublenested : ''}>
                   <ListItemText
                     primary="Download"
+                    className={classes.textDrawer}
+                  />
+                </ListItem>
+              </Link>
+              <Link
+                to="/data-preparation/des/orbit-tracer"
+                className={classes.invisibleLink}
+                title="Orbit Tracer"
+              >
+                <ListItem button className={open ? classes.doublenested : ''}>
+                  <ListItemText
+                    primary="Orbit Tracer"
                     className={classes.textDrawer}
                   />
                 </ListItem>
@@ -204,11 +211,7 @@ function Drawer({ children, title, open, setOpen }) {
                 className={classes.invisibleLink}
                 title="Astrometric reduction using PRAIA package and stellar catalogue Gaia like reference to detect and determine positions of objects from CCD frame."
               >
-                <ListItem
-                  button
-                  selected={currentPage === 'astrometry'}
-                  className={open ? classes.doublenested : ''}
-                >
+                <ListItem button className={open ? classes.doublenested : ''}>
                   <ListItemText
                     primary="Astrometry"
                     className={classes.textDrawer}
@@ -217,13 +220,13 @@ function Drawer({ children, title, open, setOpen }) {
               </Link>
             </List>
           </Collapse>
-          <Divider className={classes.borderDrawer} />
+          {/* <Divider className={classes.borderDrawer} />
           <Link
             to="/refine-orbit"
             className={classes.invisibleLink}
             title="Refinement of Orbits of specifics objects using NIMA code."
           >
-            <ListItem button selected={currentPage === 'refine-orbit'}>
+            <ListItem button>
               <ListItemText
                 primary={
                   <span className={classes.textDrawerParent}>Refine Orbit</span>
@@ -231,17 +234,14 @@ function Drawer({ children, title, open, setOpen }) {
                 className={classes.textDrawer}
               />
             </ListItem>
-          </Link>
+          </Link> */}
           <Divider className={classes.borderDrawer} />
           <Link
             to="/prediction-of-occultation"
             className={classes.invisibleLink}
             title="Comparison of objects ephemeris and positions of stars to predict events of stellar occultation using Gaia catalogue like reference."
           >
-            <ListItem
-              button
-              selected={currentPage === 'prediction-of-occultation'}
-            >
+            <ListItem button>
               <ListItemText
                 primary={
                   <span className={classes.textDrawerParent}>
@@ -258,7 +258,7 @@ function Drawer({ children, title, open, setOpen }) {
             className={classes.invisibleLink}
             title="Occultation"
           >
-            <ListItem button selected={currentPage === 'occultation'}>
+            <ListItem button>
               <ListItemText
                 primary={
                   <span className={classes.textDrawerParent}>Occultation</span>
@@ -273,7 +273,7 @@ function Drawer({ children, title, open, setOpen }) {
             className={classes.invisibleLink}
             title="Calendar containing all the occultations"
           >
-            <ListItem button selected={currentPage === 'occultation-calendar'}>
+            <ListItem button>
               <ListItemText
                 primary={
                   <span className={classes.textDrawerParent}>
@@ -316,7 +316,6 @@ function Drawer({ children, title, open, setOpen }) {
 
 Drawer.propTypes = {
   children: PropTypes.oneOfType([PropTypes.element, PropTypes.func]).isRequired,
-  title: PropTypes.string.isRequired,
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
 };

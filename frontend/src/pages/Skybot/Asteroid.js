@@ -25,8 +25,10 @@ import {
 import CCD from '../../components/Chart/CCD';
 import List from '../../components/List';
 import Switch from '../../components/Switch';
+import { useTitle } from '../../contexts/title';
 
-function SkybotAsteroid({ setTitle }) {
+function SkybotAsteroid() {
+  const { setTitle } = useTitle();
   const { id } = useParams();
 
   const coneSearchRadius = 1.2; // ! Cone search radius in Degres.
@@ -51,7 +53,7 @@ function SkybotAsteroid({ setTitle }) {
 
   useEffect(() => {
     setTitle('Discovery');
-  }, [setTitle]);
+  }, []);
 
   useEffect(() => {
     getSkybotJobResultById(id).then((res) => {
@@ -456,9 +458,5 @@ function SkybotAsteroid({ setTitle }) {
     </Grid>
   );
 }
-
-SkybotAsteroid.propTypes = {
-  setTitle: PropTypes.func.isRequired,
-};
 
 export default SkybotAsteroid;

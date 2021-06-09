@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import {
   Grid,
   Card,
@@ -14,9 +13,7 @@ import {
 } from '@material-ui/core';
 import { useParams, useHistory } from 'react-router-dom';
 import moment from 'moment';
-import {
-  InfoOutlined as InfoOutlinedIcon,
-} from '@material-ui/icons';
+import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons';
 import List from '../../components/List';
 import Table from '../../components/Table';
 import ColumnStatus from '../../components/Table/ColumnStatus';
@@ -33,8 +30,10 @@ import {
 
 import useInterval from '../../hooks/useInterval';
 import useStyles from './styles';
+import { useTitle } from '../../contexts/title';
 
-function SkybotDetail({ setTitle }) {
+function SkybotDetail() {
+  const { setTitle } = useTitle();
   const { id } = useParams();
   const history = useHistory();
   const classes = useStyles();
@@ -80,7 +79,7 @@ function SkybotDetail({ setTitle }) {
 
   useEffect(() => {
     setTitle('Discovery');
-  }, [setTitle]);
+  }, []);
 
   useEffect(() => {
     getSkybotProgress(id)
@@ -623,9 +622,5 @@ function SkybotDetail({ setTitle }) {
     </Grid>
   );
 }
-
-SkybotDetail.propTypes = {
-  setTitle: PropTypes.func.isRequired,
-};
 
 export default SkybotDetail;

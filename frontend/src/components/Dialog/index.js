@@ -10,7 +10,6 @@ import {
 import { Close as CloseIcon } from '@material-ui/icons';
 import useStyles from './styles';
 
-
 function Dialog({
   visible,
   setVisible,
@@ -21,7 +20,6 @@ function Dialog({
   bodyStyle,
   wrapperStyle,
 }) {
-
   const classes = useStyles();
 
   return (
@@ -38,18 +36,21 @@ function Dialog({
           {title}
         </Typography>
         {visible ? (
-          <IconButton  className={classes.closeButton} aria-label="close" onClick={setVisible}>
+          <IconButton
+            className={classes.closeButton}
+            aria-label="close"
+            onClick={setVisible}
+          >
             <CloseIcon />
           </IconButton>
         ) : null}
       </DialogTitle>
       <DialogContent dividers className={bodyStyle}>
-        {typeof content === 'function' ? (
-          content()
-        ) : content || content.props.data || content.props.data.length
-              ? content
-              : 'Unable to generate log due to a lack of data!'
-        }
+        {typeof content === 'function'
+          ? content()
+          : content || content.props.data || content.props.data.length
+          ? content
+          : 'Unable to generate log due to a lack of data!'}
       </DialogContent>
     </MuiDialog>
   );

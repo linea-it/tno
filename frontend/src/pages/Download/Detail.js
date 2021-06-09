@@ -25,8 +25,10 @@ import {
 } from '../../services/api/Download';
 import useInterval from '../../hooks/useInterval';
 import useStyles from './styles';
+import { useTitle } from '../../contexts/title';
 
-function DownloadDetail({ setTitle }) {
+function DownloadDetail() {
+  const { setTitle } = useTitle();
   const { id } = useParams();
   const history = useHistory();
   const classes = useStyles();
@@ -53,7 +55,7 @@ function DownloadDetail({ setTitle }) {
 
   useEffect(() => {
     setTitle('Download');
-  }, [setTitle]);
+  }, []);
 
   useEffect(() => {
     getDownloadProgress(id)
@@ -93,7 +95,7 @@ function DownloadDetail({ setTitle }) {
         },
         {
           title: 'Job ID',
-          value: id
+          value: id,
         },
         {
           title: 'Start Date',
@@ -336,9 +338,5 @@ function DownloadDetail({ setTitle }) {
     </Grid>
   );
 }
-
-DownloadDetail.propTypes = {
-  setTitle: PropTypes.func.isRequired,
-};
 
 export default DownloadDetail;

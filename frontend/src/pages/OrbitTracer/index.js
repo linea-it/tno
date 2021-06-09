@@ -22,7 +22,6 @@ import {
   Close as CloseIcon,
 } from '@material-ui/icons';
 import moment from 'moment';
-import DateRangePicker from '../../components/Date/DateRangePicker';
 import Table from '../../components/Table';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import { useTitle } from '../../contexts/title';
@@ -30,7 +29,7 @@ import useStyles from './styles';
 
 import { getAllObjects } from '../../services/api/Download';
 
-function PredictionOccultation() {
+function OrbitTracer() {
   const { setTitle } = useTitle();
   const classes = useStyles();
   const history = useHistory();
@@ -43,7 +42,7 @@ function PredictionOccultation() {
   const [customConfOpen, setCustomConfOpen] = useState(false);
 
   useEffect(() => {
-    setTitle('Prediction of Occultation');
+    setTitle('Orbit Tracer');
   }, []);
 
   const tableColumns = [
@@ -101,47 +100,56 @@ function PredictionOccultation() {
         row.execution_time ? row.execution_time.split('.')[0] : null,
     },
     {
-      name: 'predictions',
-      title: '# Predictions',
+      name: 'asteroids',
+      title: '# SSOs',
+    },
+    {
+      name: 'bsp_downloaded',
+      title: 'BSP Downloaded',
+      width: 150,
     },
   ];
 
   const tableData = [
     {
       id: 11,
-      detail: `/prediction-of-occultation/1`,
+      detail: `/data-preparation/des/orbit-tracer/1`,
       status: 3,
       owner: 'mfreitas',
       start: '2021-03-26T17:05:52.277584Z',
       execution_time: '00:12:03.588550',
-      predictions: 1192,
+      asteroids: 192,
+      bsp_downloaded: 2,
     },
     {
       id: 15,
-      detail: `/prediction-of-occultation/2`,
+      detail: `/data-preparation/des/orbit-tracer/2`,
       status: 3,
       owner: 'mfreitas',
       start: '2021-04-26T17:05:52.277584Z',
       execution_time: '00:12:04.588550',
-      predictions: 113,
+      asteroids: 13,
+      bsp_downloaded: 8,
     },
     {
       id: 16,
-      detail: `/prediction-of-occultation/2`,
+      detail: `/data-preparation/des/orbit-tracer/2`,
       status: 4,
       owner: 'mfreitas',
       start: '2021-02-26T17:05:52.277584Z',
       execution_time: '00:07:04.588550',
-      predictions: 144,
+      asteroids: 44,
+      bsp_downloaded: 15,
     },
     {
       id: 18,
-      detail: `/prediction-of-occultation/2`,
+      detail: `/data-preparation/des/orbit-tracer/2`,
       status: 2,
       owner: 'mfreitas',
       start: '2021-01-26T17:05:52.277584Z',
       execution_time: '00:02:04.588550',
-      predictions: 123,
+      asteroids: 23,
+      bsp_downloaded: 1,
     },
   ];
 
@@ -166,7 +174,7 @@ function PredictionOccultation() {
           <Grid container direction="column" spacing={2}>
             <Grid item xs={12}>
               <Card>
-                <CardHeader title="Prediction of Occultation" />
+                <CardHeader title="Orbit Tracer" />
                 <CardContent>
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -241,14 +249,6 @@ function PredictionOccultation() {
                       </Grid>
                     </Grid>
                     <Grid item xs={12}>
-                      <DateRangePicker
-                        minDate={new Date('2012-11-10 04:09')}
-                        maxDate={new Date('2019-02-28 00:00')}
-                        selectedDate={['', '']}
-                        setSelectedDate={() => {}}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
                       <Button
                         variant="contained"
                         color="primary"
@@ -319,44 +319,16 @@ function PredictionOccultation() {
           <CardContent>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel>Catalog</InputLabel>
-                  <Select label="Catalog">
-                    <MenuItem value="GAIA DR2">GAIA DR2</MenuItem>
-                    <MenuItem value="GAIA DR3">GAIA DR3</MenuItem>
-                    <MenuItem value="LSST">LSST</MenuItem>
-                  </Select>
-                </FormControl>
+                <TextField label="Match Radius (arcsec)" fullWidth />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  label="Radius Search (arcsec)"
-                  type="number"
-                  placeholder="0.15"
-                  fullWidth
-                />
+                <TextField label="Magnitude Upper Limit" fullWidth />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  label="Leap Second Kernel"
-                  placeholder="naif0012"
-                  fullWidth
-                />
+                <TextField label="Julio&rsquo;s Option 1" fullWidth />
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  label="Planetary Ephemeris"
-                  placeholder="DE435"
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Ephemeris Step (Sec)"
-                  type="number"
-                  placeholder="600"
-                  fullWidth
-                />
+                <TextField label="Julio&rsquo;s Option 2" fullWidth />
               </Grid>
             </Grid>
           </CardContent>
@@ -366,4 +338,4 @@ function PredictionOccultation() {
   );
 }
 
-export default PredictionOccultation;
+export default OrbitTracer;

@@ -1,33 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 import Tabs from '../../components/Tabs';
 import Summary from './Summary';
 import Skybot from './Skybot';
+import { useTitle } from '../../contexts/title';
 
-function Dashboard({ setTitle }) {
+function Dashboard() {
+  const { setTitle } = useTitle();
 
   useEffect(() => {
     setTitle('Dashboard');
-  }, [setTitle]);
+  }, []);
 
   const tabs = [
     {
       title: 'Process Summary',
-      content: <Summary />
+      content: <Summary />,
     },
     {
       title: 'Discovery',
-      content: <Skybot />
+      content: <Skybot />,
     },
-  ]
+  ];
 
-  return (
-    <Tabs data={tabs} />
-  );
+  return <Tabs data={tabs} />;
 }
-
-Dashboard.propTypes = {
-  setTitle: PropTypes.func.isRequired,
-};
 
 export default Dashboard;

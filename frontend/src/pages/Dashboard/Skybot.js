@@ -1,15 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Grid,
-  Card,
-  CardHeader,
-  CardContent,
-} from '@material-ui/core';
+import { Grid, Card, CardHeader, CardContent } from '@material-ui/core';
 import Table from '../../components/Table';
 
-import {
-  getResultsByDynclass,
-} from '../../services/api/Dashboard';
+import { getResultsByDynclass } from '../../services/api/Dashboard';
 
 function Skybot() {
   const [resultsByDynclass, setResultsByDynclass] = useState([]);
@@ -95,9 +88,7 @@ function Skybot() {
               totalCount={resultsByDynclass.length}
               remote={false}
               hasSearching={false}
-              defaultSorting={[
-                { columnName: 'dynclass', direction: 'asc' },
-              ]}
+              defaultSorting={[{ columnName: 'dynclass', direction: 'asc' }]}
               hasPagination={false}
               hasColumnVisibility={false}
               hasToolbar={false}

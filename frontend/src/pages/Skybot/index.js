@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import moment from 'moment';
 import { useHistory } from 'react-router-dom';
 import {
@@ -37,8 +36,10 @@ import {
 import CalendarHeatmap from '../../components/Chart/CalendarHeatmap';
 import CalendarExecutedNight from '../../components/Chart/CalendarExecutedNight';
 import useStyles from './styles';
+import { useTitle } from '../../contexts/title';
 
-function Skybot({ setTitle }) {
+function Skybot() {
+  const { setTitle } = useTitle();
   const history = useHistory();
   const classes = useStyles();
   const [totalCount, setTotalCount] = useState(0);
@@ -50,7 +51,9 @@ function Skybot({ setTitle }) {
   const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([]);
 
   // Get stored period on local storage if it exists and set as the initial data of selectedDate state:
-  const selectedDateLocalStorage = localStorage.getItem('discoverySelectedDate');
+  const selectedDateLocalStorage = localStorage.getItem(
+    'discoverySelectedDate'
+  );
   const [selectedDate, setSelectedDate] = useState(
     selectedDateLocalStorage
       ? [
@@ -81,7 +84,7 @@ function Skybot({ setTitle }) {
 
   useEffect(() => {
     setTitle('Discovery');
-  }, [setTitle]);
+  }, []);
 
   const handleSelectPeriodClick = () => {
     setExposuresByPeriod([]);
@@ -580,9 +583,5 @@ function Skybot({ setTitle }) {
     </>
   );
 }
-
-Skybot.propTypes = {
-  setTitle: PropTypes.func.isRequired,
-};
 
 export default Skybot;

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import moment from 'moment';
 import { useHistory } from 'react-router-dom';
 import {
@@ -8,7 +7,6 @@ import {
   CardHeader,
   CardContent,
   TextField,
-  Divider,
   FormControl,
   InputLabel,
   Select,
@@ -40,8 +38,10 @@ import {
 import CalendarExecutedCcd from '../../components/Chart/CalendarExecutedCcd';
 import CcdsDownloadedGrouped from '../../components/Chart/CcdsDownloadedGrouped';
 import useStyles from './styles';
+import { useTitle } from '../../contexts/title';
 
-function Download({ setTitle }) {
+function Download() {
+  const { setTitle } = useTitle();
   const history = useHistory();
   const classes = useStyles();
   const [totalCount, setTotalCount] = useState(0);
@@ -77,7 +77,7 @@ function Download({ setTitle }) {
 
   useEffect(() => {
     setTitle('Download');
-  }, [setTitle]);
+  }, []);
 
   const handleSelectPeriodClick = () => {
     getCCDCountByPeriodAndDynClass(
@@ -370,9 +370,6 @@ function Download({ setTitle }) {
                         )}
                       />
                     </Grid>
-                    <Grid item xs={12}>
-                      <Divider />
-                    </Grid>
                     <Grid
                       item
                       xs={12}
@@ -622,9 +619,5 @@ function Download({ setTitle }) {
     </>
   );
 }
-
-Download.propTypes = {
-  setTitle: PropTypes.func.isRequired,
-};
 
 export default Download;
