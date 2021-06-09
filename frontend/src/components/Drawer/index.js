@@ -195,18 +195,6 @@ function Drawer({ children, open, setOpen }) {
                 </ListItem>
               </Link>
               <Link
-                to="/data-preparation/des/orbit-tracer"
-                className={classes.invisibleLink}
-                title="Orbit Tracer"
-              >
-                <ListItem button className={open ? classes.doublenested : ''}>
-                  <ListItemText
-                    primary="Orbit Tracer"
-                    className={classes.textDrawer}
-                  />
-                </ListItem>
-              </Link>
-              <Link
                 to="/data-preparation/des/astrometry"
                 className={classes.invisibleLink}
                 title="Astrometric reduction using PRAIA package and stellar catalogue Gaia like reference to detect and determine positions of objects from CCD frame."
@@ -214,6 +202,18 @@ function Drawer({ children, open, setOpen }) {
                 <ListItem button className={open ? classes.doublenested : ''}>
                   <ListItemText
                     primary="Astrometry"
+                    className={classes.textDrawer}
+                  />
+                </ListItem>
+              </Link>
+              <Link
+                to="/data-preparation/des/orbit-tracer"
+                className={classes.invisibleLink}
+                title="Orbit Tracer"
+              >
+                <ListItem button className={open ? classes.doublenested : ''}>
+                  <ListItemText
+                    primary="Orbit Tracer"
                     className={classes.textDrawer}
                   />
                 </ListItem>
