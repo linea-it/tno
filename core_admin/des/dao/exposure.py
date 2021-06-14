@@ -146,8 +146,8 @@ class ExposureDao(DBBase):
             where(
                 and_(
                     tbl.c.date_obs.between(str(start), str(end)),
-                    ds_tbl.c.exposure_id.notin_(
-                        select([tbl.c.id])
+                    tbl.c.id.notin_(
+                        select([ds_tbl.c.exposure_id])
                     )
                 )
         )

@@ -123,8 +123,8 @@ class CcdDao(DBBase):
             where(
                 and_(
                     de_tbl.c.date_obs.between(str(start), str(end)),
-                    ds_tbl.c.exposure_id.notin_(
-                        select([de_tbl.c.id])
+                    de_tbl.c.id.notin_(
+                        select([ds_tbl.c.exposure_id])
                     )
                 )
         )
