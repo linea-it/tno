@@ -10,6 +10,15 @@ import pandas as pd
 from des.dao.skybot_position import DesSkybotPositionDao
 from django.conf import settings
 from tno.dao.asteroids import AsteroidDao
+from common.jpl import get_bsp_from_jpl, findSPKID
+import pickle
+from common.convert import datetime_to_julian_datetime
+
+import parsl
+from des.astrometry.parsl_config import htex_config
+from des.astrometry.parsl_apps import increment
+from tno.models import BspPlanetary, LeapSecond
+import spiceypy as spice
 
 
 class NoRecordsFound(Exception):
@@ -39,13 +48,13 @@ class DesAstrometryPipeline():
             'exec_time': 0,
             'records': 0
         },
-        'retrieve_ccds': {
-            'status': None,
-            'start': None,
-            'end': None,
-            'exec_time': 0,
-            'records': 0
-        },
+        # 'retrieve_ccds': {
+        #     'status': None,
+        #     'start': None,
+        #     'end': None,
+        #     'exec_time': 0,
+        #     'records': 0
+        # },
         'asteroids_csv': None,
         'time_profile': None
     })
@@ -55,6 +64,14 @@ class DesAstrometryPipeline():
     time_profile = list()
 
     asteroids = dict()
+
+    DES_START_PERIOD = '2012-11-01'
+
+    DES_FINISH_PERIOD = '2019-02-01'
+
+    BSP_PLANETARY = None
+
+    LEAP_SECOND = None
 
     def __init__(self, debug=False):
         self.log = logging.getLogger("des_astrometry")
@@ -88,29 +105,85 @@ class DesAstrometryPipeline():
             self.setup_time_profile()
 
             # Atualizar a tabela de asteroids
-            self.update_asteroid_table()
+            if self.debug is False:
+                self.update_asteroid_table()
+
+            # BSP Planetary
+            # TODO: Receber como paramatro
+            self.BSP_PLANETARY = self.get_bsp_planetary('de435')
+
+            # Leap Second
+            # TODO: Receber como paramatro
+            self.LEAP_SECOND = self.get_leap_second('naif0012')
 
             # Aplicar o filtro na tabela de asteroids
-            l_asteroids = self.retrive_asteroids(dynclass='MB')
+            l_asteroids = self.retrive_asteroids(asteroid_name='Eris')
 
             # Cria um estrutura organizada pelo nome do asteroid,
             # nela serão adicionadas as informações sobre cada asteroid.
             for asteroid in l_asteroids:
+
+                # Para cada asteroid criar um diretório dentro do diretório do Job
+                asteroid_path = self.get_or_create_asteroid_path(
+                    asteroid['name'])
+
                 self.asteroids[asteroid['name']] = dict({
                     'id': asteroid['id'],
                     'name': asteroid['name'],
                     'number': asteroid['number'],
+                    'spkid': None,
                     'alias': asteroid['name'].replace(' ', '_'),
-                    'status': None
+                    'path': asteroid_path,
+                    'bsp_planetary': self.BSP_PLANETARY,
+                    'leap_second': self.LEAP_SECOND,
+                    'bsp_jpl': None
                 })
 
-            # Para cada asteroid recuperar a lista de ccds para cada posição
-            self.retrive_asteroids_ccds()
+            # Estas etapas não são paralelizadas!
+            for asteroid_name in self.asteroids:
+                # Apartir daqui o dict asteroid não está relacionado com o a lista self.asteroids
+                # os dados desde dict serão armazenados em um pickle no diretório do asteroid.
+                asteroid = self.asteroids[asteroid_name].copy()
 
+                # Para cada asteroid recuperar a lista de ccds para cada posição
+                asteroid = self.retrieve_asteroid_ccds(asteroid)
+
+                # Só baixa os BSP para asteroids que tenham ccds
+                if asteroid['status'] != 'failure':
+                    # Para cada asteroid Baixar os arquivos BSP do JPL
+                    asteroid = self.retrieve_asteroid_bsp(asteroid)
+
+                    # Recuperar o SPK Id do objeto a partir do seu BSP
+                    asteroid['spkid'] = findSPKID(
+                        asteroid['bsp_jpl']['file_path'])
+                    self.log.debug("SpkID: [%s]" % asteroid['spkid'])
+
+                # Guardar as informações do asteroid no pickle
+                pkl_file = os.path.join(
+                    asteroid_path, asteroid['alias'] + '.pkl')
+
+                with open(pkl_file, 'wb') as f:
+                    pickle.dump(asteroid, f)
+
+                self.log.debug(json.dumps(asteroid, indent=2))
+
+            # TODO: a partir daqui o processo pode ser paralelizado
+
+            # parsl.clear()
+            # parsl.load(htex_config)
+
+            # for i in range(5):
+            #     self.log.debug('{} + 1 = {}'.format(i, increment(i).result()))
+
+            # for asteroid in l_asteroids:
+            #     # Remonta o path do diretório do asteroid
+            #     # o path será o unico parametro para as funções que serão executadas pelo parsl.
+            #     asteroid_path = self.get_or_create_asteroid_path(
+            #         asteroid['name'])
+
+                # Somente para DEBUG escreve a variavel self.asteroids em um json
             with open(os.path.join(self.job_path, 'teste.json'), 'w') as fp:
                 json.dump(self.asteroids, fp)
-
-            # Baixar os arquivos BSP de cada asteroid
 
             self.result['status'] = 'done'
 
@@ -129,82 +202,121 @@ class DesAstrometryPipeline():
 
             return self.result
 
-    def retrive_asteroids_ccds(self):
-        self.log.info("Retriving Asteroid CCDs started")
+    def retrieve_asteroid_bsp(self, asteroid):
+        self.log.info("Retriving BSP for Asteroid [%s]" % asteroid['name'])
 
         t0 = datetime.now(timezone.utc)
-        self.result['retrieve_ccds']['start'] = t0.isoformat()
 
-        dao = DesSkybotPositionDao()
+        asteroid.update({
+            'bsp_jpl': None
+        })
+
+        tp = dict({
+            'stage': 'retrieve_bsp_jpl',
+            'start': t0.isoformat(),
+            'end': None,
+            'exec_time': None,
+        })
 
         try:
-            count = 0
+            bsp_file_path = get_bsp_from_jpl(
+                identifier=asteroid['name'],
+                initial_date=self.DES_START_PERIOD,
+                final_date=self.DES_FINISH_PERIOD,
+                email='glauber.vila.verde@gmail.com',
+                directory=asteroid['path']
+            )
 
-            for asteroid_name in self.asteroids:
-                asteroid = self.asteroids[asteroid_name]
-
-                records = list()
-
-                # Faz a query na tabela des skybot positions com join na des ccds.
-                records = dao.ccds_by_asteroid(asteroid_name)
-
-                asteroid['ccds'] = list()
-                # Se não encontrar ccd para este asteroid é uma falha só para este asteroid.
-                # Não impede que o processo continue.
-                if len(records) == 0:
-
-                    asteroid['ccds_count'] = 0
-                    asteroid['error'] = 'No CCD found for this asteroid.'
-                    asteroid['status'] = 'failure'
-
-                else:
-                    for ccd in records:
-                        asteroid['ccds'].append(dict({
-                            'id': ccd['id'],
-                            'expnum': ccd['expnum'],
-                            'ccdnum': ccd['ccdnum'],
-                            'band': ccd['band'],
-                            # 'date_obs': ccd['date_obs'].isoformat(),
-                            'path': ccd['path'],
-                            'filename': ccd['filename'],
-                            'compression': ccd['compression'],
-                            'release': ccd['release'],
-                        }))
-
-                    asteroid['ccds_count'] = len(records)
-
-                count += len(records)
-
-                self.asteroids[asteroid_name] = asteroid
-
-            self.result['retrieve_ccds']['records'] = count
-            self.result['retrieve_ccds']['status'] = 'done'
+            asteroid['bsp_jpl'] = dict({
+                'file_name': os.path.basename(bsp_file_path),
+                'file_path': str(bsp_file_path),
+                'file_size': os.path.getsize(bsp_file_path)
+            })
 
         except Exception as e:
-            msg = "Failed on retrive asteroids ccds. %s" % e
+            msg = "Failed on retrive asteroids BSP from JPL. %s" % e
 
-            self.result['retrieve_ccds']['status'] = 'failed'
-
-            raise Exception(msg)
+            asteroid['bsp_jpl'] = None
+            asteroid['error'] = msg
+            asteroid['status'] = 'failure'
 
         finally:
             t1 = datetime.now(timezone.utc)
             tdelta = t1 - t0
 
-            self.result['retrieve_ccds']['end'] = t1.isoformat()
-            self.result['retrieve_ccds']['exec_time'] = tdelta.total_seconds()
+            tp['end'] = t1.isoformat()
+            tp['exec_time'] = tdelta.total_seconds()
 
-            # Time Profile
-            self.add_time_profile(
-                stage='retrieve_ccds',
-                status=self.result['retrieve_ccds']['status'],
-                start=t0,
-                end=t1,
-                persist=True
-            )
+            asteroid['time_profile'].append(tp)
 
-            self.log.info("Retrive Asteroids CCDs has %s in %s" % (
-                self.result['retrieve_ccds']['status'], self.natural_delta(tdelta)))
+            return asteroid
+
+    def retrieve_asteroid_ccds(self, asteroid):
+        self.log.info("Retriving CCDs for Asteroid [%s]" % asteroid['name'])
+
+        t0 = datetime.now(timezone.utc)
+
+        asteroid.update({
+            'status': 'running',
+            'time_profile': list(),
+            'ccds_count': 0,
+            'ccds': list(),
+        })
+
+        tp = dict({
+            'stage': 'retrieve_ccds',
+            'start': t0.isoformat(),
+            'end': None,
+            'exec_time': None,
+        })
+
+        dao = DesSkybotPositionDao()
+
+        try:
+            # Faz a query na tabela des skybot positions com join na des ccds.
+            records = dao.ccds_by_asteroid(asteroid['name'])
+
+            # Se não encontrar ccd para este asteroid é uma falha só para este asteroid.
+            # Não impede que o processo continue.
+            if len(records) == 0:
+                raise Exception('No CCD found for this asteroid.')
+            else:
+                # Para cada ccds pega só os campos que importa
+                # e adiciona ao dict do asteroid
+                for ccd in records:
+                    asteroid['ccds'].append(dict({
+                        'id': ccd['id'],
+                        'expnum': ccd['expnum'],
+                        'ccdnum': ccd['ccdnum'],
+                        'band': ccd['band'],
+                        'date_obs': str(ccd['date_obs']),
+                        'date_jd': self.date_to_jd(ccd['date_obs'], ccd['exptime'], self.LEAP_SECOND['relative_path']),
+                        'exptime': ccd['exptime'],
+                        'path': ccd['path'],
+                        'filename': ccd['filename'],
+                        'release': ccd['release'],
+                    }))
+
+                    self.log.debug(ccd['path'] + '/' + ccd['filename'])
+                asteroid['ccds_count'] = len(records)
+
+        except Exception as e:
+            msg = "Failed on retrive asteroids ccds. %s" % e
+
+            asteroid['ccds_count'] = 0
+            asteroid['error'] = msg
+            asteroid['status'] = 'failure'
+
+        finally:
+            t1 = datetime.now(timezone.utc)
+            tdelta = t1 - t0
+
+            tp['end'] = t1.isoformat()
+            tp['exec_time'] = tdelta.total_seconds()
+
+            asteroid['time_profile'].append(tp)
+
+            return asteroid
 
     def retrive_asteroids(self, dynclass=None, asteroid_name=None, asteroids=list()):
         self.log.info("Retriving Asteroids started")
@@ -221,12 +333,20 @@ class DesAstrometryPipeline():
 
                 records = AsteroidDao().asteroids_by_base_dynclass(dynclass=dynclass)
 
-            self.log.debug("Count Asteroids: [%s]" % len(records))
+            elif asteroid_name is not None:
+                self.log.info(
+                    "Getting Asteroid by name [%s] ." % asteroid_name)
 
+                record = AsteroidDao().asteroids_by_name(name=asteroid_name)
+                records.append(record)
+
+            self.log.debug("Count Asteroids: [%s]" % len(records))
             if len(records) == 0:
                 # Nenhum resultado encontrado, disparar uma excessão para finalizar a execução do processo.
                 raise NoRecordsFound(
                     "No asteroid found for the selected filters.")
+
+            self.log.debug(records)
 
             # Criar um dataframe com os asteroids
             df_asteroids = pd.DataFrame(
@@ -324,22 +444,71 @@ class DesAstrometryPipeline():
                 persist=True
             )
 
-    def on_error(self, e=None):
-        trace = traceback.format_exc()
+    def date_to_jd(self, date_obs, exptime, leap_second):
+        """Aplica uma correção a data de observação e converte para data juliana
 
-        self.result['traceback'] = trace
+        Correção para os CCDs do DES:
+            date = date_obs + 0.5 * (exptime + 1.05)
 
-        self.log.error(trace)
+        Args:
+            date_obs (datetime): Data de observação do CCD "date_obs"
+            exptime (float): Tempo de exposição do CCD "exptime"
+            lead_second (str): Path para o arquivo leap second a ser utilizado por exemplo: '/archive/lead_second/naif0012.tls'
 
-        if e is not None:
-            self.result['error'] = str(e)
+        Returns:
+            str: Data de observação corrigida e convertida para julian date.
+        """
+        # Calcula a correção
+        correction = (exptime + 1.05)/2
 
-            self.log.error(e)
+        # Carrega o lead second na lib spicepy
+        spice.furnsh(leap_second)
 
-        self.result['status'] = 'failed'
+        # Converte a date time para JD
+        date_et = spice.utc2et(str(date_obs).split('+')[0] + " UTC")
+        date_jdutc = spice.et2utc(date_et, 'J', 14)
 
-        # TODO Gravar no banco de dados e finalizar o job
-        # TODO Notificar o usuario.
+        # Remove a string JD retornada pela lib
+        midtime = date_jdutc.replace('JD ', '')
+
+        # Soma a correção
+        jd = float(midtime) + correction/86400
+
+        spice.kclear()
+
+        return jd
+
+    def get_bsp_planetary(self, name):
+
+        record = BspPlanetary.objects.get(name=name)
+
+        relative_path = os.path.join(settings.ARCHIVE_DIR, str(record.upload))
+
+        absolute_path = os.path.join(
+            settings.HOST_ARCHIVE_DIR, str(record.upload))
+
+        return dict({
+            'name': name,
+            'filename': os.path.basename(relative_path),
+            'relative_path': relative_path,
+            'absolute_path': absolute_path
+        })
+
+    def get_leap_second(self, name):
+
+        record = LeapSecond.objects.get(name=name)
+
+        relative_path = os.path.join(settings.ARCHIVE_DIR, str(record.upload))
+
+        absolute_path = os.path.join(
+            settings.HOST_ARCHIVE_DIR, str(record.upload))
+
+        return dict({
+            'name': name,
+            'filename': os.path.basename(relative_path),
+            'relative_path': relative_path,
+            'absolute_path': absolute_path
+        })
 
     def natural_delta(self, tdelta):
         return humanize.naturaldelta(
@@ -362,6 +531,20 @@ class DesAstrometryPipeline():
             self.base_path, "des_astrometry_%s" % str(job_id))
 
         return output_path
+
+    def get_or_create_asteroid_path(self, asteroid_name):
+
+        job_path = self.get_job_path()
+
+        asteroid_folder = asteroid_name.replace(' ', '_')
+        path = os.path.join(job_path, asteroid_folder)
+
+        if not os.path.exists(path):
+            os.mkdir(path)
+            self.log.info(
+                "A directory has been created for the Asteroid [%s]." % asteroid_name)
+
+        return path
 
     def create_job_path(self, job_id):
 
@@ -416,3 +599,20 @@ class DesAstrometryPipeline():
             'stage', 'status', 'asteroid', 'start', 'end'])
         df.to_csv(self.result['time_profile'],
                   sep=';', header=True, index=False)
+
+    def on_error(self, e=None):
+        trace = traceback.format_exc()
+
+        self.result['traceback'] = trace
+
+        self.log.error(trace)
+
+        if e is not None:
+            self.result['error'] = str(e)
+
+            self.log.error(e)
+
+        self.result['status'] = 'failed'
+
+        # TODO Gravar no banco de dados e finalizar o job
+        # TODO Notificar o usuario.

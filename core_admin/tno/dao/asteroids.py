@@ -23,7 +23,7 @@ class AsteroidDao(DBBase):
 
     def insert_update(self):
 
-        stm = text("""INSERT INTO tno_asteroid ("name", "number", base_dynclass, dynclass) SELECT DISTINCT(sp.name), sp."number", sp.base_dynclass, sp.dynclass from skybot_position sp limit 20 ON CONFLICT ("name") DO UPDATE SET "number" = EXCLUDED.number, base_dynclass = EXCLUDED.base_dynclass, dynclass = EXCLUDED.dynclass;""")
+        stm = text("""INSERT INTO tno_asteroid ("name", "number", base_dynclass, dynclass) SELECT DISTINCT(sp.name), sp."number", sp.base_dynclass, sp.dynclass from skybot_position sp ON CONFLICT ("name") DO UPDATE SET "number" = EXCLUDED.number, base_dynclass = EXCLUDED.base_dynclass, dynclass = EXCLUDED.dynclass;""")
 
         self.debug_query(stm, True)
 
@@ -42,3 +42,15 @@ class AsteroidDao(DBBase):
         rows = self.fetch_all_dict(stm)
 
         return rows
+
+    def asteroids_by_name(self, name):
+
+        tbl = self.get_tbl()
+
+        stm = select(tbl.c).where(and_(tbl.c.name == name))
+
+        self.debug_query(stm, True)
+
+        row = self.fetch_one_dict(stm)
+
+        return row

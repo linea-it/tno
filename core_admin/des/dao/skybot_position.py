@@ -540,7 +540,7 @@ class DesSkybotPositionDao(DBBase):
         clause = list([sp.c.name == asteroid_name])
 
         columns = dc.c + [de.c.id.label('expnum'),
-                          de.c.date_obs, de.c.band, de.c.release]
+                          de.c.date_obs, de.c.band, de.c.release, de.c.exptime]
 
         stm = select(columns).\
             select_from(

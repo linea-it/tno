@@ -33,9 +33,9 @@ def teste(request):
 
         result = DesAstrometryPipeline(debug=True).run(1)
 
-        # result = dict({
-        #     'success': True,
-        # })
+        result = dict({
+            'success': True,
+        })
 
         return Response(result)
 
