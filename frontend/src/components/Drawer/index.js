@@ -220,7 +220,7 @@ function Drawer({ children, open, setOpen }) {
               </Link>
             </List>
           </Collapse>
-          {/* <Divider className={classes.borderDrawer} />
+          <Divider className={classes.borderDrawer} />
           <Link
             to="/refine-orbit"
             className={classes.invisibleLink}
@@ -234,7 +234,7 @@ function Drawer({ children, open, setOpen }) {
                 className={classes.textDrawer}
               />
             </ListItem>
-          </Link> */}
+          </Link>
           <Divider className={classes.borderDrawer} />
           <Link
             to="/prediction-of-occultation"

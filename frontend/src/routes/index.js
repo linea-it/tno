@@ -15,8 +15,8 @@ import SkybotAsteroid from '../pages/Skybot/Asteroid';
 import OrbitTracer from '../pages/OrbitTracer';
 import OrbitTracerDetail from '../pages/OrbitTracer/Detail';
 
-// import RefineOrbit from '../pages/RefineOrbit';
-// import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
+import RefineOrbit from '../pages/RefineOrbit';
+import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
 // import RefineOrbitAsteroid from '../pages/RefineOrbit/Asteroid';
 
 import PredictionOccultation from '../pages/PredictionOccultation';
@@ -36,14 +36,14 @@ import Notfound from '../pages/LandingPage/NotFound';
 export default function Routes() {
   return (
     <Switch>
-      {/* <Route isPrivate exact path="/refine-orbit" component={RefineOrbit} />
+      <Route isPrivate exact path="/refine-orbit" component={RefineOrbit} />
       <Route
         isPrivate
         exact
         path="/refine-orbit/:id"
         component={RefineOrbitDetail}
       />
-      <Route
+      {/* <Route
         isPrivate
         exact
         path="/refine-orbit/asteroid/:id"
