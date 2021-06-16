@@ -489,6 +489,10 @@ class DesSkybotPipeline():
                 # Increment the attempts variable by each recursion:
                 self.attempts_on_fail_by_exposure += 1
 
+                result.update({
+                    'success': True,
+                })
+
                 # Call itself:
                 self.run_skybot_by_exposure(skybot_server_url, job_path, exp)
 
