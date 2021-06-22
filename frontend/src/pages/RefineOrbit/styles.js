@@ -78,6 +78,19 @@ const useStyles = makeStyles((theme) => ({
   dialogCardHeader: {
     paddingBottom: 4,
   },
+
+  tabCardContent: {
+    padding: '0 0 20px 0',
+    overflow: 'auto',
+    '&:last-child': {
+      paddingBottom: 0,
+    },
+  },
+  tabSubtitle: {
+    fontSize: '1.2rem',
+    fontWeight: 500,
+    margin: '12px 0 0',
+  },
 }));
 
 export default useStyles;

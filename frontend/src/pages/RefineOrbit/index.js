@@ -16,6 +16,11 @@ import {
   IconButton,
   Dialog,
   Divider,
+  Typography,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  Radio,
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import {
@@ -24,9 +29,11 @@ import {
   CloudUpload as CloudUploadIcon,
 } from '@material-ui/icons';
 import moment from 'moment';
-import DateRangePicker from '../../components/Date/DateRangePicker';
+import { startOfYear, addYears } from 'date-fns';
+import DateRangerPicker from '../../components/Date/DateRangerPicker';
 import Table from '../../components/Table';
 import ColumnStatus from '../../components/Table/ColumnStatus';
+import Tabs from '../../components/Tabs';
 import { useTitle } from '../../contexts/title';
 import useStyles from './styles';
 
@@ -43,6 +50,7 @@ function RefineOrbit() {
   const [object, setObject] = useState({});
   const [objectNameFocus, setObjectNameFocus] = useState(false);
   const [customConfOpen, setCustomConfOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(['', '']);
 
   useEffect(() => {
     setTitle('Refine Orbit (NIMA)');
@@ -161,10 +169,182 @@ function RefineOrbit() {
     setObject(newValue);
   };
 
+  const tabs = [
+    {
+      title: 'Options for observations and merging',
+      content: (
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <FormGroup>
+              <FormControlLabel
+                control={<Checkbox checked color="primary" />}
+                label="Creation of observations file"
+              />
+              <FormControlLabel
+                control={<Checkbox checked color="primary" />}
+                label="Creation of orbital elements file"
+              />
+              <FormControlLabel
+                control={<Checkbox checked color="primary" />}
+                label="Merge all files"
+              />
+            </FormGroup>
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              label="Timing Threashold for doublons (seconds)"
+              type="number"
+              defaultValue={60}
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography color="primary" className={classes.tabSubtitle}>
+              Type of Merging
+            </Typography>
+
+            <FormGroup>
+              <FormControlLabel
+                control={<Radio color="primary" />}
+                label="No merging, weight unchanged"
+              />
+              <FormControlLabel
+                control={<Radio color="primary" />}
+                label="Night merging, weight changed"
+              />
+              <FormControlLabel
+                control={<Radio checked color="primary" />}
+                label="No merging, weight changed"
+              />
+            </FormGroup>
+          </Grid>
+        </Grid>
+      ),
+    },
+    {
+      title: 'Fitting options',
+      content: (
+        <Grid container spacing={12}>
+          <Grid item xs={12}>
+            <Typography color="primary" className={classes.tabSubtitle}>
+              Planet Perturbations
+            </Typography>
+
+            <FormGroup>
+              <FormControlLabel
+                control={<Radio color="primary" />}
+                label="no - 2body problem"
+              />
+              <FormControlLabel
+                control={<Radio checked color="primary" />}
+                label="Me,V,EMB,Mo,J,S,U,N"
+              />
+              <FormControlLabel
+                control={<Radio color="primary" />}
+                label="Me,V,T,L,Mo,J,S,U,N"
+              />
+              <FormControlLabel
+                control={<Radio color="primary" />}
+                label="Me,V,T,L,Mo,J,S,U,N,P"
+              />
+              <FormControlLabel
+                control={<Radio color="primary" />}
+                label="Me,V,EMB,Mo,J,S,U,N,P"
+              />
+            </FormGroup>
+          </Grid>
+
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={<Checkbox checked color="primary" />}
+              label="Fitting (not checked: O-C computation only)"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography color="primary" className={classes.tabSubtitle}>
+              Weighting Process
+            </Typography>
+
+            <FormGroup row>
+              <FormControlLabel
+                control={<Radio color="primary" />}
+                label="rms"
+              />
+              <FormControlLabel
+                control={<Radio color="primary" />}
+                label="rms constant"
+              />
+              <FormControlLabel
+                control={<Radio checked color="primary" />}
+                label="rms astdys"
+              />
+            </FormGroup>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Bias correction (bias in stellar catalogues)"
+              type="number"
+              defaultValue={1}
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <TextField
+              label="Number of fitting steps"
+              type="number"
+              defaultValue={6}
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography color="primary" className={classes.tabSubtitle}>
+              Rejection of Outliers
+            </Typography>
+
+            <FormGroup>
+              <FormControlLabel
+                control={<Radio color="primary" />}
+                label="Threshold values"
+              />
+              <FormControlLabel
+                control={<Radio checked color="primary" />}
+                label="Flag astdys"
+              />
+            </FormGroup>
+
+            <TextField
+              label="Threshold for outliers (arcsec)"
+              type="number"
+              defaultValue={3}
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+
+            <FormControlLabel
+              control={<Checkbox checked color="primary" />}
+              label="Plot of residuals"
+            />
+          </Grid>
+        </Grid>
+      ),
+    },
+  ];
+
   return (
     <>
       <Grid container spacing={2} alignItems="stretch">
-        <Grid item xs={12} md={4} lg={3}>
+        <Grid item xs={12} md={6} lg={5} xl={3}>
           <Grid container direction="column" spacing={2}>
             <Grid item xs={12}>
               <Card>
@@ -230,8 +410,8 @@ function RefineOrbit() {
 
                         <Grid item xs={12}>
                           <FormControl fullWidth>
-                            <InputLabel>Data Input</InputLabel>
-                            <Select label="Data Input">
+                            <InputLabel>Data Origin</InputLabel>
+                            <Select label="Data Origin">
                               <MenuItem value="DES">DES</MenuItem>
                               <MenuItem value="LSST">LSST</MenuItem>
                               <MenuItem value="ZTF">ZTF</MenuItem>
@@ -269,11 +449,20 @@ function RefineOrbit() {
                       </Grid>
                     </Grid>
                     <Grid item xs={12}>
-                      <DateRangePicker
-                        minDate={new Date('2012-11-10 04:09')}
-                        maxDate={new Date('2019-02-28 00:00')}
-                        selectedDate={['', '']}
-                        setSelectedDate={() => {}}
+                      <Typography
+                        color="primary"
+                        variant="h6"
+                        align="center"
+                        gutterBottom
+                      >
+                        Valid Period of Extrapolation
+                      </Typography>
+                      <DateRangerPicker
+                        minDate={new Date()}
+                        maxDate={startOfYear(addYears(new Date(), 50))}
+                        selectedDate={selectedDate}
+                        setSelectedDate={setSelectedDate}
+                        definedRangeFuture
                       />
                     </Grid>
                     <Grid item xs={12}>
@@ -293,9 +482,9 @@ function RefineOrbit() {
           </Grid>
         </Grid>
 
-        <Grid item xs={12} md={8} lg={9}>
+        <Grid item xs={12} md={6} lg={7} xl={9}>
           <Card>
-            <CardHeader title="Progress" />
+            <CardHeader title="Observation Days" />
             <CardContent>{/* {renderExposurePlot()} */}</CardContent>
           </Card>
         </Grid>
@@ -333,7 +522,7 @@ function RefineOrbit() {
       >
         <Card>
           <CardHeader
-            title="Selection Criteria"
+            title="Configuration Refine Orbit"
             action={
               <IconButton
                 onClick={() => setCustomConfOpen(false)}
@@ -344,49 +533,8 @@ function RefineOrbit() {
             }
             className={classes.dialogCardHeader}
           />
-          <CardContent>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <FormControl fullWidth>
-                  <InputLabel>Catalog</InputLabel>
-                  <Select label="Catalog">
-                    <MenuItem value="GAIA DR2">GAIA DR2</MenuItem>
-                    <MenuItem value="GAIA DR3">GAIA DR3</MenuItem>
-                    <MenuItem value="LSST">LSST</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Radius Search (arcsec)"
-                  type="number"
-                  placeholder="0.15"
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Leap Second Kernel"
-                  placeholder="naif0012"
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Planetary Ephemeris"
-                  placeholder="DE435"
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Ephemeris Step (Sec)"
-                  type="number"
-                  placeholder="600"
-                  fullWidth
-                />
-              </Grid>
-            </Grid>
+          <CardContent className={classes.tabCardContent}>
+            <Tabs data={tabs} backgroundColor="primary" />
           </CardContent>
         </Card>
       </Dialog>

@@ -9,7 +9,11 @@ import {
   CardHeader,
   CardContent,
 } from '@material-ui/core';
-import { PieChart as PieChartIcon } from '@material-ui/icons';
+import {
+  CheckCircle as SuccessIcon,
+  Cancel as FailureIcon,
+  PieChart as PieChartIcon,
+} from '@material-ui/icons';
 import moment from 'moment';
 import Table from '../../components/Table';
 import { useTitle } from '../../contexts/title';
@@ -159,8 +163,14 @@ function RefineOrbitDetail() {
       align: 'center',
     },
     {
-      name: 'lat_lon',
-      title: 'Lat/Lon',
+      name: 'bsp',
+      title: 'BSP',
+      customElement: (row) =>
+        row.bsp ? (
+          <SuccessIcon style={{ color: '#009900' }} fontSize="small" />
+        ) : (
+          <FailureIcon color="error" fontSize="small" />
+        ),
     },
     {
       name: 'diagram',
@@ -177,23 +187,23 @@ function RefineOrbitDetail() {
       object: '2013 TV158',
       number: '',
       class: 'KBO',
-      lat_lon: '__/__',
+      bsp: true,
       diagram: true,
     },
     {
       id: 2,
       object: '2014 TX995',
       number: '351813',
-      class: 'M BELT',
-      lat_lon: '__/__',
+      class: 'Trojan',
+      bsp: true,
       diagram: false,
     },
     {
       id: 3,
       object: '2002 AX56',
       number: '613183',
-      class: 'TROJAN',
-      lat_lon: '__/__',
+      class: 'Main Belt',
+      bsp: true,
       diagram: false,
     },
     {
@@ -201,7 +211,7 @@ function RefineOrbitDetail() {
       object: '2004 RX48',
       number: '',
       class: 'AMOR',
-      lat_lon: '__/__',
+      bsp: false,
       diagram: true,
     },
     {
@@ -209,8 +219,8 @@ function RefineOrbitDetail() {
       object: '2016 OZ45',
       number: '381318',
       class: 'KBO',
-      lat_lon: '__/__',
-      diagram: true,
+      bsp: true,
+      diagram: false,
     },
   ];
 

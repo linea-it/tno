@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  AppBar,
-  Tabs as MuiTabs,
-  Tab,
-  Box
-} from '@material-ui/core';
+import { AppBar, Tabs as MuiTabs, Tab, Box } from '@material-ui/core';
 import useStyles from './styles';
 
 function a11yProps(i) {
@@ -15,8 +10,8 @@ function a11yProps(i) {
   };
 }
 
-function Tabs({ data }) {
-  const classes = useStyles();
+function Tabs({ data, backgroundColor }) {
+  const classes = useStyles({ backgroundColor });
   const [selectedTab, setSelectedTab] = useState(0);
 
   const handleChangeTab = (e, v) => {
@@ -26,7 +21,11 @@ function Tabs({ data }) {
   return (
     <>
       <AppBar position="static" className={classes.appBar}>
-        <MuiTabs value={selectedTab} onChange={handleChangeTab} aria-label="tabs">
+        <MuiTabs
+          value={selectedTab}
+          onChange={handleChangeTab}
+          aria-label="tabs"
+        >
           {data.map((tab, i) => (
             <Tab
               key={tab.title}
@@ -35,32 +34,39 @@ function Tabs({ data }) {
               wrapped
               {...a11yProps(i)}
             />
-
           ))}
         </MuiTabs>
       </AppBar>
-      {data.map((tab, i) => selectedTab === i && (
-        <div
-          key={tab.title}
-          role="panel"
-          hidden={selectedTab !== i}
-          id={`wrapped-panel-${i}`}
-          aria-labelledby={`wrapped-tab-${i}`}
-        >
-          <Box p={3}>
-            {tab.content}
-          </Box>
-        </div>
-      ))}
+      {data.map(
+        (tab, i) =>
+          selectedTab === i && (
+            <div
+              key={tab.title}
+              // role="panel"
+              hidden={selectedTab !== i}
+              id={`wrapped-panel-${i}`}
+              aria-labelledby={`wrapped-tab-${i}`}
+            >
+              <Box p={3}>{tab.content}</Box>
+            </div>
+          )
+      )}
     </>
   );
 }
 
+Tabs.defaultProps = {
+  backgroundColor: '#6A6A6A',
+};
+
 Tabs.propTypes = {
-  data: PropTypes.shape({
-    title: PropTypes.string,
-    content: PropTypes.node
-  }).isRequired,
-}
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string,
+      content: PropTypes.node,
+    })
+  ).isRequired,
+  backgroundColor: PropTypes.string,
+};
 
 export default Tabs;

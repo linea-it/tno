@@ -25,6 +25,7 @@ function DateRangePicker({ selectedDate, setSelectedDate, minDate, maxDate }) {
       onChange={handleChange}
       moveRangeOnFirstSelection={false}
       color="#34465d"
+      rangeColors="#34465d"
       ranges={[
         {
           startDate:

@@ -26,7 +26,7 @@ import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons';
 import filesize from 'filesize';
 import Table from '../../components/Table';
 import ColumnStatus from '../../components/Table/ColumnStatus';
-import DateRangePicker from '../../components/Date/DateRangePicker';
+import DateRanger from '../../components/Date/DateRanger';
 import useInterval from '../../hooks/useInterval';
 import {
   getDownloadJobs,
@@ -415,7 +415,7 @@ function Download() {
                       </Button>
                     </Grid>
                     <Grid item xs={12}>
-                      <DateRangePicker
+                      <DateRanger
                         // First day of Skybot:
                         minDate={new Date('2012-11-10 04:09')}
                         maxDate={new Date('2019-02-28 00:00')}
