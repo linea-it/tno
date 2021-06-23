@@ -472,7 +472,7 @@ function RefineOrbit() {
                         fullWidth
                         onClick={() => {}}
                       >
-                        Execute
+                        Submit
                       </Button>
                     </Grid>
                   </Grid>

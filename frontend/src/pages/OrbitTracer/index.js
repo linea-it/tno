@@ -255,7 +255,7 @@ function OrbitTracer() {
                         fullWidth
                         onClick={() => {}}
                       >
-                        Execute
+                        Submit
                       </Button>
                     </Grid>
                   </Grid>
@@ -267,7 +267,7 @@ function OrbitTracer() {
 
         <Grid item xs={12} md={8} lg={9}>
           <Card>
-            <CardHeader title="Progress" />
+            <CardHeader title="Number of Exposures per Objects" />
             <CardContent>{/* {renderExposurePlot()} */}</CardContent>
           </Card>
         </Grid>

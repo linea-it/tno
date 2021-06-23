@@ -22,7 +22,8 @@ import {
   Close as CloseIcon,
 } from '@material-ui/icons';
 import moment from 'moment';
-import DateRanger from '../../components/Date/DateRanger';
+import { startOfYear, addYears } from 'date-fns';
+import DateRangerPicker from '../../components/Date/DateRangerPicker';
 import Table from '../../components/Table';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import { useTitle } from '../../contexts/title';
@@ -41,6 +42,7 @@ function PredictionOccultation() {
   const [object, setObject] = useState({});
   const [objectNameFocus, setObjectNameFocus] = useState(false);
   const [customConfOpen, setCustomConfOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(['', '']);
 
   useEffect(() => {
     setTitle('Prediction of Occultation');
@@ -162,7 +164,7 @@ function PredictionOccultation() {
   return (
     <>
       <Grid container spacing={2} alignItems="stretch">
-        <Grid item xs={12} md={4} lg={3}>
+        <Grid item xs={12} md={6} lg={5} xl={3}>
           <Grid container direction="column" spacing={2}>
             <Grid item xs={12}>
               <Card>
@@ -241,11 +243,12 @@ function PredictionOccultation() {
                       </Grid>
                     </Grid>
                     <Grid item xs={12}>
-                      <DateRanger
-                        minDate={new Date('2012-11-10 04:09')}
-                        maxDate={new Date('2019-02-28 00:00')}
-                        selectedDate={['', '']}
-                        setSelectedDate={() => {}}
+                      <DateRangerPicker
+                        minDate={new Date()}
+                        maxDate={startOfYear(addYears(new Date(), 50))}
+                        selectedDate={selectedDate}
+                        setSelectedDate={setSelectedDate}
+                        definedRangeFuture
                       />
                     </Grid>
                     <Grid item xs={12}>
@@ -255,7 +258,7 @@ function PredictionOccultation() {
                         fullWidth
                         onClick={() => {}}
                       >
-                        Execute
+                        Submit
                       </Button>
                     </Grid>
                   </Grid>
@@ -265,7 +268,7 @@ function PredictionOccultation() {
           </Grid>
         </Grid>
 
-        <Grid item xs={12} md={8} lg={9}>
+        <Grid item xs={12} md={6} lg={7} xl={9}>
           <Card>
             <CardHeader title="Progress" />
             <CardContent>{/* {renderExposurePlot()} */}</CardContent>
