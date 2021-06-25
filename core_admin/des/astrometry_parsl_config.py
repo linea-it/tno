@@ -8,8 +8,10 @@ htex_config = Config(
         HighThroughputExecutor(
             label="htex_local",
             cores_per_worker=1,
+            max_workers=16,
             provider=LocalProvider(
                 channel=LocalChannel(),
+                # worker_init=f"source /home/glauber/linea/orbit_trace/env.sh",
             ),
         )
     ],

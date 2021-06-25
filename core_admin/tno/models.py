@@ -35,8 +35,15 @@ class Asteroid(models.Model):
         help_text='(ucd=“meta.code.class;src.class”) Object class (TNO, Centaur, Trojan, etc.).'
     )
 
+    def __str__(self):
+        return "%s (%s)" % (self.name, self.number)
+
 
 class LeapSecond(models.Model):
+    class Meta:
+        verbose_name = "Leap Second"
+        verbose_name_plural = "Leap Second"
+
     name = models.CharField(
         max_length=100,
         verbose_name='Name',
@@ -70,6 +77,10 @@ class LeapSecond(models.Model):
 
 
 class BspPlanetary(models.Model):
+    class Meta:
+        verbose_name = "Planetary Ephemeris"
+        verbose_name_plural = "Planetary Ephemeris"
+
     name = models.CharField(
         max_length=100,
         verbose_name='Name',
@@ -714,6 +725,10 @@ class JohnstonArchive(models.Model):
         plus other unusual asteroids with aphelion distances greater than 7.5 AU, 
         plus several additional reported objects without MPC designations.
     """
+    class Meta:
+        verbose_name = "Johnston Archive"
+        verbose_name_plural = "Johnston Archive"
+
     number = models.CharField(
         max_length=6,
         verbose_name='Number',

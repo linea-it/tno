@@ -1,24 +1,34 @@
+import gzip
 import json
 import logging
 import os
+import pickle
 import shutil
 import traceback
 from datetime import datetime, timedelta, timezone
 
 import humanize
+import numpy as np
 import pandas as pd
-from des.dao.skybot_position import DesSkybotPositionDao
+import parsl
+import spiceypy as spice
+from astropy.coordinates import GCRS, EarthLocation
+from astropy.time import Time
+from common.jpl import findSPKID, get_bsp_from_jpl
 from django.conf import settings
 from tno.dao.asteroids import AsteroidDao
-from common.jpl import get_bsp_from_jpl, findSPKID
-import pickle
-from common.convert import datetime_to_julian_datetime
-
-import parsl
-from des.astrometry.parsl_config import htex_config
-from des.astrometry.parsl_apps import increment
 from tno.models import BspPlanetary, LeapSecond
-import spiceypy as spice
+
+from des.astrometry_parsl_apps import increment, proccess_ccd
+from des.astrometry_parsl_config import htex_config
+from des.dao.skybot_position import DesSkybotPositionDao
+
+
+import humanize
+import pandas as pd
+from io import StringIO
+from des.models import Observation
+from des.dao.observation import DesObservationDao
 
 
 class NoRecordsFound(Exception):
@@ -68,6 +78,9 @@ class DesAstrometryPipeline():
     DES_START_PERIOD = '2012-11-01'
 
     DES_FINISH_PERIOD = '2019-02-01'
+
+    # Location of observatory: [longitude, latitude, elevation] Cerro tololo
+    OBSERVATORY_LOCATION = [+289.193583333, -30.16958333, 2202.7]
 
     BSP_PLANETARY = None
 
@@ -129,15 +142,25 @@ class DesAstrometryPipeline():
 
                 self.asteroids[asteroid['name']] = dict({
                     'id': asteroid['id'],
+                    'status': None,
                     'name': asteroid['name'],
                     'number': asteroid['number'],
                     'spkid': None,
                     'alias': asteroid['name'].replace(' ', '_'),
                     'path': asteroid_path,
+                    'observatory_location': self.OBSERVATORY_LOCATION,
+                    'ccds_count': 0,
+                    'observations_count': 0,
                     'bsp_planetary': self.BSP_PLANETARY,
                     'leap_second': self.LEAP_SECOND,
-                    'bsp_jpl': None
+                    'bsp_jpl': None,
+                    'ccds': list(),
+                    'observations': list(),
+                    'time_profile': list(),
+                    'exec_time': 0,
                 })
+
+            parsl_tasks = list()
 
             # Estas etapas não são paralelizadas!
             for asteroid_name in self.asteroids:
@@ -148,42 +171,141 @@ class DesAstrometryPipeline():
                 # Para cada asteroid recuperar a lista de ccds para cada posição
                 asteroid = self.retrieve_asteroid_ccds(asteroid)
 
-                # Só baixa os BSP para asteroids que tenham ccds
-                if asteroid['status'] != 'failure':
-                    # Para cada asteroid Baixar os arquivos BSP do JPL
-                    asteroid = self.retrieve_asteroid_bsp(asteroid)
+                # Se o Asteroid falhou ou não tem ccds
+                # ignora o resto das operações e passa para o proximo asteroid.
+                if asteroid['status'] == 'failure':
+                    continue
 
-                    # Recuperar o SPK Id do objeto a partir do seu BSP
-                    asteroid['spkid'] = findSPKID(
-                        asteroid['bsp_jpl']['file_path'])
-                    self.log.debug("SpkID: [%s]" % asteroid['spkid'])
+                # Para cada asteroid Baixar os arquivos BSP do JPL
+                asteroid = self.retrieve_asteroid_bsp(asteroid)
 
-                # Guardar as informações do asteroid no pickle
-                pkl_file = os.path.join(
-                    asteroid_path, asteroid['alias'] + '.pkl')
+                # Recuperar o SPK Id do objeto a partir do seu BSP
+                asteroid['spkid'] = findSPKID(
+                    asteroid['bsp_jpl']['file_path'])
+                self.log.debug("SpkID: [%s]" % asteroid['spkid'])
 
-                with open(pkl_file, 'wb') as f:
-                    pickle.dump(asteroid, f)
+                # Calcula as posições Teoricas para cada ccd do Asteroid.
+                asteroid = self.retrieve_theoretical_positions(asteroid)
 
-                self.log.debug(json.dumps(asteroid, indent=2))
+                # Se o Asteroid falhou no calculo das posições teoricas
+                # ignora o resto das operações e passa para o proximo asteroid.
+                if asteroid['status'] == 'failure':
+                    continue
 
-            # TODO: a partir daqui o processo pode ser paralelizado
+                # Cria uma Lista de Task que seram executadas em paralelo pelo Parsl
+                for ccd in asteroid['ccds']:
 
-            # parsl.clear()
-            # parsl.load(htex_config)
+                    # TODO: path para os CCD só para debug
+                    ccd['path'] = '/archive/ccd_images/Eris'
 
-            # for i in range(5):
-            #     self.log.debug('{} + 1 = {}'.format(i, increment(i).result()))
+                    task = dict({
+                        'name': asteroid['name'],
+                        'ccd': ccd,
+                        'path': asteroid['path']
+                    })
+                    parsl_tasks.append(task)
 
-            # for asteroid in l_asteroids:
-            #     # Remonta o path do diretório do asteroid
-            #     # o path será o unico parametro para as funções que serão executadas pelo parsl.
-            #     asteroid_path = self.get_or_create_asteroid_path(
-            #         asteroid['name'])
+                self.asteroids[asteroid_name] = asteroid
+                del asteroid
 
-                # Somente para DEBUG escreve a variavel self.asteroids em um json
-            with open(os.path.join(self.job_path, 'teste.json'), 'w') as fp:
-                json.dump(self.asteroids, fp)
+            # Inicio da Etapa paralelizada com Parsl.
+            self.log.info("Configuring Parsl.")
+            parsl.clear()
+
+            # Altera o diretório de execução do parsl.
+            htex_config.run_dir = os.path.join(self.job_path, "runinfo")
+            # Carrega as configurações do Parsl.
+            parsl.load(htex_config)
+
+            # Espera as tasks terminarem de ser executadas
+            self.log.info(
+                "Submitting the tasks to Parsl. The tasks will now run in parallel.")
+            results = list()
+            for task in parsl_tasks:
+                results.append(proccess_ccd(
+                    task['name'], task['ccd'], task['path']))
+
+            self.log.info("End of parallel tasks.")
+
+            # TODO: Talvez essa parte da consolidação possa ser paralelizada.
+            # Um dict indexado pelo nome do Asteroid que vai guardar os resultados por ccds
+            temp_results = dict({})
+
+            self.log.info("Generating list of all observations.")
+            # Lista com TODAS as posições observadas independente do asteroid e ccd.
+            observed_postions = list()
+
+            for result in results:
+                asteroid_name, ccd, obs_coordinates, mtp_time_profile = result.result()
+
+                if asteroid_name not in temp_results:
+                    temp_results[asteroid_name] = dict()
+
+                temp_results[asteroid_name][ccd['id']] = ccd
+
+                if obs_coordinates is not None:
+                    # Adiciona o id do asteroid a cada observação, necessário para o preenchimento da tabela de observações.
+                    obs_coordinates.update(
+                        {'asteroid_id': self.asteroids[asteroid_name]['id']})
+
+                    # Adiciona a observação a lista com todas as observações de todos os asteroids.
+                    observed_postions.append(obs_coordinates)
+
+                    # Adiciona a posição observada na variavel self.asteroid
+                    self.asteroids[asteroid_name]['observations'].append(
+                        obs_coordinates)
+                    # Adicionao time profile do match position desta task ao time profile do asteroid.
+                    self.asteroids[asteroid_name]['time_profile'].append(
+                        mtp_time_profile)
+
+                    # TODO: Adicionar um contador de ccds com falhas.
+
+            parsl.clear()
+
+            # Etapa de Consolidação volta a ser sequencial.
+
+            # TODO: Tratar/Filtrar a lista de observações
+
+            # TODO: Ingerir na tabela de posições observadas.
+            self.ingest_observations(observed_postions)
+
+            # Guardar no diretório de cada Asteroid o dict completo com dados para debug.
+            for asteroid_name in self.asteroids:
+                asteroid = self.asteroids[asteroid_name]
+
+                # Para cada ccd do asteroid procura no resultado temporario
+                for ccd in asteroid['ccds']:
+                    if ccd['id'] in temp_results[asteroid_name]:
+
+                        # Atualiza os dados de ccd do asteroid com os retornados pela função proccess_ccd.
+                        result_ccd = temp_results[asteroid_name][ccd['id']]
+                        ccd.update(result_ccd)
+
+                exec_time = 0
+                # TODO: Criar uma função que calcule o tempo de execução individual por asteroid
+                # deve pegar a menor start e a maior end da etapa match_position e fazer a diferença.
+                # a_start_match = list()
+                # for tp in asteroid['time_profile']:
+                #     exec_time += tp['exec_time']
+
+                # Retira da variavel temp_result os dados deste asteroid.
+                del temp_results[asteroid_name]
+
+                # self.log.debug(asteroid)
+                # TODO: Definir regra para avaliar se o asteroid deu sucesso ou falhou.
+                asteroid.update({
+                    'status': 'done',
+                    'exec_time': exec_time,
+                    'h_exec_time': humanize.naturaldelta(timedelta(seconds=exec_time), minimum_unit='microseconds'),
+                    'observations_count': len(asteroid['observations'])
+                })
+
+                # Escreve no diretório do asteroid um arquivo json compactado
+                # com os todas as informações utilizadas no processamento.
+                zipfilepath = os.path.join(
+                    asteroid['path'], asteroid['alias'] + '.gz')
+                with gzip.open(zipfilepath, 'wt', encoding='UTF-8') as zipfile:
+                    json.dump(asteroid, zipfile)
 
             self.result['status'] = 'done'
 
@@ -200,7 +322,225 @@ class DesAstrometryPipeline():
             self.log.info("DES Astrometry has %s in %s" %
                           (self.result['status'], self.natural_delta(tdelta)))
 
-            return self.result
+            # Escreve no diretório do Job um arquivo Json com o conteudo da variavel result.
+            with open(os.path.join(self.job_path, 'job_result.json'), 'w') as fp:
+                json.dump(self.result, fp)
+
+            # Apenas para Debug
+            self.log.debug(json.dumps(self.result, indent=2))
+
+    def ingest_observations(self, observations):
+        self.log.info("Ingest the observations into the database.")
+
+        t0 = datetime.now(timezone.utc)
+
+        tp = dict({
+            'start': t0.isoformat(),
+            'end': None,
+            'exec_time': None,
+            'rows': 0
+        })
+
+        try:
+            self.log.info("Creating a pandas dataframe.")
+            df_obs = pd.DataFrame(observations, columns=[
+                'name', 'date_obs', 'date_jd', 'ra', 'dec', 'offset_ra',
+                'offset_dec', 'mag_psf', 'mag_psf_err', 'asteroid_id', 'ccd_id'])
+
+            self.log.debug(df_obs.head())
+
+            # 'name', 'date_obs', 'date_jd', 'ra', 'dec', 'offset_ra', 'offset_dec', 'mag_psf', 'mag_psf_err', 'asteroid_id', 'ccd_id'
+
+            # TODO: Tratar os dados se necessário
+
+            self.log.info("Converting the pandas dataframe to csv")
+            data = StringIO()
+            df_obs.to_csv(
+                data,
+                sep="|",
+                header=True,
+                index=False,
+            )
+            data.seek(0)
+
+            self.log.info("Executing the import function on the database.")
+            tablename = Observation.objects.model._meta.db_table
+            self.log.debug("Tablename: %s" % tablename)
+
+            # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
+            sql = "COPY %s (name, date_obs, date_jd, ra, dec, offset_ra, offset_dec, mag_psf, mag_psf_err, asteroid_id, ccd_id) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % tablename
+            self.log.debug("SQL: [ %s ]" % sql)
+
+            rowcount = DesObservationDao().import_with_copy_expert(sql, data)
+
+            self.log.info(
+                "The observations were successfully imported.")
+            self.log.info(
+                "Total observations ingested in the database: %s" % rowcount)
+
+            tp['rows'] = rowcount
+
+        except Exception as e:
+            raise Exception(
+                "Failed to import observations data. Error: [%s]" % e)
+
+        finally:
+            t1 = datetime.now(timezone.utc)
+            tdelta = t1 - t0
+
+            tp['end'] = t1.isoformat()
+            tp['exec_time'] = tdelta.total_seconds()
+
+            self.result['ingest_observations'] = tp
+
+    # def import_observations(self, dataframe):
+    #     """
+    #         Convert the dataframe to csv, and import it into the database.
+
+    #         Parameters:
+    #             dataframe (dataframe): Pandas Dataframe with the information to be imported.
+
+    #         Returns:
+    #             rowcount (int):  the number of rows imported.
+
+    #         Example SQL Copy:
+    #             COPY tno_skybotoutput (num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
+
+    #     """
+    #     # Converte o Data frame para csv e depois para arquivo em memória.
+    #     # Mantem o header do csv para que seja possivel escolher na query COPY quais colunas
+    #     # serão importadas.
+    #     # Desabilita o index para o pandas não criar uma coluna a mais com id que não corresponde a tabela.
+    #     self.logger.debug("Converting the pandas dataframe to csv")
+    #     data = StringIO()
+    #     dataframe.to_csv(
+    #         data,
+    #         sep="|",
+    #         header=True,
+    #         index=False,
+    #     )
+    #     data.seek(0)
+
+    #     try:
+    #         self.logger.debug("Executing the import function on the database.")
+
+    #         # Recupera o nome da tabela des/skybot_positions
+    #         table = self.des_sp_dao.get_tablename()
+    #         # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
+    #         sql = "COPY %s (ccd_id, exposure_id, position_id, ticket) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
+
+    #         # Executa o metodo que importa o arquivo csv na tabela.
+    #         rowcount = self.des_sp_dao.import_with_copy_expert(sql, data)
+
+    #         self.logger.debug("Successfully imported")
+
+    #         # Retorna a quantidade de linhas que foram inseridas.
+    #         return rowcount
+
+    #     except Exception as e:
+    #         raise Exception("Failed to import data. Error: [%s]" % e)
+
+    def retrieve_theoretical_positions(self, asteroid):
+        self.log.info("Calculating theoretical positions for the asteroid.")
+
+        t0 = datetime.now(timezone.utc)
+
+        tp = dict({
+            'stage': 'theoretical_positions',
+            'start': t0.isoformat(),
+            'end': None,
+            'exec_time': None,
+        })
+
+        try:
+            ccds = self.compute_theoretical_positions(
+                asteroid['spkid'],
+                asteroid['ccds'],
+                asteroid['bsp_jpl']['file_path'],
+                asteroid['bsp_planetary']['relative_path'],
+                asteroid['leap_second']['relative_path'],
+                asteroid['observatory_location']
+            )
+
+            asteroid['ccds'] = ccds
+
+        except Exception as e:
+            msg = "Failed on calculate theoretical positions. %s" % e
+
+            asteroid['error'] = msg
+            asteroid['status'] = 'failure'
+
+        finally:
+            t1 = datetime.now(timezone.utc)
+            tdelta = t1 - t0
+
+            tp['end'] = t1.isoformat()
+            tp['exec_time'] = tdelta.total_seconds()
+
+            asteroid['time_profile'].append(tp)
+
+            return asteroid
+
+    def compute_theoretical_positions(self, spk, ccds, bsp, dexxx, leap_second, location):
+        # TODO: Provavelmente esta etapa é que causa a lentidão desta operação
+        # Por que carrega o arquivo de ephemeris planetarias que é pesado
+        # Load the asteroid and planetary ephemeris and the leap second (in order)
+        spice.furnsh(dexxx)
+        spice.furnsh(leap_second)
+        spice.furnsh(bsp)
+
+        for ccd in ccds:
+            date_jd = ccd['date_jd']
+
+            # Convert dates from JD to et format. "JD" is added due to spice requirement
+            date_et = spice.utc2et(str(date_jd) + " JD UTC")
+
+            # Compute geocentric positions (x,y,z) in km for each date with light time correction
+            r_geo, lt_ast = spice.spkpos(spk, date_et, 'J2000', 'LT', '399')
+
+            lon, lat, ele = location
+            l_ra, l_dec = [], []
+
+            # Convert from geocentric to topocentric coordinates
+            r_topo = r_geo - self.geoTopoVector(lon, lat, ele, float(date_jd))
+
+            # Convert rectangular coordinates (x,y,z) to range, right ascension, and declination.
+            d, rarad, decrad = spice.recrad(r_topo)
+
+            # Transform RA and Decl. from radians to degrees.
+            ra = np.degrees(rarad)
+            dec = np.degrees(decrad)
+
+            ccd.update({
+                'date_et': date_et,
+                'geocentric_positions': list(r_geo),
+                'topocentric_positions': list(r_topo),
+                'theoretical_coordinates': [ra, dec]
+            })
+
+        spice.kclear()
+
+        return ccds
+
+    def geoTopoVector(self, longitude, latitude, elevation, jd):
+        '''
+        Transformation from [longitude, latitude, elevation] to [x,y,z]
+        '''
+
+        loc = EarthLocation(longitude, latitude, elevation)
+
+        time = Time(jd, scale='utc', format='jd')
+        itrs = loc.get_itrs(obstime=time)
+        gcrs = itrs.transform_to(GCRS(obstime=time))
+
+        r = gcrs.cartesian
+
+        # convert from m to km
+        x = r.x.value/1000.0
+        y = r.y.value/1000.0
+        z = r.z.value/1000.0
+
+        return np.array([x, y, z])
 
     def retrieve_asteroid_bsp(self, asteroid):
         self.log.info("Retriving BSP for Asteroid [%s]" % asteroid['name'])
@@ -258,9 +598,6 @@ class DesAstrometryPipeline():
 
         asteroid.update({
             'status': 'running',
-            'time_profile': list(),
-            'ccds_count': 0,
-            'ccds': list(),
         })
 
         tp = dict({
@@ -286,18 +623,19 @@ class DesAstrometryPipeline():
                 for ccd in records:
                     asteroid['ccds'].append(dict({
                         'id': ccd['id'],
-                        'expnum': ccd['expnum'],
-                        'ccdnum': ccd['ccdnum'],
-                        'band': ccd['band'],
+                        # 'expnum': ccd['expnum'],
+                        # 'ccdnum': ccd['ccdnum'],
+                        # 'band': ccd['band'],
                         'date_obs': str(ccd['date_obs']),
                         'date_jd': self.date_to_jd(ccd['date_obs'], ccd['exptime'], self.LEAP_SECOND['relative_path']),
                         'exptime': ccd['exptime'],
                         'path': ccd['path'],
                         'filename': ccd['filename'],
-                        'release': ccd['release'],
+                        # 'release': ccd['release'],
                     }))
 
-                    self.log.debug(ccd['path'] + '/' + ccd['filename'])
+                    # self.log.debug(ccd['path'] + '/' + ccd['filename'])
+
                 asteroid['ccds_count'] = len(records)
 
         except Exception as e:

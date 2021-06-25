@@ -29,13 +29,30 @@ from tno.auth_shibboleth import ShibbolethBackend
 def teste(request):
     if request.method == 'GET':
 
-        from des.astrometry import DesAstrometryPipeline
+        from des.astrometry_pipeline import DesAstrometryPipeline
 
-        result = DesAstrometryPipeline(debug=True).run(1)
+        DesAstrometryPipeline(debug=True).run(1)
 
         result = dict({
             'success': True,
         })
+
+        return Response(result)
+
+
+@api_view(['GET'])
+def teste2(request):
+    if request.method == 'GET':
+
+        import gzip
+        import json
+
+        result = dict({
+            'success': True,
+        })
+
+        with gzip.open('/archive/des_astrometry/des_astrometry_1/Eris/Eris.gz', 'rt', encoding='UTF-8') as zipfile:
+            result = json.load(zipfile)
 
         return Response(result)
 
