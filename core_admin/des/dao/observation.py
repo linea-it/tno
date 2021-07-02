@@ -1,3 +1,4 @@
+from sqlalchemy import delete
 from tno.db import DBBase
 
 
@@ -12,3 +13,12 @@ class DesObservationDao(DBBase):
     # TODO: Mover esses metodos get para a DBBase.
     def get_tablename(self):
         return self.tablename
+
+    def delete_by_asteroid_id(self, asteroid_id):
+
+        # des_observations
+        do_tbl = self.tbl
+
+        stm = delete(do_tbl).where(do_tbl.c.asteroid_id == int(asteroid_id))
+
+        return self.execute(stm)

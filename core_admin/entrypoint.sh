@@ -9,6 +9,10 @@ NO_COLOR='\033[0m'
 ls
 if [ -e manage.py ]
 then
+    # Adicionar o diretório da aplicação na variavel pythonpath 
+    # é necessário para que o Parsl identifique os arquivos da aplicação como libs.
+    # export PYTHONPATH=$PYTHONPATH:$APP_PATH
+
     # Usar o server do django so para desenvolvimento
     echo "Running Django with ${YELLOW} DEVELOPMENT SERVER ${NO_COLOR}, for production use Gunicorn."
 
@@ -18,12 +22,8 @@ then
     echo "Running Collect Statics"
     python manage.py collectstatic --clear --noinput --verbosity 0
 
-    # Dar Permissao aos arquivos de log
-    chmod -R 775 /log
-
-    # Adicionar o diretório da aplicação na variavel pythonpath 
-    # é necessário para que o Parsl identifique os arquivos da aplicação como libs.
-    export PYTHONPATH=$PYTHONPATH:$APP_PATH
+    # # Dar Permissao aos arquivos de log
+    # chmod -R 775 /log
 
     # Para producao usar Gunicorn
     # Exemplo usando Gunicorn mais faltou o log no output do container.
@@ -32,7 +32,7 @@ then
     #     $GUNICORN_MODULE:$GUNICORN_CALLABLE \
     #     --reload
 
-    python manage.py runserver 0.0.0.0:$GUNICORN_PORT
+    python manage.py runserver 0.0.0.0:7001
 
 else
     /bin/bash

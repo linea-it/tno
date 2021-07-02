@@ -68,9 +68,8 @@ def proccess_ccd(name, ccd, current_path):
 
         if ra is not None and dec is not None:
             # Calcular "observed minus calculated"
-            observed_omc = [float((ra-ra_jpl)*3600*1000),
-                            float((dec-dec_jpl)*3600*1000)]
-
+            observed_omc = [float((ra-ra_jpl)*3600*np.cos(np.radians(dec_jpl))),
+                            float((dec-dec_jpl)*3600)]
             ccd.update({
                 'observed_coordinates': [float(ra), float(dec)],
                 'observed_omc': observed_omc,
@@ -113,3 +112,88 @@ def proccess_ccd(name, ccd, current_path):
         tp['exec_time'] = tdelta.total_seconds()
 
         return (name, ccd, obs_coordinates, tp)
+
+
+def geoTopoVector(longitude, latitude, elevation, jd):
+    '''
+    Transformation from [longitude, latitude, elevation] to [x,y,z]
+    '''
+    from astropy.coordinates import GCRS, EarthLocation
+    from astropy.time import Time
+    import numpy as np
+
+    loc = EarthLocation(longitude, latitude, elevation)
+
+    time = Time(jd, scale='utc', format='jd')
+    itrs = loc.get_itrs(obstime=time)
+    gcrs = itrs.transform_to(GCRS(obstime=time))
+
+    r = gcrs.cartesian
+
+    # convert from m to km
+    x = r.x.value/1000.0
+    y = r.y.value/1000.0
+    z = r.z.value/1000.0
+
+    return np.array([x, y, z])
+
+
+def compute_theoretical_positions(spk, ccd, bsp, dexxx, leap_second, location):
+    import spiceypy as spice
+    import numpy as np
+    from des.astrometry_parsl_apps import geoTopoVector
+    # TODO: Provavelmente esta etapa é que causa a lentidão desta operação
+    # Por que carrega o arquivo de ephemeris planetarias que é pesado
+    # Load the asteroid and planetary ephemeris and the leap second (in order)
+    spice.furnsh(dexxx)
+    spice.furnsh(leap_second)
+    spice.furnsh(bsp)
+
+    date_jd = ccd['date_jd']
+
+    # Convert dates from JD to et format. "JD" is added due to spice requirement
+    date_et = spice.utc2et(str(date_jd) + " JD UTC")
+
+    # Compute geocentric positions (x,y,z) in km for each date with light time correction
+    r_geo, lt_ast = spice.spkpos(spk, date_et, 'J2000', 'LT', '399')
+
+    lon, lat, ele = location
+    l_ra, l_dec = [], []
+
+    # Convert from geocentric to topocentric coordinates
+    r_topo = r_geo - geoTopoVector(lon, lat, ele, float(date_jd))
+
+    # Convert rectangular coordinates (x,y,z) to range, right ascension, and declination.
+    d, rarad, decrad = spice.recrad(r_topo)
+
+    # Transform RA and Decl. from radians to degrees.
+    ra = np.degrees(rarad)
+    dec = np.degrees(decrad)
+
+    ccd.update({
+        'date_et': date_et,
+        'geocentric_positions': list(r_geo),
+        'topocentric_positions': list(r_topo),
+        'theoretical_coordinates': [ra, dec]
+    })
+
+    spice.kclear()
+
+    return ccd
+
+
+@python_app
+def theoretical_positions(asteroid, ccd):
+
+    from des.astrometry_parsl_apps import compute_theoretical_positions
+
+    ccd = compute_theoretical_positions(
+        asteroid['spkid'],
+        ccd,
+        asteroid['bsp_jpl']['file_path'],
+        asteroid['bsp_planetary']['relative_path'],
+        asteroid['leap_second']['relative_path'],
+        asteroid['observatory_location']
+    )
+
+    return asteroid, ccd

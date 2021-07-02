@@ -1,0 +1,84 @@
+FROM python:3.6
+LABEL maintainer="Glauber Costa Vila Verde <glauber.vila.verde@gmail.com>"
+
+# ENV GUNICORN_PORT=7001
+# ENV GUNICORN_MODULE=coreAdmin.wsgi
+# ENV GUNICORN_CALLABLE=application
+ENV APP_PATH=/app
+
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y  \
+    python-dev \
+    python3-dev \
+    libaio-dev \
+    build-essential \
+    vim \
+    expect \
+    telnet \
+    ftp \
+    libcfitsio-bin \
+    libsasl2-dev \
+    libldap2-dev \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --upgrade pip
+
+# Install python-ldap dependencies
+# RUN apt-get update && apt-get install libsasl2-dev libldap2-dev libssl-dev -y
+
+# RUN addgroup --gid 10000 des-brazil
+# RUN useradd -u 1000 app
+# RUN useradd -u 10013 singulani
+# RUN usermod -aG des-brazil app
+# RUN usermod -aG des-brazil singulani
+
+RUN useradd -ms /bin/bash app
+USER app
+WORKDIR $APP_PATH
+
+COPY --chown=app:app requirements.txt requirements.txt
+
+RUN pip install -r requirements.txt 
+
+COPY --chown=app:app . .
+
+ENTRYPOINT ./entrypoint.sh
+
+# ENV PATH="${APP_PATH}.local/bin:${PATH}"
+
+# RUN pip install --user pipenv
+
+# COPY --chown=app:app requirements.txt requirements.txt
+# COPY --chown=worker:worker Pipfile Pipfile
+# RUN pipenv lock -r > requirements.txt
+# RUN pip install --user -r requirements.txt
+
+# RUN pipenv install -r requirements.txt
+
+# RUN pipenv lock -r > requirements.txt
+
+# COPY --chown=app:app . .
+
+
+# ENTRYPOINT ./entrypoint.sh
+# RUN mkdir $APP_PATH
+# WORKDIR $APP_PATH
+
+# COPY . $APP_PATH
+
+# USER app:app
+
+# ADD requirements.txt $APP_PATH
+
+
+# RUN pip install --user -r requirements.txt 
+
+
+# WORKDIR $APP_PATH
+# ENTRYPOINT ./entrypoint.sh
+
+
+# addgroup --gid 10000 des-brazil
+# adduser --uid 10013 singulani
+# usermod -aG des-brazil singulani

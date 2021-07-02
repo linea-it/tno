@@ -30,6 +30,8 @@ from io import StringIO
 from des.models import Observation
 from des.dao.observation import DesObservationDao
 
+import time
+
 
 class NoRecordsFound(Exception):
     pass
@@ -132,6 +134,10 @@ class DesAstrometryPipeline():
             # Aplicar o filtro na tabela de asteroids
             l_asteroids = self.retrive_asteroids(asteroid_name='Eris')
 
+            if self.debug is True:
+                for asteroid in l_asteroids:
+                    self.clear_observations_by_asteroid(asteroid['id'])
+
             # Cria um estrutura organizada pelo nome do asteroid,
             # nela serão adicionadas as informações sobre cada asteroid.
             for asteroid in l_asteroids:
@@ -220,12 +226,20 @@ class DesAstrometryPipeline():
             # Espera as tasks terminarem de ser executadas
             self.log.info(
                 "Submitting the tasks to Parsl. The tasks will now run in parallel.")
-            results = list()
+
+            futures = list()
             for task in parsl_tasks:
-                results.append(proccess_ccd(
+                futures.append(proccess_ccd(
                     task['name'], task['ccd'], task['path']))
 
-            self.log.info("End of parallel tasks.")
+            # Monitoramento parcial das tasks
+            is_done = list()
+            while is_done.count(True) != len(futures):
+                is_done = list()
+                for f in futures:
+                    is_done.append(f.done())
+                self.log.debug("%s/%s" % (is_done.count(True), len(futures)))
+                time.sleep(1)
 
             # TODO: Talvez essa parte da consolidação possa ser paralelizada.
             # Um dict indexado pelo nome do Asteroid que vai guardar os resultados por ccds
@@ -235,8 +249,9 @@ class DesAstrometryPipeline():
             # Lista com TODAS as posições observadas independente do asteroid e ccd.
             observed_postions = list()
 
-            for result in results:
-                asteroid_name, ccd, obs_coordinates, mtp_time_profile = result.result()
+            # Espera o Resultado de todos os jobs.
+            for task in futures:
+                asteroid_name, ccd, obs_coordinates, mtp_time_profile = task.result()
 
                 if asteroid_name not in temp_results:
                     temp_results[asteroid_name] = dict()
@@ -261,6 +276,8 @@ class DesAstrometryPipeline():
                     # TODO: Adicionar um contador de ccds com falhas.
 
             parsl.clear()
+
+            self.log.info("End of parallel tasks.")
 
             # Etapa de Consolidação volta a ser sequencial.
 
@@ -303,7 +320,7 @@ class DesAstrometryPipeline():
                 # Escreve no diretório do asteroid um arquivo json compactado
                 # com os todas as informações utilizadas no processamento.
                 zipfilepath = os.path.join(
-                    asteroid['path'], asteroid['alias'] + '.gz')
+                    asteroid['path'], asteroid['alias'] + '.json.gz')
                 with gzip.open(zipfilepath, 'wt', encoding='UTF-8') as zipfile:
                     json.dump(asteroid, zipfile)
 
@@ -349,8 +366,6 @@ class DesAstrometryPipeline():
 
             self.log.debug(df_obs.head())
 
-            # 'name', 'date_obs', 'date_jd', 'ra', 'dec', 'offset_ra', 'offset_dec', 'mag_psf', 'mag_psf_err', 'asteroid_id', 'ccd_id'
-
             # TODO: Tratar os dados se necessário
 
             self.log.info("Converting the pandas dataframe to csv")
@@ -392,53 +407,6 @@ class DesAstrometryPipeline():
             tp['exec_time'] = tdelta.total_seconds()
 
             self.result['ingest_observations'] = tp
-
-    # def import_observations(self, dataframe):
-    #     """
-    #         Convert the dataframe to csv, and import it into the database.
-
-    #         Parameters:
-    #             dataframe (dataframe): Pandas Dataframe with the information to be imported.
-
-    #         Returns:
-    #             rowcount (int):  the number of rows imported.
-
-    #         Example SQL Copy:
-    #             COPY tno_skybotoutput (num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
-
-    #     """
-    #     # Converte o Data frame para csv e depois para arquivo em memória.
-    #     # Mantem o header do csv para que seja possivel escolher na query COPY quais colunas
-    #     # serão importadas.
-    #     # Desabilita o index para o pandas não criar uma coluna a mais com id que não corresponde a tabela.
-    #     self.logger.debug("Converting the pandas dataframe to csv")
-    #     data = StringIO()
-    #     dataframe.to_csv(
-    #         data,
-    #         sep="|",
-    #         header=True,
-    #         index=False,
-    #     )
-    #     data.seek(0)
-
-    #     try:
-    #         self.logger.debug("Executing the import function on the database.")
-
-    #         # Recupera o nome da tabela des/skybot_positions
-    #         table = self.des_sp_dao.get_tablename()
-    #         # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
-    #         sql = "COPY %s (ccd_id, exposure_id, position_id, ticket) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
-
-    #         # Executa o metodo que importa o arquivo csv na tabela.
-    #         rowcount = self.des_sp_dao.import_with_copy_expert(sql, data)
-
-    #         self.logger.debug("Successfully imported")
-
-    #         # Retorna a quantidade de linhas que foram inseridas.
-    #         return rowcount
-
-    #     except Exception as e:
-    #         raise Exception("Failed to import data. Error: [%s]" % e)
 
     def retrieve_theoretical_positions(self, asteroid):
         self.log.info("Calculating theoretical positions for the asteroid.")
@@ -904,6 +872,38 @@ class DesAstrometryPipeline():
         if os.path.exists(job_path):
             shutil.rmtree(job_path)
             self.log.debug("Removed job path: %s" % job_path)
+
+    def clear_observations_by_asteroid(self, asteroid_id):
+        self.log.info(
+            "Delete observations for Asteroid ID: [%s]." % asteroid_id)
+
+        t0 = datetime.now(timezone.utc)
+
+        tp = dict({
+            'start': t0.isoformat(),
+            'end': None,
+            'exec_time': None,
+            'rows': 0
+        })
+
+        try:
+            dao = DesObservationDao()
+
+            result = dao.delete_by_asteroid_id(asteroid_id)
+
+            self.log.info(
+                "Deleted observations for this asteroid. Rows[%s]" % result.rowcount)
+
+        except Exception as e:
+            raise Exception(
+                "Failed to delete observations data. Error: [%s]" % e)
+
+        finally:
+            t1 = datetime.now(timezone.utc)
+            tdelta = t1 - t0
+
+            tp['end'] = t1.isoformat()
+            tp['exec_time'] = tdelta.total_seconds()
 
     def setup_time_profile(self):
 
