@@ -14,6 +14,7 @@ import SkybotAsteroid from '../pages/Skybot/Asteroid';
 
 import OrbitTracer from '../pages/OrbitTracer';
 import OrbitTracerDetail from '../pages/OrbitTracer/Detail';
+import OrbitTracerAsteroid from '../pages/OrbitTracer/Asteroid';
 
 import RefineOrbit from '../pages/RefineOrbit';
 import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
@@ -108,14 +109,20 @@ export default function Routes() {
       <Route
         isPrivate
         exact
+        path="/data-preparation/des/orbit-tracer"
+        component={OrbitTracer}
+      />
+      <Route
+        isPrivate
+        exact
         path="/data-preparation/des/orbit-tracer/:id"
         component={OrbitTracerDetail}
       />
       <Route
         isPrivate
         exact
-        path="/data-preparation/des/orbit-tracer"
-        component={OrbitTracer}
+        path="/data-preparation/des/orbit-tracer/asteroid/:id"
+        component={OrbitTracerAsteroid}
       />
       <Route
         isPrivate
