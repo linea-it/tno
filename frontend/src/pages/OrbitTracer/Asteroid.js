@@ -35,12 +35,11 @@ function OrbitTracerAsteroid() {
   const [timeProfile, setTimeProfile] = useState([]);
   const [orbitPath, setOrbitPath] = useState([]);
   const [brightnessVariation, setBrightnessVariation] = useState([]);
-  const [jplOriginal, setJplOriginal] = useState({
+  const [orbitalPathObserved, setOrbitalPathObserved] = useState({
     ra: [],
     dec: [],
-    dates: [],
   });
-  const [jpl, setJpl] = useState({ ra: [], dec: [] });
+  const [orbitalPathJpl, setOrbitalPathJpl] = useState({ ra: [], dec: [] });
   const [orbitalPathYears, setOrbitalPathYears] = useState([
     '2012',
     '2013',
@@ -177,43 +176,33 @@ function OrbitTracerAsteroid() {
         },
       })
       .then((res) => {
-        setJplOriginal(res.data);
-        setJpl(res.data);
+        setOrbitalPathJpl(res.data);
       });
   }, []);
 
   useEffect(() => {
-    if (observations.length > 0) {
-      const x = observations.map(
-        (observation) => observation.observed_coordinates[0]
-      );
-      const y = observations.map(
-        (observation) => observation.observed_coordinates[1]
-      );
-
-      setOrbitPath([
-        {
-          mode: 'lines',
-          x: jpl.ra,
-          y: jpl.dec,
-          line: {
-            dash: 'dot',
-            width: 3,
-            color: '#aaa',
-          },
-          name: 'JPL Theoretical',
-          hoverinfo: 'skip',
+    setOrbitPath([
+      {
+        mode: 'lines',
+        x: orbitalPathJpl.ra,
+        y: orbitalPathJpl.dec,
+        line: {
+          dash: 'dot',
+          width: 3,
+          color: '#aaa',
         },
-        {
-          type: 'scatter',
-          mode: 'markers',
-          x,
-          y,
-          name: 'Observed',
-        },
-      ]);
-    }
-  }, [observations, jpl]);
+        name: 'JPL Theoretical',
+        hoverinfo: 'skip',
+      },
+      {
+        type: 'scatter',
+        mode: 'markers',
+        x: orbitalPathObserved.ra,
+        y: orbitalPathObserved.dec,
+        name: 'Observed',
+      },
+    ]);
+  }, [orbitalPathObserved, orbitalPathJpl]);
 
   useEffect(() => {
     if (observations.length > 0) {
@@ -259,22 +248,22 @@ function OrbitTracerAsteroid() {
   };
 
   useEffect(() => {
-    if (jplOriginal.dates.length > 0) {
-      const newJpl = {
+    if (observations.length > 0) {
+      const observed = {
         ra: [],
         dec: [],
       };
 
-      jplOriginal.dates.forEach((date, i) => {
-        if (orbitalPathYears.includes(date.split('-')[0])) {
-          newJpl.ra.push(jplOriginal.ra[i]);
-          newJpl.dec.push(jplOriginal.dec[i]);
+      observations.forEach((observation, i) => {
+        if (orbitalPathYears.includes(observation.date_obs.split('-')[0])) {
+          observed.ra.push(observations[i].observed_coordinates[0]);
+          observed.dec.push(observations[i].observed_coordinates[1]);
         }
       });
 
-      setJpl(newJpl);
+      setOrbitalPathObserved(observed);
     }
-  }, [orbitalPathYears, jplOriginal]);
+  }, [orbitalPathYears, observations]);
 
   return (
     <Grid container spacing={2}>
