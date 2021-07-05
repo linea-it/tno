@@ -1,3 +1,10 @@
+from datetime import date, timedelta, datetime
+import math
+from astropy.coordinates import SkyCoord, EarthLocation, GCRS
+import numpy as np
+import spiceypy as spice
+from astropy.time import Time
+from astropy import units as u
 import csv
 import logging
 import os
@@ -446,3 +453,148 @@ def auth_shibboleth(request):
     response = redirect(home)
 
     return response
+
+
+def findSPKID(bsp):
+    '''
+    Search the spk id of a small Solar System object from bsp file
+    '''
+    if isinstance(bsp, str):
+        bsp = [bsp]
+    spice.furnsh(bsp)
+    kind = 'spk'
+    fillen = 256
+    typlen = 33
+    srclen = 256
+    keys = ['Target SPK ID   :', 'ASTEROID_SPK_ID =']
+    n = len(keys[0])
+    codes = dict()
+    for i in range(len(bsp)):
+        name, kind, source, loc = spice.kdata(i, kind, fillen, typlen, srclen)
+        flag = False
+        spk = ''
+        while not flag:
+            try:
+                m, header, flag = spice.dafec(loc, 1)
+                row = header[0]
+                if row[:n] in keys:
+                    spk = row[n:].strip()
+                    break
+            except:
+                break
+        codes[name] = spk
+    spice.kclear()
+    return codes
+
+
+def geoTopoVector(longitude, latitude, elevation, jd):
+    '''
+    Transformation from [longitude, latitude, elevation] to [x,y,z]
+    '''
+    loc = EarthLocation(longitude, latitude, elevation)
+    time = Time(jd, scale='utc', format='jd')
+    itrs = loc.get_itrs(obstime=time)
+    gcrs = itrs.transform_to(GCRS(obstime=time))
+    r = gcrs.cartesian
+    # convert from m to km
+    x = r.x.value/1000.0
+    y = r.y.value/1000.0
+    z = r.z.value/1000.0
+    return np.array([x, y, z])
+
+
+def computePosition(name, datesJD, bsp, dexxx, leapSec, location):
+    spkCodes = findSPKID(bsp)
+    # print(spkCodes)
+    spk = spkCodes[bsp]
+    # print(spk)
+    #spk = '02136199'
+    # Load the asteroid and planetary ephemeris and the leap second (in order)
+    spice.furnsh(dexxx)
+    spice.furnsh(leapSec)
+    spice.furnsh(bsp)
+    # Convert dates from JD to et format. "JD" is added due to spice requirement
+    dateET = [spice.utc2et(str(jd) + " JD UTC") for jd in datesJD]
+    # Compute geocentric positions (x,y,z) in km for each date with light time correction
+    rAst, ltAst = spice.spkpos(spk, dateET, 'J2000', 'LT', '399')
+    lon, lat, ele = location
+    listRA, listDec = [], []
+    for dateJD, r_geo in zip(datesJD, rAst):
+        # Convert from geocentric to topocentric coordinates
+        r_topo = r_geo - geoTopoVector(lon, lat, ele, float(dateJD))
+        # Convert rectangular coordinates (x,y,z) to range, right ascension, and declination.
+        d, rarad, decrad = spice.recrad(r_topo)
+        # Transform RA and Decl. from radians to degrees.
+        listRA.append(np.degrees(rarad))
+        listDec.append(np.degrees(decrad))
+    spice.kclear()
+    return listRA, listDec
+
+
+def date_to_jd(date_obs, leap_second):
+    """Aplica uma correção a data de observação e converte para data juliana
+    Correção para os CCDs do DES:
+        date = date_obs + 0.5 * (exptime + 1.05)
+    Args:
+        date_obs (datetime): Data de observação do CCD "date_obs"
+        exptime (float): Tempo de exposição do CCD "exptime"
+        lead_second (str): Path para o arquivo leap second a ser utilizado por exemplo: '/archive/lead_second/naif0012.tls'
+    Returns:
+        str: Data de observação corrigida e convertida para julian date.
+    """
+    # Carrega o lead second na lib spicepy
+    spice.furnsh(leap_second)
+    # Converte a date time para JD
+    date_et = spice.utc2et(str(date_obs).split('+')[0] + " UTC")
+    date_jdutc = spice.et2utc(date_et, 'J', 14)
+    # Remove a string JD retornada pela lib
+    jd = date_jdutc.replace('JD ', '')
+    # Soma a correção
+    spice.kclear()
+    return jd
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def jpl_theoretical(request):
+
+    data = request.query_params
+    start_date = data['start']
+    end_date = data['end']
+
+    start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+    end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+
+    date_delta = end_date - start_date
+
+    name = "Eris"
+    bspObject = '/archive/Eris.bsp'
+    bspPlanets = "/archive/de435.bsp"
+    leapSec = "/archive/naif0012.tls"
+    # Location of observatory: [longitude, latitude, elevation]
+    lonLatEle = [+289.193583333, -30.16958333, 2202.7]  # Cerro tololo
+
+    dates = []
+    dates_jd = []
+
+    for i in range(date_delta.days + 1):
+
+        dt = start_date + timedelta(days=i)
+
+        if dt.weekday() == 6:
+            dt = datetime.combine(dt, datetime.min.time())
+
+            dates.append(dt)
+
+            dt = date_to_jd(dt, leapSec)
+
+            dates_jd.append(dt)
+
+    raJPL, decJPL = computePosition(
+        name, dates_jd, bspObject, bspPlanets, leapSec, lonLatEle)
+
+    return Response({
+        "ra": raJPL,
+        "dec": decJPL,
+        "dates": dates
+    })

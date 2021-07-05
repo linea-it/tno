@@ -18,12 +18,12 @@ import {
 } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import Plot from 'react-plotly.js';
+import axios from 'axios';
 import OrbitTracerTimeProfile from '../../components/Chart/OrbitTracerTimeProfile';
 import Table from '../../components/Table';
 import List from '../../components/List';
 import { useTitle } from '../../contexts/title';
 import data from './data.json';
-import axios from 'axios';
 
 function OrbitTracerAsteroid() {
   const { setTitle } = useTitle();
@@ -202,6 +202,7 @@ function OrbitTracerAsteroid() {
             color: '#aaa',
           },
           name: 'JPL Theoretical',
+          hoverinfo: 'skip',
         },
         {
           type: 'scatter',
@@ -259,7 +260,7 @@ function OrbitTracerAsteroid() {
 
   useEffect(() => {
     if (jplOriginal.dates.length > 0) {
-      let newJpl = {
+      const newJpl = {
         ra: [],
         dec: [],
       };
@@ -416,12 +417,17 @@ function OrbitTracerAsteroid() {
               />
             </FormGroup>
             <Plot
+              style={{ display: 'block' }}
               data={orbitPath}
               layout={{
                 hovermode: 'closest',
                 autosize: true,
+                xaxis: {
+                  title: 'Right Ascension (degrees)',
+                },
                 yaxis: {
                   scaleanchor: 'x',
+                  title: 'Declination (degrees)',
                 },
               }}
               config={{
@@ -442,6 +448,12 @@ function OrbitTracerAsteroid() {
               layout={{
                 hovermode: 'closest',
                 autosize: true,
+                xaxis: {
+                  title: 'Julian Date',
+                },
+                yaxis: {
+                  title: 'Apparent Mag',
+                },
               }}
               config={{
                 scrollZoom: false,

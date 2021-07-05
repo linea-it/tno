@@ -112,6 +112,7 @@ urlpatterns = [
     url(r'^api/read_file', common_views.read_file),
     url(r'^api/read_csv', common_views.read_csv),
     url(r'^api/teste/', common_views.teste),
+    url(r'^api/jpl_theoretical/', common_views.jpl_theoretical),
 ] + static('api'+settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Adiciona a rota de authenticacao com Shibboleth se a variavel AUTH_SHIB_URL tiver valor
