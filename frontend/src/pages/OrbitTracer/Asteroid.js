@@ -200,6 +200,9 @@ function OrbitTracerAsteroid() {
         x: orbitalPathObserved.ra,
         y: orbitalPathObserved.dec,
         name: 'Observed',
+        marker: {
+          color: '#396CEC',
+        },
       },
     ]);
   }, [orbitalPathObserved, orbitalPathJpl]);
@@ -212,9 +215,26 @@ function OrbitTracerAsteroid() {
       setBrightnessVariation([
         {
           type: 'scatter',
-          mode: 'markers',
+          mode: 'lines',
+          hoverinfo: 'skip',
+          name: 'Line',
           x,
           y,
+          line: {
+            dash: 'dot',
+            width: 3,
+            color: '#aaa',
+          },
+        },
+        {
+          type: 'scatter',
+          mode: 'markers',
+          name: 'Points',
+          x,
+          y,
+          marker: {
+            color: '#396CEC',
+          },
         },
       ]);
     }
@@ -409,6 +429,7 @@ function OrbitTracerAsteroid() {
               style={{ display: 'block' }}
               data={orbitPath}
               layout={{
+                height: 380,
                 hovermode: 'closest',
                 autosize: true,
                 xaxis: {
@@ -435,6 +456,7 @@ function OrbitTracerAsteroid() {
             <Plot
               data={brightnessVariation}
               layout={{
+                height: 380,
                 hovermode: 'closest',
                 autosize: true,
                 xaxis: {
