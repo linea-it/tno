@@ -65,6 +65,8 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Asteroid.objects.all()
     serializer_class = AsteroidSerializer
 
+    filter_fields = ('number', 'name')
+
     @list_route(permission_classes=(IsAuthenticated, ))
     def test(self, request):
 

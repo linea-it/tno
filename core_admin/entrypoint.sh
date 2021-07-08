@@ -13,17 +13,11 @@ then
     # é necessário para que o Parsl identifique os arquivos da aplicação como libs.
     # export PYTHONPATH=$PYTHONPATH:$APP_PATH
 
-    # Usar o server do django so para desenvolvimento
-    echo "Running Django with ${YELLOW} DEVELOPMENT SERVER ${NO_COLOR}, for production use Gunicorn."
-
     echo "Running Migrate to apply changes in database"
     python manage.py migrate
 
     echo "Running Collect Statics"
     python manage.py collectstatic --clear --noinput --verbosity 0
-
-    # # Dar Permissao aos arquivos de log
-    # chmod -R 775 /log
 
     # Para producao usar Gunicorn
     # Exemplo usando Gunicorn mais faltou o log no output do container.
@@ -32,6 +26,8 @@ then
     #     $GUNICORN_MODULE:$GUNICORN_CALLABLE \
     #     --reload
 
+    # Usar o server do django so para desenvolvimento
+    echo "Running Django with ${YELLOW} DEVELOPMENT SERVER ${NO_COLOR}, for production use Gunicorn."
     python manage.py runserver 0.0.0.0:7001
 
 else

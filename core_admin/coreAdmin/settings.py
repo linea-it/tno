@@ -16,6 +16,11 @@ import urllib.parse
 import ldap
 from django_auth_ldap.config import LDAPSearch
 
+# from parsl.channels import LocalChannel
+# from parsl.config import Config
+# from parsl.executors import HighThroughputExecutor
+# from parsl.providers import LocalProvider
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -28,7 +33,7 @@ BIN_DIR = os.path.join(BASE_DIR, 'bin')
 LOG_DIR = "/log"
 ARCHIVE_DIR = "/archive"
 PROCCESS_DIR = "/proccess"
-CCD_IMAGES_DIR = "/ccd_images"
+DES_CCD_CATALOGS_DIR = "/archive/des/public/catalogs/"
 
 # Sub diretorios que ficam dentro de /archive
 
@@ -312,26 +317,22 @@ if DEBUG:
     CORS_ALLOW_CREDENTIALS = True
     SESSION_COOKIE_SAMESITE = None
 
-# Parsl
-PARSL_CONFIG = {
-    "sites": [
-        {
-            "site": "Threads",
-            "auth": {"channel": None},
-            "execution": {
-                "executor": "threads",
-                "provider": None,
-                "maxThreads": int(os.environ.get('AVAILABLE_THREADS', 8))
-            }
-        }
-    ],
-    "globals": {
-        "lazyErrors": True,
-    }
-}
+# # Parsl
+# PARSL_CONFIG = Config(
+#     executors=[
+#         HighThroughputExecutor(
+#             label="htex_local",
+#             cores_per_worker=1,
+#             max_workers=16,
+#             provider=LocalProvider(
+#                 channel=LocalChannel(),
+#             ),
+#         )
+#     ],
+# )
 
 # MINIMUM THREADS
-MINIMUM_THREADS = os.environ.get('MINIMUM_THREADS', 4)
+# MINIMUM_THREADS = os.environ.get('MINIMUM_THREADS', 4)
 
 # DOCKER Configuration
 try:
@@ -595,3 +596,14 @@ LOGGING = {
         },
     },
 }
+
+
+# Aqui é feita a importação do arquivo de variaveis locais.
+# As variaveis declaradas neste arquivo sobrescrevem as variaveais declaradas antes
+# deste import. isso é usado para permitir diferentes configurações por ambiente.
+# basta cada ambiente ter o seu arquivo local_vars.py.
+try:
+    from coreAdmin.local_vars import *
+except Exception:
+    raise FileNotFoundError(
+        "Local_vars file not found. it is necessary that the coraAdmin/local_vars.py file exists with the specific settings of this environment.")

@@ -31,7 +31,7 @@ COPY Pipfile.lock .
 
 RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
 
-# # Gerar um arquivo requirements
+# Gerar um arquivo requirements
 # RUN pipenv lock -r > requirements.txt
 
 FROM base AS runtime
@@ -39,10 +39,29 @@ FROM base AS runtime
 COPY --from=python-deps /.venv /.venv
 ENV PATH="/.venv/bin:$PATH"
 
-# Create and switch to a new user
-RUN useradd --create-home appuser
+# Criar o grupo des-brazil com o mesmo id usado no linea
+RUN groupadd --gid 10000 des-brazil
+
+# Adicionar o usuario do cristiano para rodar os jobs no condor
+# TODO: talvez não seja necessário
+RUN useradd --no-create-home --gid des-brazil --uid 10013 singulani
+
+# Cria o usuario que vai rodar a aplicação e coloca este usuario no grupo des-bazil
+# A aplicação vai estar no home deste usuario.
+RUN useradd --create-home --gid des-brazil --uid 1000 appuser
 WORKDIR /home/appuser
 USER appuser
+
+# Adiciona o path da aplicação ao pythonpath para que o parsl funcione
+ENV PYTHONPATH="/home/appuser:$PYTHONPATH"
+
+# Permissão de escrita, leitura, execução para usuarios do mesmo grupo
+RUN umask 0002
+
 COPY . .
+
+# Copy Requirements.txt from python-deps stage
+# COPY --from=python-deps /requirements.txt /home/appuser/requirements.txt
+
 
 ENTRYPOINT ./entrypoint.sh

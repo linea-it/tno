@@ -20,7 +20,7 @@ from tno.dao.asteroids import AsteroidDao
 from tno.models import BspPlanetary, LeapSecond
 
 from des.astrometry_parsl_apps import increment, proccess_ccd
-from des.astrometry_parsl_config import htex_config
+# from des.astrometry_parsl_config import htex_config
 from des.dao.skybot_position import DesSkybotPositionDao
 
 
@@ -113,15 +113,18 @@ class DesAstrometryPipeline():
         self.result['start'] = t0.isoformat()
 
         try:
+            os.umask(2)
+
             # Criar um diretório para o Job
             self.job_path = self.create_job_path(self.job_id)
 
             # Inicia o time profile
             self.setup_time_profile()
 
-            # Atualizar a tabela de asteroids
-            if self.debug is False:
-                self.update_asteroid_table()
+            # TODO: Mover para uma etapa diferente.
+            # # Atualizar a tabela de asteroids
+            # if self.debug is False:
+            #     self.update_asteroid_table()
 
             # BSP Planetary
             # TODO: Receber como paramatro
@@ -202,7 +205,8 @@ class DesAstrometryPipeline():
                 for ccd in asteroid['ccds']:
 
                     # TODO: path para os CCD só para debug
-                    ccd['path'] = '/archive/ccd_images/Eris'
+                    if self.debug is True:
+                        ccd['path'] = '/archive/ccd_images/Eris'
 
                     task = dict({
                         'name': asteroid['name'],
@@ -218,6 +222,8 @@ class DesAstrometryPipeline():
             self.log.info("Configuring Parsl.")
             parsl.clear()
 
+            # Parametros de configuração do Parsl a partir do settings
+            htex_config = settings.PARSL_CONFIG
             # Altera o diretório de execução do parsl.
             htex_config.run_dir = os.path.join(self.job_path, "runinfo")
             # Carrega as configurações do Parsl.
@@ -274,6 +280,7 @@ class DesAstrometryPipeline():
                         mtp_time_profile)
 
                     # TODO: Adicionar um contador de ccds com falhas.
+                task.done()
 
             parsl.clear()
 
@@ -330,6 +337,7 @@ class DesAstrometryPipeline():
             self.on_error(e)
 
         finally:
+            parsl.clear()
             t1 = datetime.now(timezone.utc)
             tdelta = t1 - t0
 
@@ -589,20 +597,18 @@ class DesAstrometryPipeline():
                 # Para cada ccds pega só os campos que importa
                 # e adiciona ao dict do asteroid
                 for ccd in records:
+                    path = os.path.join(
+                        settings.DES_CCD_CATALOGS_DIR, ccd['path'].replace('OPS', ''))
+
                     asteroid['ccds'].append(dict({
                         'id': ccd['id'],
-                        # 'expnum': ccd['expnum'],
-                        # 'ccdnum': ccd['ccdnum'],
-                        # 'band': ccd['band'],
                         'date_obs': str(ccd['date_obs']),
                         'date_jd': self.date_to_jd(ccd['date_obs'], ccd['exptime'], self.LEAP_SECOND['relative_path']),
                         'exptime': ccd['exptime'],
-                        'path': ccd['path'],
+                        'path': path,
                         'filename': ccd['filename'],
-                        # 'release': ccd['release'],
                     }))
-
-                    # self.log.debug(ccd['path'] + '/' + ccd['filename'])
+                    self.log.debug("CCD Path: %s" % path)
 
                 asteroid['ccds_count'] = len(records)
 
@@ -715,19 +721,27 @@ class DesAstrometryPipeline():
         self.log.info("Update Asteroid Table started")
 
         t0 = datetime.now(timezone.utc)
-        self.result['update_asteroid_table']['start'] = t0.isoformat()
+        # self.result['update_asteroid_table']['start'] = t0.isoformat()
+
+        tp = dict({
+            'status': 'running',
+            'start': t0.isoformat(),
+            'end': None,
+            'exec_time': None,
+            'records_affected': 0
+        })
 
         try:
             records_affected = AsteroidDao().insert_update()
-            self.log.debug("Affected Records: [%s]" % records_affected)
+            self.log.info("Affected Records: [%s]" % records_affected)
 
-            self.result['update_asteroid_table']['records_affected'] = records_affected
-            self.result['update_asteroid_table']['status'] = 'done'
+            tp['records_affected'] = records_affected
+            tp['status'] = 'done'
 
         except Exception as e:
             msg = "Failed on update Asteroid Table. %e" % e
 
-            self.result['update_asteroid_table']['status'] = 'failed'
+            tp['status'] = 'failed'
 
             raise Exception(msg)
 
@@ -735,11 +749,13 @@ class DesAstrometryPipeline():
             t1 = datetime.now(timezone.utc)
             tdelta = t1 - t0
 
-            self.result['update_asteroid_table']['end'] = t1.isoformat()
-            self.result['update_asteroid_table']['exec_time'] = tdelta.total_seconds()
+            tp['end'] = t1.isoformat()
+            tp['exec_time'] = tdelta.total_seconds()
 
             self.log.info("Update Asteroid Table has %s in %s" % (
-                self.result['update_asteroid_table']['status'], self.natural_delta(tdelta)))
+                tp['status'], self.natural_delta(tdelta)))
+
+            self.result['update_asteroid_table'] = tp
 
             # Time Profile
             self.add_time_profile(
