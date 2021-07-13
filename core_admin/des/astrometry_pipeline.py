@@ -19,8 +19,9 @@ from django.conf import settings
 from tno.dao.asteroids import AsteroidDao
 from tno.models import BspPlanetary, LeapSecond
 
-from des.astrometry_parsl_apps import increment, proccess_ccd
-# from des.astrometry_parsl_config import htex_config
+# from des.astrometry_parsl_apps import increment, proccess_ccd
+from astrometry_parsl_pipeline import run_parsl
+
 from des.dao.skybot_position import DesSkybotPositionDao
 
 
@@ -218,118 +219,125 @@ class DesAstrometryPipeline():
                 self.asteroids[asteroid_name] = asteroid
                 del asteroid
 
-            # Inicio da Etapa paralelizada com Parsl.
-            self.log.info("Configuring Parsl.")
-            parsl.clear()
+            self.log.info("Antes de executar o parsl.")
+            results = run_parsl(parsl_tasks, self.job_path)
+            self.log.info("Depois de executar o parsl.")
 
-            # Parametros de configuração do Parsl a partir do settings
-            htex_config = settings.PARSL_CONFIG
-            # Altera o diretório de execução do parsl.
-            htex_config.run_dir = os.path.join(self.job_path, "runinfo")
-            # Carrega as configurações do Parsl.
-            parsl.load(htex_config)
+            self.log.info("Results: [%s]." % len(results))
+            self.log.info(results)
 
-            # Espera as tasks terminarem de ser executadas
-            self.log.info(
-                "Submitting the tasks to Parsl. The tasks will now run in parallel.")
+            # # Inicio da Etapa paralelizada com Parsl.
+            # self.log.info("Configuring Parsl.")
+            # parsl.clear()
 
-            futures = list()
-            for task in parsl_tasks:
-                futures.append(proccess_ccd(
-                    task['name'], task['ccd'], task['path']))
+            # # Parametros de configuração do Parsl a partir do settings
+            # htex_config = settings.PARSL_CONFIG
+            # # Altera o diretório de execução do parsl.
+            # htex_config.run_dir = os.path.join(self.job_path, "runinfo")
+            # # Carrega as configurações do Parsl.
+            # parsl.load(htex_config)
 
-            # Monitoramento parcial das tasks
-            is_done = list()
-            while is_done.count(True) != len(futures):
-                is_done = list()
-                for f in futures:
-                    is_done.append(f.done())
-                self.log.debug("%s/%s" % (is_done.count(True), len(futures)))
-                time.sleep(1)
+            # # Espera as tasks terminarem de ser executadas
+            # self.log.info(
+            #     "Submitting the tasks to Parsl. The tasks will now run in parallel.")
 
-            # TODO: Talvez essa parte da consolidação possa ser paralelizada.
-            # Um dict indexado pelo nome do Asteroid que vai guardar os resultados por ccds
-            temp_results = dict({})
+            # futures = list()
+            # for task in parsl_tasks:
+            #     futures.append(proccess_ccd(
+            #         task['name'], task['ccd'], task['path']))
 
-            self.log.info("Generating list of all observations.")
-            # Lista com TODAS as posições observadas independente do asteroid e ccd.
-            observed_postions = list()
+            # # Monitoramento parcial das tasks
+            # is_done = list()
+            # while is_done.count(True) != len(futures):
+            #     is_done = list()
+            #     for f in futures:
+            #         is_done.append(f.done())
+            #     self.log.debug("%s/%s" % (is_done.count(True), len(futures)))
+            #     time.sleep(1)
 
-            # Espera o Resultado de todos os jobs.
-            for task in futures:
-                asteroid_name, ccd, obs_coordinates, mtp_time_profile = task.result()
+            # # TODO: Talvez essa parte da consolidação possa ser paralelizada.
+            # # Um dict indexado pelo nome do Asteroid que vai guardar os resultados por ccds
+            # temp_results = dict({})
 
-                if asteroid_name not in temp_results:
-                    temp_results[asteroid_name] = dict()
+            # self.log.info("Generating list of all observations.")
+            # # Lista com TODAS as posições observadas independente do asteroid e ccd.
+            # observed_postions = list()
 
-                temp_results[asteroid_name][ccd['id']] = ccd
+            # # Espera o Resultado de todos os jobs.
+            # for task in futures:
+            #     asteroid_name, ccd, obs_coordinates, mtp_time_profile = task.result()
 
-                if obs_coordinates is not None:
-                    # Adiciona o id do asteroid a cada observação, necessário para o preenchimento da tabela de observações.
-                    obs_coordinates.update(
-                        {'asteroid_id': self.asteroids[asteroid_name]['id']})
+            #     if asteroid_name not in temp_results:
+            #         temp_results[asteroid_name] = dict()
 
-                    # Adiciona a observação a lista com todas as observações de todos os asteroids.
-                    observed_postions.append(obs_coordinates)
+            #     temp_results[asteroid_name][ccd['id']] = ccd
 
-                    # Adiciona a posição observada na variavel self.asteroid
-                    self.asteroids[asteroid_name]['observations'].append(
-                        obs_coordinates)
-                    # Adicionao time profile do match position desta task ao time profile do asteroid.
-                    self.asteroids[asteroid_name]['time_profile'].append(
-                        mtp_time_profile)
+            #     if obs_coordinates is not None:
+            #         # Adiciona o id do asteroid a cada observação, necessário para o preenchimento da tabela de observações.
+            #         obs_coordinates.update(
+            #             {'asteroid_id': self.asteroids[asteroid_name]['id']})
 
-                    # TODO: Adicionar um contador de ccds com falhas.
-                task.done()
+            #         # Adiciona a observação a lista com todas as observações de todos os asteroids.
+            #         observed_postions.append(obs_coordinates)
 
-            parsl.clear()
+            #         # Adiciona a posição observada na variavel self.asteroid
+            #         self.asteroids[asteroid_name]['observations'].append(
+            #             obs_coordinates)
+            #         # Adicionao time profile do match position desta task ao time profile do asteroid.
+            #         self.asteroids[asteroid_name]['time_profile'].append(
+            #             mtp_time_profile)
 
-            self.log.info("End of parallel tasks.")
+            #         # TODO: Adicionar um contador de ccds com falhas.
+            #     task.done()
+
+            # parsl.clear()
+
+            # self.log.info("End of parallel tasks.")
 
             # Etapa de Consolidação volta a ser sequencial.
 
             # TODO: Tratar/Filtrar a lista de observações
 
             # TODO: Ingerir na tabela de posições observadas.
-            self.ingest_observations(observed_postions)
+            # self.ingest_observations(observed_postions)
 
-            # Guardar no diretório de cada Asteroid o dict completo com dados para debug.
-            for asteroid_name in self.asteroids:
-                asteroid = self.asteroids[asteroid_name]
+            # # Guardar no diretório de cada Asteroid o dict completo com dados para debug.
+            # for asteroid_name in self.asteroids:
+            #     asteroid = self.asteroids[asteroid_name]
 
-                # Para cada ccd do asteroid procura no resultado temporario
-                for ccd in asteroid['ccds']:
-                    if ccd['id'] in temp_results[asteroid_name]:
+            #     # Para cada ccd do asteroid procura no resultado temporario
+            #     for ccd in asteroid['ccds']:
+            #         if ccd['id'] in temp_results[asteroid_name]:
 
-                        # Atualiza os dados de ccd do asteroid com os retornados pela função proccess_ccd.
-                        result_ccd = temp_results[asteroid_name][ccd['id']]
-                        ccd.update(result_ccd)
+            #             # Atualiza os dados de ccd do asteroid com os retornados pela função proccess_ccd.
+            #             result_ccd = temp_results[asteroid_name][ccd['id']]
+            #             ccd.update(result_ccd)
 
-                exec_time = 0
-                # TODO: Criar uma função que calcule o tempo de execução individual por asteroid
-                # deve pegar a menor start e a maior end da etapa match_position e fazer a diferença.
-                # a_start_match = list()
-                # for tp in asteroid['time_profile']:
-                #     exec_time += tp['exec_time']
+            #     exec_time = 0
+            #     # TODO: Criar uma função que calcule o tempo de execução individual por asteroid
+            #     # deve pegar a menor start e a maior end da etapa match_position e fazer a diferença.
+            #     # a_start_match = list()
+            #     # for tp in asteroid['time_profile']:
+            #     #     exec_time += tp['exec_time']
 
-                # Retira da variavel temp_result os dados deste asteroid.
-                del temp_results[asteroid_name]
+            #     # Retira da variavel temp_result os dados deste asteroid.
+            #     del temp_results[asteroid_name]
 
-                # self.log.debug(asteroid)
-                # TODO: Definir regra para avaliar se o asteroid deu sucesso ou falhou.
-                asteroid.update({
-                    'status': 'done',
-                    'exec_time': exec_time,
-                    'h_exec_time': humanize.naturaldelta(timedelta(seconds=exec_time), minimum_unit='microseconds'),
-                    'observations_count': len(asteroid['observations'])
-                })
+            #     # self.log.debug(asteroid)
+            #     # TODO: Definir regra para avaliar se o asteroid deu sucesso ou falhou.
+            #     asteroid.update({
+            #         'status': 'done',
+            #         'exec_time': exec_time,
+            #         'h_exec_time': humanize.naturaldelta(timedelta(seconds=exec_time), minimum_unit='microseconds'),
+            #         'observations_count': len(asteroid['observations'])
+            #     })
 
-                # Escreve no diretório do asteroid um arquivo json compactado
-                # com os todas as informações utilizadas no processamento.
-                zipfilepath = os.path.join(
-                    asteroid['path'], asteroid['alias'] + '.json.gz')
-                with gzip.open(zipfilepath, 'wt', encoding='UTF-8') as zipfile:
-                    json.dump(asteroid, zipfile)
+            #     # Escreve no diretório do asteroid um arquivo json compactado
+            #     # com os todas as informações utilizadas no processamento.
+            #     zipfilepath = os.path.join(
+            #         asteroid['path'], asteroid['alias'] + '.json.gz')
+            #     with gzip.open(zipfilepath, 'wt', encoding='UTF-8') as zipfile:
+            #         json.dump(asteroid, zipfile)
 
             self.result['status'] = 'done'
 

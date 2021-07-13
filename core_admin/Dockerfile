@@ -55,6 +55,8 @@ USER appuser
 # Adiciona o path da aplicação ao pythonpath para que o parsl funcione
 ENV PYTHONPATH="/home/appuser:$PYTHONPATH"
 
+ENV PYTHONPATH="/teste_parsl:$PYTHONPATH"
+
 # Permissão de escrita, leitura, execução para usuarios do mesmo grupo
 RUN umask 0002
 
