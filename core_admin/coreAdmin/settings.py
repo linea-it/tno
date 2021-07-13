@@ -148,9 +148,9 @@ INSTALLED_APPS = [
     'common',
     'tno',
     'skybot',
-    'praia',
-    'orbit',
-    'predict',
+    # 'praia',
+    # 'orbit',
+    # 'predict',
     'des',
 
 ]
