@@ -25,12 +25,15 @@ from tno.auth_shibboleth import ShibbolethBackend
 @api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
+        # debug = request.query_params.get('debug', False)
 
-        debug = request.query_params.get('debug', False)
+        # from des.astrometry_pipeline import DesAstrometryPipeline
 
-        from des.astrometry_pipeline import DesAstrometryPipeline
+        # DesAstrometryPipeline(debug=bool(debug)).run(1)
 
-        DesAstrometryPipeline(debug=bool(debug)).run(1)
+        from des.astrometry_daemon import check_jobs_to_run
+
+        check_jobs_to_run()
 
         result = dict({
             'success': True,

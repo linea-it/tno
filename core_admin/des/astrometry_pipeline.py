@@ -1,3 +1,4 @@
+from des.models.astrometry_job import AstrometryJob
 import gzip
 import json
 import logging
@@ -20,7 +21,7 @@ from tno.dao.asteroids import AsteroidDao
 from tno.models import BspPlanetary, LeapSecond
 
 # from des.astrometry_parsl_apps import increment, proccess_ccd
-from astrometry_parsl_pipeline import run_parsl
+# from astrometry_parsl_pipeline import run_parsl
 
 from des.dao.skybot_position import DesSkybotPositionDao
 
@@ -42,34 +43,23 @@ class DesAstrometryPipeline():
 
     result = dict({
         'status': None,
+        'submit_time': None,
         'start': None,
         'end': None,
         'exec_time': None,
-        'error': None,
+        'path': None,
+        'bsp_planetary': None,
+        'leap_seconds': None,
+        'period': [],
+        'observatory_location': [],
+        'match_radius': 0,
+        'expected_asteroids': 0,
+        'processed_asteroids': 0,
+        'filter_type': None,
+        'filter_value': None,
+        'time_profile': list(),
         'traceback': None,
-        'update_asteroid_table': {
-            'status': None,
-            'start': None,
-            'end': None,
-            'exec_time': 0,
-            'records_affected': 0
-        },
-        'retrieve_asteroids': {
-            'status': None,
-            'start': None,
-            'end': None,
-            'exec_time': 0,
-            'records': 0
-        },
-        # 'retrieve_ccds': {
-        #     'status': None,
-        #     'start': None,
-        #     'end': None,
-        #     'exec_time': 0,
-        #     'records': 0
-        # },
-        'asteroids_csv': None,
-        'time_profile': None
+        'error': None,
     })
 
     job_path = None
@@ -88,6 +78,8 @@ class DesAstrometryPipeline():
     BSP_PLANETARY = None
 
     LEAP_SECOND = None
+
+    MATCH_RADIUS = 2
 
     def __init__(self, debug=False):
         self.log = logging.getLogger("des_astrometry")
@@ -820,7 +812,6 @@ class DesAstrometryPipeline():
         return dict({
             'name': name,
             'filename': os.path.basename(relative_path),
-            'relative_path': relative_path,
             'absolute_path': absolute_path
         })
 
@@ -836,7 +827,6 @@ class DesAstrometryPipeline():
         return dict({
             'name': name,
             'filename': os.path.basename(relative_path),
-            'relative_path': relative_path,
             'absolute_path': absolute_path
         })
 
@@ -885,6 +875,42 @@ class DesAstrometryPipeline():
             self.log.info("A directory has been created for the job.")
 
         return path
+
+    def prepare_job(self, job_id):
+
+        job = AstrometryJob.objects.get(pk=job_id)
+
+        jobpath = self.create_job_path(job_id)
+
+        job_info = self.result
+
+        job_info.update({
+            'status': job.status,
+            'submit_time': job.start.isoformat(),
+            'path': jobpath,
+            'bsp_planetary': self.get_bsp_planetary('de435'),
+            'leap_seconds': self.get_leap_second('naif0012'),
+            'period': [self.DES_START_PERIOD, self.DES_FINISH_PERIOD],
+            'observatory_location': self.OBSERVATORY_LOCATION,
+            'match_radius': self.MATCH_RADIUS,
+            'expected_asteroids': job.asteroids
+        })
+
+        if job.asteroids is not None and job.asteroids is not '':
+            job_info.update({
+                'filter_type': 'name',
+                'filter_value': job.asteroids
+            })
+        else:
+            job_info.update({
+                'filter_type': 'dynclass',
+                'filter_value': job.dynclass
+            })
+
+        with open(os.path.join(jobpath, 'job.json'), 'w') as f:
+            json.dump(job_info, f)
+
+        return jobpath
 
     def prepare_override_run(self):
 

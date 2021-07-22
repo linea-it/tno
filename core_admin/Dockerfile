@@ -27,7 +27,7 @@ RUN pip install pipenv
 
 # Install python dependencies in /.venv
 COPY Pipfile .
-COPY Pipfile.lock .
+# COPY Pipfile.lock .
 
 RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
 
@@ -56,6 +56,7 @@ USER appuser
 ENV PYTHONPATH="/home/appuser:$PYTHONPATH"
 
 ENV PYTHONPATH="/teste_parsl:$PYTHONPATH"
+ENV PYTHONPATH="/orbit_trace:$PYTHONPATH"
 
 # Permissão de escrita, leitura, execução para usuarios do mesmo grupo
 RUN umask 0002

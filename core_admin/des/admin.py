@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import (Ccd, DownloadCcdJob, DownloadCcdJobResult, Exposure,
                      SkybotJob, SkybotJobResult, SkybotPosition,
-                     SummaryDynclass, SkybotByYear, SkybotByDynclass, Observation)
+                     SummaryDynclass, SkybotByYear, SkybotByDynclass, Observation, AstrometryJob)
 
 
 @admin.register(Exposure)
@@ -152,3 +152,9 @@ class ObservationAdmin(admin.ModelAdmin):
     # Troca o tipo de imput de Select para um text field com botao de busca
     # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
     raw_id_fields = ('asteroid', 'ccd',)
+
+
+@admin.register(AstrometryJob)
+class AstrometryJobAdmin(admin.ModelAdmin):
+    list_display = ('id', 'status', 'owner', 'start',
+                    'finish', 'execution_time', 't_asteroids', )

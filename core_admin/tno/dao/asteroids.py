@@ -1,4 +1,4 @@
-from sqlalchemy import Date, cast, func
+from sqlalchemy import func
 from sqlalchemy.sql import and_, select, text
 
 from tno.db import DBBase
@@ -40,6 +40,19 @@ class AsteroidDao(DBBase):
         self.debug_query(stm, True)
 
         rows = self.fetch_all_dict(stm)
+
+        return rows
+
+    def count_asteroids_by_base_dynclass(self, dynclass):
+
+        tbl = self.get_tbl()
+
+        stm = select([func.count(tbl.c.name)]).where(
+            and_(tbl.c.base_dynclass == dynclass))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalar(stm)
 
         return rows
 
