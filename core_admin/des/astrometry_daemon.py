@@ -16,9 +16,9 @@ def check_jobs_to_run():
     import logging
     log = logging.getLogger('des_astrometry')
 
-    job_test = AstrometryJob.objects.get(id=8)
-    job_test.status = 1
-    job_test.save()
+    # job_test = AstrometryJob.objects.get(id=1)
+    # job_test.status = 1
+    # job_test.save()
 
     # Verificar se já existe algum job com status Running ou Lauched.
     running = AstrometryJob.objects.filter(status__in=[2, 7])

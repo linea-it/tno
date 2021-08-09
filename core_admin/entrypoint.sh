@@ -6,7 +6,6 @@ YELLOW='\033[00;33m'
 NO_COLOR='\033[0m'
 
 # Se nao tiver o manage.py e a primeira vez que o container e executado, apenas abre o terminal.
-ls
 if [ -e manage.py ]
 then
     # Adicionar o diretório da aplicação na variavel pythonpath 

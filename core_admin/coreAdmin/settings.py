@@ -48,17 +48,17 @@ if not os.path.exists(DES_ASTROMETRY_OUTPUT):
     os.mkdir(DES_ASTROMETRY_OUTPUT)
 
 
-OBSERVATIONS_DIR = os.path.join(ARCHIVE_DIR, "observations")
-if not os.path.exists(OBSERVATIONS_DIR):
-    os.mkdir(OBSERVATIONS_DIR)
+# OBSERVATIONS_DIR = os.path.join(ARCHIVE_DIR, "observations")
+# if not os.path.exists(OBSERVATIONS_DIR):
+#     os.mkdir(OBSERVATIONS_DIR)
 
-ORBITAL_PARAMETERS_DIR = os.path.join(ARCHIVE_DIR, "orbital_parameters")
-if not os.path.exists(ORBITAL_PARAMETERS_DIR):
-    os.mkdir(ORBITAL_PARAMETERS_DIR)
+# ORBITAL_PARAMETERS_DIR = os.path.join(ARCHIVE_DIR, "orbital_parameters")
+# if not os.path.exists(ORBITAL_PARAMETERS_DIR):
+#     os.mkdir(ORBITAL_PARAMETERS_DIR)
 
-BSP_JPL_DIR = os.path.join(ARCHIVE_DIR, "bsp_jpl")
-if not os.path.exists(BSP_JPL_DIR):
-    os.mkdir(BSP_JPL_DIR)
+# BSP_JPL_DIR = os.path.join(ARCHIVE_DIR, "bsp_jpl")
+# if not os.path.exists(BSP_JPL_DIR):
+#     os.mkdir(BSP_JPL_DIR)
 
 
 LEAP_ROOT = 'leap_seconds'
@@ -76,11 +76,11 @@ JHONSTONS_ARCHIVE = os.path.join(ARCHIVE_DIR, JHONSTONS_ARCHIVE_ROOT)
 if not os.path.exists(JHONSTONS_ARCHIVE):
     os.mkdir(JHONSTONS_ARCHIVE)
 
-# TODO:  Este diretorio e provisorio faz parte da simulacao do PRAIA.
-ASTROMETRY_POSITIONS_DIR = os.path.join(ARCHIVE_DIR, "astrometry_positions")
-if not os.path.exists(ASTROMETRY_POSITIONS_DIR):
-    os.mkdir(ASTROMETRY_POSITIONS_DIR)
-    os.chmod(ASTROMETRY_POSITIONS_DIR, 0o775)
+# # TODO:  Este diretorio e provisorio faz parte da simulacao do PRAIA.
+# ASTROMETRY_POSITIONS_DIR = os.path.join(ARCHIVE_DIR, "astrometry_positions")
+# if not os.path.exists(ASTROMETRY_POSITIONS_DIR):
+#     os.mkdir(ASTROMETRY_POSITIONS_DIR)
+#     os.chmod(ASTROMETRY_POSITIONS_DIR, 0o775)
 
 MEDIA_ROOT = ARCHIVE_DIR
 MEDIA_URL = '/media/'

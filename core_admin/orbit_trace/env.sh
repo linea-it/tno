@@ -1,8 +1,8 @@
-export ORBIT_TRACE=/archive/tmp/singulani/tno/orbit_trace
+export ORBIT_TRACE=/archive/des/tno/development/orbit_trace
 export PYTHONPATH=$PYTHONPATH:$ORBIT_TRACE
-export CONDAPATH=/home/singulani/miniconda3/bin
+export CONDAPATH=/home/glauber.costa/miniconda3/bin
 
 source $CONDAPATH/activate
-conda activate tno-parsl
+conda activate tno_orbit_trace
 
 umask 0002

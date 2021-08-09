@@ -1,15 +1,14 @@
 from sqlalchemy import create_engine, Table, MetaData
-from sqlalchemy.sql import select, and_
+from sqlalchemy.sql import select, delete, update, and_
 import collections
 from config import *
-
+import datetime
 
 class Dao():
 
-    def get_db_engine(self):
+    con = None
 
-        # engine = create_engine(
-        #     'postgresql+psycopg2://postgres:postgres@srvnode03.linea.gov.br:5454/postgres')
+    def get_db_engine(self):
 
         engine = create_engine(
             'postgresql+psycopg2://%s:%s@%s:%s/%s' % (
@@ -21,6 +20,13 @@ class Dao():
 
         return engine
 
+    def get_con(self):
+        if self.con is None:
+            engine = self.get_db_engine()
+            self.con = engine.connect()
+
+        return self.con
+
     def get_table(self, tablename, schema=None):
         engine = self.get_db_engine()
         tbl = Table(
@@ -28,9 +34,9 @@ class Dao():
         return tbl
 
     def fetch_all_dict(self, stm):
-
         engine = self.get_db_engine()
-        with engine.connect() as con:
+        with engine.connect() as con:        
+
             queryset = con.execute(stm)
 
             rows = list()
@@ -42,7 +48,8 @@ class Dao():
 
     def fetch_one_dict(self, stm):
         engine = self.get_db_engine()
-        with engine.connect() as con:
+        with engine.connect() as con:   
+
             queryset = con.execute(stm).fetchone()
 
             if queryset is not None:
@@ -50,6 +57,7 @@ class Dao():
                 return d
             else:
                 return None
+
 
     def get_job_by_id(self, id):
 
@@ -95,6 +103,8 @@ class Dao():
         finally:
             connection.close()
 
+                
+
 
 class AsteroidDao(Dao):
     def __init__(self):
@@ -112,7 +122,7 @@ class AsteroidDao(Dao):
 
     def get_asteroids_by_dynclass(self, dynclass):
 
-        stm = select(self.tbl.c).where(and_(self.tbl.c.dynclass.in_(dynclass)))
+        stm = select(self.tbl.c).where(and_(self.tbl.c.base_dynclass == dynclass))
 
         rows = self.fetch_all_dict(stm)
 
@@ -150,3 +160,50 @@ class AsteroidDao(Dao):
         rows = self.fetch_all_dict(stm)
 
         return rows
+
+
+class ObservationDao(Dao):
+    def __init__(self):
+        super(ObservationDao, self).__init__()
+
+        self.tbl = self.get_table('des_observation')
+
+    def delete_by_asteroid_name(self, name):
+
+        stm = delete(self.tbl).where(and_(self.tbl.c.name == name))
+
+        engine = self.get_db_engine()
+        with engine.connect() as con:   
+            rows = con.execute(stm)
+
+            return rows
+
+class AstrometryJobDao(Dao):
+    def __init__(self):
+        super(AstrometryJobDao, self).__init__()
+
+        self.tbl = self.get_table('des_astrometryjob')
+
+    def get_job_by_id(self, id):
+
+        stm = select(self.tbl.c).where(and_(tbl.c.id == int(id)))
+
+        return self.fetch_one_dict(stm)
+
+
+    def update_job(self, job):
+
+        stm = update(self.tbl).where(and_(self.tbl.c.id == int(job['id']))).values(
+            status=job['status'],
+            start=job['start'],
+            finish=job['end'],
+            execution_time=datetime.timedelta(seconds=job['exec_time']),
+            error=job['error'],
+            traceback=job['traceback'],
+        )
+        
+        engine = self.get_db_engine()
+        with engine.connect() as con:   
+            return  con.execute(stm)
+
+        

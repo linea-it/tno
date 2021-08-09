@@ -20,6 +20,8 @@ from django.conf import settings
 from tno.dao.asteroids import AsteroidDao
 from tno.models import BspPlanetary, LeapSecond
 
+import pathlib
+
 # from des.astrometry_parsl_apps import increment, proccess_ccd
 # from astrometry_parsl_pipeline import run_parsl
 
@@ -42,6 +44,7 @@ class NoRecordsFound(Exception):
 class DesAstrometryPipeline():
 
     result = dict({
+        'id': 0,
         'status': None,
         'submit_time': None,
         'start': None,
@@ -57,6 +60,9 @@ class DesAstrometryPipeline():
         'processed_asteroids': 0,
         'filter_type': None,
         'filter_value': None,
+        'count_asteroids': 0,
+        'count_ccds': 0,
+        'count_observations': 0,
         'time_profile': list(),
         'traceback': None,
         'error': None,
@@ -807,7 +813,7 @@ class DesAstrometryPipeline():
         relative_path = os.path.join(settings.ARCHIVE_DIR, str(record.upload))
 
         absolute_path = os.path.join(
-            settings.HOST_ARCHIVE_DIR, str(record.upload))
+            settings.BSP_PLANETARY, os.path.basename(relative_path))
 
         return dict({
             'name': name,
@@ -822,7 +828,7 @@ class DesAstrometryPipeline():
         relative_path = os.path.join(settings.ARCHIVE_DIR, str(record.upload))
 
         absolute_path = os.path.join(
-            settings.HOST_ARCHIVE_DIR, str(record.upload))
+            settings.LEAP_SECONDS, os.path.basename(relative_path))
 
         return dict({
             'name': name,
@@ -861,6 +867,7 @@ class DesAstrometryPipeline():
 
         if not os.path.exists(path):
             os.mkdir(path)
+            os.chmod(path, 0o764)
             self.log.info(
                 "A directory has been created for the Asteroid [%s]." % asteroid_name)
 
@@ -868,13 +875,19 @@ class DesAstrometryPipeline():
 
     def create_job_path(self, job_id):
 
-        path = self.get_job_path(job_id)
+        jobpath = pathlib.Path(self.get_job_path(job_id))
 
-        if not os.path.exists(path):
-            os.mkdir(path)
-            self.log.info("A directory has been created for the job.")
+        jobpath.mkdir(parents=True, exist_ok=True)
+        jobpath.chmod(0o775)
 
-        return path
+        self.log.info("A directory has been created for the job.")
+
+        # if not os.path.exists(path):
+        #     os.mkdir(path)
+        #     os.chmod(path, 0o775)
+        #     self.log.info("A directory has been created for the job.")
+
+        return str(jobpath)
 
     def prepare_job(self, job_id):
 
@@ -882,18 +895,28 @@ class DesAstrometryPipeline():
 
         jobpath = self.create_job_path(job_id)
 
+        job.path = jobpath
+        job.save()
+
         job_info = self.result
 
         job_info.update({
+            'id': job.id,
             'status': job.status,
-            'submit_time': job.start.isoformat(),
+            'submit_time': job.submit_time.isoformat(),
+            'start': None,
+            'end': None,
+            'exec_time': 0,
             'path': jobpath,
             'bsp_planetary': self.get_bsp_planetary('de435'),
             'leap_seconds': self.get_leap_second('naif0012'),
             'period': [self.DES_START_PERIOD, self.DES_FINISH_PERIOD],
             'observatory_location': self.OBSERVATORY_LOCATION,
             'match_radius': self.MATCH_RADIUS,
-            'expected_asteroids': job.asteroids
+            'expected_asteroids': job.asteroids,
+            'time_profile': list(),
+            'traceback': None,
+            'error': None,
         })
 
         if job.asteroids is not None and job.asteroids is not '':
@@ -907,8 +930,11 @@ class DesAstrometryPipeline():
                 'filter_value': job.dynclass
             })
 
-        with open(os.path.join(jobpath, 'job.json'), 'w') as f:
+        jobfile = os.path.join(jobpath, 'job.json')
+        with open(jobfile, 'w') as f:
             json.dump(job_info, f)
+
+        os.chmod(jobfile, 0o664)
 
         return jobpath
 

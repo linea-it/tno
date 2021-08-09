@@ -54,9 +54,19 @@ class AstrometryJob(models.Model):
     )
 
     # Momento em que o Job foi criado.
+    submit_time = models.DateTimeField(
+        verbose_name='Submit Time',
+        auto_now_add=True,
+        null=True,
+        blank=True,
+    )
+
+    # Momento em que o Job foi criado.
     start = models.DateTimeField(
         verbose_name='Start',
-        auto_now_add=True,
+        auto_now_add=False,
+        null=True,
+        blank=True
     )
 
     # Momento em que o Job foi finalizado.
@@ -101,6 +111,12 @@ class AstrometryJob(models.Model):
     # e a exeção e guardada neste campo.
     error = models.TextField(
         verbose_name="Error",
+        null=True,
+        blank=True
+    )
+
+    traceback = models.TextField(
+        verbose_name="Traceback",
         null=True,
         blank=True
     )
