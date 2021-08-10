@@ -22,7 +22,6 @@ from dao import AsteroidDao, AstrometryJobDao
 import time
 import traceback
 import parsl
-# from config import htex_config, condor_config
 from config import htex_config, DES_CATALOGS_BASEPATH
 import pathlib
 import json
@@ -92,19 +91,32 @@ try:
     parsl.clear()
 
     htex_config.run_dir = os.path.join(current_path, "runinfo")
-    # Htcondor config with full nodes
-    htex_config.executors[0].provider.channel.script_dir = os.path.join(current_path, "script_dir")
-    # Htcondor config with Limited nodes
-    htex_config.executors[1].provider.channel.script_dir = os.path.join(current_path, "script_dir")
-    
-    # Adicionar o ID do processo ao arquivo de submissão do condor
-    htex_config.executors[0].provider.scheduler_options += '+AppId = {}\n'.format(jobid)
-    htex_config.executors[1].provider.scheduler_options += '+AppId = {}\n'.format(jobid)
 
+    # Verifica se a configuração tem a label htcondor
+    try:
+        # Htcondor config with full nodes
+        htex_config.executors[0].provider.channel.script_dir = os.path.join(
+            current_path, "script_dir")
+
+        # Adicionar o ID do processo ao arquivo de submissão do condor
+        htex_config.executors[0].provider.scheduler_options += '+AppId = {}\n'.format(
+            jobid)
+
+        # Htcondor config with Limited nodes
+        htex_config.executors[1].provider.channel.script_dir = os.path.join(
+            current_path, "script_dir")
+
+        htex_config.executors[1].provider.scheduler_options += '+AppId = {}\n'.format(
+            jobid)
+    except:
+        # Considera que é uma execução local
+        pass
 
     parsl.load(htex_config)
 
     log.info("Parsl Load finished")
+
+    # =========================== Asteroids ===========================
 
     # Retrieve Asteroids.
     log.info("Retriving Asteroids started")
@@ -135,8 +147,13 @@ try:
 
     log.info("Asteroids Count: %s" % job['processed_asteroids'])
 
-    log.info("Retriving Asteroids Finished in %s" % humanize.naturaldelta(step_tdelta, minimum_unit='microseconds'))
+    log.info("Retriving Asteroids Finished in %s" %
+             humanize.naturaldelta(step_tdelta, minimum_unit='microseconds'))
 
+    # Update Job File
+    write_job_file(current_path, job)
+
+    # =========================== CCDs ===========================
     # Retrieve CCDs
     log.info("Retriving CCDs started")
 
@@ -153,16 +170,17 @@ try:
 
             if len(result['ccds']) == 0:
                 asteroid.update({'status': 'failure', 'ccds': []})
-                # TODO: Se o asteroid falhou deve ser escrito no diretório o json e removido do array asteroids            
+                # TODO: Se o asteroid falhou deve ser escrito no diretório o json e removido do array asteroids
             else:
                 asteroid.update({'ccds': result['ccds']})
 
-            log.debug("Asteroid: [%s] CCDs: [%s]" % (asteroid['name'], len(asteroid['ccds'])))
+            log.debug("Asteroid: [%s] CCDs: [%s]" %
+                      (asteroid['name'], len(asteroid['ccds'])))
 
         i += 1
-        
+
         log.debug("Query CCDs: %s/%s" % (i, len(asteroids)))
-   
+
     job.update({'count_ccds': count_ccds})
 
     step_t1 = datetime.now(tz=timezone.utc)
@@ -177,8 +195,13 @@ try:
     }))
 
     log.info("CCDs Count: %s" % count_ccds)
-    log.info("Retriving CCDs Finished in %s" % humanize.naturaldelta(step_tdelta, minimum_unit='microseconds'))
-        
+    log.info("Retriving CCDs Finished in %s" %
+             humanize.naturaldelta(step_tdelta, minimum_unit='microseconds'))
+
+    # Update Job File
+    write_job_file(current_path, job)
+
+    # =========================== BSP ===========================
     # Retrieve BSPs
     # Etapa sequencial
     log.info("Retriving BSP JPL started")
@@ -209,7 +232,6 @@ try:
             asteroid.update({'status': 'failure'})
             # TODO: Se o asteroid falhou deve ser escrito no diretório o json e removido do array asteroids
 
-
     step_t1 = datetime.now(tz=timezone.utc)
     step_tdelta = step_t1 - step_t0
 
@@ -221,8 +243,13 @@ try:
         'exec_time': step_tdelta.total_seconds()
     }))
 
-    log.info("Retriving BSP JPL Finished %s" % humanize.naturaldelta(step_tdelta, minimum_unit='microseconds'))
+    log.info("Retriving BSP JPL Finished %s" %
+             humanize.naturaldelta(step_tdelta, minimum_unit='microseconds'))
 
+    # Update Job File
+    write_job_file(current_path, job)
+
+    # =========================== Theoretical ===========================
     # Calculando as posições teoricas
     log.info("Calculating theoretical positions started")
 
@@ -234,14 +261,14 @@ try:
             futures.append(theoretical_positions(
                 asteroid, BSP_PLANETARY, LEAP_SECOND, OBSERVATORY_LOCATION))
 
-
     # Monitoramento parcial das tasks
     is_done = list()
     while is_done.count(True) != len(futures):
         is_done = list()
         for f in futures:
             is_done.append(f.done())
-        log.debug("Theoretical Positions running: %s/%s" % (is_done.count(True), len(futures)))
+        log.debug("Theoretical Positions running: %s/%s" %
+                  (is_done.count(True), len(futures)))
         time.sleep(1)
 
     # asteroids = [i.result() for i in futures]
@@ -251,11 +278,12 @@ try:
 
         if asteroid['status'] == 'failure':
             pass
-            # TODO: Se o asteroid falhou deve ser escrito no diretório o json e removido do array asteroids                
+            # TODO: Se o asteroid falhou deve ser escrito no diretório o json e removido do array asteroids
         else:
             asteroids.append(asteroid)
 
-    log.info("Calculating theoretical positions Finished %s" % humanize.naturaldelta(step_tdelta, minimum_unit='microseconds'))
+    log.info("Calculating theoretical positions Finished %s" %
+             humanize.naturaldelta(step_tdelta, minimum_unit='microseconds'))
 
     step_t1 = datetime.now(tz=timezone.utc)
     step_tdelta = step_t1 - step_t0
@@ -268,7 +296,11 @@ try:
         'exec_time': step_tdelta.total_seconds()
     }))
 
-    # Calculando as posições teoricas
+    # Update Job File
+    write_job_file(current_path, job)
+
+    # =========================== Observed ===========================
+    # Calculando as posições Observadas
     log.info("Calculating observed positions started")
 
     step_t0 = datetime.now(tz=timezone.utc)
@@ -280,7 +312,8 @@ try:
             for ccd in asteroid['ccds']:
                 if ccd['theoretical_coordinates'] is not None:
                     # Monta o path para os catalogos
-                    ccd['path'] = os.path.join(DES_CATALOGS_BASEPATH, ccd['path'])
+                    ccd['path'] = os.path.join(
+                        DES_CATALOGS_BASEPATH, ccd['path'])
 
                     # TODO: Path hardcoded remover para rodar no ambiente.
                     #ccd['path'] = '/archive/ccd_images/Eris'
@@ -301,7 +334,8 @@ try:
         is_done = list()
         for f in futures:
             is_done.append(f.done())
-        log.debug("Observed Positions running: %s/%s" % (is_done.count(True), len(futures)))
+        log.debug("Observed Positions running: %s/%s" %
+                  (is_done.count(True), len(futures)))
         time.sleep(1)
 
     results = dict({})
@@ -343,9 +377,13 @@ try:
     }))
 
     log.info("Observations Count: %s" % count_observations)
-    log.info("Calculating observed positions Finished %s" % humanize.naturaldelta(step_tdelta, minimum_unit='microseconds'))
+    log.info("Calculating observed positions Finished %s" %
+             humanize.naturaldelta(step_tdelta, minimum_unit='microseconds'))
 
+    # Update Job File
+    write_job_file(current_path, job)
 
+    # =========================== Ingest Observations ===========================
     # Ingere as posições observadas no banco de dados
     # ETAPA SEQUENCIAL!
     log.info("Ingest the observations into the database started")
@@ -373,9 +411,13 @@ try:
     }))
 
     log.info("Observations Ingested: %s" % ingested_obs)
-    log.info("Ingest the observations into the database Finished %s" % humanize.naturaldelta(step_tdelta, minimum_unit='microseconds'))
+    log.info("Ingest the observations into the database Finished %s" %
+             humanize.naturaldelta(step_tdelta, minimum_unit='microseconds'))
 
+    # Update Job File
+    write_job_file(current_path, job)
 
+    # =========================== Asteroids Json ===========================
     log.info("Write Asteroid Data in json started")
     futures = list()
     for asteroid in asteroids:
@@ -384,7 +426,8 @@ try:
 
     asteroids = [i.result() for i in futures]
 
-    log.info("Write Asteroid Data in json Finish %s" % humanize.naturaldelta(step_tdelta, minimum_unit='microseconds'))
+    log.info("Write Asteroid Data in json Finish %s" %
+             humanize.naturaldelta(step_tdelta, minimum_unit='microseconds'))
 
     # Status 3 = Completed
     job.update({'status': 'Completed'})
@@ -421,4 +464,3 @@ finally:
 
     log.info("Execution Time: %s" % tdelta)
     log.info("Identification of DES object is done!.")
-

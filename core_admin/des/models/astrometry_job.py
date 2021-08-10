@@ -98,6 +98,20 @@ class AstrometryJob(models.Model):
         default=0
     )
 
+    # Total de ccds que serão executadas neste Job.
+    t_ccds = models.BigIntegerField(
+        verbose_name='Total CCDs',
+        help_text='total ccds that were run in this job',
+        default=0
+    )
+
+    # Total de observations calculadas neste Job.
+    t_observations = models.BigIntegerField(
+        verbose_name='Total Observations',
+        help_text='Total observations processed in this job',
+        default=0
+    )
+
     # Pasta onde estão os dados do Job.
     path = models.CharField(
         max_length=2048,

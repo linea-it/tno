@@ -46,15 +46,18 @@ def teste(request):
 def teste2(request):
     if request.method == 'GET':
 
-        import gzip
-        import json
+        from des.astrometry_daemon import check_jobs_running
+
+        check_jobs_running()
+
+        # import gzip
+        # import json
+        # with gzip.open('/archive/des_astrometry/des_astrometry_1/Eris/Eris.json.gz', 'rt', encoding='UTF-8') as zipfile:
+        #     result = json.load(zipfile)
 
         result = dict({
             'success': True,
         })
-
-        with gzip.open('/archive/des_astrometry/des_astrometry_1/Eris/Eris.json.gz', 'rt', encoding='UTF-8') as zipfile:
-            result = json.load(zipfile)
 
         return Response(result)
 

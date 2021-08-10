@@ -16,10 +16,6 @@ def check_jobs_to_run():
     import logging
     log = logging.getLogger('des_astrometry')
 
-    # job_test = AstrometryJob.objects.get(id=1)
-    # job_test.status = 1
-    # job_test.save()
-
     # Verificar se já existe algum job com status Running ou Lauched.
     running = AstrometryJob.objects.filter(status__in=[2, 7])
     log.debug("Running Jobs: %s" % len(running))
@@ -31,15 +27,14 @@ def check_jobs_to_run():
         log.debug("Idle Jobs: %s" % len(idle))
 
         if len(idle) > 0:
+
             to_run = idle[0]
 
             jobid = to_run.id
-            # jobpath = DesAstrometryPipeline().create_job_path(jobid)
+            # Prepare Job to Run
             jobpath = DesAstrometryPipeline().prepare_job(jobid)
 
             log.debug("Jobid: [%s] JobPath: [%s]" % (jobid, jobpath))
-
-            # args = "umask 0002 && python /orbit_trace/orbit_trace.py %s %s"
 
             args = "/home/appuser/run_astrometry.sh %s %s" % (
                 str(jobid), jobpath)
@@ -48,20 +43,49 @@ def check_jobs_to_run():
             subprocess.Popen(args, shell=True,)
 
             # Altera o status para Launched
+            to_run.refresh_from_db()
             to_run.status = 7
             to_run.save()
 
             log.debug("Des Astrometry JobId[%s] Launched! log can be tracked on path: [%s]" % (
                 jobid, jobpath))
 
-# scheduler = BackgroundScheduler()
-# scheduler.add_job(
-#     check_jobs_idle,
-#     'interval',
-#     # minutes=1
-#     seconds=15,
-#     max_instances=1,
-#     id='des_skybot_request'
-# )
 
-# scheduler.start()
+def check_jobs_running():
+    """
+    """
+    import logging
+    log = logging.getLogger('des_astrometry')
+
+    # Verificar se existem jobs com status Running ou Lauched.
+    running = AstrometryJob.objects.filter(status__in=[2, 7])
+
+    if len(running):
+        log.debug("Running Jobs: %s" % len(running))
+
+        job = running[0]
+        jobid = job.id
+
+        DesAstrometryPipeline().check_job_running(jobid)
+
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(
+    check_jobs_to_run,
+    'interval',
+    # minutes=1
+    seconds=15,
+    max_instances=1,
+    id='des_astrometry_to_run'
+)
+
+scheduler.add_job(
+    check_jobs_running,
+    'interval',
+    # minutes=1
+    seconds=15,
+    max_instances=1,
+    id='des_astrometry_check_jobs'
+)
+
+scheduler.start()

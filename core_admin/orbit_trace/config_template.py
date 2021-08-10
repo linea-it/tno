@@ -23,7 +23,7 @@ DES_CATALOGS_BASEPATH = '/archive/des/public/catalogs'
 # htex_config = Config(
 #    executors=[
 #        HighThroughputExecutor(
-#            label="htex_local",
+#            label="local",
 #            cores_per_worker=1,
 #            max_workers=16,
 #            provider=LocalProvider(
@@ -57,7 +57,7 @@ htex_config = Config(
             )
         ),
         HighThroughputExecutor(
-            label='htcondor_8',
+            label='htcondor_1',
             address=address_by_query(),
             max_workers=1,
             provider=CondorProvider(

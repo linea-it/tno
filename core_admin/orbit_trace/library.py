@@ -3,6 +3,7 @@ import os
 
 from parsl import python_app
 
+
 def get_logger(path, filename='identifier.log'):
     import logging
     import os
@@ -41,23 +42,8 @@ def write_job_file(path, data):
         json.dump(data, json_file)
 
 
-# def create_heartbeat():
-#     import os
-#     hb = dict({
-#         'retrieve_asteroids': None,
-#         'retrieve_ccds': None,
-#         'retrieve_bsp': None,
-#         'theoretical_positions': None,
-#         'observed_positions': None
-#     })
-
-#     # Primeira execução arquivo ainda não existe.
-#     if not os.path.exists('heartbeat.json'):
-#         write_heartbeat(hb)
-#         return hb
-
-
-@python_app(executors=["htcondor_8"])
+# @python_app(executors=["htcondor_1"])
+@python_app()
 def retrieve_asteroids(type, values):
 
     from dao import AsteroidDao
@@ -311,7 +297,8 @@ def compute_theoretical_positions(spkid, ccds, bsp_jpl, bsp_planetary, leap_seco
     return results
 
 
-@python_app(executors=["htcondor_8"])
+# @python_app(executors=["htcondor_1"])
+@python_app()
 def retrieve_ccds_by_asteroid(asteroid, leap_second):
     from dao import AsteroidDao
     from library import date_to_jd
@@ -331,7 +318,8 @@ def retrieve_ccds_by_asteroid(asteroid, leap_second):
     return asteroid
 
 
-@python_app(executors=["htcondor_8"])
+# @python_app(executors=["htcondor_1"])
+@python_app()
 def retrieve_bsp_by_asteroid(name, initial_date, final_date, job_path):
 
     import os
@@ -373,7 +361,6 @@ def retrieve_bsp_by_asteroid(name, initial_date, final_date, job_path):
                 # Arquivo já existe faz nada
                 bsp_path = a_path
 
-
         bsp.update({
             'status': 'success',
             'filename': os.path.basename(bsp_path),
@@ -394,7 +381,8 @@ def retrieve_bsp_by_asteroid(name, initial_date, final_date, job_path):
         return bsp
 
 
-@python_app(executors=["htcondor"])
+# @python_app(executors=["htcondor"])
+@python_app()
 def theoretical_positions(asteroid, bsp_planetary, leap_second, observatory_location):
 
     from library import compute_theoretical_positions
@@ -429,7 +417,8 @@ def theoretical_positions(asteroid, bsp_planetary, leap_second, observatory_loca
         return asteroid
 
 
-@python_app(executors=["htcondor"])
+# @python_app(executors=["htcondor"])
+@python_app()
 def observed_positions(idx, name, asteroid_id, ccd, asteroid_path, radius=2):
 
     import os
@@ -529,15 +518,15 @@ def observed_positions(idx, name, asteroid_id, ccd, asteroid_path, radius=2):
         return (name, ccd, obs_coordinates)
 
 
-@python_app(executors=["htcondor_8"])
+# @python_app(executors=["htcondor_1"])
+@python_app()
 def ingest_observations(observations):
 
     import pandas as pd
     from io import StringIO
     from dao import AsteroidDao, ObservationDao
 
-
-    # Apaga as observations já registradas para este asteroid antes de inserir. 
+    # Apaga as observations já registradas para este asteroid antes de inserir.
     name = observations[0]['name']
     ObservationDao().delete_by_asteroid_name(name)
 
@@ -565,13 +554,15 @@ def ingest_observations(observations):
     return rowcount
 
 
-@python_app(executors=["htcondor"])
+# @python_app(executors=["htcondor"])
+@python_app()
 def write_asteroid_data(asteroid):
     import json
     import gzip
     import os
 
-    filepath = os.path.join(asteroid['path'], '%s.json.gz' % asteroid['name'].replace(' ', '_'))
+    filepath = os.path.join(
+        asteroid['path'], '%s.json.gz' % asteroid['name'].replace(' ', '_'))
 
     with gzip.open(filepath, 'wt', encoding='UTF-8') as zipfile:
         json.dump(asteroid, zipfile)
@@ -579,9 +570,9 @@ def write_asteroid_data(asteroid):
     return asteroid
 
 
-@python_app(executors=["htcondor"])
+# @python_app(executors=["htcondor"])
+@python_app()
 def update_job(job):
     from dao import AstrometryJobDao
 
     AstrometryJobDao().update_job(job)
-
