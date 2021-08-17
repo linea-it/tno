@@ -58,6 +58,10 @@ ENV PYTHONPATH="/home/appuser:$PYTHONPATH"
 ENV PYTHONPATH="/teste_parsl:$PYTHONPATH"
 ENV PYTHONPATH="/orbit_trace:$PYTHONPATH"
 
+# TODO: Não resolveu o problema, o warning e erro continua aparecendo na imagem builded.
+RUN mkdir /home/appuser/.astropy /home/appuser/.astropy/cache/ \
+    && chmod 775 -R /home/appuser/.astropy/cache/
+
 # Permissão de escrita, leitura, execução para usuarios do mesmo grupo
 RUN umask 0002
 
