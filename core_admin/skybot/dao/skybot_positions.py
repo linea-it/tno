@@ -3,6 +3,7 @@ from tno.db import DBBase
 from sqlalchemy.sql import and_, select
 from sqlalchemy import func
 
+
 class SkybotPositionsDao(DBBase):
 
     def __init__(self, pool=True):
@@ -74,11 +75,16 @@ class SkybotPositionsDao(DBBase):
 
         return rows
 
+    def distinct_asteroids(self):
+        stm = select([func.distinct(self.tbl.c.name).label(
+            'name'), self.tbl.c.number, self.tbl.c.base_dynclass, self.tbl.c.dynclass])
+
+        return self.fetch_all_dict(stm)
 
     # def positions_by_object(self, name, only_in_ccd=False):
     #     """
-    #         Retorna todas as linhas da tabela skybotoutput 
-    #         relacionadas a um objeto. 
+    #         Retorna todas as linhas da tabela skybotoutput
+    #         relacionadas a um objeto.
     #     """
     #     tbl = self.get_table_skybot()
 

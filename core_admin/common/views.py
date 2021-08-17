@@ -19,156 +19,56 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from praia.models import Run
-from praia.pipeline.register import (check_astrometry_running,
-                                     register_astrometry_outputs)
 from tno.auth_shibboleth import ShibbolethBackend
 
 
 @api_view(['GET'])
 def teste(request):
     if request.method == 'GET':
+        # debug = request.query_params.get('debug', False)
 
-        # Teste de envio de email
-        # from common.notify import Notify
-        # from django.template.loader import render_to_string
+        # from des.astrometry_pipeline import DesAstrometryPipeline
 
-        # from des.dao import DesSkybotJobResultDao
+        # DesAstrometryPipeline(debug=bool(debug)).run(1)
 
-        # asteroids = DesSkybotJobResultDao(
-        #     pool=False).dynclass_asteroids_by_job(91)
-        # ccds = DesSkybotJobResultDao(pool=False).dynclass_ccds_by_job(91)
-        # positions = DesSkybotJobResultDao(
-        #     pool=False).dynclass_positions_by_job(91)
+        from des.astrometry_daemon import check_jobs_to_run
 
-        # import pandas as pd
+        check_jobs_to_run()
 
-        # df_asteroids = pd.DataFrame(asteroids)
-        # df_asteroids.set_index('dynclass')
-        # df_asteroids = df_asteroids.fillna(0)
+        result = dict({
+            'success': True,
+        })
 
-        # df_ccds = pd.DataFrame(ccds)
-        # df_ccds.set_index('dynclass')
-        # df_ccds = df_ccds.fillna(0)
+        return Response(result)
 
-        # df_positions = pd.DataFrame(positions)
-        # df_positions.set_index('dynclass')
-        # df_positions = df_positions.fillna(0)
 
-        # df = pd.concat([df_asteroids, df_ccds, df_positions], axis=1)
-        # df = df.fillna(0)
-        # df = df.rename(columns={'index': 'dynclass'})
+@api_view(['GET'])
+def teste2(request):
+    if request.method == 'GET':
 
-        # result = df.to_dict('records')
+        from des.astrometry_daemon import check_jobs_running
 
-        #     pool=False).t_exposures_with_objects_by_job(72)
-        # d = DesSkybotJobResultDao(
-        #     pool=False).t_ccds_with_objects_by_job(72)
+        check_jobs_running()
 
-        # e = DesSkybotJobResultDao(
-        #     pool=False).dynclass_asteroids_by_job(72)
+        # import gzip
+        # import json
+        # with gzip.open('/archive/des_astrometry/des_astrometry_1/Eris/Eris.json.gz', 'rt', encoding='UTF-8') as zipfile:
+        #     result = json.load(zipfile)
 
-        # a = DesSkybotJobResultDao(pool=False).t_ccds_with_objects_by_id(7643)
+        result = dict({
+            'success': True,
+        })
 
-        # b = DesSkybotJobResultDao(pool=False).dynclass_asteroids_by_id(7643)
+        return Response(result)
 
-        # #  ----------------------------------------------------------
-        # Test Skybot load request
-        from des.skybot import DesSkybotPipeline
-        import logging
-        log = logging.getLogger('skybot')
-        log.info("Resetando o Job para Iniciar o teste")
 
-        job_id = 119
-        DesSkybotPipeline().reset_job_for_test(job_id)
-        DesSkybotPipeline().run_job(job_id)
+@api_view(['GET'])
+def teste3(request):
+    if request.method == 'GET':
 
-        # DesSkybotPipeline().run_import_positions(job_id)
+        from des.astrometry_pipeline import DesAstrometryPipeline
 
-        # DesSkybotPipeline().consolidate(job_id)
-
-        # #  ----------------------------------------------------------
-        # from des.skybot.pipeline import DESImportSkybotPositions
-        # from des.models import DownloadCcdJobResult
-        # from des.models import SkybotJob
-        # from datetime import datetime, timedelta, timezone
-        # import logging
-        # log = logging.getLogger('django')
-        # log.info("-----------TESTE----------------")
-
-        # from des.ccd import start_pipeline, plot_time_profile
-        # from des.dao import DownloadCcdJobDao
-        # from des.dao import DownloadCcdJobResultDao
-
-        # # a = DownloadCcdJobResultDao().execution_time_by_job(1)
-        # # log.info(a)
-
-        # # plot_time_profile('/ccd_images/download_jobs/job_1/results.csv',
-        # #                   '/ccd_images/download_jobs/job_1/')
-
-        # #  ----------------------------------------------------------
-        # #  Resetando o Job antes do teste
-        # db = DownloadCcdJobDao(pool=False)
-        # job = db.get_by_id(1)
-        # job['status'] = 1
-        # job['start'] = datetime.now(timezone.utc)
-        # job['path'] = None
-        # db = db.update_record(job)
-
-        # # Limpando o diretório antes do teste
-        # folder = '/archive/ccd_images'
-        # for filename in os.listdir(folder):
-        #     file_path = os.path.join(folder, filename)
-        #     try:
-        #         if os.path.isfile(file_path) or os.path.islink(file_path):
-        #             os.unlink(file_path)
-        #         elif os.path.isdir(file_path):
-        #             shutil.rmtree(file_path)
-        #     except Exception as e:
-        #         print('Failed to delete %s. Reason: %s' % (file_path, e))
-
-        # # Limpa a tabela de resultados antes do teste.
-        # DownloadCcdJobResult.objects.all().delete()
-
-        # #  Iniciando o Pipeline
-        # start_pipeline()
-        # #  ----------------------------------------------------------
-
-        # from des.dao import DesSkybotPositionDao
-
-        # rows = DesSkybotPositionDao().ccds_for_position(
-        #     '2019-01-01 00:00:00', '2019-01-31 23:59:59', 'KBO')
-
-        # log.info(len(rows))
-        # log.info(rows[0:5])
-
-        # from des.dao import ExposureDao, CcdDao
-        # from des.models import DownloadCcdJobResult
-        # import os
-        # import shutil
-
-        # # Limpara o diretório antes do teste
-
-        # folder = '/archive/ccd_images'
-        # for filename in os.listdir(folder):
-        #     file_path = os.path.join(folder, filename)
-        #     try:
-        #         if os.path.isfile(file_path) or os.path.islink(file_path):
-        #             os.unlink(file_path)
-        #         elif os.path.isdir(file_path):
-        #             shutil.rmtree(file_path)
-        #     except Exception as e:
-        #         print('Failed to delete %s. Reason: %s' % (file_path, e))
-
-        # from des.ccd import download_des_ccds
-
-        # ccds = CcdDao().ccds_by_period('2019-01-01 00:00:00', '2019-01-31 23:59:59')
-        # log.debug(len(ccds))
-
-        # # Limpa a tabela de resultados antes do teste.
-        # DownloadCcdJobResult.objects.all().delete()
-
-        # download_des_ccds(1, ccds[0:10])
+        DesAstrometryPipeline().update_asteroid_table()
 
         result = dict({
             'success': True,

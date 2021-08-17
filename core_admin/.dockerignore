@@ -1,0 +1,6 @@
+static/
+Dockerfile
+coreAdmin/local_vars.py
+*.pyc
+*.pyo
+*.db

@@ -32,6 +32,10 @@ npm-debug.log
 # Django static files for admin and restframework
 /core_admin/static
 
+# Django Local Settings
+core_admin/coreAdmin/local_vars.py
+local_vars.py
+
 # Develop Archive
 /archive
 
@@ -47,3 +51,7 @@ auth_shib_sessions
 
 # Venv python para desenvolvimento
 env_tno
+
+# Diretório de arquivos locais do Astropy
+core_admin/.astropy
+

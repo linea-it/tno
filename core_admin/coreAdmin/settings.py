@@ -16,6 +16,11 @@ import urllib.parse
 import ldap
 from django_auth_ldap.config import LDAPSearch
 
+# from parsl.channels import LocalChannel
+# from parsl.config import Config
+# from parsl.executors import HighThroughputExecutor
+# from parsl.providers import LocalProvider
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -28,7 +33,7 @@ BIN_DIR = os.path.join(BASE_DIR, 'bin')
 LOG_DIR = "/log"
 ARCHIVE_DIR = "/archive"
 PROCCESS_DIR = "/proccess"
-CCD_IMAGES_DIR = "/ccd_images"
+DES_CCD_CATALOGS_DIR = "/archive/des/public/catalogs/"
 
 # Sub diretorios que ficam dentro de /archive
 
@@ -37,17 +42,23 @@ SKYBOT_OUTPUT = os.path.join(ARCHIVE_DIR, SKYBOT_ROOT)
 if not os.path.exists(SKYBOT_OUTPUT):
     os.mkdir(SKYBOT_OUTPUT)
 
-OBSERVATIONS_DIR = os.path.join(ARCHIVE_DIR, "observations")
-if not os.path.exists(OBSERVATIONS_DIR):
-    os.mkdir(OBSERVATIONS_DIR)
+DES_ASTROMETRY_ROOT = 'des_astrometry'
+DES_ASTROMETRY_OUTPUT = os.path.join(ARCHIVE_DIR, DES_ASTROMETRY_ROOT)
+if not os.path.exists(DES_ASTROMETRY_OUTPUT):
+    os.mkdir(DES_ASTROMETRY_OUTPUT)
 
-ORBITAL_PARAMETERS_DIR = os.path.join(ARCHIVE_DIR, "orbital_parameters")
-if not os.path.exists(ORBITAL_PARAMETERS_DIR):
-    os.mkdir(ORBITAL_PARAMETERS_DIR)
 
-BSP_JPL_DIR = os.path.join(ARCHIVE_DIR, "bsp_jpl")
-if not os.path.exists(BSP_JPL_DIR):
-    os.mkdir(BSP_JPL_DIR)
+# OBSERVATIONS_DIR = os.path.join(ARCHIVE_DIR, "observations")
+# if not os.path.exists(OBSERVATIONS_DIR):
+#     os.mkdir(OBSERVATIONS_DIR)
+
+# ORBITAL_PARAMETERS_DIR = os.path.join(ARCHIVE_DIR, "orbital_parameters")
+# if not os.path.exists(ORBITAL_PARAMETERS_DIR):
+#     os.mkdir(ORBITAL_PARAMETERS_DIR)
+
+# BSP_JPL_DIR = os.path.join(ARCHIVE_DIR, "bsp_jpl")
+# if not os.path.exists(BSP_JPL_DIR):
+#     os.mkdir(BSP_JPL_DIR)
 
 
 LEAP_ROOT = 'leap_seconds'
@@ -65,11 +76,11 @@ JHONSTONS_ARCHIVE = os.path.join(ARCHIVE_DIR, JHONSTONS_ARCHIVE_ROOT)
 if not os.path.exists(JHONSTONS_ARCHIVE):
     os.mkdir(JHONSTONS_ARCHIVE)
 
-# TODO:  Este diretorio e provisorio faz parte da simulacao do PRAIA.
-ASTROMETRY_POSITIONS_DIR = os.path.join(ARCHIVE_DIR, "astrometry_positions")
-if not os.path.exists(ASTROMETRY_POSITIONS_DIR):
-    os.mkdir(ASTROMETRY_POSITIONS_DIR)
-    os.chmod(ASTROMETRY_POSITIONS_DIR, 0o775)
+# # TODO:  Este diretorio e provisorio faz parte da simulacao do PRAIA.
+# ASTROMETRY_POSITIONS_DIR = os.path.join(ARCHIVE_DIR, "astrometry_positions")
+# if not os.path.exists(ASTROMETRY_POSITIONS_DIR):
+#     os.mkdir(ASTROMETRY_POSITIONS_DIR)
+#     os.chmod(ASTROMETRY_POSITIONS_DIR, 0o775)
 
 MEDIA_ROOT = ARCHIVE_DIR
 MEDIA_URL = '/media/'
@@ -137,9 +148,9 @@ INSTALLED_APPS = [
     'common',
     'tno',
     'skybot',
-    'praia',
-    'orbit',
-    'predict',
+    # 'praia',
+    # 'orbit',
+    # 'predict',
     'des',
 
 ]
@@ -306,26 +317,22 @@ if DEBUG:
     CORS_ALLOW_CREDENTIALS = True
     SESSION_COOKIE_SAMESITE = None
 
-# Parsl
-PARSL_CONFIG = {
-    "sites": [
-        {
-            "site": "Threads",
-            "auth": {"channel": None},
-            "execution": {
-                "executor": "threads",
-                "provider": None,
-                "maxThreads": int(os.environ.get('AVAILABLE_THREADS', 8))
-            }
-        }
-    ],
-    "globals": {
-        "lazyErrors": True,
-    }
-}
+# # Parsl
+# PARSL_CONFIG = Config(
+#     executors=[
+#         HighThroughputExecutor(
+#             label="htex_local",
+#             cores_per_worker=1,
+#             max_workers=16,
+#             provider=LocalProvider(
+#                 channel=LocalChannel(),
+#             ),
+#         )
+#     ],
+# )
 
 # MINIMUM THREADS
-MINIMUM_THREADS = os.environ.get('MINIMUM_THREADS', 4)
+# MINIMUM_THREADS = os.environ.get('MINIMUM_THREADS', 4)
 
 # DOCKER Configuration
 try:
@@ -504,6 +511,22 @@ LOGGING = {
             'filename': os.path.join(LOG_DIR, 'download_ccds.log'),
             'formatter': 'standard',
         },
+        'asteroids': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'asteroids.log'),
+            'formatter': 'standard',
+        },
+        'des_astrometry': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'filename': os.path.join(LOG_DIR, 'des_astrometry.log'),
+            'formatter': 'standard',
+        },
     },
     'loggers': {
         'django': {
@@ -561,6 +584,26 @@ LOGGING = {
             'level': LOGGING_LEVEL,
             'propagate': True,
         },
-
+        'asteroids': {
+            'handlers': ['asteroids'],
+            'level': LOGGING_LEVEL,
+            'propagate': True,
+        },
+        'des_astrometry': {
+            'handlers': ['des_astrometry'],
+            'level': LOGGING_LEVEL,
+            'propagate': True,
+        },
     },
 }
+
+
+# Aqui é feita a importação do arquivo de variaveis locais.
+# As variaveis declaradas neste arquivo sobrescrevem as variaveais declaradas antes
+# deste import. isso é usado para permitir diferentes configurações por ambiente.
+# basta cada ambiente ter o seu arquivo local_vars.py.
+try:
+    from coreAdmin.local_vars import *
+except Exception:
+    raise FileNotFoundError(
+        "Local_vars file not found. it is necessary that the coraAdmin/local_vars.py file exists with the specific settings of this environment.")

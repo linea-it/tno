@@ -3,7 +3,7 @@ import os
 import errno
 import shutil
 from django.conf import settings
-from .skybotoutput import FilterObjects
+# from .skybotoutput import FilterObjects
 
 
 class ProccessManager():
