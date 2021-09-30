@@ -71,6 +71,11 @@ restart containers
 docker-compose stop 
 docker-compose up
 ```
+### database setup
+Apos criar o database rodar o comando pra criar a extensão q3c.
+```
+CREATE EXTENSION q3c
+```
 
 ### dabase data
 Unzip the csv files with data to the database.
@@ -80,6 +85,15 @@ cd database_subset
 unzip tno_database.subset.zip
 cd ..
 ```
+Caso crie uma tabela para gaia, rodar os comandos para criar os indexes q3c
+```
+CREATE INDEX ON gaia.dr2 (q3c_ang2ipix(ra, dec));
+
+CLUSTER dr2_q3c_ang2ipix_idx ON gaia.dr2;
+
+ANALYZE gaia.dr2;
+```
+
 
 ### Create a superuser in Django
 run createsuperuser to create a admin user in Django.
