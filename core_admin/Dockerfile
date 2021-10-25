@@ -29,7 +29,7 @@ RUN pip install pipenv
 COPY Pipfile .
 # COPY Pipfile.lock .
 
-RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
+RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy --skip-lock
 
 # Gerar um arquivo requirements
 # RUN pipenv lock -r > requirements.txt
