@@ -4,12 +4,24 @@ from tno.models import JohnstonArchive
 from tno.models import Asteroid
 from tno.models import BspPlanetary
 from tno.models import LeapSecond
+from tno.models import Occultation
 
 
 @admin.register(Asteroid)
 class AsteroidAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'number', 'base_dynclass', 'dynclass',)
     search_fields = ('name', 'number', )
+
+
+@admin.register(Occultation)
+class OccultationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'asteroid', 'date_time', 'ra_star_deg',
+                    'dec_star_deg', 'ra_target_deg', 'dec_target_deg',)
+    search_fields = ('name', 'number')
+
+    # Troca o tipo de imput de Select para um text field com botao de busca
+    # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
+    raw_id_fields = ('asteroid',)
 
 
 @admin.register(JohnstonArchive)
