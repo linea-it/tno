@@ -51,7 +51,6 @@ class Occultation(models.Model):
     name = models.CharField(
         max_length=32,
         verbose_name='Name',
-        unique=True,
         db_index=True,
         help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).'
     )
