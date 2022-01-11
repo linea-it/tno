@@ -212,7 +212,7 @@ class Occultation(models.Model):
     )
 
     pmdec = models.FloatField(
-        verbose_name='pmra',
+        verbose_name='pmdec',
         null=True, blank=True, default=0,
         help_text='star proper motion (mas/yr); (0 when not provided by Gaia DR1)'
     )
