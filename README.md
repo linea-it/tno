@@ -99,27 +99,31 @@ ANALYZE gaia.dr2;
 run createsuperuser to create a admin user in Django.
 with the docker running open a new terminal and run this command.
 ```
- docker exec -it $(docker ps -q -f name=backend) python manage.py createsuperuser
+docker-compose exec backend python manage.py createsuperuser
 ```
 
 ### Table preparation for Q3C 
 run create_q3c_index for create indexes.
 ```
-docker exec -it $(docker ps -q -f name=backend) python manage.py create_q3c_index
+docker-compose exec backend python manage.py create_q3c_index
 ```
 
 ### Importar os csv para o banco de dados
 Com o Container Database rodando, verificar se o diretorio com os csv está montado como volume no container. 
 executar os comando do psql para importar as tabelas. nos exemplos o diretorio com os CSVs esta montado em /data.
 
-#### Pointings
+#### DES Exposures
 ```
-docker exec -it $(docker ps -q -f name=database) psql -h localhost -U postgres -c "\\copy tno_pointing from '/data/tno_pointings.csv' DELIMITER ';' CSV HEADER"
+docker-compose exec database psql -U postgres -d postgres -c "\\copy des_exposure from '/data/exposures.csv' DELIMITER '|' CSV HEADER"
+
+#Old Command: docker exec -it $(docker ps -q -f name=database) psql -h localhost -U postgres -c "\\copy tno_pointing from '/data/tno_pointings.csv' DELIMITER ';' CSV HEADER"
 ```
 
-#### CCD Images
+#### DES CCDs
 ```
-docker exec -it $(docker ps -q -f name=database) psql -h localhost -U postgres -c "\\copy tno_ccdimage from '/data/tno_ccdimage.csv' DELIMITER ';' CSV HEADER"
+docker-compose exec database psql -U postgres -d postgres -c "\\copy des_ccd from '/data/ccds.csv' DELIMITER '|' CSV HEADER"
+
+ #Old Command: docker exec -it $(docker ps -q -f name=database) psql -h localhost -U postgres -c "\\copy tno_ccdimage from '/data/tno_ccdimage.csv' DELIMITER ';' CSV HEADER"
 ```
 
 #### Skybot Output
