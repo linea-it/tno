@@ -10,8 +10,7 @@ from django.conf import settings
 from tno.db import DBBase
 
 
-class ImportSkybotPositions():
-
+class ImportSkybotPositions:
     def __init__(self):
         self.logger = logging.getLogger("skybot_load_data")
 
@@ -34,25 +33,32 @@ class ImportSkybotPositions():
             t0 = datetime.now(timezone.utc)
 
             flag = self.read_flag_from_output(filepath)
+            ticket = self.read_ticket_from_output(filepath)
 
             # só executa a função de importação se tiver dados.
-            if flag > 0:
+            if flag == 1:
 
                 # Le o arquivo de outputs e gera um pandas dataframe
                 df = self.read_output_file(filepath)
                 rowcount = self.import_data(df)
-
+            elif flag == 0:
+                self.logger.info(
+                    "Skybot returned 0 Positions. means that no body has been found"
+                )
+                df = self.create_empty_dataframe()
+                rowcount = 0
             else:
-                self.logger.debug(
-                    "Skybot returned 0 Positions. means that no body has been found")
+                self.logger.error("Skybot returned error. Ticket: [ %s ]" % ticket)
                 df = self.create_empty_dataframe()
                 rowcount = 0
 
             t1 = datetime.now(timezone.utc)
             tdelta = t1 - t0
 
-            self.logger.debug("Imported Skybot [%s] Positions in %s" % (
-                rowcount, humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))
+            self.logger.debug(
+                "Imported Skybot [%s] Positions in %s"
+                % (rowcount, humanize.naturaldelta(tdelta, minimum_unit="milliseconds"))
+            )
 
             return df
 
@@ -65,30 +71,52 @@ class ImportSkybotPositions():
         # self.logger.debug("Reading Skybot Output: [%s]" % filepath)
 
         # Headers que estão no arquivo e na ordem correta de leitura.
-        headers = ["number", "name", "ra", "dec", "dynclass", "mv", "errpos", "d", "dracosdec",
-                   "ddec", "dgeo", "dhelio", "phase", "solelong", "px", "py", "pz", "vx", "vy", "vz", "jdref"]
+        headers = [
+            "number",
+            "name",
+            "ra",
+            "dec",
+            "dynclass",
+            "mv",
+            "errpos",
+            "d",
+            "dracosdec",
+            "ddec",
+            "dgeo",
+            "dhelio",
+            "phase",
+            "solelong",
+            "px",
+            "py",
+            "pz",
+            "vx",
+            "vy",
+            "vz",
+            "jdref",
+        ]
 
-        df = pd.read_csv(filepath, skiprows=3, delimiter='|', names=headers)
+        df = pd.read_csv(filepath, skiprows=3, delimiter="|", names=headers)
 
         # Tratar o campo num para retirar os caracteres -
-        df['number'] = df['number'].apply(
-            lambda x: x if str(x).strip() is not '-' else '')
+        df["number"] = df["number"].apply(
+            lambda x: x if str(x).strip() is not "-" else ""
+        )
 
         # Adiciona colunas para RA e Dec em graus.
-        df['raj2000'] = 0
-        df['decj2000'] = 0
+        df["raj2000"] = 0
+        df["decj2000"] = 0
 
         # Converter as coordenadas de HMS para Degrees
-        df['raj2000'] = df['ra'].apply(lambda x: self.convert_ra_hms_deg(x))
-        df['decj2000'] = df['dec'].apply(lambda x: self.convert_dec_hms_deg(x))
+        df["raj2000"] = df["ra"].apply(lambda x: self.convert_ra_hms_deg(x))
+        df["decj2000"] = df["dec"].apply(lambda x: self.convert_dec_hms_deg(x))
 
         # Retirar os espaços entre os valores
         df = df.applymap(lambda x: x.strip() if type(x) == str else x)
 
         # Adicionar uma coluna com o Ticket do Skybot
-        df['ticket'] = self.read_ticket_from_output(filepath)
+        df["ticket"] = self.read_ticket_from_output(filepath)
 
-        df['base_dynclass'] = df['dynclass'].apply(lambda x: x.split('>')[0])
+        df["base_dynclass"] = df["dynclass"].apply(lambda x: x.split(">")[0])
 
         # Mudar a ordem das colunas de arcordo com a ordem  da tabela.
         # Isso facilita a importacao por csv.
@@ -101,8 +129,33 @@ class ImportSkybotPositions():
         return df
 
     def get_columns(self):
-        columns = ['name', 'number', 'dynclass', 'ra', 'dec', 'raj2000', 'decj2000', 'mv', 'errpos', 'd', 'dracosdec',
-                   'ddec', 'dgeo', 'dhelio', 'phase', 'solelong', 'px', 'py', 'pz', 'vx', 'vy', 'vz', 'jdref', 'ticket', 'base_dynclass']
+        columns = [
+            "name",
+            "number",
+            "dynclass",
+            "ra",
+            "dec",
+            "raj2000",
+            "decj2000",
+            "mv",
+            "errpos",
+            "d",
+            "dracosdec",
+            "ddec",
+            "dgeo",
+            "dhelio",
+            "phase",
+            "solelong",
+            "px",
+            "py",
+            "pz",
+            "vx",
+            "vy",
+            "vz",
+            "jdref",
+            "ticket",
+            "base_dynclass",
+        ]
 
         return columns
 
@@ -113,16 +166,16 @@ class ImportSkybotPositions():
 
     def import_data(self, dataframe):
         """
-            Convert the dataframe to csv, and import it into the database.
+        Convert the dataframe to csv, and import it into the database.
 
-            Parameters:
-                dataframe (dataframe): Pandas Dataframe with the information to be imported.
+        Parameters:
+            dataframe (dataframe): Pandas Dataframe with the information to be imported.
 
-            Returns:
-                rowcount (int):  the number of rows imported.
+        Returns:
+            rowcount (int):  the number of rows imported.
 
-            Example SQL Copy:
-                COPY tno_skybotoutput (num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
+        Example SQL Copy:
+            COPY tno_skybotoutput (num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
 
         """
         # Converte o Data frame para csv e depois para arquivo em memória.
@@ -146,7 +199,10 @@ class ImportSkybotPositions():
             # Recupera o nome da tabela skybot output
             table = str(self.dbbase.get_table_skybot())
             # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
-            sql = "COPY %s (name, number, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref, ticket, base_dynclass) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
+            sql = (
+                "COPY %s (name, number, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref, ticket, base_dynclass) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);"
+                % table
+            )
 
             # Executa o metodo que importa o arquivo csv na tabela.
             rowcount = self.dbbase.import_with_copy_expert(sql, data)
@@ -161,27 +217,27 @@ class ImportSkybotPositions():
 
     def read_ticket_from_output(self, filepath):
         """
-            Read the output file and retrieve the ticket number on the second line.
-            this ticket identifies the request that was made for the Skybot service.
+        Read the output file and retrieve the ticket number on the second line.
+        this ticket identifies the request that was made for the Skybot service.
 
-            Parameters:
-                filepath (str): Output file returned by the skybot service.
+        Parameters:
+            filepath (str): Output file returned by the skybot service.
 
-            Returns:
-                ticket (int): Ticket number, example: 166515392791779001
+        Returns:
+            ticket (int): Ticket number, example: 166515392791779001
         """
 
         # Le o arquivo de outputs e recupera o ticket.
         # ticket é um id que identifica a requisição feita no skybot.
         # serve para agrupar todos os resultados a mesma requisição.
         line = linecache.getline(str(filepath), 2)
-        ticket = int(line.split(':')[1].strip())
+        ticket = int(line.split(":")[1].strip())
         self.logger.debug("Skybot Ticket: [%s]" % ticket)
 
         return ticket
 
     def read_flag_from_output(self, filepath):
-        """ Le o arquivo de outputs e recupera o flag.
+        """Le o arquivo de outputs e recupera o flag.
 
         Arguments:
             filepath {[type]} -- [description]
@@ -193,39 +249,39 @@ class ImportSkybotPositions():
                 flag=-1 means that an error occured 'ticket'
         """
         line = linecache.getline(str(filepath), 1)
-        flag = int(line.split(':')[1].strip())
+        flag = int(line.split(":")[1].strip())
         self.logger.debug("Skybot Flag: [%s]" % flag)
 
         return flag
 
-    def convert_ra_hms_deg(self, ra=''):
+    def convert_ra_hms_deg(self, ra=""):
         """
-            Converte RA em HMS para Degrees.
-            Parameters:
-                ra (str): RA em horas. exemplo '23 56 47.2833'.
+        Converte RA em HMS para Degrees.
+        Parameters:
+            ra (str): RA em horas. exemplo '23 56 47.2833'.
 
-            Returns:
-                ra (float): RA em degrees. exemplo 359.19701375.
+        Returns:
+            ra (float): RA em degrees. exemplo 359.19701375.
         """
         H, M, S = [float(i) for i in ra.split()]
-        RA = (H + M/60. + S/3600.)*15.
+        RA = (H + M / 60.0 + S / 3600.0) * 15.0
 
         return float("{0:.4f}".format(RA))
 
-    def convert_dec_hms_deg(self, dec=''):
+    def convert_dec_hms_deg(self, dec=""):
         """
-            Converte Dec em HMS para Degrees.
-            Parameters:
-                de (str): Dec em horas. exemplo '-00 53 27.975'.
+        Converte Dec em HMS para Degrees.
+        Parameters:
+            de (str): Dec em horas. exemplo '-00 53 27.975'.
 
-            Returns:
-                dec (float): Dec em degrees. exemplo -0.8911041666666666.
+        Returns:
+            dec (float): Dec em degrees. exemplo -0.8911041666666666.
         """
         DEC, ds = 0, 1
 
         D, M, S = [float(i) for i in dec.split()]
-        if str(D)[0] == '-':
+        if str(D)[0] == "-":
             ds, D = -1, abs(D)
-        DEC = ds*(D + M/60. + S/3600.)
+        DEC = ds * (D + M / 60.0 + S / 3600.0)
 
         return float("{0:.4f}".format(DEC))
