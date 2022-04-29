@@ -48,9 +48,9 @@ class ImportSkybotPositions:
                 df = self.create_empty_dataframe()
                 rowcount = 0
             else:
-                self.logger.error("Skybot returned error. Ticket: [ %s ]" % ticket)
-                df = self.create_empty_dataframe()
-                rowcount = 0
+                msg = "Skybot returned Error Flag -1 for Ticket: [ %s ]" % ticket
+                raise Exception(msg)
+
 
             t1 = datetime.now(timezone.utc)
             tdelta = t1 - t0
