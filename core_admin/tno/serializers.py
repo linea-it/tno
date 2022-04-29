@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from tno.models import JohnstonArchive
-from tno.models import Asteroid
+from tno.models import Asteroid, Occultation
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -50,4 +50,15 @@ class AsteroidSerializer(serializers.ModelSerializer):
             'name',
             'base_dynclass',
             'dynclass',
+        )
+
+
+class OccultationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Occultation
+        fields = (
+            'id',
+            'number',
+            'name',
         )

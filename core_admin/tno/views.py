@@ -24,10 +24,13 @@ from rest_framework.decorators import (detail_route, list_route,
                                        permission_classes)
 from rest_framework.permissions import (IsAdminUser, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
+
+from rest_framework.permissions import IsAuthenticated
+
 from rest_framework.response import Response
 
-from tno.models import Asteroid, JohnstonArchive
-from tno.serializers import (AsteroidSerializer, JohnstonArchiveSerializer,
+from tno.models import Asteroid, Occultation, JohnstonArchive
+from tno.serializers import (AsteroidSerializer, OccultationSerializer, JohnstonArchiveSerializer,
                              UserSerializer)
 
 from .johnstons import JhonstonArchive
@@ -67,9 +70,19 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
 
     filter_fields = ('number', 'name')
 
+    # TODO: Interessante que essa função ficasse disponivel para uso apos o skybot ou que fosse executada automaticamente.
     @list_route(permission_classes=(IsAuthenticated, ))
-    def test(self, request):
+    def update_asteroid_table(self, request):
+        """Esta função é utilizada para povoar a tabela Asteroid. 
+        Faz uma query nas tabelas de resultados do skybot, e efetua um insert/update 
+        na tabela asteroid, inserindo informações de Nome, numero, classe
 
+        Args:
+            request ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         import logging
 
         from tno.dao.asteroids import AsteroidDao
@@ -96,6 +109,52 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         })
 
         return Response(result)
+
+
+class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
+
+    authentication_classes = [
+        SessionAuthentication, BasicAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    queryset = Occultation.objects.all()
+    serializer_class = OccultationSerializer
+
+    filter_fields = ('id', 'name', 'number', 'date_time')
+    search_fields = ('name', 'number')
+
+    ordering_fields = ('id', 'name', 'number', 'date_time')
+    ordering = ('date_time',)
+
+    # @list_route(permission_classes=(IsAuthenticated, ))
+    # def test(self, request):
+
+    #     import logging
+
+    #     from tno.dao.asteroids import AsteroidDao
+    #     log = logging.getLogger('asteroids')
+
+    #     log.info("-----------------------------")
+    #     log.info("Test Asteroid DAO")
+
+    #     count = AsteroidDao().count()
+
+    #     log.info("Count Asteroids: %s" % count)
+
+    #     # from skybot.dao.skybot_positions import SkybotPositionsDao
+
+    #     # asteroids = SkybotPositionsDao().distinct_asteroids()
+
+    #     # log.info("Asteroids: %s" % asteroids[0:3])
+
+    #     a = AsteroidDao().insert_update()
+    #     log.info(a)
+
+    #     result = dict({
+    #         'success': True,
+    #     })
+
+    #     return Response(result)
 
 
 class JohnstonArchiveViewSet(viewsets.ModelViewSet):
