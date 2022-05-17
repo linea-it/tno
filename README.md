@@ -200,6 +200,23 @@ More info in http://<HOST>/api/known_tnos_johnston/
 ```
 
 
+### Acesso ao HTCondor na rede docker
+Executar este comando para criar uma rede chamada `macvlan_mode` em modo bridge
+
+```
+docker network create -d macvlan -o macvlan_mode=bridge --subnet=186.232.60.0/24 --gateway=186.232.60.10 -o parent=team0 --ip-range 186.232.60.142/32 macvlan_bridge
+```
+ 
+e depois adicionar ao docker_compose essa rede.
+
+ ```
+ networks:
+  condor:
+    name: macvlan_bridge
+    external: true
+```
+
+ 
 
 ### More details about the installation are available at this link.
 
