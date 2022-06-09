@@ -1,6 +1,7 @@
 # tno
 Transneptunian Occultation Network Portal
 
+Pipelines: https://github.com/linea-it/tno_pipelines
 
 # Development start
 Clone this repository
