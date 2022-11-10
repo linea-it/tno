@@ -295,7 +295,7 @@ class SkybotJobViewSet(
             ["request_error", "loaddata_error"]
         ].apply(
             lambda row: True
-            if np.isnan(row["request_error"]) and np.isnan(row["loaddata_error"])
+            if pd.isna(row["request_error"]) and pd.isna(row["loaddata_error"])
             else False,
             axis=1,
         )
