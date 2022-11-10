@@ -184,7 +184,7 @@ function Drawer({ children, title, open, setOpen }) {
                   />
                 </ListItem>
               </Link>
-              <Link
+              {/* <Link
                 to="/data-preparation/des/download"
                 className={classes.invisibleLink}
               >
@@ -198,8 +198,8 @@ function Drawer({ children, title, open, setOpen }) {
                     className={classes.textDrawer}
                   />
                 </ListItem>
-              </Link>
-              <Link
+              </Link> */}
+              {/* <Link
                 to="/data-preparation/des/astrometry"
                 className={classes.invisibleLink}
                 title="Astrometric reduction using PRAIA package and stellar catalogue Gaia like reference to detect and determine positions of objects from CCD frame."
@@ -214,10 +214,10 @@ function Drawer({ children, title, open, setOpen }) {
                     className={classes.textDrawer}
                   />
                 </ListItem>
-              </Link>
+              </Link> */}
             </List>
           </Collapse>
-          <Divider className={classes.borderDrawer} />
+          {/* <Divider className={classes.borderDrawer} />
           <Link
             to="/refine-orbit"
             className={classes.invisibleLink}
@@ -231,7 +231,7 @@ function Drawer({ children, title, open, setOpen }) {
                 className={classes.textDrawer}
               />
             </ListItem>
-          </Link>
+          </Link> */}
           <Divider className={classes.borderDrawer} />
           <Link
             to="/prediction-of-occultation"

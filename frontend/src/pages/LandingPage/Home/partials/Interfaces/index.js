@@ -23,21 +23,21 @@ function Interfaces() {
       app_url: 'data-preparation/des/discovery',
       app_display_name: 'Discovery',
     },
-    {
-      id: '3',
-      app_url: 'data-preparation/des/download',
-      app_display_name: 'Download',
-    },
-    {
-      id: '4',
-      app_url: 'data-preparation/des/astrometry',
-      app_display_name: 'Astrometry',
-    },
-    {
-      id: '5',
-      app_url: 'refine-orbit',
-      app_display_name: 'Refine Orbits',
-    },
+    // {
+    //   id: '3',
+    //   app_url: 'data-preparation/des/download',
+    //   app_display_name: 'Download',
+    // },
+    // {
+    //   id: '4',
+    //   app_url: 'data-preparation/des/astrometry',
+    //   app_display_name: 'Astrometry',
+    // },
+    // {
+    //   id: '5',
+    //   app_url: 'refine-orbit',
+    //   app_display_name: 'Refine Orbits',
+    // },
     {
       id: '6',
       app_url: 'prediction-of-occultation',

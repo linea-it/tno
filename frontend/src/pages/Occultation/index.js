@@ -175,7 +175,7 @@ function Occultation({ setTitle }) {
           <Card>
             <CardContent>
               <form noValidate autoComplete="off">
-                <LocalizationProvider utils={DateFnsUtils}>
+                {/* <LocalizationProvider utils={DateFnsUtils}>
                   <DatePicker
                     disableToolbar
                     variant="inline"
@@ -194,7 +194,7 @@ function Occultation({ setTitle }) {
                     value={endDate}
                     onChange={handleEndDateChange}
                   />
-                </LocalizationProvider>
+                </LocalizationProvider> */}
                 <TextField
                   label="Object Name"
                   value={objectName}
