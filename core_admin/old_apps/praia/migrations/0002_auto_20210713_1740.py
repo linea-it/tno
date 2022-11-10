@@ -6,71 +6,71 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orbit', '0002_auto_20210713_1740'),
-        ('praia', '0001_initial'),
+        ("orbit", "0002_auto_20210713_1740"),
+        ("praia", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='astrometryinput',
+            name="astrometryinput",
             unique_together=None,
         ),
         migrations.RemoveField(
-            model_name='astrometryinput',
-            name='asteroid',
+            model_name="astrometryinput",
+            name="asteroid",
         ),
         migrations.RemoveField(
-            model_name='astrometryjob',
-            name='asteroid',
+            model_name="astrometryjob",
+            name="asteroid",
         ),
         migrations.RemoveField(
-            model_name='astrometryjob',
-            name='astrometry_run',
+            model_name="astrometryjob",
+            name="astrometry_run",
         ),
         migrations.RemoveField(
-            model_name='astrometryoutput',
-            name='asteroid',
+            model_name="astrometryoutput",
+            name="asteroid",
         ),
         migrations.RemoveField(
-            model_name='configuration',
-            name='owner',
+            model_name="configuration",
+            name="owner",
         ),
         migrations.RemoveField(
-            model_name='run',
-            name='catalog',
+            model_name="run",
+            name="catalog",
         ),
         migrations.RemoveField(
-            model_name='run',
-            name='configuration',
+            model_name="run",
+            name="configuration",
         ),
         migrations.RemoveField(
-            model_name='run',
-            name='input_list',
+            model_name="run",
+            name="input_list",
         ),
         migrations.RemoveField(
-            model_name='run',
-            name='owner',
+            model_name="run",
+            name="owner",
         ),
         migrations.RemoveField(
-            model_name='run',
-            name='proccess',
+            model_name="run",
+            name="proccess",
         ),
         migrations.DeleteModel(
-            name='AstrometryAsteroid',
+            name="AstrometryAsteroid",
         ),
         migrations.DeleteModel(
-            name='AstrometryInput',
+            name="AstrometryInput",
         ),
         migrations.DeleteModel(
-            name='AstrometryJob',
+            name="AstrometryJob",
         ),
         migrations.DeleteModel(
-            name='AstrometryOutput',
+            name="AstrometryOutput",
         ),
         migrations.DeleteModel(
-            name='Configuration',
+            name="Configuration",
         ),
         migrations.DeleteModel(
-            name='Run',
+            name="Run",
         ),
     ]

@@ -8,6 +8,7 @@ from django.conf import settings
 from urllib.parse import urljoin
 from common.download import Download
 import os
+
 # from tno.models import Pointing, CcdImage
 # from tno.models import Pointing
 import subprocess
@@ -15,42 +16,54 @@ import subprocess
 
 def unpack_fz(filepath):
     # Descompactar .fz -> .fits usando funpack no sistema.
-    process = subprocess.Popen(["funpack %s" % filepath],
-                               stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    process = subprocess.Popen(
+        ["funpack %s" % filepath],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True,
+    )
 
     out, error = process.communicate()
 
     if process.returncode > 0:
         raise Exception(
-            "Failed to run Funpack. OUT: [%s] Error: [%s]" % (out.decode("utf-8"), error.decode("utf-8")))
+            "Failed to run Funpack. OUT: [%s] Error: [%s]"
+            % (out.decode("utf-8"), error.decode("utf-8"))
+        )
 
 
 def download_ccd(idx, ccd, base_url, ccd_image_dir, auth):
-    logger = logging.getLogger('download_ccds')
-    logger.info("Downloading IDX: [%s] CCD_ID: [%s] Filename: [%s]" % (
-        idx, ccd['id'], ccd['filename']))
+    logger = logging.getLogger("download_ccds")
+    logger.info(
+        "Downloading IDX: [%s] CCD_ID: [%s] Filename: [%s]"
+        % (idx, ccd["id"], ccd["filename"])
+    )
 
     try:
         start = datetime.now(timezone.utc)
 
         # Iniciar o Download aqui
-        filename = ccd['filename'] + ccd['compression']
-        download_url = '/'.join([base_url, ccd['path'], filename])
+        filename = ccd["filename"] + ccd["compression"]
+        download_url = "/".join([base_url, ccd["path"], filename])
 
         logger.debug(download_url)
 
         filepath, download_stats = Download().download_file_from_url(
-            download_url, ccd_image_dir, filename, timeout=60, auth=auth)
+            download_url, ccd_image_dir, filename, timeout=60, auth=auth
+        )
 
         # Double Check
         if not os.path.exists(filepath):
-            raise("Failed to download the file.")
+            raise ("Failed to download the file.")
 
         # Termino do Download
         finish = datetime.now(timezone.utc)
         tdelta = finish - start
-        logger.info("Downloaded  IDX: [%s] CCD_ID: [%s] in %s" % (
-            idx, ccd['id'], humanize.naturaldelta(tdelta)))
+        logger.info(
+            "Downloaded  IDX: [%s] CCD_ID: [%s] in %s"
+            % (idx, ccd["id"], humanize.naturaldelta(tdelta))
+        )
 
         # Descompactar .fz para .fits
         unpack_fz(filepath)
@@ -58,54 +71,58 @@ def download_ccd(idx, ccd, base_url, ccd_image_dir, auth):
         # Remover arquico compactado.
         os.unlink(filepath)
 
-        ccd.update({
-            'download_stats': download_stats
-        })
+        ccd.update({"download_stats": download_stats})
         return ccd
     except Exception as e:
         logger.error(
-            "Failed      IDX: [%s] - CCD_ID: [%s] Error: %s" % (idx, ccd['id'], e))
+            "Failed      IDX: [%s] - CCD_ID: [%s] Error: %s" % (idx, ccd["id"], e)
+        )
         return ccd
 
 
 def register_download(ccd):
-    logger = logging.getLogger('download_ccds')
+    logger = logging.getLogger("download_ccds")
 
     try:
         # Recuperar o Apontamento
-        pointing = Pointing.objects.get(id=ccd['id'])
+        pointing = Pointing.objects.get(id=ccd["id"])
         logger.debug("Pointing Id: %s" % pointing.id)
 
     except Pointing.DoesNotExist:
-        logger.warning("DoesNotExist: ID [ %s ] Filename: [ %s ]" % (
-            ccd['id'], ccd['filename']))
+        logger.warning(
+            "DoesNotExist: ID [ %s ] Filename: [ %s ]" % (ccd["id"], ccd["filename"])
+        )
 
     try:
         record, created = CcdImage.objects.update_or_create(
             desfile_id=pointing.desfile_id,
-            filename=ccd['filename'],
+            filename=ccd["filename"],
             defaults={
-                'pointing': pointing,
-                'download_start_time': ccd['download_stats']['start_time'],
-                'download_finish_time': ccd['download_stats']['finish_time'],
-                'download_time': timedelta(seconds=ccd['download_stats']['download_time']),
-                'file_size': ccd['download_stats']['file_size'],
-            }
+                "pointing": pointing,
+                "download_start_time": ccd["download_stats"]["start_time"],
+                "download_finish_time": ccd["download_stats"]["finish_time"],
+                "download_time": timedelta(
+                    seconds=ccd["download_stats"]["download_time"]
+                ),
+                "file_size": ccd["download_stats"]["file_size"],
+            },
         )
 
         record.save()
         pointing.downloaded = True
         pointing.save()
 
-        logger.info("CCD Image: ID [ %s ] Created: [ %s ] Filename: [ %s ]" %
-                    (record.id, created, record.filename))
+        logger.info(
+            "CCD Image: ID [ %s ] Created: [ %s ] Filename: [ %s ]"
+            % (record.id, created, record.filename)
+        )
     except Exception as e:
         logger.error(e)
 
 
 def download_des_ccds(ccds, max_workers=10):
 
-    logger = logging.getLogger('download_ccds')
+    logger = logging.getLogger("download_ccds")
     logger.info("--------------------------------------------------")
     logger.info("Started Download DES CCDs")
     logger.info("CCDs: [%s]" % len(ccds))
@@ -117,8 +134,9 @@ def download_des_ccds(ccds, max_workers=10):
     # Verificar se o Download de CCDs esta habilitado.
     if base_url is None:
         logger.warning(
-            "DES CCD download is DISABLED. to enable setting the DES_ARCHIVE_URL, DES_USERNAME and DES_PASSWORD environment variables")
-        logger.info('DONE!')
+            "DES CCD download is DISABLED. to enable setting the DES_ARCHIVE_URL, DES_USERNAME and DES_PASSWORD environment variables"
+        )
+        logger.info("DONE!")
         return 0
 
     ccd_image_dir = settings.CCD_IMAGES_DIR
@@ -133,16 +151,11 @@ def download_des_ccds(ccds, max_workers=10):
 
         # Verificar se o ccd ja existe,
         # So faz o download para ccd que nao existe.
-        filepath = os.path.join(ccd_image_dir, ccd['filename'])
+        filepath = os.path.join(ccd_image_dir, ccd["filename"])
         if not os.path.exists(filepath):
-            futures.append(pool.submit(
-                download_ccd,
-                idx,
-                ccd,
-                base_url,
-                ccd_image_dir,
-                auth
-            ))
+            futures.append(
+                pool.submit(download_ccd, idx, ccd, base_url, ccd_image_dir, auth)
+            )
 
             idx += 1
 
@@ -156,7 +169,7 @@ def download_des_ccds(ccds, max_workers=10):
     downloaded = 0
     failed = 0
     for ccd in results:
-        if 'download_stats' in ccd:
+        if "download_stats" in ccd:
             downloaded += 1
             register_download(ccd)
         else:
@@ -165,8 +178,10 @@ def download_des_ccds(ccds, max_workers=10):
     # Termino do Download
     finish = datetime.now(timezone.utc)
     tdelta = finish - start
-    logger.debug("Downloaded [%s] CCDs In %s. \nNot Downloaded [%s]" % (
-        downloaded, humanize.naturaldelta(tdelta), failed))
+    logger.debug(
+        "Downloaded [%s] CCDs In %s. \nNot Downloaded [%s]"
+        % (downloaded, humanize.naturaldelta(tdelta), failed)
+    )
     logger.info("Done!")
 
     return downloaded
@@ -178,7 +193,7 @@ def count_available_des_ccds(ccds):
 
     for ccd in ccds:
         # Verificar se o ccd existe no diretório,
-        filepath = os.path.join(ccd_image_dir, ccd['filename'])
+        filepath = os.path.join(ccd_image_dir, ccd["filename"])
         if os.path.exists(filepath):
             count += 1
 

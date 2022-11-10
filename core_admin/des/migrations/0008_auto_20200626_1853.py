@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0007_downloadccdjob'),
+        ("des", "0007_downloadccdjob"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='downloadccdjob',
-            name='t_size_downloaded',
-            field=models.BigIntegerField(blank=True, default=0, help_text='Total size downloaded in this job.', null=True, verbose_name='Size Downloaded'),
+            model_name="downloadccdjob",
+            name="t_size_downloaded",
+            field=models.BigIntegerField(
+                blank=True,
+                default=0,
+                help_text="Total size downloaded in this job.",
+                null=True,
+                verbose_name="Size Downloaded",
+            ),
         ),
     ]

@@ -41,33 +41,35 @@ class NoRecordsFound(Exception):
     pass
 
 
-class DesAstrometryPipeline():
+class DesAstrometryPipeline:
 
-    result = dict({
-        'id': 0,
-        'status': None,
-        'submit_time': None,
-        'start': None,
-        'end': None,
-        'exec_time': None,
-        'estimated_execution_time': None,
-        'path': None,
-        'bsp_planetary': None,
-        'leap_seconds': None,
-        'period': [],
-        'observatory_location': [],
-        'match_radius': 0,
-        'expected_asteroids': 0,
-        'processed_asteroids': 0,
-        'filter_type': None,
-        'filter_value': None,
-        'count_asteroids': 0,
-        'count_ccds': 0,
-        'count_observations': 0,
-        'time_profile': list(),
-        'traceback': None,
-        'error': None,
-    })
+    result = dict(
+        {
+            "id": 0,
+            "status": None,
+            "submit_time": None,
+            "start": None,
+            "end": None,
+            "exec_time": None,
+            "estimated_execution_time": None,
+            "path": None,
+            "bsp_planetary": None,
+            "leap_seconds": None,
+            "period": [],
+            "observatory_location": [],
+            "match_radius": 0,
+            "expected_asteroids": 0,
+            "processed_asteroids": 0,
+            "filter_type": None,
+            "filter_value": None,
+            "count_asteroids": 0,
+            "count_ccds": 0,
+            "count_observations": 0,
+            "time_profile": list(),
+            "traceback": None,
+            "error": None,
+        }
+    )
 
     job_path = None
 
@@ -75,9 +77,9 @@ class DesAstrometryPipeline():
 
     asteroids = dict()
 
-    DES_START_PERIOD = '2012-11-01'
+    DES_START_PERIOD = "2012-11-01"
 
-    DES_FINISH_PERIOD = '2019-02-01'
+    DES_FINISH_PERIOD = "2019-02-01"
 
     # Location of observatory: [longitude, latitude, elevation] Cerro tololo
     OBSERVATORY_LOCATION = [+289.193583333, -30.16958333, 2202.7]
@@ -814,13 +816,16 @@ class DesAstrometryPipeline():
         relative_path = os.path.join(settings.ARCHIVE_DIR, str(record.upload))
 
         absolute_path = os.path.join(
-            settings.BSP_PLANETARY, os.path.basename(relative_path))
+            settings.BSP_PLANETARY, os.path.basename(relative_path)
+        )
 
-        return dict({
-            'name': name,
-            'filename': os.path.basename(relative_path),
-            'absolute_path': absolute_path
-        })
+        return dict(
+            {
+                "name": name,
+                "filename": os.path.basename(relative_path),
+                "absolute_path": absolute_path,
+            }
+        )
 
     def get_leap_second(self, name):
 
@@ -829,13 +834,16 @@ class DesAstrometryPipeline():
         relative_path = os.path.join(settings.ARCHIVE_DIR, str(record.upload))
 
         absolute_path = os.path.join(
-            settings.LEAP_SECONDS, os.path.basename(relative_path))
+            settings.LEAP_SECONDS, os.path.basename(relative_path)
+        )
 
-        return dict({
-            'name': name,
-            'filename': os.path.basename(relative_path),
-            'absolute_path': absolute_path
-        })
+        return dict(
+            {
+                "name": name,
+                "filename": os.path.basename(relative_path),
+                "absolute_path": absolute_path,
+            }
+        )
 
     # def natural_delta(self, tdelta):
     #     return humanize.naturaldelta(
@@ -854,8 +862,7 @@ class DesAstrometryPipeline():
         if job_id is None:
             job_id = self.job_id
 
-        output_path = os.path.join(
-            self.base_path, "des_astrometry_%s" % str(job_id))
+        output_path = os.path.join(self.base_path, "des_astrometry_%s" % str(job_id))
 
         return output_path
 
@@ -896,39 +903,35 @@ class DesAstrometryPipeline():
 
         job_info = self.result
 
-        job_info.update({
-            'id': job.id,
-            'status': job.get_status_display(),
-            'submit_time': job.submit_time.isoformat(),
-            'start': None,
-            'end': None,
-            'exec_time': 0,
-            'estimated_execution_time': job.estimated_execution_time.total_seconds(),
-            'path': job.path,
-            'bsp_planetary': self.get_bsp_planetary('de435'),
-            'leap_seconds': self.get_leap_second('naif0012'),
-            'period': [self.DES_START_PERIOD, self.DES_FINISH_PERIOD],
-            'observatory_location': self.OBSERVATORY_LOCATION,
-            'match_radius': self.MATCH_RADIUS,
-            'expected_asteroids': 0,
-            'time_profile': list(),
-            'traceback': None,
-            'error': None,
-        })
+        job_info.update(
+            {
+                "id": job.id,
+                "status": job.get_status_display(),
+                "submit_time": job.submit_time.isoformat(),
+                "start": None,
+                "end": None,
+                "exec_time": 0,
+                "estimated_execution_time": job.estimated_execution_time.total_seconds(),
+                "path": job.path,
+                "bsp_planetary": self.get_bsp_planetary("de435"),
+                "leap_seconds": self.get_leap_second("naif0012"),
+                "period": [self.DES_START_PERIOD, self.DES_FINISH_PERIOD],
+                "observatory_location": self.OBSERVATORY_LOCATION,
+                "match_radius": self.MATCH_RADIUS,
+                "expected_asteroids": 0,
+                "time_profile": list(),
+                "traceback": None,
+                "error": None,
+            }
+        )
 
-        if job.asteroids is not None and job.asteroids is not '':
-            job_info.update({
-                'filter_type': 'name',
-                'filter_value': job.asteroids
-            })
+        if job.asteroids != None and job.asteroids != "":
+            job_info.update({"filter_type": "name", "filter_value": job.asteroids})
         else:
-            job_info.update({
-                'filter_type': 'dynclass',
-                'filter_value': job.dynclass
-            })
+            job_info.update({"filter_type": "dynclass", "filter_value": job.dynclass})
 
-        jobfile = os.path.join(jobpath, 'job.json')
-        with open(jobfile, 'w') as f:
+        jobfile = os.path.join(jobpath, "job.json")
+        with open(jobfile, "w") as f:
             json.dump(job_info, f)
 
         os.chmod(jobfile, 0o664)
@@ -942,29 +945,31 @@ class DesAstrometryPipeline():
         job = AstrometryJob.objects.get(pk=job_id)
 
         # Ler o arquivo job.json
-        jobfile = os.path.join(job.path, 'job.json')
+        jobfile = os.path.join(job.path, "job.json")
 
         with open(jobfile) as json_file:
             jobdata = json.load(json_file)
 
-            job.status = self.get_status_id(jobdata['status'])
-            job.start = jobdata['start']
-            job.finish = jobdata['end']
-            job.execution_time = timedelta(seconds=jobdata['exec_time'])
+            job.status = self.get_status_id(jobdata["status"])
+            job.start = jobdata["start"]
+            job.finish = jobdata["end"]
+            job.execution_time = timedelta(seconds=jobdata["exec_time"])
 
-            job.t_asteroids = jobdata['count_asteroids']
-            job.t_ccds = jobdata['count_ccds']
-            job.t_observations = jobdata['count_observations']
+            job.t_asteroids = jobdata["count_asteroids"]
+            job.t_ccds = jobdata["count_ccds"]
+            job.t_observations = jobdata["count_observations"]
 
-            job.error = jobdata['error']
-            job.traceback = jobdata['traceback']
+            job.error = jobdata["error"]
+            job.traceback = jobdata["traceback"]
 
             job.save()
 
             job.refresh_from_db()
 
-            self.log.info("JobId: [%s] Finished with Status %s in %s." % (
-                job_id, job.get_status_display(), str(job.execution_time)))
+            self.log.info(
+                "JobId: [%s] Finished with Status %s in %s."
+                % (job_id, job.get_status_display(), str(job.execution_time))
+            )
 
     def check_job_running(self, job_id):
 
@@ -973,20 +978,20 @@ class DesAstrometryPipeline():
         job = AstrometryJob.objects.get(pk=job_id)
 
         # Ler o arquivo job.json
-        jobfile = os.path.join(job.path, 'job.json')
+        jobfile = os.path.join(job.path, "job.json")
 
         with open(jobfile) as json_file:
             jobdata = json.load(json_file)
 
-            status = self.get_status_id(jobdata['status'])
+            status = self.get_status_id(jobdata["status"])
 
             if status == 2:
                 # Se o Job ainda estiver executando atualiza o status e os contadores
                 job.status = status
-                job.start = jobdata['start']
-                job.t_asteroids = jobdata['count_asteroids']
-                job.t_ccds = jobdata['count_ccds']
-                job.t_observations = jobdata['count_observations']
+                job.start = jobdata["start"]
+                job.t_asteroids = jobdata["count_asteroids"]
+                job.t_ccds = jobdata["count_ccds"]
+                job.t_observations = jobdata["count_observations"]
 
                 job.save()
 
@@ -997,15 +1002,17 @@ class DesAstrometryPipeline():
                 self.consolidate_job(job_id=job_id)
 
     def get_status_id(self, status):
-        a = dict({
-            'Idle': 1,
-            'Running': 2,
-            'Completed': 3,
-            'Failed': 4,
-            'Aborted': 5,
-            'Warning': 6,
-            'Launched': 7
-        })
+        a = dict(
+            {
+                "Idle": 1,
+                "Running": 2,
+                "Completed": 3,
+                "Failed": 4,
+                "Aborted": 5,
+                "Warning": 6,
+                "Launched": 7,
+            }
+        )
 
         return a[status]
 

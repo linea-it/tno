@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0019_auto_20200828_1716'),
+        ("des", "0019_auto_20200828_1716"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='skybotjob',
-            name='exposures_analyzed',
-            field=models.BigIntegerField(default=0, help_text='Total Exposures that have at least one object through the skybot', verbose_name='Exposures analyzed'),
+            model_name="skybotjob",
+            name="exposures_analyzed",
+            field=models.BigIntegerField(
+                default=0,
+                help_text="Total Exposures that have at least one object through the skybot",
+                verbose_name="Exposures analyzed",
+            ),
         ),
     ]

@@ -6,12 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('skybot', '0005_position_base_dynclass'),
+        ("skybot", "0005_position_base_dynclass"),
     ]
 
     operations = [
         migrations.AddIndex(
-            model_name='position',
-            index=models.Index(fields=['base_dynclass'], name='skybot_posi_base_dy_9d6444_idx'),
+            model_name="position",
+            index=models.Index(
+                fields=["base_dynclass"], name="skybot_posi_base_dy_9d6444_idx"
+            ),
         ),
     ]

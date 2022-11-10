@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0017_auto_20200819_1558'),
+        ("des", "0017_auto_20200819_1558"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='skybotjob',
-            name='estimated_execution_time',
-            field=models.DurationField(blank=True, null=True, verbose_name='Estimated Execution Time'),
+            model_name="skybotjob",
+            name="estimated_execution_time",
+            field=models.DurationField(
+                blank=True, null=True, verbose_name="Estimated Execution Time"
+            ),
         ),
     ]

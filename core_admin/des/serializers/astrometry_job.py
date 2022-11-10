@@ -8,29 +8,29 @@ class AstrometryJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = AstrometryJob
         fields = (
-            'id',
-            'owner',
-            'asteroids',
-            'dynclass',
-            'status',
-            'start',
-            'finish',
-            'execution_time',
-            'estimated_execution_time',
-            't_asteroids',
-            'path',
-            'error'
+            "id",
+            "owner",
+            "asteroids",
+            "dynclass",
+            "status",
+            "start",
+            "finish",
+            "execution_time",
+            "estimated_execution_time",
+            "t_asteroids",
+            "path",
+            "error",
         )
         read_only_fields = (
-            'id',
-            'status',
-            'start',
-            'finish',
-            'execution_time',
-            'estimated_execution_time',
-            't_asteroids',
-            'path',
-            'error'
+            "id",
+            "status",
+            "start",
+            "finish",
+            "execution_time",
+            "estimated_execution_time",
+            "t_asteroids",
+            "path",
+            "error",
         )
 
     def get_owner(self, obj):

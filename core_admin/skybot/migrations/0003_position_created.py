@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('skybot', '0002_auto_20200611_1903'),
+        ("skybot", "0002_auto_20200611_1903"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='position',
-            name='created',
-            field=models.DateTimeField(auto_now_add=True, null=True, verbose_name='Start'),
+            model_name="position",
+            name="created",
+            field=models.DateTimeField(
+                auto_now_add=True, null=True, verbose_name="Start"
+            ),
         ),
     ]

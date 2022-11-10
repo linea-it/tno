@@ -6,20 +6,29 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0003_bspplanetary_leapsecond'),
+        ("tno", "0003_bspplanetary_leapsecond"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='bspplanetary',
-            options={'verbose_name': 'Planetary Ephemeris', 'verbose_name_plural': 'Planetary Ephemeris'},
+            name="bspplanetary",
+            options={
+                "verbose_name": "Planetary Ephemeris",
+                "verbose_name_plural": "Planetary Ephemeris",
+            },
         ),
         migrations.AlterModelOptions(
-            name='johnstonarchive',
-            options={'verbose_name': 'Johnston Archive', 'verbose_name_plural': 'Johnston Archive'},
+            name="johnstonarchive",
+            options={
+                "verbose_name": "Johnston Archive",
+                "verbose_name_plural": "Johnston Archive",
+            },
         ),
         migrations.AlterModelOptions(
-            name='leapsecond',
-            options={'verbose_name': 'Leap Second', 'verbose_name_plural': 'Leap Second'},
+            name="leapsecond",
+            options={
+                "verbose_name": "Leap Second",
+                "verbose_name_plural": "Leap Second",
+            },
         ),
     ]

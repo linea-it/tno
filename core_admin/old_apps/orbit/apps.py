@@ -2,7 +2,7 @@ from django.apps import AppConfig
 
 
 class OrbitConfig(AppConfig):
-    name = 'orbit'
+    name = "orbit"
 
     def ready(self):
         from . import signals

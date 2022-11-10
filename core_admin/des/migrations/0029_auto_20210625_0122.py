@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0028_observation'),
+        ("des", "0028_observation"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='observation',
-            name='date_jd',
-            field=models.CharField(help_text='Date and time of observation in Julian date already applied the DES correction.', max_length=50, verbose_name='Observation Date (JD)'),
+            model_name="observation",
+            name="date_jd",
+            field=models.CharField(
+                help_text="Date and time of observation in Julian date already applied the DES correction.",
+                max_length=50,
+                verbose_name="Observation Date (JD)",
+            ),
         ),
     ]

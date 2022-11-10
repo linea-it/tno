@@ -12,21 +12,21 @@ class SkybotByYearDao(DBBase):
         super(SkybotByYearDao, self).__init__(pool)
 
         schema = self.get_base_schema()
-        self.tablename = 'des_skybotbyyear'
+        self.tablename = "des_skybotbyyear"
         self.tbl = self.get_table(self.tablename, schema)
 
     def import_data(self, dataframe):
         """
-            Convert the dataframe to csv, and import it into the database.
+        Convert the dataframe to csv, and import it into the database.
 
-            Parameters:
-                dataframe (dataframe): Pandas Dataframe with the information to be imported.
+        Parameters:
+            dataframe (dataframe): Pandas Dataframe with the information to be imported.
 
-            Returns:
-                rowcount (int):  the number of rows imported.
+        Returns:
+            rowcount (int):  the number of rows imported.
 
-            Example SQL Copy:
-                COPY des_skybotbyyear (year, nights, exposures, ccds, nights_analyzed, exposures_analyzed, ccds_analyzed) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
+        Example SQL Copy:
+            COPY des_skybotbyyear (year, nights, exposures, ccds, nights_analyzed, exposures_analyzed, ccds_analyzed) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
 
         """
         # Converte o Data frame para csv e depois para arquivo em memória.
@@ -48,7 +48,10 @@ class SkybotByYearDao(DBBase):
             table = str(self.tbl)
 
             # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
-            sql = "COPY %s (year, nights, exposures, ccds, nights_analyzed, exposures_analyzed, ccds_analyzed) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % table
+            sql = (
+                "COPY %s (year, nights, exposures, ccds, nights_analyzed, exposures_analyzed, ccds_analyzed) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);"
+                % table
+            )
 
             # Executa o metodo que importa o arquivo csv na tabela.
             rowcount = self.import_with_copy_expert(sql, data)

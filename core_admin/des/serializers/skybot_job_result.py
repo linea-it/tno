@@ -6,10 +6,12 @@ from des.models import Exposure, SkybotJob, SkybotJobResult
 class SkybotJobResultSerializer(serializers.ModelSerializer):
 
     job = serializers.PrimaryKeyRelatedField(
-        queryset=SkybotJob.objects.all(), many=False)
+        queryset=SkybotJob.objects.all(), many=False
+    )
 
     exposure = serializers.PrimaryKeyRelatedField(
-        queryset=Exposure.objects.all(), many=False)
+        queryset=Exposure.objects.all(), many=False
+    )
 
     ticket = serializers.SerializerMethodField()
 
@@ -20,20 +22,20 @@ class SkybotJobResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = SkybotJobResult
         fields = (
-            'id',
-            'job',
-            'exposure',
-            'ticket',
-            'success',
-            'error',
-            'execution_time',
-            'ccds_with_asteroids',
-            'positions',
-            'inside_ccd',
-            'outside_ccd',
-            'filename',
-            'band',
-            'date_obs'
+            "id",
+            "job",
+            "exposure",
+            "ticket",
+            "success",
+            "error",
+            "execution_time",
+            "ccds_with_asteroids",
+            "positions",
+            "inside_ccd",
+            "outside_ccd",
+            "filename",
+            "band",
+            "date_obs",
         )
 
     def get_ticket(self, obj):

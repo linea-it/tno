@@ -9,16 +9,36 @@ import requests
 from requests.exceptions import HTTPError
 
 
-class SkybotServer():
-    """Esta classe tem a função de facilitar consultas ao serviço Skybot.
-
-    """
+class SkybotServer:
+    """Esta classe tem a função de facilitar consultas ao serviço Skybot."""
 
     def __init__(self, url):
 
-        self.result_columns = ['expnum', 'band', 'date_obs', 'skybot_downloaded', 'skybot_url', 'download_start', 'download_finish', 'download_time', 'filename',
-                               'file_size', 'file_path', 'import_start', 'import_finish', 'import_time', 'count_created', 'count_updated', 'count_rows',
-                               'ccd_count', 'ccd_count_rows', 'ccd_start', 'ccd_finish', 'ccd_time', 'error']
+        self.result_columns = [
+            "expnum",
+            "band",
+            "date_obs",
+            "skybot_downloaded",
+            "skybot_url",
+            "download_start",
+            "download_finish",
+            "download_time",
+            "filename",
+            "file_size",
+            "file_path",
+            "import_start",
+            "import_finish",
+            "import_time",
+            "count_created",
+            "count_updated",
+            "count_rows",
+            "ccd_count",
+            "ccd_count_rows",
+            "ccd_start",
+            "ccd_finish",
+            "ccd_time",
+            "error",
+        ]
 
         # Url para o serviço do Skybot incluindo o endpoint.
         # exemplo: http://vo.imcce.fr/webservices/skybot/skybotconesearch_query.php
@@ -55,7 +75,8 @@ class SkybotServer():
             return ra
         else:
             raise Exception(
-                "Right ascension or ecliptic longitude of the FOV center limits 0..360 degrees.")
+                "Right ascension or ecliptic longitude of the FOV center limits 0..360 degrees."
+            )
 
     def __check_dec(self, dec):
         """Valida o valor para Dec. que deve ser um float entre -90 e 90.
@@ -74,7 +95,8 @@ class SkybotServer():
             return dec
         else:
             raise Exception(
-                "Declination or ecliptic latitude of the FOV center limits -90..+90 degrees.")
+                "Declination or ecliptic latitude of the FOV center limits -90..+90 degrees."
+            )
 
     def __check_radius(self, radius):
         """Valida os valores para Radius, dever ser um float entre 0 e 10.
@@ -92,8 +114,7 @@ class SkybotServer():
         if 0 <= radius <= 10:
             return radius
         else:
-            raise Exception(
-                "Radius of the FOV must be float between 0 and 10 degrees.")
+            raise Exception("Radius of the FOV must be float between 0 and 10 degrees.")
 
     def __get_ticket_from_response(self, data):
         """Read the output file and retrieve the ticket number on the second line.
@@ -107,10 +128,12 @@ class SkybotServer():
         """
 
         line = data.splitlines()[1]
-        ticket = int(line.split(':')[1].strip())
+        ticket = int(line.split(":")[1].strip())
         return ticket
 
-    def cone_search(self, date, ra, dec, radius, observer_location, position_error, output):
+    def cone_search(
+        self, date, ra, dec, radius, observer_location, position_error, output
+    ):
         """Faz uma requisição ao serviço do skybot e grava o resultado em um arquivo.
         Utiliza a função conesearch do Skybot.
 
@@ -148,82 +171,89 @@ class SkybotServer():
         """
 
         t0 = datetime.now()
-        result = dict({
-            'success': False,
-            'ticket': None,
-            'positions': 0,
-            'start': None,
-            'finish': None,
-            'execution_time': 0,
-            'output': None,
-            'file_size': 0,
-            'skybot_url': None,
-            'error': None
-        })
+        result = dict(
+            {
+                "success": False,
+                "ticket": None,
+                "positions": 0,
+                "start": None,
+                "finish": None,
+                "execution_time": 0,
+                "output": None,
+                "file_size": 0,
+                "skybot_url": None,
+                "error": None,
+            }
+        )
 
         try:
             # Monta a url para o serviço do skybot na função de conesearch
             # exemplo: http://vo.imcce.fr/webservices/skybot/skybotconesearch_query.php
-            url = urljoin(self.server_url, 'skybotconesearch_query.php')
+            url = urljoin(self.server_url, "skybotconesearch_query.php")
 
             # Faz a requisição
-            r = requests.get(url, params={
-                '-ep': self.__check_date(date),
-                '-ra': self.__check_ra(ra),
-                '-dec': self.__check_dec(dec),
-                '-rd': self.__check_radius(radius),
-                '-loc': str(observer_location),
-                '-mime': 'text',
-                '-output': 'all',
-                '-filter': float(position_error),
-            })
+            r = requests.get(
+                url,
+                params={
+                    "-ep": self.__check_date(date),
+                    "-ra": self.__check_ra(ra),
+                    "-dec": self.__check_dec(dec),
+                    "-rd": self.__check_radius(radius),
+                    "-loc": str(observer_location),
+                    "-mime": "text",
+                    "-output": "all",
+                    "-filter": float(position_error),
+                },
+            )
 
             # Checa o status da requisição
             # If the response was successful, no Exception will be raised
             r.raise_for_status()
 
             # Cria um arquivo com o resultado
-            with open(output, 'w+') as csv:
+            with open(output, "w+") as csv:
                 csv.write(r.text)
 
             # Atualiza o dict de retorno com os dados da execução.
-            result.update({
-                'success': True,
-                'skybot_url': r.url,
-                'file_size': os.path.getsize(output),
-                'ticket': self.__get_ticket_from_response(r.text),
-                'positions': len(r.text.splitlines()) - 3,
-            })
+            result.update(
+                {
+                    "success": True,
+                    "skybot_url": r.url,
+                    "file_size": os.path.getsize(output),
+                    "ticket": self.__get_ticket_from_response(r.text),
+                    "positions": len(r.text.splitlines()) - 3,
+                }
+            )
 
             # Checa se o resultdo retornado pelo Skybot possui algum valor Nulo.
             # Caso um dos campos esteja Nulo o resultado é considerado com Falha.
             if not self.check_missing_values(r.text):
-                result.update({
-                    'success': False,
-                    'error': "Result of skybot has fields missing values."
-                })
+                result.update(
+                    {
+                        "success": False,
+                        "error": "Result of skybot has fields missing values.",
+                    }
+                )
 
         except HTTPError as http_err:
-            result.update({
-                'success': False,
-                'error': "HTTP error occurred: %s" % http_err
-            })
+            result.update(
+                {"success": False, "error": "HTTP error occurred: %s" % http_err}
+            )
 
         except Exception as e:
-            result.update({
-                'success': False,
-                'error': e
-            })
+            result.update({"success": False, "error": e})
 
         # tempo de execução
         t1 = datetime.now()
         tdelta = t1 - t0
 
-        result.update({
-            'start': t0.strftime("%Y-%m-%d %H:%M:%S"),
-            'finish': t1.strftime("%Y-%m-%d %H:%M:%S"),
-            'execution_time': tdelta.total_seconds()
-        })
+        result.update(
+            {
+                "start": t0.strftime("%Y-%m-%d %H:%M:%S"),
+                "finish": t1.strftime("%Y-%m-%d %H:%M:%S"),
+                "execution_time": tdelta.total_seconds(),
+            }
+        )
 
         return result
 
@@ -240,7 +270,7 @@ class SkybotServer():
         """
 
         df = self.read_output_file(data)
-        df = df.replace('', np.nan)
+        df = df.replace("", np.nan)
 
         has_null_value = df.isnull().values.any()
 
@@ -261,11 +291,31 @@ class SkybotServer():
         """
 
         # Headers que estão no arquivo e na ordem correta de leitura.
-        headers = ["number", "name", "ra", "dec", "dynclass", "mv", "errpos", "d", "dracosdec",
-                   "ddec", "dgeo", "dhelio", "phase", "solelong", "px", "py", "pz", "vx", "vy", "vz", "jdref"]
+        headers = [
+            "number",
+            "name",
+            "ra",
+            "dec",
+            "dynclass",
+            "mv",
+            "errpos",
+            "d",
+            "dracosdec",
+            "ddec",
+            "dgeo",
+            "dhelio",
+            "phase",
+            "solelong",
+            "px",
+            "py",
+            "pz",
+            "vx",
+            "vy",
+            "vz",
+            "jdref",
+        ]
 
-        df = pd.read_csv(StringIO(data), skiprows=3,
-                         delimiter='|', names=headers)
+        df = pd.read_csv(StringIO(data), skiprows=3, delimiter="|", names=headers)
 
         # Retirar os espaços entre os valores
         df = df.applymap(lambda x: x.strip() if type(x) == str else x)

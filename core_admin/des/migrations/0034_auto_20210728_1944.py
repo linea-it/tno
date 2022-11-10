@@ -6,23 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0033_auto_20210722_1449'),
+        ("des", "0033_auto_20210722_1449"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='astrometryjob',
-            name='submit_time',
-            field=models.DateTimeField(auto_now_add=True, null=True, verbose_name='Submit Time'),
+            model_name="astrometryjob",
+            name="submit_time",
+            field=models.DateTimeField(
+                auto_now_add=True, null=True, verbose_name="Submit Time"
+            ),
         ),
         migrations.AddField(
-            model_name='astrometryjob',
-            name='traceback',
-            field=models.TextField(blank=True, null=True, verbose_name='Traceback'),
+            model_name="astrometryjob",
+            name="traceback",
+            field=models.TextField(blank=True, null=True, verbose_name="Traceback"),
         ),
         migrations.AlterField(
-            model_name='astrometryjob',
-            name='start',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Start'),
+            model_name="astrometryjob",
+            name="start",
+            field=models.DateTimeField(blank=True, null=True, verbose_name="Start"),
         ),
     ]

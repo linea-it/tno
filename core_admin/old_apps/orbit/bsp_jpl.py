@@ -18,10 +18,10 @@ import traceback
 
 class BSPJPL(DownloadParameters):
     """
-        Esta classe contem os metodos para baixar os arquivos BSP do JPL.
-        O Download e feito usando um script disponibilizado pelo JPL,
-        esse script tem depencia da lib expect.
-        o script foi disponibilizado neste diret
+    Esta classe contem os metodos para baixar os arquivos BSP do JPL.
+    O Download e feito usando um script disponibilizado pelo JPL,
+    esse script tem depencia da lib expect.
+    o script foi disponibilizado neste diret
     """
 
     def __init__(self, debug_mode=False):
@@ -29,18 +29,23 @@ class BSPJPL(DownloadParameters):
         self.logger = logging.getLogger("refine_orbit")
 
         # Verifica se o script small_body_spk esta disponivel no diretorio bin e se tem permissao de execucao
-        self.small_body_spk = os.path.join(settings.BIN_DIR, 'small_body_spk')
-        if not os.path.exists(self.small_body_spk) or not os.access(self.small_body_spk, os.X_OK):
+        self.small_body_spk = os.path.join(settings.BIN_DIR, "small_body_spk")
+        if not os.path.exists(self.small_body_spk) or not os.access(
+            self.small_body_spk, os.X_OK
+        ):
             raise Exception(
-                "Script small_body_spk does not exist or does not have execute permission")
+                "Script small_body_spk does not exist or does not have execute permission"
+            )
 
         if settings.EMAIL_NOTIFICATIONS is None:
             raise Exception(
-                "you must have a valid email set in the EMAIL_NOTIFICATION environment variable.")
+                "you must have a valid email set in the EMAIL_NOTIFICATION environment variable."
+            )
 
         if settings.BSP_JPL_DIR is None:
             raise Exception(
-                "it is necessary to have a valid path defined in the BSP_JPL_DIR settings variable.")
+                "it is necessary to have a valid path defined in the BSP_JPL_DIR settings variable."
+            )
 
         self.bsp_jpl_dir = settings.BSP_JPL_DIR
 
@@ -64,13 +69,13 @@ class BSPJPL(DownloadParameters):
         now = datetime.now()
         # Ano atual - bsp_start_years.
         start = now - timedelta(days=(self.bsp_start_years * 365.24))
-        return '%s-Jan-01' % start.year
+        return "%s-Jan-01" % start.year
 
     def get_end_date(self):
         now = datetime.now()
         # Ano atual + bsp_start_years.
         end = now + timedelta(days=(self.bsp_start_years * 365.24))
-        return '%s-Jan-01' % end.year
+        return "%s-Jan-01" % end.year
 
     def download(self, name, filename, output_path, logger):
 
@@ -81,12 +86,13 @@ class BSPJPL(DownloadParameters):
 
             args = [
                 self.small_body_spk,
-                '-b',
+                "-b",
                 '"%s"' % name,
                 self.get_start_date(),
                 self.get_end_date(),
                 settings.EMAIL_NOTIFICATIONS,
-                file_path]
+                file_path,
+            ]
 
             logger.debug("Command: [ %s ]" % (" ".join(args)))
 
@@ -113,16 +119,18 @@ class BSPJPL(DownloadParameters):
 
             size = os.path.getsize(file_path)
 
-            return dict({
-                "name": name,
-                "start_time": start,
-                "finish_time": finish,
-                "download_time": tdelta.total_seconds(),
-                "file_size": size,
-                "filename": filename,
-                "file_path": file_path,
-                "path": output_path
-            })
+            return dict(
+                {
+                    "name": name,
+                    "start_time": start,
+                    "finish_time": finish,
+                    "download_time": tdelta.total_seconds(),
+                    "file_size": size,
+                    "filename": filename,
+                    "file_path": file_path,
+                    "path": output_path,
+                }
+            )
 
         else:
             return None
@@ -159,15 +167,17 @@ class BSPJPL(DownloadParameters):
         self.logger.debug(settings.PARSL_CONFIG)
 
         # Configuracao do Parsl Log.
-        parsl.set_file_logger(os.path.join(output_path, 'bsp_jpl_parsl.log'))
+        parsl.set_file_logger(os.path.join(output_path, "bsp_jpl_parsl.log"))
 
         # Declaracao do Parsl APP
         @App("python", dfk)
         def start_parsl_job(name, filename, files_path, logger):
 
-            result = dict({
-                "name": name,
-            })
+            result = dict(
+                {
+                    "name": name,
+                }
+            )
 
             msg = "Download [ FAILURE ] - Object: %s " % name
 
@@ -175,19 +185,26 @@ class BSPJPL(DownloadParameters):
             download_stats = self.download(name, filename, files_path, logger)
 
             if download_stats is not None:
-                result.update({
-                    "name": name,
-                    "filename": download_stats.get("filename"),
-                    "download_start_time": download_stats.get("start_time"),
-                    "download_finish_time": download_stats.get("finish_time"),
-                    "download_time": download_stats.get('download_time'),
-                    "file_size": download_stats.get("file_size"),
-                })
+                result.update(
+                    {
+                        "name": name,
+                        "filename": download_stats.get("filename"),
+                        "download_start_time": download_stats.get("start_time"),
+                        "download_finish_time": download_stats.get("finish_time"),
+                        "download_time": download_stats.get("download_time"),
+                        "file_size": download_stats.get("file_size"),
+                    }
+                )
 
-                msg = "Download [ SUCCESS ] - Object: %s File: %s Size: %s Time: %s seconds" % (
-                    result.get('name'), result.get(
-                        'filename'), humanize.naturalsize(result.get('file_size')),
-                    result.get('download_time'))
+                msg = (
+                    "Download [ SUCCESS ] - Object: %s File: %s Size: %s Time: %s seconds"
+                    % (
+                        result.get("name"),
+                        result.get("filename"),
+                        humanize.naturalsize(result.get("file_size")),
+                        result.get("download_time"),
+                    )
+                )
 
             logger.info(msg)
 
@@ -199,14 +216,14 @@ class BSPJPL(DownloadParameters):
             # Utiliza o parsl apenas para os objetos que estao marcados
             # para serem baixados.
             if row.get("need_download"):
-                filename = row.get("name").replace(
-                    " ", "_") + self.bsp_jpl_extension
+                filename = row.get("name").replace(" ", "_") + self.bsp_jpl_extension
 
                 result = start_parsl_job(
                     name=row.get("name"),
                     filename=filename,
                     files_path=files_path,
-                    logger=self.logger)
+                    logger=self.logger,
+                )
 
                 self.logger.debug(result)
 
@@ -236,8 +253,9 @@ class BSPJPL(DownloadParameters):
         t1 = datetime.now()
         tdelta = t1 - t0
 
-        self.logger.info("Download BSP_JPL Completed in %s" %
-                         humanize.naturaldelta(tdelta))
+        self.logger.info(
+            "Download BSP_JPL Completed in %s" % humanize.naturaldelta(tdelta)
+        )
 
     def update_or_create_record(self, record):
 
@@ -254,11 +272,11 @@ class BSPJPL(DownloadParameters):
         return BspJplFile.objects.update_or_create(
             name=record.get("name"),
             defaults={
-                'filename': record.get("filename"),
-                'download_start_time': start_time,
-                'download_finish_time': finish_time,
-                'file_size': record.get("file_size"),
-            }
+                "filename": record.get("filename"),
+                "download_start_time": start_time,
+                "download_finish_time": finish_time,
+                "file_size": record.get("file_size"),
+            },
         )
 
     def get_file_path(self, name):
@@ -277,8 +295,11 @@ class BSPJPL(DownloadParameters):
 
     def get_latest(self, name):
         try:
-            f = BspJplFile.objects.filter(name=name).order_by(
-                '-download_finish_time').first()
+            f = (
+                BspJplFile.objects.filter(name=name)
+                .order_by("-download_finish_time")
+                .first()
+            )
             return f
 
         except:

@@ -1,12 +1,17 @@
+import warnings
 
-from .ccd import CcdDao
-from .exposure import ExposureDao
-from .skybot_position import DesSkybotPositionDao
-from .skybot_job import DesSkybotJobDao
-from .skybot_job_result import DesSkybotJobResultDao
-from .summary_dynclass import DesSummaryDynclassDao
-from .download_ccd_job import DownloadCcdJobDao
-from .download_ccd_result import DownloadCcdJobResultDao
+# https://github.com/marshmallow-code/flask-marshmallow/issues/53
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
 
-from .skybot_by_year import SkybotByYearDao
-from .skybot_by_dynclass import SkybotByDynclassDao
+    from .ccd import CcdDao
+    from .exposure import ExposureDao
+    from .skybot_position import DesSkybotPositionDao
+    from .skybot_job import DesSkybotJobDao
+    from .skybot_job_result import DesSkybotJobResultDao
+    from .summary_dynclass import DesSummaryDynclassDao
+    from .download_ccd_job import DownloadCcdJobDao
+    from .download_ccd_result import DownloadCcdJobResultDao
+
+    from .skybot_by_year import SkybotByYearDao
+    from .skybot_by_dynclass import SkybotByDynclassDao

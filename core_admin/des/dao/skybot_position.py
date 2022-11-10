@@ -10,7 +10,7 @@ class DesSkybotPositionDao(DBBase):
         super(DesSkybotPositionDao, self).__init__(pool)
 
         schema = self.get_base_schema()
-        self.tablename = 'des_skybotposition'
+        self.tablename = "des_skybotposition"
         self.tbl = self.get_table(self.tablename, schema)
 
     # TODO: Mover esses metodos get para a DBBase.
@@ -23,22 +23,22 @@ class DesSkybotPositionDao(DBBase):
 
     def insert_positions_by_ccd(self, ticket, exposure_id, ccd_id, corners):
         """
-            Insere as posições do skybot output que caem dentro de um dos CCDs do des.
-            Utiliza o Ticket da requisição do skybot, para agilizar a query, fazendo que leia só os objetos de interesse e não a tabela toda.
-            O Select é feito usando Q3C Poly query com as posições dos 4 cantos do CCD.
-            A estrátegia é: Insere nesta tabela apenas as posições do skybot_output que caem dentro de um ccd.
+        Insere as posições do skybot output que caem dentro de um dos CCDs do des.
+        Utiliza o Ticket da requisição do skybot, para agilizar a query, fazendo que leia só os objetos de interesse e não a tabela toda.
+        O Select é feito usando Q3C Poly query com as posições dos 4 cantos do CCD.
+        A estrátegia é: Insere nesta tabela apenas as posições do skybot_output que caem dentro de um ccd.
 
-            Parameters:
-                ticket (int): Skybot ticket number example: 166515392791779001
+        Parameters:
+            ticket (int): Skybot ticket number example: 166515392791779001
 
-                exposure_id (int): primary key from des_exposure table.
+            exposure_id (int): primary key from des_exposure table.
 
-                ccd_id (int): primary key from des_ccd table.
+            ccd_id (int): primary key from des_ccd table.
 
-                corners (array): An array with the positions of the corners of the ccd,
-                    in the following order: [ccd['rac1'], ccd['decc1'], ccd['rac2'], ccd['decc2'], ccd['rac3'], ccd['decc3'],ccd['rac4'], ccd['decc4']]
-            Returns:
-                rowcount (int): Total rows inserted
+            corners (array): An array with the positions of the corners of the ccd,
+                in the following order: [ccd['rac1'], ccd['decc1'], ccd['rac2'], ccd['decc2'], ccd['rac3'], ccd['decc3'],ccd['rac4'], ccd['decc4']]
+        Returns:
+            rowcount (int): Total rows inserted
         """
         try:
             # tabela Des Skybot Position
@@ -66,15 +66,30 @@ class DesSkybotPositionDao(DBBase):
             #     '{359.540844, 0.976806, 359.540543, 0.827607, 359.83968, 0.827596, 359.839912, 0.976657}')
             #     and tno_skybotoutput.ticket = 166515392791779001
 
-            stm_sel = select([
-                column(str(ccd_id), is_literal=True).label('ccd_id'),
-                column(str(exposure_id), is_literal=True).label('exposure_id'),
-                tbl_skybot.c.id.label('position_id')
-            ]).where(and_(
-                tbl_skybot.c.ticket == ticket,
-                text("q3c_poly_query(\"raj2000\", \"decj2000\", '{%s, %s, %s, %s, %s, %s, %s, %s}')" % (
-                    corners[0], corners[1], corners[2], corners[3], corners[4], corners[5], corners[6], corners[7]))
-            ))
+            stm_sel = select(
+                [
+                    column(str(ccd_id), is_literal=True).label("ccd_id"),
+                    column(str(exposure_id), is_literal=True).label("exposure_id"),
+                    tbl_skybot.c.id.label("position_id"),
+                ]
+            ).where(
+                and_(
+                    tbl_skybot.c.ticket == ticket,
+                    text(
+                        'q3c_poly_query("raj2000", "decj2000", \'{%s, %s, %s, %s, %s, %s, %s, %s}\')'
+                        % (
+                            corners[0],
+                            corners[1],
+                            corners[2],
+                            corners[3],
+                            corners[4],
+                            corners[5],
+                            corners[6],
+                            corners[7],
+                        )
+                    ),
+                )
+            )
 
             # Executa a query de Inserção/Select na tabela Des/Skybot Positions.
             # este statement gera uma query como está:
@@ -96,8 +111,7 @@ class DesSkybotPositionDao(DBBase):
             #     '{0.160099, -0.831899, 0.159831, -0.980955, 0.458933, -0.981232, 0.459265, -0.832037}')
 
             stm_insert = tbl.insert().from_select(
-                ['ccd_id', 'exposure_id', 'position_id'],
-                stm_sel
+                ["ccd_id", "exposure_id", "position_id"], stm_sel
             )
 
             self.debug_query(stm_insert, True)
@@ -108,7 +122,7 @@ class DesSkybotPositionDao(DBBase):
                 return result.rowcount
 
         except Exception as e:
-            raise(e)
+            raise (e)
 
     def ccds_for_position(self, start, end, dynclass=None, name=None):
         """Retorna os DES/CCDs  relacionados as posições filtrados por tipo de objeto nome do objeto e periodo.
@@ -144,49 +158,50 @@ class DesSkybotPositionDao(DBBase):
             [array]: com o conteudo da tabela des_ccd com as linhas que atendem aos critérios.
         """
         # des_ccd
-        dc = self.get_table('des_ccd', self.get_base_schema())
+        dc = self.get_table("des_ccd", self.get_base_schema())
 
         # des_exposure
-        de = self.get_table('des_exposure', self.get_base_schema())
+        de = self.get_table("des_exposure", self.get_base_schema())
 
         # Des skybot position
         ds = self.tbl
 
         # Skybot Position
-        sp = self.get_table('skybot_position', self.get_base_schema())
+        sp = self.get_table("skybot_position", self.get_base_schema())
 
         # Des Download CCD Job Result
-        dd = self.get_table('des_downloadccdjobresult', self.get_base_schema())
+        dd = self.get_table("des_downloadccdjobresult", self.get_base_schema())
 
         # Clausula where pelo periodo que é obrigatório
-        clause = list([
-            dc.c.id.notin_(select([dd.c.ccd_id])),
-            de.c.date_obs.between(str(start), str(end))
-        ])
+        clause = list(
+            [
+                dc.c.id.notin_(select([dd.c.ccd_id])),
+                de.c.date_obs.between(str(start), str(end)),
+            ]
+        )
 
         # Clausula where pela classe dos objetos.
         if dynclass is not None:
-            clause.append(sp.c.dynclass.ilike(dynclass + '%'))
+            clause.append(sp.c.dynclass.ilike(dynclass + "%"))
 
         # Clausula where pelo nome dos objetos.
         if name is not None:
             clause.append(sp.c.name == name)
 
         columns = list(dc.c)
-        columns.append(cast(de.c.date_obs, Date).label('date_obs'))
+        columns.append(cast(de.c.date_obs, Date).label("date_obs"))
 
-        stm = select(columns).\
-            select_from(
-            dc.join(
-                de, dc.c.exposure_id == de.c.id
-            ).join(
-                ds, dc.c.id == ds.c.ccd_id
-            ).join(
-                sp, ds.c.position_id == sp.c.id
-            )).\
-            where(and_(and_(*clause))).\
-            group_by(dc.c.id, cast(de.c.date_obs, Date)).\
-            order_by(cast(de.c.date_obs, Date))
+        stm = (
+            select(columns)
+            .select_from(
+                dc.join(de, dc.c.exposure_id == de.c.id)
+                .join(ds, dc.c.id == ds.c.ccd_id)
+                .join(sp, ds.c.position_id == sp.c.id)
+            )
+            .where(and_(and_(*clause)))
+            .group_by(dc.c.id, cast(de.c.date_obs, Date))
+            .order_by(cast(de.c.date_obs, Date))
+        )
 
         self.debug_query(stm, True)
 
@@ -219,28 +234,28 @@ class DesSkybotPositionDao(DBBase):
         """
 
         # des_exposure
-        de = self.get_table('des_exposure', self.get_base_schema())
+        de = self.get_table("des_exposure", self.get_base_schema())
         # Des skybot position
-        ds = self.get_table('des_skybotposition', self.get_base_schema())
+        ds = self.get_table("des_skybotposition", self.get_base_schema())
         # Skybot Position
-        sp = self.get_table('skybot_position', self.get_base_schema())
+        sp = self.get_table("skybot_position", self.get_base_schema())
 
         # Clausula where pela classe dos objetos OBRIGATORIO.
-        clause = list([sp.c.dynclass.ilike(dynclass + '%')])
+        clause = list([sp.c.dynclass.ilike(dynclass + "%")])
 
         # Clausula where pelo periodo que é opicional
         if start is not None and end is not None:
             clause.append(de.c.date_obs.between(str(start), str(end)))
 
-        stm = select([func.count(sp.c.name.distinct()).label('asteroid')]).\
-            select_from(
-            ds.join(
-                sp, ds.c.position_id == sp.c.id
-            ).join(
-                de, ds.c.exposure_id == de.c.id
+        stm = (
+            select([func.count(sp.c.name.distinct()).label("asteroid")])
+            .select_from(
+                ds.join(sp, ds.c.position_id == sp.c.id).join(
+                    de, ds.c.exposure_id == de.c.id
+                )
             )
-        ).\
-            where(and_(and_(*clause)))
+            .where(and_(and_(*clause)))
+        )
 
         self.debug_query(stm, True)
 
@@ -273,28 +288,28 @@ class DesSkybotPositionDao(DBBase):
         """
 
         # des_exposure
-        de = self.get_table('des_exposure', self.get_base_schema())
+        de = self.get_table("des_exposure", self.get_base_schema())
         # Des skybot position
-        ds = self.get_table('des_skybotposition', self.get_base_schema())
+        ds = self.get_table("des_skybotposition", self.get_base_schema())
         # Skybot Position
-        sp = self.get_table('skybot_position', self.get_base_schema())
+        sp = self.get_table("skybot_position", self.get_base_schema())
 
         # Clausula where pela classe dos objetos OBRIGATORIO.
-        clause = list([sp.c.dynclass.ilike(dynclass + '%')])
+        clause = list([sp.c.dynclass.ilike(dynclass + "%")])
 
         # Clausula where pelo periodo que é opicional
         if start is not None and end is not None:
             clause.append(de.c.date_obs.between(str(start), str(end)))
 
-        stm = select([func.count(ds.c.ccd_id.distinct()).label('ccds')]).\
-            select_from(
-            ds.join(
-                sp, ds.c.position_id == sp.c.id
-            ).join(
-                de, ds.c.exposure_id == de.c.id
+        stm = (
+            select([func.count(ds.c.ccd_id.distinct()).label("ccds")])
+            .select_from(
+                ds.join(sp, ds.c.position_id == sp.c.id).join(
+                    de, ds.c.exposure_id == de.c.id
+                )
             )
-        ).\
-            where(and_(and_(*clause)))
+            .where(and_(and_(*clause)))
+        )
 
         self.debug_query(stm, True)
 
@@ -329,32 +344,30 @@ class DesSkybotPositionDao(DBBase):
         """
 
         # des_exposure
-        de = self.get_table('des_exposure', self.get_base_schema())
+        de = self.get_table("des_exposure", self.get_base_schema())
         # Des skybot position
-        ds = self.get_table('des_skybotposition', self.get_base_schema())
+        ds = self.get_table("des_skybotposition", self.get_base_schema())
         # Skybot Position
-        sp = self.get_table('skybot_position', self.get_base_schema())
+        sp = self.get_table("skybot_position", self.get_base_schema())
         # Des Downloaded CCD Job Result
-        dd = self.get_table('des_downloadccdjobresult', self.get_base_schema())
+        dd = self.get_table("des_downloadccdjobresult", self.get_base_schema())
 
         # Clausula where pela classe dos objetos OBRIGATORIO.
-        clause = list([sp.c.dynclass.ilike(dynclass + '%')])
+        clause = list([sp.c.dynclass.ilike(dynclass + "%")])
 
         # Clausula where pelo periodo que é opicional
         if start is not None and end is not None:
             clause.append(de.c.date_obs.between(str(start), str(end)))
 
-        stm = select([func.count(dd.c.id.distinct()).label('ccds_downloaded')]).\
-            select_from(
-            ds.join(
-                sp, ds.c.position_id == sp.c.id
-            ).join(
-                de, ds.c.exposure_id == de.c.id
-            ).join(
-                dd, ds.c.ccd_id == dd.c.ccd_id, isouter=True
+        stm = (
+            select([func.count(dd.c.id.distinct()).label("ccds_downloaded")])
+            .select_from(
+                ds.join(sp, ds.c.position_id == sp.c.id)
+                .join(de, ds.c.exposure_id == de.c.id)
+                .join(dd, ds.c.ccd_id == dd.c.ccd_id, isouter=True)
             )
-        ).\
-            where(and_(and_(*clause)))
+            .where(and_(and_(*clause)))
+        )
 
         self.debug_query(stm, True)
 
@@ -387,28 +400,28 @@ class DesSkybotPositionDao(DBBase):
         """
 
         # des_exposure
-        de = self.get_table('des_exposure', self.get_base_schema())
+        de = self.get_table("des_exposure", self.get_base_schema())
         # Des skybot position
-        ds = self.get_table('des_skybotposition', self.get_base_schema())
+        ds = self.get_table("des_skybotposition", self.get_base_schema())
         # Skybot Position
-        sp = self.get_table('skybot_position', self.get_base_schema())
+        sp = self.get_table("skybot_position", self.get_base_schema())
 
         # Clausula where pela classe dos objetos OBRIGATORIO.
-        clause = list([sp.c.dynclass.ilike(dynclass + '%')])
+        clause = list([sp.c.dynclass.ilike(dynclass + "%")])
 
         # Clausula where pelo periodo que é opicional
         if start is not None and end is not None:
             clause.append(de.c.date_obs.between(str(start), str(end)))
 
-        stm = select([func.count(cast(de.c.date_obs, Date).distinct())]).\
-            select_from(
-            ds.join(
-                sp, ds.c.position_id == sp.c.id
-            ).join(
-                de, ds.c.exposure_id == de.c.id
+        stm = (
+            select([func.count(cast(de.c.date_obs, Date).distinct())])
+            .select_from(
+                ds.join(sp, ds.c.position_id == sp.c.id).join(
+                    de, ds.c.exposure_id == de.c.id
+                )
             )
-        ).\
-            where(and_(and_(*clause)))
+            .where(and_(and_(*clause)))
+        )
 
         self.debug_query(stm, True)
 
@@ -441,28 +454,28 @@ class DesSkybotPositionDao(DBBase):
         """
 
         # des_exposure
-        de = self.get_table('des_exposure', self.get_base_schema())
+        de = self.get_table("des_exposure", self.get_base_schema())
         # Des skybot position
-        ds = self.get_table('des_skybotposition', self.get_base_schema())
+        ds = self.get_table("des_skybotposition", self.get_base_schema())
         # Skybot Position
-        sp = self.get_table('skybot_position', self.get_base_schema())
+        sp = self.get_table("skybot_position", self.get_base_schema())
 
         # Clausula where pela classe dos objetos OBRIGATORIO.
-        clause = list([sp.c.dynclass.ilike(dynclass + '%')])
+        clause = list([sp.c.dynclass.ilike(dynclass + "%")])
 
         # Clausula where pelo periodo que é opicional
         if start is not None and end is not None:
             clause.append(de.c.date_obs.between(str(start), str(end)))
 
-        stm = select([func.count(ds.c.id)]).\
-            select_from(
-            ds.join(
-                sp, ds.c.position_id == sp.c.id
-            ).join(
-                de, ds.c.exposure_id == de.c.id
+        stm = (
+            select([func.count(ds.c.id)])
+            .select_from(
+                ds.join(sp, ds.c.position_id == sp.c.id).join(
+                    de, ds.c.exposure_id == de.c.id
+                )
             )
-        ).\
-            where(and_(and_(*clause)))
+            .where(and_(and_(*clause)))
+        )
 
         self.debug_query(stm, True)
 
@@ -495,29 +508,29 @@ class DesSkybotPositionDao(DBBase):
         """
 
         # des_exposure
-        de = self.get_table('des_exposure', self.get_base_schema())
+        de = self.get_table("des_exposure", self.get_base_schema())
         # Des skybot position
-        ds = self.get_table('des_skybotposition', self.get_base_schema())
+        ds = self.get_table("des_skybotposition", self.get_base_schema())
         # Skybot Position
-        sp = self.get_table('skybot_position', self.get_base_schema())
+        sp = self.get_table("skybot_position", self.get_base_schema())
 
         # Clausula where pela classe dos objetos OBRIGATORIO.
-        clause = list([sp.c.dynclass.ilike(dynclass + '%')])
+        clause = list([sp.c.dynclass.ilike(dynclass + "%")])
 
         # Clausula where pelo periodo que é opicional
         if start is not None and end is not None:
             clause.append(de.c.date_obs.between(str(start), str(end)))
 
-        stm = select([de.c.band, func.count(ds.c.id).label('asteroids')]).\
-            select_from(
-            ds.join(
-                sp, ds.c.position_id == sp.c.id
-            ).join(
-                de, ds.c.exposure_id == de.c.id
+        stm = (
+            select([de.c.band, func.count(ds.c.id).label("asteroids")])
+            .select_from(
+                ds.join(sp, ds.c.position_id == sp.c.id).join(
+                    de, ds.c.exposure_id == de.c.id
+                )
             )
-        ).\
-            where(and_(and_(*clause))).\
-            group_by(de.c.band)
+            .where(and_(and_(*clause)))
+            .group_by(de.c.band)
+        )
 
         self.debug_query(stm, True)
 
@@ -528,31 +541,34 @@ class DesSkybotPositionDao(DBBase):
     def ccds_by_asteroid(self, asteroid_name):
 
         # des_exposure
-        de = self.get_table('des_exposure', self.get_base_schema())
+        de = self.get_table("des_exposure", self.get_base_schema())
         # des_ccd
-        dc = self.get_table('des_ccd', self.get_base_schema())
+        dc = self.get_table("des_ccd", self.get_base_schema())
         # Des skybot position
-        ds = self.get_table('des_skybotposition', self.get_base_schema())
+        ds = self.get_table("des_skybotposition", self.get_base_schema())
         # Skybot Position
-        sp = self.get_table('skybot_position', self.get_base_schema())
+        sp = self.get_table("skybot_position", self.get_base_schema())
 
         # Clausula where pelo nome do objeto OBRIGATORIO.
         clause = list([sp.c.name == asteroid_name])
 
-        columns = dc.c + [de.c.id.label('expnum'),
-                          de.c.date_obs, de.c.band, de.c.release, de.c.exptime]
+        columns = dc.c + [
+            de.c.id.label("expnum"),
+            de.c.date_obs,
+            de.c.band,
+            de.c.release,
+            de.c.exptime,
+        ]
 
-        stm = select(columns).\
-            select_from(
-            ds.join(
-                sp, ds.c.position_id == sp.c.id
-            ).join(
-                dc, ds.c.ccd_id == dc.c.id
-            ).join(
-                de, ds.c.exposure_id == de.c.id
+        stm = (
+            select(columns)
+            .select_from(
+                ds.join(sp, ds.c.position_id == sp.c.id)
+                .join(dc, ds.c.ccd_id == dc.c.id)
+                .join(de, ds.c.exposure_id == de.c.id)
             )
-        ).\
-            where(and_(and_(*clause)))
+            .where(and_(and_(*clause)))
+        )
 
         self.debug_query(stm, True)
 

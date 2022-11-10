@@ -10,11 +10,11 @@ def download_queue():
 scheduler = BackgroundScheduler()
 scheduler.add_job(
     download_queue,
-    'interval',
+    "interval",
     # minutes=1
     seconds=20,
     max_instances=1,
-    id='des_download_ccd'
+    id="des_download_ccd",
 )
 
 scheduler.start()

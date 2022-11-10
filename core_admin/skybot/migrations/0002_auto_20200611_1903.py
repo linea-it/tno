@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('skybot', '0001_initial'),
+        ("skybot", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='position',
-            name='ticket',
-            field=models.BigIntegerField(db_index=True, default=0, help_text='Id of the request made in the skybot. it serves to group all the positions that are of the same request.', verbose_name='Skybot Ticket'),
+            model_name="position",
+            name="ticket",
+            field=models.BigIntegerField(
+                db_index=True,
+                default=0,
+                help_text="Id of the request made in the skybot. it serves to group all the positions that are of the same request.",
+                verbose_name="Skybot Ticket",
+            ),
         ),
     ]

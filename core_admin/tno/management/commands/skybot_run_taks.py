@@ -36,4 +36,3 @@ from django.core.management.base import BaseCommand, CommandError
 
 #             else:
 #                 self.stdout.write("NAO TEM NINGUEM PENDENTE")
-

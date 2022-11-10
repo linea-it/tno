@@ -1,74 +1,66 @@
-FROM python:3.7 as base
+FROM python:3.10-slim as builder
 
-# Exemplo: https://sourcery.ai/blog/python-docker/
+WORKDIR /app
 
-ENV LANG C.UTF-8
-ENV LC_ALL C.UTF-8
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONFAULTHANDLER 1
+# If this is set to a non-empty string, Python won’t try
+# to write .pyc files on the import of source modules
+ENV PYTHONDONTWRITEBYTECODE=1
 
-# Install compilation dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Force the stdout and stderr streams to be unbuffered.
+# This option has no effect on the stdin stream.
+ENV PYTHONUNBUFFERED=1
+
+# Install Packages
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     gcc \
-    python-dev \
     python3-dev \
-    libaio-dev \
     build-essential \
+    libpq-dev \
+    libaio-dev \
     libcfitsio-bin \
     libsasl2-dev \
     libldap2-dev \
     libssl-dev \
-    vim \    
+    ## cleanup
+    && apt-get clean \
+    && apt-get autoclean \
+    && apt-get autoremove --purge  -y \
     && rm -rf /var/lib/apt/lists/*
 
-FROM base AS python-deps
-# Install pipenv 
-RUN pip install pipenv
+# Add venv
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Install python dependencies in /.venv
-COPY Pipfile .
-# COPY Pipfile.lock .
+# Install python packages
+COPY requirements.txt .
+RUN pip install --upgrade pip wheel  && \
+    pip install --disable-pip-version-check --no-cache-dir -r requirements.txt
 
-RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy --skip-lock
+#  Runtime Stage
+FROM python:3.10-slim
 
-# Gerar um arquivo requirements
-# RUN pipenv lock -r > requirements.txt
+# Copy Dependencies for Python LDAP, Psql
+COPY --from=builder /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
 
-FROM base AS runtime
-# Copy virtual env from python-deps stage
-COPY --from=python-deps /.venv /.venv
-ENV PATH="/.venv/bin:$PATH"
+# add user so we can run things as non-root
+RUN adduser --system --no-create-home tnouser
 
-# Criar o grupo des-brazil com o mesmo id usado no linea
-RUN groupadd --gid 10000 des-brazil
+# Copy from builder and set ENV for venv
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Adicionar o usuario do cristiano para rodar os jobs no condor
-# TODO: talvez não seja necessário
-RUN useradd --no-create-home --gid des-brazil --uid 10013 singulani
+# Set Python ENV
+ENV PYTHONUNBUFFERED=1 
+ENV PYTHONPATH="/app:$PYTHONPATH"
+# Matplotlib Config 
+ENV MPLCONFIGDIR="/tmp"
 
-# Cria o usuario que vai rodar a aplicação e coloca este usuario no grupo des-bazil
-# A aplicação vai estar no home deste usuario.
-RUN useradd --create-home --gid des-brazil --uid 1000 appuser
-WORKDIR /home/appuser
-USER appuser
-
-# Adiciona o path da aplicação ao pythonpath para que o parsl funcione
-ENV PYTHONPATH="/home/appuser:$PYTHONPATH"
-
-ENV PYTHONPATH="/teste_parsl:$PYTHONPATH"
-ENV PYTHONPATH="/orbit_trace:$PYTHONPATH"
-
-# TODO: Não resolveu o problema, o warning e erro continua aparecendo na imagem builded.
-RUN mkdir /home/appuser/.astropy /home/appuser/.astropy/cache/ \
-    && chmod 775 -R /home/appuser/.astropy/cache/
-
-# Permissão de escrita, leitura, execução para usuarios do mesmo grupo
-RUN umask 0002
-
+# Copy app files into container
+WORKDIR /app
 COPY . .
 
-# Copy Requirements.txt from python-deps stage
-# COPY --from=python-deps /requirements.txt /home/appuser/requirements.txt
-
-
+# Switch to non-priviliged user and run app
+USER tnouser
+# CMD ["/app/entrypoint.sh"]
 ENTRYPOINT ./entrypoint.sh

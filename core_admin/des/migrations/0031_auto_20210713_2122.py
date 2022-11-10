@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0030_astrometryjob'),
+        ("des", "0030_astrometryjob"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='astrometryjob',
-            name='path',
-            field=models.CharField(blank=True, help_text='Path to the directory where the job data is located.', max_length=2048, null=True, verbose_name='Path'),
+            model_name="astrometryjob",
+            name="path",
+            field=models.CharField(
+                blank=True,
+                help_text="Path to the directory where the job data is located.",
+                max_length=2048,
+                null=True,
+                verbose_name="Path",
+            ),
         ),
     ]

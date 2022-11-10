@@ -42,43 +42,43 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, email, directory):
         Path: file path for .bsp file.
     """
 
-    date1 = dt.strptime(initial_date, '%Y-%m-%d')
-    date2 = dt.strptime(final_date, '%Y-%m-%d')
+    date1 = dt.strptime(initial_date, "%Y-%m-%d")
+    date2 = dt.strptime(final_date, "%Y-%m-%d")
     diff = date2 - date1
 
     if diff.days <= 32:
         raise ValueError(
-            'The [final_date] must be more than 32 days later than [initial_date]')
+            "The [final_date] must be more than 32 days later than [initial_date]"
+        )
 
-    urlJPL = 'https://ssd.jpl.nasa.gov/x/smb_spk.cgi?OPTION=Make+SPK'
+    urlJPL = "https://ssd.jpl.nasa.gov/x/smb_spk.cgi?OPTION=Make+SPK"
 
     path = pathlib.Path(directory)
     if not path.exists():
-        raise ValueError('The directory {} does not exist!'.format(path))
+        raise ValueError("The directory {} does not exist!".format(path))
 
-    filename = identifier.replace(' ', '') + '.bsp'
+    filename = identifier.replace(" ", "") + ".bsp"
 
     parameters = {
-        'OBJECT': identifier,
-        'START': date1.strftime('%Y-%b-%d'),
-        'STOP': date2.strftime('%Y-%b-%d'),
-        'EMAIL': email,
-        'TYPE': '-B'
+        "OBJECT": identifier,
+        "START": date1.strftime("%Y-%b-%d"),
+        "STOP": date2.strftime("%Y-%b-%d"),
+        "EMAIL": email,
+        "TYPE": "-B",
     }
 
     r = requests.get(urlJPL, params=parameters, stream=True)
-    bspFormat = r.headers['Content-Type']
-    if r.status_code == requests.codes.ok and bspFormat == 'application/download':
+    bspFormat = r.headers["Content-Type"]
+    if r.status_code == requests.codes.ok and bspFormat == "application/download":
         filepath = path.joinpath(filename)
-        with open(filepath, 'wb') as f:
+        with open(filepath, "wb") as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
 
         return filepath
     else:
         # TODO: Add a Debug
-        raise Exception(
-            "It was not able to download the bsp file for object.")
+        raise Exception("It was not able to download the bsp file for object.")
 
 
 def findSPKID(bsp):
@@ -95,16 +95,16 @@ def findSPKID(bsp):
     spice.furnsh(bsp)
 
     i = 0
-    kind = 'spk'
+    kind = "spk"
     fillen = 256
     typlen = 33
     srclen = 256
-    keys = ['Target SPK ID   :', 'ASTEROID_SPK_ID =']
+    keys = ["Target SPK ID   :", "ASTEROID_SPK_ID ="]
     n = len(keys[0])
 
     name, kind, source, loc = spice.kdata(i, kind, fillen, typlen, srclen)
     flag = False
-    spk = ''
+    spk = ""
     while not flag:
         try:
             m, header, flag = spice.dafec(loc, 1)

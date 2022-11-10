@@ -6,18 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0034_auto_20210728_1944'),
+        ("des", "0034_auto_20210728_1944"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='astrometryjob',
-            name='t_ccds',
-            field=models.BigIntegerField(default=0, help_text='total ccds that were run in this job', verbose_name='Total CCDs'),
+            model_name="astrometryjob",
+            name="t_ccds",
+            field=models.BigIntegerField(
+                default=0,
+                help_text="total ccds that were run in this job",
+                verbose_name="Total CCDs",
+            ),
         ),
         migrations.AddField(
-            model_name='astrometryjob',
-            name='t_observations',
-            field=models.BigIntegerField(default=0, help_text='Total observations processed in this job', verbose_name='Total Observations'),
+            model_name="astrometryjob",
+            name="t_observations",
+            field=models.BigIntegerField(
+                default=0,
+                help_text="Total observations processed in this job",
+                verbose_name="Total Observations",
+            ),
         ),
     ]

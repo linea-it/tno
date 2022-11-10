@@ -22,7 +22,9 @@ class GetObservations(DownloadParameters):
         self.logger = logging.getLogger("refine_orbit")
 
         if settings.OBSERVATIONS_DIR is None:
-            raise Exception("it is necessary to have a valid path defined in the OBSERVATIONS_DIR settings variable.")
+            raise Exception(
+                "it is necessary to have a valid path defined in the OBSERVATIONS_DIR settings variable."
+            )
 
         self.observations_dir = settings.OBSERVATIONS_DIR
 
@@ -63,26 +65,31 @@ class GetObservations(DownloadParameters):
             raise e
 
         self.logger.info("Configuring Parsl")
-        self.logger.debug("Parsl Config:" )
+        self.logger.debug("Parsl Config:")
         self.logger.debug(settings.PARSL_CONFIG)
 
         # Configuracao do Parsl Log.
-        parsl.set_file_logger(os.path.join(output_path, 'observations_parsl.log'))
-
+        parsl.set_file_logger(os.path.join(output_path, "observations_parsl.log"))
 
         # Declaracao do Parsl APP
-        @App('python', dfk)
+        @App("python", dfk)
         def start_parsl_job(name, number, files_path, logger):
 
             result = self.download(name, number, files_path)
 
-            msg = "Download [ FAILURE ] - Object: %s " % (result.get('name'))
+            msg = "Download [ FAILURE ] - Object: %s " % (result.get("name"))
 
-            if result.get('filename', None) is not None:
-                msg = "Download [ SUCCESS ] - [ %s ] Object: %s File: %s Size: %s Time: %s seconds" % (
-                    result.get('source'),
-                    result.get('name'), result.get('filename'), humanize.naturalsize(result.get('file_size')),
-                    result.get('download_time'))
+            if result.get("filename", None) is not None:
+                msg = (
+                    "Download [ SUCCESS ] - [ %s ] Object: %s File: %s Size: %s Time: %s seconds"
+                    % (
+                        result.get("source"),
+                        result.get("name"),
+                        result.get("filename"),
+                        humanize.naturalsize(result.get("file_size")),
+                        result.get("download_time"),
+                    )
+                )
 
                 # TODO fazer a contagem das observacoes
 
@@ -96,7 +103,11 @@ class GetObservations(DownloadParameters):
             # Utiliza o parsl apenas para os objetos que estao marcados
             # para serem baixados.
             if row.get("need_download"):
-                results.append(start_parsl_job(row.get("name"), row.get("num"), files_path, self.logger))
+                results.append(
+                    start_parsl_job(
+                        row.get("name"), row.get("num"), files_path, self.logger
+                    )
+                )
 
         # Espera o Resultado de todos os jobs.
         outputs = [i.result() for i in results]
@@ -124,7 +135,9 @@ class GetObservations(DownloadParameters):
         t1 = datetime.now()
 
         tdelta = t1 - t0
-        self.logger.info("Download Observations Completed in %s" % humanize.naturaldelta(tdelta))
+        self.logger.info(
+            "Download Observations Completed in %s" % humanize.naturaldelta(tdelta)
+        )
 
     def download(self, name, number, output_path):
         """
@@ -135,7 +148,7 @@ class GetObservations(DownloadParameters):
         :param output_path:
         :return:
         """
-        filename = name.replace(' ', '_') + '.rwo'
+        filename = name.replace(" ", "_") + ".rwo"
 
         # Try to download the AstDyS files.
         result = self.download_ast_dys(name, number, filename, output_path)
@@ -145,9 +158,7 @@ class GetObservations(DownloadParameters):
             self.download_mpc(name, number, filename, output_path)
 
         if result is None:
-            result = dict({
-                "name": name
-            })
+            result = dict({"name": name})
 
         return result
 
@@ -163,24 +174,32 @@ class GetObservations(DownloadParameters):
         url = AstDys().getObservationsURL(name, number)
 
         # Try to download the AstDyS files.
-        file_path, download_stats = Download().download_file_from_url(url, output_path=output_path, filename=filename,
-                                                                      overwrite=True, ignore_errors=True, timeout=5)
+        file_path, download_stats = Download().download_file_from_url(
+            url,
+            output_path=output_path,
+            filename=filename,
+            overwrite=True,
+            ignore_errors=True,
+            timeout=5,
+        )
         t1 = datetime.now()
 
         result = None
         # Checking if the object exists in AstDyS if it does not exist it tries to look in the MPC.
         if file_path:
-            result = dict({
-                "name": name,
-                "source": source,
-                "filename": download_stats.get('filename'),
-                "download_start_time": t0,
-                "download_finish_time": t1,
-                "download_time": download_stats.get('download_time'),
-                "file_size": download_stats.get("file_size"),
-                "external_url": url_object,
-                "download_url": url
-            })
+            result = dict(
+                {
+                    "name": name,
+                    "source": source,
+                    "filename": download_stats.get("filename"),
+                    "download_start_time": t0,
+                    "download_finish_time": t1,
+                    "download_time": download_stats.get("download_time"),
+                    "file_size": download_stats.get("file_size"),
+                    "external_url": url_object,
+                    "download_url": url,
+                }
+            )
 
         return result
 
@@ -197,44 +216,47 @@ class GetObservations(DownloadParameters):
         result = None
         if url is not None:
             # Try to download the MPC files.
-            file_path, download_stats = Download().download_file_from_url(url, output_path=output_path,
-                                                                          filename=filename, overwrite=True,
-                                                                          ignore_errors=True)
+            file_path, download_stats = Download().download_file_from_url(
+                url,
+                output_path=output_path,
+                filename=filename,
+                overwrite=True,
+                ignore_errors=True,
+            )
             if download_stats:
-                result = dict({
-                    "name": name,
-                    "source": source,
-                    "filename": download_stats.get("filename"),
-                    "download_start_time": download_stats.get("start_time"),
-                    "download_finish_time": download_stats.get("finish_time"),
-                    "download_time": download_stats.get('download_time'),
-                    "file_size": download_stats.get("file_size"),
-                    "external_url": url_object,
-                    "download_url": url
-                })
+                result = dict(
+                    {
+                        "name": name,
+                        "source": source,
+                        "filename": download_stats.get("filename"),
+                        "download_start_time": download_stats.get("start_time"),
+                        "download_finish_time": download_stats.get("finish_time"),
+                        "download_time": download_stats.get("download_time"),
+                        "file_size": download_stats.get("file_size"),
+                        "external_url": url_object,
+                        "download_url": url,
+                    }
+                )
 
                 # TODO: Este sleep e para respeitar a politica de seguranca do MPC
                 time.sleep(3)
 
         return result
 
-
-
     def update_or_create_record(self, record):
         return ObservationFile.objects.update_or_create(
             name=record.get("name"),
             defaults={
                 # TODO recuperar o numero de observacoes
-                'observations': 0,
-                'source': record.get("source"),
-                'filename': record.get("filename"),
-                'download_start_time': record.get("download_start_time"),
-                'download_finish_time': record.get("download_finish_time"),
-                'file_size': record.get("file_size"),
-                'external_url': record.get("external_url"),
-                'download_url': record.get("download_url")
-
-            }
+                "observations": 0,
+                "source": record.get("source"),
+                "filename": record.get("filename"),
+                "download_start_time": record.get("download_start_time"),
+                "download_finish_time": record.get("download_finish_time"),
+                "file_size": record.get("file_size"),
+                "external_url": record.get("external_url"),
+                "download_url": record.get("download_url"),
+            },
         )
 
     def get_file_path(self, name):
@@ -252,10 +274,12 @@ class GetObservations(DownloadParameters):
 
     def get_latest(self, name):
         try:
-            f = ObservationFile.objects.filter(name=name).order_by('-download_finish_time').first()
+            f = (
+                ObservationFile.objects.filter(name=name)
+                .order_by("-download_finish_time")
+                .first()
+            )
             return f
 
         except:
             return None
-
-

@@ -6,16 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0026_dashboardskybotdynclassresult_dashboardskybotyearresult'),
+        ("des", "0026_dashboardskybotdynclassresult_dashboardskybotyearresult"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='DashboardSkybotDynclassResult',
-            new_name='SkybotByDynclass',
+            old_name="DashboardSkybotDynclassResult",
+            new_name="SkybotByDynclass",
         ),
         migrations.RenameModel(
-            old_name='DashboardSkybotYearResult',
-            new_name='SkybotByYear',
+            old_name="DashboardSkybotYearResult",
+            new_name="SkybotByYear",
         ),
     ]

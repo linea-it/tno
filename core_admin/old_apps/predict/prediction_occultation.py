@@ -14,16 +14,23 @@ import json
 from statistics import mean
 from tno.db import CatalogDB
 from sqlalchemy.sql import text
-from .models import PredictRun, PredictAsteroid, PredictInput, PredictOutput, Occultation
+from .models import (
+    PredictRun,
+    PredictAsteroid,
+    PredictInput,
+    PredictOutput,
+    Occultation,
+)
 from tno.models import JohnstonArchive
 from django.db.models import Q
 import csv
 
-class PredictionOccultation():
+
+class PredictionOccultation:
     def __init__(self):
         self.logger = logging.getLogger("predict_occultation")
 
-        self.predict_pipeline_image = 'linea/praiaoccultation:v1.0.1'
+        self.predict_pipeline_image = "linea/praiaoccultation:v1.0.1"
 
         self.archive_dir = settings.ARCHIVE_DIR
         self.process = None
@@ -32,45 +39,60 @@ class PredictionOccultation():
         self.objects_dir = None
         self.relative_path = None
 
-        self.results = dict({
-            "status": "running",
-            "error_msg": None,
-            "start_time": None,
-            "finish_time": None,
-            "execution_time": None,
-            "count_objects": 0,
-            "count_executed": 0,
-            "count_not_executed": 0,
-            "count_success": 0,
-            "count_failed": 0,
-            "count_warning": 0,
-            "average_time": 0,
-            "objects_dir": None,
-            "input_list": None,
-            "process": None,
-            "objects": dict(),
-            "dates_file_report": dict(),
-            "ephemeris_report": dict(),
-            "maps_report": dict(),
-        })
+        self.results = dict(
+            {
+                "status": "running",
+                "error_msg": None,
+                "start_time": None,
+                "finish_time": None,
+                "execution_time": None,
+                "count_objects": 0,
+                "count_executed": 0,
+                "count_not_executed": 0,
+                "count_success": 0,
+                "count_failed": 0,
+                "count_warning": 0,
+                "average_time": 0,
+                "objects_dir": None,
+                "input_list": None,
+                "process": None,
+                "objects": dict(),
+                "dates_file_report": dict(),
+                "ephemeris_report": dict(),
+                "maps_report": dict(),
+            }
+        )
 
         self.leap_second = None
         self.dates_file = None
 
-        self.gaia_properties = ["ra", "ra_error", "dec", "dec_error", "parallax", "pmra", "pmra_error", "pmdec",
-                                "pmdec_error", "duplicated_source", "phot_g_mean_flux", "phot_g_mean_flux_error",
-                                "phot_g_mean_mag", "phot_variable_flag"]
+        self.gaia_properties = [
+            "ra",
+            "ra_error",
+            "dec",
+            "dec_error",
+            "parallax",
+            "pmra",
+            "pmra_error",
+            "pmdec",
+            "pmdec_error",
+            "duplicated_source",
+            "phot_g_mean_flux",
+            "phot_g_mean_flux_error",
+            "phot_g_mean_mag",
+            "phot_variable_flag",
+        ]
 
         # Nomes dos outputs do PRAIA Occ Star Search
-        self.stars_catalog_mini = 'g4_micro_catalog_JOHNSTON_2018'
-        self.stars_catalog_xy = 'g4_occ_catalog_JOHNSTON_2018'
-        self.stars_parameters_of_occultation = 'g4_occ_data_JOHNSTON_2018'
-        self.stars_parameters_of_occultation_plot = 'g4_occ_data_JOHNSTON_2018_table'
-        self.occultation_table = 'occultation_table.csv'
+        self.stars_catalog_mini = "g4_micro_catalog_JOHNSTON_2018"
+        self.stars_catalog_xy = "g4_occ_catalog_JOHNSTON_2018"
+        self.stars_parameters_of_occultation = "g4_occ_data_JOHNSTON_2018"
+        self.stars_parameters_of_occultation_plot = "g4_occ_data_JOHNSTON_2018_table"
+        self.occultation_table = "occultation_table.csv"
 
         # Outros outputs
-        self.orbit_filename = 'asteroid_orbit.png'
-        self.neighborhood_stars = 'neighborhood_stars.png'
+        self.orbit_filename = "asteroid_orbit.png"
+        self.neighborhood_stars = "neighborhood_stars.png"
 
         # Lista de tempo de execucao de cada asteroid incluindo o tempo de espera.
         self.execution_time = []
@@ -82,7 +104,7 @@ class PredictionOccultation():
         instance = PredictRun.objects.get(pk=run_id)
 
         start_time = datetime.now()
-        self.results["start_time"] = start_time.replace(microsecond=0).isoformat(' ')
+        self.results["start_time"] = start_time.replace(microsecond=0).isoformat(" ")
 
         instance.start_time = datetime.now()
 
@@ -105,11 +127,13 @@ class PredictionOccultation():
 
         # recuperar a Custom List usada como input
         self.input_list = instance.input_list
-        self.logger.info("CUSTOM LIST: %s - %s" % (self.input_list.id, self.input_list.displayname))
+        self.logger.info(
+            "CUSTOM LIST: %s - %s" % (self.input_list.id, self.input_list.displayname)
+        )
 
         self.results["input_list"] = self.input_list.id
 
-        instance.status = 'running'
+        instance.status = "running"
         instance.count_objects = self.input_list.asteroids
         instance.save()
         self.logger.info("Status changed to Running")
@@ -124,8 +148,12 @@ class PredictionOccultation():
             self.logger.info("Step 1 - Leap Seconds")
 
             # 2 - Generate Dates ---------------------------------------------------------------------------------------
-            start_date = datetime.strftime(instance.ephemeris_initial_date, '%Y-%b-%d %H:%M:%S').upper()
-            end_date = datetime.strftime(instance.ephemeris_final_date, '%Y-%b-%d %H:%M:%S').upper()
+            start_date = datetime.strftime(
+                instance.ephemeris_initial_date, "%Y-%b-%d %H:%M:%S"
+            ).upper()
+            end_date = datetime.strftime(
+                instance.ephemeris_final_date, "%Y-%b-%d %H:%M:%S"
+            ).upper()
             step = instance.ephemeris_step
             self.radius = instance.catalog_radius
 
@@ -136,7 +164,7 @@ class PredictionOccultation():
                 end_date=end_date,
                 step=step,
                 leap_second=os.path.basename(self.leap_second),
-                filename=dates_filename
+                filename=dates_filename,
             )
             self.results["dates_file_report"] = dates_file
             self.dates_file = dates_file.get("file_path")
@@ -150,8 +178,9 @@ class PredictionOccultation():
 
             # 4 - Objetos ----------------------------------------------------------------------------------------------
             # Recuperando os Objetos
-            objects, obj_count = ProccessManager().get_objects(tablename=self.input_list.tablename,
-                                                               schema=self.input_list.schema)
+            objects, obj_count = ProccessManager().get_objects(
+                tablename=self.input_list.tablename, schema=self.input_list.schema
+            )
 
             self.results["count_objects"] = obj_count
 
@@ -163,7 +192,9 @@ class PredictionOccultation():
 
                 obj_name = obj.get("name").replace(" ", "_")
 
-                obj_relative_path = os.path.join(self.get_object_dir(obj.get("name"), self.objects_dir))
+                obj_relative_path = os.path.join(
+                    self.get_object_dir(obj.get("name"), self.objects_dir)
+                )
 
                 # Criar link simbolico para o arquivo de datas.
                 dates_file = os.path.basename(self.dates_file)
@@ -190,80 +221,101 @@ class PredictionOccultation():
                 shutil.copy2(self.leap_second, leap_second_path)
 
                 # Renomear BSP do JPL
-                bsp_name = "%s.bsp" % obj_name.replace('_', '')
-                bsp_jpl_name = "%s_JPL.bsp" % obj_name.replace('_', '')
+                bsp_name = "%s.bsp" % obj_name.replace("_", "")
+                bsp_jpl_name = "%s_JPL.bsp" % obj_name.replace("_", "")
                 if not os.path.exists(os.path.join(obj_relative_path, bsp_jpl_name)):
                     os.rename(
                         os.path.join(obj_relative_path, bsp_name),
-                        os.path.join(obj_relative_path, bsp_jpl_name))
+                        os.path.join(obj_relative_path, bsp_jpl_name),
+                    )
 
                 # BSP gerada pelo NIMA
-                bsp_nima_name = '%s_nima.bsp' % obj_name.replace('_', '')
+                bsp_nima_name = "%s_nima.bsp" % obj_name.replace("_", "")
                 if os.path.exists(os.path.join(obj_relative_path, bsp_nima_name)):
                     os.rename(
                         os.path.join(obj_relative_path, bsp_nima_name),
-                        os.path.join(obj_relative_path, bsp_name))
+                        os.path.join(obj_relative_path, bsp_name),
+                    )
 
                 # Recuperar o Diametro dos asteroids usando os dados do Jhonston Archive
                 ja_queryset = JohnstonArchive.objects.filter(
-                    Q(name=obj.get("name")) | Q(provisional_designation=obj.get("name")) | Q(number=obj.get("num")))
-                
+                    Q(name=obj.get("name"))
+                    | Q(provisional_designation=obj.get("name"))
+                    | Q(number=obj.get("num"))
+                )
+
                 # Definir um valor padrao para o diametro do asteroid quando nao houver (200km).
-                diameter = 200 
+                diameter = 200
                 if ja_queryset.count() == 1:
 
                     asteroid_data = ja_queryset.first()
                     if asteroid_data.diameter and asteroid_data.diameter > 0:
                         diameter = asteroid_data.diameter
 
-                        self.logger.info("[ %s ] has Diameter [ %s ]" % (obj.get("name"), diameter))                        
+                        self.logger.info(
+                            "[ %s ] has Diameter [ %s ]" % (obj.get("name"), diameter)
+                        )
                 else:
-                    self.logger.warning("[ %s ] has no diameter, using the default value." % obj.get("name"))
+                    self.logger.warning(
+                        "[ %s ] has no diameter, using the default value."
+                        % obj.get("name")
+                    )
 
                 status = None
                 orbit_run_asteroid = orbit_run.asteroids.get(name=obj.get("name"))
                 self.logger.debug("Orbit RUN Asteroid %s" % orbit_run_asteroid)
-                self.logger.debug("Orbit RUN Asteroid Status %s" % orbit_run_asteroid.status)
+                self.logger.debug(
+                    "Orbit RUN Asteroid Status %s" % orbit_run_asteroid.status
+                )
 
-                if orbit_run_asteroid is not None and orbit_run_asteroid.status == 'failure':
-                    status = 'not_executed'
+                if (
+                    orbit_run_asteroid is not None
+                    and orbit_run_asteroid.status == "failure"
+                ):
+                    status = "not_executed"
 
-                self.results["objects"][obj_name] = dict({
-                    "name": obj.get("name"),
-                    "number": obj.get("num"),
-                    "alias": obj_name,
-                    "diameter": diameter,
-                    "relative_path": obj_relative_path,
-                    "status": status,
-                    "error_msg": None,
-                    "start_ephemeris": None,
-                    "finish_ephemeris": None,
-                    "execution_ephemeris": None,
-                    "absolute_path": None,
-                    "inputs": dict({
-                        "dates_file": dates_file,
-                        "bsp_planetary": bsp_planetary,
-                        "bsp_asteroid": bsp_name,
-                        "leap_second": leap_second,
-                        "positions": None,
-                        "ephemeris": None,
-                        "catalog": None,
-                    }),
-                    "results": dict({
-                        "ephemeris": None,
-                        "radec": None,
-                        "positions": None,
-                        "asteroid_orbit": None,
-                        "neighborhood_stars": None,
-                        "catalog": None,
-                        "catalog_csv": None,
-                        "stars_catalog_mini": None,
-                        "stars_catalog_xy": None,
-                        "stars_parameters_of_occultation": None,
-                        "stars_parameters_of_occultation_plot": None,
-                        "occultation_table": None
-                    })
-                })
+                self.results["objects"][obj_name] = dict(
+                    {
+                        "name": obj.get("name"),
+                        "number": obj.get("num"),
+                        "alias": obj_name,
+                        "diameter": diameter,
+                        "relative_path": obj_relative_path,
+                        "status": status,
+                        "error_msg": None,
+                        "start_ephemeris": None,
+                        "finish_ephemeris": None,
+                        "execution_ephemeris": None,
+                        "absolute_path": None,
+                        "inputs": dict(
+                            {
+                                "dates_file": dates_file,
+                                "bsp_planetary": bsp_planetary,
+                                "bsp_asteroid": bsp_name,
+                                "leap_second": leap_second,
+                                "positions": None,
+                                "ephemeris": None,
+                                "catalog": None,
+                            }
+                        ),
+                        "results": dict(
+                            {
+                                "ephemeris": None,
+                                "radec": None,
+                                "positions": None,
+                                "asteroid_orbit": None,
+                                "neighborhood_stars": None,
+                                "catalog": None,
+                                "catalog_csv": None,
+                                "stars_catalog_mini": None,
+                                "stars_catalog_xy": None,
+                                "stars_parameters_of_occultation": None,
+                                "stars_parameters_of_occultation_plot": None,
+                                "occultation_table": None,
+                            }
+                        ),
+                    }
+                )
 
             self.logger.info("Step 4")
 
@@ -307,7 +359,9 @@ class PredictionOccultation():
             finish_time = datetime.now()
             instance.finish_time = finish_time
 
-            self.results["finish_time"] = finish_time.replace(microsecond=0).isoformat(' ')
+            self.results["finish_time"] = finish_time.replace(microsecond=0).isoformat(
+                " "
+            )
             tdelta = finish_time - start_time
             self.results["execution_time"] = tdelta.total_seconds()
             # Average Time per object
@@ -317,10 +371,10 @@ class PredictionOccultation():
 
             self.results["average_time"] = average_time
 
-            csuccess = instance.asteroids.filter(status='success').count()
-            cfailed = instance.asteroids.filter(status='failed').count()
-            cwarning = instance.asteroids.filter(status='warning').count()
-            cnotexecuted = instance.asteroids.filter(status='not_executed').count()
+            csuccess = instance.asteroids.filter(status="success").count()
+            cfailed = instance.asteroids.filter(status="failed").count()
+            cwarning = instance.asteroids.filter(status="warning").count()
+            cnotexecuted = instance.asteroids.filter(status="not_executed").count()
 
             self.results["status"] = "success"
 
@@ -335,10 +389,18 @@ class PredictionOccultation():
             instance.status = "success"
             instance.execution_time = tdelta
 
-            instance.execution_dates = self.results["dates_file_report"]["execution_time"]
-            instance.execution_ephemeris = self.results["ephemeris_report"]["execution_time"]
-            instance.execution_catalog = self.results["gaia_catalog_report"]["execution_time"]
-            instance.execution_search_candidate = self.results["search_candidate_report"]["execution_time"]
+            instance.execution_dates = self.results["dates_file_report"][
+                "execution_time"
+            ]
+            instance.execution_ephemeris = self.results["ephemeris_report"][
+                "execution_time"
+            ]
+            instance.execution_catalog = self.results["gaia_catalog_report"][
+                "execution_time"
+            ]
+            instance.execution_search_candidate = self.results[
+                "search_candidate_report"
+            ]["execution_time"]
             instance.execution_maps = self.results["maps_report"]["execution_time"]
 
             instance.execution_register = str(t_register_delta)
@@ -365,9 +427,7 @@ class PredictionOccultation():
             instance.execution_time = tdelta
             instance.save()
 
-            raise(e)
-
-
+            raise (e)
 
     def create_directory(self, instance):
 
@@ -394,24 +454,28 @@ class PredictionOccultation():
 
                 return instance
             else:
-                instance.status = 'error'
+                instance.status = "error"
                 instance.save()
                 msg = "Failed to create refine orbit directory [ %s ]" % directory
                 self.logger.error(msg)
                 raise Exception(msg)
 
-
         except OSError as e:
-            instance.status = 'error'
+            instance.status = "error"
             instance.save()
-            self.logger.error("Failed to create prediction occultation directory [ %s ]" % directory)
+            self.logger.error(
+                "Failed to create prediction occultation directory [ %s ]" % directory
+            )
             if e.errno != errno.EEXIST:
                 self.logger.error(e)
                 raise
 
     def copy_leap_seconds_file(self, instance):
 
-        self.logger.info("Copying Leap Seconds [ %s ] to Work Directory" % instance.leap_second.display_name)
+        self.logger.info(
+            "Copying Leap Seconds [ %s ] to Work Directory"
+            % instance.leap_second.display_name
+        )
         try:
             origin = os.path.join(self.archive_dir, str(instance.leap_second.upload))
             self.logger.debug("Origin: %s" % origin)
@@ -427,7 +491,9 @@ class PredictionOccultation():
             self.logger.error(e)
             raise e
 
-    def run_generate_dates(self, data_path, start_date, end_date, step, leap_second, filename):
+    def run_generate_dates(
+        self, data_path, start_date, end_date, step, leap_second, filename
+    ):
         """
             Cria uma instancia do container PRAIA_Occultation
             e executa o comando generate_dates.py
@@ -443,31 +509,30 @@ class PredictionOccultation():
 
         # Get docker Client Instance
         self.logger.debug("Getting docker client")
-        docker_client = docker.DockerClient(
-            base_url=settings.DOCKER_HOST)
+        docker_client = docker.DockerClient(base_url=settings.DOCKER_HOST)
 
         # Recupera a Imagem Docker
         docker_image = self.get_docker_image(
-            docker_client=docker_client,
-            image_name=self.predict_pipeline_image)
+            docker_client=docker_client, image_name=self.predict_pipeline_image
+        )
 
         # Path absoluto para o diretorio de dados que sera montado no container.
         absolute_archive_path = settings.HOST_ARCHIVE_DIR
-        absolute_data_path = os.path.join(absolute_archive_path, data_path.strip('/'))
+        absolute_data_path = os.path.join(absolute_archive_path, data_path.strip("/"))
         self.logger.debug("Absolute Data Path: %s" % absolute_data_path)
 
         # Comando que sera executado dentro do container.
         cmd = "python generate_dates.py '%s' '%s' %s --leap_sec %s --filename %s" % (
-            start_date, end_date, step, leap_second, filename)
+            start_date,
+            end_date,
+            step,
+            leap_second,
+            filename,
+        )
         self.logger.debug("CMD: %s" % cmd)
 
         # Definicao do Volume /data
-        volumes = dict({
-            absolute_data_path: dict({
-                'bind': '/data',
-                'mode': 'rw'
-            })
-        })
+        volumes = dict({absolute_data_path: dict({"bind": "/data", "mode": "rw"})})
 
         try:
             self.logger.debug("Starting Container")
@@ -479,7 +544,7 @@ class PredictionOccultation():
                 auto_remove=True,
                 # mem_limit='128m',
                 volumes=volumes,
-                user=os.getuid()
+                user=os.getuid(),
             )
 
             container.wait()
@@ -490,23 +555,27 @@ class PredictionOccultation():
 
             dates_file = os.path.join(self.relative_path, filename)
             if os.path.isfile(dates_file):
-                self.logger.info("The generation of the date file took %s." % humanize.naturaldelta(tdelta))
+                self.logger.info(
+                    "The generation of the date file took %s."
+                    % humanize.naturaldelta(tdelta)
+                )
                 self.logger.debug("Dates File: %s" % dates_file)
 
-                return dict({
-                    'filename': filename,
-                    'file_size': os.path.getsize(dates_file),
-                    'file_path': dates_file,
-                    'start_time': t0.replace(microsecond=0).isoformat(' '),
-                    'finish_time': t1.replace(microsecond=0).isoformat(' '),
-                    'execution_time': str(tdelta),
-                })
+                return dict(
+                    {
+                        "filename": filename,
+                        "file_size": os.path.getsize(dates_file),
+                        "file_path": dates_file,
+                        "start_time": t0.replace(microsecond=0).isoformat(" "),
+                        "finish_time": t1.replace(microsecond=0).isoformat(" "),
+                        "execution_time": str(tdelta),
+                    }
+                )
 
             else:
                 msg = "%s file was not created" % filename
                 self.logger.error(msg)
                 raise msg
-
 
         except docker.errors.ContainerError as e:
             self.logger.error(e)
@@ -548,7 +617,10 @@ class PredictionOccultation():
 
     def copy_bsp_planetary(self, instance):
 
-        self.logger.info("Copying BSP Planetary [ %s ] to Work Directory" % instance.bsp_planetary.display_name)
+        self.logger.info(
+            "Copying BSP Planetary [ %s ] to Work Directory"
+            % instance.bsp_planetary.display_name
+        )
         try:
             origin = os.path.join(self.archive_dir, str(instance.bsp_planetary.upload))
             self.logger.debug("Origin: %s" % origin)
@@ -576,8 +648,7 @@ class PredictionOccultation():
 
         # Configuracao do Parsl
         try:
-            dfk = DataFlowKernel(
-                config=dict(settings.PARSL_CONFIG))
+            dfk = DataFlowKernel(config=dict(settings.PARSL_CONFIG))
 
         except Exception as e:
             self.logger.error(e)
@@ -588,7 +659,7 @@ class PredictionOccultation():
         self.logger.debug(settings.PARSL_CONFIG)
 
         # Configuracao do Parsl Log.
-        parsl.set_file_logger(os.path.join(self.relative_path, 'ephemeris_parsl.log'))
+        parsl.set_file_logger(os.path.join(self.relative_path, "ephemeris_parsl.log"))
 
         # Declaracao do Parsl APP
         @App("python", dfk)
@@ -599,36 +670,37 @@ class PredictionOccultation():
                 docker_client=docker_client,
                 docker_image=docker_image,
                 obj=obj,
-                logger=logger
+                logger=logger,
             )
 
-            if result['status'] == 'failure':
-                msg = "[ FAILURE ] - Object: %s " % obj['name']
+            if result["status"] == "failure":
+                msg = "[ FAILURE ] - Object: %s " % obj["name"]
 
             else:
                 msg = "[ SUCCESS ] - Object: %s Time: %s " % (
-                    result['name'], humanize.naturaldelta(result['execution_ephemeris']))
+                    result["name"],
+                    humanize.naturaldelta(result["execution_ephemeris"]),
+                )
 
             logger.info(msg)
 
             return result
 
         # Get docker Client Instance
-        docker_client = docker.DockerClient(
-            base_url=settings.DOCKER_HOST)
+        docker_client = docker.DockerClient(base_url=settings.DOCKER_HOST)
 
         # Recupera a Imagem Docker
         docker_image = self.get_docker_image(
-            docker_client=docker_client,
-            image_name=self.predict_pipeline_image)
+            docker_client=docker_client, image_name=self.predict_pipeline_image
+        )
 
         # executa o app Parsl para cara registro em paralelo
         results = []
         id = 0
-        for alias in self.results['objects']:
-            obj = self.results['objects'][alias]
+        for alias in self.results["objects"]:
+            obj = self.results["objects"][alias]
 
-            if obj['status'] is not 'failure' and obj['status'] is not 'not_executed':
+            if obj["status"] is not "failure" and obj["status"] is not "not_executed":
                 self.results["objects"][alias]["status"] = "running"
 
                 result = start_parsl_job(
@@ -636,7 +708,8 @@ class PredictionOccultation():
                     docker_client=docker_client,
                     docker_image=docker_image,
                     obj=obj,
-                    logger=self.logger)
+                    logger=self.logger,
+                )
 
                 self.logger.debug(result)
 
@@ -662,69 +735,82 @@ class PredictionOccultation():
         maverage = 0
 
         for row in outputs:
-            if row['status'] == "failure":
+            if row["status"] == "failure":
                 failure += 1
                 average.append(0)
-            exec_tdelta = timedelta(seconds=pytimeparse.parse(row['execution_ephemeris']))
+            exec_tdelta = timedelta(
+                seconds=pytimeparse.parse(row["execution_ephemeris"])
+            )
             average.append(exec_tdelta.total_seconds())
 
-            self.results['objects'][row['alias']] = row
+            self.results["objects"][row["alias"]] = row
 
         if len(average) > 0:
             maverage = mean(average)
 
-        self.results['ephemeris_report'] = dict({
-            'start_time': t0.replace(microsecond=0).isoformat(' '),
-            'finish_time': t1.replace(microsecond=0).isoformat(' '),
-            'execution_time': str(tdelta),
-            'count_asteroids': count,
-            'count_success': count - failure,
-            'count_failed': failure,
-            'average_time': maverage
-        })
+        self.results["ephemeris_report"] = dict(
+            {
+                "start_time": t0.replace(microsecond=0).isoformat(" "),
+                "finish_time": t1.replace(microsecond=0).isoformat(" "),
+                "execution_time": str(tdelta),
+                "count_asteroids": count,
+                "count_success": count - failure,
+                "count_failed": failure,
+                "average_time": maverage,
+            }
+        )
 
         self.logger.info(
-            "Finished to generate the ephemeris, %s asteroids in %s" % (count, humanize.naturaldelta(tdelta)))
+            "Finished to generate the ephemeris, %s asteroids in %s"
+            % (count, humanize.naturaldelta(tdelta))
+        )
 
     def run_generate_ephemeris(self, id, docker_client, docker_image, obj, logger):
         """
-            Cria uma instancia do container PRAIA_Occultation
-            e executa o comando generate_ephemeris.py
-            :param data_path:
-            :param dates_file:
-            :param bsp_asteroid:
-            :param bsp_planetary:
-            :param leap_second:
-            :param filename:
-            :param radec_filename:
-            :return:
+        Cria uma instancia do container PRAIA_Occultation
+        e executa o comando generate_ephemeris.py
+        :param data_path:
+        :param dates_file:
+        :param bsp_asteroid:
+        :param bsp_planetary:
+        :param leap_second:
+        :param filename:
+        :param radec_filename:
+        :return:
         """
         t0 = datetime.now()
 
         container_name = "occultation_ephemeris_%s" % id
 
-        filename = "%s.eph" % obj['alias'].replace('_', '')
+        filename = "%s.eph" % obj["alias"].replace("_", "")
         radec_filename = "radec.txt"
         positions_filename = "positions.txt"
 
         # Path absoluto para o diretorio de dados que sera montado no container.
         absolute_archive_path = settings.HOST_ARCHIVE_DIR
-        absolute_data_path = os.path.join(absolute_archive_path, obj['relative_path'].strip('/'))
+        absolute_data_path = os.path.join(
+            absolute_archive_path, obj["relative_path"].strip("/")
+        )
 
         # Comando que sera executado dentro do container.
-        cmd = "python generate_ephemeris.py \"%s\" %s %s %s %s --leap_sec %s --radec_filename %s --positions_filename %s" % (
-            obj['name'], obj['inputs']['dates_file'], obj['inputs']['bsp_asteroid'], obj['inputs']['bsp_planetary'], filename,
-            obj['inputs']['leap_second'], radec_filename, positions_filename)
+        cmd = (
+            'python generate_ephemeris.py "%s" %s %s %s %s --leap_sec %s --radec_filename %s --positions_filename %s'
+            % (
+                obj["name"],
+                obj["inputs"]["dates_file"],
+                obj["inputs"]["bsp_asteroid"],
+                obj["inputs"]["bsp_planetary"],
+                filename,
+                obj["inputs"]["leap_second"],
+                radec_filename,
+                positions_filename,
+            )
+        )
 
         logger.debug("[ %s ] CMD: %s" % (container_name, cmd))
 
         # Definicao do Volume /data
-        volumes = dict({
-            absolute_data_path: dict({
-                'bind': '/data',
-                'mode': 'rw'
-            })
-        })
+        volumes = dict({absolute_data_path: dict({"bind": "/data", "mode": "rw"})})
 
         try:
             logger.debug("[ %s ] Starting Container" % container_name)
@@ -736,18 +822,18 @@ class PredictionOccultation():
                 auto_remove=True,
                 # mem_limit='4096m',
                 volumes=volumes,
-                user=os.getuid()
+                user=os.getuid(),
             )
 
             container.wait()
             logger.debug("[ %s ] Finish Container" % container_name)
 
-            ephemeris = os.path.join(obj['relative_path'], filename)
-            radec = os.path.join(obj['relative_path'], radec_filename)
-            positions = os.path.join(obj['relative_path'], positions_filename)
+            ephemeris = os.path.join(obj["relative_path"], filename)
+            radec = os.path.join(obj["relative_path"], radec_filename)
+            positions = os.path.join(obj["relative_path"], positions_filename)
 
             orbit_filename = self.orbit_filename
-            asteroid_orbit = os.path.join(obj['relative_path'], orbit_filename)
+            asteroid_orbit = os.path.join(obj["relative_path"], orbit_filename)
 
             logger.debug("[ %s ] Ephemeris: %s" % (container_name, ephemeris))
             logger.debug("[ %s ] RADEC: %s" % (container_name, radec))
@@ -769,36 +855,44 @@ class PredictionOccultation():
 
             if status == "running":
                 # Result Ephemeris
-                obj["results"]["ephemeris"] = dict({
-                    "filename": filename,
-                    "file_size": os.path.getsize(ephemeris),
-                    "file_path": ephemeris,
-                    "file_type": os.path.splitext(ephemeris)[1]
-                })
+                obj["results"]["ephemeris"] = dict(
+                    {
+                        "filename": filename,
+                        "file_size": os.path.getsize(ephemeris),
+                        "file_path": ephemeris,
+                        "file_type": os.path.splitext(ephemeris)[1],
+                    }
+                )
 
                 # Result RADEC
-                obj["results"]["radec"] = dict({
-                    "filename": radec_filename,
-                    "file_size": os.path.getsize(radec),
-                    "file_path": radec,
-                    "file_type": os.path.splitext(radec)[1]
-                })
+                obj["results"]["radec"] = dict(
+                    {
+                        "filename": radec_filename,
+                        "file_size": os.path.getsize(radec),
+                        "file_path": radec,
+                        "file_type": os.path.splitext(radec)[1],
+                    }
+                )
 
                 # Result Positions
-                obj["results"]["positions"] = dict({
-                    "filename": positions_filename,
-                    "file_size": os.path.getsize(positions),
-                    "file_path": positions,
-                    "file_type": os.path.splitext(positions)[1]
-                })
+                obj["results"]["positions"] = dict(
+                    {
+                        "filename": positions_filename,
+                        "file_size": os.path.getsize(positions),
+                        "file_path": positions,
+                        "file_type": os.path.splitext(positions)[1],
+                    }
+                )
 
                 # Result Asteroid Orbit in Sky
-                obj["results"]["asteroid_orbit"] = dict({
-                    "filename": orbit_filename,
-                    "file_size": os.path.getsize(asteroid_orbit),
-                    "file_path": asteroid_orbit,
-                    "file_type": os.path.splitext(asteroid_orbit)[1]
-                })
+                obj["results"]["asteroid_orbit"] = dict(
+                    {
+                        "filename": orbit_filename,
+                        "file_size": os.path.getsize(asteroid_orbit),
+                        "file_path": asteroid_orbit,
+                        "file_type": os.path.splitext(asteroid_orbit)[1],
+                    }
+                )
 
                 # Positions e input para a proxima etapa
                 obj["inputs"]["positions"] = positions_filename
@@ -811,8 +905,8 @@ class PredictionOccultation():
 
             obj["status"] = status
             obj["error_msg"] = error_msg
-            obj["start_ephemeris"] = t0.replace(microsecond=0).isoformat(' ')
-            obj["finish_ephemeris"] = t1.replace(microsecond=0).isoformat(' ')
+            obj["start_ephemeris"] = t0.replace(microsecond=0).isoformat(" ")
+            obj["finish_ephemeris"] = t1.replace(microsecond=0).isoformat(" ")
             obj["execution_ephemeris"] = str(tdelta)
 
             return obj
@@ -832,8 +926,7 @@ class PredictionOccultation():
 
         # Configuracao do Parsl
         try:
-            dfk = DataFlowKernel(
-                config=dict(settings.PARSL_CONFIG))
+            dfk = DataFlowKernel(config=dict(settings.PARSL_CONFIG))
 
         except Exception as e:
             self.logger.error(e)
@@ -844,7 +937,9 @@ class PredictionOccultation():
         self.logger.debug(settings.PARSL_CONFIG)
 
         # Configuracao do Parsl Log.
-        parsl.set_file_logger(os.path.join(self.relative_path, 'gaia_catalog_parsl.log'))
+        parsl.set_file_logger(
+            os.path.join(self.relative_path, "gaia_catalog_parsl.log")
+        )
 
         # Declaracao do Parsl APP
         @App("python", dfk)
@@ -854,35 +949,38 @@ class PredictionOccultation():
 
             # Read Positions file
             positions = self.read_positions(
-                filename=os.path.join(obj['relative_path'], obj["inputs"]["positions"]))
+                filename=os.path.join(obj["relative_path"], obj["inputs"]["positions"])
+            )
 
             rows = self.run_gaia_catalog(id, catalog, positions, radius, logger)
 
-            filename = self.write_gaia_catalog(rows, path=obj['relative_path'])
+            filename = self.write_gaia_catalog(rows, path=obj["relative_path"])
 
             file_size = os.path.getsize(filename)
 
-
             # Result Catalog Gaia
-            obj["results"]["catalog"] = dict({
-                "filename": os.path.basename(filename),
-                "file_size": file_size,
-                "file_path": filename,
-                "file_type": os.path.splitext(filename)[1]
-            })
+            obj["results"]["catalog"] = dict(
+                {
+                    "filename": os.path.basename(filename),
+                    "file_size": file_size,
+                    "file_path": filename,
+                    "file_type": os.path.splitext(filename)[1],
+                }
+            )
 
             # Catalog in csv
-            filename_csv = self.write_gaia_catalog_csv(rows, path=obj['relative_path'])
+            filename_csv = self.write_gaia_catalog_csv(rows, path=obj["relative_path"])
             file_size_csv = os.path.getsize(filename_csv)
 
             # Result Catalog Gaia
-            obj["results"]["catalog_csv"] = dict({
-                "filename": os.path.basename(filename_csv),
-                "file_size": file_size_csv,
-                "file_path": filename_csv,
-                "file_type": os.path.splitext(filename_csv)[1]
-            })
-
+            obj["results"]["catalog_csv"] = dict(
+                {
+                    "filename": os.path.basename(filename_csv),
+                    "file_size": file_size_csv,
+                    "file_path": filename_csv,
+                    "file_type": os.path.splitext(filename_csv)[1],
+                }
+            )
 
             t1 = datetime.now()
             tdelta = t1 - t0
@@ -890,16 +988,20 @@ class PredictionOccultation():
             crows = len(rows)
 
             if crows > 0 and filename:
-                status = 'success'
+                status = "success"
                 error_msg = None
                 msg = "[ SUCCESS ] - Object: %s  Rows: %s  Size: %s Time: %s " % (
-                    obj["name"], crows, humanize.naturalsize(file_size), humanize.naturaldelta(tdelta))
+                    obj["name"],
+                    crows,
+                    humanize.naturalsize(file_size),
+                    humanize.naturaldelta(tdelta),
+                )
 
             else:
-                status = 'failure'
-                error_msg = 'Failed to generate gaia catalog.'
+                status = "failure"
+                error_msg = "Failed to generate gaia catalog."
 
-                msg = "[ FAILURE ] - Object: %s " % obj['name']
+                msg = "[ FAILURE ] - Object: %s " % obj["name"]
 
             self.logger.info(msg)
 
@@ -908,8 +1010,8 @@ class PredictionOccultation():
 
             obj["status"] = status
             obj["error_msg"] = error_msg
-            obj["start_gaia_catalog"] = t0.replace(microsecond=0).isoformat(' ')
-            obj["finish_gaia_catalog"] = t1.replace(microsecond=0).isoformat(' ')
+            obj["start_gaia_catalog"] = t0.replace(microsecond=0).isoformat(" ")
+            obj["finish_gaia_catalog"] = t1.replace(microsecond=0).isoformat(" ")
             obj["execution_gaia_catalog"] = str(tdelta)
             obj["gaia_rows"] = crows
 
@@ -921,17 +1023,14 @@ class PredictionOccultation():
         # executa o app Parsl para cara registro em paralelo
         results = []
         id = 0
-        for alias in self.results['objects']:
-            obj = self.results['objects'][alias]
+        for alias in self.results["objects"]:
+            obj = self.results["objects"][alias]
 
-            if obj['status'] is not 'failure' and obj['status'] is not 'not_executed':
+            if obj["status"] is not "failure" and obj["status"] is not "not_executed":
 
                 result = start_parsl_job(
-                    id=id,
-                    catalog=gaia,
-                    obj=obj,
-                    radius=self.radius,
-                    logger=self.logger)
+                    id=id, catalog=gaia, obj=obj, radius=self.radius, logger=self.logger
+                )
 
                 self.logger.debug(result)
 
@@ -954,16 +1053,18 @@ class PredictionOccultation():
         maverage = 0
         mcrows = 0
         for row in outputs:
-            if row['status'] == "failure":
+            if row["status"] == "failure":
                 failure += 1
                 average.append(0)
 
-            exec_tdelta = timedelta(seconds=pytimeparse.parse(row['execution_gaia_catalog']))
+            exec_tdelta = timedelta(
+                seconds=pytimeparse.parse(row["execution_gaia_catalog"])
+            )
             average.append(exec_tdelta.total_seconds())
 
-            crows.append(row['gaia_rows'])
+            crows.append(row["gaia_rows"])
 
-            self.results['objects'][row['alias']] = row
+            self.results["objects"][row["alias"]] = row
 
         t1 = datetime.now()
         tdelta = t1 - t0
@@ -974,24 +1075,28 @@ class PredictionOccultation():
         if len(crows) > 0:
             mcrows = mean(crows)
 
-        self.results['gaia_catalog_report'] = dict({
-            'start_time': t0.replace(microsecond=0).isoformat(' '),
-            'finish_time': t1.replace(microsecond=0).isoformat(' '),
-            'execution_time': str(tdelta),
-            'count_asteroids': count,
-            'count_success': count - failure,
-            'count_failed': failure,
-            'average_time': maverage,
-            'average_rows': mcrows
-        })
+        self.results["gaia_catalog_report"] = dict(
+            {
+                "start_time": t0.replace(microsecond=0).isoformat(" "),
+                "finish_time": t1.replace(microsecond=0).isoformat(" "),
+                "execution_time": str(tdelta),
+                "count_asteroids": count,
+                "count_success": count - failure,
+                "count_failed": failure,
+                "average_time": maverage,
+                "average_rows": mcrows,
+            }
+        )
 
         self.logger.info(
-            "Finished to generate the gaia catalog, %s asteroids in %s" % (count, humanize.naturaldelta(tdelta)))
+            "Finished to generate the gaia catalog, %s asteroids in %s"
+            % (count, humanize.naturaldelta(tdelta))
+        )
 
     def read_positions(self, filename):
         positions = []
 
-        with open(filename, 'r') as fp:
+        with open(filename, "r") as fp:
             for line in fp:
                 try:
                     line.strip()
@@ -1018,7 +1123,12 @@ class PredictionOccultation():
             results = []
             for pos in positions:
                 where = 'q3c_radial_query("%s", "%s", % s, % s, % s)' % (
-                        catalog.ra_property, catalog.dec_property, pos[0], pos[1], radius)
+                    catalog.ra_property,
+                    catalog.dec_property,
+                    pos[0],
+                    pos[1],
+                    radius,
+                )
 
                 stm = """SELECT %s FROM %s WHERE %s """ % (columns, tablename, where)
 
@@ -1059,7 +1169,7 @@ class PredictionOccultation():
         JD = 15.0 * 365.25 + 2451545
 
         filename = os.path.join(path, "gaia_catalog.cat")
-        with open(filename, 'w') as fp:
+        with open(filename, "w") as fp:
             for row in rows:
 
                 # Converter os valores nulos para 0
@@ -1068,7 +1178,7 @@ class PredictionOccultation():
                         row[prop] = 0
 
                 fp.write(" ".ljust(64))
-                fp.write(("%.3f" % row['phot_g_mean_mag']).rjust(6))
+                fp.write(("%.3f" % row["phot_g_mean_mag"]).rjust(6))
                 fp.write(" ".ljust(7))
                 fp.write(" " + ("%.3f" % magJ).rjust(6))
                 fp.write(" " + ("%.3f" % magH).rjust(6))
@@ -1094,21 +1204,20 @@ class PredictionOccultation():
 
     def write_gaia_catalog_csv(self, rows, path):
         filename = os.path.join(path, "gaia_catalog.csv")
-        with open(filename, 'w') as csvfile:
-            fieldnames = ['ra', 'dec']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
+        with open(filename, "w") as csvfile:
+            fieldnames = ["ra", "dec"]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=";")
             for row in rows:
                 ra = float(row["ra"])
                 ra = "%.9f" % ra
-                
+
                 dec = "%.9f" % row["dec"]
 
-                writer.writerow({'ra': ra, 'dec': dec})
+                writer.writerow({"ra": ra, "dec": dec})
 
             csvfile.close()
 
         return filename
-
 
     def search_candidate_stars(self):
 
@@ -1118,8 +1227,7 @@ class PredictionOccultation():
 
         # Configuracao do Parsl
         try:
-            dfk = DataFlowKernel(
-                config=dict(settings.PARSL_CONFIG))
+            dfk = DataFlowKernel(config=dict(settings.PARSL_CONFIG))
 
         except Exception as e:
             self.logger.error(e)
@@ -1130,7 +1238,9 @@ class PredictionOccultation():
         self.logger.debug(settings.PARSL_CONFIG)
 
         # Configuracao do Parsl Log.
-        parsl.set_file_logger(os.path.join(self.relative_path, 'search_candidate_stars.log'))
+        parsl.set_file_logger(
+            os.path.join(self.relative_path, "search_candidate_stars.log")
+        )
 
         # Declaracao do Parsl APP
         @App("python", dfk)
@@ -1144,60 +1254,80 @@ class PredictionOccultation():
             logger.debug("PRAIA OCC DAT: %s" % praia_occ_dat)
 
             result = self.run_search_candidate_stars(
-                obj['relative_path'], os.path.basename(praia_occ_dat)
+                obj["relative_path"], os.path.basename(praia_occ_dat)
             )
 
-            status = 'failure'
-            error_msg = 'PRAIA Occultation did not generate result files.'
+            status = "failure"
+            error_msg = "PRAIA Occultation did not generate result files."
 
             if result:
-                status = 'running'
+                status = "running"
                 error_msg = None
                 try:
                     # TODO essa parte pode ficar funcao run_search_candidate_stars
-                    file_path = os.path.join(obj['relative_path'], self.stars_catalog_mini)
-                    obj['results']['stars_catalog_mini'] = dict({
-                        "filename": os.path.basename(file_path),
-                        "file_size": os.path.getsize(file_path),
-                        "file_path": file_path,
-                        "file_type": os.path.splitext(file_path)[1]
-                    })
+                    file_path = os.path.join(
+                        obj["relative_path"], self.stars_catalog_mini
+                    )
+                    obj["results"]["stars_catalog_mini"] = dict(
+                        {
+                            "filename": os.path.basename(file_path),
+                            "file_size": os.path.getsize(file_path),
+                            "file_path": file_path,
+                            "file_type": os.path.splitext(file_path)[1],
+                        }
+                    )
 
-                    file_path = os.path.join(obj['relative_path'], self.stars_catalog_xy)
-                    obj['results']['stars_catalog_xy'] = dict({
-                        "filename": os.path.basename(file_path),
-                        "file_size": os.path.getsize(file_path),
-                        "file_path": file_path,
-                        "file_type": os.path.splitext(file_path)[1]
-                    })
+                    file_path = os.path.join(
+                        obj["relative_path"], self.stars_catalog_xy
+                    )
+                    obj["results"]["stars_catalog_xy"] = dict(
+                        {
+                            "filename": os.path.basename(file_path),
+                            "file_size": os.path.getsize(file_path),
+                            "file_path": file_path,
+                            "file_type": os.path.splitext(file_path)[1],
+                        }
+                    )
 
-                    file_path = os.path.join(obj['relative_path'], self.stars_parameters_of_occultation)
-                    obj['results']['stars_parameters_of_occultation'] = dict({
-                        "filename": os.path.basename(file_path),
-                        "file_size": os.path.getsize(file_path),
-                        "file_path": file_path,
-                        "file_type": os.path.splitext(file_path)[1]
-                    })
+                    file_path = os.path.join(
+                        obj["relative_path"], self.stars_parameters_of_occultation
+                    )
+                    obj["results"]["stars_parameters_of_occultation"] = dict(
+                        {
+                            "filename": os.path.basename(file_path),
+                            "file_size": os.path.getsize(file_path),
+                            "file_path": file_path,
+                            "file_type": os.path.splitext(file_path)[1],
+                        }
+                    )
 
-                    file_path = os.path.join(obj['relative_path'], self.stars_parameters_of_occultation_plot)
-                    obj['results']['stars_parameters_of_occultation_plot'] = dict({
-                        "filename": os.path.basename(file_path),
-                        "file_size": os.path.getsize(file_path),
-                        "file_path": file_path,
-                        "file_type": os.path.splitext(file_path)[1]
-                    })
+                    file_path = os.path.join(
+                        obj["relative_path"], self.stars_parameters_of_occultation_plot
+                    )
+                    obj["results"]["stars_parameters_of_occultation_plot"] = dict(
+                        {
+                            "filename": os.path.basename(file_path),
+                            "file_size": os.path.getsize(file_path),
+                            "file_path": file_path,
+                            "file_type": os.path.splitext(file_path)[1],
+                        }
+                    )
 
-                    file_path = os.path.join(obj['relative_path'], self.occultation_table)
-                    obj['results']['occultation_table'] = dict({
-                        "filename": os.path.basename(file_path),
-                        "file_size": os.path.getsize(file_path),
-                        "file_path": file_path,
-                        "file_type": os.path.splitext(file_path)[1]
-                    })
+                    file_path = os.path.join(
+                        obj["relative_path"], self.occultation_table
+                    )
+                    obj["results"]["occultation_table"] = dict(
+                        {
+                            "filename": os.path.basename(file_path),
+                            "file_size": os.path.getsize(file_path),
+                            "file_path": file_path,
+                            "file_type": os.path.splitext(file_path)[1],
+                        }
+                    )
 
                 except Exception as e:
-                    logger.error("Object [ %s ] Id [ %s ] %s" %(obj['name'], id, e))
-                    status = 'failure'
+                    logger.error("Object [ %s ] Id [ %s ] %s" % (obj["name"], id, e))
+                    status = "failure"
                     error_msg = e
 
             t1 = datetime.now()
@@ -1205,8 +1335,8 @@ class PredictionOccultation():
 
             obj["status"] = status
             obj["error_msg"] = error_msg
-            obj["start_search_candidate"] = t0.replace(microsecond=0).isoformat(' ')
-            obj["finish_search_candidate"] = t1.replace(microsecond=0).isoformat(' ')
+            obj["start_search_candidate"] = t0.replace(microsecond=0).isoformat(" ")
+            obj["finish_search_candidate"] = t1.replace(microsecond=0).isoformat(" ")
             obj["execution_search_candidate"] = str(tdelta)
 
             return obj
@@ -1214,14 +1344,11 @@ class PredictionOccultation():
         # executa o app Parsl para cara registro em paralelo
         results = []
         id = 0
-        for alias in self.results['objects']:
-            obj = self.results['objects'][alias]
+        for alias in self.results["objects"]:
+            obj = self.results["objects"][alias]
 
-            if obj['status'] is not 'failure' and obj['status'] is not 'not_executed':
-                result = start_parsl_job(
-                    id=id,
-                    obj=obj,
-                    logger=self.logger)
+            if obj["status"] is not "failure" and obj["status"] is not "not_executed":
+                result = start_parsl_job(id=id, obj=obj, logger=self.logger)
 
                 self.logger.debug(result)
 
@@ -1243,14 +1370,16 @@ class PredictionOccultation():
         maverage = 0
 
         for row in outputs:
-            if row['status'] == "failure":
+            if row["status"] == "failure":
                 failure += 1
                 average.append(0)
 
-            exec_tdelta = timedelta(seconds=pytimeparse.parse(row['execution_search_candidate']))
+            exec_tdelta = timedelta(
+                seconds=pytimeparse.parse(row["execution_search_candidate"])
+            )
             average.append(exec_tdelta.total_seconds())
 
-            self.results['objects'][row['alias']] = row
+            self.results["objects"][row["alias"]] = row
 
         t1 = datetime.now()
         tdelta = t1 - t0
@@ -1258,54 +1387,60 @@ class PredictionOccultation():
         if len(average) > 0:
             maverage = mean(average)
 
-        self.results['search_candidate_report'] = dict({
-            'start_time': t0.replace(microsecond=0).isoformat(' '),
-            'finish_time': t1.replace(microsecond=0).isoformat(' '),
-            'execution_time': str(tdelta),
-            'count_asteroids': count,
-            'count_success': count - failure,
-            'count_failed': failure,
-            'average_time': maverage,
-        })
+        self.results["search_candidate_report"] = dict(
+            {
+                "start_time": t0.replace(microsecond=0).isoformat(" "),
+                "finish_time": t1.replace(microsecond=0).isoformat(" "),
+                "execution_time": str(tdelta),
+                "count_asteroids": count,
+                "count_success": count - failure,
+                "count_failed": failure,
+                "average_time": maverage,
+            }
+        )
 
         self.logger.info(
-            "Finished to generate the table with the candidate stars, %s asteroids in %s" % (
-                count, humanize.naturaldelta(tdelta)))
+            "Finished to generate the table with the candidate stars, %s asteroids in %s"
+            % (count, humanize.naturaldelta(tdelta))
+        )
 
     def praia_occ_input_file(self, obj):
 
         # TODO: Precisa de um refactoring, os parametros podem vir da interface.
         try:
 
-            input_file = os.path.join(obj['relative_path'], "praia_occ_star_search_12.dat")
+            input_file = os.path.join(
+                obj["relative_path"], "praia_occ_star_search_12.dat"
+            )
 
             with open("predict/praia_occ_input_template.txt") as file:
 
                 data = file.read()
 
-                name = "/data/%s" % obj['inputs']['catalog']
-                data = data.replace('{stellar_catalog}', name.ljust(50))
+                name = "/data/%s" % obj["inputs"]["catalog"]
+                data = data.replace("{stellar_catalog}", name.ljust(50))
 
-                name = "/data/%s" % obj['inputs']['ephemeris']
-                data = data.replace('{object_ephemeris}', name.ljust(50))
+                name = "/data/%s" % obj["inputs"]["ephemeris"]
+                data = data.replace("{object_ephemeris}", name.ljust(50))
 
                 name = "/data/%s" % self.stars_catalog_mini
-                data = data.replace('{stars_catalog_mini}', name.ljust(50))
+                data = data.replace("{stars_catalog_mini}", name.ljust(50))
 
                 name = "/data/%s" % self.stars_catalog_xy
-                data = data.replace('{stars_catalog_xy}', name.ljust(50))
+                data = data.replace("{stars_catalog_xy}", name.ljust(50))
 
                 name = "/data/%s" % self.stars_parameters_of_occultation
-                data = data.replace('{stars_parameters_of_occultation}', name.ljust(50))
+                data = data.replace("{stars_parameters_of_occultation}", name.ljust(50))
 
                 name = "/data/%s" % self.stars_parameters_of_occultation_plot
-                data = data.replace('{stars_parameters_of_occultation_plot}', name.ljust(50))
+                data = data.replace(
+                    "{stars_parameters_of_occultation_plot}", name.ljust(50)
+                )
 
-                with open(input_file, 'w') as new_file:
+                with open(input_file, "w") as new_file:
                     new_file.write(data)
 
             return input_file
-
 
         except Exception as e:
             self.logger.error(e)
@@ -1324,17 +1459,16 @@ class PredictionOccultation():
 
         # Get docker Client Instance
         self.logger.debug("Getting docker client")
-        docker_client = docker.DockerClient(
-            base_url=settings.DOCKER_HOST)
+        docker_client = docker.DockerClient(base_url=settings.DOCKER_HOST)
 
         # Recupera a Imagem Docker
         docker_image = self.get_docker_image(
-            docker_client=docker_client,
-            image_name=self.predict_pipeline_image)
+            docker_client=docker_client, image_name=self.predict_pipeline_image
+        )
 
         # Path absoluto para o diretorio de dados que sera montado no container.
         absolute_archive_path = settings.HOST_ARCHIVE_DIR
-        absolute_data_path = os.path.join(absolute_archive_path, data_path.strip('/'))
+        absolute_data_path = os.path.join(absolute_archive_path, data_path.strip("/"))
         self.logger.debug("Absolute Data Path: %s" % absolute_data_path)
 
         # Comando que sera executado dentro do container.
@@ -1342,12 +1476,7 @@ class PredictionOccultation():
         self.logger.debug("CMD: %s" % cmd)
 
         # Definicao do Volume /data
-        volumes = dict({
-            absolute_data_path: dict({
-                'bind': '/data',
-                'mode': 'rw'
-            })
-        })
+        volumes = dict({absolute_data_path: dict({"bind": "/data", "mode": "rw"})})
 
         try:
             self.logger.debug("Starting Container")
@@ -1359,7 +1488,7 @@ class PredictionOccultation():
                 auto_remove=True,
                 # mem_limit='128m',
                 volumes=volumes,
-                user=os.getuid()
+                user=os.getuid(),
             )
 
             container.wait()
@@ -1369,10 +1498,16 @@ class PredictionOccultation():
             tdelta = t1 - t0
 
             # dates_file = os.path.join(self.relative_path, )
-            if os.path.exists(os.path.join(data_path, self.stars_catalog_mini)) and os.path.exists(
-                os.path.join(data_path, self.stars_catalog_xy)) and os.path.exists(
-                os.path.join(data_path, self.stars_parameters_of_occultation)) and os.path.exists(
-                os.path.join(data_path, self.stars_parameters_of_occultation_plot)):
+            if (
+                os.path.exists(os.path.join(data_path, self.stars_catalog_mini))
+                and os.path.exists(os.path.join(data_path, self.stars_catalog_xy))
+                and os.path.exists(
+                    os.path.join(data_path, self.stars_parameters_of_occultation)
+                )
+                and os.path.exists(
+                    os.path.join(data_path, self.stars_parameters_of_occultation_plot)
+                )
+            ):
 
                 return True
             else:
@@ -1396,10 +1531,11 @@ class PredictionOccultation():
             parsl_config = settings.PARSL_CONFIG
 
             # Diminuindo o numero de Treads por causa da limitacao de memoria
-            parsl_config["sites"][0]["execution"]["maxThreads"] = int(settings.MINIMUM_THREADS)
+            parsl_config["sites"][0]["execution"]["maxThreads"] = int(
+                settings.MINIMUM_THREADS
+            )
 
-            dfk = DataFlowKernel(
-                config=dict(parsl_config))
+            dfk = DataFlowKernel(config=dict(parsl_config))
 
         except Exception as e:
             self.logger.error(e)
@@ -1410,7 +1546,9 @@ class PredictionOccultation():
         self.logger.debug(settings.PARSL_CONFIG)
 
         # Configuracao do Parsl Log.
-        parsl.set_file_logger(os.path.join(self.relative_path, 'generate_maps_parsl.log'))
+        parsl.set_file_logger(
+            os.path.join(self.relative_path, "generate_maps_parsl.log")
+        )
 
         # Declaracao do Parsl APP
         @App("python", dfk)
@@ -1418,25 +1556,26 @@ class PredictionOccultation():
 
             t0 = datetime.now()
 
-
-            status = 'failure'
-            error_msg = 'Maps were not created'
+            status = "failure"
+            error_msg = "Maps were not created"
 
             result = self.run_generate_maps(id, obj)
 
             # Resultado do plot de Ephemeris + Stars
             neighborhood_stars = self.neighborhood_stars
-            file_path = os.path.join(obj['relative_path'], neighborhood_stars)
+            file_path = os.path.join(obj["relative_path"], neighborhood_stars)
             if os.path.exists(file_path):
-                obj['results']['neighborhood_stars'] = dict({
-                    "filename": os.path.basename(file_path),
-                    "file_size": os.path.getsize(file_path),
-                    "file_path": file_path,
-                    "file_type": os.path.splitext(file_path)[1]
-                })
+                obj["results"]["neighborhood_stars"] = dict(
+                    {
+                        "filename": os.path.basename(file_path),
+                        "file_size": os.path.getsize(file_path),
+                        "file_path": file_path,
+                        "file_type": os.path.splitext(file_path)[1],
+                    }
+                )
 
             if result:
-                status = 'success'
+                status = "success"
                 error_msg = None
 
             t1 = datetime.now()
@@ -1444,15 +1583,17 @@ class PredictionOccultation():
 
             obj["status"] = status
             obj["error_msg"] = error_msg
-            obj["start_maps"] = t0.replace(microsecond=0).isoformat(' ')
-            obj["finish_maps"] = t1.replace(microsecond=0).isoformat(' ')
+            obj["start_maps"] = t0.replace(microsecond=0).isoformat(" ")
+            obj["finish_maps"] = t1.replace(microsecond=0).isoformat(" ")
             obj["execution_maps"] = str(tdelta)
 
             if result:
                 msg = "[ SUCCESS ] - Object: %s Time: %s " % (
-                    obj['name'], humanize.naturaldelta(tdelta))
+                    obj["name"],
+                    humanize.naturaldelta(tdelta),
+                )
             else:
-                msg = "[ FAILURE ] - Object: %s " % obj['name']
+                msg = "[ FAILURE ] - Object: %s " % obj["name"]
 
             logger.info(msg)
 
@@ -1461,14 +1602,11 @@ class PredictionOccultation():
         # executa o app Parsl para cara registro em paralelo
         results = []
         id = 0
-        for alias in self.results['objects']:
-            obj = self.results['objects'][alias]
+        for alias in self.results["objects"]:
+            obj = self.results["objects"][alias]
 
-            if obj['status'] is not 'failure' and obj['status'] is not 'not_executed':
-                result = start_parsl_job(
-                    id=id,
-                    obj=obj,
-                    logger=self.logger)
+            if obj["status"] is not "failure" and obj["status"] is not "not_executed":
+                result = start_parsl_job(id=id, obj=obj, logger=self.logger)
 
                 self.logger.debug(result)
 
@@ -1490,14 +1628,14 @@ class PredictionOccultation():
         maverage = 0
 
         for row in outputs:
-            if row['status'] == "failure":
+            if row["status"] == "failure":
                 failure += 1
                 average.append(0)
 
-            exec_tdelta = timedelta(seconds=pytimeparse.parse(row['execution_maps']))
+            exec_tdelta = timedelta(seconds=pytimeparse.parse(row["execution_maps"]))
             average.append(exec_tdelta.total_seconds())
 
-            self.results['objects'][row['alias']] = row
+            self.results["objects"][row["alias"]] = row
 
         t1 = datetime.now()
         tdelta = t1 - t0
@@ -1505,19 +1643,22 @@ class PredictionOccultation():
         if len(average) > 0:
             maverage = mean(average)
 
-        self.results['maps_report'] = dict({
-            'start_time': t0.replace(microsecond=0).isoformat(' '),
-            'finish_time': t1.replace(microsecond=0).isoformat(' '),
-            'execution_time': str(tdelta),
-            'count_asteroids': count,
-            'count_success': count - failure,
-            'count_failed': failure,
-            'average_time': maverage,
-        })
+        self.results["maps_report"] = dict(
+            {
+                "start_time": t0.replace(microsecond=0).isoformat(" "),
+                "finish_time": t1.replace(microsecond=0).isoformat(" "),
+                "execution_time": str(tdelta),
+                "count_asteroids": count,
+                "count_success": count - failure,
+                "count_failed": failure,
+                "average_time": maverage,
+            }
+        )
 
         self.logger.info(
-            "Finished to generate maps, %s asteroids in %s" % (
-                count, humanize.naturaldelta(tdelta)))
+            "Finished to generate maps, %s asteroids in %s"
+            % (count, humanize.naturaldelta(tdelta))
+        )
 
     def run_generate_maps(self, id, obj):
         """
@@ -1528,38 +1669,32 @@ class PredictionOccultation():
         """
         self.logger.info("Generating Maps")
 
-        data_path = obj['relative_path']
+        data_path = obj["relative_path"]
 
         # Get docker Client Instance
         self.logger.debug("Getting docker client")
-        docker_client = docker.DockerClient(
-            base_url=settings.DOCKER_HOST)
+        docker_client = docker.DockerClient(base_url=settings.DOCKER_HOST)
 
         # Recupera a Imagem Docker
         docker_image = self.get_docker_image(
-            docker_client=docker_client,
-            image_name=self.predict_pipeline_image)
+            docker_client=docker_client, image_name=self.predict_pipeline_image
+        )
 
         # Path absoluto para o diretorio de dados que sera montado no container.
         absolute_archive_path = settings.HOST_ARCHIVE_DIR
-        absolute_data_path = os.path.join(absolute_archive_path, data_path.strip('/'))
+        absolute_data_path = os.path.join(absolute_archive_path, data_path.strip("/"))
         self.logger.debug("Absolute Data Path: %s" % absolute_data_path)
 
         # Comando que sera executado dentro do container.
         cmd = "python generate_maps.py %s %s %s" % (
-            obj['alias'].replace('_', ''),
-            obj['diameter'],
-            obj['results']['stars_parameters_of_occultation_plot']['filename']
+            obj["alias"].replace("_", ""),
+            obj["diameter"],
+            obj["results"]["stars_parameters_of_occultation_plot"]["filename"],
         )
         self.logger.debug("CMD: %s" % cmd)
 
         # Definicao do Volume /data
-        volumes = dict({
-            absolute_data_path: dict({
-                'bind': '/data',
-                'mode': 'rw'
-            })
-        })
+        volumes = dict({absolute_data_path: dict({"bind": "/data", "mode": "rw"})})
 
         try:
             self.logger.debug("[ %s ] Starting Container" % id)
@@ -1568,20 +1703,19 @@ class PredictionOccultation():
                 command=cmd,
                 detach=True,
                 auto_remove=True,
-                mem_limit='4096m',
+                mem_limit="4096m",
                 # mem_limit='2096m',
                 volumes=volumes,
-                user=os.getuid()
+                user=os.getuid(),
             )
 
             container.wait()
 
-
             # Criar o plot de Ephemeris + Stars
             cmd = "python plot_ephem_stars.py %s %s %s --filename %s" % (
-                obj['inputs']['ephemeris'],
-                obj["results"]["catalog_csv"]['filename'],
-                obj['inputs']['positions'],
+                obj["inputs"]["ephemeris"],
+                obj["results"]["catalog_csv"]["filename"],
+                obj["inputs"]["positions"],
                 self.neighborhood_stars,
             )
             self.logger.debug("CMD: %s" % cmd)
@@ -1591,14 +1725,12 @@ class PredictionOccultation():
                 command=cmd,
                 detach=True,
                 auto_remove=True,
-                mem_limit='4096m',
+                mem_limit="4096m",
                 volumes=volumes,
-                user=os.getuid()
+                user=os.getuid(),
             )
 
             container.wait()
-
-
 
             self.logger.debug("[ %s ] Finish Container" % id)
 
@@ -1616,7 +1748,6 @@ class PredictionOccultation():
         # Precisa saber quantos mapas e qual o nome dos mapas que deveriam ter sido criados.
         return True
 
-
     def register_asteroid(self, obj, predict_run):
 
         self.logger.debug("Registered Object")
@@ -1625,15 +1756,16 @@ class PredictionOccultation():
 
             self.logger.debug("Object Status [%s]" % obj.get("status"))
 
-            if obj.get("status") is 'not_executed':
+            if obj.get("status") is "not_executed":
                 asteroid, created = PredictAsteroid.objects.update_or_create(
                     predict_run=predict_run,
                     name=obj.get("name"),
                     defaults={
-                        'number': obj.get("number"),
-                        'status': 'not_executed',
-                        'error_msg': 'Not executed because it failed to refine orbit.',
-                    })
+                        "number": obj.get("number"),
+                        "status": "not_executed",
+                        "error_msg": "Not executed because it failed to refine orbit.",
+                    },
+                )
 
                 asteroid.save()
 
@@ -1642,7 +1774,9 @@ class PredictionOccultation():
                 # Gerar o tempo medio para executar cada asteroid somando o tempo de cada etapa
                 t1 = pytimeparse.parse(obj.get("execution_ephemeris", "00:00:00"))
                 t2 = pytimeparse.parse(obj.get("execution_gaia_catalog", "00:00:00"))
-                t3 = pytimeparse.parse(obj.get("execution_search_candidate", "00:00:00"))
+                t3 = pytimeparse.parse(
+                    obj.get("execution_search_candidate", "00:00:00")
+                )
                 t4 = pytimeparse.parse(obj.get("execution_maps", "00:00:00"))
                 ttotal = (t1 + t2) + (t3 + t4)
 
@@ -1663,18 +1797,20 @@ class PredictionOccultation():
 
                 execution_search_candidate = None
                 if obj.get("execution_search_candidate"):
-                    execution_search_candidate = str(obj.get("execution_search_candidate"))
+                    execution_search_candidate = str(
+                        obj.get("execution_search_candidate")
+                    )
 
                 asteroid, created = PredictAsteroid.objects.update_or_create(
                     predict_run=predict_run,
                     name=obj.get("name"),
                     defaults={
-                        'number': obj.get("number"),
-                        'diameter': obj.get("diameter"),
-                        'status': obj.get("status"),
-                        'error_msg': obj.get("error_msg"),
-                        'catalog_rows': obj.get("gaia_rows"),
-                        'execution_time': texecution,
+                        "number": obj.get("number"),
+                        "diameter": obj.get("diameter"),
+                        "status": obj.get("status"),
+                        "error_msg": obj.get("error_msg"),
+                        "catalog_rows": obj.get("gaia_rows"),
+                        "execution_time": texecution,
                         "start_ephemeris": obj.get("start_ephemeris"),
                         "finish_ephemeris": obj.get("finish_ephemeris"),
                         "execution_ephemeris": obj.get("execution_ephemeris"),
@@ -1687,8 +1823,9 @@ class PredictionOccultation():
                         "start_maps": obj.get("start_maps"),
                         "finish_maps": obj.get("finish_maps"),
                         "execution_maps": obj.get("execution_maps"),
-                        'relative_path': obj.get("relative_path"),
-                    })
+                        "relative_path": obj.get("relative_path"),
+                    },
+                )
 
                 asteroid.save()
 
@@ -1715,10 +1852,10 @@ class PredictionOccultation():
                             filename=result.get("filename"),
                             type=ftype,
                             defaults={
-                                'file_size': result.get("file_size"),
-                                'file_type': result.get("file_type"),
-                                'file_path': result.get("file_path"),
-                            }
+                                "file_size": result.get("file_size"),
+                                "file_type": result.get("file_type"),
+                                "file_path": result.get("file_path"),
+                            },
                         )
 
                         result_file.save()
@@ -1728,7 +1865,7 @@ class PredictionOccultation():
                     inp = obj.get("inputs").get(input_type)
 
                     if inp is not None:
-                        file_path = os.path.join(obj['relative_path'], inp)
+                        file_path = os.path.join(obj["relative_path"], inp)
                         file_size = None
                         file_type = None
                         if os.path.exists(file_path):
@@ -1739,69 +1876,101 @@ class PredictionOccultation():
                             asteroid=asteroid,
                             input_type=input_type,
                             defaults={
-                                'filename': inp,
-                                'file_path': file_path,
-                                'file_size': file_size,
-                                'file_type': file_type
+                                "filename": inp,
+                                "file_path": file_path,
+                                "file_size": file_size,
+                                "file_type": file_type,
                             },
                         )
 
                         input_file.save()
 
                 # Registrar as Ocultacoes
-                if obj['results']['occultation_table'] is not None:
-                    table = obj['results']['occultation_table']['file_path']
+                if obj["results"]["occultation_table"] is not None:
+                    table = obj["results"]["occultation_table"]["file_path"]
                     self.logger.debug("Table Path: %s" % table)
 
                     with open(table) as csvfile:
                         fieldnames = [
-                            'occultation_date', 'ra_star_candidate', 'dec_star_candidate','ra_object', 'dec_object', 
-                            'ca', 'pa', 'vel', 'delta', 'g', 'j', 'h', 'k', 'long', 'loc_t', 'off_ra', 'off_de', 
-                            'pm', 'ct', 'f', 'e_ra', 'e_de', 'pmra', 'pmde']
+                            "occultation_date",
+                            "ra_star_candidate",
+                            "dec_star_candidate",
+                            "ra_object",
+                            "dec_object",
+                            "ca",
+                            "pa",
+                            "vel",
+                            "delta",
+                            "g",
+                            "j",
+                            "h",
+                            "k",
+                            "long",
+                            "loc_t",
+                            "off_ra",
+                            "off_de",
+                            "pm",
+                            "ct",
+                            "f",
+                            "e_ra",
+                            "e_de",
+                            "pmra",
+                            "pmde",
+                        ]
 
-                        reader = csv.DictReader(csvfile, fieldnames=fieldnames, delimiter=';', skipinitialspace=True)
+                        reader = csv.DictReader(
+                            csvfile,
+                            fieldnames=fieldnames,
+                            delimiter=";",
+                            skipinitialspace=True,
+                        )
 
                         next(reader, None)
 
                         for row in reader:
 
-                            dt = datetime.strptime(row['occultation_date'], '%Y-%m-%d %H:%M:%S')
+                            dt = datetime.strptime(
+                                row["occultation_date"], "%Y-%m-%d %H:%M:%S"
+                            )
 
-                            file_map = "%s_%s.000.png" % (obj['alias'].replace('_', ''), dt.isoformat())
-                            map_path = os.path.join(obj['relative_path'], file_map)
+                            file_map = "%s_%s.000.png" % (
+                                obj["alias"].replace("_", ""),
+                                dt.isoformat(),
+                            )
+                            map_path = os.path.join(obj["relative_path"], file_map)
 
                             if not os.path.exists(map_path):
                                 map_path = None
 
                             occ, created = Occultation.objects.update_or_create(
                                 asteroid=asteroid,
-                                date_time=row['occultation_date'],
+                                date_time=row["occultation_date"],
                                 defaults={
-                                    'ra_star_candidate': row['ra_star_candidate'],
-                                    'dec_star_candidate': row['dec_star_candidate'],
-                                    'ra_target': row['ra_object'],
-                                    'dec_target': row['dec_object'],
-                                    'closest_approach': row['ca'],
-                                    'position_angle': row['pa'],
-                                    'velocity': row['vel'],
-                                    'delta': row['delta'],
-                                    'g': row['g'],
-                                    'j': row['j'],
-                                    'h': row['h'],
-                                    'k': row['k'],
-                                    'long': row['long'],
-                                    'loc_t': row['loc_t'],
-                                    'off_ra': row['off_ra'],
-                                    'off_dec': row['off_de'],
-                                    'proper_motion': row['pm'],
-                                    'ct': row['ct'],
-                                    'multiplicity_flag': row['f'],
-                                    'e_ra': row['e_ra'],
-                                    'e_dec': row['e_de'],
-                                    'pmra': row['pmra'],
-                                    'pmdec': row['pmde'],
-                                    'file_path': map_path
-                                }
+                                    "ra_star_candidate": row["ra_star_candidate"],
+                                    "dec_star_candidate": row["dec_star_candidate"],
+                                    "ra_target": row["ra_object"],
+                                    "dec_target": row["dec_object"],
+                                    "closest_approach": row["ca"],
+                                    "position_angle": row["pa"],
+                                    "velocity": row["vel"],
+                                    "delta": row["delta"],
+                                    "g": row["g"],
+                                    "j": row["j"],
+                                    "h": row["h"],
+                                    "k": row["k"],
+                                    "long": row["long"],
+                                    "loc_t": row["loc_t"],
+                                    "off_ra": row["off_ra"],
+                                    "off_dec": row["off_de"],
+                                    "proper_motion": row["pm"],
+                                    "ct": row["ct"],
+                                    "multiplicity_flag": row["f"],
+                                    "e_ra": row["e_ra"],
+                                    "e_dec": row["e_de"],
+                                    "pmra": row["pmra"],
+                                    "pmdec": row["pmde"],
+                                    "file_path": map_path,
+                                },
                             )
                             occ.save()
 
@@ -1811,26 +1980,26 @@ class PredictionOccultation():
                     asteroid.status = "warning"
                     asteroid.save()
 
-
             self.logger.info("Registered Object %s " % obj.get("name"))
 
         except Exception as e:
-            self.logger.error("Failed to Register Object %s Error: %s" % (obj.get("name"), e))
+            self.logger.error(
+                "Failed to Register Object %s Error: %s" % (obj.get("name"), e)
+            )
             asteroid, created = PredictAsteroid.objects.update_or_create(
                 predict_run=predict_run,
                 name=obj.get("name"),
                 defaults={
-                    'number': obj.get("number"),
-                    'status': 'failure',
-                    'error_msg': 'Failed to record results. error: %s' % e,
-                })
+                    "number": obj.get("number"),
+                    "status": "failure",
+                    "error_msg": "Failed to record results. error: %s" % e,
+                },
+            )
 
             asteroid.save()
 
-
     def on_error(self, msg):
         pass
-
 
 
 # Comando para gerar o plot no gnuplot

@@ -6,18 +6,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0011_auto_20200702_2125'),
+        ("des", "0011_auto_20200702_2125"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='downloadccdjob',
-            name='dynclass',
-            field=models.CharField(blank=True, help_text='(ucd=“meta.code.class;src.class”) Object class (TNO, Centaur, Trojan, etc.)', max_length=24, null=True, verbose_name='Object classification'),
+            model_name="downloadccdjob",
+            name="dynclass",
+            field=models.CharField(
+                blank=True,
+                help_text="(ucd=“meta.code.class;src.class”) Object class (TNO, Centaur, Trojan, etc.)",
+                max_length=24,
+                null=True,
+                verbose_name="Object classification",
+            ),
         ),
         migrations.AddField(
-            model_name='downloadccdjob',
-            name='name',
-            field=models.CharField(blank=True, help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).', max_length=32, null=True, verbose_name='Name'),
+            model_name="downloadccdjob",
+            name="name",
+            field=models.CharField(
+                blank=True,
+                help_text="(ucd=“meta.id;meta.main”) Object name (official or provisional designation).",
+                max_length=32,
+                null=True,
+                verbose_name="Name",
+            ),
         ),
     ]

@@ -11,7 +11,7 @@ class ExposureDao(DBBase):
         super(ExposureDao, self).__init__(pool)
 
         schema = self.get_base_schema()
-        self.tablename = 'des_exposure'
+        self.tablename = "des_exposure"
         self.tbl = self.get_table(self.tablename, schema)
 
     # TODO: Mover esse metodo get para a DBBase.
@@ -24,23 +24,25 @@ class ExposureDao(DBBase):
 
     def exposures_by_period(self, start, end):
         """
-            Retorna todas as exposições com data de observação
-            para um periodo.
+        Retorna todas as exposições com data de observação
+        para um periodo.
 
-            Parameters:
-                start (datetime): Periodo inicial que sera usado na seleção.
+        Parameters:
+            start (datetime): Periodo inicial que sera usado na seleção.
 
-                end (datetime): Periodo final que sera usado na seleção.
+            end (datetime): Periodo final que sera usado na seleção.
 
-            Returns:
-                rows (array) Exposições com data de observação entre o periodo.
+        Returns:
+            rows (array) Exposições com data de observação entre o periodo.
 
         """
         tbl = self.tbl
 
-        stm = select(tbl.c).\
-            where(and_(tbl.c.date_obs.between(str(start), str(end)))).\
-            order_by(tbl.c.date_obs)
+        stm = (
+            select(tbl.c)
+            .where(and_(tbl.c.date_obs.between(str(start), str(end))))
+            .order_by(tbl.c.date_obs)
+        )
 
         self.debug_query(stm, True)
 
@@ -50,22 +52,23 @@ class ExposureDao(DBBase):
 
     def count_exposures_by_period(self, start, end):
         """
-            Retorna todas as exposições com data de observação
-            para um periodo.
+        Retorna todas as exposições com data de observação
+        para um periodo.
 
-            Parameters:
-                start (datetime): Periodo inicial que sera usado na seleção.
+        Parameters:
+            start (datetime): Periodo inicial que sera usado na seleção.
 
-                end (datetime): Periodo final que sera usado na seleção.
+            end (datetime): Periodo final que sera usado na seleção.
 
-            Returns:
-                rows (array) Exposições com data de observação entre o periodo.
+        Returns:
+            rows (array) Exposições com data de observação entre o periodo.
 
         """
         tbl = self.tbl
 
-        stm = select([func.count(tbl.c.id)]).\
-            where(and_(tbl.c.date_obs.between(str(start), str(end))))
+        stm = select([func.count(tbl.c.id)]).where(
+            and_(tbl.c.date_obs.between(str(start), str(end)))
+        )
 
         self.debug_query(stm, True)
 
@@ -77,10 +80,17 @@ class ExposureDao(DBBase):
 
         tbl = self.tbl
 
-        stm = select([cast(tbl.c.date_obs, Date).label('date'), func.count('*').label('count')]).\
-            where(and_(tbl.c.date_obs.between(str(start), str(end)))).\
-            group_by(cast(tbl.c.date_obs, Date)).\
-            order_by(cast(tbl.c.date_obs, Date))
+        stm = (
+            select(
+                [
+                    cast(tbl.c.date_obs, Date).label("date"),
+                    func.count("*").label("count"),
+                ]
+            )
+            .where(and_(tbl.c.date_obs.between(str(start), str(end))))
+            .group_by(cast(tbl.c.date_obs, Date))
+            .order_by(cast(tbl.c.date_obs, Date))
+        )
 
         self.debug_query(stm, True)
 
@@ -90,28 +100,29 @@ class ExposureDao(DBBase):
 
     def count_nights_by_period(self, start, end):
         """
-            Retorna a quantidade de noites com exposição no periodo
-            Parameters:
-                start (datetime): Periodo inicial que sera usado na seleção.
+        Retorna a quantidade de noites com exposição no periodo
+        Parameters:
+            start (datetime): Periodo inicial que sera usado na seleção.
 
-                end (datetime): Periodo final que sera usado na seleção.
+            end (datetime): Periodo final que sera usado na seleção.
 
-            Returns:
-                count (int) Quantidade de noites com exposição
+        Returns:
+            count (int) Quantidade de noites com exposição
 
-            select
-                count(distinct date(de.date_obs))
-            from
-                des_exposure de
-            where
-                de.date_obs between '2019-01-01 00:00:00' and '2019-01-31 23:59:50'
+        select
+            count(distinct date(de.date_obs))
+        from
+            des_exposure de
+        where
+            de.date_obs between '2019-01-01 00:00:00' and '2019-01-31 23:59:50'
 
         """
 
         tbl = self.tbl
 
-        stm = select([func.count(cast(tbl.c.date_obs, Date).distinct())]).\
-            where(and_(tbl.c.date_obs.between(str(start), str(end))))
+        stm = select([func.count(cast(tbl.c.date_obs, Date).distinct())]).where(
+            and_(tbl.c.date_obs.between(str(start), str(end)))
+        )
 
         self.debug_query(stm, True)
 
@@ -121,35 +132,32 @@ class ExposureDao(DBBase):
 
     def count_not_exec_nights_by_period(self, start, end):
         """
-            Retorna a quantidade de noites com exposição no periodo
-            Parameters:
-                start (datetime): Periodo inicial que sera usado na seleção.
+        Retorna a quantidade de noites com exposição no periodo
+        Parameters:
+            start (datetime): Periodo inicial que sera usado na seleção.
 
-                end (datetime): Periodo final que sera usado na seleção.
+            end (datetime): Periodo final que sera usado na seleção.
 
-            Returns:
-                count (int) Quantidade de noites com exposição
+        Returns:
+            count (int) Quantidade de noites com exposição
 
-            select
-                count(distinct date(de.date_obs))
-            from
-                des_exposure de
-            where
-                de.date_obs between '2019-01-01 00:00:00' and '2019-01-31 23:59:50'
+        select
+            count(distinct date(de.date_obs))
+        from
+            des_exposure de
+        where
+            de.date_obs between '2019-01-01 00:00:00' and '2019-01-31 23:59:50'
 
         """
 
         tbl = self.tbl
-        ds_tbl = self.get_table('des_skybotjobresult', self.get_base_schema())
+        ds_tbl = self.get_table("des_skybotjobresult", self.get_base_schema())
 
-        stm = select([func.count(cast(tbl.c.date_obs, Date).distinct())]).\
-            where(
-                and_(
-                    tbl.c.date_obs.between(str(start), str(end)),
-                    tbl.c.id.notin_(
-                        select([ds_tbl.c.exposure_id])
-                    )
-                )
+        stm = select([func.count(cast(tbl.c.date_obs, Date).distinct())]).where(
+            and_(
+                tbl.c.date_obs.between(str(start), str(end)),
+                tbl.c.id.notin_(select([ds_tbl.c.exposure_id])),
+            )
         )
 
         self.debug_query(stm, True)

@@ -7,13 +7,17 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0010_auto_20200702_2045'),
+        ("des", "0010_auto_20200702_2045"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='downloadccdjobresult',
-            name='ccd',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='des.Ccd', verbose_name='CCD'),
+            model_name="downloadccdjobresult",
+            name="ccd",
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="des.Ccd",
+                verbose_name="CCD",
+            ),
         ),
     ]

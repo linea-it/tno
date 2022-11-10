@@ -22,9 +22,9 @@ from rest_framework.response import Response
 from tno.auth_shibboleth import ShibbolethBackend
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def teste(request):
-    if request.method == 'GET':
+    if request.method == "GET":
         # debug = request.query_params.get('debug', False)
 
         # from des.astrometry_pipeline import DesAstrometryPipeline
@@ -35,16 +35,18 @@ def teste(request):
 
         check_jobs_to_run()
 
-        result = dict({
-            'success': True,
-        })
+        result = dict(
+            {
+                "success": True,
+            }
+        )
 
         return Response(result)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def teste2(request):
-    if request.method == 'GET':
+    if request.method == "GET":
 
         from des.astrometry_daemon import check_jobs_running
 
@@ -55,29 +57,33 @@ def teste2(request):
         # with gzip.open('/archive/des_astrometry/des_astrometry_1/Eris/Eris.json.gz', 'rt', encoding='UTF-8') as zipfile:
         #     result = json.load(zipfile)
 
-        result = dict({
-            'success': True,
-        })
+        result = dict(
+            {
+                "success": True,
+            }
+        )
 
         return Response(result)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def teste3(request):
-    if request.method == 'GET':
+    if request.method == "GET":
 
         from des.astrometry_pipeline import DesAstrometryPipeline
 
         DesAstrometryPipeline().update_asteroid_table()
 
-        result = dict({
-            'success': True,
-        })
+        result = dict(
+            {
+                "success": True,
+            }
+        )
 
         return Response(result)
 
 
-@ api_view(['GET'])
+@api_view(["GET"])
 def logout_view(request):
     logout(request)
 
@@ -88,11 +94,10 @@ def logout_view(request):
     return response
 
 
-@ api_view(['GET'])
+@api_view(["GET"])
 def import_skybot(request):
-    """
-    """
-    if request.method == 'GET':
+    """ """
+    if request.method == "GET":
 
         from tno.skybot import ImportSkybot
 
@@ -103,36 +108,41 @@ def import_skybot(request):
         # Funcão para registrar o Skybot output
         sk.register_skybot_output()
 
-        result = dict({
-            'success': True,
-        })
+        result = dict(
+            {
+                "success": True,
+            }
+        )
     return Response(result)
 
 
-@ api_view(['GET'])
+@api_view(["GET"])
 def read_file(request):
     """
     Function to read .log file
     A filepath parameter is obrigatory to display the file.
     """
-    if request.method == 'GET':
+    if request.method == "GET":
 
         # Recuperar o filepath do arquivo a ser lido dos parametros da url.
-        filepath = request.query_params.get('filepath', None)
+        filepath = request.query_params.get("filepath", None)
 
         # Verificar se o parametro nao esta vazio, se estiver retorna mensagem avisando.
-        if filepath == None or filepath == '':
-            return Response(dict({
-                'success': False,
-                'message': 'filepath parameter obrigatory'
-            }))
+        if filepath == None or filepath == "":
+            return Response(
+                dict({"success": False, "message": "filepath parameter obrigatory"})
+            )
 
         # Verificar se o arquivo existe, se nao existir retorna mensagem avisando.
         if not os.path.exists(filepath):
-            return Response(dict({
-                'success': False,
-                'message': 'filepath do not exist. (%s)' % filepath
-            }))
+            return Response(
+                dict(
+                    {
+                        "success": False,
+                        "message": "filepath do not exist. (%s)" % filepath,
+                    }
+                )
+            )
 
         # Ler o arquivo.
         try:
@@ -140,21 +150,29 @@ def read_file(request):
             with open(filepath) as fp:
                 lines = fp.readlines()
                 for line in lines:
-                    rows.append(line.replace('\n', '').strip())
+                    rows.append(line.replace("\n", "").strip())
 
-            return Response(dict({
-                'success': True,
-                'rows': rows,
-                'filepath': filepath,
-            }))
+            return Response(
+                dict(
+                    {
+                        "success": True,
+                        "rows": rows,
+                        "filepath": filepath,
+                    }
+                )
+            )
         except IOError as e:
-            return Response(dict({
-                'success': False,
-                'message': "I/O error({0}): {1}".format(e.errno, e.strerror)
-            }))
+            return Response(
+                dict(
+                    {
+                        "success": False,
+                        "message": "I/O error({0}): {1}".format(e.errno, e.strerror),
+                    }
+                )
+            )
 
 
-@ api_view(['GET'])
+@api_view(["GET"])
 def read_csv(request):
     """
     Function to read .csv file
@@ -166,34 +184,36 @@ def read_csv(request):
     for this exemple will be returned 5 rows for page 2.
 
     """
-    if request.method == 'GET':
+    if request.method == "GET":
 
         # Recuperar o filepath do arquivo a ser lido dos parametros da url.
-        filepath = request.query_params.get('filepath', None)
-        page = int(request.query_params.get('page', 1))
-        pageSize = int(request.query_params.get(
-            'pageSize', 100))
+        filepath = request.query_params.get("filepath", None)
+        page = int(request.query_params.get("page", 1))
+        pageSize = int(request.query_params.get("pageSize", 100))
 
         # Verificar se o parametro nao esta vazio, se estiver retorna mensagem avisando.
-        if filepath == None or filepath == '':
-            return Response(dict({
-                'success': False,
-                'message': 'filepath parameter obrigatory'
-            }))
+        if filepath == None or filepath == "":
+            return Response(
+                dict({"success": False, "message": "filepath parameter obrigatory"})
+            )
 
         # Verificar se o arquivo existe, se nao existir retorna mensagem avisando.
         if not os.path.exists(filepath):
-            return Response(dict({
-                'success': False,
-                'message': 'filepath do not exist. (%s)' % filepath
-            }))
+            return Response(
+                dict(
+                    {
+                        "success": False,
+                        "message": "filepath do not exist. (%s)" % filepath,
+                    }
+                )
+            )
             #    implementar paginacao na funcao csv
         if page == 1:
             skiprows = 1
         else:
             skiprows = (page * pageSize) - pageSize
 
-        df_temp = pd.read_csv(filepath, delimiter=';')
+        df_temp = pd.read_csv(filepath, delimiter=";")
         columns = list()
         for col in df_temp.columns:
             columns.append(col)
@@ -203,11 +223,8 @@ def read_csv(request):
 
         # Ler o arquivo.
         df = pd.read_csv(
-            filepath,
-            names=columns,
-            delimiter=';',
-            skiprows=skiprows,
-            nrows=pageSize)
+            filepath, names=columns, delimiter=";", skiprows=skiprows, nrows=pageSize
+        )
 
         df = df.fillna(0)
 
@@ -220,18 +237,20 @@ def read_csv(request):
 
             rows.append(row)
 
-        result = dict({
-            'success': True,
-            'filepath': filepath,
-            'columns': columns,
-            'rows': rows,
-            'count': count
-        })
+        result = dict(
+            {
+                "success": True,
+                "filepath": filepath,
+                "columns": columns,
+                "rows": rows,
+                "count": count,
+            }
+        )
 
     return Response(result)
 
 
-@ api_view(['GET'])
+@api_view(["GET"])
 def download_file(request):
     """
     Function to download a file and zip.
@@ -240,11 +259,11 @@ def download_file(request):
 
     When the file is bigger than 1Mb, the file is zipped.
     """
-    if request.method == 'GET':
+    if request.method == "GET":
         # Funcao para fazer download de um arquivo
 
         # Recuperar o filepath do arquivo a ser lido dos parametros da url.
-        filepath = request.query_params.get('filepath', None)
+        filepath = request.query_params.get("filepath", None)
 
         if not os.path.exists(filepath):
             raise Exception("File do not exist")
@@ -258,39 +277,43 @@ def download_file(request):
         if size > maxSize:
             # criar uma nova variavel com o path para o arquivo zip
             filename = os.path.basename(filepath)
-            filename = filename + '.zip'
+            filename = filename + ".zip"
             new_file = os.path.join(settings.MEDIA_TMP_DIR, filename)
 
             # Comprime o arquivo e retorna o arquivo comprimido
-            with zipfile.ZipFile(new_file, 'w') as myzip:
+            with zipfile.ZipFile(new_file, "w") as myzip:
                 myzip.write(filepath, compress_type=zipfile.ZIP_DEFLATED)
 
             # Retornar o arquivo zipado
-            with open(new_file, 'rb') as fh:
+            with open(new_file, "rb") as fh:
                 response = HttpResponse(
-                    fh.read(), content_type="application/octet-stream")
-                response['Content-Disposition'] = 'inline; filename=' + \
-                    os.path.basename(new_file)
+                    fh.read(), content_type="application/octet-stream"
+                )
+                response[
+                    "Content-Disposition"
+                ] = "inline; filename=" + os.path.basename(new_file)
                 return response
         else:
 
-            with open(filepath, 'rb') as fh:
+            with open(filepath, "rb") as fh:
                 response = HttpResponse(
-                    fh.read(), content_type="application/octet-stream")
-                response['Content-Disposition'] = 'inline; filename=' + \
-                    os.path.basename(filepath)
+                    fh.read(), content_type="application/octet-stream"
+                )
+                response[
+                    "Content-Disposition"
+                ] = "inline; filename=" + os.path.basename(filepath)
                 return response
 
 
-@ api_view(['GET'])
-@ permission_classes([AllowAny])
+@api_view(["GET"])
+@permission_classes([AllowAny])
 def auth_shibboleth(request):
 
-    logger = logging.getLogger('auth_shibboleth')
+    logger = logging.getLogger("auth_shibboleth")
     logger.info("---------------------------------------------------------")
     logger.info("Shibboleth Authentication Endpoint")
 
-    if request.method == 'GET':
+    if request.method == "GET":
         logger.debug(request.query_params)
 
         logger.debug("Is Authenticated: %s" % request.user.is_authenticated)
@@ -298,11 +321,11 @@ def auth_shibboleth(request):
         if not request.user.is_authenticated:
             try:
                 data = request.query_params
-                sid = data['sid']
+                sid = data["sid"]
                 logger.debug("Session ID: %s" % sid)
 
             except KeyError:
-                logger.error("Parameter \"sid\"  session id  is unknown.")
+                logger.error('Parameter "sid"  session id  is unknown.')
 
             # Fazer o parse do arquivo de sessao antes de chamar o authenticate
             try:
@@ -317,16 +340,16 @@ def auth_shibboleth(request):
                 # TODO: melhorar a checagem de authenticacao. verificar mais atributos como a origem por exemplo.
                 # Tenta autenticar o usuario com os dados da sessao
                 user = ShibbolethBackend().authenticate(
-                    request, session_data, username=None, password=None)
+                    request, session_data, username=None, password=None
+                )
 
                 # Setar o tempo de expiracao da sessao, necessario ser feito antes do login
                 # baseado nesta resposta https://stackoverflow.com/a/27062144/9063237
                 # a data de expiração está em Unix epoch time. conversor de epoch online util para testes: https://www.epochconverter.com/
-                request.session.expire_date = session_data.get(
-                    'Shib-Session-Expires')
+                request.session.expire_date = session_data.get("Shib-Session-Expires")
 
                 # Efetua o Login
-                login(request, user, backend='tno.auth_shibboleth.ShibbolethBackend')
+                login(request, user, backend="tno.auth_shibboleth.ShibbolethBackend")
 
             except Exception as e:
                 logger.error(e)
@@ -337,8 +360,7 @@ def auth_shibboleth(request):
             logger.info("User is already logged in does nothing.")
 
         # Just Checking if is authenticated
-        logger.info("Is Authenticated: %s" %
-                    request.user.is_authenticated)
+        logger.info("Is Authenticated: %s" % request.user.is_authenticated)
 
     # Redireciona para a home
     home = settings.HOST_URL

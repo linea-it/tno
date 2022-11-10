@@ -9,8 +9,24 @@ class DesSkybotPositionViewSet(viewsets.ModelViewSet):
 
     queryset = SkybotPosition.objects.select_related().all()
     serializer_class = SkybotPositionSerializer
-    filter_fields = ('id', 'position', 'exposure', 'ccd', 'ticket',)
-    ordering_fields = ('id', 'position__name', 'position__number',
-                       'position__dynclass', 'position__raj2000', 'position__decj2000', 'position__mv',)
-    ordering = ('id',)
-    search_fields = ('position__name', 'position__number',)
+    filter_fields = (
+        "id",
+        "position",
+        "exposure",
+        "ccd",
+        "ticket",
+    )
+    ordering_fields = (
+        "id",
+        "position__name",
+        "position__number",
+        "position__dynclass",
+        "position__raj2000",
+        "position__decj2000",
+        "position__mv",
+    )
+    ordering = ("id",)
+    search_fields = (
+        "position__name",
+        "position__number",
+    )

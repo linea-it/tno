@@ -11,7 +11,7 @@ class DownloadCcdJobResultDao(DBBase):
         super(DownloadCcdJobResultDao, self).__init__(pool)
 
         schema = self.get_base_schema()
-        self.tablename = 'des_downloadccdjobresult'
+        self.tablename = "des_downloadccdjobresult"
         self.tbl = self.get_table(self.tablename, schema)
 
     def get_tablename(self):
@@ -21,22 +21,22 @@ class DownloadCcdJobResultDao(DBBase):
         return self.tbl
 
     def create(self, record):
-        stm = self.tbl.insert().\
-            values(
-                job_id=record['job'],
-                ccd_id=record['ccd'],
-                start=record['start'],
-                finish=record['finish'],
-                execution_time=record['execution_time'],
-                file_size=record['file_size']
+        stm = self.tbl.insert().values(
+            job_id=record["job"],
+            ccd_id=record["ccd"],
+            start=record["start"],
+            finish=record["finish"],
+            execution_time=record["execution_time"],
+            file_size=record["file_size"],
         )
 
         return self.execute(stm)
 
     def count_by_job(self, job_id):
 
-        stm = select([func.count(self.tbl.c.id)]).\
-            where(and_(self.tbl.c.job_id == int(job_id)))
+        stm = select([func.count(self.tbl.c.id)]).where(
+            and_(self.tbl.c.job_id == int(job_id))
+        )
 
         self.debug_query(stm, True)
 
@@ -46,8 +46,9 @@ class DownloadCcdJobResultDao(DBBase):
 
     def file_size_by_job(self, job_id):
 
-        stm = select([func.sum(self.tbl.c.file_size)]).\
-            where(and_(self.tbl.c.job_id == int(job_id)))
+        stm = select([func.sum(self.tbl.c.file_size)]).where(
+            and_(self.tbl.c.job_id == int(job_id))
+        )
 
         self.debug_query(stm, True)
 
@@ -57,8 +58,9 @@ class DownloadCcdJobResultDao(DBBase):
 
     def execution_time_by_job(self, job_id):
 
-        stm = select([func.sum(self.tbl.c.execution_time)]).\
-            where(and_(self.tbl.c.job_id == int(job_id)))
+        stm = select([func.sum(self.tbl.c.execution_time)]).where(
+            and_(self.tbl.c.job_id == int(job_id))
+        )
 
         self.debug_query(stm, True)
 
@@ -68,11 +70,13 @@ class DownloadCcdJobResultDao(DBBase):
 
     def download_estimate(self):
 
-        stm = select([
-            func.sum(self.tbl.c.execution_time).label('t_exec_time'),
-            func.sum(self.tbl.c.file_size).label('t_file_size'),
-            func.count(self.tbl.c.id).label('total'),
-        ])
+        stm = select(
+            [
+                func.sum(self.tbl.c.execution_time).label("t_exec_time"),
+                func.sum(self.tbl.c.file_size).label("t_file_size"),
+                func.count(self.tbl.c.id).label("total"),
+            ]
+        )
 
         self.debug_query(stm, True)
 

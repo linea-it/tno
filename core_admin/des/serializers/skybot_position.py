@@ -7,16 +7,17 @@ from skybot.models import Position
 class SkybotPositionSerializer(serializers.ModelSerializer):
 
     position = serializers.PrimaryKeyRelatedField(
-        queryset=Position.objects.all(), many=False)
+        queryset=Position.objects.all(), many=False
+    )
 
     exposure = serializers.PrimaryKeyRelatedField(
-        queryset=Exposure.objects.all(), many=False)
+        queryset=Exposure.objects.all(), many=False
+    )
 
     expnum = serializers.SerializerMethodField()
     band = serializers.SerializerMethodField()
 
-    ccd = serializers.PrimaryKeyRelatedField(
-        queryset=Ccd.objects.all(), many=False)
+    ccd = serializers.PrimaryKeyRelatedField(queryset=Ccd.objects.all(), many=False)
 
     ccdnum = serializers.SerializerMethodField()
 
@@ -48,37 +49,37 @@ class SkybotPositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = SkybotPosition
         fields = (
-            'id',
-            'position',
-            'exposure',
-            'expnum',
-            'band',            
-            'ccd',
-            'ccdnum',
-            'number',
-            'name',
-            'dynclass',
-            'ra',
-            'dec',
-            'raj2000',
-            'decj2000',
-            'mv',
-            'errpos',
-            'd',
-            'dracosdec',
-            'ddec',
-            'dgeo',
-            'dhelio',
-            'phase',
-            'solelong',
-            'px',
-            'py',
-            'pz',
-            'vx',
-            'vy',
-            'vz',
-            'jdref',
-            'ticket',
+            "id",
+            "position",
+            "exposure",
+            "expnum",
+            "band",
+            "ccd",
+            "ccdnum",
+            "number",
+            "name",
+            "dynclass",
+            "ra",
+            "dec",
+            "raj2000",
+            "decj2000",
+            "mv",
+            "errpos",
+            "d",
+            "dracosdec",
+            "ddec",
+            "dgeo",
+            "dhelio",
+            "phase",
+            "solelong",
+            "px",
+            "py",
+            "pz",
+            "vx",
+            "vy",
+            "vz",
+            "jdref",
+            "ticket",
         )
 
     def get_expnum(self, obj):

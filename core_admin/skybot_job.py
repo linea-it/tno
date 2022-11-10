@@ -4,12 +4,13 @@ from sqlalchemy.sql import and_, select
 from tno.db import DBBase
 from datetime import datetime
 
+
 class DesSkybotJobDao(DBBase):
     def __init__(self, pool=True):
         super(DesSkybotJobDao, self).__init__(pool)
 
         schema = self.get_base_schema()
-        self.tablename = 'des_skybotjob'
+        self.tablename = "des_skybotjob"
         self.tbl = self.get_table(self.tablename, schema)
 
     def get_tablename(self):
@@ -38,34 +39,41 @@ class DesSkybotJobDao(DBBase):
         Returns:
             [array] -- Um Array com os jobs, tem a mesma estrutura do Model des/SkybotJob
         """
-        stm = select(self.tbl.c).where(and_(self.tbl.c.status ==
-                                            int(status))).order_by(desc(self.tbl.c.start))
+        stm = (
+            select(self.tbl.c)
+            .where(and_(self.tbl.c.status == int(status)))
+            .order_by(desc(self.tbl.c.start))
+        )
 
         rows = self.fetch_all_dict(stm)
 
         return rows
 
     def update_by_id(self, id, job):
-        stm = self.tbl.update().\
-            where(self.tbl.c.id == int(id)).\
-            values(
-                status=job['status'],
-                exposures=job['exposures'],
-                path=job['path'],
-                results=job['results'],
+        stm = (
+            self.tbl.update()
+            .where(self.tbl.c.id == int(id))
+            .values(
+                status=job["status"],
+                exposures=job["exposures"],
+                path=job["path"],
+                results=job["results"],
+            )
         )
 
         return self.execute(stm)
 
     def complete_job(self, id, job):
-        stm = self.tbl.update().\
-            where(self.tbl.c.id == int(id)).\
-            values(
-                status=job['status'],
+        stm = (
+            self.tbl.update()
+            .where(self.tbl.c.id == int(id))
+            .values(
+                status=job["status"],
                 # finish=job['finish'].strftime('%Y-%m-%d %H:%M:%S'),
-                finish=job['finish'],
-                execution_time=job['execution_time'],
-                error=job['error']
+                finish=job["finish"],
+                execution_time=job["execution_time"],
+                error=job["error"],
+            )
         )
 
         return self.execute(stm)

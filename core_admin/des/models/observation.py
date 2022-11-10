@@ -7,15 +7,16 @@ from tno.models import Asteroid
 
 class Observation(models.Model):
     """
-        Representa as Observações para os asteroids que estão dentro de algum CCD do DES,
-        depois de processado pelo pipeline Des Astrometry (Orbit Trace)
+    Representa as Observações para os asteroids que estão dentro de algum CCD do DES,
+    depois de processado pelo pipeline Des Astrometry (Orbit Trace)
     """
+
     # Ligação com a tabela de tno.asteroids.
     # Associa a observação a um asteroid.
     asteroid = models.ForeignKey(
         Asteroid,
         on_delete=models.CASCADE,
-        verbose_name='Asteroid',
+        verbose_name="Asteroid",
     )
 
     # Ligação com a tabela de apontamentos.
@@ -25,57 +26,48 @@ class Observation(models.Model):
     ccd = models.ForeignKey(
         Ccd,
         on_delete=models.CASCADE,
-        verbose_name='CCD',
-        help_text='Field that identifies an CCD in the DES CCD table. represents desfile_id'
+        verbose_name="CCD",
+        help_text="Field that identifies an CCD in the DES CCD table. represents desfile_id",
     )
 
     name = models.CharField(
         max_length=32,
-        verbose_name='Name',
+        verbose_name="Name",
         db_index=True,
-        help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).'
+        help_text="(ucd=“meta.id;meta.main”) Object name (official or provisional designation).",
     )
 
     date_obs = models.DateTimeField(
-        verbose_name='Observation Date',
+        verbose_name="Observation Date",
         db_index=True,
-        help_text='Date and time of observation already applied the DES correction.'
+        help_text="Date and time of observation already applied the DES correction.",
     )
 
     date_jd = models.CharField(
-        verbose_name='Observation Date (JD)',
+        verbose_name="Observation Date (JD)",
         max_length=50,
-        help_text='Date and time of observation in Julian date already applied the DES correction.'
+        help_text="Date and time of observation in Julian date already applied the DES correction.",
     )
 
     ra = models.FloatField(
-        verbose_name='RA (deg)',
+        verbose_name="RA (deg)",
     )
-    dec = models.FloatField(
-        verbose_name='Dec (deg)'
-    )
+    dec = models.FloatField(verbose_name="Dec (deg)")
 
-    offset_ra = models.FloatField(
-        verbose_name='Offset RA (deg)'
-    )
+    offset_ra = models.FloatField(verbose_name="Offset RA (deg)")
 
-    offset_dec = models.FloatField(
-        verbose_name='Offset Dec (deg)'
-    )
+    offset_dec = models.FloatField(verbose_name="Offset Dec (deg)")
 
-    mag_psf = models.FloatField(
-        verbose_name='Mag PSF',
-        null=True, blank=True
-    )
+    mag_psf = models.FloatField(verbose_name="Mag PSF", null=True, blank=True)
 
-    mag_psf_err = models.FloatField(
-        verbose_name='Mag PSF Error',
-        null=True, blank=True
-    )
+    mag_psf_err = models.FloatField(verbose_name="Mag PSF Error", null=True, blank=True)
 
     class Meta:
         # A mesma posição não pode se repetir em um mesmo ccd para um mesmo asteroid.
-        unique_together = ('asteroid', 'ccd',)
+        unique_together = (
+            "asteroid",
+            "ccd",
+        )
 
     def __str__(self):
         return str(self.id)

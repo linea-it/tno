@@ -1,7 +1,5 @@
 #!/bin/sh
 
-cd $APP_PATH
-
 YELLOW='\033[00;33m'
 NO_COLOR='\033[0m'
 

@@ -6,13 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('skybot', '0004_auto_20200629_2218'),
+        ("skybot", "0004_auto_20200629_2218"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='position',
-            name='base_dynclass',
-            field=models.CharField(blank=True, default=None, help_text='(ucd=“meta.code.class”) Base Object class (TNO, Centaur, Trojan, etc.).', max_length=24, null=True, verbose_name='Base Object classification'),
+            model_name="position",
+            name="base_dynclass",
+            field=models.CharField(
+                blank=True,
+                default=None,
+                help_text="(ucd=“meta.code.class”) Base Object class (TNO, Centaur, Trojan, etc.).",
+                max_length=24,
+                null=True,
+                verbose_name="Base Object classification",
+            ),
         ),
     ]

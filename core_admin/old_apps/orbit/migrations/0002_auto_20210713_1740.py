@@ -6,45 +6,45 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orbit', '0001_initial'),
+        ("orbit", "0001_initial"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='BspJplFile',
+            name="BspJplFile",
         ),
         migrations.DeleteModel(
-            name='ObservationFile',
+            name="ObservationFile",
         ),
         migrations.DeleteModel(
-            name='OrbitalParameterFile',
+            name="OrbitalParameterFile",
         ),
         migrations.AlterUniqueTogether(
-            name='refinedasteroid',
+            name="refinedasteroid",
             unique_together=None,
         ),
         migrations.RemoveField(
-            model_name='refinedasteroid',
-            name='orbit_run',
+            model_name="refinedasteroid",
+            name="orbit_run",
         ),
         migrations.RemoveField(
-            model_name='refinedorbit',
-            name='asteroid',
+            model_name="refinedorbit",
+            name="asteroid",
         ),
         migrations.RemoveField(
-            model_name='refinedorbitinput',
-            name='asteroid',
+            model_name="refinedorbitinput",
+            name="asteroid",
         ),
         migrations.DeleteModel(
-            name='OrbitRun',
+            name="OrbitRun",
         ),
         migrations.DeleteModel(
-            name='RefinedAsteroid',
+            name="RefinedAsteroid",
         ),
         migrations.DeleteModel(
-            name='RefinedOrbit',
+            name="RefinedOrbit",
         ),
         migrations.DeleteModel(
-            name='RefinedOrbitInput',
+            name="RefinedOrbitInput",
         ),
     ]
