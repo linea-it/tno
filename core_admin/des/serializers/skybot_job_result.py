@@ -19,6 +19,8 @@ class SkybotJobResultSerializer(serializers.ModelSerializer):
 
     date_obs = serializers.SerializerMethodField()
 
+    ccds = serializers.SerializerMethodField()
+
     class Meta:
         model = SkybotJobResult
         fields = (
@@ -29,6 +31,7 @@ class SkybotJobResultSerializer(serializers.ModelSerializer):
             "success",
             "error",
             "execution_time",
+            "ccds",
             "ccds_with_asteroids",
             "positions",
             "inside_ccd",
@@ -55,3 +58,9 @@ class SkybotJobResultSerializer(serializers.ModelSerializer):
             return obj.exposure.date_obs
         except:
             return None
+
+    def get_ccds(self, obj):
+        try:
+            return obj.exposure.ccd_set.count()
+        except:
+            return 0

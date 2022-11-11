@@ -293,12 +293,7 @@ function SkybotAsteroid({ setTitle }) {
   }, []);
 
   useEffect(() => {
-    if (
-      'ccds' in ccdsPlotData &&
-      'asteroidsInside' in ccdsPlotData &&
-      'asteroidsOutside' in ccdsPlotData &&
-      skybotResult.exposure !== 0
-    ) {
+    if (skybotResult.exposure !== 0) {
       setSummary([
         {
           title: 'Exposure',
@@ -310,35 +305,33 @@ function SkybotAsteroid({ setTitle }) {
         },
         {
           title: '# CCDs',
-          value: ccdsPlotData.ccds.length,
+          value: skybotResult.ccds,
         },
         {
           title: '# SSOs',
-          value:
-            ccdsPlotData.asteroidsInside.x.length +
-            ccdsPlotData.asteroidsOutside.x.length,
+          value: skybotResult.positions,
         },
         {
           title: '# SSOs Inside',
-          value: ccdsPlotData.asteroidsInside.x.length,
+          value: skybotResult.inside_ccd,
         },
         {
           title: '# SSOs Outside',
-          value: ccdsPlotData.asteroidsOutside.x.length,
+          value: skybotResult.outside_ccd,
         },
         {
           title: '# CCDs With SSOs',
-          value: ccdsWithAsteroids || '-',
+          value: skybotResult.ccds_with_asteroids || '-',
         },
         {
           title: '# CCDs Without SSOs',
-          value: ccdsWithAsteroids
-            ? ccdsPlotData.ccds.length - ccdsWithAsteroids
+          value: skybotResult.ccds
+            ? skybotResult.ccds - skybotResult.ccds_with_asteroids
             : '-',
         },
       ]);
     }
-  }, [ccdsPlotData, skybotResult, ccdsWithAsteroids]);
+  }, [skybotResult]);
 
   const summaryClassColumns = [
     {
