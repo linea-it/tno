@@ -1,6 +1,12 @@
 from rest_framework import serializers
 import humanize
-from .models import Run, Configuration, AstrometryAsteroid, AstrometryInput, AstrometryOutput
+from .models import (
+    Run,
+    Configuration,
+    AstrometryAsteroid,
+    AstrometryInput,
+    AstrometryOutput,
+)
 from tno.models import CustomList, Proccess, Catalog
 from django.utils import timezone
 import os
@@ -10,13 +16,16 @@ class RunSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
 
     configuration = serializers.PrimaryKeyRelatedField(
-        queryset=Configuration.objects.all(), many=False)
+        queryset=Configuration.objects.all(), many=False
+    )
 
     input_list = serializers.PrimaryKeyRelatedField(
-        queryset=CustomList.objects.all(), many=False)
+        queryset=CustomList.objects.all(), many=False
+    )
 
     catalog = serializers.PrimaryKeyRelatedField(
-        queryset=Catalog.objects.all(), many=False)
+        queryset=Catalog.objects.all(), many=False
+    )
 
     catalog_name = serializers.SerializerMethodField()
 
@@ -29,7 +38,8 @@ class RunSerializer(serializers.ModelSerializer):
     input_displayname = serializers.SerializerMethodField()
 
     proccess = serializers.PrimaryKeyRelatedField(
-        queryset=Proccess.objects.all(), many=False, required=False)
+        queryset=Proccess.objects.all(), many=False, required=False
+    )
 
     proccess_displayname = serializers.SerializerMethodField()
 
@@ -40,28 +50,28 @@ class RunSerializer(serializers.ModelSerializer):
     class Meta:
         model = Run
         fields = (
-            'id',
-            'owner',
-            'start_time',
-            'finish_time',
-            'execution_time',
-            'configuration',
-            'catalog',
-            'catalog_name',
-            'input_list',
-            'count_objects',
-            'status',
-            'h_execution_time',
-            'h_time',
-            'configuration_displayname',
-            'input_displayname',
-            'proccess',
-            'proccess_displayname',
-            'count_success',
-            'count_failed',
-            'count_warning',
-            'count_not_executed',
-            'step'
+            "id",
+            "owner",
+            "start_time",
+            "finish_time",
+            "execution_time",
+            "configuration",
+            "catalog",
+            "catalog_name",
+            "input_list",
+            "count_objects",
+            "status",
+            "h_execution_time",
+            "h_time",
+            "configuration_displayname",
+            "input_displayname",
+            "proccess",
+            "proccess_displayname",
+            "count_success",
+            "count_failed",
+            "count_warning",
+            "count_not_executed",
+            "step",
         )
 
     def get_owner(self, obj):
@@ -96,13 +106,13 @@ class RunSerializer(serializers.ModelSerializer):
 
     def get_start_time(self, obj):
         try:
-            return obj.start_time.strftime('%Y-%m-%d %H:%M:%S')
+            return obj.start_time.strftime("%Y-%m-%d %H:%M:%S")
         except:
             return None
 
     def get_finish_time(self, obj):
         try:
-            return obj.finish_time.strftime('%Y-%m-%d %H:%M:%S')
+            return obj.finish_time.strftime("%Y-%m-%d %H:%M:%S")
         except:
             return None
 
@@ -132,10 +142,10 @@ class ConfigurationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Configuration
         fields = (
-            'id',
-            'owner',
-            'creation_date',
-            'displayname',
+            "id",
+            "owner",
+            "creation_date",
+            "displayname",
         )
 
     def get_owner(self, obj):
@@ -148,7 +158,8 @@ class ConfigurationSerializer(serializers.ModelSerializer):
 class AstrometryAsteroidSerializer(serializers.ModelSerializer):
 
     astrometry_run = serializers.PrimaryKeyRelatedField(
-        queryset=Run.objects.all(), many=False)
+        queryset=Run.objects.all(), many=False
+    )
 
     proccess_displayname = serializers.SerializerMethodField()
 
@@ -165,38 +176,41 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
     class Meta:
         model = AstrometryAsteroid
         fields = (
-            'id',
-            'astrometry_run',
-            'proccess_displayname',
-            'name',
-            'number',
-            'status',
-            'error_msg',
-            'ccd_images',
-            'available_ccd_image',
-            'processed_ccd_image',
-            'catalog_rows',
-            'outputs',
-            'execution_time',
-            'catalog_name',
-            'h_execution_time',
-            'astrometry_log',
-            'condor_out_log',
-            'condor_err_log',
-            'condor_log',
-            'execution_ccd_list',
-            'execution_bsp_jpl',
-            'execution_reference_catalog',
-            'execution_header',
-            'execution_astrometry',
-            'execution_targets',
-            'execution_plots',
-            'execution_registry'
+            "id",
+            "astrometry_run",
+            "proccess_displayname",
+            "name",
+            "number",
+            "status",
+            "error_msg",
+            "ccd_images",
+            "available_ccd_image",
+            "processed_ccd_image",
+            "catalog_rows",
+            "outputs",
+            "execution_time",
+            "catalog_name",
+            "h_execution_time",
+            "astrometry_log",
+            "condor_out_log",
+            "condor_err_log",
+            "condor_log",
+            "execution_ccd_list",
+            "execution_bsp_jpl",
+            "execution_reference_catalog",
+            "execution_header",
+            "execution_astrometry",
+            "execution_targets",
+            "execution_plots",
+            "execution_registry",
         )
 
     def get_proccess_displayname(self, obj):
         try:
-            return "%s - %s" % (obj.astrometry_run.proccess.id, obj.astrometry_run.input_list.displayname)
+            return "%s - %s" % (
+                obj.astrometry_run.proccess.id,
+                obj.astrometry_run.input_list.displayname,
+            )
         except:
             return None
 
@@ -215,7 +229,7 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
 
     def get_astrometry_log(self, obj):
         try:
-            log = os.path.join(obj.relative_path, 'astrometry.log')
+            log = os.path.join(obj.relative_path, "astrometry.log")
             if os.path.exists(log):
                 return log
             else:
@@ -225,7 +239,7 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
 
     def get_condor_out_log(self, obj):
         try:
-            log = os.path.join(obj.condor_relative_path, 'astrometry.out')
+            log = os.path.join(obj.condor_relative_path, "astrometry.out")
             if os.path.exists(log):
                 return log
             else:
@@ -235,7 +249,7 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
 
     def get_condor_err_log(self, obj):
         try:
-            log = os.path.join(obj.condor_relative_path, 'astrometry.err')
+            log = os.path.join(obj.condor_relative_path, "astrometry.err")
             if os.path.exists(log):
                 return log
             else:
@@ -245,7 +259,7 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
 
     def get_condor_log(self, obj):
         try:
-            log = os.path.join(obj.condor_relative_path, 'astrometry.log')
+            log = os.path.join(obj.condor_relative_path, "astrometry.log")
             if os.path.exists(log):
                 return log
             else:
@@ -257,7 +271,8 @@ class AstrometryAsteroidSerializer(serializers.ModelSerializer):
 class AstrometryInputSerializer(serializers.ModelSerializer):
 
     asteroid = serializers.PrimaryKeyRelatedField(
-        queryset=AstrometryAsteroid.objects.all(), many=False)
+        queryset=AstrometryAsteroid.objects.all(), many=False
+    )
 
     h_file_size = serializers.SerializerMethodField()
 
@@ -268,16 +283,16 @@ class AstrometryInputSerializer(serializers.ModelSerializer):
     class Meta:
         model = AstrometryInput
         fields = (
-            'id',
-            'asteroid',
-            'input_type',
-            'type_name',
-            'filename',
-            'file_size',
-            'file_type',
-            'file_path',
-            'h_file_size',
-            'execution_time',
+            "id",
+            "asteroid",
+            "input_type",
+            "type_name",
+            "filename",
+            "file_size",
+            "file_type",
+            "file_path",
+            "h_file_size",
+            "execution_time",
         )
 
     def get_h_file_size(self, obj):
@@ -299,23 +314,24 @@ class AstrometryInputSerializer(serializers.ModelSerializer):
 class AstrometryOutputSerializer(serializers.ModelSerializer):
 
     asteroid = serializers.PrimaryKeyRelatedField(
-        queryset=AstrometryAsteroid.objects.all(), many=False)
+        queryset=AstrometryAsteroid.objects.all(), many=False
+    )
 
     type_name = serializers.SerializerMethodField()
 
     class Meta:
         model = AstrometryOutput
         fields = (
-            'id',
-            'asteroid',
-            'type',
-            'type_name',
-            'catalog',
-            'ccd_image',
-            'filename',
-            'file_size',
-            'file_type',
-            'file_path',
+            "id",
+            "asteroid",
+            "type",
+            "type_name",
+            "catalog",
+            "ccd_image",
+            "filename",
+            "file_size",
+            "file_type",
+            "file_path",
         )
 
     def get_type_name(self, obj):

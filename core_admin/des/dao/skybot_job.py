@@ -10,7 +10,7 @@ class DesSkybotJobDao(DBBase):
         super(DesSkybotJobDao, self).__init__(pool)
 
         schema = self.get_base_schema()
-        self.tablename = 'des_skybotjob'
+        self.tablename = "des_skybotjob"
         self.tbl = self.get_table(self.tablename, schema)
 
     def get_tablename(self):
@@ -39,38 +39,45 @@ class DesSkybotJobDao(DBBase):
         Returns:
             [array] -- Um Array com os jobs, tem a mesma estrutura do Model des/SkybotJob
         """
-        stm = select(self.tbl.c).where(and_(self.tbl.c.status ==
-                                            int(status))).order_by(self.tbl.c.start)
+        stm = (
+            select(self.tbl.c)
+            .where(and_(self.tbl.c.status == int(status)))
+            .order_by(self.tbl.c.start)
+        )
 
         rows = self.fetch_all_dict(stm)
 
         return rows
 
     def update_by_id(self, id, job):
-        stm = self.tbl.update().\
-            where(self.tbl.c.id == int(id)).\
-            values(
-                status=job['status'],
-                exposures=job['exposures'],
-                positions=job['positions'],
-                asteroids=job['asteroids'],
-                exposures_with_asteroid=job['exposures_with_asteroid'],
-                ccds_with_asteroid=job['ccds_with_asteroid'],
-                path=job['path'],
-                results=job['results'],
+        stm = (
+            self.tbl.update()
+            .where(self.tbl.c.id == int(id))
+            .values(
+                status=job["status"],
+                exposures=job["exposures"],
+                positions=job["positions"],
+                asteroids=job["asteroids"],
+                exposures_with_asteroid=job["exposures_with_asteroid"],
+                ccds_with_asteroid=job["ccds_with_asteroid"],
+                path=job["path"],
+                results=job["results"],
+            )
         )
 
         return self.execute(stm)
 
     def complete_job(self, id, job):
-        stm = self.tbl.update().\
-            where(self.tbl.c.id == int(id)).\
-            values(
-                status=job['status'],
+        stm = (
+            self.tbl.update()
+            .where(self.tbl.c.id == int(id))
+            .values(
+                status=job["status"],
                 # finish=job['finish'].strftime('%Y-%m-%d %H:%M:%S'),
-                finish=job['finish'],
-                execution_time=job['execution_time'],
-                error=job['error']
+                finish=job["finish"],
+                execution_time=job["execution_time"],
+                error=job["error"],
+            )
         )
 
         return self.execute(stm)

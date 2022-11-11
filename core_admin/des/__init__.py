@@ -1,1 +1,1 @@
-default_app_config = 'des.apps.DesConfig'
+default_app_config = "des.apps.DesConfig"

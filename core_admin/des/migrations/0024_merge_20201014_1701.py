@@ -6,9 +6,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0023_skybotjobresult_error'),
-        ('des', '0020_auto_20200930_1532'),
+        ("des", "0023_skybotjobresult_error"),
+        ("des", "0020_auto_20200930_1532"),
     ]
 
-    operations = [
-    ]
+    operations = []

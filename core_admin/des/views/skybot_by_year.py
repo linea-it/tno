@@ -9,7 +9,15 @@ class SkybotByYearViewSet(viewsets.ModelViewSet):
     queryset = SkybotByYear.objects.all()
     serializer_class = SkybotByYearSerializer
     ordering_fields = ()
-    ordering = ('year',)
-    filter_fields = ('id', 'year', 'nights', 'exposures', 'ccds',
-                     'nights_analyzed', 'exposures_analyzed', 'ccds_analyzed',)
-    search_fields = ('year',)
+    ordering = ("year",)
+    filter_fields = (
+        "id",
+        "year",
+        "nights",
+        "exposures",
+        "ccds",
+        "nights_analyzed",
+        "exposures_analyzed",
+        "ccds_analyzed",
+    )
+    search_fields = ("year",)

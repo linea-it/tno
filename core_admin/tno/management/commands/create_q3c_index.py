@@ -6,20 +6,20 @@ from tno.models import Occultation
 
 
 class Command(BaseCommand):
-    help = 'Table preparation for Q3C.'
+    help = "Table preparation for Q3C."
 
     def add_arguments(self, parser):
         # Named (optional) arguments
         parser.add_argument(
-            '--table',
+            "--table",
             # action='store_true',
-            help='Create index only for this table',
+            help="Create index only for this table",
         )
 
     def handle(self, *args, **options):
 
-        if options['table']:
-            if options['table'] == "occultation":
+        if options["table"]:
+            if options["table"] == "occultation":
                 # Criar index para tabela tno/occultation
                 self.create_index_occultation()
 
@@ -44,7 +44,7 @@ class Command(BaseCommand):
             self.stdout.write("Done!")
 
     def clear_all_q3c_index(self):
-        """Apaga todos os index de q3c que tenham sido criado usando por esta classe. 
+        """Apaga todos os index de q3c que tenham sido criado usando por esta classe.
         usa o suffixo da get_indes_name como condição.
         """
         with connection.cursor() as cursor:
@@ -69,7 +69,9 @@ class Command(BaseCommand):
             self.stdout.write("Q3C Table Preparation for [ %s ]" % tbl)
 
             cursor.execute(
-                "CREATE INDEX %s ON %s (q3c_ang2ipix(raj2000, decj2000))" % (idx_name, tbl))
+                "CREATE INDEX %s ON %s (q3c_ang2ipix(raj2000, decj2000))"
+                % (idx_name, tbl)
+            )
 
             cursor.execute("CLUSTER %s ON %s" % (idx_name, tbl))
 
@@ -87,7 +89,8 @@ class Command(BaseCommand):
             self.stdout.write("Q3C Table Preparation for [ %s ]" % tbl)
 
             cursor.execute(
-                "CREATE INDEX %s ON %s (q3c_ang2ipix(radeg, decdeg))" % (idx_name, tbl))
+                "CREATE INDEX %s ON %s (q3c_ang2ipix(radeg, decdeg))" % (idx_name, tbl)
+            )
 
             cursor.execute("CLUSTER %s ON %s" % (idx_name, tbl))
 
@@ -105,7 +108,9 @@ class Command(BaseCommand):
             self.stdout.write("Q3C Table Preparation for [ %s ]" % tbl)
 
             cursor.execute(
-                "CREATE INDEX %s ON %s (q3c_ang2ipix(ra_cent, dec_cent))" % (idx_name, tbl))
+                "CREATE INDEX %s ON %s (q3c_ang2ipix(ra_cent, dec_cent))"
+                % (idx_name, tbl)
+            )
 
             cursor.execute("CLUSTER %s ON %s" % (idx_name, tbl))
 
@@ -125,12 +130,16 @@ class Command(BaseCommand):
             self.stdout.write("Q3C Table Preparation for [ %s ]" % tbl)
 
             cursor.execute(
-                "CREATE INDEX %s ON %s (q3c_ang2ipix(ra_star_deg, dec_star_deg))" % (idx_name, tbl))
+                "CREATE INDEX %s ON %s (q3c_ang2ipix(ra_star_deg, dec_star_deg))"
+                % (idx_name, tbl)
+            )
 
             cursor.execute("CLUSTER %s ON %s" % (idx_name, tbl))
 
             cursor.execute(
-                "CREATE INDEX %s ON %s (q3c_ang2ipix(ra_target_deg, dec_target_deg))" % (idx_name_1, tbl))
+                "CREATE INDEX %s ON %s (q3c_ang2ipix(ra_target_deg, dec_target_deg))"
+                % (idx_name_1, tbl)
+            )
             cursor.execute("CLUSTER %s ON %s" % (idx_name_1, tbl))
 
             cursor.execute("ANALYZE %s" % tbl)

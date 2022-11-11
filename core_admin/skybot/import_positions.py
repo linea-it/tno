@@ -51,7 +51,6 @@ class ImportSkybotPositions:
                 msg = "Skybot returned Error Flag -1 for Ticket: [ %s ]" % ticket
                 raise Exception(msg)
 
-
             t1 = datetime.now(timezone.utc)
             tdelta = t1 - t0
 
@@ -98,9 +97,7 @@ class ImportSkybotPositions:
         df = pd.read_csv(filepath, skiprows=3, delimiter="|", names=headers)
 
         # Tratar o campo num para retirar os caracteres -
-        df["number"] = df["number"].apply(
-            lambda x: x if str(x).strip() is not "-" else ""
-        )
+        df["number"] = df["number"].apply(lambda x: x if str(x).strip() != "-" else "")
 
         # Adiciona colunas para RA e Dec em graus.
         df["raj2000"] = 0

@@ -1,1 +1,1 @@
-default_app_config = 'orbit.apps.OrbitConfig'
+default_app_config = "orbit.apps.OrbitConfig"

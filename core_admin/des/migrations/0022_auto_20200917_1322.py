@@ -6,13 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0021_remove_skybotjob_exposures_analyzed'),
+        ("des", "0021_remove_skybotjob_exposures_analyzed"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='skybotjob',
-            name='status',
-            field=models.IntegerField(choices=[(1, 'Idle'), (2, 'Running'), (3, 'Completed'), (4, 'Failed'), (5, 'Aborted'), (6, 'Warning')], default=1, verbose_name='Status'),
+            model_name="skybotjob",
+            name="status",
+            field=models.IntegerField(
+                choices=[
+                    (1, "Idle"),
+                    (2, "Running"),
+                    (3, "Completed"),
+                    (4, "Failed"),
+                    (5, "Aborted"),
+                    (6, "Warning"),
+                ],
+                default=1,
+                verbose_name="Status",
+            ),
         ),
     ]

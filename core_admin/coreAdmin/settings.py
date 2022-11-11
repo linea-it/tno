@@ -25,7 +25,7 @@ from django_auth_ldap.config import LDAPSearch
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Diretorio com scripts externos.
-BIN_DIR = os.path.join(BASE_DIR, 'bin')
+BIN_DIR = os.path.join(BASE_DIR, "bin")
 
 # PROJECT PATHS
 # estes diretorios estao montados no container utilizando variaveis de ambiente, mas para o container sempre vao ser
@@ -37,12 +37,12 @@ DES_CCD_CATALOGS_DIR = "/archive/des/public/catalogs/"
 
 # Sub diretorios que ficam dentro de /archive
 
-SKYBOT_ROOT = 'skybot_output'
+SKYBOT_ROOT = "skybot_output"
 SKYBOT_OUTPUT = os.path.join(ARCHIVE_DIR, SKYBOT_ROOT)
 if not os.path.exists(SKYBOT_OUTPUT):
     os.mkdir(SKYBOT_OUTPUT)
 
-DES_ASTROMETRY_ROOT = 'des_astrometry'
+DES_ASTROMETRY_ROOT = "des_astrometry"
 DES_ASTROMETRY_OUTPUT = os.path.join(ARCHIVE_DIR, DES_ASTROMETRY_ROOT)
 if not os.path.exists(DES_ASTROMETRY_OUTPUT):
     os.mkdir(DES_ASTROMETRY_OUTPUT)
@@ -61,17 +61,17 @@ if not os.path.exists(DES_ASTROMETRY_OUTPUT):
 #     os.mkdir(BSP_JPL_DIR)
 
 
-LEAP_ROOT = 'leap_seconds'
+LEAP_ROOT = "leap_seconds"
 LEAP_SECONDS = os.path.join(ARCHIVE_DIR, LEAP_ROOT)
 if not os.path.exists(LEAP_SECONDS):
     os.mkdir(LEAP_SECONDS)
 
-BSP_PLA_ROOT = 'bsp_planetary'
+BSP_PLA_ROOT = "bsp_planetary"
 BSP_PLANETARY = os.path.join(ARCHIVE_DIR, BSP_PLA_ROOT)
 if not os.path.exists(BSP_PLANETARY):
     os.mkdir(BSP_PLANETARY)
 
-JHONSTONS_ARCHIVE_ROOT = 'jhonstons_archive'
+JHONSTONS_ARCHIVE_ROOT = "jhonstons_archive"
 JHONSTONS_ARCHIVE = os.path.join(ARCHIVE_DIR, JHONSTONS_ARCHIVE_ROOT)
 if not os.path.exists(JHONSTONS_ARCHIVE):
     os.mkdir(JHONSTONS_ARCHIVE)
@@ -83,140 +83,137 @@ if not os.path.exists(JHONSTONS_ARCHIVE):
 #     os.chmod(ASTROMETRY_POSITIONS_DIR, 0o775)
 
 MEDIA_ROOT = ARCHIVE_DIR
-MEDIA_URL = '/media/'
+MEDIA_URL = "/media/"
 
 MEDIA_TMP_DIR = os.path.join(MEDIA_ROOT, "tmp")
 if not os.path.exists(MEDIA_TMP_DIR):
     os.mkdir(MEDIA_TMP_DIR)
 
-MEDIA_TMP_URL = urllib.parse.urljoin(MEDIA_URL, 'tmp/')
+MEDIA_TMP_URL = urllib.parse.urljoin(MEDIA_URL, "tmp/")
 
 
-ENVIRONMENT_NAME = os.environ.get('ENVIRONMENT_NAME', 'Development')
+ENVIRONMENT_NAME = os.environ.get("ENVIRONMENT_NAME", "Development")
 
 # Emails
 # Notifications Email
-EMAIL_NOTIFICATION = os.environ.get(
-    'EMAIL_NOTIFICATION', 'sso-portal@linea.gov.br')
+EMAIL_NOTIFICATION = os.environ.get("EMAIL_NOTIFICATION", "sso-portal@linea.gov.br")
 
 
-EMAIL_HELPDESK = os.environ.get('EMAIL_HELPDESK', 'helpdesk@linea.gov.br')
+EMAIL_HELPDESK = os.environ.get("EMAIL_HELPDESK", "helpdesk@linea.gov.br")
 
-EMAIL_NOTIFICATION_COPY_TO = list([os.environ.get(
-    'EMAIL_NOTIFICATION', 'sso-portal@linea.gov.br')])
+EMAIL_NOTIFICATION_COPY_TO = list(
+    [os.environ.get("EMAIL_NOTIFICATION", "sso-portal@linea.gov.br")]
+)
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_USE_TLS = True
 try:
-    EMAIL_HOST = os.environ['EMAIL_HOST']
-    EMAIL_PORT = os.environ['EMAIL_PORT']
-    EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
-    EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+    EMAIL_HOST = os.environ["EMAIL_HOST"]
+    EMAIL_PORT = os.environ["EMAIL_PORT"]
+    EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+    EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
 except:
-    raise ("Environment variables EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD can not be null.")
+    raise (
+        "Environment variables EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD can not be null."
+    )
 
-APPLICATION_NAME = 'SSSO - Solar System Small Object'
+APPLICATION_NAME = "SSSO - Solar System Small Object"
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'm=5=08^4a(il)bba)$cd%f*#wrcammi(r(q#($b$n^-jz8%+j0'
+SECRET_KEY = "m=5=08^4a(il)bba)$cd%f*#wrcammi(r(q#($b$n^-jz8%+j0"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.getenv('DEBUG', False))
+DEBUG = bool(os.getenv("DEBUG", False))
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
     # third-party apps
-    'rest_framework',
-    'rest_framework.authtoken',
-    'django_filters',
-    'url_filter',
-    'corsheaders',
-
+    "rest_framework",
+    "rest_framework.authtoken",
+    "django_filters",
+    "url_filter",
+    "corsheaders",
     # Project Apps
-    'common',
-    'tno',
-    'skybot',
+    "common",
+    "tno",
+    "skybot",
     # 'praia',
     # 'orbit',
     # 'predict',
-    'des',
-
+    "des",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'current_user.CurrentUserMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "current_user.CurrentUserMiddleware",
 ]
 
-ROOT_URLCONF = 'coreAdmin.urls'
+ROOT_URLCONF = "coreAdmin.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR, os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'django_settings_export.settings_export',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR, os.path.join(BASE_DIR, "templates")],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "django_settings_export.settings_export",
             ],
         },
     },
 ]
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'staticfiles'),
-)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "staticfiles"),)
 
-WSGI_APPLICATION = 'coreAdmin.wsgi.application'
+WSGI_APPLICATION = "coreAdmin.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ['DB_NAME'],
-        'USER': os.environ['DB_USER'],
-        'PASSWORD': os.environ['DB_PASS'],
-        'HOST': os.environ['DB_HOST'],
-        'PORT': os.environ['DB_PORT'],
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": os.environ["DB_NAME"],
+        "USER": os.environ["DB_USER"],
+        "PASSWORD": os.environ["DB_PASS"],
+        "HOST": os.environ["DB_HOST"],
+        "PORT": os.environ["DB_PORT"],
     },
 }
 # caso o banco de dados tenha definido um schema
-if 'DB_SCHEMA' in os.environ:
-    DATABASES['default']['OPTIONS'] = {
-        'options': '-c search_path=%s,public' % os.environ['DB_SCHEMA']
+if "DB_SCHEMA" in os.environ:
+    DATABASES["default"]["OPTIONS"] = {
+        "options": "-c search_path=%s,public" % os.environ["DB_SCHEMA"]
     }
 
 CATALOG_DATABASE = {
-    'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    'NAME': os.environ['CATALOG_DB_NAME'],
-    'USER': os.environ['CATALOG_DB_USER'],
-    'PASSWORD': os.environ['CATALOG_DB_PASS'],
-    'HOST': os.environ['CATALOG_DB_HOST'],
-    'PORT': os.environ['CATALOG_DB_PORT'],
+    "ENGINE": "django.db.backends.postgresql_psycopg2",
+    "NAME": os.environ["CATALOG_DB_NAME"],
+    "USER": os.environ["CATALOG_DB_USER"],
+    "PASSWORD": os.environ["CATALOG_DB_PASS"],
+    "HOST": os.environ["CATALOG_DB_HOST"],
+    "PORT": os.environ["CATALOG_DB_PORT"],
 }
 
 # Password validation
@@ -224,25 +221,25 @@ CATALOG_DATABASE = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -253,29 +250,29 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 AUTHENTICATION_BACKENDS = (
-    'tno.auth_shibboleth.ShibbolethBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    "tno.auth_shibboleth.ShibbolethBackend",
+    "django.contrib.auth.backends.ModelBackend",
 )
 
 
 # LDAP Authentication
 # Responsible for turn on and off the LDAP authentication:
-AUTH_LDAP_ENABLED = os.environ.get('AUTH_LDAP_ENABLED')
+AUTH_LDAP_ENABLED = os.environ.get("AUTH_LDAP_ENABLED")
 
-if AUTH_LDAP_ENABLED == 'True':
+if AUTH_LDAP_ENABLED == "True":
 
     # The address of the LDAP server:
-    AUTH_LDAP_SERVER_URI = os.environ.get('AUTH_LDAP_SERVER_URI')
+    AUTH_LDAP_SERVER_URI = os.environ.get("AUTH_LDAP_SERVER_URI")
 
     # The password of the LDAP server (leave empty if anonymous requests are available):
-    AUTH_LDAP_BIND_PASSWORD = os.environ.get('AUTH_LDAP_BIND_PASSWORD')
+    AUTH_LDAP_BIND_PASSWORD = os.environ.get("AUTH_LDAP_BIND_PASSWORD")
 
     # The distinguishable name, used to identify entries:
-    AUTH_LDAP_BIND_DN = os.environ.get('AUTH_LDAP_BIND_DN')
+    AUTH_LDAP_BIND_DN = os.environ.get("AUTH_LDAP_BIND_DN")
 
     # Populate the Django user from the LDAP directory.
     AUTH_LDAP_USER_ATTR_MAP = {
@@ -285,35 +282,32 @@ if AUTH_LDAP_ENABLED == 'True':
     }
 
     # The distinguishable name for searching users, used to identify entries:
-    AUTH_LDAP_USER_SEARCH_DN = os.environ.get('AUTH_LDAP_USER_SEARCH_DN')
+    AUTH_LDAP_USER_SEARCH_DN = os.environ.get("AUTH_LDAP_USER_SEARCH_DN")
 
     AUTH_LDAP_USER_SEARCH = LDAPSearch(
-        AUTH_LDAP_USER_SEARCH_DN,
-        ldap.SCOPE_SUBTREE, "(uid=%(user)s)"
+        AUTH_LDAP_USER_SEARCH_DN, ldap.SCOPE_SUBTREE, "(uid=%(user)s)"
     )
 
     # Adding LDAP as an authentication method:
-    AUTHENTICATION_BACKENDS += ('django_auth_ldap.backend.LDAPBackend',)
+    AUTHENTICATION_BACKENDS += ("django_auth_ldap.backend.LDAPBackend",)
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.SessionAuthentication",
     ),
-    'DEFAULT_PAGINATION_CLASS': 'common.pagination.StandardResultsSetPagination',
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_FILTER_BACKENDS': (
-        'url_filter.integrations.drf.DjangoFilterBackend',
-        'rest_framework.filters.SearchFilter',
-        'rest_framework.filters.OrderingFilter',
+    "DEFAULT_PAGINATION_CLASS": "common.pagination.StandardResultsSetPagination",
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_FILTER_BACKENDS": (
+        "url_filter.integrations.drf.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
     ),
 }
 
 # CORS com essa combinação o serv de desenvolvimento do frontend consegue se authenticar
 if DEBUG:
-    ALLOWED_HOSTS = '*'
+    ALLOWED_HOSTS = "*"
     CORS_ALLOW_CREDENTIALS = True
     SESSION_COOKIE_SAMESITE = None
 
@@ -357,7 +351,7 @@ except Exception as e:
 try:
     LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
 except:
-    LOGGING_LEVEL = 'INFO'
+    LOGGING_LEVEL = "INFO"
 
 # HOST URL url para onde o app está disponivel. em desenvolvimento //localhost
 # No ambiente de testes é //tno-testing.linea.gov.br
@@ -378,10 +372,10 @@ if HOST_URL is not None:
 # se AUTH_SHIB_URL usar None para desativar o login institucional, isto remove o botão da tela de login.
 AUTH_SHIB_URL = None
 try:
-    AUTH_SHIB_URL = os.getenv('AUTH_SHIB_URL')
+    AUTH_SHIB_URL = os.getenv("AUTH_SHIB_URL")
     if AUTH_SHIB_URL is not None:
         AUTH_SHIB_SESSIONS = "/auth_shib_sessions"
-        AUTH_SHIB_CRYPT_KEY = os.getenv('AUTH_SHIB_CRYPT_KEY')
+        AUTH_SHIB_CRYPT_KEY = os.getenv("AUTH_SHIB_CRYPT_KEY")
 
 except Exception as e:
     raise ("Auth Shibboleth settings are required in .env file")
@@ -389,12 +383,12 @@ except Exception as e:
 # Url para download dos CCDs,
 # usar None para desativar esta opcao.
 # ex: 'https://desar2.cosmology.illinois.edu/DESFiles/desarchive/'
-DES_ARCHIVE_URL = os.getenv('DES_ARCHIVE_URL')
+DES_ARCHIVE_URL = os.getenv("DES_ARCHIVE_URL")
 if DES_ARCHIVE_URL is not None:
     try:
         # Username e Password no DES.
-        DES_USERNAME = os.getenv('DES_USERNAME')
-        DES_PASSWORD = os.getenv('DES_PASSWORD')
+        DES_USERNAME = os.getenv("DES_USERNAME")
+        DES_PASSWORD = os.getenv("DES_PASSWORD")
     except Exception as e:
         raise ("DES user settings are required in .env file")
 
@@ -409,190 +403,188 @@ except Exception as e:
 
 
 SETTINGS_EXPORT = [
-    'AUTH_SHIB_URL',
+    "AUTH_SHIB_URL",
 ]
 
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'standard': {
-            'format': '%(asctime)s [%(levelname)s] %(message)s'
-        },
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {"format": "%(asctime)s [%(levelname)s] %(message)s"},
     },
-    'handlers': {
-        'file': {
-            'level': LOGGING_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'django.log'),
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
+    "handlers": {
+        "file": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOG_DIR, "django.log"),
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
         },
-        'proccess': {
-            'level': LOGGING_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'filename': os.path.join(LOG_DIR, 'proccess.log'),
-            'formatter': 'standard',
+        "proccess": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "proccess.log"),
+            "formatter": "standard",
         },
-        'astrometry': {
-            'level': LOGGING_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'filename': os.path.join(LOG_DIR, 'astrometry.log'),
-            'formatter': 'standard',
+        "astrometry": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "astrometry.log"),
+            "formatter": "standard",
         },
-        'astrometry_daemon': {
-            'level': LOGGING_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'filename': os.path.join(LOG_DIR, 'astrometry_daemon.log'),
-            'formatter': 'standard',
+        "astrometry_daemon": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "astrometry_daemon.log"),
+            "formatter": "standard",
         },
-        'refine_orbit': {
-            'level': LOGGING_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'filename': os.path.join(LOG_DIR, 'refine_orbit.log'),
-            'formatter': 'standard',
+        "refine_orbit": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "refine_orbit.log"),
+            "formatter": "standard",
         },
-        'predict_occultation': {
-            'level': LOGGING_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'filename': os.path.join(LOG_DIR, 'predict_occultation.log'),
-            'formatter': 'standard',
+        "predict_occultation": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "predict_occultation.log"),
+            "formatter": "standard",
         },
         # Skybot Download
-        'skybot': {
-            'level': LOGGING_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'filename': os.path.join(LOG_DIR, 'skybot.log'),
-            'formatter': 'standard',
+        "skybot": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "skybot.log"),
+            "formatter": "standard",
         },
         # Skybot Load data
-        'skybot_load_data': {
-            'level': LOGGING_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'filename': os.path.join(LOG_DIR, 'skybot_load_data.log'),
-            'formatter': 'standard',
+        "skybot_load_data": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "skybot_load_data.log"),
+            "formatter": "standard",
         },
-        'condor': {
-            'level': LOGGING_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'filename': os.path.join(LOG_DIR, 'condor.log'),
-            'formatter': 'standard',
+        "condor": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "condor.log"),
+            "formatter": "standard",
         },
-        'auth_shibboleth': {
-            'level': LOGGING_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'filename': os.path.join(LOG_DIR, 'auth_shibboleth.log'),
-            'formatter': 'standard',
+        "auth_shibboleth": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "auth_shibboleth.log"),
+            "formatter": "standard",
         },
-        'download_ccds': {
-            'level': LOGGING_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'filename': os.path.join(LOG_DIR, 'download_ccds.log'),
-            'formatter': 'standard',
+        "download_ccds": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "download_ccds.log"),
+            "formatter": "standard",
         },
-        'asteroids': {
-            'level': LOGGING_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'filename': os.path.join(LOG_DIR, 'asteroids.log'),
-            'formatter': 'standard',
+        "asteroids": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "asteroids.log"),
+            "formatter": "standard",
         },
-        'des_astrometry': {
-            'level': LOGGING_LEVEL,
-            'class': 'logging.handlers.RotatingFileHandler',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'filename': os.path.join(LOG_DIR, 'des_astrometry.log'),
-            'formatter': 'standard',
+        "des_astrometry": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "des_astrometry.log"),
+            "formatter": "standard",
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': LOGGING_LEVEL,
-            'propagate': True,
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": LOGGING_LEVEL,
+            "propagate": True,
         },
-        'proccess': {
-            'handlers': ['proccess'],
-            'level': LOGGING_LEVEL,
-            'propagate': True,
+        "proccess": {
+            "handlers": ["proccess"],
+            "level": LOGGING_LEVEL,
+            "propagate": True,
         },
-        'astrometry': {
-            'handlers': ['astrometry'],
-            'level': LOGGING_LEVEL,
-            'propagate': True,
+        "astrometry": {
+            "handlers": ["astrometry"],
+            "level": LOGGING_LEVEL,
+            "propagate": True,
         },
-        'astrometry_daemon': {
-            'handlers': ['astrometry_daemon'],
-            'level': LOGGING_LEVEL,
-            'propagate': True,
+        "astrometry_daemon": {
+            "handlers": ["astrometry_daemon"],
+            "level": LOGGING_LEVEL,
+            "propagate": True,
         },
-        'refine_orbit': {
-            'handlers': ['refine_orbit'],
-            'level': LOGGING_LEVEL,
-            'propagate': True,
+        "refine_orbit": {
+            "handlers": ["refine_orbit"],
+            "level": LOGGING_LEVEL,
+            "propagate": True,
         },
-        'predict_occultation': {
-            'handlers': ['predict_occultation'],
-            'level': LOGGING_LEVEL,
-            'propagate': True,
+        "predict_occultation": {
+            "handlers": ["predict_occultation"],
+            "level": LOGGING_LEVEL,
+            "propagate": True,
         },
-        'skybot': {
-            'handlers': ['skybot'],
-            'level': LOGGING_LEVEL,
-            'propagate': False,
+        "skybot": {
+            "handlers": ["skybot"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
         },
-        'skybot_load_data': {
-            'handlers': ['skybot_load_data'],
-            'level': LOGGING_LEVEL,
-            'propagate': False,
+        "skybot_load_data": {
+            "handlers": ["skybot_load_data"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
         },
-        'condor': {
-            'handlers': ['condor'],
-            'level': LOGGING_LEVEL,
-            'propagate': True,
+        "condor": {
+            "handlers": ["condor"],
+            "level": LOGGING_LEVEL,
+            "propagate": True,
         },
-        'auth_shibboleth': {
-            'handlers': ['auth_shibboleth'],
-            'level': LOGGING_LEVEL,
-            'propagate': True,
+        "auth_shibboleth": {
+            "handlers": ["auth_shibboleth"],
+            "level": LOGGING_LEVEL,
+            "propagate": True,
         },
-        'download_ccds': {
-            'handlers': ['download_ccds'],
-            'level': LOGGING_LEVEL,
-            'propagate': True,
+        "download_ccds": {
+            "handlers": ["download_ccds"],
+            "level": LOGGING_LEVEL,
+            "propagate": True,
         },
-        'asteroids': {
-            'handlers': ['asteroids'],
-            'level': LOGGING_LEVEL,
-            'propagate': True,
+        "asteroids": {
+            "handlers": ["asteroids"],
+            "level": LOGGING_LEVEL,
+            "propagate": True,
         },
-        'des_astrometry': {
-            'handlers': ['des_astrometry'],
-            'level': LOGGING_LEVEL,
-            'propagate': True,
+        "des_astrometry": {
+            "handlers": ["des_astrometry"],
+            "level": LOGGING_LEVEL,
+            "propagate": True,
         },
     },
 }
@@ -606,4 +598,5 @@ try:
     from coreAdmin.local_vars import *
 except Exception:
     raise FileNotFoundError(
-        "Local_vars file not found. it is necessary that the coraAdmin/local_vars.py file exists with the specific settings of this environment.")
+        "Local_vars file not found. it is necessary that the coraAdmin/local_vars.py file exists with the specific settings of this environment."
+    )

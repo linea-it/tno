@@ -11,54 +11,61 @@ from des.serializers import AstrometryJobSerializer
 from tno.dao.asteroids import AsteroidDao
 
 
-class AstrometryJobViewSet(mixins.RetrieveModelMixin,
-                           mixins.ListModelMixin,
-                           viewsets.GenericViewSet):
+class AstrometryJobViewSet(
+    mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
+):
     """
-        Este end point esta com os metodos de Create, Update, Delete desabilitados.
-        estas operações vão ficar na responsabilidades do pipeline des/astrometry.
+    Este end point esta com os metodos de Create, Update, Delete desabilitados.
+    estas operações vão ficar na responsabilidades do pipeline des/astrometry.
 
-        o Endpoint submit_job é responsavel por iniciar o pipeline que será executado em background.
+    o Endpoint submit_job é responsavel por iniciar o pipeline que será executado em background.
     """
+
     queryset = AstrometryJob.objects.all()
     serializer_class = AstrometryJobSerializer
-    ordering_fields = ('id', 'status', 'start', 'finish')
-    ordering = ('-start',)
+    ordering_fields = ("id", "status", "start", "finish")
+    ordering = ("-start",)
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=["post"])
     def submit_job(self, request, pk=None):
         """
-            Este endpoint apenas cria um novo registro na tabela Des/Astrometry Jobs.
+        Este endpoint apenas cria um novo registro na tabela Des/Astrometry Jobs.
 
-            O Job é criado com status idle. uma daemon verifica
-            de tempos em tempos os jobs neste status e inicia o processamento.
+        O Job é criado com status idle. uma daemon verifica
+        de tempos em tempos os jobs neste status e inicia o processamento.
 
-            Parameters:
-                asteroids (string): Asteroids que serão processados, pode ser um unico asteroid name ou uma lista separada por ;.
+        Parameters:
+            asteroids (string): Asteroids que serão processados, pode ser um unico asteroid name ou uma lista separada por ;.
 
-                dynclass (string): Dynamic Class para executar todos os asteroids pela classe.
+            dynclass (string): Dynamic Class para executar todos os asteroids pela classe.
 
-            Returns:
-                job (SkybotJobSerializer): Job que acabou de ser criado.
+        Returns:
+            job (SkybotJobSerializer): Job que acabou de ser criado.
         """
         params = request.data
 
-        asteroids = params.get('asteroids', None)
-        dynclass = params.get('dynclass', None)
+        asteroids = params.get("asteroids", None)
+        dynclass = params.get("dynclass", None)
 
         # Total de asteroids que serão executados.
         t_asteroids = 0
 
-        if asteroids is not None and asteroids is not "":
-            t_asteroids = len(asteroids.split(';'))
+        if asteroids != None and asteroids != "":
+            t_asteroids = len(asteroids.split(";"))
             dynclass = None
 
-        elif dynclass is not None and dynclass is not "":
+        elif dynclass != None and dynclass != "":
             # faz uma query para saber quantos asteroids serão executados.
             t_asteroids = AsteroidDao().count_asteroids_by_base_dynclass(dynclass)
             asteroids = None
         else:
-            return Response(dict({'msg': 'The two selection parameters asteroids and dynclass cannot be null, one of them must have a value.'}))
+            return Response(
+                dict(
+                    {
+                        "msg": "The two selection parameters asteroids and dynclass cannot be null, one of them must have a value."
+                    }
+                )
+            )
 
         # Estimativa de tempo baseada na qtd de asteroids a serem executadas.
         # TODO: Calcular o tempo estimado de execução
@@ -77,7 +84,7 @@ class AstrometryJobViewSet(mixins.RetrieveModelMixin,
             # Total de asteroids a serem executadas.
             t_asteroids=t_asteroids,
             # Tempo de execução estimado
-            estimated_execution_time=timedelta(seconds=estimated_time)
+            estimated_execution_time=timedelta(seconds=estimated_time),
         )
         job.save()
 

@@ -7,7 +7,7 @@ class DesObservationDao(DBBase):
         super(DesObservationDao, self).__init__(pool)
 
         schema = self.get_base_schema()
-        self.tablename = 'des_observation'
+        self.tablename = "des_observation"
         self.tbl = self.get_table(self.tablename, schema)
 
     # TODO: Mover esses metodos get para a DBBase.

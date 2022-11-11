@@ -15,86 +15,549 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Catalog',
+            name="Catalog",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=128, verbose_name='Internal Name')),
-                ('display_name', models.CharField(max_length=128, verbose_name='Display Name')),
-                ('database', models.CharField(blank=True, default='catalog', help_text='Database identifier in settings', max_length=128, null=True, verbose_name='Database')),
-                ('schema', models.CharField(blank=True, max_length=128, null=True, verbose_name='Schema name')),
-                ('tablename', models.CharField(help_text='Tablename without schema', max_length=128, verbose_name='Tablename')),
-                ('ra_property', models.CharField(default='ra', help_text='name of the column that represents the RA in degrees', max_length=128, verbose_name='RA Property')),
-                ('dec_property', models.CharField(default='dec', help_text='name of the column that represents the Dec in degrees', max_length=128, verbose_name='Dec Property')),
-                ('rows', models.PositiveIntegerField(blank=True, null=True, verbose_name='Num of rows')),
-                ('columns', models.PositiveIntegerField(blank=True, null=True, verbose_name='Num of columns')),
-                ('size', models.PositiveIntegerField(blank=True, null=True, verbose_name='Size in bytes')),
-                ('registration_date', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Registration Date')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=128, verbose_name="Internal Name"),
+                ),
+                (
+                    "display_name",
+                    models.CharField(max_length=128, verbose_name="Display Name"),
+                ),
+                (
+                    "database",
+                    models.CharField(
+                        blank=True,
+                        default="catalog",
+                        help_text="Database identifier in settings",
+                        max_length=128,
+                        null=True,
+                        verbose_name="Database",
+                    ),
+                ),
+                (
+                    "schema",
+                    models.CharField(
+                        blank=True,
+                        max_length=128,
+                        null=True,
+                        verbose_name="Schema name",
+                    ),
+                ),
+                (
+                    "tablename",
+                    models.CharField(
+                        help_text="Tablename without schema",
+                        max_length=128,
+                        verbose_name="Tablename",
+                    ),
+                ),
+                (
+                    "ra_property",
+                    models.CharField(
+                        default="ra",
+                        help_text="name of the column that represents the RA in degrees",
+                        max_length=128,
+                        verbose_name="RA Property",
+                    ),
+                ),
+                (
+                    "dec_property",
+                    models.CharField(
+                        default="dec",
+                        help_text="name of the column that represents the Dec in degrees",
+                        max_length=128,
+                        verbose_name="Dec Property",
+                    ),
+                ),
+                (
+                    "rows",
+                    models.PositiveIntegerField(
+                        blank=True, null=True, verbose_name="Num of rows"
+                    ),
+                ),
+                (
+                    "columns",
+                    models.PositiveIntegerField(
+                        blank=True, null=True, verbose_name="Num of columns"
+                    ),
+                ),
+                (
+                    "size",
+                    models.PositiveIntegerField(
+                        blank=True, null=True, verbose_name="Size in bytes"
+                    ),
+                ),
+                (
+                    "registration_date",
+                    models.DateTimeField(
+                        auto_now_add=True, null=True, verbose_name="Registration Date"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='CustomList',
+            name="CustomList",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('displayname', models.CharField(help_text='List name', max_length=128, verbose_name='Name')),
-                ('description', models.TextField(blank=True, null=True, verbose_name='Description')),
-                ('database', models.CharField(blank=True, help_text='Database identifier in settings', max_length=128, null=True, verbose_name='Database')),
-                ('schema', models.CharField(blank=True, max_length=128, null=True, verbose_name='Schema')),
-                ('tablename', models.CharField(help_text='Tablename without schema', max_length=128, verbose_name='Tablename')),
-                ('asteroids', models.PositiveIntegerField(blank=True, null=True, verbose_name='Num of Asteroids')),
-                ('rows', models.PositiveIntegerField(blank=True, null=True, verbose_name='Num of rows')),
-                ('n_columns', models.PositiveIntegerField(blank=True, null=True, verbose_name='Num of columns')),
-                ('columns', models.CharField(blank=True, help_text='Column names separated by comma.', max_length=1024, null=True, verbose_name='Columns')),
-                ('size', models.PositiveIntegerField(blank=True, null=True, verbose_name='Size in bytes')),
-                ('creation_date', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Creation Date')),
-                ('creation_time', models.FloatField(blank=True, help_text='Creation Time in seconds', null=True, verbose_name='Creation Time')),
-                ('sql', models.TextField(blank=True, help_text='SQL for the table contents to be created', null=True, verbose_name='SQL')),
-                ('sql_creation', models.TextField(blank=True, help_text='Sql used in table creation', null=True, verbose_name='SQL Creation')),
-                ('filter_name', models.CharField(blank=True, help_text='Filter By Object name.', max_length=32, null=True, verbose_name='Filter Name')),
-                ('filter_dynclass', models.TextField(blank=True, help_text='Filter by Object class (TNO, Centaur, Trojan, etc.).', null=True, verbose_name='Filter Classification')),
-                ('filter_magnitude', models.FloatField(blank=True, help_text='Filter by Object Magnitude', null=True, verbose_name='Filter Magnitude')),
-                ('filter_diffdatenights', models.FloatField(blank=True, help_text='Filter by minimun difference time between observations', null=True, verbose_name='Filter diff nights')),
-                ('filter_morefilter', models.BooleanField(default=False, help_text='Filter by objects with more than one filter in the some night', verbose_name='Filter more Bands')),
-                ('status', models.CharField(blank=True, choices=[('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('error', 'Error')], default='pending', max_length=10, null=True, verbose_name='Status')),
-                ('error_msg', models.TextField(blank=True, null=True, verbose_name='Error Message')),
-                ('owner', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Owner')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "displayname",
+                    models.CharField(
+                        help_text="List name", max_length=128, verbose_name="Name"
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(blank=True, null=True, verbose_name="Description"),
+                ),
+                (
+                    "database",
+                    models.CharField(
+                        blank=True,
+                        help_text="Database identifier in settings",
+                        max_length=128,
+                        null=True,
+                        verbose_name="Database",
+                    ),
+                ),
+                (
+                    "schema",
+                    models.CharField(
+                        blank=True, max_length=128, null=True, verbose_name="Schema"
+                    ),
+                ),
+                (
+                    "tablename",
+                    models.CharField(
+                        help_text="Tablename without schema",
+                        max_length=128,
+                        verbose_name="Tablename",
+                    ),
+                ),
+                (
+                    "asteroids",
+                    models.PositiveIntegerField(
+                        blank=True, null=True, verbose_name="Num of Asteroids"
+                    ),
+                ),
+                (
+                    "rows",
+                    models.PositiveIntegerField(
+                        blank=True, null=True, verbose_name="Num of rows"
+                    ),
+                ),
+                (
+                    "n_columns",
+                    models.PositiveIntegerField(
+                        blank=True, null=True, verbose_name="Num of columns"
+                    ),
+                ),
+                (
+                    "columns",
+                    models.CharField(
+                        blank=True,
+                        help_text="Column names separated by comma.",
+                        max_length=1024,
+                        null=True,
+                        verbose_name="Columns",
+                    ),
+                ),
+                (
+                    "size",
+                    models.PositiveIntegerField(
+                        blank=True, null=True, verbose_name="Size in bytes"
+                    ),
+                ),
+                (
+                    "creation_date",
+                    models.DateTimeField(
+                        auto_now_add=True, null=True, verbose_name="Creation Date"
+                    ),
+                ),
+                (
+                    "creation_time",
+                    models.FloatField(
+                        blank=True,
+                        help_text="Creation Time in seconds",
+                        null=True,
+                        verbose_name="Creation Time",
+                    ),
+                ),
+                (
+                    "sql",
+                    models.TextField(
+                        blank=True,
+                        help_text="SQL for the table contents to be created",
+                        null=True,
+                        verbose_name="SQL",
+                    ),
+                ),
+                (
+                    "sql_creation",
+                    models.TextField(
+                        blank=True,
+                        help_text="Sql used in table creation",
+                        null=True,
+                        verbose_name="SQL Creation",
+                    ),
+                ),
+                (
+                    "filter_name",
+                    models.CharField(
+                        blank=True,
+                        help_text="Filter By Object name.",
+                        max_length=32,
+                        null=True,
+                        verbose_name="Filter Name",
+                    ),
+                ),
+                (
+                    "filter_dynclass",
+                    models.TextField(
+                        blank=True,
+                        help_text="Filter by Object class (TNO, Centaur, Trojan, etc.).",
+                        null=True,
+                        verbose_name="Filter Classification",
+                    ),
+                ),
+                (
+                    "filter_magnitude",
+                    models.FloatField(
+                        blank=True,
+                        help_text="Filter by Object Magnitude",
+                        null=True,
+                        verbose_name="Filter Magnitude",
+                    ),
+                ),
+                (
+                    "filter_diffdatenights",
+                    models.FloatField(
+                        blank=True,
+                        help_text="Filter by minimun difference time between observations",
+                        null=True,
+                        verbose_name="Filter diff nights",
+                    ),
+                ),
+                (
+                    "filter_morefilter",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Filter by objects with more than one filter in the some night",
+                        verbose_name="Filter more Bands",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("pending", "Pending"),
+                            ("running", "Running"),
+                            ("success", "Success"),
+                            ("error", "Error"),
+                        ],
+                        default="pending",
+                        max_length=10,
+                        null=True,
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "error_msg",
+                    models.TextField(
+                        blank=True, null=True, verbose_name="Error Message"
+                    ),
+                ),
+                (
+                    "owner",
+                    models.ForeignKey(
+                        blank=True,
+                        default=None,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Owner",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='JohnstonArchive',
+            name="JohnstonArchive",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('number', models.CharField(blank=True, default=None, help_text='(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).', max_length=6, null=True, verbose_name='Number')),
-                ('name', models.CharField(blank=True, default=None, help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).', max_length=32, null=True, verbose_name='Name')),
-                ('provisional_designation', models.CharField(max_length=32, verbose_name='Provisional Designation')),
-                ('dynamical_class', models.CharField(blank=True, default=None, max_length=32, null=True, verbose_name='Dynamical Class')),
-                ('a', models.FloatField(blank=True, default=None, null=True, verbose_name='a (AU)')),
-                ('e', models.FloatField(blank=True, default=None, null=True, verbose_name='e')),
-                ('perihelion_distance', models.FloatField(blank=True, default=None, help_text='q (AU) perihelion distance', null=True, verbose_name='perihelion distance')),
-                ('aphelion_distance', models.FloatField(blank=True, default=None, help_text='Q (AU) aphelion distance', null=True, verbose_name='aphelion distance')),
-                ('i', models.FloatField(blank=True, default=None, null=True, verbose_name='i (deg)')),
-                ('diameter', models.FloatField(blank=True, default=None, null=True, verbose_name='Diameter (Km)')),
-                ('diameter_flag', models.BooleanField(default=False, help_text='Diameter values marked by True are estimated assuming an albedo of 0.09 (or for secondary components, assuming the same albedo as the primary). Remaining diameter values have been determined by various methods (combined optical/thermal observations, dynamical fits/assumed densities for binaries, direct imagery, or stellar occultation).', verbose_name='Diameter Flag')),
-                ('albedo', models.FloatField(blank=True, default=None, null=True, verbose_name='Albedo')),
-                ('b_r_mag', models.FloatField(blank=True, default=None, help_text='B-R magnitude is the difference between blue filter magnitude and red filter magnitude; values greater than 1.03 indicate spectra redder than that of the Sun.', null=True, verbose_name='B-R mag')),
-                ('taxon', models.CharField(blank=True, default=None, help_text='Taxonomic type is from Belskaya et al., 2015, Icarus, 250:482-491.', max_length=10, null=True, verbose_name='Taxon Type')),
-                ('density', models.FloatField(blank=True, default=None, null=True, verbose_name='Density (g/cm^3)')),
-                ('known_components', models.CharField(blank=True, default=None, max_length=64, null=True, verbose_name="known add'l components")),
-                ('discovery', models.DateField(blank=True, default=None, help_text='Discovery Year-Month', null=True, verbose_name='Discovery')),
-                ('updated', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Updated')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "number",
+                    models.CharField(
+                        blank=True,
+                        default=None,
+                        help_text="(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).",
+                        max_length=6,
+                        null=True,
+                        verbose_name="Number",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        blank=True,
+                        default=None,
+                        help_text="(ucd=“meta.id;meta.main”) Object name (official or provisional designation).",
+                        max_length=32,
+                        null=True,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "provisional_designation",
+                    models.CharField(
+                        max_length=32, verbose_name="Provisional Designation"
+                    ),
+                ),
+                (
+                    "dynamical_class",
+                    models.CharField(
+                        blank=True,
+                        default=None,
+                        max_length=32,
+                        null=True,
+                        verbose_name="Dynamical Class",
+                    ),
+                ),
+                (
+                    "a",
+                    models.FloatField(
+                        blank=True, default=None, null=True, verbose_name="a (AU)"
+                    ),
+                ),
+                (
+                    "e",
+                    models.FloatField(
+                        blank=True, default=None, null=True, verbose_name="e"
+                    ),
+                ),
+                (
+                    "perihelion_distance",
+                    models.FloatField(
+                        blank=True,
+                        default=None,
+                        help_text="q (AU) perihelion distance",
+                        null=True,
+                        verbose_name="perihelion distance",
+                    ),
+                ),
+                (
+                    "aphelion_distance",
+                    models.FloatField(
+                        blank=True,
+                        default=None,
+                        help_text="Q (AU) aphelion distance",
+                        null=True,
+                        verbose_name="aphelion distance",
+                    ),
+                ),
+                (
+                    "i",
+                    models.FloatField(
+                        blank=True, default=None, null=True, verbose_name="i (deg)"
+                    ),
+                ),
+                (
+                    "diameter",
+                    models.FloatField(
+                        blank=True,
+                        default=None,
+                        null=True,
+                        verbose_name="Diameter (Km)",
+                    ),
+                ),
+                (
+                    "diameter_flag",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Diameter values marked by True are estimated assuming an albedo of 0.09 (or for secondary components, assuming the same albedo as the primary). Remaining diameter values have been determined by various methods (combined optical/thermal observations, dynamical fits/assumed densities for binaries, direct imagery, or stellar occultation).",
+                        verbose_name="Diameter Flag",
+                    ),
+                ),
+                (
+                    "albedo",
+                    models.FloatField(
+                        blank=True, default=None, null=True, verbose_name="Albedo"
+                    ),
+                ),
+                (
+                    "b_r_mag",
+                    models.FloatField(
+                        blank=True,
+                        default=None,
+                        help_text="B-R magnitude is the difference between blue filter magnitude and red filter magnitude; values greater than 1.03 indicate spectra redder than that of the Sun.",
+                        null=True,
+                        verbose_name="B-R mag",
+                    ),
+                ),
+                (
+                    "taxon",
+                    models.CharField(
+                        blank=True,
+                        default=None,
+                        help_text="Taxonomic type is from Belskaya et al., 2015, Icarus, 250:482-491.",
+                        max_length=10,
+                        null=True,
+                        verbose_name="Taxon Type",
+                    ),
+                ),
+                (
+                    "density",
+                    models.FloatField(
+                        blank=True,
+                        default=None,
+                        null=True,
+                        verbose_name="Density (g/cm^3)",
+                    ),
+                ),
+                (
+                    "known_components",
+                    models.CharField(
+                        blank=True,
+                        default=None,
+                        max_length=64,
+                        null=True,
+                        verbose_name="known add'l components",
+                    ),
+                ),
+                (
+                    "discovery",
+                    models.DateField(
+                        blank=True,
+                        default=None,
+                        help_text="Discovery Year-Month",
+                        null=True,
+                        verbose_name="Discovery",
+                    ),
+                ),
+                (
+                    "updated",
+                    models.DateTimeField(
+                        auto_now_add=True, null=True, verbose_name="Updated"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Proccess',
+            name="Proccess",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start_time', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Start Time')),
-                ('finish_time', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Finish Time')),
-                ('relative_path', models.CharField(blank=True, help_text='Path relative to the process directory, this is the internal path in the container.', max_length=256, null=True, verbose_name='Relative Path')),
-                ('absolute_path', models.CharField(blank=True, help_text='Absolute path to the process directory, this is the EXTERNAL path to the container.', max_length=1024, null=True, verbose_name='Absolute Path')),
-                ('status', models.CharField(blank=True, choices=[('pending', 'Pending'), ('running', 'Running'), ('success', 'Success'), ('error', 'Error')], default='pending', max_length=10, null=True, verbose_name='Status')),
-                ('purged', models.BooleanField(default=False, help_text='This flag true indicates that the marked process was removed and your data excluded.', verbose_name='Purged')),
-                ('input_list', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='tno.CustomList', verbose_name='Input List')),
-                ('owner', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Owner')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "start_time",
+                    models.DateTimeField(
+                        auto_now_add=True, null=True, verbose_name="Start Time"
+                    ),
+                ),
+                (
+                    "finish_time",
+                    models.DateTimeField(
+                        auto_now_add=True, null=True, verbose_name="Finish Time"
+                    ),
+                ),
+                (
+                    "relative_path",
+                    models.CharField(
+                        blank=True,
+                        help_text="Path relative to the process directory, this is the internal path in the container.",
+                        max_length=256,
+                        null=True,
+                        verbose_name="Relative Path",
+                    ),
+                ),
+                (
+                    "absolute_path",
+                    models.CharField(
+                        blank=True,
+                        help_text="Absolute path to the process directory, this is the EXTERNAL path to the container.",
+                        max_length=1024,
+                        null=True,
+                        verbose_name="Absolute Path",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("pending", "Pending"),
+                            ("running", "Running"),
+                            ("success", "Success"),
+                            ("error", "Error"),
+                        ],
+                        default="pending",
+                        max_length=10,
+                        null=True,
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "purged",
+                    models.BooleanField(
+                        default=False,
+                        help_text="This flag true indicates that the marked process was removed and your data excluded.",
+                        verbose_name="Purged",
+                    ),
+                ),
+                (
+                    "input_list",
+                    models.ForeignKey(
+                        blank=True,
+                        default=None,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="tno.CustomList",
+                        verbose_name="Input List",
+                    ),
+                ),
+                (
+                    "owner",
+                    models.ForeignKey(
+                        blank=True,
+                        default=None,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Owner",
+                    ),
+                ),
             ],
         ),
     ]

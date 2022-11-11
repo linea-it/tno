@@ -7,17 +7,17 @@ from parsl.channels import SSHChannel
 from parsl.addresses import address_by_hostname, address_by_query
 
 # TNO Database Settings
-DB_NAME = 'DATABASE_NAME'
-DB_USER = 'DATABASE_USER'
-DB_PASS = 'DATABASE_PASSWORD'
-DB_HOST = 'DATABASE_HOST'
-DB_PORT = 'DATABASE_PORT'
+DB_NAME = "DATABASE_NAME"
+DB_USER = "DATABASE_USER"
+DB_PASS = "DATABASE_PASSWORD"
+DB_HOST = "DATABASE_HOST"
+DB_PORT = "DATABASE_PORT"
 
 # Email utilizado para baixar os BSP do JPL
-JPL_EMAIL = 'sso-portal@linea.gov.br'
+JPL_EMAIL = "sso-portal@linea.gov.br"
 
 # Diretório Raiz onde estão os arquivos de catalog
-DES_CATALOGS_BASEPATH = '/archive/des/public/catalogs'
+DES_CATALOGS_BASEPATH = "/archive/des/public/catalogs"
 
 # PARSL Config
 # htex_config = Config(
@@ -37,7 +37,7 @@ DES_CATALOGS_BASEPATH = '/archive/des/public/catalogs'
 htex_config = Config(
     executors=[
         HighThroughputExecutor(
-            label='htcondor',
+            label="htcondor",
             address=address_by_query(),
             max_workers=1,
             provider=CondorProvider(
@@ -52,12 +52,12 @@ htex_config = Config(
                     hostname="loginicx",
                     username="USERNAME",
                     password="PASSWORD_LDAP",
-                    script_dir="/archive/des/tno/development/orbit_trace/"
-                )
-            )
+                    script_dir="/archive/des/tno/development/orbit_trace/",
+                ),
+            ),
         ),
         HighThroughputExecutor(
-            label='htcondor_1',
+            label="htcondor_1",
             address=address_by_query(),
             max_workers=1,
             provider=CondorProvider(
@@ -70,10 +70,10 @@ htex_config = Config(
                     hostname="loginicx",
                     username="USERNAME",
                     password="PASSWORD_LDAP",
-                    script_dir="/archive/des/tno/development/orbit_trace/"
-                )
-            )
-        )
+                    script_dir="/archive/des/tno/development/orbit_trace/",
+                ),
+            ),
+        ),
     ],
     #     # monitoring=MonitoringHub(
     #     #     hub_address=address_by_hostname(),

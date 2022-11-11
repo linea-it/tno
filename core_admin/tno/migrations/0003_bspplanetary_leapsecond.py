@@ -6,28 +6,116 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0002_asteroid'),
+        ("tno", "0002_asteroid"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='BspPlanetary',
+            name="BspPlanetary",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, help_text='Internal name', max_length=100, null=True, verbose_name='Name')),
-                ('display_name', models.CharField(blank=True, help_text='Display Name.', max_length=100, null=True, verbose_name='Display name')),
-                ('url', models.URLField(blank=True, help_text='URL of archives.', max_length=100, null=True, verbose_name='URL')),
-                ('upload', models.FileField(blank=True, help_text='Upload of archives.', null=True, upload_to='bsp_planetary', verbose_name='file')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        blank=True,
+                        help_text="Internal name",
+                        max_length=100,
+                        null=True,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "display_name",
+                    models.CharField(
+                        blank=True,
+                        help_text="Display Name.",
+                        max_length=100,
+                        null=True,
+                        verbose_name="Display name",
+                    ),
+                ),
+                (
+                    "url",
+                    models.URLField(
+                        blank=True,
+                        help_text="URL of archives.",
+                        max_length=100,
+                        null=True,
+                        verbose_name="URL",
+                    ),
+                ),
+                (
+                    "upload",
+                    models.FileField(
+                        blank=True,
+                        help_text="Upload of archives.",
+                        null=True,
+                        upload_to="bsp_planetary",
+                        verbose_name="file",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='LeapSecond',
+            name="LeapSecond",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, help_text='Internal name', max_length=100, null=True, verbose_name='Name')),
-                ('display_name', models.CharField(blank=True, help_text='Display Name.', max_length=100, null=True, verbose_name='Display name')),
-                ('url', models.URLField(blank=True, help_text='URL of archives.', max_length=100, null=True, verbose_name='URL')),
-                ('upload', models.FileField(blank=True, help_text='Upload of archives.', null=True, upload_to='leap_seconds', verbose_name='file')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        blank=True,
+                        help_text="Internal name",
+                        max_length=100,
+                        null=True,
+                        verbose_name="Name",
+                    ),
+                ),
+                (
+                    "display_name",
+                    models.CharField(
+                        blank=True,
+                        help_text="Display Name.",
+                        max_length=100,
+                        null=True,
+                        verbose_name="Display name",
+                    ),
+                ),
+                (
+                    "url",
+                    models.URLField(
+                        blank=True,
+                        help_text="URL of archives.",
+                        max_length=100,
+                        null=True,
+                        verbose_name="URL",
+                    ),
+                ),
+                (
+                    "upload",
+                    models.FileField(
+                        blank=True,
+                        help_text="Upload of archives.",
+                        null=True,
+                        upload_to="leap_seconds",
+                        verbose_name="file",
+                    ),
+                ),
             ],
         ),
     ]

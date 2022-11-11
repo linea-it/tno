@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0005_occultation'),
+        ("tno", "0005_occultation"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='occultation',
-            name='name',
-            field=models.CharField(db_index=True, help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).', max_length=32, verbose_name='Name'),
+            model_name="occultation",
+            name="name",
+            field=models.CharField(
+                db_index=True,
+                help_text="(ucd=“meta.id;meta.main”) Object name (official or provisional designation).",
+                max_length=32,
+                verbose_name="Name",
+            ),
         ),
     ]

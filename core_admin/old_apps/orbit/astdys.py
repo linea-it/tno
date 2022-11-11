@@ -1,4 +1,4 @@
-class AstDys():
+class AstDys:
     def __init__(self):
 
         self.observations_extension = ".rwo"
@@ -7,8 +7,10 @@ class AstDys():
 
     def getObjectURL(self, name):
 
-        temp_name = name.replace(' ', '+')
-        url_object = 'https://newton.spacedys.com/astdys2/index.php?pc=1.1.0&n=' + temp_name
+        temp_name = name.replace(" ", "+")
+        url_object = (
+            "https://newton.spacedys.com/astdys2/index.php?pc=1.1.0&n=" + temp_name
+        )
 
         return url_object
 
@@ -24,7 +26,7 @@ class AstDys():
         if number != "-" and number is not None:
             link2 = "numbered/" + str(int((int(number) / 1000))) + "/" + number + ext
         else:
-            temp_name = name.replace(' ', '')
+            temp_name = name.replace(" ", "")
             try:
                 year = int(temp_name[:4])
             except ValueError:

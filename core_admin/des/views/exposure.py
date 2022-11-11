@@ -15,8 +15,11 @@ class ExposureViewSet(viewsets.ModelViewSet):
 
     queryset = Exposure.objects.all()
     serializer_class = ExposureSerializer
-    ordering_fields = ('id', 'date_obs',)
-    ordering = ('date_obs',)
+    ordering_fields = (
+        "id",
+        "date_obs",
+    )
+    ordering = ("date_obs",)
 
     @action(detail=False)
     def count_by_period(self, request):
@@ -30,27 +33,27 @@ class ExposureViewSet(viewsets.ModelViewSet):
         Returns:
             [array]: um array com todas as datas do periodo no formato [{date: '2019-01-01', count: 0}]
         """
-        start = request.query_params.get('start')
-        end = request.query_params.get('end')
+        start = request.query_params.get("start")
+        end = request.query_params.get("end")
 
         all_dates = get_days_interval(start, end)
 
         # Verificar a quantidade de dias entre o start e end.
         if len(all_dates) < 7:
-            dt_start = datetime.strptime(start, '%Y-%m-%d')
+            dt_start = datetime.strptime(start, "%Y-%m-%d")
             dt_end = dt_start + timedelta(days=6)
 
-            all_dates = get_days_interval(dt_start.strftime(
-                "%Y-%m-%d"), dt_end.strftime("%Y-%m-%d"))
+            all_dates = get_days_interval(
+                dt_start.strftime("%Y-%m-%d"), dt_end.strftime("%Y-%m-%d")
+            )
 
         df1 = pd.DataFrame()
-        df1['date'] = all_dates
-        df1 = df1.set_index('date')
+        df1["date"] = all_dates
+        df1 = df1.set_index("date")
 
         # adicionar a hora inicial e final as datas
-        start = datetime.strptime(
-            start, '%Y-%m-%d').strftime("%Y-%m-%d 00:00:00")
-        end = datetime.strptime(end, '%Y-%m-%d').strftime("%Y-%m-%d 23:59:59")
+        start = datetime.strptime(start, "%Y-%m-%d").strftime("%Y-%m-%d 00:00:00")
+        end = datetime.strptime(end, "%Y-%m-%d").strftime("%Y-%m-%d 23:59:59")
 
         resultset = ExposureDao().count_by_period(start, end)
 
@@ -58,16 +61,16 @@ class ExposureViewSet(viewsets.ModelViewSet):
             df2 = pd.DataFrame(resultset)
         else:
             df2 = pd.DataFrame()
-            df2['date'] = []
-            df2['count'] = 0
+            df2["date"] = []
+            df2["count"] = 0
 
-        df2 = df2.set_index('date')
+        df2 = df2.set_index("date")
 
         df = pd.concat([df1, df2], axis=1)
         df = df.fillna(0)
         df = df.reset_index()
-        df = df.rename(columns={'index': 'date'})
+        df = df.rename(columns={"index": "date"})
 
-        result = df.to_dict('records')
+        result = df.to_dict("records")
 
         return Response(result)

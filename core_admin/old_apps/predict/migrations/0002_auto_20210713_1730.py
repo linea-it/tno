@@ -6,77 +6,77 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('predict', '0001_initial'),
+        ("predict", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='occultation',
-            name='asteroid',
+            model_name="occultation",
+            name="asteroid",
         ),
         migrations.AlterUniqueTogether(
-            name='predictasteroid',
+            name="predictasteroid",
             unique_together=None,
         ),
         migrations.RemoveField(
-            model_name='predictasteroid',
-            name='predict_run',
+            model_name="predictasteroid",
+            name="predict_run",
         ),
         migrations.RemoveField(
-            model_name='predictinput',
-            name='asteroid',
+            model_name="predictinput",
+            name="asteroid",
         ),
         migrations.RemoveField(
-            model_name='predictoutput',
-            name='asteroid',
+            model_name="predictoutput",
+            name="asteroid",
         ),
         migrations.RemoveField(
-            model_name='predictrun',
-            name='bsp_planetary',
+            model_name="predictrun",
+            name="bsp_planetary",
         ),
         migrations.RemoveField(
-            model_name='predictrun',
-            name='catalog',
+            model_name="predictrun",
+            name="catalog",
         ),
         migrations.RemoveField(
-            model_name='predictrun',
-            name='input_list',
+            model_name="predictrun",
+            name="input_list",
         ),
         migrations.RemoveField(
-            model_name='predictrun',
-            name='input_orbit',
+            model_name="predictrun",
+            name="input_orbit",
         ),
         migrations.RemoveField(
-            model_name='predictrun',
-            name='leap_second',
+            model_name="predictrun",
+            name="leap_second",
         ),
         migrations.RemoveField(
-            model_name='predictrun',
-            name='owner',
+            model_name="predictrun",
+            name="owner",
         ),
         migrations.RemoveField(
-            model_name='predictrun',
-            name='process',
+            model_name="predictrun",
+            name="process",
         ),
         migrations.DeleteModel(
-            name='BspPlanetary',
+            name="BspPlanetary",
         ),
         migrations.DeleteModel(
-            name='LeapSecond',
+            name="LeapSecond",
         ),
         migrations.DeleteModel(
-            name='Occultation',
+            name="Occultation",
         ),
         migrations.DeleteModel(
-            name='PredictAsteroid',
+            name="PredictAsteroid",
         ),
         migrations.DeleteModel(
-            name='PredictInput',
+            name="PredictInput",
         ),
         migrations.DeleteModel(
-            name='PredictOutput',
+            name="PredictOutput",
         ),
         migrations.DeleteModel(
-            name='PredictRun',
+            name="PredictRun",
         ),
     ]

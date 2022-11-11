@@ -1,3 +1,1 @@
-
-
-default_app_config = 'tno.apps.TnoConfig'
+default_app_config = "tno.apps.TnoConfig"

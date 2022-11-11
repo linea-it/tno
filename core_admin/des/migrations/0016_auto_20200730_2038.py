@@ -6,18 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0015_auto_20200727_2104'),
+        ("des", "0015_auto_20200727_2104"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='skybotjobresult',
-            name='ccds_with_asteroids',
-            field=models.PositiveIntegerField(default=0, help_text='number of CCDs with Asteroids for this exposure', verbose_name='CCDs With Asteroids'),
+            model_name="skybotjobresult",
+            name="ccds_with_asteroids",
+            field=models.PositiveIntegerField(
+                default=0,
+                help_text="number of CCDs with Asteroids for this exposure",
+                verbose_name="CCDs With Asteroids",
+            ),
         ),
         migrations.AlterField(
-            model_name='skybotjobresult',
-            name='positions',
-            field=models.PositiveIntegerField(default=0, help_text='number of positions returned by skybot for this exposure', verbose_name='Positions'),
+            model_name="skybotjobresult",
+            name="positions",
+            field=models.PositiveIntegerField(
+                default=0,
+                help_text="number of positions returned by skybot for this exposure",
+                verbose_name="Positions",
+            ),
         ),
     ]

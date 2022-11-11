@@ -26,11 +26,32 @@ class StellarCatalog(CatalogDB):
 
         self.catalog = catalog
         self.radius = 0.5
-        self.columns = ["source_id", "ra", "dec", "ra_error", "dec_error", "ref_epoch", "parallax", "parallax_error",
-                        "pmra", "pmra_error", "pmdec", "pmdec_error", "phot_g_mean_flux", "phot_g_mean_flux_error",
-                        "phot_g_mean_mag", "phot_bp_mean_flux", "phot_bp_mean_flux_error", "phot_rp_mean_flux",
-                        "phot_rp_mean_flux_error", "phot_rp_mean_mag", "radial_velocity", "radial_velocity_error",
-                        "astrometric_excess_noise", "astrometric_excess_noise_sig"]
+        self.columns = [
+            "source_id",
+            "ra",
+            "dec",
+            "ra_error",
+            "dec_error",
+            "ref_epoch",
+            "parallax",
+            "parallax_error",
+            "pmra",
+            "pmra_error",
+            "pmdec",
+            "pmdec_error",
+            "phot_g_mean_flux",
+            "phot_g_mean_flux_error",
+            "phot_g_mean_mag",
+            "phot_bp_mean_flux",
+            "phot_bp_mean_flux_error",
+            "phot_rp_mean_flux",
+            "phot_rp_mean_flux_error",
+            "phot_rp_mean_mag",
+            "radial_velocity",
+            "radial_velocity_error",
+            "astrometric_excess_noise",
+            "astrometric_excess_noise_sig",
+        ]
 
         self.output_path = output_path
 
@@ -51,7 +72,7 @@ class StellarCatalog(CatalogDB):
             raise e
 
         # Declaracao do Parsl APP
-        @App('python', dfk)
+        @App("python", dfk)
         def start_parsl_job(line, id):
 
             result = self.read_ephemeris_line(line)
@@ -70,18 +91,24 @@ class StellarCatalog(CatalogDB):
                 self.total_count += count
 
                 if count > 0:
-                    filename = self.writer_csv(os.path.join(self.output_path, "stellar_catalog_%s.csv" % id), rows)
+                    filename = self.writer_csv(
+                        os.path.join(self.output_path, "stellar_catalog_%s.csv" % id),
+                        rows,
+                    )
 
                 w_t1 = datetime.now()
                 w_delta = w_t1 - w_t0
 
-                result.update({'id': id,
-                               'rows': count,
-                               'query_time': q_delta.total_seconds(),
-                               'writer_time': w_delta.total_seconds(),
-                               'filename': filename,
-                               'file_size': os.path.getsize(filename)
-                               })
+                result.update(
+                    {
+                        "id": id,
+                        "rows": count,
+                        "query_time": q_delta.total_seconds(),
+                        "writer_time": w_delta.total_seconds(),
+                        "filename": filename,
+                        "file_size": os.path.getsize(filename),
+                    }
+                )
 
             return result
 
@@ -103,26 +130,30 @@ class StellarCatalog(CatalogDB):
         dfk.cleanup()
 
         # Concat CSVs
-        stellar_catalog = self.concat_csvs(os.path.join(self.output_path, "stellar_catalog.csv"), outputs)
+        stellar_catalog = self.concat_csvs(
+            os.path.join(self.output_path, "stellar_catalog.csv"), outputs
+        )
 
         t1 = datetime.now()
 
         tdelta = t1 - t0
 
-        json_log = dict({
-            'catalog_id': self.catalog.id,
-            'columns': self.columns,
-            'start_time': t0.strftime("%Y-%m-%d %H:%M:%S"),
-            'finish_time': t1.strftime("%Y-%m-%d %H:%M:%S"),
-            'execution_time': tdelta.total_seconds(),
-            'records': self.total_count,
-            'count_steps': len(outputs),
-            'steps_detail': outputs,
-            'filename': stellar_catalog,
-            'file_size': os.path.getsize(stellar_catalog)
-        })
+        json_log = dict(
+            {
+                "catalog_id": self.catalog.id,
+                "columns": self.columns,
+                "start_time": t0.strftime("%Y-%m-%d %H:%M:%S"),
+                "finish_time": t1.strftime("%Y-%m-%d %H:%M:%S"),
+                "execution_time": tdelta.total_seconds(),
+                "records": self.total_count,
+                "count_steps": len(outputs),
+                "steps_detail": outputs,
+                "filename": stellar_catalog,
+                "file_size": os.path.getsize(stellar_catalog),
+            }
+        )
 
-        JsonFile().write(json_log, os.path.join(self.output_path, 'stellar_log.json'))
+        JsonFile().write(json_log, os.path.join(self.output_path, "stellar_log.json"))
 
         print("Iteracoes: %s" % len(outputs))
         print("Estrelas: %s" % self.total_count)
@@ -130,27 +161,25 @@ class StellarCatalog(CatalogDB):
 
     def read_ephemeris_line(self, line):
 
-        result = dict({
-            "date": None,
-            "ra": None,
-            "dec": None,
-            "ra_hms": None,
-            "dec_hms": None
-        })
+        result = dict(
+            {"date": None, "ra": None, "dec": None, "ra_hms": None, "dec_hms": None}
+        )
 
         date = line[0:68].strip()
         if len(date) == 24:
             ra_hms = line[68:83].strip()
             dec_hms = line[83:131].strip()
 
-            result.update({
-                "date": date,
-                "ra_hms": ra_hms,
-                "dec_hms": dec_hms,
-                # multiplica RA por 15 para transformar de decimal para graus
-                "ra": (15 * sextodec(ra_hms)),
-                "dec": sextodec(dec_hms),
-            })
+            result.update(
+                {
+                    "date": date,
+                    "ra_hms": ra_hms,
+                    "dec_hms": dec_hms,
+                    # multiplica RA por 15 para transformar de decimal para graus
+                    "ra": (15 * sextodec(ra_hms)),
+                    "dec": sextodec(dec_hms),
+                }
+            )
 
             return result
         else:
@@ -167,7 +196,8 @@ class StellarCatalog(CatalogDB):
             dec=position.get("dec"),
             radius=self.radius,
             columns=self.columns,
-            limit=None)
+            limit=None,
+        )
 
         if len(self.columns) == 0 and len(rows) > 0:
             self.columns = rows[0].keys()
@@ -175,22 +205,22 @@ class StellarCatalog(CatalogDB):
         return rows
 
     def writer_csv(self, filename, rows):
-        with open(filename, 'w', newline='') as csvfile:
+        with open(filename, "w", newline="") as csvfile:
             fieldnames = self.columns
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames,delimiter=';')
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=";")
             writer.writerows(rows)
 
         return filename
 
     def concat_csvs(self, filename, results):
-        with open(filename, 'w', newline='') as csvfile:
+        with open(filename, "w", newline="") as csvfile:
             fieldnames = self.columns
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';')
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=";")
             writer.writeheader()
 
             for row in results:
                 if row is not None:
-                    with open(row.get("filename"), 'r') as readfile:
+                    with open(row.get("filename"), "r") as readfile:
                         shutil.copyfileobj(readfile, csvfile)
 
                     os.remove(row.get("filename"))

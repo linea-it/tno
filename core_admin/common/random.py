@@ -8,6 +8,6 @@ def randbool(n=8):
         n (int, optional): inverse of probability. Defaults to 5.
 
     Returns:
-        bool: 
+        bool:
     """
-    return randint(0, n*n-1) % n == 0
+    return randint(0, n * n - 1) % n == 0

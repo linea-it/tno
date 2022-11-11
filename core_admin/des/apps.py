@@ -2,12 +2,12 @@ from django.apps import AppConfig
 
 
 class DesConfig(AppConfig):
-    name = 'des'
+    name = "des"
 
     def ready(self):
         """
-            Ao iniciar o app des, 
-            inicia tambem a scheduler dos pipelines 
+        Ao iniciar o app des,
+        inicia tambem a scheduler dos pipelines
 
         """
 

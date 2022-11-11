@@ -22,7 +22,8 @@ class GetOrbitalParameters(DownloadParameters):
 
         if settings.ORBITAL_PARAMETERS_DIR is None:
             raise Exception(
-                "it is necessary to have a valid path defined in the ORBITAL_PARAMETERS_DIR settings variable.")
+                "it is necessary to have a valid path defined in the ORBITAL_PARAMETERS_DIR settings variable."
+            )
 
         self.orbital_parameters_dir = settings.ORBITAL_PARAMETERS_DIR
 
@@ -64,26 +65,30 @@ class GetOrbitalParameters(DownloadParameters):
         self.logger.debug(settings.PARSL_CONFIG)
 
         # Configuracao do Parsl Log.
-        parsl.set_file_logger(os.path.join(
-            output_path, 'orbital_parameters_parsl.log'))
+        parsl.set_file_logger(os.path.join(output_path, "orbital_parameters_parsl.log"))
 
         # Declaracao do Parsl APP
-        @App('python', dfk)
+        @App("python", dfk)
         def start_parsl_job(name, number, files_path, logger):
 
             result = self.download(name, number, files_path)
 
             logger.debug(result)
 
-            msg = "Download [ FAILURE ] - Object: %s " % (result.get('name'))
+            msg = "Download [ FAILURE ] - Object: %s " % (result.get("name"))
 
-            if result.get('filename', None) is not None:
+            if result.get("filename", None) is not None:
                 self.logger.debug(result)
-                msg = "Download [ SUCCESS ] - [ %s ] Object: %s File: %s [ %s ] [ %s seconds ]" % (
-                    result.get('source', None),
-                    result.get('name', None), result.get(
-                        'filename', None), humanize.naturalsize(result.get('file_size', 0)),
-                    result.get('download_time', 0))
+                msg = (
+                    "Download [ SUCCESS ] - [ %s ] Object: %s File: %s [ %s ] [ %s seconds ]"
+                    % (
+                        result.get("source", None),
+                        result.get("name", None),
+                        result.get("filename", None),
+                        humanize.naturalsize(result.get("file_size", 0)),
+                        result.get("download_time", 0),
+                    )
+                )
 
             logger.info(msg)
 
@@ -95,8 +100,11 @@ class GetOrbitalParameters(DownloadParameters):
             # Utiliza o parsl apenas para os objetos que estao marcados
             # para serem baixados.
             if row.get("need_download"):
-                results.append(start_parsl_job(row.get("name"),
-                                               row.get("num"), files_path, self.logger))
+                results.append(
+                    start_parsl_job(
+                        row.get("name"), row.get("num"), files_path, self.logger
+                    )
+                )
 
         # Espera o Resultado de todos os jobs.
         outputs = [i.result() for i in results]
@@ -124,8 +132,9 @@ class GetOrbitalParameters(DownloadParameters):
         t1 = datetime.now()
 
         tdelta = t1 - t0
-        self.logger.info('Download Orbital Parameter Completed in %s' %
-                         humanize.naturaldelta(tdelta))
+        self.logger.info(
+            "Download Orbital Parameter Completed in %s" % humanize.naturaldelta(tdelta)
+        )
 
     def download(self, name, number, output_path):
         """
@@ -149,16 +158,12 @@ class GetOrbitalParameters(DownloadParameters):
             self.logger.debug(download_result)
 
             if download_result is None:
-                return dict({
-                    "name": name
-                })
+                return dict({"name": name})
 
             return download_result
         except Exception as e:
             self.logger.error(e)
-            return dict({
-                "name": name
-            })
+            return dict({"name": name})
 
     def download_ast_dys(self, name, number, output_path):
 
@@ -171,28 +176,35 @@ class GetOrbitalParameters(DownloadParameters):
         # AstDys Orbital Parameters URL
         url = AstDys().getOrbitalParametersURL(name, number)
 
-        filename = name.replace(" ", "_") + \
-            AstDys().orbital_parameters_extension
+        filename = name.replace(" ", "_") + AstDys().orbital_parameters_extension
 
         # Try to download the AstDyS files.
-        file_path, download_stats = Download().download_file_from_url(url, output_path=output_path, filename=filename,
-                                                                      overwrite=True, ignore_errors=True, timeout=5)
+        file_path, download_stats = Download().download_file_from_url(
+            url,
+            output_path=output_path,
+            filename=filename,
+            overwrite=True,
+            ignore_errors=True,
+            timeout=5,
+        )
         t1 = datetime.now()
 
         result = None
 
         if file_path:
-            result = dict({
-                "name": name,
-                "source": source,
-                "filename": download_stats.get('filename'),
-                "download_start_time": t0,
-                "download_finish_time": t1,
-                "download_time": download_stats.get('download_time'),
-                "file_size": download_stats.get("file_size"),
-                "external_url": url_object,
-                "download_url": url
-            })
+            result = dict(
+                {
+                    "name": name,
+                    "source": source,
+                    "filename": download_stats.get("filename"),
+                    "download_start_time": t0,
+                    "download_finish_time": t1,
+                    "download_time": download_stats.get("download_time"),
+                    "file_size": download_stats.get("file_size"),
+                    "external_url": url_object,
+                    "download_url": url,
+                }
+            )
 
         return result
 
@@ -211,17 +223,19 @@ class GetOrbitalParameters(DownloadParameters):
         result = None
 
         if download_stats:
-            result = dict({
-                "name": name,
-                "source": source,
-                "filename": download_stats.get("filename"),
-                "download_start_time": download_stats.get("start_time"),
-                "download_finish_time": download_stats.get("finish_time"),
-                "download_time": download_stats.get('download_time'),
-                "file_size": download_stats.get("file_size"),
-                "external_url": url_object,
-                "download_url": None
-            })
+            result = dict(
+                {
+                    "name": name,
+                    "source": source,
+                    "filename": download_stats.get("filename"),
+                    "download_start_time": download_stats.get("start_time"),
+                    "download_finish_time": download_stats.get("finish_time"),
+                    "download_time": download_stats.get("download_time"),
+                    "file_size": download_stats.get("file_size"),
+                    "external_url": url_object,
+                    "download_url": None,
+                }
+            )
 
         return result
 
@@ -230,15 +244,14 @@ class GetOrbitalParameters(DownloadParameters):
         return OrbitalParameterFile.objects.update_or_create(
             name=record.get("name"),
             defaults={
-                'source': record.get("source"),
-                'filename': record.get("filename"),
-                'download_start_time': record.get("download_start_time"),
-                'download_finish_time': record.get("download_finish_time"),
-                'file_size': record.get("file_size"),
-                'external_url': record.get("external_url"),
-                'download_url': record.get("download_url")
-
-            }
+                "source": record.get("source"),
+                "filename": record.get("filename"),
+                "download_start_time": record.get("download_start_time"),
+                "download_finish_time": record.get("download_finish_time"),
+                "file_size": record.get("file_size"),
+                "external_url": record.get("external_url"),
+                "download_url": record.get("download_url"),
+            },
         )
 
     def get_file_path(self, name):
@@ -257,8 +270,11 @@ class GetOrbitalParameters(DownloadParameters):
 
     def get_latest(self, name):
         try:
-            f = OrbitalParameterFile.objects.filter(
-                name=name).order_by('-download_finish_time').first()
+            f = (
+                OrbitalParameterFile.objects.filter(name=name)
+                .order_by("-download_finish_time")
+                .first()
+            )
             return f
 
         except:

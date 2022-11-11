@@ -6,18 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0018_skybotjob_estimated_execution_time'),
+        ("des", "0018_skybotjob_estimated_execution_time"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='downloadccdjob',
-            name='estimated_execution_time',
-            field=models.DurationField(blank=True, null=True, verbose_name='Estimated Execution Time'),
+            model_name="downloadccdjob",
+            name="estimated_execution_time",
+            field=models.DurationField(
+                blank=True, null=True, verbose_name="Estimated Execution Time"
+            ),
         ),
         migrations.AddField(
-            model_name='downloadccdjob',
-            name='estimated_t_size',
-            field=models.BigIntegerField(blank=True, default=0, help_text='Total size estimated to download in this job.', null=True, verbose_name='Estimated Size to Download'),
+            model_name="downloadccdjob",
+            name="estimated_t_size",
+            field=models.BigIntegerField(
+                blank=True,
+                default=0,
+                help_text="Total size estimated to download in this job.",
+                null=True,
+                verbose_name="Estimated Size to Download",
+            ),
         ),
     ]

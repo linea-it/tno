@@ -4,10 +4,9 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 
 
-class Notify():
-
+class Notify:
     def __init__(self):
-        self.logger = logging.getLogger('django')
+        self.logger = logging.getLogger("django")
 
     def send_email(self, subject, body, to, copy_to_adms=True, html=True):
         """
@@ -24,13 +23,15 @@ class Notify():
             from_email = settings.EMAIL_NOTIFICATION
         except:
             raise Exception(
-                "The EMAIL_NOTIFICATION variable is not configured in settings.")
+                "The EMAIL_NOTIFICATION variable is not configured in settings."
+            )
 
         try:
             environment = settings.ENVIRONMENT_NAME
         except:
             raise Exception(
-                "The ENVIRONMENT_NAME variable is not configured in settings.")
+                "The ENVIRONMENT_NAME variable is not configured in settings."
+            )
 
         self.logger.debug("FROM: %s" % from_email)
 
@@ -44,12 +45,13 @@ class Notify():
                 to = to + copy_to
             except:
                 raise Exception(
-                    "The EMAIL_NOTIFICATION_COPY_TO variable is not configured in settings.")
+                    "The EMAIL_NOTIFICATION_COPY_TO variable is not configured in settings."
+                )
 
         self.logger.debug("TO: %s" % to)
 
         # Subject
-        subject = ("SSSO %s - %s" % (environment, subject))
+        subject = "SSSO %s - %s" % (environment, subject)
 
         self.logger.debug("SUBJECT: %s" % subject)
 
@@ -75,16 +77,19 @@ class Notify():
             to = settings.EMAIL_HELPDESK
         except:
             raise Exception(
-                "The EMAIL_HELPDESK variable is not configured in settings.")
+                "The EMAIL_HELPDESK variable is not configured in settings."
+            )
 
         self.send_email(subject, original_message, to, False, False)
 
     def send_html_email(self, subject, to, template, context, copy_to_adms=True):
 
-        context.update({
-            "application_name": settings.APPLICATION_NAME,
-            "host_url": settings.HOST_URL
-        })
+        context.update(
+            {
+                "application_name": settings.APPLICATION_NAME,
+                "host_url": settings.HOST_URL,
+            }
+        )
 
         body = render_to_string(template, context)
 

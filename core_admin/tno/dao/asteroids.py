@@ -1,7 +1,12 @@
 from sqlalchemy import func
 from sqlalchemy.sql import and_, select, text
 
-from tno.db import DBBase
+
+import warnings
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    from tno.db import DBBase
 
 
 class AsteroidDao(DBBase):
@@ -9,7 +14,7 @@ class AsteroidDao(DBBase):
         super(AsteroidDao, self).__init__(pool)
 
         schema = self.get_base_schema()
-        self.tablename = 'tno_asteroid'
+        self.tablename = "tno_asteroid"
         self.tbl = self.get_table(self.tablename, schema)
 
     def get_tablename(self):
@@ -23,7 +28,9 @@ class AsteroidDao(DBBase):
 
     def insert_update(self):
 
-        stm = text("""INSERT INTO tno_asteroid ("name", "number", base_dynclass, dynclass) SELECT DISTINCT(sp.name), sp."number", sp.base_dynclass, sp.dynclass from skybot_position sp ON CONFLICT ("name") DO UPDATE SET "number" = EXCLUDED.number, base_dynclass = EXCLUDED.base_dynclass, dynclass = EXCLUDED.dynclass;""")
+        stm = text(
+            """INSERT INTO tno_asteroid ("name", "number", base_dynclass, dynclass) SELECT DISTINCT(sp.name), sp."number", sp.base_dynclass, sp.dynclass from skybot_position sp ON CONFLICT ("name") DO UPDATE SET "number" = EXCLUDED.number, base_dynclass = EXCLUDED.base_dynclass, dynclass = EXCLUDED.dynclass;"""
+        )
 
         self.debug_query(stm, True)
 
@@ -34,8 +41,11 @@ class AsteroidDao(DBBase):
 
         tbl = self.get_tbl()
 
-        stm = select(tbl.c).where(
-            and_(tbl.c.base_dynclass == dynclass)).order_by(tbl.c.name)
+        stm = (
+            select(tbl.c)
+            .where(and_(tbl.c.base_dynclass == dynclass))
+            .order_by(tbl.c.name)
+        )
 
         self.debug_query(stm, True)
 
@@ -48,7 +58,8 @@ class AsteroidDao(DBBase):
         tbl = self.get_tbl()
 
         stm = select([func.count(tbl.c.name)]).where(
-            and_(tbl.c.base_dynclass == dynclass))
+            and_(tbl.c.base_dynclass == dynclass)
+        )
 
         self.debug_query(stm, True)
 

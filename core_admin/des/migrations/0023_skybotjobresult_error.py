@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0022_auto_20200917_1322'),
+        ("des", "0022_auto_20200917_1322"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='skybotjobresult',
-            name='error',
-            field=models.TextField(blank=True, null=True, verbose_name='Error'),
+            model_name="skybotjobresult",
+            name="error",
+            field=models.TextField(blank=True, null=True, verbose_name="Error"),
         ),
     ]

@@ -2,8 +2,7 @@ from django.apps import AppConfig
 
 
 class PraiaConfig(AppConfig):
-    name = 'praia'
+    name = "praia"
 
     def ready(self):
         from . import signals
-

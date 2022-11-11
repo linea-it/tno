@@ -1,15 +1,15 @@
 import csv
 
 
-class DownloadParameters():
+class DownloadParameters:
     def read_input(self, input_file):
 
         records = list()
         with open(input_file) as csvfile:
-            reader = csv.DictReader(csvfile, delimiter=';')
+            reader = csv.DictReader(csvfile, delimiter=";")
             for row in reader:
 
-                if row.get("need_download") in ['True', 'true', '1', 't', 'y', 'yes']:
+                if row.get("need_download") in ["True", "true", "1", "t", "y", "yes"]:
                     row["need_download"] = True
 
                     self.need_download += 1
@@ -25,11 +25,11 @@ class DownloadParameters():
 
     def update_or_create_record(self, record):
         """
-            Este Metodo deve ser sobrescrito
+        Este Metodo deve ser sobrescrito
 
-            Instancia um Django Model e executa o metodo update_or_create
+        Instancia um Django Model e executa o metodo update_or_create
 
-            return obj, created
+        return obj, created
         """
 
         pass
@@ -58,5 +58,7 @@ class DownloadParameters():
                 not_downloaded += 1
 
         # TODO esta informacao tem que ficar dentro do metodo run
-        self.logger.info("Inputs [ %s ] Downloaded [ %s ] Registered [ %s ] Updated [ %s ] Not Downloaded [ %s ]" % (
-            len(self.input_records), downloaded, new, updated, not_downloaded))
+        self.logger.info(
+            "Inputs [ %s ] Downloaded [ %s ] Registered [ %s ] Updated [ %s ] Not Downloaded [ %s ]"
+            % (len(self.input_records), downloaded, new, updated, not_downloaded)
+        )

@@ -6,32 +6,56 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0016_auto_20200730_2038'),
+        ("des", "0016_auto_20200730_2038"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='downloadccdjob',
-            name='ccds',
+            model_name="downloadccdjob",
+            name="ccds",
         ),
         migrations.AddField(
-            model_name='downloadccdjob',
-            name='asteroids',
-            field=models.BigIntegerField(blank=True, default=0, help_text='Total unique objects  in this job.', null=True, verbose_name='Asteroids'),
+            model_name="downloadccdjob",
+            name="asteroids",
+            field=models.BigIntegerField(
+                blank=True,
+                default=0,
+                help_text="Total unique objects  in this job.",
+                null=True,
+                verbose_name="Asteroids",
+            ),
         ),
         migrations.AddField(
-            model_name='downloadccdjob',
-            name='ccds_downloaded',
-            field=models.BigIntegerField(blank=True, default=0, help_text='Total CCDs downloaded in this job.', null=True, verbose_name='CCDs Downloaded'),
+            model_name="downloadccdjob",
+            name="ccds_downloaded",
+            field=models.BigIntegerField(
+                blank=True,
+                default=0,
+                help_text="Total CCDs downloaded in this job.",
+                null=True,
+                verbose_name="CCDs Downloaded",
+            ),
         ),
         migrations.AddField(
-            model_name='downloadccdjob',
-            name='ccds_to_download',
-            field=models.BigIntegerField(blank=True, default=0, help_text='Total CCDs to be downloaded by this job.', null=True, verbose_name='CCDs to Download'),
+            model_name="downloadccdjob",
+            name="ccds_to_download",
+            field=models.BigIntegerField(
+                blank=True,
+                default=0,
+                help_text="Total CCDs to be downloaded by this job.",
+                null=True,
+                verbose_name="CCDs to Download",
+            ),
         ),
         migrations.AddField(
-            model_name='downloadccdjob',
-            name='nights',
-            field=models.BigIntegerField(blank=True, default=0, help_text='Total nights with ccds to be downloaded in this job.', null=True, verbose_name='Nights'),
+            model_name="downloadccdjob",
+            name="nights",
+            field=models.BigIntegerField(
+                blank=True,
+                default=0,
+                help_text="Total nights with ccds to be downloaded in this job.",
+                null=True,
+                verbose_name="Nights",
+            ),
         ),
     ]

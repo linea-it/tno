@@ -4,7 +4,7 @@ import os
 from parsl import python_app
 
 
-def get_logger(path, filename='identifier.log'):
+def get_logger(path, filename="identifier.log"):
     import logging
     import os
 
@@ -12,16 +12,17 @@ def get_logger(path, filename='identifier.log'):
     formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
     file_handler = logging.FileHandler(logfile)
     file_handler.setFormatter(formatter)
-    log = logging.getLogger('identifier')
+    log = logging.getLogger("identifier")
     log.setLevel(logging.DEBUG)
     log.addHandler(file_handler)
 
     return log
 
 
-def read_inputs(path, filename='job.json'):
+def read_inputs(path, filename="job.json"):
     import os
     import json
+
     with open(os.path.join(path, filename)) as json_file:
         data = json.load(json_file)
 
@@ -38,7 +39,8 @@ def read_inputs(path, filename='job.json'):
 def write_job_file(path, data):
     import json
     import os
-    with open(os.path.join(path, 'job.json'), 'w') as json_file:
+
+    with open(os.path.join(path, "job.json"), "w") as json_file:
         json.dump(data, json_file)
 
 
@@ -49,20 +51,13 @@ def retrieve_asteroids(type, values):
     from dao import AsteroidDao
 
     asteroids = None
-    if type == 'name':
-        asteroids = AsteroidDao().get_asteroids_by_names(
-            names=values.split(';')
-        )
+    if type == "name":
+        asteroids = AsteroidDao().get_asteroids_by_names(names=values.split(";"))
     else:
-        asteroids = AsteroidDao().get_asteroids_by_dynclass(
-            dynclass=values
-        )
+        asteroids = AsteroidDao().get_asteroids_by_dynclass(dynclass=values)
 
     for asteroid in asteroids:
-        asteroid.update({
-            'status': 'running',
-            'ccds': list()
-        })
+        asteroid.update({"status": "running", "ccds": list()})
 
     return asteroids
 
@@ -84,20 +79,20 @@ def date_to_jd(date_obs, exptime, leap_second):
     import spiceypy as spice
 
     # Calcula a correção
-    correction = (exptime + 1.05)/2
+    correction = (exptime + 1.05) / 2
 
     # Carrega o lead second na lib spicepy
     spice.furnsh(leap_second)
 
     # Converte a date time para JD
-    date_et = spice.utc2et(str(date_obs).split('+')[0] + " UTC")
-    date_jdutc = spice.et2utc(date_et, 'J', 14)
+    date_et = spice.utc2et(str(date_obs).split("+")[0] + " UTC")
+    date_jdutc = spice.et2utc(date_et, "J", 14)
 
     # Remove a string JD retornada pela lib
-    midtime = date_jdutc.replace('JD ', '')
+    midtime = date_jdutc.replace("JD ", "")
 
     # Soma a correção
-    jd = float(midtime) + correction/86400
+    jd = float(midtime) + correction / 86400
 
     spice.kclear()
 
@@ -146,43 +141,43 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, email, directory):
     import requests
     import spiceypy as spice
 
-    date1 = dt.strptime(initial_date, '%Y-%m-%d')
-    date2 = dt.strptime(final_date, '%Y-%m-%d')
+    date1 = dt.strptime(initial_date, "%Y-%m-%d")
+    date2 = dt.strptime(final_date, "%Y-%m-%d")
     diff = date2 - date1
 
     if diff.days <= 32:
         raise ValueError(
-            'The [final_date] must be more than 32 days later than [initial_date]')
+            "The [final_date] must be more than 32 days later than [initial_date]"
+        )
 
-    urlJPL = 'https://ssd.jpl.nasa.gov/x/smb_spk.cgi?OPTION=Make+SPK'
+    urlJPL = "https://ssd.jpl.nasa.gov/x/smb_spk.cgi?OPTION=Make+SPK"
 
     path = pathlib.Path(directory)
     if not path.exists():
-        raise ValueError('The directory {} does not exist!'.format(path))
+        raise ValueError("The directory {} does not exist!".format(path))
 
-    filename = identifier.replace(' ', '') + '.bsp'
+    filename = identifier.replace(" ", "") + ".bsp"
 
     parameters = {
-        'OBJECT': identifier,
-        'START': date1.strftime('%Y-%b-%d'),
-        'STOP': date2.strftime('%Y-%b-%d'),
-        'EMAIL': email,
-        'TYPE': '-B'
+        "OBJECT": identifier,
+        "START": date1.strftime("%Y-%b-%d"),
+        "STOP": date2.strftime("%Y-%b-%d"),
+        "EMAIL": email,
+        "TYPE": "-B",
     }
 
     r = requests.get(urlJPL, params=parameters, stream=True)
-    bspFormat = r.headers['Content-Type']
-    if r.status_code == requests.codes.ok and bspFormat == 'application/download':
+    bspFormat = r.headers["Content-Type"]
+    if r.status_code == requests.codes.ok and bspFormat == "application/download":
         file_path = path.joinpath(filename)
-        with open(file_path, 'wb') as f:
+        with open(file_path, "wb") as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
 
         return file_path
     else:
         # TODO: Add a Debug
-        raise Exception(
-            "It was not able to download the bsp file for object.")
+        raise Exception("It was not able to download the bsp file for object.")
 
 
 def findSPKID(bsp):
@@ -200,16 +195,16 @@ def findSPKID(bsp):
     spice.furnsh(bsp)
 
     i = 0
-    kind = 'spk'
+    kind = "spk"
     fillen = 256
     typlen = 33
     srclen = 256
-    keys = ['Target SPK ID   :', 'ASTEROID_SPK_ID =']
+    keys = ["Target SPK ID   :", "ASTEROID_SPK_ID ="]
     n = len(keys[0])
 
     name, kind, source, loc = spice.kdata(i, kind, fillen, typlen, srclen)
     flag = False
-    spk = ''
+    spk = ""
     while not flag:
         try:
             m, header, flag = spice.dafec(loc, 1)
@@ -223,30 +218,32 @@ def findSPKID(bsp):
 
 
 def geo_topo_vector(longitude, latitude, elevation, jd):
-    '''
+    """
     Transformation from [longitude, latitude, elevation] to [x,y,z]
-    '''
+    """
     from astropy.coordinates import GCRS, EarthLocation
     from astropy.time import Time
     import numpy as np
 
     loc = EarthLocation(longitude, latitude, elevation)
 
-    time = Time(jd, scale='utc', format='jd')
+    time = Time(jd, scale="utc", format="jd")
     itrs = loc.get_itrs(obstime=time)
     gcrs = itrs.transform_to(GCRS(obstime=time))
 
     r = gcrs.cartesian
 
     # convert from m to km
-    x = r.x.value/1000.0
-    y = r.y.value/1000.0
-    z = r.z.value/1000.0
+    x = r.x.value / 1000.0
+    y = r.y.value / 1000.0
+    z = r.z.value / 1000.0
 
     return np.array([x, y, z])
 
 
-def compute_theoretical_positions(spkid, ccds, bsp_jpl, bsp_planetary, leap_second, location):
+def compute_theoretical_positions(
+    spkid, ccds, bsp_jpl, bsp_planetary, leap_second, location
+):
 
     import spiceypy as spice
     import numpy as np
@@ -262,13 +259,13 @@ def compute_theoretical_positions(spkid, ccds, bsp_jpl, bsp_planetary, leap_seco
     results = list()
 
     for ccd in ccds:
-        date_jd = ccd['date_jd']
+        date_jd = ccd["date_jd"]
 
         # Convert dates from JD to et format. "JD" is added due to spice requirement
         date_et = spice.utc2et(str(date_jd) + " JD UTC")
 
         # Compute geocentric positions (x,y,z) in km for each date with light time correction
-        r_geo, lt_ast = spice.spkpos(spkid, date_et, 'J2000', 'LT', '399')
+        r_geo, lt_ast = spice.spkpos(spkid, date_et, "J2000", "LT", "399")
 
         lon, lat, ele = location
         l_ra, l_dec = [], []
@@ -283,12 +280,14 @@ def compute_theoretical_positions(spkid, ccds, bsp_jpl, bsp_planetary, leap_seco
         ra = np.degrees(rarad)
         dec = np.degrees(decrad)
 
-        ccd.update({
-            'date_et': date_et,
-            'geocentric_positions': list(r_geo),
-            'topocentric_positions': list(r_topo),
-            'theoretical_coordinates': [ra, dec]
-        })
+        ccd.update(
+            {
+                "date_et": date_et,
+                "geocentric_positions": list(r_geo),
+                "topocentric_positions": list(r_topo),
+                "theoretical_coordinates": [ra, dec],
+            }
+        )
 
         results.append(ccd)
 
@@ -303,17 +302,17 @@ def retrieve_ccds_by_asteroid(asteroid, leap_second):
     from dao import AsteroidDao
     from library import date_to_jd
 
-    ccds = AsteroidDao().ccds_by_asteroid(
-        asteroid_name=asteroid['name']
-    )
+    ccds = AsteroidDao().ccds_by_asteroid(asteroid_name=asteroid["name"])
 
     for ccd in ccds:
-        ccd.update({
-            'date_obs': str(ccd['date_obs']),
-            'date_jd': date_to_jd(ccd['date_obs'], ccd['exptime'], leap_second),
-        })
+        ccd.update(
+            {
+                "date_obs": str(ccd["date_obs"]),
+                "date_jd": date_to_jd(ccd["date_obs"], ccd["exptime"], leap_second),
+            }
+        )
 
-    asteroid['ccds'] = ccds
+    asteroid["ccds"] = ccds
 
     return asteroid
 
@@ -328,17 +327,20 @@ def retrieve_bsp_by_asteroid(name, initial_date, final_date, job_path):
     from library import get_bsp_from_jpl
     from config import JPL_EMAIL
 
-    bsp = dict({
-        'status': None,
-        'filename': None,
-        'path': None,
-        'file_size': None,
-    })
+    bsp = dict(
+        {
+            "status": None,
+            "filename": None,
+            "path": None,
+            "file_size": None,
+        }
+    )
 
     try:
         # Criar o diretório para o asteroid.
         asteroid_path = pathlib.Path.joinpath(
-            pathlib.Path(job_path), name.replace(' ', '_'))
+            pathlib.Path(job_path), name.replace(" ", "_")
+        )
         pathlib.Path(asteroid_path).mkdir(parents=True, exist_ok=True)
 
         if not asteroid_path.exists():
@@ -350,7 +352,7 @@ def retrieve_bsp_by_asteroid(name, initial_date, final_date, job_path):
 
         else:
             # Já existe diretório verifica se existe o arquivo
-            a_path = asteroid_path.joinpath('%s.bsp' % name.replace(' ', '_'))
+            a_path = asteroid_path.joinpath("%s.bsp" % name.replace(" ", "_"))
 
             if not a_path.exists():
                 # Download BSP from JPL
@@ -361,21 +363,23 @@ def retrieve_bsp_by_asteroid(name, initial_date, final_date, job_path):
                 # Arquivo já existe faz nada
                 bsp_path = a_path
 
-        bsp.update({
-            'status': 'success',
-            'filename': os.path.basename(bsp_path),
-            'path': str(bsp_path),
-            'file_size': os.path.getsize(bsp_path)
-        })
+        bsp.update(
+            {
+                "status": "success",
+                "filename": os.path.basename(bsp_path),
+                "path": str(bsp_path),
+                "file_size": os.path.getsize(bsp_path),
+            }
+        )
 
     except Exception as e:
         trace = traceback.format_exc()
 
         msg = "Failed on retrive asteroids BSP from JPL. %s" % e
 
-        bsp['status'] = 'failure'
-        bsp['error'] = msg
-        bsp['traceback'] = trace
+        bsp["status"] = "failure"
+        bsp["error"] = msg
+        bsp["traceback"] = trace
 
     finally:
         return bsp
@@ -390,28 +394,27 @@ def theoretical_positions(asteroid, bsp_planetary, leap_second, observatory_loca
 
     try:
         # Recuperar o SPK Id do objeto a partir do seu BSP
-        asteroid['spkid'] = findSPKID(
-            asteroid['bsp_jpl']['path'])
+        asteroid["spkid"] = findSPKID(asteroid["bsp_jpl"]["path"])
 
         ccds = compute_theoretical_positions(
-            asteroid['spkid'],
-            asteroid['ccds'],
-            asteroid['bsp_jpl']['path'],
+            asteroid["spkid"],
+            asteroid["ccds"],
+            asteroid["bsp_jpl"]["path"],
             bsp_planetary,
             leap_second,
-            observatory_location
+            observatory_location,
         )
 
-        asteroid['ccds'] = ccds
+        asteroid["ccds"] = ccds
 
     except Exception as e:
         trace = traceback.format_exc()
 
         msg = "Failed on retrive asteroids BSP from JPL. %s" % e
 
-        asteroid['status'] = 'failure'
-        asteroid['error'] = msg
-        asteroid['traceback'] = trace
+        asteroid["status"] = "failure"
+        asteroid["error"] = msg
+        asteroid["traceback"] = trace
 
     finally:
         return asteroid
@@ -432,31 +435,30 @@ def observed_positions(idx, name, asteroid_id, ccd, asteroid_path, radius=2):
 
     obs_coordinates = None
 
-    log = get_logger(asteroid_path, '%s_obs_%s.log' %
-                     (name.replace(' ', '_'), idx))
+    log = get_logger(asteroid_path, "%s_obs_%s.log" % (name.replace(" ", "_"), idx))
 
     log.info("Calculating observed positions")
     log.debug("Asteroid: %s" % name)
     log.debug("IDX: %s" % idx)
-    log.debug("CCD: %s" % ccd['path'])
+    log.debug("CCD: %s" % ccd["path"])
 
     try:
         # Coordenadas teroricas
-        ra_jpl, dec_jpl = ccd['theoretical_coordinates']
+        ra_jpl, dec_jpl = ccd["theoretical_coordinates"]
 
-        file_path = os.path.join(ccd['path'], ccd['filename'])
+        file_path = os.path.join(ccd["path"], ccd["filename"])
 
         # Le o catalogo Fits
         hdul = fits.open(file_path)
         rows = hdul[2].data
 
-        a_ra_des = rows['ALPHA_J2000']
-        a_dec_des = rows['DELTA_J2000']
-        a_magpsf = rows['MAG_PSF']
-        a_magerrpsf = rows['MAGERR_PSF']
+        a_ra_des = rows["ALPHA_J2000"]
+        a_dec_des = rows["DELTA_J2000"]
+        a_magpsf = rows["MAG_PSF"]
+        a_magerrpsf = rows["MAGERR_PSF"]
 
-        catJPL = SkyCoord(ra=[ra_jpl]*u.deg, dec=[dec_jpl]*u.deg, frame='icrs')
-        catD00 = SkyCoord(ra=a_ra_des*u.deg, dec=a_dec_des*u.deg, frame='icrs')
+        catJPL = SkyCoord(ra=[ra_jpl] * u.deg, dec=[dec_jpl] * u.deg, frame="icrs")
+        catD00 = SkyCoord(ra=a_ra_des * u.deg, dec=a_dec_des * u.deg, frame="icrs")
         id1, d2d1, d3d = catD00.match_to_catalog_sky(catJPL)
 
         # search the index and value of element with minimal distance
@@ -471,50 +473,57 @@ def observed_positions(idx, name, asteroid_id, ccd, asteroid_path, radius=2):
 
         if ra is not None and dec is not None:
             # Calcular "observed minus calculated"
-            observed_omc = [float((ra-ra_jpl)*3600*np.cos(np.radians(dec_jpl))),
-                            float((dec-dec_jpl)*3600)]
-            ccd.update({
-                'observed_coordinates': [float(ra), float(dec)],
-                'observed_omc': observed_omc,
-                'magpsf': float(a_magpsf[match_idx]),
-                'magerrpsf': float(a_magerrpsf[match_idx])
-            })
+            observed_omc = [
+                float((ra - ra_jpl) * 3600 * np.cos(np.radians(dec_jpl))),
+                float((dec - dec_jpl) * 3600),
+            ]
+            ccd.update(
+                {
+                    "observed_coordinates": [float(ra), float(dec)],
+                    "observed_omc": observed_omc,
+                    "magpsf": float(a_magpsf[match_idx]),
+                    "magerrpsf": float(a_magerrpsf[match_idx]),
+                }
+            )
 
             # Cria um objeto com os dados da posição observada,
             # Esta etapa está aqui para aproveitar o paralelismo e adiantar a consolidação.
-            obs_coordinates = dict({
-                'name': name,
-                'asteroid_id': asteroid_id,
-                'ccd_id': ccd['id'],
-                'date_obs': ccd['date_obs'],
-                'date_jd': ccd['date_jd'],
-                'ra': ccd['observed_coordinates'][0],
-                'dec': ccd['observed_coordinates'][1],
-                'offset_ra': ccd['observed_omc'][0],
-                'offset_dec': ccd['observed_omc'][1],
-                'mag_psf': ccd['magpsf'],
-                'mag_psf_err': ccd['magerrpsf'],
-            })
+            obs_coordinates = dict(
+                {
+                    "name": name,
+                    "asteroid_id": asteroid_id,
+                    "ccd_id": ccd["id"],
+                    "date_obs": ccd["date_obs"],
+                    "date_jd": ccd["date_jd"],
+                    "ra": ccd["observed_coordinates"][0],
+                    "dec": ccd["observed_coordinates"][1],
+                    "offset_ra": ccd["observed_omc"][0],
+                    "offset_dec": ccd["observed_omc"][1],
+                    "mag_psf": ccd["magpsf"],
+                    "mag_psf_err": ccd["magerrpsf"],
+                }
+            )
 
-            log.info("Observed Coordinates: %s" % ccd['observed_coordinates'])
+            log.info("Observed Coordinates: %s" % ccd["observed_coordinates"])
 
         else:
-            ccd.update({
-                'observed_coordinates': None,
-                'info': 'Could not find a position.'
-            })
+            ccd.update(
+                {"observed_coordinates": None, "info": "Could not find a position."}
+            )
 
             log.info("Could not find a position.")
 
     except Exception as e:
-        ccd.update({
-            'observed_coordinates': None,
-            'error': 'Failed in match position stage with exception: %s' % str(e)
-        })
-        log.error('Failed in match position stage with exception: %s' % str(e))
+        ccd.update(
+            {
+                "observed_coordinates": None,
+                "error": "Failed in match position stage with exception: %s" % str(e),
+            }
+        )
+        log.error("Failed in match position stage with exception: %s" % str(e))
 
     finally:
-        log.info('Calculating observed positions Finish')
+        log.info("Calculating observed positions Finish")
         return (name, ccd, obs_coordinates)
 
 
@@ -527,12 +536,25 @@ def ingest_observations(observations):
     from dao import AsteroidDao, ObservationDao
 
     # Apaga as observations já registradas para este asteroid antes de inserir.
-    name = observations[0]['name']
+    name = observations[0]["name"]
     ObservationDao().delete_by_asteroid_name(name)
 
-    df_obs = pd.DataFrame(observations, columns=[
-        'name', 'date_obs', 'date_jd', 'ra', 'dec', 'offset_ra',
-        'offset_dec', 'mag_psf', 'mag_psf_err', 'asteroid_id', 'ccd_id'])
+    df_obs = pd.DataFrame(
+        observations,
+        columns=[
+            "name",
+            "date_obs",
+            "date_jd",
+            "ra",
+            "dec",
+            "offset_ra",
+            "offset_dec",
+            "mag_psf",
+            "mag_psf_err",
+            "asteroid_id",
+            "ccd_id",
+        ],
+    )
 
     # TODO: Tratar os dados se necessário
     data = StringIO()
@@ -544,10 +566,13 @@ def ingest_observations(observations):
     )
     data.seek(0)
 
-    tablename = 'des_observation'
+    tablename = "des_observation"
 
     # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
-    sql = "COPY %s (name, date_obs, date_jd, ra, dec, offset_ra, offset_dec, mag_psf, mag_psf_err, asteroid_id, ccd_id) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);" % tablename
+    sql = (
+        "COPY %s (name, date_obs, date_jd, ra, dec, offset_ra, offset_dec, mag_psf, mag_psf_err, asteroid_id, ccd_id) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);"
+        % tablename
+    )
 
     rowcount = AsteroidDao().import_with_copy_expert(sql, data)
 
@@ -562,9 +587,10 @@ def write_asteroid_data(asteroid):
     import os
 
     filepath = os.path.join(
-        asteroid['path'], '%s.json.gz' % asteroid['name'].replace(' ', '_'))
+        asteroid["path"], "%s.json.gz" % asteroid["name"].replace(" ", "_")
+    )
 
-    with gzip.open(filepath, 'wt', encoding='UTF-8') as zipfile:
+    with gzip.open(filepath, "wt", encoding="UTF-8") as zipfile:
         json.dump(asteroid, zipfile)
 
     return asteroid
