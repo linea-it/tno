@@ -25,55 +25,6 @@ from tno.auth_shibboleth import ShibbolethBackend
 @api_view(["GET"])
 def teste(request):
     if request.method == "GET":
-        # debug = request.query_params.get('debug', False)
-
-        # from des.astrometry_pipeline import DesAstrometryPipeline
-
-        # DesAstrometryPipeline(debug=bool(debug)).run(1)
-
-        from des.astrometry_daemon import check_jobs_to_run
-
-        check_jobs_to_run()
-
-        result = dict(
-            {
-                "success": True,
-            }
-        )
-
-        return Response(result)
-
-
-@api_view(["GET"])
-def teste2(request):
-    if request.method == "GET":
-
-        from des.astrometry_daemon import check_jobs_running
-
-        check_jobs_running()
-
-        # import gzip
-        # import json
-        # with gzip.open('/archive/des_astrometry/des_astrometry_1/Eris/Eris.json.gz', 'rt', encoding='UTF-8') as zipfile:
-        #     result = json.load(zipfile)
-
-        result = dict(
-            {
-                "success": True,
-            }
-        )
-
-        return Response(result)
-
-
-@api_view(["GET"])
-def teste3(request):
-    if request.method == "GET":
-
-        from des.astrometry_pipeline import DesAstrometryPipeline
-
-        DesAstrometryPipeline().update_asteroid_table()
-
         result = dict(
             {
                 "success": True,

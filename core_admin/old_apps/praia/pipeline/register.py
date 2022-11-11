@@ -13,7 +13,12 @@ from praia.models import (
     AstrometryOutput,
     Run,
 )
-from tno.condor import check_condor_job, check_job_history, get_job_by_id, remove_job
+from old_apps.condor import (
+    check_condor_job,
+    check_job_history,
+    get_job_by_id,
+    remove_job,
+)
 
 import csv
 

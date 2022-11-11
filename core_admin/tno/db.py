@@ -49,32 +49,34 @@ class DBBase:
         self.logger = logging.getLogger("django")
 
     def get_db_uri(self):
-        db_uri = ""
 
-        if "DB_NAME" in os.environ:
-            # postgresql+psycopg2
-            db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
-                os.environ["DB_USER"],
-                os.environ["DB_PASS"],
-                os.environ["DB_HOST"],
-                os.environ["DB_PORT"],
-                os.environ["DB_NAME"],
-            )
+        db_admin = settings.DATABASES["default"]
+        # postgresql+psycopg2
+        db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
+            db_admin["USER"],
+            db_admin["PASSWORD"],
+            db_admin["HOST"],
+            db_admin["PORT"],
+            db_admin["NAME"],
+        )
 
-            self.current_dialect = postgresql.dialect()
+        self.current_dialect = postgresql.dialect()
 
         return db_uri
 
     def get_database(self):
-        if "DB_NAME" in os.environ:
-            return os.environ["DB_NAME"]
+        if "NAME" in settings.DATABASES["default"]:
+            return settings.DATABASES["default"]["NAME"]
         else:
             return None
 
     def get_base_schema(self):
         schema = None
-        if "DB_SCHEMA" in os.environ:
-            schema = os.environ["DB_SCHEMA"]
+        # Considerando esse parametro em Settings DATABASES
+        # "OPTIONS": {"options": "-c search_path=<DB_SCHEMA>,public"},
+        if "options" in settings.DATABASES["default"]["OPTIONS"]:
+            options = settings.DATABASES["default"]["OPTIONS"]["options"]
+            schema = options[options.find("=") + 1 : options.rfind(",")]
 
         return schema
 
@@ -393,105 +395,105 @@ class DBBase:
             connection.close()
 
 
-class CatalogDB(DBBase):
-    def __init__(self, pool=True):
+# class CatalogDB(DBBase):
+#     def __init__(self, pool=True):
 
-        if pool is False:
-            self.engine = create_engine(self.get_db_uri(), poolclass=NullPool)
-        else:
-            self.engine = create_engine(self.get_db_uri())
+#         if pool is False:
+#             self.engine = create_engine(self.get_db_uri(), poolclass=NullPool)
+#         else:
+#             self.engine = create_engine(self.get_db_uri())
 
-        self.current_dialect = None
+#         self.current_dialect = None
 
-        self.inspect = inspect(self.engine)
+#         self.inspect = inspect(self.engine)
 
-        self.logger = logging.getLogger("django")
+#         self.logger = logging.getLogger("django")
 
-    def get_db_uri(self):
-        db_uri = ""
+#     def get_db_uri(self):
+#         db_uri = ""
 
-        if "CATALOG_DB_NAME" in os.environ:
-            # postgresql+psycopg2
-            db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
-                os.environ["CATALOG_DB_USER"],
-                os.environ["CATALOG_DB_PASS"],
-                os.environ["CATALOG_DB_HOST"],
-                os.environ["CATALOG_DB_PORT"],
-                os.environ["CATALOG_DB_NAME"],
-            )
+#         if "CATALOG_DB_NAME" in os.environ:
+#             # postgresql+psycopg2
+#             db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
+#                 os.environ["CATALOG_DB_USER"],
+#                 os.environ["CATALOG_DB_PASS"],
+#                 os.environ["CATALOG_DB_HOST"],
+#                 os.environ["CATALOG_DB_PORT"],
+#                 os.environ["CATALOG_DB_NAME"],
+#             )
 
-            self.current_dialect = postgresql.dialect()
+#             self.current_dialect = postgresql.dialect()
 
-        return db_uri
+#         return db_uri
 
-    def radial_query(
-        self,
-        tablename,
-        ra_property,
-        dec_property,
-        ra,
-        dec,
-        radius,
-        schema=None,
-        columns=None,
-        limit=None,
-    ):
+#     def radial_query(
+#         self,
+#         tablename,
+#         ra_property,
+#         dec_property,
+#         ra,
+#         dec,
+#         radius,
+#         schema=None,
+#         columns=None,
+#         limit=None,
+#     ):
 
-        s_columns = "*"
-        if columns != None and len(columns) > 0:
-            s_columns = ", ".join(columns)
+#         s_columns = "*"
+#         if columns != None and len(columns) > 0:
+#             s_columns = ", ".join(columns)
 
-        if schema != None:
-            tablename = "%s.%s" % (schema, tablename)
+#         if schema != None:
+#             tablename = "%s.%s" % (schema, tablename)
 
-        s_limit = ""
-        if limit != None:
-            s_limit = "LIMIT %s" % limit
+#         s_limit = ""
+#         if limit != None:
+#             s_limit = "LIMIT %s" % limit
 
-        stm = (
-            """SELECT %s FROM %s WHERE q3c_radial_query("%s", "%s", %s, %s, %s) %s """
-            % (
-                s_columns,
-                tablename,
-                ra_property,
-                dec_property,
-                ra,
-                dec,
-                radius,
-                s_limit,
-            )
-        )
+#         stm = (
+#             """SELECT %s FROM %s WHERE q3c_radial_query("%s", "%s", %s, %s, %s) %s """
+#             % (
+#                 s_columns,
+#                 tablename,
+#                 ra_property,
+#                 dec_property,
+#                 ra,
+#                 dec,
+#                 radius,
+#                 s_limit,
+#             )
+#         )
 
-        return self.fetch_all_dict(text(stm))
+#         return self.fetch_all_dict(text(stm))
 
-    def poly_query(
-        self,
-        tablename,
-        ra_property,
-        dec_property,
-        positions,
-        schema=None,
-        columns=None,
-        limit=None,
-    ):
+#     def poly_query(
+#         self,
+#         tablename,
+#         ra_property,
+#         dec_property,
+#         positions,
+#         schema=None,
+#         columns=None,
+#         limit=None,
+#     ):
 
-        s_columns = "*"
-        if columns != None and len(columns) > 0:
-            s_columns = ", ".join(columns)
+#         s_columns = "*"
+#         if columns != None and len(columns) > 0:
+#             s_columns = ", ".join(columns)
 
-        if schema != None:
-            tablename = "%s.%s" % (schema, tablename)
+#         if schema != None:
+#             tablename = "%s.%s" % (schema, tablename)
 
-        s_limit = ""
-        if limit != None:
-            s_limit = "LIMIT %s" % limit
+#         s_limit = ""
+#         if limit != None:
+#             s_limit = "LIMIT %s" % limit
 
-        stm = """SELECT %s FROM %s WHERE q3c_poly_query("%s", "%s", '{%s}') %s """ % (
-            s_columns,
-            tablename,
-            ra_property,
-            dec_property,
-            ", ".join(positions),
-            s_limit,
-        )
-        return self.fetch_all_dict(text(stm))
+#         stm = """SELECT %s FROM %s WHERE q3c_poly_query("%s", "%s", '{%s}') %s """ % (
+#             s_columns,
+#             tablename,
+#             ra_property,
+#             dec_property,
+#             ", ".join(positions),
+#             s_limit,
+#         )
+#         return self.fetch_all_dict(text(stm))

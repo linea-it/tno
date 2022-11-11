@@ -28,7 +28,7 @@ scheduler.add_job(
     check_loaddata_queue,
     "interval",
     # minutes=1
-    seconds=20,
+    seconds=30,
     max_instances=1,
     id="des_skybot_loaddata",
 )

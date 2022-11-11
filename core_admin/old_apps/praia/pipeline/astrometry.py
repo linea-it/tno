@@ -21,7 +21,7 @@ from praia.pipeline.bsp_jpl import retrieve_bsp_jpl
 from praia.pipeline.ccd_image import create_ccd_images_list
 from praia.pipeline.register import register_condor_job, register_csv_stages_outputs
 from praia.pipeline.star_catalog import create_star_catalog
-from tno.condor import submit_condor_job
+from old_apps.condor import submit_condor_job
 from tno.models import Proccess
 from tno.proccess import ProccessManager
 from tno.skybotoutput import FilterObjects
