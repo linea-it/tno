@@ -15,7 +15,7 @@ from sqlalchemy import (
     create_engine,
 )
 from sqlalchemy import func, inspect
-
+from sqlalchemy import exc as sa_exc
 
 # from sqlalchemy.dialects import oracle
 from sqlalchemy.dialects import postgresql, sqlite
@@ -33,12 +33,14 @@ from sqlalchemy.sql.expression import (
 
 class DBBase:
     def __init__(self, pool=False):
-        if pool is False:
-            self.engine = create_engine(self.get_db_uri(), poolclass=NullPool)
-        else:
-            self.engine = create_engine(
-                self.get_db_uri(), connect_args={"options": "-c timezone=utc"}
-            )
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=sa_exc.SAWarning)
+            if pool is False:
+                self.engine = create_engine(self.get_db_uri(), poolclass=NullPool)
+            else:
+                self.engine = create_engine(
+                    self.get_db_uri(), connect_args={"options": "-c timezone=utc"}
+                )
 
         self.current_dialect = None
 
@@ -80,16 +82,20 @@ class DBBase:
         return self.engine
 
     def get_table(self, tablename, schema=None):
-        tbl = Table(tablename, MetaData(self.engine), autoload=True, schema=schema)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=sa_exc.SAWarning)
+            tbl = Table(tablename, MetaData(self.engine), autoload=True, schema=schema)
 
-        return tbl
+            return tbl
 
     def to_dict(self, row):
         return dict(collections.OrderedDict(row))
 
     def execute(self, stm):
-        with self.engine.connect() as con:
-            return con.execute(stm)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=sa_exc.SAWarning)
+            with self.engine.connect() as con:
+                return con.execute(stm)
 
     def fetch_all_dict(self, stm, log=True):
 

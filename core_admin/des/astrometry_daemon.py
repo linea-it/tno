@@ -1,11 +1,16 @@
 # TODO: Seria interessante ter apenas um scheduler para toda a aplicação. poderia ser usado django-apscheduler para gerenciar. Tentar usar essa função do Remove, criar uma função aqui que tenha acesso ao schedule.
 
 
+import subprocess
+import warnings
+from sqlalchemy import exc as sa_exc
 from apscheduler.schedulers.background import BackgroundScheduler
 
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", category=sa_exc.SAWarning)
+    from des.astrometry_pipeline import DesAstrometryPipeline
+
 from des.models import AstrometryJob
-from des.astrometry_pipeline import DesAstrometryPipeline
-import subprocess
 
 
 def check_jobs_to_run():
@@ -88,7 +93,7 @@ scheduler.add_job(
     check_jobs_running,
     "interval",
     # minutes=1
-    seconds=15,
+    seconds=30,
     max_instances=1,
     id="des_astrometry_check_jobs",
 )

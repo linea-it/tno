@@ -3,8 +3,8 @@ from datetime import datetime
 from io import StringIO
 from urllib.parse import urljoin
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 import requests
 from requests.exceptions import HTTPError
 

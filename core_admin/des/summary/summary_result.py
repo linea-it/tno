@@ -33,6 +33,10 @@ class SummaryResult:
         # Get asteroids by dynclass of the job
         asteroids = dao.dynclass_asteroids_by_job(job_id)
 
+        if len(asteroids) == 0:
+            self.logger.warning("SummaryResult::by_job -> No results found.")
+            return
+
         # Get ccds by dynclass of the job
         ccds = dao.dynclass_ccds_by_job(job_id)
 

@@ -15,11 +15,10 @@ from django.conf import settings
 
 from common.notify import Notify
 from des.dao import DesSkybotJobDao, DesSkybotJobResultDao, ExposureDao
-from des.skybot.import_positions import DESImportSkybotPositions
-from skybot.skybot_server import SkybotServer
-
 from des.models import SummaryDynclass
+from des.skybot.import_positions import DESImportSkybotPositions
 from des.summary import SummaryResult
+from skybot.skybot_server import SkybotServer
 
 
 class AbortSkybotJobError(Exception):
@@ -424,7 +423,7 @@ class DesSkybotPipeline:
 
             # TODO: Aducionar a opção de Pausar o Job
 
-    def run_skybot_by_exposure(self, skybot_server_url, job_path, exp):
+    def run_skybot_by_exposure(self, skybot_server_url, job_path, exp, attempt=1):
         # Instancia da classe SkybotServer para fazer as requisições.
         # A url para o serviço do skybot fica na settings.SKYBOT_SERVER
         ss = SkybotServer(url=skybot_server_url)
@@ -461,8 +460,6 @@ class DesSkybotPipeline:
             filepath = os.path.join(job_path, filename)
 
             try:
-                # TODO: remove later, after debug
-                # self.logger.debug(result)
                 self.logger.debug("Output: [%s], Filepath: [%s]" % (output, filepath))
 
                 # renomea o arquivo
@@ -475,8 +472,7 @@ class DesSkybotPipeline:
         else:
             result.update({"success": False, "error": "File has size equal to 0"})
 
-        if result["success"]:
-
+        if result["success"] == True:
             self.logger.info(
                 "Exposure [%s] returned [%s] positions in %s."
                 % (
@@ -488,34 +484,58 @@ class DesSkybotPipeline:
                     ),
                 )
             )
-        else:
 
+            return result
+
+        else:
             self.logger.warning(
                 "Exposure [%s]: %s" % (result["exposure"], result["error"])
             )
 
             # If the exposure returned an error, try again for at least 10 times:
-            if self.attempts_on_fail_by_exposure <= 10:
-                self.logger.warning(
-                    "Attempts On Fail: %s of 10" % (self.attempts_on_fail_by_exposure)
-                )
+            if attempt <= 10:
+                self.logger.warning("Attempts On Fail: %s of 10" % (attempt))
 
                 # Increment the attempts variable by each recursion:
-                self.attempts_on_fail_by_exposure += 1
-
-                result.update(
-                    {
-                        "success": True,
-                    }
-                )
-
+                attempt += 1
                 # Call itself:
-                self.run_skybot_by_exposure(skybot_server_url, job_path, exp)
+                return self.run_skybot_by_exposure(
+                    skybot_server_url, job_path, exp, attempt
+                )
+            else:
+                self.logger.warning(
+                    "Exposure [%s]: Tried 10 times and failed every time."
+                    % (result["exposure"])
+                )
+                return result
 
-        # Reset the attempts variable to its default value:
-        self.attempts_on_fail_by_exposure = 1
+        # else:
 
-        return result
+        #     self.logger.warning(
+        #         "Exposure [%s]: %s" % (result["exposure"], result["error"])
+        #     )
+
+        #     # If the exposure returned an error, try again for at least 10 times:
+        #     if self.attempts_on_fail_by_exposure <= 10:
+        #         self.logger.warning(
+        #             "Attempts On Fail: %s of 10" % (self.attempts_on_fail_by_exposure)
+        #         )
+
+        #         # Increment the attempts variable by each recursion:
+        #         self.attempts_on_fail_by_exposure += 1
+
+        #         result.update(
+        #             {
+        #                 "success": True,
+        #             }
+        #         )
+
+        #         # Call itself:
+        #         self.run_skybot_by_exposure(skybot_server_url, job_path, exp)
+
+        # # Reset the attempts variable to its default value:
+        # self.attempts_on_fail_by_exposure = 1
+        # return result
 
     def run_job(self, job_id):
         """Este método executa as etapas de request ao skybot.
@@ -588,7 +608,9 @@ class DesSkybotPipeline:
             a_exposures = df_exposures.to_dict(
                 "records",
             )
-            # a_exposures = df_exposures.to_dict('records', )[0:10]
+            # a_exposures = df_exposures.to_dict(
+            #     "records",
+            # )[0:5]
 
             # Guarda o total de tempo de execução para calcular o tempo médio.
             t_exec_time = []
@@ -615,7 +637,17 @@ class DesSkybotPipeline:
                     heartbeat, "running", 0, len(a_exposures), 0, 0, 0
                 )
 
-                self.logger.debug("Skybot Server: [%s]" % settings.SKYBOT_SERVER)
+                # Criar o arquivo de Heartbeat para o Load Skybot Data tb para evitar errors
+                self.update_loaddata_heartbeat(
+                    self.get_loadata_heartbeat_filepath(job_path),
+                    "running",
+                    0,
+                    0,
+                    0,
+                    0,
+                )
+
+                self.logger.info("Skybot Server: [%s]" % settings.SKYBOT_SERVER)
 
                 for idx, exp in enumerate(a_exposures, start=1):
 
@@ -624,9 +656,11 @@ class DesSkybotPipeline:
                     self.check_status(job_id)
 
                     # Função de rodar as exposures
+                    # Em caso de erro executa novamente até o limite de 10 tentativas
                     result = self.run_skybot_by_exposure(
                         settings.SKYBOT_SERVER, job_path, exp
                     )
+                    # self.logger.debug(result)
 
                     if result["success"]:
                         t_success += 1
@@ -970,8 +1004,6 @@ class DesSkybotPipeline:
             df_filepath = self.get_loaddata_dataframe_filepath(job["path"])
 
             if t_to_execute == 0:
-                # self.logger_import.debug('helelelelel to execute if')
-
                 t_success = 0
                 t_failure = 0
                 t_files = 0
@@ -1229,7 +1261,8 @@ class DesSkybotPipeline:
             df = self.read_loaddata_dataframe(filepath)
 
             # Inclui as novas linhas.
-            df = df.append(pd.DataFrame(rows, columns=columns), ignore_index=True)
+            # df = df.append(pd.DataFrame(rows, columns=columns), ignore_index=True)
+            df = pd.concat([df, pd.DataFrame(rows, columns=columns)], ignore_index=True)
 
             # Seobrescreve o arquivo csv.
             df.to_csv(filepath, sep=";", header=True, index=False)
