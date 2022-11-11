@@ -13,9 +13,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 import urllib.parse
 
-import ldap
-from django_auth_ldap.config import LDAPSearch
-
 # from parsl.channels import LocalChannel
 # from parsl.config import Config
 # from parsl.executors import HighThroughputExecutor
@@ -47,20 +44,6 @@ DES_ASTROMETRY_OUTPUT = os.path.join(ARCHIVE_DIR, DES_ASTROMETRY_ROOT)
 if not os.path.exists(DES_ASTROMETRY_OUTPUT):
     os.mkdir(DES_ASTROMETRY_OUTPUT)
 
-
-# OBSERVATIONS_DIR = os.path.join(ARCHIVE_DIR, "observations")
-# if not os.path.exists(OBSERVATIONS_DIR):
-#     os.mkdir(OBSERVATIONS_DIR)
-
-# ORBITAL_PARAMETERS_DIR = os.path.join(ARCHIVE_DIR, "orbital_parameters")
-# if not os.path.exists(ORBITAL_PARAMETERS_DIR):
-#     os.mkdir(ORBITAL_PARAMETERS_DIR)
-
-# BSP_JPL_DIR = os.path.join(ARCHIVE_DIR, "bsp_jpl")
-# if not os.path.exists(BSP_JPL_DIR):
-#     os.mkdir(BSP_JPL_DIR)
-
-
 LEAP_ROOT = "leap_seconds"
 LEAP_SECONDS = os.path.join(ARCHIVE_DIR, LEAP_ROOT)
 if not os.path.exists(LEAP_SECONDS):
@@ -76,11 +59,6 @@ JHONSTONS_ARCHIVE = os.path.join(ARCHIVE_DIR, JHONSTONS_ARCHIVE_ROOT)
 if not os.path.exists(JHONSTONS_ARCHIVE):
     os.mkdir(JHONSTONS_ARCHIVE)
 
-# # TODO:  Este diretorio e provisorio faz parte da simulacao do PRAIA.
-# ASTROMETRY_POSITIONS_DIR = os.path.join(ARCHIVE_DIR, "astrometry_positions")
-# if not os.path.exists(ASTROMETRY_POSITIONS_DIR):
-#     os.mkdir(ASTROMETRY_POSITIONS_DIR)
-#     os.chmod(ASTROMETRY_POSITIONS_DIR, 0o775)
 
 MEDIA_ROOT = ARCHIVE_DIR
 MEDIA_URL = "/media/"
@@ -107,15 +85,11 @@ EMAIL_NOTIFICATION_COPY_TO = list(
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_USE_TLS = True
-try:
-    EMAIL_HOST = os.environ["EMAIL_HOST"]
-    EMAIL_PORT = os.environ["EMAIL_PORT"]
-    EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
-    EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
-except:
-    raise (
-        "Environment variables EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD can not be null."
-    )
+EMAIL_HOST = "smtp.linea.org.br"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
+
 
 APPLICATION_NAME = "SSSO - Solar System Small Object"
 # Quick-start development settings - unsuitable for production
@@ -125,7 +99,7 @@ APPLICATION_NAME = "SSSO - Solar System Small Object"
 SECRET_KEY = "m=5=08^4a(il)bba)$cd%f*#wrcammi(r(q#($b$n^-jz8%+j0"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.getenv("DEBUG", False))
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -194,27 +168,24 @@ WSGI_APPLICATION = "coreAdmin.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.environ["DB_NAME"],
-        "USER": os.environ["DB_USER"],
-        "PASSWORD": os.environ["DB_PASS"],
-        "HOST": os.environ["DB_HOST"],
-        "PORT": os.environ["DB_PORT"],
+        "NAME": "tno_admin",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
+        "HOST": "database",
+        "PORT": 5432,
+        # caso o banco de dados tenha definido um schema
+        # "OPTIONS": {"options": "-c search_path=<DB_SCHEMA>,public"},
     },
 }
-# caso o banco de dados tenha definido um schema
-if "DB_SCHEMA" in os.environ:
-    DATABASES["default"]["OPTIONS"] = {
-        "options": "-c search_path=%s,public" % os.environ["DB_SCHEMA"]
-    }
 
-CATALOG_DATABASE = {
-    "ENGINE": "django.db.backends.postgresql_psycopg2",
-    "NAME": os.environ["CATALOG_DB_NAME"],
-    "USER": os.environ["CATALOG_DB_USER"],
-    "PASSWORD": os.environ["CATALOG_DB_PASS"],
-    "HOST": os.environ["CATALOG_DB_HOST"],
-    "PORT": os.environ["CATALOG_DB_PORT"],
-}
+# CATALOG_DATABASE = {
+#     "ENGINE": "django.db.backends.postgresql_psycopg2",
+#     "NAME": "tno_catalog",
+#     "USER": "postgres",
+#     "PASSWORD": "postgres",
+#     "HOST": "database",
+#     "PORT": 5432,
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -259,39 +230,6 @@ AUTHENTICATION_BACKENDS = (
 )
 
 
-# LDAP Authentication
-# Responsible for turn on and off the LDAP authentication:
-AUTH_LDAP_ENABLED = os.environ.get("AUTH_LDAP_ENABLED")
-
-if AUTH_LDAP_ENABLED == "True":
-
-    # The address of the LDAP server:
-    AUTH_LDAP_SERVER_URI = os.environ.get("AUTH_LDAP_SERVER_URI")
-
-    # The password of the LDAP server (leave empty if anonymous requests are available):
-    AUTH_LDAP_BIND_PASSWORD = os.environ.get("AUTH_LDAP_BIND_PASSWORD")
-
-    # The distinguishable name, used to identify entries:
-    AUTH_LDAP_BIND_DN = os.environ.get("AUTH_LDAP_BIND_DN")
-
-    # Populate the Django user from the LDAP directory.
-    AUTH_LDAP_USER_ATTR_MAP = {
-        "first_name": "givenName",
-        "last_name": "sn",
-        "email": "mail",
-    }
-
-    # The distinguishable name for searching users, used to identify entries:
-    AUTH_LDAP_USER_SEARCH_DN = os.environ.get("AUTH_LDAP_USER_SEARCH_DN")
-
-    AUTH_LDAP_USER_SEARCH = LDAPSearch(
-        AUTH_LDAP_USER_SEARCH_DN, ldap.SCOPE_SUBTREE, "(uid=%(user)s)"
-    )
-
-    # Adding LDAP as an authentication method:
-    AUTHENTICATION_BACKENDS += ("django_auth_ldap.backend.LDAPBackend",)
-
-
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
@@ -328,39 +266,11 @@ if DEBUG:
 # MINIMUM THREADS
 # MINIMUM_THREADS = os.environ.get('MINIMUM_THREADS', 4)
 
-# DOCKER Configuration
-try:
-    DOCKER_HOST = os.environ["DOCKER_HOST"]
-except Exception as e:
-    raise ("Environment variable DOCKER_HOST can not be null.")
 
-try:
-    HOST_ARCHIVE_DIR = os.environ["HOST_ARCHIVE"]
-except Exception as e:
-    raise ("Environment variable HOST_ARCHIVE can not be null.")
-
-
-# CONDOR API
-try:
-    CONDOR_API = os.environ["CONDOR_API"]
-    CONDOR_CLUSTER = os.environ["CONDOR_CLUSTER"]
-    CONDOR_MACHINE = os.environ["CONDOR_MACHINE"]
-except Exception as e:
-    raise ("Condor API access settings are required in .env file")
-
-try:
-    LOGGING_LEVEL = os.environ["LOGGING_LEVEL"]
-except:
-    LOGGING_LEVEL = "INFO"
-
+# TODO: Testar esta parte!
 # HOST URL url para onde o app está disponivel. em desenvolvimento //localhost
 # No ambiente de testes é //tno-testing.linea.gov.br
-HOST_URL = None
-try:
-    HOST_URL = os.environ["HOST_URL"]
-except:
-    raise ("Environment variable HOST_URL can not be null.")
-
+HOST_URL = "//localhost"
 # Configurando os redirects padrao de login e logout, para apontar para o HOST_URL.
 if HOST_URL is not None:
     LOGOUT_REDIRECT_URL = HOST_URL
@@ -380,6 +290,7 @@ try:
 except Exception as e:
     raise ("Auth Shibboleth settings are required in .env file")
 
+# TODO: Talves nao esteja mais sendo utilizado
 # Url para download dos CCDs,
 # usar None para desativar esta opcao.
 # ex: 'https://desar2.cosmology.illinois.edu/DESFiles/desarchive/'
@@ -393,20 +304,18 @@ if DES_ARCHIVE_URL is not None:
         raise ("DES user settings are required in .env file")
 
 
-# Skybot Server URL
-SKYBOT_SERVER = None
-try:
-    SKYBOT_SERVER = os.environ["SKYBOT_SERVER"]
-
-except Exception as e:
-    raise ("SKYBOT_SERVER settings are required in .env file")
+# Skybot Server
+# Url para o serviço do skybot sempre com a barra no final.
+# Skybot do linea: SKYBOT_SERVER=http://srvskybot.linea.org.br/webservices/skybot/
+# Skybot da Franca: SKYBOT_SERVER="http://vo.imcce.fr/webservices/skybot/"
+SKYBOT_SERVER = "http://vo.imcce.fr/webservices/skybot/"
 
 
 SETTINGS_EXPORT = [
     "AUTH_SHIB_URL",
 ]
 
-
+LOGGING_LEVEL = "INFO"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -600,3 +509,40 @@ except Exception:
     raise FileNotFoundError(
         "Local_vars file not found. it is necessary that the coraAdmin/local_vars.py file exists with the specific settings of this environment."
     )
+
+
+# # TODO: Reavaliar se ainda é necessário Login via LDAP
+# # Login Via Shibboleth já está funcional
+# # LDAP Authentication
+# import ldap
+# from django_auth_ldap.config import LDAPSearch
+# # Responsible for turn on and off the LDAP authentication:
+# AUTH_LDAP_ENABLED = os.environ.get("AUTH_LDAP_ENABLED")
+
+# if AUTH_LDAP_ENABLED == "True":
+
+#     # The address of the LDAP server:
+#     AUTH_LDAP_SERVER_URI = os.environ.get("AUTH_LDAP_SERVER_URI")
+
+#     # The password of the LDAP server (leave empty if anonymous requests are available):
+#     AUTH_LDAP_BIND_PASSWORD = os.environ.get("AUTH_LDAP_BIND_PASSWORD")
+
+#     # The distinguishable name, used to identify entries:
+#     AUTH_LDAP_BIND_DN = os.environ.get("AUTH_LDAP_BIND_DN")
+
+#     # Populate the Django user from the LDAP directory.
+#     AUTH_LDAP_USER_ATTR_MAP = {
+#         "first_name": "givenName",
+#         "last_name": "sn",
+#         "email": "mail",
+#     }
+
+#     # The distinguishable name for searching users, used to identify entries:
+#     AUTH_LDAP_USER_SEARCH_DN = os.environ.get("AUTH_LDAP_USER_SEARCH_DN")
+
+#     AUTH_LDAP_USER_SEARCH = LDAPSearch(
+#         AUTH_LDAP_USER_SEARCH_DN, ldap.SCOPE_SUBTREE, "(uid=%(user)s)"
+#     )
+
+#     # Adding LDAP as an authentication method:
+#     AUTHENTICATION_BACKENDS += ("django_auth_ldap.backend.LDAPBackend",)
