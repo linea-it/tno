@@ -210,10 +210,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-AUTHENTICATION_BACKENDS = (
-    "tno.auth_shibboleth.ShibbolethBackend",
-    "django.contrib.auth.backends.ModelBackend",
-)
+AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 
 
 REST_FRAMEWORK = {
@@ -246,19 +243,6 @@ if HOST_URL is not None:
     LOGIN_REDIRECT_URL = HOST_URL
 
 
-# Auth Shibboleth
-# Variaveis de configuração para o Login Institucional usando Shibboleth e Gidlab.
-# se AUTH_SHIB_URL usar None para desativar o login institucional, isto remove o botão da tela de login.
-AUTH_SHIB_URL = None
-try:
-    AUTH_SHIB_URL = os.getenv("AUTH_SHIB_URL")
-    if AUTH_SHIB_URL is not None:
-        AUTH_SHIB_SESSIONS = "/auth_shib_sessions"
-        AUTH_SHIB_CRYPT_KEY = os.getenv("AUTH_SHIB_CRYPT_KEY")
-
-except Exception as e:
-    raise ("Auth Shibboleth settings are required in .env file")
-
 # TODO: Talves nao esteja mais sendo utilizado
 # Url para download dos CCDs,
 # usar None para desativar esta opcao.
@@ -279,10 +263,6 @@ if DES_ARCHIVE_URL is not None:
 # Skybot da Franca: SKYBOT_SERVER="http://vo.imcce.fr/webservices/skybot/"
 SKYBOT_SERVER = "http://vo.imcce.fr/webservices/skybot/"
 
-
-SETTINGS_EXPORT = [
-    "AUTH_SHIB_URL",
-]
 
 LOGGING_LEVEL = "INFO"
 LOGGING = {
@@ -477,3 +457,5 @@ except Exception:
     raise FileNotFoundError(
         "Local_vars file not found. it is necessary that the coraAdmin/local_vars.py file exists with the specific settings of this environment."
     )
+
+SETTINGS_EXPORT = []
