@@ -74,4 +74,4 @@ urlpatterns = [
     url(r"^api/read_file", common_views.read_file),
     url(r"^api/read_csv", common_views.read_csv),
     url(r"^api/teste/", common_views.teste),
-] + static("api" + settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

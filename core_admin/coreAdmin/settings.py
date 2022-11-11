@@ -113,13 +113,11 @@ INSTALLED_APPS = [
     "django_filters",
     "url_filter",
     "corsheaders",
+    "shibboleth",
     # Project Apps
     "common",
     "tno",
     "skybot",
-    # 'praia',
-    # 'orbit',
-    # 'predict',
     "des",
 ]
 
@@ -130,6 +128,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "common.shibboleth.ShibbolethMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "current_user.CurrentUserMiddleware",
@@ -207,11 +206,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_URL = "/django_static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "django_static")
 
 AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 
+# https://docs.djangoproject.com/en/4.1/ref/settings/#csrf-cookie-name
+CSRF_COOKIE_NAME = "tno.csrftoken"
+
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
+LOGIN_REDIRECT_URL = "/"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -224,6 +228,7 @@ REST_FRAMEWORK = {
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
     ),
+    "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
 
 # CORS com essa combinação o serv de desenvolvimento do frontend consegue se authenticar
@@ -231,16 +236,6 @@ if DEBUG:
     ALLOWED_HOSTS = "*"
     CORS_ALLOW_CREDENTIALS = True
     SESSION_COOKIE_SAMESITE = None
-
-
-# TODO: Testar esta parte!
-# HOST URL url para onde o app está disponivel. em desenvolvimento //localhost
-# No ambiente de testes é //tno-testing.linea.gov.br
-HOST_URL = "//localhost"
-# Configurando os redirects padrao de login e logout, para apontar para o HOST_URL.
-if HOST_URL is not None:
-    LOGOUT_REDIRECT_URL = HOST_URL
-    LOGIN_REDIRECT_URL = HOST_URL
 
 
 # TODO: Talves nao esteja mais sendo utilizado
@@ -254,7 +249,7 @@ if DES_ARCHIVE_URL is not None:
         DES_USERNAME = os.getenv("DES_USERNAME")
         DES_PASSWORD = os.getenv("DES_PASSWORD")
     except Exception as e:
-        raise ("DES user settings are required in .env file")
+        raise Exception("DES user settings are required in .env file")
 
 
 # Skybot Server
@@ -287,38 +282,6 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "proccess.log"),
             "formatter": "standard",
         },
-        "astrometry": {
-            "level": LOGGING_LEVEL,
-            "class": "logging.handlers.RotatingFileHandler",
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,
-            "filename": os.path.join(LOG_DIR, "astrometry.log"),
-            "formatter": "standard",
-        },
-        "astrometry_daemon": {
-            "level": LOGGING_LEVEL,
-            "class": "logging.handlers.RotatingFileHandler",
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,
-            "filename": os.path.join(LOG_DIR, "astrometry_daemon.log"),
-            "formatter": "standard",
-        },
-        "refine_orbit": {
-            "level": LOGGING_LEVEL,
-            "class": "logging.handlers.RotatingFileHandler",
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,
-            "filename": os.path.join(LOG_DIR, "refine_orbit.log"),
-            "formatter": "standard",
-        },
-        "predict_occultation": {
-            "level": LOGGING_LEVEL,
-            "class": "logging.handlers.RotatingFileHandler",
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,
-            "filename": os.path.join(LOG_DIR, "predict_occultation.log"),
-            "formatter": "standard",
-        },
         # Skybot Download
         "skybot": {
             "level": LOGGING_LEVEL,
@@ -337,28 +300,12 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "skybot_load_data.log"),
             "formatter": "standard",
         },
-        "condor": {
-            "level": LOGGING_LEVEL,
-            "class": "logging.handlers.RotatingFileHandler",
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,
-            "filename": os.path.join(LOG_DIR, "condor.log"),
-            "formatter": "standard",
-        },
-        "auth_shibboleth": {
+        "shibboleth": {
             "level": LOGGING_LEVEL,
             "class": "logging.handlers.RotatingFileHandler",
             "maxBytes": 1024 * 1024 * 5,  # 5 MB
             "backupCount": 5,
             "filename": os.path.join(LOG_DIR, "auth_shibboleth.log"),
-            "formatter": "standard",
-        },
-        "download_ccds": {
-            "level": LOGGING_LEVEL,
-            "class": "logging.handlers.RotatingFileHandler",
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,
-            "filename": os.path.join(LOG_DIR, "download_ccds.log"),
             "formatter": "standard",
         },
         "asteroids": {
@@ -367,14 +314,6 @@ LOGGING = {
             "maxBytes": 1024 * 1024 * 5,  # 5 MB
             "backupCount": 5,
             "filename": os.path.join(LOG_DIR, "asteroids.log"),
-            "formatter": "standard",
-        },
-        "des_astrometry": {
-            "level": LOGGING_LEVEL,
-            "class": "logging.handlers.RotatingFileHandler",
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,
-            "filename": os.path.join(LOG_DIR, "des_astrometry.log"),
             "formatter": "standard",
         },
     },
@@ -389,26 +328,6 @@ LOGGING = {
             "level": LOGGING_LEVEL,
             "propagate": True,
         },
-        "astrometry": {
-            "handlers": ["astrometry"],
-            "level": LOGGING_LEVEL,
-            "propagate": True,
-        },
-        "astrometry_daemon": {
-            "handlers": ["astrometry_daemon"],
-            "level": LOGGING_LEVEL,
-            "propagate": True,
-        },
-        "refine_orbit": {
-            "handlers": ["refine_orbit"],
-            "level": LOGGING_LEVEL,
-            "propagate": True,
-        },
-        "predict_occultation": {
-            "handlers": ["predict_occultation"],
-            "level": LOGGING_LEVEL,
-            "propagate": True,
-        },
         "skybot": {
             "handlers": ["skybot"],
             "level": LOGGING_LEVEL,
@@ -419,18 +338,8 @@ LOGGING = {
             "level": LOGGING_LEVEL,
             "propagate": False,
         },
-        "condor": {
-            "handlers": ["condor"],
-            "level": LOGGING_LEVEL,
-            "propagate": True,
-        },
-        "auth_shibboleth": {
-            "handlers": ["auth_shibboleth"],
-            "level": LOGGING_LEVEL,
-            "propagate": True,
-        },
-        "download_ccds": {
-            "handlers": ["download_ccds"],
+        "shibboleth": {
+            "handlers": ["shibboleth"],
             "level": LOGGING_LEVEL,
             "propagate": True,
         },
@@ -439,23 +348,35 @@ LOGGING = {
             "level": LOGGING_LEVEL,
             "propagate": True,
         },
-        "des_astrometry": {
-            "handlers": ["des_astrometry"],
-            "level": LOGGING_LEVEL,
-            "propagate": True,
-        },
     },
 }
+# Autenticacao com Shibboleth desativada por padrão
+SHIBBOLETH_ENABLED = False
 
 # Aqui é feita a importação do arquivo de variaveis locais.
 # As variaveis declaradas neste arquivo sobrescrevem as variaveais declaradas antes
 # deste import. isso é usado para permitir diferentes configurações por ambiente.
 # basta cada ambiente ter o seu arquivo local_vars.py.
 try:
-    from coreAdmin.local_vars import *
+    from coreAdmin.local_settings import *
 except Exception:
     raise FileNotFoundError(
-        "Local_vars file not found. it is necessary that the coraAdmin/local_vars.py file exists with the specific settings of this environment."
+        "local_settings.py file not found. it is necessary that the coraAdmin/local_settings.py file exists with the specific settings of this environment."
     )
 
 SETTINGS_EXPORT = []
+
+# Shibboleth Authentication
+if SHIBBOLETH_ENABLED is True:
+    # https://github.com/Brown-University-Library/django-shibboleth-remoteuser
+    SHIBBOLETH_ATTRIBUTE_MAP = {
+        "eppn": (True, "username"),
+        "cn": (False, "first_name"),
+        "sn": (False, "last_name"),
+        "Shib-inetOrgPerson-mail": (False, "email"),
+    }
+    SHIBBOLETH_GROUP_ATTRIBUTES = "Shibboleth"
+    # Including Shibboleth authentication:
+    AUTHENTICATION_BACKENDS += ("shibboleth.backends.ShibbolethRemoteUserBackend",)
+
+    SHIBBOLETH_ENABLED = True

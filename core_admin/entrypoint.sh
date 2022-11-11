@@ -1,32 +1,36 @@
 #!/bin/sh
 
 YELLOW='\033[00;33m'
+GREEN="\[\033[0;32m\]"
 NO_COLOR='\033[0m'
 
 # Se nao tiver o manage.py e a primeira vez que o container e executado, apenas abre o terminal.
 if [ -e manage.py ]
 then
-    # Adicionar o diretório da aplicação na variavel pythonpath 
-    # é necessário para que o Parsl identifique os arquivos da aplicação como libs.
-    # export PYTHONPATH=$PYTHONPATH:$APP_PATH
-
     echo "Running Migrate to apply changes in database"
     python manage.py migrate
 
     echo "Running Collect Statics"
     python manage.py collectstatic --clear --noinput --verbosity 0
 
-    # Para producao usar Gunicorn
-    # Exemplo usando Gunicorn mais faltou o log no output do container.
-    # echo "Starting Gunicorn"
-    # gunicorn --bind 0.0.0.0:$GUNICORN_PORT \
-    #     $GUNICORN_MODULE:$GUNICORN_CALLABLE \
-    #     --reload
+    # # Usar o server do django so para desenvolvimento
+    # # echo "Running Django with ${YELLOW} DEVELOPMENT SERVER ${NO_COLOR}, for production use Gunicorn."
+    # python manage.py runserver 0.0.0.0:7001
 
-    # Usar o server do django so para desenvolvimento
-    echo "Running Django with ${YELLOW} DEVELOPMENT SERVER ${NO_COLOR}, for production use Gunicorn."
-    python manage.py runserver 0.0.0.0:7001
-
+    # Para produção é necessário usar o uWSGI!
+    # uWSGI para servir o app e ter compatibilidade com Shibboleth
+    # https://uwsgi-docs.readthedocs.io/en/latest/WSGIquickstart.html
+    # TODO: Em produção não é recomendado o auto reload. utilizar uma variavel de ambiente para ligar ou desligar esta opção.
+    echo "${YELLOW}Running Django with uWSGI.${NO_COLOR}"
+    uwsgi \
+        --socket 0.0.0.0:8000 \
+        --wsgi-file /app/coreAdmin/wsgi.py \
+        --module coreAdmin.wsgi:application \
+        --buffer-size=32768 \
+        --processes=4 \
+        --threads=2 \
+        --static-map /django_static=/app/django_static \
+        --py-autoreload=1 
 else
     /bin/bash
 fi
