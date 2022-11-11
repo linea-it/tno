@@ -13,11 +13,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 import urllib.parse
 
-# from parsl.channels import LocalChannel
-# from parsl.config import Config
-# from parsl.executors import HighThroughputExecutor
-# from parsl.providers import LocalProvider
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -178,15 +173,6 @@ DATABASES = {
     },
 }
 
-# CATALOG_DATABASE = {
-#     "ENGINE": "django.db.backends.postgresql_psycopg2",
-#     "NAME": "tno_catalog",
-#     "USER": "postgres",
-#     "PASSWORD": "postgres",
-#     "HOST": "database",
-#     "PORT": 5432,
-# }
-
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
@@ -248,23 +234,6 @@ if DEBUG:
     ALLOWED_HOSTS = "*"
     CORS_ALLOW_CREDENTIALS = True
     SESSION_COOKIE_SAMESITE = None
-
-# # Parsl
-# PARSL_CONFIG = Config(
-#     executors=[
-#         HighThroughputExecutor(
-#             label="htex_local",
-#             cores_per_worker=1,
-#             max_workers=16,
-#             provider=LocalProvider(
-#                 channel=LocalChannel(),
-#             ),
-#         )
-#     ],
-# )
-
-# MINIMUM THREADS
-# MINIMUM_THREADS = os.environ.get('MINIMUM_THREADS', 4)
 
 
 # TODO: Testar esta parte!
@@ -498,7 +467,6 @@ LOGGING = {
     },
 }
 
-
 # Aqui é feita a importação do arquivo de variaveis locais.
 # As variaveis declaradas neste arquivo sobrescrevem as variaveais declaradas antes
 # deste import. isso é usado para permitir diferentes configurações por ambiente.
@@ -509,40 +477,3 @@ except Exception:
     raise FileNotFoundError(
         "Local_vars file not found. it is necessary that the coraAdmin/local_vars.py file exists with the specific settings of this environment."
     )
-
-
-# # TODO: Reavaliar se ainda é necessário Login via LDAP
-# # Login Via Shibboleth já está funcional
-# # LDAP Authentication
-# import ldap
-# from django_auth_ldap.config import LDAPSearch
-# # Responsible for turn on and off the LDAP authentication:
-# AUTH_LDAP_ENABLED = os.environ.get("AUTH_LDAP_ENABLED")
-
-# if AUTH_LDAP_ENABLED == "True":
-
-#     # The address of the LDAP server:
-#     AUTH_LDAP_SERVER_URI = os.environ.get("AUTH_LDAP_SERVER_URI")
-
-#     # The password of the LDAP server (leave empty if anonymous requests are available):
-#     AUTH_LDAP_BIND_PASSWORD = os.environ.get("AUTH_LDAP_BIND_PASSWORD")
-
-#     # The distinguishable name, used to identify entries:
-#     AUTH_LDAP_BIND_DN = os.environ.get("AUTH_LDAP_BIND_DN")
-
-#     # Populate the Django user from the LDAP directory.
-#     AUTH_LDAP_USER_ATTR_MAP = {
-#         "first_name": "givenName",
-#         "last_name": "sn",
-#         "email": "mail",
-#     }
-
-#     # The distinguishable name for searching users, used to identify entries:
-#     AUTH_LDAP_USER_SEARCH_DN = os.environ.get("AUTH_LDAP_USER_SEARCH_DN")
-
-#     AUTH_LDAP_USER_SEARCH = LDAPSearch(
-#         AUTH_LDAP_USER_SEARCH_DN, ldap.SCOPE_SUBTREE, "(uid=%(user)s)"
-#     )
-
-#     # Adding LDAP as an authentication method:
-#     AUTHENTICATION_BACKENDS += ("django_auth_ldap.backend.LDAPBackend",)
