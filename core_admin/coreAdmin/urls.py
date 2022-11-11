@@ -74,8 +74,4 @@ urlpatterns = [
     url(r"^api/read_file", common_views.read_file),
     url(r"^api/read_csv", common_views.read_csv),
     url(r"^api/teste/", common_views.teste),
-] + static("api" + settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-# Adiciona a rota de authenticacao com Shibboleth se a variavel AUTH_SHIB_URL tiver valor
-if settings.AUTH_SHIB_URL is not None:
-    urlpatterns.append(url(r"^api/auth_shibboleth/", common_views.auth_shibboleth))
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

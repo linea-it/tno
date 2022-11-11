@@ -16,12 +16,13 @@ RUN apt-get update && \
     gcc \
     python3-dev \
     build-essential \
+    # Dependency for psycopg2-binary
     libpq-dev \
-    libaio-dev \
-    libcfitsio-bin \
-    libsasl2-dev \
-    libldap2-dev \
-    libssl-dev \
+    # libaio-dev \
+    # libcfitsio-bin \
+    # libsasl2-dev \
+    # libldap2-dev \
+    # libssl-dev \
     ## cleanup
     && apt-get clean \
     && apt-get autoclean \
