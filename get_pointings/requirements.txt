@@ -1,7 +1,0 @@
-# Dummy file, so the Dockerfile can contain a step about installing app
-# dependencies.
-flask
-flask_sqlalchemy
-requests
-cx_Oracle
-SQLAlchemy
