@@ -469,8 +469,6 @@ function SkybotDetail({ setTitle }) {
           <CardHeader title="Summary Execution" />
           <CardContent>
             <List data={summaryExecution} />
-            {/* {(totalErrorCount > 0 && skybotJob !== null) ? (
-               */}
             {haveError === true ? (
               <Alert severity="warning" action={
                 <Button color="inherit" size="small" href={skybotJob.results.replace("/archive", "/data")}>

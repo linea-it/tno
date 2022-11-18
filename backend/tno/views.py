@@ -22,7 +22,7 @@ from rest_framework.authentication import (
     SessionAuthentication,
     TokenAuthentication,
 )
-from rest_framework.decorators import detail_route, list_route, permission_classes
+from rest_framework.decorators import action
 from rest_framework.permissions import (
     IsAdminUser,
     IsAuthenticated,
@@ -80,7 +80,7 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
     filter_fields = ("number", "name")
 
     # TODO: Interessante que essa função ficasse disponivel para uso apos o skybot ou que fosse executada automaticamente.
-    @list_route(permission_classes=(IsAuthenticated,))
+    @action(detail=False, methods=["GET"], permission_classes=(IsAuthenticated,))
     def update_asteroid_table(self, request):
         """Esta função é utilizada para povoar a tabela Asteroid.
         Faz uma query nas tabelas de resultados do skybot, e efetua um insert/update
@@ -227,8 +227,7 @@ class JohnstonArchiveViewSet(viewsets.ModelViewSet):
     search_fields = ("name", "number", "provisional_designation")
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
-    @list_route(permission_classes=(IsAuthenticated,))
-    # @permission_classes((IsAuthenticated, ))
+    @action(detail=False, methods=["GET"], permission_classes=(IsAuthenticated,))
     def update_list(self, request):
 
         ja = JhonstonArchive()

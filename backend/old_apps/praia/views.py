@@ -9,7 +9,7 @@ from django.conf import settings
 from django.db.models import Count
 from django.shortcuts import render
 from rest_framework import viewsets
-from rest_framework.decorators import detail_route, list_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from tno.models import Pointing
@@ -53,7 +53,7 @@ class PraiaRunViewSet(viewsets.ModelViewSet):
             )
         serializer.save(owner=self.request.user)
 
-    @detail_route(methods=["GET"])
+    @action(detail=True, methods=["GET"])
     def count_asteroid_status(self, request, pk=None):
 
         astrometry_run = self.get_object()
@@ -81,7 +81,7 @@ class PraiaRunViewSet(viewsets.ModelViewSet):
 
         return Response(result)
 
-    @detail_route(methods=["GET"])
+    @action(detail=True, methods=["GET"])
     def step_execution_time(self, request, pk=None):
         """
         Retorna o tempo de execucao de cada etapa do pipeline

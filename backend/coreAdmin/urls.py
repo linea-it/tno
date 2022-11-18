@@ -44,7 +44,7 @@ router.register(r"des/exposure", ExposureViewSet)
 router.register(r"des/ccd", CcdViewSet)
 router.register(r"des/skybot_job_result", SkybotJobResultViewSet)
 router.register(
-    r"des/skybot_position", DesSkybotPositionViewSet, base_name="des_skybot_position"
+    r"des/skybot_position", DesSkybotPositionViewSet, basename="des_skybot_position"
 )
 router.register(r"des/summary_dynclass", SummaryDynclassViewSet)
 router.register(r"des/dashboard/skybot_by_year", SkybotByYearViewSet)
