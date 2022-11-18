@@ -58,8 +58,8 @@ export const getSkybotResultById = ({ id, pageSize, page, ordering }) => {
     const field = key.split('__')[1];
     const isDesc = ordering.indexOf('-') === 0;
 
-    if(ordering.indexOf(field) > -1) {
-      params.ordering =  isDesc ? `-${foreign_keys_ordering[0]}` : foreign_keys_ordering[0];
+    if (ordering.indexOf(field) > -1) {
+      params.ordering = isDesc ? `-${foreign_keys_ordering[0]}` : foreign_keys_ordering[0];
     }
   });
 
@@ -112,3 +112,14 @@ export const getCcdsWithAsteroidsById = (id) =>
 export const getSkybotCalcExecutionTime = exposures =>
   axios.get(`/des/skybot_job/calc_execution_time?to_execute=${exposures}`)
     .then((res) => res.data.estimated_time)
+
+
+export const getSkybotJobExposuresThatFailed = ({ id, pageSize, page }) => {
+  const params = {
+    page,
+    pageSize,
+  };
+
+  return axios.get(`/des/skybot_job/${id}/exposures_that_fail/`, { params })
+    .then((res) => res.data);
+};

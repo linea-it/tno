@@ -33,7 +33,7 @@ function ColumnStatus({ status, title, align }) {
   }
 
   return (
-    <span className={clsx(classes.btn, statusColor)} title={title || status}>
+    <span className={clsx(classes.btn, statusColor)} title={title}>
       {statusTitle}
     </span>
   );

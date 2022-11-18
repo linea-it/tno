@@ -3,7 +3,7 @@ import axios from 'axios';
 export const url = process.env.REACT_APP_API;
 axios.defaults.baseURL = url;
 
-axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfCookieName = 'tno.csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 axios.defaults.withCredentials = true;
 

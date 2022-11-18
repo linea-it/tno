@@ -151,8 +151,8 @@ class DESImportSkybotPositions(ImportSkybotPositions):
         except Exception as e:
             trace = traceback.format_exc()
             result.update({"error": str(e), "traceback": trace})
-            self.logger.error(trace)
-            self.logger.error(e)
+            # self.logger.error(trace)
+            self.logger.error("Exposure: [%s] %s", (exposure_id, e))
         finally:
             a_t1 = datetime.now(timezone.utc)
             a_tdelta = a_t1 - a_t0
