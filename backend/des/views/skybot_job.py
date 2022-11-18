@@ -1,24 +1,21 @@
 import json
 import os
+import threading
 from datetime import datetime, timedelta
 
+import numpy as np
 import pandas as pd
-from rest_framework import mixins, viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
-
 from common.dates_interval import get_days_interval
 from common.read_csv import csv_to_dataframe
 from des.dao import CcdDao, DesSkybotJobResultDao, ExposureDao
 from des.models import SkybotJob
 from des.serializers import SkybotJobSerializer
 from des.skybot.pipeline import DesSkybotPipeline
-
-import numpy as np
-
 from des.summary import SummaryResult
-
-import threading
+from django.core.paginator import Paginator
+from rest_framework import mixins, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class SkybotJobViewSet(
@@ -253,119 +250,6 @@ class SkybotJobViewSet(
             )
         )
 
-    @action(detail=True)
-    def nites_success_or_fail(self, request, pk=None):
-        """Retorna todas as datas que executaram com sucesso por completo e as que retornaram com no mínimo uma falha, dentro do periodo, que foram executadas pelo skybot.
-
-        Exemplo: http://localhost/api/des/skybot_job/11/nites_success_or_fails/
-        Returns:
-            [array]: um array com todas as datas do periodo no formato [{date: '2019-01-01', count: 0, executed: 0}]
-                O atributo executed pode ter 4 valores:
-                    0 - para datas que não tem exposição;
-                    1 - para datas que tem exposição mas não foram executadas;
-                    2 - para datas que tem exposição, foram executadas e finalizaram com sucesso;
-                    3 - para datas que tem exposição, foram executadas e finalizaram com erro.
-        """
-
-        job = self.get_object()
-
-        file_path = os.path.join(job.path, "results.csv")
-
-        job_result = pd.read_csv(
-            file_path,
-            delimiter=";",
-            usecols=["date_obs", "success", "request_error", "loaddata_error"],
-        )
-
-        job_result["date_obs"] = job_result["date_obs"].apply(lambda x: x.split()[0])
-
-        job_result["count"] = 1
-
-        # Sometimes the error property comes as a '0.0', even though it doesn't have an error,
-        # So in here we replace it with np.nan to treat it later
-        job_result["request_error"] = job_result["request_error"].apply(
-            lambda x: np.nan if x == 0.0 else x
-        )
-        job_result["loaddata_error"] = job_result["loaddata_error"].apply(
-            lambda x: np.nan if x == 0.0 else x
-        )
-
-        # Verify if either or both request or loadata failed, fill the property is_success with False, otherwise with True
-        job_result["is_success"] = job_result[
-            ["request_error", "loaddata_error"]
-        ].apply(
-            lambda row: True
-            if pd.isna(row["request_error"]) and pd.isna(row["loaddata_error"])
-            else False,
-            axis=1,
-        )
-
-        job_result.drop(columns=["request_error", "loaddata_error"])
-
-        job_result["error"] = job_result["is_success"].apply(lambda x: 0 if x else 1)
-
-        # Group by "date_obs" so we know if that day failed or not
-        df1 = job_result.groupby(by="date_obs", as_index=False).agg(
-            {"count": "sum", "error": "sum", "success": "all", "is_success": "all"}
-        )
-
-        # Function that applies the value of the attributes based on the comparison of 'success' and 'error' properties
-        def apply_success_value(row):
-            if row["success"] == True and row["is_success"] == True:
-                return 2
-            elif row["success"] == False and row["is_success"] == False:
-                return 3
-            else:
-                return 1
-
-        df1["success"] = df1.apply(apply_success_value, axis=1)
-
-        df1.drop(columns=["is_success"])
-
-        start = str(job.date_initial)
-        end = str(job.date_final)
-
-        all_dates = get_days_interval(start, end)
-
-        # Verificar a quantidade de dias entre o start e end.
-        if len(all_dates) < 7:
-            dt_start = datetime.strptime(start, "%Y-%m-%d")
-            dt_end = dt_start + timedelta(days=6)
-
-            all_dates = get_days_interval(
-                dt_start.strftime("%Y-%m-%d"), dt_end.strftime("%Y-%m-%d")
-            )
-
-        df2 = pd.DataFrame()
-        df2["date_obs"] = all_dates
-        df2["success"] = 0
-        df2["count"] = 0
-        df2["error"] = 0
-
-        df1["date_obs"] = df1["date_obs"].astype(str)
-        df2["date_obs"] = df2["date_obs"].astype(str)
-
-        df1["success"] = df1["success"].astype(int)
-        df2["success"] = df2["success"].astype(int)
-
-        df1["count"] = df1["count"].astype(int)
-        df2["count"] = df2["count"].astype(int)
-
-        df1["error"] = df1["error"].astype(int)
-        df2["error"] = df2["error"].astype(int)
-
-        for i, row in df1.iterrows():
-            df2.loc[df2["date_obs"] == row["date_obs"], ["success", "count"]] = (
-                row["success"],
-                row["count"],
-            )
-
-        df = df2.rename(columns={"date_obs": "date", "success": "executed"})
-
-        result = df.to_dict("records")
-
-        return Response(result)
-
     def run_summary_result(self):
         summary_result = SummaryResult()
 
@@ -384,3 +268,132 @@ class SkybotJobViewSet(
                 "success": True,
             }
         )
+
+    @action(detail=True)
+    def nites_success_or_fail(self, request, pk=None):
+        """Retorna todas as datas que executaram com sucesso por completo e as que retornaram com no mínimo uma falha, dentro do periodo, que foram executadas pelo skybot.
+
+        Exemplo: http://localhost/api/des/skybot_job/11/nites_success_or_fails/
+        Returns:
+            [array]: um array com todas as datas do periodo no formato [{date: '2019-01-01', count: 0, status: 0}]
+                O atributo status pode ter 4 valores:
+                    0 - para datas que não tem exposição;
+                    1 - para datas que tem exposição mas não foram executadas;
+                    2 - para datas que tem exposição, foram executadas e finalizaram com sucesso;
+                    3 - para datas que tem exposição, foram executadas e finalizaram com erro.
+        """
+
+        job = self.get_object()
+
+        file_path = os.path.join(job.path, "results.csv")
+
+        job_result = pd.read_csv(
+            file_path,
+            delimiter=";",
+            usecols=["date_obs", "success"],
+            dtype={"success": bool, "date_obs": str},
+        )
+
+        job_result["date_obs"] = job_result["date_obs"].apply(lambda x: x.split()[0])
+
+        job_result["count"] = 1
+
+        # Group by "date_obs" so we know if that day failed or not
+        df1 = job_result.groupby(by="date_obs", as_index=False).agg(
+            {"count": "sum", "success": "sum"}
+        )
+
+        start = str(job.date_initial)
+        end = str(job.date_final)
+
+        all_dates = get_days_interval(start, end)
+
+        # Verificar a quantidade de dias entre o start e end.
+        if len(all_dates) < 7:
+            dt_start = datetime.strptime(start, "%Y-%m-%d")
+            dt_end = dt_start + timedelta(days=6)
+
+            all_dates = get_days_interval(
+                dt_start.strftime("%Y-%m-%d"), dt_end.strftime("%Y-%m-%d")
+            )
+
+        df1["date_obs"] = df1["date_obs"].astype(str)
+        df1["success"] = df1["success"].astype(int)
+        df1["count"] = df1["count"].astype(int)
+        df1["failure"] = 0
+        df1["status"] = 0
+
+        df = pd.DataFrame(
+            {
+                "date_obs": pd.Series(dtype=str),
+                "success": pd.Series(dtype=int),
+                "count": pd.Series(dtype=int),
+                "failure": pd.Series(dtype=int),
+                "status": pd.Series(dtype=int),
+            }
+        )
+        df["date_obs"] = all_dates
+
+        df.update(df1)
+        df = df.fillna(0)
+        df = df.astype(
+            dtype={
+                "date_obs": str,
+                "count": int,
+                "success": int,
+                "failure": int,
+                "status": int,
+            }
+        )
+        df["failure"] = df["count"] - df["success"]
+
+        # Function that applies the value of the executed based on the comparison of 'success' and 'error' properties
+        def apply_executed_value(row):
+            if row["count"] > 0 and row["success"] == row["count"]:
+                # para datas que tem exposição, foram executadas e finalizaram com sucesso;
+                return 2
+            elif row["count"] > 0 and row["failure"] != 0:
+                # para datas que tem exposição, foram executadas e finalizaram com erro.
+                return 3
+            else:
+                return 1
+
+        df["status"] = df.apply(apply_executed_value, axis=1)
+        df = df.rename(columns={"date_obs": "date"})
+
+        result = df.to_dict("records")
+        return Response(result)
+
+    @action(detail=True)
+    def exposures_that_fail(self, request, pk=None):
+
+        page = request.query_params.get("page")
+        page_size = request.query_params.get("pageSize")
+
+        job = self.get_object()
+
+        file_path = os.path.join(job.path, "results.csv")
+
+        df_results = pd.read_csv(
+            file_path,
+            delimiter=";",
+            usecols=["id", "date_obs", "success", "loaddata_error"],
+            dtype={
+                "id": str,
+                "date_obs": str,
+                "success": bool,
+                "loaddata_error": str,
+            },
+        )
+        # Filtra as exposições que falharam
+        df_results = df_results[df_results["success"] == False]
+        df_results = df_results.rename(
+            columns={"id": "exposure_id", "loaddata_error": "error"}
+        )
+
+        # Paginação
+        records = df_results.to_dict("records")
+        paginator = Paginator(records, page_size)
+        records = paginator.get_page(page)
+        result = dict({"results": list(records), "count": df_results.shape[0]})
+        return Response(result)

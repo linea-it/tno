@@ -18,7 +18,6 @@ from des.views import (
     AstrometryJobViewSet,
     CcdViewSet,
     DesSkybotPositionViewSet,
-    DownloadCcdJobViewSet,
     ExposureViewSet,
     SkybotByDynclassViewSet,
     SkybotByYearViewSet,
@@ -48,11 +47,6 @@ router.register(
     r"des/skybot_position", DesSkybotPositionViewSet, base_name="des_skybot_position"
 )
 router.register(r"des/summary_dynclass", SummaryDynclassViewSet)
-
-router.register(
-    r"des/download_ccd/job", DownloadCcdJobViewSet, base_name="des_download_ccd_job"
-)
-
 router.register(r"des/dashboard/skybot_by_year", SkybotByYearViewSet)
 router.register(r"des/dashboard/skybot_by_dynclass", SkybotByDynclassViewSet)
 router.register(r"des/astrometry_job", AstrometryJobViewSet)

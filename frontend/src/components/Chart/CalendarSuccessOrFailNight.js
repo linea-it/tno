@@ -9,11 +9,10 @@ function CalendarSuccessOrFailNight({ data }) {
   useEffect(() => {
     const exposures = data.map((row) => ({
       date: d3.timeDay(new Date(`${row.date} 00:00`)),
-      value: row.executed,
+      value: row.status,
       count: row.count,
-      error: row.error,
+      error: row.failure,
     }));
-
     setRows(exposures);
   }, [data]);
 

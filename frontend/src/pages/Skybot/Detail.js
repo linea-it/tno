@@ -29,10 +29,12 @@ import {
   cancelSkybotJobById,
   getNightsSuccessOrFail,
   getDynclassAsteroids,
+  getSkybotJobExposuresThatFailed
 } from '../../services/api/Skybot';
 
 import useInterval from '../../hooks/useInterval';
 import useStyles from './styles';
+import { Alert, AlertTitle } from '@material-ui/lab';
 
 function SkybotDetail({ setTitle }) {
   const { id } = useParams();
@@ -76,7 +78,12 @@ function SkybotDetail({ setTitle }) {
 
   const [dynclassAsteroids, setDynclassAsteroids] = useState([]);
 
+  const [tableErrorData, setTableErrorData] = useState([])
+  const [totalErrorCount, setTotalErrorCount] = useState(0)
+
   const handleBackNavigation = () => history.goBack();
+
+  const haveError = (totalErrorCount > 0 && 'results' in skybotJob)
 
   useEffect(() => {
     setTitle('Discovery');
@@ -224,16 +231,50 @@ function SkybotDetail({ setTitle }) {
     },
   ];
 
+  const tableErrorColumns = [
+    {
+      name: 'exposure_id',
+      title: 'Exposure #',
+      width: 150,
+      sortingEnabled: false,
+    },
+    {
+      name: 'date_obs',
+      title: 'Observation Date',
+      width: 150,
+      sortingEnabled: false,
+      customElement: (row) =>
+        row.date_obs
+          ? moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss')
+          : '-',
+    },
+    {
+      name: 'error',
+      title: 'Error Message',
+      width: 600,
+      sortingEnabled: false,
+    },
+  ];
+
   const loadData = ({ currentPage, pageSize, sorting }) => {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1;
-    const ordering = `${sorting[0].direction === 'desc' ? '-' : ''}${
-      sorting[0].columnName
-    }`;
+    const ordering = `${sorting[0].direction === 'desc' ? '-' : ''}${sorting[0].columnName
+      }`;
 
     getSkybotResultById({ id, page, pageSize, ordering }).then((res) => {
       setTableData(res.results.map((results) => ({ ...results, log: null })));
       setTotalCount(res.count);
+    });
+  };
+
+  const loadErrors = ({ currentPage, pageSize }) => {
+    // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
+    const page = currentPage + 1;
+
+    getSkybotJobExposuresThatFailed({ id, page, pageSize }).then((res) => {
+      setTableErrorData(res.results.map((results) => ({ ...results, log: null })));
+      setTotalErrorCount(res.count);
     });
   };
 
@@ -247,6 +288,8 @@ function SkybotDetail({ setTitle }) {
       pageSize: 10,
       sorting: [{ columnName: 'id', direction: 'asc' }],
     });
+    loadErrors({ currentPage: 0, pageSize: 10 })
+
   }, [loadProgress]);
 
   useEffect(() => {
@@ -426,6 +469,17 @@ function SkybotDetail({ setTitle }) {
           <CardHeader title="Summary Execution" />
           <CardContent>
             <List data={summaryExecution} />
+            {/* {(totalErrorCount > 0 && skybotJob !== null) ? (
+               */}
+            {haveError === true ? (
+              <Alert severity="warning" action={
+                <Button color="inherit" size="small" href={skybotJob.results.replace("/archive", "/data")}>
+                  CHECK IT OUT
+                </Button>
+              }>
+                <strong>{totalErrorCount}</strong> exposures out of {skybotJob.exposures} failed.
+              </Alert>
+            ) : null}
           </CardContent>
         </Card>
       </Grid>
@@ -617,10 +671,31 @@ function SkybotDetail({ setTitle }) {
                 </CardContent>
               </Card>
             </Grid>
+            {totalErrorCount > 0 ? (
+              <Grid item xs={12}>
+                <Card>
+                  <CardHeader title="Exposures With Errors" />
+                  <CardContent>
+                    <Table
+                      columns={tableErrorColumns}
+                      data={tableErrorData}
+                      loadData={loadErrors}
+                      totalCount={totalErrorCount}
+                      hasSearching={false}
+                      // hasSorting={false}
+                      hasFiltering={false}
+                      hasColumnVisibility={false}
+                      hasToolbar={false}
+                    />
+                  </CardContent>
+                </Card>
+              </Grid>
+            ) : null}
+
           </>
         ) : null
       }
-    </Grid>
+    </Grid >
   );
 }
 
