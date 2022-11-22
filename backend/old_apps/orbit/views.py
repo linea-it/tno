@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from .models import OrbitRun
 from .serializers import OrbitRunSerializer, BspJplSerializer
-from rest_framework.decorators import list_route
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 import os
@@ -24,7 +24,6 @@ from .serializers import (
     ObservationFileSerializer,
     OrbitalParameterSerializer,
 )
-from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from django.core.exceptions import ObjectDoesNotExist
 import os
@@ -45,7 +44,7 @@ class OrbitRunViewSet(viewsets.ModelViewSet):
     ordering_fields = ("id", "owner", "status", "start_time", "finish_time")
     ordering = ("-start_time",)
 
-    @list_route()
+    @action(detail=False, methods=["GET"])
     def log_by_objects(self, request):
         name = request.query_params.get("name")
         run = request.query_params.get("cod")
@@ -95,7 +94,7 @@ class OrbitRunViewSet(viewsets.ModelViewSet):
             )
         serializer.save(owner=self.request.user)
 
-    @list_route()
+    @action(detail=False, methods=["GET"])
     def get_time_profile(self, request):
 
         run = request.query_params.get("orbit_run", None)
@@ -174,7 +173,7 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
     )
     ordering = ("name",)
 
-    @list_route()
+    @action(detail=False, methods=["GET"])
     def get_log(self, request):
         id = request.query_params.get("asteroid_id", None)
 
@@ -240,7 +239,7 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
                 )
             )
 
-    @list_route()
+    @action(detail=False, methods=["GET"])
     def get_neighbors(self, request):
         id = request.query_params.get("asteroid_id", None)
 
@@ -291,7 +290,7 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
 
         return Response(dict({"success": True, "prev": prev, "next": next}))
 
-    @list_route()
+    @action(detail=False, methods=["GET"])
     def download_results(self, request):
         id = request.query_params.get("asteroid_id", None)
 
@@ -360,7 +359,7 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
 
         return Response(dict({"success": True, "src": src}))
 
-    @list_route()
+    @action(detail=False, methods=["GET"])
     def get_orbital_parameters(self, request):
         id = request.query_params.get("asteroid_id", None)
 

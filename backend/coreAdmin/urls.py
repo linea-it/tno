@@ -26,10 +26,9 @@ from des.views import (
     SummaryDynclassViewSet,
 )
 from django.conf import settings
-from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path, include
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
@@ -44,7 +43,7 @@ router.register(r"des/exposure", ExposureViewSet)
 router.register(r"des/ccd", CcdViewSet)
 router.register(r"des/skybot_job_result", SkybotJobResultViewSet)
 router.register(
-    r"des/skybot_position", DesSkybotPositionViewSet, base_name="des_skybot_position"
+    r"des/skybot_position", DesSkybotPositionViewSet, basename="des_skybot_position"
 )
 router.register(r"des/summary_dynclass", SummaryDynclassViewSet)
 router.register(r"des/dashboard/skybot_by_year", SkybotByYearViewSet)
@@ -60,12 +59,12 @@ router.register(r"occultations", OccultationViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    url(r"^api/", include(router.urls)),
-    url(r"^api/obtain-auth-token/$", csrf_exempt(obtain_auth_token)),
+    re_path(r"^api/", include(router.urls)),
+    re_path(r"^api/obtain-auth-token/$", csrf_exempt(obtain_auth_token)),
     path("api/auth/", include("rest_framework.urls")),
-    url(r"^api/logout/", common_views.logout_view),
-    url(r"^api/import-skybot", common_views.import_skybot),
-    url(r"^api/read_file", common_views.read_file),
-    url(r"^api/read_csv", common_views.read_csv),
-    url(r"^api/teste/", common_views.teste),
+    re_path(r"^api/logout/", common_views.logout_view),
+    re_path(r"^api/import-skybot", common_views.import_skybot),
+    re_path(r"^api/read_file", common_views.read_file),
+    re_path(r"^api/read_csv", common_views.read_csv),
+    re_path(r"^api/teste/", common_views.teste),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -85,7 +85,7 @@ class DBBase:
 
     def get_table(self, tablename, schema=None):
         with warnings.catch_warnings():
-            warnings.simplefilter("ignore", category=sa_exc.SAWarning)
+            warnings.simplefilter("ignore")
             tbl = Table(tablename, MetaData(self.engine), autoload=True, schema=schema)
 
             return tbl

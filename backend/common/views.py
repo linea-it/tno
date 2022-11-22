@@ -1,26 +1,16 @@
-import csv
-import logging
 import os
-import shutil
 import zipfile
-import zlib
-from datetime import datetime, timedelta, timezone
 
-import humanize
 import pandas as pd
-import requests
 from django.conf import settings
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-from django.db.models import Count
+from django.contrib.auth import logout
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 
-@api_view(["GET"])
+@action(detail=False, methods=["GET"])
 def teste(request):
     if request.method == "GET":
         result = dict(
@@ -32,7 +22,7 @@ def teste(request):
         return Response(result)
 
 
-@api_view(["GET"])
+@action(detail=False, methods=["GET"])
 def logout_view(request):
     logout(request)
 
@@ -43,7 +33,7 @@ def logout_view(request):
     return response
 
 
-@api_view(["GET"])
+@action(detail=False, methods=["GET"])
 def import_skybot(request):
     """ """
     if request.method == "GET":
@@ -65,7 +55,7 @@ def import_skybot(request):
     return Response(result)
 
 
-@api_view(["GET"])
+@action(detail=False, methods=["GET"])
 def read_file(request):
     """
     Function to read .log file
@@ -121,7 +111,7 @@ def read_file(request):
             )
 
 
-@api_view(["GET"])
+@action(detail=False, methods=["GET"])
 def read_csv(request):
     """
     Function to read .csv file
@@ -199,7 +189,7 @@ def read_csv(request):
     return Response(result)
 
 
-@api_view(["GET"])
+@action(detail=False, methods=["GET"])
 def download_file(request):
     """
     Function to download a file and zip.
@@ -252,68 +242,3 @@ def download_file(request):
                     "Content-Disposition"
                 ] = "inline; filename=" + os.path.basename(filepath)
                 return response
-
-
-# @api_view(["GET"])
-# @permission_classes([AllowAny])
-# def auth_shibboleth(request):
-
-#     logger = logging.getLogger("auth_shibboleth")
-#     logger.info("---------------------------------------------------------")
-#     logger.info("Shibboleth Authentication Endpoint")
-
-#     if request.method == "GET":
-#         logger.debug(request.query_params)
-
-#         logger.debug("Is Authenticated: %s" % request.user.is_authenticated)
-
-#         if not request.user.is_authenticated:
-#             try:
-#                 data = request.query_params
-#                 sid = data["sid"]
-#                 logger.debug("Session ID: %s" % sid)
-
-#             except KeyError:
-#                 logger.error('Parameter "sid"  session id  is unknown.')
-
-#             # Fazer o parse do arquivo de sessao antes de chamar o authenticate
-#             try:
-#                 session_data = ShibbolethBackend().read_session_file(sid)
-#             except Exception as e:
-#                 logger.error(e)
-#             finally:
-#                 # Deletar o aquivo de sessao
-#                 ShibbolethBackend().destroy_session_file(sid)
-
-#             try:
-#                 # TODO: melhorar a checagem de authenticacao. verificar mais atributos como a origem por exemplo.
-#                 # Tenta autenticar o usuario com os dados da sessao
-#                 user = ShibbolethBackend().authenticate(
-#                     request, session_data, username=None, password=None
-#                 )
-
-#                 # Setar o tempo de expiracao da sessao, necessario ser feito antes do login
-#                 # baseado nesta resposta https://stackoverflow.com/a/27062144/9063237
-#                 # a data de expiração está em Unix epoch time. conversor de epoch online util para testes: https://www.epochconverter.com/
-#                 request.session.expire_date = session_data.get("Shib-Session-Expires")
-
-#                 # Efetua o Login
-#                 login(request, user, backend="tno.auth_shibboleth.ShibbolethBackend")
-
-#             except Exception as e:
-#                 logger.error(e)
-#                 logger.error("User not found, authentication failed.")
-
-#         else:
-#             # TODO: Revisar esta parte pode haver inconsistencias.
-#             logger.info("User is already logged in does nothing.")
-
-#         # Just Checking if is authenticated
-#         logger.info("Is Authenticated: %s" % request.user.is_authenticated)
-
-#     # Redireciona para a home
-#     home = settings.HOST_URL
-#     logger.info("Redirect to Home: [ %s:%s ]" % (request.scheme, home))
-#     response = redirect(home)
-
-#     return response
