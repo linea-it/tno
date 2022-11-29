@@ -87,7 +87,7 @@ function Tutorials() {
           container
           spacing={9}
           direction="row"
-          justify="space-evenly"
+          justifyContent="space-evenly"
           alignItems="flex-start"
           className={classes.root}
         >

@@ -32,7 +32,7 @@ function Banner() {
       <Grid
         container
         direction="row"
-        justify="space-between"
+        justifyContent="space-between"
         alignItems="flex-start"
         spacing={1}
         className={classes.container}

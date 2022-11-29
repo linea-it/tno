@@ -1,5 +1,5 @@
 import React from 'react';
-import { CardMedia,Typography, Grid } from '@material-ui/core';
+import { CardMedia, Typography, Grid } from '@material-ui/core';
 import styles from './styles';
 
 
@@ -43,20 +43,20 @@ function Supporters() {
         container
         spacing={2}
         direction="row"
-        justify="center"
+        justifyContent="center"
         alignItems="stretch"
       >
         {interfaces.map((item) => (
-            <Grid key={item.id} item>
-              <CardMedia
-                className={classes.carouselItem}
-                component="img"
-                alt={item.title}
-                image={`${process.env.PUBLIC_URL}/img/supporters/${item.image}`}
-                title={item.title}
-              />
-            </Grid>
-          ))}
+          <Grid key={item.id} item>
+            <CardMedia
+              className={classes.carouselItem}
+              component="img"
+              alt={item.title}
+              image={`${process.env.PUBLIC_URL}/img/supporters/${item.image}`}
+              title={item.title}
+            />
+          </Grid>
+        ))}
       </Grid>
     </div>
   );

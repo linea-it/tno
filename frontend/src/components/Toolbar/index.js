@@ -36,7 +36,7 @@ function Toolbar({ title, open, drawerWidth, currentUser, handleDrawerClick }) {
       })}
     >
       <MuiToolbar>
-        <Grid container justify="space-between" alignItems="center">
+        <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <Grid container alignItems="center" spacing={2}>
               {!open ? (

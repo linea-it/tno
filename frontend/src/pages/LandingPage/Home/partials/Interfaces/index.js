@@ -63,7 +63,7 @@ function Interfaces() {
         container
         spacing={2}
         direction="row"
-        justify="center"
+        justifyContent="center"
         alignItems="stretch"
       >
         {interfaces.map((item) => (
