@@ -54,9 +54,9 @@ function Skybot({ setTitle }) {
   const [selectedDate, setSelectedDate] = useState(
     selectedDateLocalStorage
       ? [
-          JSON.parse(selectedDateLocalStorage).start,
-          JSON.parse(selectedDateLocalStorage).end,
-        ]
+        JSON.parse(selectedDateLocalStorage).start,
+        JSON.parse(selectedDateLocalStorage).end,
+      ]
       : ['', '']
   );
 
@@ -166,7 +166,7 @@ function Skybot({ setTitle }) {
       setCurrentYearExposures(exposures);
       setCurrentYearExecutedNights(nights);
     }
-  }, [executedNightsByPeriod, currentSelectedDateYear, chartType]);
+  }, [executedNightsByPeriod, currentSelectedDateYear, chartType, exposuresByPeriod]);
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
     getSkybotRunList({

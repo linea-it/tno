@@ -34,7 +34,7 @@ import {
 
 import useInterval from '../../hooks/useInterval';
 import useStyles from './styles';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import { Alert } from '@material-ui/lab';
 
 function SkybotDetail({ setTitle }) {
   const { id } = useParams();
@@ -98,7 +98,7 @@ function SkybotDetail({ setTitle }) {
       .catch(() => {
         setHasCircularProgress(true);
       });
-  }, [loadProgress]);
+  }, [loadProgress, id]);
 
   const tableColumns = [
     {
@@ -290,7 +290,7 @@ function SkybotDetail({ setTitle }) {
     });
     loadErrors({ currentPage: 0, pageSize: 10 })
 
-  }, [loadProgress]);
+  }, [loadProgress, id]);
 
   useEffect(() => {
     if (Object.keys(skybotJob).length > 0) {
@@ -376,13 +376,13 @@ function SkybotDetail({ setTitle }) {
         },
       ]);
     }
-  }, [skybotJob]);
+  }, [skybotJob, id]);
 
   useEffect(() => {
     getDynclassAsteroids(id).then((res) => {
       setDynclassAsteroids(res);
     });
-  }, [loadProgress]);
+  }, [loadProgress, id]);
 
   const formatSeconds = (value) =>
     moment().startOf('day').seconds(value).format('HH:mm:ss');

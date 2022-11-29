@@ -20,7 +20,7 @@ import {
   getCcdsByExposure,
   getExposureById,
   getDynclassAsteroidsById,
-  getCcdsWithAsteroidsById,
+  // getCcdsWithAsteroidsById,
 } from '../../services/api/Skybot';
 import CCD from '../../components/Chart/CCD';
 import List from '../../components/List';
@@ -45,7 +45,6 @@ function SkybotAsteroid({ setTitle }) {
   const [exposure, setExposure] = useState({ radeg: null, decdeg: null });
   const [asteroidsInsideCcd, setAsteroidsInsideCcd] = useState([]);
   const [dynclassAsteroids, setDynclassAsteroids] = useState([]);
-  const [ccdsWithAsteroids, setCcdsWithAsteroids] = useState(null);
   const [summary, setSummary] = useState([]);
   const [tableColumns, setTableColumns] = useState([]);
 
@@ -59,7 +58,7 @@ function SkybotAsteroid({ setTitle }) {
     });
   }, [id]);
 
-  const columns = [
+  const columns = React.useMemo(() => [
     {
       title: ' ',
       name: 'index',
@@ -170,7 +169,7 @@ function SkybotAsteroid({ setTitle }) {
       name: 'jdref',
       headerTooltip: 'Epoch of the position vector (Julian Day)',
     },
-  ];
+  ], []);
 
   useEffect(() => {
     if (insideCcdOnly) {
@@ -178,7 +177,7 @@ function SkybotAsteroid({ setTitle }) {
     } else {
       setTableColumns(columns.filter((row) => row.name !== 'ccdnum'));
     }
-  }, [insideCcdOnly]);
+  }, [insideCcdOnly, columns]);
 
   const circleCoordinatesPlaneFormat = (x) => {
     if (typeof x === 'number') return x > 180 ? x - 360 : x;
@@ -284,13 +283,13 @@ function SkybotAsteroid({ setTitle }) {
     getDynclassAsteroidsById(id).then((res) => {
       setDynclassAsteroids(res);
     });
-  }, []);
+  }, [id]);
 
-  useEffect(() => {
-    getCcdsWithAsteroidsById(id).then((res) => {
-      setCcdsWithAsteroids(res.ccds_with_asteroid);
-    });
-  }, []);
+  // useEffect(() => {
+  //   getCcdsWithAsteroidsById(id).then((res) => {
+  //     setCcdsWithAsteroids(res.ccds_with_asteroid);
+  //   });
+  // }, [id]);
 
   useEffect(() => {
     if (skybotResult.exposure !== 0) {

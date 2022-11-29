@@ -56,7 +56,7 @@ function SkybotTimeProfile({ data }) {
   useEffect(() => {
     const result = loadRows();
     if (result !== null) setRows(result);
-  }, [data]);
+  }, [data, loadRows]);
 
   return (
     <Plot

@@ -14,7 +14,7 @@ export const createDownloadJob = ({ date_initial, date_final, dynclass, object_n
     date_final: date_final,
   };
 
-  if(object_name) {
+  if (object_name) {
     params = {
       ...params,
       name: object_name
@@ -49,7 +49,7 @@ export const getObjectByName = (objectName) => {
 }
 
 export const getAllObjects = () => {
-  const params = { pageSize: 999999  };
+  const params = { pageSize: 999999 };
 
   return axios.get('/des/skybot_position/', { params })
     .then(res => {
@@ -57,7 +57,7 @@ export const getAllObjects = () => {
 
       return results
         .filter((value, index, self) =>
-          self.map(x => x.name).indexOf(value.name) == index
+          self.map(x => x.name).indexOf(value.name) === index
         )
     })
 }
