@@ -5,24 +5,24 @@ import Route from './Route';
 
 import Dashboard from '../pages/Dashboard';
 
-import Download from '../pages/Download';
-import DownloadDetail from '../pages/Download/Detail';
+// import Download from '../pages/Download';
+// import DownloadDetail from '../pages/Download/Detail';
 
 import Skybot from '../pages/Skybot';
 import SkybotDetail from '../pages/Skybot/Detail';
 import SkybotAsteroid from '../pages/Skybot/Asteroid';
 
-import RefineOrbit from '../pages/RefineOrbit';
-import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
-import RefineOrbitAsteroid from '../pages/RefineOrbit/Asteroid';
+// import RefineOrbit from '../pages/RefineOrbit';
+// import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
+// import RefineOrbitAsteroid from '../pages/RefineOrbit/Asteroid';
 
-import PredictionOccultation from '../pages/PredictionOccultation';
-import PredictionOccultationDetail from '../pages/PredictionOccultation/Detail';
-import PredictionOccultationAsteroid from '../pages/PredictionOccultation/Asteroid';
+// import PredictionOccultation from '../pages/PredictionOccultation';
+// import PredictionOccultationDetail from '../pages/PredictionOccultation/Detail';
+// import PredictionOccultationAsteroid from '../pages/PredictionOccultation/Asteroid';
 
-import Occultation from '../pages/Occultation';
-import OccultationDetail from '../pages/Occultation/Detail';
-import OccultationCalendar from '../pages/Occultation/Calendar';
+// import Occultation from '../pages/Occultation';
+// import OccultationDetail from '../pages/Occultation/Detail';
+// import OccultationCalendar from '../pages/Occultation/Calendar';
 
 import Home from '../pages/LandingPage/Home';
 import AboutUs from '../pages/LandingPage/AboutUs';
@@ -34,7 +34,7 @@ import Notfound from '../pages/LandingPage/NotFound';
 export default function Routes() {
   return (
     <Switch>
-      <Route isPrivate exact path="/refine-orbit" component={RefineOrbit} />
+      {/* <Route isPrivate exact path="/refine-orbit" component={RefineOrbit} />
       <Route
         isPrivate
         exact
@@ -83,7 +83,7 @@ export default function Routes() {
         exact
         path="/occultation/:id"
         component={OccultationDetail}
-      />
+      /> */}
 
       <Route
         isPrivate
@@ -103,7 +103,7 @@ export default function Routes() {
         path="/data-preparation/des/discovery/asteroid/:id"
         component={SkybotAsteroid}
       />
-      <Route
+      {/* <Route
         isPrivate
         exact
         path="/data-preparation/des/download"
@@ -114,7 +114,7 @@ export default function Routes() {
         exact
         path="/data-preparation/des/download/:id"
         component={DownloadDetail}
-      />
+      /> */}
       <Route isHomePage exact path="/" component={Home} />
       <Route isHomePage exact path="/about-us" component={AboutUs} />
       <Route isHomePage exact path="/help" component={Help} />
