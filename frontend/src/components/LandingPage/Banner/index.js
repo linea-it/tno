@@ -2,7 +2,7 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import { YouTube, Twitter, GitHub } from '@material-ui/icons';
-import Stars from '../Stars';
+// import Stars from '../Stars';
 import styles from './styles';
 
 function Banner() {
@@ -28,7 +28,7 @@ function Banner() {
 
   return (
     <div className={classes.root}>
-      <Stars />
+      {/* <Stars /> */}
       <Grid
         container
         direction="row"
