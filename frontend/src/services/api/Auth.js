@@ -23,6 +23,9 @@ axios.interceptors.response.use(
         // TODO: Tratar quando o usuario tentar acessar uma api que ele nao tem permissao.
         // console.warn(error.request);
       }
+      if (error.response.status === 403) {
+          // Não está logado
+      }      
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -32,7 +35,6 @@ axios.interceptors.response.use(
       // Something happened in setting up the request that triggered an Error
       console.error('Error', error.message);
     }
-    console.error(error.config);
 
     return Promise.reject(error);
   }
@@ -59,10 +61,6 @@ export function isAuthenticated() {
   });
 }
 
-export function logout() {
-  window.location.replace(`${url}/auth/logout`);
-}
+export const urlLogin = `${url}/auth/login/`;
 
-export const urlLogin = `${url}/auth/login/?next=/`;
-
-export const urlLogout = `${url}/auth/logout/?next=/`;
+export const urlLogout = `${url}/auth/logout/`;

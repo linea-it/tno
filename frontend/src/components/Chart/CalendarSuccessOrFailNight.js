@@ -22,7 +22,7 @@ function CalendarSuccessOrFailNight({ data }) {
 
     // Fix aferter update d3
     // https://observablehq.com/@d3/d3v6-migration-guide#group
-    const years = d3.group(dateValues, d => d.date.getUTCFullYear()).reverse()
+    const years = d3.group(dateValues, d => d.date.getUTCFullYear())
 
     const cellSize = 15;
     const height = 185;

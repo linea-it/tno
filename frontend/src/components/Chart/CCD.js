@@ -63,6 +63,8 @@ function CCD({ data, width, height }) {
     },
   });
 
+  // width = !width ? height : width;
+
   return (
     <Plot
       data={rows}
@@ -75,10 +77,13 @@ function CCD({ data, width, height }) {
         autosize: true,
         xaxis: {
           title: 'RA (º)',
+          nticks: 5,
+          scaleanchor: 'y',
         },
         yaxis: {
           title: 'Dec (º)',
-          scaleanchor: 'x',
+          nticks: 5,
+          // scaleanchor: 'x',
         },
         shapes: [
           {

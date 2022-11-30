@@ -1,16 +1,20 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-
-// import Route from './Route';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Dashboard from '../pages/Dashboard';
-
-// import Download from '../pages/Download';
-// import DownloadDetail from '../pages/Download/Detail';
 
 import Skybot from '../pages/Skybot';
 import SkybotDetail from '../pages/Skybot/Detail';
 import SkybotAsteroid from '../pages/Skybot/Asteroid';
+
+import Home from '../pages/LandingPage/Home';
+import AboutUs from '../pages/LandingPage/AboutUs';
+import Help from '../pages/LandingPage/Help';
+import Tutorials from '../pages/LandingPage/Tutorials';
+import Contact from '../pages/LandingPage/Contact';
+
+import { useAuth } from '../contexts/AuthContext.js'
+
 
 // import RefineOrbit from '../pages/RefineOrbit';
 // import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
@@ -24,14 +28,17 @@ import SkybotAsteroid from '../pages/Skybot/Asteroid';
 // import OccultationDetail from '../pages/Occultation/Detail';
 // import OccultationCalendar from '../pages/Occultation/Calendar';
 
-import Home from '../pages/LandingPage/Home';
-import AboutUs from '../pages/LandingPage/AboutUs';
-import Help from '../pages/LandingPage/Help';
-import Tutorials from '../pages/LandingPage/Tutorials';
-import Contact from '../pages/LandingPage/Contact';
-import Notfound from '../pages/LandingPage/NotFound';
+// import Download from '../pages/Download';
+// import DownloadDetail from '../pages/Download/Detail';
 
 export default function AppRoutes() {
+
+  const { isAuthenticated, signIn } = useAuth()
+
+  const PrivateRoute = ({ auth: { isAuthenticated }, children }) => {
+    return isAuthenticated ? children : signIn();
+  };
+
   return (
     <Routes>
       <Route isHomePage exact path="/" element={<Home />} />
@@ -40,25 +47,28 @@ export default function AppRoutes() {
       <Route isHomePage exact path="/tutorials" element={<Tutorials />} />
       <Route isHomePage exact path="/contact-us" element={<Contact />} />
       <Route isPrivate exact path="/dashboard" element={<Dashboard />} />
-      <Route element={<Notfound />} />
+
       <Route
         isPrivate
         exact
         path="/data-preparation/des/discovery"
-        element={<Skybot />}
+        element={<PrivateRoute auth={{ isAuthenticated }}><Skybot /></PrivateRoute>}
       />
       <Route
         isPrivate
         exact
         path="/data-preparation/des/discovery/:id"
-        element={<SkybotDetail />}
+        element={<PrivateRoute auth={{ isAuthenticated }}><SkybotDetail /></PrivateRoute>}
       />
       <Route
         isPrivate
         exact
         path="/data-preparation/des/discovery/asteroid/:id"
-        element={<SkybotAsteroid />}
+        element={<PrivateRoute auth={{ isAuthenticated }}><SkybotAsteroid /></PrivateRoute>}
       />
+      <Route path="*" element={<Navigate to="/" />} />
+      
+      {/* <Route element={<Notfound />} />       */}
       {/* <Route isPrivate exact path="/refine-orbit" element={RefineOrbit} />
       <Route
         isPrivate

@@ -10,10 +10,13 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Avatar from '@material-ui/core/Avatar';
-import { loggedUser, urlLogin, urlLogout } from '../../../services/api/Auth';
+// import { loggedUser, urlLogin, urlLogout } from '../../../services/api/Auth';
 import styles from './styles';
-
+import { useAuth } from '../../../contexts/AuthContext.js';
 function Header() {
+
+  const { isAuthenticated, user, signIn, logout } = useAuth()
+
   const location = useLocation();
   const trigger = useScrollTrigger({
     threshold: 10,
@@ -23,12 +26,6 @@ function Header() {
     scrollActive: trigger,
     pathname: location.pathname,
   });
-
-  const [user, setUser] = useState(undefined);
-  useEffect(() => {
-    loggedUser().then((result) => setUser(result));
-  }, []);
-  useEffect(() => { }, [user]);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -65,7 +62,7 @@ function Header() {
           <List className={classes.list}>
             <ListItem button>
               <Button
-                href={urlLogout}
+                onClick={logout}
                 color="inherit"
                 startIcon={<ExitToAppIcon />}
               >
@@ -81,10 +78,9 @@ function Header() {
   function UserUnLogged() {
     return (
       <>
-        <Button href={urlLogin} color="inherit">
+        <Button onClick={signIn} color="inherit">
           Sign in
         </Button>
-        {/* <Button color="inherit">Sign up</Button> */}
       </>
     );
   }
@@ -130,8 +126,7 @@ function Header() {
           ))}
         </List>
         <div className={classes.separator} />
-        {/* TODO: verificar se o usuario esta logado */}
-        {user && user.username ? <UserLogged /> : <UserUnLogged />}
+        {isAuthenticated ? <UserLogged /> : <UserUnLogged />}
       </Toolbar>
     </AppBar>
   );
