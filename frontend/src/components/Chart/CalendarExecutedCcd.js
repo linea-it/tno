@@ -31,11 +31,9 @@ function CalendarExecutedCcd({ data }) {
     d3.selectAll('#executed-ccd-svg > *').remove();
     const svg = d3.select('#executed-ccd-svg');
 
-    const years = d3
-      .nest()
-      .key((d) => d.date.getUTCFullYear())
-      .entries(dateValues)
-      .reverse();
+    // Fix aferter update d3
+    // https://observablehq.com/@d3/d3v6-migration-guide#group
+    const years = d3.group(dateValues, d => d.date.getUTCFullYear())
 
     const cellSize = 15;
     const height = 185;
@@ -92,7 +90,7 @@ function CalendarExecutedCcd({ data }) {
     year
       .append('g')
       .selectAll('rect')
-      .data((d) => d.values)
+      .data((d) => d[1])
       .join('rect')
       .attr('width', cellSize - 3)
       .attr('height', cellSize - 3)

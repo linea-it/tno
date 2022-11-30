@@ -21,15 +21,12 @@ function CalendarHeatmap({ data }) {
     d3.selectAll('#heatmap-svg > *').remove();
     const svg = d3.select('#heatmap-svg');
 
-    // const years = d3
-    //   .nest()
-    //   .key((d) => d.date.getUTCFullYear())
-    //   .entries(dateValues)
-    //   .reverse();
-
-    const years = d3.group(dateValues, d => d.date.getUTCFullYear()).reverse()
+    // Fix aferter update d3
+    // https://observablehq.com/@d3/d3v6-migration-guide#group
+    const years = d3.group(dateValues, d => d.date.getUTCFullYear())
 
     const values = dateValues.map((c) => c.value);
+
     const maxValue = d3.max(values);
     const minValue = d3.min(values);
 
@@ -65,6 +62,7 @@ function CalendarHeatmap({ data }) {
 
     const countDay = (d) => d.getUTCDay();
 
+
     const timeWeek = d3.utcSunday;
 
     const colorFn = d3
@@ -87,7 +85,7 @@ function CalendarHeatmap({ data }) {
     year
       .append('g')
       .selectAll('rect')
-      .data((d) => d.values)
+      .data((d) => d[1])
       .join('rect')
       .attr('width', cellSize - 3)
       .attr('height', cellSize - 3)
