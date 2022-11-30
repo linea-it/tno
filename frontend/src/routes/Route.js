@@ -2,7 +2,7 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Route, Redirect } from 'react-router-dom';
+import { Route, Navigate } from 'react-router-dom';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import useStyles from './styles';
@@ -26,7 +26,7 @@ export default function RouteWrapper({
     isAuthenticated().then((res) => {
       setAuthenticated(res);
       if (res && !isPrivate) {
-        return <Redirect to="/" />;
+        return <Navigate to="/" />;
       }
 
       if (!res && isPrivate) {

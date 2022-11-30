@@ -1,7 +1,7 @@
 import React from 'react';
-import { Switch } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 
-import Route from './Route';
+// import Route from './Route';
 
 import Dashboard from '../pages/Dashboard';
 
@@ -31,97 +31,96 @@ import Tutorials from '../pages/LandingPage/Tutorials';
 import Contact from '../pages/LandingPage/Contact';
 import Notfound from '../pages/LandingPage/NotFound';
 
-export default function Routes() {
+export default function AppRoutes() {
   return (
-    <Switch>
-      {/* <Route isPrivate exact path="/refine-orbit" component={RefineOrbit} />
-      <Route
-        isPrivate
-        exact
-        path="/refine-orbit/:id"
-        component={RefineOrbitDetail}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/refine-orbit/asteroid/:id"
-        component={RefineOrbitAsteroid}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/prediction-of-occultation/asteroid/:id"
-        component={PredictionOccultationAsteroid}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/prediction-of-occultation/:id"
-        component={PredictionOccultationDetail}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/prediction-of-occultation"
-        component={PredictionOccultation}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/occultation-calendar"
-        component={OccultationCalendar}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching"
-        component={OccultationCalendar}
-      />
-      <Route isPrivate exact path="/occultation" component={Occultation} />
-      <Route
-        isPrivate
-        exact
-        path="/occultation/:id"
-        component={OccultationDetail}
-      /> */}
-
+    <Routes>
+      <Route isHomePage exact path="/" element={<Home />} />
+      <Route isHomePage exact path="/about-us" element={<AboutUs />} />
+      <Route isHomePage exact path="/help" element={<Help />} />
+      <Route isHomePage exact path="/tutorials" element={<Tutorials />} />
+      <Route isHomePage exact path="/contact-us" element={<Contact />} />
+      <Route isPrivate exact path="/dashboard" element={<Dashboard />} />
+      <Route element={<Notfound />} />
       <Route
         isPrivate
         exact
         path="/data-preparation/des/discovery"
-        component={Skybot}
+        element={<Skybot />}
       />
       <Route
         isPrivate
         exact
         path="/data-preparation/des/discovery/:id"
-        component={SkybotDetail}
+        element={<SkybotDetail />}
       />
       <Route
         isPrivate
         exact
         path="/data-preparation/des/discovery/asteroid/:id"
-        component={SkybotAsteroid}
+        element={<SkybotAsteroid />}
       />
+      {/* <Route isPrivate exact path="/refine-orbit" element={RefineOrbit} />
+      <Route
+        isPrivate
+        exact
+        path="/refine-orbit/:id"
+        element={RefineOrbitDetail}
+      />
+      <Route
+        isPrivate
+        exact
+        path="/refine-orbit/asteroid/:id"
+        element={RefineOrbitAsteroid}
+      />
+      <Route
+        isPrivate
+        exact
+        path="/prediction-of-occultation/asteroid/:id"
+        element={PredictionOccultationAsteroid}
+      />
+      <Route
+        isPrivate
+        exact
+        path="/prediction-of-occultation/:id"
+        element={PredictionOccultationDetail}
+      />
+      <Route
+        isPrivate
+        exact
+        path="/prediction-of-occultation"
+        element={PredictionOccultation}
+      />
+      <Route
+        isPrivate
+        exact
+        path="/occultation-calendar"
+        element={OccultationCalendar}
+      />
+      <Route
+        isPrivate
+        exact
+        path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching"
+        element={OccultationCalendar}
+      />
+      <Route isPrivate exact path="/occultation" element={Occultation} />
+      <Route
+        isPrivate
+        exact
+        path="/occultation/:id"
+        element={OccultationDetail}
+      /> */}
       {/* <Route
         isPrivate
         exact
         path="/data-preparation/des/download"
-        component={Download}
+        element={Download}
       />
       <Route
         isPrivate
         exact
         path="/data-preparation/des/download/:id"
-        component={DownloadDetail}
+        element={DownloadDetail}
       /> */}
-      <Route isHomePage exact path="/" component={Home} />
-      <Route isHomePage exact path="/about-us" component={AboutUs} />
-      <Route isHomePage exact path="/help" component={Help} />
-      <Route isHomePage exact path="/tutorials" component={Tutorials} />
-      <Route isHomePage exact path="/contact-us" component={Contact} />
-      <Route isPrivate exact path="/dashboard" component={Dashboard} />
-      <Route component={Notfound} />
-    </Switch>
+    </Routes>
   );
 }

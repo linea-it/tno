@@ -21,11 +21,13 @@ function CalendarHeatmap({ data }) {
     d3.selectAll('#heatmap-svg > *').remove();
     const svg = d3.select('#heatmap-svg');
 
-    const years = d3
-      .nest()
-      .key((d) => d.date.getUTCFullYear())
-      .entries(dateValues)
-      .reverse();
+    // const years = d3
+    //   .nest()
+    //   .key((d) => d.date.getUTCFullYear())
+    //   .entries(dateValues)
+    //   .reverse();
+
+    const years = d3.group(dateValues, d => d.date.getUTCFullYear()).reverse()
 
     const values = dateValues.map((c) => c.value);
     const maxValue = d3.max(values);

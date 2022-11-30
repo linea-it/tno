@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   Grid,
   Card,
@@ -38,8 +38,8 @@ import CalendarHeatmap from '../../components/Chart/CalendarHeatmap';
 import CalendarExecutedNight from '../../components/Chart/CalendarExecutedNight';
 import useStyles from './styles';
 
-function Skybot({ setTitle }) {
-  const history = useHistory();
+function Skybot({ }) {
+  const navigate = useNavigate();
   const classes = useStyles();
   const [totalCount, setTotalCount] = useState(0);
   const [tableData, setTableData] = useState([]);
@@ -79,9 +79,9 @@ function Skybot({ setTitle }) {
     estimated_time: '0',
   });
 
-  useEffect(() => {
-    setTitle('Discovery');
-  }, [setTitle]);
+  // useEffect(() => {
+  //   setTitle('Discovery');
+  // }, [setTitle]);
 
   const handleSelectPeriodClick = () => {
     setExposuresByPeriod([]);
@@ -211,7 +211,7 @@ function Skybot({ setTitle }) {
           setHasJobRunningOrIdleFeedback(true);
           setReload((prevState) => !prevState);
         } else {
-          history.push(`/data-preparation/des/discovery/${id}`);
+          navigate(`/data-preparation/des/discovery/${id}`);
         }
 
         setBackdropOpen(false);
@@ -245,7 +245,7 @@ function Skybot({ setTitle }) {
       title: 'Detail',
       width: 80,
       customElement: (row) => (
-        <Button onClick={() => history.push(row.detail)}>
+        <Button onClick={() => navigate(row.detail)}>
           <InfoOutlinedIcon />
         </Button>
       ),
@@ -581,8 +581,9 @@ function Skybot({ setTitle }) {
   );
 }
 
-Skybot.propTypes = {
-  setTitle: PropTypes.func.isRequired,
-};
+// Skybot.propTypes = {
+//   // setTitle: PropTypes.func.isRequired,
+//   setTitle: PropTypes.func,
+// };
 
 export default Skybot;

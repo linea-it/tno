@@ -8,7 +8,7 @@ import Dialog from '../../components/Dialog';
 import Log from '../../components/Log';
 import { readFile } from '../../services/api/Orbit';
 
-function Observation({ setTitle }) {
+function Observation({ }) {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tableDataCount, setTableDataCount] = useState(true);
@@ -18,9 +18,9 @@ function Observation({ setTitle }) {
     title: ' ',
   });
 
-  useEffect(() => {
-    setTitle('Observation Files');
-  }, [setTitle]);
+  // useEffect(() => {
+  //   setTitle('Observation Files');
+  // }, [setTitle]);
 
   const loadTableData = (event) => {
     setLoading(true);
@@ -172,8 +172,9 @@ function Observation({ setTitle }) {
   );
 }
 
-Observation.propTypes = {
-  setTitle: PropTypes.func.isRequired,
-};
+// Observation.propTypes = {
+//   // setTitle: PropTypes.func.isRequired,
+//   setTitle: PropTypes.func,
+// };
 
 export default Observation;

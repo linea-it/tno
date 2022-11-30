@@ -19,7 +19,8 @@ function AboutUs() {
       <Container>
         <Grid item xs={12} className={classes.grid}>
           <Breadcrumbs aria-label="breadcrumb">
-            <Link color="inherit" href="/">
+            {/* <Link color="inherit" href="/"> */}
+            <Link color="inherit" to="/">
               Home
             </Link>
             <Typography color="textPrimary">About</Typography>

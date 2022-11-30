@@ -28,7 +28,7 @@ function Header() {
   useEffect(() => {
     loggedUser().then((result) => setUser(result));
   }, []);
-  useEffect(() => {}, [user]);
+  useEffect(() => { }, [user]);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -123,7 +123,8 @@ function Header() {
         <List className={classes.menuList}>
           {menus.map((menu) => (
             <ListItem key={menu.href} className={classes.menuListItem}>
-              <Link href={menu.href} className={classes.menuLink}>
+              {/* <Link href={menu.href} className={classes.menuLink}> */}
+              <Link to={menu.href} className={classes.menuLink}>
                 {menu.description}
               </Link>
             </ListItem>

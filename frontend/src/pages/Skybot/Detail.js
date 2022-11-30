@@ -12,7 +12,7 @@ import {
   Typography,
   CircularProgress,
 } from '@material-ui/core';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import {
   InfoOutlined as InfoOutlinedIcon,
@@ -36,9 +36,9 @@ import useInterval from '../../hooks/useInterval';
 import useStyles from './styles';
 import { Alert } from '@material-ui/lab';
 
-function SkybotDetail({ setTitle }) {
+function SkybotDetail({ }) {
   const { id } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
   const classes = useStyles();
   const [skybotJob, setSkybotJob] = useState({});
   const [summaryExecution, setSummaryExecution] = useState([]);
@@ -81,13 +81,10 @@ function SkybotDetail({ setTitle }) {
   const [tableErrorData, setTableErrorData] = useState([])
   const [totalErrorCount, setTotalErrorCount] = useState(0)
 
-  const handleBackNavigation = () => history.goBack();
+  const handleBackNavigation = () => navigate(-1);
 
   const haveError = (totalErrorCount > 0 && 'results' in skybotJob)
 
-  useEffect(() => {
-    setTitle('Discovery');
-  }, [setTitle]);
 
   useEffect(() => {
     getSkybotProgress(id)
@@ -112,7 +109,7 @@ function SkybotDetail({ setTitle }) {
         return (
           <Button
             onClick={() =>
-              history.push(`/data-preparation/des/discovery/asteroid/${row.id}`)
+              navigate(`/data-preparation/des/discovery/asteroid/${row.id}`)
             }
           >
             <InfoOutlinedIcon />
@@ -697,8 +694,5 @@ function SkybotDetail({ setTitle }) {
   );
 }
 
-SkybotDetail.propTypes = {
-  setTitle: PropTypes.func.isRequired,
-};
 
 export default SkybotDetail;

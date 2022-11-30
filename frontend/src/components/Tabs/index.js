@@ -57,10 +57,10 @@ function Tabs({ data }) {
 }
 
 Tabs.propTypes = {
-  data: PropTypes.shape({
+  data: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string,
     content: PropTypes.node
-  }).isRequired,
+  })).isRequired,
 }
 
 export default Tabs;

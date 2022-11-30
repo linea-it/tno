@@ -78,7 +78,10 @@ function Tutorials() {
     <div className={classes.initContainer}>
       <Container>
         <Breadcrumbs aria-label="breadcrumb">
-          <Link color="inherit" href="/">
+          {/* <Link color="inherit" href="/">
+            Home
+          </Link> */}
+          <Link color="inherit" to="/">
             Home
           </Link>
           <Typography color="textPrimary">Tutorials</Typography>

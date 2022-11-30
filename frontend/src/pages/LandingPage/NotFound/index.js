@@ -36,7 +36,10 @@ function AboutUs() {
       <Container>
         <Grid item xs={12}>
           <Breadcrumbs aria-label="breadcrumb">
-            <Link color="inherit" href="/">
+            {/* <Link color="inherit" href="/">
+              Home
+            </Link> */}
+            <Link color="inherit" to="/">
               Home
             </Link>
             <Typography color="textPrimary">Not Found</Typography>
@@ -52,7 +55,10 @@ function AboutUs() {
               <Typography variant="subtitle1" className={classes.description}>
                 The page you are looking for might have been removed, had its
                 name changed or is temporarily unavailable.{' '}
-                <Link color="inherit" className={classes.returnPage} href="/">
+                {/* <Link color="inherit" className={classes.returnPage} href="/">
+                  Return to homepage
+                </Link> */}
+                <Link color="inherit" className={classes.returnPage} to="/">
                   Return to homepage
                 </Link>
               </Typography>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Grid,
   Card,
@@ -26,12 +26,12 @@ import CCD from '../../components/Chart/CCD';
 import List from '../../components/List';
 import Switch from '../../components/Switch';
 
-function SkybotAsteroid({ setTitle }) {
+function SkybotAsteroid({ }) {
   const { id } = useParams();
 
   const coneSearchRadius = 1.2; // ! Cone search radius in Degres.
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const [skybotResult, setSkybotResult] = useState({
     ticket: 0,
     exposure: 0,
@@ -48,9 +48,9 @@ function SkybotAsteroid({ setTitle }) {
   const [summary, setSummary] = useState([]);
   const [tableColumns, setTableColumns] = useState([]);
 
-  useEffect(() => {
-    setTitle('Discovery');
-  }, [setTitle]);
+  // useEffect(() => {
+  //   setTitle('Discovery');
+  // }, [setTitle]);
 
   useEffect(() => {
     getSkybotJobResultById(id).then((res) => {
@@ -353,7 +353,7 @@ function SkybotAsteroid({ setTitle }) {
     },
   ];
 
-  const handleBackNavigation = () => history.goBack();
+  const handleBackNavigation = () => navigate(-1);
 
   return (
     <Grid container spacing={2}>
@@ -449,8 +449,9 @@ function SkybotAsteroid({ setTitle }) {
   );
 }
 
-SkybotAsteroid.propTypes = {
-  setTitle: PropTypes.func.isRequired,
-};
+// SkybotAsteroid.propTypes = {
+//   //setTitle: PropTypes.func.isRequired,
+//   setTitle: PropTypes.any,
+// };
 
 export default SkybotAsteroid;

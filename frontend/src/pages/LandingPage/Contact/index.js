@@ -52,7 +52,8 @@ function Contact() {
       <Container>
         <Grid item xs={12}>
           <Breadcrumbs aria-label="breadcrumb">
-            <Link color="inherit" href="/">
+            {/* <Link color="inherit" href="/"> */}
+            <Link color="inherit" to="/">
               Home
             </Link>
             <Typography color="textPrimary">Contact</Typography>
@@ -65,7 +66,8 @@ function Contact() {
               <span>
                 If you have any problems related to the usage of the
                 applications,
-                <Link href="/tutorials" variant="body2">
+                {/* <Link href="/tutorials" variant="body2"> */}
+                <Link to="/tutorials" variant="body2">
                   &nbsp;click here&nbsp;
                 </Link>
                 to be redirected to the tutorials page. Or if you still have
@@ -175,8 +177,12 @@ function Contact() {
               Sorry, you have to be authenticated in this application to send a
               message. In case you still need to contact us,{' '}
             </span>
-            <Link
+            {/* <Link
               href="https://www.linea.gov.br/6-faleconosco/"
+              target="_blank"
+            > */}
+            <Link
+              to="https://www.linea.gov.br/6-faleconosco/"
               target="_blank"
             >
               click here
@@ -198,8 +204,12 @@ function Contact() {
               Sorry, an unexpected error has occurred. Could you please try
               again? If it still didn't work, you can{' '}
             </span>
-            <Link
+            {/* <Link
               href="https://www.linea.gov.br/6-faleconosco/"
+              target="_blank"
+            > */}
+            <Link
+              to="https://www.linea.gov.br/6-faleconosco/"
               target="_blank"
             >
               click here

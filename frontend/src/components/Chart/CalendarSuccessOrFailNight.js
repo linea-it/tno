@@ -20,11 +20,12 @@ function CalendarSuccessOrFailNight({ data }) {
     d3.selectAll('#success-fail-night-svg > *').remove();
     const svg = d3.select('#success-fail-night-svg');
 
-    const years = d3
-      .nest()
-      .key((d) => d.date.getUTCFullYear())
-      .entries(dateValues)
-      .reverse();
+    // const years = d3
+    //   .nest()
+    //   .key((d) => d.date.getUTCFullYear())
+    //   .entries(dateValues)
+    //   .reverse();
+    const years = d3.group(dateValues, d => d.date.getUTCFullYear()).reverse()
 
     const cellSize = 15;
     const height = 185;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import Container from '@material-ui/core/Container';
@@ -10,7 +10,7 @@ import styles from './styles';
 
 function Interfaces() {
   const classes = styles();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [interfaces] = useState([
     {
@@ -55,7 +55,7 @@ function Interfaces() {
     },
   ]);
 
-  const handleCardClick = (pathname) => history.push(pathname);
+  const handleCardClick = (pathname) => navigate(pathname);
 
   return (
     <Container>

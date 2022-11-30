@@ -4,11 +4,11 @@ import Tabs from '../../components/Tabs';
 import Summary from './Summary';
 import Skybot from './Skybot';
 
-function Dashboard({ setTitle }) {
+function Dashboard({ }) {
 
-  useEffect(() => {
-    setTitle('Dashboard');
-  }, [setTitle]);
+  // useEffect(() => {
+  //   setTitle('Dashboard');
+  // }, [setTitle]);
 
   const tabs = [
     {
@@ -26,8 +26,9 @@ function Dashboard({ setTitle }) {
   );
 }
 
-Dashboard.propTypes = {
-  setTitle: PropTypes.func.isRequired,
-};
+// Dashboard.propTypes = {
+//   // setTitle: PropTypes.func.isRequired,
+//   setTitle: PropTypes.func,
+// };
 
 export default Dashboard;

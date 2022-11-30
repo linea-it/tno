@@ -20,11 +20,13 @@ function CalendarExecutedNight({ data }) {
     d3.selectAll('#executed-night-svg > *').remove();
     const svg = d3.select('#executed-night-svg');
 
-    const years = d3
-      .nest()
-      .key((d) => d.date.getUTCFullYear())
-      .entries(dateValues)
-      .reverse();
+    // const years = d3
+    //   .nest()
+    //   .key((d) => d.date.getUTCFullYear())
+    //   .entries(dateValues)
+    //   .reverse();
+    const years = d3.group(dateValues, d => d.date.getUTCFullYear()).reverse()
+
 
     const cellSize = 15;
     const height = 185;
