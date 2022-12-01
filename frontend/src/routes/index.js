@@ -14,8 +14,10 @@ import Tutorials from '../pages/LandingPage/Tutorials';
 import Contact from '../pages/LandingPage/Contact';
 
 import { useAuth } from '../contexts/AuthContext.js'
-
-
+import Header from '../components/LandingPage/Header';
+import Footer from '../components/LandingPage/Footer';
+// import Drawer from '../components/Drawer';
+import PersistentDrawerLeft from '../components/Drawer';
 // import RefineOrbit from '../pages/RefineOrbit';
 // import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
 // import RefineOrbitAsteroid from '../pages/RefineOrbit/Asteroid';
@@ -34,37 +36,63 @@ import { useAuth } from '../contexts/AuthContext.js'
 export default function AppRoutes() {
 
   const { isAuthenticated, signIn } = useAuth()
+  // const [title, setTitle] = React.useState('');
+  // // const [open, setOpen] = React.useState(window.innerWidth > 1360);
+  // const [open, setOpen] = React.useState(true);
 
   const PrivateRoute = ({ auth: { isAuthenticated }, children }) => {
     return isAuthenticated ? children : signIn();
   };
 
+  const LandingPage = ({ children }) => {
+    return (
+      <>
+        <Header />
+          {children}
+        <Footer />
+      </>
+    )
+  };
+
+  const DashboardPage = ({ children }) => {
+    return (
+      <>
+        {/* <Drawer title={title} open={open} setOpen={setOpen}>
+          {children}
+        </Drawer> */}
+        <PersistentDrawerLeft>{children}</PersistentDrawerLeft>
+      </>
+    )
+  };
+
   return (
     <Routes>
-      <Route isHomePage exact path="/" element={<Home />} />
-      <Route isHomePage exact path="/about-us" element={<AboutUs />} />
-      <Route isHomePage exact path="/help" element={<Help />} />
-      <Route isHomePage exact path="/tutorials" element={<Tutorials />} />
-      <Route isHomePage exact path="/contact-us" element={<Contact />} />
-      <Route isPrivate exact path="/dashboard" element={<Dashboard />} />
+      {/* Landing Page  Layout*/}
+      <Route isHomePage exact path="/" element={<LandingPage><Home /></LandingPage>} />
+      <Route isHomePage exact path="/about-us" element={<LandingPage><AboutUs /></LandingPage>} />
+      <Route isHomePage exact path="/help" element={<LandingPage><Help /></LandingPage>} />
+      <Route isHomePage exact path="/tutorials" element={<LandingPage><Tutorials /></LandingPage>} />
+      <Route isHomePage exact path="/contact-us" element={<LandingPage><Contact /></LandingPage>} />
 
+      {/* Dashboard  Layout*/}
+      <Route isPrivate exact path="/dashboard" element={<PrivateRoute auth={{ isAuthenticated }}><DashboardPage><Dashboard /></DashboardPage></PrivateRoute>} />
       <Route
         isPrivate
         exact
         path="/data-preparation/des/discovery"
-        element={<PrivateRoute auth={{ isAuthenticated }}><Skybot /></PrivateRoute>}
+        element={<PrivateRoute auth={{ isAuthenticated }}><DashboardPage><Skybot /></DashboardPage></PrivateRoute>}
       />
       <Route
         isPrivate
         exact
         path="/data-preparation/des/discovery/:id"
-        element={<PrivateRoute auth={{ isAuthenticated }}><SkybotDetail /></PrivateRoute>}
+        element={<PrivateRoute auth={{ isAuthenticated }}><DashboardPage><SkybotDetail /></DashboardPage></PrivateRoute>}
       />
       <Route
         isPrivate
         exact
         path="/data-preparation/des/discovery/asteroid/:id"
-        element={<PrivateRoute auth={{ isAuthenticated }}><SkybotAsteroid /></PrivateRoute>}
+        element={<PrivateRoute auth={{ isAuthenticated }}><DashboardPage><SkybotAsteroid /></DashboardPage></PrivateRoute>}
       />
       <Route path="*" element={<Navigate to="/" />} />
       

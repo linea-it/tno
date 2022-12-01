@@ -1,324 +1,187 @@
-import React, { useState, useEffect } from 'react';
-import clsx from 'clsx';
-import PropTypes from 'prop-types';
-import { Link, useLocation } from 'react-router-dom';
-import {
-  Drawer as MuiDrawer,
-  List,
-  CssBaseline,
-  Divider,
-  IconButton,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Collapse,
-} from '@material-ui/core';
-import {
-  ChevronLeft,
-  ArrowDropUp as ArrowDropUpIcon,
-  ArrowDropDown as ArrowDropDownIcon,
-} from '@material-ui/icons';
-
-import Footer from '../Footer';
-import Toolbar from '../Toolbar';
-
+import * as React from 'react';
+import { useNavigate, matchRoutes, useLocation } from "react-router-dom"
+import { styled, useTheme } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import CssBaseline from '@mui/material/CssBaseline';
+import MuiAppBar from '@mui/material/AppBar';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Collapse from '@mui/material/Collapse';
+import DashToolbar from '../Toolbar'
 import Logo from '../../assets/img/logo.png';
-import useStyles from './styles';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-
-import { loggedUser } from '../../services/api/Auth';
-
+import Footer from '../Footer'
 const drawerWidth = 240;
 
-function Drawer({ children, title, open, setOpen }) {
-  const location = useLocation();
-  const classes = useStyles({ drawerWidth });
-  const [dataPreparationOpen, setDataPreparationOpen] = useState(false);
-  const [desOpen, setDesOpen] = useState(false);
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
+    ({ theme, open }) => ({
+        flexGrow: 1,
+        padding: theme.spacing(3),
+        transition: theme.transitions.create('margin', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+        }),
+        marginLeft: `-${drawerWidth}px`,
+        ...(open && {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: 0,
+        }),
+    }),
+);
 
-  const [currentPage, setCurrentPage] = useState('');
-  const [currentUser, setCurrentUser] = useState({ username: '' });
+const AppBar = styled(MuiAppBar, {
+    shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+    transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+    }),
+    ...(open && {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: `${drawerWidth}px`,
+        transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+        }),
+    }),
+}));
 
-  const handleDrawerClick = () => setOpen(!open);
+const DrawerHeader = styled('div')(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: 'flex-end',
+}));
 
-  const handleDataPreparationClick = () => {
-    if (dataPreparationOpen === true) {
-      setDesOpen(false);
-    }
-    setDataPreparationOpen((prev) => !prev);
-  };
-  const handleDesClick = () => setDesOpen((prev) => !prev);
 
-  useEffect(() => {
-    loggedUser().then((res) => {
-      setCurrentUser(res);
-    });
-  }, []);
 
-  useEffect(() => {
-    const { pathname } = location;
-    setCurrentPage(pathname.split('/')[1]);
-  }, [location]);
+const routes = [
+    { path: "/data-preparation/des/discovery", title: "Skybot Discovery"},
+    { path: "/data-preparation/des/discovery/:id", title: "Skybot Discovery"},
+    { path: "/data-preparation/des/discovery/asteroid/:id", title: "Skybot Discovery"},
+    { path: "/dashboard", title: "Dashboard"},
+]
 
-  return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <Toolbar
-        title={title}
-        open={open}
-        handleDrawerClick={handleDrawerClick}
-        drawerWidth={drawerWidth}
-        currentUser={currentUser}
-      />
-      <MuiDrawer
-        variant="permanent"
-        className={clsx(classes.drawer, {
-          [classes.drawerOpen]: open,
-          [classes.drawerClose]: !open,
-        })}
-        classes={{
-          paper: clsx({
-            [classes.drawerOpen]: open,
-            [classes.drawerClose]: !open,
-          }),
-        }}
-        open={open}
-      >
-        <List className={classes.drawerList}>
-          <Link
-            to="/dashboard"
-            className={classes.invisibleLink}
-            title="Laboratório Interinstitucional de e-Astronomia"
-          >
-            <ListItem button>
-              <ListItemText
-                primary={
-                  <>
-                    <ListItemIcon
-                      className={clsx(
-                        classes.ListIconDrawer,
-                        open ? classes.logoBlock : ''
-                      )}
-                    >
-                      <img
-                        src={Logo}
-                        alt="TNO"
-                        className={clsx(
-                          open ? classes.iconHomeOpen : classes.iconHomeClose
-                        )}
-                      />
-                    </ListItemIcon>
-                  </>
-                }
-                className={clsx(classes.homeBtn, classes.textDrawer)}
-              />
-            </ListItem>
-          </Link>
-          <Divider className={classes.borderDrawer} />
-          <Link
-            to="/dashboard"
-            className={classes.invisibleLink}
-            title="Dashboard"
-          >
-            <ListItem button selected={currentPage === 'dashboard'}>
-              <ListItemText
-                primary={
-                  <span className={classes.textDrawerParent}>Dashboard</span>
-                }
-                className={classes.textDrawer}
-              />
-            </ListItem>
-          </Link>
-          <Divider className={classes.borderDrawer} />
-          <ListItem button onClick={handleDataPreparationClick}>
-            <ListItemText
-              primary={
-                <span className={classes.textDrawerParent}>
-                  Data Preparation
-                </span>
-              }
-              className={classes.textDrawer}
-            />
-            {dataPreparationOpen ? (
-              <ArrowDropUpIcon className={classes.menuItemIcon} />
-            ) : (
-              <ArrowDropDownIcon className={classes.menuItemIcon} />
-            )}
-          </ListItem>
-          <Collapse in={dataPreparationOpen} unmountOnExit>
-            <List component="div" disablePadding>
-              <ListItem
-                button
-                onClick={handleDesClick}
-                className={open ? classes.nested : ''}
-              >
-                <ListItemText
-                  primary={
-                    <span className={classes.textDrawerParent}>DES</span>
-                  }
-                  className={classes.textDrawer}
-                />
-                {desOpen ? (
-                  <ArrowDropUpIcon className={classes.menuItemIcon} />
-                ) : (
-                  <ArrowDropDownIcon className={classes.menuItemIcon} />
-                )}
-              </ListItem>
-            </List>
-          </Collapse>
-          <Collapse in={desOpen} unmountOnExit>
-            <List component="div" disablePadding>
-              <Link
-                to="/data-preparation/des/discovery"
-                className={classes.invisibleLink}
-                title="Discovery"
-              >
-                <ListItem
-                  button
-                  className={open ? classes.doublenested : ''}
-                  selected={currentPage === 'discovery'}
-                >
-                  <ListItemText
-                    primary="Discovery"
-                    className={classes.textDrawer}
-                  />
-                </ListItem>
-              </Link>
-              {/* <Link
-                to="/data-preparation/des/download"
-                className={classes.invisibleLink}
-              >
-                <ListItem
-                  button
-                  selected={currentPage === 'download'}
-                  className={open ? classes.doublenested : ''}
-                >
-                  <ListItemText
-                    primary="Download"
-                    className={classes.textDrawer}
-                  />
-                </ListItem>
-              </Link> */}
-              {/* <Link
-                to="/data-preparation/des/astrometry"
-                className={classes.invisibleLink}
-                title="Astrometric reduction using PRAIA package and stellar catalogue Gaia like reference to detect and determine positions of objects from CCD frame."
-              >
-                <ListItem
-                  button
-                  selected={currentPage === 'astrometry'}
-                  className={open ? classes.doublenested : ''}
-                >
-                  <ListItemText
-                    primary="Astrometry"
-                    className={classes.textDrawer}
-                  />
-                </ListItem>
-              </Link> */}
-            </List>
-          </Collapse>
-          {/* <Divider className={classes.borderDrawer} />
-          <Link
-            to="/refine-orbit"
-            className={classes.invisibleLink}
-            title="Refinement of Orbits of specifics objects using NIMA code."
-          >
-            <ListItem button selected={currentPage === 'refine-orbit'}>
-              <ListItemText
-                primary={
-                  <span className={classes.textDrawerParent}>Refine Orbit</span>
-                }
-                className={classes.textDrawer}
-              />
-            </ListItem>
-          </Link> */}
-          <Divider className={classes.borderDrawer} />
-          <Link
-            to="/prediction-of-occultation"
-            className={classes.invisibleLink}
-            title="Comparison of objects ephemeris and positions of stars to predict events of stellar occultation using Gaia catalogue like reference."
-          >
-            <ListItem
-              button
-              selected={currentPage === 'prediction-of-occultation'}
-            >
-              <ListItemText
-                primary={
-                  <span className={classes.textDrawerParent}>
-                    Prediction of Occultation
-                  </span>
-                }
-                className={classes.textDrawer}
-              />
-            </ListItem>
-          </Link>
-          <Divider className={classes.borderDrawer} />
-          <Link
-            to="/occultation"
-            className={classes.invisibleLink}
-            title="Occultation"
-          >
-            <ListItem button selected={currentPage === 'occultation'}>
-              <ListItemText
-                primary={
-                  <span className={classes.textDrawerParent}>Occultation</span>
-                }
-                className={classes.textDrawer}
-              />
-            </ListItem>
-          </Link>
-          <Divider className={classes.borderDrawer} />
-          <Link
-            to="/occultation-calendar"
-            className={classes.invisibleLink}
-            title="Calendar containing all the occultations"
-          >
-            <ListItem button selected={currentPage === 'occultation-calendar'}>
-              <ListItemText
-                primary={
-                  <span className={classes.textDrawerParent}>
-                    Occultation Calendar
-                  </span>
-                }
-                className={classes.textDrawer}
-              />
-            </ListItem>
-          </Link>
-          <Divider className={classes.borderDrawer} />
-        </List>
-        <div className={classes.drawerControlWrapper}>
-          <IconButton
-            onClick={handleDrawerClick}
-            className={clsx(
-              classes.ListIconDrawer,
-              classes.ListIconControlDrawer
-            )}
-            title="Close"
-          >
-            <ChevronLeft />
-          </IconButton>
-        </div>
-      </MuiDrawer>
-      <div
-        className={clsx(
-          classes.bodyWrapper,
-          open ? classes.bodyWrapperOpen : null
-        )}
-      >
-        <main className={title !== 'Dashboard' && classes.content}>
-          {children}
-        </main>
-      </div>
-      <Footer drawerOpen={open} />
-    </div>
-  );
+const useCurrentPath = () => {
+    const location = useLocation()
+    const [{ route }] = matchRoutes(routes, location)
+
+    return route
 }
 
-Drawer.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.element, PropTypes.func]).isRequired,
-  title: PropTypes.string.isRequired,
-  open: PropTypes.bool.isRequired,
-  setOpen: PropTypes.func.isRequired,
-};
+export default function PersistentDrawerLeft({children}) {
+    const theme = useTheme();
 
-export default Drawer;
+    console.log(theme)
+    const navigate = useNavigate();   
+    let location = useCurrentPath(); 
+    const [open, setOpen] = React.useState(false);
+
+    const handleDrawerOpen = () => {
+        setOpen(true);
+    };
+
+    const handleDrawerClose = () => {
+        setOpen(false);
+    };
+
+    const [desOpen, setDesOpen] = React.useState(false);
+
+    const handleClickDes = () => {
+        setDesOpen(!desOpen);
+    };
+
+    return (
+        <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <AppBar 
+            position="fixed" 
+            open={open} 
+            sx={{
+                color: '#34465d',
+                background: theme.palette.common.white,
+            }}>
+            <DashToolbar open={open} handleDrawerOpen={handleDrawerOpen} title={location.title}></DashToolbar>
+        </AppBar>        
+        <Drawer
+            sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+                width: drawerWidth,
+                boxSizing: 'border-box',
+            },
+            }}
+            PaperProps={{
+                sx: {
+                    color: theme.palette.common.white,
+                    background: 'rgb(69, 69, 69)'
+                }
+            }}            
+            variant="persistent"
+            anchor="left"
+            open={open}
+        >
+            <DrawerHeader>
+                <ListItem button>
+                {/* TNO LOGO */}
+                <ListItemText
+                    primary={
+                    <>
+                        <ListItemIcon>
+                        <img
+                            src={Logo}
+                            alt="TNO"
+                            style={{ width: 140 }}
+                        />
+                        </ListItemIcon>
+                    </>
+                    }
+                />
+                </ListItem>
+                <IconButton onClick={handleDrawerClose}  sx={{ color: "white" }}>
+                    {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                </IconButton>
+            </DrawerHeader>
+            <Divider style={{backgroundColor: 'rgba(255, 255, 255, 0.32)'}}/>
+            <List>
+                <ListItemButton onClick={()=>navigate('/dashboard')}>
+                    <ListItemText primary="Dashboard" sx={{ fontWeight: 'bold' }}/>
+                </ListItemButton>
+                <Divider style={{backgroundColor: 'rgba(255, 255, 255, 0.32)'}}/>                     
+                {/* DES Data Preparation */}
+                <ListItemButton onClick={handleClickDes}>
+                    <ListItemText primary="DES Data Preparation" />
+                    {desOpen ? <ExpandLess /> : <ExpandMore />}
+                </ListItemButton>
+                <Collapse in={desOpen} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                        <ListItemButton sx={{ pl: 4 }} onClick={()=>navigate('/data-preparation/des/discovery')}>
+                            <ListItemText primary="Skybot Discovery" />
+                        </ListItemButton>
+                    </List>
+                </Collapse>
+            </List>
+        </Drawer>
+        <Main open={open}>
+            <DrawerHeader />
+            {children}
+            <Footer drawerOpen={open}/>
+        </Main>
+        </Box>
+    );
+}
