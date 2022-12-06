@@ -10,7 +10,7 @@ function CalendarExecutedNight({ data }) {
       date: d3.timeDay(new Date(`${row.date} 00:00`)),
       value: row.status,
       count: row.count,
-      not_executed: row.count - row.executed,
+      not_executed: row.count - row.executed
     }))
 
     setRows(exposures)
@@ -95,7 +95,7 @@ function CalendarExecutedNight({ data }) {
             break
           case 3:
             hoverText = `There are still ${d.not_executed} out of ${d.count} exposure(s) to execute`
-            break            
+            break
           default:
             break
         }

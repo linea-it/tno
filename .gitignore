@@ -55,3 +55,4 @@ env_tno
 # Diretório de arquivos locais do Astropy
 core_admin/.astropy
 
+database_subset/
