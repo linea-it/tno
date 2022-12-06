@@ -1,14 +1,14 @@
-import axios from 'axios';
+import { api } from './api'
 
 export const getStatsById = ({ id }) => {
   const params = { id };
-  return axios
+  return api
     .get('/customlist/get_stats', { params })
     .then((res) => res.data.data);
 };
 
 export const getObjectsList = ({ tablename, page, pageSize }) =>
-  axios
+  api
     .get('/customlist/list_objects/', {
       params: { tablename, page, pageSize },
     })
@@ -31,7 +31,7 @@ export const getCustomList = ({
     params[element.property] = element.value;
   });
 
-  return axios
+  return api
     .get('/customlist', {
       params,
     })
@@ -63,7 +63,7 @@ export const postCustomList = ({
     params.filter_morefilter = filter_morefilter;
   }
 
-  return axios.post('/customlist/', params).then((res) => res.data);
+  return api.post('/customlist/', params).then((res) => res.data);
 };
 
 export const getSkybotOutput = ({
@@ -98,7 +98,7 @@ export const getSkybotOutput = ({
     }
   });
 
-  return axios
+  return api
     .get('/skybotoutput/objects', {
       params,
     })
@@ -133,7 +133,7 @@ export const getSkybotOutputCount = ({
     }
   });
 
-  return axios
+  return api
     .get('/skybotoutput/objects_count', {
       params,
     })
@@ -146,7 +146,7 @@ export const checkTableName = ({ tablename, status }) => {
     status,
   };
 
-  return axios
+  return api
     .get('/customlist/', {
       params,
     })
@@ -154,7 +154,7 @@ export const checkTableName = ({ tablename, status }) => {
 };
 
 export const submitDownloadCcds = ({ id }) => {
-  return axios
+  return api
     .get(`customlist/${id}/download_ccds_by_list/`)
     .then((res) => res.data);
 };

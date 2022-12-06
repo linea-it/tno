@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 const styles = makeStyles({
   particlesWrapper: {
@@ -7,8 +7,8 @@ const styles = makeStyles({
     bottom: 0,
     left: 0,
     right: 0,
-    zIndex: 1,
-  },
-});
+    zIndex: 1
+  }
+})
 
-export default styles;
+export default styles

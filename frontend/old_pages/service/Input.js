@@ -1,7 +1,7 @@
-import axios from 'axios';
+import { api } from './api'
 
 export const getBspJpl = ({ page, pageSize, search }) => {
-  return axios.get('/bsp_jpl/', {
+  return api.get('/bsp_jpl/', {
     params: {
       page,
       pageSize,
@@ -11,7 +11,7 @@ export const getBspJpl = ({ page, pageSize, search }) => {
 };
 
 export const getObservationFiles = ({ page, pageSize, search, ordering }) => {
-  return axios.get('/observation_files', {
+  return api.get('/observation_files', {
     params: {
       page,
       pageSize,
@@ -27,7 +27,7 @@ export const getOrbitalParameterFiles = ({
   search,
   ordering,
 }) => {
-  return axios.get('/orbital_parameter', {
+  return api.get('/orbital_parameter', {
     params: {
       page,
       pageSize,
@@ -38,7 +38,7 @@ export const getOrbitalParameterFiles = ({
 };
 
 export const getJohnstonArchives = ({ page, pageSize, search }) => {
-  return axios.get('/known_tnos_johnston', {
+  return api.get('/known_tnos_johnston', {
     params: {
       page,
       pageSize,
@@ -48,9 +48,9 @@ export const getJohnstonArchives = ({ page, pageSize, search }) => {
 };
 
 export const getJohnstonArchivesById = (id) => {
-  return axios.get(`/known_tnos_johnston/${id}`);
+  return api.get(`/known_tnos_johnston/${id}`);
 };
 
 export const updateJohnstonList = () => {
-  return axios.get(`/known_tnos_johnston/update_list`);
+  return api.get(`/known_tnos_johnston/update_list`);
 };

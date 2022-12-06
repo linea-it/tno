@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { api } from './api'
 
 export const getPraiaRuns = ({ page, pageSize, ordering, filters = [] }) => {
   const params = { page, pageSize, ordering };
@@ -6,7 +6,7 @@ export const getPraiaRuns = ({ page, pageSize, ordering, filters = [] }) => {
     params[element.property] = element.value;
   });
 
-  return axios
+  return api
     .get('/praia_run/', {
       params,
     })

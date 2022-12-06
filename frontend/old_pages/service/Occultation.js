@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { api } from './api'
 
 export const getOccultations = ({ page, pageSize, sortField, filters }) => {
   const params = { page, pageSize };
@@ -9,7 +9,7 @@ export const getOccultations = ({ page, pageSize, sortField, filters }) => {
     });
   }
 
-  return axios
+  return api
     .get('/occultation/', {
       params,
     })
@@ -17,4 +17,4 @@ export const getOccultations = ({ page, pageSize, sortField, filters }) => {
 };
 
 export const getOccultationById = ({ id }) =>
-  axios.get(`/occultation/${id}/`).then((res) => res.data);
+  api.get(`/occultation/${id}/`).then((res) => res.data);

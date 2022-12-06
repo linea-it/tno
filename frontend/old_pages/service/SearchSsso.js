@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { api } from './api'
 
 export const getSkybotLists = ({ page, pageSize, search, filters }) => {
   const params = { page, pageSize, search };
@@ -7,7 +7,7 @@ export const getSkybotLists = ({ page, pageSize, search, filters }) => {
     params[el.property] = el.value;
   });
 
-  return axios.get('/skybotoutput/', { params });
+  return api.get('/skybotoutput/', { params });
 };
 
-export const getSkybotRecord = ({ id }) => axios.get(`/skybotoutput/${id}/`);
+export const getSkybotRecord = ({ id }) => api.get(`/skybotoutput/${id}/`);

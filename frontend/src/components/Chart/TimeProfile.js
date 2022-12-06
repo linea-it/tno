@@ -1,12 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Plot from 'react-plotly.js';
-import moment from 'moment';
-import useStyles, { colors } from './styles';
+import React from 'react'
+import PropTypes from 'prop-types'
+import Plot from 'react-plotly.js'
+import moment from 'moment'
+import useStyles, { colors } from './styles'
 
 function TimeProfile({ data, width, height }) {
-  const classes = useStyles();
-  const rows = [];
+  const classes = useStyles()
+  const rows = []
 
   if (Array.isArray(data)) {
     data.forEach((line, i) => {
@@ -17,50 +17,45 @@ function TimeProfile({ data, width, height }) {
         type: i === 0 ? 'line' : 'scatter',
         mode: 'lines+markers',
         marker: {
-          color: colors[0],
+          color: colors[0]
         },
         line: {
-          color: colors[0],
+          color: colors[0]
         },
         duration: line.duration,
         showlegend: false,
-        hoverinfo: 'name+duration',
-      });
-    });
+        hoverinfo: 'name+duration'
+      })
+    })
   } else if (typeof data === 'object' && !Array.isArray(data)) {
-    let idx = 1;
+    let idx = 1
 
     const getDates = (dates) => {
       if (dates) {
         return [
           {
             name: dates.label,
-            x: [
-              dates.start,
-              moment(dates.start)
-                .add(dates.duration, 'seconds')
-                .format('YYYY-MM-DD HH:mm:ss'),
-            ],
+            x: [dates.start, moment(dates.start).add(dates.duration, 'seconds').format('YYYY-MM-DD HH:mm:ss')],
             y: [idx, idx],
             type: 'line',
             mode: 'lines+markers',
             marker: {
-              color: '#dc0d0e',
+              color: '#dc0d0e'
             },
             line: {
-              color: '#f66364',
-            },
-          },
-        ];
+              color: '#f66364'
+            }
+          }
+        ]
       }
-      return [];
-    };
+      return []
+    }
 
     const getEphemeris = (ephemeris) => {
       if (ephemeris && ephemeris.rows && ephemeris.rows.length > 0) {
-        idx++;
+        idx++
 
-        const lines = [];
+        const lines = []
         ephemeris.rows.map((row) => {
           const obj = {
             name: row.name,
@@ -71,30 +66,30 @@ function TimeProfile({ data, width, height }) {
             type: 'scatter',
             mode: 'lines+markers',
             marker: {
-              color: '#2196F3',
+              color: '#2196F3'
             },
             line: {
-              color: '#64B5F6',
+              color: '#64B5F6'
             },
             showlegend: false,
-            hoverinfo: 'name+duration',
-          };
-          idx++;
+            hoverinfo: 'name+duration'
+          }
+          idx++
 
-          lines.push(obj);
-          return row;
-        });
+          lines.push(obj)
+          return row
+        })
 
-        return lines;
+        return lines
       }
-      return [];
-    };
+      return []
+    }
 
     const getCatalog = (catalog) => {
       if (catalog && catalog.rows && catalog.rows.length > 0) {
-        idx++;
+        idx++
 
-        const lines = [];
+        const lines = []
 
         catalog.rows.map((row) => {
           const obj = {
@@ -106,30 +101,30 @@ function TimeProfile({ data, width, height }) {
             type: 'scatter',
             mode: 'lines+markers',
             marker: {
-              color: '#009688',
+              color: '#009688'
             },
             line: {
-              color: '#4DB6AC',
+              color: '#4DB6AC'
             },
             showlegend: false,
-            hoverinfo: 'name+duration',
-          };
-          idx++;
+            hoverinfo: 'name+duration'
+          }
+          idx++
 
-          lines.push(obj);
-          return row;
-        });
+          lines.push(obj)
+          return row
+        })
 
-        return lines;
+        return lines
       }
-      return [];
-    };
+      return []
+    }
 
     const getSearchs = (searchs) => {
       if (searchs && searchs.rows && searchs.rows.length > 0) {
-        idx++;
+        idx++
 
-        const lines = [];
+        const lines = []
 
         searchs.rows.map((row) => {
           const obj = {
@@ -141,30 +136,30 @@ function TimeProfile({ data, width, height }) {
             type: 'scatter',
             mode: 'lines+markers',
             marker: {
-              color: '#8BC34A',
+              color: '#8BC34A'
             },
             line: {
-              color: '#AED581',
+              color: '#AED581'
             },
             showlegend: false,
-            hoverinfo: 'name+duration',
-          };
-          idx++;
+            hoverinfo: 'name+duration'
+          }
+          idx++
 
-          lines.push(obj);
-          return row;
-        });
+          lines.push(obj)
+          return row
+        })
 
-        return lines;
+        return lines
       }
-      return [];
-    };
+      return []
+    }
 
     const getMaps = (maps) => {
       if (maps && maps.rows && maps.rows.length > 0) {
-        idx++;
+        idx++
 
-        const lines = [];
+        const lines = []
 
         maps.rows.map((row) => {
           const obj = {
@@ -176,66 +171,61 @@ function TimeProfile({ data, width, height }) {
             type: 'scatter',
             mode: 'lines+markers',
             marker: {
-              color: '#9575CD',
+              color: '#9575CD'
             },
             line: {
-              color: '#673AB7',
+              color: '#673AB7'
             },
             showlegend: false,
-            hoverinfo: 'name+duration',
-          };
-          idx++;
+            hoverinfo: 'name+duration'
+          }
+          idx++
 
-          lines.push(obj);
-          return row;
-        });
+          lines.push(obj)
+          return row
+        })
 
-        return lines;
+        return lines
       }
-      return [];
-    };
+      return []
+    }
 
     const getRegister = (dates) => {
       if (dates) {
         return [
           {
             name: dates.label,
-            x: [
-              dates.start,
-              moment(dates.start)
-                .add(dates.duration, 'seconds')
-                .format('YYYY-MM-DD HH:mm:ss'),
-            ],
+            x: [dates.start, moment(dates.start).add(dates.duration, 'seconds').format('YYYY-MM-DD HH:mm:ss')],
             y: [1, 1],
             type: 'line',
             mode: 'lines+markers',
             marker: {
-              color: '#FF9800',
+              color: '#FF9800'
             },
             line: {
-              color: '#FFB74D',
-            },
-          },
-        ];
+              color: '#FFB74D'
+            }
+          }
+        ]
       }
-      return [];
-    };
-
-    if (data === {}) {
-      return <div />;
+      return []
     }
 
-    const dates = getDates(data.dates);
-    dates.map((e) => {
-      rows.push(e);
-      return e;
-    });
+    if (data === {}) {
+      return <div />
+    }
 
-    const ephemeris = getEphemeris(data.ephemeris);
+    const dates = getDates(data.dates)
+    dates.map((e) => {
+      rows.push(e)
+      return e
+    })
+
+    const ephemeris = getEphemeris(data.ephemeris)
     ephemeris.map((e) => {
-      rows.push(e);
-      return e;
-    });
+      rows.push(e)
+      return e
+    })
     if (data.ephemeris) {
       rows.push({
         name: data.ephemeris.label,
@@ -245,21 +235,21 @@ function TimeProfile({ data, width, height }) {
         type: 'scatter',
         mode: 'lines+markers',
         marker: {
-          color: '#2196F3',
+          color: '#2196F3'
         },
         line: {
-          color: '#64B5F6',
+          color: '#64B5F6'
         },
         showlegend: true,
-        hoverinfo: 'name',
-      });
+        hoverinfo: 'name'
+      })
     }
 
-    const catalogs = getCatalog(data.catalog);
+    const catalogs = getCatalog(data.catalog)
     catalogs.map((e) => {
-      rows.push(e);
-      return e;
-    });
+      rows.push(e)
+      return e
+    })
 
     if (data.catalog) {
       rows.push({
@@ -270,21 +260,21 @@ function TimeProfile({ data, width, height }) {
         type: 'scatter',
         mode: 'lines+markers',
         marker: {
-          color: '#009688',
+          color: '#009688'
         },
         line: {
-          color: '#4DB6AC',
+          color: '#4DB6AC'
         },
         showlegend: true,
-        hoverinfo: 'name',
-      });
+        hoverinfo: 'name'
+      })
     }
 
-    const searchs = getSearchs(data.search);
+    const searchs = getSearchs(data.search)
     searchs.map((e) => {
-      rows.push(e);
-      return e;
-    });
+      rows.push(e)
+      return e
+    })
 
     if (data.search) {
       rows.push({
@@ -295,21 +285,21 @@ function TimeProfile({ data, width, height }) {
         type: 'scatter',
         mode: 'lines+markers',
         marker: {
-          color: '#8BC34A',
+          color: '#8BC34A'
         },
         line: {
-          color: '#AED581',
+          color: '#AED581'
         },
         showlegend: true,
-        hoverinfo: 'name',
-      });
+        hoverinfo: 'name'
+      })
     }
 
-    const maps = getMaps(data.map);
+    const maps = getMaps(data.map)
     maps.map((e) => {
-      rows.push(e);
-      return e;
-    });
+      rows.push(e)
+      return e
+    })
 
     if (data.map) {
       rows.push({
@@ -320,21 +310,21 @@ function TimeProfile({ data, width, height }) {
         type: 'scatter',
         mode: 'lines+markers',
         marker: {
-          color: '#9575CD',
+          color: '#9575CD'
         },
         line: {
-          color: '#673AB7',
+          color: '#673AB7'
         },
         showlegend: true,
-        hoverinfo: 'name',
-      });
+        hoverinfo: 'name'
+      })
     }
 
-    const register = getRegister(data.register);
+    const register = getRegister(data.register)
     register.map((e) => {
-      rows.push(e);
-      return e;
-    });
+      rows.push(e)
+      return e
+    })
   }
 
   return (
@@ -348,34 +338,34 @@ function TimeProfile({ data, width, height }) {
         xaxis: {
           title: 'Execution Time',
           automargin: true,
-          autorange: true,
+          autorange: true
         },
         yaxis: {
           title: 'Asteroids',
           automargin: true,
-          autorange: true,
+          autorange: true
         },
         hovermode: 'closest',
-        autosize: true,
+        autosize: true
       }}
       config={{
         scrollZoom: true,
         displaylogo: false,
-        responsive: true,
+        responsive: true
       }}
     />
-  );
+  )
 }
 
 TimeProfile.defaultProps = {
   width: 500,
-  height: 310,
-};
+  height: 310
+}
 
 TimeProfile.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
-  data: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
-};
+  data: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired
+}
 
-export default TimeProfile;
+export default TimeProfile

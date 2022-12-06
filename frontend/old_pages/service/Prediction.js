@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { api } from './api'
 
 export const createPredictRun = ({
   process,
@@ -12,7 +12,7 @@ export const createPredictRun = ({
   ephemeris_final_date,
   ephemeris_step,
 }) =>
-  axios.post('/predict_run/', {
+  api.post('/predict_run/', {
     process,
     input_list,
     input_orbit,
@@ -26,15 +26,15 @@ export const createPredictRun = ({
   });
 
 export const getPrediction = () =>
-  axios.get('/orbit_run/?status=success').then((res) => res.data);
+  api.get('/orbit_run/?status=success').then((res) => res.data);
 
-export const getCatalogs = () => axios.get('/catalog/').then((res) => res.data);
+export const getCatalogs = () => api.get('/catalog/').then((res) => res.data);
 
 export const getLeapSeconds = () =>
-  axios.get('/leap_seconds/').then((res) => res.data);
+  api.get('/leap_seconds/').then((res) => res.data);
 
 export const getBspPlanetary = () =>
-  axios.get('/bsp_planetary/').then((res) => res.data);
+  api.get('/bsp_planetary/').then((res) => res.data);
 
 export const getPredictionRuns = ({
   page,
@@ -47,7 +47,7 @@ export const getPredictionRuns = ({
     params[element.property] = element.value;
   });
 
-  return axios
+  return api
     .get('/predict_run/', {
       params,
     })
@@ -55,18 +55,18 @@ export const getPredictionRuns = ({
 };
 
 export const predictReRun = ({ id }) =>
-  axios.patch(`/predict_run/${id}/`, {
+  api.patch(`/predict_run/${id}/`, {
     status: 'pending',
   });
 
 export const getPredictionRunById = ({ id }) =>
-  axios.get(`/predict_run/${id}/`).then((res) => res.data);
+  api.get(`/predict_run/${id}/`).then((res) => res.data);
 
 export const getTimeProfile = ({ id }) => {
   const params = {
     id,
   };
-  return axios
+  return api
     .get('/predict_run/get_time_profile/', {
       params,
     })
@@ -96,7 +96,7 @@ export const getAsteroids = ({
     params[element.property] = element.value;
   });
 
-  return axios
+  return api
     .get('/predict_asteroid/', {
       params,
     })
@@ -104,11 +104,11 @@ export const getAsteroids = ({
 };
 
 export const getAsteroidById = ({ id }) =>
-  axios.get(`/predict_asteroid/${id}/`).then((res) => res.data);
+  api.get(`/predict_asteroid/${id}/`).then((res) => res.data);
 
 export const getAsteroidNeighbors = ({ id }) => {
   const params = { asteroid: id };
-  return axios
+  return api
     .get('/predict_asteroid/get_neighbors/', {
       params,
     })
@@ -121,7 +121,7 @@ export const getAsteroidDownloadLink = ({ id, name, orbit_run }) => {
     params = { asteroid_id: id };
   }
 
-  return axios
+  return api
     .get('/predict_asteroid/download_results/', {
       params,
     })
@@ -132,7 +132,7 @@ export const getAsteroidInputs = ({ id }) => {
   const params = {
     asteroid: id,
   };
-  return axios
+  return api
     .get('/predict_input/', {
       params,
     })
@@ -143,7 +143,7 @@ export const getAsteroidOutputs = ({ id }) => {
   const params = {
     asteroid: id,
   };
-  return axios
+  return api
     .get('/predict_output/', {
       params,
     })
@@ -154,7 +154,7 @@ export const getCatalogPositions = ({ id }) => {
   const params = {
     asteroid: id,
   };
-  return axios
+  return api
     .get('/predict_asteroid/catalog_positions', {
       params,
     })
@@ -165,7 +165,7 @@ export const getCatalogStars = ({ id }) => {
   const params = {
     asteroid: id,
   };
-  return axios
+  return api
     .get('/predict_asteroid/catalog_stars', {
       params,
     })
@@ -173,8 +173,8 @@ export const getCatalogStars = ({ id }) => {
 };
 
 // getPredictionEvent = ({ asteroidId }) => {
-//   return axios.get(`/occultation/?asteroid=${asteroidId}`);
+//   return api.get(`/occultation/?asteroid=${asteroidId}`);
 // };
 
 export const getPredictionEvent = ({ asteroidId }) =>
-  axios.get(`/occultation/?asteroid=${asteroidId}`).then((res) => res.data);
+  api.get(`/occultation/?asteroid=${asteroidId}`).then((res) => res.data);

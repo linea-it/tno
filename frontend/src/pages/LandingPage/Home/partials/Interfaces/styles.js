@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 const styles = makeStyles({
   titleItem: {
@@ -7,25 +7,25 @@ const styles = makeStyles({
     paddingTop: '0.5em',
     paddingLeft: '0.5em',
     color: 'white',
-    textShadow: '0.1em 0.1em 0.1em black',
+    textShadow: '0.1em 0.1em 0.1em black'
   },
   media: {
     minHeight: 175,
-    width: '100%',
+    width: '100%'
   },
   icon: {
-    maxWidth: 50,
+    maxWidth: 50
   },
   card: {
     position: 'relative',
-    height: 'auto',
+    height: 'auto'
   },
   cardAction: {
-    display: 'contents',
+    display: 'contents'
   },
   grid: {
-    margin: 'auto',
-  },
-});
+    margin: 'auto'
+  }
+})
 
-export default styles;
+export default styles

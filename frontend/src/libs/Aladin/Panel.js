@@ -1,34 +1,34 @@
-import React, { Component } from 'react';
-import { uniqueId } from 'lodash';
-import sizeMe from 'react-sizeme';
-import PropTypes from 'prop-types';
-import { desfootprint } from './DesFootprint';
+import React, { Component } from 'react'
+import { uniqueId } from 'lodash'
+import sizeMe from 'react-sizeme'
+import PropTypes from 'prop-types'
+import { desfootprint } from './DesFootprint'
 
 class Panel extends Component {
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.state = this.initialState;
+    this.state = this.initialState
 
-    this.id = uniqueId('aladin-container-');
+    this.id = uniqueId('aladin-container-')
 
     // Instancia do Aladin linkado com a div
-    this.aladin = null;
+    this.aladin = null
 
     // Verificar se a lib Aladin esta disponivel
     if (window.A) {
-      this.libA = window.A;
+      this.libA = window.A
     }
   }
 
   static propTypes = {
     position: PropTypes.string,
     fov: PropTypes.number,
-    desfootprint: PropTypes.bool,
-  };
+    desfootprint: PropTypes.bool
+  }
 
   get initialState() {
-    return {};
+    return {}
   }
 
   get aladinOptions() {
@@ -51,8 +51,8 @@ class Panel extends Component {
       reticleColor: 'rgb(178, 50, 178)',
       reticleSize: 28,
       log: true,
-      allowFullZoomout: true,
-    };
+      allowFullZoomout: true
+    }
   }
 
   componentWillMount() {
@@ -60,8 +60,8 @@ class Panel extends Component {
   }
 
   componentDidMount = () => {
-    this.create_aladin();
-  };
+    this.create_aladin()
+  }
 
   componentDidUpdate = () => {
     // // Load CCDs:
@@ -76,17 +76,17 @@ class Panel extends Component {
     //   // });
     //   this.aladin.gotoObject(r.results[0].radeg + ', ' + r.results[0].decdeg);
     // });
-  };
+  }
 
   create_aladin = () => {
-    const options = this.aladinOptions;
+    const options = this.aladinOptions
 
     if (this.props.position != null) {
-      options.target = this.props.position;
+      options.target = this.props.position
     }
 
     if (this.props.fov) {
-      options.fov = this.props.fov;
+      options.fov = this.props.fov
     }
 
     this.aladin = this.libA.aladin(
@@ -94,34 +94,34 @@ class Panel extends Component {
       `#${this.id}`,
       // opcoes do aladin
       options
-    );
+    )
 
     // Desenha o Footprint do Des
     if (this.props.desfootprint) {
-      this.footprint(desfootprint, 'DES Footprint', true);
+      this.footprint(desfootprint, 'DES Footprint', true)
     }
 
-    return this.aladin;
-  };
+    return this.aladin
+  }
 
   footprint = (footprint = [], name = 'footprint', visible = true) => {
-    const { aladin } = this;
+    const { aladin } = this
 
-    let overlay;
+    let overlay
 
     if (aladin.view.overlays[0] !== undefined) {
-      const { overlays } = aladin.view;
+      const { overlays } = aladin.view
 
-      let plotDes = false;
+      let plotDes = false
 
       for (let i = overlays.length - 1; i >= 0; i--) {
         if (overlays[i].name === name) {
-          plotDes = true;
+          plotDes = true
 
           if (visible) {
-            overlays[i].show();
+            overlays[i].show()
           } else {
-            overlays[i].hide();
+            overlays[i].hide()
           }
         }
       }
@@ -129,118 +129,112 @@ class Panel extends Component {
         overlay = this.libA.graphicOverlay({
           color: '#ee2345',
           lineWidth: 2,
-          name: 'des',
-        });
+          name: 'des'
+        })
 
-        aladin.addOverlay(overlay);
-        overlay.add(this.libA.polyline(footprint));
+        aladin.addOverlay(overlay)
+        overlay.add(this.libA.polyline(footprint))
       }
     } else {
       overlay = this.libA.graphicOverlay({
         color: '#ee2345',
         lineWidth: 2,
-        name,
-      });
+        name
+      })
 
-      aladin.addOverlay(overlay);
-      overlay.add(this.libA.polyline(footprint));
+      aladin.addOverlay(overlay)
+      overlay.add(this.libA.polyline(footprint))
     }
-  };
+  }
 
   plot_exposures = (exposures = [], name = 'Exposures') => {
-    const { aladin } = this;
+    const { aladin } = this
 
     // Verificar se os ccds ja foram plotados
-    let overlay = this.getOverlayByName(name);
+    let overlay = this.getOverlayByName(name)
     if (overlay) {
       // Se ja existir exibir
-      overlay.show();
+      overlay.show()
     } else {
       // Se nao existir criar
       overlay = this.libA.graphicOverlay({
         color: '#f75e00',
         lineWidth: 1,
-        name: String(name),
-      });
+        name: String(name)
+      })
 
-      aladin.addOverlay(overlay);
+      aladin.addOverlay(overlay)
 
       exposures.forEach((item) => {
         // const exposure = this.libA.circle(item.ra_cent, item.dec_cent, 2.2,{});
-        const exposure = this.libA.circle(item.radeg, item.decdeg, 1.1, {});
-        overlay.add(exposure);
-      });
+        const exposure = this.libA.circle(item.radeg, item.decdeg, 1.1, {})
+        overlay.add(exposure)
+      })
     }
-  };
+  }
 
   plot_ccds = (ccds = [], name = 'CCDs') => {
-    const { aladin } = this;
+    const { aladin } = this
 
     // Verificar se os ccds ja foram plotados
-    let overlay = this.getOverlayByName(name);
+    let overlay = this.getOverlayByName(name)
     if (overlay) {
       // Se ja existir exibir
-      overlay.show();
+      overlay.show()
     } else {
       // Se nao existir criar
       overlay = this.libA.graphicOverlay({
         color: '#64e544',
         lineWidth: 1,
-        name: String(name),
-      });
+        name: String(name)
+      })
 
-      aladin.addOverlay(overlay);
+      aladin.addOverlay(overlay)
 
       ccds.forEach((item) => {
         const tPath = [
           [item.rac4, item.decc4],
           [item.rac3, item.decc3],
           [item.rac2, item.decc2],
-          [item.rac1, item.decc1],
-        ];
+          [item.rac1, item.decc1]
+        ]
 
-        overlay.add(this.libA.polygon(tPath));
-      });
+        overlay.add(this.libA.polygon(tPath))
+      })
     }
-  };
+  }
 
   getOverlayByName = (name) => {
-    const { aladin } = this;
-    const { overlays } = aladin.view;
-    let result = null;
+    const { aladin } = this
+    const { overlays } = aladin.view
+    let result = null
 
     if (overlays.length > 0) {
       overlays.forEach(function (item) {
         if (item.name === name) {
-          result = item;
+          result = item
         }
-      });
+      })
     }
 
-    return result;
-  };
+    return result
+  }
 
   markPosition = (position) => {
-    const cat = this.libA.catalog({ name: 'Target', sourceSize: 18 });
-    this.aladin.addCatalog(cat);
-    cat.addSources([this.libA.marker(position)]);
-  };
+    const cat = this.libA.catalog({ name: 'Target', sourceSize: 18 })
+    this.aladin.addCatalog(cat)
+    cat.addSources([this.libA.marker(position)])
+  }
 
   render() {
     // Ajuste no Tamanho do container
-    let { width, height } = this.props.size;
+    let { width, height } = this.props.size
     if (height === 0) {
-      height = width / 2;
+      height = width / 2
     }
 
-    return (
-      <div
-        id={this.id}
-        className="aladin-container"
-        style={{ width, height }}
-      />
-    );
+    return <div id={this.id} className='aladin-container' style={{ width, height }} />
   }
 }
 
-export default sizeMe({ monitorHeight: true, monitorWidth: true })(Panel);
+export default sizeMe({ monitorHeight: true, monitorWidth: true })(Panel)

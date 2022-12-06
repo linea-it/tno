@@ -1,7 +1,6 @@
-import axios from 'axios';
-
+import { api } from './api'
 export const readFile = (filepath) =>
-  axios
+  api
     .get('/read_file/', {
       params: { filepath },
     })

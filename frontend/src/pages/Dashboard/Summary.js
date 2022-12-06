@@ -1,58 +1,51 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Grid,
-  Card,
-  CardHeader,
-  CardContent,
-} from '@material-ui/core';
-import Table from '../../components/Table';
+import React, { useEffect, useState } from 'react'
+import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
+import Table from '../../components/Table'
 
-import {
-  getResultsByYear,
-} from '../../services/api/Dashboard';
+import { getResultsByYear } from '../../services/api/Dashboard'
 
 function Summary() {
-  const [resultsByYear, setResultsByYear] = useState([]);
+  const [resultsByYear, setResultsByYear] = useState([])
 
   const resultsByYearColumns = [
     {
       name: 'year',
       title: 'Year',
-      width: 90,
+      width: 90
     },
     {
       name: 'nights',
       title: '# Nights',
-      width: 100,
+      width: 100
     },
     {
       name: 'exposures',
-      title: '# Exposures',
+      title: '# Exposures'
     },
     {
       name: 'ccds',
-      title: '# CCDs',
+      title: '# CCDs'
     },
     {
       name: 'nights_analyzed',
-      title: '# Nights Analyzed',
+      title: '# Nights Analyzed'
     },
     {
       name: 'exposures_analyzed',
       title: '# Exposures Analyzed',
-      width: 100,
+      width: 100
     },
     {
       name: 'percentage_nights',
       title: '% Nights',
-      width: 100,
+      width: 100
     },
     {
       name: 'percentage_ccds',
       title: '% CCDs',
-      width: 100,
-    },
-  ];
+      width: 100
+    }
+  ]
 
   useEffect(() => {
     // Get results by year
@@ -63,24 +56,22 @@ function Summary() {
         // ccds_analyzed: the division of the ccds_analyzed by all the ccds
         const result = res.map((row) => ({
           ...row,
-          percentage_nights: Math.round(
-            (row.nights_analyzed / row.nights) * 100
-          ),
-          percentage_ccds: Math.round((row.ccds_analyzed / row.ccds) * 100),
-        }));
+          percentage_nights: Math.round((row.nights_analyzed / row.nights) * 100),
+          percentage_ccds: Math.round((row.ccds_analyzed / row.ccds) * 100)
+        }))
 
-        setResultsByYear(result);
+        setResultsByYear(result)
       })
       .catch(() => {
-        setResultsByYear([]);
-      });
-  }, []);
+        setResultsByYear([])
+      })
+  }, [])
 
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title="Results By Year" />
+          <CardHeader title='Results By Year' />
           <CardContent>
             <Table
               columns={resultsByYearColumns}
@@ -97,7 +88,7 @@ function Summary() {
         </Card>
       </Grid>
     </Grid>
-  );
+  )
 }
 
-export default Summary;
+export default Summary

@@ -1,41 +1,41 @@
-import React, { Component } from 'react';
-import Paper from '@material-ui/core/Paper';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import { ColumnChooser } from '@devexpress/dx-react-grid-material-ui';
-import Divider from '@material-ui/core/Divider';
-import { withStyles } from '@material-ui/core/styles';
+import React, { Component } from 'react'
+import Paper from '@material-ui/core/Paper'
+import FormGroup from '@material-ui/core/FormGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@material-ui/core/Checkbox'
+import { ColumnChooser } from '@devexpress/dx-react-grid-material-ui'
+import Divider from '@material-ui/core/Divider'
+import { withStyles } from '@material-ui/core/styles'
 
 const styles = {
   chooserPaperWrapper: {
-    maxHeight: 'none',
+    maxHeight: 'none'
   },
   chooserFormGroupWrapper: {
-    padding: '0 26px',
-  },
-};
+    padding: '0 26px'
+  }
+}
 
 class CustomColumnChooser extends Component {
   constructor(props) {
-    super(props);
-    this.state = { chooserAllChecked: true };
-    this.containerComponent = this.containerComponent.bind(this);
+    super(props)
+    this.state = { chooserAllChecked: true }
+    this.containerComponent = this.containerComponent.bind(this)
   }
 
   containerComponent(columns) {
-    let isAllChecked = true;
-    const { chooserAllChecked } = this.state;
+    let isAllChecked = true
+    const { chooserAllChecked } = this.state
     return (
       <Paper style={styles.chooserPaperWrapper}>
         {columns.children.map((column, index) => {
-          const { key } = column;
-          const item = column.props.item.column;
-          const toggle = column.props.onToggle;
-          const isFirstIndex = index === 0;
+          const { key } = column
+          const item = column.props.item.column
+          const toggle = column.props.onToggle
+          const isFirstIndex = index === 0
 
           if (column.props.item.hidden === true) {
-            isAllChecked = false;
+            isAllChecked = false
           }
 
           return (
@@ -46,18 +46,12 @@ class CustomColumnChooser extends Component {
                     <FormControlLabel
                       control={
                         <Checkbox
-                          checked={
-                            isAllChecked === false
-                              ? isAllChecked
-                              : chooserAllChecked
-                          }
-                          value="all"
-                          onChange={() =>
-                            this.handleToggleAll(columns.children)
-                          }
+                          checked={isAllChecked === false ? isAllChecked : chooserAllChecked}
+                          value='all'
+                          onChange={() => this.handleToggleAll(columns.children)}
                         />
                       }
-                      label="All"
+                      label='All'
                     />
                   </FormGroup>
                   <Divider />
@@ -69,66 +63,59 @@ class CustomColumnChooser extends Component {
                     <Checkbox
                       checked={!column.props.item.hidden}
                       value={item.name}
-                      onChange={() =>
-                        this.handleToggle(index, columns.children, toggle)
-                      }
+                      onChange={() => this.handleToggle(index, columns.children, toggle)}
                     />
                   }
                   label={item.title}
                 />
               </FormGroup>
             </React.Fragment>
-          );
+          )
         })}
         {/*
           In case of changing the state, the following warning will appear:
           "Warning: Cannot update during an existing state transition (such as within `render`).
           Render methods should be a pure function of props and state."
         */}
-        {!isAllChecked
-          ? this.setState({ chooserAllChecked: isAllChecked })
-          : null}
+        {!isAllChecked ? this.setState({ chooserAllChecked: isAllChecked }) : null}
       </Paper>
-    );
+    )
   }
 
   handleToggle(currentColumnIndex, columns, toggle) {
-    toggle();
-    let isAllChecked = true;
+    toggle()
+    let isAllChecked = true
     columns.forEach((column, index) => {
       if (currentColumnIndex === index && column.props.item.hidden === false) {
-        isAllChecked = false;
-      } else if (
-        currentColumnIndex !== index &&
-        column.props.item.hidden === true
-      ) {
-        isAllChecked = false;
+        isAllChecked = false
+      } else if (currentColumnIndex !== index && column.props.item.hidden === true) {
+        isAllChecked = false
       }
-    });
+    })
 
-    this.setState({ chooserAllChecked: isAllChecked });
+    this.setState({ chooserAllChecked: isAllChecked })
   }
 
   handleToggleAll(columns) {
-    const { chooserAllChecked } = this.state;
+    const { chooserAllChecked } = this.state
     this.setState((prevState) => ({
-      chooserAllChecked: !prevState.chooserAllChecked,
-    }));
+      chooserAllChecked: !prevState.chooserAllChecked
+    }))
 
     columns.forEach((column) => {
       if (chooserAllChecked) {
         if (!column.props.item.hidden) {
-          column.props.onToggle();
+          column.props.onToggle()
         }
       } else if (column.props.item.hidden) {
-        column.props.onToggle();
+        column.props.onToggle()
       }
-    });
+    })
   }
 
   render() {
-    return <ColumnChooser containerComponent={this.containerComponent} />;
+    return <ColumnChooser containerComponent={this.containerComponent} />
   }
 }
 
-export default withStyles(styles)(CustomColumnChooser);
+export default withStyles(styles)(CustomColumnChooser)

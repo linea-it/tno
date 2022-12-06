@@ -1,10 +1,10 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
     float: 'right',
-    height: 64,
+    height: 64
   },
   appBarDrawerOpen: {
     top: 'auto',
@@ -13,8 +13,8 @@ const useStyles = makeStyles((theme) => ({
     width: 'calc(100% - 240px)',
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+      duration: theme.transitions.duration.enteringScreen
+    })
   },
   appBarDrawerClose: {
     top: 'auto',
@@ -22,28 +22,28 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#6A6A6A',
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
+      duration: theme.transitions.duration.leavingScreen
+    })
   },
   toolbar: {
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   versionLink: {
     color: '#d2cf00',
     textDecoration: 'none',
     fontSize: '0.9rem',
-    cursor: 'pointer',
+    cursor: 'pointer'
   },
   logoLink: {
     lineHeight: 0,
     display: 'inline-block',
-    verticalAlign: 'middle',
+    verticalAlign: 'middle'
   },
   poweredBy: {
     display: 'inline-block',
-    verticalAlign: 'middle',
-  },
-}));
+    verticalAlign: 'middle'
+  }
+}))
 
-export default useStyles;
+export default useStyles
