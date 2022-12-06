@@ -2,7 +2,6 @@ import * as d3 from 'd3'
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-
 function CalendarExecutedNight({ data }) {
   const [rows, setRows] = useState([])
 
