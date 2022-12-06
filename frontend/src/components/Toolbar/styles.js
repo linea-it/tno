@@ -32,6 +32,9 @@ const useStyles = makeStyles((theme) => ({
   listItemIcon: {
     minWidth: theme.spacing(4),
   },
+  separator: {
+    flexGrow: 1,
+  },  
 }));
 
 export default useStyles;

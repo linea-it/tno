@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -9,8 +9,6 @@ import { useLocation } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import Avatar from '@material-ui/core/Avatar';
-// import { loggedUser, urlLogin, urlLogout } from '../../../services/api/Auth';
 import styles from './styles';
 import { useAuth } from '../../../contexts/AuthContext.js';
 function Header() {
@@ -43,9 +41,6 @@ function Header() {
     return (
       <>
         <Button color="inherit" onClick={handleClick}>
-          <Avatar className={classes.avatar}>
-            {user.username.substr(0, 1) || ''}
-          </Avatar>
           {user.username || ''}
         </Button>
         <Popover
