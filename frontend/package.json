@@ -84,6 +84,7 @@
     "eslint-plugin-react": "^7.14.3",
     "eslint-plugin-react-hooks": "4.6.0",
     "husky": "^8.0.2",
+    "lint-staged": "^13.1.0",
     "prettier": "^2.8.0"
   },
   "author": "",
@@ -92,5 +93,15 @@
     "hooks": {
       "pre-commit": "npm run lint && npm run format"
     }
+  },
+  "lint-staged": {
+    "*.+(js|jsx)": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.+(json|css|md)": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
