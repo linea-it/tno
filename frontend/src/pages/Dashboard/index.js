@@ -1,14 +1,9 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import Tabs from '../../components/Tabs';
 import Summary from './Summary';
 import Skybot from './Skybot';
 
-function Dashboard({ }) {
-
-  // useEffect(() => {
-  //   setTitle('Dashboard');
-  // }, [setTitle]);
+function Dashboard() {
 
   const tabs = [
     {
@@ -25,10 +20,5 @@ function Dashboard({ }) {
     <Tabs data={tabs} />
   );
 }
-
-// Dashboard.propTypes = {
-//   // setTitle: PropTypes.func.isRequired,
-//   setTitle: PropTypes.func,
-// };
 
 export default Dashboard;

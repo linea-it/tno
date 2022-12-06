@@ -42,7 +42,7 @@ function Tabs({ data }) {
       {data.map((tab, i) => selectedTab === i && (
         <div
           key={tab.title}
-          role="panel"
+          // role="panel"
           hidden={selectedTab !== i}
           id={`wrapped-panel-${i}`}
           aria-labelledby={`wrapped-tab-${i}`}

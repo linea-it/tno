@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import moment from 'moment';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -38,7 +37,7 @@ import CalendarHeatmap from '../../components/Chart/CalendarHeatmap';
 import CalendarExecutedNight from '../../components/Chart/CalendarExecutedNight';
 import useStyles from './styles';
 
-function Skybot({ }) {
+function Skybot() {
   const navigate = useNavigate();
   const classes = useStyles();
   const [totalCount, setTotalCount] = useState(0);
@@ -78,10 +77,6 @@ function Skybot({ }) {
     exposures: 0,
     estimated_time: '0',
   });
-
-  // useEffect(() => {
-  //   setTitle('Discovery');
-  // }, [setTitle]);
 
   const handleSelectPeriodClick = () => {
     setExposuresByPeriod([]);
@@ -581,9 +576,5 @@ function Skybot({ }) {
   );
 }
 
-// Skybot.propTypes = {
-//   // setTitle: PropTypes.func.isRequired,
-//   setTitle: PropTypes.func,
-// };
 
 export default Skybot;

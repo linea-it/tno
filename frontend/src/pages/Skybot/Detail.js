@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import {
   Grid,
   Card,
@@ -36,7 +35,7 @@ import useInterval from '../../hooks/useInterval';
 import useStyles from './styles';
 import { Alert } from '@material-ui/lab';
 
-function SkybotDetail({ }) {
+function SkybotDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const classes = useStyles();

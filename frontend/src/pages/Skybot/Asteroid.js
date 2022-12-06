@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Grid,
@@ -20,13 +19,12 @@ import {
   getCcdsByExposure,
   getExposureById,
   getDynclassAsteroidsById,
-  // getCcdsWithAsteroidsById,
 } from '../../services/api/Skybot';
 import CCD from '../../components/Chart/CCD';
 import List from '../../components/List';
 import Switch from '../../components/Switch';
 
-function SkybotAsteroid({ }) {
+function SkybotAsteroid() {
   const { id } = useParams();
 
   const coneSearchRadius = 1.2; // ! Cone search radius in Degres.
@@ -47,10 +45,6 @@ function SkybotAsteroid({ }) {
   const [dynclassAsteroids, setDynclassAsteroids] = useState([]);
   const [summary, setSummary] = useState([]);
   const [tableColumns, setTableColumns] = useState([]);
-
-  // useEffect(() => {
-  //   setTitle('Discovery');
-  // }, [setTitle]);
 
   useEffect(() => {
     getSkybotJobResultById(id).then((res) => {
@@ -448,10 +442,5 @@ function SkybotAsteroid({ }) {
     </Grid>
   );
 }
-
-// SkybotAsteroid.propTypes = {
-//   //setTitle: PropTypes.func.isRequired,
-//   setTitle: PropTypes.any,
-// };
 
 export default SkybotAsteroid;
