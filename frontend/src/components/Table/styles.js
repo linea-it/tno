@@ -41,28 +41,34 @@ const useStyles = makeStyles((theme) => ({
     float: align === 'center' ? 'none' : align,
   }),
   btnSuccess: {
-    backgroundColor: '#009900',
-    color: '#fff',
+    // backgroundColor: '#009900',
+    // color: '#fff',
+    color: '#009900',
   },
   btnFailure: {
-    backgroundColor: '#ff1a1a',
-    color: '#fff',
+    // backgroundColor: '#ff1a1a',
+    // color: '#fff',
+    color: '#ff1a1a',
   },
   btnAborted: {
-    backgroundColor: theme.palette.secondary[500],
-    color: '#fff',
+    // backgroundColor: theme.palette.secondary[500],
+    // color: '#fff',
+    color: theme.palette.secondary[500],
   },
   btnRunning: {
-    backgroundColor: '#ffba01',
-    color: '#000',
+    // backgroundColor: '#ffba01',
+    // color: '#000',
+    color: '#ffba01'
   },
   btnNotExecuted: {
-    backgroundColor: '#ABA6A2',
-    color: '#fff',
+    // backgroundColor: '#ABA6A2',
+    // color: '#fff',
+    color: '#ABA6A2'
   },
   btnWarning: {
-    backgroundColor: '#D79F15',
-    color: '#FFF',
+    // backgroundColor: '#D79F15',
+    // color: '#FFF',
+    color: '#D79F15'
   },
   container: {
     position: 'relative',
