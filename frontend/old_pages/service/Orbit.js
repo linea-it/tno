@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { api } from './api'
 
 export const getOrbitRuns = ({
   page,
@@ -17,7 +17,7 @@ export const getOrbitRuns = ({
     params[element.property] = element.value;
   });
 
-  return axios
+  return api
     .get('/orbit_run/', {
       params,
     })
@@ -25,28 +25,28 @@ export const getOrbitRuns = ({
 };
 
 export const createOrbitRun = ({ input_list, proccess }) =>
-  axios.post('/orbit_run/', {
+  api.post('/orbit_run/', {
     input_list,
     proccess,
   });
 
 export const orbitReRun = ({ id }) =>
-  axios.patch(`/orbit_run/${id}/`, {
+  api.patch(`/orbit_run/${id}/`, {
     status: 'pending',
   });
 
 export const getOrbitRunById = ({ id }) =>
-  axios.get(`/orbit_run/${id}/`).then((res) => res.data);
+  api.get(`/orbit_run/${id}/`).then((res) => res.data);
 
 // dados na table do primereact
-export const getRefineOrbits = (id) => axios.get(`/orbit_run/${id}`);
+export const getRefineOrbits = (id) => api.get(`/orbit_run/${id}`);
 
 // Time Profile
 export const getOrbitRunTimeProfile = ({ id }) => {
   const params = {
     orbit_run: id,
   };
-  return axios
+  return api
     .get('/orbit_run/get_time_profile/', {
       params,
     })
@@ -76,7 +76,7 @@ export const getAsteroids = ({
     params[element.property] = element.value;
   });
 
-  return axios
+  return api
     .get('/refined_asteroid/', {
       params,
     })
@@ -84,14 +84,14 @@ export const getAsteroids = ({
 };
 
 export const getAsteroidById = ({ id }) =>
-  axios.get(`/refined_asteroid/${id}/`).then((res) => res.data);
+  api.get(`/refined_asteroid/${id}/`).then((res) => res.data);
 
 export const getAsteroidLog = ({ id, name, orbit_run }) => {
   let params = { name, orbit_run };
   if (id) {
     params = { asteroid_id: id };
   }
-  return axios
+  return api
     .get('/refined_asteroid/get_log/', {
       params,
     })
@@ -104,7 +104,7 @@ export const getAsteroidDownloadLink = ({ id, name, orbit_run }) => {
     params = { asteroid_id: id };
   }
 
-  return axios
+  return api
     .get('/refined_asteroid/download_results/', {
       params,
     })
@@ -113,7 +113,7 @@ export const getAsteroidDownloadLink = ({ id, name, orbit_run }) => {
 
 export const getAsteroidNeighbors = ({ id }) => {
   const params = { asteroid_id: id };
-  return axios
+  return api
     .get('/refined_asteroid/get_neighbors/', {
       params,
     })
@@ -124,7 +124,7 @@ export const getAsteroidFiles = ({ id }) => {
   const params = {
     asteroid: id,
   };
-  return axios
+  return api
     .get('/refined_orbit/', {
       params,
     })
@@ -135,7 +135,7 @@ export const getAsteroidInputs = ({ id }) => {
   const params = {
     asteroid: id,
   };
-  return axios
+  return api
     .get('/refined_input/', {
       params,
     })
@@ -143,11 +143,11 @@ export const getAsteroidInputs = ({ id }) => {
 };
 
 export const readFile = (filepath) =>
-  axios
+  api
     .get(`/read_file?filepath=/archive/observations/Lempo.rwo`)
     .then((res) => res.data);
 
 export const readOrbitalFile = (filepath) =>
-  axios
+  api
     .get(`/read_file?filepath=/archive/orbital_parameters/Eris.eq0`)
     .then((res) => res.data);

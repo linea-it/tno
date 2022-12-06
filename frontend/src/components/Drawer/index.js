@@ -86,7 +86,6 @@ const useCurrentPath = () => {
 export default function PersistentDrawerLeft({children}) {
     const theme = useTheme();
 
-    console.log(theme)
     const navigate = useNavigate();   
     let location = useCurrentPath(); 
     const [open, setOpen] = React.useState(false);
