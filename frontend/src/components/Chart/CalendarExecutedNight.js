@@ -2,15 +2,15 @@ import * as d3 from 'd3'
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-
 function CalendarExecutedNight({ data }) {
   const [rows, setRows] = useState([])
 
   useEffect(() => {
     const exposures = data.map((row) => ({
       date: d3.timeDay(new Date(`${row.date} 00:00`)),
-      value: row.executed,
-      count: row.count
+      value: row.status,
+      count: row.count,
+      not_executed: row.count - row.executed,
     }))
 
     setRows(exposures)
@@ -54,7 +54,7 @@ function CalendarExecutedNight({ data }) {
 
     const timeWeek = d3.utcSunday
 
-    const colorFn = d3.scaleLinear().domain([0, 1, 2]).range(['#ebedf0', '#939497', '#212121'])
+    const colorFn = d3.scaleLinear().domain([0, 1, 2, 3]).range(['#ebedf0', '#939497', '#18ba03', '#fcba03'])
 
     year
       .append('g')
@@ -93,6 +93,9 @@ function CalendarExecutedNight({ data }) {
           case 2:
             hoverText = `was executed and it has ${d.count} exposure(s)`
             break
+          case 3:
+            hoverText = `There are still ${d.not_executed} out of ${d.count} exposure(s) to execute`
+            break            
           default:
             break
         }

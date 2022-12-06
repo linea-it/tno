@@ -1,5 +1,5 @@
 
-FROM node:12.16.2 as builder
+FROM node:18.12.1 as builder
 
 COPY . /app
 WORKDIR /app
