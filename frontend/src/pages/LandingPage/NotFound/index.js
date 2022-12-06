@@ -1,64 +1,56 @@
 /* eslint-disable max-len */
-import React from 'react';
-import {
-  Grid,
-  Container,
-  Typography,
-  Breadcrumbs,
-  Link,
-  IconButton,
-} from '@material-ui/core';
-import { YouTube, Twitter, GitHub } from '@material-ui/icons';
-import styles from './styles';
+import React from 'react'
+import { Grid, Container, Typography, Breadcrumbs, Link, IconButton } from '@material-ui/core'
+import { YouTube, Twitter, GitHub } from '@material-ui/icons'
+import styles from './styles'
 
 function AboutUs() {
   const handlerClick = (socialMedia) => {
-    let uri = '';
+    let uri = ''
     switch (socialMedia) {
       case 'YouTube':
-        uri = 'https://www.youtube.com/user/lineamcti';
-        break;
+        uri = 'https://www.youtube.com/user/lineamcti'
+        break
       case 'Twitter':
-        uri = 'https://twitter.com/LIneA_mcti';
-        break;
+        uri = 'https://twitter.com/LIneA_mcti'
+        break
       case 'GitHub':
-        uri = 'https://github.com/linea-it/tno';
-        break;
+        uri = 'https://github.com/linea-it/tno'
+        break
       default:
-        uri = 'https://www.youtube.com/user/lineamcti';
+        uri = 'https://www.youtube.com/user/lineamcti'
     }
-    window.open(uri, '_blank');
-  };
+    window.open(uri, '_blank')
+  }
 
-  const classes = styles();
+  const classes = styles()
   return (
     <div className={classes.initContainer}>
       <Container>
         <Grid item xs={12}>
-          <Breadcrumbs aria-label="breadcrumb">
+          <Breadcrumbs aria-label='breadcrumb'>
             {/* <Link color="inherit" href="/">
               Home
             </Link> */}
-            <Link color="inherit" to="/">
+            <Link color='inherit' to='/'>
               Home
             </Link>
-            <Typography color="textPrimary">Not Found</Typography>
+            <Typography color='textPrimary'>Not Found</Typography>
           </Breadcrumbs>
           <>
             <div className={classes.notfound}>
-              <Typography variant="h1" className={classes.title}>
+              <Typography variant='h1' className={classes.title}>
                 404
               </Typography>
-              <Typography variant="h2" className={classes.subTitle}>
+              <Typography variant='h2' className={classes.subTitle}>
                 Oops! Nothing was found
               </Typography>
-              <Typography variant="subtitle1" className={classes.description}>
-                The page you are looking for might have been removed, had its
-                name changed or is temporarily unavailable.{' '}
+              <Typography variant='subtitle1' className={classes.description}>
+                The page you are looking for might have been removed, had its name changed or is temporarily unavailable.{' '}
                 {/* <Link color="inherit" className={classes.returnPage} href="/">
                   Return to homepage
                 </Link> */}
-                <Link color="inherit" className={classes.returnPage} to="/">
+                <Link color='inherit' className={classes.returnPage} to='/'>
                   Return to homepage
                 </Link>
               </Typography>
@@ -66,33 +58,33 @@ function AboutUs() {
                 <IconButton
                   className={classes.icon}
                   onClick={() => {
-                    handlerClick('Youtube');
+                    handlerClick('Youtube')
                   }}
-                  color="inherit"
-                  aria-label="YouTube"
-                  component="span"
+                  color='inherit'
+                  aria-label='YouTube'
+                  component='span'
                 >
                   <YouTube />
                 </IconButton>
                 <IconButton
                   className={classes.icon}
                   onClick={() => {
-                    handlerClick('Twitter');
+                    handlerClick('Twitter')
                   }}
-                  color="inherit"
-                  aria-label="Twitter"
-                  component="span"
+                  color='inherit'
+                  aria-label='Twitter'
+                  component='span'
                 >
                   <Twitter />
                 </IconButton>
                 <IconButton
                   className={classes.icon}
                   onClick={() => {
-                    handlerClick('GitHub');
+                    handlerClick('GitHub')
                   }}
-                  color="inherit"
-                  aria-label="GitHub"
-                  component="span"
+                  color='inherit'
+                  aria-label='GitHub'
+                  component='span'
                 >
                   <GitHub />
                 </IconButton>
@@ -102,7 +94,7 @@ function AboutUs() {
         </Grid>
       </Container>
     </div>
-  );
+  )
 }
 
-export default AboutUs;
+export default AboutUs

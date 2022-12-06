@@ -1,28 +1,28 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles((theme) => ({
   wrapPaper: {
     position: 'relative',
-    paddingTop: '10px',
+    paddingTop: '10px'
   },
   formControl: {
     width: '180px',
     position: 'absolute',
     top: '8px',
     left: '24px',
-    zIndex: '999',
+    zIndex: '999'
   },
   noDataCell: {
     padding: '48px 0px',
-    textAlign: 'center',
+    textAlign: 'center'
   },
   noDataWrapper: {
     left: '50%',
-    display: 'inline-block',
+    display: 'inline-block'
   },
   noDataText: {
     display: 'inline-block',
-    transform: 'translateX(-50%)',
+    transform: 'translateX(-50%)'
   },
   btn: ({ align }) => ({
     textTransform: 'capitalize',
@@ -38,22 +38,22 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '4px',
     boxSizing: 'border-box',
     margin: align === 'center' ? 'auto' : 'initial',
-    float: align === 'center' ? 'none' : align,
+    float: align === 'center' ? 'none' : align
   }),
   btnSuccess: {
     // backgroundColor: '#009900',
     // color: '#fff',
-    color: '#009900',
+    color: '#009900'
   },
   btnFailure: {
     // backgroundColor: '#ff1a1a',
     // color: '#fff',
-    color: '#ff1a1a',
+    color: '#ff1a1a'
   },
   btnAborted: {
     // backgroundColor: theme.palette.secondary[500],
     // color: '#fff',
-    color: theme.palette.secondary[500],
+    color: theme.palette.secondary[500]
   },
   btnRunning: {
     // backgroundColor: '#ffba01',
@@ -71,8 +71,8 @@ const useStyles = makeStyles((theme) => ({
     color: '#D79F15'
   },
   container: {
-    position: 'relative',
-  },
-}));
+    position: 'relative'
+  }
+}))
 
-export default useStyles;
+export default useStyles

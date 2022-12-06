@@ -1,12 +1,12 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 const styles = makeStyles(() => ({
   action: {
     color: 'darkslateblue',
     fontSize: '0.9em',
     padding: '0px 8px',
-    zIndex: 9999,
-  },
-}));
+    zIndex: 9999
+  }
+}))
 
-export default styles;
+export default styles

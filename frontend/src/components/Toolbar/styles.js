@@ -1,5 +1,5 @@
-import { makeStyles } from '@material-ui/core/styles';
-import { deepOrange } from '@material-ui/core/colors';
+import { makeStyles } from '@material-ui/core/styles'
+import { deepOrange } from '@material-ui/core/colors'
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -9,32 +9,32 @@ const useStyles = makeStyles((theme) => ({
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
+      duration: theme.transitions.duration.leavingScreen
+    })
   },
   appBarShift: {
     marginLeft: (drawerWidth) => drawerWidth,
     width: (drawerWidth) => `calc(100% - ${drawerWidth}px)`,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+      duration: theme.transitions.duration.enteringScreen
+    })
   },
   sectionButtons: {
-    display: 'flex',
+    display: 'flex'
   },
   avatar: {
     margin: 10,
     cursor: 'pointer',
     color: theme.palette.getContrastText(deepOrange[500]),
-    backgroundColor: deepOrange[500],
+    backgroundColor: deepOrange[500]
   },
   listItemIcon: {
-    minWidth: theme.spacing(4),
+    minWidth: theme.spacing(4)
   },
   separator: {
-    flexGrow: 1,
-  },  
-}));
+    flexGrow: 1
+  }
+}))
 
-export default useStyles;
+export default useStyles

@@ -1,17 +1,16 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles((theme) => ({
   root: {
     height: 10,
-    borderRadius: 5,
+    borderRadius: 5
   },
   colorPrimary: {
-    backgroundColor:
-      theme.palette.grey[theme.palette.type === 'dark' ? 800 : 400],
+    backgroundColor: theme.palette.grey[theme.palette.type === 'dark' ? 800 : 400]
   },
   bar: {
-    borderRadius: 5,
-  },
-}));
+    borderRadius: 5
+  }
+}))
 
-export default useStyles;
+export default useStyles

@@ -1,55 +1,55 @@
-import axios from 'axios';
+import axios from 'axios'
 
-export const url = process.env.REACT_APP_API;
+export const url = process.env.REACT_APP_API
 
 export function getAPIClient(ctx) {
-    const api = axios.create({
-        timeout: 5000,
-        headers: {
-            'Content-Type': 'application/json',
-            accept: 'application/json'
+  const api = axios.create({
+    timeout: 5000,
+    headers: {
+      'Content-Type': 'application/json',
+      accept: 'application/json'
+    }
+  })
+
+  api.defaults.baseURL = url
+
+  api.defaults.xsrfCookieName = 'tno.csrftoken'
+  api.defaults.xsrfHeaderName = 'X-CSRFToken'
+  api.defaults.withCredentials = true
+
+  // Add a response interceptor
+  api.interceptors.response.use(
+    (response) =>
+      // Do something with response data
+      response,
+    (error) => {
+      // Do something with response error
+      if (error.response) {
+        // The request was made and the server responded with a status code
+
+        if (error.response.status === 401) {
+          // Não autorizado
+          // TODO: Tratar quando o usuario tentar acessar uma api que ele nao tem permissao.
+          // console.warn(error.request);
         }
-    })
-
-    api.defaults.baseURL = url;
-
-    api.defaults.xsrfCookieName = 'tno.csrftoken';
-    api.defaults.xsrfHeaderName = 'X-CSRFToken';
-    api.defaults.withCredentials = true;
-
-    // Add a response interceptor
-    api.interceptors.response.use(
-        (response) =>
-            // Do something with response data
-            response,
-        (error) => {
-            // Do something with response error
-            if (error.response) {
-            // The request was made and the server responded with a status code
-
-            if (error.response.status === 401) {
-                // Não autorizado
-                // TODO: Tratar quando o usuario tentar acessar uma api que ele nao tem permissao.
-                // console.warn(error.request);
-            }
-            if (error.response.status === 403) {
-                // Não está logado
-            }      
-            } else if (error.request) {
-            // The request was made but no response was received
-            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-            // http.ClientRequest in node.js
-            console.error(error.request);
-            } else {
-            // Something happened in setting up the request that triggered an Error
-            console.error('Error', error.message);
-            }
-
-            return Promise.reject(error);
+        if (error.response.status === 403) {
+          // Não está logado
         }
-    );
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.error(error.request)
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error('Error', error.message)
+      }
 
-    return api
+      return Promise.reject(error)
+    }
+  )
+
+  return api
 }
 
 export const api = getAPIClient()

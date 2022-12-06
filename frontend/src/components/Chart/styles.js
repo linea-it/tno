@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 export const colors = [
   '#4D80CC',
@@ -52,8 +52,8 @@ export const colors = [
   '#4DB380',
   '#FF4D4D',
   '#99E6E6',
-  '#6666FF',
-];
+  '#6666FF'
+]
 
 const useStyles = makeStyles((theme) => ({
   plotWrapper: {
@@ -61,13 +61,13 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     [theme.breakpoints.down('lg')]: {
-      overflow: 'auto',
-    },
+      overflow: 'auto'
+    }
   },
 
   legendWrapper: {
     float: 'right',
-    color: '#586069',
+    color: '#586069'
   },
 
   legend: {
@@ -75,14 +75,14 @@ const useStyles = makeStyles((theme) => ({
     display: 'inline-block',
     margin: '0 5px',
     listStyle: 'none',
-    padding: 0,
+    padding: 0
   },
 
   legendItem: {
     display: 'inline-block',
     width: 10,
-    height: 10,
-  },
-}));
+    height: 10
+  }
+}))
 
-export default useStyles;
+export default useStyles

@@ -1,10 +1,9 @@
-import React from 'react';
-import Tabs from '../../components/Tabs';
-import Summary from './Summary';
-import Skybot from './Skybot';
+import React from 'react'
+import Tabs from '../../components/Tabs'
+import Summary from './Summary'
+import Skybot from './Skybot'
 
 function Dashboard() {
-
   const tabs = [
     {
       title: 'Process Summary',
@@ -13,12 +12,10 @@ function Dashboard() {
     {
       title: 'Discovery',
       content: <Skybot />
-    },
+    }
   ]
 
-  return (
-    <Tabs data={tabs} />
-  );
+  return <Tabs data={tabs} />
 }
 
-export default Dashboard;
+export default Dashboard

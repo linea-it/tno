@@ -1,43 +1,43 @@
 /* eslint-disable */
-import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import InputLabel from '@material-ui/core/InputLabel'
+import MenuItem from '@material-ui/core/MenuItem'
+import FormControl from '@material-ui/core/FormControl'
+import Select from '@material-ui/core/Select'
+import PropTypes from 'prop-types'
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
-    flexWrap: 'wrap',
+    flexWrap: 'wrap'
   },
   formControl: {
     marginTop: (props) => props.marginTop,
     margin: theme.spacing(2),
     marginLeft: 30,
     minWidth: 120,
-    width: (props) => props.width,
+    width: (props) => props.width
   },
   selectEmpty: {
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
   MenuItem: {
-    fontSize: 14,
+    fontSize: 14
   },
   OutlinedInput: {
-    height: 37,
-  },
-}));
+    height: 37
+  }
+}))
 
 function SelectPredict(props) {
-  const classes = useStyles();
+  const classes = useStyles()
   const [values, setValues] = useState({
     input: '',
-    name: '',
-  });
+    name: ''
+  })
 
-  const [defaultValue, setDefaultValue] = useState(0);
+  const [defaultValue, setDefaultValue] = useState(0)
 
   const handleChange = (event) => {
     /*
@@ -52,63 +52,61 @@ function SelectPredict(props) {
 
     setValues((oldValues) => ({
       ...oldValues,
-      [event.target.name]: event.target.value,
-    }));
+      [event.target.name]: event.target.value
+    }))
 
-    setDefaultValue(event.target.value);
+    setDefaultValue(event.target.value)
 
     switch (event.currentTarget.title) {
       case 'input':
-        props.setActionButton(false); // Turns the submit button active
+        props.setActionButton(false) // Turns the submit button active
 
-        const process_id = event.currentTarget.getAttribute('process_id');
-        const orbit_input_list_id = event.currentTarget.getAttribute(
-          'orbit_input_list_id'
-        );
-        const orbit_run_id = event.currentTarget.getAttribute('orbit_run_id');
+        const process_id = event.currentTarget.getAttribute('process_id')
+        const orbit_input_list_id = event.currentTarget.getAttribute('orbit_input_list_id')
+        const orbit_run_id = event.currentTarget.getAttribute('orbit_run_id')
 
         props.setSubmition({
           ...props.valueSubmition,
           processId: process_id,
           orbit_run_input_list_id: orbit_input_list_id,
-          orbit_run_id,
-        });
-        break;
+          orbit_run_id
+        })
+        break
 
       case 'catalog':
-        const catalogId = event.currentTarget.id;
+        const catalogId = event.currentTarget.id
         props.setSubmition({
           ...props.valueSubmition,
-          catalogId,
-        });
-        break;
+          catalogId
+        })
+        break
 
       case 'leapSeconds':
-        const leapSecondsId = event.currentTarget.id;
+        const leapSecondsId = event.currentTarget.id
         props.setSubmition({
           ...props.valueSubmition,
-          leap_secondsId: leapSecondsId,
-        });
-        break;
+          leap_secondsId: leapSecondsId
+        })
+        break
 
       case 'bspPlanetary':
-        const bsp_planetaryId = event.currentTarget.id;
+        const bsp_planetaryId = event.currentTarget.id
         props.setSubmition({
           ...props.valueSubmition,
-          bsp_planetaryId,
-        });
-        break;
+          bsp_planetaryId
+        })
+        break
     }
   }
 
-  const { formControl } = useStyles(props);
-  const { title } = props;
+  const { formControl } = useStyles(props)
+  const { title } = props
 
   const loadMenuItems = () => {
     // Receive the data from PredictionOccultation props.
-    const generalArray = props.data;
-    const { display } = props;
-    const { value } = props;
+    const generalArray = props.data
+    const { display } = props
+    const { value } = props
 
     // Create a map function to define(return) the MenuItems.
 
@@ -127,27 +125,21 @@ function SelectPredict(props) {
           >
             {eval(display)}
           </MenuItem>
-        ));
+        ))
       }
 
       return generalArray.map((el, i) => (
-        <MenuItem
-          key={i}
-          id={el.id}
-          className={classes.MenuItem}
-          value={i}
-          title={props.title}
-        >
+        <MenuItem key={i} id={el.id} className={classes.MenuItem} value={i} title={props.title}>
           {eval(display)}
         </MenuItem>
-      ));
+      ))
     }
-  };
+  }
 
   return (
-    <form className={classes.root} autoComplete="off">
+    <form className={classes.root} autoComplete='off'>
       <FormControl className={`${formControl}`}>
-        <InputLabel htmlFor="input">{title}</InputLabel>
+        <InputLabel htmlFor='input'>{title}</InputLabel>
         <Select
           // value={values.input}
           value={defaultValue}
@@ -161,11 +153,11 @@ function SelectPredict(props) {
         </Select>
       </FormControl>
     </form>
-  );
+  )
 }
 
 SelectPredict.propTypes = {
-  title: PropTypes.string.isRequired,
-};
+  title: PropTypes.string.isRequired
+}
 
-export default SelectPredict;
+export default SelectPredict

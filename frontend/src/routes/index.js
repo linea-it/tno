@@ -1,23 +1,23 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
 
-import Dashboard from '../pages/Dashboard';
+import Dashboard from '../pages/Dashboard'
 
-import Skybot from '../pages/Skybot';
-import SkybotDetail from '../pages/Skybot/Detail';
-import SkybotAsteroid from '../pages/Skybot/Asteroid';
+import Skybot from '../pages/Skybot'
+import SkybotDetail from '../pages/Skybot/Detail'
+import SkybotAsteroid from '../pages/Skybot/Asteroid'
 
-import Home from '../pages/LandingPage/Home';
-import AboutUs from '../pages/LandingPage/AboutUs';
-import Help from '../pages/LandingPage/Help';
-import Tutorials from '../pages/LandingPage/Tutorials';
-import Contact from '../pages/LandingPage/Contact';
+import Home from '../pages/LandingPage/Home'
+import AboutUs from '../pages/LandingPage/AboutUs'
+import Help from '../pages/LandingPage/Help'
+import Tutorials from '../pages/LandingPage/Tutorials'
+import Contact from '../pages/LandingPage/Contact'
 
 import { useAuth } from '../contexts/AuthContext.js'
-import Header from '../components/LandingPage/Header';
-import Footer from '../components/LandingPage/Footer';
+import Header from '../components/LandingPage/Header'
+import Footer from '../components/LandingPage/Footer'
 // import Drawer from '../components/Drawer';
-import PersistentDrawerLeft from '../components/Drawer';
+import PersistentDrawerLeft from '../components/Drawer'
 // import RefineOrbit from '../pages/RefineOrbit';
 // import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
 // import RefineOrbitAsteroid from '../pages/RefineOrbit/Asteroid';
@@ -34,25 +34,24 @@ import PersistentDrawerLeft from '../components/Drawer';
 // import DownloadDetail from '../pages/Download/Detail';
 
 export default function AppRoutes() {
-
   const { isAuthenticated, signIn } = useAuth()
   // const [title, setTitle] = React.useState('');
   // // const [open, setOpen] = React.useState(window.innerWidth > 1360);
   // const [open, setOpen] = React.useState(true);
 
   const PrivateRoute = ({ auth: { isAuthenticated }, children }) => {
-    return isAuthenticated ? children : signIn();
-  };
+    return isAuthenticated ? children : signIn()
+  }
 
   const LandingPage = ({ children }) => {
     return (
       <>
         <Header />
-          {children}
+        {children}
         <Footer />
       </>
     )
-  };
+  }
 
   const DashboardPage = ({ children }) => {
     return (
@@ -63,39 +62,113 @@ export default function AppRoutes() {
         <PersistentDrawerLeft>{children}</PersistentDrawerLeft>
       </>
     )
-  };
+  }
 
   return (
     <Routes>
       {/* Landing Page  Layout*/}
-      <Route isHomePage exact path="/" element={<LandingPage><Home /></LandingPage>} />
-      <Route isHomePage exact path="/about-us" element={<LandingPage><AboutUs /></LandingPage>} />
-      <Route isHomePage exact path="/help" element={<LandingPage><Help /></LandingPage>} />
-      <Route isHomePage exact path="/tutorials" element={<LandingPage><Tutorials /></LandingPage>} />
-      <Route isHomePage exact path="/contact-us" element={<LandingPage><Contact /></LandingPage>} />
+      <Route
+        isHomePage
+        exact
+        path='/'
+        element={
+          <LandingPage>
+            <Home />
+          </LandingPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/about-us'
+        element={
+          <LandingPage>
+            <AboutUs />
+          </LandingPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/help'
+        element={
+          <LandingPage>
+            <Help />
+          </LandingPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/tutorials'
+        element={
+          <LandingPage>
+            <Tutorials />
+          </LandingPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/contact-us'
+        element={
+          <LandingPage>
+            <Contact />
+          </LandingPage>
+        }
+      />
 
       {/* Dashboard  Layout*/}
-      <Route isPrivate exact path="/dashboard" element={<PrivateRoute auth={{ isAuthenticated }}><DashboardPage><Dashboard /></DashboardPage></PrivateRoute>} />
       <Route
         isPrivate
         exact
-        path="/data-preparation/des/discovery"
-        element={<PrivateRoute auth={{ isAuthenticated }}><DashboardPage><Skybot /></DashboardPage></PrivateRoute>}
+        path='/dashboard'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <Dashboard />
+            </DashboardPage>
+          </PrivateRoute>
+        }
       />
       <Route
         isPrivate
         exact
-        path="/data-preparation/des/discovery/:id"
-        element={<PrivateRoute auth={{ isAuthenticated }}><DashboardPage><SkybotDetail /></DashboardPage></PrivateRoute>}
+        path='/data-preparation/des/discovery'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <Skybot />
+            </DashboardPage>
+          </PrivateRoute>
+        }
       />
       <Route
         isPrivate
         exact
-        path="/data-preparation/des/discovery/asteroid/:id"
-        element={<PrivateRoute auth={{ isAuthenticated }}><DashboardPage><SkybotAsteroid /></DashboardPage></PrivateRoute>}
+        path='/data-preparation/des/discovery/:id'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <SkybotDetail />
+            </DashboardPage>
+          </PrivateRoute>
+        }
       />
-      <Route path="*" element={<Navigate to="/" />} />
-      
+      <Route
+        isPrivate
+        exact
+        path='/data-preparation/des/discovery/asteroid/:id'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <SkybotAsteroid />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route path='*' element={<Navigate to='/' />} />
+
       {/* <Route element={<Notfound />} />       */}
       {/* <Route isPrivate exact path="/refine-orbit" element={RefineOrbit} />
       <Route
@@ -160,5 +233,5 @@ export default function AppRoutes() {
         element={DownloadDetail}
       /> */}
     </Routes>
-  );
+  )
 }

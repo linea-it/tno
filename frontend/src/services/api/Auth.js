@@ -4,23 +4,23 @@ export function loggedUser() {
   return api
     .get('/users/i')
     .then((res) => {
-      const result = res.data;
-      return result;
+      const result = res.data
+      return result
     })
     .catch(() => {
-      return null;
-    });
+      return null
+    })
 }
 
 export function isAuthenticated() {
   return loggedUser().then((res) => {
     if (res !== null) {
-      return true;
+      return true
     }
-    return false;
-  });
+    return false
+  })
 }
 
-export const urlLogin = `${url}/auth/login/`;
+export const urlLogin = `${url}/auth/login/`
 
-export const urlLogout = `${url}/auth/logout/`;
+export const urlLogout = `${url}/auth/logout/`

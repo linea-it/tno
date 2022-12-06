@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable eqeqeq */
-import React, { useState, useEffect } from 'react';
-import YouTube from 'react-youtube';
+import React, { useState, useEffect } from 'react'
+import YouTube from 'react-youtube'
 import {
   Container,
   Typography,
@@ -12,38 +12,38 @@ import {
   ListItemIcon,
   ListItemText,
   Breadcrumbs,
-  Link,
-} from '@material-ui/core';
-import MovieIcon from '@material-ui/icons/Movie';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import styles from './styles';
+  Link
+} from '@material-ui/core'
+import MovieIcon from '@material-ui/icons/Movie'
+import ArrowRightIcon from '@material-ui/icons/ArrowRight'
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown'
+import styles from './styles'
 // import { tutorials } from '../../Services/api';
 
 function Tutorials() {
-  const classes = styles();
-  const opts = { width: '100%' };
-  const [idPlayer, setIdPlayer] = useState('');
+  const classes = styles()
+  const opts = { width: '100%' }
+  const [idPlayer, setIdPlayer] = useState('')
   const [videoOnDisplay, setVideoOnDisplay] = useState({
     tutorial: '',
-    video: '',
-  });
-  const [treeTutorial, setTreeTutorial] = useState([]);
+    video: ''
+  })
+  const [treeTutorial, setTreeTutorial] = useState([])
 
   function compare(a, b) {
-    const bandA = a.title.toUpperCase();
-    const bandB = b.title.toUpperCase();
-    let comparison = 0;
+    const bandA = a.title.toUpperCase()
+    const bandB = b.title.toUpperCase()
+    let comparison = 0
     if (bandA > bandB) {
-      comparison = 1;
+      comparison = 1
     } else if (bandA < bandB) {
-      comparison = -1;
+      comparison = -1
     }
-    return comparison;
+    return comparison
   }
 
   useEffect(() => {
-    const auxTreeTutorial = [];
+    const auxTreeTutorial = []
     // let menuFilter;
     // let idVideo;
     async function fetchData() {
@@ -61,39 +61,32 @@ function Tutorials() {
       //   setIdPlayer('0');
       // });
     }
-    setTreeTutorial(auxTreeTutorial);
-    fetchData();
-  }, []);
+    setTreeTutorial(auxTreeTutorial)
+    fetchData()
+  }, [])
 
-  const [expanded, setExpanded] = React.useState('');
+  const [expanded, setExpanded] = React.useState('')
   const handleChange = (panel) => (event, newExpanded) => {
-    setExpanded(newExpanded ? panel : false);
-  };
+    setExpanded(newExpanded ? panel : false)
+  }
   const handleSelected = (tutorial, video) => {
-    setIdPlayer(video.idVideo);
-    setVideoOnDisplay({ tutorial: tutorial.title, video: video.title });
-  };
+    setIdPlayer(video.idVideo)
+    setVideoOnDisplay({ tutorial: tutorial.title, video: video.title })
+  }
 
   return (
     <div className={classes.initContainer}>
       <Container>
-        <Breadcrumbs aria-label="breadcrumb">
+        <Breadcrumbs aria-label='breadcrumb'>
           {/* <Link color="inherit" href="/">
             Home
           </Link> */}
-          <Link color="inherit" to="/">
+          <Link color='inherit' to='/'>
             Home
           </Link>
-          <Typography color="textPrimary">Tutorials</Typography>
+          <Typography color='textPrimary'>Tutorials</Typography>
         </Breadcrumbs>
-        <Grid
-          container
-          spacing={9}
-          direction="row"
-          justifyContent="space-evenly"
-          alignItems="flex-start"
-          className={classes.root}
-        >
+        <Grid container spacing={9} direction='row' justifyContent='space-evenly' alignItems='flex-start' className={classes.root}>
           <Grid item xs={12} sm={4}>
             {treeTutorial &&
               treeTutorial.sort(compare).map((tutorial, index) => (
@@ -103,25 +96,16 @@ function Tutorials() {
                   expanded={expanded === `panel${index + 1}`}
                   onChange={handleChange(`panel${index + 1}`)}
                 >
-                  <ExpansionPanelSummary
-                    aria-controls={`panel${index + 1}d-content`}
-                    id={`panel${index + 1}d-header`}
-                  >
-                    {expanded === `panel${index + 1}` ? (
-                      <ArrowDropDownIcon />
-                    ) : (
-                      <ArrowRightIcon />
-                    )}
+                  <ExpansionPanelSummary aria-controls={`panel${index + 1}d-content`} id={`panel${index + 1}d-header`}>
+                    {expanded === `panel${index + 1}` ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
                     <Typography>{tutorial.title}</Typography>
                   </ExpansionPanelSummary>
                   {tutorial.videos.map((video, indexVideos) => (
                     <ListItem
-                      key={
-                        (index + 1).toString() + (indexVideos + 1).toString()
-                      }
+                      key={(index + 1).toString() + (indexVideos + 1).toString()}
                       className={classes.item}
                       onClick={() => {
-                        handleSelected(tutorial, video);
+                        handleSelected(tutorial, video)
                       }}
                     >
                       <ListItemIcon>
@@ -137,7 +121,7 @@ function Tutorials() {
             {idPlayer != '0' ? (
               <>
                 <YouTube videoId={idPlayer} opts={opts} />
-                <Typography variant="subtitle1" align="center" gutterBottom>
+                <Typography variant='subtitle1' align='center' gutterBottom>
                   {`${videoOnDisplay.tutorial} - ${videoOnDisplay.video}`}
                 </Typography>
               </>
@@ -148,7 +132,7 @@ function Tutorials() {
         </Grid>
       </Container>
     </div>
-  );
+  )
 }
 
-export default Tutorials;
+export default Tutorials

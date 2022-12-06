@@ -1,32 +1,32 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Plot from 'react-plotly.js';
-import useStyles from './styles';
+import React from 'react'
+import PropTypes from 'prop-types'
+import Plot from 'react-plotly.js'
+import useStyles from './styles'
 
 function CCD({ data, width, height }) {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const rows = [];
+  const rows = []
 
   data.ccds.forEach((row, i) => {
-    let showlegend = false;
+    let showlegend = false
     if (i === 0) {
-      showlegend = true;
+      showlegend = true
     }
     rows.push({
       x: row.x,
       y: row.y,
       mode: 'lines',
       line: {
-        color: '#3972b3',
+        color: '#3972b3'
       },
       type: 'scatter',
       name: 'CCDs',
       showlegend,
       legendgroup: 'CCDs',
-      hoverinfo: 'skip',
-    });
-  });
+      hoverinfo: 'skip'
+    })
+  })
 
   rows.push({
     x: data.asteroidsInside.x,
@@ -35,10 +35,10 @@ function CCD({ data, width, height }) {
     type: 'scatter',
     name: 'Small Bodies Inside CCD',
     marker: {
-      color: '#008000',
+      color: '#008000'
     },
-    text: data.asteroidsInside.ccdnum.map((ccdnum) => `CCD Number: ${ccdnum}`),
-  });
+    text: data.asteroidsInside.ccdnum.map((ccdnum) => `CCD Number: ${ccdnum}`)
+  })
 
   rows.push({
     x: data.asteroidsOutside.x,
@@ -47,9 +47,9 @@ function CCD({ data, width, height }) {
     type: 'scatter',
     name: 'Small Bodies Outside CCD',
     marker: {
-      color: '#333',
-    },
-  });
+      color: '#333'
+    }
+  })
 
   rows.push({
     x: [null],
@@ -59,9 +59,9 @@ function CCD({ data, width, height }) {
     showlegend: true,
     hoverinfo: 'skip',
     line: {
-      color: 'rgba(255, 26, 26, 0.7)',
-    },
-  });
+      color: 'rgba(255, 26, 26, 0.7)'
+    }
+  })
 
   // width = !width ? height : width;
 
@@ -78,11 +78,11 @@ function CCD({ data, width, height }) {
         xaxis: {
           title: 'RA (º)',
           nticks: 5,
-          scaleanchor: 'y',
+          scaleanchor: 'y'
         },
         yaxis: {
           title: 'Dec (º)',
-          nticks: 5,
+          nticks: 5
           // scaleanchor: 'x',
         },
         shapes: [
@@ -96,32 +96,32 @@ function CCD({ data, width, height }) {
             y1: data.asteroidsLimit.y[1],
             type: 'circle',
             line: {
-              color: '#ff1a1a',
-            },
-          },
-        ],
+              color: '#ff1a1a'
+            }
+          }
+        ]
       }}
       config={{
         scrollZoom: false,
         displaylogo: false,
-        responsive: true,
+        responsive: true
       }}
     />
-  );
+  )
 }
 
 CCD.defaultProps = {
   width: null,
-  height: 'auto',
-};
+  height: 'auto'
+}
 
 CCD.propTypes = {
   width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   data: PropTypes.shape({
     x: PropTypes.array,
-    y: PropTypes.array,
-  }).isRequired,
-};
+    y: PropTypes.array
+  }).isRequired
+}
 
-export default CCD;
+export default CCD

@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 const styles = makeStyles((theme) => ({
   root: {
@@ -11,9 +11,9 @@ const styles = makeStyles((theme) => ({
     backgroundSize: 'cover',
     height: 220,
     [theme.breakpoints.down('sm')]: {
-      height: 330,
+      height: 330
     },
-    marginBottom: theme.spacing(4),
+    marginBottom: theme.spacing(4)
   },
   container: {
     background: 'transparent',
@@ -21,7 +21,7 @@ const styles = makeStyles((theme) => ({
     textAlign: 'center',
     color: '#FFF',
     zIndex: 2,
-    marginTop: '0',
+    marginTop: '0'
   },
   title: {
     fontFamily: 'Oxanium',
@@ -30,31 +30,31 @@ const styles = makeStyles((theme) => ({
     margin: 0,
     [theme.breakpoints.down('sm')]: {
       fontSize: 48,
-      margin: `0 ${theme.spacing(2)}px`,
+      margin: `0 ${theme.spacing(2)}px`
     },
-    textShadow: 'black 0.1em 0.1em 0.2em',
+    textShadow: 'black 0.1em 0.1em 0.2em'
   },
   logo: {
     position: 'relative',
     [theme.breakpoints.up('sm')]: {
-      maxWidth: 120,
+      maxWidth: 120
     },
-    maxWidth: 120,
+    maxWidth: 120
   },
   titleWrapper: {
     [theme.breakpoints.up('sm')]: {
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center',
-    },
+      alignItems: 'center'
+    }
   },
   socialWrapper: {
     color: '#fff',
     position: 'absolute',
     right: 0,
     bottom: 0,
-    zIndex: 2,
-  },
-}));
+    zIndex: 2
+  }
+}))
 
-export default styles;
+export default styles
