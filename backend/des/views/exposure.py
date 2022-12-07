@@ -11,7 +11,7 @@ from des.models import Exposure
 from des.serializers import ExposureSerializer
 
 
-class ExposureViewSet(viewsets.ModelViewSet):
+class ExposureViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Exposure.objects.all()
     serializer_class = ExposureSerializer

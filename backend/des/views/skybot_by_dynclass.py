@@ -4,7 +4,7 @@ from des.models import SkybotByDynclass
 from des.serializers import SkybotByDynclassSerializer
 
 
-class SkybotByDynclassViewSet(viewsets.ModelViewSet):
+class SkybotByDynclassViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = SkybotByDynclass.objects.all()
     serializer_class = SkybotByDynclassSerializer

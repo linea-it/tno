@@ -11,7 +11,7 @@ from des.models import Ccd
 from des.serializers import CcdSerializer
 
 
-class CcdViewSet(viewsets.ModelViewSet):
+class CcdViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Ccd.objects.all()
     serializer_class = CcdSerializer

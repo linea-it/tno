@@ -4,7 +4,7 @@ from des.models import SkybotByYear
 from des.serializers import SkybotByYearSerializer
 
 
-class SkybotByYearViewSet(viewsets.ModelViewSet):
+class SkybotByYearViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = SkybotByYear.objects.all()
     serializer_class = SkybotByYearSerializer

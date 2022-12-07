@@ -12,7 +12,7 @@ from des.models import SkybotJobResult
 from des.serializers import SkybotJobResultSerializer
 
 
-class SkybotJobResultViewSet(viewsets.ModelViewSet):
+class SkybotJobResultViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = SkybotJobResult.objects.all()
     serializer_class = SkybotJobResultSerializer
