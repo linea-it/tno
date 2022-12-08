@@ -5,7 +5,7 @@ import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { useQuery } from 'react-query'
-import { updateAsteroidTable, countAsteroidTable } from '../../services/api/Asteroid'
+import { updateAsteroidTable } from '../../services/api/Asteroid'
 import Stack from '@mui/material/Stack'
 import Paper from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
@@ -37,7 +37,7 @@ function UpdateAsteroidTable() {
                 <DisplayCount>
                   <Typography variant='h4'>{resUpdate.data.count_after}</Typography>
                   <Typography variant='body2'>Total de Asteroids</Typography>
-                </DisplayCount>              
+                </DisplayCount>
                 <DisplayCount>
                   <Typography variant='h4'>{resUpdate.data.count_before}</Typography>
                   <Typography variant='body2'>Asteroids antes do Update</Typography>
