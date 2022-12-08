@@ -6,7 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from tno.dao.asteroids import AsteroidDao
-from tno.models import Asteroid
+from tno.models import Asteroid, Occultation
+from des.models import Observation
 from tno.serializers import AsteroidSerializer
 
 from datetime import datetime
@@ -82,3 +83,24 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         except Exception as e:
             # TODO Implementar error handling
             pass
+
+    @action(
+        detail=False, methods=["GET"], permission_classes=(IsAuthenticated,)
+    )
+    def count_asteroid_table(self, request):
+
+        count = Asteroid.objects.count()
+
+        return Response(dict({"count":count}))
+
+    @action(
+        detail=False, methods=["POST"], permission_classes=(IsAuthenticated,)
+    )
+    def delete_all(self, request):
+        # Deleta todas as observações de posições de asteroids no DES.
+        Observation.objects.all().delete()
+        # Deleta todas as ocultações antes de apagar os asteroids
+        Occultation.objects.all().delete()
+        Asteroid.objects.all().delete()
+
+        return Response(dict({"success": True}))        

@@ -1,5 +1,6 @@
 from sqlalchemy import func
 from sqlalchemy.sql import and_, select, text
+from sqlalchemy import delete
 
 
 import warnings
@@ -87,3 +88,12 @@ class AsteroidDao(DBBase):
         row = self.fetch_one_dict(stm)
 
         return row
+
+    # def delete_all(self):
+       
+    #     # ! Deleta todos os registros na TNO_Occultations
+
+    #     tbl = self.get_tbl()
+    #     stm = delete(tbl)
+
+    #     return self.execute(stm)

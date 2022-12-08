@@ -69,7 +69,7 @@ const routes = [
   { path: '/data-preparation/des/discovery', title: 'Skybot Discovery' },
   { path: '/data-preparation/des/discovery/:id', title: 'Skybot Discovery' },
   { path: '/data-preparation/des/discovery/asteroid/:id', title: 'Skybot Discovery' },
-  { path: '/data-preparation/des/orbit_trace', title: 'Orbit Trace' },  
+  { path: '/data-preparation/des/orbit_trace', title: 'Orbit Trace' },
   { path: '/data-preparation/des/management', title: 'DES Management' },
   { path: '/predict_occultation', title: 'Predict Occultation' },
   { path: '/occultation', title: 'Occultation' },
@@ -171,10 +171,10 @@ export default function PersistentDrawerLeft({ children }) {
               </ListItemButton>
               <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/data-preparation/des/orbit_trace')}>
                 <ListItemText primary='Orbit Trace' />
-              </ListItemButton>                  
+              </ListItemButton>
               <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/data-preparation/des/management')}>
                 <ListItemText primary='DES Management' />
-              </ListItemButton>              
+              </ListItemButton>
             </List>
           </Collapse>
           <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
@@ -186,7 +186,7 @@ export default function PersistentDrawerLeft({ children }) {
           <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
           <ListItemButton onClick={() => navigate('/occultation')}>
             <ListItemText primary='Occultation' />
-          </ListItemButton>                          
+          </ListItemButton>
         </List>
       </Drawer>
       <Main open={open}>

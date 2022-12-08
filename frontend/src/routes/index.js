@@ -178,7 +178,7 @@ export default function AppRoutes() {
             </DashboardPage>
           </PrivateRoute>
         }
-      />      
+      />
       <Route
         isPrivate
         exact
@@ -190,7 +190,7 @@ export default function AppRoutes() {
             </DashboardPage>
           </PrivateRoute>
         }
-      />      
+      />
       <Route
         isPrivate
         exact
@@ -214,7 +214,7 @@ export default function AppRoutes() {
             </DashboardPage>
           </PrivateRoute>
         }
-      />   
+      />
       <Route
         isPrivate
         exact
@@ -226,7 +226,7 @@ export default function AppRoutes() {
             </DashboardPage>
           </PrivateRoute>
         }
-      />                               
+      />
 
       <Route path='*' element={<Navigate to='/' />} />
 
