@@ -45,7 +45,7 @@ FROM python:3.10-slim
 COPY --from=builder /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
 
 # add user so we can run things as non-root
-RUN adduser --system --no-create-home tnouser
+RUN adduser --system tnouser
 
 # Copy from builder and set ENV for venv
 COPY --from=builder /opt/venv /opt/venv
@@ -56,6 +56,8 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH="/app:$PYTHONPATH"
 # Matplotlib Config 
 ENV MPLCONFIGDIR="/tmp"
+
+ENV SHELL /bin/bash
 
 # Copy app files into container
 WORKDIR /app

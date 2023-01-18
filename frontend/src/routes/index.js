@@ -6,6 +6,12 @@ import Dashboard from '../pages/Dashboard'
 import Skybot from '../pages/Skybot'
 import SkybotDetail from '../pages/Skybot/Detail'
 import SkybotAsteroid from '../pages/Skybot/Asteroid'
+import OrbitTrace from '../pages/OrbitTrace/'
+import DesManagement from '../pages/DesManagement'
+
+import PredictOccultation from '../pages/PredictOccultation'
+
+import Occultation from '../pages/Occultation'
 
 import Home from '../pages/LandingPage/Home'
 import AboutUs from '../pages/LandingPage/AboutUs'
@@ -35,9 +41,6 @@ import PersistentDrawerLeft from '../components/Drawer'
 
 export default function AppRoutes() {
   const { isAuthenticated, signIn } = useAuth()
-  // const [title, setTitle] = React.useState('');
-  // // const [open, setOpen] = React.useState(window.innerWidth > 1360);
-  // const [open, setOpen] = React.useState(true);
 
   const PrivateRoute = ({ auth: { isAuthenticated }, children }) => {
     return isAuthenticated ? children : signIn()
@@ -56,9 +59,6 @@ export default function AppRoutes() {
   const DashboardPage = ({ children }) => {
     return (
       <>
-        {/* <Drawer title={title} open={open} setOpen={setOpen}>
-          {children}
-        </Drawer> */}
         <PersistentDrawerLeft>{children}</PersistentDrawerLeft>
       </>
     )
@@ -167,6 +167,67 @@ export default function AppRoutes() {
           </PrivateRoute>
         }
       />
+      <Route
+        isPrivate
+        exact
+        path='/data-preparation/des/orbit_trace'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <OrbitTrace />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/data-preparation/des/management'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <DesManagement />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/data-preparation/des/management'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <DesManagement />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/predict_occultation'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <PredictOccultation />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/occultation'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <Occultation />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+
       <Route path='*' element={<Navigate to='/' />} />
 
       {/* <Route element={<Notfound />} />       */}

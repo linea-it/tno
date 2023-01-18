@@ -5,7 +5,7 @@ from des.models import SkybotPosition
 from des.serializers import SkybotPositionSerializer
 
 
-class DesSkybotPositionViewSet(viewsets.ModelViewSet):
+class DesSkybotPositionViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = SkybotPosition.objects.select_related().all()
     serializer_class = SkybotPositionSerializer

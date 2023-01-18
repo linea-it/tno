@@ -4,7 +4,7 @@ export const url = process.env.REACT_APP_API
 
 export function getAPIClient(ctx) {
   const api = axios.create({
-    timeout: 5000,
+    timeout: 60000,
     headers: {
       'Content-Type': 'application/json',
       accept: 'application/json'

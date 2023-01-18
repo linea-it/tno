@@ -4,7 +4,7 @@ from des.models import SummaryDynclass
 from des.serializers import SummaryDynclassSerializer
 
 
-class SummaryDynclassViewSet(viewsets.ModelViewSet):
+class SummaryDynclassViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = SummaryDynclass.objects.all()
     serializer_class = SummaryDynclassSerializer
