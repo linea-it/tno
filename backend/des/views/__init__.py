@@ -7,5 +7,4 @@ from .summary_dynclass import SummaryDynclassViewSet
 
 from .skybot_by_year import SkybotByYearViewSet
 from .skybot_by_dynclass import SkybotByDynclassViewSet
-
-from .astrometry_job import AstrometryJobViewSet
+from .management_tables import *

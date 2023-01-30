@@ -10,7 +10,6 @@ from .models import (
     SkybotByYear,
     SkybotByDynclass,
     Observation,
-    AstrometryJob,
 )
 
 
@@ -248,17 +247,4 @@ class ObservationAdmin(admin.ModelAdmin):
     raw_id_fields = (
         "asteroid",
         "ccd",
-    )
-
-
-@admin.register(AstrometryJob)
-class AstrometryJobAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "status",
-        "owner",
-        "start",
-        "finish",
-        "execution_time",
-        "t_asteroids",
     )

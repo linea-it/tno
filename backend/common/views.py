@@ -33,26 +33,26 @@ def logout_view(request):
     return response
 
 
-@action(detail=False, methods=["GET"])
-def import_skybot(request):
-    """ """
-    if request.method == "GET":
+# @action(detail=False, methods=["GET"])
+# def import_skybot(request):
+#     """ """
+#     if request.method == "GET":
 
-        from tno.skybot import ImportSkybot
+#         from tno.skybot import ImportSkybot
 
-        sk = ImportSkybot()
+#         sk = ImportSkybot()
 
-        # Funcao para consumir o servico skybot
-        # sk.import_skybot()
-        # Funcão para registrar o Skybot output
-        sk.register_skybot_output()
+#         # Funcao para consumir o servico skybot
+#         # sk.import_skybot()
+#         # Funcão para registrar o Skybot output
+#         sk.register_skybot_output()
 
-        result = dict(
-            {
-                "success": True,
-            }
-        )
-    return Response(result)
+#         result = dict(
+#             {
+#                 "success": True,
+#             }
+#         )
+#     return Response(result)
 
 
 @action(detail=False, methods=["GET"])
