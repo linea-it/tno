@@ -15,7 +15,6 @@ Including another URLconf
 """
 from common import views as common_views
 from des.views import (
-    AstrometryJobViewSet,
     CcdViewSet,
     DesSkybotPositionViewSet,
     ExposureViewSet,
@@ -48,7 +47,6 @@ router.register(
 router.register(r"des/summary_dynclass", SummaryDynclassViewSet)
 router.register(r"des/dashboard/skybot_by_year", SkybotByYearViewSet)
 router.register(r"des/dashboard/skybot_by_dynclass", SkybotByDynclassViewSet)
-router.register(r"des/astrometry_job", AstrometryJobViewSet)
 
 
 router.register(r"skybot/position", PositionViewSet)
@@ -66,5 +64,5 @@ urlpatterns = [
     re_path(r"^api/import-skybot", common_views.import_skybot),
     re_path(r"^api/read_file", common_views.read_file),
     re_path(r"^api/read_csv", common_views.read_csv),
-    re_path(r"^api/teste/", common_views.teste),
+    # re_path(r"^api/teste/", common_views.teste),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
