@@ -3,8 +3,10 @@ services:
   # Database
   database:
     image: linea/postgresql_q3c:latest
-    env_file:
-      - .env
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
     expose:
       # Deixar a porta exposta para desenvolvimento
       # isto permite acessar o banco de dados a partir de outros apps como o DBeaver
@@ -14,28 +16,33 @@ services:
       - ./pg_backups:/pg_backups
       - ./database_subset:/data
 
-  # Core Admin (Backend Django)
+  # Backend Django
   backend:
     user: "1000:1000"
-    build: ./core_admin
-    # image: linea/tno:backend_36b1691
+    build: ./backend
     volumes:
-      - ./core_admin:/app
-      - ./local_vars.py:/app/coreAdmin/local_vars.py
+      # Diretório de Código fonte da aplicação
+      - ./backend:/app
+      # Arquivo de Variaveis de ambiente
+      - ./local_settings.py:/app/coreAdmin/local_settings.py
+      # Diretório de Logs
       - ./log:/log
+      # Diretório de Dados
       - ./archive:/archive
-      - ./archive/proccess:/proccess
-      - ./archive/ccd_images:/ccd_images
     depends_on:
       - database
 
+  # Frontend React
   frontend:
-    image: node:12.16.2
+    image: node:18.12.1
     working_dir: /app
     volumes:
       - ./frontend:/app
       - ./frontend/node_modules:/app/node_modules
     stdin_open: true
+    environment:
+      # Fixes bug where websocket connection is fixed to default port 3000
+      - WDS_SOCKET_PORT=0
     command: yarn start
 
   # jupyter:
