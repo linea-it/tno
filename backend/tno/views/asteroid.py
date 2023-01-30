@@ -97,6 +97,18 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         detail=False, methods=["POST"], permission_classes=(IsAuthenticated,)
     )
     def delete_all(self, request):
+        """Apaga todos os Asteroids e seus resultados do banco de dados. 
+        Utilizada duranto o desenvolvimento dos pipelines ou quando se deseja gerar novos resultados.
+        Isso implica em perder todos os resultados gerados pelas etapas posteriores ao Skybot Discovery que são:
+            Orbit Trace: Cada posição encontrada pelo pipeline é associada a um Asteroid. Todos os registros na tabela DES_OBSERVATION serão apagados.
+            Predict Occultation: Toda Ocultação encontrada pelo pipeline é associada a um Asteroid. Todos os registros na tabela TNO_OCCULTATION serão apagados.
+        
+        Após está operação será necessário:
+            Update Asteroid Table: Executar o função "Update Asteroid Table" para gerar novamente a lista de Asteroids.
+            Orbit Trace: Executar o pipeline "Orbit Trace" para gerar novos registros de Observações na tabela DES_OBSERVATION.
+            Predict Occultation: Executar o pipeline "Predict Occultation" para gerar novos resultados de Predição de Ocultação registrados na tabela TNO_OCCULTATION.
+        """
+        # TODO: Deveria ser executada apenas por Admin.
         # Deleta todas as observações de posições de asteroids no DES.
         Observation.objects.all().delete()
         # Deleta todas as ocultações antes de apagar os asteroids

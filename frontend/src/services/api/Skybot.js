@@ -104,3 +104,7 @@ export const getSkybotJobExposuresThatFailed = ({ id, pageSize, page }) => {
 
   return api.get(`/des/skybot_job/${id}/exposures_that_fail/`, { params }).then((res) => res.data)
 }
+
+export const clearDesDataPreparation = () => {
+  return api.post('/des/clear_des_data_preparation_tables')
+}

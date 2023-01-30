@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))y
 """
 from common import views as common_views
+from des.views import management_tables as des_management_views
 from des.views import (
     CcdViewSet,
     DesSkybotPositionViewSet,
@@ -61,8 +62,12 @@ urlpatterns = [
     re_path(r"^api/obtain-auth-token/$", csrf_exempt(obtain_auth_token)),
     path("api/auth/", include("rest_framework.urls")),
     re_path(r"^api/logout/", common_views.logout_view),
-    re_path(r"^api/import-skybot", common_views.import_skybot),
+    # re_path(r"^api/import-skybot", common_views.import_skybot),
     re_path(r"^api/read_file", common_views.read_file),
     re_path(r"^api/read_csv", common_views.read_csv),
-    # re_path(r"^api/teste/", common_views.teste),
+    re_path(r"^api/read_csv", common_views.read_csv),
+    re_path(
+        r"^api/des/clear_des_data_preparation_tables",
+        des_management_views.clear_des_data_preparation_tables,
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
