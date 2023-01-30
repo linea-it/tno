@@ -113,7 +113,7 @@ Frontend uses a Node image. before up this container run yarn for install depend
 docker-compose run frontend yarn
 ```
 
-### Run
+## Run
 
 Stop all containers and run in background mode
 
@@ -121,14 +121,16 @@ Stop all containers and run in background mode
 docker-compose up -d
 ```
 
-### Test in brownser
+## Test in brownser
 
-
+Home: <http://localhost>
+Django Admin: <http://localhost/admin>
+Django Rest: <http://localhost/api>
 
 ### For Running Science pipelines some registers are necessary
 Access admin interface in http://localhost/admin
 
-- Home › Predict › Leap seconds › Add leap second - Create a LeapSecond record (**Temporary**)
+- Home › TNO › Leap seconds › Add leap second - Create a LeapSecond record (**Temporary**)
 
     ```bash
     name: naif0012
@@ -137,7 +139,7 @@ Access admin interface in http://localhost/admin
     file: Download file fron this url and upload in this field
     ```
 
-- Home › Predict › Bsp planetarys › Add bsp planetary - Create a BSP Planetary record (**Temporary**)
+- Home › TNO › Bsp planetarys › Add bsp planetary - Create a BSP Planetary record (**Temporary**)
   
   ```bash
   name: de435
@@ -156,7 +158,7 @@ Access admin interface in http://localhost/admin
   tablename: gaia_dr2
 
   ```
-  
+
 ### Update Johnston Known Tnos
 Access api ```http://<HOST>/api/known_tnos_johnston/update_list ``` wait response with counts. like this:
 More info in http://<HOST>/api/known_tnos_johnston/
