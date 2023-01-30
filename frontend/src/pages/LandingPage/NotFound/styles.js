@@ -1,17 +1,17 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 const styles = makeStyles((theme) => ({
   initContainer: {
     paddingTop: 20,
-    paddingBottom: 100,
+    paddingBottom: 100
   },
   notfound: {
     textAlign: 'center',
-    paddingTop: '10vh',
+    paddingTop: '10vh'
   },
   title: {
     fontSize: '186px',
-    fontWeight: 200,
+    fontWeight: 200
   },
   subTitle: {
     fontSize: '33px',
@@ -19,24 +19,24 @@ const styles = makeStyles((theme) => ({
     textTransform: 'uppercase',
     marginTop: '0px',
     marginBottom: '25px',
-    letterSpacing: '3px',
+    letterSpacing: '3px'
   },
   description: {
     fontSize: '16px',
     fontWeight: 200,
     marginTop: '0px',
-    marginBottom: '25px',
+    marginBottom: '25px'
   },
   icon: {
     border: '1px solid #949494',
-    margin: '10px',
+    margin: '10px'
   },
   returnPage: {
     fontWeight: 200,
     textDecoration: 'none',
     borderBottom: '1px dashed #949494',
-    borderRadius: '2px',
-  },
-}));
+    borderRadius: '2px'
+  }
+}))
 
-export default styles;
+export default styles

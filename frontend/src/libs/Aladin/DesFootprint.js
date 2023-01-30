@@ -561,9 +561,9 @@ const desfootprint = [
   [23.0, -10.0],
   [23.0, -9.0],
   [23.0, -8.0],
-  [23.0, -7.0],
-];
+  [23.0, -7.0]
+]
 
 module.exports = {
-  desfootprint,
-};
+  desfootprint
+}

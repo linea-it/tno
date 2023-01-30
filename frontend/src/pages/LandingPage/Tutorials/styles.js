@@ -1,12 +1,12 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 const styles = makeStyles(() => ({
   initContainer: {
     paddingTop: 20,
-    paddingBottom: 100,
+    paddingBottom: 100
   },
   root: {
-    paddingTop: 25,
+    paddingTop: 25
   },
   item: {
     cursor: 'pointer',
@@ -16,9 +16,9 @@ const styles = makeStyles(() => ({
     borderBottom: 'solid 1px #cccccc',
     backgroundColor: '#f5f5f5',
     '&:hover': {
-      background: '#efefef',
-    },
-  },
-}));
+      background: '#efefef'
+    }
+  }
+}))
 
-export default styles;
+export default styles

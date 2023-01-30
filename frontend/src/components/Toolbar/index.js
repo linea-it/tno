@@ -1,107 +1,77 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import {
-  AppBar,
-  Toolbar as MuiToolbar,
-  Typography,
-  Grid,
-  Avatar,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  Button,
-  IconButton,
-} from '@material-ui/core';
-import {
-  ExitToApp as ExitToAppIcon,
-  Menu as MenuIcon,
-} from '@material-ui/icons';
+import * as React from 'react'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import MenuIcon from '@mui/icons-material/Menu'
+import { useAuth } from '../../contexts/AuthContext.js'
+import styles from './styles'
+import Button from '@material-ui/core/Button'
+import Popover from '@material-ui/core/Popover'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 
-import { logout } from '../../services/api/Auth';
-import useStyles from './styles';
+function DashToolbar({ open, handleDrawerOpen, title }) {
+  const { isAuthenticated, user, logout } = useAuth()
+  const classes = styles()
+  const [anchorEl, setAnchorEl] = React.useState(null)
 
-function Toolbar({ title, open, drawerWidth, currentUser, handleDrawerClick }) {
-  const classes = useStyles(drawerWidth);
-  const [userSettingsAnchorEl, setUserSettingsAnchorEl] = useState(null);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget)
+  }
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
 
-  const handleUserOpen = (e) => setUserSettingsAnchorEl(e.currentTarget);
-  const handleUserClose = () => setUserSettingsAnchorEl(null);
+  const MenuOpen = Boolean(anchorEl)
+
+  function UserLogged() {
+    return (
+      <>
+        <Button color='inherit' onClick={handleClick}>
+          {user.username || ''}
+        </Button>
+        <Popover
+          id='user_menu'
+          anchorEl={anchorEl}
+          open={MenuOpen}
+          onClose={handleClose}
+          PaperProps={{
+            style: {
+              transform: 'translateX(calc(100vw - 185px)) translateY(45px)'
+            }
+          }}
+        >
+          <List className={classes.list}>
+            <ListItem button>
+              <Button onClick={logout} color='inherit' startIcon={<ExitToAppIcon />}>
+                Logout
+              </Button>
+            </ListItem>
+          </List>
+        </Popover>
+      </>
+    )
+  }
 
   return (
-    <AppBar
-      position="fixed"
-      className={clsx(classes.appBar, {
-        [classes.appBarShift]: open,
-      })}
-    >
-      <MuiToolbar>
-        <Grid container justify="space-between" alignItems="center">
-          <Grid item>
-            <Grid container alignItems="center" spacing={2}>
-              {!open ? (
-                <Grid item>
-                  <IconButton
-                    color="inherit"
-                    aria-label="Open Drawer"
-                    onClick={handleDrawerClick}
-                    edge="start"
-                  >
-                    <MenuIcon />
-                  </IconButton>
-                </Grid>
-              ) : null}
-              <Grid>
-                <Typography variant="h6" component="h1">
-                  {title}
-                </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <div className={classes.sectionButtons}>
-              <Avatar className={classes.avatar} onClick={handleUserOpen}>
-                {currentUser.username.substring(0, 2).toUpperCase()}
-              </Avatar>
-              <Button color="inherit" onClick={handleUserOpen}>
-                {currentUser.username}
-              </Button>
-              <Menu
-                anchorEl={userSettingsAnchorEl}
-                // anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                keepMounted
-                open={Boolean(userSettingsAnchorEl)}
-                onClose={handleUserClose}
-              >
-                <MenuItem onClick={() => logout()}>
-                  <ListItemIcon className={classes.listItemIcon}>
-                    <ExitToAppIcon fontSize="small" />
-                  </ListItemIcon>
-                  <Typography variant="inherit">Logout</Typography>
-                </MenuItem>
-              </Menu>
-            </div>
-          </Grid>
-        </Grid>
-      </MuiToolbar>
-    </AppBar>
-  );
+    <Toolbar>
+      <IconButton
+        color='inherit'
+        aria-label='open drawer'
+        onClick={handleDrawerOpen}
+        edge='start'
+        sx={{ mr: 2, ...(open && { display: 'none' }) }}
+      >
+        <MenuIcon />
+      </IconButton>
+      <Typography variant='h6' noWrap component='div'>
+        {title}
+      </Typography>
+      <div className={classes.separator} />
+      {isAuthenticated ? <UserLogged /> : null}
+    </Toolbar>
+  )
 }
 
-Toolbar.defaultProps = {
-  open: null,
-  drawerWidth: 0,
-  currentUser: { username: '' },
-};
-
-Toolbar.propTypes = {
-  title: PropTypes.string.isRequired,
-  open: PropTypes.bool,
-  drawerWidth: PropTypes.number,
-  currentUser: PropTypes.shape({
-    username: PropTypes.string,
-  }),
-  handleDrawerClick: PropTypes.func.isRequired,
-};
-
-export default Toolbar;
+export default DashToolbar

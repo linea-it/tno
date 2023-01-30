@@ -1,12 +1,12 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 const styles = makeStyles(() => ({
   initContainer: {
     paddingTop: 20,
-    paddingBottom: 100,
+    paddingBottom: 100
   },
   grid: {
-    margin: 'auto',
+    margin: 'auto'
   },
   textFormat: {
     marginTop: 40,
@@ -17,8 +17,8 @@ const styles = makeStyles(() => ({
     textAlign: 'justify',
     color: 'black',
     letterSpacing: '0.0em',
-    textTransform: 'none',
-  },
-}));
+    textTransform: 'none'
+  }
+}))
 
-export default styles;
+export default styles

@@ -1,11 +1,11 @@
-import React from 'react';
-import Banner from '../../../components/LandingPage/Banner';
-import Interfaces from './partials/Interfaces';
-import Supporters from './partials/Supporters';
-import styles from './styles';
+import React from 'react'
+import Banner from '../../../components/LandingPage/Banner'
+import Interfaces from './partials/Interfaces'
+import Supporters from './partials/Supporters'
+import styles from './styles'
 
 function Main() {
-  const classes = styles();
+  const classes = styles()
 
   return (
     <>
@@ -15,7 +15,7 @@ function Main() {
         <Supporters />
       </div>
     </>
-  );
+  )
 }
 
-export default Main;
+export default Main

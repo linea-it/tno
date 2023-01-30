@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import Tabs from '../../components/Tabs';
-import Summary from './Summary';
-import Skybot from './Skybot';
+import React from 'react'
+import Tabs from '../../components/Tabs'
+import Summary from './Summary'
+import Skybot from './Skybot'
 
-function Dashboard({ setTitle }) {
-
-  useEffect(() => {
-    setTitle('Dashboard');
-  }, [setTitle]);
-
+function Dashboard() {
   const tabs = [
     {
       title: 'Process Summary',
@@ -18,16 +12,10 @@ function Dashboard({ setTitle }) {
     {
       title: 'Discovery',
       content: <Skybot />
-    },
+    }
   ]
 
-  return (
-    <Tabs data={tabs} />
-  );
+  return <Tabs data={tabs} />
 }
 
-Dashboard.propTypes = {
-  setTitle: PropTypes.func.isRequired,
-};
-
-export default Dashboard;
+export default Dashboard

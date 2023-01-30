@@ -33,8 +33,8 @@ npm-debug.log
 /core_admin/static
 
 # Django Local Settings
-core_admin/coreAdmin/local_vars.py
-local_vars.py
+core_admin/coreAdmin/local_settings.py
+local_settings.py
 
 # Develop Archive
 /archive
@@ -55,3 +55,4 @@ env_tno
 # Diretório de arquivos locais do Astropy
 core_admin/.astropy
 
+database_subset/

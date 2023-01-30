@@ -1,127 +1,298 @@
-import React from 'react';
-import { Switch, Redirect } from 'react-router-dom';
+import React from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
 
-import Route from './Route';
+import Dashboard from '../pages/Dashboard'
 
-import Dashboard from '../pages/Dashboard';
+import Skybot from '../pages/Skybot'
+import SkybotDetail from '../pages/Skybot/Detail'
+import SkybotAsteroid from '../pages/Skybot/Asteroid'
+import OrbitTrace from '../pages/OrbitTrace/'
+import DesManagement from '../pages/DesManagement'
 
-import Download from '../pages/Download';
-import DownloadDetail from '../pages/Download/Detail';
+import PredictOccultation from '../pages/PredictOccultation'
 
-import Skybot from '../pages/Skybot';
-import SkybotDetail from '../pages/Skybot/Detail';
-import SkybotAsteroid from '../pages/Skybot/Asteroid';
+import Occultation from '../pages/Occultation'
 
-import RefineOrbit from '../pages/RefineOrbit';
-import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
-import RefineOrbitAsteroid from '../pages/RefineOrbit/Asteroid';
+import Home from '../pages/LandingPage/Home'
+import AboutUs from '../pages/LandingPage/AboutUs'
+import Help from '../pages/LandingPage/Help'
+import Tutorials from '../pages/LandingPage/Tutorials'
+import Contact from '../pages/LandingPage/Contact'
 
-import PredictionOccultation from '../pages/PredictionOccultation';
-import PredictionOccultationDetail from '../pages/PredictionOccultation/Detail';
-import PredictionOccultationAsteroid from '../pages/PredictionOccultation/Asteroid';
+import { useAuth } from '../contexts/AuthContext.js'
+import Header from '../components/LandingPage/Header'
+import Footer from '../components/LandingPage/Footer'
+// import Drawer from '../components/Drawer';
+import PersistentDrawerLeft from '../components/Drawer'
+// import RefineOrbit from '../pages/RefineOrbit';
+// import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
+// import RefineOrbitAsteroid from '../pages/RefineOrbit/Asteroid';
 
-import Occultation from '../pages/Occultation';
-import OccultationDetail from '../pages/Occultation/Detail';
-import OccultationCalendar from '../pages/Occultation/Calendar';
+// import PredictionOccultation from '../pages/PredictionOccultation';
+// import PredictionOccultationDetail from '../pages/PredictionOccultation/Detail';
+// import PredictionOccultationAsteroid from '../pages/PredictionOccultation/Asteroid';
 
-import Home from '../pages/LandingPage/Home';
-import AboutUs from '../pages/LandingPage/AboutUs';
-import Help from '../pages/LandingPage/Help';
-import Tutorials from '../pages/LandingPage/Tutorials';
-import Contact from '../pages/LandingPage/Contact';
-import Notfound from '../pages/LandingPage/NotFound';
+// import Occultation from '../pages/Occultation';
+// import OccultationDetail from '../pages/Occultation/Detail';
+// import OccultationCalendar from '../pages/Occultation/Calendar';
 
-export default function Routes() {
+// import Download from '../pages/Download';
+// import DownloadDetail from '../pages/Download/Detail';
+
+export default function AppRoutes() {
+  const { isAuthenticated, signIn } = useAuth()
+
+  const PrivateRoute = ({ auth: { isAuthenticated }, children }) => {
+    return isAuthenticated ? children : signIn()
+  }
+
+  const LandingPage = ({ children }) => {
+    return (
+      <>
+        <Header />
+        {children}
+        <Footer />
+      </>
+    )
+  }
+
+  const DashboardPage = ({ children }) => {
+    return (
+      <>
+        <PersistentDrawerLeft>{children}</PersistentDrawerLeft>
+      </>
+    )
+  }
+
   return (
-    <Switch>
-      <Route isPrivate exact path="/refine-orbit" component={RefineOrbit} />
+    <Routes>
+      {/* Landing Page  Layout*/}
+      <Route
+        isHomePage
+        exact
+        path='/'
+        element={
+          <LandingPage>
+            <Home />
+          </LandingPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/about-us'
+        element={
+          <LandingPage>
+            <AboutUs />
+          </LandingPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/help'
+        element={
+          <LandingPage>
+            <Help />
+          </LandingPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/tutorials'
+        element={
+          <LandingPage>
+            <Tutorials />
+          </LandingPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/contact-us'
+        element={
+          <LandingPage>
+            <Contact />
+          </LandingPage>
+        }
+      />
+
+      {/* Dashboard  Layout*/}
+      <Route
+        isPrivate
+        exact
+        path='/dashboard'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <Dashboard />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/data-preparation/des/discovery'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <Skybot />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/data-preparation/des/discovery/:id'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <SkybotDetail />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/data-preparation/des/discovery/asteroid/:id'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <SkybotAsteroid />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/data-preparation/des/orbit_trace'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <OrbitTrace />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/data-preparation/des/management'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <DesManagement />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/data-preparation/des/management'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <DesManagement />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/predict_occultation'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <PredictOccultation />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/occultation'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <Occultation />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+
+      <Route path='*' element={<Navigate to='/' />} />
+
+      {/* <Route element={<Notfound />} />       */}
+      {/* <Route isPrivate exact path="/refine-orbit" element={RefineOrbit} />
       <Route
         isPrivate
         exact
         path="/refine-orbit/:id"
-        component={RefineOrbitDetail}
+        element={RefineOrbitDetail}
       />
       <Route
         isPrivate
         exact
         path="/refine-orbit/asteroid/:id"
-        component={RefineOrbitAsteroid}
+        element={RefineOrbitAsteroid}
       />
       <Route
         isPrivate
         exact
         path="/prediction-of-occultation/asteroid/:id"
-        component={PredictionOccultationAsteroid}
+        element={PredictionOccultationAsteroid}
       />
       <Route
         isPrivate
         exact
         path="/prediction-of-occultation/:id"
-        component={PredictionOccultationDetail}
+        element={PredictionOccultationDetail}
       />
       <Route
         isPrivate
         exact
         path="/prediction-of-occultation"
-        component={PredictionOccultation}
+        element={PredictionOccultation}
       />
       <Route
         isPrivate
         exact
         path="/occultation-calendar"
-        component={OccultationCalendar}
+        element={OccultationCalendar}
       />
       <Route
         isPrivate
         exact
         path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching"
-        component={OccultationCalendar}
+        element={OccultationCalendar}
       />
-      <Route isPrivate exact path="/occultation" component={Occultation} />
+      <Route isPrivate exact path="/occultation" element={Occultation} />
       <Route
         isPrivate
         exact
         path="/occultation/:id"
-        component={OccultationDetail}
-      />
-
-      <Route
-        isPrivate
-        exact
-        path="/data-preparation/des/discovery"
-        component={Skybot}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/data-preparation/des/discovery/:id"
-        component={SkybotDetail}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/data-preparation/des/discovery/asteroid/:id"
-        component={SkybotAsteroid}
-      />
-      <Route
+        element={OccultationDetail}
+      /> */}
+      {/* <Route
         isPrivate
         exact
         path="/data-preparation/des/download"
-        component={Download}
+        element={Download}
       />
       <Route
         isPrivate
         exact
         path="/data-preparation/des/download/:id"
-        component={DownloadDetail}
-      />
-      <Route isHomePage exact path="/" component={Home} />
-      <Route isHomePage exact path="/about-us" component={AboutUs} />
-      <Route isHomePage exact path="/help" component={Help} />
-      <Route isHomePage exact path="/tutorials" component={Tutorials} />
-      <Route isHomePage exact path="/contact-us" component={Contact} />
-      <Route isPrivate exact path="/dashboard" component={Dashboard} />
-      <Route component={Notfound} />
-    </Switch>
-  );
+        element={DownloadDetail}
+      /> */}
+    </Routes>
+  )
 }

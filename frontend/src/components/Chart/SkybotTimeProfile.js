@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import Plot from 'react-plotly.js';
-import moment from 'moment';
+import React, { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
+import Plot from 'react-plotly.js'
+import moment from 'moment'
 
 function SkybotTimeProfile({ data }) {
-  const [rows, setRows] = useState([{ x: 0, y: 0 }]);
+  const [rows, setRows] = useState([{ x: 0, y: 0 }])
 
   const getHoverTemplate = (row) => {
     return `
@@ -12,13 +12,11 @@ function SkybotTimeProfile({ data }) {
       </br>Positions: ${row.positions}
       </br>Start: ${moment(row.start).format('L LTS')}
       </br>Finish: ${moment(row.end).format('L LTS')}
-      </br>Duration: ${moment
-        .utc(row.execution_time * 1000)
-        .format('HH:mm:ss')}`;
-  };
+      </br>Duration: ${moment.utc(row.execution_time * 1000).format('HH:mm:ss')}`
+  }
 
   const loadRows = () => {
-    const { requests, loaddata } = data;
+    const { requests, loaddata } = data
 
     if (requests.length > 0 && loaddata.length > 0) {
       const requestsRows = requests.map((request, i) => ({
@@ -26,42 +24,42 @@ function SkybotTimeProfile({ data }) {
         mode: 'lines+markers',
         name: 'Requests',
         line: {
-          color: '#0B6A22',
+          color: '#0B6A22'
         },
         x: [request.start, request.finish],
         y: [i, i],
         showlegend: i === 0,
         legendgroup: 'Requests',
-        hovertemplate: getHoverTemplate(request),
-      }));
+        hovertemplate: getHoverTemplate(request)
+      }))
 
       const loaddataRows = loaddata.map((load, i) => ({
         type: 'scattergl',
         mode: 'lines+markers',
         name: 'Load Data',
         line: {
-          color: '#0C7FCA',
+          color: '#0C7FCA'
         },
         x: [load.start, load.finish],
         y: [i, i],
         showlegend: i === 0,
         legendgroup: 'Load Data',
-        hovertemplate: getHoverTemplate(load),
-      }));
-      return requestsRows.concat(loaddataRows);
+        hovertemplate: getHoverTemplate(load)
+      }))
+      return requestsRows.concat(loaddataRows)
     }
-    return null;
-  };
+    return null
+  }
 
   useEffect(() => {
-    const result = loadRows();
-    if (result !== null) setRows(result);
-  }, [data]);
+    const result = loadRows()
+    if (result !== null) setRows(result)
+  }, [data, loadRows])
 
   return (
     <Plot
       style={{
-        width: '100%',
+        width: '100%'
       }}
       data={rows}
       layout={{
@@ -69,23 +67,23 @@ function SkybotTimeProfile({ data }) {
         height: 400,
         xaxis: {
           automargin: true,
-          autorange: true,
+          autorange: true
         },
         yaxis: {
           automargin: true,
           autorange: true,
-          showticklabels: false,
+          showticklabels: false
         },
         hovermode: 'closest',
-        autosize: true,
+        autosize: true
       }}
       config={{
         scrollZoom: false,
         displaylogo: false,
-        responsive: true,
+        responsive: true
       }}
     />
-  );
+  )
 }
 
 SkybotTimeProfile.propTypes = {
@@ -96,7 +94,7 @@ SkybotTimeProfile.propTypes = {
         start: PropTypes.string,
         finish: PropTypes.string,
         execution_time: PropTypes.number,
-        positions: PropTypes.number,
+        positions: PropTypes.number
       })
     ),
     loaddata: PropTypes.arrayOf(
@@ -105,10 +103,10 @@ SkybotTimeProfile.propTypes = {
         start: PropTypes.string,
         finish: PropTypes.string,
         execution_time: PropTypes.number,
-        positions: PropTypes.number,
+        positions: PropTypes.number
       })
-    ),
-  }).isRequired,
-};
+    )
+  }).isRequired
+}
 
-export default SkybotTimeProfile;
+export default SkybotTimeProfile
