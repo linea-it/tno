@@ -5,12 +5,20 @@ from des.models import Exposure, SkybotJob, SkybotJobResult
 
 class SkybotJobResultSerializer(serializers.ModelSerializer):
 
+    # job = serializers.PrimaryKeyRelatedField(
+    #     queryset=SkybotJob.objects.all(), many=False
+    # )
+
+    # exposure = serializers.PrimaryKeyRelatedField(
+    #     queryset=Exposure.objects.all(), many=False
+    # )
+
     job = serializers.PrimaryKeyRelatedField(
-        queryset=SkybotJob.objects.all(), many=False
+        read_only=True
     )
 
     exposure = serializers.PrimaryKeyRelatedField(
-        queryset=Exposure.objects.all(), many=False
+        read_only=True
     )
 
     ticket = serializers.SerializerMethodField()

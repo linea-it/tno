@@ -1,3 +1,4 @@
+ENVIRONMENT_NAME = "Development"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 # Level do Log (INFO, DEBUG, WARNING, ERROR, CRITICAL)

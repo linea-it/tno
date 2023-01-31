@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from tno.models import JohnstonArchive
-from tno.models import Asteroid, Occultation
+from tno.models import Asteroid, Occultation, LeapSecond, BspPlanetary, Catalog
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -38,6 +38,25 @@ class JohnstonArchiveSerializer(serializers.ModelSerializer):
             "updated",
         )
 
+class LeapSecondSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LeapSecond
+        fields = '__all__'
+
+
+class BspPlanetarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BspPlanetary
+        fields = '__all__'
+
+class CatalogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Catalog
+        fields = (
+            "id",
+            "name",
+            "display_name"
+        )
 
 class AsteroidSerializer(serializers.ModelSerializer):
     class Meta:

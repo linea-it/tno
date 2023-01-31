@@ -29,6 +29,7 @@ then
         --buffer-size=32768 \
         --processes=4 \
         --threads=2 \
+        --http-timeout=120 \
         --static-map /django_static=/app/django_static \
         --py-autoreload=1 
 else

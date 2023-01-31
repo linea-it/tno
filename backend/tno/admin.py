@@ -5,6 +5,7 @@ from tno.models import Asteroid
 from tno.models import BspPlanetary
 from tno.models import LeapSecond
 from tno.models import Occultation
+from tno.models import Catalog
 
 
 @admin.register(Asteroid)
@@ -60,7 +61,6 @@ class LeapSecondAdmin(admin.ModelAdmin):
         "name",
         "display_name",
         "url",
-        "upload",
     )
     search_fields = ("name", "display_name")
 
@@ -71,6 +71,19 @@ class BspPlanetaryAdmin(admin.ModelAdmin):
         "name",
         "display_name",
         "url",
-        "upload",
+    )
+    search_fields = ("name", "display_name")
+
+@admin.register(Catalog)
+class CatalogAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "display_name",
+        "database",
+        "schema",
+        "tablename",
+        "ra_property",
+        "dec_property",
+        "registration_date"
     )
     search_fields = ("name", "display_name")

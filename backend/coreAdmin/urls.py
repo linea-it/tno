@@ -24,6 +24,7 @@ from des.views import (
     SkybotJobResultViewSet,
     SkybotJobViewSet,
     SummaryDynclassViewSet,
+    ObservationViewSet
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -33,7 +34,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from skybot.views import PositionViewSet
-from tno.views import AsteroidViewSet, UserViewSet, OccultationViewSet
+from tno.views import AsteroidViewSet, UserViewSet, OccultationViewSet, LeapSecondViewSet, BspPlanetaryViewSet, CatalogViewSet
 
 router = DefaultRouter()
 router.register(r"users", UserViewSet)
@@ -48,6 +49,8 @@ router.register(
 router.register(r"des/summary_dynclass", SummaryDynclassViewSet)
 router.register(r"des/dashboard/skybot_by_year", SkybotByYearViewSet)
 router.register(r"des/dashboard/skybot_by_dynclass", SkybotByDynclassViewSet)
+router.register(r"des/observation", ObservationViewSet)
+
 
 
 router.register(r"skybot/position", PositionViewSet)
@@ -56,15 +59,17 @@ router.register(r"asteroids", AsteroidViewSet)
 
 router.register(r"occultations", OccultationViewSet)
 
+router.register(r"leap_second", LeapSecondViewSet)
+router.register(r"bsp_planetary", BspPlanetaryViewSet)
+router.register(r"catalog", CatalogViewSet)
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     re_path(r"^api/", include(router.urls)),
     re_path(r"^api/obtain-auth-token/$", csrf_exempt(obtain_auth_token)),
     path("api/auth/", include("rest_framework.urls")),
     re_path(r"^api/logout/", common_views.logout_view),
-    # re_path(r"^api/import-skybot", common_views.import_skybot),
     re_path(r"^api/read_file", common_views.read_file),
-    re_path(r"^api/read_csv", common_views.read_csv),
     re_path(r"^api/read_csv", common_views.read_csv),
     re_path(
         r"^api/des/clear_des_data_preparation_tables",

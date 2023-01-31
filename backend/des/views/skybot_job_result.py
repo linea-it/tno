@@ -14,7 +14,7 @@ from des.serializers import SkybotJobResultSerializer
 
 class SkybotJobResultViewSet(viewsets.ReadOnlyModelViewSet):
 
-    queryset = SkybotJobResult.objects.all()
+    queryset = SkybotJobResult.objects.select_related().all()
     serializer_class = SkybotJobResultSerializer
     filter_fields = (
         "id",
@@ -32,7 +32,7 @@ class SkybotJobResultViewSet(viewsets.ReadOnlyModelViewSet):
         "execution_time",
         "exposure__date_obs",
     )
-    ordering = ("exposure",)
+    # ordering = ("exposure",)
 
     def exposures_by_date(self, start, end):
         resultset = ExposureDao().count_by_period(start, end)

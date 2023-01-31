@@ -8,7 +8,7 @@ from tno.models import Asteroid
 class Observation(models.Model):
     """
     Representa as Observações para os asteroids que estão dentro de algum CCD do DES,
-    depois de processado pelo pipeline Des Astrometry (Orbit Trace)
+    depois de processado pelo pipeline Orbit Trace
     """
 
     # Ligação com a tabela de tno.asteroids.
@@ -68,6 +68,10 @@ class Observation(models.Model):
             "asteroid",
             "ccd",
         )
+        indexes = [
+            models.Index(fields=["name"]),
+            models.Index(fields=["date_obs"]),
+        ]
 
     def __str__(self):
         return str(self.id)

@@ -1,8 +1,8 @@
 import logging
 import os
 import requests
-from tno.skybotoutput import Pointing as PointingDB
-from tno.skybotoutput import SkybotOutput as SkybotOutputDB
+from old_apps.skybotoutput import Pointing as PointingDB
+from old_apps.skybotoutput import SkybotOutput as SkybotOutputDB
 from sqlalchemy.sql import select, and_, insert, desc
 from django.conf import settings
 from datetime import datetime

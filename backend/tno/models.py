@@ -324,14 +324,6 @@ class LeapSecond(models.Model):
         blank=True,
     )
 
-    upload = models.FileField(
-        upload_to=settings.LEAP_ROOT,
-        verbose_name="file",
-        help_text="Upload of archives.",
-        null=True,
-        blank=True,
-    )
-
     def __str__(self):
         return str(self.name)
 
@@ -365,221 +357,8 @@ class BspPlanetary(models.Model):
         blank=True,
     )
 
-    upload = models.FileField(
-        upload_to=settings.BSP_PLA_ROOT,
-        verbose_name="file",
-        help_text="Upload of archives.",
-        null=True,
-        blank=True,
-    )
-
     def __str__(self):
         return str(self.name)
-
-
-class CustomList(models.Model):
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        default=None,
-        verbose_name="Owner",
-        null=True,
-        blank=True,
-    )
-
-    displayname = models.CharField(
-        max_length=128, verbose_name="Name", help_text="List name"
-    )
-
-    description = models.TextField(verbose_name="Description", null=True, blank=True)
-
-    database = models.CharField(
-        max_length=128,
-        verbose_name="Database",
-        null=True,
-        blank=True,
-        help_text="Database identifier in settings",
-    )
-
-    schema = models.CharField(
-        max_length=128, verbose_name="Schema", null=True, blank=True
-    )
-
-    tablename = models.CharField(
-        max_length=128, verbose_name="Tablename", help_text="Tablename without schema"
-    )
-
-    asteroids = models.PositiveIntegerField(
-        verbose_name="Num of Asteroids", null=True, blank=True
-    )
-
-    rows = models.PositiveIntegerField(
-        verbose_name="Num of rows", null=True, blank=True
-    )
-
-    n_columns = models.PositiveIntegerField(
-        verbose_name="Num of columns", null=True, blank=True
-    )
-
-    columns = models.CharField(
-        verbose_name="Columns",
-        max_length=1024,
-        help_text="Column names separated by comma.",
-        null=True,
-        blank=True,
-    )
-
-    size = models.PositiveIntegerField(
-        verbose_name="Size in bytes", null=True, blank=True
-    )
-
-    creation_date = models.DateTimeField(
-        verbose_name="Creation Date", auto_now_add=True, null=True, blank=True
-    )
-
-    creation_time = models.FloatField(
-        verbose_name="Creation Time",
-        help_text="Creation Time in seconds",
-        null=True,
-        blank=True,
-    )
-
-    sql = models.TextField(
-        verbose_name="SQL",
-        null=True,
-        blank=True,
-        help_text="SQL for the table contents to be created",
-    )
-
-    sql_creation = models.TextField(
-        verbose_name="SQL Creation",
-        null=True,
-        blank=True,
-        help_text="Sql used in table creation",
-    )
-
-    filter_name = models.CharField(
-        max_length=32,
-        verbose_name="Filter Name",
-        help_text="Filter By Object name.",
-        null=True,
-        blank=True,
-    )
-
-    filter_dynclass = models.TextField(
-        verbose_name="Filter Classification",
-        help_text="Filter by Object class (TNO, Centaur, Trojan, etc.).",
-        null=True,
-        blank=True,
-    )
-
-    filter_magnitude = models.FloatField(
-        verbose_name="Filter Magnitude",
-        help_text="Filter by Object Magnitude",
-        null=True,
-        blank=True,
-    )
-
-    filter_diffdatenights = models.FloatField(
-        verbose_name="Filter diff nights",
-        help_text="Filter by minimun difference time between observations",
-        null=True,
-        blank=True,
-    )
-
-    filter_morefilter = models.BooleanField(
-        verbose_name="Filter more Bands",
-        help_text="Filter by objects with more than one filter in the some night",
-        default=False,
-    )
-
-    status = models.CharField(
-        max_length=10,
-        verbose_name="Status",
-        default="pending",
-        null=True,
-        blank=True,
-        choices=(
-            ("pending", "Pending"),
-            ("running", "Running"),
-            ("success", "Success"),
-            ("error", "Error"),
-        ),
-    )
-
-    error_msg = models.TextField(verbose_name="Error Message", null=True, blank=True)
-
-    def __str__(self):
-        return self.displayname
-
-
-class Proccess(models.Model):
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        default=None,
-        verbose_name="Owner",
-        null=True,
-        blank=True,
-    )
-
-    start_time = models.DateTimeField(
-        verbose_name="Start Time", auto_now_add=True, null=True, blank=True
-    )
-
-    finish_time = models.DateTimeField(
-        verbose_name="Finish Time", auto_now_add=True, null=True, blank=True
-    )
-
-    relative_path = models.CharField(
-        max_length=256,
-        verbose_name="Relative Path",
-        null=True,
-        blank=True,
-        help_text="Path relative to the process directory, this is the internal path in the container.",
-    )
-
-    absolute_path = models.CharField(
-        max_length=1024,
-        verbose_name="Absolute Path",
-        null=True,
-        blank=True,
-        help_text="Absolute path to the process directory, this is the EXTERNAL path to the container.",
-    )
-
-    # Relation With Tno.CustomList
-    input_list = models.ForeignKey(
-        "tno.CustomList",
-        on_delete=models.CASCADE,
-        verbose_name="Input List",
-        null=True,
-        blank=True,
-        default=None,
-    )
-
-    status = models.CharField(
-        max_length=10,
-        verbose_name="Status",
-        default="pending",
-        null=True,
-        blank=True,
-        choices=(
-            ("pending", "Pending"),
-            ("running", "Running"),
-            ("success", "Success"),
-            ("error", "Error"),
-        ),
-    )
-
-    purged = models.BooleanField(
-        verbose_name="Purged",
-        default=False,
-        help_text="This flag true indicates that the marked process was removed and your data excluded.",
-    )
-
-    def __str__(self):
-        return str(self.id)
-
 
 class Catalog(models.Model):
     name = models.CharField(max_length=128, verbose_name="Internal Name")
@@ -587,9 +366,9 @@ class Catalog(models.Model):
     database = models.CharField(
         max_length=128,
         verbose_name="Database",
-        null=True,
-        blank=True,
-        help_text="Database identifier in settings",
+        null=False,
+        blank=False,
+        help_text="Database identifier",
         default="catalog",
     )
     schema = models.CharField(
@@ -611,16 +390,6 @@ class Catalog(models.Model):
         verbose_name="Dec Property",
         help_text="name of the column that represents the Dec in degrees",
         default="dec",
-    )
-
-    rows = models.PositiveIntegerField(
-        verbose_name="Num of rows", null=True, blank=True
-    )
-    columns = models.PositiveIntegerField(
-        verbose_name="Num of columns", null=True, blank=True
-    )
-    size = models.PositiveIntegerField(
-        verbose_name="Size in bytes", null=True, blank=True
     )
 
     registration_date = models.DateTimeField(
