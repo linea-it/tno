@@ -6,18 +6,23 @@ from skybot.models import Position
 
 class SkybotPositionSerializer(serializers.ModelSerializer):
 
-    position = serializers.PrimaryKeyRelatedField(
-        queryset=Position.objects.all(), many=False
-    )
+    # position = serializers.PrimaryKeyRelatedField(
+    #     queryset=Position.objects.all(), many=False
+    # )
 
-    exposure = serializers.PrimaryKeyRelatedField(
-        queryset=Exposure.objects.all(), many=False
-    )
+    # exposure = serializers.PrimaryKeyRelatedField(
+    #     queryset=Exposure.objects.all(), many=False
+    # )
+    # ccd = serializers.PrimaryKeyRelatedField(queryset=Ccd.objects.all(), many=False)
+
+    position = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    exposure = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    ccd = serializers.PrimaryKeyRelatedField(read_only=True)
 
     expnum = serializers.SerializerMethodField()
     band = serializers.SerializerMethodField()
-
-    ccd = serializers.PrimaryKeyRelatedField(queryset=Ccd.objects.all(), many=False)
 
     ccdnum = serializers.SerializerMethodField()
 

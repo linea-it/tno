@@ -24,6 +24,7 @@ from des.views import (
     SkybotJobResultViewSet,
     SkybotJobViewSet,
     SummaryDynclassViewSet,
+    ObservationViewSet
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -48,6 +49,8 @@ router.register(
 router.register(r"des/summary_dynclass", SummaryDynclassViewSet)
 router.register(r"des/dashboard/skybot_by_year", SkybotByYearViewSet)
 router.register(r"des/dashboard/skybot_by_dynclass", SkybotByDynclassViewSet)
+router.register(r"des/observation", ObservationViewSet)
+
 
 
 router.register(r"skybot/position", PositionViewSet)

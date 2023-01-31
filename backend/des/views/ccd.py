@@ -17,7 +17,7 @@ class CcdViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CcdSerializer
     filter_fields = ("id", "exposure", "filename")
     ordering_fields = ("id", "exposure", "ccdnum")
-    ordering = ("ccdnum",)
+    # ordering = ("ccdnum",)
     search_fields = ("filename",)
 
     @action(detail=False)

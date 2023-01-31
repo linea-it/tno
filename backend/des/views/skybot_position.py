@@ -8,6 +8,7 @@ from des.serializers import SkybotPositionSerializer
 class DesSkybotPositionViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = SkybotPosition.objects.select_related().all()
+    # queryset = SkybotPosition.objects.all()
     serializer_class = SkybotPositionSerializer
     filter_fields = (
         "id",
@@ -25,7 +26,7 @@ class DesSkybotPositionViewSet(viewsets.ReadOnlyModelViewSet):
         "position__decj2000",
         "position__mv",
     )
-    ordering = ("id",)
+    # ordering = ("id",)
     search_fields = (
         "position__name",
         "position__number",

@@ -7,3 +7,4 @@ from .summary_dynclass import SummaryDynclassSerializer
 
 from .skybot_by_year import SkybotByYearSerializer
 from .skybot_by_dynclass import SkybotByDynclassSerializer
+from .observation import ObservationSerializer
