@@ -34,26 +34,10 @@ SKYBOT_OUTPUT = os.path.join(ARCHIVE_DIR, SKYBOT_ROOT)
 if not os.path.exists(SKYBOT_OUTPUT):
     os.mkdir(SKYBOT_OUTPUT)
 
-DES_ASTROMETRY_ROOT = "des_astrometry"
-DES_ASTROMETRY_OUTPUT = os.path.join(ARCHIVE_DIR, DES_ASTROMETRY_ROOT)
-if not os.path.exists(DES_ASTROMETRY_OUTPUT):
-    os.mkdir(DES_ASTROMETRY_OUTPUT)
-
-LEAP_ROOT = "leap_seconds"
-LEAP_SECONDS = os.path.join(ARCHIVE_DIR, LEAP_ROOT)
-if not os.path.exists(LEAP_SECONDS):
-    os.mkdir(LEAP_SECONDS)
-
-BSP_PLA_ROOT = "bsp_planetary"
-BSP_PLANETARY = os.path.join(ARCHIVE_DIR, BSP_PLA_ROOT)
-if not os.path.exists(BSP_PLANETARY):
-    os.mkdir(BSP_PLANETARY)
-
-JHONSTONS_ARCHIVE_ROOT = "jhonstons_archive"
-JHONSTONS_ARCHIVE = os.path.join(ARCHIVE_DIR, JHONSTONS_ARCHIVE_ROOT)
-if not os.path.exists(JHONSTONS_ARCHIVE):
-    os.mkdir(JHONSTONS_ARCHIVE)
-
+# JHONSTONS_ARCHIVE_ROOT = "jhonstons_archive"
+# JHONSTONS_ARCHIVE = os.path.join(ARCHIVE_DIR, JHONSTONS_ARCHIVE_ROOT)
+# if not os.path.exists(JHONSTONS_ARCHIVE):
+#     os.mkdir(JHONSTONS_ARCHIVE)
 
 MEDIA_ROOT = ARCHIVE_DIR
 MEDIA_URL = "/media/"
@@ -277,14 +261,14 @@ LOGGING = {
             "maxBytes": 1024 * 1024 * 5,  # 5 MB
             "backupCount": 5,
         },
-        "proccess": {
-            "level": LOGGING_LEVEL,
-            "class": "logging.handlers.RotatingFileHandler",
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,
-            "filename": os.path.join(LOG_DIR, "proccess.log"),
-            "formatter": "standard",
-        },
+        # "proccess": {
+        #     "level": LOGGING_LEVEL,
+        #     "class": "logging.handlers.RotatingFileHandler",
+        #     "maxBytes": 1024 * 1024 * 5,  # 5 MB
+        #     "backupCount": 5,
+        #     "filename": os.path.join(LOG_DIR, "proccess.log"),
+        #     "formatter": "standard",
+        # },
         # Skybot Download
         "skybot": {
             "level": LOGGING_LEVEL,
@@ -326,11 +310,11 @@ LOGGING = {
             "level": LOGGING_LEVEL,
             "propagate": True,
         },
-        "proccess": {
-            "handlers": ["proccess"],
-            "level": LOGGING_LEVEL,
-            "propagate": True,
-        },
+        # "proccess": {
+        #     "handlers": ["proccess"],
+        #     "level": LOGGING_LEVEL,
+        #     "propagate": True,
+        # },
         "skybot": {
             "handlers": ["skybot"],
             "level": LOGGING_LEVEL,

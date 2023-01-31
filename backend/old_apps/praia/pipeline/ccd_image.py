@@ -1,7 +1,7 @@
 import os
 import csv
 from datetime import datetime, timezone, timedelta
-from tno.skybotoutput import FilterObjects, SkybotOutput, Pointing as PointingDB
+from old_apps.skybotoutput import FilterObjects, SkybotOutput, Pointing as PointingDB
 from praia.pipeline.register import register_input
 from django.conf import settings
 from tno.des_ccds import download_des_ccds, count_available_des_ccds

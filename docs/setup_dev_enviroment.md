@@ -61,15 +61,17 @@ run create_q3c_index for create indexes.
 docker-compose exec backend python manage.py create_q3c_index
 ```
 
+Load Initial Data (LeapSecond, BspPlanetary, Stelar Catalog)
+
+```bash
+docker-compose exec backend python manage.py loaddata initial_data.yaml
+```
+
 ### Load DES release data
 
 Load table exposure and ccds from fixtures files.
 
-Download files and import them
-
-```bash
-wget -P database_subset http://dev.linea.org.br/\~glauber.costa/exposures.yml.gz && wget -P database_subset http://dev.linea.org.br/\~glauber.costa/ccds.yml.xz
-```
+Download files and extract then
 
 ```bash
 wget -P database_subset https://tno-dev.linea.org.br/data/database_subset/exposures.csv.zip && wget -P database_subset https://tno-dev.linea.org.br/data/database_subset/ccds.csv.zip
@@ -88,13 +90,13 @@ executar os comando do psql para importar as tabelas. nos exemplos o diretorio c
 
 IMPORTANTE: A tabelas de CCDs é muito grande e demora bastante para ser importada (~40min).
 
-DES Exposures
+Importing DES Exposures
 
 ```bash
 docker-compose exec database psql -U postgres -d postgres -c "\\copy des_exposure from '/data/exposures.csv' DELIMITER '|' CSV HEADER"
 ```
 
-DES CCDs
+Importing DES CCDs
 
 ```bash
 docker-compose exec database psql -U postgres -d postgres -c "\\copy des_ccd from '/data/ccds.csv' DELIMITER '|' CSV HEADER"
@@ -119,41 +121,10 @@ docker-compose up -d
 ## Test in brownser
 
 Home: <http://localhost>
+
 Django Admin: <http://localhost/admin>
+
 Django Rest: <http://localhost/api>
-
-### For Running Science pipelines some registers are necessary
-
-Access admin interface in <http://localhost/admin>
-
-- Home › TNO › Leap seconds › Add leap second - Create a LeapSecond record (**Temporary**)
-
-    ```bash
-    name: naif0012
-    display name: naif0012   
-    url: https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls
-    file: Download file fron this url and upload in this field
-    ```
-
-- Home › TNO › Bsp planetarys › Add bsp planetary - Create a BSP Planetary record (**Temporary**)
-  
-  ```bash
-  name: de435
-  display name: de435
-  url: https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de435.bsp
-  file: Download file fron this url and upload in this field
-  ```
-
-- Home › Tno › Catalogs › Add catalog - Register Gaia Reference Catalog (**Temporary**)
-
-  ```bash
-  name: gaia_dr2
-  display name: GAIA DR2
-  database: catalog
-  schema: gaia
-  tablename: gaia_dr2
-
-  ```
 
 ## Tips For develops only
 
@@ -163,6 +134,30 @@ with the containers running open a new terminal and run this command.
 
 ```bash
 docker-compose exec backend python manage.py --help
+```
+
+### Build manual das imagens e push para docker hub
+
+Docker Hub: <https://hub.docker.com/repository/docker/linea/tno/>
+
+No docker hub é apenas um repositório `linea/tno` e as imagens estão divididas em duas tags uma para o backend (**:backend_[version]**) e outra para frontend (**:frontend_[version]**). 
+
+A identificação unica de cada tag pode ser o numero de versão exemplo: `linea/tno:backend_v0.1` ou a hash do commit para versões de desenvolvimento: `linea/tno:backend_8816330` para obter o hash do commit usar o comando `$(git describe --always)`.
+
+**Importante:** Sempre fazer o build das duas imagens utilizando a mesma versão ou mesmo hash de commit, mesmo que uma das imagens não tenha sido alterada.
+
+```bash
+# Backend
+cd tno/backend
+docker build -t linea/tno:backend_$(git describe --always) .
+# Para o push copie o nome da imagem que aparece no final do build e faça o docker push 
+docker push linea/tno:backend_<commit_hash>
+
+# Frontend
+cd tno/frontend
+docker build -t linea/tno:frontend_$(git describe --always) .
+# Para o push copie o nome da imagem que aparece no final do build e faça o docker push 
+docker push linea/tno:frontend_<commit_hash>
 ```
 
 ### Export Tables to csv

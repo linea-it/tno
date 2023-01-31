@@ -24,7 +24,7 @@ from praia.pipeline.star_catalog import create_star_catalog
 from old_apps.condor import submit_condor_job
 from tno.models import Proccess
 from tno.proccess import ProccessManager
-from tno.skybotoutput import FilterObjects
+from old_apps.skybotoutput import FilterObjects
 
 
 class AstrometryPipeline:

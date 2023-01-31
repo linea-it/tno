@@ -1,0 +1,29 @@
+- model: tno.leapsecond
+  pk: 1
+  fields:
+    name: naif0012
+    display_name: naif0012
+    url: https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls
+- model: tno.bspplanetary
+  pk: 1
+  fields:
+    name: de435
+    display_name: de435
+    url: https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de435.bsp
+- model: tno.bspplanetary
+  pk: 2
+  fields:
+    name: de440
+    display_name: de440
+    url: https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de440.bsp
+- model: tno.catalog
+  pk: 1
+  fields:
+    name: gaia_dr2
+    display_name: GAIA DR2
+    database: prod_gavo
+    schema: gaia
+    tablename: dr2
+    ra_property: ra
+    dec_property: dec
+    registration_date: 2023-01-30 23:59:11.554084+00:00

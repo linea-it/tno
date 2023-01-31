@@ -4,7 +4,7 @@ import shutil
 from datetime import datetime, timezone, timedelta
 import logging
 import traceback
-from tno.skybotoutput import FilterObjects
+from old_apps.skybotoutput import FilterObjects
 from orbit.bsp_jpl import BSPJPL
 from praia.pipeline.register import register_input
 

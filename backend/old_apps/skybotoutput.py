@@ -1,5 +1,5 @@
 import os
-from .db import DBBase
+from ..tno.db import DBBase
 from sqlalchemy.sql import select, and_, or_, func, subquery, text
 from sqlalchemy import (
     create_engine,
