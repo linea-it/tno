@@ -1,50 +1,63 @@
 
 
 
-### Clone Repository
+Download 
+
+Create Folders (Ignore this step if want use other locations)
+
+mkdir tno/database_subset tno/archive tno/log && cd tno
+
+```bash
+wget -O docker-compose.yml https://raw.githubusercontent.com/linea-it/tno/main/docker-compose-development-template.yml \
+&& wget -O local_settings.py https://raw.githubusercontent.com/linea-it/tno/main/local_settings_template.py \
+&& wget -O nginx-proxy.conf https://raw.githubusercontent.com/linea-it/tno/main/nginx-proxy-development.conf
 ```
-git clone https://github.com/linea-it/tno.git tno
+<!-- TODO Adicionar o arquivo de configuração do Jupyter Notebook -->
+
+Edit local_settings.py
+
+
+Ligar o database e esperar até que a mensagem "database system is ready to accept connections" apareça. depois pode desligar e ligar o backend.
+
+```bash
+docker-compose up database
 ```
 
-```
-cd tno/
-```
-
-### dabase data
-Unzip the csv files with data to the database.
-you have to do it before doing the build and up of the container, because the directory will be mounted in the postgres image.
-```
-cd database_subset
-unzip tno_database.subset.zip
-cd ..
-```
-
-### Create a .env based in env_template
-```
-cp env_template .env
+```bash
+tno-dev-database-1  | PostgreSQL init process complete; ready for start up.
+tno-dev-database-1  | LOG:  database system was shut down at 2023-01-31 21:17:20 UTC
+tno-dev-database-1  | LOG:  MultiXact member wraparound protections are now enabled
+tno-dev-database-1  | LOG:  autovacuum launcher started
+tno-dev-database-1  | LOG:  database system is ready to accept connections
 
 ```
 
-### Configure ngnix
-Create link to ngnix config
-```
-cd nginx
-ln -s development_template.conf nginx-proxy.conf
-cd ..
+```bash
+docker-compose up backend
 ```
 
-### Build and Run Containers 
+Create a superuser in Django
+run createsuperuser to create a admin user in Django.
+with the docker running open a new terminal and run this command.
 
-Create link to docker-compose.yml
-```
-ln -s docker-compose-production-template.yml docker-compose.yml
-```
-
-```
-docker-compose build
+```bash
+docker-compose exec backend python manage.py createsuperuser
 ```
 
-### Prepare Database
+Table preparation for Q3C
+run create_q3c_index for create indexes.
+
+```bash
+docker-compose exec backend python manage.py create_q3c_index
+```
+
+Load Initial Data (LeapSecond, BspPlanetary, Stelar Catalog)
+
+```bash
+docker-compose exec backend python manage.py loaddata initial_data.yaml
+```
+
+
 
 ```
 docker-compose up database

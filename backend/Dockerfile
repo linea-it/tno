@@ -44,8 +44,13 @@ FROM python:3.10-slim
 # Copy Dependencies for Python LDAP, Psql
 COPY --from=builder /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
 
+# # Criar o grupo des-brazil com o mesmo id usado no linea
+# RUN groupadd --gid 10000 des-brazil
+# # add user so we can run things as non-root
+# RUN adduser --system tnouser --gid 10000
+
 # add user so we can run things as non-root
-RUN adduser --system tnouser
+RUN adduser --system tnouser 
 
 # Copy from builder and set ENV for venv
 COPY --from=builder /opt/venv /opt/venv

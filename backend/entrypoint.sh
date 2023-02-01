@@ -13,9 +13,6 @@ then
     echo "Running Collect Statics"
     python manage.py collectstatic --clear --noinput --verbosity 0
 
-    # # Usar o server do django so para desenvolvimento
-    # # echo "Running Django with ${YELLOW} DEVELOPMENT SERVER ${NO_COLOR}, for production use Gunicorn."
-    # python manage.py runserver 0.0.0.0:7001
 
     # Para produção é necessário usar o uWSGI!
     # uWSGI para servir o app e ter compatibilidade com Shibboleth

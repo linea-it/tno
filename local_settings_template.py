@@ -13,8 +13,8 @@ HOST_URL = "//localhost"
 # Email Confs
 EMAIL_HOST = "smtp.linea.org.br"
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 
-EMAIL_HOST_PASSWORD = 
+EMAIL_HOST_USER = ""
+EMAIL_HOST_PASSWORD = ""
 
 # Django Admin Database
 DATABASES = {
