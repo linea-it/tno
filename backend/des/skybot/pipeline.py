@@ -510,33 +510,6 @@ class DesSkybotPipeline:
                 )
                 return result
 
-        # else:
-
-        #     self.logger.warning(
-        #         "Exposure [%s]: %s" % (result["exposure"], result["error"])
-        #     )
-
-        #     # If the exposure returned an error, try again for at least 10 times:
-        #     if self.attempts_on_fail_by_exposure <= 10:
-        #         self.logger.warning(
-        #             "Attempts On Fail: %s of 10" % (self.attempts_on_fail_by_exposure)
-        #         )
-
-        #         # Increment the attempts variable by each recursion:
-        #         self.attempts_on_fail_by_exposure += 1
-
-        #         result.update(
-        #             {
-        #                 "success": True,
-        #             }
-        #         )
-
-        #         # Call itself:
-        #         self.run_skybot_by_exposure(skybot_server_url, job_path, exp)
-
-        # # Reset the attempts variable to its default value:
-        # self.attempts_on_fail_by_exposure = 1
-        # return result
 
     def run_job(self, job_id):
         """Este método executa as etapas de request ao skybot.
@@ -609,9 +582,10 @@ class DesSkybotPipeline:
             a_exposures = df_exposures.to_dict(
                 "records",
             )
-            # a_exposures = df_exposures.to_dict(
-            #     "records",
-            # )[0:5]
+            # ------- REMOVER ---------
+            a_exposures = df_exposures.to_dict(
+                "records",
+            )[0:5]
 
             # Guarda o total de tempo de execução para calcular o tempo médio.
             t_exec_time = []
@@ -865,7 +839,6 @@ class DesSkybotPipeline:
         """
 
         # Verifica se já existe algum job com status Running.
-        # running = SkybotJob.objects.filter(status=2).order_by('-start').first()
         a_running = self.spdao.get_by_status(2)
 
         # Se tiver algum job executando, verifica se tem arquivos
@@ -874,13 +847,12 @@ class DesSkybotPipeline:
             # self.logger_import.info("Tem um job executando.")
             running = a_running[0]
             if self.check_lock_load_data(running["path"]):
-                # self.logger_import.info("Não está importando dados.")
                 # Se não exisitir arquivo de lock
                 # significa que não tem nenhum importação acontecendo
                 self.run_import_positions(running["id"])
 
     def check_lock_load_data(self, job_path):
-        """Verifica se existe um arquivo de lock para a taks de load data.
+        """Verifica se existe um arquivo de lock para as tasks de load data.
         Se exisir retorna False, se não existir cria o arquivo de lock e retorna True.
 
         Arquivo de lock tem a função de prevenir que 2 operações de importação
@@ -962,10 +934,6 @@ class DesSkybotPipeline:
                 # Na primeira execução pode ocorrer ao mesmo tempo que o componente requests.
                 # e o arquivo heartbeat pode ainda não ter sido criado.
                 # o valor do execute vai estar errado, mas é corrigido na segunda execução.
-                # request_heartbeat = self.read_request_heartbeat(job['path'])
-                # t_success = request_heartbeat['exposures_success']
-                # t_failure = request_heartbeat['exposures_failed']
-
                 loaddata_heartbeat = self.read_loaddata_heartbeat(job["path"])
                 t_success = loaddata_heartbeat["exposures_success"]
                 t_failure = loaddata_heartbeat["exposures_failed"]
@@ -976,18 +944,13 @@ class DesSkybotPipeline:
                 t_success = 0
                 t_failure = 0
 
-            # Total a ser executado ler do heartbead da etapa anterior
-            try:
 
+            try:
+                # le o heartbead da etapa anterior 
                 request_heartbeat = self.read_request_heartbeat(job["path"])
 
-                # t_to_execute = 0
-                # if request_heartbeat['current'] == request_heartbeat['exposures']:
-                #     t_to_execute = request_heartbeat['exposures_success']
-                # else:
-                #     t_to_execute = request_heartbeat['exposures']
-
-                t_to_execute = request_heartbeat["exposures"]
+                # Total a ser executado  (Total de exposições menos as que falharam na etapa do request.)
+                t_to_execute = request_heartbeat["exposures"] - request_heartbeat["exposures_failed"]
                 request_heartbeat_exists = True
 
             except (FileNotFoundError, json.decoder.JSONDecodeError) as e:
@@ -1137,8 +1100,6 @@ class DesSkybotPipeline:
 
                 # Totais de sucesso e falha.
                 t_files = len(results)
-                # t_success = df_loaddata.success.sum()
-                # t_failure = t_files - t_success
 
                 if t_executed == t_to_execute:
                     self.update_loaddata_heartbeat(
@@ -1381,7 +1342,6 @@ class DesSkybotPipeline:
         """
         # Recupera o Model pelo ID
         try:
-            # job = SkybotJob.objects.get(pk=job_id)
             job = self.get_job_by_id(job_id)
 
             # Le os arquivos de heartbeat para checar se o Job acabaou.
@@ -1546,9 +1506,6 @@ class DesSkybotPipeline:
                     ]
                 )
 
-                # Printa a primeira linha do dataset para debug
-                # self.logger_import.info(df.iloc[0])
-
                 # Filtrar apenas pelas exposições com sucesso:
                 df = df[df["success"] == True]
 
@@ -1684,7 +1641,6 @@ class DesSkybotPipeline:
             job["finish"] = t1
             job["execution_time"] = tdelta
             job["status"] = 4
-            # job['error'] = str(e).replace('"', '\\"')
             job["error"] = str(e)
 
             self.complete_job(job)
