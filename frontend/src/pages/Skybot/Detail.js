@@ -35,14 +35,16 @@ function SkybotDetail() {
       exposures: 0,
       current: 0,
       average_time: 0,
-      time_estimate: 0
+      time_estimate: 0,
+      exposures_failed: 0,
     },
     loaddata: {
       status: 'completed',
       exposures: 0,
       current: 0,
       average_time: 0,
-      time_estimate: 0
+      time_estimate: 0,
+      exposures_failed: 0,
     }
   })
   const [loadProgress, setLoadProgress] = useState(false)
@@ -443,6 +445,11 @@ function SkybotDetail() {
                       variant='outlined'
                     />
                   </Grid>
+                  {progress.request.exposures_failed > 0 ? (
+                    <Grid item>
+                      <Chip label={`Exposures Failed: ${progress.request.exposures_failed}`} className={classes.chipError} variant='outlined' />
+                    </Grid>                  
+                  ) : null}
                 </Grid>
               </Grid>
 
@@ -474,6 +481,11 @@ function SkybotDetail() {
                       variant='outlined'
                     />
                   </Grid>
+                  {progress.loaddata.exposures_failed > 0 ? (
+                    <Grid item>
+                      <Chip label={`Exposures Failed: ${progress.loaddata.exposures_failed}`} className={classes.chipError} variant='outlined' />
+                    </Grid>                  
+                  ) : null}                  
                 </Grid>
               </Grid>
               {hasCircularProgress && [1, 2].includes(skybotJob.status) ? (

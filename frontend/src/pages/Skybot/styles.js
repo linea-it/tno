@@ -23,7 +23,12 @@ const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff'
+  },
+  chipError: {
+    color: `${theme.palette.error.light} !important`,
+    borderColor: `${theme.palette.error.light} !important`
   }
+
 }))
 
 export default useStyles
