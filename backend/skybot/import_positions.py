@@ -17,7 +17,7 @@ class ImportSkybotPositions:
         # Abre conexão com o banco usando sqlAlchemy
         self.dbbase = DBBase(pool=False)
 
-    def import_output_file(self, filepath):
+    def import_output_file(self, filepath, job_id):
         """Importa os resultados na tabela skybot
 
         Arguments:
@@ -39,7 +39,8 @@ class ImportSkybotPositions:
             if flag == 1:
 
                 # Le o arquivo de outputs e gera um pandas dataframe
-                df = self.read_output_file(filepath)
+                df = self.read_output_file(filepath, job_id)
+                
                 rowcount = self.import_data(df)
             elif flag == 0:
                 self.logger.info(
@@ -65,7 +66,7 @@ class ImportSkybotPositions:
             self.logger.error(e)
             raise (e)
 
-    def read_output_file(self, filepath):
+    def read_output_file(self, filepath, job_id):
 
         # self.logger.debug("Reading Skybot Output: [%s]" % filepath)
 
@@ -114,7 +115,10 @@ class ImportSkybotPositions:
         df["ticket"] = self.read_ticket_from_output(filepath)
 
         df["base_dynclass"] = df["dynclass"].apply(lambda x: x.split(">")[0])
-
+        
+        # Adicionar uma coluna com o job_id
+        df["skybot_job"] = int(job_id)
+        
         # Mudar a ordem das colunas de arcordo com a ordem  da tabela.
         # Isso facilita a importacao por csv.
         columns = self.get_columns()
@@ -152,6 +156,7 @@ class ImportSkybotPositions:
             "jdref",
             "ticket",
             "base_dynclass",
+            "skybot_job"
         ]
 
         return columns
@@ -172,7 +177,7 @@ class ImportSkybotPositions:
             rowcount (int):  the number of rows imported.
 
         Example SQL Copy:
-            COPY tno_skybotoutput (num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
+            COPY tno_skybotoutput (num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref, ticket, base_dynclass, skybot_job) FROM '/data/teste.csv' with (FORMAT CSV, DELIMITER ';', HEADER);
 
         """
         # Converte o Data frame para csv e depois para arquivo em memória.
@@ -197,7 +202,7 @@ class ImportSkybotPositions:
             table = str(self.dbbase.get_table_skybot())
             # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
             sql = (
-                "COPY %s (name, number, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref, ticket, base_dynclass) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);"
+                "COPY %s (name, number, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref, ticket, base_dynclass, skybot_job) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);"
                 % table
             )
 

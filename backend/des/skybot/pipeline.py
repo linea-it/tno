@@ -1082,7 +1082,7 @@ class DesSkybotPipeline:
                     # result = loaddata.import_des_skybot_positions_q3c(
                     #     exposure_id, ticket, pos_file)
                     result = loaddata.import_des_skybot_positions(
-                        exposure_id, ticket, pos_file
+                        exposure_id, ticket, pos_file, job_id
                     )
 
                     # Mover os arquivos para diretório de outputs.

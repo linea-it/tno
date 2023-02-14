@@ -12,5 +12,6 @@ class PositionAdmin(admin.ModelAdmin):
         "raj2000",
         "decj2000",
         "ticket",
+        "skybot_job"
     )
     search_fields = ("name",)

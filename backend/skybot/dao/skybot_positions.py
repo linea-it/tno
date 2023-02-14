@@ -81,6 +81,19 @@ class SkybotPositionsDao(DBBase):
 
         return rows
 
+    def positions_by_skybot_job(self, job_id):
+        """
+        Retorna todas as linhas da tabela skybotoutput
+        relacionadas a um skybot Job.
+        """
+        stm = select(self.tbl.c).where(and_(self.tbl.c.skybot_job == job_id))
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_all_dict(stm)
+
+        return rows
+
     def distinct_asteroids(self):
         stm = select(
             [
