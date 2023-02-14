@@ -132,6 +132,7 @@ class SkybotJobViewSet(
             data = dict(
                 {
                     "status": "aborted",
+                    "reason": "The job was aborted by the user."
                 }
             )
 
