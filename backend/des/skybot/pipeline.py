@@ -1737,28 +1737,26 @@ class DesSkybotPipeline:
         # Verificar se já existe algum job com status Running.
         a_running = self.spdao.get_by_status(2)
         
-        print("Check Job Timeout")
-
         if len(a_running) > 0:
             # Recupera o Model pelo ID
             job = self.get_job_by_id(a_running[0]['id'])
             try:
                 request_heartbeat = self.read_request_heartbeat(job['path'])
-                print(request_heartbeat)
+
                 if request_heartbeat['status'] == 'running' and request_heartbeat['last_state']['current'] == request_heartbeat['current']:
                     now = datetime.now()
                     last = datetime.fromisoformat(request_heartbeat['last_state']['time'])
                     tdelta = now - last
-                    print("Time: %s" % tdelta.total_seconds())
+
                     if tdelta.total_seconds() >= self.timeout:
                         msg = "The Job has been frozen for %s seconds in the same operation and was marked to be aborted by timeout." % self.timeout
                         self.logger.warning(msg)
-                        print(msg)
+
                         self.write_status_json(job['id'], "aborted", reason=msg)
 
 
                 loaddata_heartbeat = self.read_loaddata_dataframe(job['path'])
-                print(request_heartbeat)
+
                 if loaddata_heartbeat['status'] == 'running' and loaddata_heartbeat['last_state']['current'] == loaddata_heartbeat['current']:
                     now = datetime.now()
                     last = datetime.fromisoformat(loaddata_heartbeat['last_state']['time'])    

@@ -25,6 +25,9 @@ const styles = makeStyles({
   },
   grid: {
     margin: 'auto'
+  },
+  mainContainer: {
+
   }
 })
 
