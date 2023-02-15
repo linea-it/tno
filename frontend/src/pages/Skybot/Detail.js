@@ -415,7 +415,7 @@ function SkybotDetail() {
                 <strong>{totalErrorCount}</strong> exposures out of {skybotJob.exposures} failed.
               </Alert>
             ) : null}
-            {skybotJob.error !== null ? <Alert severity='error'>{skybotJob.error}</Alert> : null}
+            {(skybotJob?.error !== null && skybotJob?.error !== '')  ? <Alert severity='error'>{skybotJob?.error}</Alert> : null}
           </CardContent>
         </Card>
       </Grid>

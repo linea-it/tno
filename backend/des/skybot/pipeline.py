@@ -173,6 +173,17 @@ class DesSkybotPipeline:
             shutil.rmtree(path)
             self.logger.debug("Job directory has been deleted.")
 
+    def delete_positions_dir(self, job_id):
+        """Apaga o diretório de posições de um job com todo seu conteudo.
+
+        Arguments:
+            job_id {int} -- Id do Job que sera apagado.
+        """
+        path = self.get_positions_path(job_id)
+        if os.path.exists(path) and os.path.isdir(path):
+            shutil.rmtree(path)
+            self.logger_import.info("Job Outputs directory has been deleted. [%s]" % path)
+
     def query_exposures_by_period(self, start, end):
         """Retorna todas as Des/Exposures que tenham date_obs entre o periodo start, end.
 
@@ -1602,6 +1613,10 @@ class DesSkybotPipeline:
                     #  Executa o Update na tabela de Asteroids.
                     self.update_asteroid_table(job["id"])
 
+                    # If Debug is True, Remove output Directory and all files returned by skybot
+                    if job["debug"] == True:
+                        self.delete_positions_dir(job["id"])
+
                     # Calcula o tempo total de execução do Job.
                     t0 = job["start"]
                     t1 = datetime.now(timezone.utc)
@@ -1671,6 +1686,7 @@ class DesSkybotPipeline:
             self.logger_import.info(
                 "--------------------------------------------------------"
             )
+
 
     def on_error(self, job_id, e):
         """Encerra o job com status de erro.

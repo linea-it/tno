@@ -1,9 +1,10 @@
 import { api } from './Api'
 
-export const createSkybotRun = ({ date_initial, date_final }) => {
+export const createSkybotRun = ({ date_initial, date_final, debug }) => {
   const params = {
     date_initial: date_initial,
-    date_final: date_final
+    date_final: date_final,
+    debug: Boolean(debug)
   }
 
   return api.post('/des/skybot_job/submit_job/', params)

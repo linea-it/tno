@@ -68,6 +68,7 @@ class SkybotJobViewSet(
 
         date_initial = params["date_initial"]
         date_final = params["date_final"]
+        debug = params["debug"]
 
         # Recuperar o usuario que submeteu o Job.
         owner = self.request.user
@@ -109,6 +110,8 @@ class SkybotJobViewSet(
             ccds=t_ccds,
             # Tempo de execução estimado
             estimated_execution_time=timedelta(seconds=estimated_time),
+            # Debug Mode
+            debug=debug,
         )
         job.save()
 
@@ -288,6 +291,10 @@ class SkybotJobViewSet(
 
         file_path = os.path.join(job.path, "results.csv")
 
+        if not os.path.exists(file_path):
+            result = dict({"results": [], "count": 0, "message": "No such file results.csv"})
+            return Response(result)
+
         job_result = pd.read_csv(
             file_path,
             delimiter=";",
@@ -374,6 +381,10 @@ class SkybotJobViewSet(
         job = self.get_object()
 
         file_path = os.path.join(job.path, "results.csv")
+
+        if not os.path.exists(file_path):
+            result = dict({"results": [], "count": 0, "message": "No such file results.csv"})
+            return Response(result)
 
         df_results = pd.read_csv(
             file_path,

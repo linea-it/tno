@@ -130,5 +130,7 @@ class SkybotJob(models.Model):
     # e a exeção e guardada neste campo.
     error = models.TextField(verbose_name="Error", null=True, blank=True)
 
+    debug = models.BooleanField(verbose_name="Debug", default=False, blank=False, null=False)
+    
     def __str__(self):
         return str(self.id)
