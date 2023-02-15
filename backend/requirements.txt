@@ -6,7 +6,7 @@ certifi==2022.9.24
 charset-normalizer==2.1.1
 contourpy==1.0.6
 cycler==0.11.0
-Django==3.2
+Django==3.2.18
 django-cors-headers==3.11.0
 django-filter==21.1
 django-settings-export==1.2.1
