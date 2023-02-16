@@ -14,7 +14,7 @@ import pytz
 from django.conf import settings
 
 from common.notify import Notify
-from des.dao import DesSkybotJobDao, DesSkybotJobResultDao, ExposureDao
+from des.dao import DesSkybotJobDao, DesSkybotJobResultDao, ExposureDao, CcdDao
 from des.models import SummaryDynclass
 from des.skybot.import_positions import DESImportSkybotPositions
 from des.summary import SummaryResult
@@ -55,6 +55,8 @@ class DesSkybotPipeline:
         self.epdao = ExposureDao(pool=False)
 
         self.dsdao = DesSkybotJobResultDao(pool=False)
+
+        self.ccddao = CcdDao(pool=False)
 
         self.attempts_on_fail_by_exposure = 1
 
@@ -183,6 +185,19 @@ class DesSkybotPipeline:
         if os.path.exists(path) and os.path.isdir(path):
             shutil.rmtree(path)
             self.logger_import.info("Job Outputs directory has been deleted. [%s]" % path)
+
+    def estimate_execution_time(self, exposures):
+
+        try:
+            se = self.dsdao.skybot_estimate()
+            average_time = se["t_exec_time"] / int(se["total"])
+            estimated_time = (int(exposures) * average_time).total_seconds()
+
+        except:
+            # Caso não tenha dados para a estimativa utilizar 2.15 segundos para cada exposição.
+            estimated_time = (int(exposures) * 2.15)
+
+        return timedelta(seconds=estimated_time)
 
     def query_exposures_by_period(self, start, end):
         """Retorna todas as Des/Exposures que tenham date_obs entre o periodo start, end.
@@ -555,8 +570,6 @@ class DesSkybotPipeline:
         try:
             t0 = datetime.now()
 
-            # Recupera o Model pelo ID
-            # job = SkybotJob.objects.get(pk=job_id)
             job = self.get_job_by_id(job_id)
 
             # Altera o Status do Job para Running
@@ -565,6 +578,24 @@ class DesSkybotPipeline:
             self.update_job(job)
 
             self.logger.debug("Alterando status do job para running")
+
+            # Coleta Estatisticas do Volume de dados a ser executado no Job.
+            start = datetime.strptime(str(job["date_initial"]), "%Y-%m-%d").strftime("%Y-%m-%d 00:00:00")
+            end = datetime.strptime(str(job["date_final"]), "%Y-%m-%d").strftime("%Y-%m-%d 23:59:59")
+
+            # Total de exposures não executadas no Periodo.
+            job["exposures"] = self.dsdao.count_not_exec_by_period(
+                start, end
+            )
+
+            # Recuperar o total de noites com exposição não executadas no periodo
+            job["nights"] = self.epdao.count_not_exec_nights_by_period(start, end)
+
+            # Recuperar o total de ccds não executados no periodo.
+            job["ccds"] = self.ccddao.count_not_exec_ccds_by_period(start, end)
+
+            # Estimativa de tempo baseada na qtd de exposures a serem executadas.
+            job["estimated_execution_time"] = self.estimate_execution_time(job["exposures"])            
 
             # Cria o diretório onde o job será executado e onde ficaram os outputs.
             job_path = self.create_job_dir(job_id)
@@ -602,7 +633,6 @@ class DesSkybotPipeline:
             self.notify_start_job(job_id)
 
             # Aqui inicia as requisições para o serviço do Skybot.
-
             # Para cada exposição faz a requisição no serviço do Skybot.
 
             # Array com os resultados de cada requisição
@@ -1600,21 +1630,22 @@ class DesSkybotPipeline:
                     else:
                         job["status"] = 3
 
-                    # Preencher a tabela Summary Dynclass e rodar o update do dashboard
-                    # apenas se tiver exposição
+
                     if request_heartbeat["exposures"] > 0:
                         summary_result = SummaryResult()
                         summary_result.by_job(job["id"])
-                        summary_result.run_by_year()
-                        summary_result.run_by_dynclass()
+
+                        if job["summary"] == True:
+                            summary_result.run_by_year()
+                            summary_result.run_by_dynclass()
+
+                            #  Executa o Update na tabela de Asteroids.
+                            self.update_asteroid_table(job["id"])
 
                         self.logger_import.info("Summary result finished!")
 
-                    #  Executa o Update na tabela de Asteroids.
-                    self.update_asteroid_table(job["id"])
-
-                    # If Debug is True, Remove output Directory and all files returned by skybot
-                    if job["debug"] == True:
+                    # If Debug is False, Remove output Directory and all files returned by skybot
+                    if job["debug"] == False:
                         self.delete_positions_dir(job["id"])
 
                     # Calcula o tempo total de execução do Job.
