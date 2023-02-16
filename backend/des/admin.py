@@ -145,6 +145,10 @@ class OrbitTraceJobAdmin(admin.ModelAdmin):
         "owner",
         "date_initial",
         "date_final",
+        "bsp_planetary",
+        "leap_seconds",
+        "filter_type",
+        "filter_value",
         "exec_time",
     )
 
