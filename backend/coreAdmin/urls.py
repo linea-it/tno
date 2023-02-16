@@ -23,6 +23,7 @@ from des.views import (
     SkybotByYearViewSet,
     SkybotJobResultViewSet,
     SkybotJobViewSet,
+    OrbitTraceJobViewSet,
     SummaryDynclassViewSet,
     ObservationViewSet
 )
@@ -40,6 +41,7 @@ router = DefaultRouter()
 router.register(r"users", UserViewSet)
 
 router.register(r"des/skybot_job", SkybotJobViewSet)
+router.register(r"des/orbit_trace_job", OrbitTraceJobViewSet)
 router.register(r"des/exposure", ExposureViewSet)
 router.register(r"des/ccd", CcdViewSet)
 router.register(r"des/skybot_job_result", SkybotJobResultViewSet)

@@ -4,6 +4,7 @@ from .models import (
     Ccd,
     Exposure,
     SkybotJob,
+    OrbitTraceJob,
     SkybotJobResult,
     SkybotPosition,
     SummaryDynclass,
@@ -134,6 +135,17 @@ class SkybotJobAdmin(admin.ModelAdmin):
         "exposures",
         "ccds",
         "nights",
+    )
+
+@admin.register(OrbitTraceJob)
+class OrbitTraceJobAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "status",
+        "owner",
+        "date_initial",
+        "date_final",
+        "exec_time",
     )
 
 
