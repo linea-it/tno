@@ -1,6 +1,7 @@
 from .exposure import ExposureViewSet
 from .ccd import CcdViewSet
 from .skybot_job import SkybotJobViewSet
+from .orbit_trace_job import OrbitTraceJobViewSet
 from .skybot_job_result import SkybotJobResultViewSet
 from .skybot_position import DesSkybotPositionViewSet
 from .summary_dynclass import SummaryDynclassViewSet
