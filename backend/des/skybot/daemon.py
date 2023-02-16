@@ -13,6 +13,9 @@ def check_request_queue():
 def check_loaddata_queue():
     DesSkybotPipeline().check_loaddata_queue()
 
+def check_job_timeout_queue():
+    DesSkybotPipeline().check_job_timeout()
+
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(
@@ -32,5 +35,13 @@ scheduler.add_job(
     max_instances=1,
     id="des_skybot_loaddata",
 )
+scheduler.add_job(
+    check_job_timeout_queue,
+    "interval",
+    seconds=30,
+    max_instances=1,
+    id="des_skybot_job_timeout",
+)
+
 
 scheduler.start()

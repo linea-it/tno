@@ -130,5 +130,23 @@ class SkybotJob(models.Model):
     # e a exeção e guardada neste campo.
     error = models.TextField(verbose_name="Error", null=True, blank=True)
 
+    # debug = False Os arquivos retornados pelo skybot serão removidos no final do job.
+    debug = models.BooleanField(
+        verbose_name="Debug", 
+        default=False, 
+        blank=False, 
+        null=False, 
+        help_text="debug = False The files returned by skybot will be removed at the end of the job."
+    )
+
+    # summary = True executa os metodos que preenchem as tabelas de estatisticas dos jobs. 
+    summary = models.BooleanField(
+        verbose_name="Summary", 
+        default=True, 
+        blank=False, 
+        null=False, 
+        help_text="summary = True runs the methods that populate the job statistics tables."
+    )    
+    
     def __str__(self):
         return str(self.id)

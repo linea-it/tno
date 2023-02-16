@@ -27,6 +27,8 @@ class SkybotJobSerializer(serializers.ModelSerializer):
             "path",
             "results",
             "error",
+            "debug",
+            "summary"
         )
 
     def get_owner(self, obj):

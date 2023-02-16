@@ -132,6 +132,13 @@ class DBBase:
         with self.engine.connect() as con:
             return con.execute(stm).scalar()
 
+    def fetch_scalars(self, stm, log=True):
+        if settings.DEBUG is True and log is True:
+            self.debug_query(stm, True)
+
+        with self.engine.connect() as con:
+            return list(con.execute(stm).scalars())
+
     def stm_count(self, stm):
         with self.engine.connect() as con:
             # Over para que a contagem seja feita no final da query em casos

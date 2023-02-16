@@ -116,3 +116,28 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         Asteroid.objects.all().delete()
 
         return Response(dict({"success": True}))        
+
+    @action(
+        detail=False, methods=["GET"], permission_classes=(IsAuthenticated,)
+    )
+    def dynclasses(self, request):
+        """All Dynamic Classes.
+        Distinct dynclass in tno_asteroid table.
+        """
+
+        rows = AsteroidDao(pool=False).distinct_dynclass()
+
+        return Response(dict({"results": rows, "count": len(rows)}))        
+
+    @action(
+        detail=False, methods=["GET"], permission_classes=(IsAuthenticated,)
+    )
+    def base_dynclasses(self, request):
+        """All Base Dynamic Classes.
+        Distinct base_dynclass in tno_asteroid table.
+        Base Dynamic Class is dynclass split in >
+        """
+
+        rows = AsteroidDao(pool=False).distinct_base_dynclass()
+
+        return Response(dict({"results": rows, "count": len(rows)}))        

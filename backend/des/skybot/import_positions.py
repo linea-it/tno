@@ -238,7 +238,7 @@ class DESImportSkybotPositions(ImportSkybotPositions):
         except Exception as e:
             raise (e)
 
-    def import_des_skybot_positions(self, exposure_id, ticket, filepath):
+    def import_des_skybot_positions(self, exposure_id, ticket, filepath, job_id):
 
         result = dict(
             {
@@ -266,7 +266,7 @@ class DESImportSkybotPositions(ImportSkybotPositions):
             # Importa as posições no Skybot
             t0_copy = datetime.now(timezone.utc)
 
-            self.import_output_file(filepath)
+            self.import_output_file(filepath, job_id)
 
             t1_copy = datetime.now(timezone.utc)
             tdelta_copy = t1_copy - t0_copy
