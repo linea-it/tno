@@ -3,10 +3,17 @@ import pink from '@material-ui/core/colors/pink'
 
 const light = createTheme({
   palette: {
+    mode: 'light',
     primary: {
       light: '#5c6b7d',
       main: '#34465d',
       dark: '#243141',
+      contrastText: '#fff'
+    },
+    error: {
+      light: '#ef5350',
+      main: '#d32f2f',
+      dark: '#c62828',
       contrastText: '#fff'
     },
     secondary: pink,
@@ -61,7 +68,7 @@ const light = createTheme({
     initContainer: {
       paddingTop: 20,
       paddingBottom: 100
-    }
+    },
     // MuiCollapse: {
     //   wrapperInner: {
     //     paddingLeft: 15,

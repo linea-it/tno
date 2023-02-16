@@ -132,7 +132,7 @@ class ExposureDao(DBBase):
 
     def count_not_exec_nights_by_period(self, start, end):
         """
-        Retorna a quantidade de noites com exposição no periodo
+        Retorna a quantidade de noites com exposição não executadas no periodo
         Parameters:
             start (datetime): Periodo inicial que sera usado na seleção.
 

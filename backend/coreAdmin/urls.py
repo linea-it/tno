@@ -71,6 +71,7 @@ urlpatterns = [
     re_path(r"^api/logout/", common_views.logout_view),
     re_path(r"^api/read_file", common_views.read_file),
     re_path(r"^api/read_csv", common_views.read_csv),
+    re_path(r"^api/teste", common_views.teste),
     re_path(
         r"^api/des/clear_des_data_preparation_tables",
         des_management_views.clear_des_data_preparation_tables,

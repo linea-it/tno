@@ -22,7 +22,7 @@ body,
   height: 100%;
 }
 
-.MuiTableRow-root > .MuiTableCell-root > div {
+.MuiTableRow-root>.MuiTableCell-root>div {
   background-color: inherit !important;
 }
 

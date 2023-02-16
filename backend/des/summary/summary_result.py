@@ -26,7 +26,7 @@ class SummaryResult:
 
         t0 = datetime.now()
         self.logger.info("".ljust(50, "-"))
-        self.logger.info("By Job Started [%s]" % t0.strftime("%Y-%m-%d %H:%M:%S"))
+        self.logger.info("Summary Result By Job Started [%s]" % t0.strftime("%Y-%m-%d %H:%M:%S"))
 
         dao = DesSkybotJobResultDao(pool=False)
 
@@ -34,7 +34,7 @@ class SummaryResult:
         asteroids = dao.dynclass_asteroids_by_job(job_id)
 
         if len(asteroids) == 0:
-            self.logger.warning("SummaryResult::by_job -> No results found.")
+            self.logger.warning("Summary Result By Job -> No results found.")
             return
 
         # Get ccds by dynclass of the job

@@ -36,6 +36,9 @@ import {
 import CalendarHeatmap from '../../components/Chart/CalendarHeatmap'
 import CalendarExecutedNight from '../../components/Chart/CalendarExecutedNight'
 import useStyles from './styles'
+import FormGroup from '@mui/material/FormGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Switch from '@mui/material/Switch'
 
 function Skybot() {
   const navigate = useNavigate()
@@ -67,7 +70,11 @@ function Skybot() {
     exposures: 0,
     estimated_time: '0'
   })
+  const [debug, setDebug] = React.useState(false)
 
+  const handleChangeDebug = (event) => {
+    setDebug(event.target.checked)
+  }
   const handleSelectPeriodClick = () => {
     setExposuresByPeriod([])
     setExecutedNightsByPeriod([])
@@ -153,7 +160,8 @@ function Skybot() {
     setBackdropOpen(true)
     createSkybotRun({
       date_initial: selectedDate[0],
-      date_final: selectedDate.length === 1 ? selectedDate[0] : selectedDate[1]
+      date_final: selectedDate.length === 1 ? selectedDate[0] : selectedDate[1],
+      debug: debug
     })
       .then((response) => {
         const { id } = response.data
@@ -425,6 +433,12 @@ function Skybot() {
             <Grid item xs={12}>
               <Card>
                 <CardContent>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={<Switch checked={debug} onChange={handleChangeDebug} />}
+                      label='Debug mode'
+                    />
+                  </FormGroup>                  
                   <Typography color='textSecondary' gutterBottom>
                     Click here to submit a job on the selected period
                   </Typography>

@@ -23,6 +23,7 @@ BIN_DIR = os.path.join(BASE_DIR, "bin")
 # estes diretorios estao montados no container utilizando variaveis de ambiente, mas para o container sempre vao ser
 # os mesmos listados aqui.
 LOG_DIR = "/log"
+LOGGING_LEVEL = "INFO"
 ARCHIVE_DIR = "/archive"
 PROCCESS_DIR = "/proccess"
 DES_CCD_CATALOGS_DIR = "/archive/des/public/catalogs/"
@@ -246,7 +247,7 @@ if DES_ARCHIVE_URL is not None:
 SKYBOT_SERVER = "http://vo.imcce.fr/webservices/skybot/"
 
 
-LOGGING_LEVEL = "INFO"
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

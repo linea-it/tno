@@ -6,12 +6,14 @@ from django.conf import settings
 from django.contrib.auth import logout
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from rest_framework.decorators import action
+from rest_framework.decorators import action, renderer_classes, api_view
 from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer
 
 
-@action(detail=False, methods=["GET"])
+@api_view(["GET"])
 def teste(request):
+
     if request.method == "GET":
         result = dict(
             {

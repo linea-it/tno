@@ -89,6 +89,28 @@ class AsteroidDao(DBBase):
 
         return row
 
+    def distinct_base_dynclass(self):
+        tbl = self.get_tbl()
+
+        stm = select([func.distinct(tbl.c.base_dynclass)])
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalars(stm)
+
+        return rows
+
+    def distinct_dynclass(self):
+        tbl = self.get_tbl()
+
+        stm = select([func.distinct(tbl.c.dynclass)])
+
+        self.debug_query(stm, True)
+
+        rows = self.fetch_scalars(stm)
+
+        return rows
+
     # def delete_all(self):
        
     #     # ! Deleta todos os registros na TNO_Occultations
