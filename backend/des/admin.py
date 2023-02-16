@@ -31,7 +31,7 @@ class ExposureAdmin(admin.ModelAdmin):
     )
 
     search_fields = ("id",)
-
+~
     # This will help you to disbale add functionality
     def has_add_permission(self, request):
         return False
@@ -68,7 +68,7 @@ class CcdAdmin(admin.ModelAdmin):
     )
 
     # This will help you to disbale add functionality
-    def has_add_permission(self, request):
+    def has_add_permission(self, request):~
         return False
 
     # This will help you to disable delete functionaliyt
@@ -100,7 +100,7 @@ class SkybotPositionAdmin(admin.ModelAdmin):
 
     # Troca o tipo de imput de Select para um text field com botao de busca
     # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
-    raw_id_fields = ("position", "ccd", "exposure")
+    raw_id_fields = ("position", "ccd", "exposure")~
 
     # Busca pelo nome do Asteroid
     search_fields = ("position__name",)
@@ -134,7 +134,7 @@ class SkybotJobAdmin(admin.ModelAdmin):
         "execution_time",
         "exposures",
         "ccds",
-        "nights",
+        "nights",~
     )
 
 @admin.register(OrbitTraceJob)
@@ -152,7 +152,7 @@ class OrbitTraceJobAdmin(admin.ModelAdmin):
         "exec_time",
     )
 
-
+~
 @admin.register(SkybotJobResult)
 class SkybotJobResultAdmin(admin.ModelAdmin):
     list_display = (
@@ -171,7 +171,7 @@ class SkybotJobResultAdmin(admin.ModelAdmin):
     raw_id_fields = (
         "job",
         "exposure",
-    )
+    )~
 
 
 @admin.register(SummaryDynclass)
@@ -187,7 +187,7 @@ class SummaryDynclassAdmin(admin.ModelAdmin):
         "g",
         "r",
         "i",
-        "z",
+        "z",~
         "y",
     )
 
@@ -255,7 +255,7 @@ class ObservationAdmin(admin.ModelAdmin):
         "mag_psf",
         "mag_psf_err",
     )
-
+~
     search_fields = ("name",)
 
     # Troca o tipo de imput de Select para um text field com botao de busca
