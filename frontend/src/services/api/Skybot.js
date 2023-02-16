@@ -109,3 +109,7 @@ export const getSkybotJobExposuresThatFailed = ({ id, pageSize, page }) => {
 export const clearDesDataPreparation = () => {
   return api.post('/des/clear_des_data_preparation_tables')
 }
+
+export const SubmitSkybotJobsBalanced = () => {
+  return api.post('/des/skybot_job/submit_job_balanced_periods/')
+}

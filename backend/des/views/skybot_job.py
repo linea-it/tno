@@ -137,7 +137,7 @@ class SkybotJobViewSet(
         return job
 
     @action(detail=False, methods=["post"])
-    def submit_job_balanced_periods(self):
+    def submit_job_balanced_periods(self, request):
         """
         Este endpoint Submete Jobs do Skybot em lotes para todo o periodo de observações do DES. 
         criando uma fila balanceada de jobs.
