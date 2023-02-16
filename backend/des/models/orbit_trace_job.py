@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from tno.models import BspPlanetary, LeapSecond
 
 
 class OrbitTraceJob(models.Model):
@@ -41,10 +42,15 @@ class OrbitTraceJob(models.Model):
         ),
     )
 
+    # Momento em que o Job foi submetido.
+    submit_time = models.DateTimeField(
+        verbose_name="Submit Time",
+        auto_now_add=True,
+    )
+
     # Momento em que o Job foi criado.
     start = models.DateTimeField(
-        verbose_name="Start",
-        auto_now_add=True,
+        verbose_name="Start", auto_now_add=False, null=True, blank=True
     )
 
     # Momento em que o Job foi finalizado.
@@ -62,12 +68,95 @@ class OrbitTraceJob(models.Model):
         verbose_name="Estimated Execution Time", null=True, blank=True
     )
 
-    # Pasta onde estão os dados do Job.
-    path = models.CharField(
-        max_length=2048,
-        verbose_name="Path",
-        help_text="Path to the directory where the job data is located.",
+    bsp_planetary = models.ForeignKey(
+        BspPlanetary,
+        on_delete=models.CASCADE,
+        verbose_name="Planetary Ephemeris",
     )
+
+    leap_seconds = models.ForeignKey(
+        LeapSecond,
+        on_delete=models.CASCADE,
+        verbose_name="Leap Second",
+    )
+
+    match_radius = models.FloatField(
+        default=2,
+        help_text="Exposure time of observation.",
+        verbose_name="Match Radius",
+    )
+
+    expected_asteroids = models.IntegerField(
+        default=0,
+        help_text="Expected Asteroids",
+        verbose_name="Expected asteroids",
+    )
+
+    processed_asteroids = models.IntegerField(
+        default=0,
+        help_text="Processed Asteroids",
+        verbose_name="Processed Asteroids",
+    )
+
+    filter_type = models.CharField(
+        max_length=100,
+        null=False,
+        blank=False,
+        verbose_name="Filter Type",
+    )
+
+    filter_value = models.CharField(
+        max_length=100,
+        null=False,
+        blank=False,
+        verbose_name="Filter Value",
+    )
+
+    count_asteroids = models.IntegerField(
+        default=0,
+        help_text="Asteroids Count",
+        verbose_name="Asteroids Count",
+    )
+
+    count_ccds = models.IntegerField(
+        default=0,
+        help_text="CCDs Count",
+        verbose_name="CCDs Count",
+    )
+
+    count_observations = models.IntegerField(
+        default=0,
+        help_text="Observations Count",
+        verbose_name="Observations Count",
+    )
+
+    count_success = models.IntegerField(
+        default=0,
+        help_text="Success Count",
+        verbose_name="Success Count",
+    )
+
+    count_failures = models.IntegerField(
+        default=0,
+        help_text="Failures Count",
+        verbose_name="Failures Count",
+    )
+
+    parsl_init_blocks = models.IntegerField(
+        default=0,
+        help_text="parsl_init_blocks",
+        verbose_name="parsl_init_blocks",
+    )
+
+    h_exec_time = models.IntegerField(
+        default=0,
+        help_text="h_exec_time",
+        verbose_name="h_exec_time",
+    )
+
+    observatory_location = models.JSONField()
+
+    time_profile = models.JSONField()
 
     results = models.CharField(
         max_length=2048,
@@ -82,5 +171,7 @@ class OrbitTraceJob(models.Model):
     # e a exceção e guardada neste campo.
     error = models.TextField(verbose_name="Error", null=True, blank=True)
 
+    traceback = models.TextField(verbose_name="Traceback", null=True, blank=True)
+    
     def __str__(self):
         return str(self.id)

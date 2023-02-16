@@ -16,6 +16,7 @@ from django.core.paginator import Paginator
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from tno.models import BspPlanetary, LeapSecond
 
 
 class OrbitTraceJobViewSet(
@@ -72,11 +73,13 @@ class OrbitTraceJobViewSet(
         # Recuperar o usuario que submeteu o Job.
         owner = self.request.user
 
-        # adicionar a hora inicial e final as datas
-        start = datetime.strptime(date_initial, "%Y-%m-%d").strftime("%Y-%m-%d 00:00:00")
+        # # adicionar a hora inicial e final as datas
+        # start = datetime.strptime(date_initial, "%Y-%m-%d").strftime("%Y-%m-%d 00:00:00")
 
-        end = datetime.strptime(date_final, "%Y-%m-%d").strftime("%Y-%m-%d 23:59:59")
+        # end = datetime.strptime(date_final, "%Y-%m-%d").strftime("%Y-%m-%d 23:59:59")
 
+        bsp_planetary = BspPlanetary.objects.get(name=params["bsp_planetary"].replace("\'", "\""));
+        leap_seconds = LeapSecond.objects.get(name=params["leap_second"].replace("\'", "\""));
 
         # Estimativa de tempo baseada na qtd de exposures a serem executadas.
         #estimated_time = self.estimate_execution_time(t_exposures)
@@ -84,8 +87,15 @@ class OrbitTraceJobViewSet(
         # Criar um model Skybot Job
         job = OrbitTraceJob(
             owner=owner,
+            submit_time=datetime.now(),
             date_initial=date_initial,
             date_final=date_final,
+            bsp_planetary=bsp_planetary,
+            leap_seconds=leap_seconds,
+            filter_type=params["filter_type"].replace("\'", "\""),
+            filter_value=params["filter_value"].replace("\'", "\""),
+            observatory_location = '[289.193583333,-30.16958333,2202.7]',
+            time_profile = 1,
             # Job começa com Status Idle.
             status=1,
             # Tempo de execução estimado
