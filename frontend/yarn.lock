@@ -2712,6 +2712,7 @@
 
 "@types/react@*", "@types/react@^16.8.0 || ^17.0.0 || ^18.0.0", "@types/react@^16.8.6", "@types/react@^16.8.6 || ^17.0.0", "@types/react@^16.9.0 || ^17.0.0 || ^18.0.0", "@types/react@^17.0.0 || ^18.0.0":
 <<<<<<< HEAD
+<<<<<<< HEAD
   "integrity" "sha512-1yIpQR2zdYu1Z/dc1OxC+MA6GR240u3gcnP4l6mvj/PJiVaqHsQPmWttsvHsfnhfPbU2FuGmo0wSITPygjBmsw=="
   "resolved" "https://registry.npmjs.org/@types/react/-/react-17.0.53.tgz"
   "version" "17.0.53"
@@ -2720,6 +2721,11 @@
   "resolved" "https://registry.npmjs.org/@types/react/-/react-18.0.25.tgz"
   "version" "18.0.25"
 >>>>>>> 03e317c (orbit trace migration)
+=======
+  "integrity" "sha512-1yIpQR2zdYu1Z/dc1OxC+MA6GR240u3gcnP4l6mvj/PJiVaqHsQPmWttsvHsfnhfPbU2FuGmo0wSITPygjBmsw=="
+  "resolved" "https://registry.npmjs.org/@types/react/-/react-17.0.53.tgz"
+  "version" "17.0.53"
+>>>>>>> 45288d4 (app)
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -14770,13 +14776,19 @@ http-proxy-agent@^4.0.1:
   "version" "0.0.6"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 45288d4 (app)
 "typescript@^3.2.1 || ^4", "typescript@>= 2.7", "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta":
   "integrity" "sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g=="
   "resolved" "https://registry.npmjs.org/typescript/-/typescript-4.9.5.tgz"
   "version" "4.9.5"
 
+<<<<<<< HEAD
 =======
 >>>>>>> 03e317c (orbit trace migration)
+=======
+>>>>>>> 45288d4 (app)
 "ua-parser-js@^0.7.30":
   "integrity" "sha512-f9BESNVhzlhEFf2CHMSj40NWOjYPl1YKYbrvIr/hFTDEmLq7SRbWvm7FcdcpCYT95zrOhC7gZSxjdnnTpBcwVw=="
   "resolved" "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.32.tgz"
