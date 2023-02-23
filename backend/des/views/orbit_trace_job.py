@@ -107,6 +107,23 @@ class OrbitTraceJobViewSet(
 
         return Response(result.data)
 
+    @action(detail=True, methods=["get"])
+    def status(self, request, pk=None):
+        """
+        #     Este endpoint obtem o status de um job.
+
+        #     Parameters:
+        #         pk (int): id do job.
+
+        #     Returns:
+        #         result (string): status do job.
+        #     """
+        job = OrbitTraceJob.objects.get(id=pk) if OrbitTraceJob.objects.filter(id=pk).exists() else None
+        if job is not None:
+            return Response(job.get_status_display())
+        else:
+            return Response("job not found")
+
     # @action(detail=True, methods=["post"])
     # def cancel_job(self, request, pk=None):
     #     """
