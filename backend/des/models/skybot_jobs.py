@@ -44,6 +44,12 @@ class SkybotJob(models.Model):
     )
 
     # Momento em que o Job foi criado.
+    submit_time = models.DateTimeField(
+        verbose_name="Submit Time",
+        auto_now_add=True,
+    )
+
+    # Momento em que o Job foi Iniciado
     start = models.DateTimeField(
         verbose_name="Start",
         auto_now_add=True,

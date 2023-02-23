@@ -574,6 +574,7 @@ class DesSkybotPipeline:
 
             # Altera o Status do Job para Running
             job["status"] = 2
+            job["start"] = datetime.now(timezone.utc)
 
             self.update_job(job)
 
