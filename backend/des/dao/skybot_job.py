@@ -54,6 +54,7 @@ class DesSkybotJobDao(DBBase):
             .where(self.tbl.c.id == int(id))
             .values(
                 status=job["status"],
+                start=job["start"],
                 exposures=job["exposures"],
                 nights=job["nights"],           
                 ccds=job["ccds"],  
