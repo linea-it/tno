@@ -8,6 +8,11 @@ import { getExecutedNightsByPeriodOrbit, getExposuresByPeriodOrbit } from '../..
 import useStyles from './styles'
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index'
 import { Label } from '../../../node_modules/@material-ui/icons/index'
+import {
+  getLeapSecondList,
+  getBspPlanetaryList,
+  createOrbitTraceJob
+} from '../../services/api/OrbitTrace'
 
 
 function OrbitTrace() {
@@ -24,6 +29,8 @@ function OrbitTrace() {
   const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([])
   const [selectedDateYears, setSelectedDateYears] = useState([])
   const [currentSelectedDateYear, setCurrentSelectedDateYear] = useState('')
+  const [bspPlanetaryList, setBspPlanetaryList] = useState([]) 
+  const [leapSecondList, setLeapSecondList] = useState([]) 
 
   const [hasJobRunningOrIdleFeedback, setHasJobRunningOrIdleFeedback] = useState(false)
   const [executionSummary, setExecutionSummary] = useState({
@@ -54,6 +61,18 @@ function OrbitTrace() {
   const filterValuehandleChange = (event) => {
     setFilteValue(event.target.value);
   };
+
+  useEffect(() => {
+    console.log("passou")
+    getBspPlanetaryList().then((list) => {
+      setBspPlanetaryList(list)
+    })
+
+    getLeapSecondList().then((list) => {
+      setLeapSecondList(list)
+    })
+    
+  }, []);
 
 
   const handleSelectAllPeriodClick = () => {
@@ -88,10 +107,43 @@ function OrbitTrace() {
         end: selectedDate[1],
         estimated_time: 0
       })
+
+
+      const data = {
+        date_initial: selectedDate[0],
+        date_final: selectedDate[1],
+        bsp_planetary: bspPlanetary,
+        leap_second: leapSecond,
+        filter_type: filterType,
+        filter_value :filterValue
+      }
+      console.log(data)
+      createOrbitTraceJob(data)
+        .then((response) => {
+          console.log("ORBIT TRACE INSERTED");
+          console.log(response);
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     })
 
 
   }
+
+  const populateBspPlanetaryOptions = () => {
+      return bspPlanetaryList.map((obj) => {
+        return <MenuItem value={obj.name}>{obj.name} 
+               </MenuItem>;
+      });
+  }
+
+  const populateLeapSecondOptions = () => {
+    return leapSecondList.map((obj) => {
+      return <MenuItem value={obj.name}>{obj.name} 
+             </MenuItem>;
+    });
+}
 
   return (
     <>
@@ -112,10 +164,8 @@ function OrbitTrace() {
                             value={bspPlanetary}
                             label="BSP Planetary"
                             onChange={bspPlanetaryhandleChange}
-                          >Ten
-                            <MenuItem value={10}>Ten</MenuItem>
-                            <MenuItem value={20}>Twenty</MenuItem>
-                            <MenuItem value={30}>Thirty</MenuItem>
+                          >
+                            {populateBspPlanetaryOptions()}
                           </Select>
                         </FormControl>
                       </Box>
@@ -132,9 +182,7 @@ function OrbitTrace() {
                             label="Leap Second"
                             onChange={lepSecondhandleChange}
                           >
-                            <MenuItem value={10}>Ten</MenuItem>
-                            <MenuItem value={20}>Twenty</MenuItem>
-                            <MenuItem value={30}>Thirty</MenuItem>
+                            {populateLeapSecondOptions()}
                           </Select>
                         </FormControl>
                       </Box>
