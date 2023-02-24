@@ -1,0 +1,14 @@
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<h1>404 Not Found</h1>
+<ul>
+<li>Code: NoSuchKey</li>
+<li>Message: The specified key does not exist.</li>
+<li>Key: linux/ubuntu/dists/jammy/pool/stable/amd64/docker-compose-plugin_2.6.0~ubuntu-focal_amd64.deb</li>
+<li>RequestId: BTXT247N7ZKPAZAR</li>
+<li>HostId: g2JX3N/1n9HQwcCOP/ubPlUrxFliv4A6SlJczoRk692uk+6JfrWE65EMRy/awsOGGvq/l11zXWo=</li>
+</ul>
+<hr/>
+</body>
+</html>
