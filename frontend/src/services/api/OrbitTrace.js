@@ -40,3 +40,7 @@ export const getExecutedNightsByPeriodOrbit = (initialDate, finalDate) =>
 export const getOrbitTraceJobById = ({ id }) => api.get(`/des/orbit_trace_job/${id}`).then((res) => res.data)
 
 export const getOrbitTraceJobStatusById = ({ id }) => api.get(`/des/orbit_trace_job/${id}/status`).then((res) => res.data)
+
+export const getLeapSecondList = () => api.get(`/leap_second/`).then((res) => res.data.results)
+
+export const getBspPlanetaryList = () => api.get(`/bsp_planetary/`).then((res) => res.data.results)
