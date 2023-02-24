@@ -23,6 +23,20 @@ export const getOrbitTraceJobList = ({ page, pageSize, ordering }) => {
   return api.get('/des/orbit_trace_job/', { params })
 }
 
+export const getExposuresByPeriodOrbit = (initialDate, finalDate) =>
+  api
+    .get('/des/exposure/count_by_period/', {
+      params: { start: initialDate, end: finalDate }
+    })
+    .then((res) => res.data)
+
+export const getExecutedNightsByPeriodOrbit = (initialDate, finalDate) =>
+  api
+    .get('/des/skybot_job_result/nites_executed_by_period/', {
+      params: { start: initialDate, end: finalDate }
+    })
+    .then((res) => res.data)
+
 export const getOrbitTraceJobById = ({ id }) => api.get(`/des/orbit_trace_job/${id}`).then((res) => res.data)
 
 export const getOrbitTraceJobStatusById = ({ id }) => api.get(`/des/orbit_trace_job/${id}/status`).then((res) => res.data)
