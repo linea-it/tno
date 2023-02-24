@@ -63,7 +63,6 @@ function OrbitTrace() {
   };
 
   useEffect(() => {
-    console.log("passou")
     getBspPlanetaryList().then((list) => {
       setBspPlanetaryList(list)
     })
@@ -120,7 +119,6 @@ function OrbitTrace() {
       console.log(data)
       createOrbitTraceJob(data)
         .then((response) => {
-          console.log("ORBIT TRACE INSERTED");
           console.log(response);
         })
         .catch((err) => {
