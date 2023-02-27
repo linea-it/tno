@@ -433,7 +433,7 @@ function Skybot() {
             <Grid item xs={12}>
               <Card>
                 <CardContent>
-                  <FormGroup>
+                  <FormGroup>open
                     <FormControlLabel
                       control={<Switch checked={debug} onChange={handleChangeDebug} />}
                       label='Debug mode'
@@ -451,7 +451,7 @@ function Skybot() {
           </Grid>
         </Grid>
 
-        <Grid item xs={12} md={8} lg={9}>
+        <Grid item xs={12} md={8} lg={9}open>
           <Card>
             <CardHeader title='Number of Exposures in Selected Period' />
             <CardContent>{renderExposurePlot()}</CardContent>

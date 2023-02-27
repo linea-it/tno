@@ -27,8 +27,10 @@ const useStyles = makeStyles((theme) => ({
   chipError: {
     color: `${theme.palette.error.light} !important`,
     borderColor: `${theme.palette.error.light} !important`
+  },
+  errorText:{
+    color: '#8B0000'
   }
-
 }))
 
 export default useStyles

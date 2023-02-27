@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { Backdrop, Box, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '../../../node_modules/@material-ui/core/index'
+import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '../../../node_modules/@material-ui/core/index'
 import DateRangePicker from '../../components/Date/DateRangePicker'
 import Table from '../../components/Table/index'
-import Snackbar from '../../components/Snackbar/index'
 import moment from '../../../node_modules/moment/moment'
 import { getExecutedNightsByPeriodOrbit, getExposuresByPeriodOrbit } from '../../services/api/OrbitTrace'
 import useStyles from './styles'
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index'
-import { Label } from '../../../node_modules/@material-ui/icons/index'
+
 import {
   getLeapSecondList,
   getBspPlanetaryList,
   createOrbitTraceJob
 } from '../../services/api/OrbitTrace'
-
+import { Alert } from '../../../node_modules/@material-ui/lab/index'
+import { bool } from 'prop-types'
 
 function OrbitTrace() {
   const navigate = useNavigate()
@@ -29,10 +29,21 @@ function OrbitTrace() {
   const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([])
   const [selectedDateYears, setSelectedDateYears] = useState([])
   const [currentSelectedDateYear, setCurrentSelectedDateYear] = useState('')
-  const [bspPlanetaryList, setBspPlanetaryList] = useState([]) 
-  const [leapSecondList, setLeapSecondList] = useState([]) 
+  const [bspPlanetaryList, setBspPlanetaryList] = useState([])
+  const [leapSecondList, setLeapSecondList] = useState([])
 
-  const [hasJobRunningOrIdleFeedback, setHasJobRunningOrIdleFeedback] = useState(false)
+  const [messageOpenSuccess, setMessageOpenSuccess] = useState(false)
+  const [messageTextSuccess, setMessageTextSuccess] = React.useState('');
+
+  const [messageOpenError, setMessageOpenError] = useState(false)
+  const [messageTextError, setMessageTextError] = React.useState('');
+
+  const [bspPlanetaryError, setBspPlanetaryError] = React.useState(false);
+  const [leapSecondError, setLeapSecondError] = React.useState(false);
+  const [filterTypeError, setFilterTypeError] = React.useState(false);
+  const [filterValueError, setFilteValueError] = React.useState(false);
+  const [selectedDateError, setselectedDateError] = React.useState(false);
+
   const [executionSummary, setExecutionSummary] = useState({
     visible: false,
     start: '',
@@ -40,6 +51,7 @@ function OrbitTrace() {
     exposures: 0,
     estimated_time: '0'
   })
+
 
   const [bspPlanetary, setBspPlanetary] = React.useState('');
   const [leapSecond, setLeapSecond] = React.useState('');
@@ -54,14 +66,6 @@ function OrbitTrace() {
     setLeapSecond(event.target.value);
   };
 
-  const filterTypehandleChange = (event) => {
-    setFilterType(event.target.value);
-  };
-
-  const filterValuehandleChange = (event) => {
-    setFilteValue(event.target.value);
-  };
-
   useEffect(() => {
     getBspPlanetaryList().then((list) => {
       setBspPlanetaryList(list)
@@ -70,9 +74,56 @@ function OrbitTrace() {
     getLeapSecondList().then((list) => {
       setLeapSecondList(list)
     })
-    
+
   }, []);
 
+  function validadeInformation() {
+    var verify = true;
+    setMessageTextError('');
+    setMessageOpenError(false);
+    setselectedDateError(false);
+    setBspPlanetaryError(false);
+    setLeapSecondError(false);
+    setFilterTypeError(false);
+    setFilteValueError(false);
+
+    if (selectedDate[0] == '') {
+      verify = false;
+      setselectedDateError(true);
+    }
+
+    if (selectedDate[1] == '') {
+      verify = false;
+      setselectedDateError(true);
+    }
+
+    if (bspPlanetary == '') {
+      verify = false;
+      setBspPlanetaryError(true);
+    }
+
+    if (leapSecond == '') {
+      verify = false;
+      setLeapSecondError(true);
+    }
+
+    if (filterType == '') {
+      verify = false;
+      setFilterTypeError(true);
+    }
+
+    if (filterValue == '') {
+      verify = false;
+      setFilteValueError(true);
+    }
+
+    if (!verify) {
+      setMessageTextError('All information must be completed.');
+      setMessageOpenError(true);
+    }
+
+    return verify;
+  }
 
   const handleSelectAllPeriodClick = () => {
     getExecutedNightsByPeriodOrbit('2012-11-10', '2019-02-28').then((res) => {
@@ -88,76 +139,86 @@ function OrbitTrace() {
     })
   }
 
-  const handleSelectPeriodClick = () => {
-    setExposuresByPeriod([])
-    setExecutedNightsByPeriod([])
+  const handleSelectPeriodClick = async () => {
 
-    getExposuresByPeriodOrbit(moment(selectedDate[0]).format('YYYY-MM-DD'), moment(selectedDate[1]).format('YYYY-MM-DD')).then((res) => {
-      const selectedYears = res.map((year) => moment(year.date).format('YYYY')).filter((year, i, yearArr) => yearArr.indexOf(year) === i)
+    if (await validadeInformation()) {
+      setExposuresByPeriod([])
+      setExecutedNightsByPeriod([])
 
-      setExposuresByPeriod(res)
-      setSelectedDateYears(selectedYears)
-      setCurrentSelectedDateYear(selectedYears[0])
+      getExposuresByPeriodOrbit(moment(selectedDate[0]).format('YYYY-MM-DD'), moment(selectedDate[1]).format('YYYY-MM-DD')).then((res) => {
+        const selectedYears = res.map((year) => moment(year.date).format('YYYY')).filter((year, i, yearArr) => yearArr.indexOf(year) === i)
 
-      setExecutionSummary({
-        visible: true,
-        exposures: res.reduce((a, b) => a + (b.count || 0), 0),
-        start: selectedDate[0],
-        end: selectedDate[1],
-        estimated_time: 0
+        setExposuresByPeriod(res)
+        setSelectedDateYears(selectedYears)
+        setCurrentSelectedDateYear(selectedYears[0])
+
+        setExecutionSummary({
+          visible: true,
+          exposures: res.reduce((a, b) => a + (b.count || 0), 0),
+          start: selectedDate[0],
+          end: selectedDate[1],
+          estimated_time: 0
+        })
+
+        const data = {
+          date_initial: selectedDate[0],
+          date_final: selectedDate[1],
+          bsp_planetary: bspPlanetary,
+          leap_second: leapSecond,
+          filter_type: filterType,
+          filter_value: filterValue
+        }
+        console.log(data)
+        createOrbitTraceJob(data)
+          .then((response) => {
+            console.log(response);
+            setBspPlanetary('');
+            setLeapSecond('');
+            setFilterType('');
+            setFilteValue('');
+            setBspPlanetaryList([]);
+            setLeapSecondList([]);
+            setMessageTextSuccess('Information registered successfully');
+            setMessageOpenSuccess(true);
+          })
+          .catch((err) => {
+            console.log(err)
+            setMessageTextError(err);
+            setMessageOpenError(true);
+          })
       })
-
-
-      const data = {
-        date_initial: selectedDate[0],
-        date_final: selectedDate[1],
-        bsp_planetary: bspPlanetary,
-        leap_second: leapSecond,
-        filter_type: filterType,
-        filter_value :filterValue
-      }
-      console.log(data)
-      createOrbitTraceJob(data)
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    })
-
-
+    }
   }
 
   const populateBspPlanetaryOptions = () => {
-      return bspPlanetaryList.map((obj) => {
-        return <MenuItem value={obj.name}>{obj.name} 
-               </MenuItem>;
-      });
+    return bspPlanetaryList.map((obj) => {
+      return <MenuItem value={obj.name}>{obj.name}
+      </MenuItem>;
+    });
   }
 
   const populateLeapSecondOptions = () => {
     return leapSecondList.map((obj) => {
-      return <MenuItem value={obj.name}>{obj.name} 
-             </MenuItem>;
+      return <MenuItem value={obj.name}>{obj.name}
+      </MenuItem>;
     });
-}
+  }
 
   return (
     <>
       <Grid container spacing={2} alignItems='stretch'>
-        <Grid item xs={12} md={4} lg={3}>
+        <Grid item xs={12} md={5} lg={4}>
           <Grid container direction='column' spacing={2}>
             <Grid item xs={12}>
               <Card>
                 <CardHeader title='Fetch Astrometry' />
-                <CardContent>                  
+                <CardContent>
                   <Grid container spacing={2} alignItems='stretch'>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth>
-                          <InputLabel>Bsp Planetary</InputLabel>
-                          <Select                           
+                          <InputLabel>Bsp Planetary *</InputLabel>
+                          <Select
                             id="bspPlanetary"
                             value={bspPlanetary}
                             label="BSP Planetary"
@@ -166,6 +227,7 @@ function OrbitTrace() {
                             {populateBspPlanetaryOptions()}
                           </Select>
                         </FormControl>
+                        {bspPlanetaryError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
                     </Grid>
                   </Grid>
@@ -173,8 +235,8 @@ function OrbitTrace() {
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth>
-                          <InputLabel>Leap Second</InputLabel>
-                          <Select                            
+                          <InputLabel>Leap Second *</InputLabel>
+                          <Select
                             id="lepSecond"
                             value={leapSecond}
                             label="Leap Second"
@@ -183,6 +245,7 @@ function OrbitTrace() {
                             {populateLeapSecondOptions()}
                           </Select>
                         </FormControl>
+                        {leapSecondError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
                     </Grid>
                   </Grid>
@@ -190,8 +253,9 @@ function OrbitTrace() {
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth>
-                          <TextField id="filterType" label="Filter Type" size="small" onChange={filterTypehandleChange} />
+                          <TextField id="filterType" label="Filter Type *" size="small" value={filterType} onChange={(e) => setFilterType(e.target.value)} />
                         </FormControl>
+                        {filterTypeError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
                     </Grid>
                   </Grid>
@@ -199,20 +263,22 @@ function OrbitTrace() {
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth>
-                          <TextField id="filterValue" label="Filter Value" size="small" onChange={filterValuehandleChange}/>
+                          <TextField id="filterValue" label="Filter Value *" size="small" value={filterValue} onChange={(e) => setFilteValue(e.target.value)} />
                         </FormControl>
+                        {filterValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
                     </Grid>
                   </Grid>
-                  <Grid container spacing={4} alignItems='stretch'>
+                  <Grid container spacing={2} alignItems='stretch'>
                     <Grid item xs={12}>
-                      <label>Ephemeris Range</label>
+                      <label>Ephemeris Range *</label>
                       <DateRangePicker
                         minDate={new Date('2012-11-10 04:09')}
                         maxDate={new Date('2019-02-28 00:00')}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
                       />
+                      {selectedDateError ? (<span className={classes.errorText}>Required field</span>) : ''}
                     </Grid>
                     <Grid item xs={12}>
                       <Button variant='contained' color='primary' fullWidth onClick={handleSelectPeriodClick}>
@@ -248,13 +314,26 @@ function OrbitTrace() {
           </Card>
         </Grid>
       </Grid>
-      {/* <Snackbar
-        open={hasJobRunningOrIdleFeedback}
-        autoHideDuration={5000}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        message="There's already a job running, so your job is currently idle."
-        onClose={() => setHasJobRunningOrIdleFeedback(false)}
-      /> */}
+      <Snackbar
+        open={messageOpenSuccess}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        onClose={() => setMessageOpenSuccess(false)}
+      >
+        <Alert severity="success" sx={{ width: '100%' }}>
+          {messageTextSuccess}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={messageOpenError}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        onClose={() => setMessageOpenError(false)}
+      >
+        <Alert severity="error" sx={{ width: '100%' }}>
+          {messageTextError}
+        </Alert>
+      </Snackbar>
       <Backdrop className={classes.backdrop} open={backdropOpen}>
         <CircularProgress color='inherit' />
       </Backdrop>
