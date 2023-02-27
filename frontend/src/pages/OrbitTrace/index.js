@@ -3,17 +3,17 @@ import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, Circula
 import DateRangePicker from '../../components/Date/DateRangePicker'
 import Table from '../../components/Table/index'
 import moment from '../../../node_modules/moment/moment'
-import { getExecutedNightsByPeriodOrbit, getExposuresByPeriodOrbit } from '../../services/api/OrbitTrace'
 import useStyles from './styles'
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index'
 
 import {
   getLeapSecondList,
   getBspPlanetaryList,
-  createOrbitTraceJob
+  createOrbitTraceJob,
+  getOrbitTraceJobList
 } from '../../services/api/OrbitTrace'
 import { Alert } from '../../../node_modules/@material-ui/lab/index'
-import { bool } from 'prop-types'
+import ColumnStatus from '../../components/Table/ColumnStatus'
 
 function OrbitTrace() {
   const navigate = useNavigate()
@@ -25,10 +25,6 @@ function OrbitTrace() {
 
   const [backdropOpen, setBackdropOpen] = useState(false)
   const [reload, setReload] = useState(true)
-  const [exposuresByPeriod, setExposuresByPeriod] = useState([])
-  const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([])
-  const [selectedDateYears, setSelectedDateYears] = useState([])
-  const [currentSelectedDateYear, setCurrentSelectedDateYear] = useState('')
   const [bspPlanetaryList, setBspPlanetaryList] = useState([])
   const [leapSecondList, setLeapSecondList] = useState([])
 
@@ -44,19 +40,14 @@ function OrbitTrace() {
   const [filterValueError, setFilteValueError] = React.useState(false);
   const [selectedDateError, setselectedDateError] = React.useState(false);
 
-  const [executionSummary, setExecutionSummary] = useState({
-    visible: false,
-    start: '',
-    end: '',
-    exposures: 0,
-    estimated_time: '0'
-  })
-
-
   const [bspPlanetary, setBspPlanetary] = React.useState('');
   const [leapSecond, setLeapSecond] = React.useState('');
   const [filterType, setFilterType] = React.useState('');
   const [filterValue, setFilteValue] = React.useState('');
+
+  const [tableData, setTableData] = useState([])
+  const [totalCount, setTotalCount] = useState(0)
+
 
   const bspPlanetaryhandleChange = (event) => {
     setBspPlanetary(event.target.value);
@@ -125,68 +116,33 @@ function OrbitTrace() {
     return verify;
   }
 
-  const handleSelectAllPeriodClick = () => {
-    getExecutedNightsByPeriodOrbit('2012-11-10', '2019-02-28').then((res) => {
-      const selectedYears = res.map((year) => moment(year.date).format('YYYY')).filter((year, i, yearArr) => yearArr.indexOf(year) === i)
-
-      setExposuresByPeriod(res)
-      setSelectedDateYears(selectedYears)
-      setCurrentSelectedDateYear(selectedYears[0])
-    })
-
-    getExecutedNightsByPeriodOrbit('2012-11-10', '2019-02-28').then((res) => {
-      setExecutedNightsByPeriod(res)
-    })
-  }
 
   const handleSelectPeriodClick = async () => {
 
     if (await validadeInformation()) {
-      setExposuresByPeriod([])
-      setExecutedNightsByPeriod([])
-
-      getExposuresByPeriodOrbit(moment(selectedDate[0]).format('YYYY-MM-DD'), moment(selectedDate[1]).format('YYYY-MM-DD')).then((res) => {
-        const selectedYears = res.map((year) => moment(year.date).format('YYYY')).filter((year, i, yearArr) => yearArr.indexOf(year) === i)
-
-        setExposuresByPeriod(res)
-        setSelectedDateYears(selectedYears)
-        setCurrentSelectedDateYear(selectedYears[0])
-
-        setExecutionSummary({
-          visible: true,
-          exposures: res.reduce((a, b) => a + (b.count || 0), 0),
-          start: selectedDate[0],
-          end: selectedDate[1],
-          estimated_time: 0
+      const data = {
+        date_initial: selectedDate[0],
+        date_final: selectedDate[1],
+        bsp_planetary: bspPlanetary,
+        leap_second: leapSecond,
+        filter_type: filterType,
+        filter_value: filterValue
+      }
+      createOrbitTraceJob(data)
+        .then((response) => {
+          setBspPlanetary('');
+          setLeapSecond('');
+          setFilterType('');
+          setFilteValue('');
+          setMessageTextSuccess('Information registered successfully');
+          setMessageOpenSuccess(true);
+          setReload((prevState) => !prevState)
         })
-
-        const data = {
-          date_initial: selectedDate[0],
-          date_final: selectedDate[1],
-          bsp_planetary: bspPlanetary,
-          leap_second: leapSecond,
-          filter_type: filterType,
-          filter_value: filterValue
-        }
-        console.log(data)
-        createOrbitTraceJob(data)
-          .then((response) => {
-            console.log(response);
-            setBspPlanetary('');
-            setLeapSecond('');
-            setFilterType('');
-            setFilteValue('');
-            setBspPlanetaryList([]);
-            setLeapSecondList([]);
-            setMessageTextSuccess('Information registered successfully');
-            setMessageOpenSuccess(true);
-          })
-          .catch((err) => {
-            console.log(err)
-            setMessageTextError(err);
-            setMessageOpenError(true);
-          })
-      })
+        .catch((err) => {
+          console.log(err)
+          setMessageTextError(err);
+          setMessageOpenError(true);
+        })
     }
   }
 
@@ -203,6 +159,73 @@ function OrbitTrace() {
       </MenuItem>;
     });
   }
+
+  const loadData = ({ sorting, pageSize, currentPage}) => {
+    getOrbitTraceJobList({
+      page: currentPage + 1,
+      pageSize,
+      ordering: sorting
+    }).then((res) => {
+      const { data } = res
+
+      setTableData(
+        data.results.map((row) => ({
+          detail: `/data-preparation/des/discovery/${row.id}`,
+          ...row
+        }))
+      )
+      setTotalCount(data.count)
+    })
+  }
+
+  const tableColumns = [
+    {
+      name: 'index',
+      title: ' ',
+      width: 70
+    },
+    {
+      name: 'id',
+      title: 'ID',
+      width: 80
+    },
+    {
+      name: 'status',
+      title: 'Status',
+      customElement: (row) => <ColumnStatus status={row.status} title={row.error_msg} />
+    },
+    {
+      name: 'owner',
+      title: 'Owner',
+      width: 130
+    },
+    {
+      name: 'start',
+      title: 'Execution Date',
+      width: 150,
+      customElement: (row) => row.start?<span title={moment(row.start).format('HH:mm:ss')}>{moment(row.start).format('YYYY-MM-DD')}</span>:<span>Not started</span>
+    },
+    {
+      name: 'execution_time',
+      title: 'Execution Time',
+      width: 150,
+      headerTooltip: 'Execution time',
+      align: 'center',
+      customElement: (row) => (row.execution_time ? row.execution_time.split('.')[0] : null)
+    },
+    {
+      name: 'date_initial',
+      title: 'First Night',
+      width: 130,
+      customElement: (row) => <span title={moment(row.start).format('HH:mm:ss')}>{row.date_initial}</span>
+    },
+    {
+      name: 'date_final',
+      title: 'Last Night',
+      width: 130,
+      customElement: (row) => <span title={moment(row.finish).format('HH:mm:ss')}>{row.date_final}</span>
+    }
+  ]
 
   return (
     <>
@@ -297,7 +320,7 @@ function OrbitTrace() {
         <Grid item xs={12}>
           <Card>
             <CardHeader title='History' />
-            {/* <CardContent>
+            <CardContent>
               <Table
                 columns={tableColumns}
                 data={tableData}
@@ -310,7 +333,7 @@ function OrbitTrace() {
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
               />
-            </CardContent> */}
+            </CardContent>
           </Card>
         </Grid>
       </Grid>
