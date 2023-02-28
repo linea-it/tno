@@ -16,22 +16,22 @@ import { Alert } from '../../../node_modules/@material-ui/lab/index'
 import ColumnStatus from '../../components/Table/ColumnStatus'
 
 function OrbitTrace() {
-  const navigate = useNavigate()
-  const classes = useStyles()
-  const selectedDateLocalStorage = localStorage.getItem('discoverySelectedDate')
+  const navigate = useNavigate();
+  const classes = useStyles();
+  const selectedDateLocalStorage = localStorage.getItem('discoverySelectedDate');
   const [selectedDate, setSelectedDate] = useState(
     selectedDateLocalStorage ? [JSON.parse(selectedDateLocalStorage).start, JSON.parse(selectedDateLocalStorage).end] : ['', '']
-  )
+  );
 
-  const [backdropOpen, setBackdropOpen] = useState(false)
-  const [reload, setReload] = useState(true)
-  const [bspPlanetaryList, setBspPlanetaryList] = useState([])
-  const [leapSecondList, setLeapSecondList] = useState([])
+  const [backdropOpen, setBackdropOpen] = useState(false);
+  const [reload, setReload] = useState(true);
+  const [bspPlanetaryList, setBspPlanetaryList] = useState([]);
+  const [leapSecondList, setLeapSecondList] = useState([]);
 
-  const [messageOpenSuccess, setMessageOpenSuccess] = useState(false)
+  const [messageOpenSuccess, setMessageOpenSuccess] = useState(false);
   const [messageTextSuccess, setMessageTextSuccess] = React.useState('');
 
-  const [messageOpenError, setMessageOpenError] = useState(false)
+  const [messageOpenError, setMessageOpenError] = useState(false);
   const [messageTextError, setMessageTextError] = React.useState('');
 
   const [bspPlanetaryError, setBspPlanetaryError] = React.useState(false);
@@ -45,8 +45,8 @@ function OrbitTrace() {
   const [filterType, setFilterType] = React.useState('');
   const [filterValue, setFilteValue] = React.useState('');
 
-  const [tableData, setTableData] = useState([])
-  const [totalCount, setTotalCount] = useState(0)
+  const [tableData, setTableData] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
 
 
   const bspPlanetaryhandleChange = (event) => {
