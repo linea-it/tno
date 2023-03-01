@@ -30,6 +30,14 @@ const useStyles = makeStyles((theme) => ({
   },
   errorText:{
     color: '#8B0000'
+  },
+  pad:{
+    paddingTop:'10px',
+    paddingBottom:'10px'
+  },
+  padDropBox:{
+    paddingTop:'2px',
+    paddingBottom:'2px'
   }
 }))
 

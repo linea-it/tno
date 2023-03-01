@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '../../../node_modules/@material-ui/core/index'
-import DateRangePicker from '../../components/Date/DateRangePicker'
+import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField, FormGroup, FormControlLabel, Typography, Switch } from '../../../node_modules/@material-ui/core/index'
 import Table from '../../components/Table/index'
 import moment from '../../../node_modules/moment/moment'
 import useStyles from './styles'
@@ -18,13 +17,10 @@ import { Alert } from '../../../node_modules/@material-ui/lab/index'
 import ColumnStatus from '../../components/Table/ColumnStatus'
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
 
+
 function OrbitTrace() {
   const navigate = useNavigate();
   const classes = useStyles();
-  const selectedDateLocalStorage = localStorage.getItem('discoverySelectedDate');
-  const [selectedDate, setSelectedDate] = useState(
-    selectedDateLocalStorage ? [JSON.parse(selectedDateLocalStorage).start, JSON.parse(selectedDateLocalStorage).end] : ['', '']
-  );
 
   const [backdropOpen, setBackdropOpen] = useState(false);
   const [reload, setReload] = useState(true);
@@ -32,6 +28,7 @@ function OrbitTrace() {
   const [leapSecondList, setLeapSecondList] = useState([]);
   const [filterValueList, setFilterValueList] = useState([]);
   const [filterTypeList, setFilterTypeList] = useState([]);
+  const [bspValueList, setbspValueList] = useState(['none', '10 days', '20 days', '30 days']);
 
   const [messageOpenSuccess, setMessageOpenSuccess] = useState(false);
   const [messageTextSuccess, setMessageTextSuccess] = React.useState('');
@@ -43,17 +40,23 @@ function OrbitTrace() {
   const [leapSecondError, setLeapSecondError] = React.useState(false);
   const [filterTypeError, setFilterTypeError] = React.useState(false);
   const [filterValueError, setFilteValueError] = React.useState(false);
-  const [selectedDateError, setselectedDateError] = React.useState(false);
+  const [bspValueError, setBspValueError] = React.useState(false);
 
   const [bspPlanetary, setBspPlanetary] = React.useState('');
   const [leapSecond, setLeapSecond] = React.useState('');
   const [filterType, setFilterType] = React.useState('');
   const [filterValue, setFilterValue] = React.useState('');
+  const [bspValue, setBspValue] = React.useState('');
 
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const useMountEffect = (fun) => useEffect(fun, []);
+  const [debug, setDebug] = React.useState(false)
+  const [disableSubmit, setDisableSubmit] = useState(true)
 
+  const handleChangeDebug = (event) => {
+    setDebug(event.target.checked)
+  }
 
   const bspPlanetaryhandleChange = (event) => {
     setBspPlanetary(event.target.value);
@@ -65,6 +68,10 @@ function OrbitTrace() {
 
   const filterTypehandleChange = (event) => {
     setFilterType(event.target.value);
+  };
+
+  const bspValuehandleChange = (event) => {
+    setBspValue(event.target.value);
   };
 
   const filterValuehandleChange = (event) => {
@@ -90,25 +97,21 @@ function OrbitTrace() {
 
   });
 
+  const handleSubmitJob = () => {
+    setDisableSubmit(true)
+
+    //handleSubmit()
+  }
+
   function validadeInformation() {
     var verify = true;
     setMessageTextError('');
     setMessageOpenError(false);
-    setselectedDateError(false);
     setBspPlanetaryError(false);
     setLeapSecondError(false);
     setFilterTypeError(false);
     setFilteValueError(false);
-
-    if (selectedDate[0] == '') {
-      verify = false;
-      setselectedDateError(true);
-    }
-
-    if (selectedDate[1] == '') {
-      verify = false;
-      setselectedDateError(true);
-    }
+    setBspValueError(false);
 
     if (bspPlanetary == '') {
       verify = false;
@@ -143,8 +146,8 @@ function OrbitTrace() {
 
     if (await validadeInformation()) {
       const data = {
-        date_initial: selectedDate[0],
-        date_final: selectedDate[1],
+        date_initial: '',
+        date_final: '',
         bsp_planetary: bspPlanetary,
         leap_second: leapSecond,
         filter_type: filterType,
@@ -196,7 +199,14 @@ function OrbitTrace() {
     });
   }
 
-  const loadData = ({ sorting, pageSize, currentPage}) => {
+  const populateBspValueOptions = () => {
+    return bspValueList.map((value) => {
+      return <MenuItem value={value}>{value}
+      </MenuItem>;
+    });
+  }
+
+  const loadData = ({ sorting, pageSize, currentPage }) => {
     getOrbitTraceJobList({
       page: currentPage + 1,
       pageSize,
@@ -250,7 +260,7 @@ function OrbitTrace() {
       name: 'start',
       title: 'Execution Date',
       width: 150,
-      customElement: (row) => row.start?<span title={moment(row.start).format('HH:mm:ss')}>{moment(row.start).format('YYYY-MM-DD')}</span>:<span>Not started</span>
+      customElement: (row) => row.start ? <span title={moment(row.start).format('HH:mm:ss')}>{moment(row.start).format('YYYY-MM-DD')}</span> : <span>Not started</span>
     },
     {
       name: 'execution_time',
@@ -283,7 +293,7 @@ function OrbitTrace() {
               <Card>
                 <CardHeader title='Fetch Astrometry' />
                 <CardContent>
-                  <Grid container spacing={2} alignItems='stretch'>
+                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth>
@@ -301,7 +311,7 @@ function OrbitTrace() {
                       </Box>
                     </Grid>
                   </Grid>
-                  <Grid container spacing={2} alignItems='stretch'>
+                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth>
@@ -319,7 +329,7 @@ function OrbitTrace() {
                       </Box>
                     </Grid>
                   </Grid>
-                  <Grid container spacing={2} alignItems='stretch'>
+                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
                         {/* <FormControl fullWidth>
@@ -340,7 +350,7 @@ function OrbitTrace() {
                       </Box>
                     </Grid>
                   </Grid>
-                  <Grid container spacing={2} alignItems='stretch'>
+                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
                         {/* <FormControl fullWidth>
@@ -361,27 +371,42 @@ function OrbitTrace() {
                       </Box>
                     </Grid>
                   </Grid>
-                  <Grid container spacing={2} alignItems='stretch'>
+                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
-                      <label>Ephemeris Range *</label>
-                      <DateRangePicker
-                        minDate={new Date('2012-11-10 04:09')}
-                        maxDate={new Date('2019-02-28 00:00')}
-                        selectedDate={selectedDate}
-                        setSelectedDate={setSelectedDate}
-                      />
-                      {selectedDateError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                      <Box sx={{ minWidth: 120 }}>                        
+                        <FormControl fullWidth>
+                          <InputLabel>BSP Value *</InputLabel>
+                          <Select
+                            id="bspValue"
+                            value={bspValue}
+                            label="BSP Value"
+                            onChange={bspValuehandleChange}
+                          >
+                            {populateBspValueOptions()}
+                          </Select>
+                        </FormControl>
+                        {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                      </Box>
                     </Grid>
-                    <Grid item xs={12}>
+                  </Grid>
+                  <Grid item spacing={2} xs={12} className={classes.pad}>                                     
+                        <FormGroup>
+                          <FormControlLabel
+                            control={<Switch checked={debug} onChange={handleChangeDebug} />}
+                            label='Debug mode'
+                          />
+                        </FormGroup>                       
+                  </Grid>
+                  <Grid item spacing={2}  xs={12}>
                       <Button variant='contained' color='primary' fullWidth onClick={handleSelectPeriodClick}>
                         Execute
                       </Button>
                     </Grid>
-                  </Grid>
                 </CardContent>
               </Card>
             </Grid>
           </Grid>
+
         </Grid>
       </Grid>
 
