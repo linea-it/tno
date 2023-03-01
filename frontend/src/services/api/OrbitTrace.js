@@ -30,3 +30,7 @@ export const getOrbitTraceJobStatusById = ({ id }) => api.get(`/des/orbit_trace_
 export const getLeapSecondList = () => api.get(`/leap_second/`).then((res) => res.data.results)
 
 export const getBspPlanetaryList = () => api.get(`/bsp_planetary/`).then((res) => res.data.results)
+
+export const getFilterValueList = () => api.get(`/asteroids/dynclasses/`).then((res) => res.data.results)
+
+export const getFilterTypeList = () => api.get(`/asteroids/base_dynclasses/`).then((res) => res.data.results)

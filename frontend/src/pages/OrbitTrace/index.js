@@ -10,10 +10,13 @@ import {
   getLeapSecondList,
   getBspPlanetaryList,
   createOrbitTraceJob,
-  getOrbitTraceJobList
+  getOrbitTraceJobList,
+  getFilterTypeList,
+  getFilterValueList,
 } from '../../services/api/OrbitTrace'
 import { Alert } from '../../../node_modules/@material-ui/lab/index'
 import ColumnStatus from '../../components/Table/ColumnStatus'
+import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
 
 function OrbitTrace() {
   const navigate = useNavigate();
@@ -27,6 +30,8 @@ function OrbitTrace() {
   const [reload, setReload] = useState(true);
   const [bspPlanetaryList, setBspPlanetaryList] = useState([]);
   const [leapSecondList, setLeapSecondList] = useState([]);
+  const [filterValueList, setFilterValueList] = useState([]);
+  const [filterTypeList, setFilterTypeList] = useState([]);
 
   const [messageOpenSuccess, setMessageOpenSuccess] = useState(false);
   const [messageTextSuccess, setMessageTextSuccess] = React.useState('');
@@ -43,21 +48,30 @@ function OrbitTrace() {
   const [bspPlanetary, setBspPlanetary] = React.useState('');
   const [leapSecond, setLeapSecond] = React.useState('');
   const [filterType, setFilterType] = React.useState('');
-  const [filterValue, setFilteValue] = React.useState('');
+  const [filterValue, setFilterValue] = React.useState('');
 
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
+  const useMountEffect = (fun) => useEffect(fun, []);
 
 
   const bspPlanetaryhandleChange = (event) => {
     setBspPlanetary(event.target.value);
   };
 
-  const lepSecondhandleChange = (event) => {
+  const leapSecondhandleChange = (event) => {
     setLeapSecond(event.target.value);
   };
 
-  useEffect(() => {
+  const filterTypehandleChange = (event) => {
+    setFilterType(event.target.value);
+  };
+
+  const filterValuehandleChange = (event) => {
+    setFilterValue(event.target.value);
+  };
+
+  useMountEffect(() => {
     getBspPlanetaryList().then((list) => {
       setBspPlanetaryList(list)
     })
@@ -66,7 +80,15 @@ function OrbitTrace() {
       setLeapSecondList(list)
     })
 
-  }, []);
+    getFilterTypeList().then((list) => {
+      setFilterTypeList(list)
+    })
+
+    getFilterValueList().then((list) => {
+      setFilterValueList(list)
+    })
+
+  });
 
   function validadeInformation() {
     var verify = true;
@@ -133,7 +155,7 @@ function OrbitTrace() {
           setBspPlanetary('');
           setLeapSecond('');
           setFilterType('');
-          setFilteValue('');
+          setFilterValue('');
           setMessageTextSuccess('Information registered successfully');
           setMessageOpenSuccess(true);
           setReload((prevState) => !prevState)
@@ -160,6 +182,20 @@ function OrbitTrace() {
     });
   }
 
+  const populateFilterTypeOptions = () => {
+    return filterTypeList.map((type) => {
+      return <MenuItem value={type}>{type}
+      </MenuItem>;
+    });
+  }
+
+  const populateFilterValueOptions = () => {
+    return filterValueList.map((value) => {
+      return <MenuItem value={value}>{value}
+      </MenuItem>;
+    });
+  }
+
   const loadData = ({ sorting, pageSize, currentPage}) => {
     getOrbitTraceJobList({
       page: currentPage + 1,
@@ -167,10 +203,9 @@ function OrbitTrace() {
       ordering: sorting
     }).then((res) => {
       const { data } = res
-
       setTableData(
         data.results.map((row) => ({
-          detail: `/data-preparation/des/discovery/${row.id}`,
+          detail: `/data-preparation/des/orbittracedetail/${row.id}`,
           ...row
         }))
       )
@@ -188,6 +223,18 @@ function OrbitTrace() {
       name: 'id',
       title: 'ID',
       width: 80
+    },
+    {
+      name: 'detail',
+      title: 'Detail',
+      width: 80,
+      customElement: (row) => (
+        <Button onClick={() => navigate(row.detail)}>
+          <InfoOutlinedIcon />
+        </Button>
+      ),
+      align: 'center',
+      sortingEnabled: false
     },
     {
       name: 'status',
@@ -263,7 +310,7 @@ function OrbitTrace() {
                             id="lepSecond"
                             value={leapSecond}
                             label="Leap Second"
-                            onChange={lepSecondhandleChange}
+                            onChange={leapSecondhandleChange}
                           >
                             {populateLeapSecondOptions()}
                           </Select>
@@ -275,8 +322,19 @@ function OrbitTrace() {
                   <Grid container spacing={2} alignItems='stretch'>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth>
+                        {/* <FormControl fullWidth>
                           <TextField id="filterType" label="Filter Type *" size="small" value={filterType} onChange={(e) => setFilterType(e.target.value)} />
+                        </FormControl> */}
+                        <FormControl fullWidth>
+                          <InputLabel>Filter Type *</InputLabel>
+                          <Select
+                            id="filterType"
+                            value={filterType}
+                            label="Filter Type"
+                            onChange={filterTypehandleChange}
+                          >
+                            {populateFilterTypeOptions()}
+                          </Select>
                         </FormControl>
                         {filterTypeError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
@@ -285,8 +343,19 @@ function OrbitTrace() {
                   <Grid container spacing={2} alignItems='stretch'>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
+                        {/* <FormControl fullWidth>
+                          <TextField id="filterValue" label="Filter Value *" size="small" value={filterValue} onChange={(e) => setFilterValue(e.target.value)} />
+                        </FormControl> */}
                         <FormControl fullWidth>
-                          <TextField id="filterValue" label="Filter Value *" size="small" value={filterValue} onChange={(e) => setFilteValue(e.target.value)} />
+                          <InputLabel>Filter Value *</InputLabel>
+                          <Select
+                            id="filterValue"
+                            value={filterValue}
+                            label="Filter Value"
+                            onChange={filterValuehandleChange}
+                          >
+                            {populateFilterValueOptions()}
+                          </Select>
                         </FormControl>
                         {filterValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>

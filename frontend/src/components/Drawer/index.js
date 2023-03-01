@@ -74,7 +74,8 @@ const routes = [
   { path: '/data-preparation/des/management', title: 'DES Management' },
   { path: '/predict_occultation', title: 'Predict Occultation' },
   { path: '/occultation', title: 'Occultation' },
-  { path: '/dashboard', title: 'Dashboard' }
+  { path: '/dashboard', title: 'Dashboard' },
+  { path: '/data-preparation/des/orbittracedetail/:id', title: 'Orbit Trace Details' },
 ]
 
 const useCurrentPath = () => {
