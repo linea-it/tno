@@ -59,17 +59,14 @@ class OrbitTraceJobViewSet(
         de tempos em tempos os jobs neste status e inicia o processamento.
 
         Parameters:
-            date_initial (datetime): data inicial.
+            bsp_planetary (string): .
 
-            date_final (datetime): data Final.
+            leap_second (string): .
 
         Returns:
-            job (SkybotJobSerializer): Job que acabou de ser criado.
+            job (OrbitTraceJobSerializer): Job que acabou de ser criado.
         """
         params = request.data
-
-        date_initial = params["date_initial"]
-        date_final = params["date_final"]
 
         # Recuperar o usuario que submeteu o Job.
         owner = self.request.user
@@ -89,14 +86,11 @@ class OrbitTraceJobViewSet(
         job = OrbitTraceJob(
             owner=owner,
             submit_time=datetime.now(),
-            date_initial=date_initial,
-            date_final=date_final,
             bsp_planetary=bsp_planetary,
             leap_seconds=leap_seconds,
             filter_type=params["filter_type"].replace("\'", "\""),
             filter_value=params["filter_value"].replace("\'", "\""),
-            observatory_location = '[289.193583333,-30.16958333,2202.7]',
-            time_profile = 1,
+            time_profile = '[]',
             # Job começa com Status Idle.
             status=1,
             # Tempo de execução estimado

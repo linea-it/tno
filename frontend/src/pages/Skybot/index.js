@@ -433,7 +433,7 @@ function Skybot() {
             <Grid item xs={12}>
               <Card>
                 <CardContent>
-                  <FormGroup>open
+                  <FormGroup>
                     <FormControlLabel
                       control={<Switch checked={debug} onChange={handleChangeDebug} />}
                       label='Debug mode'

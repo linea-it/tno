@@ -15,19 +15,6 @@ class OrbitTraceJob(models.Model):
         verbose_name="Owner",
         related_name="des_orbitTrace_run",
     )
-
-    # data inicial usada para selecionar as exposições que serão processadas.
-    date_initial = models.DateField(
-        verbose_name="Date Initial",
-        auto_now_add=False,
-    )
-
-    # data Final usado para selecionar as exposições que serão processadas
-    date_final = models.DateField(
-        verbose_name="Date Final",
-        auto_now_add=False,
-    )
-
     # Status da execução.
     status = models.IntegerField(
         verbose_name="Status",
@@ -86,18 +73,6 @@ class OrbitTraceJob(models.Model):
         verbose_name="Match Radius",
     )
 
-    expected_asteroids = models.IntegerField(
-        default=0,
-        help_text="Expected Asteroids",
-        verbose_name="Expected asteroids",
-    )
-
-    processed_asteroids = models.IntegerField(
-        default=0,
-        help_text="Processed Asteroids",
-        verbose_name="Processed Asteroids",
-    )
-
     filter_type = models.CharField(
         max_length=100,
         null=False,
@@ -154,17 +129,36 @@ class OrbitTraceJob(models.Model):
         verbose_name="h_exec_time",
     )
 
-    observatory_location = models.JSONField()
+    bps_days_to_expire = models.IntegerField(
+        default=0,
+        help_text="bps_days_to_expire",
+        verbose_name="bps_days_to_expire",
+    )
+
+    #falso = todos os arquivosw retornados pelo skybot são apagados
+    #true = os arquivos ficam na máquina referenciada no campo path
+    debug = models.BooleanField(
+        default=False,
+        help_text="Debug",
+        verbose_name="Debug",
+    )
 
     time_profile = models.JSONField()
 
-    results = models.CharField(
+    # results = models.CharField(
+    #     max_length=2048,
+    #     verbose_name="Results",
+    #     help_text="Filepath to the results.csv. this file contains the results of the job.",
+    #     null=True,
+    #     blank=True,
+    #     default=None,
+    # )
+
+    # Pasta onde estão os dados do Job.
+    path = models.CharField(
         max_length=2048,
-        verbose_name="Results",
-        help_text="Filepath to the results.csv. this file contains the results of the job.",
-        null=True,
-        blank=True,
-        default=None,
+        verbose_name="Path",
+        help_text="Path to the directory where the job data is located.",
     )
 
     # Em caso de erro o Job fica com status 'Failed'

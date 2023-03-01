@@ -10,8 +10,6 @@ class OrbitTraceJobSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "owner",
-            "date_initial",
-            "date_final",
             "status",
             "submit_time",
             "start",
@@ -20,10 +18,7 @@ class OrbitTraceJobSerializer(serializers.ModelSerializer):
             "estimated_execution_time",
             "bsp_planetary",
             "leap_seconds",
-            "observatory_location",
             "match_radius",
-            "expected_asteroids",
-            "processed_asteroids",
             "filter_type",
             "filter_value",
             "count_asteroids",
@@ -33,8 +28,12 @@ class OrbitTraceJobSerializer(serializers.ModelSerializer):
             "count_failures",
             "parsl_init_blocks",
             "h_exec_time",
-            "results",
+            "bps_days_to_expire",
+            "debug",
+            "time_profile",
+            "path",
             "error",
+            "traceback",
         )
 
     def get_owner(self, obj):
