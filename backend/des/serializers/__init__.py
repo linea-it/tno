@@ -2,6 +2,7 @@ from .exposure import ExposureSerializer
 from .ccd import CcdSerializer
 from .skybot_job import SkybotJobSerializer
 from .orbit_trace_job import OrbitTraceJobSerializer
+from .orbit_trace_job_result import OrbitTraceJobResultSerializer
 from .skybot_job_result import SkybotJobResultSerializer
 from .skybot_position import SkybotPositionSerializer
 from .summary_dynclass import SummaryDynclassSerializer

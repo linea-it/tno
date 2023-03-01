@@ -5,6 +5,7 @@ from .models import (
     Exposure,
     SkybotJob,
     OrbitTraceJob,
+    OrbitTraceJobResult,
     SkybotJobResult,
     SkybotPosition,
     SummaryDynclass,
@@ -168,6 +169,19 @@ class SkybotJobResultAdmin(admin.ModelAdmin):
     raw_id_fields = (
         "job",
         "exposure",
+    )
+
+@admin.register(OrbitTraceJobResult)
+class OrbitTraceJobResultAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "status",
+        "asteroid_name",
+        "asteroid_number",
+        "base_dynclass",
+        "dynclass",
+        "observations",
+        "ccds",
     )
 
 
