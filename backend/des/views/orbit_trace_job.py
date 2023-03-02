@@ -90,6 +90,8 @@ class OrbitTraceJobViewSet(
             leap_seconds=leap_seconds,
             filter_type=params["filter_type"].replace("\'", "\""),
             filter_value=params["filter_value"].replace("\'", "\""),
+            debug=bool(params["debug"].replace("\'", "\"")),
+            bps_days_to_expire=params["bps_days_to_expire"].replace("\'", "\""),
             time_profile = '[]',
             # Job começa com Status Idle.
             status=1,

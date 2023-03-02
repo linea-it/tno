@@ -1,13 +1,13 @@
 import { api } from './Api'
 
-export const createOrbitTraceJob = ({ date_initial, date_final, bsp_planetary, leap_second, filter_type, filter_value }) => {
+export const createOrbitTraceJob = ({ bsp_planetary, leap_second, filter_type, filter_value, debug, bps_days_to_expire}) => {
   const params = {
-    date_initial: date_initial,
-    date_final: date_final,
     bsp_planetary: bsp_planetary,
     leap_second: leap_second,
     filter_type: filter_type,
-    filter_value: filter_value
+    filter_value: filter_value,
+    debug: debug,
+    bps_days_to_expire: bps_days_to_expire
   }
 
   return api.post('/des/orbit_trace_job/submit_job/', params)
@@ -31,6 +31,8 @@ export const getLeapSecondList = () => api.get(`/leap_second/`).then((res) => re
 
 export const getBspPlanetaryList = () => api.get(`/bsp_planetary/`).then((res) => res.data.results)
 
-export const getFilterValueList = () => api.get(`/asteroids/dynclasses/`).then((res) => res.data.results)
+export const getDynClassList = () => api.get(`/asteroids/dynclasses/`).then((res) => res.data.results)
 
-export const getFilterTypeList = () => api.get(`/asteroids/base_dynclasses/`).then((res) => res.data.results)
+export const getBaseDynClassList = () => api.get(`/asteroids/base_dynclasses/`).then((res) => res.data.results)
+
+export const getAsteroidsList = () => api.get(`/asteroids/`).then((res) => res.data.results)
