@@ -26,356 +26,356 @@ function OrbitTraceDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const classes = useStyles()
-  // const [skybotJob, setSkybotJob] = useState({})
-  // const [summaryExecution, setSummaryExecution] = useState([])
-  // const [summaryResults, setSummaryResults] = useState([])
-  // const [progress, setProgress] = useState({
-  //   request: {
-  //     status: 'completed',
-  //     exposures: 0,
-  //     current: 0,
-  //     average_time: 0,
-  //     time_estimate: 0,
-  //     exposures_failed: 0,
-  //   },
-  //   loaddata: {
-  //     status: 'completed',
-  //     exposures: 0,
-  //     current: 0,
-  //     average_time: 0,
-  //     time_estimate: 0,
-  //     exposures_failed: 0,
-  //   }
-  // })
-  // const [loadProgress, setLoadProgress] = useState(false)
-  // const [isJobCanceled, setIsJobCanceled] = useState(false)
-  // const [tableData, setTableData] = useState([])
-  // const [hasCircularProgress, setHasCircularProgress] = useState(true)
+  const [skybotJob, setSkybotJob] = useState({})
+  const [summaryExecution, setSummaryExecution] = useState([])
+  const [summaryResults, setSummaryResults] = useState([])
+  const [progress, setProgress] = useState({
+    request: {
+      status: 'completed',
+      exposures: 0,
+      current: 0,
+      average_time: 0,
+      time_estimate: 0,
+      exposures_failed: 0,
+    },
+    loaddata: {
+      status: 'completed',
+      exposures: 0,
+      current: 0,
+      average_time: 0,
+      time_estimate: 0,
+      exposures_failed: 0,
+    }
+  })
+  const [loadProgress, setLoadProgress] = useState(false)
+  const [isJobCanceled, setIsJobCanceled] = useState(false)
+  const [tableData, setTableData] = useState([])
+  const [hasCircularProgress, setHasCircularProgress] = useState(true)
 
-  // // Initiating totalCount as null so that it passes the conditional rendering,
-  // // in case of nor exposure, and calls the function loadData.
-  // const [totalCount, setTotalCount] = useState(null)
+  // Initiating totalCount as null so that it passes the conditional rendering,
+  // in case of nor exposure, and calls the function loadData.
+  const [totalCount, setTotalCount] = useState(null)
 
-  // const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([])
-  // const [currentYearExecutedNights, setCurrentYearExecutedNights] = useState([])
+  const [executedNightsByPeriod, setExecutedNightsByPeriod] = useState([])
+  const [currentYearExecutedNights, setCurrentYearExecutedNights] = useState([])
 
-  // const [currentSelectedDateYear, setCurrentSelectedDateYear] = useState('')
-  // const [selectedDateYears, setSelectedDateYears] = useState([])
+  const [currentSelectedDateYear, setCurrentSelectedDateYear] = useState('')
+  const [selectedDateYears, setSelectedDateYears] = useState([])
 
-  // const [dynclassAsteroids, setDynclassAsteroids] = useState([])
+  const [dynclassAsteroids, setDynclassAsteroids] = useState([])
 
-  // const [tableErrorData, setTableErrorData] = useState([])
-  // const [totalErrorCount, setTotalErrorCount] = useState(0)
+  const [tableErrorData, setTableErrorData] = useState([])
+  const [totalErrorCount, setTotalErrorCount] = useState(0)
 
-  // const handleBackNavigation = () => navigate(-1)
+  const handleBackNavigation = () => navigate(-1)
 
-  // const haveError = totalErrorCount > 0 && 'results' in skybotJob
+  const haveError = totalErrorCount > 0 && 'results' in skybotJob
 
-  // useEffect(() => {
-  //   getSkybotProgress(id)
-  //     .then((data) => {
-  //       setProgress(data)
-  //       setHasCircularProgress(false)
-  //     })
-  //     .catch(() => {
-  //       setHasCircularProgress(true)
-  //     })
-  // }, [loadProgress, id])
+  useEffect(() => {
+    getSkybotProgress(id)
+      .then((data) => {
+        setProgress(data)
+        setHasCircularProgress(false)
+      })
+      .catch(() => {
+        setHasCircularProgress(true)
+      })
+  }, [loadProgress, id])
 
-  // const tableColumns = [
-  //   {
-  //     name: 'id',
-  //     title: 'Details',
-  //     width: 110,
-  //     customElement: (row) => {
-  //       if (row.positions === 0) {
-  //         return <span>-</span>
-  //       }
-  //       return (
-  //         <Button onClick={() => navigate(`/data-preparation/des/discovery/asteroid/${row.id}`)}>
-  //           <InfoOutlinedIcon />
-  //         </Button>
-  //       )
-  //     },
-  //     sortingEnabled: false,
-  //     align: 'center'
-  //   },
-  //   {
-  //     name: 'success',
-  //     title: 'Status',
-  //     align: 'center',
+  const tableColumns = [
+    {
+      name: 'id',
+      title: 'Details',
+      width: 110,
+      customElement: (row) => {
+        if (row.positions === 0) {
+          return <span>-</span>
+        }
+        return (
+          <Button onClick={() => navigate(`/data-preparation/des/discovery/asteroid/${row.id}`)}>
+            <InfoOutlinedIcon />
+          </Button>
+        )
+      },
+      sortingEnabled: false,
+      align: 'center'
+    },
+    {
+      name: 'success',
+      title: 'Status',
+      align: 'center',
 
-  //     customElement: (row) => <ColumnStatus status={row.success ? 'success' : 'failure'} />,
-  //     width: 130
-  //   },
-  //   {
-  //     name: 'exposure',
-  //     title: 'Exposure #'
-  //   },
-  //   {
-  //     name: 'band',
-  //     title: 'Band',
-  //     width: 80
-  //   },
-  //   {
-  //     name: 'date_obs',
-  //     title: 'Observation Date',
-  //     width: 150,
-  //     customElement: (row) => (row.execution_time ? moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss') : '-')
-  //   },
-  //   {
-  //     name: 'positions',
-  //     title: '# Observations',
-  //     width: 140
-  //   },
-  //   {
-  //     name: 'inside_ccd',
-  //     title: '# SSOs In CCDs',
-  //     width: 150
-  //   },
-  //   {
-  //     name: 'outside_ccd',
-  //     title: '# SSOs Out CCDs',
-  //     width: 160
-  //   },
-  //   {
-  //     name: 'execution_time',
-  //     title: 'Execution Time',
-  //     width: 150,
-  //     customElement: (row) => (row.execution_time ? row.execution_time.split('.')[0] : '-')
-  //   }
-  // ]
+      customElement: (row) => <ColumnStatus status={row.success ? 'success' : 'failure'} />,
+      width: 130
+    },
+    {
+      name: 'exposure',
+      title: 'Exposure #'
+    },
+    {
+      name: 'band',
+      title: 'Band',
+      width: 80
+    },
+    {
+      name: 'date_obs',
+      title: 'Observation Date',
+      width: 150,
+      customElement: (row) => (row.execution_time ? moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss') : '-')
+    },
+    {
+      name: 'positions',
+      title: '# Observations',
+      width: 140
+    },
+    {
+      name: 'inside_ccd',
+      title: '# SSOs In CCDs',
+      width: 150
+    },
+    {
+      name: 'outside_ccd',
+      title: '# SSOs Out CCDs',
+      width: 160
+    },
+    {
+      name: 'execution_time',
+      title: 'Execution Time',
+      width: 150,
+      customElement: (row) => (row.execution_time ? row.execution_time.split('.')[0] : '-')
+    }
+  ]
 
-  // const dynclassAsteroidsColumns = [
-  //   {
-  //     name: 'dynclass',
-  //     title: 'Dynamic Class',
-  //     width: 200,
-  //     sortingEnabled: false
-  //   },
-  //   {
-  //     name: 'asteroids',
-  //     title: '# SSOs',
-  //     width: 200,
-  //     sortingEnabled: false
-  //   },
-  //   {
-  //     name: 'ccds',
-  //     title: '# CCDs',
-  //     width: 200,
-  //     sortingEnabled: false
-  //   },
-  //   {
-  //     name: 'positions',
-  //     title: '# Observations',
-  //     width: 200,
-  //     sortingEnabled: false
-  //   },
-  //   {
-  //     name: 'u',
-  //     title: 'u',
-  //     sortingEnabled: false
-  //   },
-  //   {
-  //     name: 'g',
-  //     title: 'g',
-  //     sortingEnabled: false
-  //   },
-  //   {
-  //     name: 'r',
-  //     title: 'r',
-  //     sortingEnabled: false
-  //   },
-  //   {
-  //     name: 'i',
-  //     title: 'i',
-  //     sortingEnabled: false
-  //   },
-  //   {
-  //     name: 'z',
-  //     title: 'z',
-  //     sortingEnabled: false
-  //   },
-  //   {
-  //     name: 'y',
-  //     title: 'Y',
-  //     sortingEnabled: false
-  //   }
-  // ]
+  const dynclassAsteroidsColumns = [
+    {
+      name: 'dynclass',
+      title: 'Dynamic Class',
+      width: 200,
+      sortingEnabled: false
+    },
+    {
+      name: 'asteroids',
+      title: '# SSOs',
+      width: 200,
+      sortingEnabled: false
+    },
+    {
+      name: 'ccds',
+      title: '# CCDs',
+      width: 200,
+      sortingEnabled: false
+    },
+    {
+      name: 'positions',
+      title: '# Observations',
+      width: 200,
+      sortingEnabled: false
+    },
+    {
+      name: 'u',
+      title: 'u',
+      sortingEnabled: false
+    },
+    {
+      name: 'g',
+      title: 'g',
+      sortingEnabled: false
+    },
+    {
+      name: 'r',
+      title: 'r',
+      sortingEnabled: false
+    },
+    {
+      name: 'i',
+      title: 'i',
+      sortingEnabled: false
+    },
+    {
+      name: 'z',
+      title: 'z',
+      sortingEnabled: false
+    },
+    {
+      name: 'y',
+      title: 'Y',
+      sortingEnabled: false
+    }
+  ]
 
-  // const tableErrorColumns = [
-  //   {
-  //     name: 'exposure_id',
-  //     title: 'Exposure #',
-  //     width: 150,
-  //     sortingEnabled: false
-  //   },
-  //   {
-  //     name: 'date_obs',
-  //     title: 'Observation Date',
-  //     width: 150,
-  //     sortingEnabled: false,
-  //     customElement: (row) => (row.date_obs ? moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss') : '-')
-  //   },
-  //   {
-  //     name: 'error',
-  //     title: 'Error Message',
-  //     width: 600,
-  //     sortingEnabled: false
-  //   }
-  // ]
+  const tableErrorColumns = [
+    {
+      name: 'exposure_id',
+      title: 'Exposure #',
+      width: 150,
+      sortingEnabled: false
+    },
+    {
+      name: 'date_obs',
+      title: 'Observation Date',
+      width: 150,
+      sortingEnabled: false,
+      customElement: (row) => (row.date_obs ? moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss') : '-')
+    },
+    {
+      name: 'error',
+      title: 'Error Message',
+      width: 600,
+      sortingEnabled: false
+    }
+  ]
 
-  // const loadData = ({ currentPage, pageSize, sorting }) => {
-  //   // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
-  //   const page = currentPage + 1
-  //   const ordering = `${sorting[0].direction === 'desc' ? '-' : ''}${sorting[0].columnName}`
+  const loadData = ({ currentPage, pageSize, sorting }) => {
+    // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
+    const page = currentPage + 1
+    const ordering = `${sorting[0].direction === 'desc' ? '-' : ''}${sorting[0].columnName}`
 
-  //   getSkybotResultById({ id, page, pageSize, ordering }).then((res) => {
-  //     setTableData(res.results.map((results) => ({ ...results, log: null })))
-  //     setTotalCount(res.count)
-  //   })
-  // }
+    getSkybotResultById({ id, page, pageSize, ordering }).then((res) => {
+      setTableData(res.results.map((results) => ({ ...results, log: null })))
+      setTotalCount(res.count)
+    })
+  }
 
-  // const loadErrors = ({ currentPage, pageSize }) => {
-  //   // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
-  //   const page = currentPage + 1
+  const loadErrors = ({ currentPage, pageSize }) => {
+    // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
+    const page = currentPage + 1
 
-  //   getSkybotJobExposuresThatFailed({ id, page, pageSize }).then((res) => {
-  //     setTableErrorData(res.results.map((results) => ({ ...results, log: null })))
-  //     setTotalErrorCount(res.count)
-  //   })
-  // }
+    getSkybotJobExposuresThatFailed({ id, page, pageSize }).then((res) => {
+      setTableErrorData(res.results.map((results) => ({ ...results, log: null })))
+      setTotalErrorCount(res.count)
+    })
+  }
 
-  // useEffect(() => {
-  //   getSkybotRunById({ id }).then((res) => {
-  //     setSkybotJob(res)
-  //   })
+  useEffect(() => {
+    getSkybotRunById({ id }).then((res) => {
+      setSkybotJob(res)
+    })
 
-  //   loadData({
-  //     currentPage: 0,
-  //     pageSize: 10,
-  //     sorting: [{ columnName: 'id', direction: 'asc' }]
-  //   })
-  //   loadErrors({ currentPage: 0, pageSize: 10 })
-  // }, [loadProgress, id])
+    loadData({
+      currentPage: 0,
+      pageSize: 10,
+      sorting: [{ columnName: 'id', direction: 'asc' }]
+    })
+    loadErrors({ currentPage: 0, pageSize: 10 })
+  }, [loadProgress, id])
 
-  // useEffect(() => {
-  //   if (Object.keys(skybotJob).length > 0) {
-  //     setSummaryExecution([
-  //       {
-  //         title: 'Status',
-  //         value: () => <ColumnStatus status={skybotJob.status} title={skybotJob.error_msg} align='right' />
-  //       },
-  //       {
-  //         title: 'Owner',
-  //         value: skybotJob.owner
-  //       },
-  //       {
-  //         title: 'Job ID',
-  //         value: id
-  //       },
-  //       {
-  //         title: 'Start Date',
-  //         value: moment(skybotJob.date_initial).format('YYYY-MM-DD')
-  //       },
-  //       {
-  //         title: 'End Date',
-  //         value: moment(skybotJob.date_final).format('YYYY-MM-DD')
-  //       },
-  //       {
-  //         title: 'Start',
-  //         value: moment(skybotJob.start).format('YYYY-MM-DD HH:mm:ss')
-  //       },
-  //       {
-  //         title: 'Finish',
-  //         value: skybotJob.finish ? moment(skybotJob.finish).format('YYYY-MM-DD HH:mm:ss') : '-'
-  //       },
-  //       {
-  //         title: 'Estimated Time',
-  //         value: skybotJob.estimated_execution_time ? skybotJob.estimated_execution_time.split('.')[0] : 0
-  //       },
-  //       {
-  //         title: 'Execution Time',
-  //         value: skybotJob.execution_time ? skybotJob.execution_time.split('.')[0] : 0
-  //       }
-  //     ])
+  useEffect(() => {
+    if (Object.keys(skybotJob).length > 0) {
+      setSummaryExecution([
+        {
+          title: 'Status',
+          value: () => <ColumnStatus status={skybotJob.status} title={skybotJob.error_msg} align='right' />
+        },
+        {
+          title: 'Owner',
+          value: skybotJob.owner
+        },
+        {
+          title: 'Job ID',
+          value: id
+        },
+        {
+          title: 'Start Date',
+          value: moment(skybotJob.date_initial).format('YYYY-MM-DD')
+        },
+        {
+          title: 'End Date',
+          value: moment(skybotJob.date_final).format('YYYY-MM-DD')
+        },
+        {
+          title: 'Start',
+          value: moment(skybotJob.start).format('YYYY-MM-DD HH:mm:ss')
+        },
+        {
+          title: 'Finish',
+          value: skybotJob.finish ? moment(skybotJob.finish).format('YYYY-MM-DD HH:mm:ss') : '-'
+        },
+        {
+          title: 'Estimated Time',
+          value: skybotJob.estimated_execution_time ? skybotJob.estimated_execution_time.split('.')[0] : 0
+        },
+        {
+          title: 'Execution Time',
+          value: skybotJob.execution_time ? skybotJob.execution_time.split('.')[0] : 0
+        }
+      ])
 
-  //     setSummaryResults([
-  //       {
-  //         title: '# Nights',
-  //         value: skybotJob.nights
-  //       },
-  //       {
-  //         title: '# Exposures Analyzed',
-  //         value: skybotJob.exposures
-  //       },
-  //       {
-  //         title: '# CCDs Analyzed',
-  //         value: skybotJob.ccds
-  //       },
-  //       {
-  //         title: '# SSOs',
-  //         value: skybotJob.asteroids
-  //       },
-  //       {
-  //         title: '# Observations',
-  //         value: skybotJob.positions
-  //       },
-  //       {
-  //         title: '# Exposures with SSOs',
-  //         value: skybotJob.exposures_with_asteroid
-  //       },
-  //       {
-  //         title: '# CCDs with SSOs',
-  //         value: skybotJob.ccds_with_asteroid
-  //       }
-  //     ])
-  //   }
-  // }, [skybotJob, id])
+      setSummaryResults([
+        {
+          title: '# Nights',
+          value: skybotJob.nights
+        },
+        {
+          title: '# Exposures Analyzed',
+          value: skybotJob.exposures
+        },
+        {
+          title: '# CCDs Analyzed',
+          value: skybotJob.ccds
+        },
+        {
+          title: '# SSOs',
+          value: skybotJob.asteroids
+        },
+        {
+          title: '# Observations',
+          value: skybotJob.positions
+        },
+        {
+          title: '# Exposures with SSOs',
+          value: skybotJob.exposures_with_asteroid
+        },
+        {
+          title: '# CCDs with SSOs',
+          value: skybotJob.ccds_with_asteroid
+        }
+      ])
+    }
+  }, [skybotJob, id])
 
-  // useEffect(() => {
-  //   getDynclassAsteroids(id).then((res) => {
-  //     setDynclassAsteroids(res)
-  //   })
-  // }, [loadProgress, id])
+  useEffect(() => {
+    getDynclassAsteroids(id).then((res) => {
+      setDynclassAsteroids(res)
+    })
+  }, [loadProgress, id])
 
-  // const formatSeconds = (value) => moment().startOf('day').seconds(value).format('HH:mm:ss')
+  const formatSeconds = (value) => moment().startOf('day').seconds(value).format('HH:mm:ss')
 
-  // useInterval(() => {
-  //   if ([1, 2].includes(skybotJob.status)) {
-  //     setLoadProgress((prevState) => !prevState)
-  //   }
-  // }, [5000])
+  useInterval(() => {
+    if ([1, 2].includes(skybotJob.status)) {
+      setLoadProgress((prevState) => !prevState)
+    }
+  }, [5000])
 
-  // const handleStopRun = () => {
-  //   cancelSkybotJobById(id).then(() => {
-  //     setIsJobCanceled(true)
-  //     setLoadProgress((prevState) => !prevState)
-  //   })
-  // }
+  const handleStopRun = () => {
+    cancelSkybotJobById(id).then(() => {
+      setIsJobCanceled(true)
+      setLoadProgress((prevState) => !prevState)
+    })
+  }
 
-  // useEffect(() => {
-  //     getNightsSuccessOrFail(id).then((res) => {
-  //       const selectedYears = res.map((year) => moment(year.date).format('YYYY')).filter((year, i, yearArr) => yearArr.indexOf(year) === i)
+  useEffect(() => {
+      getNightsSuccessOrFail(id).then((res) => {
+        const selectedYears = res.map((year) => moment(year.date).format('YYYY')).filter((year, i, yearArr) => yearArr.indexOf(year) === i)
 
-  //       setSelectedDateYears(selectedYears)
-  //       setCurrentSelectedDateYear(selectedYears[0])
+        setSelectedDateYears(selectedYears)
+        setCurrentSelectedDateYear(selectedYears[0])
 
-  //       setExecutedNightsByPeriod(res)
-  //     })
-  // }, [id, skybotJob])
+        setExecutedNightsByPeriod(res)
+      })
+  }, [id, skybotJob])
 
-  // useEffect(() => {
-  //   if (executedNightsByPeriod.length > 0) {
-  //     const nights = executedNightsByPeriod.filter((exposure) => moment(exposure.date).format('YYYY') === currentSelectedDateYear)
+  useEffect(() => {
+    if (executedNightsByPeriod.length > 0) {
+      const nights = executedNightsByPeriod.filter((exposure) => moment(exposure.date).format('YYYY') === currentSelectedDateYear)
 
-  //     setCurrentYearExecutedNights(nights)
-  //   }
-  // }, [executedNightsByPeriod, currentSelectedDateYear])
+      setCurrentYearExecutedNights(nights)
+    }
+  }, [executedNightsByPeriod, currentSelectedDateYear])
 
   return (
     <Grid container spacing={2}>
-      {/* <Grid item xs={12}>
+      <Grid item xs={12}>
         <Grid container alignItems='center' spacing={2}>
           <Grid item>
             <Button variant='contained' color='primary' title='Back' onClick={handleBackNavigation}>
@@ -508,7 +508,7 @@ function OrbitTraceDetail() {
           </Grid>
           <Grid item xs={12} md={7} xl={9}>
             <Card>
-              <CardHeader title='Executed Nights' />
+              <CardHeader title='Graphic' />
               <CardContent>
                 <Grid container spacing={2} direction='column' className={classes.gridTable}>
                   <Grid item>
@@ -537,27 +537,10 @@ function OrbitTraceDetail() {
         ![1, 2].includes(skybotJob.status) ? (
           <>
             <Grid item xs={12} />
+            
             <Grid item xs={12}>
               <Card>
-                <CardHeader title='Summary Dynamic Class' />
-                <CardContent>
-                  <Table
-                    columns={dynclassAsteroidsColumns}
-                    data={dynclassAsteroids}
-                    totalCount={dynclassAsteroids.length}
-                    hasSearching={false}
-                    hasPagination={false}
-                    hasColumnVisibility={false}
-                    hasToolbar={false}
-                    remote={false}
-                    loading
-                  />
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12}>
-              <Card>
-                <CardHeader title='Discovery Results' />
+                <CardHeader title='Asteroid Results' />
                 <CardContent>
                     <Table
                       columns={tableColumns}
@@ -595,8 +578,7 @@ function OrbitTraceDetail() {
             ) : null}
           </>
         ) : null
-      } */}
-      ORBIT TRACE DETAIL
+      }
     </Grid>
   )
 }
