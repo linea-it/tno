@@ -3,8 +3,7 @@ from des.models import OrbitTraceJobResult
 
 
 class OrbitTraceJobResultSerializer(serializers.ModelSerializer):
-    owner = serializers.SerializerMethodField()
-
+    
     class Meta:
         model = OrbitTraceJobResult
         fields = (
@@ -21,9 +20,3 @@ class OrbitTraceJobResultSerializer(serializers.ModelSerializer):
             "ccds",
             "error",
         )
-
-    def get_owner(self, obj):
-        try:
-            return obj.job.owner.username
-        except:
-            return None

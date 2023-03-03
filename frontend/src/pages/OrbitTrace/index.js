@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, Component } from 'react'
 import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField, FormGroup, FormControlLabel, Typography, Switch } from '../../../node_modules/@material-ui/core/index'
 import Table from '../../components/Table/index'
 import moment from '../../../node_modules/moment/moment'
@@ -284,7 +284,7 @@ function OrbitTrace() {
       name: 'status',
       title: 'Status',
       align: 'center',
-      customElement: (row) => <ColumnStatus status={row.status} title={row.error_msg} />
+      customElement: (row) => <ColumnStatus status={row.status} title={row.error} />
     },
     {
       name: 'owner',

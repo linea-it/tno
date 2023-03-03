@@ -9,14 +9,10 @@ import ColumnStatus from '../../components/Table/ColumnStatus'
 import Progress from '../../components/Progress'
 import CalendarSuccessOrFailNight from '../../components/Chart/CalendarSuccessOrFailNight'
 import {
-  getSkybotResultById,
-  getSkybotRunById,
-  getSkybotProgress,
-  cancelSkybotJobById,
-  getNightsSuccessOrFail,
-  getDynclassAsteroids,
-  getSkybotJobExposuresThatFailed
-} from '../../services/api/Skybot'
+  getOrbitTraceJobById,
+  getOrbitTraceJobResultById
+
+} from '../../services/api/OrbitTrace'
 
 import useInterval from '../../hooks/useInterval'
 import useStyles from './styles'
@@ -26,7 +22,7 @@ function OrbitTraceDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const classes = useStyles()
-  const [skybotJob, setSkybotJob] = useState({})
+  const [orbitTraceJob, setOrbitTraceJob] = useState({})
   const [summaryExecution, setSummaryExecution] = useState([])
   const [summaryResults, setSummaryResults] = useState([])
   const [progress, setProgress] = useState({
@@ -69,18 +65,18 @@ function OrbitTraceDetail() {
 
   const handleBackNavigation = () => navigate(-1)
 
-  const haveError = totalErrorCount > 0 && 'results' in skybotJob
+  const haveError = totalErrorCount > 0 && 'results' in orbitTraceJob
 
-  useEffect(() => {
-    getSkybotProgress(id)
-      .then((data) => {
-        setProgress(data)
-        setHasCircularProgress(false)
-      })
-      .catch(() => {
-        setHasCircularProgress(true)
-      })
-  }, [loadProgress, id])
+  // useEffect(() => {
+  //   getSkybotProgress(id)
+  //     .then((data) => {
+  //       setProgress(data)
+  //       setHasCircularProgress(false)
+  //     })
+  //     .catch(() => {
+  //       setHasCircularProgress(true)
+  //     })
+  // }, [loadProgress, id])
 
   const tableColumns = [
     {
@@ -101,154 +97,89 @@ function OrbitTraceDetail() {
       align: 'center'
     },
     {
-      name: 'success',
+      name: 'status',
       title: 'Status',
       align: 'center',
 
-      customElement: (row) => <ColumnStatus status={row.success ? 'success' : 'failure'} />,
+      customElement: (row) => {return <span>{row.status == 1 ? 'success' : 'failure'}</span>},
       width: 130
     },
     {
-      name: 'exposure',
-      title: 'Exposure #'
-    },
-    {
-      name: 'band',
-      title: 'Band',
-      width: 80
-    },
-    {
-      name: 'date_obs',
-      title: 'Observation Date',
-      width: 150,
-      customElement: (row) => (row.execution_time ? moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss') : '-')
-    },
-    {
-      name: 'positions',
-      title: '# Observations',
-      width: 140
-    },
-    {
-      name: 'inside_ccd',
-      title: '# SSOs In CCDs',
-      width: 150
-    },
-    {
-      name: 'outside_ccd',
-      title: '# SSOs Out CCDs',
-      width: 160
-    },
-    {
-      name: 'execution_time',
-      title: 'Execution Time',
-      width: 150,
-      customElement: (row) => (row.execution_time ? row.execution_time.split('.')[0] : '-')
-    }
-  ]
+      name: 'asteroid_name',
+      title: 'Asteroid',
+      align: 'center',
 
-  const dynclassAsteroidsColumns = [
+      customElement: (row) => {return <span>{row.asteroid_name}</span>},
+      width: 180
+    },
+    {
+      name: 'asteroid_number',
+      title: 'Number',
+      align: 'center',
+
+      customElement: (row) => {return <span>{row.asteroid_number}</span>},
+      width: 130
+    },
+    {
+      name: 'base_dynclass',
+      title: 'Base DynClass',
+      align: 'center',
+
+      customElement: (row) => {return <span>{row.base_dynclass}</span>},
+      width: 130
+    },
     {
       name: 'dynclass',
-      title: 'Dynamic Class',
-      width: 200,
-      sortingEnabled: false
+      title: 'DynClass',
+      align: 'center',
+
+      customElement: (row) => {return <span>{row.dynclass}</span>},
+      width: 130
     },
     {
-      name: 'asteroids',
-      title: '# SSOs',
-      width: 200,
-      sortingEnabled: false
+      name: 'observations',
+      title: 'Observations',
+      align: 'center',
+
+      customElement: (row) => {return <span>{row.observations}</span>},
+      width: 130
     },
     {
       name: 'ccds',
-      title: '# CCDs',
-      width: 200,
-      sortingEnabled: false
+      title: 'CCDs',
+      align: 'center',
+
+      customElement: (row) => {return <span>{row.ccds}</span>},
+      width: 130
     },
-    {
-      name: 'positions',
-      title: '# Observations',
-      width: 200,
-      sortingEnabled: false
-    },
-    {
-      name: 'u',
-      title: 'u',
-      sortingEnabled: false
-    },
-    {
-      name: 'g',
-      title: 'g',
-      sortingEnabled: false
-    },
-    {
-      name: 'r',
-      title: 'r',
-      sortingEnabled: false
-    },
-    {
-      name: 'i',
-      title: 'i',
-      sortingEnabled: false
-    },
-    {
-      name: 'z',
-      title: 'z',
-      sortingEnabled: false
-    },
-    {
-      name: 'y',
-      title: 'Y',
-      sortingEnabled: false
-    }
+    
   ]
 
-  const tableErrorColumns = [
-    {
-      name: 'exposure_id',
-      title: 'Exposure #',
-      width: 150,
-      sortingEnabled: false
-    },
-    {
-      name: 'date_obs',
-      title: 'Observation Date',
-      width: 150,
-      sortingEnabled: false,
-      customElement: (row) => (row.date_obs ? moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss') : '-')
-    },
-    {
-      name: 'error',
-      title: 'Error Message',
-      width: 600,
-      sortingEnabled: false
-    }
-  ]
-
+  
   const loadData = ({ currentPage, pageSize, sorting }) => {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
-    const ordering = `${sorting[0].direction === 'desc' ? '-' : ''}${sorting[0].columnName}`
+    //const ordering = `${sorting[0].direction === 'desc' ? '-' : ''}${sorting[0].columnName}`
 
-    getSkybotResultById({ id, page, pageSize, ordering }).then((res) => {
+    getOrbitTraceJobResultById({ id, page, pageSize }).then((res) => {
       setTableData(res.results.map((results) => ({ ...results, log: null })))
       setTotalCount(res.count)
     })
   }
 
-  const loadErrors = ({ currentPage, pageSize }) => {
-    // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
-    const page = currentPage + 1
+  // const loadErrors = ({ currentPage, pageSize }) => {
+  //   // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
+  //   const page = currentPage + 1
 
-    getSkybotJobExposuresThatFailed({ id, page, pageSize }).then((res) => {
-      setTableErrorData(res.results.map((results) => ({ ...results, log: null })))
-      setTotalErrorCount(res.count)
-    })
-  }
+  //   getSkybotJobExposuresThatFailed({ id, page, pageSize }).then((res) => {
+  //     setTableErrorData(res.results.map((results) => ({ ...results, log: null })))
+  //     setTotalErrorCount(res.count)
+  //   })
+  // }
 
   useEffect(() => {
-    getSkybotRunById({ id }).then((res) => {
-      setSkybotJob(res)
+    getOrbitTraceJobById({ id }).then((res) => {
+      setOrbitTraceJob(res)
     })
 
     loadData({
@@ -256,122 +187,102 @@ function OrbitTraceDetail() {
       pageSize: 10,
       sorting: [{ columnName: 'id', direction: 'asc' }]
     })
-    loadErrors({ currentPage: 0, pageSize: 10 })
+    //loadErrors({ currentPage: 0, pageSize: 10 })
   }, [loadProgress, id])
 
   useEffect(() => {
-    if (Object.keys(skybotJob).length > 0) {
+    if (Object.keys(orbitTraceJob).length > 0) {
       setSummaryExecution([
         {
           title: 'Status',
-          value: () => <ColumnStatus status={skybotJob.status} title={skybotJob.error_msg} align='right' />
+          value: () => <ColumnStatus status={orbitTraceJob.status} title={orbitTraceJob.error_msg} align='right' />
         },
         {
           title: 'Owner',
-          value: skybotJob.owner
+          value: orbitTraceJob.owner
         },
         {
           title: 'Job ID',
           value: id
         },
         {
-          title: 'Start Date',
-          value: moment(skybotJob.date_initial).format('YYYY-MM-DD')
-        },
-        {
-          title: 'End Date',
-          value: moment(skybotJob.date_final).format('YYYY-MM-DD')
-        },
-        {
           title: 'Start',
-          value: moment(skybotJob.start).format('YYYY-MM-DD HH:mm:ss')
+          value: orbitTraceJob.start? moment(orbitTraceJob.start).format('YYYY-MM-DD HH:mm:ss'): "Not started"
         },
         {
           title: 'Finish',
-          value: skybotJob.finish ? moment(skybotJob.finish).format('YYYY-MM-DD HH:mm:ss') : '-'
+          value: orbitTraceJob.finish ? moment(orbitTraceJob.finish).format('YYYY-MM-DD HH:mm:ss') : '-'
         },
         {
           title: 'Estimated Time',
-          value: skybotJob.estimated_execution_time ? skybotJob.estimated_execution_time.split('.')[0] : 0
+          value: orbitTraceJob.estimated_execution_time ? orbitTraceJob.estimated_execution_time.split('.')[0] : 0
         },
         {
           title: 'Execution Time',
-          value: skybotJob.execution_time ? skybotJob.execution_time.split('.')[0] : 0
+          value: orbitTraceJob.exec_time ? orbitTraceJob.exec_time.split('.')[0] : 0
         }
       ])
 
       setSummaryResults([
         {
-          title: '# Nights',
-          value: skybotJob.nights
+          title: '# Count Asteroids',
+          value: orbitTraceJob.count_asteroids
         },
         {
-          title: '# Exposures Analyzed',
-          value: skybotJob.exposures
+          title: '# Count CCDs',
+          value: orbitTraceJob.count_ccds
         },
         {
-          title: '# CCDs Analyzed',
-          value: skybotJob.ccds
+          title: '# Count Success',
+          value: orbitTraceJob.count_success
         },
         {
-          title: '# SSOs',
-          value: skybotJob.asteroids
-        },
-        {
-          title: '# Observations',
-          value: skybotJob.positions
-        },
-        {
-          title: '# Exposures with SSOs',
-          value: skybotJob.exposures_with_asteroid
-        },
-        {
-          title: '# CCDs with SSOs',
-          value: skybotJob.ccds_with_asteroid
+          title: '# Count Failures',
+          value: orbitTraceJob.count_failures
         }
       ])
     }
-  }, [skybotJob, id])
+  }, [orbitTraceJob, id])
 
-  useEffect(() => {
-    getDynclassAsteroids(id).then((res) => {
-      setDynclassAsteroids(res)
-    })
-  }, [loadProgress, id])
+  // useEffect(() => {
+  //   getDynclassAsteroids(id).then((res) => {
+  //     setDynclassAsteroids(res)
+  //   })
+  // }, [loadProgress, id])
 
   const formatSeconds = (value) => moment().startOf('day').seconds(value).format('HH:mm:ss')
 
   useInterval(() => {
-    if ([1, 2].includes(skybotJob.status)) {
+    if ([1, 2].includes(orbitTraceJob.status)) {
       setLoadProgress((prevState) => !prevState)
     }
   }, [5000])
 
   const handleStopRun = () => {
-    cancelSkybotJobById(id).then(() => {
-      setIsJobCanceled(true)
-      setLoadProgress((prevState) => !prevState)
-    })
+    // cancelSkybotJobById(id).then(() => {
+    //   setIsJobCanceled(true)
+    //   setLoadProgress((prevState) => !prevState)
+    // })
   }
 
-  useEffect(() => {
-      getNightsSuccessOrFail(id).then((res) => {
-        const selectedYears = res.map((year) => moment(year.date).format('YYYY')).filter((year, i, yearArr) => yearArr.indexOf(year) === i)
+  // useEffect(() => {
+  //     getNightsSuccessOrFail(id).then((res) => {
+  //       const selectedYears = res.map((year) => moment(year.date).format('YYYY')).filter((year, i, yearArr) => yearArr.indexOf(year) === i)
 
-        setSelectedDateYears(selectedYears)
-        setCurrentSelectedDateYear(selectedYears[0])
+  //       setSelectedDateYears(selectedYears)
+  //       setCurrentSelectedDateYear(selectedYears[0])
 
-        setExecutedNightsByPeriod(res)
-      })
-  }, [id, skybotJob])
+  //       setExecutedNightsByPeriod(res)
+  //     })
+  // }, [id, orbitTraceJob])
 
-  useEffect(() => {
-    if (executedNightsByPeriod.length > 0) {
-      const nights = executedNightsByPeriod.filter((exposure) => moment(exposure.date).format('YYYY') === currentSelectedDateYear)
+  // useEffect(() => {
+  //   if (executedNightsByPeriod.length > 0) {
+  //     const nights = executedNightsByPeriod.filter((exposure) => moment(exposure.date).format('YYYY') === currentSelectedDateYear)
 
-      setCurrentYearExecutedNights(nights)
-    }
-  }, [executedNightsByPeriod, currentSelectedDateYear])
+  //     setCurrentYearExecutedNights(nights)
+  //   }
+  // }, [executedNightsByPeriod, currentSelectedDateYear])
 
   return (
     <Grid container spacing={2}>
@@ -385,7 +296,7 @@ function OrbitTraceDetail() {
               </Typography>
             </Button>
           </Grid>
-          {[1, 2].includes(skybotJob.status) ? (
+          {[1, 2].includes(orbitTraceJob.status) ? (
             <Grid item>
               <Button variant='contained' color='secondary' title='Abort' onClick={handleStopRun} disabled={isJobCanceled}>
                 {isJobCanceled ? <CircularProgress size={15} color='secondary' /> : <Icon className='fas fa-stop' fontSize='inherit' />}
@@ -406,16 +317,16 @@ function OrbitTraceDetail() {
             {haveError === true ? (
               <Alert
                 severity='warning'
-                action={
-                  <Button color='inherit' size='small' href={skybotJob.results.replace('/archive', '/data')}>
-                    CHECK IT OUT
-                  </Button>
-                }
+                // action={
+                //   <Button color='inherit' size='small' href={orbitTraceJob.results.replace('/archive', '/data')}>
+                //     CHECK IT OUT
+                //   </Button>
+                // }
               >
-                <strong>{totalErrorCount}</strong> exposures out of {skybotJob.exposures} failed.
+                {/* <strong>{totalErrorCount}</strong> exposures out of {skybotJob.exposures} failed. */}
               </Alert>
             ) : null}
-            {(skybotJob?.error !== null && skybotJob?.error !== '')  ? <Alert severity='error'>{skybotJob?.error}</Alert> : null}
+            {(orbitTraceJob?.error !== null && orbitTraceJob?.error !== '')  ? <Alert severity='error'>{orbitTraceJob?.error}</Alert> : null}
           </CardContent>
         </Card>
       </Grid>
@@ -425,7 +336,7 @@ function OrbitTraceDetail() {
           <CardContent>
             <Grid container spacing={3} direction='column' className={classes.progressWrapper}>
               <Grid item>
-                <Progress
+                {/* <Progress
                   title='Retrieving data from Skybot'
                   variant='determinate'
                   label={`${progress.request.exposures} exposures`}
@@ -451,11 +362,11 @@ function OrbitTraceDetail() {
                       <Chip label={`Exposures Failed: ${progress.request.exposures_failed}`} className={classes.chipError} variant='outlined' />
                     </Grid>                  
                   ) : null}
-                </Grid>
+                </Grid> */}
               </Grid>
 
               <Grid item>
-                <Progress
+                {/* <Progress
                   title='Importing positions to database'
                   variant='determinate'
                   label={`${progress.loaddata.exposures} exposures`}
@@ -487,9 +398,9 @@ function OrbitTraceDetail() {
                       <Chip label={`Exposures Failed: ${progress.loaddata.exposures_failed}`} className={classes.chipError} variant='outlined' />
                     </Grid>                  
                   ) : null}                  
-                </Grid>
+                </Grid> */}
               </Grid>
-              {hasCircularProgress && [1, 2].includes(skybotJob.status) ? (
+              {hasCircularProgress && [1, 2].includes(orbitTraceJob.status) ? (
                 <CircularProgress className={classes.circularProgress} disableShrink size={20} />
               ) : null}
             </Grid>
@@ -511,7 +422,7 @@ function OrbitTraceDetail() {
               <CardHeader title='Graphic' />
               <CardContent>
                 <Grid container spacing={2} direction='column' className={classes.gridTable}>
-                  <Grid item>
+                  {/* <Grid item>
                     {selectedDateYears.length > 1 ? (
                       <ButtonGroup variant='contained' color='primary' className={classes.buttonGroupYear}>
                         {selectedDateYears.map((year) => (
@@ -524,7 +435,7 @@ function OrbitTraceDetail() {
                   </Grid>
                   <Grid item className={classes.gridTableRow}>
                     <CalendarSuccessOrFailNight data={currentYearExecutedNights} />
-                  </Grid>
+                  </Grid> */}
                 </Grid>
               </CardContent>
             </Card>
@@ -534,7 +445,8 @@ function OrbitTraceDetail() {
 
       {
         // Idle and Running Statuses:
-        ![1, 2].includes(skybotJob.status) ? (
+        // ![1, 2].includes(orbitTraceJob.status) ? (
+          (
           <>
             <Grid item xs={12} />
             
@@ -556,28 +468,9 @@ function OrbitTraceDetail() {
                   </CardContent>
               </Card>
             </Grid>
-            {totalErrorCount > 0 ? (
-              <Grid item xs={12}>
-                <Card>
-                  <CardHeader title='Exposures With Errors' />
-                  <CardContent>
-                    <Table
-                      columns={tableErrorColumns}
-                      data={tableErrorData}
-                      loadData={loadErrors}
-                      totalCount={totalErrorCount}
-                      hasSearching={false}
-                      // hasSorting={false}
-                      hasFiltering={false}
-                      hasColumnVisibility={false}
-                      hasToolbar={false}
-                    />
-                  </CardContent>
-                </Card>
-              </Grid>
-            ) : null}
           </>
-        ) : null
+        ) 
+        // : null
       }
     </Grid>
   )

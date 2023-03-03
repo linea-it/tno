@@ -36,3 +36,13 @@ export const getDynClassList = () => api.get(`/asteroids/dynclasses/`).then((res
 export const getBaseDynClassList = () => api.get(`/asteroids/base_dynclasses/`).then((res) => res.data.results)
 
 export const getAsteroidsList = () => api.get(`/asteroids/`).then((res) => res.data.results)
+
+export const getOrbitTraceJobResultById = ({ id, pageSize, page }) => {
+  const params = {
+    job: id,
+    page,
+    pageSize,
+  }
+
+  return api.get(`/des/orbit_trace_job_result/`, { params }).then((res) => res.data)
+}
