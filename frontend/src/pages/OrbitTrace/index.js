@@ -1,9 +1,10 @@
 import React, { useEffect, useState, Component } from 'react'
-import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, InputLabel, MenuItem, TextField, FormGroup, FormControlLabel, Typography, Switch } from '../../../node_modules/@material-ui/core/index'
+import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, InputLabel, MenuItem, TextField, FormGroup, FormControlLabel, Typography, Switch, OutlinedInput } from '../../../node_modules/@material-ui/core/index'
 import Table from '../../components/Table/index'
 import moment from '../../../node_modules/moment/moment'
 import useStyles from './styles'
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index'
+
 import {
   getLeapSecondList,
   getBspPlanetaryList,
@@ -26,11 +27,11 @@ function OrbitTrace() {
   const [reload, setReload] = useState(true);
   const [bspPlanetaryList, setBspPlanetaryList] = useState([]);
   const [leapSecondList, setLeapSecondList] = useState([]);
-  const [filterTypeList, setFilterTypeList] = useState(['Name', 'DynClass', 'Base DynClass']);
+  const [filterTypeList, setFilterTypeList] = useState([{value: 'Name', label: 'Name'}, {value: 'DynClass', label: 'DynClass'}, {value: 'Base DynClass', label: 'Base DynClass'}]);
   const [dynClassList, setDynClassList] = useState([]);
   const [baseDynClassList, setBaseDynClassList] = useState([]);
   const [asteroidsList, setAsteroidsList] = useState([]);
-  const [bspValueList, setbspValueList] = useState([{ value: 0, text: 'None' }, { value: 10, text: '10 days' }, { value: 20, text: '20 days' }, { value: 30, text: '30 days' }]);
+  const [bspValueList, setbspValueList] = useState([{value:0, label: 'None'}, {value:10, label: '10 days'}, {value:20, label: '20 days'}, {value:30, label: '30 days'}]);
 
   const [messageOpenSuccess, setMessageOpenSuccess] = useState(false);
   const [messageTextSuccess, setMessageTextSuccess] = React.useState('');
@@ -66,54 +67,63 @@ function OrbitTrace() {
   }
 
   const bspPlanetaryhandleChange = (event) => {
-    setBspPlanetary(event.target.value);
-
+    if(event)
+      setBspPlanetary(event.value);
+    
   };
 
   const leapSecondhandleChange = (event) => {
-    setLeapSecond(event.target.value);
+    if(event)
+    setLeapSecond(event.value);
   };
 
   const filterTypehandleChange = (event) => {
-    setFilterValue("");
-    setFilterValueNames([]);
-    setFilterType(event.target.value);
+    if(event){
+      setFilterValue("");
+      setFilterValueNames([]);
+      setFilterType(event.value);
+    }
   };
 
   const bspValuehandleChange = (event) => {
-    setBspValue(event.target.value);
+    if(event)
+      setBspValue(event.value);
   };
 
   const filterValuehandleChange = (event) => {
-    setFilterValueNames([]);
-    setFilterValue(event.target.value);
+    if(event){
+      setFilterValueNames([]);
+      setFilterValue(event.value);
+    }
   };
 
   const filterValueNameshandleChange = (event) => {
-    let stringArray = event.target.value.toString().replaceAll(',', ';');
-    setFilterValue(stringArray);
-    setFilterValueNames(event.target.value);
+    if(event){
+      let stringArray = event.map(x => {return x.value}).toString().replaceAll(',', ';');
+      setFilterValue(stringArray);
+      setFilterValueNames(event.map(x => {return x.value}));
+    }
   };
 
   useMountEffect(() => {
     getBspPlanetaryList().then((list) => {
-      setBspPlanetaryList(list)
+      setBspPlanetaryList(list.map( x=> {return {value: x.name, label: x.name} }));
     })
 
     getLeapSecondList().then((list) => {
-      setLeapSecondList(list)
+      setLeapSecondList(list.map( x=> {return {value: x.name, label: x.name} }));
     })
 
     getDynClassList().then((list) => {
-      setDynClassList(list)
+      setDynClassList(list.map( x=> {return {value: x, label: x} }));
     })
 
     getBaseDynClassList().then((list) => {
-      setBaseDynClassList(list)
+      setBaseDynClassList(list.map( x=> {return {value: x, label: x} }));
     })
 
     getAsteroidsList().then((list) => {
-      setAsteroidsList(list)
+      setAsteroidsList(list.map( x=> {return {value: x.name, label: x.name} }));
     })
 
   });
@@ -189,54 +199,7 @@ function OrbitTrace() {
     }
   }
 
-  const populateBspPlanetaryOptions = () => {
-    return bspPlanetaryList.map((obj, index) => {
-      return <MenuItem key={index} value={obj.name}>{obj.name}
-      </MenuItem>;
-    });
-  }
 
-  const populateLeapSecondOptions = () => {
-    return leapSecondList.map((obj, index) => {
-      return <MenuItem key={index} value={obj.name}>{obj.name}
-      </MenuItem>;
-    });
-  }
-
-  const populateFilterTypeOptions = () => {
-    return filterTypeList.map((type, index) => {
-      return <MenuItem key={index} value={type}>{type}
-      </MenuItem>;
-    });
-  }
-
-  const populateDynClassOptions = () => {
-    return dynClassList.map((type, index) => {
-      return <MenuItem key={index} value={type}>{type}
-      </MenuItem>;
-    });
-  }
-
-  const populateBaseDynClassOptions = () => {
-    return baseDynClassList.map((value, index) => {
-      return <MenuItem key={index} value={value}>{value}
-      </MenuItem>;
-    });
-  }
-
-  const populateAsteroidsNameOptions = () => {
-    return asteroidsList.map((obj, index) => {
-      return <MenuItem key={index} value={obj.name}>{obj.name}
-      </MenuItem>;
-    });
-  }
-
-  const populateBspValueOptions = () => {
-    return bspValueList.map((obj, index) => {
-      return <MenuItem key={index} value={obj.value}>{obj.text}
-      </MenuItem>;
-    });
-  }
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
     getOrbitTraceJobList({
@@ -351,14 +314,12 @@ function OrbitTrace() {
                         <FormControl fullWidth>
                           <InputLabel>Bsp Planetary *</InputLabel>
                           <Select
-                            defaultValue=""
-                            id="bspPlanetary"
-                            value={bspPlanetary}
+                            input={<OutlinedInput label="hashshs"/>}
+                            name="bspPlanetary"
                             label="BSP Planetary"
                             onChange={bspPlanetaryhandleChange}
-                          >
-                            {populateBspPlanetaryOptions()}
-                          </Select>
+                            options={bspPlanetaryList}
+                          />
                         </FormControl>
                         {bspPlanetaryError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
@@ -370,14 +331,11 @@ function OrbitTrace() {
                         <FormControl fullWidth>
                           <InputLabel>Leap Second *</InputLabel>
                           <Select
-                            defaultValue=""
-                            id="lepSecond"
-                            value={leapSecond}
+                            id="leapSecond"
                             label="Leap Second"
                             onChange={leapSecondhandleChange}
-                          >
-                            {populateLeapSecondOptions()}
-                          </Select>
+                            options={leapSecondList}
+                          />
                         </FormControl>
                         {leapSecondError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
@@ -389,14 +347,11 @@ function OrbitTrace() {
                         <FormControl fullWidth>
                           <InputLabel>Filter Type *</InputLabel>
                           <Select
-                            defaultValue=""
                             id="filterType"
-                            value={filterType}
                             label="Filter Type"
                             onChange={filterTypehandleChange}
-                          >
-                            {populateFilterTypeOptions()}
-                          </Select>
+                            options={filterTypeList}
+                          />
                         </FormControl>
                         {filterTypeError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
@@ -408,48 +363,30 @@ function OrbitTrace() {
                         {filterType == "Name" && <FormControl fullWidth>
                           <InputLabel>Filter Value *</InputLabel>
                           <Select
-                            defaultValue=""
                             id="filterName"
-                            value={filterValueNames}
                             label="Filter Value"
                             onChange={filterValueNameshandleChange}
-                            multiple={true}
-                          >
-                            {populateAsteroidsNameOptions()}
-                          </Select>
+                            isMulti
+                            options={asteroidsList}
+                          />
                         </FormControl>}
                         {filterType == "DynClass" && <FormControl fullWidth>
                           <InputLabel>Filter Value *</InputLabel>
                           <Select
                             id="filterDynClass"
-                            value={filterValue}
                             label="Filter Value"
                             onChange={filterValuehandleChange}
-                          >
-                            {populateDynClassOptions()}
-                          </Select>
+                            options={dynClassList}
+                          />
                         </FormControl>}
                         {filterType == "Base DynClass" && <FormControl fullWidth>
                           <InputLabel>Filter Value *</InputLabel>
-                          {/* <Select
-                            defaultValue=""
+                          <Select
                             id="filterBaseDynClass"
-                            value={filterValue}
                             label="Filter Value"
                             onChange={filterValuehandleChange}
-                          >
-                            {populateBaseDynClassOptions()}
-                          </Select> */}
-                          <Select
-                            defaultValue=""
-                            isMulti
-                            name="colors"
-                            options={filterValue}
-                            className="basic-multi-select"
-                            classNamePrefix="select"
-                          >
-                            {populateBaseDynClassOptions()}                            </Select>
-
+                            options={baseDynClassList}
+                          />
                         </FormControl>}
                         {filterValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
@@ -462,12 +399,10 @@ function OrbitTrace() {
                           <InputLabel>BSP Value *</InputLabel>
                           <Select
                             id="bspValue"
-                            value={bspValue}
                             label="BSP Value"
                             onChange={bspValuehandleChange}
-                          >
-                            {populateBspValueOptions()}
-                          </Select>
+                            options={bspValueList}
+                          />
                         </FormControl>
                         {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
