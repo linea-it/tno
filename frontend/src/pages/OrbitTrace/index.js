@@ -1,10 +1,9 @@
 import React, { useEffect, useState, Component } from 'react'
-import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, TextField, FormGroup, FormControlLabel, Typography, Switch } from '../../../node_modules/@material-ui/core/index'
+import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, InputLabel, MenuItem, TextField, FormGroup, FormControlLabel, Typography, Switch } from '../../../node_modules/@material-ui/core/index'
 import Table from '../../components/Table/index'
 import moment from '../../../node_modules/moment/moment'
 import useStyles from './styles'
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index'
-
 import {
   getLeapSecondList,
   getBspPlanetaryList,
@@ -17,7 +16,7 @@ import {
 import { Alert } from '../../../node_modules/@material-ui/lab/index'
 import ColumnStatus from '../../components/Table/ColumnStatus'
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
-
+import Select from 'react-select'
 
 function OrbitTrace() {
   const navigate = useNavigate();
@@ -31,7 +30,7 @@ function OrbitTrace() {
   const [dynClassList, setDynClassList] = useState([]);
   const [baseDynClassList, setBaseDynClassList] = useState([]);
   const [asteroidsList, setAsteroidsList] = useState([]);
-  const [bspValueList, setbspValueList] = useState([{value:0, text: 'None'}, {value:10, text: '10 days'}, {value:20, text: '20 days'}, {value:30, text: '30 days'}]);
+  const [bspValueList, setbspValueList] = useState([{ value: 0, text: 'None' }, { value: 10, text: '10 days' }, { value: 20, text: '20 days' }, { value: 30, text: '30 days' }]);
 
   const [messageOpenSuccess, setMessageOpenSuccess] = useState(false);
   const [messageTextSuccess, setMessageTextSuccess] = React.useState('');
@@ -68,7 +67,7 @@ function OrbitTrace() {
 
   const bspPlanetaryhandleChange = (event) => {
     setBspPlanetary(event.target.value);
-    
+
   };
 
   const leapSecondhandleChange = (event) => {
@@ -297,7 +296,7 @@ function OrbitTrace() {
       title: 'Execution Date',
       width: 150,
       align: 'center',
-      customElement: (row) => row.start ? <span title={moment(row.start).format('HH:mm:ss')}>{moment(row.start).format('YYYY-MM-DD')}</span> : <span>Not started</span>  
+      customElement: (row) => row.start ? <span title={moment(row.start).format('HH:mm:ss')}>{moment(row.start).format('YYYY-MM-DD')}</span> : <span>Not started</span>
     },
     {
       name: 'execution_time',
@@ -406,7 +405,7 @@ function OrbitTrace() {
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
-                      {filterType == "Name" && <FormControl fullWidth>
+                        {filterType == "Name" && <FormControl fullWidth>
                           <InputLabel>Filter Value *</InputLabel>
                           <Select
                             defaultValue=""
@@ -432,7 +431,7 @@ function OrbitTrace() {
                         </FormControl>}
                         {filterType == "Base DynClass" && <FormControl fullWidth>
                           <InputLabel>Filter Value *</InputLabel>
-                          <Select
+                          {/* <Select
                             defaultValue=""
                             id="filterBaseDynClass"
                             value={filterValue}
@@ -440,7 +439,17 @@ function OrbitTrace() {
                             onChange={filterValuehandleChange}
                           >
                             {populateBaseDynClassOptions()}
-                          </Select>
+                          </Select> */}
+                          <Select
+                            defaultValue=""
+                            isMulti
+                            name="colors"
+                            options={filterValue}
+                            className="basic-multi-select"
+                            classNamePrefix="select"
+                          >
+                            {populateBaseDynClassOptions()}                            </Select>
+
                         </FormControl>}
                         {filterValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
@@ -448,7 +457,7 @@ function OrbitTrace() {
                   </Grid>
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
-                      <Box sx={{ minWidth: 120 }}>                        
+                      <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth>
                           <InputLabel>BSP Value *</InputLabel>
                           <Select
@@ -464,19 +473,19 @@ function OrbitTrace() {
                       </Box>
                     </Grid>
                   </Grid>
-                  <Grid item container spacing={2} xs={12} className={classes.pad}>                                     
-                        <FormGroup>
-                          <FormControlLabel
-                            control={<Switch checked={debug} onChange={handleChangeDebug} />}
-                            label='Debug mode'
-                          />
-                        </FormGroup>                       
+                  <Grid item container spacing={2} xs={12} className={classes.pad}>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={<Switch checked={debug} onChange={handleChangeDebug} />}
+                        label='Debug mode'
+                      />
+                    </FormGroup>
                   </Grid>
-                  <Grid item container spacing={2}  xs={12}>
-                      <Button disabled={disableSubmit} variant='contained' color='primary' fullWidth onClick={handleSubmitJobClick}>
-                        Execute
-                      </Button>
-                    </Grid>
+                  <Grid item container spacing={2} xs={12}>
+                    <Button disabled={disableSubmit} variant='contained' color='primary' fullWidth onClick={handleSubmitJobClick}>
+                      Execute
+                    </Button>
+                  </Grid>
                 </CardContent>
               </Card>
             </Grid>
