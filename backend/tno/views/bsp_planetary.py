@@ -9,6 +9,6 @@ from tno.serializers import BspPlanetarySerializer
 
 class BspPlanetaryViewSet(viewsets.ReadOnlyModelViewSet):
 
-    queryset = BspPlanetary.objects.all()
+    queryset = BspPlanetary.objects.all().order_by('-id')
     serializer_class = BspPlanetarySerializer
     filterset_fields = ("id", "name",)

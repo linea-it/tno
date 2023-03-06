@@ -108,6 +108,8 @@ function OrbitTrace() {
   useMountEffect(() => {
     getBspPlanetaryList().then((list) => {
       setBspPlanetaryList(list.map( x=> {return {value: x.name, label: x.name} }));
+      //set default value 
+      setBspPlanetary({value: list[0].name, label: list[0].name})
     })
 
     getLeapSecondList().then((list) => {
