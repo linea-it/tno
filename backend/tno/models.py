@@ -504,3 +504,144 @@ class JohnstonArchive(models.Model):
     updated = models.DateTimeField(
         verbose_name="Updated", auto_now_add=True, null=True, blank=True
     )
+
+class PredictionJob (models.Model):
+
+    # Usuario que solicitou a execução do Job.
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name="Owner",
+        related_name="predicition_run",
+    )
+
+    # Status da execução.
+    status = models.IntegerField(
+        verbose_name="Status",
+        default=1,
+        choices=(
+            (1, "Idle"),
+            (2, "Running"),
+            (3, "Completed"),
+            (4, "Failed"),
+            (5, "Aborted"),
+            (6, "Warning"),
+        ),
+    )
+
+    # Momento em que o Job foi submetido.
+    submit_time = models.DateTimeField(
+        verbose_name="Submit Time",
+        auto_now_add=True,
+    )
+
+    # Momento em que o Job foi criado.
+    start = models.DateTimeField(
+        verbose_name="Start", auto_now_add=False, null=True, blank=True
+    )
+
+    # Momento em que o Job foi finalizado.
+    end = models.DateTimeField(
+        verbose_name="Finish", auto_now_add=False, null=True, blank=True
+    )
+
+    # Tempo de duração do Job.
+    exec_time = models.DurationField(
+        verbose_name="Execution Time", null=True, blank=True
+    )
+
+    filter_type = models.CharField(
+        max_length=100,
+        null=False,
+        blank=False,
+        verbose_name="Filter Type",
+    )
+
+    filter_value = models.CharField(
+        max_length=100,
+        null=False,
+        blank=False,
+        verbose_name="Filter Value",
+    )
+
+    # data inicial .
+    predict_start_date = models.DateField(
+        verbose_name="Date Initial of Predictions",
+        auto_now_add=False,
+    )
+
+    # data Final
+    predict_end_date = models.DateField(
+        verbose_name="Date Final of Predictions",
+        auto_now_add=False,
+    )
+
+    predict_step = models.IntegerField(
+        default=0,
+        help_text="Prediction Step",
+        verbose_name="Prediction Step",
+    )
+
+
+    input_days_to_expire = models.IntegerField(
+        default=0,
+        help_text="Days to expire inputs",
+        verbose_name="Days to expire inputs",
+    )
+
+    force_refresh_input = models.BooleanField(
+        default=False,
+        help_text="Force Refresh Inputs",
+        verbose_name="Force Refresh Inputs",
+    )
+
+    count_asteroids = models.IntegerField(
+        default=0,
+        help_text="Asteroids Count",
+        verbose_name="Asteroids Count",
+    )
+
+    count_asteroids_with_occ = models.IntegerField(
+        default=0,
+        help_text="Asteroids With Occultations Count",
+        verbose_name="Asteroids With Occultations Count",
+    )
+
+    count_occ = models.IntegerField(
+        default=0,
+        help_text="Occultations Count",
+        verbose_name="Occultations Count",
+    )
+
+    count_asteroids_failure = models.IntegerField(
+        default=0,
+        help_text="Asteroids Failure Count",
+        verbose_name="Asteroids Failure Count",
+    )
+
+    condor_job_submited = models.IntegerField(
+        default=0,
+        help_text="Condor Job Submited",
+        verbose_name="Condor Job Submited",
+    )
+
+    condor_job_completed = models.IntegerField(
+        default=0,
+        help_text="Condor Job Completed",
+        verbose_name="Condor Job Completed",
+    )
+
+    condor_job_removed = models.IntegerField(
+        default=0,
+        help_text="Condor Job Removed",
+        verbose_name="Condor Job Removed",
+    )    
+
+    # Pasta onde estão os dados do Job.
+    path = models.CharField(
+        max_length=2048,
+        verbose_name="Path",
+        help_text="Path to the directory where the job data is located.",
+    )
+
+

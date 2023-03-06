@@ -82,7 +82,7 @@ class OrbitTraceJobViewSet(
         # Estimativa de tempo baseada na qtd de exposures a serem executadas.
         #estimated_time = self.estimate_execution_time(t_exposures)
 
-        # Criar um model Skybot Job
+        # Criar um model Orbit Trace Job
         job = OrbitTraceJob(
             owner=owner,
             submit_time=datetime.now(),

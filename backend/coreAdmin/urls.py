@@ -36,7 +36,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from skybot.views import PositionViewSet
-from tno.views import AsteroidViewSet, UserViewSet, OccultationViewSet, LeapSecondViewSet, BspPlanetaryViewSet, CatalogViewSet
+from tno.views import AsteroidViewSet, UserViewSet, OccultationViewSet, LeapSecondViewSet, BspPlanetaryViewSet, CatalogViewSet, PredictionJobViewSet
 
 router = DefaultRouter()
 router.register(r"users", UserViewSet)
@@ -66,6 +66,8 @@ router.register(r"occultations", OccultationViewSet)
 router.register(r"leap_second", LeapSecondViewSet)
 router.register(r"bsp_planetary", BspPlanetaryViewSet)
 router.register(r"catalog", CatalogViewSet)
+
+router.register(r"prediction_job", PredictionJobViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
