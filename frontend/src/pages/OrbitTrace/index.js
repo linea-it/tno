@@ -27,11 +27,11 @@ function OrbitTrace() {
   const [reload, setReload] = useState(true);
   const [bspPlanetaryList, setBspPlanetaryList] = useState([]);
   const [leapSecondList, setLeapSecondList] = useState([]);
-  const [filterTypeList, setFilterTypeList] = useState([{value: 'Name', label: 'Name'}, {value: 'DynClass', label: 'DynClass'}, {value: 'Base DynClass', label: 'Base DynClass'}]);
+  const [filterTypeList, setFilterTypeList] = useState([{ value: 'Name', label: 'Name' }, { value: 'DynClass', label: 'DynClass' }, { value: 'Base DynClass', label: 'Base DynClass' }]);
   const [dynClassList, setDynClassList] = useState([]);
   const [baseDynClassList, setBaseDynClassList] = useState([]);
   const [asteroidsList, setAsteroidsList] = useState([]);
-  const [bspValueList, setbspValueList] = useState([{value:0, label: 'None'}, {value:10, label: '10 days'}, {value:20, label: '20 days'}, {value:30, label: '30 days'}]);
+  const [bspValueList, setbspValueList] = useState([{ value: 0, label: 'None' }, { value: 10, label: '10 days' }, { value: 20, label: '20 days' }, { value: 30, label: '30 days' }]);
 
   const [messageOpenSuccess, setMessageOpenSuccess] = useState(false);
   const [messageTextSuccess, setMessageTextSuccess] = React.useState('');
@@ -45,11 +45,11 @@ function OrbitTrace() {
   const [filterValueError, setFilteValueError] = React.useState(false);
   const [bspValueError, setBspValueError] = React.useState(false);
 
-  const [bspPlanetary, setBspPlanetary] = React.useState({value: "", label: "Select..."});
-  const [leapSecond, setLeapSecond] = React.useState({value: "", label: "Select..."});
-  const [filterType, setFilterType] = React.useState({value: "", label: "Select..."});
-  const [filterValue, setFilterValue] = React.useState({value: "", label: "Select..."});
-  const [bspValue, setBspValue] = React.useState({value: 0, label: "None"});
+  const [bspPlanetary, setBspPlanetary] = React.useState({ value: "", label: "Select..." });
+  const [leapSecond, setLeapSecond] = React.useState({ value: "", label: "Select..." });
+  const [filterType, setFilterType] = React.useState({ value: "", label: "Select..." });
+  const [filterValue, setFilterValue] = React.useState({ value: "", label: "Select..." });
+  const [bspValue, setBspValue] = React.useState({ value: 0, label: "None" });
   const [filterValueNames, setFilterValueNames] = React.useState([]);
 
   const [tableData, setTableData] = useState([]);
@@ -67,65 +67,65 @@ function OrbitTrace() {
   }
 
   const bspPlanetaryhandleChange = (event) => {
-    if(event)
+    if (event)
       setBspPlanetary(event);
-    
+
   };
 
   const leapSecondhandleChange = (event) => {
-    if(event)
-    setLeapSecond(event);
+    if (event)
+      setLeapSecond(event);
   };
 
   const filterTypehandleChange = (event) => {
-    if(event){
-      setFilterValue({value: "", label: "Select..."});
+    if (event) {
+      setFilterValue({ value: "", label: "Select..." });
       setFilterValueNames([]);
       setFilterType(event);
     }
   };
 
   const bspValuehandleChange = (event) => {
-    if(event)
+    if (event)
       setBspValue(event);
   };
 
   const filterValuehandleChange = (event) => {
-    if(event){
+    if (event) {
       setFilterValueNames([]);
       setFilterValue(event);
     }
   };
 
   const filterValueNameshandleChange = (event) => {
-    if(event){
-      let stringArray = event.map(x => {return x.value}).toString().replaceAll(',', ';');
-      setFilterValue({value: stringArray, label:stringArray});
-      setFilterValueNames(event.map(x => {return x.value}));
+    if (event) {
+      let stringArray = event.map(x => { return x.value }).toString().replaceAll(',', ';');
+      setFilterValue({ value: stringArray, label: stringArray });
+      setFilterValueNames(event.map(x => { return x.value }));
     }
   };
 
   useMountEffect(() => {
     getBspPlanetaryList().then((list) => {
-      setBspPlanetaryList(list.map( x=> {return {value: x.name, label: x.name} }));
+      setBspPlanetaryList(list.map(x => { return { value: x.name, label: x.name } }));
       //set default value 
-      setBspPlanetary({value: list[0].name, label: list[0].name})
+      setBspPlanetary({ value: list[0].name, label: list[0].name })
     })
 
     getLeapSecondList().then((list) => {
-      setLeapSecondList(list.map( x=> {return {value: x.name, label: x.name} }));
+      setLeapSecondList(list.map(x => { return { value: x.name, label: x.name } }));
     })
 
     getDynClassList().then((list) => {
-      setDynClassList(list.map( x=> {return {value: x, label: x} }));
+      setDynClassList(list.map(x => { return { value: x, label: x } }));
     })
 
     getBaseDynClassList().then((list) => {
-      setBaseDynClassList(list.map( x=> {return {value: x, label: x} }));
+      setBaseDynClassList(list.map(x => { return { value: x, label: x } }));
     })
 
     getAsteroidsList().then((list) => {
-      setAsteroidsList(list.map( x=> {return {value: x.name, label: x.name} }));
+      setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
     })
 
   });
@@ -184,11 +184,11 @@ function OrbitTrace() {
       }
       createOrbitTraceJob(data)
         .then((response) => {
-          setBspPlanetary({value: "", label: "Select..."});
-          setLeapSecond({value: "", label: "Select..."});
-          setFilterType({value: "", label: "Select..."});
-          setFilterValue({value: "", label: "Select..."});
-          setBspValue({value: 0, label: "None"});
+          setBspPlanetary({ value: "", label: "Select..." });
+          setLeapSecond({ value: "", label: "Select..." });
+          setFilterType({ value: "", label: "Select..." });
+          setFilterValue({ value: "", label: "Select..." });
+          setBspValue({ value: 0, label: "None" });
           setMessageTextSuccess('Information registered successfully');
           setMessageOpenSuccess(true);
           setReload((prevState) => !prevState);
@@ -314,7 +314,7 @@ function OrbitTrace() {
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth>Bsp Planetary *
+                        <FormControl fullWidth><label>Bsp Planetary <span className={classes.errorText}>*</span></label>
                           <Select
                             value={bspPlanetary}
                             name="bspPlanetary"
@@ -329,12 +329,12 @@ function OrbitTrace() {
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth>Leap Second *
+                        <FormControl fullWidth><label>Leap Second <span className={classes.errorText}>*</span></label>
                           <Select
                             value={leapSecond}
                             id="leapSecond"
                             onChange={leapSecondhandleChange}
-                            options={leapSecondList}
+                            options={leapSecondList}                            
                           />
                         </FormControl>
                         {leapSecondError ? (<span className={classes.errorText}>Required field</span>) : ''}
@@ -344,7 +344,7 @@ function OrbitTrace() {
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth>Filter Type *
+                        <FormControl fullWidth><label>Filter Type <span className={classes.errorText}>*</span></label>
                           <Select
                             value={filterType}
                             id="filterType"
@@ -356,42 +356,44 @@ function OrbitTrace() {
                       </Box>
                     </Grid>
                   </Grid>
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
-                      <Box sx={{ minWidth: 120 }}>
-                        {filterType.value == "Name" && <FormControl fullWidth>Filter Value *
-                          <InputLabel></InputLabel>
-                          <Select
-                            id="filterName"
-                            onChange={filterValueNameshandleChange}
-                            isMulti
-                            options={asteroidsList}
-                          />
-                        </FormControl>}
-                        {filterType.value == "DynClass" && <FormControl fullWidth>Filter Value *
-                          <Select
-                            value={filterValue}
-                            id="filterDynClass"
-                            onChange={filterValuehandleChange}
-                            options={dynClassList}
-                          />
-                        </FormControl>}
-                        {filterType.value == "Base DynClass" && <FormControl fullWidth>Filter Value *
-                          <Select
-                            value={filterValue}
-                            id="filterBaseDynClass"
-                            onChange={filterValuehandleChange}
-                            options={baseDynClassList}
-                          />
-                        </FormControl>}
-                        {filterValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
-                      </Box>
+                  {filterType.value != "" &&
+                    <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                      <Grid item xs={12}>
+                        <Box sx={{ minWidth: 120 }}>
+                          {filterType.value == "Name" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                            <InputLabel></InputLabel>
+                            <Select
+                              id="filterName"
+                              onChange={filterValueNameshandleChange}
+                              isMulti
+                              options={asteroidsList}
+                            />
+                          </FormControl>}
+                          {filterType.value == "DynClass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                            <Select
+                              value={filterValue}
+                              id="filterDynClass"
+                              onChange={filterValuehandleChange}
+                              options={dynClassList}
+                            />
+                          </FormControl>}
+                          {filterType.value == "Base DynClass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                            <Select
+                              value={filterValue}
+                              id="filterBaseDynClass"
+                              onChange={filterValuehandleChange}
+                              options={baseDynClassList}
+                            />
+                          </FormControl>}
+                          {filterValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                        </Box>
+                      </Grid>
                     </Grid>
-                  </Grid>
+                  }
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth>BSP Value *
+                        <FormControl fullWidth><label>BSP Value <span className={classes.errorText}>*</span></label>
                           <Select
                             value={bspValue}
                             id="bspValue"
@@ -405,17 +407,25 @@ function OrbitTrace() {
                     </Grid>
                   </Grid>
                   <Grid item container spacing={2} xs={12} className={classes.pad}>
-                    <FormGroup>
-                      <FormControlLabel
-                        control={<Switch checked={debug} onChange={handleChangeDebug} />}
-                        label='Debug mode'
-                      />
-                    </FormGroup>
+                    <Grid item xs={12}>
+                      <Box sx={{ minWidth: 120 }}>
+                        <FormGroup>
+                          <FormControlLabel
+                            control={<Switch checked={debug} onChange={handleChangeDebug} color="primary" />}
+                            label='Debug mode'
+                          />
+                        </FormGroup>
+                      </Box>
+                    </Grid>
                   </Grid>
-                  <Grid item container spacing={2} xs={12}>
-                    <Button disabled={disableSubmit} variant='contained' color='primary' fullWidth onClick={handleSubmitJobClick}>
-                      Execute
-                    </Button>
+                  <Grid container spacing={2} alignItems='stretch'>
+                    <Grid item xs={12}>
+                      <Box>
+                        <Button disabled={disableSubmit} variant='contained' color='primary' fullWidth onClick={handleSubmitJobClick}>
+                          Execute
+                        </Button>
+                      </Box>
+                    </Grid>
                   </Grid>
                 </CardContent>
               </Card>
