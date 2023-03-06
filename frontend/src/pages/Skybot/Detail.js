@@ -593,7 +593,7 @@ function SkybotDetail() {
                 </Card>
               </Grid>
             ) : null}
-          </>
+          </> 
         ) : null
       }
     </Grid>

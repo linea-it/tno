@@ -10,6 +10,7 @@ import Progress from '../../components/Progress'
 import CalendarSuccessOrFailNight from '../../components/Chart/CalendarSuccessOrFailNight'
 import {
   getOrbitTraceJobById,
+  getOrbitTraceJobExposuresThatFailed,
   getOrbitTraceJobResultById
 
 } from '../../services/api/OrbitTrace'
@@ -63,20 +64,20 @@ function OrbitTraceDetail() {
   const [tableErrorData, setTableErrorData] = useState([])
   const [totalErrorCount, setTotalErrorCount] = useState(0)
 
+
   const handleBackNavigation = () => navigate(-1)
 
   const haveError = totalErrorCount > 0 && 'results' in orbitTraceJob
 
-  // useEffect(() => {
-  //   getSkybotProgress(id)
-  //     .then((data) => {
-  //       setProgress(data)
-  //       setHasCircularProgress(false)
-  //     })
-  //     .catch(() => {
-  //       setHasCircularProgress(true)
-  //     })
-  // }, [loadProgress, id])
+  const loadErrors = ({ currentPage, pageSize }) => {
+    // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
+    const page = currentPage + 1
+
+    getOrbitTraceJobExposuresThatFailed({ id, page, pageSize }).then((res) => {
+      setTableErrorData(res.results.map((results) => ({ ...results, log: null })))
+      setTotalErrorCount(res.count)
+    })
+  }
 
   const tableColumns = [
     {
@@ -101,7 +102,7 @@ function OrbitTraceDetail() {
       title: 'Status',
       align: 'center',
 
-      customElement: (row) => {return <span>{row.status == 1 ? 'success' : 'failure'}</span>},
+      customElement: (row) => { return <span>{row.status == 1 ? 'success' : 'failure'}</span> },
       width: 130
     },
     {
@@ -109,7 +110,7 @@ function OrbitTraceDetail() {
       title: 'Asteroid',
       align: 'center',
 
-      customElement: (row) => {return <span>{row.asteroid_name}</span>},
+      customElement: (row) => { return <span>{row.asteroid_name}</span> },
       width: 180
     },
     {
@@ -117,7 +118,7 @@ function OrbitTraceDetail() {
       title: 'Number',
       align: 'center',
 
-      customElement: (row) => {return <span>{row.asteroid_number}</span>},
+      customElement: (row) => { return <span>{row.asteroid_number}</span> },
       width: 130
     },
     {
@@ -125,7 +126,7 @@ function OrbitTraceDetail() {
       title: 'Base DynClass',
       align: 'center',
 
-      customElement: (row) => {return <span>{row.base_dynclass}</span>},
+      customElement: (row) => { return <span>{row.base_dynclass}</span> },
       width: 130
     },
     {
@@ -133,7 +134,7 @@ function OrbitTraceDetail() {
       title: 'DynClass',
       align: 'center',
 
-      customElement: (row) => {return <span>{row.dynclass}</span>},
+      customElement: (row) => { return <span>{row.dynclass}</span> },
       width: 130
     },
     {
@@ -141,7 +142,7 @@ function OrbitTraceDetail() {
       title: 'Observations',
       align: 'center',
 
-      customElement: (row) => {return <span>{row.observations}</span>},
+      customElement: (row) => { return <span>{row.observations}</span> },
       width: 130
     },
     {
@@ -149,13 +150,35 @@ function OrbitTraceDetail() {
       title: 'CCDs',
       align: 'center',
 
-      customElement: (row) => {return <span>{row.ccds}</span>},
+      customElement: (row) => { return <span>{row.ccds}</span> },
       width: 130
     },
-    
+
   ]
 
-  
+  const tableErrorColumns = [
+    {
+      name: 'exposure_id',
+      title: 'Exposure #',
+      width: 150,
+      sortingEnabled: false
+    },
+    {
+      name: 'date_obs',
+      title: 'Observation Date',
+      width: 150,
+      sortingEnabled: false,
+      customElement: (row) => (row.date_obs ? moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss') : '-')
+    },
+    {
+      name: 'error',
+      title: 'Error Message',
+      width: 600,
+      sortingEnabled: false
+    }
+  ]
+
+
   const loadData = ({ currentPage, pageSize, sorting }) => {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
@@ -167,17 +190,21 @@ function OrbitTraceDetail() {
     })
   }
 
-  // const loadErrors = ({ currentPage, pageSize }) => {
-  //   // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
-  //   const page = currentPage + 1
-
-  //   getSkybotJobExposuresThatFailed({ id, page, pageSize }).then((res) => {
-  //     setTableErrorData(res.results.map((results) => ({ ...results, log: null })))
-  //     setTotalErrorCount(res.count)
-  //   })
-  // }
-
   useEffect(() => {
+
+    //   getOrbitTraceProgress(id)
+    //     .then((data) => {
+    //       setProgress(data)
+    //       setHasCircularProgress(false)
+    //     })
+    //     .catch(() => {
+    //       setHasCircularProgress(true)
+    //     })
+
+    //   getDynclassAsteroids(id).then((res) => {
+    //     setDynclassAsteroids(res)
+    //   })
+
     getOrbitTraceJobById({ id }).then((res) => {
       setOrbitTraceJob(res)
     })
@@ -207,7 +234,7 @@ function OrbitTraceDetail() {
         },
         {
           title: 'Start',
-          value: orbitTraceJob.start? moment(orbitTraceJob.start).format('YYYY-MM-DD HH:mm:ss'): "Not started"
+          value: orbitTraceJob.start ? moment(orbitTraceJob.start).format('YYYY-MM-DD HH:mm:ss') : "Not started"
         },
         {
           title: 'Finish',
@@ -244,12 +271,6 @@ function OrbitTraceDetail() {
     }
   }, [orbitTraceJob, id])
 
-  // useEffect(() => {
-  //   getDynclassAsteroids(id).then((res) => {
-  //     setDynclassAsteroids(res)
-  //   })
-  // }, [loadProgress, id])
-
   const formatSeconds = (value) => moment().startOf('day').seconds(value).format('HH:mm:ss')
 
   useInterval(() => {
@@ -259,30 +280,11 @@ function OrbitTraceDetail() {
   }, [5000])
 
   const handleStopRun = () => {
-    // cancelSkybotJobById(id).then(() => {
+    // cancelOrbitTraceJobById(id).then(() => {
     //   setIsJobCanceled(true)
     //   setLoadProgress((prevState) => !prevState)
     // })
   }
-
-  // useEffect(() => {
-  //     getNightsSuccessOrFail(id).then((res) => {
-  //       const selectedYears = res.map((year) => moment(year.date).format('YYYY')).filter((year, i, yearArr) => yearArr.indexOf(year) === i)
-
-  //       setSelectedDateYears(selectedYears)
-  //       setCurrentSelectedDateYear(selectedYears[0])
-
-  //       setExecutedNightsByPeriod(res)
-  //     })
-  // }, [id, orbitTraceJob])
-
-  // useEffect(() => {
-  //   if (executedNightsByPeriod.length > 0) {
-  //     const nights = executedNightsByPeriod.filter((exposure) => moment(exposure.date).format('YYYY') === currentSelectedDateYear)
-
-  //     setCurrentYearExecutedNights(nights)
-  //   }
-  // }, [executedNightsByPeriod, currentSelectedDateYear])
 
   return (
     <Grid container spacing={2}>
@@ -317,16 +319,16 @@ function OrbitTraceDetail() {
             {haveError === true ? (
               <Alert
                 severity='warning'
-                // action={
-                //   <Button color='inherit' size='small' href={orbitTraceJob.results.replace('/archive', '/data')}>
-                //     CHECK IT OUT
-                //   </Button>
-                // }
+              // action={
+              //   <Button color='inherit' size='small' href={orbitTraceJob.results.replace('/archive', '/data')}>
+              //     CHECK IT OUT
+              //   </Button>
+              // }
               >
                 {/* <strong>{totalErrorCount}</strong> exposures out of {skybotJob.exposures} failed. */}
               </Alert>
             ) : null}
-            {(orbitTraceJob?.error !== null && orbitTraceJob?.error !== '')  ? <Alert severity='error'>{orbitTraceJob?.error}</Alert> : null}
+            {(orbitTraceJob?.error !== null && orbitTraceJob?.error !== '') ? <Alert severity='error'>{orbitTraceJob?.error}</Alert> : null}
           </CardContent>
         </Card>
       </Grid>
@@ -446,30 +448,50 @@ function OrbitTraceDetail() {
       {
         // Idle and Running Statuses:
         // ![1, 2].includes(orbitTraceJob.status) ? (
-          (
+        (
           <>
             <Grid item xs={12} />
-            
+
             <Grid item xs={12}>
               <Card>
                 <CardHeader title='Asteroid Results' />
                 <CardContent>
-                    <Table
-                      columns={tableColumns}
-                      data={tableData}
-                      loadData={loadData}
-                      totalCount={totalCount || 0}
-                      hasSearching={false}
-                      // hasSorting={false}
-                      hasColumnVisibility={false}
-                      hasToolbar={false}
-                      hasRowNumberer
-                    />
-                  </CardContent>
+                  <Table
+                    columns={tableColumns}
+                    data={tableData}
+                    loadData={loadData}
+                    totalCount={totalCount || 0}
+                    hasSearching={false}
+                    // hasSorting={false}
+                    hasColumnVisibility={false}
+                    hasToolbar={false}
+                    hasRowNumberer
+                  />
+                </CardContent>
               </Card>
             </Grid>
+            {totalErrorCount > 0 ? (
+              <Grid item xs={12}>
+                <Card>
+                  <CardHeader title='Asteroid With Errors' />
+                  <CardContent>
+                    <Table
+                      columns={tableErrorColumns}
+                      data={tableErrorData}
+                      loadData={loadErrors}
+                      totalCount={totalErrorCount}
+                      hasSearching={false}
+                      // hasSorting={false}
+                      hasFiltering={false}
+                      hasColumnVisibility={false}
+                      hasToolbar={false}
+                    />
+                  </CardContent>
+                </Card>
+              </Grid>
+            ) : null}
           </>
-        ) 
+        )
         // : null
       }
     </Grid>

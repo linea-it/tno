@@ -23,6 +23,15 @@ export const getOrbitTraceJobList = ({ page, pageSize, ordering }) => {
   return api.get('/des/orbit_trace_job/', { params })
 }
 
+export const getOrbitTraceJobExposuresThatFailed = ({ id, pageSize, page }) => {
+  const params = {
+    page,
+    pageSize
+  }
+
+  return api.get(`/des/orbit_trace_job/${id}/exposures_that_fail/`, { params }).then((res) => res.data)
+}
+
 export const getOrbitTraceJobById = ({ id }) => api.get(`/des/orbit_trace_job/${id}`).then((res) => res.data)
 
 export const getOrbitTraceJobStatusById = ({ id }) => api.get(`/des/orbit_trace_job/${id}/status`).then((res) => res.data)
