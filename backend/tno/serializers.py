@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from tno.models import JohnstonArchive
-from tno.models import Asteroid, Occultation, LeapSecond, BspPlanetary, Catalog, PredictionJob
+from tno.models import Asteroid, Occultation, LeapSecond, BspPlanetary, Catalog, PredictionJob, PredictionJobResult
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -82,4 +82,10 @@ class OccultationSerializer(serializers.ModelSerializer):
 class PredictionJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = PredictionJob
+        fields = '__all__'
+
+
+class PredictionJobResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PredictionJobResult
         fields = '__all__'

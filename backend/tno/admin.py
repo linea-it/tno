@@ -6,7 +6,7 @@ from tno.models import BspPlanetary
 from tno.models import LeapSecond
 from tno.models import Occultation
 from tno.models import Catalog
-from tno.models import PredictionJob
+from tno.models import PredictionJob, PredictionJobResult
 
 
 @admin.register(Asteroid)
@@ -99,4 +99,13 @@ class PredictionJobAdmin(admin.ModelAdmin):
         "predict_end_date",
         "filter_type",
         "filter_value",
+    )
+
+
+@admin.register(PredictionJobResult)
+class PredictionJobResultAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "job",
+        "asteroid",
     )

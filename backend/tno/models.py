@@ -644,4 +644,200 @@ class PredictionJob (models.Model):
         help_text="Path to the directory where the job data is located.",
     )
 
+class PredictionJobResult(models.Model):
+    
+    job = models.ForeignKey(
+        PredictionJob,
+        on_delete=models.CASCADE,
+        verbose_name="Prediction Job",
+    )
+
+    asteroid = models.ForeignKey(
+        Asteroid,
+        on_delete=models.CASCADE,
+        verbose_name="Asteroid",
+    )
+
+    asteroid_name = models.CharField(
+        max_length=100,
+        null=False,
+        blank=False,
+        verbose_name="Asteroid Name",
+    )
+
+    asteroid_number = models.CharField(
+        max_length=100,
+        null=False,
+        blank=False,
+        verbose_name="Asteroid Number",
+    )
+
+    des_obs = models.IntegerField(
+        default=0,
+        verbose_name="des_obs",
+    )
+
+    des_obs_start = models.DateTimeField(
+        verbose_name="des_obs_start", auto_now_add=False, null=True, blank=True
+    )
+
+    des_obs_finish = models.DateTimeField(
+        verbose_name="des_obs_finish", auto_now_add=False, null=True, blank=True
+    )
+
+    des_obs_exec_time = models.DurationField(
+        verbose_name="des_obs_exec_time", null=True, blank=True
+    )
+
+    des_obs_gen_run = models.BooleanField(
+        default=False,
+        verbose_name="des_obs_gen_run",
+    )
+
+    des_obs_tp_start = models.DateTimeField(
+        verbose_name="des_obs_tp_start", auto_now_add=False, null=True, blank=True
+    )
+
+    des_obs_tp_finish = models.DateTimeField(
+        verbose_name="des_obs_tp_finish", auto_now_add=False, null=True, blank=True
+    )
+
+    bsp_jpl_start = models.DateTimeField(
+        verbose_name="bsp_jpl_start", auto_now_add=False, null=True, blank=True
+    )
+
+    bsp_jpl_finish = models.DateTimeField(
+        verbose_name="bsp_jpl_finish", auto_now_add=False, null=True, blank=True
+    )
+
+    bsp_jpl_dw_time = models.DurationField(
+        verbose_name="bsp_jpl_dw_time", null=True, blank=True
+    )
+
+    bsp_jpl_dw_run = models.BooleanField(
+        default=False,
+        verbose_name="bsp_jpl_dw_run",
+    )
+
+    bsp_jpl_tp_start = models.DateTimeField(
+        verbose_name="bsp_jpl_tp_start", auto_now_add=False, null=True, blank=True
+    )
+
+    bsp_jpl_tp_finish = models.DateTimeField(
+        verbose_name="bsp_jpl_tp_finish", auto_now_add=False, null=True, blank=True
+    )
+
+    obs_source = models.CharField(
+        max_length=100,
+        null=True, 
+        blank=True,
+        verbose_name="obs_source",
+    )
+
+    obs_start = models.DateTimeField(
+        verbose_name="obs_start", auto_now_add=False, null=True, blank=True
+    )
+
+    obs_finish = models.DateTimeField(
+        verbose_name="obs_finish", auto_now_add=False, null=True, blank=True
+    )
+
+    obs_dw_time = models.DurationField(
+        verbose_name="obs_dw_time", null=True, blank=True
+    )
+
+    obs_dw_run = models.BooleanField(
+        default=False,
+        verbose_name="obs_dw_run",
+    )
+
+    obs_tp_start = models.DateTimeField(
+        verbose_name="obs_tp_start", auto_now_add=False, null=True, blank=True
+    )
+
+    obs_tp_finish = models.DateTimeField(
+        verbose_name="obs_tp_finish", auto_now_add=False, null=True, blank=True
+    )
+
+    obs_ele_source = models.CharField(
+        max_length=100,
+        null=True, 
+        blank=True,
+        verbose_name="obs_ele_source",
+    )
+
+    obs_ele_start = models.DateTimeField(
+        verbose_name="obs_ele_start", auto_now_add=False, null=True, blank=True
+    )
+
+    obs_ele_finish = models.DateTimeField(
+        verbose_name="obs_ele_finish", auto_now_add=False, null=True, blank=True
+    )
+
+    obs_ele_dw_time = models.DurationField(
+        verbose_name="obs_ele_dw_time", null=True, blank=True
+    )
+
+    obs_ele_dw_run = models.BooleanField(
+        default=False,
+        verbose_name="obs_ele_dw_run",
+    )
+
+    obs_ele_tp_start = models.DateTimeField(
+        verbose_name="obs_ele_tp_start", auto_now_add=False, null=True, blank=True
+    )
+
+    obs_ele_tp_finish = models.DateTimeField(
+        verbose_name="obs_ele_tp_finish", auto_now_add=False, null=True, blank=True
+    )
+    
+    ref_orb_start = models.DateTimeField(
+        verbose_name="ref_orb_start", auto_now_add=False, null=True, blank=True
+    )
+
+    ref_orb_finish = models.DateTimeField(
+        verbose_name="ref_orb_finish", auto_now_add=False, null=True, blank=True
+    )
+
+    ref_orb_exec_time = models.DurationField(
+        verbose_name="ref_orb_exec_time", null=True, blank=True
+    )
+
+    pre_occ_count = models.IntegerField(
+        default=0,
+        verbose_name="pre_occ_count",
+    )
+
+    pre_occ_start = models.DateTimeField(
+        verbose_name="pre_occ_start", auto_now_add=False, null=True, blank=True
+    )
+
+    pre_occ_finish = models.DateTimeField(
+        verbose_name="pre_occ_finish", auto_now_add=False, null=True, blank=True
+    )
+    pre_occ_exec_time = models.DurationField(
+        verbose_name="pre_occ_exec_time", null=True, blank=True
+    )
+
+    ing_occ_count = models.IntegerField(
+        default=0,
+        verbose_name="ing_occ_count",
+    )
+
+    ing_occ_start = models.DateTimeField(
+        verbose_name="ing_occ_start", auto_now_add=False, null=True, blank=True
+    )
+
+    ing_occ_finish = models.DateTimeField(
+        verbose_name="ing_occ_finish", auto_now_add=False, null=True, blank=True
+    )
+
+    ing_occ_exec_time = models.DurationField(
+        verbose_name="ing_occ_exec_time", null=True, blank=True
+    )
+
+    messages = models.TextField(
+        verbose_name="messages", null=True, blank=True
+    )
+
 
