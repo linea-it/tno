@@ -393,13 +393,13 @@ function OrbitTrace() {
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>BSP Value <span className={classes.errorText}>*</span></label>
+                        <FormControl fullWidth><label>BSP File Expiration Time <span className={classes.errorText}>*</span></label>
                           <Select
                             value={bspValue}
                             id="bspValue"
                             label="BSP Value"
                             onChange={bspValuehandleChange}
-                            options={bspValueList}
+                            options={bspValueList}                           
                           />
                         </FormControl>
                         {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
