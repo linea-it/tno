@@ -25,6 +25,7 @@ import Footer from '../components/LandingPage/Footer'
 // import Drawer from '../components/Drawer';
 import PersistentDrawerLeft from '../components/Drawer'
 import OrbitTraceDetail from '../pages/OrbitTrace/Detail'
+import OrbitTraceAsteroid from '../pages/OrbitTrace/Asteroid'
 // import RefineOrbit from '../pages/RefineOrbit';
 // import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
 // import RefineOrbitAsteroid from '../pages/RefineOrbit/Asteroid';
@@ -175,7 +176,19 @@ export default function AppRoutes() {
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
-              <SkybotAsteroid />
+              <SkybotAsteroid/>
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+            <Route
+        isPrivate
+        exact
+        path='/data-preparation/des/orbittrace/asteroid/:id'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <OrbitTraceAsteroid/>
             </DashboardPage>
           </PrivateRoute>
         }

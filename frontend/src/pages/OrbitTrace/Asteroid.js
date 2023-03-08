@@ -14,7 +14,7 @@ import {
 import CCD from '../../components/Chart/CCD'
 import List from '../../components/List'
 import Switch from '../../components/Switch'
-import graphFake from '../../assets/img/graphFake.png'
+import graphFake from '../../assets/img/graph_fake.png'
 
 function OrbitTraceAsteroid() {
   const { id } = useParams()

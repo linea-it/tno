@@ -321,6 +321,8 @@ function OrbitTrace() {
                             onChange={bspPlanetaryhandleChange}
                             options={bspPlanetaryList}
                             style={{height:'45px !important'}}
+                            menuPortalTarget={document.body}
+                            menuPosition={'fixed'}
                           />
                         </FormControl>
                         {bspPlanetaryError ? (<span className={classes.errorText}>Required field</span>) : ''}
@@ -335,7 +337,9 @@ function OrbitTrace() {
                             value={leapSecond}
                             id="leapSecond"
                             onChange={leapSecondhandleChange}
-                            options={leapSecondList}                            
+                            options={leapSecondList}
+                            menuPortalTarget={document.body}
+                            menuPosition={'fixed'}                            
                           />
                         </FormControl>
                         {leapSecondError ? (<span className={classes.errorText}>Required field</span>) : ''}
@@ -351,6 +355,8 @@ function OrbitTrace() {
                             id="filterType"
                             onChange={filterTypehandleChange}
                             options={filterTypeList}
+                            menuPortalTarget={document.body}
+                            menuPosition={'fixed'}
                           />
                         </FormControl>
                         {filterTypeError ? (<span className={classes.errorText}>Required field</span>) : ''}
@@ -368,6 +374,8 @@ function OrbitTrace() {
                               onChange={filterValueNameshandleChange}
                               isMulti
                               options={asteroidsList}
+                              menuPortalTarget={document.body}
+                              menuPosition={'fixed'}
                             />
                           </FormControl>}
                           {filterType.value == "DynClass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
@@ -376,6 +384,8 @@ function OrbitTrace() {
                               id="filterDynClass"
                               onChange={filterValuehandleChange}
                               options={dynClassList}
+                              menuPortalTarget={document.body}
+                              menuPosition={'fixed'}
                             />
                           </FormControl>}
                           {filterType.value == "Base DynClass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
@@ -384,6 +394,8 @@ function OrbitTrace() {
                               id="filterBaseDynClass"
                               onChange={filterValuehandleChange}
                               options={baseDynClassList}
+                              menuPortalTarget={document.body}
+                              menuPosition={'fixed'}
                             />
                           </FormControl>}
                           {filterValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
@@ -400,7 +412,9 @@ function OrbitTrace() {
                             id="bspValue"
                             label="BSP Value"
                             onChange={bspValuehandleChange}
-                            options={bspValueList}                           
+                            options={bspValueList}
+                            menuPortalTarget={document.body}
+                            menuPosition={'fixed'}                           
                           />
                         </FormControl>
                         {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}

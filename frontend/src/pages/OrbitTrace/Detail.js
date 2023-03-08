@@ -89,7 +89,7 @@ function OrbitTraceDetail() {
           return <span>-</span>
         }
         return (
-          <Button onClick={() => navigate(`/data-preparation/des/discovery/asteroid/${row.id}`)}>
+          <Button onClick={() => navigate(`/data-preparation/des/orbittrace/asteroid/${row.id}`)}>
             <InfoOutlinedIcon />
           </Button>
         )

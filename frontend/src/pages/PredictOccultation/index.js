@@ -348,6 +348,8 @@ function PredictOccultation() {
                               onChange={filterValueNameshandleChange}
                               isMulti
                               options={asteroidsList}
+                              menuPortalTarget={document.body}
+                              menuPosition={'fixed'}
                             />
                           </FormControl>}
                           {filterType.value == "DynClass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
@@ -356,6 +358,8 @@ function PredictOccultation() {
                               id="filterDynClass"
                               onChange={filterValuehandleChange}
                               options={dynClassList}
+                              menuPortalTarget={document.body}
+                              menuPosition={'fixed'}
                             />
                           </FormControl>}
                           {filterType.value == "Base DynClass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
@@ -364,6 +368,8 @@ function PredictOccultation() {
                               id="filterBaseDynClass"
                               onChange={filterValuehandleChange}
                               options={baseDynClassList}
+                              menuPortalTarget={document.body}
+                              menuPosition={'fixed'}
                             />
                           </FormControl>}
                           {filterValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
@@ -374,13 +380,15 @@ function PredictOccultation() {
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>BSP File Expiration Time <span className={classes.errorText}>*</span></label>
+                        <FormControl fullWidth><label>Input Expiration Time <span className={classes.errorText}>*</span></label>
                           <Select
                             value={bspValue}
                             id="bspValue"
                             label="BSP Value"
                             onChange={bspValuehandleChange}
                             options={bspValueList}
+                            menuPortalTarget={document.body}
+                            menuPosition={'fixed'}
                           />
                         </FormControl>
                         {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
@@ -402,7 +410,7 @@ function PredictOccultation() {
                         <FormGroup>
                           <FormControlLabel
                             control={<Switch checked={debug} onChange={handleChangeDebug} color="primary" />}
-                            label='Debug mode'
+                            label='Force Refresh Inputs'
                           />
                         </FormGroup>
                       </Box>

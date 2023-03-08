@@ -76,6 +76,7 @@ const routes = [
   { path: '/occultation', title: 'Occultation' },
   { path: '/dashboard', title: 'Dashboard' },
   { path: '/data-preparation/des/orbittracedetail/:id', title: 'Orbit Trace Details' },
+  { path: '/data-preparation/des/orbittrace/asteroid/:id', title: 'Orbit Trace Asteroid' },
 ]
 
 const useCurrentPath = () => {
