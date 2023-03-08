@@ -296,7 +296,7 @@ function PredictOccultation() {
           <Grid container direction='column' spacing={2}>
             <Grid item xs={12}>
               <Card>
-                <CardHeader title='Discovery Run' />
+                <CardHeader title='Predict Occultation Run' />
                 <CardContent>
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
