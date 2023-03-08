@@ -177,7 +177,7 @@ function PredictionOccultationAsteroid({ setTitle, drawerOpen }) {
     getAsteroidInputs({ id }).then((data) => {
       const tableData = data.results.map((res) => ({
         input_type: res.input_type,
-        filename: res.filename,
+        filename: res.filename,DatePredict
         file_size: res.h_size,
       }));
       setInputTableData(tableData);
@@ -225,7 +225,7 @@ function PredictionOccultationAsteroid({ setTitle, drawerOpen }) {
             status={asteroidData.status}
             title={asteroidData.error_msg}
           />
-        ),
+        ),DatePredict
       },
       {
         title: 'Asteroid',
@@ -265,7 +265,7 @@ function PredictionOccultationAsteroid({ setTitle, drawerOpen }) {
       {
         title: 'Leap Seconds',
         value: asteroidData.leap_second,
-      },
+      },DatePredict
       {
         title: 'Observations',
         value: '',
@@ -291,7 +291,7 @@ function PredictionOccultationAsteroid({ setTitle, drawerOpen }) {
       },
     ]);
   }, [asteroidData, occultationData]);
-
+  DatePredict
   const closeLightbox = () => {
     setLightbox({
       currentImage: 0,
@@ -315,7 +315,7 @@ function PredictionOccultationAsteroid({ setTitle, drawerOpen }) {
     } else {
       // TODO: Implementar notificacao de erro.
       setTimeout(() => {
-        setDownloading(false);
+        setDownloading(false);DatePredict
       }, [1000]);
     }
   };

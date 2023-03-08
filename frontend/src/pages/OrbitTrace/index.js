@@ -320,6 +320,7 @@ function OrbitTrace() {
                             name="bspPlanetary"
                             onChange={bspPlanetaryhandleChange}
                             options={bspPlanetaryList}
+                            style={{height:'45px !important'}}
                           />
                         </FormControl>
                         {bspPlanetaryError ? (<span className={classes.errorText}>Required field</span>) : ''}
