@@ -6,7 +6,7 @@ class ObservationSerializer(serializers.ModelSerializer):
 
     asteroid = serializers.PrimaryKeyRelatedField(read_only=True)
     ccd = serializers.PrimaryKeyRelatedField(read_only=True)
-
+    
     class Meta:
         model = Observation
         fields = (

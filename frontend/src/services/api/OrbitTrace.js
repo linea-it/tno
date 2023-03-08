@@ -46,7 +46,7 @@ export const getBaseDynClassList = () => api.get(`/asteroids/base_dynclasses/`).
 
 export const getAsteroidsList = () => api.get(`/asteroids/`).then((res) => res.data.results)
 
-export const getOrbitTraceJobResultById = ({ id, pageSize, page }) => {
+export const getOrbitTraceResultById = ({ id, pageSize, page }) => {
   const params = {
     job: id,
     page,
@@ -54,4 +54,15 @@ export const getOrbitTraceJobResultById = ({ id, pageSize, page }) => {
   }
 
   return api.get(`/des/orbit_trace_job_result/`, { params }).then((res) => res.data)
+}
+
+export const getOrbitTraceJobResultById = (id) => api.get(`/des/orbit_trace_job_result/${id}/`).then((res) => res.data)
+
+export const getObeservationByAsteroid = ({ asteroid_id, pageSize, page }) =>{
+  const params = {
+    asteroid_id: asteroid_id,
+    page,
+    pageSize,
+  }
+ return api.get(`/des/observation/${asteroid_id}/get_by_asteroid/?format=json`).then((res) => res.data)
 }

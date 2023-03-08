@@ -4,17 +4,19 @@ import { Grid, Card, CardHeader, CardContent, Toolbar, Icon, Button, Typography 
 import { Skeleton } from '@material-ui/lab'
 import Table from '../../components/Table'
 import {
-  getSkybotJobResultById,
-  getPositionsByTicket,
-  getAsteroidsInsideCcdByTicket,
-  getCcdsByExposure,
-  getExposureById,
-  getDynclassAsteroidsById
-} from '../../services/api/Skybot'
+  getOrbitTraceJobResultById,
+  getObeservationByAsteroid,
+  // getPositionsByTicket,
+  // getAsteroidsInsideCcdByTicket,
+  // getCcdsByExposure,
+  // getExposureById,
+  // getDynclassAsteroidsById
+} from '../../services/api/OrbitTrace'
 import CCD from '../../components/Chart/CCD'
 import List from '../../components/List'
 import Switch from '../../components/Switch'
 import graphFake from '../../assets/img/graph_fake.png'
+import moment from '../../../node_modules/moment/moment'
 
 function OrbitTraceAsteroid() {
   const { id } = useParams()
@@ -22,304 +24,95 @@ function OrbitTraceAsteroid() {
   const coneSearchRadius = 1.2 // ! Cone search radius in Degres.
 
   const navigate = useNavigate()
-  const [skybotResult, setSkybotResult] = useState({
-    ticket: 0,
-    exposure: 0,
-    inside_ccd: 0,
-    outside_ccd: 0
+  const [orbitTraceResult, setOrbitTraceResult] = useState({
+    asteroid: 0,
+    status: 0,
+    asteroid_name: "",
+    asteroid_number: "",
+    base_dynclass: "",
+    dynclass: "",
+    observations: 0,
+    ccds: 0
   })
-  const [insideCcdOnly, setInsideCcdOnly] = useState(true)
-  const [ccds, setCcds] = useState([])
-  const [ccdsPlotData, setCcdsPlotData] = useState({})
-  const [positions, setPositions] = useState([])
-  const [exposure, setExposure] = useState({ radeg: null, decdeg: null })
-  const [asteroidsInsideCcd, setAsteroidsInsideCcd] = useState([])
-  const [dynclassAsteroids, setDynclassAsteroids] = useState([])
+
   const [summary, setSummary] = useState([])
-  const [tableColumns, setTableColumns] = useState([])
+  const [observationsTable, setObservationsTable] = useState([])
+  const [observationsCount, setObservationsCount] = useState(0)
 
   useEffect(() => {
-    getSkybotJobResultById(id).then((res) => {
-      setSkybotResult(res)
+    getOrbitTraceJobResultById(id).then((res) => {
+      setOrbitTraceResult(res)
+      loadObservationsData({
+        asteroid_id: res.asteroid,
+        currentPage: 0,
+        pageSize: 10,
+        sorting: [{ columnName: 'id', direction: 'asc' }]
+      })
     })
+
   }, [id])
 
-  const columns = React.useMemo(
-    () => [
+  const observationsTableColumns = [
       {
-        title: ' ',
-        name: 'index',
-        width: 70
+        name: 'ccd',
+        title: 'CCD',
+        align: 'center',
+        sortingEnabled: false,
+        customElement: (row) => { return <span>{row.ccd}</span> },
+        width: 180
       },
       {
-        title: 'CCD Num',
-        name: 'ccdnum',
-        headerTooltip: 'CCD Number'
-      },
-      {
-        title: 'Name',
-        name: 'name',
-        headerTooltip: 'Object Name'
-      },
-      {
-        title: 'Object Number',
-        name: 'number',
-        headerTooltip: 'Object Number'
-      },
-      {
-        title: 'Dyn Class',
-        name: 'dynclass',
-        headerTooltip: 'Dynamic Class'
-      },
-      {
-        title: 'RA  (deg)',
-        name: 'raj2000',
-        headerTooltip: 'Right Ascension'
-      },
-      {
-        title: 'Dec (deg)',
-        name: 'decj2000',
-        headerTooltip: 'Declination'
-      },
-      {
-        title: 'Visual Mag',
-        name: 'mv'
-      },
-      {
-        title: 'Error (arcsec)',
-        name: 'errpos'
-      },
-      {
-        title: 'Ang Dist (arcsec)',
-        name: 'd',
-        headerTooltip: 'Angular Distance'
-      },
-      {
-        title: 'dRAcosDec (arcsec/h)',
-        name: 'dracosdec'
-      },
-      {
-        title: 'dDEC  (arcsec/h)',
-        name: 'ddec'
-      },
-      {
-        title: 'Geoc Dist (AU)',
-        name: 'dgeo',
-        headerTooltip: 'Geocentric Distance'
-      },
-      {
-        title: 'Hel Dist (AU)',
-        name: 'dhelio',
-        headerTooltip: 'Heliocentric Distance'
-      },
-      {
-        title: 'Phase Angle (deg)',
-        name: 'phase'
-      },
-      {
-        title: 'Solar Elong',
-        name: 'solelong',
-        headerTooltip: 'Solar Elongantion'
-      },
-      {
-        title: 'Vec Pos x (AU)',
-        name: 'px',
-        headerTooltip: 'Vector Position in x'
-      },
-      {
-        title: 'Vec pos y (AU)',
-        name: 'py',
-        headerTooltip: 'Vector Position in y'
-      },
-      {
-        title: 'Vec Pos z (AU)',
-        name: 'pz',
-        headerTooltip: 'Vector Position in z'
-      },
-      {
-        title: 'Vec Pos x [AU/d]',
-        name: 'vx',
-        headerTooltip: 'Vector Position in x'
-      },
-      {
-        title: 'Vec Pos y [AU/d]',
-        name: 'vy',
-        headerTooltip: 'Vector Position in y'
-      },
-      {
-        title: 'Vec Pos z [AU/d]',
-        name: 'vz',
-        headerTooltip: 'Vector Position in z'
-      },
-      {
-        title: 'Epo Pos Vec (Julien Day)',
-        name: 'jdref',
-        headerTooltip: 'Epoch of the position vector (Julian Day)'
+        name: 'date_obs',
+        title: 'Date',
+        width: 150,
+        align: 'center',
+        customElement: (row) => row.date_obs ? <span title={moment(row.date_obs).format('HH:mm:ss')}>{moment(row.date_obs).format('YYYY-MM-DD')}</span> : <span>Invalid Date</span>
       }
-    ],
-    []
-  )
+  ]
+
 
   useEffect(() => {
-    if (insideCcdOnly) {
-      setTableColumns(columns)
-    } else {
-      setTableColumns(columns.filter((row) => row.name !== 'ccdnum'))
-    }
-  }, [insideCcdOnly, columns])
-
-  const circleCoordinatesPlaneFormat = (x) => {
-    if (typeof x === 'number') return x > 180 ? x - 360 : x
-    return x.map((n) => (n > 180 ? n - 360 : n))
-  }
-
-  useEffect(() => {
-    if (skybotResult.ticket !== 0) {
-      getPositionsByTicket(skybotResult.ticket).then((res) => {
-        setPositions(res.results)
-      })
-      getAsteroidsInsideCcdByTicket(skybotResult.ticket).then((res) => {
-        setAsteroidsInsideCcd(res.results)
-      })
-    }
-  }, [skybotResult.ticket])
-
-  useEffect(() => {
-    if (skybotResult.exposure !== 0) {
-      getCcdsByExposure(skybotResult.exposure).then((res) => {
-        setCcds(res.results)
-      })
-    }
-  }, [skybotResult.exposure])
-
-  useEffect(() => {
-    if (skybotResult.exposure !== 0) {
-      getExposureById(skybotResult.exposure).then((res) => {
-        setExposure(res)
-      })
-    }
-  }, [skybotResult.exposure])
-
-  useEffect(() => {
-    if (positions.length > 0 && ccds.length > 0 && exposure.radeg !== null && exposure.decdeg !== null && asteroidsInsideCcd.length > 0) {
-      const center = {
-        x: exposure.radeg,
-        y: exposure.decdeg
-      }
-
-      const ccdRows = ccds.map((ccd) => ({
-        x: [
-          circleCoordinatesPlaneFormat(Number(ccd.rac1)),
-          circleCoordinatesPlaneFormat(Number(ccd.rac2)),
-          circleCoordinatesPlaneFormat(Number(ccd.rac3)),
-          circleCoordinatesPlaneFormat(Number(ccd.rac4)),
-          circleCoordinatesPlaneFormat(Number(ccd.rac1))
-        ],
-        y: [ccd.decc1, ccd.decc2, ccd.decc3, ccd.decc4, ccd.decc1]
-      }))
-
-      const asteroidsIdInsideCcd = asteroidsInsideCcd.map((res) => res.position)
-
-      const asteroidsInside = positions.filter((position) => asteroidsIdInsideCcd.includes(position.id))
-
-      const asteroidsOutside = positions.filter((position) => !asteroidsIdInsideCcd.includes(position.id))
-
-      const asteroidInsideCcdRows = {
-        x: asteroidsInside.map((res) => circleCoordinatesPlaneFormat(Number(res.raj2000))),
-        y: asteroidsInside.map((res) => res.decj2000),
-        ccdnum: asteroidsInsideCcd.map((res) => res.ccdnum)
-      }
-
-      const asteroidOutsideCcdRows = {
-        x: asteroidsOutside.map((res) => circleCoordinatesPlaneFormat(Number(res.raj2000))),
-        y: asteroidsOutside.map((res) => res.decj2000)
-      }
-
-      const asteroidLimitRows = {
-        x: [circleCoordinatesPlaneFormat(center.x - coneSearchRadius), circleCoordinatesPlaneFormat(center.x + coneSearchRadius)],
-        y: [center.y - coneSearchRadius, center.y + coneSearchRadius]
-      }
-
-      setCcdsPlotData({
-        ccds: ccdRows,
-        asteroidsInside: asteroidInsideCcdRows,
-        asteroidsOutside: asteroidOutsideCcdRows,
-        asteroidsLimit: asteroidLimitRows
-      })
-    }
-  }, [positions, ccds, exposure, asteroidsInsideCcd])
-
-  useEffect(() => {
-    getDynclassAsteroidsById(id).then((res) => {
-      setDynclassAsteroids(res)
-    })
-  }, [id])
-
-  // useEffect(() => {
-  //   getCcdsWithAsteroidsById(id).then((res) => {
-  //     setCcdsWithAsteroids(res.ccds_with_asteroid);
-  //   });
-  // }, [id]);
-
-  useEffect(() => {
-    if (skybotResult.exposure !== 0) {
       setSummary([
         {
-          title: 'Exposure',
-          value: skybotResult.exposure
+          title: '# Status',
+          value: orbitTraceResult.status == 1 ? 'success' : 'failure'
         },
         {
-          title: 'Cone Search Radius',
-          value: `${coneSearchRadius} (degree)`
+          title: '# Asteroid Name',
+          value: orbitTraceResult.asteroid_name
+        },
+        {
+          title: '# Asteroid Number',
+          value: orbitTraceResult.asteroid_number
+        },
+        {
+          title: '# Base DynClass',
+          value: orbitTraceResult.base_dynclass
+        },
+        {
+          title: '# DynClass',
+          value: orbitTraceResult.dynclass
+        },
+        {
+          title: '# Observations',
+          value: orbitTraceResult.observations
         },
         {
           title: '# CCDs',
-          value: skybotResult.ccds
-        },
-        {
-          title: '# SSOs',
-          value: skybotResult.positions
-        },
-        {
-          title: '# SSOs Inside',
-          value: skybotResult.inside_ccd
-        },
-        {
-          title: '# SSOs Outside',
-          value: skybotResult.outside_ccd
-        },
-        {
-          title: '# CCDs With SSOs',
-          value: skybotResult.ccds_with_asteroids || '-'
-        },
-        {
-          title: '# CCDs Without SSOs',
-          value: skybotResult.ccds ? skybotResult.ccds - skybotResult.ccds_with_asteroids : '-'
+          value: orbitTraceResult.ccds
         }
       ])
-    }
-  }, [skybotResult])
+  }, [orbitTraceResult])
 
-  const summaryClassColumns = [
-    {
-      title: 'Dynamic Class',
-      name: 'dynclass',
-      width: 215,
-      sortingEnabled: false
-    },
-    {
-      title: '# SSOs',
-      name: 'asteroids',
-      width: 150,
-      sortingEnabled: false
-    },
-    {
-      title: '# CCDs',
-      name: 'ccds',
-      width: 150,
-      sortingEnabled: false
-    }
-  ]
+  const loadObservationsData = ({ asteroid_id, currentPage, pageSize, sorting }) => {
+    // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
+    const page = currentPage + 1
+    
+    getObeservationByAsteroid({asteroid_id, page, pageSize}).then((res) => {
+      setObservationsTable(res);
+      setObservationsCount(res.length);
+    })
+  }
 
   const handleBackNavigation = () => navigate(-1)
 
@@ -347,24 +140,6 @@ function OrbitTraceAsteroid() {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12}>
-            <Card>
-              <CardHeader title='Summary Class' />
-              <CardContent>
-                <Table
-                  columns={summaryClassColumns}
-                  data={dynclassAsteroids}
-                  totalCount={dynclassAsteroids.length}
-                  hasSearching={false}
-                  hasPagination={false}
-                  defaultSorting={[{ columnName: 'dynclass', ordering: 'asc' }]}
-                  hasColumnVisibility={false}
-                  hasToolbar={false}
-                  remote={false}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
         </Grid>
       </Grid>
       <Grid item xs={12} md={8}>
@@ -378,20 +153,19 @@ function OrbitTraceAsteroid() {
       </Grid>
       <Grid item xs={12}>
         <Card>
-          <CardHeader title='Observation' />
+          <CardHeader title='Observations' />
           <CardContent>            
-            {skybotResult.ticket !== 0 ? (
               <Table
-                columns={tableColumns}
-                data={insideCcdOnly ? asteroidsInsideCcd : positions}
-                totalCount={insideCcdOnly ? asteroidsInsideCcd.length : positions.length}
-                defaultSorting={[{ columnName: 'ccdnum', direction: 'asc' }]}
+                columns={observationsTableColumns}
+                data={observationsTable}
+                loadData={loadObservationsData}
+                totalCount={observationsCount}
                 hasSearching={false}
-                remote={false}
+                // hasSorting={false}
+                hasFiltering={false}
+                hasColumnVisibility={false}
+                hasToolbar={false}
               />
-            ) : (
-              <Skeleton variant='rect' hght={540} />
-            )}
           </CardContent>
         </Card>
       </Grid>

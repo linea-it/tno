@@ -11,7 +11,7 @@ import CalendarSuccessOrFailNight from '../../components/Chart/CalendarSuccessOr
 import {
   getOrbitTraceJobById,
   getOrbitTraceJobExposuresThatFailed,
-  getOrbitTraceJobResultById
+  getOrbitTraceResultById
 
 } from '../../services/api/OrbitTrace'
 
@@ -69,15 +69,6 @@ function OrbitTraceDetail() {
 
   const haveError = totalErrorCount > 0 && 'results' in orbitTraceJob
 
-  const loadErrors = ({ currentPage, pageSize }) => {
-    // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
-    const page = currentPage + 1
-
-    getOrbitTraceJobExposuresThatFailed({ id, page, pageSize }).then((res) => {
-      setTableErrorData(res.results.map((results) => ({ ...results, log: null })))
-      setTotalErrorCount(res.count)
-    })
-  }
 
   const tableColumns = [
     {
@@ -179,37 +170,41 @@ function OrbitTraceDetail() {
   ]
 
 
-  const loadData = ({ currentPage, pageSize, sorting }) => {
+  const loadDataSuccess = ({ currentPage, pageSize, sorting }) => {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
-    //const ordering = `${sorting[0].direction === 'desc' ? '-' : ''}${sorting[0].columnName}`
+    
+    getOrbitTraceResultById({ id, page, pageSize }).then((res) => {
+      const successeds = res.results.filter(x => x.status == 1);
+      setTableData(successeds.map((successeds) => ({ ...successeds, log: null })))
+      setTotalCount(successeds.length)
+    })
+  }
 
-    getOrbitTraceJobResultById({ id, page, pageSize }).then((res) => {
-      setTableData(res.results.map((results) => ({ ...results, log: null })))
-      setTotalCount(res.count)
+  const loadDataFailure = ({ currentPage, pageSize, sorting }) => {
+    // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
+    const page = currentPage + 1
+
+    getOrbitTraceResultById({ id, page, pageSize }).then((res) => {
+      const failures = res.results.filter(x => x.status == 2);
+      setTotalErrorCount(failures.lenght);
+      setTableErrorData(failures.map((failures) => ({ ...failures, log: null })))
+      setTotalErrorCount(failures.length)
     })
   }
 
   useEffect(() => {
-
-    //   getOrbitTraceProgress(id)
-    //     .then((data) => {
-    //       setProgress(data)
-    //       setHasCircularProgress(false)
-    //     })
-    //     .catch(() => {
-    //       setHasCircularProgress(true)
-    //     })
-
-    //   getDynclassAsteroids(id).then((res) => {
-    //     setDynclassAsteroids(res)
-    //   })
-
     getOrbitTraceJobById({ id }).then((res) => {
       setOrbitTraceJob(res)
     })
 
-    loadData({
+    loadDataSuccess({
+      currentPage: 0,
+      pageSize: 10,
+      sorting: [{ columnName: 'id', direction: 'asc' }]
+    })
+
+    loadDataFailure({
       currentPage: 0,
       pageSize: 10,
       sorting: [{ columnName: 'id', direction: 'asc' }]
@@ -446,9 +441,7 @@ function OrbitTraceDetail() {
       </Grid>
 
       {
-        // Idle and Running Statuses:
-        // ![1, 2].includes(orbitTraceJob.status) ? (
-        (
+          totalCount > 0 ? (
           <>
             <Grid item xs={12} />
 
@@ -459,7 +452,7 @@ function OrbitTraceDetail() {
                   <Table
                     columns={tableColumns}
                     data={tableData}
-                    loadData={loadData}
+                    loadData={loadDataSuccess}
                     totalCount={totalCount || 0}
                     hasSearching={false}
                     // hasSorting={false}
@@ -473,12 +466,12 @@ function OrbitTraceDetail() {
             {totalErrorCount > 0 ? (
               <Grid item xs={12}>
                 <Card>
-                  <CardHeader title='Asteroid With Errors' />
+                  <CardHeader title='Asteroid Failures' />
                   <CardContent>
                     <Table
-                      columns={tableErrorColumns}
+                      columns={tableColumns}
                       data={tableErrorData}
-                      loadData={loadErrors}
+                      loadData={loadDataFailure}
                       totalCount={totalErrorCount}
                       hasSearching={false}
                       // hasSorting={false}
@@ -491,8 +484,7 @@ function OrbitTraceDetail() {
               </Grid>
             ) : null}
           </>
-        )
-        // : null
+        ) : null
       }
     </Grid>
   )
