@@ -32,13 +32,12 @@ class ObservationViewSet(viewsets.ReadOnlyModelViewSet):
         #     Este endpoint obtem as observações de dado asteroide.
 
         #     Parameters:
-        #         pk (string): asteroid name.
+        #         pk (string): asteroid id.
 
         #     Returns:
         #         result .
         #     """
-        pk = pk.replace("%20", " ")
-        obs = Observation.objects.prefetch_related('ccd').filter(asteroid=1) if Observation.objects.filter(asteroid=1).exists() else None
+        obs = Observation.objects.filter(asteroid=pk) if Observation.objects.filter(asteroid=pk).exists() else None
         
         if obs is not None:
             result = ObservationSerializer(obs, many=True)

@@ -23,6 +23,10 @@ import {
   getBaseDynClassList,
   getAsteroidsList
 } from '../../services/api/OrbitTrace'
+import {
+  createPredictionJob,
+  getPredictionJobList
+} from '../../services/api/PredictOccultation'
 import useStyles from './styles'
 import FormGroup from '@mui/material/FormGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -45,16 +49,16 @@ function PredictOccultation() {
   const [reload, setReload] = useState(true)
 
   const [hasJobRunningOrIdleFeedback, setHasJobRunningOrIdleFeedback] = useState(false)
-  const [debug, setDebug] = React.useState(false)
+  const [forceRefreshInputs, setForceRefreshInputs] = useState(false)
 
   const [filterTypeList, setFilterTypeList] = useState([{ value: 'Name', label: 'Name' }, { value: 'DynClass', label: 'DynClass' }, { value: 'Base DynClass', label: 'Base DynClass' }]);
   const [dynClassList, setDynClassList] = useState([]);
   const [baseDynClassList, setBaseDynClassList] = useState([]);
   const [asteroidsList, setAsteroidsList] = useState([]);
   const [bspValueList, setbspValueList] = useState([{ value: 0, label: 'None' }, { value: 10, label: '10 days' }, { value: 20, label: '20 days' }, { value: 30, label: '30 days' }]);
-  const [bspValue, setBspValue] = React.useState({ value: 0, label: "None" });
-  const [dateStart, setDateStart] = React.useState('');
-  const [dateEnd, setDateEnd] = React.useState('');
+  const [bspValue, setBspValue] = useState({ value: 0, label: "None" });
+  const [dateStart, setDateStart] = useState('');
+  const [dateEnd, setDateEnd] = useState('');
 
   const [dateStartError, setDateStartError] = React.useState(false);
   const [dateEndError, setDateEndError] = React.useState(false);
@@ -73,6 +77,10 @@ function PredictOccultation() {
 
   const [messageOpenError, setMessageOpenError] = useState(false);
   const [messageTextError, setMessageTextError] = React.useState('');
+
+  useEffect(() => {
+    setDisableSubmit(!dateStart || !dateEnd || !filterValue.value || !filterType.value);
+  }, [dateStart, dateEnd, filterValue, filterType]);
 
   useMountEffect(() => {
     getDynClassList().then((list) => {
@@ -112,44 +120,59 @@ function PredictOccultation() {
   };
 
 
-  const handleChangeDebug = (event) => {
-    setDebug(event.target.checked)
+  const handleChangeForceRefreshInputs = (event) => {
+    setForceRefreshInputs(event.target.checked)
   }
 
   const bspValuehandleChange = (event) => {
     if (event)
       setBspValue(event);
   };
+
+  function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+  }
+
   const handleSubmitJobClick = async () => {
 
     if (await validadeInformation()) {
-      //   setDisableSubmit(true);
-      //   const data = {
-      //     bsp_planetary: bspPlanetary.value,
-      //     leap_second: leapSecond.value,
-      //     filter_type: filterType.value,
-      //     filter_value: filterValue.value,
-      //     bps_days_to_expire: bspValue.value.toString(),
-      //     debug: debug.toString()
-
-      //   }
-      //   createOrbitTraceJob(data)
-      //     .then((response) => {
-      //       setBspPlanetary({ value: "", label: "Select..." });
-      //       setLeapSecond({ value: "", label: "Select..." });
-      //       setFilterType({ value: "", label: "Select..." });
-      //       setFilterValue({ value: "", label: "Select..." });
-      //       setBspValue({ value: 0, label: "None" });
-      //       setMessageTextSuccess('Information registered successfully');
-      //       setMessageOpenSuccess(true);
-      //       setReload((prevState) => !prevState);
-      //       setDisableSubmit(false);
-      //     })
-      //     .catch((err) => {
-      //       console.log(err)
-      //       setMessageTextError(err);
-      //       setMessageOpenError(true);
-      //     })
+        setDisableSubmit(true);
+        const data = {
+          date_initial: formatDate(dateStart),
+          date_final: formatDate(dateEnd),
+          filter_type: filterType.value,
+          filter_value: filterValue.value,
+          predict_step: predictStep,
+          force_refresh_input: forceRefreshInputs.toString(),
+          input_days_to_expire: bspValue.value.toString()
+        }
+        createPredictionJob(data)
+          .then((response) => {
+            setDateStart("");
+            setDateEnd("");
+            setFilterType({ value: "", label: "Select..." });
+            setFilterValue({ value: "", label: "Select..." });
+            setBspValue({ value: 0, label: "None" });
+            setMessageTextSuccess('Information registered successfully');
+            setMessageOpenSuccess(true);
+            setReload((prevState) => !prevState);
+            setDisableSubmit(false);
+          })
+          .catch((err) => {
+            console.log(err)
+            setMessageTextError(err);
+            setMessageOpenError(true);
+          })
     }
   }
 
@@ -197,6 +220,24 @@ function PredictOccultation() {
     return verify;
   }
 
+  const loadData = ({ sorting, pageSize, currentPage }) => {
+    getPredictionJobList({
+      page: currentPage + 1,
+      pageSize,
+      ordering: sorting
+    }).then((res) => {
+      const { data } = res
+      setTableData(
+        data.results.map((row) => ({
+          key: row.id,
+          detail: `/data-preparation/des/orbittracedetail/${row.id}`,
+          ...row
+        }))
+      )
+      setTotalCount(data.count)
+    })
+  }
+
 
   const tableColumns = [
     {
@@ -224,18 +265,21 @@ function PredictOccultation() {
     {
       name: 'status',
       title: 'Status',
-      customElement: (row) => <ColumnStatus status={row.status} title={row.error_msg} />
+      align: 'center',
+      customElement: (row) => <ColumnStatus status={row.status} title={row.error} />
     },
     {
       name: 'owner',
       title: 'Owner',
-      width: 130
+      width: 130,
+      align: 'center',
     },
     {
       name: 'start',
       title: 'Execution Date',
       width: 150,
-      customElement: (row) => <span title={moment(row.start).format('HH:mm:ss')}>{moment(row.start).format('YYYY-MM-DD')}</span>
+      align: 'center',
+      customElement: (row) => row.start ? <span title={moment(row.start).format('HH:mm:ss')}>{moment(row.start).format('YYYY-MM-DD')}</span> : <span>Not started</span>
     },
     {
       name: 'execution_time',
@@ -243,39 +287,7 @@ function PredictOccultation() {
       width: 150,
       headerTooltip: 'Execution time',
       align: 'center',
-      customElement: (row) => (row.execution_time ? row.execution_time.split('.')[0] : null)
-    },
-    {
-      name: 'date_initial',
-      title: 'First Night',
-      width: 130,
-      customElement: (row) => <span title={moment(row.start).format('HH:mm:ss')}>{row.date_initial}</span>
-    },
-    {
-      name: 'date_final',
-      title: 'Last Night',
-      width: 130,
-      customElement: (row) => <span title={moment(row.finish).format('HH:mm:ss')}>{row.date_final}</span>
-    },
-    {
-      name: 'nights',
-      title: '# Nights'
-    },
-    {
-      name: 'exposures',
-      title: '# Exposures'
-    },
-    {
-      name: 'asteroids',
-      title: '# SSOs'
-    },
-    {
-      name: 'ccds',
-      title: '# CCDs'
-    },
-    {
-      name: 'ccds_with_asteroid',
-      title: '# CCDs with SSOs'
+      customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : null)
     }
   ]
 
@@ -303,7 +315,7 @@ function PredictOccultation() {
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth><label>Date Start <span className={classes.errorText}>*</span></label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker format="YYYY-MM-DD" />
+                            <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => {setDateStart(date)}}/>
                           </LocalizationProvider>
                         </FormControl>
                         {dateStartError ? (<span className={classes.errorText}>Required field</span>) : ''}
@@ -315,7 +327,7 @@ function PredictOccultation() {
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth><label>Date End <span className={classes.errorText}>*</span></label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker format="YYYY-MM-DD" />
+                            <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => {setDateEnd(date)}}/>
                           </LocalizationProvider>
                         </FormControl>
                         {dateEndError ? (<span className={classes.errorText}>Required field</span>) : ''}
@@ -409,7 +421,7 @@ function PredictOccultation() {
                       <Box sx={{ minWidth: 120 }}>
                         <FormGroup>
                           <FormControlLabel
-                            control={<Switch checked={debug} onChange={handleChangeDebug} color="primary" />}
+                            control={<Switch checked={forceRefreshInputs} onChange={handleChangeForceRefreshInputs} color="primary" />}
                             label='Force Refresh Inputs'
                           />
                         </FormGroup>
@@ -440,7 +452,7 @@ function PredictOccultation() {
               <Table
                 columns={tableColumns}
                 data={tableData}
-                //loadData={loadData}
+                loadData={loadData}
                 hasSearching={false}
                 hasPagination
                 hasColumnVisibility={false}

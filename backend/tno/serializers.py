@@ -80,9 +80,16 @@ class OccultationSerializer(serializers.ModelSerializer):
         )
 
 class PredictionJobSerializer(serializers.ModelSerializer):
+    owner = serializers.SerializerMethodField()
     class Meta:
         model = PredictionJob
         fields = '__all__'
+
+    def get_owner(self, obj):
+        try:
+            return obj.owner.username
+        except:
+            return None
 
 
 class PredictionJobResultSerializer(serializers.ModelSerializer):

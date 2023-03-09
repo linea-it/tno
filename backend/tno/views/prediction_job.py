@@ -31,9 +31,21 @@ class PredictionJobViewSet(
         de tempos em tempos os jobs neste status e inicia o processamento.
 
         Parameters:
-            bsp_planetary (string): .
+            date_initial: (string):
+            
+            date_final: (string): 
 
-            leap_second (string): .
+            filter_type (string): 
+
+            filter_value (string): 
+
+            predict_step (inteiro):
+
+            force_refresh_input (booleano):
+
+            input_days_to_expire (inteiro):
+
+            
 
         Returns:
             job (PredictionJobSerializer): Job que acabou de ser criado.
@@ -61,7 +73,7 @@ class PredictionJobViewSet(
             predict_start_date=date_initial,
             predict_end_date=date_final,
             predict_step=params["predict_step"].replace("\'", "\""),
-            force_refresh_input=params["force_refresh_input"].replace("\'", "\""),
+            force_refresh_input=bool(params["force_refresh_input"].replace("\'", "\"")),
             input_days_to_expire=params["input_days_to_expire"].replace("\'", "\""),
         )
         job.save()

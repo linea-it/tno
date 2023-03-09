@@ -1,27 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Grid, Card, CardHeader, CardContent, Toolbar, Icon, Button, Typography } from '@material-ui/core'
-import { Skeleton } from '@material-ui/lab'
 import Table from '../../components/Table'
 import {
   getOrbitTraceJobResultById,
-  getObeservationByAsteroid,
-  // getPositionsByTicket,
-  // getAsteroidsInsideCcdByTicket,
-  // getCcdsByExposure,
-  // getExposureById,
-  // getDynclassAsteroidsById
+  getObeservationByAsteroid
 } from '../../services/api/OrbitTrace'
-import CCD from '../../components/Chart/CCD'
 import List from '../../components/List'
-import Switch from '../../components/Switch'
 import graphFake from '../../assets/img/graph_fake.png'
 import moment from '../../../node_modules/moment/moment'
 
 function OrbitTraceAsteroid() {
   const { id } = useParams()
-
-  const coneSearchRadius = 1.2 // ! Cone search radius in Degres.
 
   const navigate = useNavigate()
   const [orbitTraceResult, setOrbitTraceResult] = useState({
