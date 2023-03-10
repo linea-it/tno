@@ -310,31 +310,7 @@ function PredictOccultation() {
               <Card>
                 <CardHeader title='Predict Occultation Run' />
                 <CardContent>
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
-                      <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Date Start <span className={classes.errorText}>*</span></label>
-                          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => {setDateStart(date)}}/>
-                          </LocalizationProvider>
-                        </FormControl>
-                        {dateStartError ? (<span className={classes.errorText}>Required field</span>) : ''}
-                      </Box>
-                    </Grid>
-                  </Grid>
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
-                      <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Date End <span className={classes.errorText}>*</span></label>
-                          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => {setDateEnd(date)}}/>
-                          </LocalizationProvider>
-                        </FormControl>
-                        {dateEndError ? (<span className={classes.errorText}>Required field</span>) : ''}
-                      </Box>
-                    </Grid>
-                  </Grid>
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth><label>Filter Type <span className={classes.errorText}>*</span></label>
@@ -389,6 +365,30 @@ function PredictOccultation() {
                       </Grid>
                     </Grid>
                   }
+                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                    <Grid item xs={12}>
+                      <Box sx={{ minWidth: 120 }}>
+                        <FormControl fullWidth><label>Date Start <span className={classes.errorText}>*</span></label>
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => {setDateStart(date)}}/>
+                          </LocalizationProvider>
+                        </FormControl>
+                        {dateStartError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                      </Box>
+                    </Grid>
+                  </Grid>
+                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                    <Grid item xs={12}>
+                      <Box sx={{ minWidth: 120 }}>
+                        <FormControl fullWidth><label>Date End <span className={classes.errorText}>*</span></label>
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => {setDateEnd(date)}}/>
+                          </LocalizationProvider>
+                        </FormControl>
+                        {dateEndError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                      </Box>
+                    </Grid>
+                  </Grid>
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>

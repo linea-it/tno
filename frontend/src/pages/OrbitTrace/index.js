@@ -311,42 +311,7 @@ function OrbitTrace() {
               <Card>
                 <CardHeader title='Fetch Astrometry' />
                 <CardContent>
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
-                      <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Bsp Planetary <span className={classes.errorText}>*</span></label>
-                          <Select
-                            value={bspPlanetary}
-                            name="bspPlanetary"
-                            onChange={bspPlanetaryhandleChange}
-                            options={bspPlanetaryList}
-                            style={{height:'45px !important'}}
-                            menuPortalTarget={document.body}
-                            menuPosition={'fixed'}
-                          />
-                        </FormControl>
-                        {bspPlanetaryError ? (<span className={classes.errorText}>Required field</span>) : ''}
-                      </Box>
-                    </Grid>
-                  </Grid>
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
-                      <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Leap Second <span className={classes.errorText}>*</span></label>
-                          <Select
-                            value={leapSecond}
-                            id="leapSecond"
-                            onChange={leapSecondhandleChange}
-                            options={leapSecondList}
-                            menuPortalTarget={document.body}
-                            menuPosition={'fixed'}                            
-                          />
-                        </FormControl>
-                        {leapSecondError ? (<span className={classes.errorText}>Required field</span>) : ''}
-                      </Box>
-                    </Grid>
-                  </Grid>
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth><label>Filter Type <span className={classes.errorText}>*</span></label>
@@ -403,6 +368,42 @@ function OrbitTrace() {
                       </Grid>
                     </Grid>
                   }
+                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                    <Grid item xs={12}>
+                      <Box sx={{ minWidth: 120 }}>
+                        <FormControl fullWidth><label>Bsp Planetary <span className={classes.errorText}>*</span></label>
+                          <Select
+                            value={bspPlanetary}
+                            name="bspPlanetary"
+                            onChange={bspPlanetaryhandleChange}
+                            options={bspPlanetaryList}
+                            style={{height:'45px !important'}}
+                            menuPortalTarget={document.body}
+                            menuPosition={'fixed'}
+                          />
+                        </FormControl>
+                        {bspPlanetaryError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                      </Box>
+                    </Grid>
+                  </Grid>
+                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                    <Grid item xs={12}>
+                      <Box sx={{ minWidth: 120 }}>
+                        <FormControl fullWidth><label>Leap Second <span className={classes.errorText}>*</span></label>
+                          <Select
+                            value={leapSecond}
+                            id="leapSecond"
+                            onChange={leapSecondhandleChange}
+                            options={leapSecondList}
+                            menuPortalTarget={document.body}
+                            menuPosition={'fixed'}                            
+                          />
+                        </FormControl>
+                        {leapSecondError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                      </Box>
+                    </Grid>
+                  </Grid>
+                  
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
