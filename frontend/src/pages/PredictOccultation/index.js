@@ -57,7 +57,7 @@ function PredictOccultation() {
   const [asteroidsList, setAsteroidsList] = useState([]);
   const [bspValueList, setbspValueList] = useState([{ value: 0, label: 'None' }, { value: 10, label: '10 days' }, { value: 20, label: '20 days' }, { value: 30, label: '30 days' }]);
   const [bspValue, setBspValue] = useState({ value: 0, label: "None" });
-  const [dateStart, setDateStart] = useState('');
+  const [dateStart, setDateStart] = useState(moment());
   const [dateEnd, setDateEnd] = useState('');
 
   const [dateStartError, setDateStartError] = React.useState(false);
@@ -119,7 +119,6 @@ function PredictOccultation() {
     }
   };
 
-
   const handleChangeForceRefreshInputs = (event) => {
     setForceRefreshInputs(event.target.checked)
   }
@@ -131,14 +130,50 @@ function PredictOccultation() {
 
   function formatDate(date) {
     var d = new Date(date),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
 
-    if (month.length < 2) 
-        month = '0' + month;
-    if (day.length < 2) 
-        day = '0' + day;
+    if (month.length < 2)
+      month = '0' + month;
+    if (day.length < 2)
+      day = '0' + day;
+
+    return [year, month, day].join('-');
+  }
+
+  const calculateDate = (filter) => {
+    const currentDate = dateStart;
+    var dateEnd = moment();
+
+    switch (filter) {
+      case '1week':
+        dateEnd = moment(currentDate).add(7, 'days');
+        break;
+      case '1mounth':
+        dateEnd = moment(currentDate).add(30, 'days');
+        break;
+      case '6mounths':
+        dateEnd = moment(currentDate).add(180, 'days');
+        break;
+      case '1year':
+        dateEnd = moment(currentDate).add(365, 'days');
+        break;
+    }
+
+    setDateEnd(dateEnd);
+  }
+
+  function currentDate() {
+    var d = new Date(),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+    if (month.length < 2)
+      month = '0' + month;
+    if (day.length < 2)
+      day = '0' + day;
 
     return [year, month, day].join('-');
   }
@@ -146,33 +181,33 @@ function PredictOccultation() {
   const handleSubmitJobClick = async () => {
 
     if (await validadeInformation()) {
-        setDisableSubmit(true);
-        const data = {
-          date_initial: formatDate(dateStart),
-          date_final: formatDate(dateEnd),
-          filter_type: filterType.value,
-          filter_value: filterValue.value,
-          predict_step: predictStep,
-          force_refresh_input: forceRefreshInputs.toString(),
-          input_days_to_expire: bspValue.value.toString()
-        }
-        createPredictionJob(data)
-          .then((response) => {
-            setDateStart("");
-            setDateEnd("");
-            setFilterType({ value: "", label: "Select..." });
-            setFilterValue({ value: "", label: "Select..." });
-            setBspValue({ value: 0, label: "None" });
-            setMessageTextSuccess('Information registered successfully');
-            setMessageOpenSuccess(true);
-            setReload((prevState) => !prevState);
-            setDisableSubmit(false);
-          })
-          .catch((err) => {
-            console.log(err)
-            setMessageTextError(err);
-            setMessageOpenError(true);
-          })
+      setDisableSubmit(true);
+      const data = {
+        date_initial: formatDate(dateStart),
+        date_final: formatDate(dateEnd),
+        filter_type: filterType.value,
+        filter_value: filterValue.value,
+        predict_step: predictStep,
+        force_refresh_input: forceRefreshInputs.toString(),
+        input_days_to_expire: bspValue.value.toString()
+      }
+      createPredictionJob(data)
+        .then((response) => {
+          setDateStart("");
+          setDateEnd("");
+          setFilterType({ value: "", label: "Select..." });
+          setFilterValue({ value: "", label: "Select..." });
+          setBspValue({ value: 0, label: "None" });
+          setMessageTextSuccess('Information registered successfully');
+          setMessageOpenSuccess(true);
+          setReload((prevState) => !prevState);
+          setDisableSubmit(false);
+        })
+        .catch((err) => {
+          console.log(err)
+          setMessageTextError(err);
+          setMessageOpenError(true);
+        })
     }
   }
 
@@ -304,13 +339,13 @@ function PredictOccultation() {
   return (
     <>
       <Grid container spacing={2} alignItems='stretch'>
-        <Grid item xs={12} md={5} lg={4}>
+        <Grid item xs={12} sm={8} md={6} lg={5}>
           <Grid container direction='column' spacing={2}>
             <Grid item xs={12}>
               <Card>
                 <CardHeader title='Predict Occultation Run' />
                 <CardContent>
-                <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth><label>Filter Type <span className={classes.errorText}>*</span></label>
@@ -367,28 +402,60 @@ function PredictOccultation() {
                   }
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
-                      <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Date Start <span className={classes.errorText}>*</span></label>
-                          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => {setDateStart(date)}}/>
-                          </LocalizationProvider>
-                        </FormControl>
-                        {dateStartError ? (<span className={classes.errorText}>Required field</span>) : ''}
-                      </Box>
+                      <label>Start and End Period<span className={classes.errorText}>*</span></label>
+                      <Card variant="outlined" className="cardBoder">
+                        <CardContent>
+                          <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                            <Grid item xs={12} sm={6} md={3}>
+                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1week')}>
+                                1 Week
+                              </Button>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1mounth')}>
+                                1 Month
+                              </Button>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('6mounths')}>
+                                6 Months
+                              </Button>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1year')}>
+                                1 Year
+                              </Button>
+                            </Grid>
+                          </Grid>
+                          <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                            <Grid item xs={12}>
+                              <Box sx={{ minWidth: 120 }}>
+                                <FormControl fullWidth><label>Date Start <span className={classes.errorText}>*</span></label>
+                                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
+                                  </LocalizationProvider>
+                                </FormControl>
+                                {dateStartError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                              </Box>
+                            </Grid>
+                          </Grid>
+                          <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                            <Grid item xs={12}>
+                              <Box sx={{ minWidth: 120 }}>
+                                <FormControl fullWidth><label>Date End <span className={classes.errorText}>*</span></label>
+                                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
+                                  </LocalizationProvider>
+                                </FormControl>
+                                {dateEndError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                              </Box>
+                            </Grid>
+                          </Grid>
+                        </CardContent>
+                      </Card>
                     </Grid>
                   </Grid>
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
-                      <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Date End <span className={classes.errorText}>*</span></label>
-                          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => {setDateEnd(date)}}/>
-                          </LocalizationProvider>
-                        </FormControl>
-                        {dateEndError ? (<span className={classes.errorText}>Required field</span>) : ''}
-                      </Box>
-                    </Grid>
-                  </Grid>
+
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>

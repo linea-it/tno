@@ -311,7 +311,7 @@ function OrbitTrace() {
               <Card>
                 <CardHeader title='Fetch Astrometry' />
                 <CardContent>
-                <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth><label>Filter Type <span className={classes.errorText}>*</span></label>
@@ -377,7 +377,7 @@ function OrbitTrace() {
                             name="bspPlanetary"
                             onChange={bspPlanetaryhandleChange}
                             options={bspPlanetaryList}
-                            style={{height:'45px !important'}}
+                            style={{ height: '45px !important' }}
                             menuPortalTarget={document.body}
                             menuPosition={'fixed'}
                           />
@@ -396,14 +396,13 @@ function OrbitTrace() {
                             onChange={leapSecondhandleChange}
                             options={leapSecondList}
                             menuPortalTarget={document.body}
-                            menuPosition={'fixed'}                            
+                            menuPosition={'fixed'}
                           />
                         </FormControl>
                         {leapSecondError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
                     </Grid>
                   </Grid>
-                  
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <Box sx={{ minWidth: 120 }}>
@@ -415,7 +414,7 @@ function OrbitTrace() {
                             onChange={bspValuehandleChange}
                             options={bspValueList}
                             menuPortalTarget={document.body}
-                            menuPosition={'fixed'}                           
+                            menuPosition={'fixed'}
                           />
                         </FormControl>
                         {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
