@@ -73,6 +73,7 @@ const routes = [
   { path: '/data-preparation/des/orbit_trace', title: 'Orbit Trace' },
   { path: '/data-preparation/des/management', title: 'DES Management' },
   { path: '/predict_occultation', title: 'Predict Occultation' },
+  { path: '/predict_detail/:id', title: 'Predict Occultation Details' },
   { path: '/occultation', title: 'Occultation' },
   { path: '/dashboard', title: 'Dashboard' },
   { path: '/data-preparation/des/orbittracedetail/:id', title: 'Orbit Trace Details' },

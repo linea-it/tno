@@ -4,7 +4,7 @@ import { Grid, Card, CardHeader, CardContent, Toolbar, Icon, Button, Typography 
 import Table from '../../components/Table'
 import {
   getOrbitTraceJobResultById,
-  getObeservationByAsteroid
+  getObservationByAsteroid
 } from '../../services/api/OrbitTrace'
 import List from '../../components/List'
 import graphFake from '../../assets/img/graph_fake.png'
@@ -44,6 +44,14 @@ function OrbitTraceAsteroid() {
 
   const observationsTableColumns = [
       {
+        name: 'name',
+        title: 'Name',
+        align: 'center',
+        sortingEnabled: false,
+        customElement: (row) => { return <span>{row.name}</span> },
+        width: 180
+      },
+      {
         name: 'ccd',
         title: 'CCD',
         align: 'center',
@@ -56,9 +64,54 @@ function OrbitTraceAsteroid() {
         title: 'Date',
         width: 150,
         align: 'center',
-        customElement: (row) => row.date_obs ? <span title={moment(row.date_obs).format('HH:mm:ss')}>{moment(row.date_obs).format('YYYY-MM-DD')}</span> : <span>Invalid Date</span>
+        customElement: (row) => row.date_obs ? <span title={moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss')}>{moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss')}</span> : <span>Invalid Date</span>
+      },
+      {
+        name: 'ra',
+        title: 'RA (DEG) ',
+        width: 150,
+        align: 'center',
+        customElement: (row) => <span>{row.ra.toFixed(1)}</span>
+      },
+      {
+        name: 'dec',
+        title: 'Dec (DEG) ',
+        width: 150,
+        align: 'center',
+        customElement: (row) => <span>{row.dec.toFixed(1)}</span>
+      },
+      {
+        name: 'offset_ra',
+        title: 'Offset RA (DEG) ',
+        width: 150,
+        align: 'center',
+        customElement: (row) => <span>{row.offset_ra.toFixed(2)}</span>
+      },
+      {
+        name: 'offset_dec',
+        title: 'Offset Dec (DEG) ',
+        width: 150,
+        align: 'center',
+        customElement: (row) => <span>{row.offset_dec.toFixed(2)}</span>
+      },
+      {
+        name: 'mag_psf',
+        title: 'Mag PSF ',
+        width: 150,
+        align: 'center',
+        customElement: (row) => <span>{row.mag_psf.toFixed(2)}</span>
+      },
+      {
+        name: 'mag_psf_err',
+        title: 'Mag PSF Error',
+        width: 150,
+        align: 'center',
+        customElement: (row) => <span>{row.mag_psf_err.toFixed(2)}</span>
       }
+      
+      
   ]
+
 
 
   useEffect(() => {
@@ -98,7 +151,7 @@ function OrbitTraceAsteroid() {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
     
-    getObeservationByAsteroid({asteroid_id, page, pageSize}).then((res) => {
+    getObservationByAsteroid({asteroid_id, page, pageSize}).then((res) => {
       setObservationsTable(res);
       setObservationsCount(res.length);
     })

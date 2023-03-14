@@ -10,6 +10,7 @@ import OrbitTrace from '../pages/OrbitTrace/'
 import DesManagement from '../pages/DesManagement'
 
 import PredictOccultation from '../pages/PredictOccultation'
+import PredictDetail from '../pages/PredictOccultation/Detail'
 
 import Occultation from '../pages/Occultation'
 
@@ -237,6 +238,18 @@ export default function AppRoutes() {
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
               <PredictOccultation />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/predict_detail/:id'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <PredictDetail />
             </DashboardPage>
           </PrivateRoute>
         }

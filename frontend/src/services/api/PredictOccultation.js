@@ -24,3 +24,27 @@ export const getPredictionJobList = ({ page, pageSize, ordering }) => {
   return api.get('/prediction_job/', { params })
 }
 
+export const getPredictionJobById = ({ id }) => api.get(`/prediction_job/${id}`).then((res) => res.data)
+
+
+export const getPredictionJobResultsById = ({ id, pageSize, page }) => {
+  const params = {
+    job: id,
+    page,
+    pageSize,
+  }
+
+  return api.get(`/prediction_job_result/`, { params }).then((res) => res.data)
+}
+
+export const getPredctionJobResultById = (id) => api.get(`/prediction_job_result/${id}/`).then((res) => res.data)
+
+export const getOccultationsByAsteroid = ({ asteroid_id, pageSize, page }) =>{
+  const params = {
+    asteroid_id: asteroid_id,
+    page,
+    pageSize,
+  }
+ return api.get(`/des/occultation/${asteroid_id}/get_by_asteroid/?format=json`).then((res) => res.data)
+}
+

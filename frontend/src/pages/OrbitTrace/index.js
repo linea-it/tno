@@ -47,7 +47,7 @@ function OrbitTrace() {
 
   const [bspPlanetary, setBspPlanetary] = React.useState({ value: "", label: "Select..." });
   const [leapSecond, setLeapSecond] = React.useState({ value: "", label: "Select..." });
-  const [filterType, setFilterType] = React.useState({ value: "", label: "Select..." });
+  const [filterType, setFilterType] = React.useState({ value: 'Base DynClass', label: 'Base DynClass' });
   const [filterValue, setFilterValue] = React.useState({ value: "", label: "Select..." });
   const [bspValue, setBspValue] = React.useState({ value: 0, label: "None" });
   const [filterValueNames, setFilterValueNames] = React.useState([]);
@@ -186,7 +186,7 @@ function OrbitTrace() {
         .then((response) => {
           setBspPlanetary({ value: "", label: "Select..." });
           setLeapSecond({ value: "", label: "Select..." });
-          setFilterType({ value: "", label: "Select..." });
+          setFilterType({ value: 'Base DynClass', label: 'Base DynClass' });
           setFilterValue({ value: "", label: "Select..." });
           setBspValue({ value: 0, label: "None" });
           setMessageTextSuccess('Information registered successfully');

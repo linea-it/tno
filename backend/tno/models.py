@@ -526,6 +526,7 @@ class PredictionJob (models.Model):
             (4, "Failed"),
             (5, "Aborted"),
             (6, "Warning"),
+            (7, "Aborting"),
         ),
     )
 
@@ -644,6 +645,10 @@ class PredictionJob (models.Model):
         help_text="Path to the directory where the job data is located.",
     )
 
+    error = models.TextField(verbose_name="Error", null=True, blank=True)
+
+    traceback = models.TextField(verbose_name="Traceback", null=True, blank=True)
+
 class PredictionJobResult(models.Model):
     
     job = models.ForeignKey(
@@ -656,6 +661,15 @@ class PredictionJobResult(models.Model):
         Asteroid,
         on_delete=models.CASCADE,
         verbose_name="Asteroid",
+    )
+
+    status = models.IntegerField(
+        verbose_name="Status",
+        default=1,
+        choices=(
+            (1, "Success"),
+            (2, "Failed"),
+        ),
     )
 
     asteroid_name = models.CharField(
@@ -834,6 +848,10 @@ class PredictionJobResult(models.Model):
 
     ing_occ_exec_time = models.DurationField(
         verbose_name="ing_occ_exec_time", null=True, blank=True
+    )
+
+    exec_time = models.DurationField(
+        verbose_name="exec_time", null=True, blank=True
     )
 
     messages = models.TextField(

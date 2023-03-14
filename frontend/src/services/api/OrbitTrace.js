@@ -58,7 +58,7 @@ export const getOrbitTraceResultById = ({ id, pageSize, page }) => {
 
 export const getOrbitTraceJobResultById = (id) => api.get(`/des/orbit_trace_job_result/${id}/`).then((res) => res.data)
 
-export const getObeservationByAsteroid = ({ asteroid_id, pageSize, page }) =>{
+export const getObservationByAsteroid = ({ asteroid_id, pageSize, page }) =>{
   const params = {
     asteroid_id: asteroid_id,
     page,

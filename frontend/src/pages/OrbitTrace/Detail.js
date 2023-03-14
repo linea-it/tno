@@ -177,7 +177,7 @@ function OrbitTraceDetail() {
     getOrbitTraceResultById({ id, page, pageSize }).then((res) => {
       const successeds = res.results.filter(x => x.status == 1);
       setTableData(successeds.map((successeds) => ({ ...successeds, log: null })))
-      setTotalCount(successeds.length)
+      setTotalCount(successeds.length);
     })
   }
 
@@ -187,9 +187,8 @@ function OrbitTraceDetail() {
 
     getOrbitTraceResultById({ id, page, pageSize }).then((res) => {
       const failures = res.results.filter(x => x.status == 2);
-      setTotalErrorCount(failures.lenght);
       setTableErrorData(failures.map((failures) => ({ ...failures, log: null })))
-      setTotalErrorCount(failures.length)
+      setTotalErrorCount(failures.length);
     })
   }
 
@@ -217,7 +216,7 @@ function OrbitTraceDetail() {
       setSummaryExecution([
         {
           title: 'Status',
-          value: () => <ColumnStatus status={orbitTraceJob.status} title={orbitTraceJob.error_msg} align='right' />
+          value: () => <ColumnStatus status={orbitTraceJob.status} title={orbitTraceJob.error} align='right' />
         },
         {
           title: 'Owner',
@@ -305,7 +304,6 @@ function OrbitTraceDetail() {
           ) : null}
         </Grid>
       </Grid>
-
       <Grid item xs={12} md={5} xl={3}>
         <Card>
           <CardHeader title='Summary Execution' />
@@ -439,53 +437,50 @@ function OrbitTraceDetail() {
           </Grid>
         </Grid>
       </Grid>
-
+      <>
       {
-          totalCount > 0 ? (
-          <>
-            <Grid item xs={12} />
-
-            <Grid item xs={12}>
+        totalCount > 0 &&
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader title='Asteroid Results' />
+              <CardContent>
+                <Table
+                  columns={tableColumns}
+                  data={tableData}
+                  loadData={loadDataSuccess}
+                  totalCount={totalCount || 0}
+                  hasSearching={false}
+                  // hasSorting={false}
+                  hasColumnVisibility={false}
+                  hasToolbar={false}
+                  hasRowNumberer
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+      }
+      {
+        totalCount > 0 &&
+          <Grid item xs={12}>
               <Card>
-                <CardHeader title='Asteroid Results' />
+                <CardHeader title='Asteroid Failures' />
                 <CardContent>
                   <Table
                     columns={tableColumns}
-                    data={tableData}
-                    loadData={loadDataSuccess}
-                    totalCount={totalCount || 0}
+                    data={tableErrorData}
+                    loadData={loadDataFailure}
+                    totalCount={totalErrorCount}
                     hasSearching={false}
                     // hasSorting={false}
+                    hasFiltering={false}
                     hasColumnVisibility={false}
                     hasToolbar={false}
-                    hasRowNumberer
                   />
                 </CardContent>
               </Card>
-            </Grid>
-            {totalErrorCount > 0 ? (
-              <Grid item xs={12}>
-                <Card>
-                  <CardHeader title='Asteroid Failures' />
-                  <CardContent>
-                    <Table
-                      columns={tableColumns}
-                      data={tableErrorData}
-                      loadData={loadDataFailure}
-                      totalCount={totalErrorCount}
-                      hasSearching={false}
-                      // hasSorting={false}
-                      hasFiltering={false}
-                      hasColumnVisibility={false}
-                      hasToolbar={false}
-                    />
-                  </CardContent>
-                </Card>
-              </Grid>
-            ) : null}
-          </>
-        ) : null
+          </Grid>
       }
+      </>
     </Grid>
   )
 }

@@ -10,55 +10,75 @@ import {
   Icon,
   Tooltip,
   Toolbar,
+  Typography,
+  CircularProgress,
 } from '@material-ui/core';
 import {
   List as ListIcon,
   BugReport as BugReportIcon,
 } from '@material-ui/icons';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
 import List from '../../components/List';
 import Table from '../../components/Table';
 import Dialog from '../../components/Dialog';
 import Log from '../../components/Log';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import Donut from '../../components/Chart/Donut';
-import TimeProfile from '../../components/Chart/TimeProfile';
 import {
-  getPredictionRunById,
-  getTimeProfile,
-  getAsteroids,
-} from '../../services/api/Prediction';
+  getPredictionJobById,
+  getPredictionJobResultsById
 
-function PredictionOccultationDetail() {
+} from '../../services/api/PredictOccultation';
+import { useNavigate } from '../../../node_modules/react-router-dom/dist/index';
+import { Alert } from '@material-ui/lab'
+import useStyles from './styles';
+
+function PredictDetail() {
   const { id } = useParams();
-  const history = useHistory();
-  const [list, setList] = useState([]);
-  const [statusDonutData, setStatusDonutData] = useState([]);
-  const [executionTimeDonutData, setExecutionTimeDonutData] = useState([]);
-  const [timeProfile, setTimeProfile] = useState({});
+  const navigate = useNavigate();
+  const [predictionJob, setPredictionJob] = useState({});
+  const [summaryExecution, setSummaryExecution] = useState([])
   const [tableData, setTableData] = useState([]);
+  const [tableErrorData, setTableErrorData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [toolButton, setToolButton] = useState('list');
+  const [totalErrorCount, setTotalErrorCount] = useState(0);
+  const [isJobCanceled, setIsJobCanceled] = useState(false);
+  const [hasCircularProgress, setHasCircularProgress] = useState(true);
+  const classes = useStyles()
   const [dialog, setDialog] = useState({
     content: [],
     visible: false,
     title: '',
   });
+  const haveError = totalErrorCount > 0 && 'results' in predictionJob
 
-  const tableListArray = [
+  const handleBackNavigation = () => navigate(-1);
+
+  const handleStopRun = () => {
+    // cancelOrbitTraceJobById(id).then(() => {
+    //   setIsJobCanceled(true)
+    //   setLoadProgress((prevState) => !prevState)
+    // })
+  }
+
+  const tableColumns = [
     {
       name: 'id',
       title: 'Details',
-      width: 100,
+      width: 110,
+      customElement: (row) => {
+        if (row.positions === 0) {
+          return <span>-</span>
+        }
+        return (
+          <Button onClick={() => navigate(`/data-preparation/prediction_job/asteroid/${row.id}`)}>
+            <InfoOutlinedIcon />
+          </Button>
+        )
+      },
       sortingEnabled: false,
-      icon: (
-        <Tooltip title="Details">
-          <Icon className="fas fa-info-circle" />
-        </Tooltip>
-      ),
-      action: (el) =>
-        history.push(`/prediction-of-occultation/asteroid/${el.id}`),
-      align: 'center',
+      align: 'center'
     },
     {
       name: 'status',
@@ -66,318 +86,294 @@ function PredictionOccultationDetail() {
       width: 140,
       align: 'center',
       sortingEnabled: false,
-      customElement: (row) => (
-        <ColumnStatus status={row.status} title={row.error_msg} />
-      ),
+      customElement: (row) => { return <span>{row.status == 1 ? 'success' : 'failure'}</span> },
     },
     {
-      name: 'name',
-      title: 'Name',
-      width: 180,
-    },
-    {
-      name: 'number',
-      title: 'Number',
-      width: 140,
-      sortingEnabled: false,
-      align: 'right',
-    },
-    {
-      name: 'occultations',
-      title: 'Occultations',
-      width: 140,
-      align: 'right',
-      sortingEnabled: false,
-    },
-    {
-      name: 'execution_time',
-      title: 'Exec Time',
-      headerTooltip: 'Execution time',
+      name: 'des_obs',
+      title: 'DES Obs',
+      width: 130,
       align: 'center',
-      customElement: (row) => (
-        <span>
-          {row.execution_time
-            ? moment.utc(row.execution_time * 1000).format('HH:mm:ss')
-            : ''}
-        </span>
-      ),
+      customElement: (row) => { return <span>{row.des_obs}</span> },
+    },
+    {
+      name: 'exec_time',
+      title: 'Exec Time',
+      align: 'center',
+      customElement: (row) => {return <span>{row.exec_time}</span>},
       width: 140,
       sortingEnabled: false,
     },
+    {
+      name: 'pre_occ_count',
+      title: 'Pre Occ Count',
+      width: 130,
+      align: 'center',
+      customElement: (row) => { return <span>{row.pre_occ_count}</span> },
+    },
+    {
+      name: 'ing_occ_count',
+      title: 'Ing Occ Count',
+      width: 130,
+      align: 'center',
+      customElement: (row) => { return <span>{row.ing_occ_count}</span> },
+    },
+    
   ];
-
-  const [columnsTable, setColumnsTable] = useState(tableListArray);
-
+  
   useEffect(() => {
-    getPredictionRunById({ id }).then((data) => {
-      setList([
-        {
-          title: 'Status',
-          value: () => (
-            <ColumnStatus status={data.status} title={data.error_msg} />
-          ),
-        },
-        {
-          title: 'Process',
-          value: data.process_displayname,
-        },
-        {
-          title: 'Owner',
-          value: data.owner,
-        },
-        {
-          title: 'Start',
-          value: data.h_time,
-        },
-        {
-          title: 'Execution',
-          value: data.h_execution_time,
-        },
-        {
-          title: 'Asteroids',
-          value: data.count_objects,
-        },
-        {
-          title: 'Occultations',
-          value: data.occultations,
-        },
-      ]);
-
-      setStatusDonutData([
-        { name: 'Success', value: data.count_success, color: '#009900' },
-        { name: 'Warning', value: data.count_warning, color: '#D79F15' },
-        { name: 'Failure', value: data.count_failed, color: '#ff1a1a' },
-        {
-          name: 'Not Executed',
-          value: data.count_not_executed,
-          color: '#ABA6A2',
-        },
-      ]);
-
-      setExecutionTimeDonutData([
-        {
-          name: 'Dates',
-          value: Math.round(moment.duration(data.execution_dates).asSeconds()),
-        },
-        {
-          name: 'Ephemeris',
-          value: Math.round(
-            moment.duration(data.execution_ephemeris).asSeconds()
-          ),
-        },
-        {
-          name: 'Gaia',
-          value: Math.round(
-            moment.duration(data.execution_catalog).asSeconds()
-          ),
-        },
-        {
-          name: 'Search Candidates',
-          value: Math.round(
-            moment.duration(data.execution_search_candidate).asSeconds()
-          ),
-        },
-        {
-          name: 'Maps',
-          value: Math.round(moment.duration(data.execution_maps).asSeconds()),
-        },
-        {
-          name: 'Register',
-          value: Math.round(
-            moment.duration(data.execution_register).asSeconds()
-          ),
-        },
-      ]);
+    loadDataSuccess({
+      currentPage: 0,
+      pageSize: 10,
+      sorting: [{ columnName: 'id', direction: 'asc' }]
     });
 
-    getTimeProfile({ id }).then((res) => {
-      setTimeProfile(res);
+    loadDataFailure({
+      currentPage: 0,
+      pageSize: 10,
+      sorting: [{ columnName: 'id', direction: 'asc' }]
     });
+
+    getPredictionJobById({ id }).then((job) => {
+      setPredictionJob(job);
+    });
+
+
   }, [id]);
 
-  const bugLogArray = [
-    {
-      name: 'id',
-      title: 'Details',
-      width: 100,
-      icon: (
-        <Tooltip title="Details">
-          <Icon className="fas fa-info-circle" />
-        </Tooltip>
-      ),
-      action: (el) =>
-        history.push(`/prediction-of-occultation/asteroid/${el.id}`),
-      align: 'center',
-      sortingEnabled: false,
-    },
-    {
-      name: 'status',
-      title: 'Status',
-      width: 140,
-      align: 'center',
-      sortingEnabled: false,
-      customElement: (row) => (
-        <ColumnStatus status={row.status} title={row.error_msg} />
-      ),
-    },
-    {
-      name: 'name',
-      title: 'Name',
-      width: 180,
-    },
-    {
-      name: 'number',
-      title: 'Number',
-      width: 140,
-      sortingEnabled: false,
-    },
-    {
-      name: 'error_msg',
-      title: 'Error Message',
-      width: 350,
-      sortingEnabled: false,
-    },
-  ];
+  useEffect(() => {
+    setSummaryExecution([
+      {
+        title: 'Status',
+        value: () => (
+          <ColumnStatus status={predictionJob.status} title={predictionJob.error} />
+        ),
+        
+      },
+      {
+        title: 'Owner',
+        value: predictionJob.owner,
+      },
+      {
+        title: 'Start',
+        value: predictionJob.start?moment(predictionJob.start).format('YYYY-MM-DD'):"Not started"
+      },
+      {
+        title: 'Finish',
+        value: predictionJob.end ? moment(predictionJob.end).format('YYYY-MM-DD HH:mm:ss') : '-'
+      },
+      {
+        title: 'Search Period',
+        value: predictionJob.predict_start_date && predictionJob.predict_end_date? moment(predictionJob.predict_start_date).format('YYYY-MM-DD HH:mm:ss') + ' to ' + moment(predictionJob.predict_end_date).format('YYYY-MM-DD HH:mm:ss'): '-'
+      },
+      {
+        title: 'Execution Time',
+        value: predictionJob.exec_time ? predictionJob.exec_time.split('.')[0] : 0
+      }
+    ]);
+  }, [predictionJob])
 
-  const loadTableData = async ({
-    sorting,
-    pageSize,
-    currentPage,
-    filter,
-    searchValue,
-  }) => {
-    const ordering =
-      sorting[0].direction === 'desc'
-        ? `-${sorting[0].columnName}`
-        : sorting[0].columnName;
 
-    const asteroids = await getAsteroids({
-      ordering,
-      pageSize,
-      page: currentPage !== 0 ? currentPage + 1 : 1,     
-      filters: [
-        {
-          property: 'predict_run',
-          value: id,
-        },
-        ...filter,
-      ],
-      search: searchValue,
-    });
+  const loadDataSuccess = ({ currentPage, pageSize, sorting }) => {
+    // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
+    const page = currentPage + 1
+    
+    getPredictionJobResultsById({ id, page, pageSize }).then((res) => {
+      const successeds = res.results.filter(x => x.status == 1);
+      setTableData(successeds.map((successeds) => ({ ...successeds, log: null })))
+      setTotalCount(successeds.length)
+    })
+  }
 
-    if (asteroids && asteroids.results) {
-      setTableData(asteroids.results);
-      setTotalCount(asteroids.count);
-    }
-  };
+  const loadDataFailure = ({ currentPage, pageSize, sorting }) => {
+    // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
+    const page = currentPage + 1
 
-  const handleBackNavigation = () => history.push('/prediction-of-occultation');
+    getPredictionJobResultsById({ id, page, pageSize }).then((res) => {
+      const failures = res.results.filter(x => x.status == 2);
+      setTableErrorData(failures.map((failures) => ({ ...failures, log: null })))
+      setTotalErrorCount(failures.length)
+    })
+  }
+  
 
-  const handleChangeToolButton = (event, value) => {
-    const columnToggleValue =
-      value === 'list'
-        ? setColumnsTable(tableListArray)
-        : setColumnsTable(bugLogArray);
-    setToolButton(columnToggleValue);
-  };
+  //const handleBackNavigation = () => history.push('/prediction-of-occultation');
+
+  // const handleChangeToolButton = (event, value) => {
+  //   const columnToggleValue =
+  //     value === 'list'
+  //       ? setColumnsTable(tableListArray)
+  //       : setColumnsTable(bugLogArray);
+  //   setToolButton(columnToggleValue);
+  // };
 
   return (
-    <>
-      <Grid container justify="space-between" alignItems="center" spacing={2}>
-        <Grid item xs={12} md={4}>
-          <Button
-            variant="contained"
-            color="primary"
-            title="Back"
-            onClick={handleBackNavigation}
-          >
-            <Icon className="fas fa-undo" />
-            <span>Back</span>
-          </Button>
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Grid container alignItems='center' spacing={2}>
+          <Grid item>
+            <Button variant='contained' color='primary' title='Back' onClick={handleBackNavigation}>
+              <Icon className='fas fa-undo' fontSize='inherit' />
+              <Typography variant='button' style={{ margin: '0 5px' }}>
+                Back
+              </Typography>
+            </Button>
+          </Grid>
+          {[1, 2].includes(predictionJob.status) ? (
+            <Grid item>
+              <Button variant='contained' color='secondary' title='Abort' onClick={handleStopRun} disabled={isJobCanceled}>
+                {isJobCanceled ? <CircularProgress size={15} color='secondary' /> : <Icon className='fas fa-stop' fontSize='inherit' />}
+                <Typography variant='button' style={{ margin: '0 5px' }}>
+                  Abort
+                </Typography>
+              </Button>
+            </Grid>
+          ) : null}
         </Grid>
       </Grid>
-      <Grid container spacing={2}>
-        <Grid item xs={12} lg={6}>
-          <Card>
-            <CardHeader title="Summary" />
-            <CardContent>
-              <List data={list} />
-            </CardContent>
-          </Card>
-        </Grid>
-        {Object.entries(timeProfile).length > 0 ? (
-          <Grid item xs={12} md={9}>
+      <Grid item xs={12} md={5} xl={3}>
+        <Card>
+          <CardHeader title='Summary Execution' />
+          <CardContent>
+            <List data={summaryExecution} />
+            {haveError === true ? (
+              <Alert
+                severity='warning'
+              // action={
+              //   <Button color='inherit' size='small' href={orbitTraceJob.results.replace('/archive', '/data')}>
+              //     CHECK IT OUT
+              //   </Button>
+              // }
+              >
+                {/* <strong>{totalErrorCount}</strong> exposures out of {skybotJob.exposures} failed. */}
+              </Alert>
+            ) : null}
+            {(predictionJob?.error !== null && predictionJob?.error !== '') ? <Alert severity='error'>{predictionJob?.error}</Alert> : null}
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item xs={12} md={7} xl={9}>
+        <Card>
+          <CardHeader title='Progress' />
+          <CardContent>
+            <Grid container spacing={3} direction='column' className={classes.progressWrapper}>
+              <Grid item>
+                {/* <Progress
+                  title='Retrieving data from Skybot'
+                  variant='determinate'
+                  label={`${progress.request.exposures} exposures`}
+                  total={progress.request.exposures}
+                  current={progress.request.current}
+                />
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <Chip label={`Average: ${progress.request.average_time.toFixed(2)}s`} color='primary' variant='outlined' />
+                  </Grid>
+                  <Grid item>
+                    <Chip label={`Time Left: ${formatSeconds(progress.request.time_estimate)}`} color='primary' variant='outlined' />
+                  </Grid>
+                  <Grid item>
+                    <Chip
+                      label={`Progress: ${progress.request.current}/${progress.request.exposures}`}
+                      color='primary'
+                      variant='outlined'
+                    />
+                  </Grid>
+                  {progress.request.exposures_failed > 0 ? (
+                    <Grid item>
+                      <Chip label={`Exposures Failed: ${progress.request.exposures_failed}`} className={classes.chipError} variant='outlined' />
+                    </Grid>                  
+                  ) : null}
+                </Grid> */}
+              </Grid>
+
+              <Grid item>
+                {/* <Progress
+                  title='Importing positions to database'
+                  variant='determinate'
+                  label={`${progress.loaddata.exposures} exposures`}
+                  total={progress.loaddata.exposures}
+                  current={progress.loaddata.current}
+                />
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <Chip label={`Average: ${progress.loaddata.average_time.toFixed(2)}s`} color='primary' variant='outlined' />
+                  </Grid>
+                  <Grid item>
+                    <Chip
+                      label={`Time Left: ${formatSeconds(
+                        moment.duration(progress.loaddata.time_estimate).add(moment.duration(progress.request.time_estimate))
+                      )}`}container spacing={2}
+                      color='primary'
+                      variant='outlined'
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Chip
+                      label={`Progress: ${progress.loaddata.current}/${progress.loaddata.exposures}`}
+                      color='primary'
+                      variant='outlined'
+                    />
+                  </Grid>
+                  {progress.loaddata.exposures_failed > 0 ? (
+                    <Grid item>
+                      <Chip label={`Exposures Failed: ${progress.loaddata.exposures_failed}`} className={classes.chipError} variant='outlined' />
+                    </Grid>                  
+                  ) : null}                  
+                </Grid> */}
+              </Grid>
+              {hasCircularProgress && [1, 2].includes(predictionJob.status) ? (
+                <CircularProgress className={classes.circularProgress} disableShrink size={20} />
+              ) : null}
+            </Grid>
+          </CardContent>
+        </Card>
+      </Grid>
+      <>
+      {
+        totalCount > 0 &&
+          <Grid item xs={12}>
             <Card>
-              <CardHeader title="Time Profile" />
+              <CardHeader title='Asteroid Results' />
               <CardContent>
-                <TimeProfile width={773} height={363} data={timeProfile} />
+                <Table
+                  columns={tableColumns}
+                  data={tableData}
+                  loadData={loadDataSuccess}
+                  totalCount={totalCount || 0}
+                  hasSearching={false}
+                  // hasSorting={false}
+                  hasColumnVisibility={false}
+                  hasToolbar={false}
+                  hasRowNumberer
+                />
               </CardContent>
             </Card>
           </Grid>
-        ) : null}
-      </Grid>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardHeader title="Status" />
-            <CardContent>
-              <Donut data={statusDonutData} />
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardHeader title="Execution Time" />
-            <CardContent>
-              <Donut data={executionTimeDonutData} />
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Card>
-            <CardHeader title="Asteroids" />
-            <CardContent>
-              <Toolbar>
-                <ToggleButtonGroup
-                  value={toolButton}
-                  onChange={handleChangeToolButton}
-                  exclusive
-                >
-                  <ToggleButton value="list">
-                    <ListIcon />
-                  </ToggleButton>
-                  <ToggleButton value="bugLog">
-                    <BugReportIcon />
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </Toolbar>
-              <Table
-                columns={columnsTable}
-                data={tableData}
-                loadData={loadTableData}
-                totalCount={totalCount}
-                defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
-                hasResizing={false}
-                reload
-              />
-            </CardContent>
-          </Card>
-        </Grid>
-        <Dialog
-          visible={dialog.visible}
-          title={dialog.title}
-          content={<Log data={dialog.content} />}
-          setVisible={() =>
-            setDialog({ visible: false, content: [], title: ' ' })
-          }
-        />
-      </Grid>
-    </>
+      }
+      {
+        totalCount > 0 &&
+          <Grid item xs={12}>
+              <Card>
+                <CardHeader title='Asteroid Failures' />
+                <CardContent>
+                  <Table
+                    columns={tableColumns}
+                    data={tableErrorData}
+                    loadData={loadDataFailure}
+                    totalCount={totalErrorCount}
+                    hasSearching={false}
+                    // hasSorting={false}
+                    hasFiltering={false}
+                    hasColumnVisibility={false}
+                    hasToolbar={false}
+                  />
+                </CardContent>
+              </Card>
+          </Grid>
+      }
+      </>
+    </Grid>
   );
 }
 
-export default PredictionOccultationDetail;
+export default PredictDetail;

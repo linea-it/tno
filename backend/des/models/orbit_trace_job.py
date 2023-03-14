@@ -26,6 +26,7 @@ class OrbitTraceJob(models.Model):
             (4, "Failed"),
             (5, "Aborted"),
             (6, "Warning"),
+            (7, "Aborting"),
         ),
     )
 

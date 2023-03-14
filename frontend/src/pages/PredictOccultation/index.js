@@ -37,6 +37,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Box, OutlinedInput } from '../../../node_modules/@material-ui/core/index'
 import Select from 'react-select'
+import { Alert } from '../../../node_modules/@material-ui/lab/index'
 
 function PredictOccultation() {
   const navigate = useNavigate()
@@ -67,7 +68,7 @@ function PredictOccultation() {
   const [bspValueError, setBspValueError] = React.useState(false);
   const [predictStepError, setPredictStepError] = React.useState(false);
 
-  const [filterType, setFilterType] = React.useState({ value: "", label: "Select..." });
+  const [filterType, setFilterType] = React.useState({ value: 'Base DynClass', label: 'Base DynClass' });
   const [filterValue, setFilterValue] = React.useState({ value: "", label: "Select..." });
   const [filterValueNames, setFilterValueNames] = React.useState([]);
   const [predictStep, setpredictStep] = React.useState('600');
@@ -195,7 +196,7 @@ function PredictOccultation() {
         .then((response) => {
           setDateStart("");
           setDateEnd("");
-          setFilterType({ value: "", label: "Select..." });
+          setFilterType({ value: 'Base DynClass', label: 'Base DynClass' });
           setFilterValue({ value: "", label: "Select..." });
           setBspValue({ value: 0, label: "None" });
           setMessageTextSuccess('Information registered successfully');
@@ -265,7 +266,7 @@ function PredictOccultation() {
       setTableData(
         data.results.map((row) => ({
           key: row.id,
-          detail: `/data-preparation/des/orbittracedetail/${row.id}`,
+          detail: `/predict_detail/${row.id}`,
           ...row
         }))
       )
@@ -532,6 +533,26 @@ function PredictOccultation() {
           </Card>
         </Grid>
       </Grid>
+      <Snackbar
+        open={messageOpenSuccess}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        onClose={() => setMessageOpenSuccess(false)}
+      >
+        <Alert severity="success" sx={{ width: '100%' }}>
+          {messageTextSuccess}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={messageOpenError}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        onClose={() => setMessageOpenError(false)}
+      >
+        <Alert severity="error" sx={{ width: '100%' }}>
+          {messageTextError}
+        </Alert>
+      </Snackbar>
       <Snackbar
         open={hasJobRunningOrIdleFeedback}
         autoHideDuration={5000}
