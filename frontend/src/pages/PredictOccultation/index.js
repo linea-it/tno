@@ -404,7 +404,7 @@ function PredictOccultation() {
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12}>
                       <label>Start and End Period<span className={classes.errorText}>*</span></label>
-                      <Card variant="outlined" className="cardBoder">
+                      <Box variant="outlined" className="cardBoder">
                         <CardContent>
                           <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                             <Grid item xs={12} sm={6} md={3}>
@@ -453,7 +453,7 @@ function PredictOccultation() {
                             </Grid>
                           </Grid>
                         </CardContent>
-                      </Card>
+                      </Box>
                     </Grid>
                   </Grid>
 
