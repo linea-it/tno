@@ -37,7 +37,7 @@ export const getPredictionJobResultsById = ({ id, pageSize, page }) => {
   return api.get(`/prediction_job_result/`, { params }).then((res) => res.data)
 }
 
-export const getPredctionJobResultById = (id) => api.get(`/prediction_job_result/${id}/`).then((res) => res.data)
+export const getPredictionJobResultById = (id) => api.get(`/prediction_job_result/${id}/`).then((res) => res.data)
 
 export const getOccultationsByAsteroid = ({ asteroid_id, pageSize, page }) =>{
   const params = {
@@ -45,6 +45,9 @@ export const getOccultationsByAsteroid = ({ asteroid_id, pageSize, page }) =>{
     page,
     pageSize,
   }
- return api.get(`/des/occultation/${asteroid_id}/get_by_asteroid/?format=json`).then((res) => res.data)
+ return api.get(`/occultations/${asteroid_id}/get_by_asteroid/?format=json`).then((res) => res.data)
 }
+
+export const cancelPredictionJobById = (id) => api.post(`/prediction_job/${id}/cancel_job/`).then((res) => res.data)
+
 

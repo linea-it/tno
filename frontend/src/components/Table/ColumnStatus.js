@@ -29,7 +29,7 @@ function ColumnStatus({ status, title, align }) {
     statusColor = classes.btnWarning
   }else if (status === 'aborting' || status === 7) {
     statusTitle = 'Aborting'
-    statusColor = classes.btnNotExecuted
+    statusColor = classes.btnAborting
   } else {
     statusTitle = 'Unknown'
     statusColor = classes.btnNotExecuted

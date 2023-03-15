@@ -82,4 +82,17 @@ class PredictionJobViewSet(
 
         return Response(result.data)
 
+    @action(detail=True, methods=["post"])
+    def cancel_job(self, request, pk=None):
+        """
+        Sinaliza o pediio de cancelamento um Prediction job, alterando status para aborting
+        """
+        job = self.get_object()
+        # Se o job estiver idle=1 ou running=2
+        if job.status <= 2:
+            job.status = 7
+            job.save()
+        result = PredictionJobSerializer(job)
+        return Response(result.data)
+
     

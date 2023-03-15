@@ -11,6 +11,7 @@ import DesManagement from '../pages/DesManagement'
 
 import PredictOccultation from '../pages/PredictOccultation'
 import PredictDetail from '../pages/PredictOccultation/Detail'
+import PredictionAsteroid from '../pages/PredictOccultation/Asteroid'
 
 import Occultation from '../pages/Occultation'
 
@@ -250,6 +251,18 @@ export default function AppRoutes() {
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
               <PredictDetail />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/predict_asteroid/:id'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <PredictionAsteroid />
             </DashboardPage>
           </PrivateRoute>
         }

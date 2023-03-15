@@ -10,8 +10,8 @@ import Progress from '../../components/Progress'
 import CalendarSuccessOrFailNight from '../../components/Chart/CalendarSuccessOrFailNight'
 import {
   getOrbitTraceJobById,
-  getOrbitTraceJobExposuresThatFailed,
-  getOrbitTraceResultById
+  getOrbitTraceResultById,
+  cancelOrbitTraceJobById
 
 } from '../../services/api/OrbitTrace'
 
@@ -274,10 +274,10 @@ function OrbitTraceDetail() {
   }, [5000])
 
   const handleStopRun = () => {
-    // cancelOrbitTraceJobById(id).then(() => {
-    //   setIsJobCanceled(true)
-    //   setLoadProgress((prevState) => !prevState)
-    // })
+    cancelOrbitTraceJobById(id).then(() => {
+      setIsJobCanceled(true)
+      setLoadProgress((prevState) => !prevState)
+    })
   }
 
   return (
@@ -395,9 +395,9 @@ function OrbitTraceDetail() {
                   ) : null}                  
                 </Grid> */}
               </Grid>
-              {hasCircularProgress && [1, 2].includes(orbitTraceJob.status) ? (
+              {/* {hasCircularProgress && [1, 2].includes(orbitTraceJob.status) ? (
                 <CircularProgress className={classes.circularProgress} disableShrink size={20} />
-              ) : null}
+              ) : null} */}
             </Grid>
           </CardContent>
         </Card>

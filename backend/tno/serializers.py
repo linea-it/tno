@@ -77,6 +77,11 @@ class OccultationSerializer(serializers.ModelSerializer):
             "id",
             "number",
             "name",
+            "date_time",
+            "ra_star_deg",
+            "dec_star_deg",
+            "ra_target_deg",
+            "dec_target_deg",
         )
 
 class PredictionJobSerializer(serializers.ModelSerializer):

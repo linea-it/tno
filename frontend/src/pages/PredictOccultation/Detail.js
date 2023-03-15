@@ -27,12 +27,13 @@ import ColumnStatus from '../../components/Table/ColumnStatus';
 import Donut from '../../components/Chart/Donut';
 import {
   getPredictionJobById,
-  getPredictionJobResultsById
-
+  getPredictionJobResultsById,
+  cancelPredictionJobById
 } from '../../services/api/PredictOccultation';
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index';
 import { Alert } from '@material-ui/lab'
 import useStyles from './styles';
+import useInterval from '../../hooks/useInterval'
 
 function PredictDetail() {
   const { id } = useParams();
@@ -45,6 +46,7 @@ function PredictDetail() {
   const [totalErrorCount, setTotalErrorCount] = useState(0);
   const [isJobCanceled, setIsJobCanceled] = useState(false);
   const [hasCircularProgress, setHasCircularProgress] = useState(true);
+  const [loadProgress, setLoadProgress] = useState(false)
   const classes = useStyles()
   const [dialog, setDialog] = useState({
     content: [],
@@ -55,11 +57,17 @@ function PredictDetail() {
 
   const handleBackNavigation = () => navigate(-1);
 
+  useInterval(() => {
+    if ([1, 2].includes(predictionJob.status)) {
+      setLoadProgress((prevState) => !prevState)
+    }
+  }, [5000])
+
   const handleStopRun = () => {
-    // cancelOrbitTraceJobById(id).then(() => {
-    //   setIsJobCanceled(true)
-    //   setLoadProgress((prevState) => !prevState)
-    // })
+    cancelPredictionJobById(id).then(() => {
+      setIsJobCanceled(true)
+      setLoadProgress((prevState) => !prevState)
+    })
   }
 
   const tableColumns = [
@@ -72,7 +80,7 @@ function PredictDetail() {
           return <span>-</span>
         }
         return (
-          <Button onClick={() => navigate(`/data-preparation/prediction_job/asteroid/${row.id}`)}>
+          <Button onClick={() => navigate(`/predict_asteroid/${row.id}`)}>
             <InfoOutlinedIcon />
           </Button>
         )
@@ -138,7 +146,7 @@ function PredictDetail() {
     });
 
 
-  }, [id]);
+  }, [loadProgress, id]);
 
   useEffect(() => {
     setSummaryExecution([
@@ -321,9 +329,9 @@ function PredictDetail() {
                   ) : null}                  
                 </Grid> */}
               </Grid>
-              {hasCircularProgress && [1, 2].includes(predictionJob.status) ? (
+              {/* {hasCircularProgress && [1, 2].includes(predictionJob.status) ? (
                 <CircularProgress className={classes.circularProgress} disableShrink size={20} />
-              ) : null}
+              ) : null} */}
             </Grid>
           </CardContent>
         </Card>

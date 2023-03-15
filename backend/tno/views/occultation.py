@@ -8,6 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 
 from tno.models import Occultation
 from tno.serializers import OccultationSerializer
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
@@ -57,3 +59,21 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     #     })
 
     #     return Response(result)
+    @action(detail=True, methods=["get"])
+    def get_by_asteroid(self, request, pk=None):
+        """
+        #     Este endpoint obtem as observações de dado asteroide.
+
+        #     Parameters:
+        #         pk (string): asteroid id.
+
+        #     Returns:
+        #         result .
+        #     """
+        occ = Occultation.objects.filter(asteroid=pk) if Occultation.objects.filter(asteroid=pk).exists() else None
+        
+        if occ is not None:
+            result = OccultationSerializer(occ, many=True)
+            return Response(result.data)
+        else:
+            return Response("no observations found")
