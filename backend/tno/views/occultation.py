@@ -4,7 +4,7 @@ from rest_framework.authentication import (
     SessionAuthentication,
     TokenAuthentication,
 )
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from tno.models import Occultation
 from tno.serializers import OccultationSerializer
@@ -19,7 +19,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         BasicAuthentication,
         TokenAuthentication,
     ]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     queryset = Occultation.objects.all()
     serializer_class = OccultationSerializer
@@ -29,6 +29,26 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
     ordering_fields = ("id", "name", "number", "date_time")
     ordering = ("date_time",)
+
+    def get_queryset(self):
+        #filter date
+        start_date = self.request.query_params.get('start_date', None)
+        end_date = self.request.query_params.get('end_date', None)
+        queryset = self.queryset.filter(date_time__range=[start_date, end_date]) if start_date and end_date else self.queryset
+        #filter asteroids (filter_type, filter_value)
+        if(self.request.query_params.get('filter_type', None) == "name"):
+            values = self.request.query_params.get('filter_value', None)
+            names = values.split(';')
+            queryset = self.queryset.filter(asteroid__name__in=names)
+        elif (self.request.query_params.get('filter_type', None) == "dynclass"):
+            dynclass = self.request.query_params.get('filter_value', None)
+            queryset = self.queryset.filter(asteroid__dynclass=dynclass)
+        elif(self.request.query_params.get('filter_type', None) == "base_dynclass"):
+            basedyn = self.request.query_params.get('filter_value', None)
+            queryset = self.queryset.filter(asteroid__base_dynclass=basedyn)
+        return queryset    
+
+    
 
     # @list_route(permission_classes=(IsAuthenticated, ))
     # def test(self, request):
@@ -68,7 +88,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         #         pk (string): asteroid id.
 
         #     Returns:
-        #         result .
+        #         occultations list .
         #     """
         occ = Occultation.objects.filter(asteroid=pk) if Occultation.objects.filter(asteroid=pk).exists() else None
         
