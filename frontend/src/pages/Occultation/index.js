@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-//import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 import {
   Grid,
@@ -10,110 +8,128 @@ import {
   Slider,
   TextField,
   MenuItem,
+  Box,
+  Button,
+  FormControl,
+
 } from '@material-ui/core';
-import { LocalizationProvider, DatePicker } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
-//import { url } from '../../services/api/Auth';
-//import { getOccultations } from '../../services/api/Occultation';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { getOccultations } from '../../services/api/Occultation';
 import Image from '../../components/List/Image';
+import useStyles from './styles'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import {
+  getDynClassList,
+  getBaseDynClassList,
+  getAsteroidsList
+} from '../../services/api/Asteroid'
+import Select from 'react-select'
+import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
+import { useNavigate } from '../../../node_modules/react-router-dom/dist/index'
+import Table from '../../components/Table/index'
 
 function Occultation() {
-  //const history = useHistory();
-  const [data, setData] = useState();
-  const [startDate, setStartDate] = useState(
-    moment().startOf('year').format('YYYY-MM-DD')
-  );
-  const [endDate, setEndDate] = useState(
-    moment().endOf('year').format('YYYY-MM-DD')
-  );
+  const navigate = useNavigate();
+  const classes = useStyles()
   const [magnitude, setMagnitude] = useState([4, 23]);
   const [diameter, setDiameter] = useState([0, 600]);
-  const [objectName, setObjectName] = useState();
-  const [dynamicClass, setDynamicClass] = useState('');
   const [zoneValue, setZoneValue] = useState('');
   const pageSize = 25;
+  const [dateStart, setDateStart] = useState('');
+  const [dateEnd, setDateEnd] = useState('');
+  const [dateStartError, setDateStartError] = useState(false);
+  const [dateEndError, setDateEndError] = useState(false);
+  const [filterTypeList, setFilterTypeList] = useState([{ value: 'Name', label: 'Name' }, { value: 'DynClass', label: 'DynClass' }, { value: 'Base DynClass', label: 'Base DynClass' }]);
+  const [dynClassList, setDynClassList] = useState([]);
+  const [baseDynClassList, setBaseDynClassList] = useState([]);
+  const [asteroidsList, setAsteroidsList] = useState([]);
+  const [filterType, setFilterType] = useState('');
+  const [filterValue, setFilterValue] = useState('');
+  const [filterValueNames, setFilterValueNames] = useState([]);
+  const useMountEffect = (fun) => useEffect(fun, []);
+  const [tableData, setTableData] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [reload, setReload] = useState(true);
 
-  // useEffect(() => {
-  //   setTitle('Occultations');
-  // }, [setTitle]);
+  const tableColumns = [
+    {
+      name: 'index',
+      title: ' ',
+      width: 70
+    },
+    {
+      name: 'detail',
+      title: 'Detail',
+      width: 80,
+      customElement: (row) => (
+        <Button onClick={() => navigate(row.detail)}>
+          <InfoOutlinedIcon />
+        </Button>
+      ),
+      align: 'center',
+      sortingEnabled: false
+    },
+    {
+      name: 'name',
+      title: 'Name',
+      align: 'center',
+    },
+    {
+      name: 'number',
+      title: 'Number',
+      align: 'center',
+    },
+    {
+      name: 'date_time',
+      title: 'Observation Date',
+      width: 150,
+      sortingEnabled: false,
+      customElement: (row) => (row.date_time ? moment(row.date_time).format('YYYY-MM-DD HH:mm:ss') : '-')
+    },
+  ]
 
-  useEffect(() => {
-    const filters = [];
-    // Busca por Periodo, necessario pelo menos o start date.
-    if (startDate) {
-      // Se tiver start e end date usa filtro Between
-      if (endDate) {
-        filters.push({
-          property: 'date_time__range',
-          value: [
-            moment(startDate).format('YYYY-MM-DD'),
-            moment(endDate).format('YYYY-MM-DD'),
-          ].join(),
-        });
-      } else {
-        // Se nao tiver endDate buca por datas maiores que o start date.
-        filters.push({
-          property: 'date_time__gte',
-          value: moment(startDate).format('YYYY-MM-DD'),
-        });
-      }
+  const filterTypehandleChange = (event) => {
+    if (event) {
+      setFilterValue("");
+      setFilterValueNames([]);
+      setFilterType(event);
     }
-
-    // Busca por Magnitude
-    if (magnitude && magnitude.length === 2) {
-      filters.push({
-        property: 'g__range',
-        value: magnitude.join(),
-      });
-    }
-
-    //  Busca por Asteroid Name ou Number
-    if (objectName && objectName !== '') {
-      filters.push({
-        property: 'asteroid__name__icontains',
-        value: objectName,
-      });
-
-      // Por enquanto nao pode filtrar por numero, backend nao aceita OR ainda so AND.
-    }
-
-    // TODO no backend criar um filtro customizado para a identificacao do asteroid.
-    // TODO Busca por Dynclass, precisa de alteracao no backend.
-    // TODO Busca por Zona ou Regiao, precisa de alteracao no backend.
-    // TODO Busca por Diametro, precisa de alteracao no backend.
-
-    if (filters.length === 0) {
-      setData([]);
-    } else {
-      // getOccultations({ filters, pageSize }).then((res) => {
-      //   res.results.map((row) => ({
-      //     ...row,
-      //     src: row.src ? url + row.src : null,
-      //   }));
-
-      //   setData(res.results);
-      // });
-    }
-  }, [startDate, endDate, objectName, magnitude]);
-
-  const handleStartDateChange = (date) => {
-    setStartDate(date);
   };
 
-  const handleEndDateChange = (date) => {
-    setEndDate(date);
+  const filterValuehandleChange = (event) => {
+    if (event) {
+      setFilterValueNames([]);
+      setFilterValue(event);
+    }
   };
+
+  const filterValueNameshandleChange = (event) => {
+    if (event) {
+      let stringArray = event.map(x => { return x.value }).toString().replaceAll(',', ';');
+      // @ts-ignore
+      setFilterValue({ value: stringArray, label: stringArray });
+      setFilterValueNames(event.map(x => { return x.value }));
+    }
+  };
+
+  useMountEffect(() => {
+    getDynClassList().then((list) => {
+      setDynClassList(list.map(x => { return { value: x, label: x } }));
+    })
+
+    getBaseDynClassList().then((list) => {
+      setBaseDynClassList(list.map(x => { return { value: x, label: x } }));
+    })
+
+    getAsteroidsList().then((list) => {
+      setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
+    })
+
+  });
 
   const handleDiameter = (event, value) => {
     setDiameter(value);
-  };
-
-  const handleChangeobjectName = (event) => {
-    setObjectName(event.target.value);
-  };
-
-  const handleChangeDynamicClass = (event) => {
-    setDynamicClass(event.target.value);
   };
 
   const handleChangeZone = (event) => {
@@ -124,49 +140,87 @@ function Occultation() {
     setMagnitude(value);
   };
 
-  const dynamicClassArray = [
-    { name: 'Centaurs', value: 'Centaurs', title: 'Centaurs' },
-    { name: 'KBOs', value: 'KBOs', title: 'KBOs' },
-  ];
-
   const zoneArray = [
-    { name: 'East-Asia', value: 'East-Asia', title: 'East-Asia' },
-    {
-      name: 'Europe & North Africa',
-      value: 'Europe & North Africa',
-      title: 'Europe & North Africa',
-    },
-    { name: 'Oceania', value: 'Oceania', title: 'Oceania' },
-    {
-      name: 'Southern Africa',
-      value: 'Southern Africa',
-      title: 'Southern Africa',
-    },
-    { name: 'North America', value: 'North America', title: 'North America' },
-    { name: 'South America', value: 'South America', title: 'South America' },
+    { value: 'East-Asia', label: 'East-Asia' },
+    { value: 'Europe & North Africa', label: 'Europe & North Africa' },
+    { value: 'Oceania', label: 'Oceania' },
+    { value: 'Southern Africa', label: 'Southern Africa', },
+    { value: 'North America', label: 'North America' },
+    { value: 'South America', label: 'South America' },
   ];
 
-  const loadDynamicClassMenuItems = () => {
-    if (dynamicClassArray && dynamicClassArray.length > 0) {
-      return dynamicClassArray.map((el, i) => (
-        <MenuItem key={i} value={i} title={el.title}>
-          {el.value}
-        </MenuItem>
-      ));
-    }
-  };
+  const calculateDate = (filter) => {
+    const currentDate = dateStart ? dateStart : moment();
+    setDateStart(currentDate);
+    var dateEnd = moment();
 
-  const loadZoneMenuItems = () => {
-    if (zoneArray && zoneArray.length > 0) {
-      return zoneArray.map((el, i) => (
-        <MenuItem key={i} value={i} title={el.title}>
-          {el.value}
-        </MenuItem>
-      ));
+    switch (filter) {
+      case '1week':
+        dateEnd = moment(currentDate).add(7, 'days');
+        break;
+      case '1mounth':
+        dateEnd = moment(currentDate).add(30, 'days');
+        break;
+      case '6mounths':
+        dateEnd = moment(currentDate).add(180, 'days');
+        break;
+      case '1year':
+        dateEnd = moment(currentDate).add(365, 'days');
+        break;
     }
-  };
+    setDateEnd(dateEnd);
+  }
 
- // const handleRecordClick = (id) => history.push(`/occultation/${id}`);
+
+  const loadData = ({ sorting, pageSize, currentPage }) => {
+    getOccultations({
+      page: currentPage + 1,
+      pageSize,
+      ordering: sorting,
+      start_date: null, 
+      end_date: null, 
+      filter_type: null, 
+      filter_value: null
+    }).then((res) => {
+      const { data } = res
+      setTableData(
+        data.results.map((row) => ({
+          key: row.id,
+          detail: `/occultation_detail/${row.id}`,
+          ...row
+        }))
+      )
+      setTotalCount(data.count)
+    })
+  }
+
+  const handleFilterClick = async () => {
+
+    const start = dateStart? new Date(dateStart).toISOString().slice(0, 10) +' 00:00:00': null;
+    const end = dateEnd? new Date(dateEnd).toISOString().slice(0, 10) +' 23:59:59': null;
+
+    getOccultations({
+      page: 1,
+      pageSize,
+      ordering: null,
+      start_date: start, 
+      end_date: end,
+      // @ts-ignore
+      filter_type: filterType.value.toLowerCase(), 
+      // @ts-ignore
+      filter_value: filterValue.value
+    }, ).then((res) => {
+      const { data } = res
+      setTableData(
+        data.results.map((row) => ({
+          key: row.id,
+          detail: `/occultation_detail/${row.id}`,
+          ...row
+        }))
+      )
+      setTotalCount(data.count)
+    })
+  }
 
   return (
     <Grid>
@@ -175,33 +229,7 @@ function Occultation() {
           <Card>
             <CardContent>
               <form noValidate autoComplete="off">
-                {/* <LocalizationProvider utils={DateFnsUtils}>
-                  <DatePicker
-                    disableToolbar
-                    variant="inline"
-                    format="yyyy-MM-dd"
-                    margin="normal"
-                    label="Start Date"
-                    value={startDate}
-                    onChange={handleStartDateChange}
-                  />
-                  <DatePicker
-                    disableToolbar
-                    variant="inline"
-                    format="yyyy-MM-dd"
-                    margin="normal"
-                    label="Final Date"
-                    value={endDate}
-                    onChange={handleEndDateChange}
-                  />
-                </LocalizationProvider> */}
-                <TextField
-                  label="Object Name"
-                  value={objectName}
-                  onChange={handleChangeobjectName}
-                  margin="normal"dynamicClass
-                />
-                <div>
+                <Grid container item lg={12} alignItems='stretch' className={classes.padDropBox}>
                   <Typography gutterBottom variant="body2">
                     {`Magnitude(g): ${magnitude}`}
                   </Typography>
@@ -212,9 +240,10 @@ function Occultation() {
                     max={23}
                     valueLabelDisplay="auto"
                     onChange={handleChangeMagnitudeValue}
+                    disabled
                   />
-                </div>
-                <div>
+                </Grid>
+                <Grid container item lg={12} alignItems='stretch' className={classes.padDropBox}>
                   <Typography gutterBottom variant="body2">
                     {`Diameter(Km): ${diameter}`}
                   </Typography>
@@ -227,50 +256,166 @@ function Occultation() {
                     onChange={handleDiameter}
                     disabled
                   />
-                </div>
-                <TextField
-                  select
-                  label="Dynamic Class"
-                  value={dynamicClass}
-                  onChange={handleChangeDynamicClass}
-                  margin="normal"
-                  
-                >
-                  {loadDynamicClassMenuItems()}
-                </TextField>
-                <br></br>
-                <TextField
-                  select
-                  label="Zone"
-                  value={zoneValue}
-                  onChange={handleChangeZone}
-                  margin="normal"
-                  
-                >
-                  {loadZoneMenuItems()}
-                </TextField>
+                </Grid>
+                <Grid container spacing={2}>
+                  <Grid container item xs={12} md={4} alignItems='stretch' className={classes.padDropBox}>
+                    <Grid item xs={12}>
+                      <label>Start and End Period</label>
+                      <Box variant="outlined" className="cardBoder">
+                        <CardContent>
+                          <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                            <Grid item xs={12} sm={6} md={3}>
+                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1week')}>
+                                1 Week
+                              </Button>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1mounth')}>
+                                1 Month
+                              </Button>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('6mounths')}>
+                                6 Months
+                              </Button>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1year')}>
+                                1 Year
+                              </Button>
+                            </Grid>
+                          </Grid>
+                          <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                            <Grid item xs={12}>
+                              <Box sx={{ minWidth: 120 }}>
+                                <FormControl fullWidth><label>Date Start</label>
+                                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
+                                  </LocalizationProvider>
+                                </FormControl>
+                                {/* {dateStartError ? (<span className={classes.errorText}>Required field</span>) : ''} */}
+                              </Box>
+                            </Grid>
+                          </Grid>
+                          <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                            <Grid item xs={12}>
+                              <Box sx={{ minWidth: 120 }}>
+                                <FormControl fullWidth><label>Date End</label>
+                                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
+                                  </LocalizationProvider>
+                                </FormControl>
+                                {/* {dateEndError ? (<span className={classes.errorText}>Required field</span>) : ''} */}
+                              </Box>
+                            </Grid>
+                          </Grid>
+                        </CardContent>
+                      </Box>
+                    </Grid>
+                  </Grid>
+                  <Grid container item xs={12} md={8}>
+                    <Grid item xs={12}>
+                    <Table
+                        columns={tableColumns}
+                        data={tableData}
+                        loadData={loadData}
+                        hasSearching={false}
+                        hasPagination
+                        hasColumnVisibility={false}
+                        hasToolbar={false}
+                        reload={reload}
+                        totalCount={totalCount}
+                        defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid container item lg={4} alignItems='stretch' className={classes.padDropBox}>
+                  <Grid item xs={12}>
+                    <Box sx={{ minWidth: 120 }}>
+                      <FormControl fullWidth><label>Zone</label>
+                        <Select
+                          value={zoneValue}
+                          id="filterZone"
+                          onChange={handleChangeZone}
+                          options={zoneArray}
+                          menuPortalTarget={document.body}
+                          menuPosition={'fixed'}
+                        />
+                      </FormControl>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Box sx={{ minWidth: 120 }}>
+                      <FormControl fullWidth><label>Filter Type</label>
+                        <Select
+                          value={filterType}
+                          id="filterType"
+                          onChange={filterTypehandleChange}
+                          options={filterTypeList}
+                          menuPortalTarget={document.body}
+                          menuPosition={'fixed'}
+                        />
+                      </FormControl>
+                    </Box>
+                  </Grid>
+                  {filterType.value != "" &&
+                    <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                      <Grid item xs={12}>
+                        <Box sx={{ minWidth: 120 }}>
+                          {filterType.value == "Name" && <FormControl fullWidth><label>Filter Value</label>
+                            <Select
+                              id="filterName"
+                              onChange={filterValueNameshandleChange}
+                              isMulti
+                              options={asteroidsList}
+                              menuPortalTarget={document.body}
+                              menuPosition={'fixed'}
+                            />
+                          </FormControl>}
+                          {filterType.value == "DynClass" && <FormControl fullWidth><label>Filter Value</label>
+                            <Select
+                              value={filterValue}
+                              id="filterDynClass"
+                              onChange={filterValuehandleChange}
+                              options={dynClassList}
+                              menuPortalTarget={document.body}
+                              menuPosition={'fixed'}
+                            />
+                          </FormControl>}
+                          {filterType.value == "Base DynClass" && <FormControl fullWidth><label>Filter Value</label>
+                            <Select
+                              value={filterValue}
+                              id="filterBaseDynClass"
+                              onChange={filterValuehandleChange}
+                              options={baseDynClassList}
+                              menuPortalTarget={document.body}
+                              menuPosition={'fixed'}
+                            />
+                          </FormControl>}
+
+                        </Box>
+
+                      </Grid>
+                    </Grid>
+                  }
+                </Grid>
+                <Grid container item lg={4} alignItems='stretch' className={classes.padDropBox}>
+                  <Grid item xs={12}>
+                    <Box>
+                      <Button variant='contained' color='primary' fullWidth onClick={handleFilterClick}>
+                        Filter
+                      </Button>
+                    </Box>
+                  </Grid>
+                </Grid>
               </form>
             </CardContent>
           </Card>
         </Grid>
-        {data ? (
-          <Grid item lg={12} xl={12}>
-            <Grid container spacing={2}>
-              <Image
-                data={data}
-                //baseUrl={url}
-                //handleImageClick={handleRecordClick}
-              />
-            </Grid>
-          </Grid>
-        ) : null}
       </Grid>
-    </Grid>
+    </Grid >
   );
 }
 
-// Occultation.propTypes = {
-//   setTitle: PropTypes.func.isRequired,
-// };
-
-export default Occultation;
+export default Occultation

@@ -18,11 +18,11 @@ import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
 import Table from '../../components/Table'
 import ColumnStatus from '../../components/Table/ColumnStatus'
 import useInterval from '../../hooks/useInterval'
-import {
+import{
   getDynClassList,
   getBaseDynClassList,
   getAsteroidsList
-} from '../../services/api/OrbitTrace'
+} from '../../services/api/Asteroid'
 import {
   createPredictionJob,
   getPredictionJobList

@@ -10,10 +10,12 @@ import {
   getBspPlanetaryList,
   createOrbitTraceJob,
   getOrbitTraceJobList,
+} from '../../services/api/OrbitTrace'
+import{
   getDynClassList,
   getBaseDynClassList,
   getAsteroidsList
-} from '../../services/api/OrbitTrace'
+} from '../../services/api/Asteroid'
 import { Alert } from '../../../node_modules/@material-ui/lab/index'
 import ColumnStatus from '../../components/Table/ColumnStatus'
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
@@ -108,8 +110,9 @@ function OrbitTrace() {
   useMountEffect(() => {
     getBspPlanetaryList().then((list) => {
       setBspPlanetaryList(list.map(x => { return { value: x.name, label: x.name } }));
-      //set default value 
-      setBspPlanetary({ value: list[0].name, label: list[0].name })
+      //set default value
+      if(list.length > 0) 
+        setBspPlanetary({ value: list[0].name, label: list[0].name })
     })
 
     getLeapSecondList().then((list) => {
@@ -333,7 +336,6 @@ function OrbitTrace() {
                       <Grid item xs={12}>
                         <Box sx={{ minWidth: 120 }}>
                           {filterType.value == "Name" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
-                            <InputLabel></InputLabel>
                             <Select
                               id="filterName"
                               onChange={filterValueNameshandleChange}

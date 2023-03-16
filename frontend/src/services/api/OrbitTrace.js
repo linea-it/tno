@@ -31,11 +31,7 @@ export const getLeapSecondList = () => api.get(`/leap_second/`).then((res) => re
 
 export const getBspPlanetaryList = () => api.get(`/bsp_planetary/`).then((res) => res.data.results)
 
-export const getDynClassList = () => api.get(`/asteroids/dynclasses/`).then((res) => res.data.results)
 
-export const getBaseDynClassList = () => api.get(`/asteroids/base_dynclasses/`).then((res) => res.data.results)
-
-export const getAsteroidsList = () => api.get(`/asteroids/`).then((res) => res.data.results)
 
 export const getOrbitTraceResultById = ({ id, pageSize, page }) => {
   const params = {
