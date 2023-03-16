@@ -34,7 +34,14 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         #filter date
         start_date = self.request.query_params.get('start_date', None)
         end_date = self.request.query_params.get('end_date', None)
-        queryset = self.queryset.filter(date_time__range=[start_date, end_date]) if start_date and end_date else self.queryset
+        if start_date and end_date:
+            queryset = self.queryset.filter(date_time__range=[start_date, end_date])  
+        elif start_date:
+            queryset = self.queryset.filter(date_time__gte=start_date)
+        elif end_date:
+            queryset = self.queryset.filter(date_time__lte=end_date)
+        else:
+            queryset = self.queryset
         #filter asteroids (filter_type, filter_value)
         if(self.request.query_params.get('filter_type', None) == "name"):
             values = self.request.query_params.get('filter_value', None)
