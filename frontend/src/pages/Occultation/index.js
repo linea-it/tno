@@ -6,8 +6,6 @@ import {
   CardContent,
   Typography,
   Slider,
-  TextField,
-  MenuItem,
   Box,
   Button,
   FormControl,
@@ -35,7 +33,6 @@ function Occultation() {
   const [magnitude, setMagnitude] = useState([4, 23]);
   const [diameter, setDiameter] = useState([0, 600]);
   const [zoneValue, setZoneValue] = useState('');
-  const pageSize = 25;
   const [dateStart, setDateStart] = useState('');
   const [dateEnd, setDateEnd] = useState('');
   const [dateStartError, setDateStartError] = useState(false);
@@ -46,7 +43,6 @@ function Occultation() {
   const [asteroidsList, setAsteroidsList] = useState([]);
   const [filterType, setFilterType] = useState('');
   const [filterValue, setFilterValue] = useState('');
-  const [filterValueNames, setFilterValueNames] = useState([]);
   const useMountEffect = (fun) => useEffect(fun, []);
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -92,14 +88,12 @@ function Occultation() {
   const filterTypehandleChange = (event) => {
     if (event) {
       setFilterValue("");
-      setFilterValueNames([]);
       setFilterType(event);
     }
   };
 
   const filterValuehandleChange = (event) => {
     if (event) {
-      setFilterValueNames([]);
       setFilterValue(event);
     }
   };
@@ -107,9 +101,7 @@ function Occultation() {
   const filterValueNameshandleChange = (event) => {
     if (event) {
       let stringArray = event.map(x => { return x.value }).toString().replaceAll(',', ';');
-      // @ts-ignore
       setFilterValue({ value: stringArray, label: stringArray });
-      setFilterValueNames(event.map(x => { return x.value }));
     }
   };
 
@@ -173,14 +165,18 @@ function Occultation() {
 
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
+    const start = dateStart? new Date(dateStart).toISOString().slice(0, 10) +' 00:00:00': null;
+    const end = dateEnd? new Date(dateEnd).toISOString().slice(0, 10) +' 23:59:59': null;
+    const type = filterType.value?filterType.value.toLowerCase().replaceAll(' ', '_'):null;
+    const value = filterValue.value?filterValue.value:null;
     getOccultations({
       page: currentPage + 1,
       pageSize,
       ordering: sorting,
-      start_date: null, 
-      end_date: null, 
-      filter_type: null, 
-      filter_value: null
+      start_date: start, 
+      end_date: end, 
+      filter_type: type, 
+      filter_value: value
     }).then((res) => {
       const { data } = res
       setTableData(
@@ -195,31 +191,7 @@ function Occultation() {
   }
 
   const handleFilterClick = async () => {
-
-    const start = dateStart? new Date(dateStart).toISOString().slice(0, 10) +' 00:00:00': null;
-    const end = dateEnd? new Date(dateEnd).toISOString().slice(0, 10) +' 23:59:59': null;
-
-    getOccultations({
-      page: 1,
-      pageSize,
-      ordering: null,
-      start_date: start, 
-      end_date: end,
-      // @ts-ignore
-      filter_type: filterType.value.toLowerCase(), 
-      // @ts-ignore
-      filter_value: filterValue.value
-    }, ).then((res) => {
-      const { data } = res
-      setTableData(
-        data.results.map((row) => ({
-          key: row.id,
-          detail: `/occultation_detail/${row.id}`,
-          ...row
-        }))
-      )
-      setTotalCount(data.count)
-    })
+    loadData({sorting: [{ columnName: 'id', direction: 'asc' }], pageSize: 10, currentPage: 0});
   }
 
   return (
@@ -312,26 +284,7 @@ function Occultation() {
                         </CardContent>
                       </Box>
                     </Grid>
-                  </Grid>
-                  <Grid container item xs={12} md={8}>
                     <Grid item xs={12}>
-                    <Table
-                        columns={tableColumns}
-                        data={tableData}
-                        loadData={loadData}
-                        hasSearching={false}
-                        hasPagination
-                        hasColumnVisibility={false}
-                        hasToolbar={false}
-                        reload={reload}
-                        totalCount={totalCount}
-                        defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid container item lg={4} alignItems='stretch' className={classes.padDropBox}>
-                  <Grid item xs={12}>
                     <Box sx={{ minWidth: 120 }}>
                       <FormControl fullWidth><label>Zone</label>
                         <Select
@@ -399,6 +352,23 @@ function Occultation() {
                       </Grid>
                     </Grid>
                   }
+                  </Grid>
+                  <Grid container item xs={12} md={8}>
+                    <Grid item xs={12}>
+                    <Table
+                        columns={tableColumns}
+                        data={tableData}
+                        loadData={loadData}
+                        hasSearching={false}
+                        hasPagination
+                        hasColumnVisibility={false}
+                        hasToolbar={false}
+                        reload={reload}
+                        totalCount={totalCount}
+                        defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
+                      />
+                    </Grid>
+                  </Grid>
                 </Grid>
                 <Grid container item lg={4} alignItems='stretch' className={classes.padDropBox}>
                   <Grid item xs={12}>
