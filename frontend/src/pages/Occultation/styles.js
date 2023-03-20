@@ -1,4 +1,5 @@
 import { makeStyles } from '@material-ui/core/styles'
+import { Height } from '../../../node_modules/@material-ui/icons/index'
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -43,7 +44,8 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 4,
     position: 'relative',    
     border: '1px solid #ced4da',   
-    width: 'auto'    
+    width: 'auto',  
+    height: '43px'  
   }
 }))
 

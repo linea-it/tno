@@ -26,12 +26,16 @@ import Select from 'react-select'
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index'
 import Table from '../../components/Table/index'
+import './occultation.css'
+import { CardHeader, MenuItem, OutlinedInput } from '../../../node_modules/@material-ui/core/index';
 
 function Occultation() {
   const navigate = useNavigate();
   const classes = useStyles()
-  const [magnitude, setMagnitude] = useState([4, 23]);
-  const [diameter, setDiameter] = useState([0, 600]);
+  //const [magnitude, setMagnitude] = useState([4, 23]);
+  //const [diameter, setDiameter] = useState([0, 600]);
+  const [magnitude, setMagnitude] = useState('0');
+  const [diameter, setDiameter] = useState('0');
   const [zoneValue, setZoneValue] = useState('');
   const [dateStart, setDateStart] = useState('');
   const [dateEnd, setDateEnd] = useState('');
@@ -165,17 +169,17 @@ function Occultation() {
 
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
-    const start = dateStart? new Date(dateStart).toISOString().slice(0, 10) +' 00:00:00': null;
-    const end = dateEnd? new Date(dateEnd).toISOString().slice(0, 10) +' 23:59:59': null;
-    const type = filterType.value?filterType.value.toLowerCase().replaceAll(' ', '_'):null;
-    const value = filterValue.value?filterValue.value:null;
+    const start = dateStart ? new Date(dateStart).toISOString().slice(0, 10) + ' 00:00:00' : null;
+    const end = dateEnd ? new Date(dateEnd).toISOString().slice(0, 10) + ' 23:59:59' : null;
+    const type = filterType.value ? filterType.value.toLowerCase().replaceAll(' ', '_') : null;
+    const value = filterValue.value ? filterValue.value : null;
     getOccultations({
       page: currentPage + 1,
       pageSize,
       ordering: sorting,
-      start_date: start, 
-      end_date: end, 
-      filter_type: type, 
+      start_date: start,
+      end_date: end,
+      filter_type: type,
       filter_value: value
     }).then((res) => {
       const { data } = res
@@ -191,114 +195,37 @@ function Occultation() {
   }
 
   const handleFilterClick = async () => {
-    loadData({sorting: [{ columnName: 'id', direction: 'asc' }], pageSize: 10, currentPage: 0});
+    loadData({ sorting: [{ columnName: 'id', direction: 'asc' }], pageSize: 10, currentPage: 0 });
   }
 
   return (
     <Grid>
       <Grid container spacing={3}>
-        <Grid item lg={12}>
+        <Grid item xs={12}>
           <Card>
+            <CardHeader title='Ocuttation Filter' />
             <CardContent>
               <form noValidate autoComplete="off">
-                <Grid container item lg={12} alignItems='stretch' className={classes.padDropBox}>
-                  <Typography gutterBottom variant="body2">
-                    {`Magnitude(g): ${magnitude}`}
-                  </Typography>
-                  <Slider
-                    value={magnitude}
-                    step={1}
-                    min={4}
-                    max={23}
-                    valueLabelDisplay="auto"
-                    onChange={handleChangeMagnitudeValue}
-                    disabled
-                  />
-                </Grid>
-                <Grid container item lg={12} alignItems='stretch' className={classes.padDropBox}>
-                  <Typography gutterBottom variant="body2">
-                    {`Diameter(Km): ${diameter}`}
-                  </Typography>
-                  <Slider
-                    value={diameter}
-                    step={50}
-                    min={0}
-                    max={5000}
-                    valueLabelDisplay="auto"
-                    onChange={handleDiameter}
-                    disabled
-                  />
-                </Grid>
-                <Grid container spacing={2}>
-                  <Grid container item xs={12} md={4} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
-                      <label>Start and End Period</label>
-                      <Box variant="outlined" className="cardBoder">
-                        <CardContent>
-                          <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                            <Grid item xs={12} sm={6} md={3}>
-                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1week')}>
-                                1 Week
-                              </Button>
-                            </Grid>
-                            <Grid item xs={12} sm={6} md={3}>
-                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1mounth')}>
-                                1 Month
-                              </Button>
-                            </Grid>
-                            <Grid item xs={12} sm={6} md={3}>
-                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('6mounths')}>
-                                6 Months
-                              </Button>
-                            </Grid>
-                            <Grid item xs={12} sm={6} md={3}>
-                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1year')}>
-                                1 Year
-                              </Button>
-                            </Grid>
-                          </Grid>
-                          <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                            <Grid item xs={12}>
-                              <Box sx={{ minWidth: 120 }}>
-                                <FormControl fullWidth><label>Date Start</label>
-                                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
-                                  </LocalizationProvider>
-                                </FormControl>
-                                {/* {dateStartError ? (<span className={classes.errorText}>Required field</span>) : ''} */}
-                              </Box>
-                            </Grid>
-                          </Grid>
-                          <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                            <Grid item xs={12}>
-                              <Box sx={{ minWidth: 120 }}>
-                                <FormControl fullWidth><label>Date End</label>
-                                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
-                                  </LocalizationProvider>
-                                </FormControl>
-                                {/* {dateEndError ? (<span className={classes.errorText}>Required field</span>) : ''} */}
-                              </Box>
-                            </Grid>
-                          </Grid>
-                        </CardContent>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12}>
+                <Grid container spacing={2} alignItems='stretch'>
+                  <Grid item xs={12} sm={6} md={3}>
                     <Box sx={{ minWidth: 120 }}>
-                      <FormControl fullWidth><label>Zone</label>
-                        <Select
-                          value={zoneValue}
-                          id="filterZone"
-                          onChange={handleChangeZone}
-                          options={zoneArray}
-                          menuPortalTarget={document.body}
-                          menuPosition={'fixed'}
-                        />
-                      </FormControl>
+                      <FormControl fullWidth><label>Date Start</label>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
+                        </LocalizationProvider>
+                      </FormControl>                      
                     </Box>
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Box sx={{ minWidth: 120 }}>
+                      <FormControl fullWidth><label>Date End</label>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
+                        </LocalizationProvider>
+                      </FormControl>                     
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
                     <Box sx={{ minWidth: 120 }}>
                       <FormControl fullWidth><label>Filter Type</label>
                         <Select
@@ -312,79 +239,134 @@ function Occultation() {
                       </FormControl>
                     </Box>
                   </Grid>
-                  {filterType.value != "" &&
-                    <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                      <Grid item xs={12}>
-                        <Box sx={{ minWidth: 120 }}>
-                          {filterType.value == "Name" && <FormControl fullWidth><label>Filter Value</label>
-                            <Select
-                              id="filterName"
-                              onChange={filterValueNameshandleChange}
-                              isMulti
-                              options={asteroidsList}
-                              menuPortalTarget={document.body}
-                              menuPosition={'fixed'}
-                            />
-                          </FormControl>}
-                          {filterType.value == "DynClass" && <FormControl fullWidth><label>Filter Value</label>
-                            <Select
-                              value={filterValue}
-                              id="filterDynClass"
-                              onChange={filterValuehandleChange}
-                              options={dynClassList}
-                              menuPortalTarget={document.body}
-                              menuPosition={'fixed'}
-                            />
-                          </FormControl>}
-                          {filterType.value == "Base DynClass" && <FormControl fullWidth><label>Filter Value</label>
-                            <Select
-                              value={filterValue}
-                              id="filterBaseDynClass"
-                              onChange={filterValuehandleChange}
-                              options={baseDynClassList}
-                              menuPortalTarget={document.body}
-                              menuPosition={'fixed'}
-                            />
-                          </FormControl>}
-
-                        </Box>
-
-                      </Grid>
-                    </Grid>
-                  }
-                  </Grid>
-                  <Grid container item xs={12} md={8}>
-                    <Grid item xs={12}>
-                    <Table
-                        columns={tableColumns}
-                        data={tableData}
-                        loadData={loadData}
-                        hasSearching={false}
-                        hasPagination
-                        hasColumnVisibility={false}
-                        hasToolbar={false}
-                        reload={reload}
-                        totalCount={totalCount}
-                        defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid container item lg={4} alignItems='stretch' className={classes.padDropBox}>
-                  <Grid item xs={12}>
-                    <Box>
-                      <Button variant='contained' color='primary' fullWidth onClick={handleFilterClick}>
-                        Filter
-                      </Button>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Box sx={{ minWidth: 120 }}>
+                      <FormControl fullWidth><label>Filter Value</label>
+                        {filterType.value == null &&
+                          <Select
+                            id="filter"
+                            isDisabled
+                            placeholder="Select Filter Type"
+                            menuPortalTarget={document.body}
+                            menuPosition={'fixed'}
+                          />
+                        }
+                        {filterType.value == "Name" &&
+                          <Select
+                            id="filterName"
+                            onChange={filterValueNameshandleChange}
+                            isMulti
+                            options={asteroidsList}
+                            menuPortalTarget={document.body}
+                            menuPosition={'fixed'}
+                          />
+                        }
+                        {filterType.value == "DynClass" &&
+                          <Select
+                            value={filterValue}
+                            id="filterDynClass"
+                            onChange={filterValuehandleChange}
+                            options={dynClassList}
+                            menuPortalTarget={document.body}
+                            menuPosition={'fixed'}
+                          />
+                        }
+                        {filterType.value == "Base DynClass" &&
+                          <Select
+                            value={filterValue}
+                            id="filterBaseDynClass"
+                            onChange={filterValuehandleChange}
+                            options={baseDynClassList}
+                            menuPortalTarget={document.body}
+                            menuPosition={'fixed'}
+                          />
+                        }
+                      </FormControl>
                     </Box>
                   </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Box sx={{ minWidth: 120 }}>
+                      <FormControl fullWidth><label>Zone</label>
+                        <Select
+                          value={zoneValue}
+                          id="filterZone"
+                          onChange={handleChangeZone}
+                          options={zoneArray}
+                          menuPortalTarget={document.body}
+                          menuPosition={'fixed'}
+                        />
+                      </FormControl>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    {/* <Typography gutterBottom variant="body2">
+                      {`Magnitude(g): ${magnitude}`}
+                    </Typography>
+                    <Slider
+                      value={magnitude}
+                      step={1}
+                      min={4}
+                      max={23}
+                      valueLabelDisplay="auto"
+                      onChange={handleChangeMagnitudeValue}
+                      disabled
+                    /> */}
+                    <FormControl fullWidth><label>Magnitude (0 and 4.23g)</label>
+                      <OutlinedInput disabled id="my-input" value={magnitude} className={classes.input} variant="outlined" onChange={(e) => setMagnitude(e.target.value)} />
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    {/* <Typography gutterBottom variant="body2">
+                      {`Diameter(Km): ${diameter}`}
+                    </Typography>
+                    <Slider
+                      value={diameter}
+                      step={50}
+                      min={0}
+                      max={5000}
+                      valueLabelDisplay="auto"
+                      onChange={handleDiameter}
+
+                    /> */}
+                    <FormControl fullWidth><label>Diameter (0 and 600Km)</label>
+                      <OutlinedInput disabled id="my-input" value={diameter} className={classes.input} variant="outlined" onChange={(e) => setDiameter(e.target.value)} />
+                    </FormControl>
+                  </Grid>
+                </Grid>
+                <Grid container spacing={2} direction="row"
+                  justifyContent="center"
+                  alignItems="center">
+                  <Box>
+                    <Button variant='contained' className="buttonFilter" color='primary' onClick={handleFilterClick}>
+                      Search
+                    </Button>
+                  </Box>
                 </Grid>
               </form>
             </CardContent>
           </Card>
         </Grid>
+        <Grid item xs={12} spacing={6}>
+          <Card>
+            <CardHeader title='Ocuttation Result' />
+            <CardContent>
+              <Table
+                columns={tableColumns}
+                data={tableData}
+                loadData={loadData}
+                hasSearching={false}
+                hasPagination
+                hasColumnVisibility={false}
+                hasToolbar={false}
+                reload={reload}
+                totalCount={totalCount}
+                defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
+              />
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
-    </Grid >
+    </Grid>
   );
 }
 
