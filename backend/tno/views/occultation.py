@@ -34,25 +34,24 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         #filter date
         start_date = self.request.query_params.get('start_date', None)
         end_date = self.request.query_params.get('end_date', None)
+        queryset = self.queryset
         if start_date and end_date:
-            queryset = self.queryset.filter(date_time__range=[start_date, end_date])  
+            queryset = queryset.filter(date_time__range=[start_date, end_date])  
         elif start_date:
-            queryset = self.queryset.filter(date_time__gte=start_date)
+            queryset = queryset.filter(date_time__gte=start_date)
         elif end_date:
-            queryset = self.queryset.filter(date_time__lte=end_date)
-        else:
-            queryset = self.queryset
+            queryset = queryset.filter(date_time__lte=end_date)  
         #filter asteroids (filter_type, filter_value)
         if(self.request.query_params.get('filter_type', None) == "name"):
             values = self.request.query_params.get('filter_value', None)
             names = values.split(';')
-            queryset = self.queryset.filter(asteroid__name__in=names)
+            queryset = queryset.filter(asteroid__name__in=names)
         elif (self.request.query_params.get('filter_type', None) == "dynclass"):
             dynclass = self.request.query_params.get('filter_value', None)
-            queryset = self.queryset.filter(asteroid__dynclass=dynclass)
+            queryset = queryset.filter(asteroid__dynclass=dynclass)
         elif(self.request.query_params.get('filter_type', None) == "base_dynclass"):
             basedyn = self.request.query_params.get('filter_value', None)
-            queryset = self.queryset.filter(asteroid__base_dynclass=basedyn)
+            queryset = queryset.filter(asteroid__base_dynclass=basedyn)
         return queryset    
 
     
