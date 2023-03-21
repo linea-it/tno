@@ -11,7 +11,7 @@ import {
   createOrbitTraceJob,
   getOrbitTraceJobList,
 } from '../../services/api/OrbitTrace'
-import{
+import {
   getDynClassList,
   getBaseDynClassList,
   getAsteroidsList
@@ -20,6 +20,7 @@ import { Alert } from '../../../node_modules/@material-ui/lab/index'
 import ColumnStatus from '../../components/Table/ColumnStatus'
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
 import Select from 'react-select'
+import './orbittrace.css'
 
 function OrbitTrace() {
   const navigate = useNavigate();
@@ -111,7 +112,7 @@ function OrbitTrace() {
     getBspPlanetaryList().then((list) => {
       setBspPlanetaryList(list.map(x => { return { value: x.name, label: x.name } }));
       //set default value
-      if(list.length > 0) 
+      if (list.length > 0)
         setBspPlanetary({ value: list[0].name, label: list[0].name })
     })
 
@@ -304,18 +305,17 @@ function OrbitTrace() {
       customElement: (row) => <span title={moment(row.finish).format('HH:mm:ss')}>{row.count_failures}</span>
     }
   ]
-
   return (
     <>
       <Grid container spacing={2} alignItems='stretch'>
-        <Grid item xs={12} md={5} lg={4}>
-          <Grid container direction='column' spacing={2}>
+        <Grid item xs={12}>
+          <Grid container direction='row' spacing={2}>
             <Grid item xs={12}>
               <Card>
                 <CardHeader title='Fetch Astrometry' />
                 <CardContent>
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth><label>Filter Type <span className={classes.errorText}>*</span></label>
                           <Select
@@ -330,10 +330,8 @@ function OrbitTrace() {
                         {filterTypeError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
                     </Grid>
-                  </Grid>
-                  {filterType.value != "" &&
-                    <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                      <Grid item xs={12}>
+                    {filterType.value != "" &&
+                      <Grid item xs={12} sm={6} md={4} lg={3}>
                         <Box sx={{ minWidth: 120 }}>
                           {filterType.value == "Name" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
                             <Select
@@ -368,10 +366,8 @@ function OrbitTrace() {
                           {filterValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
                         </Box>
                       </Grid>
-                    </Grid>
-                  }
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
+                    }
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth><label>Bsp Planetary <span className={classes.errorText}>*</span></label>
                           <Select
@@ -387,9 +383,7 @@ function OrbitTrace() {
                         {bspPlanetaryError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
                     </Grid>
-                  </Grid>
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth><label>Leap Second <span className={classes.errorText}>*</span></label>
                           <Select
@@ -404,9 +398,7 @@ function OrbitTrace() {
                         {leapSecondError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
                     </Grid>
-                  </Grid>
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth><label>BSP File Expiration Time <span className={classes.errorText}>*</span></label>
                           <Select
@@ -422,36 +414,34 @@ function OrbitTrace() {
                         {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
                     </Grid>
-                  </Grid>
-                  <Grid item container spacing={2} xs={12} className={classes.pad}>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
+                      <FormControl fullWidth><label>Debug Mode ON/OFF</label>
+                          
                         <FormGroup>
                           <FormControlLabel
                             control={<Switch checked={debug} onChange={handleChangeDebug} color="primary" />}
                             label='Debug mode'
                           />
-                        </FormGroup>
+                        </FormGroup> </FormControl>
                       </Box>
                     </Grid>
                   </Grid>
-                  <Grid container spacing={2} alignItems='stretch'>
-                    <Grid item xs={12}>
-                      <Box>
-                        <Button disabled={disableSubmit} variant='contained' color='primary' fullWidth onClick={handleSubmitJobClick}>
-                          Execute
-                        </Button>
-                      </Box>
-                    </Grid>
+                  <Grid container spacing={2} direction="row"
+                    justifyContent="center"
+                    alignItems="center">
+                    <Box>
+                      <Button disabled={disableSubmit} variant='contained' className="buttonFilter" color='primary' onClick={handleSubmitJobClick}>
+                        Execute
+                      </Button>
+                    </Box>
                   </Grid>
                 </CardContent>
               </Card>
             </Grid>
           </Grid>
-
         </Grid>
       </Grid>
-
       <Grid container spacing={6}>
         <Grid item xs={12}>
           <Card>
@@ -499,4 +489,5 @@ function OrbitTrace() {
     </>
   )
 }
+
 export default OrbitTrace

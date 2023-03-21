@@ -18,7 +18,7 @@ import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
 import Table from '../../components/Table'
 import ColumnStatus from '../../components/Table/ColumnStatus'
 import useInterval from '../../hooks/useInterval'
-import{
+import {
   getDynClassList,
   getBaseDynClassList,
   getAsteroidsList
@@ -58,6 +58,8 @@ function PredictOccultation() {
   const [asteroidsList, setAsteroidsList] = useState([]);
   const [bspValueList, setbspValueList] = useState([{ value: 0, label: 'None' }, { value: 10, label: '10 days' }, { value: 20, label: '20 days' }, { value: 30, label: '30 days' }]);
   const [bspValue, setBspValue] = useState({ value: 0, label: "None" });
+  const [catalogList, setCatalogList] = useState([{ value: 0, label: 'None' }]);
+  const [catalog, setCatalog] = useState({ value: 0, label: "None" });
   const [dateStart, setDateStart] = useState(moment());
   const [dateEnd, setDateEnd] = useState('');
 
@@ -66,6 +68,7 @@ function PredictOccultation() {
   const [filterTypeError, setFilterTypeError] = React.useState(false);
   const [filterValueError, setFilteValueError] = React.useState(false);
   const [bspValueError, setBspValueError] = React.useState(false);
+  const [catalogError, setCatalogError] = React.useState(false);
   const [predictStepError, setPredictStepError] = React.useState(false);
 
   const [filterType, setFilterType] = React.useState({ value: 'Base DynClass', label: 'Base DynClass' });
@@ -127,6 +130,11 @@ function PredictOccultation() {
   const bspValuehandleChange = (event) => {
     if (event)
       setBspValue(event);
+  };
+
+  const CataloghandleChange = (event) => {
+    if (event)
+      setCatalog(event);
   };
 
   function formatDate(date) {
@@ -340,89 +348,35 @@ function PredictOccultation() {
   return (
     <>
       <Grid container spacing={2} alignItems='stretch'>
-        <Grid item xs={12} sm={8} md={6} lg={5}>
-          <Grid container direction='column' spacing={2}>
+        <Grid item xs={12}>
+          <Grid container spacing={2}>
             <Grid item xs={12}>
               <Card>
                 <CardHeader title='Predict Occultation Run' />
                 <CardContent>
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
-                      <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Filter Type <span className={classes.errorText}>*</span></label>
-                          <Select
-                            value={filterType}
-                            id="filterType"
-                            onChange={filterTypehandleChange}
-                            options={filterTypeList}
-                          />
-                        </FormControl>
-                        {filterTypeError ? (<span className={classes.errorText}>Required field</span>) : ''}
-                      </Box>
-                    </Grid>
-                  </Grid>
-                  {filterType.value != "" &&
-                    <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                      <Grid item xs={12}>
-                        <Box sx={{ minWidth: 120 }}>
-                          {filterType.value == "Name" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
-                            <InputLabel></InputLabel>
-                            <Select
-                              id="filterName"
-                              onChange={filterValueNameshandleChange}
-                              isMulti
-                              options={asteroidsList}
-                              menuPortalTarget={document.body}
-                              menuPosition={'fixed'}
-                            />
-                          </FormControl>}
-                          {filterType.value == "DynClass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
-                            <Select
-                              value={filterValue}
-                              id="filterDynClass"
-                              onChange={filterValuehandleChange}
-                              options={dynClassList}
-                              menuPortalTarget={document.body}
-                              menuPosition={'fixed'}
-                            />
-                          </FormControl>}
-                          {filterType.value == "Base DynClass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
-                            <Select
-                              value={filterValue}
-                              id="filterBaseDynClass"
-                              onChange={filterValuehandleChange}
-                              options={baseDynClassList}
-                              menuPortalTarget={document.body}
-                              menuPosition={'fixed'}
-                            />
-                          </FormControl>}
-                          {filterValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  }
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
+
+                    <Grid item xs={12} sm={12} md={6}>
                       <label>Start and End Period<span className={classes.errorText}>*</span></label>
                       <Box variant="outlined" className="cardBoder">
                         <CardContent>
                           <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                            <Grid item xs={12} sm={6} md={3}>
+                            <Grid item xs={12} sm={6} md={6} lg={3}>
                               <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1week')}>
                                 1 Week
                               </Button>
                             </Grid>
-                            <Grid item xs={12} sm={6} md={3}>
+                            <Grid item xs={12} sm={6} md={6} lg={3}>
                               <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1mounth')}>
                                 1 Month
                               </Button>
                             </Grid>
-                            <Grid item xs={12} sm={6} md={3}>
+                            <Grid item xs={12} sm={6} md={6} lg={3}>
                               <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('6mounths')}>
                                 6 Months
                               </Button>
                             </Grid>
-                            <Grid item xs={12} sm={6} md={3}>
+                            <Grid item xs={12} sm={6} md={6} lg={3}>
                               <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1year')}>
                                 1 Year
                               </Button>
@@ -455,56 +409,124 @@ function PredictOccultation() {
                         </CardContent>
                       </Box>
                     </Grid>
-                  </Grid>
 
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
-                      <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Input Expiration Time <span className={classes.errorText}>*</span></label>
-                          <Select
-                            value={bspValue}
-                            id="bspValue"
-                            label="BSP Value"
-                            onChange={bspValuehandleChange}
-                            options={bspValueList}
-                            menuPortalTarget={document.body}
-                            menuPosition={'fixed'}
-                          />
-                        </FormControl>
-                        {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
-                      </Box>
+                    <Grid item xs={12} sm={12} md={6}>
+                      <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                        <Grid item xs={12} sm={6} md={12} lg={6}>
+                          <Box sx={{ minWidth: 120 }}>
+                            <FormControl fullWidth><label>Filter Type <span className={classes.errorText}>*</span></label>
+                              <Select
+                                value={filterType}
+                                id="filterType"
+                                onChange={filterTypehandleChange}
+                                options={filterTypeList}
+                              />
+                            </FormControl>
+                            {filterTypeError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                          </Box>
+                        </Grid>
+
+                        {filterType.value != "" &&
+                          <Grid item xs={12} sm={6} md={12} lg={6}>
+                            <Box sx={{ minWidth: 120 }}>
+                              {filterType.value == "Name" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                                <InputLabel></InputLabel>
+                                <Select
+                                  id="filterName"
+                                  onChange={filterValueNameshandleChange}
+                                  isMulti
+                                  options={asteroidsList}
+                                  menuPortalTarget={document.body}
+                                  menuPosition={'fixed'}
+                                />
+                              </FormControl>}
+                              {filterType.value == "DynClass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                                <Select
+                                  value={filterValue}
+                                  id="filterDynClass"
+                                  onChange={filterValuehandleChange}
+                                  options={dynClassList}
+                                  menuPortalTarget={document.body}
+                                  menuPosition={'fixed'}
+                                />
+                              </FormControl>}
+                              {filterType.value == "Base DynClass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                                <Select
+                                  value={filterValue}
+                                  id="filterBaseDynClass"
+                                  onChange={filterValuehandleChange}
+                                  options={baseDynClassList}
+                                  menuPortalTarget={document.body}
+                                  menuPosition={'fixed'}
+                                />
+                              </FormControl>}
+                              {filterValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                            </Box>
+                          </Grid>
+                        }
+                        <Grid item xs={12} sm={6} md={12} lg={6}>
+                          <Box sx={{ minWidth: 120 }}>
+                            <FormControl fullWidth><label>Catalog <span className={classes.errorText}>*</span></label>
+                              <Select
+                                value={catalog}
+                                id="catalog"
+                                label="Catalog"
+                                onChange={CataloghandleChange}
+                                options={catalogList}
+                                menuPortalTarget={document.body}
+                                menuPosition={'fixed'}
+                              />
+                            </FormControl>
+                            {catalogError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                          </Box>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={12} lg={6}>
+                          <Box sx={{ minWidth: 120 }}>
+                            <FormControl fullWidth><label>Input Expiration Time <span className={classes.errorText}>*</span></label>
+                              <Select
+                                value={bspValue}
+                                id="bspValue"
+                                label="BSP Value"
+                                onChange={bspValuehandleChange}
+                                options={bspValueList}
+                                menuPortalTarget={document.body}
+                                menuPosition={'fixed'}
+                              />
+                            </FormControl>
+                            {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                          </Box>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={12} lg={6}>
+                          <Box sx={{ minWidth: 120 }}>
+                            <FormControl fullWidth><label>Predict Step <span className={classes.errorText}>*</span></label>
+                              <OutlinedInput id="my-input" value={predictStep} className={classes.input} variant="outlined" onChange={(e) => setpredictStep(e.target.value)} />
+                            </FormControl>
+                            {predictStepError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                          </Box>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={12} lg={6}>
+                          <Box sx={{ minWidth: 120 }}>
+                            <FormControl fullWidth><label>Force Refresh Inputs ON/OFF</label>
+                              <FormGroup>
+                                <FormControlLabel
+                                  control={<Switch checked={forceRefreshInputs} onChange={handleChangeForceRefreshInputs} color="primary" />}
+                                  label='Force Refresh Inputs'
+                                />
+                              </FormGroup></FormControl>
+                          </Box>
+                        </Grid>
+                      </Grid>
                     </Grid>
                   </Grid>
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
-                    <Grid item xs={12}>
-                      <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Predict Step <span className={classes.errorText}>*</span></label>
-                          <OutlinedInput id="my-input" value={predictStep} className={classes.input} variant="outlined" onChange={(e) => setpredictStep(e.target.value)} />
-                        </FormControl>
-                        {predictStepError ? (<span className={classes.errorText}>Required field</span>) : ''}
-                      </Box>
-                    </Grid></Grid>
-                  <Grid item container spacing={2} xs={12} className={classes.pad}>
-                    <Grid item xs={12}>
-                      <Box sx={{ minWidth: 120 }}>
-                        <FormGroup>
-                          <FormControlLabel
-                            control={<Switch checked={forceRefreshInputs} onChange={handleChangeForceRefreshInputs} color="primary" />}
-                            label='Force Refresh Inputs'
-                          />
-                        </FormGroup>
-                      </Box>
-                    </Grid>
-                  </Grid>
-                  <Grid container spacing={2} alignItems='stretch'>
-                    <Grid item xs={12}>
-                      <Box>
-                        <Button disabled={disableSubmit} variant='contained' color='primary' fullWidth onClick={handleSubmitJobClick}>
-                          Execute
-                        </Button>
-                      </Box>
-                    </Grid>
-                  </Grid>
+                  <Grid container spacing={2} direction="row"
+                    justifyContent="center"
+                    alignItems="center">
+                    <Box>
+                      <Button variant='contained' disabled={disableSubmit} className="buttonFilter" color='primary' onClick={handleSubmitJobClick}>
+                        Execute
+                      </Button>
+                    </Box>
+                  </Grid>                  
                 </CardContent>
               </Card>
             </Grid>

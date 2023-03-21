@@ -298,36 +298,12 @@ function Occultation() {
                       </FormControl>
                     </Box>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    {/* <Typography gutterBottom variant="body2">
-                      {`Magnitude(g): ${magnitude}`}
-                    </Typography>
-                    <Slider
-                      value={magnitude}
-                      step={1}
-                      min={4}
-                      max={23}
-                      valueLabelDisplay="auto"
-                      onChange={handleChangeMagnitudeValue}
-                      disabled
-                    /> */}
+                  <Grid item xs={12} sm={6} md={3}>                   
                     <FormControl fullWidth><label>Magnitude (0 and 4.23g)</label>
                       <OutlinedInput disabled id="my-input" value={magnitude} className={classes.input} variant="outlined" onChange={(e) => setMagnitude(e.target.value)} />
                     </FormControl>
                   </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
-                    {/* <Typography gutterBottom variant="body2">
-                      {`Diameter(Km): ${diameter}`}
-                    </Typography>
-                    <Slider
-                      value={diameter}
-                      step={50}
-                      min={0}
-                      max={5000}
-                      valueLabelDisplay="auto"
-                      onChange={handleDiameter}
-
-                    /> */}
+                  <Grid item xs={12} sm={6} md={3}>                   
                     <FormControl fullWidth><label>Diameter (0 and 600Km)</label>
                       <OutlinedInput disabled id="my-input" value={diameter} className={classes.input} variant="outlined" onChange={(e) => setDiameter(e.target.value)} />
                     </FormControl>
