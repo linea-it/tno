@@ -179,7 +179,7 @@ function Occultation() {
       ordering: sorting,
       start_date: start,
       end_date: end,
-      filter_type: type,
+      filter_type: value?type:null,
       filter_value: value
     }).then((res) => {
       const { data } = res
