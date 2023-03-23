@@ -204,7 +204,7 @@ function Occultation() {
 
   useEffect(() => {
     filter();
-  }, [filterValue]);
+  }, [dateStart, dateEnd, filterValue]);
 
   return (
     <Grid>
@@ -217,7 +217,7 @@ function Occultation() {
                 <Grid container spacing={2} alignItems='stretch'>
                   <Grid item xs={12} sm={6} md={3}>
                     <Box sx={{ minWidth: 120 }}>
-                      <FormControl fullWidth onBlur={filter}><label>Date Start</label>
+                      <FormControl fullWidth ><label>Date Start</label>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
                         </LocalizationProvider>
@@ -226,7 +226,7 @@ function Occultation() {
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Box sx={{ minWidth: 120 }}>
-                      <FormControl fullWidth onBlur={filter}><label>Date End</label>
+                      <FormControl fullWidth><label>Date End</label>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
                         </LocalizationProvider>
