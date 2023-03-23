@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 import numpy as np
 import pandas as pd
-from tno.models import PredictionJob
+from tno.models import PredictionJob, Catalog
 from tno.serializers import PredictionJobSerializer
 from django.core.paginator import Paginator
 from rest_framework import mixins, viewsets
@@ -61,7 +61,7 @@ class PredictionJobViewSet(
 
         # predictions_end = datetime.strptime(date_final, "%Y-%m-%d").strftime("%Y-%m-%d 23:59:59")
 
-        
+        catalog = Catalog.objects.get(name=params["catalog"].replace("\'", "\""))
         # Criar um model Prediction Job
         job = PredictionJob(
             owner=owner,
@@ -75,6 +75,7 @@ class PredictionJobViewSet(
             predict_step=params["predict_step"].replace("\'", "\""),
             force_refresh_input=bool(params["force_refresh_input"].replace("\'", "\"")),
             input_days_to_expire=params["input_days_to_expire"].replace("\'", "\""),
+            catalog=catalog,
         )
         job.save()
 

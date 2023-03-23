@@ -198,6 +198,14 @@ function Occultation() {
     loadData({ sorting: [{ columnName: 'id', direction: 'asc' }], pageSize: 10, currentPage: 0 });
   }
 
+  const filter = async() =>{
+    handleFilterClick();
+  }
+
+  useEffect(() => {
+    filter();
+  }, [filterValue]);
+
   return (
     <Grid>
       <Grid container spacing={3}>
@@ -209,7 +217,7 @@ function Occultation() {
                 <Grid container spacing={2} alignItems='stretch'>
                   <Grid item xs={12} sm={6} md={3}>
                     <Box sx={{ minWidth: 120 }}>
-                      <FormControl fullWidth><label>Date Start</label>
+                      <FormControl fullWidth onBlur={filter}><label>Date Start</label>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
                         </LocalizationProvider>
@@ -218,7 +226,7 @@ function Occultation() {
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Box sx={{ minWidth: 120 }}>
-                      <FormControl fullWidth><label>Date End</label>
+                      <FormControl fullWidth onBlur={filter}><label>Date End</label>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
                         </LocalizationProvider>
@@ -246,7 +254,7 @@ function Occultation() {
                           <Select
                             id="filter"
                             isDisabled
-                            placeholder="Select Filter Type"
+                            placeholder="Select Filter Value"
                             menuPortalTarget={document.body}
                             menuPosition={'fixed'}
                           />
@@ -308,15 +316,6 @@ function Occultation() {
                       <OutlinedInput disabled id="my-input" value={diameter} className={classes.input} variant="outlined" onChange={(e) => setDiameter(e.target.value)} />
                     </FormControl>
                   </Grid>
-                </Grid>
-                <Grid container spacing={2} direction="row"
-                  justifyContent="center"
-                  alignItems="center">
-                  <Box>
-                    <Button variant='contained' className="buttonFilter" color='primary' onClick={handleFilterClick}>
-                      Search
-                    </Button>
-                  </Box>
                 </Grid>
               </form>
             </CardContent>

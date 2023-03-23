@@ -76,8 +76,8 @@ class OrbitTraceJobViewSet(
 
         # end = datetime.strptime(date_final, "%Y-%m-%d").strftime("%Y-%m-%d 23:59:59")
 
-        bsp_planetary = BspPlanetary.objects.get(name=params["bsp_planetary"].replace("\'", "\""));
-        leap_seconds = LeapSecond.objects.get(name=params["leap_second"].replace("\'", "\""));
+        bsp_planetary = BspPlanetary.objects.get(name=params["bsp_planetary"].replace("\'", "\""))
+        leap_seconds = LeapSecond.objects.get(name=params["leap_second"].replace("\'", "\""))
 
         # Estimativa de tempo baseada na qtd de exposures a serem executadas.
         #estimated_time = self.estimate_execution_time(t_exposures)

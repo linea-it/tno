@@ -17,3 +17,5 @@ export const getDynClassList = () => api.get(`/asteroids/dynclasses/`).then((res
 export const getBaseDynClassList = () => api.get(`/asteroids/base_dynclasses/`).then((res) => res.data.results)
 
 export const getAsteroidsList = () => api.get(`/asteroids/`).then((res) => res.data.results)
+
+export const getCatalogList = () => api.get(`/catalog/`).then((res) => res.data.results)

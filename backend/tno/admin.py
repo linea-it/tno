@@ -99,6 +99,7 @@ class PredictionJobAdmin(admin.ModelAdmin):
         "predict_end_date",
         "filter_type",
         "filter_value",
+        "catalog"
     )
 
 

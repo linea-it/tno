@@ -55,28 +55,28 @@ function PredictionAsteroid() {
         title: 'RA Star (DEG) ',
         width: 150,
         align: 'center',
-        customElement: (row) => <span>{row.ra_star_deg.toFixed(1)}</span>
+        customElement: (row) => <span>{row.ra_star_deg?row.ra_star_deg.toFixed(1):''}</span>
       },
       {
         name: 'dec_star_deg',
         title: 'Dec Star (DEG) ',
         width: 150,
         align: 'center',
-        customElement: (row) => <span>{row.dec_star_deg.toFixed(1)}</span>
+        customElement: (row) => <span>{row.dec_star_deg?row.dec_star_deg.toFixed(1):''}</span>
       },
       {
         name: 'ra_target_deg',
         title: 'RA Target (DEG) ',
         width: 150,
         align: 'center',
-        customElement: (row) => <span>{row.ra_target_deg.toFixed(1)}</span>
+        customElement: (row) => <span>{row.ra_target_deg?row.ra_target_deg.toFixed(1):''}</span>
       },
       {
         name: 'dec_target_deg',
         title: 'Dec Target (DEG) ',
         width: 150,
         align: 'center',
-        customElement: (row) => <span>{row.dec_target_deg.toFixed(1)}</span>
+        customElement: (row) => <span>{row.dec_target_deg?row.dec_target_deg.toFixed(1):''}</span>
       },
       
   ]

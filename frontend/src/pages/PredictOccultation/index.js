@@ -21,7 +21,8 @@ import useInterval from '../../hooks/useInterval'
 import {
   getDynClassList,
   getBaseDynClassList,
-  getAsteroidsList
+  getAsteroidsList,
+  getCatalogList
 } from '../../services/api/Asteroid'
 import {
   createPredictionJob,
@@ -59,7 +60,7 @@ function PredictOccultation() {
   const [bspValueList, setbspValueList] = useState([{ value: 0, label: 'None' }, { value: 10, label: '10 days' }, { value: 20, label: '20 days' }, { value: 30, label: '30 days' }]);
   const [bspValue, setBspValue] = useState({ value: 0, label: "None" });
   const [catalogList, setCatalogList] = useState([{ value: 0, label: 'None' }]);
-  const [catalog, setCatalog] = useState({ value: 0, label: "None" });
+  const [catalog, setCatalog] = useState({ value: '', label: "None" });
   const [dateStart, setDateStart] = useState(moment());
   const [dateEnd, setDateEnd] = useState('');
 
@@ -97,6 +98,10 @@ function PredictOccultation() {
 
     getAsteroidsList().then((list) => {
       setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
+    })
+
+    getCatalogList().then((list) => {
+      setCatalogList(list.map(x => { return { value: x.name, label: x.name } }));
     })
   });
 
@@ -198,7 +203,8 @@ function PredictOccultation() {
         filter_value: filterValue.value,
         predict_step: predictStep,
         force_refresh_input: forceRefreshInputs.toString(),
-        input_days_to_expire: bspValue.value.toString()
+        input_days_to_expire: bspValue.value.toString(),
+        catalog: catalog.value
       }
       createPredictionJob(data)
         .then((response) => {
@@ -206,6 +212,7 @@ function PredictOccultation() {
           setDateEnd("");
           setFilterType({ value: 'Base DynClass', label: 'Base DynClass' });
           setFilterValue({ value: "", label: "Select..." });
+          setCatalog({ value: "", label: "Select..." });
           setBspValue({ value: 0, label: "None" });
           setMessageTextSuccess('Information registered successfully');
           setMessageOpenSuccess(true);

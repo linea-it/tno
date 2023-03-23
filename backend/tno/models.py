@@ -515,6 +515,12 @@ class PredictionJob (models.Model):
         related_name="predicition_run",
     )
 
+    catalog = models.ForeignKey(
+        Catalog,
+        on_delete=models.CASCADE,
+        verbose_name="Catalog",
+    )
+
     # Status da execução.
     status = models.IntegerField(
         verbose_name="Status",
