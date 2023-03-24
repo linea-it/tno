@@ -211,7 +211,7 @@ function Occultation() {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Card>
-            <CardHeader title='Ocuttation Filter' />
+            <CardHeader title='Ocultation Filter' />
             <CardContent>
               <form noValidate autoComplete="off">
                 <Grid container spacing={2} alignItems='stretch'>
@@ -323,7 +323,7 @@ function Occultation() {
         </Grid>
         <Grid item xs={12} spacing={6}>
           <Card>
-            <CardHeader title='Ocuttation Result' />
+            <CardHeader title='Ocultation Result' />
             <CardContent>
               <Table
                 columns={tableColumns}
