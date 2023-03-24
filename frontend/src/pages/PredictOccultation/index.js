@@ -39,6 +39,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Box, OutlinedInput } from '../../../node_modules/@material-ui/core/index'
 import Select from 'react-select'
 import { Alert } from '../../../node_modules/@material-ui/lab/index'
+import dayjs from 'dayjs';
 
 function PredictOccultation() {
   const navigate = useNavigate()
@@ -61,7 +62,7 @@ function PredictOccultation() {
   const [bspValue, setBspValue] = useState({ value: 0, label: "None" });
   const [catalogList, setCatalogList] = useState([{ value: 0, label: 'None' }]);
   const [catalog, setCatalog] = useState({ value: '', label: "None" });
-  const [dateStart, setDateStart] = useState(moment());
+  const [dateStart, setDateStart] = useState(dayjs(new Date()));
   const [dateEnd, setDateEnd] = useState('');
 
   const [dateStartError, setDateStartError] = React.useState(false);
@@ -158,20 +159,20 @@ function PredictOccultation() {
 
   const calculateDate = (filter) => {
     const currentDate = dateStart;
-    var dateEnd = moment();
+    var dateEnd = dayjs(new Date());
 
     switch (filter) {
       case '1week':
-        dateEnd = moment(currentDate).add(7, 'days');
+        dateEnd = dayjs(currentDate).add(7, 'days');
         break;
       case '1mounth':
-        dateEnd = moment(currentDate).add(30, 'days');
+        dateEnd = dayjs(currentDate).add(30, 'days');
         break;
       case '6mounths':
-        dateEnd = moment(currentDate).add(180, 'days');
+        dateEnd = dayjs(currentDate).add(180, 'days');
         break;
       case '1year':
-        dateEnd = moment(currentDate).add(365, 'days');
+        dateEnd = dayjs(currentDate).add(365, 'days');
         break;
     }
 
