@@ -175,13 +175,21 @@ class SkybotJobResultAdmin(admin.ModelAdmin):
 class OrbitTraceJobResultAdmin(admin.ModelAdmin):
     list_display = (
         "id",
+        "job",
+        "asteroid",
         "status",
-        "asteroid_name",
         "asteroid_number",
         "base_dynclass",
         "dynclass",
         "observations",
         "ccds",
+    )
+
+    # Troca o tipo de input de Select para um text field com botao de busca
+    # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
+    raw_id_fields = (
+        "job",
+        "asteroid",
     )
 
 

@@ -110,3 +110,10 @@ class PredictionJobResultAdmin(admin.ModelAdmin):
         "job",
         "asteroid",
     )
+
+    # Troca o tipo de input de Select para um text field com botao de busca
+    # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
+    raw_id_fields = (
+        "job",
+        "exposure",
+    )
