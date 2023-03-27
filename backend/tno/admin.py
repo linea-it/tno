@@ -115,5 +115,5 @@ class PredictionJobResultAdmin(admin.ModelAdmin):
     # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
     raw_id_fields = (
         "job",
-        "exposure",
+        "asteroid",
     )
