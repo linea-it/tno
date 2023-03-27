@@ -6,9 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from tno.dao.asteroids import AsteroidDao
-from tno.models import Asteroid, Occultation
+from tno.models import Asteroid, Occultation, PredictionJobResult
 from des.models import Observation
 from tno.serializers import AsteroidSerializer
+from rest_framework.pagination import PageNumberPagination
 
 from datetime import datetime
 import humanize
@@ -140,4 +141,24 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
 
         rows = AsteroidDao(pool=False).distinct_base_dynclass()
 
-        return Response(dict({"results": rows, "count": len(rows)}))        
+        return Response(dict({"results": rows, "count": len(rows)}))  
+
+    @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
+    def with_prediction(self, request):
+        """
+        #     Este endpoint obtem o asteroids com ao menos uma predicao.
+
+        #     Parameters:
+        #         pk (int): id do job.
+
+        #     Returns:
+        #         result (string): asteroid list.
+        #     """
+        paginator = PageNumberPagination()
+        paginator.page_size = 100
+        predictions = PredictionJobResult.objects.all()
+        aa = Asteroid.objects.filter(id__in=predictions.values('asteroid__id'))
+        result_page = paginator.paginate_queryset(aa, request)
+        serializer = AsteroidSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+        

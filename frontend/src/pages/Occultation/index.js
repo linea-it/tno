@@ -20,7 +20,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
   getDynClassList,
   getBaseDynClassList,
-  getAsteroidsList
+  getAsteroidsWithPredictionList
 } from '../../services/api/Asteroid'
 import Select from 'react-select'
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
@@ -118,7 +118,7 @@ function Occultation() {
       setBaseDynClassList(list.map(x => { return { value: x, label: x } }));
     })
 
-    getAsteroidsList().then((list) => {
+    getAsteroidsWithPredictionList().then((list) => {
       setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
     })
 
@@ -323,7 +323,7 @@ function Occultation() {
         </Grid>
         <Grid item xs={12} spacing={6}>
           <Card>
-            <CardHeader title='Ocultation Result' />
+            <CardHeader title={`Occultation Result - Total: ${totalCount}` }/>
             <CardContent>
               <Table
                 columns={tableColumns}
