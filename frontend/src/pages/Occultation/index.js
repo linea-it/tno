@@ -85,7 +85,7 @@ function Occultation() {
       title: 'Observation Date',
       width: 150,
       sortingEnabled: false,
-      customElement: (row) => (row.date_time ? moment(row.date_time).format('YYYY-MM-DD HH:mm:ss') : '-')
+      customElement: (row) => (row.date_time ? moment(row.date_time).utc().format('YYYY-MM-DD HH:mm:ss') : '-')
     },
   ]
 
@@ -198,12 +198,8 @@ function Occultation() {
     loadData({ sorting: [{ columnName: 'id', direction: 'asc' }], pageSize: 10, currentPage: 0 });
   }
 
-  const filter = async() =>{
-    handleFilterClick();
-  }
-
   useEffect(() => {
-    filter();
+    handleFilterClick();
   }, [dateStart, dateEnd, filterValue]);
 
   return (
@@ -321,7 +317,7 @@ function Occultation() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} spacing={6}>
+        <Grid container item xs={12} spacing={6}>
           <Card>
             <CardHeader title={`Occultation Result - Total: ${totalCount}` }/>
             <CardContent>
