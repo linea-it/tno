@@ -140,10 +140,10 @@ function Contact() {
           <p>
             <span>Sorry, you have to be authenticated in this application to send a message. In case you still need to contact us, </span>
             {/* <Link
-              href="https://www.linea.gov.br/6-faleconosco/"
+              href="https://www.linea.org.br/6-faleconosco/"
               target="_blank"
             > */}
-            <Link to='https://www.linea.gov.br/6-faleconosco/' target='_blank'>
+            <Link to='https://www.linea.org.br/6-faleconosco/' target='_blank'>
               click here
             </Link>
             <span> to go to the "Contact Us" page on our website</span>
@@ -161,10 +161,10 @@ function Contact() {
           <p>
             <span>Sorry, an unexpected error has occurred. Could you please try again? If it still didn't work, you can </span>
             {/* <Link
-              href="https://www.linea.gov.br/6-faleconosco/"
+              href="https://www.linea.org.br/6-faleconosco/"
               target="_blank"
             > */}
-            <Link to='https://www.linea.gov.br/6-faleconosco/' target='_blank'>
+            <Link to='https://www.linea.org.br/6-faleconosco/' target='_blank'>
               click here
             </Link>
             <span> to go to the "Contact Us" page on our website.</span>

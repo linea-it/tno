@@ -17,7 +17,7 @@ function Footer({ drawerOpen }) {
           </Typography>
           <Typography color='inherit'>
             <span className={classes.poweredBy}>Powered by</span>
-            <a href='http://www.linea.gov.br/' target='blank' className={classes.logoLink}>
+            <a href='http://www.linea.org.br/' target='blank' className={classes.logoLink}>
               <img src={logo} title='LIneA' alt='LineA' style={{ cursor: 'pointer', marginLeft: '10px' }} />
             </a>
           </Typography>
