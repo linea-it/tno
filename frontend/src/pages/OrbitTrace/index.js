@@ -14,7 +14,8 @@ import {
 import {
   getDynClassList,
   getBaseDynClassList,
-  getAsteroidsList
+  getAsteroidsList,
+  getFilteredAsteroidsList,
 } from '../../services/api/Asteroid'
 import { Alert } from '../../../node_modules/@material-ui/lab/index'
 import ColumnStatus from '../../components/Table/ColumnStatus'
@@ -305,6 +306,15 @@ function OrbitTrace() {
       customElement: (row) => <span title={moment(row.finish).format('HH:mm:ss')}>{row.count_failures}</span>
     }
   ]
+
+  const onKeyUp = async (event) => {
+    if(event.target.value.length > 1){
+        getFilteredAsteroidsList(event.target.value).then((list) => {
+          setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
+        })
+    }
+  }
+
   return (
     <>
       <Grid container spacing={2} alignItems='stretch'>
@@ -333,7 +343,7 @@ function OrbitTrace() {
                     {filterType.value != "" &&
                       <Grid item xs={12} sm={6} md={4} lg={3}>
                         <Box sx={{ minWidth: 120 }}>
-                          {filterType.value == "Name" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                          {filterType.value == "Name" && <FormControl onKeyUp={onKeyUp} fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
                             <Select
                               id="filterName"
                               onChange={filterValueNameshandleChange}

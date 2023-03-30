@@ -22,7 +22,8 @@ import {
   getDynClassList,
   getBaseDynClassList,
   getAsteroidsList,
-  getCatalogList
+  getCatalogList,
+  getFilteredAsteroidsList
 } from '../../services/api/Asteroid'
 import {
   createPredictionJob,
@@ -353,6 +354,14 @@ function PredictOccultation() {
     }
   }, 10000)
 
+  const onKeyUp = async (event) => {
+    if(event.target.value.length > 1){
+      getFilteredAsteroidsList(event.target.value).then((list) => {
+        setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
+      })
+    }
+  }
+
   return (
     <>
       <Grid container spacing={2} alignItems='stretch'>
@@ -437,7 +446,7 @@ function PredictOccultation() {
                         {filterType.value != "" &&
                           <Grid item xs={12} sm={6} md={12} lg={6}>
                             <Box sx={{ minWidth: 120 }}>
-                              {filterType.value == "Name" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                              {filterType.value == "Name" && <FormControl onKeyUp={onKeyUp} fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
                                 <InputLabel></InputLabel>
                                 <Select
                                   id="filterName"

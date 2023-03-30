@@ -148,16 +148,34 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         """
         #     Este endpoint obtem o asteroids com ao menos uma predicao.
 
-        #     Parameters:
-        #         pk (int): id do job.
-
         #     Returns:
-        #         result (string): asteroid list.
+        #         result (json): asteroid list.
         #     """
         paginator = PageNumberPagination()
         paginator.page_size = 100
         predictions = PredictionJobResult.objects.all()
-        aa = Asteroid.objects.filter(id__in=predictions.values('asteroid__id'))
+        filtro = self.request.query_params.get('name', None)
+        
+        if filtro:
+            aa = Asteroid.objects.filter(name__icontains=filtro, id__in=predictions.values('asteroid__id'))
+        else:
+            aa = Asteroid.objects.filter(id__in=predictions.values('asteroid__id'))  
+        result_page = paginator.paginate_queryset(aa, request)
+        serializer = AsteroidSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+    @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
+    def search(self, request):
+        """
+        #     Este endpoint obtem o lista de asteroids filtrada por parte do nome.
+
+        #     Returns:
+        #         result (json): asteroid list.
+        #     """
+        paginator = PageNumberPagination()
+        paginator.page_size = 100
+        aa = Asteroid.objects.filter(name__icontains=self.request.query_params.get('name', None))
         result_page = paginator.paginate_queryset(aa, request)
         serializer = AsteroidSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)

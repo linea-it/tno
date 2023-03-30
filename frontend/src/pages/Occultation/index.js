@@ -20,7 +20,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import {
   getDynClassList,
   getBaseDynClassList,
-  getAsteroidsWithPredictionList
+  getAsteroidsWithPredictionList,
+  getFilteredWithPredictionList
 } from '../../services/api/Asteroid'
 import Select from 'react-select'
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
@@ -202,6 +203,14 @@ function Occultation() {
     handleFilterClick();
   }, [dateStart, dateEnd, filterValue]);
 
+  const onKeyUp = async (event) => {
+    if(event.target.value.length > 1){
+        getFilteredWithPredictionList(event.target.value).then((list) => {
+          setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
+        })
+    }
+  }
+
   return (
     <Grid>
       <Grid container spacing={3}>
@@ -245,7 +254,7 @@ function Occultation() {
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Box sx={{ minWidth: 120 }}>
-                      <FormControl fullWidth><label>Filter Value</label>
+                      <FormControl  onKeyUp={onKeyUp} fullWidth><label>Filter Value</label>
                         {filterType.value == null &&
                           <Select
                             id="filter"
