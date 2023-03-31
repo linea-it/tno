@@ -119,15 +119,18 @@ class OrbitTraceJob(models.Model):
     )
 
     parsl_init_blocks = models.IntegerField(
-        default=0,
+        default=400,
         help_text="parsl_init_blocks",
         verbose_name="parsl_init_blocks",
     )
 
-    h_exec_time = models.IntegerField(
-        default=0,
-        help_text="h_exec_time",
-        verbose_name="h_exec_time",
+    h_exec_time = models.CharField(
+        max_length=100,
+        verbose_name="Human Exec Time",
+        help_text="Execution Time formated with humanize.",
+        null=True,
+        default=None,
+        blank=True        
     )
 
     bps_days_to_expire = models.IntegerField(
@@ -160,6 +163,8 @@ class OrbitTraceJob(models.Model):
         max_length=2048,
         verbose_name="Path",
         help_text="Path to the directory where the job data is located.",
+        null=True,
+        blank=True        
     )
 
     # Em caso de erro o Job fica com status 'Failed'
