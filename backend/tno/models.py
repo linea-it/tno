@@ -558,102 +558,127 @@ class PredictionJob (models.Model):
     )
 
     filter_type = models.CharField(
-        max_length=100,
-        null=False,
-        blank=False,
         verbose_name="Filter Type",
+        max_length=15,
+        choices=(
+            ("name", "Name"),
+            ("dynclass", "DynClass"),            
+            ("base_dynclass", "Base DynClass"),
+        ),
     )
 
-    filter_value = models.CharField(
-        max_length=100,
-        null=False,
-        blank=False,
+    filter_value = models.TextField (
         verbose_name="Filter Value",
     )
 
     # data inicial .
     predict_start_date = models.DateField(
-        verbose_name="Date Initial of Predictions",
+        verbose_name="Date Initial",
+        help_text="Date Initial of Predictions",
         auto_now_add=False,
     )
 
     # data Final
     predict_end_date = models.DateField(
         verbose_name="Date Final of Predictions",
+        help_text="Date Final of Predictions",
         auto_now_add=False,
     )
 
     predict_step = models.IntegerField(
-        default=0,
+        verbose_name="Prediction Step",        
         help_text="Prediction Step",
-        verbose_name="Prediction Step",
+        default=600,
     )
 
-
     input_days_to_expire = models.IntegerField(
-        default=0,
+        verbose_name="Days to expire",
         help_text="Days to expire inputs",
-        verbose_name="Days to expire inputs",
+        default=5,
     )
 
     force_refresh_input = models.BooleanField(
-        default=False,
+        verbose_name="Refresh Inputs",
         help_text="Force Refresh Inputs",
-        verbose_name="Force Refresh Inputs",
+        default=False,        
     )
 
     count_asteroids = models.IntegerField(
+        verbose_name="Asteroids",
+        help_text="Total asteroids selected to run this job",        
         default=0,
-        help_text="Asteroids Count",
-        verbose_name="Asteroids Count",
     )
 
     count_asteroids_with_occ = models.IntegerField(
+        verbose_name="Asteroids With Occultations",        
+        help_text="Total asteroids with at least one occultation event identified by predict occultation.",
         default=0,
-        help_text="Asteroids With Occultations Count",
-        verbose_name="Asteroids With Occultations Count",
     )
 
     count_occ = models.IntegerField(
+        verbose_name="Occultations",
+        help_text="Total occultation events identified by predict occultation.",
         default=0,
-        help_text="Occultations Count",
-        verbose_name="Occultations Count",
     )
 
-    count_asteroids_failure = models.IntegerField(
+    count_success = models.IntegerField(
+        verbose_name="Success",
+        help_text="Total asteroids successfully executed in all steps.",
         default=0,
-        help_text="Asteroids Failure Count",
-        verbose_name="Asteroids Failure Count",
+    )
+
+    count_failures = models.IntegerField(
+        verbose_name="Failures Count",
+        help_text="Total asteroids that failed at least one of the steps.",        
+        default=0,        
+    )
+
+    parsl_init_blocks = models.IntegerField(
+        verbose_name="Parsl Blocks",        
+        help_text="Value that defines the parallelism factor that parsl will use in the process.",
+        default=400,
+
     )
 
     condor_job_submited = models.IntegerField(
+        verbose_name="HTCondor Jobs",
+        help_text="HTCondor Job Submited",        
         default=0,
-        help_text="Condor Job Submited",
-        verbose_name="Condor Job Submited",
     )
 
     condor_job_completed = models.IntegerField(
+        verbose_name="HTCondor Completed",
+        help_text="HTCondor Jobs Completed.",        
         default=0,
-        help_text="Condor Job Completed",
-        verbose_name="Condor Job Completed",
     )
 
     condor_job_removed = models.IntegerField(
-        default=0,
-        help_text="Condor Job Removed",
-        verbose_name="Condor Job Removed",
+        verbose_name="HTCondor Removed",
+        help_text="Condor Jobs Removed",
+        default=0,        
     )    
+
+    debug = models.BooleanField(
+        verbose_name="Debug",        
+        help_text="Debug False all log files and intermediate results will be deleted at the end of the job.",
+        default=False,
+    )
 
     # Pasta onde estão os dados do Job.
     path = models.CharField(
-        max_length=2048,
-        verbose_name="Path",
+        verbose_name="Path",        
         help_text="Path to the directory where the job data is located.",
+        max_length=2048,        
+        null=True,
+        blank=True        
     )
 
     error = models.TextField(verbose_name="Error", null=True, blank=True)
 
     traceback = models.TextField(verbose_name="Traceback", null=True, blank=True)
+
+    def __str__(self):
+        return str(self.id)
 
 class PredictionJobResult(models.Model):
     
@@ -669,6 +694,32 @@ class PredictionJobResult(models.Model):
         verbose_name="Asteroid",
     )
 
+    name = models.CharField(
+        max_length=100,
+        verbose_name="Asteroid Name",
+    )
+
+    number = models.CharField(
+        max_length=100,
+        verbose_name="Asteroid Number",
+        null=True,
+        blank=True,        
+    )
+
+    base_dynclass = models.CharField(
+        max_length=100,
+        verbose_name="Asteroid Base DynClass",
+        # Default value only because this field is added after table already have data
+        default="" 
+    )
+
+    dynclass = models.CharField(
+        max_length=100,
+        verbose_name="Asteroid DynClass",
+        # Default value only because this field is added after table already have data        
+        default=""
+    )    
+
     status = models.IntegerField(
         verbose_name="Status",
         default=1,
@@ -678,25 +729,27 @@ class PredictionJobResult(models.Model):
         ),
     )
 
-    asteroid_name = models.CharField(
-        max_length=100,
-        null=False,
-        blank=False,
-        verbose_name="Asteroid Name",
-    )
-
-    asteroid_number = models.CharField(
-        max_length=100,
-        null=False,
-        blank=False,
-        verbose_name="Asteroid Number",
-    )
-
     des_obs = models.IntegerField(
-        default=0,
         verbose_name="des_obs",
+        default=0,
     )
 
+    obs_source = models.CharField(
+        max_length=100,
+        null=True, 
+        blank=True,
+        verbose_name="obs_source",
+    )
+
+    exec_time = models.DurationField(
+        verbose_name="exec_time", null=True, blank=True
+    )
+
+    messages = models.TextField(
+        verbose_name="messages", null=True, blank=True
+    )
+
+    # TODO: REVER ESTES CAMPOS que seriam usados só no time profile
     des_obs_start = models.DateTimeField(
         verbose_name="des_obs_start", auto_now_add=False, null=True, blank=True
     )
@@ -745,13 +798,6 @@ class PredictionJobResult(models.Model):
 
     bsp_jpl_tp_finish = models.DateTimeField(
         verbose_name="bsp_jpl_tp_finish", auto_now_add=False, null=True, blank=True
-    )
-
-    obs_source = models.CharField(
-        max_length=100,
-        null=True, 
-        blank=True,
-        verbose_name="obs_source",
     )
 
     obs_start = models.DateTimeField(
@@ -855,13 +901,3 @@ class PredictionJobResult(models.Model):
     ing_occ_exec_time = models.DurationField(
         verbose_name="ing_occ_exec_time", null=True, blank=True
     )
-
-    exec_time = models.DurationField(
-        verbose_name="exec_time", null=True, blank=True
-    )
-
-    messages = models.TextField(
-        verbose_name="messages", null=True, blank=True
-    )
-
-

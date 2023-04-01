@@ -75,94 +75,101 @@ class OrbitTraceJob(models.Model):
     )
 
     filter_type = models.CharField(
-        max_length=100,
-        null=False,
-        blank=False,
         verbose_name="Filter Type",
+        max_length=15,
+        choices=(
+            ("name", "Name"),
+            ("dynclass", "DynClass"),            
+            ("base_dynclass", "Base DynClass"),
+        ),
     )
 
-    filter_value = models.CharField(
-        max_length=100,
-        null=False,
-        blank=False,
+    filter_value = models.TextField(
         verbose_name="Filter Value",
     )
 
     count_asteroids = models.IntegerField(
-        default=0,
-        help_text="Asteroids Count",
-        verbose_name="Asteroids Count",
+        verbose_name="Asteroids",
+        help_text="Total asteroids selected to run this job",        
+        default=0,        
     )
 
     count_ccds = models.IntegerField(
-        default=0,
-        help_text="CCDs Count",
-        verbose_name="CCDs Count",
+        verbose_name="CCDs",
+        help_text="Total ccds processed in this job.",        
+        default=0,        
     )
 
     count_observations = models.IntegerField(
-        default=0,
-        help_text="Observations Count",
         verbose_name="Observations Count",
+        help_text="Total observations identified by the orbit trace.",        
+        default=0,        
     )
 
     count_success = models.IntegerField(
+        verbose_name="Success",
+        help_text="Total asteroids successfully executed in all steps.",
         default=0,
-        help_text="Success Count",
-        verbose_name="Success Count",
     )
 
     count_failures = models.IntegerField(
-        default=0,
-        help_text="Failures Count",
         verbose_name="Failures Count",
-    )
-
-    parsl_init_blocks = models.IntegerField(
-        default=400,
-        help_text="parsl_init_blocks",
-        verbose_name="parsl_init_blocks",
+        help_text="Total asteroids that failed at least one of the steps.",        
+        default=0,        
     )
 
     h_exec_time = models.CharField(
-        max_length=100,
         verbose_name="Human Exec Time",
         help_text="Execution Time formated with humanize.",
+        max_length=100,        
         null=True,
         default=None,
         blank=True        
     )
 
+    parsl_init_blocks = models.IntegerField(
+        verbose_name="Parsl Blocks",        
+        help_text="Value that defines the parallelism factor that parsl will use in the process.",
+        default=400,
+
+    )
+
     bps_days_to_expire = models.IntegerField(
+        verbose_name="BSP days to expire",        
+        help_text="Number of days that a BSP file already downloaded is considered valid.",
+        default=0,        
+    )
+    condor_job_submited = models.IntegerField(
+        verbose_name="HTCondor Jobs",
+        help_text="HTCondor Job Submited",        
         default=0,
-        help_text="bps_days_to_expire",
-        verbose_name="bps_days_to_expire",
+    )
+
+    condor_job_completed = models.IntegerField(
+        verbose_name="HTCondor Completed",
+        help_text="HTCondor Jobs Completed.",        
+        default=0,
+    )
+
+    condor_job_removed = models.IntegerField(
+        verbose_name="HTCondor Removed",
+        help_text="Condor Jobs Removed",
+        default=0,        
     )
 
     #falso = todos os arquivosw retornados pelo skybot são apagados
     #true = os arquivos ficam na máquina referenciada no campo path
     debug = models.BooleanField(
+        verbose_name="Debug",        
+        help_text="Debug False all log files and intermediate results will be deleted at the end of the job.",
         default=False,
-        help_text="Debug",
-        verbose_name="Debug",
     )
-
-    time_profile = models.JSONField()
-
-    # results = models.CharField(
-    #     max_length=2048,
-    #     verbose_name="Results",
-    #     help_text="Filepath to the results.csv. this file contains the results of the job.",
-    #     null=True,
-    #     blank=True,
-    #     default=None,
-    # )
 
     # Pasta onde estão os dados do Job.
     path = models.CharField(
-        max_length=2048,
-        verbose_name="Path",
+        verbose_name="Path",        
         help_text="Path to the directory where the job data is located.",
+        max_length=2048,        
         null=True,
         blank=True        
     )
