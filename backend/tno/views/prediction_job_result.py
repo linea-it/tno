@@ -15,7 +15,7 @@ from rest_framework.response import Response
 
 
 class PredictionJobResultViewSet(
-    mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
+    viewsets.ReadOnlyModelViewSet
 ):
     
     queryset = PredictionJobResult.objects.all()

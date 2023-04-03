@@ -20,7 +20,7 @@ from rest_framework.response import Response
 
 
 class OrbitTraceJobResultViewSet(
-    mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
+    viewsets.ReadOnlyModelViewSet
 ):
     
     queryset = OrbitTraceJobResult.objects.all()
