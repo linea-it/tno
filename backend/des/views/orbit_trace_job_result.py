@@ -28,4 +28,13 @@ class OrbitTraceJobResultViewSet(
     ordering_fields = ("id", "status")
     ordering = ("id",)
 
+    def get_queryset(self):
+        #filter job
+        jobId = self.request.query_params.get('job', None)
+        queryset = self.queryset
+        if jobId:
+            queryset = queryset.filter(job__id=jobId)  
+        return queryset    
+
+
     

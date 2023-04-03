@@ -265,7 +265,7 @@ function PredictDetail() {
           <CardContent>
             <Grid container spacing={3} direction='column' className={classes.progressWrapper}>
               <Grid item>
-                {/* <Progress
+                {/* <ProgresstotalCount
                   title='Retrieving data from Skybot'
                   variant='determinate'
                   label={`${progress.request.exposures} exposures`}
@@ -359,7 +359,7 @@ function PredictDetail() {
           </Grid>
       }
       {
-        totalCount > 0 &&
+        totalErrorCount > 0 &&
           <Grid item xs={12}>
               <Card>
                 <CardHeader title='Asteroid Failures' />

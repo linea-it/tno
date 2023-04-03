@@ -460,7 +460,7 @@ function OrbitTraceDetail() {
           </Grid>
       }
       {
-        totalCount > 0 &&
+        totalErrorCount > 0 &&
           <Grid item xs={12}>
               <Card>
                 <CardHeader title='Asteroid Failures' />
