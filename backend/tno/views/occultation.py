@@ -10,6 +10,7 @@ from tno.models import Occultation
 from tno.serializers import OccultationSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
+#from tno.filters import OccultationFilter
 
 
 class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
@@ -22,13 +23,16 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
 
     queryset = Occultation.objects.all()
+    
     serializer_class = OccultationSerializer
 
+    #filterset_class = OccultationFilter
     filter_fields = ("id", "name", "number", "date_time")
     search_fields = ("name", "number")
 
     ordering_fields = ("id", "name", "number", "date_time")
     ordering = ("date_time",)
+    
 
     def get_queryset(self):
         #filter date
@@ -96,10 +100,12 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         #     Returns:
         #         occultations list .
         #     """
+        ordering = request.query_params.get('ordering', None)
         occ = Occultation.objects.filter(asteroid=pk) if Occultation.objects.filter(asteroid=pk).exists() else None
-        
         if occ is not None:
-            result = OccultationSerializer(occ, many=True)
-            return Response(result.data)
+            if(ordering):
+                occ = occ.order_by(ordering)
+            result = OccultationSerializer(occ, many=True)    
         else:
-            return Response("no observations found")
+            result = OccultationSerializer([], many=True)
+        return Response(result.data)

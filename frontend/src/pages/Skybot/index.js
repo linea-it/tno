@@ -139,10 +139,11 @@ function Skybot() {
   }, [executedNightsByPeriod, currentSelectedDateYear, chartType, exposuresByPeriod])
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
+    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
     getSkybotRunList({
       page: currentPage + 1,
       pageSize,
-      ordering: sorting
+      ordering: ordering
     }).then((res) => {
       const { data } = res
 
@@ -470,8 +471,8 @@ function Skybot() {
                 loadData={loadData}
                 hasSearching={false}
                 hasPagination
-                hasColumnVisibility={false}
-                hasToolbar={false}
+                hasColumnVisibility={true}
+                hasToolbar={true}
                 reload={reload}
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'id', direction: 'asc' }]}

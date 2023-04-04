@@ -84,8 +84,7 @@ function Occultation() {
     {
       name: 'date_time',
       title: 'Observation Date',
-      width: 150,
-      sortingEnabled: false,
+      width: 200,
       customElement: (row) => (row.date_time ? moment(row.date_time).utc().format('YYYY-MM-DD HH:mm:ss') : '-')
     },
   ]
@@ -170,6 +169,7 @@ function Occultation() {
 
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
+    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
     const start = dateStart ? new Date(dateStart).toISOString().slice(0, 10) + ' 00:00:00' : null;
     const end = dateEnd ? new Date(dateEnd).toISOString().slice(0, 10) + ' 23:59:59' : null;
     const type = filterType.value ? filterType.value.toLowerCase().replaceAll(' ', '_') : null;
@@ -177,7 +177,7 @@ function Occultation() {
     getOccultations({
       page: currentPage + 1,
       pageSize,
-      ordering: sorting,
+      ordering: ordering,
       start_date: start,
       end_date: end,
       filter_type: value?type:null,
@@ -336,11 +336,11 @@ function Occultation() {
                 loadData={loadData}
                 hasSearching={false}
                 hasPagination
-                hasColumnVisibility={false}
-                hasToolbar={false}
+                hasColumnVisibility={true}
+                hasToolbar={true}
                 reload={reload}
                 totalCount={totalCount}
-                defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
+                defaultSorting={[{ columnName: 'name', direction: 'asc' }]}
               />
             </CardContent>
           </Card>

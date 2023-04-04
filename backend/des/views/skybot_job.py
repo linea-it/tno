@@ -30,7 +30,7 @@ class SkybotJobViewSet(
 
     queryset = SkybotJob.objects.all()
     serializer_class = SkybotJobSerializer
-    ordering_fields = ("id", "status", "start", "finish")
+    ordering_fields = ("id", "status", "start", "finish", "execution_time", "nights", "exposures", "asteroids", "ccds", "ccds_with_asteroid")
     ordering = ("-start",)
 
     def estimate_execution_time(self, to_execute):

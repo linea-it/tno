@@ -20,6 +20,14 @@ class PredictionJobResultViewSet(
     
     queryset = PredictionJobResult.objects.all()
     serializer_class = PredictionJobResultSerializer
-    ordering_fields = ("id",)
+    ordering_fields = ("asteroid_name", "des_obs", "exec_time", "pre_occ_count", "ing_occ_count")
+
+    def get_queryset(self):
+        #filter job
+        jobId = self.request.query_params.get('job', None)
+        queryset = self.queryset
+        if jobId:
+            queryset = queryset.filter(job__id=jobId)  
+        return queryset   
 
     

@@ -72,6 +72,12 @@ function OrbitTraceDetail() {
 
   const tableColumns = [
     {
+      name: 'index',
+      title: ' ',
+      width: 70,
+      sortingEnabled: false,
+    },
+    {
       name: 'id',
       title: 'Details',
       width: 110,
@@ -89,18 +95,9 @@ function OrbitTraceDetail() {
       align: 'center'
     },
     {
-      name: 'status',
-      title: 'Status',
-      align: 'center',
-
-      customElement: (row) => { return <span>{row.status == 1 ? 'success' : 'failure'}</span> },
-      width: 130
-    },
-    {
       name: 'asteroid_name',
       title: 'Asteroid',
       align: 'center',
-
       customElement: (row) => { return <span>{row.asteroid_name}</span> },
       width: 180
     },
@@ -147,34 +144,12 @@ function OrbitTraceDetail() {
 
   ]
 
-  const tableErrorColumns = [
-    {
-      name: 'exposure_id',
-      title: 'Exposure #',
-      width: 150,
-      sortingEnabled: false
-    },
-    {
-      name: 'date_obs',
-      title: 'Observation Date',
-      width: 150,
-      sortingEnabled: false,
-      customElement: (row) => (row.date_obs ? moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss') : '-')
-    },
-    {
-      name: 'error',
-      title: 'Error Message',
-      width: 600,
-      sortingEnabled: false
-    }
-  ]
-
-
   const loadDataSuccess = ({ currentPage, pageSize, sorting }) => {
+    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
     
-    getOrbitTraceResultById({ id, page, pageSize }).then((res) => {
+    getOrbitTraceResultById({ id, page, pageSize, ordering }).then((res) => {
       const successeds = res.results.filter(x => x.status == 1);
       setTableData(successeds.map((successeds) => ({ ...successeds, log: null })))
       setTotalCount(successeds.length);
@@ -182,10 +157,11 @@ function OrbitTraceDetail() {
   }
 
   const loadDataFailure = ({ currentPage, pageSize, sorting }) => {
+    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
 
-    getOrbitTraceResultById({ id, page, pageSize }).then((res) => {
+    getOrbitTraceResultById({ id, page, pageSize, ordering }).then((res) => {
       const failures = res.results.filter(x => x.status == 2);
       setTableErrorData(failures.map((failures) => ({ ...failures, log: null })))
       setTotalErrorCount(failures.length);
@@ -232,7 +208,7 @@ function OrbitTraceDetail() {
         },
         {
           title: 'Finish',
-          value: orbitTraceJob.finish ? moment(orbitTraceJob.finish).format('YYYY-MM-DD HH:mm:ss') : '-'
+          value: orbitTraceJob.end ? moment(orbitTraceJob.end).format('YYYY-MM-DD HH:mm:ss') : '-'
         },
         {
           title: 'Estimated Time',
@@ -246,19 +222,23 @@ function OrbitTraceDetail() {
 
       setSummaryResults([
         {
-          title: '# Count Asteroids',
+          title: '# Asteroids',
           value: orbitTraceJob.count_asteroids
         },
         {
-          title: '# Count CCDs',
+          title: '# CCDs',
           value: orbitTraceJob.count_ccds
         },
         {
-          title: '# Count Success',
+          title: '# Observations',
+          value: orbitTraceJob.count_observations
+        },
+        {
+          title: '# Success',
           value: orbitTraceJob.count_success
         },
         {
-          title: '# Count Failures',
+          title: '# Failures',
           value: orbitTraceJob.count_failures
         }
       ])
@@ -450,10 +430,9 @@ function OrbitTraceDetail() {
                   loadData={loadDataSuccess}
                   totalCount={totalCount || 0}
                   hasSearching={false}
-                  // hasSorting={false}
-                  hasColumnVisibility={false}
-                  hasToolbar={false}
-                  hasRowNumberer
+                  hasColumnVisibility={true}
+                  hasToolbar={true}
+                  defaultSorting={[{ columnName: 'asteroid_name', direction: 'asc' }]}
                 />
               </CardContent>
             </Card>
@@ -471,10 +450,10 @@ function OrbitTraceDetail() {
                     loadData={loadDataFailure}
                     totalCount={totalErrorCount}
                     hasSearching={false}
-                    // hasSorting={false}
                     hasFiltering={false}
-                    hasColumnVisibility={false}
-                    hasToolbar={false}
+                    hasColumnVisibility={true}
+                    hasToolbar={true}
+                    defaultSorting={[{ columnName: 'asteroid_name', direction: 'asc' }]}
                   />
                 </CardContent>
               </Card>

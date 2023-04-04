@@ -36,6 +36,7 @@ function OrbitTrace() {
   const [baseDynClassList, setBaseDynClassList] = useState([]);
   const [asteroidsList, setAsteroidsList] = useState([]);
   const [bspValueList, setbspValueList] = useState([{ value: 0, label: 'None' }, { value: 10, label: '10 days' }, { value: 20, label: '20 days' }, { value: 30, label: '30 days' }]);
+  const [parslInitBlocksList, setParslInitBlocksList] = useState([{ value: 1, label: '1' }, { value: 50, label: '50' }, { value: 100, label: '100' }, { value: 300, label: '300' }, { value: 600, label: '600' }]);
 
   const [messageOpenSuccess, setMessageOpenSuccess] = useState(false);
   const [messageTextSuccess, setMessageTextSuccess] = React.useState('');
@@ -54,6 +55,7 @@ function OrbitTrace() {
   const [filterType, setFilterType] = React.useState({ value: 'Base DynClass', label: 'Base DynClass' });
   const [filterValue, setFilterValue] = React.useState({ value: "", label: "Select..." });
   const [bspValue, setBspValue] = React.useState({ value: 0, label: "None" });
+  const [parslInitBlocks, setParslInitBlocks] = React.useState({ value: 600, label: "600" });
   const [filterValueNames, setFilterValueNames] = React.useState([]);
 
   const [tableData, setTableData] = useState([]);
@@ -92,6 +94,11 @@ function OrbitTrace() {
   const bspValuehandleChange = (event) => {
     if (event)
       setBspValue(event);
+  };
+
+  const  parslInitBlockshandleChange = (event) => {
+    if (event)
+      setParslInitBlocks(event);
   };
 
   const filterValuehandleChange = (event) => {
@@ -184,8 +191,8 @@ function OrbitTrace() {
         filter_type: filterType.value,
         filter_value: filterValue.value,
         bps_days_to_expire: bspValue.value.toString(),
+        parsl_init_blocks: parslInitBlocks.value.toString(),
         debug: debug.toString()
-
       }
       createOrbitTraceJob(data)
         .then((response) => {
@@ -194,6 +201,7 @@ function OrbitTrace() {
           setFilterType({ value: 'Base DynClass', label: 'Base DynClass' });
           setFilterValue({ value: "", label: "Select..." });
           setBspValue({ value: 0, label: "None" });
+          setParslInitBlocks({ value: 600, label: "600" });
           setMessageTextSuccess('Information registered successfully');
           setMessageOpenSuccess(true);
           setReload((prevState) => !prevState);
@@ -210,10 +218,12 @@ function OrbitTrace() {
 
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
+    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
+
     getOrbitTraceJobList({
       page: currentPage + 1,
       pageSize,
-      ordering: sorting
+      ordering: ordering
     }).then((res) => {
       const { data } = res
       setTableData(
@@ -270,40 +280,47 @@ function OrbitTrace() {
       customElement: (row) => row.start ? <span title={moment(row.start).format('HH:mm:ss')}>{moment(row.start).format('YYYY-MM-DD')}</span> : <span>Not started</span>
     },
     {
-      name: 'execution_time',
+      name: 'exec_time',
       title: 'Execution Time',
       width: 150,
       headerTooltip: 'Execution time',
       align: 'center',
-      customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : null)
+      customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : "-")
     },
     {
       name: 'count_asteroids',
-      title: 'Count Asteroids',
+      title: 'Asteroids',
       width: 130,
       align: 'center',
-      customElement: (row) => <span title={moment(row.start).format('HH:mm:ss')}>{row.count_asteroids}</span>
+      customElement: (row) => <span>{row.count_asteroids}</span>
     },
     {
       name: 'count_ccds',
-      title: 'Count ccds',
+      title: 'CCDs',
       width: 130,
       align: 'center',
-      customElement: (row) => <span title={moment(row.finish).format('HH:mm:ss')}>{row.count_ccds}</span>
+      customElement: (row) => <span>{row.count_ccds}</span>
+    },
+    {
+      name: 'count_observations',
+      title: 'Observations',
+      width: 130,
+      align: 'center',
+      customElement: (row) => <span>{row.count_observations}</span>
     },
     {
       name: 'count_success',
-      title: 'count_success',
+      title: 'Success',
       width: 130,
       align: 'center',
-      customElement: (row) => <span title={moment(row.finish).format('HH:mm:ss')}>{row.count_success}</span>
+      customElement: (row) => <span>{row.count_success}</span>
     },
     {
       name: 'count_failures',
-      title: 'Count Failures',
+      title: 'Failures',
       width: 130,
       align: 'center',
-      customElement: (row) => <span title={moment(row.finish).format('HH:mm:ss')}>{row.count_failures}</span>
+      customElement: (row) => <span title={moment(row.end).format('HH:mm:ss')}>{row.count_failures}</span>
     }
   ]
 
@@ -426,6 +443,22 @@ function OrbitTrace() {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
+                        <FormControl fullWidth><label> Parsl Init Blocks <span className={classes.errorText}>*</span></label>
+                          <Select
+                            value={parslInitBlocks}
+                            id=" parslinitBlocks"
+                            label="Parsl Init Blocks"
+                            onChange={parslInitBlockshandleChange}
+                            options={parslInitBlocksList}
+                            menuPortalTarget={document.body}
+                            menuPosition={'fixed'}
+                          />
+                        </FormControl>
+                        {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                      <Box sx={{ minWidth: 120 }}>
                       <FormControl fullWidth><label>Debug Mode ON/OFF</label>
                           
                         <FormGroup>
@@ -463,8 +496,8 @@ function OrbitTrace() {
                 loadData={loadData}
                 hasSearching={false}
                 hasPagination
-                hasColumnVisibility={false}
-                hasToolbar={false}
+                hasColumnVisibility={true}
+                hasToolbar={true}
                 reload={reload}
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'id', direction: 'asc' }]}

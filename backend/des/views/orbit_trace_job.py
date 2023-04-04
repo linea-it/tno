@@ -32,7 +32,7 @@ class OrbitTraceJobViewSet(
 
     queryset = OrbitTraceJob.objects.all()
     serializer_class = OrbitTraceJobSerializer
-    ordering_fields = ("id", "status", "start", "end")
+    ordering_fields = ("id", "status", "start", "end", "exec_time", "count_asteroids", "count_ccds", "count_observations", "count_success", "count_failures")
     ordering = ("-start",)
 
     # def estimate_execution_time(self, to_execute):
@@ -92,6 +92,7 @@ class OrbitTraceJobViewSet(
             filter_value=params["filter_value"].replace("\'", "\""),
             debug=bool(params["debug"].replace("\'", "\"")),
             bps_days_to_expire=params["bps_days_to_expire"].replace("\'", "\""),
+            parsl_init_blocks=params["parsl_init_blocks"].replace("\'", "\""),
             time_profile = '[]',
             # Job começa com Status Idle.
             status=1,

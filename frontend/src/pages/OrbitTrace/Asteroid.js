@@ -7,7 +7,7 @@ import {
   getObservationByAsteroid
 } from '../../services/api/OrbitTrace'
 import List from '../../components/List'
-import graphFake from '../../assets/img/graph_fake.png'
+import graphFake from '../../assets/img/graph_fake.jpeg'
 import moment from '../../../node_modules/moment/moment'
 
 function OrbitTraceAsteroid() {
@@ -28,14 +28,16 @@ function OrbitTraceAsteroid() {
   const [summary, setSummary] = useState([])
   const [observationsTable, setObservationsTable] = useState([])
   const [observationsCount, setObservationsCount] = useState(0)
+  const [asteroidId, setAsteroidId] = useState(0)
 
   useEffect(() => {
     getOrbitTraceJobResultById(id).then((res) => {
+      setAsteroidId(res.asteroid)
       setOrbitTraceResult(res)
       loadObservationsData({
         asteroid_id: res.asteroid,
         currentPage: 0,
-        pageSize: 10,
+        pageSize: 50,
         sorting: [{ columnName: 'id', direction: 'asc' }]
       })
     })
@@ -44,18 +46,15 @@ function OrbitTraceAsteroid() {
 
   const observationsTableColumns = [
       {
-        name: 'name',
-        title: 'Name',
-        align: 'center',
+        name: 'index',
+        title: ' ',
         sortingEnabled: false,
-        customElement: (row) => { return <span>{row.name}</span> },
-        width: 180
+        width: 70
       },
       {
         name: 'ccd',
         title: 'CCD',
         align: 'center',
-        sortingEnabled: false,
         customElement: (row) => { return <span>{row.ccd}</span> },
         width: 180
       },
@@ -71,42 +70,42 @@ function OrbitTraceAsteroid() {
         title: 'RA (DEG) ',
         width: 150,
         align: 'center',
-        customElement: (row) => <span>{row.ra.toFixed(1)}</span>
+        customElement: (row) => <span>{row.ra.toFixed(4)}</span>
       },
       {
         name: 'dec',
         title: 'Dec (DEG) ',
         width: 150,
         align: 'center',
-        customElement: (row) => <span>{row.dec.toFixed(1)}</span>
+        customElement: (row) => <span>{row.dec.toFixed(4)}</span>
       },
       {
         name: 'offset_ra',
         title: 'Offset RA (DEG) ',
         width: 150,
         align: 'center',
-        customElement: (row) => <span>{row.offset_ra.toFixed(2)}</span>
+        customElement: (row) => <span>{row.offset_ra.toFixed(4)}</span>
       },
       {
         name: 'offset_dec',
         title: 'Offset Dec (DEG) ',
         width: 150,
         align: 'center',
-        customElement: (row) => <span>{row.offset_dec.toFixed(2)}</span>
+        customElement: (row) => <span>{row.offset_dec.toFixed(4)}</span>
       },
       {
         name: 'mag_psf',
         title: 'Mag PSF ',
         width: 150,
         align: 'center',
-        customElement: (row) => <span>{row.mag_psf.toFixed(2)}</span>
+        customElement: (row) => <span>{row.mag_psf.toFixed(3)}</span>
       },
       {
         name: 'mag_psf_err',
         title: 'Mag PSF Error',
         width: 150,
         align: 'center',
-        customElement: (row) => <span>{row.mag_psf_err.toFixed(2)}</span>
+        customElement: (row) => <span>{row.mag_psf_err.toFixed(3)}</span>
       }
       
       
@@ -117,31 +116,31 @@ function OrbitTraceAsteroid() {
   useEffect(() => {
       setSummary([
         {
-          title: '# Status',
+          title: 'Status',
           value: orbitTraceResult.status == 1 ? 'success' : 'failure'
         },
         {
-          title: '# Asteroid Name',
+          title: 'Asteroid Name',
           value: orbitTraceResult.asteroid_name
         },
         {
-          title: '# Asteroid Number',
+          title: 'Asteroid Number',
           value: orbitTraceResult.asteroid_number
         },
         {
-          title: '# Base DynClass',
+          title: 'Base DynClass',
           value: orbitTraceResult.base_dynclass
         },
         {
-          title: '# DynClass',
+          title: 'DynClass',
           value: orbitTraceResult.dynclass
         },
         {
-          title: '# Observations',
+          title: 'Observations',
           value: orbitTraceResult.observations
         },
         {
-          title: '# CCDs',
+          title: 'CCDs',
           value: orbitTraceResult.ccds
         }
       ])
@@ -150,8 +149,9 @@ function OrbitTraceAsteroid() {
   const loadObservationsData = ({ asteroid_id, currentPage, pageSize, sorting }) => {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
+    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
     
-    getObservationByAsteroid({asteroid_id, page, pageSize}).then((res) => {
+    getObservationByAsteroid({asteroid_id: asteroid_id?asteroid_id:asteroidId, page, pageSize, ordering: ordering}).then((res) => {
       setObservationsTable(res);
       setObservationsCount(res.length);
     })
@@ -204,10 +204,12 @@ function OrbitTraceAsteroid() {
                 loadData={loadObservationsData}
                 totalCount={observationsCount}
                 hasSearching={false}
-                // hasSorting={false}
                 hasFiltering={false}
-                hasColumnVisibility={false}
-                hasToolbar={false}
+                hasColumnVisibility={true}
+                hasToolbar={true}
+                pageSizes={[5, 10, 25, 50,100]}
+                pageSize={50}
+                defaultSorting={[{ columnName: 'date_obs', direction: 'asc' }]}
               />
           </CardContent>
         </Card>

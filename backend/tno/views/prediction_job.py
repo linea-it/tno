@@ -20,7 +20,8 @@ class PredictionJobViewSet(
     
     queryset = PredictionJob.objects.all()
     serializer_class = PredictionJobSerializer
-    ordering_fields = ("id", "status")
+    ordering_fields = ("id", "status", "owner", "start", "exec_time")
+    ordering = ("-start",)
 
     @action(detail=False, methods=["post"])
     def submit_job(self, request, pk=None):

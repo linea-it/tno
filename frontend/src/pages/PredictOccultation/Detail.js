@@ -72,6 +72,12 @@ function PredictDetail() {
 
   const tableColumns = [
     {
+      name: 'index',
+      title: ' ',
+      sortingEnabled: false,
+      width: 70
+    },
+    {
       name: 'id',
       title: 'Details',
       width: 110,
@@ -89,12 +95,9 @@ function PredictDetail() {
       align: 'center'
     },
     {
-      name: 'status',
-      title: 'Status',
-      width: 140,
-      align: 'center',
-      sortingEnabled: false,
-      customElement: (row) => { return <span>{row.status == 1 ? 'success' : 'failure'}</span> },
+      name: 'asteroid_name',
+      title: 'Asteroid',
+      width: 150
     },
     {
       name: 'des_obs',
@@ -108,8 +111,7 @@ function PredictDetail() {
       title: 'Exec Time',
       align: 'center',
       customElement: (row) => {return <span>{row.exec_time}</span>},
-      width: 140,
-      sortingEnabled: false,
+      width: 140
     },
     {
       name: 'pre_occ_count',
@@ -182,10 +184,11 @@ function PredictDetail() {
 
 
   const loadDataSuccess = ({ currentPage, pageSize, sorting }) => {
+    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
     
-    getPredictionJobResultsById({ id, page, pageSize }).then((res) => {
+    getPredictionJobResultsById({ id, page, pageSize, ordering }).then((res) => {
       const successeds = res.results.filter(x => x.status == 1);
       setTableData(successeds.map((successeds) => ({ ...successeds, log: null })))
       setTotalCount(successeds.length)
@@ -193,10 +196,11 @@ function PredictDetail() {
   }
 
   const loadDataFailure = ({ currentPage, pageSize, sorting }) => {
+    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
 
-    getPredictionJobResultsById({ id, page, pageSize }).then((res) => {
+    getPredictionJobResultsById({ id, page, pageSize, ordering }).then((res) => {
       const failures = res.results.filter(x => x.status == 2);
       setTableErrorData(failures.map((failures) => ({ ...failures, log: null })))
       setTotalErrorCount(failures.length)
@@ -349,10 +353,10 @@ function PredictDetail() {
                   loadData={loadDataSuccess}
                   totalCount={totalCount || 0}
                   hasSearching={false}
-                  // hasSorting={false}
-                  hasColumnVisibility={false}
-                  hasToolbar={false}
+                  hasColumnVisibility={true}
+                  hasToolbar={true}
                   hasRowNumberer
+                  defaultSorting={[{ columnName: 'asteroid_name', direction: 'asc' }]}
                 />
               </CardContent>
             </Card>
@@ -370,10 +374,10 @@ function PredictDetail() {
                     loadData={loadDataFailure}
                     totalCount={totalErrorCount}
                     hasSearching={false}
-                    // hasSorting={false}
                     hasFiltering={false}
-                    hasColumnVisibility={false}
-                    hasToolbar={false}
+                    hasColumnVisibility={true}
+                    hasToolbar={true}
+                    defaultSorting={[{ columnName: 'asteroid_name', direction: 'asc' }]}
                   />
                 </CardContent>
               </Card>

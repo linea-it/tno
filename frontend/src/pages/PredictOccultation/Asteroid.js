@@ -7,7 +7,6 @@ import {
   getOccultationsByAsteroid
 } from '../../services/api/PredictOccultation'
 import List from '../../components/List'
-import graphFake from '../../assets/img/graph_fake.png'
 import moment from '../../../node_modules/moment/moment'
 
 function PredictionAsteroid() {
@@ -28,10 +27,12 @@ function PredictionAsteroid() {
   const [summary, setSummary] = useState([])
   const [occultationsTable, setOccultationsTable] = useState([])
   const [occultationsCount, setOccultationsCount] = useState(0)
+  const [asteroidId, setAsteroidId] = useState(0);
 
   useEffect(() => {
     getPredictionJobResultById(id).then((res) => {
       setPredictionJobResult(res)
+      setAsteroidId(res.asteroid)
       loadOccultationsData({
         asteroid_id: res.asteroid,
         currentPage: 0,
@@ -43,6 +44,12 @@ function PredictionAsteroid() {
   }, [id])
 
   const occultationsTableColumns = [
+      {
+        name: 'index',
+        title: ' ',
+        width: 70,
+        sortingEnabled: false
+      },
       {
         name: 'date_time',
         title: 'Date',
@@ -117,13 +124,14 @@ function PredictionAsteroid() {
   }, [predictionJobResult])
 
   const loadOccultationsData = ({ asteroid_id, currentPage, pageSize, sorting }) => {
-    // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
-    const page = currentPage + 1
-    
-    getOccultationsByAsteroid({asteroid_id, page, pageSize}).then((res) => {
-      setOccultationsTable(res);
-      setOccultationsCount(res.length);
-    })
+      const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
+      // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
+      const page = currentPage + 1
+      
+      getOccultationsByAsteroid({asteroid_id: asteroid_id?asteroid_id:asteroidId, page, pageSize, ordering}).then((res) => {
+        setOccultationsTable(res);
+        setOccultationsCount(res.length);
+      })
   }
 
   const handleBackNavigation = () => navigate(-1)
@@ -172,10 +180,10 @@ function PredictionAsteroid() {
                 loadData={loadOccultationsData}
                 totalCount={occultationsCount}
                 hasSearching={false}
-                // hasSorting={false}
                 hasFiltering={false}
-                hasColumnVisibility={false}
-                hasToolbar={false}
+                hasColumnVisibility={true}
+                hasToolbar={true}
+                defaultSorting={[{ columnName: 'date_time', direction: 'asc' }]}
               />
           </CardContent>
         </Card>

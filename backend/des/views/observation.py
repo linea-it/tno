@@ -37,10 +37,12 @@ class ObservationViewSet(viewsets.ReadOnlyModelViewSet):
         #     Returns:
         #         result .
         #     """
+        ordering = request.query_params.get('ordering', None)
         obs = Observation.objects.filter(asteroid=pk) if Observation.objects.filter(asteroid=pk).exists() else None
-        
         if obs is not None:
+            if(ordering):
+                obs = obs.order_by(ordering)
             result = ObservationSerializer(obs, many=True)
-            return Response(result.data)
         else:
-            return Response("no observations found")
+            result = ObservationSerializer([], many=True)
+        return Response(result.data)

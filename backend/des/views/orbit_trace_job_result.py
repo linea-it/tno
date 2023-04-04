@@ -25,8 +25,8 @@ class OrbitTraceJobResultViewSet(
     
     queryset = OrbitTraceJobResult.objects.all()
     serializer_class = OrbitTraceJobResultSerializer
-    ordering_fields = ("id", "status")
-    ordering = ("id",)
+    ordering_fields = ("asteroid_name", "asteroid_number", "base_dynclass", "dynclass", "observations", "ccds")
+    ordering = ("asteroid_name",)
 
     def get_queryset(self):
         #filter job
