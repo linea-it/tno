@@ -95,16 +95,20 @@ function PredictDetail() {
       align: 'center'
     },
     {
-      name: 'asteroid_name',
+      name: 'name',
       title: 'Asteroid',
+      width: 150
+    },
+    {
+      name: 'number',
+      title: 'Number',
       width: 150
     },
     {
       name: 'des_obs',
       title: 'DES Obs',
       width: 130,
-      align: 'center',
-      customElement: (row) => { return <span>{row.des_obs}</span> },
+      align: 'center'
     },
     {
       name: 'exec_time',
@@ -134,13 +138,13 @@ function PredictDetail() {
     loadDataSuccess({
       currentPage: 0,
       pageSize: 10,
-      sorting: [{ columnName: 'id', direction: 'asc' }]
+      sorting: [{ columnName: 'start', direction: 'asc' }]
     });
 
     loadDataFailure({
       currentPage: 0,
       pageSize: 10,
-      sorting: [{ columnName: 'id', direction: 'asc' }]
+      sorting: [{ columnName: 'start', direction: 'asc' }]
     });
 
     getPredictionJobById({ id }).then((job) => {
@@ -172,8 +176,12 @@ function PredictDetail() {
         value: predictionJob.end ? moment(predictionJob.end).format('YYYY-MM-DD HH:mm:ss') : '-'
       },
       {
-        title: 'Search Period',
-        value: predictionJob.predict_start_date && predictionJob.predict_end_date? moment(predictionJob.predict_start_date).format('YYYY-MM-DD HH:mm:ss') + ' to ' + moment(predictionJob.predict_end_date).format('YYYY-MM-DD HH:mm:ss'): '-'
+        title: 'Start Period',
+        value: predictionJob.predict_start_date? moment(predictionJob.predict_start_date).format('YYYY-MM-DD HH:mm:ss'):""
+      },
+      {
+        title: 'End Period',
+        value: predictionJob.predict_end_date? moment(predictionJob.predict_end_date).format('YYYY-MM-DD HH:mm:ss'):""
       },
       {
         title: 'Execution Time',

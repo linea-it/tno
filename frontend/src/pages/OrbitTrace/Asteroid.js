@@ -17,8 +17,8 @@ function OrbitTraceAsteroid() {
   const [orbitTraceResult, setOrbitTraceResult] = useState({
     asteroid: 0,
     status: 0,
-    asteroid_name: "",
-    asteroid_number: "",
+    name: "",
+    number: "",
     base_dynclass: "",
     dynclass: "",
     observations: 0,
@@ -55,7 +55,6 @@ function OrbitTraceAsteroid() {
         name: 'ccd',
         title: 'CCD',
         align: 'center',
-        customElement: (row) => { return <span>{row.ccd}</span> },
         width: 180
       },
       {
@@ -121,11 +120,11 @@ function OrbitTraceAsteroid() {
         },
         {
           title: 'Asteroid Name',
-          value: orbitTraceResult.asteroid_name
+          value: orbitTraceResult.name
         },
         {
           title: 'Asteroid Number',
-          value: orbitTraceResult.asteroid_number
+          value: orbitTraceResult.number
         },
         {
           title: 'Base DynClass',

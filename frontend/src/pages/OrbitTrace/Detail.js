@@ -95,50 +95,39 @@ function OrbitTraceDetail() {
       align: 'center'
     },
     {
-      name: 'asteroid_name',
+      name: 'name',
       title: 'Asteroid',
       align: 'center',
-      customElement: (row) => { return <span>{row.asteroid_name}</span> },
       width: 180
     },
     {
-      name: 'asteroid_number',
+      name: 'number',
       title: 'Number',
       align: 'center',
-
-      customElement: (row) => { return <span>{row.asteroid_number}</span> },
       width: 130
     },
     {
       name: 'base_dynclass',
       title: 'Base DynClass',
       align: 'center',
-
-      customElement: (row) => { return <span>{row.base_dynclass}</span> },
       width: 130
     },
     {
       name: 'dynclass',
       title: 'DynClass',
       align: 'center',
-
-      customElement: (row) => { return <span>{row.dynclass}</span> },
       width: 130
     },
     {
       name: 'observations',
       title: 'Observations',
       align: 'center',
-
-      customElement: (row) => { return <span>{row.observations}</span> },
       width: 130
     },
     {
       name: 'ccds',
       title: 'CCDs',
       align: 'center',
-
-      customElement: (row) => { return <span>{row.ccds}</span> },
       width: 130
     },
 

@@ -16,8 +16,8 @@ function PredictionAsteroid() {
   const [predictionJobResult, setPredictionJobResult] = useState({
     asteroid: 0,
     status: 0,
-    asteroid_name: "",
-    asteroid_number: "",
+    name: "",
+    number: "",
     des_obs: "",
     exec_time: "",
     pre_occ_count: 0,
@@ -98,11 +98,11 @@ function PredictionAsteroid() {
         },
         {
           title: '# Asteroid Name',
-          value: predictionJobResult.asteroid_name
+          value: predictionJobResult.name
         },
         {
           title: '# Asteroid Number',
-          value: predictionJobResult.asteroid_number
+          value: predictionJobResult.number
         },
         {
           title: '# Des Obs',
