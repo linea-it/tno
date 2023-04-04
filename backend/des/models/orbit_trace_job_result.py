@@ -18,31 +18,25 @@ class OrbitTraceJobResult(models.Model):
         verbose_name="Asteroid",
     )
 
-    asteroid_name = models.CharField(
+    name = models.CharField(
         max_length=100,
-        null=False,
-        blank=False,
         verbose_name="Asteroid Name",
     )
 
-    asteroid_number = models.CharField(
+    number = models.CharField(
         max_length=100,
-        null=False,
-        blank=False,
         verbose_name="Asteroid Number",
+        null=True,
+        blank=True,        
     )
 
     base_dynclass = models.CharField(
         max_length=100,
-        null=False,
-        blank=False,
         verbose_name="Asteroid Base DynClass",
     )
 
     dynclass = models.CharField(
         max_length=100,
-        null=False,
-        blank=False,
         verbose_name="Asteroid DynClass",
     )
 
@@ -57,8 +51,8 @@ class OrbitTraceJobResult(models.Model):
 
     spk_id = models.CharField(
         max_length=100,
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
         verbose_name="Spk Id",
     )
 

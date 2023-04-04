@@ -4,14 +4,17 @@ from des.models import OrbitTraceJobResult
 
 class OrbitTraceJobResultSerializer(serializers.ModelSerializer):
     
+    job = serializers.PrimaryKeyRelatedField(read_only=True)
+    asteroid = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = OrbitTraceJobResult
         fields = (
             "id",
             "job",
             "asteroid",
-            "asteroid_name",
-            "asteroid_number",
+            "name",
+            "number",
             "base_dynclass",
             "dynclass",
             "status",
