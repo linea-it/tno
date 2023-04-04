@@ -78,7 +78,7 @@ class OrbitTraceJobViewSet(
 
         bsp_planetary = BspPlanetary.objects.get(name=params["bsp_planetary"].replace("\'", "\""))
         leap_seconds = LeapSecond.objects.get(name=params["leap_second"].replace("\'", "\""))
-
+        debug = params["debug"]
         # Estimativa de tempo baseada na qtd de exposures a serem executadas.
         #estimated_time = self.estimate_execution_time(t_exposures)
 
@@ -90,7 +90,7 @@ class OrbitTraceJobViewSet(
             leap_seconds=leap_seconds,
             filter_type=params["filter_type"].replace("\'", "\""),
             filter_value=params["filter_value"].replace("\'", "\""),
-            debug=bool(params["debug"].replace("\'", "\"")),
+            debug=debug,
             bps_days_to_expire=params["bps_days_to_expire"].replace("\'", "\""),
             parsl_init_blocks=params["parsl_init_blocks"].replace("\'", "\""),
             # Job começa com Status Idle.

@@ -86,8 +86,8 @@ function PredictOccultation() {
   const [messageTextError, setMessageTextError] = React.useState('');
 
   useEffect(() => {
-    setDisableSubmit(!dateStart || !dateEnd || !filterValue.value || !filterType.value);
-  }, [dateStart, dateEnd, filterValue, filterType]);
+    setDisableSubmit(!dateStart || !dateEnd || !filterValue.value || !filterType.value || !catalog.value);
+  }, [dateStart, dateEnd, filterValue, filterType, catalog]);
 
   useMountEffect(() => {
     getDynClassList().then((list) => {
@@ -204,13 +204,13 @@ function PredictOccultation() {
         filter_type: filterType.value,
         filter_value: filterValue.value,
         predict_step: predictStep,
-        force_refresh_input: forceRefreshInputs.toString(),
+        force_refresh_input: forceRefreshInputs,
         input_days_to_expire: bspValue.value.toString(),
         catalog: catalog.value
       }
       createPredictionJob(data)
         .then((response) => {
-          setDateStart("");
+          setDateStart(dayjs(new Date()));
           setDateEnd("");
           setFilterType({ value: 'Base DynClass', label: 'Base DynClass' });
           setFilterValue({ value: "", label: "Select..." });

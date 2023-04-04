@@ -54,6 +54,7 @@ class PredictionJobViewSet(
         params = request.data
         date_initial = params["date_initial"]
         date_final = params["date_final"]
+        force_refresh_input = params["force_refresh_input"]
         # Recuperar o usuario que submeteu o Job.
         owner = self.request.user
 
@@ -74,7 +75,7 @@ class PredictionJobViewSet(
             predict_start_date=date_initial,
             predict_end_date=date_final,
             predict_step=params["predict_step"].replace("\'", "\""),
-            force_refresh_input=bool(params["force_refresh_input"].replace("\'", "\"")),
+            force_refresh_input=force_refresh_input,
             input_days_to_expire=params["input_days_to_expire"].replace("\'", "\""),
             catalog=catalog,
         )
