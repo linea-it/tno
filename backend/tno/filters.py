@@ -1,5 +1,7 @@
 import django_filters
-from tno.models import Occultation
+from des.models import OrbitTraceJobResult
+from tno.models import Occultation, PredictionJobResult
+
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
     pass
@@ -13,3 +15,16 @@ class OccultationFilter(django_filters.FilterSet):
     class Meta:
         model = Occultation
         fields = ['start_date','end_date', 'dynclass', 'base_dynclass', 'name']
+
+class OrbitTraceJobResultFilter(django_filters.FilterSet):
+    job = django_filters.NumberFilter(field_name='job__id', lookup_expr='exact')
+    class Meta:
+        model = OrbitTraceJobResult
+        fields = ['job']
+
+class PredictionJobResultFilter(django_filters.FilterSet):
+    job = django_filters.NumberFilter(field_name='job__id', lookup_expr='exact')
+    class Meta:
+        model = PredictionJobResult
+        fields = ['job']
+

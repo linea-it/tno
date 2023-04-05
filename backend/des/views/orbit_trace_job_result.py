@@ -17,6 +17,7 @@ from django.core.paginator import Paginator
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from tno.filters import OrbitTraceJobResultFilter
 
 
 class OrbitTraceJobResultViewSet(
@@ -25,16 +26,9 @@ class OrbitTraceJobResultViewSet(
     
     queryset = OrbitTraceJobResult.objects.all()
     serializer_class = OrbitTraceJobResultSerializer
+    filterset_class = OrbitTraceJobResultFilter
     ordering_fields = ("name", "number", "base_dynclass", "dynclass", "observations", "ccds")
-    ordering = ("name",)
-
-    def get_queryset(self):
-        #filter job
-        jobId = self.request.query_params.get('job', None)
-        queryset = self.queryset
-        if jobId:
-            queryset = queryset.filter(job__id=jobId)  
-        return queryset    
+    ordering = ("name",)   
 
 
     
