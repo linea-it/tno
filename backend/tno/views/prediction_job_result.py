@@ -2,6 +2,7 @@
 import json
 import os
 import threading
+import django_filters
 from datetime import datetime, timedelta
 
 import numpy as np
@@ -12,8 +13,12 @@ from django.core.paginator import Paginator
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from tno.filters import PredictionJobResultFilter
 
+class PredictionJobResultFilter(django_filters.FilterSet):
+    job = django_filters.NumberFilter(field_name='job__id', lookup_expr='exact')
+    class Meta:
+        model = PredictionJobResult
+        fields = ['job']
 
 class PredictionJobResultViewSet(
     viewsets.ReadOnlyModelViewSet

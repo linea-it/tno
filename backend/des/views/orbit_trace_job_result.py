@@ -3,6 +3,7 @@ import json
 import os
 import threading
 from datetime import datetime, timedelta
+import django_filters
 
 import numpy as np
 import pandas as pd
@@ -17,8 +18,12 @@ from django.core.paginator import Paginator
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from tno.filters import OrbitTraceJobResultFilter
 
+class OrbitTraceJobResultFilter(django_filters.FilterSet):
+    job = django_filters.NumberFilter(field_name='job__id', lookup_expr='exact')
+    class Meta:
+        model = OrbitTraceJobResult
+        fields = ['job']
 
 class OrbitTraceJobResultViewSet(
     viewsets.ReadOnlyModelViewSet

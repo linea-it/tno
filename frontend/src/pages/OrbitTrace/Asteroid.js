@@ -58,12 +58,12 @@ function OrbitTraceAsteroid() {
         sortingEnabled: false,
         width: 70
       },
-      {
-        name: 'ccd',
-        title: 'CCD',
-        align: 'center',
-        width: 180
-      },
+      // {
+      //   name: 'ccd',
+      //   title: 'CCD',
+      //   align: 'center',
+      //   width: 180
+      // },
       {
         name: 'date_obs',
         title: 'Date',
