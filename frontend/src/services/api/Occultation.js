@@ -7,18 +7,10 @@ export const getOccultations = ({ page, pageSize, ordering , start_date, end_dat
     ordering,
     start_date,
     end_date,
-    filter_type,
-    filter_value
+    dynclass: filter_type == "dynclass"?filter_value:null,
+    base_dynclass: filter_type == "base_dynclass"?filter_value:null,
+    name: filter_type == "name"?filter_value.replaceAll(';', ','):null,
   }
-  // var queryString = '';
-
-  // if(dateStart || dateEnd || (filterType && filterValue))
-  //   queryString = '?'
-  // if(dateStart)
-  //   queryString += "start_date="+ dateStart + " 00:00:00";
-  // if(dateEnd)
-  //   queryString += "end_date=" + dateEnd + " 00:00:00"
-
   return api.get('/occultations/', { params })
 }
 

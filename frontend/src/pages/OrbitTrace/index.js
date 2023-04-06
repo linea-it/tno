@@ -192,11 +192,11 @@ function OrbitTrace() {
         filter_value: filterValue.value,
         bps_days_to_expire: bspValue.value.toString(),
         parsl_init_blocks: parslInitBlocks.value.toString(),
-        debug: debug.toString()
+        debug: debug
       }
       createOrbitTraceJob(data)
         .then((response) => {
-          setBspPlanetary({ value: "", label: "Select..." });
+          setBspPlanetary({ value: bspPlanetaryList[0].value, label: bspPlanetaryList[0].label })
           setLeapSecond({ value: "", label: "Select..." });
           setFilterType({ value: 'Base DynClass', label: 'Base DynClass' });
           setFilterValue({ value: "", label: "Select..." });
