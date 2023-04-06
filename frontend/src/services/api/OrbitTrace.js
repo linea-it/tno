@@ -54,7 +54,14 @@ export const getObservationByAsteroid = ({ asteroid_id, pageSize, page, ordering
     pageSize,
     ordering
   }
- return api.get(`/des/observation/${asteroid_id}/get_by_asteroid/?format=json`, {params}).then((res) => res.data)
+  return api.get(`/des/observation/`, {params}).then((res) => res.data)
+}
+
+export const getPlotObservationByAsteroid = (name) => {
+  if (!name) {
+    return
+  }
+  return api.get(`/des/observation/plot_by_asteroid/?name=${name}`).then((res) => res.data)
 }
 
 export const cancelOrbitTraceJobById = (id) => api.post(`/des/orbit_trace_job/${id}/cancel_job/`).then((res) => res.data)

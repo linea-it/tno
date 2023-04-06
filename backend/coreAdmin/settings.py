@@ -49,6 +49,9 @@ if not os.path.exists(MEDIA_TMP_DIR):
 
 MEDIA_TMP_URL = urllib.parse.urljoin(MEDIA_URL, "tmp/")
 
+DATA_URL = "/data/"
+DATA_TMP_DIR = MEDIA_TMP_DIR
+DATA_TMP_URL = urllib.parse.urljoin(DATA_URL, "tmp/")
 
 ENVIRONMENT_NAME = os.environ.get("ENVIRONMENT_NAME", "Development")
 
@@ -217,6 +220,8 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter",
     ),
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    # https://www.django-rest-framework.org/api-guide/relations/#select-field-cutoffs
+    "HTML_SELECT_CUTOFF": 50
 }
 
 # CORS com essa combinação o serv de desenvolvimento do frontend consegue se authenticar

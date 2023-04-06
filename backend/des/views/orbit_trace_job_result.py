@@ -25,16 +25,7 @@ class OrbitTraceJobResultViewSet(
     
     queryset = OrbitTraceJobResult.objects.all()
     serializer_class = OrbitTraceJobResultSerializer
+    filter_fields = ("job", "name", "base_dynclass", "dynclass")
     ordering_fields = ("name", "number", "base_dynclass", "dynclass", "observations", "ccds")
     ordering = ("name",)
 
-    def get_queryset(self):
-        #filter job
-        jobId = self.request.query_params.get('job', None)
-        queryset = self.queryset
-        if jobId:
-            queryset = queryset.filter(job__id=jobId)  
-        return queryset    
-
-
-    

@@ -8,41 +8,47 @@ from des.models import Observation
 from des.serializers import ObservationSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
+from tno.models import Asteroid
+from des.models import Observation
+from tno.asteroid_utils import plot_observations_by_asteroid
 
 class ObservationViewSet(viewsets.ReadOnlyModelViewSet):
 
-    # queryset = Observation.objects.select_related().all()
-    queryset = Observation.objects.all()
+    queryset = Observation.objects.select_related().all()
+    # queryset = Observation.objects.all()
     serializer_class = ObservationSerializer
-    # ordering_fields = ("date_obs", "id", "name",)
+    ordering_fields = ("date_obs", "id", "name",)
     # ordering = ("date_obs",)
     filter_fields = (
         "id",
         "asteroid",
-        "ccd",
+        "ccd_id",
         "name",
         "date_obs",
     )
     search_fields = ("name",)
 
-    @action(detail=True, methods=["get"])
-    def get_by_asteroid(self, request, pk=None):
-        """
-        #     Este endpoint obtem as observações de dado asteroide.
+    @action(detail=False, methods=["get"])
+    def plot_by_asteroid(self, request):
 
-        #     Parameters:
-        #         pk (string): asteroid id.
+        asteroid_id = self.request.query_params.get('asteroid', None)
+        asteroid_name = self.request.query_params.get('name', None)
 
-        #     Returns:
-        #         result .
-        #     """
-        ordering = request.query_params.get('ordering', None)
-        obs = Observation.objects.filter(asteroid=pk) if Observation.objects.filter(asteroid=pk).exists() else None
-        if obs is not None:
-            if(ordering):
-                obs = obs.order_by(ordering)
-            result = ObservationSerializer(obs, many=True)
-        else:
-            result = ObservationSerializer([], many=True)
-        return Response(result.data)
+        if asteroid_id is None and asteroid_name is None:
+            return Response(dict(
+                {
+                    "success": False,
+                    "message": "It is necessary to specify an identifier for the asteroid. use asteroid parameter for id or name.",
+                }
+            ))
+
+        if asteroid_id:
+            ast = Asteroid.objects.get(pk=int(asteroid_id))
+            asteroid_name = ast.name
+
+        plot_url = plot_observations_by_asteroid(asteroid_name, "html")
+
+        return Response(dict({
+            "success": True,
+            "plot_url": plot_url
+        }))

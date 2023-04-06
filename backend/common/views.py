@@ -13,11 +13,44 @@ from rest_framework.renderers import JSONRenderer
 
 @api_view(["GET"])
 def teste(request):
+    from des.models import Observation
+    from tno.asteroid_utils import plot_observations_by_asteroid
+
+    
+    # asteroid_id = 13765
+    asteroid_id = None
+    asteroid_name = 'Eris'
+    # plot_url = plot_observations_by_asteroid(asteroid_name, "jpeg")
+    plot_url = plot_observations_by_asteroid(asteroid_name, "html")
+    # if asteroid_id is None:
+    #     queryset = Observation.objects.filter(asteroid=asteroid_id).order_by('date_obs')
+    # elif asteroid_name is None:
+    # queryset = Observation.objects.filter(name=asteroid_name).order_by('date_obs')
+    # else: 
+    #     return Response(dict(
+    #         {
+    #             "success": False,
+    #             "message": "It is necessary to specify an identifier for the asteroid. use asteroid parameter for id or name.",
+    #         }
+    #     ))
+
+    # obs = Observation.objects.all()
+    # print(queryset)
+#     if obs is not None:
+#         if(ordering):
+#             obs = obs.order_by(ordering)
+#         result = ObservationSerializer(obs, many=True)
+#     else:
+#         result = ObservationSerializer([], many=True)
+
+
+
 
     if request.method == "GET":
         result = dict(
             {
                 "success": True,
+                "plot_url": plot_url
             }
         )
 

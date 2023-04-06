@@ -264,7 +264,7 @@ class SkybotByDynclassAdmin(admin.ModelAdmin):
 class ObservationAdmin(admin.ModelAdmin):
     list_display = (
         "asteroid",
-        "ccd",
+        # "ccd_id",
         "name",
         "date_obs",
         "date_jd",
@@ -281,5 +281,4 @@ class ObservationAdmin(admin.ModelAdmin):
     # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
     raw_id_fields = (
         "asteroid",
-        "ccd",
     )
