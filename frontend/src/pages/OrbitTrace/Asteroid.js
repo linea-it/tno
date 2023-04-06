@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Grid, Card, CardHeader, CardContent, CardMedia, Icon, Button, Typography } from '@material-ui/core'
+import { Grid, Card, CardHeader, CardContent, CardMedia, Icon, Button, Typography, CircularProgress } from '@material-ui/core'
 import Table from '../../components/Table'
 import {
   getOrbitTraceJobResultById,
@@ -9,9 +9,11 @@ import {
 } from '../../services/api/OrbitTrace'
 import List from '../../components/List'
 import moment from '../../../node_modules/moment/moment'
+import useStyles from './styles'
 
 function OrbitTraceAsteroid() {
   const { id } = useParams()
+  const classes = useStyles()
 
   const navigate = useNavigate()
   const [orbitTraceResult, setOrbitTraceResult] = useState({
@@ -31,6 +33,7 @@ function OrbitTraceAsteroid() {
   const [asteroidId, setAsteroidId] = useState(0)
 
   const [observationPlot, setObservationPlot] = useState("")
+  const [observationPlotError, setObservationPlotError] = useState(false)
 
   useEffect(() => {
     getOrbitTraceJobResultById(id).then((res) => {
@@ -45,6 +48,7 @@ function OrbitTraceAsteroid() {
       getPlotObservationByAsteroid(res.name).then((res) => {
         setObservationPlot(res.plot_url)
       }).catch(function (error) {
+        setObservationPlotError(true);
         setObservationPlot("")
       })
     })
@@ -194,13 +198,12 @@ function OrbitTraceAsteroid() {
       </Grid>
       <Grid item xs={12} md={8}>
         <Card>
-          {/* <CardHeader title='Asteroid Graphic' /> */}
-          {/* {observationPlot === false && (
-            <CardContent>
-              loading
-            </CardContent>            
-          )} */}
-          {observationPlot !== "" && (
+          <CardHeader title='Asteroid Graphic' />
+          {observationPlotError && <CardContent>
+            <label className={classes.errorText}>An error occurred while the plot was generated</label>
+          </CardContent>}
+          {!observationPlotError && observationPlot === '' && <CircularProgress className={classes.loadingPlot} disableShrink size={100} />}
+          {!observationPlotError && observationPlot !== "" && (
             <CardMedia
               component="iframe"
               height="100%"
