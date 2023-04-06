@@ -1,6 +1,6 @@
 from sqlalchemy import delete
 from tno.db import DBBase
-
+from sqlalchemy.sql import and_, select
 
 class DesObservationDao(DBBase):
     def __init__(self, pool=True):
@@ -22,3 +22,13 @@ class DesObservationDao(DBBase):
         stm = delete(do_tbl).where(do_tbl.c.asteroid_id == int(asteroid_id))
 
         return self.execute(stm)
+
+    def by_asteroid_id(self, asteroid_id):
+        stm = select(self.tbl.c).where(and_(self.tbl.c.asteroid_id == int(id))).order_by(self.tbl.c.date_obs)
+        rows = self.fetch_all_dict(stm)
+        return rows
+
+    def by_asteroid_name(self, name):
+        stm = select(self.tbl.c).where(and_(self.tbl.c.name == name)).order_by(self.tbl.c.date_obs)
+        rows = self.fetch_all_dict(stm)
+        return rows

@@ -23,11 +23,16 @@ class Observation(models.Model):
     # Este campo representa um CCD unico. que é a composição de
     # CCD = Parte de uma exposição, em uma data/hora, banda, uma area retangular com um numero que vai de 1 a 62.
     # Importante: O campo que representa um CCD individualmente no des é o desfile_id.
-    ccd = models.ForeignKey(
-        Ccd,
-        on_delete=models.CASCADE,
+    # ccd = models.ForeignKey(
+    #     Ccd,
+    #     on_delete=models.CASCADE,
+    #     verbose_name="CCD",
+    #     help_text="Field that identifies an CCD in the DES CCD table. represents desfile_id",
+    # )
+    ccd_id = models.IntegerField(
         verbose_name="CCD",
         help_text="Field that identifies an CCD in the DES CCD table. represents desfile_id",
+        default=0
     )
 
     name = models.CharField(
@@ -66,7 +71,7 @@ class Observation(models.Model):
         # A mesma posição não pode se repetir em um mesmo ccd para um mesmo asteroid.
         unique_together = (
             "asteroid",
-            "ccd",
+            "ccd_id",
         )
         indexes = [
             models.Index(fields=["name"]),

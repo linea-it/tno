@@ -13,14 +13,12 @@ from rest_framework.renderers import JSONRenderer
 
 @api_view(["GET"])
 def teste(request):
-
     if request.method == "GET":
         result = dict(
             {
                 "success": True,
             }
         )
-
         return Response(result)
 
 

@@ -21,13 +21,13 @@ then
     echo "${YELLOW}Running Django with uWSGI.${NO_COLOR}"
     uwsgi \
         --socket 0.0.0.0:8000 \
-        --wsgi-file /app/coreAdmin/wsgi.py \
+        --wsgi-file /usr/src/app/coreAdmin/wsgi.py \
         --module coreAdmin.wsgi:application \
         --buffer-size=32768 \
         --processes=4 \
         --threads=2 \
         --http-timeout=120 \
-        --static-map /django_static=/app/django_static \
+        --static-map /django_static=/usr/src/app/django_static \
         --py-autoreload=1 
 else
     /bin/bash

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Grid, Card, CardHeader, CardContent, Toolbar, Icon, Button, Typography } from '@material-ui/core'
+import { Grid, Card, CardHeader, CardContent, CardMedia, Icon, Button, Typography } from '@material-ui/core'
 import Table from '../../components/Table'
 import {
   getOrbitTraceJobResultById,
-  getObservationByAsteroid
+  getObservationByAsteroid,
+  getPlotObservationByAsteroid
 } from '../../services/api/OrbitTrace'
 import List from '../../components/List'
-import graphFake from '../../assets/img/graph_fake.jpeg'
 import moment from '../../../node_modules/moment/moment'
 
 function OrbitTraceAsteroid() {
@@ -30,6 +30,8 @@ function OrbitTraceAsteroid() {
   const [observationsCount, setObservationsCount] = useState(0)
   const [asteroidId, setAsteroidId] = useState(0)
 
+  const [observationPlot, setObservationPlot] = useState("")
+
   useEffect(() => {
     getOrbitTraceJobResultById(id).then((res) => {
       setAsteroidId(res.asteroid)
@@ -39,6 +41,11 @@ function OrbitTraceAsteroid() {
         currentPage: 0,
         pageSize: 50,
         sorting: [{ columnName: 'id', direction: 'asc' }]
+      })
+      getPlotObservationByAsteroid(res.name).then((res) => {
+        setObservationPlot(res.plot_url)
+      }).catch(function (error) {
+        setObservationPlot("")
       })
     })
 
@@ -151,9 +158,10 @@ function OrbitTraceAsteroid() {
     const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
     
     getObservationByAsteroid({asteroid_id: asteroid_id?asteroid_id:asteroidId, page, pageSize, ordering: ordering}).then((res) => {
-      setObservationsTable(res);
-      setObservationsCount(res.length);
+      setObservationsTable(res.results);
+      setObservationsCount(res.count);
     })
+
   }
 
   const handleBackNavigation = () => navigate(-1)
@@ -186,11 +194,25 @@ function OrbitTraceAsteroid() {
       </Grid>
       <Grid item xs={12} md={8}>
         <Card>
-          <CardHeader title='Asteroid Graphic' />
-          <CardContent>
-            {/* {'ccds' in ccdsPlotData ? <CCD data={ccdsPlotData} height={550} /> : <Skeleton variant='rect' hght={550} />} */}
-            <img src={graphFake} style={{ width:'100%', margin: 'auto' }} />
-          </CardContent>
+          {/* <CardHeader title='Asteroid Graphic' /> */}
+          {/* {observationPlot === false && (
+            <CardContent>
+              loading
+            </CardContent>            
+          )} */}
+          {observationPlot !== "" && (
+            <CardMedia
+              component="iframe"
+              height="100%"
+              frameBorder="0"
+              src={observationPlot}
+            />
+          )}
+          {/* <iframe src="/data/tmp/plot_des_observations_Eris-2013-08-30-2018-10-20.html"></iframe> */}
+          {/* <CardContent>
+            
+            <img src={graphFake} style={{ width:'100%', margin: 'auto' }} /> 
+          </CardContent> */}
         </Card>
       </Grid>
       <Grid item xs={12}>
