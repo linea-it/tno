@@ -22,9 +22,10 @@ class OccultationFilter(django_filters.FilterSet):
     dynclass = django_filters.CharFilter(field_name='asteroid__dynclass', lookup_expr='iexact')
     base_dynclass = django_filters.CharFilter(field_name='asteroid__base_dynclass', lookup_expr='iexact')
     name = CharInFilter(field_name='asteroid__name', lookup_expr='in')
+    asteroid_id = django_filters.NumberFilter(field_name='asteroid__id', lookup_expr='exact')
     class Meta:
         model = Occultation
-        fields = ['start_date','end_date', 'dynclass', 'base_dynclass', 'name']
+        fields = ['start_date','end_date', 'dynclass', 'base_dynclass', 'name', 'asteroid_id']
 
 
 class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
@@ -79,23 +80,4 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     #     })
 
     #     return Response(result)
-    @action(detail=True, methods=["get"])
-    def get_by_asteroid(self, request, pk=None):
-        """
-        #     Este endpoint obtem as observações de dado asteroide.
 
-        #     Parameters:
-        #         pk (string): asteroid id.
-
-        #     Returns:
-        #         occultations list .
-        #     """
-        ordering = request.query_params.get('ordering', None)
-        occ = Occultation.objects.filter(asteroid=pk) if Occultation.objects.filter(asteroid=pk).exists() else None
-        if occ is not None:
-            if(ordering):
-                occ = occ.order_by(ordering)
-            result = OccultationSerializer(occ, many=True)    
-        else:
-            result = OccultationSerializer([], many=True)
-        return Response(result.data)

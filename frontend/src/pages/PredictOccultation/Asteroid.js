@@ -124,14 +124,16 @@ function PredictionAsteroid() {
   }, [predictionJobResult])
 
   const loadOccultationsData = ({ asteroid_id, currentPage, pageSize, sorting }) => {
-      const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
+    if(asteroid_id || asteroidId){  
+    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
       // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
       const page = currentPage + 1
       
       getOccultationsByAsteroid({asteroid_id: asteroid_id?asteroid_id:asteroidId, page, pageSize, ordering}).then((res) => {
-        setOccultationsTable(res);
-        setOccultationsCount(res.length);
+        setOccultationsTable(res.results);
+        setOccultationsCount(res.count);
       })
+    }
   }
 
   const handleBackNavigation = () => navigate(-1)

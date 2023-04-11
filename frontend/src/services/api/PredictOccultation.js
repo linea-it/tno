@@ -48,7 +48,7 @@ export const getOccultationsByAsteroid = ({ asteroid_id, pageSize, page, orderin
     pageSize,
     ordering
   }
- return api.get(`/occultations/${asteroid_id}/get_by_asteroid/?format=json`, {params}).then((res) => res.data)
+ return api.get(`/occultations/?format=json`, {params}).then((res) => res.data)
 }
 
 export const cancelPredictionJobById = (id) => api.post(`/prediction_job/${id}/cancel_job/`).then((res) => res.data)

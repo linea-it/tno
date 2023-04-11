@@ -155,39 +155,41 @@ function PredictDetail() {
   }, [loadProgress, id]);
 
   useEffect(() => {
-    setSummaryExecution([
-      {
-        title: 'Status',
-        value: () => (
-          <ColumnStatus status={predictionJob.status} title={predictionJob.error} />
-        ),
-        
-      },
-      {
-        title: 'Owner',
-        value: predictionJob.owner,
-      },
-      {
-        title: 'Start',
-        value: predictionJob.start?moment(predictionJob.start).format('YYYY-MM-DD'):"Not started"
-      },
-      {
-        title: 'Finish',
-        value: predictionJob.end ? moment(predictionJob.end).format('YYYY-MM-DD HH:mm:ss') : '-'
-      },
-      {
-        title: 'Start Period',
-        value: predictionJob.predict_start_date? moment(predictionJob.predict_start_date).format('YYYY-MM-DD HH:mm:ss'):""
-      },
-      {
-        title: 'End Period',
-        value: predictionJob.predict_end_date? moment(predictionJob.predict_end_date).format('YYYY-MM-DD HH:mm:ss'):""
-      },
-      {
-        title: 'Execution Time',
-        value: predictionJob.exec_time ? predictionJob.exec_time.split('.')[0] : 0
-      }
-    ]);
+    if(predictionJob.status){
+      setSummaryExecution([
+        {
+          title: 'Status',
+          value: () => (
+            <ColumnStatus status={predictionJob.status} title={predictionJob.error} />
+          ),
+          
+        },
+        {
+          title: 'Owner',
+          value: predictionJob.owner,
+        },
+        {
+          title: 'Start',
+          value: predictionJob.start?moment(predictionJob.start).format('YYYY-MM-DD'):"Not started"
+        },
+        {
+          title: 'Finish',
+          value: predictionJob.end ? moment(predictionJob.end).format('YYYY-MM-DD HH:mm:ss') : '-'
+        },
+        {
+          title: 'Start Period',
+          value: predictionJob.predict_start_date? moment(predictionJob.predict_start_date).format('YYYY-MM-DD HH:mm:ss'):""
+        },
+        {
+          title: 'End Period',
+          value: predictionJob.predict_end_date? moment(predictionJob.predict_end_date).format('YYYY-MM-DD HH:mm:ss'):""
+        },
+        {
+          title: 'Execution Time',
+          value: predictionJob.exec_time ? predictionJob.exec_time.split('.')[0] : 0
+        }
+      ]);
+    }
   }, [predictionJob])
 
 

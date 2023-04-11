@@ -1,6 +1,7 @@
 import json
 import os
 import threading
+import django_filters
 
 from rest_framework import viewsets
 
@@ -12,11 +13,18 @@ from tno.models import Asteroid
 from des.models import Observation
 from tno.asteroid_utils import plot_observations_by_asteroid
 
+class ObservationFilter(django_filters.FilterSet):
+    asteroid_id = django_filters.NumberFilter(field_name='asteroid__id', lookup_expr='exact')
+    class Meta:
+        model = Observation
+        fields = ['asteroid_id']
+
 class ObservationViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Observation.objects.select_related().all()
     # queryset = Observation.objects.all()
     serializer_class = ObservationSerializer
+    filterset_class = ObservationFilter
     ordering_fields = ("date_obs", "id", "name",)
     # ordering = ("date_obs",)
     filter_fields = (
