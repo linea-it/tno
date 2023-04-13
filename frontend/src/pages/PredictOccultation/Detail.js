@@ -27,7 +27,7 @@ import ColumnStatus from '../../components/Table/ColumnStatus';
 import Donut from '../../components/Chart/Donut';
 import {
   getPredictionJobById,
-  getPredictionJobResultsById,
+  getPredictionJobResultsByJobId,
   cancelPredictionJobById
 } from '../../services/api/PredictOccultation';
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index';
@@ -198,10 +198,9 @@ function PredictDetail() {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
     
-    getPredictionJobResultsById({ id, page, pageSize, ordering }).then((res) => {
-      const successeds = res.results.filter(x => x.status == 1);
-      setTableData(successeds.map((successeds) => ({ ...successeds, log: null })))
-      setTotalCount(successeds.length)
+    getPredictionJobResultsByJobId({ id, page, pageSize, ordering }, true).then((res) => {
+      setTableData(res.results)
+      setTotalCount(res.count)
     })
   }
 
@@ -210,10 +209,9 @@ function PredictDetail() {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
 
-    getPredictionJobResultsById({ id, page, pageSize, ordering }).then((res) => {
-      const failures = res.results.filter(x => x.status == 2);
-      setTableErrorData(failures.map((failures) => ({ ...failures, log: null })))
-      setTotalErrorCount(failures.length)
+    getPredictionJobResultsByJobId({ id, page, pageSize, ordering }, false).then((res) => {
+      setTableErrorData(res.results)
+      setTotalErrorCount(res.count)
     })
   }
   

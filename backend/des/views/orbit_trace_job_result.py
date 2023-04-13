@@ -21,9 +21,10 @@ from rest_framework.response import Response
 
 class OrbitTraceJobResultFilter(django_filters.FilterSet):
     job = django_filters.NumberFilter(field_name='job__id', lookup_expr='exact')
+    status = django_filters.CharFilter(field_name='status', lookup_expr='exact')
     class Meta:
         model = OrbitTraceJobResult
-        fields = ['job']
+        fields = ['job', 'status']
 
 class OrbitTraceJobResultViewSet(
     viewsets.ReadOnlyModelViewSet

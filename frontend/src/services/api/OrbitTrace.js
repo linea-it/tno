@@ -34,9 +34,10 @@ export const getBspPlanetaryList = () => api.get(`/bsp_planetary/`).then((res) =
 
 
 
-export const getOrbitTraceResultById = ({ id, pageSize, page, ordering }) => {
+export const getOrbitTraceResultByJobId = ({ id, pageSize, page, ordering }, successed) => {
   const params = {
     job: id,
+    status: successed? 1:2,
     page,
     pageSize,
     ordering

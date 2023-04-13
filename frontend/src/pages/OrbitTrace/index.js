@@ -31,7 +31,7 @@ function OrbitTrace() {
   const [reload, setReload] = useState(true);
   const [bspPlanetaryList, setBspPlanetaryList] = useState([]);
   const [leapSecondList, setLeapSecondList] = useState([]);
-  const [filterTypeList, setFilterTypeList] = useState([{ value: 'Name', label: 'Name' }, { value: 'DynClass', label: 'DynClass' }, { value: 'Base DynClass', label: 'Base DynClass' }]);
+  const [filterTypeList, setFilterTypeList] = useState([{ value: 'name', label: 'Name' }, { value: 'dynclass', label: 'DynClass' }, { value: 'base_dynclass', label: 'Base DynClass' }]);
   const [dynClassList, setDynClassList] = useState([]);
   const [baseDynClassList, setBaseDynClassList] = useState([]);
   const [asteroidsList, setAsteroidsList] = useState([]);
@@ -52,7 +52,7 @@ function OrbitTrace() {
 
   const [bspPlanetary, setBspPlanetary] = React.useState({ value: "", label: "Select..." });
   const [leapSecond, setLeapSecond] = React.useState({ value: "", label: "Select..." });
-  const [filterType, setFilterType] = React.useState({ value: 'Base DynClass', label: 'Base DynClass' });
+  const [filterType, setFilterType] = React.useState({ value: 'base_dynclass', label: 'Base DynClass' });
   const [filterValue, setFilterValue] = React.useState({ value: "", label: "Select..." });
   const [bspValue, setBspValue] = React.useState({ value: 0, label: "None" });
   const [parslInitBlocks, setParslInitBlocks] = React.useState({ value: 600, label: "600" });
@@ -198,7 +198,7 @@ function OrbitTrace() {
         .then((response) => {
           setBspPlanetary({ value: bspPlanetaryList[0].value, label: bspPlanetaryList[0].label })
           setLeapSecond({ value: "", label: "Select..." });
-          setFilterType({ value: 'Base DynClass', label: 'Base DynClass' });
+          setFilterType({ value: 'base_dynclass', label: 'Base DynClass' });
           setFilterValue({ value: "", label: "Select..." });
           setBspValue({ value: 0, label: "None" });
           setParslInitBlocks({ value: 600, label: "600" });
@@ -360,7 +360,7 @@ function OrbitTrace() {
                     {filterType.value != "" &&
                       <Grid item xs={12} sm={6} md={4} lg={3}>
                         <Box sx={{ minWidth: 120 }}>
-                          {filterType.value == "Name" && <FormControl onKeyUp={onKeyUp} fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                          {filterType.value == "name" && <FormControl onKeyUp={onKeyUp} fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
                             <Select
                               id="filterName"
                               onChange={filterValueNameshandleChange}
@@ -370,7 +370,7 @@ function OrbitTrace() {
                               menuPosition={'fixed'}
                             />
                           </FormControl>}
-                          {filterType.value == "DynClass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                          {filterType.value == "dynclass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
                             <Select
                               value={filterValue}
                               id="filterDynClass"
@@ -380,7 +380,7 @@ function OrbitTrace() {
                               menuPosition={'fixed'}
                             />
                           </FormControl>}
-                          {filterType.value == "Base DynClass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                          {filterType.value == "base_dynclass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
                             <Select
                               value={filterValue}
                               id="filterBaseDynClass"

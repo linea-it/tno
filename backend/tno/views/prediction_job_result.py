@@ -16,9 +16,10 @@ from rest_framework.response import Response
 
 class PredictionJobResultFilter(django_filters.FilterSet):
     job = django_filters.NumberFilter(field_name='job__id', lookup_expr='exact')
+    status = django_filters.CharFilter(field_name='status', lookup_expr='exact')
     class Meta:
         model = PredictionJobResult
-        fields = ['job']
+        fields = ['job', 'status']
 
 class PredictionJobResultViewSet(
     viewsets.ReadOnlyModelViewSet

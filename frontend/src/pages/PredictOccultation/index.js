@@ -55,7 +55,7 @@ function PredictOccultation() {
   const [hasJobRunningOrIdleFeedback, setHasJobRunningOrIdleFeedback] = useState(false)
   const [forceRefreshInputs, setForceRefreshInputs] = useState(false)
 
-  const [filterTypeList, setFilterTypeList] = useState([{ value: 'Name', label: 'Name' }, { value: 'DynClass', label: 'DynClass' }, { value: 'Base DynClass', label: 'Base DynClass' }]);
+  const [filterTypeList, setFilterTypeList] = useState([{ value: 'name', label: 'Name' }, { value: 'dynclass', label: 'DynClass' }, { value: 'base_dynclass', label: 'Base DynClass' }]);
   const [dynClassList, setDynClassList] = useState([]);
   const [baseDynClassList, setBaseDynClassList] = useState([]);
   const [asteroidsList, setAsteroidsList] = useState([]);
@@ -74,7 +74,7 @@ function PredictOccultation() {
   const [catalogError, setCatalogError] = React.useState(false);
   const [predictStepError, setPredictStepError] = React.useState(false);
 
-  const [filterType, setFilterType] = React.useState({ value: 'Base DynClass', label: 'Base DynClass' });
+  const [filterType, setFilterType] = React.useState({ value: 'base_dynclass', label: 'Base DynClass' });
   const [filterValue, setFilterValue] = React.useState({ value: "", label: "Select..." });
   const [filterValueNames, setFilterValueNames] = React.useState([]);
   const [predictStep, setpredictStep] = React.useState('600');
@@ -212,7 +212,7 @@ function PredictOccultation() {
         .then((response) => {
           setDateStart(dayjs(new Date()));
           setDateEnd("");
-          setFilterType({ value: 'Base DynClass', label: 'Base DynClass' });
+          setFilterType({ value: 'base_dynclass', label: 'Base DynClass' });
           setFilterValue({ value: "", label: "Select..." });
           setCatalog({ value: "", label: "Select..." });
           setBspValue({ value: 0, label: "None" });
@@ -448,7 +448,7 @@ function PredictOccultation() {
                         {filterType.value != "" &&
                           <Grid item xs={12} sm={6} md={12} lg={6}>
                             <Box sx={{ minWidth: 120 }}>
-                              {filterType.value == "Name" && <FormControl onKeyUp={onKeyUp} fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                              {filterType.value == "name" && <FormControl onKeyUp={onKeyUp} fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
                                 <InputLabel></InputLabel>
                                 <Select
                                   id="filterName"
@@ -459,7 +459,7 @@ function PredictOccultation() {
                                   menuPosition={'fixed'}
                                 />
                               </FormControl>}
-                              {filterType.value == "DynClass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                              {filterType.value == "dynclass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
                                 <Select
                                   value={filterValue}
                                   id="filterDynClass"
@@ -469,7 +469,7 @@ function PredictOccultation() {
                                   menuPosition={'fixed'}
                                 />
                               </FormControl>}
-                              {filterType.value == "Base DynClass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                              {filterType.value == "base_dynclass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
                                 <Select
                                   value={filterValue}
                                   id="filterBaseDynClass"
