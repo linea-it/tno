@@ -24,7 +24,8 @@ function OrbitTraceAsteroid() {
     base_dynclass: "",
     dynclass: "",
     observations: 0,
-    ccds: 0
+    ccds: 0,
+    error: ""
   })
 
   const [summary, setSummary] = useState([])
@@ -34,6 +35,7 @@ function OrbitTraceAsteroid() {
 
   const [observationPlot, setObservationPlot] = useState("")
   const [observationPlotError, setObservationPlotError] = useState(false)
+
 
   useEffect(() => {
     getOrbitTraceJobResultById(id).then((res) => {
@@ -45,12 +47,14 @@ function OrbitTraceAsteroid() {
         pageSize: 50,
         sorting: [{ columnName: 'id', direction: 'asc' }]
       })
-      getPlotObservationByAsteroid(res.name).then((res) => {
-        setObservationPlot(res.plot_url)
-      }).catch(function (error) {
-        setObservationPlotError(true);
-        setObservationPlot("")
-      })
+      if(res.status != 2){
+        getPlotObservationByAsteroid(res.name).then((res) => {
+          setObservationPlot(res.plot_url)
+        }).catch(function (error) {
+          setObservationPlotError(true);
+          setObservationPlot("")
+        })
+      }
     })
 
   }, [id])
@@ -124,7 +128,7 @@ function OrbitTraceAsteroid() {
 
 
   useEffect(() => {
-      setSummary([
+      let defaultSummary = [
         {
           title: 'Status',
           value: orbitTraceResult.status == 1 ? 'success' : 'failure'
@@ -152,8 +156,15 @@ function OrbitTraceAsteroid() {
         {
           title: 'CCDs',
           value: orbitTraceResult.ccds
-        }
-      ])
+        },
+      ]
+      if(orbitTraceResult.status == 2){
+        defaultSummary.push(        {
+          title: 'Messages',
+          value: orbitTraceResult.error
+        },)
+      }
+      setSummary(defaultSummary)
   }, [orbitTraceResult])
 
   const loadObservationsData = ({ asteroid_id, currentPage, pageSize, sorting }) => {
@@ -199,18 +210,21 @@ function OrbitTraceAsteroid() {
       <Grid item xs={12} md={8}>
         <Card>
           <CardHeader title='Asteroid Graphic' />
-          {observationPlotError && <CardContent>
-            <label className={classes.errorText}>An error occurred while the plot was generated</label>
-          </CardContent>}
-          {!observationPlotError && observationPlot === '' && <CircularProgress className={classes.loadingPlot} disableShrink size={100} />}
-          {!observationPlotError && observationPlot !== "" && (
-            <CardMedia
-              component="iframe"
-              height="100%"
-              frameBorder="0"
-              src={observationPlot}
-            />
-          )}
+          {orbitTraceResult.status != 2 && <>          
+            {observationPlotError && <CardContent>
+              <label className={classes.errorText}>An error occurred while the plot was generated</label>
+            </CardContent>}
+            {!observationPlotError && observationPlot === '' && <CircularProgress className={classes.loadingPlot} disableShrink size={100} />}
+            {!observationPlotError && observationPlot !== "" && (
+              <CardMedia
+                component="iframe"
+                height="100%"
+                frameBorder="0"
+                src={observationPlot}
+              />
+            )}
+          </>}
+
           {/* <iframe src="/data/tmp/plot_des_observations_Eris-2013-08-30-2018-10-20.html"></iframe> */}
           {/* <CardContent>
             

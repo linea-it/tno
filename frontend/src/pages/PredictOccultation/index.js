@@ -85,6 +85,10 @@ function PredictOccultation() {
   const [messageOpenError, setMessageOpenError] = useState(false);
   const [messageTextError, setMessageTextError] = React.useState('');
 
+  const [selectedSorting, setSelectedSorting] = useState();
+  const [selectedPage, setSelectedPage] = useState(0);
+  const [selectedPageSize, setSelectedPageSize] = useState(0);
+
   useEffect(() => {
     setDisableSubmit(!dateStart || !dateEnd || !filterValue.value || !filterType.value || !catalog.value);
   }, [dateStart, dateEnd, filterValue, filterType, catalog]);
@@ -274,6 +278,9 @@ function PredictOccultation() {
   }
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
+    setSelectedSorting(sorting)
+    setSelectedPageSize(pageSize)
+    setSelectedPage(currentPage)
     const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
     getPredictionJobList({
       page: currentPage + 1,
@@ -363,6 +370,12 @@ function PredictOccultation() {
       })
     }
   }
+
+  useInterval(() => {
+    if(selectedSorting){
+      loadData(({sorting: selectedSorting, pageSize: selectedPageSize, currentPage: selectedPage}));
+    }
+  }, [5000]);
 
   return (
     <>

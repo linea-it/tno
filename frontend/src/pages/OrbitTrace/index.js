@@ -22,6 +22,8 @@ import ColumnStatus from '../../components/Table/ColumnStatus'
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
 import Select from 'react-select'
 import './orbittrace.css'
+import useInterval from '../../hooks/useInterval'
+import { Pages } from '../../../node_modules/@material-ui/icons/index'
 
 function OrbitTrace() {
   const navigate = useNavigate();
@@ -54,7 +56,7 @@ function OrbitTrace() {
   const [leapSecond, setLeapSecond] = React.useState({ value: "", label: "Select..." });
   const [filterType, setFilterType] = React.useState({ value: 'base_dynclass', label: 'Base DynClass' });
   const [filterValue, setFilterValue] = React.useState({ value: "", label: "Select..." });
-  const [bspValue, setBspValue] = React.useState({ value: 0, label: "None" });
+  const [bspValue, setBspValue] = React.useState({ value: 10, label: "10 days" });
   const [parslInitBlocks, setParslInitBlocks] = React.useState({ value: 600, label: "600" });
   const [filterValueNames, setFilterValueNames] = React.useState([]);
 
@@ -63,6 +65,11 @@ function OrbitTrace() {
   const useMountEffect = (fun) => useEffect(fun, []);
   const [debug, setDebug] = React.useState(false);
   const [disableSubmit, setDisableSubmit] = useState(true);
+
+  const [selectedSorting, setSelectedSorting] = useState();
+  const [selectedPage, setSelectedPage] = useState(0);
+  const [selectedPageSize, setSelectedPageSize] = useState(0);
+
 
   useEffect(() => {
     setDisableSubmit(!bspPlanetary.value || !leapSecond.value || !filterValue.value || !filterType.value);
@@ -126,6 +133,9 @@ function OrbitTrace() {
 
     getLeapSecondList().then((list) => {
       setLeapSecondList(list.map(x => { return { value: x.name, label: x.name } }));
+      //set default value
+      if (list.length > 0)
+        setLeapSecond({ value: list[0].name, label: list[0].name })
     })
 
     getDynClassList().then((list) => {
@@ -139,7 +149,6 @@ function OrbitTrace() {
     getAsteroidsList().then((list) => {
       setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
     })
-
   });
 
   function validadeInformation() {
@@ -196,16 +205,8 @@ function OrbitTrace() {
       }
       createOrbitTraceJob(data)
         .then((response) => {
-          setBspPlanetary({ value: bspPlanetaryList[0].value, label: bspPlanetaryList[0].label })
-          setLeapSecond({ value: "", label: "Select..." });
-          setFilterType({ value: 'base_dynclass', label: 'Base DynClass' });
-          setFilterValue({ value: "", label: "Select..." });
-          setBspValue({ value: 0, label: "None" });
-          setParslInitBlocks({ value: 600, label: "600" });
-          setMessageTextSuccess('Information registered successfully');
-          setMessageOpenSuccess(true);
-          setReload((prevState) => !prevState);
-          setDisableSubmit(false);
+          navigate(`/data-preparation/des/orbittracedetail/${response.data.id}`)
+          //cleanFields();
         })
         .catch((err) => {
           console.log(err)
@@ -215,9 +216,25 @@ function OrbitTrace() {
     }
   }
 
+  function cleanFields() {
+    setBspPlanetary({ value: bspPlanetaryList[0].value, label: bspPlanetaryList[0].label })
+    setLeapSecond({ value: "", label: "Select..." });
+    setFilterType({ value: 'base_dynclass', label: 'Base DynClass' });
+    setFilterValue({ value: "", label: "Select..." });
+    setBspValue({ value: 0, label: "None" });
+    setParslInitBlocks({ value: 600, label: "600" });
+    setMessageTextSuccess('Information registered successfully');
+    setMessageOpenSuccess(true);
+    setReload((prevState) => !prevState);
+    setDisableSubmit(false);
+  }
+
 
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
+    setSelectedSorting(sorting)
+    setSelectedPageSize(pageSize)
+    setSelectedPage(currentPage)
     const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
 
     getOrbitTraceJobList({
@@ -331,6 +348,12 @@ function OrbitTrace() {
         })
     }
   }
+
+  useInterval(() => {
+    if(selectedSorting){
+      loadData(({sorting: selectedSorting, pageSize: selectedPageSize, currentPage: selectedPage}));
+    }
+  }, [5000]);
 
   return (
     <>
@@ -500,7 +523,7 @@ function OrbitTrace() {
                 hasToolbar={true}
                 reload={reload}
                 totalCount={totalCount}
-                defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
+                defaultSorting={[{ columnName: 'id', direction: 'desc' }]}
               />
             </CardContent>
           </Card>

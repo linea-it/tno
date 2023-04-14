@@ -69,6 +69,42 @@ function OrbitTraceDetail() {
 
   const haveError = totalErrorCount > 0 && 'results' in orbitTraceJob
 
+  const tableErrorColumns = [
+    {
+      name: 'index',
+      title: ' ',
+      sortingEnabled: false,
+      width: 70
+    },
+    {
+      name: 'id',
+      title: 'Details',
+      width: 110,
+      customElement: (row) => {
+        if (row.positions === 0) {
+          return <span>-</span>
+        }
+        return (
+          <Button onClick={() => navigate(`/data-preparation/des/orbittrace/asteroid/${row.id}`)}>
+            <InfoOutlinedIcon />
+          </Button>
+        )
+      },
+      sortingEnabled: false,
+      align: 'center'
+    },
+    {
+      name: 'name',
+      title: 'Asteroid',
+      width: 150
+    },
+    {
+      name: 'error',
+      title: 'Messages',
+      width: 150
+    },
+
+  ]
 
   const tableColumns = [
     {
@@ -432,7 +468,7 @@ function OrbitTraceDetail() {
                 <CardHeader title='Asteroid Failures' />
                 <CardContent>
                   <Table
-                    columns={tableColumns}
+                    columns={tableErrorColumns}
                     data={tableErrorData}
                     loadData={loadDataFailure}
                     totalCount={totalErrorCount}

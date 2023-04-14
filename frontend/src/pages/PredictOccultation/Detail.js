@@ -70,6 +70,43 @@ function PredictDetail() {
     })
   }
 
+  const tableErrorColumns = [
+    {
+      name: 'index',
+      title: ' ',
+      sortingEnabled: false,
+      width: 70
+    },
+    {
+      name: 'id',
+      title: 'Details',
+      width: 110,
+      customElement: (row) => {
+        if (row.positions === 0) {
+          return <span>-</span>
+        }
+        return (
+          <Button onClick={() => navigate(`/predict_asteroid/${row.id}`)}>
+            <InfoOutlinedIcon />
+          </Button>
+        )
+      },
+      sortingEnabled: false,
+      align: 'center'
+    },
+    {
+      name: 'name',
+      title: 'Asteroid',
+      width: 150
+    },
+    {
+      name: 'messages',
+      title: 'Messages',
+      width: 150
+    },
+
+  ]
+
   const tableColumns = [
     {
       name: 'index',
@@ -377,7 +414,7 @@ function PredictDetail() {
                 <CardHeader title='Asteroid Failures' />
                 <CardContent>
                   <Table
-                    columns={tableColumns}
+                    columns={tableErrorColumns}
                     data={tableErrorData}
                     loadData={loadDataFailure}
                     totalCount={totalErrorCount}
