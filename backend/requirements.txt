@@ -37,7 +37,7 @@ scipy==1.9.3
 six==1.16.0
 spiceypy==5.1.2
 SQLAlchemy==1.4.44
-sqlparse==0.4.3
+sqlparse==0.4.4
 tzdata==2022.6
 tzlocal==4.2
 urllib3==1.26.12
