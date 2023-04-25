@@ -28,6 +28,11 @@ import Footer from '../components/LandingPage/Footer'
 import PersistentDrawerLeft from '../components/Drawer'
 import OrbitTraceDetail from '../pages/OrbitTrace/Detail'
 import OrbitTraceAsteroid from '../pages/OrbitTrace/Asteroid'
+import PublicHeader from '../components/PublicPortal/Header/index'
+import PublicFooter from '../components/PublicPortal/Footer/index'
+import PublicHome from '../pages/PublicPortal/Home'
+import PublicAboutUs from '../pages/PublicPortal/AboutUs/index'
+import PublicTutorials from '../pages/PublicPortal/Tutorials/index'
 // import RefineOrbit from '../pages/RefineOrbit';
 // import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
 // import RefineOrbitAsteroid from '../pages/RefineOrbit/Asteroid';
@@ -60,6 +65,16 @@ export default function AppRoutes() {
     )
   }
 
+  const PublicPortalPage = ({ children }) => {
+    return (
+      <>
+        <PublicHeader />
+        {children}
+        <PublicFooter />
+      </>
+    )
+  }
+
   const DashboardPage = ({ children }) => {
     return (
       <>
@@ -70,6 +85,37 @@ export default function AppRoutes() {
 
   return (
     <Routes>
+      {/* Public Portal  Layout*/}
+      <Route
+        isHomePage
+        exact
+        path='/publicportal'
+        element={
+          <PublicPortalPage>
+            <PublicHome />
+          </PublicPortalPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/publicAbout-us'
+        element={
+          <PublicPortalPage>
+            <PublicAboutUs />
+          </PublicPortalPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/publicTutorials'
+        element={
+          <PublicPortalPage>
+            <PublicTutorials />
+          </PublicPortalPage>
+        }
+      />
       {/* Landing Page  Layout*/}
       <Route
         isHomePage
@@ -178,19 +224,19 @@ export default function AppRoutes() {
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
-              <SkybotAsteroid/>
+              <SkybotAsteroid />
             </DashboardPage>
           </PrivateRoute>
         }
       />
-            <Route
+      <Route
         isPrivate
         exact
         path='/data-preparation/des/orbittrace/asteroid/:id'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
-              <OrbitTraceAsteroid/>
+              <OrbitTraceAsteroid />
             </DashboardPage>
           </PrivateRoute>
         }
