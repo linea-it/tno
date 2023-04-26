@@ -280,7 +280,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/predict_occultation'
+        path='/prediction-of-occultation'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>

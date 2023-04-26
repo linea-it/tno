@@ -71,17 +71,20 @@ class AsteroidSerializer(serializers.ModelSerializer):
 
 
 class OccultationSerializer(serializers.ModelSerializer):
+    dynclass = serializers.CharField(source='asteroid.dynclass')
     class Meta:
         model = Occultation
         fields = (
             "id",
             "number",
             "name",
+            "dynclass",
             "date_time",
             "ra_star_deg",
             "dec_star_deg",
             "ra_target_deg",
             "dec_target_deg",
+            "g",
         )
 
 class PredictionJobSerializer(serializers.ModelSerializer):

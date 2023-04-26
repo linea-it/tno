@@ -72,21 +72,32 @@ function Occultation() {
       sortingEnabled: false
     },
     {
-      name: 'name',
-      title: 'Name',
-      align: 'center',
-    },
-    {
-      name: 'number',
-      title: 'Number',
-      align: 'center',
-    },
-    {
       name: 'date_time',
-      title: 'Observation Date',
+      title: 'Date',
       width: 200,
       customElement: (row) => (row.date_time ? moment(row.date_time).utc().format('YYYY-MM-DD HH:mm:ss') : '-')
     },
+    {
+      name: 'g',
+      title: 'Mag',
+      aligh: 'center',
+    },
+    {
+      name: 'name',
+      title: 'Object',
+      align: 'center',
+    },    
+    {
+      name: 'dynclass',
+      title: 'Class',
+      align: 'center',
+    },
+    // {
+    //   name: 'number',
+    //   title: 'Number',
+    //   align: 'center',
+    // },
+
   ]
 
   const filterTypehandleChange = (event) => {

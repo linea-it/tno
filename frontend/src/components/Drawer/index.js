@@ -72,7 +72,7 @@ const routes = [
   { path: '/data-preparation/des/discovery/asteroid/:id', title: 'Skybot Discovery' },
   { path: '/data-preparation/des/orbit_trace', title: 'Orbit Trace' },
   { path: '/data-preparation/des/management', title: 'DES Management' },
-  { path: '/predict_occultation', title: 'Predict Occultation' },
+  { path: '/prediction-of-occultation', title: 'Predict Occultation' },
   { path: '/predict_detail/:id', title: 'Predict Occultation Details' },
   { path: '/predict_asteroid/:id', title: 'Predict Occultation Asteroid' },
   { path: '/occultation', title: 'Occultation' },
@@ -184,7 +184,7 @@ export default function PersistentDrawerLeft({ children }) {
           </Collapse>
           <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
           {/* Predict Occultation */}
-          <ListItemButton onClick={() => navigate('/predict_occultation')}>
+          <ListItemButton onClick={() => navigate('/prediction-of-occultation')}>
             <ListItemText primary='Predict Occultation' />
           </ListItemButton>
           {/* Occultation */}
