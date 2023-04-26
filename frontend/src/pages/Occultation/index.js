@@ -35,7 +35,7 @@ function Occultation() {
   const classes = useStyles()
   //const [magnitude, setMagnitude] = useState([4, 23]);
   //const [diameter, setDiameter] = useState([0, 600]);
-  const [magnitude, setMagnitude] = useState('0');
+  const [magnitude, setMagnitude] = useState([4, 23]);
   const [diameter, setDiameter] = useState('0');
   const [zoneValue, setZoneValue] = useState('');
   const [dateStart, setDateStart] = useState('');
@@ -185,6 +185,8 @@ function Occultation() {
     const end = dateEnd ? new Date(dateEnd).toISOString().slice(0, 10) + ' 23:59:59' : null;
     const type = filterType.value ? filterType.value.toLowerCase().replaceAll(' ', '_') : null;
     const value = filterValue.value ? filterValue.value : null;
+    const minmag = magnitude[0] > 4? magnitude[0]:null;
+    const maxmag = magnitude[1] < 23? magnitude[1]:null;
     getOccultations({
       page: currentPage + 1,
       pageSize,
@@ -192,7 +194,9 @@ function Occultation() {
       start_date: start,
       end_date: end,
       filter_type: value?type:null,
-      filter_value: value
+      filter_value: value,
+      min_mag: minmag,
+      max_mag: maxmag
     }).then((res) => {
       const { data } = res
       setTableData(
@@ -212,7 +216,7 @@ function Occultation() {
 
   useEffect(() => {
     handleFilterClick();
-  }, [dateStart, dateEnd, filterValue]);
+  }, [dateStart, dateEnd, filterValue, magnitude]);
 
   const onKeyUp = async (event) => {
     if(event.target.value.length > 1){
@@ -323,8 +327,15 @@ function Occultation() {
                     </Box>
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>                   
-                    <FormControl fullWidth><label>Magnitude (0 and 4.23g)</label>
-                      <OutlinedInput disabled id="my-input" value={magnitude} className={classes.input} variant="outlined" onChange={(e) => setMagnitude(e.target.value)} />
+                    <FormControl fullWidth><label>Magnitude ({magnitude.toString()})</label>
+                      <Slider
+                        value={magnitude}
+                        step={1}
+                        min={4}
+                        max={23}
+                        valueLabelDisplay="auto"
+                        onChange={handleChangeMagnitudeValue}
+                      />
                     </FormControl>
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>                   

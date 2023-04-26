@@ -19,13 +19,15 @@ class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
 class OccultationFilter(django_filters.FilterSet):
     start_date = django_filters.DateTimeFilter(field_name='date_time',lookup_expr='gte')
     end_date = django_filters.DateTimeFilter(field_name='date_time',lookup_expr='lte')
+    min_mag = django_filters.NumberFilter(field_name='g', lookup_expr='gte')
+    max_mag = django_filters.NumberFilter(field_name='g', lookup_expr='lte')
     dynclass = django_filters.CharFilter(field_name='asteroid__dynclass', lookup_expr='iexact')
     base_dynclass = django_filters.CharFilter(field_name='asteroid__base_dynclass', lookup_expr='iexact')
     name = CharInFilter(field_name='asteroid__name', lookup_expr='in')
     asteroid_id = django_filters.NumberFilter(field_name='asteroid__id', lookup_expr='exact')
     class Meta:
         model = Occultation
-        fields = ['start_date','end_date', 'dynclass', 'base_dynclass', 'name', 'asteroid_id']
+        fields = ['start_date','end_date', 'min_mag', 'max_mag', 'dynclass', 'base_dynclass', 'name', 'asteroid_id']
 
 
 class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
