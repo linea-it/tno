@@ -83,6 +83,11 @@ function PublicHeader() {
       target: '_self'
     },
     {
+      description: 'Occultation',
+      href: '/publicOccultation',
+      target: '_self'
+    },
+    {
       description: 'About',
       href: '/publicAbout-us',
       target: '_self'

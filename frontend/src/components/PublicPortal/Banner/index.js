@@ -16,7 +16,7 @@ function PublicBanner() {
         <Grid item xs={12} container className={classes.bannerWrapper} alignItems='flex-end'>
           <div className="container textBanner">
             <Grid xs={12} className={classes.textTitleOcultatiom}><label>Ocultation</label></Grid>
-            <Grid xs={12} className={classes.textOcultatiom}><label >xxxx</label></Grid>
+            <Grid xs={12} className={classes.textOcultatiom}><label >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla porttitor dui ipsum, ultricies placerat orci venenatis vel. In varius tortor tempus, feugiat nulla nec, tempus leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit...</label></Grid>
             <Grid xs={12} className={classes.bannerWrapper}  alignItems='flex-end'><label>read more</label></Grid>
           </div>
         </Grid>

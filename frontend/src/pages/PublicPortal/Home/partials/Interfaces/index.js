@@ -8,7 +8,7 @@ function PublicInterfaces() {
   const classes = styles() 
 
   return (
-    <Container className={classes.mainContainer}>
+    <Container>
       <br></br>
       <Grid container spacing={2}>
         <div className={classes.titleItem}><label>Lorem</label></div>

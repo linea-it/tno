@@ -33,6 +33,7 @@ import PublicFooter from '../components/PublicPortal/Footer/index'
 import PublicHome from '../pages/PublicPortal/Home'
 import PublicAboutUs from '../pages/PublicPortal/AboutUs/index'
 import PublicTutorials from '../pages/PublicPortal/Tutorials/index'
+import PublicOccultation from '../pages/PublicPortal/occultation/index'
 // import RefineOrbit from '../pages/RefineOrbit';
 // import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
 // import RefineOrbitAsteroid from '../pages/RefineOrbit/Asteroid';
@@ -113,6 +114,16 @@ export default function AppRoutes() {
         element={
           <PublicPortalPage>
             <PublicTutorials />
+          </PublicPortalPage>
+        }
+      />
+       <Route
+        isHomePage
+        exact
+        path='/publicOccultation'
+        element={
+          <PublicPortalPage>
+            <PublicOccultation/>
           </PublicPortalPage>
         }
       />

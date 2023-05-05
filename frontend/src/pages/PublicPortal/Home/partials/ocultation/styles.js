@@ -1,23 +1,65 @@
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles';
 
-const styles = makeStyles({
-  titleItem: {
-    fontFamily: 'arial',
-    fontSize: '2em',
-    paddingTop: '0.5em',  
-    paddingBotton: '0.5em', 
-    color: '#000000',
-  },
-  media: {
-    minHeight: 175,
-    width: '100%'
-  },
-  icon: {
-    maxWidth: 50
-  },  
+const styles = makeStyles({  
   grid: {
     margin: 'auto'
   },
+  titleItem: {    
+    marginTop: '10px',
+    fontSize: '1.3em',
+    paddingTop: '0.5em',   
+    color: '#000000'    
+  },
+  celula:{
+    backgroundColor:'#cccccc',
+    textAlign: 'center',
+    padding: '10px'
+  },
+  mouse:{
+    cursor: 'pointer'
+  },
+  btnPeriod:{
+    paddingTop:'7px'
+  },
+  formControl: {
+    minWidth: 113
+  },
+  buttonGroupYear: {
+    height: 'calc(100% - 1px)'
+  },
+  progressWrapper: {
+    position: 'relative'    
+  },
+  circularProgress: {
+    margin: '5px auto'
+  },
+  gridTable: {
+    display: 'table'
+  },
+  gridTableRow: {
+    display: 'table-row'
+  },
+  backdrop: {   
+    color: '#fff'
+  }, 
+  errorText:{
+    color: '#8B0000'
+  },
+  pad:{
+    paddingTop:'10px',
+    paddingBottom:'10px'
+  },
+  padDropBox:{
+    paddingTop:'2px',
+    paddingBottom:'2px'
+  },
+  input:{
+    borderRadius: 4,
+    position: 'relative',    
+    border: '1px solid #ced4da',   
+    width: 'auto',  
+    height: '43px'  
+  }
 })
 
 export default styles
