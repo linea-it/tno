@@ -5,14 +5,21 @@ import Typography from '@material-ui/core/Typography'
 import styles from './styles'
 
 function PublicInterfaces() {
-  const classes = styles() 
+  const classes = styles()
 
   return (
     <Container>
       <br></br>
-      <Grid container spacing={2}>
-        <div className={classes.titleItem}><label>Lorem</label></div>
-        <Typography>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla porttitor dui ipsum, ultricies placerat orci venenatis vel. In varius tortor tempus, feugiat nulla nec, tempus leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tincidunt imperdiet metus, a tempor purus vehicula sed. Aenean nec velit vitae ex cursus ultricies. Ut vitae finibus est, sed fringilla lorem. Nam sit amet ipsum placerat, vehicula lectus ut, consequat dolor. Vestibulum efficitur ligula sapien, ac vehicula mauris sodales non. Vestibulum finibus magna vulputate lacus pretium, vel sollicitudin elit tincidunt. Donec turpis elit, facilisis id massa vel, elementum lobortis velit. Praesent sit amet lobortis nulla, vitae facilisis nisi. Mauris vitae blandit mauris. Duis luctus metus vitae dolor tempus, sit amet viverra magna hendrerit.</Typography>
+      <Grid container justifyContent="center" alignItems="center">
+        <div className={classes.titleItem}><label>Prediction of stellar occultations by Solar System Objects</label></div><br></br>     
+      </Grid><br></br>
+      <Grid container justifyContent="center" alignItems="center">       
+        <div><label>(Last update: 2023-05-12)</label></div>
+      </Grid><br></br><br></br>
+      <Grid container>
+        <Typography>This page presents the prediction of stellar occultations by Solar System Objects (Main Belt Asteroids, Trans-Neptunian Objects, Centaurs, Trojans, among others) observed by the Dark Energy Survey for forthcoming months. These predictions are made in the Solar System Portal of LIneA project (led by L. N. da Costa) and in collaboration with 11 tech.
+          <br></br>You can select the events by period, dynamic class and visibility in a specific place (longitude and latitude):
+        </Typography>
       </Grid>
     </Container>
   )

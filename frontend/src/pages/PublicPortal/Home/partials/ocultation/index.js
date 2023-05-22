@@ -228,12 +228,9 @@ function PublicOcutation() {
   }
 
   return (
-    <Container>
-      <Grid container spacing={2}>
-        <div className={classes.titleItem}><label>Occultation Filter</label></div>
-      </Grid>
-      <br></br>
-      <Grid container spacing={1}>
+    <Container>     
+      <br></br><br></br>
+      <Grid container spacing={1} mt="3">
         <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('period')}>
           <div className={classes.celula}>Period</div>
         </Grid>
@@ -256,7 +253,7 @@ function PublicOcutation() {
                   <Grid container spacing={2} alignItems='stretch'>
                     <Grid item xs={12} sm={4} md={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth ><label>Date Start</label>
+                        <FormControl fullWidth ><label>Date Filter (start)</label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker format="YYYY-MM-DD" value={dateStartPeriod} onChange={date => { setDateStartPeriod(date) }} />
                           </LocalizationProvider>
@@ -265,7 +262,7 @@ function PublicOcutation() {
                     </Grid>
                     <Grid item xs={7} sm={4} md={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Date End</label>
+                        <FormControl fullWidth><label>Date Filter (end)</label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker format="YYYY-MM-DD" value={dateEndPeriod} onChange={date => { setDateEndPeriod(date) }} />
                           </LocalizationProvider>
@@ -295,7 +292,7 @@ function PublicOcutation() {
                   <Grid container spacing={2} alignItems='stretch'>
                     <Grid item xs={12} sm={6} md={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth ><label>Date Start</label>
+                        <FormControl fullWidth ><label>Date Filter (start)</label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker format="YYYY-MM-DD" value={dateStartUser} onChange={date => { setDateStartUser(date) }} />
                           </LocalizationProvider>
@@ -304,7 +301,7 @@ function PublicOcutation() {
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Date End</label>
+                        <FormControl fullWidth><label>Date Filter (end)</label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker format="YYYY-MM-DD" value={dateStartUser} onChange={date => { setDateEndUser(date) }} />
                           </LocalizationProvider>
@@ -385,7 +382,8 @@ function PublicOcutation() {
                       </Box>
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
-                      <FormControl fullWidth><label>Magnitude ({magnitude.toString()})</label>
+                      {/* <FormControl fullWidth><label>Magnitude ({magnitude.toString()})</label> */}
+                      <FormControl fullWidth><label>Magnitude Filter</label>
                         <Slider
                           value={magnitude}
                           step={1}
@@ -397,7 +395,8 @@ function PublicOcutation() {
                       </FormControl>
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
-                      <FormControl fullWidth><label>Diameter (0 and 600Km)</label>
+                      {/* <FormControl fullWidth><label>Diameter (0 and 600Km)</label> */}
+                      <FormControl fullWidth><label> Diameter Filter (Km)</label>
                         <OutlinedInput disabled id="my-input" value={diameter} className={classes.input} variant="outlined" onChange={(e) => setDiameter(e.target.value)} />
                       </FormControl>
                     </Grid>

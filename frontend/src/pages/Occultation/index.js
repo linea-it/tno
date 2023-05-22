@@ -237,7 +237,7 @@ function Occultation() {
                 <Grid container spacing={2} alignItems='stretch'>
                   <Grid item xs={12} sm={6} md={3}>
                     <Box sx={{ minWidth: 120 }}>
-                      <FormControl fullWidth ><label>Date Start</label>
+                      <FormControl fullWidth ><label>Date Filter (start)</label>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
                         </LocalizationProvider>
@@ -246,7 +246,7 @@ function Occultation() {
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Box sx={{ minWidth: 120 }}>
-                      <FormControl fullWidth><label>Date End</label>
+                      <FormControl fullWidth><label>Date Filter (end)</label>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
                         </LocalizationProvider>
@@ -327,7 +327,7 @@ function Occultation() {
                     </Box>
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>                   
-                    <FormControl fullWidth><label>Magnitude ({magnitude.toString()})</label>
+                    <FormControl fullWidth><label>Magnitude Filter</label>
                       <Slider
                         value={magnitude}
                         step={1}
@@ -339,7 +339,7 @@ function Occultation() {
                     </FormControl>
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>                   
-                    <FormControl fullWidth><label>Diameter (0 and 600Km)</label>
+                    <FormControl fullWidth><label>Diameter Filter (Km)</label>
                       <OutlinedInput disabled id="my-input" value={diameter} className={classes.input} variant="outlined" onChange={(e) => setDiameter(e.target.value)} />
                     </FormControl>
                   </Grid>

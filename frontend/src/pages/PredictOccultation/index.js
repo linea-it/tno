@@ -37,10 +37,11 @@ import Switch from '@mui/material/Switch'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Box, OutlinedInput } from '../../../node_modules/@material-ui/core/index'
+import { Box, IconButton, OutlinedInput, Tooltip } from '../../../node_modules/@material-ui/core/index'
 import Select from 'react-select'
 import { Alert } from '../../../node_modules/@material-ui/lab/index'
 import dayjs from 'dayjs';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 function PredictOccultation() {
   const navigate = useNavigate()
@@ -281,7 +282,7 @@ function PredictOccultation() {
     setSelectedSorting(sorting)
     setSelectedPageSize(pageSize)
     setSelectedPage(currentPage)
-    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
     getPredictionJobList({
       page: currentPage + 1,
       pageSize,
@@ -364,7 +365,7 @@ function PredictOccultation() {
   }, 10000)
 
   const onKeyUp = async (event) => {
-    if(event.target.value.length > 1){
+    if (event.target.value.length > 1) {
       getFilteredAsteroidsList(event.target.value).then((list) => {
         setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
       })
@@ -372,8 +373,8 @@ function PredictOccultation() {
   }
 
   useInterval(() => {
-    if(selectedSorting){
-      loadData(({sorting: selectedSorting, pageSize: selectedPageSize, currentPage: selectedPage}));
+    if (selectedSorting) {
+      loadData(({ sorting: selectedSorting, pageSize: selectedPageSize, currentPage: selectedPage }));
     }
   }, [5000]);
 
@@ -417,7 +418,7 @@ function PredictOccultation() {
                           <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                             <Grid item xs={12}>
                               <Box sx={{ minWidth: 120 }}>
-                                <FormControl fullWidth><label>Date Start <span className={classes.errorText}>*</span></label>
+                                <FormControl fullWidth><label>Date Filter (start) <span className={classes.errorText}>*</span></label>
                                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
                                   </LocalizationProvider>
@@ -429,7 +430,7 @@ function PredictOccultation() {
                           <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                             <Grid item xs={12}>
                               <Box sx={{ minWidth: 120 }}>
-                                <FormControl fullWidth><label>Date End <span className={classes.errorText}>*</span></label>
+                                <FormControl fullWidth><label>DDate Filter (end) <span className={classes.errorText}>*</span></label>
                                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
                                   </LocalizationProvider>
@@ -498,7 +499,7 @@ function PredictOccultation() {
                         }
                         <Grid item xs={12} sm={6} md={12} lg={6}>
                           <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth><label>Catalog <span className={classes.errorText}>*</span></label>
+                            <FormControl fullWidth><label>Star Catalog <span className={classes.errorText}>*</span></label>
                               <Select
                                 value={catalog}
                                 id="catalog"
@@ -530,7 +531,8 @@ function PredictOccultation() {
                         </Grid>
                         <Grid item xs={12} sm={6} md={12} lg={6}>
                           <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth><label>Predict Step <span className={classes.errorText}>*</span></label>
+                            <FormControl fullWidth><label> Ephemeris Step(s) <span className={classes.errorText}>*</span></label> <Tooltip title=" Step in time, in seconds, to determine the positions of objects. 600 for distant objects and 60 for nearby objects."><IconButton><InfoOutlinedIcon /></IconButton>
+                            </Tooltip>
                               <OutlinedInput id="my-input" value={predictStep} className={classes.input} variant="outlined" onChange={(e) => setpredictStep(e.target.value)} />
                             </FormControl>
                             {predictStepError ? (<span className={classes.errorText}>Required field</span>) : ''}
@@ -558,7 +560,7 @@ function PredictOccultation() {
                         Execute
                       </Button>
                     </Box>
-                  </Grid>                  
+                  </Grid>
                 </CardContent>
               </Card>
             </Grid>

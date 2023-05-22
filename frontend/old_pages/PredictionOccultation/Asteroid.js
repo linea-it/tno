@@ -265,7 +265,7 @@ function PredictionOccultationAsteroid({ setTitle, drawerOpen }) {
       {
         title: 'Leap Seconds',
         value: asteroidData.leap_second,
-      },DatePredict
+      },      
       {
         title: 'Observations',
         value: '',
@@ -291,7 +291,7 @@ function PredictionOccultationAsteroid({ setTitle, drawerOpen }) {
       },
     ]);
   }, [asteroidData, occultationData]);
-  DatePredict
+
   const closeLightbox = () => {
     setLightbox({
       currentImage: 0,

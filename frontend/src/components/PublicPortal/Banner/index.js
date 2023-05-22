@@ -1,5 +1,5 @@
 import React from 'react'
-import { Grid, Card, CardContent } from '@material-ui/core';
+import { Grid, Link } from '@material-ui/core';
 import styles from './styles'
 import './styles.css'
 
@@ -15,9 +15,10 @@ function PublicBanner() {
         </Grid>
         <Grid item xs={12} container className={classes.bannerWrapper} alignItems='flex-end'>
           <div className="container textBanner">
-            <Grid xs={12} className={classes.textTitleOcultatiom}><label>Ocultation</label></Grid>
-            <Grid xs={12} className={classes.textOcultatiom}><label >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla porttitor dui ipsum, ultricies placerat orci venenatis vel. In varius tortor tempus, feugiat nulla nec, tempus leo. Lorem ipsum dolor sit amet, consectetur adipiscing elit...</label></Grid>
-            <Grid xs={12} className={classes.bannerWrapper}  alignItems='flex-end'><label>read more</label></Grid>
+            <Grid xs={12} className={classes.textTitleOcultatiom}><label>Stellar Occultation</label></Grid>
+            <Grid xs={12} className={classes.textOcultatiom}><label >A Stellar Occultation is an astronomical event that occurs when the flux of the light from a star is temporarily blocked by a Solar System Object passing in front of it for an specific observer on Earth. This technique allows the determination of sizes and shapes with accuracy comparable to observations by spacecraft and also provides information about the object's surroundings, such as: atmosphere, rings, jets, among other structures around the body.</label></Grid>
+            <Grid xs={12} className={classes.bannerWrapper} alignItems='flex-end'><Link color='inherit' href="/publicOccultation"
+              target="_self" className={classes.menuLink}><label>read more</label></Link></Grid>
           </div>
         </Grid>
       </Grid>

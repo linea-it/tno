@@ -7,6 +7,7 @@ const styles = makeStyles({
     paddingTop: '0.5em',  
     paddingBotton: '0.5em', 
     color: '#000000',
+    
   },
   media: {
     minHeight: 175,
