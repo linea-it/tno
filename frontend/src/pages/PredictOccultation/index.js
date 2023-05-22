@@ -41,7 +41,6 @@ import { Box, IconButton, OutlinedInput, Tooltip } from '../../../node_modules/@
 import Select from 'react-select'
 import { Alert } from '../../../node_modules/@material-ui/lab/index'
 import dayjs from 'dayjs';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 function PredictOccultation() {
   const navigate = useNavigate()
