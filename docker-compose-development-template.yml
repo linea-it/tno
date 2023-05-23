@@ -22,9 +22,9 @@ services:
     build: ./backend
     volumes:
       # Diretório de Código fonte da aplicação
-      - ./backend:/app
+      - ./backend:/usr/src/app
       # Arquivo de Variaveis de ambiente
-      - ./local_settings.py:/app/coreAdmin/local_settings.py
+      - ./local_settings.py:/usr/src/app/coreAdmin/local_settings.py
       # Diretório de Logs
       - ./log:/log
       # Diretório de Dados
