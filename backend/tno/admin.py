@@ -34,6 +34,7 @@ class OccultationAdmin(admin.ModelAdmin):
         "dec_star_deg",
         "ra_target_deg",
         "dec_target_deg",
+        "created_at"
     )
     search_fields = ("name", "number")
 

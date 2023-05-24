@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-
+from datetime import datetime
 from current_user import get_current_user
 
 
@@ -292,6 +292,11 @@ class Occultation(models.Model):
         help_text="Declination of target in degrees",
         null=True,
         blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        verbose_name="Created at", 
+        auto_now=True
     )
 
 

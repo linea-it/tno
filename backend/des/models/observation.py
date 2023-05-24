@@ -67,6 +67,15 @@ class Observation(models.Model):
 
     mag_psf_err = models.FloatField(verbose_name="Mag PSF Error", null=True, blank=True)
 
+    # Data de criação do registro, 
+    # Representa o momento em que a observação foi processada
+    # Como esta tabela nunca é update, cada novo processamento é um delete/insert 
+    # este campo sempre representa o momento da ultima atualização.
+    created_at = models.DateTimeField(
+        verbose_name="Created at", 
+        auto_now=True
+    )
+
     class Meta:
         # A mesma posição não pode se repetir em um mesmo ccd para um mesmo asteroid.
         unique_together = (

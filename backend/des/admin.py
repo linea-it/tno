@@ -274,6 +274,7 @@ class ObservationAdmin(admin.ModelAdmin):
         "offset_dec",
         "mag_psf",
         "mag_psf_err",
+        "created_at"
     )
     search_fields = ("name",)
 
