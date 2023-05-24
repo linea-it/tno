@@ -44,7 +44,10 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative',    
     border: '1px solid #ced4da',   
     width: 'auto'    
-  }
+  },
+  tooltip: {
+    fontSize: "1.4em",
+  },
 }))
 
 export default useStyles
