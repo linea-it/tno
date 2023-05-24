@@ -557,13 +557,22 @@ class PredictionJob (models.Model):
         verbose_name="Execution Time", null=True, blank=True
     )
 
+    # Tempo médio de execução por Asteroid ( exec_time / count_asteroids) em segundos
+    avg_exec_time = models.FloatField(
+        verbose_name="Average Execution Time", 
+        help_text= "average execution time per asteroid. (seconds)",
+        null=True, 
+        blank=True,
+        default=0
+    )
+
     filter_type = models.CharField(
         verbose_name="Filter Type",
         max_length=15,
         choices=(
-            ("name", "Name"),
-            ("dynclass", "DynClass"),            
-            ("base_dynclass", "Base DynClass"),
+            ("name", "Object name"),
+            ("dynclass", "Dynamic class (with subclasses)"),            
+            ("base_dynclass", "Dynamic class"),
         ),
     )
 
@@ -765,6 +774,8 @@ class PredictionJobResult(models.Model):
     des_obs_gen_run = models.BooleanField(
         default=False,
         verbose_name="des_obs_gen_run",
+        null=True, 
+        blank=True
     )
 
     des_obs_tp_start = models.DateTimeField(
@@ -790,6 +801,7 @@ class PredictionJobResult(models.Model):
     bsp_jpl_dw_run = models.BooleanField(
         default=False,
         verbose_name="bsp_jpl_dw_run",
+        null=True, blank=True
     )
 
     bsp_jpl_tp_start = models.DateTimeField(
@@ -815,6 +827,7 @@ class PredictionJobResult(models.Model):
     obs_dw_run = models.BooleanField(
         default=False,
         verbose_name="obs_dw_run",
+        null=True, blank=True
     )
 
     obs_tp_start = models.DateTimeField(
