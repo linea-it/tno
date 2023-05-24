@@ -738,27 +738,49 @@ class PredictionJobResult(models.Model):
         ),
     )
 
+    # Total de Observações no DES para este asteroid. 
+    # referente a tabela des_observations.
     des_obs = models.IntegerField(
         verbose_name="des_obs",
+        help_text="total DES observations for this asteroid.",
         default=0,
     )
+    # Total de Ocultações para este asteroid.
+    occultations = models.IntegerField(
+        default=0,
+        verbose_name="Occultations",
+        help_text="Number of occultation events identified for this asteroid."
+    )
 
+    # Indica a Origem das Observations e Orbital Elements pode ser AstDys ou MPC
     obs_source = models.CharField(
         max_length=100,
         null=True, 
         blank=True,
-        verbose_name="obs_source",
+        verbose_name="Observation Source",
+        help_text="Observation data source, AstDys or MPC."
     )
 
+    # Tempo de execução para um unico asteroid. 
+    # Não considera o tempo em que job ficou em idle nem o tempo de consolidação do job.
     exec_time = models.DurationField(
-        verbose_name="exec_time", null=True, blank=True
+        verbose_name="exec_time", 
+        null=True, 
+        blank=True,
+        help_text="Prediction pipeline runtime for this asteroid."
     )
 
+    # Mensagens de erro pode conter mais de uma separadas por ;
     messages = models.TextField(
-        verbose_name="messages", null=True, blank=True
+        verbose_name="messages", 
+        null=True, 
+        blank=True,
+        help_text="Error messages that occurred while running this asteroid, there may be more than one in this case will be separated by ;"
     )
 
     # TODO: REVER ESTES CAMPOS que seriam usados só no time profile
+
+    # Etapa DES Observations
     des_obs_start = models.DateTimeField(
         verbose_name="des_obs_start", auto_now_add=False, null=True, blank=True
     )
@@ -771,6 +793,7 @@ class PredictionJobResult(models.Model):
         verbose_name="des_obs_exec_time", null=True, blank=True
     )
 
+    # TODO pode ser removidos todos os inputs serão baixados sempre.
     des_obs_gen_run = models.BooleanField(
         default=False,
         verbose_name="des_obs_gen_run",
@@ -786,6 +809,7 @@ class PredictionJobResult(models.Model):
         verbose_name="des_obs_tp_finish", auto_now_add=False, null=True, blank=True
     )
 
+    # Etapa Download BSP from JPL 
     bsp_jpl_start = models.DateTimeField(
         verbose_name="bsp_jpl_start", auto_now_add=False, null=True, blank=True
     )
@@ -798,6 +822,7 @@ class PredictionJobResult(models.Model):
         verbose_name="bsp_jpl_dw_time", null=True, blank=True
     )
 
+    # TODO pode ser removidos todos os inputs serão baixados sempre.
     bsp_jpl_dw_run = models.BooleanField(
         default=False,
         verbose_name="bsp_jpl_dw_run",
@@ -812,6 +837,7 @@ class PredictionJobResult(models.Model):
         verbose_name="bsp_jpl_tp_finish", auto_now_add=False, null=True, blank=True
     )
 
+    # Etapa Download Observations from AstDys or MPC
     obs_start = models.DateTimeField(
         verbose_name="obs_start", auto_now_add=False, null=True, blank=True
     )
@@ -824,6 +850,7 @@ class PredictionJobResult(models.Model):
         verbose_name="obs_dw_time", null=True, blank=True
     )
 
+    # TODO pode ser removidos todos os inputs serão baixados sempre.
     obs_dw_run = models.BooleanField(
         default=False,
         verbose_name="obs_dw_run",
@@ -838,38 +865,40 @@ class PredictionJobResult(models.Model):
         verbose_name="obs_tp_finish", auto_now_add=False, null=True, blank=True
     )
 
-    obs_ele_source = models.CharField(
+    # Etapa Download Orbital Elements from AstDys or MPC
+    orb_ele_source = models.CharField(
         max_length=100,
         null=True, 
         blank=True,
         verbose_name="obs_ele_source",
     )
 
-    obs_ele_start = models.DateTimeField(
+    orb_ele_start = models.DateTimeField(
         verbose_name="obs_ele_start", auto_now_add=False, null=True, blank=True
     )
 
-    obs_ele_finish = models.DateTimeField(
+    orb_ele_finish = models.DateTimeField(
         verbose_name="obs_ele_finish", auto_now_add=False, null=True, blank=True
     )
 
-    obs_ele_dw_time = models.DurationField(
+    orb_ele_dw_time = models.DurationField(
         verbose_name="obs_ele_dw_time", null=True, blank=True
     )
-
-    obs_ele_dw_run = models.BooleanField(
+    # TODO pode ser removidos todos os inputs serão baixados sempre.
+    orb_ele_dw_run = models.BooleanField(
         default=False,
         verbose_name="obs_ele_dw_run",
     )
 
-    obs_ele_tp_start = models.DateTimeField(
+    orb_ele_tp_start = models.DateTimeField(
         verbose_name="obs_ele_tp_start", auto_now_add=False, null=True, blank=True
     )
 
-    obs_ele_tp_finish = models.DateTimeField(
+    orb_ele_tp_finish = models.DateTimeField(
         verbose_name="obs_ele_tp_finish", auto_now_add=False, null=True, blank=True
     )
-    
+
+    # Etapa Refinamento de Orbita (NIMA)
     ref_orb_start = models.DateTimeField(
         verbose_name="ref_orb_start", auto_now_add=False, null=True, blank=True
     )
@@ -882,11 +911,7 @@ class PredictionJobResult(models.Model):
         verbose_name="ref_orb_exec_time", null=True, blank=True
     )
 
-    pre_occ_count = models.IntegerField(
-        default=0,
-        verbose_name="pre_occ_count",
-    )
-
+    # Etapa Predict Occultation (PRAIA Occ)
     pre_occ_start = models.DateTimeField(
         verbose_name="pre_occ_start", auto_now_add=False, null=True, blank=True
     )
@@ -898,6 +923,12 @@ class PredictionJobResult(models.Model):
         verbose_name="pre_occ_exec_time", null=True, blank=True
     )
 
+    # Etapa de Ingestão de Resultados (prenchimento dessa tabela e da tno_occultation)
+
+    # Total de ocultações que foram inseridas no banco de dados
+    # Deve ser igual a observations caso seja diferente indica que 
+    # houve falha no registro dos resultados
+    # TODO: Talvez esse campo não seja necessário depois da fase de validação.
     ing_occ_count = models.IntegerField(
         default=0,
         verbose_name="ing_occ_count",
