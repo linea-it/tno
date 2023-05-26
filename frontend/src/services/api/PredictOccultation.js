@@ -1,14 +1,12 @@
 import { api } from './Api'
 
-export const createPredictionJob = ({ date_initial, date_final, filter_type, filter_value, predict_step, force_refresh_input, input_days_to_expire, catalog}) => {
+export const createPredictionJob = ({ date_initial, date_final, filter_type, filter_value, predict_step, catalog}) => {
   const params = {
     date_initial: date_initial,
     date_final: date_final,
     filter_type: filter_type,
     filter_value: filter_value,
     predict_step: predict_step,
-    force_refresh_input: force_refresh_input,
-    input_days_to_expire: input_days_to_expire,
     catalog: catalog
   }
 

@@ -29,15 +29,10 @@ RUN apt-get update && \
     && apt-get autoremove --purge  -y \
     && rm -rf /var/lib/apt/lists/*
 
-# Add venv
-# RUN python -m venv /opt/venv
-# ENV PATH="/opt/venv/bin:$PATH"
-
 # Install python packages
 COPY requirements.txt /tmp/pip-tmp/
 RUN pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
     && rm -rf /tmp/pip-tmp
-
 
 ARG USERNAME=tnouser
 ARG USER_UID=1000
@@ -55,12 +50,13 @@ ENV PYTHONPATH="/usr/src/app:$PYTHONPATH"
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 
-COPY ./entrypoint.sh ./entrypoint.sh
+COPY --chmod=0775 ./entrypoint.sh /entrypoint.sh
+COPY --chmod=0775 ./start.sh /start.sh
 
 # Switch to non-priviliged user and run app
 USER tnouser
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 
 #  Runtime Stage
 # FROM python:3.10-slim

@@ -294,9 +294,14 @@ class Occultation(models.Model):
         blank=True,
     )
 
+    # Data de criação do registro, 
+    # Representa o momento em que o evento foi identificado/processado
+    # Como esta tabela nunca é update, cada novo processamento é um delete/insert 
+    # este campo sempre representa o momento da ultima atualização deste evento de 
+    # ocultação.
     created_at = models.DateTimeField(
         verbose_name="Created at", 
-        auto_now=True
+        auto_now_add=True
     )
 
 
@@ -605,17 +610,17 @@ class PredictionJob (models.Model):
         default=600,
     )
 
-    input_days_to_expire = models.IntegerField(
-        verbose_name="Days to expire",
-        help_text="Days to expire inputs",
-        default=5,
-    )
+    # input_days_to_expire = models.IntegerField(
+    #     verbose_name="Days to expire",
+    #     help_text="Days to expire inputs",
+    #     default=5,
+    # )
 
-    force_refresh_input = models.BooleanField(
-        verbose_name="Refresh Inputs",
-        help_text="Force Refresh Inputs",
-        default=False,        
-    )
+    # force_refresh_input = models.BooleanField(
+    #     verbose_name="Refresh Inputs",
+    #     help_text="Force Refresh Inputs",
+    #     default=False,        
+    # )
 
     count_asteroids = models.IntegerField(
         verbose_name="Asteroids",
@@ -647,30 +652,30 @@ class PredictionJob (models.Model):
         default=0,        
     )
 
-    parsl_init_blocks = models.IntegerField(
-        verbose_name="Parsl Blocks",        
-        help_text="Value that defines the parallelism factor that parsl will use in the process.",
-        default=400,
+    # parsl_init_blocks = models.IntegerField(
+    #     verbose_name="Parsl Blocks",        
+    #     help_text="Value that defines the parallelism factor that parsl will use in the process.",
+    #     default=400,
 
-    )
+    # )
 
-    condor_job_submited = models.IntegerField(
-        verbose_name="HTCondor Jobs",
-        help_text="HTCondor Job Submited",        
-        default=0,
-    )
+    # condor_job_submited = models.IntegerField(
+    #     verbose_name="HTCondor Jobs",
+    #     help_text="HTCondor Job Submited",        
+    #     default=0,
+    # )
 
-    condor_job_completed = models.IntegerField(
-        verbose_name="HTCondor Completed",
-        help_text="HTCondor Jobs Completed.",        
-        default=0,
-    )
+    # condor_job_completed = models.IntegerField(
+    #     verbose_name="HTCondor Completed",
+    #     help_text="HTCondor Jobs Completed.",        
+    #     default=0,
+    # )
 
-    condor_job_removed = models.IntegerField(
-        verbose_name="HTCondor Removed",
-        help_text="Condor Jobs Removed",
-        default=0,        
-    )    
+    # condor_job_removed = models.IntegerField(
+    #     verbose_name="HTCondor Removed",
+    #     help_text="Condor Jobs Removed",
+    #     default=0,        
+    # )    
 
     debug = models.BooleanField(
         verbose_name="Debug",        
@@ -757,13 +762,22 @@ class PredictionJobResult(models.Model):
         help_text="Number of occultation events identified for this asteroid."
     )
 
-    # Indica a Origem das Observations e Orbital Elements pode ser AstDys ou MPC
+    # Indica a Origem das Observations pode ser AstDys ou MPC
     obs_source = models.CharField(
         max_length=100,
         null=True, 
         blank=True,
         verbose_name="Observation Source",
         help_text="Observation data source, AstDys or MPC."
+    )
+
+    # Indica a Origem dos Orbital Elements pode ser AstDys ou MPC
+    orb_ele_source = models.CharField(
+        max_length=100,
+        null=True, 
+        blank=True,
+        verbose_name="Orbital Elements Source",
+        help_text="Orbital Elements data source, AstDys or MPC."
     )
 
     # Tempo de execução para um unico asteroid. 
@@ -798,22 +812,6 @@ class PredictionJobResult(models.Model):
         verbose_name="des_obs_exec_time", null=True, blank=True
     )
 
-    # TODO pode ser removidos todos os inputs serão baixados sempre.
-    des_obs_gen_run = models.BooleanField(
-        default=False,
-        verbose_name="des_obs_gen_run",
-        null=True, 
-        blank=True
-    )
-
-    des_obs_tp_start = models.DateTimeField(
-        verbose_name="des_obs_tp_start", auto_now_add=False, null=True, blank=True
-    )
-
-    des_obs_tp_finish = models.DateTimeField(
-        verbose_name="des_obs_tp_finish", auto_now_add=False, null=True, blank=True
-    )
-
     # Etapa Download BSP from JPL 
     bsp_jpl_start = models.DateTimeField(
         verbose_name="bsp_jpl_start", auto_now_add=False, null=True, blank=True
@@ -825,21 +823,6 @@ class PredictionJobResult(models.Model):
 
     bsp_jpl_dw_time = models.DurationField(
         verbose_name="bsp_jpl_dw_time", null=True, blank=True
-    )
-
-    # TODO pode ser removidos todos os inputs serão baixados sempre.
-    bsp_jpl_dw_run = models.BooleanField(
-        default=False,
-        verbose_name="bsp_jpl_dw_run",
-        null=True, blank=True
-    )
-
-    bsp_jpl_tp_start = models.DateTimeField(
-        verbose_name="bsp_jpl_tp_start", auto_now_add=False, null=True, blank=True
-    )
-
-    bsp_jpl_tp_finish = models.DateTimeField(
-        verbose_name="bsp_jpl_tp_finish", auto_now_add=False, null=True, blank=True
     )
 
     # Etapa Download Observations from AstDys or MPC
@@ -855,29 +838,7 @@ class PredictionJobResult(models.Model):
         verbose_name="obs_dw_time", null=True, blank=True
     )
 
-    # TODO pode ser removidos todos os inputs serão baixados sempre.
-    obs_dw_run = models.BooleanField(
-        default=False,
-        verbose_name="obs_dw_run",
-        null=True, blank=True
-    )
-
-    obs_tp_start = models.DateTimeField(
-        verbose_name="obs_tp_start", auto_now_add=False, null=True, blank=True
-    )
-
-    obs_tp_finish = models.DateTimeField(
-        verbose_name="obs_tp_finish", auto_now_add=False, null=True, blank=True
-    )
-
-    # Etapa Download Orbital Elements from AstDys or MPC
-    orb_ele_source = models.CharField(
-        max_length=100,
-        null=True, 
-        blank=True,
-        verbose_name="obs_ele_source",
-    )
-
+    # Etapa Orbital Elements from AstDys or MPC
     orb_ele_start = models.DateTimeField(
         verbose_name="obs_ele_start", auto_now_add=False, null=True, blank=True
     )
@@ -888,19 +849,6 @@ class PredictionJobResult(models.Model):
 
     orb_ele_dw_time = models.DurationField(
         verbose_name="obs_ele_dw_time", null=True, blank=True
-    )
-    # TODO pode ser removidos todos os inputs serão baixados sempre.
-    orb_ele_dw_run = models.BooleanField(
-        default=False,
-        verbose_name="obs_ele_dw_run",
-    )
-
-    orb_ele_tp_start = models.DateTimeField(
-        verbose_name="obs_ele_tp_start", auto_now_add=False, null=True, blank=True
-    )
-
-    orb_ele_tp_finish = models.DateTimeField(
-        verbose_name="obs_ele_tp_finish", auto_now_add=False, null=True, blank=True
     )
 
     # Etapa Refinamento de Orbita (NIMA)
@@ -924,6 +872,7 @@ class PredictionJobResult(models.Model):
     pre_occ_finish = models.DateTimeField(
         verbose_name="pre_occ_finish", auto_now_add=False, null=True, blank=True
     )
+
     pre_occ_exec_time = models.DurationField(
         verbose_name="pre_occ_exec_time", null=True, blank=True
     )

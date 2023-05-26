@@ -42,19 +42,13 @@ class PredictionJobViewSet(
 
             predict_step (inteiro):
 
-            force_refresh_input (booleano):
-
-            input_days_to_expire (inteiro):
-
-            
-
         Returns:
             job (PredictionJobSerializer): Job que acabou de ser criado.
         """
         params = request.data
         date_initial = params["date_initial"]
         date_final = params["date_final"]
-        force_refresh_input = params["force_refresh_input"]
+
         # Recuperar o usuario que submeteu o Job.
         owner = self.request.user
 
@@ -62,7 +56,9 @@ class PredictionJobViewSet(
         # predictions_start = datetime.strptime(date_initial, "%Y-%m-%d").strftime("%Y-%m-%d 00:00:00")
 
         # predictions_end = datetime.strptime(date_final, "%Y-%m-%d").strftime("%Y-%m-%d 23:59:59")
-
+        
+        # TODO: Investigar por que recebeu os parametros como string ao inves de json. 
+        # Não seria necessário remover as aspas. 
         catalog = Catalog.objects.get(name=params["catalog"].replace("\'", "\""))
         # Criar um model Prediction Job
         job = PredictionJob(
@@ -75,8 +71,6 @@ class PredictionJobViewSet(
             predict_start_date=date_initial,
             predict_end_date=date_final,
             predict_step=params["predict_step"].replace("\'", "\""),
-            force_refresh_input=force_refresh_input,
-            input_days_to_expire=params["input_days_to_expire"].replace("\'", "\""),
             catalog=catalog,
         )
         job.save()

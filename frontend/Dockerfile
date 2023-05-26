@@ -5,7 +5,7 @@ COPY . /app
 WORKDIR /app
 
 RUN yarn -v
-RUN yarn --ignore-optional
+RUN yarn --non-interactive --ignore-optional --network-timeout 500000
 
 
 RUN yarn run build
