@@ -387,7 +387,7 @@ function PredictOccultation() {
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
 
                     <Grid item xs={12} sm={12} md={6}>
-                      <label>Start and End Period<span className={classes.errorText}>*</span></label>
+                      <label>Period for prediction<span className={classes.errorText}>*</span></label>
                       <Box variant="outlined" className="cardBoder">
                         <CardContent>
                           <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
@@ -415,7 +415,7 @@ function PredictOccultation() {
                           <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                             <Grid item xs={12}>
                               <Box sx={{ minWidth: 120 }}>
-                                <FormControl fullWidth><label>Date Filter (start) <span className={classes.errorText}>*</span></label>
+                                <FormControl fullWidth><label>Initial date <span className={classes.errorText}>*</span></label>
                                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
                                   </LocalizationProvider>
@@ -427,7 +427,7 @@ function PredictOccultation() {
                           <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                             <Grid item xs={12}>
                               <Box sx={{ minWidth: 120 }}>
-                                <FormControl fullWidth><label>DDate Filter (end) <span className={classes.errorText}>*</span></label>
+                                <FormControl fullWidth><label>Final date <span className={classes.errorText}>*</span></label>
                                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
                                   </LocalizationProvider>
