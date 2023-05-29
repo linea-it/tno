@@ -168,16 +168,19 @@ function PredictOccultation() {
 
     switch (filter) {
       case '1week':
-        dateEnd = dayjs(currentDate).add(7, 'days');
+        dateEnd = dayjs(currentDate).add(7, 'day');
         break;
       case '1mounth':
-        dateEnd = dayjs(currentDate).add(30, 'days');
+        dateEnd = dayjs(currentDate).add(1, 'month');
+        dateEnd = dayjs(dateEnd.add(-1, 'day'));
         break;
       case '6mounths':
-        dateEnd = dayjs(currentDate).add(180, 'days');
+        dateEnd = dayjs(currentDate).add(6, 'month');
+        dateEnd = dayjs(dateEnd.add(-1, 'day'));
         break;
       case '1year':
-        dateEnd = dayjs(currentDate).add(365, 'days');
+        dateEnd = dayjs(currentDate).add(1, 'year');
+        dateEnd = dayjs(dateEnd.add(-1, 'day'));
         break;
     }
 
