@@ -133,9 +133,9 @@ export default function AppRoutes() {
         exact
         path='/'
         element={
-          <LandingPage>
-            <Home />
-          </LandingPage>
+          <PublicPortalPage>
+            <PublicHome />
+          </PublicPortalPage>
         }
       />
       <Route
