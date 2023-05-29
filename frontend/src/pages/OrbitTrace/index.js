@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Component } from 'react'
-import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, InputLabel, MenuItem, TextField, FormGroup, FormControlLabel, Typography, Switch, OutlinedInput } from '../../../node_modules/@material-ui/core/index'
+import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, InputLabel, MenuItem, TextField, FormGroup, FormControlLabel, Typography, Switch, OutlinedInput, IconButton, Tooltip } from '../../../node_modules/@material-ui/core/index'
 import Table from '../../components/Table/index'
 import moment from '../../../node_modules/moment/moment'
 import useStyles from './styles'
@@ -33,7 +33,7 @@ function OrbitTrace() {
   const [reload, setReload] = useState(true);
   const [bspPlanetaryList, setBspPlanetaryList] = useState([]);
   const [leapSecondList, setLeapSecondList] = useState([]);
-  const [filterTypeList, setFilterTypeList] = useState([{ value: 'name', label: 'Name' }, { value: 'dynclass', label: 'DynClass' }, { value: 'base_dynclass', label: 'Base DynClass' }]);
+  const [filterTypeList, setFilterTypeList] = useState([{ value: 'name', label: 'Object name' }, { value: 'dynclass', label: 'Dynamic class (with subclasses)' }, { value: 'base_dynclass', label: 'Dynamic class' }]);
   const [dynClassList, setDynClassList] = useState([]);
   const [baseDynClassList, setBaseDynClassList] = useState([]);
   const [asteroidsList, setAsteroidsList] = useState([]);
@@ -419,7 +419,8 @@ function OrbitTrace() {
                     }
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Bsp Planetary <span className={classes.errorText}>*</span></label>
+                        <FormControl fullWidth><label>Planetary ephemerides <span className={classes.errorText}>*</span><Tooltip title={<label className={classes.tooltip}>Version of binary file that contains information to compute the ephemeris of the planets.</label>}><IconButton><InfoOutlinedIcon /></IconButton>
+                            </Tooltip></label>
                           <Select
                             value={bspPlanetary}
                             name="bspPlanetary"
@@ -435,7 +436,8 @@ function OrbitTrace() {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Leap Second <span className={classes.errorText}>*</span></label>
+                        <FormControl fullWidth><label>Leap Second <span className={classes.errorText}>*</span><Tooltip title={<label className={classes.tooltip}>Version of ascii file that contains dates of one-second adjustment that is occasionally applied to UTC.</label>}><IconButton><InfoOutlinedIcon /></IconButton>
+                            </Tooltip></label>
                           <Select
                             value={leapSecond}
                             id="leapSecond"

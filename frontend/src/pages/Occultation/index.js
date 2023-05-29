@@ -231,7 +231,7 @@ function Occultation() {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Card>
-            <CardHeader title='Ocultation Filter' />
+            <CardHeader title='Selection of occultation events' />
             <CardContent>
               <form noValidate autoComplete="off">
                 <Grid container spacing={2} alignItems='stretch'>
@@ -348,7 +348,7 @@ function Occultation() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid container item xs={12} spacing={6}>
+        <Grid item xs={12} spacing={6}>
           <Card>
             <CardHeader title={`Occultation Result - Total: ${totalCount}` }/>
             <CardContent>

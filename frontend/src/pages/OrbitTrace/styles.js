@@ -42,6 +42,12 @@ const useStyles = makeStyles((theme) => ({
   loadingPlot:{
     margin: '150px auto',
   },
+  tooltip: {
+    fontSize: "1.4em",
+  },
+  MuiIconButtonRoot:{
+padding:'0px !Important',
+  }
 }))
 
 export default useStyles
