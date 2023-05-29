@@ -98,9 +98,15 @@ class PredictionJobAdmin(admin.ModelAdmin):
         "status",
         "predict_start_date",
         "predict_end_date",
+        "predict_interval",
         "filter_type",
         "filter_value",
-        "catalog"
+        "count_asteroids",
+        "count_occ",
+        "count_success",
+        "count_failures",
+        "avg_exec_time",
+        "exec_time"
     )
 
 

@@ -3,7 +3,7 @@ import json
 import os
 import threading
 from datetime import datetime, timedelta
-
+import humanize
 import numpy as np
 import pandas as pd
 from tno.models import PredictionJob, Catalog
@@ -52,10 +52,11 @@ class PredictionJobViewSet(
         # Recuperar o usuario que submeteu o Job.
         owner = self.request.user
 
-        # # # adicionar a hora inicial e final as datas
-        # predictions_start = datetime.strptime(date_initial, "%Y-%m-%d").strftime("%Y-%m-%d 00:00:00")
-
-        # predictions_end = datetime.strptime(date_final, "%Y-%m-%d").strftime("%Y-%m-%d 23:59:59")
+        # Calcular o intervalo da predição
+        predictions_start = datetime.strptime(date_initial, "%Y-%m-%d")
+        predictions_end = datetime.strptime(date_final, "%Y-%m-%d")
+        predictons_interval = predictions_start - predictions_end
+        h_predict_interval = humanize.naturaldelta(predictons_interval)
         
         # TODO: Investigar por que recebeu os parametros como string ao inves de json. 
         # Não seria necessário remover as aspas. 
@@ -72,6 +73,7 @@ class PredictionJobViewSet(
             predict_end_date=date_final,
             predict_step=params["predict_step"].replace("\'", "\""),
             catalog=catalog,
+            predict_interval=h_predict_interval
         )
         job.save()
 
