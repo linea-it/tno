@@ -34,6 +34,7 @@ class OccultationAdmin(admin.ModelAdmin):
         "dec_star_deg",
         "ra_target_deg",
         "dec_target_deg",
+        "created_at"
     )
     search_fields = ("name", "number")
 
@@ -97,9 +98,15 @@ class PredictionJobAdmin(admin.ModelAdmin):
         "status",
         "predict_start_date",
         "predict_end_date",
+        "predict_interval",
         "filter_type",
         "filter_value",
-        "catalog"
+        "count_asteroids",
+        "count_occ",
+        "count_success",
+        "count_failures",
+        "avg_exec_time",
+        "exec_time"
     )
 
 

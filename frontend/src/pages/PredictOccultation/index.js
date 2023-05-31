@@ -211,8 +211,6 @@ function PredictOccultation() {
         filter_type: filterType.value,
         filter_value: filterValue.value,
         predict_step: predictStep,
-        force_refresh_input: forceRefreshInputs,
-        input_days_to_expire: bspValue.value.toString(),
         catalog: catalog.value
       }
       createPredictionJob(data)
