@@ -12,8 +12,10 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp'
 import styles from './styles'
 import './header.css'
 import { useAuth } from '../../../contexts/AuthContext.js'
+import { useNavigate } from '../../../../node_modules/react-router-dom/dist/index'
 function PublicHeader() {
   const { isAuthenticated, user, signIn, logout } = useAuth()
+  const navigate = useNavigate();
 
   const location = useLocation()
   const trigger = useScrollTrigger({
@@ -96,8 +98,15 @@ function PublicHeader() {
       description: 'Tutorials',
       href: '/publicTutorials',
       target: '_self'
+    },  
+    isAuthenticated && user.dashboard && {
+      description: 'Dashboard',
+      href: 'privatePortal',
+      target: '_self'
     }   
   ]
+
+  const handleCardClick = (pathname) => navigate(pathname)   
 
   return (
     <AppBar position='static' className={classes.appbar}>
@@ -105,7 +114,7 @@ function PublicHeader() {
         <List className={classes.menuList}>
           {menus.map((menu) => (
             <ListItem key={menu.href} className={classes.menuListItem}>
-              <Link href={menu.href} className={classes.menuLink}>
+              <Link onClick={() => handleCardClick(menu.href)} className={classes.menuLink}>
                 {menu.description}
               </Link>
             </ListItem>

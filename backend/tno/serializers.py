@@ -8,9 +8,16 @@ from tno.models import Asteroid, Occultation, LeapSecond, BspPlanetary, Catalog,
 
 
 class UserSerializer(serializers.ModelSerializer):
+    dashboard = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ("username",)
+        fields = ("username", "dashboard")
+
+    def get_dashboard(self, obj):
+        if(obj.profile):
+            return obj.profile.dashboard
+        else:
+            return False
 
 
 class JohnstonArchiveSerializer(serializers.ModelSerializer):

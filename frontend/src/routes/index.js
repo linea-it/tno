@@ -141,6 +141,16 @@ export default function AppRoutes() {
       <Route
         isHomePage
         exact
+        path='/privatePortal'
+        element={
+          <LandingPage>
+            <Home />
+          </LandingPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
         path='/about-us'
         element={
           <LandingPage>

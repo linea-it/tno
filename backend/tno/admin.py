@@ -7,6 +7,14 @@ from tno.models import LeapSecond
 from tno.models import Occultation
 from tno.models import Catalog
 from tno.models import PredictionJob, PredictionJobResult
+from tno.models import Profile
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = (
+        "user_id",
+        "dashboard",
+    )
 
 
 @admin.register(Asteroid)

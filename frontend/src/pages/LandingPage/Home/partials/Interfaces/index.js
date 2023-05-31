@@ -15,12 +15,12 @@ function Interfaces() {
   const [interfaces] = useState([
     {
       id: '1',
-      app_url: 'dashboard',
+      app_url: '/dashboard',
       app_display_name: 'Dashboard'
     },
     {
       id: '2',
-      app_url: 'data-preparation/des/discovery',
+      app_url: '/data-preparation/des/discovery',
       app_display_name: 'Discovery'
     },
     // {
@@ -40,17 +40,17 @@ function Interfaces() {
     // },
     {
       id: '6',
-      app_url: 'prediction-of-occultation',
+      app_url: '/prediction-of-occultation',
       app_display_name: 'Prediction of Occultation'
     },
     {
       id: '7',
-      app_url: 'occultation',
+      app_url: '/occultation',
       app_display_name: 'Occultation'
     },
     {
       id: '8',
-      app_url: 'occultation-calendar',
+      app_url: '/occultation-calendar',
       app_display_name: 'Occultation Calendar'
     }
   ])
