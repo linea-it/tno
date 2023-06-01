@@ -14,9 +14,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("username", "dashboard")
 
     def get_dashboard(self, obj):
-        if(obj.profile):
+        try:
             return obj.profile.dashboard
-        else:
+        except:
             return False
 
 
