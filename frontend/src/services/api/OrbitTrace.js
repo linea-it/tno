@@ -6,8 +6,8 @@ export const createOrbitTraceJob = ({ bsp_planetary, leap_second, filter_type, f
     leap_second: leap_second,
     filter_type: filter_type,
     filter_value: filter_value,
-    parsl_init_blocks: parsl_init_blocks,
-    bps_days_to_expire: bps_days_to_expire,
+    // parsl_init_blocks: parsl_init_blocks,
+    // bps_days_to_expire: bps_days_to_expire,
     debug: debug,
   }
 
