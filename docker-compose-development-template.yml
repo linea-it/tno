@@ -17,7 +17,7 @@ services:
       - ./database_subset:/data
 
   # Backend Django
-  backend:
+  backend: &backend
     user: "1000:1000"
     build: ./backend
     volumes:
@@ -31,6 +31,16 @@ services:
       - ./archive:/archive
     depends_on:
       - database
+
+  # Copia do serviço backend, mas executando outro comando
+  celery_worker: &celery_worker
+    <<: *backend
+    command: /start_worker.sh
+
+  # Copia do serviço backend, mas executando outro comando
+  celery_beat: &celery_beat
+    <<: *backend
+    command: /start_beat.sh
 
   # Frontend React
   frontend:

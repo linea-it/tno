@@ -6,6 +6,7 @@ set -o nounset
 
 echo "Running Migrate to apply changes in database"
 python manage.py migrate
+python manage.py migrate django_celery_results
 
 echo "Running Collect Statics"
 python manage.py collectstatic --clear --noinput --verbosity 0

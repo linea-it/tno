@@ -41,3 +41,6 @@ SKYBOT_SERVER = "http://vo.imcce.fr/webservices/skybot/"
 # Em ambiente de desenvolvimento ou que não esteja configurado o shibboleth usar SHIBBOLETH_ENABLED = False.
 # Em ambiente de produção que já esteja configurado com shibboleth usar SHIBBOLETH_ENABLED = True.
 SHIBBOLETH_ENABLED = False
+
+# Celery Configs
+CELERY_BROKER_URL = "amqp://tno:adminadmin@rabbit:5672/tno_vhost"
