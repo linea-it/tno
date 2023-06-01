@@ -14,16 +14,11 @@ class Profile(models.Model):
 
     dashboard = models.BooleanField(default=True)
 
-    # def __str__(self):
-    #     return str(self.display_name)
-
     @receiver(post_save, sender=User)
     def create_or_update_user_profile(sender, instance, created, **kwargs):
-        """Cria um profile para o usuario e adiciona um display_name.
+        """Cria um profile para o usuario e adiciona dashboard como verdadeiro.
         Só é executado quando um usuario é criado.
-        display_name = username para usuarios sem email.
-        display_name = email.split('@')[0] para usuarios que tem email.
-
+        
         Args:
             instance (User): instancia do model User.
             created (bool): True se o evento for disparado pela criação de um novo usuario.
