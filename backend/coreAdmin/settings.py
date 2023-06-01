@@ -102,6 +102,8 @@ INSTALLED_APPS = [
     "url_filter",
     "corsheaders",
     "shibboleth",
+    "django_celery_results",
+    # "django_celery_beat",
     # Project Apps
     "common",
     "tno",
@@ -251,7 +253,8 @@ if DES_ARCHIVE_URL is not None:
 # Skybot da Franca: SKYBOT_SERVER="http://vo.imcce.fr/webservices/skybot/"
 SKYBOT_SERVER = "http://vo.imcce.fr/webservices/skybot/"
 
-
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "amqp://tno:adminadmin@rabbit:5672/tno_vhost")
+CELERY_RESULT_BACKEND = 'django-db'
 
 LOGGING = {
     "version": 1,
@@ -314,7 +317,7 @@ LOGGING = {
         "django": {
             "handlers": ["file"],
             "level": LOGGING_LEVEL,
-            "propagate": True,
+            "propagate": False,
         },
         # "proccess": {
         #     "handlers": ["proccess"],
@@ -334,12 +337,12 @@ LOGGING = {
         "shibboleth": {
             "handlers": ["shibboleth"],
             "level": LOGGING_LEVEL,
-            "propagate": True,
+            "propagate": False,
         },
         "asteroids": {
             "handlers": ["asteroids"],
             "level": LOGGING_LEVEL,
-            "propagate": True,
+            "propagate": False,
         },
     },
 }

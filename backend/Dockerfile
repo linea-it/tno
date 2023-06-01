@@ -52,6 +52,8 @@ COPY . /usr/src/app
 
 COPY --chmod=0775 ./entrypoint.sh /entrypoint.sh
 COPY --chmod=0775 ./start.sh /start.sh
+COPY --chmod=0775 ./start_worker.sh /start_worker.sh
+COPY --chmod=0775 ./start_beat.sh /start_beat.sh
 
 # Switch to non-priviliged user and run app
 USER tnouser
