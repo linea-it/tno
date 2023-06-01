@@ -91,8 +91,8 @@ class OrbitTraceJobViewSet(
             filter_type=params["filter_type"].replace("\'", "\""),
             filter_value=params["filter_value"].replace("\'", "\""),
             debug=debug,
-            bps_days_to_expire=params["bps_days_to_expire"].replace("\'", "\""),
-            parsl_init_blocks=params["parsl_init_blocks"].replace("\'", "\""),
+            # bps_days_to_expire=params["bps_days_to_expire"].replace("\'", "\""),
+            # parsl_init_blocks=params["parsl_init_blocks"].replace("\'", "\""),
             # Job começa com Status Idle.
             status=1,
             # Tempo de execução estimado

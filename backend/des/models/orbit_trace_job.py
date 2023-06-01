@@ -78,9 +78,9 @@ class OrbitTraceJob(models.Model):
         verbose_name="Filter Type",
         max_length=15,
         choices=(
-            ("name", "Name"),
-            ("dynclass", "DynClass"),            
-            ("base_dynclass", "Base DynClass"),
+            ("name", "Object name"),
+            ("dynclass", "Dynamic class (with subclasses)"),            
+            ("base_dynclass", "Dynamic class"),
         ),
     )
 
@@ -127,36 +127,6 @@ class OrbitTraceJob(models.Model):
         blank=True        
     )
 
-    parsl_init_blocks = models.IntegerField(
-        verbose_name="Parsl Blocks",        
-        help_text="Value that defines the parallelism factor that parsl will use in the process.",
-        default=400,
-
-    )
-
-    bps_days_to_expire = models.IntegerField(
-        verbose_name="BSP days to expire",        
-        help_text="Number of days that a BSP file already downloaded is considered valid.",
-        default=0,        
-    )
-    condor_job_submited = models.IntegerField(
-        verbose_name="HTCondor Jobs",
-        help_text="HTCondor Job Submited",        
-        default=0,
-    )
-
-    condor_job_completed = models.IntegerField(
-        verbose_name="HTCondor Completed",
-        help_text="HTCondor Jobs Completed.",        
-        default=0,
-    )
-
-    condor_job_removed = models.IntegerField(
-        verbose_name="HTCondor Removed",
-        help_text="Condor Jobs Removed",
-        default=0,        
-    )
-
     #falso = todos os arquivosw retornados pelo skybot são apagados
     #true = os arquivos ficam na máquina referenciada no campo path
     debug = models.BooleanField(
@@ -180,5 +150,24 @@ class OrbitTraceJob(models.Model):
 
     traceback = models.TextField(verbose_name="Traceback", null=True, blank=True)
     
+    # Tempo médio de execução por Asteroid ( exec_time / count_asteroids) em segundos
+    avg_exec_time_asteroid = models.FloatField(
+        verbose_name="Average Execution Time Asteroid", 
+        help_text= "average execution time per asteroid. (seconds)",
+        null=True, 
+        blank=True,
+        default=0
+    )
+
+    # Tempo médio de execução por Asteroid ( exec_time / count_ccds) em segundos
+    avg_exec_time_ccd = models.FloatField(
+        verbose_name="Average Execution Time CCD", 
+        help_text= "average execution time per ccd. (seconds)",
+        null=True, 
+        blank=True,
+        default=0
+    )
+
+
     def __str__(self):
         return str(self.id)
