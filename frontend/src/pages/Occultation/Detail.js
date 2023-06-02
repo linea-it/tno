@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'
 import {
   Grid,
   Card,
@@ -23,15 +23,14 @@ import Log from '../../components/Log';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import Donut from '../../components/Chart/Donut';
 import TimeProfile from '../../components/Chart/TimeProfile';
-import {
-  getPredictionRunById,
-  getTimeProfile,
-  getAsteroids,
-} from '../../services/api/Prediction';
+// import {
+//   getPredictionRunById,
+//   getTimeProfile,
+//   getAsteroids,
+// } from '../../services/api/Prediction';
 
-function PredictionOccultationDetail() {
+function OccultationDetail() {
   const { id } = useParams();
-  const history = useHistory();
   const [list, setList] = useState([]);
   const [statusDonutData, setStatusDonutData] = useState([]);
   const [executionTimeDonutData, setExecutionTimeDonutData] = useState([]);
@@ -56,9 +55,9 @@ function PredictionOccultationDetail() {
           <Icon className="fas fa-info-circle" />
         </Tooltip>
       ),
-      action: (el) =>
-        history.push(`/prediction-of-occultation/asteroid/${el.id}`),
-      align: 'center',
+      // action: (el) =>
+      //   history.push(`/prediction-of-occultation/asteroid/${el.id}`),
+      // align: 'center',
     },
     {
       name: 'status',
@@ -109,90 +108,90 @@ function PredictionOccultationDetail() {
   const [columnsTable, setColumnsTable] = useState(tableListArray);
 
   useEffect(() => {
-    getPredictionRunById({ id }).then((data) => {
-      setList([
-        {
-          title: 'Status',
-          value: () => (
-            <ColumnStatus status={data.status} title={data.error_msg} />
-          ),
-        },
-        {
-          title: 'Process',
-          value: data.process_displayname,
-        },
-        {
-          title: 'Owner',
-          value: data.owner,
-        },
-        {
-          title: 'Start',
-          value: data.h_time,
-        },
-        {
-          title: 'Execution',
-          value: data.h_execution_time,
-        },
-        {
-          title: 'Asteroids',
-          value: data.count_objects,
-        },
-        {
-          title: 'Occultations',
-          value: data.occultations,
-        },
-      ]);
+    // getPredictionRunById({ id }).then((data) => {
+    //   setList([
+    //     {
+    //       title: 'Status',
+    //       value: () => (
+    //         <ColumnStatus status={data.status} title={data.error_msg} />
+    //       ),
+    //     },
+    //     {
+    //       title: 'Process',
+    //       value: data.process_displayname,
+    //     },
+    //     {
+    //       title: 'Owner',
+    //       value: data.owner,
+    //     },
+    //     {
+    //       title: 'Start',
+    //       value: data.h_time,
+    //     },
+    //     {
+    //       title: 'Execution',
+    //       value: data.h_execution_time,
+    //     },
+    //     {
+    //       title: 'Asteroids',
+    //       value: data.count_objects,
+    //     },
+    //     {
+    //       title: 'Occultations',
+    //       value: data.occultations,
+    //     },
+    //   ]);
 
-      setStatusDonutData([
-        { name: 'Success', value: data.count_success, color: '#009900' },
-        { name: 'Warning', value: data.count_warning, color: '#D79F15' },
-        { name: 'Failure', value: data.count_failed, color: '#ff1a1a' },
-        {
-          name: 'Not Executed',
-          value: data.count_not_executed,
-          color: '#ABA6A2',
-        },
-      ]);
+    //   setStatusDonutData([
+    //     { name: 'Success', value: data.count_success, color: '#009900' },
+    //     { name: 'Warning', value: data.count_warning, color: '#D79F15' },
+    //     { name: 'Failure', value: data.count_failed, color: '#ff1a1a' },
+    //     {
+    //       name: 'Not Executed',
+    //       value: data.count_not_executed,
+    //       color: '#ABA6A2',
+    //     },
+    //   ]);
 
-      setExecutionTimeDonutData([
-        {
-          name: 'Dates',
-          value: Math.round(moment.duration(data.execution_dates).asSeconds()),
-        },
-        {
-          name: 'Ephemeris',
-          value: Math.round(
-            moment.duration(data.execution_ephemeris).asSeconds()
-          ),
-        },
-        {
-          name: 'Gaia',
-          value: Math.round(
-            moment.duration(data.execution_catalog).asSeconds()
-          ),
-        },
-        {
-          name: 'Search Candidates',
-          value: Math.round(
-            moment.duration(data.execution_search_candidate).asSeconds()
-          ),
-        },
-        {
-          name: 'Maps',
-          value: Math.round(moment.duration(data.execution_maps).asSeconds()),
-        },
-        {
-          name: 'Register',
-          value: Math.round(
-            moment.duration(data.execution_register).asSeconds()
-          ),
-        },
-      ]);
-    });
+    //   setExecutionTimeDonutData([
+    //     {
+    //       name: 'Dates',
+    //       value: Math.round(moment.duration(data.execution_dates).asSeconds()),
+    //     },
+    //     {
+    //       name: 'Ephemeris',
+    //       value: Math.round(
+    //         moment.duration(data.execution_ephemeris).asSeconds()
+    //       ),
+    //     },
+    //     {
+    //       name: 'Gaia',
+    //       value: Math.round(
+    //         moment.duration(data.execution_catalog).asSeconds()
+    //       ),
+    //     },
+    //     {
+    //       name: 'Search Candidates',
+    //       value: Math.round(
+    //         moment.duration(data.execution_search_candidate).asSeconds()
+    //       ),
+    //     },
+    //     {
+    //       name: 'Maps',
+    //       value: Math.round(moment.duration(data.execution_maps).asSeconds()),
+    //     },
+    //     {
+    //       name: 'Register',
+    //       value: Math.round(
+    //         moment.duration(data.execution_register).asSeconds()
+    //       ),
+    //     },
+    //   ]);
+    // });
 
-    getTimeProfile({ id }).then((res) => {
-      setTimeProfile(res);
-    });
+    // getTimeProfile({ id }).then((res) => {
+    //   setTimeProfile(res);
+    //});
   }, [id]);
 
   const bugLogArray = [
@@ -205,10 +204,10 @@ function PredictionOccultationDetail() {
           <Icon className="fas fa-info-circle" />
         </Tooltip>
       ),
-      action: (el) =>
-        history.push(`/prediction-of-occultation/asteroid/${el.id}`),
-      align: 'center',
-      sortingEnabled: false,
+      // action: (el) =>
+      //   history.push(`/prediction-of-occultation/asteroid/${el.id}`),
+      // align: 'center',
+      // sortingEnabled: false,
     },
     {
       name: 'status',
@@ -251,34 +250,34 @@ function PredictionOccultationDetail() {
         ? `-${sorting[0].columnName}`
         : sorting[0].columnName;
 
-    const asteroids = await getAsteroids({
-      ordering,
-      pageSize,
-      page: currentPage !== 0 ? currentPage + 1 : 1,     
-      filters: [
-        {
-          property: 'predict_run',
-          value: id,
-        },
-        ...filter,
-      ],
-      search: searchValue,
-    });
+    // const asteroids = await getAsteroids({
+    //   ordering,
+    //   pageSize,
+    //   page: currentPage !== 0 ? currentPage + 1 : 1,     
+    //   filters: [
+    //     {
+    //       property: 'predict_run',
+    //       value: id,
+    //     },
+    //     ...filter,
+    //   ],
+    //   search: searchValue,
+    // });
 
-    if (asteroids && asteroids.results) {
-      setTableData(asteroids.results);
-      setTotalCount(asteroids.count);
-    }
+    // if (asteroids && asteroids.results) {
+    //   setTableData(asteroids.results);
+    //   setTotalCount(asteroids.count);
+    // }
   };
 
-  const handleBackNavigation = () => history.push('/prediction-of-occultation');
+  const handleBackNavigation = () => {}//history.push('/prediction-of-occultation');
 
   const handleChangeToolButton = (event, value) => {
-    const columnToggleValue =
-      value === 'list'
-        ? setColumnsTable(tableListArray)
-        : setColumnsTable(bugLogArray);
-    setToolButton(columnToggleValue);
+    // const columnToggleValue =
+    //   value === 'list'
+    //     ? setColumnsTable(tableListArray)
+    //     : setColumnsTable(bugLogArray);
+    // setToolButton(columnToggleValue);
   };
 
   return (
@@ -380,4 +379,4 @@ function PredictionOccultationDetail() {
   );
 }
 
-export default PredictionOccultationDetail;
+export default OccultationDetail;

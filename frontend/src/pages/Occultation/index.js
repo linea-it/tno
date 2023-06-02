@@ -202,7 +202,7 @@ function Occultation() {
       setTableData(
         data.results.map((row) => ({
           key: row.id,
-          detail: `/occultation_detail/${row.id}`,
+          detail: `/occultation-detail/${row.id}`,
           ...row
         }))
       )

@@ -25,7 +25,8 @@ function OrbitTraceAsteroid() {
     dynclass: "",
     observations: 0,
     ccds: 0,
-    error: ""
+    error: "",
+    exec_time: "",
   })
 
   const [summary, setSummary] = useState([])
@@ -120,7 +121,8 @@ function OrbitTraceAsteroid() {
         width: 150,
         align: 'center',
         customElement: (row) => <span>{row.mag_psf_err.toFixed(3)}</span>
-      }
+      },
+
       
       
   ]
@@ -157,6 +159,10 @@ function OrbitTraceAsteroid() {
           title: 'CCDs',
           value: orbitTraceResult.ccds
         },
+        {
+          title: 'Execution Time',
+          value: orbitTraceResult.exec_time ? orbitTraceResult.exec_time.split('.')[0] : "-"
+        }
       ]
       if(orbitTraceResult.status == 2){
         defaultSummary.push(        {

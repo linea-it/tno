@@ -21,5 +21,6 @@ class OrbitTraceJobResultSerializer(serializers.ModelSerializer):
             "spk_id",
             "observations",
             "ccds",
+            "exec_time",
             "error",
         )

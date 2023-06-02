@@ -68,6 +68,11 @@ class OrbitTraceJobResult(models.Model):
         verbose_name="CCDS Count",
     )
 
+    # Tempo de duração do Job (asteroid).
+    exec_time = models.DurationField(
+        verbose_name="Execution Time", null=True, blank=True
+    )
+
     error = models.TextField(verbose_name="Error", null=True, blank=True)
 
 

@@ -20,6 +20,7 @@ services:
   backend: &backend
     user: "1000:1000"
     build: ./backend
+    command: /start.sh
     volumes:
       # Diretório de Código fonte da aplicação
       - ./backend:/usr/src/app

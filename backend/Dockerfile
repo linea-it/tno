@@ -50,10 +50,19 @@ ENV PYTHONPATH="/usr/src/app:$PYTHONPATH"
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 
-COPY --chmod=0775 ./entrypoint.sh /entrypoint.sh
-COPY --chmod=0775 ./start.sh /start.sh
-COPY --chmod=0775 ./start_worker.sh /start_worker.sh
-COPY --chmod=0775 ./start_beat.sh /start_beat.sh
+# COPY --chmod=0775 ./entrypoint.sh /entrypoint.sh
+# COPY --chmod=0775 ./start.sh /start.sh
+# COPY --chmod=0775 ./start_worker.sh /start_worker.sh
+# COPY --chmod=0775 ./start_beat.sh /start_beat.sh
+
+COPY ./entrypoint.sh /entrypoint.sh
+COPY ./start.sh /start.sh
+COPY ./start_worker.sh /start_worker.sh
+COPY ./start_beat.sh /start_beat.sh
+RUN chmod 775 /entrypoint.sh 
+RUN chmod 775 /start.sh
+RUN chmod 775 /start_worker.sh
+RUN chmod 775 /start_beat.sh
 
 # Switch to non-priviliged user and run app
 USER tnouser

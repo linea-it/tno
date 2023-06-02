@@ -34,6 +34,7 @@ import PublicHome from '../pages/PublicPortal/Home'
 import PublicAboutUs from '../pages/PublicPortal/AboutUs/index'
 import PublicTutorials from '../pages/PublicPortal/Tutorials/index'
 import PublicOccultation from '../pages/PublicPortal/occultation/index'
+import OccultationDetail from '../pages/Occultation/Detail'
 // import RefineOrbit from '../pages/RefineOrbit';
 // import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
 // import RefineOrbitAsteroid from '../pages/RefineOrbit/Asteroid';
@@ -342,6 +343,18 @@ export default function AppRoutes() {
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
               <Occultation />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/occultation-detail/:id'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <OccultationDetail />
             </DashboardPage>
           </PrivateRoute>
         }

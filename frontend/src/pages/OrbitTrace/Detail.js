@@ -99,6 +99,13 @@ function OrbitTraceDetail() {
       width: 150
     },
     {
+      name: 'exec_time',
+      title: 'Execution Time',
+      width: 150,
+      align: 'center',
+      customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : "-")
+    },
+    {
       name: 'error',
       title: 'Messages',
       width: 150
@@ -165,6 +172,13 @@ function OrbitTraceDetail() {
       title: 'CCDs',
       align: 'center',
       width: 130
+    },
+    {
+      name: 'exec_time',
+      title: 'Execution Time',
+      width: 150,
+      align: 'center',
+      customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : "-")
     },
 
   ]
@@ -240,7 +254,16 @@ function OrbitTraceDetail() {
         {
           title: 'Execution Time',
           value: orbitTraceJob.exec_time ? orbitTraceJob.exec_time.split('.')[0] : 0
-        }
+        },
+        {
+          title: 'Average Execution Time asteroid',
+          value: orbitTraceJob.avg_exec_time_asteroid ? orbitTraceJob.avg_exec_time_asteroid.split('.')[0] : 0
+        },
+        {
+          title: 'Average Execution Time ccd',
+          value: orbitTraceJob.avg_exec_time_ccd ? orbitTraceJob.avg_exec_time_ccd.split('.')[0] : 0
+        },
+
       ])
 
       setSummaryResults([

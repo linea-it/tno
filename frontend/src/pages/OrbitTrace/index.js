@@ -254,6 +254,15 @@ function OrbitTrace() {
     })
   }
 
+  // const getAverage = (exec_time, count_asteroids) =>{
+  //   let data = exec_time.split(':')
+  //   let hSeconds = (parseInt(data[0]) * 3600)
+  //   let mSeconds = (parseInt(data[1]) * 60)
+  //   let seconds = parseInt(data[2].split('.')[0])
+  //   let totalSeconds = hSeconds + mSeconds + seconds
+  //   return moment.utc(((totalSeconds / count_asteroids) * 1000)).format("HH:mm:ss.SSS")
+  // }
+
   const tableColumns = [
     {
       name: 'index',
@@ -303,6 +312,22 @@ function OrbitTrace() {
       headerTooltip: 'Execution time',
       align: 'center',
       customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : "-")
+    },
+    {
+      name: 'avg_exec_time_asteroid',
+      title: 'Average Execution Time Asteroid',
+      width: 150,
+      headerTooltip: 'Execution time',
+      align: 'center',
+      customElement: (row) => (row.avg_exec_time_asteroid ? row.avg_exec_time_asteroid.split('.')[0] : "-")
+    },
+    {
+      name: 'avg_exec_time_ccd',
+      title: 'Average Execution Time CCD',
+      width: 150,
+      headerTooltip: 'Execution time',
+      align: 'center',
+      customElement: (row) => (row.avg_exec_time_ccd ? row.avg_exec_time_ccd.split('.')[0] : "-")
     },
     {
       name: 'count_asteroids',
@@ -450,7 +475,7 @@ function OrbitTrace() {
                         {leapSecondError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
                     </Grid>
-                    <Grid item xs={12} sm={6} md={4} lg={3}>
+                    {/* <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth><label>BSP File Expiration Time <span className={classes.errorText}>*</span></label>
                           <Select
@@ -481,10 +506,10 @@ function OrbitTrace() {
                         </FormControl>
                         {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
-                      <FormControl fullWidth><label>Debug Mode ON/OFF</label>
+                      <FormControl fullWidth>
                           
                         <FormGroup>
                           <FormControlLabel

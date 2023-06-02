@@ -12,9 +12,12 @@ from tno.models import Profile
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = (
-        "user_id",
+        "user",
         "dashboard",
     )
+
+    raw_id_fields = ("user",)
+
 
 
 @admin.register(Asteroid)
