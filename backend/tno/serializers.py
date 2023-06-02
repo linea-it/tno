@@ -91,6 +91,12 @@ class OccultationSerializer(serializers.ModelSerializer):
             "dec_star_deg",
             "ra_target_deg",
             "dec_target_deg",
+            "ra_star_candidate",
+            "dec_star_candidate",
+            "closest_approach",
+            "position_angle",
+            "velocity",
+            "delta",
             "g",
         )
 

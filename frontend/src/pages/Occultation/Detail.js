@@ -23,357 +23,258 @@ import Log from '../../components/Log';
 import ColumnStatus from '../../components/Table/ColumnStatus';
 import Donut from '../../components/Chart/Donut';
 import TimeProfile from '../../components/Chart/TimeProfile';
-// import {
-//   getPredictionRunById,
-//   getTimeProfile,
-//   getAsteroids,
-// } from '../../services/api/Prediction';
+import Aladin from '../../components/Aladin/index';
+import {
+  getOccultationById,
+} from '../../services/api/Occultation';
 
 function OccultationDetail() {
   const { id } = useParams();
-  const [list, setList] = useState([]);
-  const [statusDonutData, setStatusDonutData] = useState([]);
-  const [executionTimeDonutData, setExecutionTimeDonutData] = useState([]);
-  const [timeProfile, setTimeProfile] = useState({});
-  const [tableData, setTableData] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [toolButton, setToolButton] = useState('list');
-  const [dialog, setDialog] = useState({
-    content: [],
-    visible: false,
-    title: '',
-  });
-
-  const tableListArray = [
-    {
-      name: 'id',
-      title: 'Details',
-      width: 100,
-      sortingEnabled: false,
-      icon: (
-        <Tooltip title="Details">
-          <Icon className="fas fa-info-circle" />
-        </Tooltip>
-      ),
-      // action: (el) =>
-      //   history.push(`/prediction-of-occultation/asteroid/${el.id}`),
-      // align: 'center',
-    },
-    {
-      name: 'status',
-      title: 'Status',
-      width: 140,
-      align: 'center',
-      sortingEnabled: false,
-      customElement: (row) => (
-        <ColumnStatus status={row.status} title={row.error_msg} />
-      ),
-    },
-    {
-      name: 'name',
-      title: 'Name',
-      width: 180,
-    },
-    {
-      name: 'number',
-      title: 'Number',
-      width: 140,
-      sortingEnabled: false,
-      align: 'right',
-    },
-    {
-      name: 'occultations',
-      title: 'Occultations',
-      width: 140,
-      align: 'right',
-      sortingEnabled: false,
-    },
-    {
-      name: 'execution_time',
-      title: 'Exec Time',
-      headerTooltip: 'Execution time',
-      align: 'center',
-      customElement: (row) => (
-        <span>
-          {row.execution_time
-            ? moment.utc(row.execution_time * 1000).format('HH:mm:ss')
-            : ''}
-        </span>
-      ),
-      width: 140,
-      sortingEnabled: false,
-    },
-  ];
-
-  const [columnsTable, setColumnsTable] = useState(tableListArray);
-
+  const [occultation, setOccultation] = useState({});
+  const [circumstances, setCircumstances] = useState([]);
+  const [star, setStar] = useState([]);
+  const [object, setObject] = useState([]);
+  
+  
   useEffect(() => {
-    // getPredictionRunById({ id }).then((data) => {
-    //   setList([
-    //     {
-    //       title: 'Status',
-    //       value: () => (
-    //         <ColumnStatus status={data.status} title={data.error_msg} />
-    //       ),
-    //     },
-    //     {
-    //       title: 'Process',
-    //       value: data.process_displayname,
-    //     },
-    //     {
-    //       title: 'Owner',
-    //       value: data.owner,
-    //     },
-    //     {
-    //       title: 'Start',
-    //       value: data.h_time,
-    //     },
-    //     {
-    //       title: 'Execution',
-    //       value: data.h_execution_time,
-    //     },
-    //     {
-    //       title: 'Asteroids',
-    //       value: data.count_objects,
-    //     },
-    //     {
-    //       title: 'Occultations',
-    //       value: data.occultations,
-    //     },
-    //   ]);
-
-    //   setStatusDonutData([
-    //     { name: 'Success', value: data.count_success, color: '#009900' },
-    //     { name: 'Warning', value: data.count_warning, color: '#D79F15' },
-    //     { name: 'Failure', value: data.count_failed, color: '#ff1a1a' },
-    //     {
-    //       name: 'Not Executed',
-    //       value: data.count_not_executed,
-    //       color: '#ABA6A2',
-    //     },
-    //   ]);
-
-    //   setExecutionTimeDonutData([
-    //     {
-    //       name: 'Dates',
-    //       value: Math.round(moment.duration(data.execution_dates).asSeconds()),
-    //     },
-    //     {
-    //       name: 'Ephemeris',
-    //       value: Math.round(
-    //         moment.duration(data.execution_ephemeris).asSeconds()
-    //       ),
-    //     },
-    //     {
-    //       name: 'Gaia',
-    //       value: Math.round(
-    //         moment.duration(data.execution_catalog).asSeconds()
-    //       ),
-    //     },
-    //     {
-    //       name: 'Search Candidates',
-    //       value: Math.round(
-    //         moment.duration(data.execution_search_candidate).asSeconds()
-    //       ),
-    //     },
-    //     {
-    //       name: 'Maps',
-    //       value: Math.round(moment.duration(data.execution_maps).asSeconds()),
-    //     },
-    //     {
-    //       name: 'Register',
-    //       value: Math.round(
-    //         moment.duration(data.execution_register).asSeconds()
-    //       ),
-    //     },
-    //   ]);
-    // });
-
-    // getTimeProfile({ id }).then((res) => {
-    //   setTimeProfile(res);
-    //});
+    getOccultationById({ id }).then((res) => {
+      setOccultation({
+        ...res,
+        source: ''//imagem do sora,
+      });
+    });
   }, [id]);
 
-  const bugLogArray = [
-    {
-      name: 'id',
-      title: 'Details',
-      width: 100,
-      icon: (
-        <Tooltip title="Details">
-          <Icon className="fas fa-info-circle" />
-        </Tooltip>
-      ),
-      // action: (el) =>
-      //   history.push(`/prediction-of-occultation/asteroid/${el.id}`),
-      // align: 'center',
-      // sortingEnabled: false,
-    },
-    {
-      name: 'status',
-      title: 'Status',
-      width: 140,
-      align: 'center',
-      sortingEnabled: false,
-      customElement: (row) => (
-        <ColumnStatus status={row.status} title={row.error_msg} />
-      ),
-    },
-    {
-      name: 'name',
-      title: 'Name',
-      width: 180,
-    },
-    {
-      name: 'number',
-      title: 'Number',
-      width: 140,
-      sortingEnabled: false,
-    },
-    {
-      name: 'error_msg',
-      title: 'Error Message',
-      width: 350,
-      sortingEnabled: false,
-    },
-  ];
+  useEffect(() => {
+    setCircumstances([
+      {
+        title: 'Date',
+        value: moment(occultation.occ_date).format(
+          'ddd. DD MMMM YYYY HH:mm:ss'
+        ),
+      },
+      {
+        title: 'Star position (ICRF)',
+        tooltip:
+          'Right ascension and declination with assumed proper motion in ICRF/J2000',
+        value: `${occultation.ra_star_candidate} ${occultation.dec_star_candidate}`,
+      },
+      {
+        title: 'C/A',
+        tooltip: 'Geocentric closest approach (arcsec)',
+        value: `${occultation.closest_approach} arcsec`,
+      },
+      {
+        title: 'P/A',
+        tooltip: 'Planet position angle wrt to star at C/A (deg)',
+        value: occultation.position_angle,
+      },
+      {
+        title: 'Velocity',
+        tooltip:
+          'Velocity in plane of sky (positive= prograde, negative= retrograde)',
+        value: `${occultation.velocity} km/s`,
+      },
+      {
+        title: 'Geocentric distance Δ',
+        value: `${occultation.delta} au`,
+      },
+      {
+        title: 'G mag*',
+        tooltip: 'Gaia magnitude corrected from velocity (Source: Gaia DR1)',
+        value: occultation.g,
+      },
+      {
+        title: 'RP mag*',
+        tooltip: 'RP magnitude corrected from velocity (Source: GaiaDR2)',
+        value: '-',
+      },
+      {
+        title: 'H mag*',
+        tooltip: 'H magnitude corrected from velocity (Source: 2MASS)',
+        value: '-',
+      },
+      {
+        title: 'Magnitude drop',
+        value: '-',
+      },
+      {
+        title: 'Uncertainty in time',
+        value: '-',
+      },
+    ]);
 
-  const loadTableData = async ({
-    sorting,
-    pageSize,
-    currentPage,
-    filter,
-    searchValue,
-  }) => {
-    const ordering =
-      sorting[0].direction === 'desc'
-        ? `-${sorting[0].columnName}`
-        : sorting[0].columnName;
+    setStar([
+      {
+        title: 'Star source ID',
+        value: '-',
+      },
+      {
+        title: 'Stellar catalogue',
+        value: '-',
+      },
+      {
+        title: 'Star astrometric position in catalogue (ICRF)',
+        value: '-',
+      },
+      {
+        title: 'Star astrometric position with proper motion (ICRF)',
+        value: '-',
+      },
+      {
+        title: 'Star apparent position (date)',
+        value: '-',
+      },
+      {
+        title: 'Proper motion',
+        value: '-',
+      },
+      {
+        title: 'Source of proper motion',
+        value: '-',
+      },
+      {
+        title: 'Uncertainty in the star position',
+        value: '-',
+      },
+      {
+        title: 'G magnitude',
+        value: '-',
+      },
+      {
+        title: 'RP magnitude (source: GaiaDR2)',
+        value: '-',
+      },
+      {
+        title: 'J magnitude (source: 2MASS)',
+        value: '-',
+      },
+      {
+        title: 'H magnitude (source: 2MASS)',
+        value: '-',
+      },
+      {
+        title: 'K magnitude (source: 2MASS)',
+        value: '-',
+      },
+    ]);
 
-    // const asteroids = await getAsteroids({
-    //   ordering,
-    //   pageSize,
-    //   page: currentPage !== 0 ? currentPage + 1 : 1,     
-    //   filters: [
-    //     {
-    //       property: 'predict_run',
-    //       value: id,
-    //     },
-    //     ...filter,
-    //   ],
-    //   search: searchValue,
-    // });
-
-    // if (asteroids && asteroids.results) {
-    //   setTableData(asteroids.results);
-    //   setTotalCount(asteroids.count);
-    // }
-  };
-
-  const handleBackNavigation = () => {}//history.push('/prediction-of-occultation');
-
-  const handleChangeToolButton = (event, value) => {
-    // const columnToggleValue =
-    //   value === 'list'
-    //     ? setColumnsTable(tableListArray)
-    //     : setColumnsTable(bugLogArray);
-    // setToolButton(columnToggleValue);
-  };
+    setObject([
+      {
+        title: 'Object',
+        value: '-',
+      },
+      {
+        title: 'Diameter',
+        value: '-',
+      },
+      {
+        title: 'Apparent diameter',
+        value: '-',
+      },
+      {
+        title: 'Object astrometric position (ICRF)',
+        value: '-',
+      },
+      {
+        title: 'Object apparent position (date)',
+        value: '-',
+      },
+      {
+        title: 'Uncertainty in position',
+        value: '-',
+      },
+      {
+        title: 'Apparent magnitude',
+        value: '-',
+      },
+      {
+        title: 'Ephemeris',
+        value: '-',
+      },
+      {
+        title: 'Dynamic class',
+        value: '-',
+      },
+      {
+        title: 'Semi major axis',
+        value: '-',
+      },
+      {
+        title: 'Eccentricity',
+        value: '-',
+      },
+      {
+        title: 'Inclination',
+        value: '-',
+      },
+      {
+        title: 'Perihelion',
+        value: '-',
+      },
+      {
+        title: 'Aphelion',
+        value: '-',
+      },
+    ]);
+  }, [occultation]);
 
   return (
     <>
-      <Grid container justify="space-between" alignItems="center" spacing={2}>
-        <Grid item xs={12} md={4}>
-          <Button
-            variant="contained"
-            color="primary"
-            title="Back"
-            onClick={handleBackNavigation}
-          >
-            <Icon className="fas fa-undo" />
-            <span>Back</span>
-          </Button>
-        </Grid>
-      </Grid>
-      <Grid container spacing={2}>
-        <Grid item xs={12} lg={6}>
-          <Card>
-            <CardHeader title="Summary" />
-            <CardContent>
-              <List data={list} />
-            </CardContent>
-          </Card>
-        </Grid>
-        {Object.entries(timeProfile).length > 0 ? (
-          <Grid item xs={12} md={9}>
-            <Card>
-              <CardHeader title="Time Profile" />
-              <CardContent>
-                <TimeProfile width={773} height={363} data={timeProfile} />
-              </CardContent>
-            </Card>
-          </Grid>
-        ) : null}
-      </Grid>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardHeader title="Status" />
-            <CardContent>
-              <Donut data={statusDonutData} />
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardHeader title="Execution Time" />
-            <CardContent>
-              <Donut data={executionTimeDonutData} />
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Card>
-            <CardHeader title="Asteroids" />
+            <CardHeader title="Occultation Map" />
             <CardContent>
-              <Toolbar>
-                <ToggleButtonGroup
-                  value={toolButton}
-                  onChange={handleChangeToolButton}
-                  exclusive
-                >
-                  <ToggleButton value="list">
-                    <ListIcon />
-                  </ToggleButton>
-                  <ToggleButton value="bugLog">
-                    <BugReportIcon />
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </Toolbar>
-              <Table
-                columns={columnsTable}
-                data={tableData}
-                loadData={loadTableData}
-                totalCount={totalCount}
-                defaultSorting={[{ columnName: 'name', direction: 'desc' }]}
-                hasResizing={false}
-                reload
+              <img
+                src={occultation.source}
+                alt={occultation.name}
+                title={occultation.name}
               />
             </CardContent>
           </Card>
         </Grid>
-        <Dialog
-          visible={dialog.visible}
-          title={dialog.title}
-          content={<Log data={dialog.content} />}
-          setVisible={() =>
-            setDialog({ visible: false, content: [], title: ' ' })
-          }
-        />
+      </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardHeader title="Occultation Circumstances" />
+            <CardContent>
+              <List data={circumstances} />
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardHeader title="Occulted star" />
+            <CardContent>
+              <List data={star} />
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardHeader title="Object" />
+            <CardContent>
+              <List data={object} />
+            </CardContent>
+          </Card>
+        </Grid>
+        {occultation.ra_star_candidate && occultation.dec_star_candidate ? (
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardHeader title="Sky map (Aladin)" />
+              <CardContent>
+                <Aladin
+                  ra={occultation.ra_star_candidate}
+                  dec={occultation.dec_star_candidate}
+                />
+              </CardContent>
+            </Card>
+          </Grid>
+        ) : null}
       </Grid>
     </>
   );

@@ -16,3 +16,5 @@ export const getOccultations = ({ page, pageSize, ordering , start_date, end_dat
   return api.get('/occultations/', { params })
 }
 
+export const getOccultationById = ({ id }) => api.get(`/occultations/${id}`).then((res) => res.data)
+

@@ -319,7 +319,6 @@ function OrbitTrace() {
       width: 150,
       headerTooltip: 'Execution time',
       align: 'center',
-      customElement: (row) => (row.avg_exec_time_asteroid ? row.avg_exec_time_asteroid.split('.')[0] : "-")
     },
     {
       name: 'avg_exec_time_ccd',
@@ -327,7 +326,6 @@ function OrbitTrace() {
       width: 150,
       headerTooltip: 'Execution time',
       align: 'center',
-      customElement: (row) => (row.avg_exec_time_ccd ? row.avg_exec_time_ccd.split('.')[0] : "-")
     },
     {
       name: 'count_asteroids',

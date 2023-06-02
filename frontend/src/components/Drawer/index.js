@@ -76,6 +76,7 @@ const routes = [
   { path: '/predict_detail/:id', title: 'Predict Occultation Details' },
   { path: '/predict_asteroid/:id', title: 'Predict Occultation Asteroid' },
   { path: '/occultation', title: 'Occultation' },
+  { path: '/occultation-detail/:id', title: 'Occultation Detail' },
   { path: '/dashboard', title: 'Dashboard' },
   { path: '/data-preparation/des/orbittracedetail/:id', title: 'Orbit Trace Details' },
   { path: '/data-preparation/des/orbittrace/asteroid/:id', title: 'Orbit Trace Asteroid' },

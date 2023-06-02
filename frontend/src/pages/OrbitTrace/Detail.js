@@ -257,11 +257,11 @@ function OrbitTraceDetail() {
         },
         {
           title: 'Average Execution Time asteroid',
-          value: orbitTraceJob.avg_exec_time_asteroid ? orbitTraceJob.avg_exec_time_asteroid.split('.')[0] : 0
+          value: orbitTraceJob.avg_exec_time_asteroid
         },
         {
           title: 'Average Execution Time ccd',
-          value: orbitTraceJob.avg_exec_time_ccd ? orbitTraceJob.avg_exec_time_ccd.split('.')[0] : 0
+          value: orbitTraceJob.avg_exec_time_ccd
         },
 
       ])
