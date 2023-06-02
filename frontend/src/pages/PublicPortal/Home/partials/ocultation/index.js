@@ -37,7 +37,7 @@ function PublicOcutation() {
   const [dateEndUser, setDateEndUser] = useState('');
   const [filterView, setFilterView] = useState('');
   const [magnitude, setMagnitude] = useState([4, 23]);
-  const [diameter, setDiameter] = useState('0');
+  const [diameter, setDiameter] = useState([0, 600]);
   const [zoneValue, setZoneValue] = useState('');
   const [dateStart, setDateStart] = useState('');
   const [dateEnd, setDateEnd] = useState('');
@@ -146,6 +146,10 @@ function PublicOcutation() {
 
   const handleChangeMagnitudeValue = (event, value) => {
     setMagnitude(value);
+  };
+
+  const handleChangeDiameterValue = (event, value) => {
+    setDiameter(value);
   };
 
   const zoneArray = [
@@ -397,7 +401,14 @@ function PublicOcutation() {
                     <Grid item xs={12} sm={6} md={3}>
                       {/* <FormControl fullWidth><label>Diameter (0 and 600Km)</label> */}
                       <FormControl fullWidth><label> Diameter Filter (Km)</label>
-                        <OutlinedInput disabled id="my-input" value={diameter} className={classes.input} variant="outlined" onChange={(e) => setDiameter(e.target.value)} />
+                        <Slider
+                            value={diameter}
+                            step={1}
+                            min={0}
+                            max={600}
+                            valueLabelDisplay="auto"
+                            onChange={handleChangeDiameterValue}
+                          />
                       </FormControl>
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
