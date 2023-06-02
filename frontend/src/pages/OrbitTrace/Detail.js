@@ -256,11 +256,11 @@ function OrbitTraceDetail() {
           value: orbitTraceJob.exec_time ? orbitTraceJob.exec_time.split('.')[0] : 0
         },
         {
-          title: 'Average Execution Time asteroid',
+          title: 'Average Execution Time Asteroid',
           value: orbitTraceJob.avg_exec_time_asteroid
         },
         {
-          title: 'Average Execution Time ccd',
+          title: 'Average Execution Time CCD',
           value: orbitTraceJob.avg_exec_time_ccd
         },
 
