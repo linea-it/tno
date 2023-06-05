@@ -67,7 +67,7 @@ RUN chmod 775 /start_beat.sh
 # Switch to non-priviliged user and run app
 USER tnouser
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh", "/start.sh"]
 
 #  Runtime Stage
 # FROM python:3.10-slim

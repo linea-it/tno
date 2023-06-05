@@ -18,6 +18,8 @@ import {
 import useInterval from '../../hooks/useInterval'
 import useStyles from './styles'
 import { Alert } from '@material-ui/lab'
+import { WidthFull } from '../../../node_modules/@mui/icons-material/index'
+import { fill } from 'lodash'
 
 function OrbitTraceDetail() {
   const { id } = useParams()
@@ -108,7 +110,7 @@ function OrbitTraceDetail() {
     {
       name: 'error',
       title: 'Messages',
-      width: 150
+      width: 800            
     },
 
   ]
@@ -466,11 +468,12 @@ function OrbitTraceDetail() {
       <>
       {
         totalCount > 0 &&
-          <Grid item xs={12}>
+          <Grid item>
             <Card>
               <CardHeader title='Asteroid Results' />
               <CardContent>
                 <Table
+                
                   columns={tableColumns}
                   data={tableData}
                   loadData={loadDataSuccess}
@@ -492,6 +495,7 @@ function OrbitTraceDetail() {
                 <CardContent>
                   <Table
                     columns={tableErrorColumns}
+
                     data={tableErrorData}
                     loadData={loadDataFailure}
                     totalCount={totalErrorCount}

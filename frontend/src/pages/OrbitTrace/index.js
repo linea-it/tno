@@ -438,7 +438,7 @@ function OrbitTrace() {
                     }
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Planetary ephemerides <span className={classes.errorText}>*</span><Tooltip title={<label className={classes.tooltip}>Version of binary file that contains information to compute the ephemeris of the planets.</label>}><IconButton><InfoOutlinedIcon /></IconButton>
+                        <FormControl fullWidth><label className="label-tooltip-margin">Planetary ephemerides <span className={classes.errorText}>*</span><Tooltip title={<label className={classes.tooltip}>Version of binary file that contains information to compute the ephemeris of the planets.</label>}><IconButton><InfoOutlinedIcon /></IconButton>
                             </Tooltip></label>
                           <Select
                             value={bspPlanetary}
@@ -455,7 +455,7 @@ function OrbitTrace() {
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Leap Second <span className={classes.errorText}>*</span><Tooltip title={<label className={classes.tooltip}>Version of ascii file that contains dates of one-second adjustment that is occasionally applied to UTC.</label>}><IconButton><InfoOutlinedIcon /></IconButton>
+                        <FormControl fullWidth><label className="label-tooltip-margin">Leap Second <span className={classes.errorText}>*</span><Tooltip title={<label className={classes.tooltip}>Version of ascii file that contains dates of one-second adjustment that is occasionally applied to UTC.</label>}><IconButton><InfoOutlinedIcon /></IconButton>
                             </Tooltip></label>
                           <Select
                             value={leapSecond}
