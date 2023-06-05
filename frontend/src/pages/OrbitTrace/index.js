@@ -219,7 +219,7 @@ function OrbitTrace() {
   function cleanFields() {
     setBspPlanetary({ value: bspPlanetaryList[0].value, label: bspPlanetaryList[0].label })
     setLeapSecond({ value: "", label: "Select..." });
-    setFilterType({ value: 'base_dynclass', label: 'Base DynClass' });
+    setFilterType({ value: 'base_dynclass', label: 'Dynamic class' });
     setFilterValue({ value: "", label: "Select..." });
     setBspValue({ value: 0, label: "None" });
     setParslInitBlocks({ value: 600, label: "600" });
@@ -332,28 +332,24 @@ function OrbitTrace() {
       title: 'Asteroids',
       width: 130,
       align: 'center',
-      customElement: (row) => <span>{row.count_asteroids}</span>
     },
     {
       name: 'count_ccds',
       title: 'CCDs',
       width: 130,
       align: 'center',
-      customElement: (row) => <span>{row.count_ccds}</span>
     },
     {
       name: 'count_observations',
       title: 'Observations',
       width: 130,
       align: 'center',
-      customElement: (row) => <span>{row.count_observations}</span>
     },
     {
       name: 'count_success',
       title: 'Success',
       width: 130,
       align: 'center',
-      customElement: (row) => <span>{row.count_success}</span>
     },
     {
       name: 'count_failures',
