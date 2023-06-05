@@ -110,9 +110,8 @@ function OrbitTraceDetail() {
     {
       name: 'error',
       title: 'Messages',
-      width: 800            
+      width: 720            
     },
-
   ]
 
   const tableColumns = [
