@@ -11,6 +11,7 @@ from common.read_csv import csv_to_dataframe
 from des.dao import CcdDao, DesSkybotJobResultDao, ExposureDao
 from des.models import OrbitTraceJob
 from des.serializers import OrbitTraceJobSerializer
+from des.serializers import OrbitTraceJobStatusSerializer
 from des.skybot.pipeline import DesSkybotPipeline
 from des.summary import SummaryResult
 from django.core.paginator import Paginator
@@ -105,7 +106,7 @@ class OrbitTraceJobViewSet(
         return Response(result.data)
 
     @action(detail=True, methods=["get"])
-    def status(self, request, pk=None):
+    def status_display(self, request, pk=None):
         """
         #     Este endpoint obtem o status de um job.
 
@@ -120,6 +121,13 @@ class OrbitTraceJobViewSet(
             return Response(job.get_status_display())
         else:
             return Response("job not found")
+
+    @action(detail=True, methods=["get"])
+    def status(self, request, pk=None):
+        job = self.get_object()
+        queryset = job.job_status.all().order_by("step")
+        serializer = OrbitTraceJobStatusSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(detail=True, methods=["post"])
     def cancel_job(self, request, pk=None):

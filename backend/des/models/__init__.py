@@ -4,6 +4,7 @@ from .skybot_position import SkybotPosition
 from .skybot_jobs import SkybotJob
 from .orbit_trace_job import OrbitTraceJob
 from .orbit_trace_job_result import OrbitTraceJobResult
+from .orbit_trace_job_status import OrbitTraceJobStatus
 from .skybot_job_result import SkybotJobResult
 from .summary_dynclass import SummaryDynclass
 from .skybot_by_year import SkybotByYear

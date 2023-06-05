@@ -6,8 +6,10 @@ from tno.models import BspPlanetary
 from tno.models import LeapSecond
 from tno.models import Occultation
 from tno.models import Catalog
-from tno.models import PredictionJob, PredictionJobResult
+from tno.models import PredictionJob
+from tno.models import PredictionJobResult
 from tno.models import Profile
+from tno.models import PredictionJobStatus
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
@@ -134,4 +136,18 @@ class PredictionJobResultAdmin(admin.ModelAdmin):
     raw_id_fields = (
         "job",
         "asteroid",
+    )
+
+@admin.register(PredictionJobStatus)
+class PredictionJobStatusAdmin(admin.ModelAdmin):
+    list_display = (
+        "job",
+        "step",
+        "status",
+        "count",
+        "current",
+        "average_time",
+        "time_estimate",
+        "success",
+        "failures"
     )
