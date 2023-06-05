@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
+import PropTypes, { object } from 'prop-types'
 import InputLabel from '@material-ui/core/InputLabel'
 import Input from '@material-ui/core/Input'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -67,6 +67,7 @@ function Table({
   hasColumnVisibility,
   defaultExpandedGroups,
   reload,
+  defaultHiddenColumnsNames,
   modalContent,
   hasFiltering,
   hasLineBreak,
@@ -120,6 +121,7 @@ function Table({
   const [searchValue, setSearchValue] = useState('')
   const [selection, setSelection] = useState([])
   const [customModalContent, setCustomModalContent] = useState('')
+  const [defaultHiddenColumnNames, setDefaultHiddenColumnNames] = useState(defaultHiddenColumnsNames)
 
   const classes = useStyles()
 
@@ -300,7 +302,7 @@ function Table({
             {hasPagination ? <PagingPanel pageSizes={pageSizes} /> : null}
             {hasToolbar ? <Toolbar /> : null}
             {hasSearching ? <SearchPanel /> : null}
-            {hasColumnVisibility ? <TableColumnVisibility /> : null}
+            {hasColumnVisibility ? <TableColumnVisibility  defaultHiddenColumnNames={ defaultHiddenColumnNames } /> : null}
             {hasColumnVisibility ? <ColumnChooser /> : null}
             <RowIndexer />
           </Grid>

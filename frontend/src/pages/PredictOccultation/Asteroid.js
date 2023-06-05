@@ -9,11 +9,12 @@ import {
 import List from '../../components/List'
 import moment from '../../../node_modules/moment/moment'
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
-
+import { TableColumnVisibility } from '@devexpress/dx-react-grid';
 
 
 function PredictionAsteroid() {
   const { id } = useParams()
+  const [defaultHiddenColumnNames, setDefaultHiddenColumnNames] = useState([])
 
   const navigate = useNavigate()
   const [predictionJobResult, setPredictionJobResult] = useState({
@@ -79,7 +80,7 @@ function PredictionAsteroid() {
         title: 'Date',
         width: 150,
         align: 'center',
-        hide: true,
+        enableHiding: false,
         customElement: (row) => row.date_time ? <span title={moment(row.date_time).format('YYYY-MM-DD HH:mm:ss')}>{moment(row.date_time).format('YYYY-MM-DD HH:mm:ss')}</span> : <span>Invalid Date</span>
       },
       {
@@ -410,8 +411,10 @@ function PredictionAsteroid() {
                 hasFiltering={false}
                 hasColumnVisibility={true}
                 hasToolbar={true}
+                defaultHiddenColumnsNames={defaultHiddenColumnNames}
                 defaultSorting={[{ columnName: 'date_time', direction: 'asc' }]}
-              />
+              >
+              </Table>
           </CardContent>
         </Card>
       </Grid>
