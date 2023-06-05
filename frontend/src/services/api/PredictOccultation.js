@@ -1,13 +1,14 @@
 import { api } from './Api'
 
-export const createPredictionJob = ({ date_initial, date_final, filter_type, filter_value, predict_step, catalog}) => {
+export const createPredictionJob = ({ date_initial, date_final, filter_type, filter_value, predict_step, catalog, debug}) => {
   const params = {
     date_initial: date_initial,
     date_final: date_final,
     filter_type: filter_type,
     filter_value: filter_value,
     predict_step: predict_step,
-    catalog: catalog
+    catalog: catalog,
+    debug: debug
   }
 
   return api.post('/prediction_job/submit_job/', params)

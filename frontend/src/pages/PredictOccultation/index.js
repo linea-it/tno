@@ -55,7 +55,7 @@ function PredictOccultation() {
   const [hasJobRunningOrIdleFeedback, setHasJobRunningOrIdleFeedback] = useState(false)
   const [forceRefreshInputs, setForceRefreshInputs] = useState(false)
 
-  const [filterTypeList, setFilterTypeList] = useState([{ value: 'name', label: 'Name' }, { value: 'dynclass', label: 'DynClass' }, { value: 'base_dynclass', label: 'Base DynClass' }]);
+  const [filterTypeList, setFilterTypeList] = useState([{ value: 'name', label: 'Object name' }, { value: 'dynclass', label: 'Dynamic Class (with subclasses)' }, { value: 'base_dynclass', label: 'Dynamic Class' }]);
   const [dynClassList, setDynClassList] = useState([]);
   const [baseDynClassList, setBaseDynClassList] = useState([]);
   const [asteroidsList, setAsteroidsList] = useState([]);
@@ -74,7 +74,7 @@ function PredictOccultation() {
   const [catalogError, setCatalogError] = React.useState(false);
   const [predictStepError, setPredictStepError] = React.useState(false);
 
-  const [filterType, setFilterType] = React.useState({ value: 'base_dynclass', label: 'Base DynClass' });
+  const [filterType, setFilterType] = React.useState({ value: 'base_dynclass', label: 'Dynamic class' });
   const [filterValue, setFilterValue] = React.useState({ value: "", label: "Select..." });
   const [filterValueNames, setFilterValueNames] = React.useState([]);
   const [predictStep, setpredictStep] = React.useState('600');
@@ -88,6 +88,7 @@ function PredictOccultation() {
   const [selectedSorting, setSelectedSorting] = useState();
   const [selectedPage, setSelectedPage] = useState(0);
   const [selectedPageSize, setSelectedPageSize] = useState(0);
+  const [debug, setDebug] = React.useState(false);
 
   useEffect(() => {
     setDisableSubmit(!dateStart || !dateEnd || !filterValue.value || !filterType.value || !catalog.value);
@@ -110,6 +111,11 @@ function PredictOccultation() {
       setCatalogList(list.map(x => { return { value: x.name, label: x.name } }));
     })
   });
+
+
+  const handleChangeDebug = (event) => {
+    setDebug(event.target.checked)
+  }
 
   const filterTypehandleChange = (event) => {
     if (event) {
@@ -211,13 +217,14 @@ function PredictOccultation() {
         filter_type: filterType.value,
         filter_value: filterValue.value,
         predict_step: predictStep,
-        catalog: catalog.value
+        catalog: catalog.value,
+        debug: debug
       }
       createPredictionJob(data)
         .then((response) => {
           setDateStart(dayjs(new Date()));
           setDateEnd("");
-          setFilterType({ value: 'base_dynclass', label: 'Base DynClass' });
+          setFilterType({ value: 'base_dynclass', label: 'Dynamic class' });
           setFilterValue({ value: "", label: "Select..." });
           setCatalog({ value: "", label: "Select..." });
           setBspValue({ value: 0, label: "None" });
@@ -351,7 +358,43 @@ function PredictOccultation() {
       headerTooltip: 'Execution time',
       align: 'center',
       customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : null)
-    }
+    },
+    {
+      name: 'count_asteroids',
+      title: 'Asteroids',
+      width: 130,
+      align: 'center',
+    },
+    {
+      name: 'count_asteroids_with_occ',
+      title: 'Asteroids with Occultations',
+      width: 130,
+      align: 'center',
+    },
+    {
+      name: 'count_occ',
+      title: 'Occultations',
+      width: 130,
+      align: 'center',
+    },
+    {
+      name: 'count_success',
+      title: 'Success',
+      width: 130,
+      align: 'center',
+    },
+    {
+      name: 'count_failures',
+      title: 'Failures',
+      width: 130,
+      align: 'center',
+    },
+    {
+      name: 'avg_exec_time',
+      title: 'Average Execution Time',
+      width: 130,
+      align: 'center',
+    },
   ]
 
   // Reload data if we have any Skybot job running,
@@ -513,7 +556,7 @@ function PredictOccultation() {
                             {catalogError ? (<span className={classes.errorText}>Required field</span>) : ''}
                           </Box>
                         </Grid>
-                        <Grid item xs={12} sm={6} md={12} lg={6}>
+                        {/* <Grid item xs={12} sm={6} md={12} lg={6}>
                           <Box sx={{ minWidth: 120 }}>
                             <FormControl fullWidth><label>Input Expiration Time <span className={classes.errorText}>*</span></label>
                               <Select
@@ -528,7 +571,7 @@ function PredictOccultation() {
                             </FormControl>
                             {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
                           </Box>
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={12} sm={6} md={12} lg={6}>
                           <Box sx={{ minWidth: 120 }}>
                             <FormControl fullWidth><label> Ephemeris Step(s) <span className={classes.errorText}>*</span><Tooltip title={<label className={classes.tooltip}> Step in time, in seconds, to determine the positions of objects. 600 for distant objects and 60 for nearby objects.</label>}><IconButton><InfoOutlinedIcon /></IconButton>
@@ -538,7 +581,19 @@ function PredictOccultation() {
                             {predictStepError ? (<span className={classes.errorText}>Required field</span>) : ''}
                           </Box>
                         </Grid>
-                        <Grid item xs={12} sm={6} md={12} lg={6}>
+                        <Grid item xs={12} sm={6} md={4} lg={3}>
+                          <Box sx={{ minWidth: 120 }}>
+                          <FormControl fullWidth>
+                              
+                            <FormGroup>
+                              <FormControlLabel
+                                control={<Switch checked={debug} onChange={handleChangeDebug} color="primary" />}
+                                label='Debug mode'
+                              />
+                            </FormGroup> </FormControl>
+                          </Box>
+                        </Grid>
+                        {/* <Grid item xs={12} sm={6} md={12} lg={6}>
                           <Box sx={{ minWidth: 120 }}>
                             <FormControl fullWidth><label>Force Refresh Inputs ON/OFF</label>
                               <FormGroup>
@@ -548,7 +603,8 @@ function PredictOccultation() {
                                 />
                               </FormGroup></FormControl>
                           </Box>
-                        </Grid>
+                        </Grid> */}
+                        
                       </Grid>
                     </Grid>
                   </Grid>
@@ -583,7 +639,7 @@ function PredictOccultation() {
                 hasToolbar={true}
                 reload={reload}
                 totalCount={totalCount}
-                defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
+                defaultSorting={[{ columnName: 'id', direction: 'desc' }]}
               />
             </CardContent>
           </Card>

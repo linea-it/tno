@@ -142,6 +142,16 @@ function PredictDetail() {
       width: 150
     },
     {
+      name: 'base_dynclass',
+      title: 'Dynamic Class',
+      align: 'center',
+    },
+    {
+      name: 'occultations',
+      title: 'Occultations',
+      align: 'center',
+    },
+    {
       name: 'des_obs',
       title: 'DES Obs',
       width: 130,
@@ -154,21 +164,6 @@ function PredictDetail() {
       customElement: (row) => {return <span>{row.exec_time}</span>},
       width: 140
     },
-    {
-      name: 'pre_occ_count',
-      title: 'Pre Occ Count',
-      width: 130,
-      align: 'center',
-      customElement: (row) => { return <span>{row.pre_occ_count}</span> },
-    },
-    {
-      name: 'ing_occ_count',
-      title: 'Ing Occ Count',
-      width: 130,
-      align: 'center',
-      customElement: (row) => { return <span>{row.ing_occ_count}</span> },
-    },
-    
   ];
   
   useEffect(() => {
@@ -219,12 +214,33 @@ function PredictDetail() {
         },
         {
           title: 'End Period',
-          value: predictionJob.predict_end_date? moment(predictionJob.predict_end_date).format('YYYY-MM-DD HH:mm:ss'):""
+          value: predictionJob.predict_end_date? moment(predictionJob.predict_end_date).format('YYYY-MM-DD 23:59:59'):""
         },
         {
           title: 'Execution Time',
           value: predictionJob.exec_time ? predictionJob.exec_time.split('.')[0] : 0
-        }
+        },
+        {
+          title: 'Average Execution Time Asteroid',
+          value: predictionJob.avg_exec_time
+        },
+        {
+          title: '# Asteroids',
+          value: predictionJob.count_asteroids
+        },
+        {
+          title: '# Success',
+          value: predictionJob.count_success
+        },
+        {
+          title: '# Failures',
+          value: predictionJob.count_failures
+        },
+        {
+          title: '# Occultations',
+          value: predictionJob.count_occ
+        },
+
       ]);
     }
   }, [predictionJob])

@@ -28,7 +28,7 @@ class PredictionJobResultViewSet(
     queryset = PredictionJobResult.objects.all()
     serializer_class = PredictionJobResultSerializer
     filterset_class = PredictionJobResultFilter
-    ordering_fields = ("name", "number", "des_obs", "exec_time", "pre_occ_count", "ing_occ_count")
+    ordering_fields = ("name", "number", "base_dynclass", "occultations", "des_obs", "exec_time",)
     ordering = ("name",)
  
 

@@ -127,8 +127,6 @@ class OrbitTraceJob(models.Model):
         blank=True        
     )
 
-    #falso = todos os arquivosw retornados pelo skybot são apagados
-    #true = os arquivos ficam na máquina referenciada no campo path
     debug = models.BooleanField(
         verbose_name="Debug",        
         help_text="Debug False all log files and intermediate results will be deleted at the end of the job.",

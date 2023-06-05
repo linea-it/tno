@@ -32,7 +32,7 @@ class OrbitTraceJobViewSet(
 
     queryset = OrbitTraceJob.objects.all()
     serializer_class = OrbitTraceJobSerializer
-    ordering_fields = ("id", "status", "start", "end", "exec_time", "count_asteroids", "count_ccds", "count_observations", "count_success", "count_failures")
+    ordering_fields = ("id", "status", "start", "end", "exec_time", "count_asteroids", "count_ccds", "count_observations", "count_success", "count_failures", "avg_exec_time_asteroid", "avg_exec_time_ccd",)
     ordering = ("-start",)
 
     # def estimate_execution_time(self, to_execute):

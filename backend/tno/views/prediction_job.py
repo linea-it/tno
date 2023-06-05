@@ -20,7 +20,7 @@ class PredictionJobViewSet(
     
     queryset = PredictionJob.objects.all()
     serializer_class = PredictionJobSerializer
-    ordering_fields = ("id", "status", "owner", "start", "exec_time")
+    ordering_fields = ("id", "status", "owner", "start", "exec_time", "count_asteroids", "count_asteroids_with_occ", "count_occ", "count_success", "count_failures", "avg_exec_time")
     ordering = ("-start",)
 
     @action(detail=False, methods=["post"])
@@ -48,6 +48,7 @@ class PredictionJobViewSet(
         params = request.data
         date_initial = params["date_initial"]
         date_final = params["date_final"]
+        debug = params["debug"]
 
         # Recuperar o usuario que submeteu o Job.
         owner = self.request.user
@@ -73,7 +74,8 @@ class PredictionJobViewSet(
             predict_end_date=date_final,
             predict_step=params["predict_step"].replace("\'", "\""),
             catalog=catalog,
-            predict_interval=h_predict_interval
+            predict_interval=h_predict_interval,
+            debug=debug
         )
         job.save()
 

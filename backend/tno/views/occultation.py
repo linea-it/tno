@@ -47,7 +47,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     filter_fields = ("id", "name", "number", "date_time")
     search_fields = ("name", "number")
 
-    ordering_fields = ("id", "name", "number", "date_time")
+    ordering_fields = ("id", "name", "number", "date_time", "ra_star_candidate", "dec_star_candidate", "ra_target", " dec_target", "closest_approach", "position_angle", "velocity", "delta", "g", "j", "h", "k", "long", "loc_t", "off_ra", "off_dec", "proper_motion", "ct", "multiplicity_flag", "e_ra", "e_dec", "pmra", "pmdec", "ra_star_deg", "dec_star_deg", "ra_target_deg", "dec_target_deg", "created_at")
     ordering = ("date_time",)
     
 
