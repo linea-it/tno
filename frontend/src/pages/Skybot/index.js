@@ -149,7 +149,7 @@ function Skybot() {
 
       setTableData(
         data.results.map((row) => ({
-          detail: `/data-preparation/des/discovery/${row.id}`,
+          detail: `/dashboard/data-preparation/des/discovery/${row.id}`,
           ...row
         }))
       )
@@ -182,7 +182,7 @@ function Skybot() {
           setHasJobRunningOrIdleFeedback(true)
           setReload((prevState) => !prevState)
         } else {
-          navigate(`/data-preparation/des/discovery/${id}`)
+          navigate(`/dashboard/data-preparation/des/discovery/${id}`)
         }
 
         setBackdropOpen(false)

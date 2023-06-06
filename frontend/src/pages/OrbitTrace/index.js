@@ -205,7 +205,7 @@ function OrbitTrace() {
       }
       createOrbitTraceJob(data)
         .then((response) => {
-          navigate(`/data-preparation/des/orbittracedetail/${response.data.id}`)
+          navigate(`/dashboard/data-preparation/des/orbittrace-detail/${response.data.id}`)
           //cleanFields();
         })
         .catch((err) => {
@@ -246,7 +246,7 @@ function OrbitTrace() {
       setTableData(
         data.results.map((row) => ({
           key: row.id,
-          detail: `/data-preparation/des/orbittracedetail/${row.id}`,
+          detail: `/dashboard/data-preparation/des/orbittrace-detail/${row.id}`,
           ...row
         }))
       )

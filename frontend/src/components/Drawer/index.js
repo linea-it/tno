@@ -67,19 +67,19 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }))
 
 const routes = [
-  { path: '/data-preparation/des/discovery', title: 'Skybot Discovery' },
-  { path: '/data-preparation/des/discovery/:id', title: 'Skybot Discovery' },
-  { path: '/data-preparation/des/discovery/asteroid/:id', title: 'Skybot Discovery' },
-  { path: '/data-preparation/des/orbit_trace', title: 'Orbit Trace' },
-  { path: '/data-preparation/des/management', title: 'DES Management' },
-  { path: '/prediction-of-occultation', title: 'Predict Occultation' },
-  { path: '/predict_detail/:id', title: 'Predict Occultation Details' },
-  { path: '/predict_asteroid/:id', title: 'Predict Occultation Asteroid' },
-  { path: '/occultation', title: 'Occultation' },
-  { path: '/occultation-detail/:id', title: 'Occultation Detail' },
-  { path: '/dashboard', title: 'Dashboard' },
-  { path: '/data-preparation/des/orbittracedetail/:id', title: 'Orbit Trace Details' },
-  { path: '/data-preparation/des/orbittrace/asteroid/:id', title: 'Orbit Trace Asteroid' },
+  { path: '/dashboard/data-preparation/des/discovery', title: 'Skybot Discovery' },
+  { path: '/dashboard/data-preparation/des/discovery/:id', title: 'Skybot Discovery' },
+  { path: '/dashboard/data-preparation/des/discovery/asteroid/:id', title: 'Skybot Discovery' },
+  { path: '/dashboard/data-preparation/des/orbittrace', title: 'Orbit Trace' },
+  { path: '/dashboard/data-preparation/des/management', title: 'DES Management' },
+  { path: '/dashboard/data-preparation/prediction-of-occultation', title: 'Predict Occultation' },
+  { path: '/dashboard/data-preparation/predict-detail/:id', title: 'Predict Occultation Details' },
+  { path: '/dashboard/data-preparation/predict-asteroid/:id', title: 'Predict Occultation Asteroid' },
+  { path: '/dashboard/data-preparation/occultation', title: 'Occultation' },
+  { path: '/dashboard/data-preparation/occultation-detail/:id', title: 'Occultation Detail' },
+  { path: '/dashboard/data-preparation/des/statistics', title: 'Statistics' },
+  { path: '/dashboard/data-preparation/des/orbittrace-detail/:id', title: 'Orbit Trace Details' },
+  { path: '/dashboard/data-preparation/des/orbittrace/asteroid/:id', title: 'Orbit Trace Asteroid' },
 ]
 
 const useCurrentPath = () => {
@@ -161,7 +161,7 @@ export default function PersistentDrawerLeft({ children }) {
         </DrawerHeader>
         <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
         <List>
-          <ListItemButton onClick={() => navigate('/dashboard')}>
+          <ListItemButton onClick={() => navigate('/dashboard/data-preparation/des/statistics')}>
             <ListItemText primary='Dashboard' sx={{ fontWeight: 'bold' }} />
           </ListItemButton>
           <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
@@ -172,25 +172,25 @@ export default function PersistentDrawerLeft({ children }) {
           </ListItemButton>
           <Collapse in={desOpen} timeout='auto' unmountOnExit>
             <List component='div' disablePadding>
-              <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/data-preparation/des/discovery')}>
+              <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-preparation/des/discovery')}>
                 <ListItemText primary='Skybot Discovery' />
               </ListItemButton>
-              <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/data-preparation/des/orbit_trace')}>
+              <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-preparation/des/orbit_trace')}>
                 <ListItemText primary='Orbit Trace' />
               </ListItemButton>
-              <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/data-preparation/des/management')}>
+              <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-preparation/des/management')}>
                 <ListItemText primary='DES Management' />
               </ListItemButton>
             </List>
           </Collapse>
           <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
           {/* Predict Occultation */}
-          <ListItemButton onClick={() => navigate('/prediction-of-occultation')}>
+          <ListItemButton onClick={() => navigate('/dashboard/data-preparation/prediction-of-occultation')}>
             <ListItemText primary='Predict Occultation' />
           </ListItemButton>
           {/* Occultation */}
           <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
-          <ListItemButton onClick={() => navigate('/occultation')}>
+          <ListItemButton onClick={() => navigate('/dashboard/data-preparation/occultation')}>
             <ListItemText primary='Occultation' />
           </ListItemButton>
         </List>

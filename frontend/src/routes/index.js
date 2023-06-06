@@ -35,6 +35,9 @@ import PublicAboutUs from '../pages/PublicPortal/AboutUs/index'
 import PublicTutorials from '../pages/PublicPortal/Tutorials/index'
 import PublicOccultation from '../pages/PublicPortal/occultation/index'
 import OccultationDetail from '../pages/Occultation/Detail'
+import PublicSupporters from '../pages/PublicPortal/Home/partials/Supporters/index'
+import PublicBanner from '../components/PublicPortal/Banner/index'
+import PublicInterfaces from '../pages/PublicPortal/Home/partials/Interfaces/index'
 // import RefineOrbit from '../pages/RefineOrbit';
 // import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
 // import RefineOrbitAsteroid from '../pages/RefineOrbit/Asteroid';
@@ -43,9 +46,9 @@ import OccultationDetail from '../pages/Occultation/Detail'
 // import PredictionOccultationDetail from '../pages/PredictionOccultation/Detail';
 // import PredictionOccultationAsteroid from '../pages/PredictionOccultation/Asteroid';
 
-// import Occultation from '../pages/Occultation';
-// import OccultationDetail from '../pages/Occultation/Detail';
-// import OccultationCalendar from '../pages/Occultation/Calendar';
+// import Occultation from '../pages/dashboard/data-preparation/occultation';
+// import OccultationDetail from '../pages/dashboard/data-preparation/occultation/Detail';
+// import OccultationCalendar from '../pages/dashboard/data-preparation/occultation/Calendar';
 
 // import Download from '../pages/Download';
 // import DownloadDetail from '../pages/Download/Detail';
@@ -91,7 +94,7 @@ export default function AppRoutes() {
       <Route
         isHomePage
         exact
-        path='/publicportal'
+        path='/'
         element={
           <PublicPortalPage>
             <PublicHome />
@@ -101,7 +104,19 @@ export default function AppRoutes() {
       <Route
         isHomePage
         exact
-        path='/publicAbout-us'
+        path='/occultation-detail/:id'
+        element={
+          <PublicPortalPage>
+            <PublicBanner />
+            <OccultationDetail />
+            <PublicSupporters />
+          </PublicPortalPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/about-us'
         element={
           <PublicPortalPage>
             <PublicAboutUs />
@@ -111,7 +126,7 @@ export default function AppRoutes() {
       <Route
         isHomePage
         exact
-        path='/publicTutorials'
+        path='/tutorials'
         element={
           <PublicPortalPage>
             <PublicTutorials />
@@ -121,7 +136,7 @@ export default function AppRoutes() {
        <Route
         isHomePage
         exact
-        path='/publicOccultation'
+        path='/public-occultation'
         element={
           <PublicPortalPage>
             <PublicOccultation/>
@@ -149,52 +164,12 @@ export default function AppRoutes() {
           </LandingPage>
         }
       />
-      <Route
-        isHomePage
-        exact
-        path='/about-us'
-        element={
-          <LandingPage>
-            <AboutUs />
-          </LandingPage>
-        }
-      />
-      <Route
-        isHomePage
-        exact
-        path='/help'
-        element={
-          <LandingPage>
-            <Help />
-          </LandingPage>
-        }
-      />
-      <Route
-        isHomePage
-        exact
-        path='/tutorials'
-        element={
-          <LandingPage>
-            <Tutorials />
-          </LandingPage>
-        }
-      />
-      <Route
-        isHomePage
-        exact
-        path='/contact-us'
-        element={
-          <LandingPage>
-            <Contact />
-          </LandingPage>
-        }
-      />
-
+      
       {/* Dashboard  Layout*/}
       <Route
         isPrivate
         exact
-        path='/dashboard'
+        path='/dashboard/data-preparation/des/statistics'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -206,7 +181,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/data-preparation/des/discovery'
+        path='/dashboard/data-preparation/des/discovery'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -218,7 +193,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/data-preparation/des/discovery/:id'
+        path='/dashboard/data-preparation/des/discovery/:id'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -230,7 +205,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/data-preparation/des/orbittracedetail/:id'
+        path='/dashboard/data-preparation/des/orbittrace-detail/:id'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -242,7 +217,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/data-preparation/des/discovery/asteroid/:id'
+        path='/dashboard/data-preparation/des/discovery/asteroid/:id'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -254,7 +229,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/data-preparation/des/orbittrace/asteroid/:id'
+        path='/dashboard/data-preparation/des/orbittrace/asteroid/:id'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -266,7 +241,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/data-preparation/des/orbit_trace'
+        path='/dashboard/data-preparation/des/orbit_trace'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -278,7 +253,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/data-preparation/des/management'
+        path='/dashboard/data-preparation/des/management'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -290,7 +265,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/data-preparation/des/management'
+        path='/dashboard/data-preparation/des/management'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -302,7 +277,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/prediction-of-occultation'
+        path='/dashboard/data-preparation/prediction-of-occultation'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -314,7 +289,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/predict_detail/:id'
+        path='/dashboard/data-preparation/predict-detail/:id'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -326,7 +301,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/predict_asteroid/:id'
+        path='/dashboard/data-preparation/predict-asteroid/:id'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -338,7 +313,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/occultation'
+        path='/dashboard/data-preparation/occultation'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -348,9 +323,9 @@ export default function AppRoutes() {
         }
       />
       <Route
-        isPrivate
+        IsPrivate
         exact
-        path='/occultation-detail/:id'
+        path='/dashboard/data-preparation/occultation-detail/:id'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -379,50 +354,50 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path="/prediction-of-occultation/asteroid/:id"
+        path="/dashboard/data-preparation/prediction-of-occultation/asteroid/:id"
         element={PredictionOccultationAsteroid}
       />
       <Route
         isPrivate
         exact
-        path="/prediction-of-occultation/:id"
+        path="/dashboard/data-preparation/prediction-of-occultation/:id"
         element={PredictionOccultationDetail}
       />
       <Route
         isPrivate
         exact
-        path="/prediction-of-occultation"
+        path="/dashboard/data-preparation/prediction-of-occultation"
         element={PredictionOccultation}
       />
       <Route
         isPrivate
         exact
-        path="/occultation-calendar"
+        path="/dashboard/data-preparation/occultation-calendar"
         element={OccultationCalendar}
       />
       <Route
         isPrivate
         exact
-        path="/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching"
+        path="/dashboard/data-preparation/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching"
         element={OccultationCalendar}
       />
-      <Route isPrivate exact path="/occultation" element={Occultation} />
+      <Route isPrivate exact path="/dashboard/data-preparation/occultation" element={Occultation} />
       <Route
         isPrivate
         exact
-        path="/occultation/:id"
+        path="/dashboard/data-preparation/occultation/:id"
         element={OccultationDetail}
       /> */}
       {/* <Route
         isPrivate
         exact
-        path="/data-preparation/des/download"
+        path="/dashboard/data-preparation/des/download"
         element={Download}
       />
       <Route
         isPrivate
         exact
-        path="/data-preparation/des/download/:id"
+        path="/dashboard/data-preparation/des/download/:id"
         element={DownloadDetail}
       /> */}
     </Routes>

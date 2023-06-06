@@ -299,7 +299,7 @@ function PredictOccultation() {
       setTableData(
         data.results.map((row) => ({
           key: row.id,
-          detail: `/predict_detail/${row.id}`,
+          detail: `/dashboard/data-preparation/predict-detail/${row.id}`,
           ...row
         }))
       )

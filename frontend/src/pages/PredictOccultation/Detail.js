@@ -86,7 +86,7 @@ function PredictDetail() {
           return <span>-</span>
         }
         return (
-          <Button onClick={() => navigate(`/predict_asteroid/${row.id}`)}>
+          <Button onClick={() => navigate(`/dashboard/data-preparation/predict-asteroid/${row.id}`)}>
             <InfoOutlinedIcon />
           </Button>
         )
@@ -123,7 +123,7 @@ function PredictDetail() {
           return <span>-</span>
         }
         return (
-          <Button onClick={() => navigate(`/predict_asteroid/${row.id}`)}>
+          <Button onClick={() => navigate(`/dashboard/data-preparation/predict-asteroid/${row.id}`)}>
             <InfoOutlinedIcon />
           </Button>
         )
@@ -269,7 +269,7 @@ function PredictDetail() {
   }
   
 
-  //const handleBackNavigation = () => history.push('/prediction-of-occultation');
+  //const handleBackNavigation = () => history.push('/dashboard/data-preparation/prediction-of-occultation');
 
   // const handleChangeToolButton = (event, value) => {
   //   const columnToggleValue =

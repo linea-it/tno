@@ -81,22 +81,22 @@ function PublicHeader() {
   const menus = [
     {
       description: 'Home',
-      href: '/publicportal',
+      href: '/',
       target: '_self'
     },
     {
       description: 'Occultation',
-      href: '/publicOccultation',
+      href: '/public-occultation',
       target: '_self'
     },
     {
       description: 'About',
-      href: '/publicAbout-us',
+      href: '/about-us',
       target: '_self'
     },
     {
       description: 'Tutorials',
-      href: '/publicTutorials',
+      href: '/tutorials',
       target: '_self'
     },  
     isAuthenticated && user.dashboard && {

@@ -87,7 +87,7 @@ function OrbitTraceDetail() {
           return <span>-</span>
         }
         return (
-          <Button onClick={() => navigate(`/data-preparation/des/orbittrace/asteroid/${row.id}`)}>
+          <Button onClick={() => navigate(`/dashboard/data-preparation/des/orbittrace/asteroid/${row.id}`)}>
             <InfoOutlinedIcon />
           </Button>
         )
@@ -130,7 +130,7 @@ function OrbitTraceDetail() {
           return <span>-</span>
         }
         return (
-          <Button onClick={() => navigate(`/data-preparation/des/orbittrace/asteroid/${row.id}`)}>
+          <Button onClick={() => navigate(`/dashboard/data-preparation/des/orbittrace/asteroid/${row.id}`)}>
             <InfoOutlinedIcon />
           </Button>
         )

@@ -37,7 +37,7 @@ function SubmitSkybotJobs() {
   }
   const handleCheckJob = () => {
     console.log(data)
-    navigate(`/data-preparation/des/discovery/${data.data.job}`)
+    navigate(`/dashboard/data-preparation/des/discovery/${data.data.job}`)
   }
   
   useInterval(() => {

@@ -347,7 +347,7 @@ function PredictionAsteroid() {
         
         setOccultationsTable(res.results.map((row) => ({
           key: row.id,
-          detail: `/occultation-detail/${row.id}`,
+          detail: `/dashboard/data-preparation/occultation-detail/${row.id}`,
           ...row
         })));
         setOccultationsCount(res.count);
