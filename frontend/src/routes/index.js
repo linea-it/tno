@@ -24,7 +24,6 @@ import styles from './styles'
 import { useAuth } from '../contexts/AuthContext.js'
 import Header from '../components/LandingPage/Header'
 import Footer from '../components/LandingPage/Footer'
-// import Drawer from '../components/Drawer';
 import PersistentDrawerLeft from '../components/Drawer'
 import OrbitTraceDetail from '../pages/OrbitTrace/Detail'
 import OrbitTraceAsteroid from '../pages/OrbitTrace/Asteroid'
@@ -37,21 +36,7 @@ import PublicOccultation from '../pages/PublicPortal/occultation/index'
 import OccultationDetail from '../pages/Occultation/Detail'
 import PublicSupporters from '../pages/PublicPortal/Home/partials/Supporters/index'
 import PublicBanner from '../components/PublicPortal/Banner/index'
-import PublicInterfaces from '../pages/PublicPortal/Home/partials/Interfaces/index'
-// import RefineOrbit from '../pages/RefineOrbit';
-// import RefineOrbitDetail from '../pages/RefineOrbit/Detail';
-// import RefineOrbitAsteroid from '../pages/RefineOrbit/Asteroid';
 
-// import PredictionOccultation from '../pages/PredictionOccultation';
-// import PredictionOccultationDetail from '../pages/PredictionOccultation/Detail';
-// import PredictionOccultationAsteroid from '../pages/PredictionOccultation/Asteroid';
-
-// import Occultation from '../pages/dashboard/data-preparation/occultation';
-// import OccultationDetail from '../pages/dashboard/data-preparation/occultation/Detail';
-// import OccultationCalendar from '../pages/dashboard/data-preparation/occultation/Calendar';
-
-// import Download from '../pages/Download';
-// import DownloadDetail from '../pages/Download/Detail';
 
 export default function AppRoutes() {
   const { isAuthenticated, signIn } = useAuth()
@@ -174,7 +159,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/dashboard/data-preparation/des/statistics'
+        path='/dashboard/statistics'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -282,7 +267,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/dashboard/data-preparation/prediction-of-occultation'
+        path='/dashboard/prediction-of-occultation'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -318,7 +303,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/dashboard/data-preparation/occultation'
+        path='/dashboard/occultation'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -330,7 +315,7 @@ export default function AppRoutes() {
       <Route
         IsPrivate
         exact
-        path='/dashboard/data-preparation/occultation-detail/:id'
+        path='/dashboard/occultation-detail/:id'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -341,70 +326,6 @@ export default function AppRoutes() {
       />
 
       <Route path='*' element={<Navigate to='/' />} />
-
-      {/* <Route element={<Notfound />} />       */}
-      {/* <Route isPrivate exact path="/refine-orbit" element={RefineOrbit} />
-      <Route
-        isPrivate
-        exact
-        path="/refine-orbit/:id"
-        element={RefineOrbitDetail}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/refine-orbit/asteroid/:id"
-        element={RefineOrbitAsteroid}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/dashboard/data-preparation/prediction-of-occultation/asteroid/:id"
-        element={PredictionOccultationAsteroid}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/dashboard/data-preparation/prediction-of-occultation/:id"
-        element={PredictionOccultationDetail}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/dashboard/data-preparation/prediction-of-occultation"
-        element={PredictionOccultation}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/dashboard/data-preparation/occultation-calendar"
-        element={OccultationCalendar}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/dashboard/data-preparation/occultation-calendar-back/:id/:date/:view/:sDate/:fDate/:searching"
-        element={OccultationCalendar}
-      />
-      <Route isPrivate exact path="/dashboard/data-preparation/occultation" element={Occultation} />
-      <Route
-        isPrivate
-        exact
-        path="/dashboard/data-preparation/occultation/:id"
-        element={OccultationDetail}
-      /> */}
-      {/* <Route
-        isPrivate
-        exact
-        path="/dashboard/data-preparation/des/download"
-        element={Download}
-      />
-      <Route
-        isPrivate
-        exact
-        path="/dashboard/data-preparation/des/download/:id"
-        element={DownloadDetail}
-      /> */}
     </Routes>
   )
 }

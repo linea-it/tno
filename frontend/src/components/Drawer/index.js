@@ -72,12 +72,12 @@ const routes = [
   { path: '/dashboard/data-preparation/des/discovery/asteroid/:id', title: 'Skybot Discovery' },
   { path: '/dashboard/data-preparation/des/orbittrace', title: 'Orbit Trace' },
   { path: '/dashboard/data-preparation/des/management', title: 'DES Management' },
-  { path: '/dashboard/data-preparation/prediction-of-occultation', title: 'Predict Occultation' },
+  { path: '/dashboard/prediction-of-occultation', title: 'Predict Occultation' },
   { path: '/dashboard/data-preparation/predict-detail/:id', title: 'Predict Occultation Details' },
   { path: '/dashboard/data-preparation/predict-asteroid/:id', title: 'Predict Occultation Asteroid' },
-  { path: '/dashboard/data-preparation/occultation', title: 'Occultation' },
-  { path: '/dashboard/data-preparation/occultation-detail/:id', title: 'Occultation Detail' },
-  { path: '/dashboard/data-preparation/des/statistics', title: 'Statistics' },
+  { path: '/dashboard/occultation', title: 'Occultation' },
+  { path: '/dashboard/occultation-detail/:id', title: 'Occultation Detail' },
+  { path: '/dashboard/statistics', title: 'Statistics' },
   { path: '/dashboard/data-preparation/des/orbittrace-detail/:id', title: 'Orbit Trace Details' },
   { path: '/dashboard/data-preparation/des/orbittrace/asteroid/:id', title: 'Orbit Trace Asteroid' },
 ]
@@ -161,8 +161,8 @@ export default function PersistentDrawerLeft({ children }) {
         </DrawerHeader>
         <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
         <List>
-          <ListItemButton onClick={() => navigate('/dashboard/data-preparation/des/statistics')}>
-            <ListItemText primary='Dashboard' sx={{ fontWeight: 'bold' }} />
+          <ListItemButton onClick={() => navigate('/dashboard/statistics')}>
+            <ListItemText primary='Statistics' sx={{ fontWeight: 'bold' }} />
           </ListItemButton>
           <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
           {/* DES Data Preparation */}
@@ -185,12 +185,12 @@ export default function PersistentDrawerLeft({ children }) {
           </Collapse>
           <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
           {/* Predict Occultation */}
-          <ListItemButton onClick={() => navigate('/dashboard/data-preparation/prediction-of-occultation')}>
+          <ListItemButton onClick={() => navigate('/dashboard/prediction-of-occultation')}>
             <ListItemText primary='Predict Occultation' />
           </ListItemButton>
           {/* Occultation */}
           <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
-          <ListItemButton onClick={() => navigate('/dashboard/data-preparation/occultation')}>
+          <ListItemButton onClick={() => navigate('/dashboard/occultation')}>
             <ListItemText primary='Occultation' />
           </ListItemButton>
         </List>

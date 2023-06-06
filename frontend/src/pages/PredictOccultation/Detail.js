@@ -269,7 +269,7 @@ function PredictDetail() {
   }
   
 
-  //const handleBackNavigation = () => history.push('/dashboard/data-preparation/prediction-of-occultation');
+  //const handleBackNavigation = () => history.push('/dashboard/prediction-of-occultation');
 
   // const handleChangeToolButton = (event, value) => {
   //   const columnToggleValue =
