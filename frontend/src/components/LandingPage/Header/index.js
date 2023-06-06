@@ -91,11 +91,11 @@ function Header() {
       href: '/tutorials',
       target: '_self'
     },
-    {
-      description: 'Contact',
-      href: '/contact-us',
-      target: '_self'
-    }
+    // {
+    //   description: 'Contact',
+    //   href: '/contact-us',
+    //   target: '_self'
+    // }
   ]
 
   return (

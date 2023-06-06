@@ -136,7 +136,7 @@ export default function AppRoutes() {
        <Route
         isHomePage
         exact
-        path='/public-occultation'
+        path='/occultation'
         element={
           <PublicPortalPage>
             <PublicOccultation/>
@@ -157,7 +157,7 @@ export default function AppRoutes() {
       <Route
         isHomePage
         exact
-        path='/privatePortal'
+        path='/dashboard'
         element={
           <LandingPage>
             <Home />

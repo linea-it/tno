@@ -86,7 +86,7 @@ function PublicHeader() {
     },
     {
       description: 'Occultation',
-      href: '/public-occultation',
+      href: '/occultation',
       target: '_self'
     },
     {
@@ -101,7 +101,7 @@ function PublicHeader() {
     },  
     isAuthenticated && user.dashboard && {
       description: 'Dashboard',
-      href: 'privatePortal',
+      href: 'dashboard',
       target: '_self'
     }   
   ]
