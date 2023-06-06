@@ -175,7 +175,7 @@ export default function PersistentDrawerLeft({ children }) {
               <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-preparation/des/discovery')}>
                 <ListItemText primary='Skybot Discovery' />
               </ListItemButton>
-              <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-preparation/des/orbit_trace')}>
+              <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-preparation/des/orbittrace')}>
                 <ListItemText primary='Orbit Trace' />
               </ListItemButton>
               <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-preparation/des/management')}>

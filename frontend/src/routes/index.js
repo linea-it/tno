@@ -246,7 +246,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/dashboard/data-preparation/des/orbit_trace'
+        path='/dashboard/data-preparation/des/orbittrace'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
