@@ -394,6 +394,7 @@ function PredictOccultation() {
       title: 'Average Execution Time',
       width: 130,
       align: 'center',
+      customElement: (row) => (moment.utc(row.avg_exec_time * 1000).format("HH:mm:ss.SSS"))
     },
   ]
 

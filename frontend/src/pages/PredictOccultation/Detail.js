@@ -102,7 +102,7 @@ function PredictDetail() {
     {
       name: 'messages',
       title: 'Messages',
-      width: 150
+      width: 720
     },
 
   ]
@@ -218,11 +218,11 @@ function PredictDetail() {
         },
         {
           title: 'Execution Time',
-          value: predictionJob.exec_time ? predictionJob.exec_time.split('.')[0] : 0
+          value: predictionJob.exec_time ? predictionJob.exec_time.split('.')[0] : "-"
         },
         {
           title: 'Average Execution Time Asteroid',
-          value: predictionJob.avg_exec_time
+          value: moment.utc(predictionJob.avg_exec_time * 1000).format("HH:mm:ss.SSS")
         },
         {
           title: '# Asteroids',
