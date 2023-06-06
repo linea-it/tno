@@ -2,7 +2,7 @@ import logging
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from tno.dao.asteroids import AsteroidDao
@@ -119,7 +119,7 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(dict({"success": True}))        
 
     @action(
-        detail=False, methods=["GET"], permission_classes=(IsAuthenticated,)
+        detail=False, methods=["GET"], permission_classes=(AllowAny,)
     )
     def dynclasses(self, request):
         """All Dynamic Classes.
@@ -131,7 +131,7 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(dict({"results": rows, "count": len(rows)}))        
 
     @action(
-        detail=False, methods=["GET"], permission_classes=(IsAuthenticated,)
+        detail=False, methods=["GET"], permission_classes=(AllowAny,)
     )
     def base_dynclasses(self, request):
         """All Base Dynamic Classes.
@@ -143,7 +143,7 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response(dict({"results": rows, "count": len(rows)}))  
 
-    @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
+    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def with_prediction(self, request):
         """
         #     Este endpoint obtem o asteroids com ao menos uma predicao.
@@ -165,7 +165,7 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         return paginator.get_paginated_response(serializer.data)
 
 
-    @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
+    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def search(self, request):
         """
         #     Este endpoint obtem o lista de asteroids filtrada por parte do nome.

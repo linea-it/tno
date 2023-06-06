@@ -71,7 +71,7 @@ function PublicHeader() {
   function UserUnLogged() {
     return (
       <>
-        <Button onClick={signIn} color='#000000'>
+        <Button onClick={signIn} color='default'>
           Sign in
         </Button>
       </>
@@ -113,10 +113,13 @@ function PublicHeader() {
       <Toolbar className={classes.toolbar}>      
         <List className={classes.menuList}>
           {menus.map((menu) => (
-            <ListItem key={menu.href} className={classes.menuListItem}>
-              <Link onClick={() => handleCardClick(menu.href)} className={classes.menuLink}>
-                {menu.description}
-              </Link>
+            
+            <ListItem key={menu.href?menu.href:Math.random() } className={classes.menuListItem}>
+              { menu.description &&
+                <Link onClick={() => handleCardClick(menu.href)} className={classes.menuLink}>
+                  {menu.description}
+                </Link>
+              }
             </ListItem>
           ))}
         </List>

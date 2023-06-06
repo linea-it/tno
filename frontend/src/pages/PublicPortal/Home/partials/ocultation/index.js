@@ -53,12 +53,14 @@ function PublicOcutation() {
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [reload, setReload] = useState(true);
+  const [defaultHiddenColumnNames, setDefaultHiddenColumnNames] = useState([])
 
   const tableColumns = [
     {
       name: 'index',
       title: ' ',
-      width: 70
+      width: 70,
+      sortingEnabled: false
     },
     {
       name: 'detail',
@@ -75,29 +77,199 @@ function PublicOcutation() {
     {
       name: 'date_time',
       title: 'Date',
-      width: 200,
-      customElement: (row) => (row.date_time ? moment(row.date_time).utc().format('YYYY-MM-DD HH:mm:ss') : '-')
+      width: 150,
+      align: 'center',
+      enableHiding: false,
+      customElement: (row) => row.date_time ? <span title={moment(row.date_time).format('YYYY-MM-DD HH:mm:ss')}>{moment(row.date_time).format('YYYY-MM-DD HH:mm:ss')}</span> : <span>Invalid Date</span>
+    },
+    {
+      name: 'ra_star_candidate',
+      title: 'RA Star Candidate ',
+      width: 150,
+      align: 'center',
+    },
+    {
+      name: 'dec_star_candidate',
+      title: 'DEC Star Candidate ',
+      width: 150,
+      align: 'center',
+    },
+    {
+      name: 'ra_target',
+      title: 'RA Target ',
+      width: 150,
+      align: 'center',
+    },
+    {
+      name: 'dec_target',
+      title: 'DEC Target ',
+      width: 150,
+      align: 'center',
+    },
+    {
+      name: 'closest_approach',
+      title: 'Closest Approach ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.closest_approach?row.closest_approach.toFixed(2):''}</span>
+    },
+    {
+      name: 'position_angle',
+      title: 'Position Angle ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.position_angle?row.position_angle.toFixed(2):''}</span>
+    },
+    {
+      name: 'velocity',
+      title: 'Velocity ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.velocity?row.velocity.toFixed(2):''}</span>
+    },
+    {
+      name: 'delta',
+      title: 'Delta ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.delta?row.delta.toFixed(2):''}</span>
     },
     {
       name: 'g',
-      title: 'Mag',
-      aligh: 'center',
+      title: 'G ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.g?row.g.toFixed(2):''}</span>
     },
     {
-      name: 'name',
-      title: 'Object',
+      name: 'j',
+      title: 'J ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.j?row.j.toFixed(2):''}</span>
+    },
+    {
+      name: 'h',
+      title: 'H ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.h?row.h.toFixed(2):''}</span>
+    },
+    {
+      name: 'k',
+      title: 'K ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.k?row.k.toFixed(2):''}</span>
+    },
+    {
+      name: 'long',
+      title: 'Long ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.long?row.long.toFixed(2):''}</span>
+    },
+    {
+      name: 'loc_t',
+      title: 'Loc T ',
+      width: 150,
       align: 'center',
     },
     {
-      name: 'dynclass',
-      title: 'Class',
+      name: 'off_ra',
+      title: 'Off RA ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.off_ra?row.off_ra.toFixed(2):''}</span>
+    },
+    {
+      name: 'off_dec',
+      title: 'Off DEC ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.off_dec?row.off_dec.toFixed(2):''}</span>
+    },
+    {
+      name: 'proper_motion',
+      title: 'Proper Motion ',
+      width: 150,
       align: 'center',
     },
-    // {
-    //   name: 'number',
-    //   title: 'Number',
-    //   align: 'center',
-    // },
+    {
+      name: 'ct',
+      title: 'CT ',
+      width: 150,
+      align: 'center',
+    },
+    {
+      name: 'multiplicity_flag',
+      title: 'Multiplicity Flag ',
+      width: 150,
+      align: 'center',
+    },
+    {
+      name: 'e_ra',
+      title: 'E RA ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.e_ra?row.e_ra.toFixed(2):''}</span>
+    },
+    {
+      name: 'e_dec',
+      title: 'E DEC ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.e_dec?row.e_dec.toFixed(2):''}</span>
+    },
+    {
+      name: 'pmra',
+      title: 'PMRA',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.pmra?row.pmra.toFixed(2):''}</span>
+    },
+    {
+      name: 'pmdec',
+      title: 'PMDEC',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.pmdec?row.pmdec.toFixed(2):''}</span>
+    },
+    {
+      name: 'ra_star_deg',
+      title: 'RA Star (DEG) ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.ra_star_deg?row.ra_star_deg.toFixed(2):''}</span>
+    },
+    {
+      name: 'dec_star_deg',
+      title: 'DEC Star (DEG) ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.dec_star_deg?row.dec_star_deg.toFixed(2):''}</span>
+    },
+    {
+      name: 'ra_target_deg',
+      title: 'RA Target (DEG) ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.ra_target_deg?row.ra_target_deg.toFixed(2):''}</span>
+    },
+    {
+      name: 'dec_target_deg',
+      title: 'Dec Target (DEG) ',
+      width: 150,
+      align: 'center',
+      customElement: (row) => <span>{row.dec_target_deg?row.dec_target_deg.toFixed(2):''}</span>
+    },
+    {
+      name: 'created_at',
+      title: 'Created At',
+      width: 150,
+      align: 'center',
+      customElement: (row) => row.created_at ? <span title={moment(row.created_at).format('YYYY-MM-DD HH:mm:ss')}>{moment(row.created_at).format('YYYY-MM-DD HH:mm:ss')}</span> : <span>Invalid Date</span>
+    },
 
   ]
 
@@ -161,28 +333,6 @@ function PublicOcutation() {
     { value: 'South America', label: 'South America' },
   ];
 
-  const calculateDate = (filter) => {
-    const currentDate = dateStart ? dateStart : moment();
-    setDateStart(currentDate);
-    var dateEnd = moment();
-
-    switch (filter) {
-      case '1week':
-        dateEnd = moment(currentDate).add(7, 'days');
-        break;
-      case '1mounth':
-        dateEnd = moment(currentDate).add(30, 'days');
-        break;
-      case '6mounths':
-        dateEnd = moment(currentDate).add(180, 'days');
-        break;
-      case '1year':
-        dateEnd = moment(currentDate).add(365, 'days');
-        break;
-    }
-    setDateEnd(dateEnd);
-  }
-
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
     const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
@@ -207,7 +357,7 @@ function PublicOcutation() {
       setTableData(
         data.results.map((row) => ({
           key: row.id,
-          detail: `/occultation_detail/${row.id}`,
+          detail: `/occultation-detail/${row.id}`,
           ...row
         }))
       )
@@ -381,6 +531,7 @@ function PublicOcutation() {
                             options={zoneArray}
                             menuPortalTarget={document.body}
                             menuPosition={'fixed'}
+                            isDisabled={true}
                           />
                         </FormControl>
                       </Box>
@@ -408,6 +559,7 @@ function PublicOcutation() {
                             max={600}
                             valueLabelDisplay="auto"
                             onChange={handleChangeDiameterValue}
+                            disabled
                           />
                       </FormControl>
                     </Grid>
@@ -425,7 +577,7 @@ function PublicOcutation() {
           </Grid></Grid></>
       }
       <br></br>
-      <Grid item xs={12} spacing={6}>
+      <Grid item xs={12}>
         <Card>
           <CardHeader title={`Occultation Result - Total: ${totalCount}`} />
           <CardContent>
@@ -439,6 +591,7 @@ function PublicOcutation() {
               hasToolbar={true}
               reload={reload}
               totalCount={totalCount}
+              defaultHiddenColumnNames={defaultHiddenColumnNames}
               defaultSorting={[{ columnName: 'name', direction: 'asc' }]}
             />
           </CardContent>

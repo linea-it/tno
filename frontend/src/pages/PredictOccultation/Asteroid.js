@@ -108,13 +108,6 @@ function PredictionAsteroid() {
         align: 'center',
       },
       {
-        name: 'ra_star_deg',
-        title: 'RA Star (DEG) ',
-        width: 150,
-        align: 'center',
-        customElement: (row) => <span>{row.ra_star_deg?row.ra_star_deg.toFixed(2):''}</span>
-      },
-      {
         name: 'closest_approach',
         title: 'Closest Approach ',
         width: 150,
@@ -411,7 +404,7 @@ function PredictionAsteroid() {
                 hasFiltering={false}
                 hasColumnVisibility={true}
                 hasToolbar={true}
-                defaultHiddenColumnsNames={defaultHiddenColumnNames}
+                defaultHiddenColumnNames={defaultHiddenColumnNames}
                 defaultSorting={[{ columnName: 'date_time', direction: 'asc' }]}
               >
               </Table>

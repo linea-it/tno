@@ -37,7 +37,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({
       duration: theme.transitions.duration.enteringScreen
     }),
     marginLeft: 0
-  })
+  }),
 }))
 
 const AppBar = styled(MuiAppBar, {
@@ -63,7 +63,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-  justifyContent: 'flex-end'
+  justifyContent: 'flex-end',
 }))
 
 const routes = [

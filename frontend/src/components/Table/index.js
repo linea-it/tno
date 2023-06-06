@@ -67,7 +67,7 @@ function Table({
   hasColumnVisibility,
   defaultExpandedGroups,
   reload,
-  defaultHiddenColumnsNames,
+  defaultHiddenColumnNames,
   modalContent,
   hasFiltering,
   hasLineBreak,
@@ -121,7 +121,7 @@ function Table({
   const [searchValue, setSearchValue] = useState('')
   const [selection, setSelection] = useState([])
   const [customModalContent, setCustomModalContent] = useState('')
-  const [defaultHiddenColumnNames, setDefaultHiddenColumnNames] = useState(defaultHiddenColumnsNames)
+  const [customDefaultHiddenColumnNames, setCustomDefaultHiddenColumnNames] = useState(defaultHiddenColumnNames)
 
   const classes = useStyles()
 
@@ -302,7 +302,7 @@ function Table({
             {hasPagination ? <PagingPanel pageSizes={pageSizes} /> : null}
             {hasToolbar ? <Toolbar /> : null}
             {hasSearching ? <SearchPanel /> : null}
-            {hasColumnVisibility ? <TableColumnVisibility  defaultHiddenColumnNames={ defaultHiddenColumnNames } /> : null}
+            {hasColumnVisibility ? <TableColumnVisibility  defaultHiddenColumnNames={ customDefaultHiddenColumnNames } /> : null}
             {hasColumnVisibility ? <ColumnChooser /> : null}
             <RowIndexer />
           </Grid>
