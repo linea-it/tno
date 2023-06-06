@@ -382,7 +382,7 @@ function PublicOcutation() {
   }
 
   return (
-    <Container>     
+    <>   
       <br></br><br></br>
       <Grid container spacing={1} mt="3">
         <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('period')}>
@@ -596,8 +596,8 @@ function PublicOcutation() {
             />
           </CardContent>
         </Card>
-      </Grid>
-    </Container>
+      </Grid>   
+    </>
   )
 }
 

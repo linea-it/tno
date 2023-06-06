@@ -16,3 +16,8 @@
     min-width: 150px !important;
     margin-top: 15px !important;
 }
+
+.label-tooltip-margin{
+    margin-bottom: -10px;
+    margin-top: -14px;
+}

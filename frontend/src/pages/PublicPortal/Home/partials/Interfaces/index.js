@@ -8,7 +8,8 @@ function PublicInterfaces() {
   const classes = styles()
 
   return (
-    <Container>
+    // <Container>
+    <>
       <br></br>
       <Grid container justifyContent="center" alignItems="center">
         <div className={classes.titleItem}><label>Prediction of stellar occultations by Solar System Objects</label></div><br></br>     
@@ -21,7 +22,8 @@ function PublicInterfaces() {
           <br></br>You can select the events by period, dynamic class and visibility in a specific place (longitude and latitude):
         </Typography>
       </Grid>
-    </Container>
+      </>
+    // </Container>
   )
 }
 

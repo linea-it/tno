@@ -2,7 +2,7 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 
 import Dashboard from '../pages/Dashboard'
-
+import Grid from '@material-ui/core/Grid'
 import Skybot from '../pages/Skybot'
 import SkybotDetail from '../pages/Skybot/Detail'
 import SkybotAsteroid from '../pages/Skybot/Asteroid'
@@ -20,7 +20,7 @@ import AboutUs from '../pages/LandingPage/AboutUs'
 import Help from '../pages/LandingPage/Help'
 import Tutorials from '../pages/LandingPage/Tutorials'
 import Contact from '../pages/LandingPage/Contact'
-
+import styles from './styles'
 import { useAuth } from '../contexts/AuthContext.js'
 import Header from '../components/LandingPage/Header'
 import Footer from '../components/LandingPage/Footer'
@@ -55,7 +55,7 @@ import PublicInterfaces from '../pages/PublicPortal/Home/partials/Interfaces/ind
 
 export default function AppRoutes() {
   const { isAuthenticated, signIn } = useAuth()
-
+  const classes = styles()
   const PrivateRoute = ({ auth: { isAuthenticated }, children }) => {
     return isAuthenticated ? children : signIn()
   }
@@ -108,8 +108,13 @@ export default function AppRoutes() {
         element={
           <PublicPortalPage>
             <PublicBanner />
-            <OccultationDetail />
-            <PublicSupporters />
+            <div className={classes.root}>
+              <Grid container justifyContent="center" alignItems="center">
+                <div className={classes.titleItem}><label>Detail Prediction of stellar occultations</label></div>
+              </Grid><br></br>
+              <OccultationDetail />
+              <PublicSupporters />
+            </div>
           </PublicPortalPage>
         }
       />
@@ -133,13 +138,13 @@ export default function AppRoutes() {
           </PublicPortalPage>
         }
       />
-       <Route
+      <Route
         isHomePage
         exact
         path='/occultation'
         element={
           <PublicPortalPage>
-            <PublicOccultation/>
+            <PublicOccultation />
           </PublicPortalPage>
         }
       />
@@ -164,7 +169,7 @@ export default function AppRoutes() {
           </LandingPage>
         }
       />
-      
+
       {/* Dashboard  Layout*/}
       <Route
         isPrivate
