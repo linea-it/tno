@@ -59,6 +59,11 @@ const styles = makeStyles({
     border: '1px solid #ced4da',   
     width: 'auto',  
     height: '43px'  
+  },
+  loadingTable:{
+    display: 'block',
+    marginLeft: 'auto',
+    marginRight: 'auto'
   }
 })
 

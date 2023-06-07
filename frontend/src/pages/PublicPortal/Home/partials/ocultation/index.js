@@ -13,7 +13,7 @@ import styles from './styles';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { getOccultations } from '../../../../../services/api/Occultation';
+import { getOccultations, getNextTwenty } from '../../../../../services/api/Occultation';
 //import Image from '../../components/List/Image';
 import {
   getDynClassList,
@@ -23,7 +23,7 @@ import {
 } from '../../../../../services/api/Asteroid';
 import Select from 'react-select';
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons';
-import { CardHeader, MenuItem, OutlinedInput } from '../../../../../../node_modules/@material-ui/core/index';
+import { CardHeader, CircularProgress, MenuItem, OutlinedInput } from '../../../../../../node_modules/@material-ui/core/index';
 import Table from '../../../../../components/Table/index';
 import { useNavigate } from '../../../../../../node_modules/react-router-dom/dist/index';
 import "./ocultation.css";
@@ -31,10 +31,6 @@ import "./ocultation.css";
 function PublicOcutation() {
   const navigate = useNavigate();
   const classes = styles();
-  const [dateStartPeriod, setDateStartPeriod] = useState('');
-  const [dateEndPeriod, setDateEndPeriod] = useState('');
-  const [dateStartUser, setDateStartUser] = useState('');
-  const [dateEndUser, setDateEndUser] = useState('');
   const [filterView, setFilterView] = useState('');
   const [magnitude, setMagnitude] = useState([4, 23]);
   const [diameter, setDiameter] = useState([0, 600]);
@@ -53,7 +49,8 @@ function PublicOcutation() {
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [reload, setReload] = useState(true);
-  const [defaultHiddenColumnNames, setDefaultHiddenColumnNames] = useState([])
+  const [defaultHiddenColumnNames, setDefaultHiddenColumnNames] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const tableColumns = [
     {
@@ -79,7 +76,6 @@ function PublicOcutation() {
       title: 'Date',
       width: 150,
       align: 'center',
-      enableHiding: false,
       customElement: (row) => row.date_time ? <span title={moment(row.date_time).format('YYYY-MM-DD HH:mm:ss')}>{moment(row.date_time).format('YYYY-MM-DD HH:mm:ss')}</span> : <span>Invalid Date</span>
     },
     {
@@ -125,6 +121,7 @@ function PublicOcutation() {
       title: 'Velocity ',
       width: 150,
       align: 'center',
+      
       customElement: (row) => <span>{row.velocity?row.velocity.toFixed(2):''}</span>
     },
     {
@@ -342,36 +339,57 @@ function PublicOcutation() {
     const value = filterValue.value ? filterValue.value : null;
     const minmag = magnitude[0] > 4 ? magnitude[0] : null;
     const maxmag = magnitude[1] < 23 ? magnitude[1] : null;
-    getOccultations({
-      page: currentPage + 1,
-      pageSize,
-      ordering: ordering,
-      start_date: start,
-      end_date: end,
-      filter_type: value ? type : null,
-      filter_value: value,
-      min_mag: minmag,
-      max_mag: maxmag
-    }).then((res) => {
-      const { data } = res
-      setTableData(
-        data.results.map((row) => ({
-          key: row.id,
-          detail: `/occultation-detail/${row.id}`,
-          ...row
-        }))
-      )
-      setTotalCount(data.count)
-    })
+    if(filterView == "next"){
+      getNextTwenty({
+        page: currentPage + 1,
+        pageSize,
+        ordering: ordering,
+      }).then((res) => {
+        setLoading(false);
+        setTableData(
+          res.results.map((row) => ({
+            key: row.id,
+            detail: `/occultation-detail/${row.id}`,
+            ...row
+          }))
+        )
+        setTotalCount(res.count)
+      })
+    }
+    else{
+      getOccultations({
+        page: currentPage + 1,
+        pageSize,
+        ordering: ordering,
+        start_date: start,
+        end_date: end,
+        filter_type: value ? type : null,
+        filter_value: value,
+        min_mag: minmag,
+        max_mag: maxmag
+      }).then((res) => {
+        setLoading(false);
+        const { data } = res
+        setTableData(
+          data.results.map((row) => ({
+            key: row.id,
+            detail: `/occultation-detail/${row.id}`,
+            ...row
+          }))
+        )
+        setTotalCount(data.count)
+      })
+    }
   }
 
   const handleFilterClick = async () => {
-    loadData({ sorting: [{ columnName: 'id', direction: 'asc' }], pageSize: 10, currentPage: 0 });
+    loadData({ sorting: [{ columnName: 'date_time', direction: 'asc' }], pageSize: 10, currentPage: 0 });
   }
 
   useEffect(() => {
+    setLoading(true);
     handleFilterClick();
-  }, [dateStart, dateEnd, filterValue, magnitude]);
+  }, [dateStart, dateEnd, filterValue, magnitude, filterView]);
 
   const onKeyUp = async (event) => {
     if (event.target.value.length > 1) {
@@ -391,7 +409,7 @@ function PublicOcutation() {
         <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('')}>
           <div className={classes.celula}>All events</div>
         </Grid>
-        <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('')}>
+        <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('next')}>
           <div className={classes.celula}>Next 20 events</div>
         </Grid>
         <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('userSelect')}>
@@ -409,7 +427,7 @@ function PublicOcutation() {
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth ><label>Date Filter (start)</label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker format="YYYY-MM-DD" value={dateStartPeriod} onChange={date => { setDateStartPeriod(date) }} />
+                            <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
                           </LocalizationProvider>
                         </FormControl>
                       </Box>
@@ -418,18 +436,18 @@ function PublicOcutation() {
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth><label>Date Filter (end)</label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker format="YYYY-MM-DD" value={dateEndPeriod} onChange={date => { setDateEndPeriod(date) }} />
+                            <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
                           </LocalizationProvider>
                         </FormControl>
                       </Box>
                     </Grid>
-                    <Grid item xs={5} sm={4} md={2}>
+                    {/* <Grid item xs={5} sm={4} md={2}>
                       <Box className={classes.btnPeriod}>
                         <Button variant='contained' className="buttonFilter" color='primary'>
                           Searcher
                         </Button>
                       </Box>
-                    </Grid>
+                    </Grid> */}
                   </Grid>
                 </form>
               </CardContent>
@@ -448,7 +466,7 @@ function PublicOcutation() {
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth ><label>Date Filter (start)</label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker format="YYYY-MM-DD" value={dateStartUser} onChange={date => { setDateStartUser(date) }} />
+                            <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
                           </LocalizationProvider>
                         </FormControl>
                       </Box>
@@ -457,7 +475,7 @@ function PublicOcutation() {
                       <Box sx={{ minWidth: 120 }}>
                         <FormControl fullWidth><label>Date Filter (end)</label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker format="YYYY-MM-DD" value={dateStartUser} onChange={date => { setDateEndUser(date) }} />
+                            <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
                           </LocalizationProvider>
                         </FormControl>
                       </Box>
@@ -563,13 +581,13 @@ function PublicOcutation() {
                           />
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
+                    {/* <Grid item xs={12} sm={6} md={3}>
                       <Box className={classes.btnPeriod}>
                         <Button variant='contained' className="buttonFilter" color='primary'>
                           Searcher
                         </Button>
                       </Box>
-                    </Grid>
+                    </Grid> */}
                   </Grid>
                 </form>
               </CardContent>
@@ -581,7 +599,8 @@ function PublicOcutation() {
         <Card>
           <CardHeader title={`Occultation Result - Total: ${totalCount}`} />
           <CardContent>
-            <Table
+            { loading && <CircularProgress className={classes.loadingTable} size={40}/> }
+            {!loading && <Table
               columns={tableColumns}
               data={tableData}
               loadData={loadData}
@@ -592,8 +611,8 @@ function PublicOcutation() {
               reload={reload}
               totalCount={totalCount}
               defaultHiddenColumnNames={defaultHiddenColumnNames}
-              defaultSorting={[{ columnName: 'name', direction: 'asc' }]}
-            />
+              defaultSorting={[{ columnName: 'date_time', direction: 'asc' }]}
+            />}
           </CardContent>
         </Card>
       </Grid>   

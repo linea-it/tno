@@ -11,6 +11,9 @@ from tno.models import Occultation
 from tno.serializers import OccultationSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from datetime import datetime
+from rest_framework.pagination import PageNumberPagination
+from operator import  attrgetter
 
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
@@ -51,35 +54,19 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     ordering = ("date_time",)
     
 
-    
+    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    def next_twenty(self, request):
+        """
+        #     Este endpoint obtem as próximas 20 occultações .
 
-    # @list_route(permission_classes=(IsAuthenticated, ))
-    # def test(self, request):
-
-    #     import logging
-
-    #     from tno.dao.asteroids import AsteroidDao
-    #     log = logging.getLogger('asteroids')
-
-    #     log.info("-----------------------------")
-    #     log.info("Test Asteroid DAO")
-
-    #     count = AsteroidDao().count()
-
-    #     log.info("Count Asteroids: %s" % count)
-
-    #     # from skybot.dao.skybot_positions import SkybotPositionsDao
-
-    #     # asteroids = SkybotPositionsDao().distinct_asteroids()
-
-    #     # log.info("Asteroids: %s" % asteroids[0:3])
-
-    #     a = AsteroidDao().insert_update()
-    #     log.info(a)
-
-    #     result = dict({
-    #         'success': True,
-    #     })
-
-    #     return Response(result)
+        #     Returns:
+        #         result (json): Ocultation list.
+        #     """
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        lista = Occultation.objects.filter(date_time__gte=datetime.now()).order_by('date_time')[:20]
+        ordered = sorted(lista, key=attrgetter(request.query_params.get('ordering', '').replace('-', '')), reverse='-' in request.query_params.get('ordering', ''))
+        result_page = paginator.paginate_queryset(ordered, request)
+        serializer = OccultationSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
