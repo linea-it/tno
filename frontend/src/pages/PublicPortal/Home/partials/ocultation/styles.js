@@ -30,9 +30,6 @@ const styles = makeStyles({
   progressWrapper: {
     position: 'relative'    
   },
-  circularProgress: {
-    margin: '5px auto'
-  },
   gridTable: {
     display: 'table'
   },
@@ -61,9 +58,15 @@ const styles = makeStyles({
     height: '43px'  
   },
   loadingTable:{
-    display: 'block',
-    marginLeft: 'auto',
-    marginRight: 'auto'
+    display: 'block !important',
+    marginLeft: 'auto !important',
+    marginRight: 'auto !important',
+    fontSize: '40px'
+  },
+  selected:{
+    backgroundColor:'#9b9a9a',
+    textAlign: 'center',
+    padding: '10px'
   }
 })
 

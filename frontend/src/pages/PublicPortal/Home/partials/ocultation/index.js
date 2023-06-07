@@ -27,11 +27,12 @@ import { CardHeader, CircularProgress, MenuItem, OutlinedInput } from '../../../
 import Table from '../../../../../components/Table/index';
 import { useNavigate } from '../../../../../../node_modules/react-router-dom/dist/index';
 import "./ocultation.css";
+import clsx from 'clsx'
 
 function PublicOcutation() {
   const navigate = useNavigate();
   const classes = styles();
-  const [filterView, setFilterView] = useState('');
+  const [filterView, setFilterView] = useState('next');
   const [magnitude, setMagnitude] = useState([4, 23]);
   const [diameter, setDiameter] = useState([0, 600]);
   const [zoneValue, setZoneValue] = useState('');
@@ -403,17 +404,17 @@ function PublicOcutation() {
     <>   
       <br></br><br></br>
       <Grid container spacing={1} mt="3">
-        <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('period')}>
-          <div className={classes.celula}>Period</div>
+        <Grid item xs={6} className={classes.mouse} sm={3} onClick={() => setFilterView('period')}>
+          <div className={clsx(filterView == 'period'?classes.selected:classes.celula)}>Period</div>
         </Grid>
         <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('')}>
-          <div className={classes.celula}>All events</div>
+          <div className={clsx(filterView == ''?classes.selected:classes.celula)}>All events</div>
         </Grid>
         <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('next')}>
-          <div className={classes.celula}>Next 20 events</div>
+          <div className={clsx(filterView == 'next'?classes.selected:classes.celula)}>Next 20 events</div>
         </Grid>
         <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('userSelect')}>
-          <div className={classes.celula}>User selected</div>
+          <div className={clsx(filterView == 'userSelect'?classes.selected:classes.celula)}>User selected</div>
         </Grid>
       </Grid>
       {filterView == 'period' &&
