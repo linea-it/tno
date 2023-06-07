@@ -4,10 +4,11 @@ FROM node:18.12.1 as builder
 COPY . /app
 WORKDIR /app
 
+ENV GENERATE_SOURCEMAP=false
+ENV NODE_OPTIONS=--max_old_space_size=8192
+
 RUN yarn -v
 RUN yarn --non-interactive --ignore-optional --network-timeout 500000
-
-
 RUN yarn run build
 
 
