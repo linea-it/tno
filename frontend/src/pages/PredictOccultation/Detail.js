@@ -222,7 +222,7 @@ function PredictDetail() {
         },
         {
           title: 'Average Execution Time Asteroid',
-          value: moment.utc(predictionJob.avg_exec_time * 1000).format("HH:mm:ss.SSS")
+          value: moment.utc(predictionJob.avg_exec_time * 1000).format("HH:mm:ss")
         },
         {
           title: '# Asteroids',

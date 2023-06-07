@@ -109,6 +109,8 @@ function PredictOccultation() {
 
     getCatalogList().then((list) => {
       setCatalogList(list.map(x => { return { value: x.name, label: x.name } }));
+      if (list.length > 0)
+        setCatalog({ value: list[0].name, label: list[0].name })
     })
   });
 
@@ -394,7 +396,7 @@ function PredictOccultation() {
       title: 'Average Execution Time',
       width: 130,
       align: 'center',
-      customElement: (row) => (moment.utc(row.avg_exec_time * 1000).format("HH:mm:ss.SSS"))
+      customElement: (row) => (moment.utc(row.avg_exec_time * 1000).format("HH:mm:ss"))
     },
   ]
 

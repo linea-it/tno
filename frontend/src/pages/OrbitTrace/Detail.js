@@ -258,11 +258,11 @@ function OrbitTraceDetail() {
         },
         {
           title: 'Average Execution Time Asteroid',
-          value: moment.utc(orbitTraceJob.avg_exec_time_asteroid * 1000).format("HH:mm:ss.SSS")
+          value: moment.utc(orbitTraceJob.avg_exec_time_asteroid * 1000).format("HH:mm:ss")
         },
         {
           title: 'Average Execution Time CCD',
-          value: moment.utc(orbitTraceJob.avg_exec_time_ccd * 1000).format("HH:mm:ss.SSS")
+          value: moment.utc(orbitTraceJob.avg_exec_time_ccd * 1000).format("HH:mm:ss")
         },
 
       ])
@@ -467,7 +467,7 @@ function OrbitTraceDetail() {
       <>
       {
         totalCount > 0 &&
-          <Grid item>
+          <Grid item xs={12}>
             <Card>
               <CardHeader title='Asteroid Results' />
               <CardContent>
