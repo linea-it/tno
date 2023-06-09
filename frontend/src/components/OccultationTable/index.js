@@ -77,7 +77,7 @@ function OccultationTable({ loadData, tableData, totalCount }) {
             width: 150,
             align: 'center',
             headerTooltip: 'Asteroid Name (Number)',
-            customElement: (row) => <span>{row.name + (row.number? '(' +row.number + ')':'')}</span>
+            customElement: (row) => <span>{row.name + (row.number? ' (' +row.number + ')':'')}</span>
         },
         {
             name: 'number',
