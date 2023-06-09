@@ -1,6 +1,26 @@
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
+const styles = makeStyles({  
+  grid: {
+    margin: 'auto'
+  },
+  titleItem: {    
+    marginTop: '10px',
+    fontSize: '1.3em',
+    paddingTop: '0.5em',   
+    color: '#000000'    
+  },
+  celula:{
+    backgroundColor:'#cccccc',
+    textAlign: 'center',
+    padding: '10px'
+  },
+  mouse:{
+    cursor: 'pointer'
+  },
+  btnPeriod:{
+    paddingTop:'7px'
+  },
   formControl: {
     minWidth: 113
   },
@@ -8,11 +28,7 @@ const useStyles = makeStyles((theme) => ({
     height: 'calc(100% - 1px)'
   },
   progressWrapper: {
-    position: 'relative',
-    paddingBottom: theme.spacing(1)
-  },
-  circularProgress: {
-    margin: '5px auto'
+    position: 'relative'    
   },
   gridTable: {
     display: 'table'
@@ -20,14 +36,9 @@ const useStyles = makeStyles((theme) => ({
   gridTableRow: {
     display: 'table-row'
   },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
+  backdrop: {   
     color: '#fff'
-  },
-  chipError: {
-    color: `${theme.palette.error.light} !important`,
-    borderColor: `${theme.palette.error.light} !important`
-  },
+  }, 
   errorText:{
     color: '#8B0000'
   },
@@ -43,10 +54,8 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 4,
     position: 'relative',    
     border: '1px solid #ced4da',   
-    width: 'auto'    
-  },
-  tooltip: {
-    fontSize: "1.4em",
+    width: 'auto',  
+    height: '43px'  
   },
   loadingTable:{
     display: 'block !important',
@@ -54,6 +63,11 @@ const useStyles = makeStyles((theme) => ({
     marginRight: 'auto !important',
     fontSize: '40px'
   },
-}))
+  selected:{
+    backgroundColor:'#9b9a9a',
+    textAlign: 'center',
+    padding: '10px'
+  }
+})
 
-export default useStyles
+export default styles
