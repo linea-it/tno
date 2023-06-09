@@ -144,12 +144,8 @@ function Occultation() {
     })
   }
 
-  const handleFilterClick = async () => {
-    loadData({ sorting: [{ columnName: 'id', direction: 'asc' }], pageSize: 10, currentPage: 0 });
-  }
-
   useEffect(() => {
-    handleFilterClick();
+    loadData({ sorting: [{ columnName: 'id', direction: 'asc' }], pageSize: 10, currentPage: 0 });
   }, [dateStart, dateEnd, filterValue, magnitude]);
 
   const onKeyUp = async (event) => {

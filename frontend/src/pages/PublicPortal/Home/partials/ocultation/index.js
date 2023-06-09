@@ -161,12 +161,8 @@ function PublicOcutation() {
     }
   }
 
-  const handleFilterClick = async () => {
-    loadData({ sorting: [{ columnName: 'date_time', direction: 'asc' }], pageSize: 10, currentPage: 0 });
-  }
-
   useEffect(() => {
-    handleFilterClick();
+    loadData({ sorting: [{ columnName: 'date_time', direction: 'asc' }], pageSize: 10, currentPage: 0 });
   }, [dateStart, dateEnd, filterValue, magnitude, filterView]);
 
   const onKeyUp = async (event) => {
