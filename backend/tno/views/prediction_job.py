@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 import humanize
 import numpy as np
 import pandas as pd
-from tno.models import PredictionJob, Catalog
-from tno.serializers import PredictionJobSerializer
+from tno.models import PredictionJob, Catalog, PredictionJobStatus
+from tno.serializers import PredictionJobSerializer, PredictionJobStatusSerializer
 from django.core.paginator import Paginator
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
@@ -82,6 +82,14 @@ class PredictionJobViewSet(
         result = PredictionJobSerializer(job)
 
         return Response(result.data)
+
+    @action(detail=True, methods=["get"])
+    def status(self, request, pk=None):
+
+        job = self.get_object()
+        queryset = job.predictionjobstatus_set.all().order_by("step")
+        serializer = PredictionJobStatusSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(detail=True, methods=["post"])
     def cancel_job(self, request, pk=None):

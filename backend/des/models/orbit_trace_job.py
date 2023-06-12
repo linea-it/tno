@@ -166,6 +166,5 @@ class OrbitTraceJob(models.Model):
         default=0
     )
 
-
     def __str__(self):
         return str(self.id)

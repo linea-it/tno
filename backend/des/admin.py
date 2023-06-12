@@ -6,6 +6,7 @@ from .models import (
     SkybotJob,
     OrbitTraceJob,
     OrbitTraceJobResult,
+    OrbitTraceJobStatus,
     SkybotJobResult,
     SkybotPosition,
     SummaryDynclass,
@@ -150,27 +151,6 @@ class OrbitTraceJobAdmin(admin.ModelAdmin):
         "exec_time",
     )
 
-
-@admin.register(SkybotJobResult)
-class SkybotJobResultAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "job",
-        "exposure",
-        "ticket",
-        "execution_time",
-        "positions",
-        "inside_ccd",
-        "outside_ccd",
-    )
-
-    # Troca o tipo de imput de Select para um text field com botao de busca
-    # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
-    raw_id_fields = (
-        "job",
-        "exposure",
-    )
-
 @admin.register(OrbitTraceJobResult)
 class OrbitTraceJobResultAdmin(admin.ModelAdmin):
     list_display = (
@@ -191,6 +171,40 @@ class OrbitTraceJobResultAdmin(admin.ModelAdmin):
     raw_id_fields = (
         "job",
         "asteroid",
+    )
+
+@admin.register(OrbitTraceJobStatus)
+class OrbitTraceJobStatusAdmin(admin.ModelAdmin):
+    list_display = (
+        "job",
+        "step",
+        "status",
+        "count",
+        "current",
+        "average_time",
+        "time_estimate",
+        "success",
+        "failures"
+    )
+
+@admin.register(SkybotJobResult)
+class SkybotJobResultAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "job",
+        "exposure",
+        "ticket",
+        "execution_time",
+        "positions",
+        "inside_ccd",
+        "outside_ccd",
+    )
+
+    # Troca o tipo de imput de Select para um text field com botao de busca
+    # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
+    raw_id_fields = (
+        "job",
+        "exposure",
     )
 
 
