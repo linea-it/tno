@@ -6,20 +6,18 @@ import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
 import List from '../../components/List'
 import Table from '../../components/Table'
 import ColumnStatus from '../../components/Table/ColumnStatus'
-import Progress from '../../components/Progress'
-import CalendarSuccessOrFailNight from '../../components/Chart/CalendarSuccessOrFailNight'
 import {
   getOrbitTraceJobById,
   getOrbitTraceResultByJobId,
-  cancelOrbitTraceJobById
+  cancelOrbitTraceJobById,
+  getOrbitTraceProgressById
 
 } from '../../services/api/OrbitTrace'
 
 import useInterval from '../../hooks/useInterval'
 import useStyles from './styles'
 import { Alert } from '@material-ui/lab'
-import { WidthFull } from '../../../node_modules/@mui/icons-material/index'
-import { fill } from 'lodash'
+import ProgressList from '../../components/ProgressList/index'
 
 function OrbitTraceDetail() {
   const { id } = useParams()
@@ -28,28 +26,9 @@ function OrbitTraceDetail() {
   const [orbitTraceJob, setOrbitTraceJob] = useState({})
   const [summaryExecution, setSummaryExecution] = useState([])
   const [summaryResults, setSummaryResults] = useState([])
-  const [progress, setProgress] = useState({
-    request: {
-      status: 'completed',
-      exposures: 0,
-      current: 0,
-      average_time: 0,
-      time_estimate: 0,
-      exposures_failed: 0,
-    },
-    loaddata: {
-      status: 'completed',
-      exposures: 0,
-      current: 0,
-      average_time: 0,
-      time_estimate: 0,
-      exposures_failed: 0,
-    }
-  })
-  const [loadProgress, setLoadProgress] = useState(false)
+  const [progress, setProgress] = useState([])
   const [isJobCanceled, setIsJobCanceled] = useState(false)
   const [tableData, setTableData] = useState([])
-  const [hasCircularProgress, setHasCircularProgress] = useState(true)
 
   // Initiating totalCount as null so that it passes the conditional rendering,
   // in case of nor exposure, and calls the function loadData.
@@ -223,7 +202,7 @@ function OrbitTraceDetail() {
       sorting: [{ columnName: 'id', direction: 'asc' }]
     })
     //loadErrors({ currentPage: 0, pageSize: 10 })
-  }, [loadProgress, id])
+  }, [id])
 
   useEffect(() => {
     if (Object.keys(orbitTraceJob).length > 0) {
@@ -290,20 +269,26 @@ function OrbitTraceDetail() {
         }
       ])
     }
-  }, [orbitTraceJob, id])
+  }, [orbitTraceJob])
+
+  const loadDataProgress = (id) =>{
+    getOrbitTraceProgressById({ id }).then((res) => {
+      setProgress(res)
+    })
+  }
 
   const formatSeconds = (value) => moment().startOf('day').seconds(value).format('HH:mm:ss')
 
   useInterval(() => {
-    if ([1, 2].includes(orbitTraceJob.status)) {
-      setLoadProgress((prevState) => !prevState)
+    if ([1, 2].includes(orbitTraceJob.status) && id) {
+      loadDataProgress(id)
     }
   }, [5000])
 
   const handleStopRun = () => {
     cancelOrbitTraceJobById(id).then(() => {
       setIsJobCanceled(true)
-      setLoadProgress((prevState) => !prevState)
+      //setLoadProgress((prevState) => !prevState)
     })
   }
 
@@ -357,74 +342,12 @@ function OrbitTraceDetail() {
           <CardHeader title='Progress' />
           <CardContent>
             <Grid container spacing={3} direction='column' className={classes.progressWrapper}>
-              <Grid item>
-                {/* <Progress
-                  title='Retrieving data from Skybot'
-                  variant='determinate'
-                  label={`${progress.request.exposures} exposures`}
-                  total={progress.request.exposures}
-                  current={progress.request.current}
-                />
-                <Grid container spacing={2}>
-                  <Grid item>
-                    <Chip label={`Average: ${progress.request.average_time.toFixed(2)}s`} color='primary' variant='outlined' />
-                  </Grid>
-                  <Grid item>
-                    <Chip label={`Time Left: ${formatSeconds(progress.request.time_estimate)}`} color='primary' variant='outlined' />
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      label={`Progress: ${progress.request.current}/${progress.request.exposures}`}
-                      color='primary'
-                      variant='outlined'
-                    />
-                  </Grid>
-                  {progress.request.exposures_failed > 0 ? (
-                    <Grid item>
-                      <Chip label={`Exposures Failed: ${progress.request.exposures_failed}`} className={classes.chipError} variant='outlined' />
-                    </Grid>                  
-                  ) : null}
-                </Grid> */}
-              </Grid>
-
-              <Grid item>
-                {/* <Progress
-                  title='Importing positions to database'
-                  variant='determinate'
-                  label={`${progress.loaddata.exposures} exposures`}
-                  total={progress.loaddata.exposures}
-                  current={progress.loaddata.current}
-                />
-                <Grid container spacing={2}>
-                  <Grid item>
-                    <Chip label={`Average: ${progress.loaddata.average_time.toFixed(2)}s`} color='primary' variant='outlined' />
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      label={`Time Left: ${formatSeconds(
-                        moment.duration(progress.loaddata.time_estimate).add(moment.duration(progress.request.time_estimate))
-                      )}`}
-                      color='primary'
-                      variant='outlined'
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      label={`Progress: ${progress.loaddata.current}/${progress.loaddata.exposures}`}
-                      color='primary'
-                      variant='outlined'
-                    />
-                  </Grid>
-                  {progress.loaddata.exposures_failed > 0 ? (
-                    <Grid item>
-                      <Chip label={`Exposures Failed: ${progress.loaddata.exposures_failed}`} className={classes.chipError} variant='outlined' />
-                    </Grid>                  
-                  ) : null}                  
-                </Grid> */}
-              </Grid>
-              {/* {hasCircularProgress && [1, 2].includes(orbitTraceJob.status) ? (
-                <CircularProgress className={classes.circularProgress} disableShrink size={20} />
-              ) : null} */}
+              <ProgressList
+                lista={progress}    
+              /> 
+              {orbitTraceJob.status == 1 && progress.length == 0 ? (
+                <CircularProgress className={classes.circularProgress} disableShrink size={50} />
+              ) : null}
             </Grid>
           </CardContent>
         </Card>

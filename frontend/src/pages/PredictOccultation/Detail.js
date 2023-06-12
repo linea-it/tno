@@ -28,12 +28,14 @@ import Donut from '../../components/Chart/Donut';
 import {
   getPredictionJobById,
   getPredictionJobResultsByJobId,
-  cancelPredictionJobById
+  cancelPredictionJobById,
+  getPredictionJobProgressById
 } from '../../services/api/PredictOccultation';
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index';
 import { Alert } from '@material-ui/lab'
 import useStyles from './styles';
 import useInterval from '../../hooks/useInterval'
+import ProgressList from '../../components/ProgressList/index';
 
 function PredictDetail() {
   const { id } = useParams();
@@ -45,8 +47,7 @@ function PredictDetail() {
   const [totalCount, setTotalCount] = useState(0);
   const [totalErrorCount, setTotalErrorCount] = useState(0);
   const [isJobCanceled, setIsJobCanceled] = useState(false);
-  const [hasCircularProgress, setHasCircularProgress] = useState(true);
-  const [loadProgress, setLoadProgress] = useState(false)
+  const [progress, setProgress] = useState([])
   const classes = useStyles()
   const [dialog, setDialog] = useState({
     content: [],
@@ -57,16 +58,21 @@ function PredictDetail() {
 
   const handleBackNavigation = () => navigate(-1);
 
+  const loadDataProgress = (id) =>{
+    getPredictionJobProgressById({ id }).then((res) => {
+      setProgress(res)
+    })
+  }
+
   useInterval(() => {
-    if ([1, 2].includes(predictionJob.status)) {
-      setLoadProgress((prevState) => !prevState)
+    if ([1, 2].includes(predictionJob.status) && id) {
+      loadDataProgress(id)
     }
   }, [5000])
 
   const handleStopRun = () => {
     cancelPredictionJobById(id).then(() => {
       setIsJobCanceled(true)
-      setLoadProgress((prevState) => !prevState)
     })
   }
 
@@ -184,7 +190,7 @@ function PredictDetail() {
     });
 
 
-  }, [loadProgress, id]);
+  }, [id]);
 
   useEffect(() => {
     if(predictionJob.status){
@@ -269,15 +275,6 @@ function PredictDetail() {
   }
   
 
-  //const handleBackNavigation = () => history.push('/dashboard/prediction-of-occultation');
-
-  // const handleChangeToolButton = (event, value) => {
-  //   const columnToggleValue =
-  //     value === 'list'
-  //       ? setColumnsTable(tableListArray)
-  //       : setColumnsTable(bugLogArray);
-  //   setToolButton(columnToggleValue);
-  // };
 
   return (
     <Grid container spacing={2}>
@@ -329,74 +326,12 @@ function PredictDetail() {
           <CardHeader title='Progress' />
           <CardContent>
             <Grid container spacing={3} direction='column' className={classes.progressWrapper}>
-              <Grid item>
-                {/* <ProgresstotalCount
-                  title='Retrieving data from Skybot'
-                  variant='determinate'
-                  label={`${progress.request.exposures} exposures`}
-                  total={progress.request.exposures}
-                  current={progress.request.current}
-                />
-                <Grid container spacing={2}>
-                  <Grid item>
-                    <Chip label={`Average: ${progress.request.average_time.toFixed(2)}s`} color='primary' variant='outlined' />
-                  </Grid>
-                  <Grid item>
-                    <Chip label={`Time Left: ${formatSeconds(progress.request.time_estimate)}`} color='primary' variant='outlined' />
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      label={`Progress: ${progress.request.current}/${progress.request.exposures}`}
-                      color='primary'
-                      variant='outlined'
-                    />
-                  </Grid>
-                  {progress.request.exposures_failed > 0 ? (
-                    <Grid item>
-                      <Chip label={`Exposures Failed: ${progress.request.exposures_failed}`} className={classes.chipError} variant='outlined' />
-                    </Grid>                  
-                  ) : null}
-                </Grid> */}
-              </Grid>
-
-              <Grid item>
-                {/* <Progress
-                  title='Importing positions to database'
-                  variant='determinate'
-                  label={`${progress.loaddata.exposures} exposures`}
-                  total={progress.loaddata.exposures}
-                  current={progress.loaddata.current}
-                />
-                <Grid container spacing={2}>
-                  <Grid item>
-                    <Chip label={`Average: ${progress.loaddata.average_time.toFixed(2)}s`} color='primary' variant='outlined' />
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      label={`Time Left: ${formatSeconds(
-                        moment.duration(progress.loaddata.time_estimate).add(moment.duration(progress.request.time_estimate))
-                      )}`}container spacing={2}
-                      color='primary'
-                      variant='outlined'
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Chip
-                      label={`Progress: ${progress.loaddata.current}/${progress.loaddata.exposures}`}
-                      color='primary'
-                      variant='outlined'
-                    />
-                  </Grid>
-                  {progress.loaddata.exposures_failed > 0 ? (
-                    <Grid item>
-                      <Chip label={`Exposures Failed: ${progress.loaddata.exposures_failed}`} className={classes.chipError} variant='outlined' />
-                    </Grid>                  
-                  ) : null}                  
-                </Grid> */}
-              </Grid>
-              {/* {hasCircularProgress && [1, 2].includes(predictionJob.status) ? (
-                <CircularProgress className={classes.circularProgress} disableShrink size={20} />
-              ) : null} */}
+            <ProgressList
+                lista={progress}    
+              /> 
+              {predictionJob.status == 1 && progress.length == 0 ? (
+                <CircularProgress className={classes.circularProgress} disableShrink size={50} />
+              ) : null}
             </Grid>
           </CardContent>
         </Card>
