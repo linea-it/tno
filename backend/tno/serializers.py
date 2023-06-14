@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from tno.models import JohnstonArchive
-from tno.models import Asteroid, Occultation, LeapSecond, BspPlanetary, Catalog, PredictionJob, PredictionJobResult, PredictionJobStatus
+from tno.models import Asteroid, Occultation, LeapSecond, BspPlanetary, Catalog, PredictionJob, PredictionJobResult, PredictionJobStatus, Profile
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -17,7 +17,10 @@ class UserSerializer(serializers.ModelSerializer):
         if hasattr(obj, 'profile'):
             return obj.profile.dashboard
         else:
-            return False
+            # creating a new profile if the user does not have one
+            profile = Profile(user_id=obj.id, dashboard=False)
+            profile.save()
+            return profile.dashboard
 
 
 class JohnstonArchiveSerializer(serializers.ModelSerializer):
