@@ -29,6 +29,7 @@ import { useNavigate } from '../../../../../../node_modules/react-router-dom/dis
 import "./ocultation.css";
 import clsx from 'clsx'
 import OccultationTable from '../../../../../components/OccultationTable/index';
+import { useIsMount } from '../../../../../hooks/useIsMount';
 
 function PublicOcutation() {
   const navigate = useNavigate();
@@ -50,6 +51,7 @@ function PublicOcutation() {
   const useMountEffect = (fun) => useEffect(fun, []);
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
+  const isMount = useIsMount();
   
   const filterTypehandleChange = (event) => {
     if (event) {
@@ -162,7 +164,9 @@ function PublicOcutation() {
   }
 
   useEffect(() => {
-    loadData({ sorting: [{ columnName: 'date_time', direction: 'asc' }], pageSize: 10, currentPage: 0 });
+    if(!isMount){
+      loadData({ sorting: [{ columnName: 'date_time', direction: 'asc' }], pageSize: 10, currentPage: 0 });
+    }
   }, [dateStart, dateEnd, filterValue, magnitude, filterView]);
 
   const onKeyUp = async (event) => {

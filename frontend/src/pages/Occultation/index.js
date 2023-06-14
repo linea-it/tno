@@ -30,6 +30,7 @@ import { useNavigate } from '../../../node_modules/react-router-dom/dist/index'
 import './occultation.css'
 import { CardHeader, MenuItem, OutlinedInput } from '../../../node_modules/@material-ui/core/index';
 import OccultationTable from '../../components/OccultationTable/index';
+import { useIsMount } from '../../hooks/useIsMount';
 
 function Occultation() {
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ function Occultation() {
   const useMountEffect = (fun) => useEffect(fun, []);
   const [tableData, setTableData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
-
+  const isMount = useIsMount();
 
 
   const filterTypehandleChange = (event) => {
@@ -145,7 +146,9 @@ function Occultation() {
   }
 
   useEffect(() => {
-    loadData({ sorting: [{ columnName: 'id', direction: 'asc' }], pageSize: 10, currentPage: 0 });
+    if(!isMount){
+      loadData({ sorting: [{ columnName: 'id', direction: 'asc' }], pageSize: 10, currentPage: 0 });
+    }
   }, [dateStart, dateEnd, filterValue, magnitude]);
 
   const onKeyUp = async (event) => {
