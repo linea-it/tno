@@ -42,7 +42,7 @@ function Occultation() {
   const [dateEnd, setDateEnd] = useState('');
   const [dateStartError, setDateStartError] = useState(false);
   const [dateEndError, setDateEndError] = useState(false);
-  const [filterTypeList, setFilterTypeList] = useState([{ value: 'Name', label: 'Name' }, { value: 'DynClass', label: 'DynClass' }, { value: 'Base DynClass', label: 'Base DynClass' }]);
+  const [filterTypeList, setFilterTypeList] = useState([{ value: 'name', label: 'Object name' }, { value: 'dynclass', label: 'Dynamic class (with subclasses)' }, { value: 'base_dynclass', label: 'Dynamic class' }]);
   const [dynClassList, setDynClassList] = useState([]);
   const [baseDynClassList, setBaseDynClassList] = useState([]);
   const [asteroidsList, setAsteroidsList] = useState([]);
@@ -212,7 +212,7 @@ function Occultation() {
                             menuPosition={'fixed'}
                           />
                         }
-                        {filterType.value == "Name" &&
+                        {filterType.value == "name" &&
                           <Select
                             id="filterName"
                             onChange={filterValueNameshandleChange}
@@ -222,7 +222,7 @@ function Occultation() {
                             menuPosition={'fixed'}
                           />
                         }
-                        {filterType.value == "DynClass" &&
+                        {filterType.value == "dynclass" &&
                           <Select
                             value={filterValue}
                             id="filterDynClass"
@@ -232,7 +232,7 @@ function Occultation() {
                             menuPosition={'fixed'}
                           />
                         }
-                        {filterType.value == "Base DynClass" &&
+                        {filterType.value == "base_dynclass" &&
                           <Select
                             value={filterValue}
                             id="filterBaseDynClass"

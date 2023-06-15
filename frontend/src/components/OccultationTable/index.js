@@ -11,7 +11,7 @@ import styles from './style'
 import { getNextTwenty, getOccultations } from '../../services/api/Occultation'
 
 
-function OccultationTable({ loadData, tableData, totalCount }) {
+function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
     const navigate = useNavigate()
     const defaultHiddenColumnNames = [
         "number", 
@@ -55,15 +55,15 @@ function OccultationTable({ loadData, tableData, totalCount }) {
         {
           name: 'index',
           title: ' ',
-          width: 70,
+          width: 50,
           sortingEnabled: false
         },
         {
           name: 'detail',
-          title: 'Detail',
+          title: publicPage?' ': 'Detail',
           width: 80,
           customElement: (row) => (
-            <Button onClick={() => navigate(row.detail)}>
+            <Button className={classes.btnDetail} onClick={() => publicPage?window.open(row.detail, "_blank"):navigate(row.detail)}>
               <InfoOutlinedIcon />
             </Button>
           ),
@@ -299,7 +299,7 @@ function OccultationTable({ loadData, tableData, totalCount }) {
     return (
         <>
             <Card>
-                <CardHeader title={`Occultation Result - Total: ${occultationsCount}`} />
+                <CardHeader title={`Total Occultation Predictions: ${occultationsCount}`} />
                 <CardContent>
                     <Table
                         columns={occultationsTableColumns}
@@ -323,14 +323,16 @@ function OccultationTable({ loadData, tableData, totalCount }) {
 OccultationTable.propTypes = {
     loadData: PropTypes.func,
     tableData: PropTypes.array,
-    totalCount: PropTypes.number
+    totalCount: PropTypes.number,
+    publicPage: PropTypes.bool
 
 }
 
 OccultationTable.defaultProps = {
     loadData: () => null,
     tableData: [],
-    totalCount: 0
+    totalCount: 0,
+    publicPage: false
 }
 
 export default OccultationTable

@@ -227,7 +227,7 @@ function PredictDetail() {
           value: predictionJob.exec_time ? predictionJob.exec_time.split('.')[0] : "-"
         },
         {
-          title: 'Average Execution Time Asteroid',
+          title: 'Asteroid Average Execution Time',
           value: moment.utc(predictionJob.avg_exec_time * 1000).format("HH:mm:ss")
         },
         {

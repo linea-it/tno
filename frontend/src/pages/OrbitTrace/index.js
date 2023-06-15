@@ -54,7 +54,7 @@ function OrbitTrace() {
 
   const [bspPlanetary, setBspPlanetary] = React.useState({ value: "", label: "Select..." });
   const [leapSecond, setLeapSecond] = React.useState({ value: "", label: "Select..." });
-  const [filterType, setFilterType] = React.useState({ value: 'base_dynclass', label: 'Base DynClass' });
+  const [filterType, setFilterType] = React.useState({ value: 'base_dynclass', label: 'Dynamic class' });
   const [filterValue, setFilterValue] = React.useState({ value: "", label: "Select..." });
   const [bspValue, setBspValue] = React.useState({ value: 10, label: "10 days" });
   const [parslInitBlocks, setParslInitBlocks] = React.useState({ value: 600, label: "600" });
@@ -315,17 +315,17 @@ function OrbitTrace() {
     },
     {
       name: 'avg_exec_time_asteroid',
-      title: 'Average Execution Time Asteroid',
+      title: 'Ast AET',
       width: 150,
-      headerTooltip: 'Execution time',
+      headerTooltip: 'Asteroid Average Execution Time',
       align: 'center',
-      customElement: (row) => (moment.utc(row.avg_exec_time_asteroid * 1000).format("HH:mm:ss"))
+      customElement: (row) => (moment.utc(row.avg_exec_time_asteroid * 1000).format("HH:mm:ss")),
     },
     {
       name: 'avg_exec_time_ccd',
-      title: 'Average Execution Time CCD',
+      title: 'CCD AET',
       width: 150,
-      headerTooltip: 'Execution time',
+      headerTooltip: 'CCD Average Execution Time',
       align: 'center',
       customElement: (row) => (moment.utc(row.avg_exec_time_ccd * 1000).format("HH:mm:ss"))
     },

@@ -1,3 +1,9 @@
+.buttonClear{
+  min-width: 20px !important;
+  margin-top: 15px !important;
+}
+
+
 .fade-in-image {
     animation: fadeIn 5s;
     -webkit-animation: fadeIn 5s;

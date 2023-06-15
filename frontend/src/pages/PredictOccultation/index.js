@@ -369,9 +369,10 @@ function PredictOccultation() {
     },
     {
       name: 'count_asteroids_with_occ',
-      title: 'Asteroids with Occultations',
+      title: 'Ast WO',
       width: 130,
       align: 'center',
+      headerTooltip: 'Asteroids with Occultations'
     },
     {
       name: 'count_occ',

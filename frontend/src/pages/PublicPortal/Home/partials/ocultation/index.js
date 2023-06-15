@@ -23,7 +23,7 @@ import {
 } from '../../../../../services/api/Asteroid';
 import Select from 'react-select';
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons';
-import { CardHeader, CircularProgress, MenuItem, OutlinedInput } from '../../../../../../node_modules/@material-ui/core/index';
+import { CardHeader, CircularProgress, Icon, MenuItem, OutlinedInput } from '../../../../../../node_modules/@material-ui/core/index';
 import Table from '../../../../../components/Table/index';
 import { useNavigate } from '../../../../../../node_modules/react-router-dom/dist/index';
 import "./ocultation.css";
@@ -35,14 +35,14 @@ function PublicOcutation() {
   const navigate = useNavigate();
   const classes = styles();
   const [filterView, setFilterView] = useState('next');
-  const [magnitude, setMagnitude] = useState([4, 23]);
+  const [magnitude, setMagnitude] = useState([4, 14]);
   const [diameter, setDiameter] = useState([0, 600]);
   const [zoneValue, setZoneValue] = useState('');
   const [dateStart, setDateStart] = useState('');
   const [dateEnd, setDateEnd] = useState('');
   const [dateStartError, setDateStartError] = useState(false);
   const [dateEndError, setDateEndError] = useState(false);
-  const [filterTypeList, setFilterTypeList] = useState([{ value: 'Name', label: 'Name' }, { value: 'DynClass', label: 'DynClass' }, { value: 'Base DynClass', label: 'Base DynClass' }]);
+  const [filterTypeList, setFilterTypeList] = useState([{ value: 'name', label: 'Object name' }, { value: 'dynclass', label: 'Dynamic class (with subclasses)' }, { value: 'base_dynclass', label: 'Dynamic class' }]);
   const [dynClassList, setDynClassList] = useState([]);
   const [baseDynClassList, setBaseDynClassList] = useState([]);
   const [asteroidsList, setAsteroidsList] = useState([]);
@@ -120,8 +120,8 @@ function PublicOcutation() {
     const end = dateEnd ? new Date(dateEnd).toISOString().slice(0, 10) + ' 23:59:59' : null;
     const type = filterType.value ? filterType.value.toLowerCase().replaceAll(' ', '_') : null;
     const value = filterValue.value ? filterValue.value : null;
-    const minmag = magnitude[0] > 4 ? magnitude[0] : null;
-    const maxmag = magnitude[1] < 23 ? magnitude[1] : null;
+    const minmag = filterView == "userSelect" ? magnitude[0] : null;
+    const maxmag = filterView == "userSelect" ? magnitude[1] : null;
     if(filterView == "next"){
       getNextTwenty({
         page: currentPage + 1,
@@ -175,6 +175,14 @@ function PublicOcutation() {
         setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
       })
     }
+  }
+
+  const clearFilter = () =>{
+    setDateStart('');
+    setDateEnd('');
+    setFilterType('');
+    setFilterValue('');
+    setMagnitude([4,14]);
   }
 
   return (
@@ -284,7 +292,7 @@ function PublicOcutation() {
                               menuPosition={'fixed'}
                             />
                           }
-                          {filterType.value == "Name" &&
+                          {filterType.value == "name" &&
                             <Select
                               id="filterName"
                               onChange={filterValueNameshandleChange}
@@ -294,7 +302,7 @@ function PublicOcutation() {
                               menuPosition={'fixed'}
                             />
                           }
-                          {filterType.value == "DynClass" &&
+                          {filterType.value == "dynclass" &&
                             <Select
                               value={filterValue}
                               id="filterDynClass"
@@ -304,7 +312,7 @@ function PublicOcutation() {
                               menuPosition={'fixed'}
                             />
                           }
-                          {filterType.value == "Base DynClass" &&
+                          {filterType.value == "base_dynclass" &&
                             <Select
                               value={filterValue}
                               id="filterBaseDynClass"
@@ -359,13 +367,16 @@ function PublicOcutation() {
                           />
                       </FormControl>
                     </Grid>
-                    {/* <Grid item xs={12} sm={6} md={3}>
-                      <Box className={classes.btnPeriod}>
-                        <Button variant='contained' className="buttonFilter" color='primary'>
-                          Searcher
+                    <Grid item xs={12} sm={6} md={3}>
+                      <Box className={classes.btnClear}>
+                        <Button onClick={clearFilter} variant='contained' className="buttonClear" color='primary'>
+                          <Icon className='fas fa-trash' fontSize='inherit' />
+                          <Typography variant='button' style={{ margin: '0 5px' }}>
+                            Clean
+                          </Typography>
                         </Button>
                       </Box>
-                    </Grid> */}
+                    </Grid>
                   </Grid>
                 </form>
               </CardContent>
@@ -378,6 +389,7 @@ function PublicOcutation() {
           loadData={loadData}
           tableData={tableData}
           totalCount={totalCount}
+          publicPage={true}
           /> 
       </Grid>
     </>
