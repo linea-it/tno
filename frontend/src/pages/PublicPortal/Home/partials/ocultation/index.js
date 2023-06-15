@@ -118,8 +118,8 @@ function PublicOcutation() {
     const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
     const start = dateStart ? new Date(dateStart).toISOString().slice(0, 10) + ' 00:00:00' : null;
     const end = dateEnd ? new Date(dateEnd).toISOString().slice(0, 10) + ' 23:59:59' : null;
-    const type = filterType.value ? filterType.value.toLowerCase().replaceAll(' ', '_') : null;
-    const value = filterValue.value ? filterValue.value : null;
+    const type = filterView == "userSelect" && filterType.value ? filterType.value.toLowerCase().replaceAll(' ', '_') : null;
+    const value = filterView == "userSelect" && filterValue.value ? filterValue.value : null;
     const minmag = filterView == "userSelect" ? magnitude[0] : null;
     const maxmag = filterView == "userSelect" ? magnitude[1] : null;
     if(filterView == "next"){
@@ -211,7 +211,7 @@ function PublicOcutation() {
                   <Grid container spacing={2} alignItems='stretch'>
                     <Grid item xs={12} sm={4} md={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth ><label>Date Filter (start)</label>
+                        <FormControl fullWidth ><label>Date Start</label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
                           </LocalizationProvider>
@@ -220,7 +220,7 @@ function PublicOcutation() {
                     </Grid>
                     <Grid item xs={7} sm={4} md={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Date Filter (end)</label>
+                        <FormControl fullWidth><label>Date End</label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
                           </LocalizationProvider>
@@ -250,7 +250,7 @@ function PublicOcutation() {
                   <Grid container spacing={2} alignItems='stretch'>
                     <Grid item xs={12} sm={6} md={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth ><label>Date Filter (start)</label>
+                        <FormControl fullWidth ><label>Date Start</label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
                           </LocalizationProvider>
@@ -259,7 +259,7 @@ function PublicOcutation() {
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Date Filter (end)</label>
+                        <FormControl fullWidth><label>Date End</label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
                           </LocalizationProvider>
@@ -342,7 +342,7 @@ function PublicOcutation() {
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                       {/* <FormControl fullWidth><label>Magnitude ({magnitude.toString()})</label> */}
-                      <FormControl fullWidth><label>Magnitude Filter</label>
+                      <FormControl fullWidth><label>Magnitude</label>
                         <Slider
                           value={magnitude}
                           step={1}
@@ -355,7 +355,7 @@ function PublicOcutation() {
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
                       {/* <FormControl fullWidth><label>Diameter (0 and 600Km)</label> */}
-                      <FormControl fullWidth><label> Diameter Filter (Km)</label>
+                      <FormControl fullWidth><label> Diameter (Km)</label>
                         <Slider
                             value={diameter}
                             step={1}

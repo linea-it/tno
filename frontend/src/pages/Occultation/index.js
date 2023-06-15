@@ -28,7 +28,7 @@ import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
 import { useNavigate } from '../../../node_modules/react-router-dom/dist/index'
 
 import './occultation.css'
-import { CardHeader, MenuItem, OutlinedInput } from '../../../node_modules/@material-ui/core/index';
+import { CardHeader, Icon, MenuItem, OutlinedInput } from '../../../node_modules/@material-ui/core/index';
 import OccultationTable from '../../components/OccultationTable/index';
 import { useIsMount } from '../../hooks/useIsMount';
 
@@ -164,13 +164,13 @@ function Occultation() {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Card>
-            <CardHeader title='Selection of occultation events' />
+            <CardHeader title= {<span>Selection of occultation events <Icon className="fa fa-filter" /></span>}/>
             <CardContent>
               <form noValidate autoComplete="off">
                 <Grid container spacing={2} alignItems='stretch'>
                   <Grid item xs={12} sm={6} md={3}>
                     <Box sx={{ minWidth: 120 }}>
-                      <FormControl fullWidth ><label>Date Filter (start)</label>
+                      <FormControl fullWidth ><label>Date Start</label>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
                         </LocalizationProvider>
@@ -179,7 +179,7 @@ function Occultation() {
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Box sx={{ minWidth: 120 }}>
-                      <FormControl fullWidth><label>Date Filter (end)</label>
+                      <FormControl fullWidth><label>Date End</label>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
                         </LocalizationProvider>
@@ -261,7 +261,7 @@ function Occultation() {
                     </Box>
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>                   
-                    <FormControl fullWidth><label>Magnitude Filter</label>
+                    <FormControl fullWidth><label>Magnitude</label>
                       <Slider
                         value={magnitude}
                         step={1}
@@ -273,7 +273,7 @@ function Occultation() {
                     </FormControl>
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>                   
-                    <FormControl fullWidth><label>Diameter Filter (Km)</label>
+                    <FormControl fullWidth><label>Diameter (Km)</label>
                     <Slider
                         value={diameter}
                         step={1}
