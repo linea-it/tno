@@ -114,6 +114,20 @@ function Occultation() {
     { value: 'South America', label: 'South America' },
   ];
 
+  function urlExists(url) {
+    var http = new XMLHttpRequest();
+    http.open('HEAD', url, false);
+    http.send();
+    if (http.status != 404)
+        return true;
+    else
+        return false;
+  }
+
+  function getMapUrl(occultation){
+    return process.env.REACT_APP_SORA + '/map?body=' + encodeURI(occultation.name) + '&date=' + encodeURI(occultation.date_time.split('T')[0]) + '&time=' + encodeURI(occultation.date_time.split('T')[1].replaceAll('Z', ''))
+  }
+
   const loadData = ({ sorting, pageSize, currentPage }) => {
     const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
     const start = dateStart ? new Date(dateStart).toISOString().slice(0, 10) + ' 00:00:00' : null;
@@ -138,6 +152,7 @@ function Occultation() {
         data.results.map((row) => ({
           key: row.id,
           detail: `/dashboard/occultation-detail/${row.id}`,
+          map: urlExists(getMapUrl(row))?getMapUrl(row):'',
           ...row
         }))
       )

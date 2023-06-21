@@ -46,6 +46,18 @@ const useStyles = makeStyles((theme) => ({
     border: '1px solid #ced4da',   
     width: 'auto',  
     height: '43px'  
+  },
+  divImg:{
+    display: 'flex !important',
+    alignItems: 'center !important',
+    justifyContent: 'center !important',
+  },
+  mapImg:{
+    width: '60%'
+  },
+  erroMap:{
+    fontSize: '20px',
+    color: 'red'
   }
 }))
 

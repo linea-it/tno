@@ -1,32 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import {
   Grid,
   Card,
   CardHeader,
   CardContent,
-  Button,
-  Icon,
-  Tooltip,
-  Toolbar,
+  CircularProgress
 } from '@material-ui/core';
-import {
-  List as ListIcon,
-  BugReport as BugReportIcon,
-} from '@material-ui/icons';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import List from '../../components/List';
-import Table from '../../components/Table';
-import Dialog from '../../components/Dialog';
-import Log from '../../components/Log';
-import ColumnStatus from '../../components/Table/ColumnStatus';
-import Donut from '../../components/Chart/Donut';
-import TimeProfile from '../../components/Chart/TimeProfile';
+
 import Aladin from '../../components/Aladin/index';
 import {
   getOccultationById,
+  getOccultationMap
 } from '../../services/api/Occultation';
+import useStyles from './styles'
 
 function OccultationDetail() {
   const { id } = useParams();
@@ -34,22 +23,41 @@ function OccultationDetail() {
   const [circumstances, setCircumstances] = useState([]);
   const [star, setStar] = useState([]);
   const [object, setObject] = useState([]);
-  
-  
+  const [map, setMap] = useState(null);
+  const [erroMap, setErroMap] = useState(false);
+  const classes = useStyles()
+
+
   useEffect(() => {
     getOccultationById({ id }).then((res) => {
       setOccultation({
         ...res,
-        source: ''//imagem do sora,
       });
     });
   }, [id]);
 
+  const s2ab = (s) => {
+    var buf = new ArrayBuffer(s.length);
+    var view = new Uint8Array(buf);
+    for (var i=0; i!=s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+    return buf;
+  }
+
   useEffect(() => {
+    if (occultation.date_time) {
+      getOccultationMap({ object: occultation.name, date: occultation.date_time.split('T')[0], time: occultation.date_time.split('T')[1].replaceAll('Z', '') })
+        .then((res) => {
+        setMap(res.config.baseURL + res.config.url + '?body=' + encodeURI(occultation.name) + '&date=' + encodeURI(occultation.date_time.split('T')[0]) + '&time=' + encodeURI(occultation.date_time.split('T')[1].replaceAll('Z', '')));
+      },
+      ).catch((err) =>{
+        setErroMap(true);
+      });
+    }
+
     setCircumstances([
       {
         title: 'Date',
-        value: moment(occultation.occ_date).format(
+        value: moment(occultation.date_time).format(
           'ddd. DD MMMM YYYY HH:mm:ss'
         ),
       },
@@ -162,7 +170,7 @@ function OccultationDetail() {
     setObject([
       {
         title: 'Object',
-        value: '-',
+        value: occultation.name,
       },
       {
         title: 'Diameter',
@@ -225,12 +233,24 @@ function OccultationDetail() {
         <Grid item xs={12}>
           <Card>
             <CardHeader title="Occultation Map" />
-            <CardContent>
-              <img
-                src={occultation.source}
-                alt={occultation.name}
-                title={occultation.name}
-              />
+            <CardContent className={classes.divImg}>
+              { map && !erroMap &&
+                <img
+                  className={classes.mapImg}
+                  src={map}
+                  alt={occultation.name}
+                />
+              }
+              {!map && !erroMap &&
+                <CircularProgress
+                  className={classes.circularProgress}
+                  disableShrink
+                  size={50}
+                />
+              }
+              { erroMap &&
+                <span className={classes.erroMap}>An error occurred while generating the map.</span>
+              }
             </CardContent>
           </Card>
         </Grid>

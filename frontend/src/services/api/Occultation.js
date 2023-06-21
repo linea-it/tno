@@ -1,4 +1,5 @@
 import { api } from './Api'
+import { sora } from './Sora'
 
 export const getOccultations = ({ page, pageSize, ordering , start_date, end_date, filter_type, filter_value, min_mag, max_mag }) => {
   const params = {
@@ -26,4 +27,17 @@ export const getNextTwenty = ({ page, pageSize, ordering}) => {
   }
   return api.get(`/occultations/next_twenty/`, { params }).then((res) => res.data)
 }
+
+export const getOccultationMap = ({object, date, time}) => {
+  const params ={
+    body: object,
+    date: date,
+    time: time
+  }
+  return sora.post('/map', params);
+}
+
+
+
+
 

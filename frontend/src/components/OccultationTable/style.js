@@ -67,6 +67,9 @@ const styles = makeStyles({
     backgroundColor:'#9b9a9a',
     textAlign: 'center',
     padding: '10px'
+  },
+  imgThumb:{
+    width: '50%'
   }
 })
 

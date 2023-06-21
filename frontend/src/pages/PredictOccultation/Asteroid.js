@@ -118,6 +118,20 @@ function PredictionAsteroid() {
       ])
   }, [predictionJobResult])
 
+  function urlExists(url) {
+    var http = new XMLHttpRequest();
+    http.open('HEAD', url, false);
+    http.send();
+    if (http.status != 404)
+        return true;
+    else
+        return false;
+  }
+
+  function getMapUrl(occultation){
+    return process.env.REACT_APP_SORA + '/map?body=' + encodeURI(occultation.name) + '&date=' + encodeURI(occultation.date_time.split('T')[0]) + '&time=' + encodeURI(occultation.date_time.split('T')[1].replaceAll('Z', ''))
+  }
+
   const loadOccultationsData = ({ asteroid_id, currentPage, pageSize, sorting }) => {
     if(asteroid_id || asteroidId){  
       setLoading(true);
@@ -130,6 +144,7 @@ function PredictionAsteroid() {
         setOccultationsTable(res.results.map((row) => ({
           key: row.id,
           detail: `/dashboard/occultation-detail/${row.id}`,
+          map: urlExists(getMapUrl(row))?getMapUrl(row):'',
           ...row
         })));
         setOccultationsCount(res.count);
