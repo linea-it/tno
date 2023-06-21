@@ -4,7 +4,7 @@ export const url = process.env.REACT_APP_SORA
 
 export function getSoraClient(ctx) {
   const sora = axios.create({
-    timeout: 60000,
+    timeout: 180000,
     headers: {
       'Content-Type': 'application/json',
       accept: 'application/json'
