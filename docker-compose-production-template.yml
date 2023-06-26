@@ -1,0 +1,101 @@
+version: "3.6"
+services:
+  # Backend Django
+  backend: &backend
+    user: "1000:10000"
+    image: linea/tno:backend_11tech_089d4cb
+    command: /start.sh
+    volumes:
+      # Arquivo de Variaveis de ambiente
+      - ./local_settings.py:/usr/src/app/coreAdmin/local_settings.py
+      # Diretório de Logs
+      - ./log:/log
+      # Diretório de Dados
+      #- /archive/apps/tno-dev/data/:/archive
+      - ./data/:/archive
+      # Diretório de Catalogos do DES (finalcut)
+      - /archive/cl/ton/finalcut:/des/public/
+      # Astropy Cache
+      #- /archive/apps/tno-dev/data/astropy_cache:/home/appuser/.astropy/cache/
+      - ./data/astropy_cache:/home/appuser/.astropy/cache/
+    depends_on:
+      - rabbit
+
+  # Copia do serviço backend, mas executando outro comando
+  celery_worker: &celery_worker
+    <<: *backend
+    command: /start_worker.sh
+
+  # Copia do serviço backend, mas executando outro comando
+  celery_beat: &celery_beat
+    <<: *backend
+    command: /start_beat.sh
+
+  # Esta aberto na rede para que os pipelines possam conectar neste servico.
+  rabbit:
+    image: rabbitmq:3-management
+    hostname: rabbit_tno_dev
+    environment:
+      RABBITMQ_DEFAULT_USER: tno
+      RABBITMQ_DEFAULT_PASS: tnorabbit123
+      RABBITMQ_DEFAULT_VHOST: tno_vhost
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq/
+    ports:
+      - 56722:5672
+
+  rabbit_portal:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: tno
+      RABBITMQ_DEFAULT_PASS: tnorabbit123
+      RABBITMQ_DEFAULT_VHOST: tno_portal_vhost
+    volumes:
+      - rabbitmq_portal-data:/var/lib/rabbitmq/
+
+  # Frontend React/Servidor Web NGINX
+  frontend:
+    image: linea/tno:frontend_11tech_089d4cb
+    ports:
+      - 8060:8080
+    volumes:
+      - ./nginx_proxy.conf:/etc/nginx/conf.d/default.conf
+      - /archive/apps/tno-dev/database_subset:/var/www/data/database_subset
+      - ./data:/var/www/data
+    depends_on:
+      - backend
+      - jupyter
+      - sora            
+
+  sora:
+    image: mozaru/carto-sora
+    user: "1000:10000"
+    environment:
+      INPUT_PATH: "/media/input"
+      OUTPUT_PATH: "/media/output"
+      CACHE_PATH: "/media/output"
+      PORT: 8000
+    volumes:
+      - ./data/sora/input:/media/input
+      - ./data/sora/output:/media/output
+    command: python3.7 /opt/server/main.py
+
+  # #Jupyter Notebook for Science Verification (access database and files)
+  # jupyter:
+  #   image: jupyter/scipy-notebook:latest
+  #   command: "start-notebook.sh"
+  #   user: "1000:10000"
+  #   environment:
+  #     NB_USER: docker_worker
+  #     CHOWN_HOME: 'yes'
+  #     CHOWN_HOME_OPTS: -R
+  #     JUPYTER_ENABLE_LAB: 'yes'
+  #     PASSWORD: "password"
+  #   volumes:
+  #     - ./jupyter_data:/home/jovyan/work
+  #     - ./jupyter_server_config.py:/home/jovyan/.jupyter/jupyter_server_config.py:ro
+  #   ports:
+  #     - 8888:8888      
+  volumes:
+    rabbitmq-data:
+    rabbitmq_portal-data:

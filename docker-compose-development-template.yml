@@ -58,14 +58,12 @@ services:
 
   sora:
     image: mozaru/carto-sora
-    #user: "1000:1000"
+    user: "1000:1000"
     environment:
       INPUT_PATH: "/media/input"
       OUTPUT_PATH: "/media/output"
       CACHE_PATH: "/media/output"
       PORT: 8000
-    ports: 
-      - 1234:8000
     volumes:
       - ./archive/sora/input:/media/input
       - ./archive/sora/output:/media/output

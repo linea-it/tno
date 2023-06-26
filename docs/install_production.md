@@ -5,7 +5,9 @@ Download
 
 Create Folders (Ignore this step if want use other locations)
 
-mkdir tno/database_subset tno/archive tno/log && cd tno
+```bash
+mkdir tno/database_subset tno/archive tno/archive/sora tno/archive/sora/input tno/archive/sora/output tno/log && cd tno
+```
 
 ```bash
 wget -O docker-compose.yml https://raw.githubusercontent.com/linea-it/tno/main/docker-compose-development-template.yml \
