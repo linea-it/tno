@@ -59,47 +59,14 @@ COPY ./entrypoint.sh /entrypoint.sh
 COPY ./start.sh /start.sh
 COPY ./start_worker.sh /start_worker.sh
 COPY ./start_beat.sh /start_beat.sh
-RUN chmod 775 /entrypoint.sh 
-RUN chmod 775 /start.sh
-RUN chmod 775 /start_worker.sh
-RUN chmod 775 /start_beat.sh
+RUN chmod 775 /entrypoint.sh && chown $USER_UID:$USER_GID /entrypoint.sh 
+RUN chmod 775 /start.sh && chown $USER_UID:$USER_GID /start.sh
+RUN chmod 775 /start_worker.sh && chown $USER_UID:$USER_GID /start_worker.sh
+RUN chmod 775 /start_beat.sh && chown $USER_UID:$USER_GID /start_beat.sh
 
 # Switch to non-priviliged user and run app
 USER tnouser
 
-ENTRYPOINT ["/entrypoint.sh", "/start.sh"]
-
-#  Runtime Stage
-# FROM python:3.10-slim
-
-# Copy Dependencies for Python LDAP, Psql
-# COPY --from=builder /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
-
-# # Criar o grupo des-brazil com o mesmo id usado no linea
-# RUN groupadd --gid 10000 des-brazil
-# # add user so we can run things as non-root
-# RUN adduser --system tnouser --gid 10000
-
-# add user so we can run things as non-root
-# RUN adduser --system tnouser 
-
-# # Copy from builder and set ENV for venv
-# COPY --from=builder /opt/venv /opt/venv
-# ENV PATH="/opt/venv/bin:$PATH"
-
-# # Set Python ENV
-# ENV PYTHONUNBUFFERED=1 
-# ENV PYTHONPATH="/app:$PYTHONPATH"
-# # Matplotlib Config 
-# ENV MPLCONFIGDIR="/tmp"
-
-# ENV SHELL /bin/bash
-
-# # Copy app files into container
-# WORKDIR /app
-# COPY . .
-
-# # Switch to non-priviliged user and run app
-# USER tnouser
-# # CMD ["/app/entrypoint.sh"]
-# ENTRYPOINT ./entrypoint.sh
+# NÃO adicionar o script /start.sh no entrypoint
+# O /start.sh deve ser adicionado no docker-compose command.
+ENTRYPOINT ["/entrypoint.sh"]

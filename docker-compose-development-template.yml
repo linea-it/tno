@@ -16,6 +16,16 @@ services:
       - ./pg_backups:/pg_backups
       - ./database_subset:/data
 
+  # Message-Broker Software RabbitMQ
+  rabbit:
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: tno
+      RABBITMQ_DEFAULT_PASS: adminadmin
+      RABBITMQ_DEFAULT_VHOST: tno_vhost
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq/      
+
   # Backend Django
   backend: &backend
     user: "1000:1000"

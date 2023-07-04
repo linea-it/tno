@@ -15,19 +15,18 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # https://docs.celeryq.dev/en/stable/userguide/periodic-tasks.html
 app.conf.beat_schedule = {
-    'add-every-30-seconds': {
-        'task': 'tasks.add',
+    # 'add-every-30-seconds': {
+    #     'task': 'tno.tasks.add',
+    #     'schedule': 30.0,
+    #     'args': (16, 16)
+    # },
+    'test-periodic-every-30-seconds': {
+        'task': 'tno.tasks.teste_periodic_task',
         'schedule': 30.0,
-        'args': (16, 16)
-    },
+    },    
 }
 app.conf.timezone = 'UTC'
-
 
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
 
-
-@app.task(bind=True)
-def debug_task(self):
-    print(f'Request: {self.request!r}')
