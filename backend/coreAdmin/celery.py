@@ -1,6 +1,7 @@
 import os
 
 from celery import Celery
+from celery.schedules import crontab
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'coreAdmin.settings')
@@ -20,10 +21,15 @@ app.conf.beat_schedule = {
     #     'schedule': 30.0,
     #     'args': (16, 16)
     # },
-    'test-periodic-every-30-seconds': {
-        'task': 'tno.tasks.teste_periodic_task',
-        'schedule': 30.0,
-    },    
+    # 'test-periodic-every-30-seconds': {
+    #     'task': 'tno.tasks.teste_periodic_task',
+    #     'schedule': 30.0,
+    # },
+    'genmap-every-day-at-23': {
+        'task': 'tno.tasks.generate_maps',
+        'schedule': crontab(hour='23')
+    } 
+
 }
 app.conf.timezone = 'UTC'
 

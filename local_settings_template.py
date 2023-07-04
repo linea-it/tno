@@ -35,6 +35,7 @@ DATABASES = {
 # Skybot do linea: SKYBOT_SERVER=http://srvskybot.linea.org.br/webservices/skybot/
 # Skybot da Franca: SKYBOT_SERVER="http://vo.imcce.fr/webservices/skybot/"
 SKYBOT_SERVER = "http://vo.imcce.fr/webservices/skybot/"
+SORA_SERVER = "http://tno_sora_1:8000"
 
 # Shibboleth Authentication
 # Habilita ou desabilita autenticação pelo shibboleth.

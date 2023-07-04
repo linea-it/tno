@@ -96,6 +96,6 @@ services:
   #     - ./jupyter_server_config.py:/home/jovyan/.jupyter/jupyter_server_config.py:ro
   #   ports:
   #     - 8888:8888      
-  volumes:
-    rabbitmq-data:
-    rabbitmq_portal-data:
+volumes:
+  rabbitmq-data:
+  rabbitmq_portal-data:
