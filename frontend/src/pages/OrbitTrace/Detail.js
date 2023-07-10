@@ -204,6 +204,16 @@ function OrbitTraceDetail() {
     //loadErrors({ currentPage: 0, pageSize: 10 })
   }, [id])
 
+  useInterval(() => {
+    const hasStatusRunning = [1, 2].includes(orbitTraceJob.status)
+
+    if (hasStatusRunning) {
+      getOrbitTraceJobById({ id }).then((job) => {
+        setOrbitTraceJob(job);
+      });
+    }
+  }, 2000)
+
   useEffect(() => {
     if (Object.keys(orbitTraceJob).length > 0) {
       setSummaryExecution([
@@ -283,7 +293,7 @@ function OrbitTraceDetail() {
     if ([1, 2].includes(orbitTraceJob.status) && id) {
       loadDataProgress(id)
     }
-  }, [5000])
+  }, [2000])
 
   const handleStopRun = () => {
     cancelOrbitTraceJobById(id).then(() => {

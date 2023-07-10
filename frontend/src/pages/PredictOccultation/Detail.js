@@ -68,7 +68,7 @@ function PredictDetail() {
     if ([1, 2].includes(predictionJob.status) && id) {
       loadDataProgress(id)
     }
-  }, [5000])
+  }, [2000])
 
   const handleStopRun = () => {
     cancelPredictionJobById(id).then(() => {
@@ -192,13 +192,23 @@ function PredictDetail() {
 
   }, [id]);
 
+  useInterval(() => {
+    const hasStatusRunning = [1, 2].includes(predictionJob.status)
+
+    if (hasStatusRunning) {
+      getPredictionJobById({ id }).then((job) => {
+        setPredictionJob(job);
+      });
+    }
+  }, 2000)
+
   useEffect(() => {
     if(predictionJob.status){
       setSummaryExecution([
         {
           title: 'Status',
           value: () => (
-            <ColumnStatus status={predictionJob.status} title={predictionJob.error} />
+            <ColumnStatus status={predictionJob.status} title={predictionJob.error} align="right" />
           ),
           
         },

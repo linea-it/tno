@@ -27,7 +27,11 @@ app.conf.beat_schedule = {
     # },
     'genmap-every-day-at-23': {
         'task': 'tno.tasks.generate_maps',
-        'schedule': crontab(hour='23')
+        'schedule': crontab(hour='23', minute='0')
+    },
+    'cleanmap-every-day-at-3': {
+        'task': 'tno.tasks.cleanup_maps',
+        'schedule': crontab(hour='3', minute='0')
     } 
 
 }
