@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid'
 import Skybot from '../pages/Skybot'
 import SkybotDetail from '../pages/Skybot/Detail'
 import SkybotAsteroid from '../pages/Skybot/Asteroid'
+import SkybotStatistics from '../pages/Skybot/Statistics'
 import OrbitTrace from '../pages/OrbitTrace/'
 import DesManagement from '../pages/DesManagement'
 
@@ -159,7 +160,7 @@ export default function AppRoutes() {
       <Route
         isPrivate
         exact
-        path='/dashboard/statistics'
+        path='/dashboard/stats'
         element={
           <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
@@ -192,6 +193,18 @@ export default function AppRoutes() {
           </PrivateRoute>
         }
       />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/data-preparation/des/statistics'
+        element={
+          <PrivateRoute auth={{ isAuthenticated }}>
+            <DashboardPage>
+              <SkybotStatistics />
+            </DashboardPage>
+          </PrivateRoute>
+        }
+      />      
       <Route
         isPrivate
         exact
