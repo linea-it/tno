@@ -70,6 +70,7 @@ const routes = [
   { path: '/dashboard/data-preparation/des/discovery', title: 'Skybot Discovery' },
   { path: '/dashboard/data-preparation/des/discovery/:id', title: 'Skybot Discovery' },
   { path: '/dashboard/data-preparation/des/discovery/asteroid/:id', title: 'Skybot Discovery' },
+  { path: '/dashboard/data-preparation/des/statistics', title: 'Skybot Statistics' },  
   { path: '/dashboard/data-preparation/des/orbittrace', title: 'Orbit Trace' },
   { path: '/dashboard/data-preparation/des/management', title: 'DES Management' },
   { path: '/dashboard/prediction-of-occultation', title: 'Predict Occultation' },
@@ -77,7 +78,7 @@ const routes = [
   { path: '/dashboard/data-preparation/predict-asteroid/:id', title: 'Predict Occultation Asteroid' },
   { path: '/dashboard/occultation', title: 'Occultation' },
   { path: '/dashboard/occultation-detail/:id', title: 'Occultation Detail' },
-  { path: '/dashboard/statistics', title: 'Statistics' },
+  { path: '/dashboard/stats', title: 'Dashboard' },
   { path: '/dashboard/data-preparation/des/orbittrace-detail/:id', title: 'Orbit Trace Details' },
   { path: '/dashboard/data-preparation/des/orbittrace/asteroid/:id', title: 'Orbit Trace Asteroid' },
 ]
@@ -94,7 +95,7 @@ export default function PersistentDrawerLeft({ children }) {
 
   const navigate = useNavigate()
   let location = useCurrentPath()
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(true)
 
   const handleDrawerOpen = () => {
     setOpen(true)
@@ -118,7 +119,7 @@ export default function PersistentDrawerLeft({ children }) {
         open={open}
         sx={{
           color: '#34465d',
-          background: theme.palette.common.white
+          background: theme.palette.common.white,
         }}
       >
         <DashToolbar open={open} handleDrawerOpen={handleDrawerOpen} title={location.title}></DashToolbar>
@@ -161,8 +162,8 @@ export default function PersistentDrawerLeft({ children }) {
         </DrawerHeader>
         <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
         <List>
-          <ListItemButton onClick={() => navigate('/dashboard/statistics')}>
-            <ListItemText primary='Statistics' sx={{ fontWeight: 'bold' }} />
+          <ListItemButton onClick={() => navigate('/dashboard/stats')}>
+            <ListItemText primary='Dashboard' sx={{ fontWeight: 'bold' }} />
           </ListItemButton>
           <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
           {/* DES Data Preparation */}
@@ -175,6 +176,9 @@ export default function PersistentDrawerLeft({ children }) {
               <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-preparation/des/discovery')}>
                 <ListItemText primary='Skybot Discovery' />
               </ListItemButton>
+              <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-preparation/des/statistics')}>
+                <ListItemText primary='Skybot Statistics' />
+              </ListItemButton>                            
               <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-preparation/des/orbittrace')}>
                 <ListItemText primary='Orbit Trace' />
               </ListItemButton>
@@ -193,6 +197,9 @@ export default function PersistentDrawerLeft({ children }) {
           <ListItemButton onClick={() => navigate('/dashboard/occultation')}>
             <ListItemText primary='Occultation' />
           </ListItemButton>
+          <ListItemButton onClick={() => navigate('/')}>
+            <ListItemText primary='Public Page' />
+          </ListItemButton>          
         </List>
       </Drawer>
       <Main open={open}>
