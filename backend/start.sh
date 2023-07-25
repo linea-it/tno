@@ -5,6 +5,7 @@ set -o pipefail
 set -o nounset
 
 echo "Running Migrate to apply changes in database"
+cd /usr/src/app
 python manage.py migrate
 python manage.py migrate django_celery_results
 

@@ -53,16 +53,6 @@ services:
     <<: *backend
     command: /start_beat.sh
 
-  # Esta aberto na rede para que os pipelines possam conectar neste servico.
-  rabbit:
-    image: rabbitmq:3-management
-    environment:
-      RABBITMQ_DEFAULT_USER: tno
-      RABBITMQ_DEFAULT_PASS: adminadmin
-      RABBITMQ_DEFAULT_VHOST: tno_vhost
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq/
-
   # Frontend React
   frontend:
     image: node:18.12.1

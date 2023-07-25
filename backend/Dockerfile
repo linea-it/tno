@@ -36,7 +36,7 @@ RUN pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requi
 
 ARG USERNAME=tnouser
 ARG USER_UID=1000
-ARG USER_GID=$USER_UID
+ARG USER_GID=1000
 
 # add user so we can run things as non-root
 # https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user
