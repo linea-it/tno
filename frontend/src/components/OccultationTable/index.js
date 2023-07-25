@@ -4,11 +4,8 @@ import Table from '../../components/Table'
 import { Card, CardContent, CardHeader, Button, CircularProgress } from '../../../node_modules/@material-ui/core/index'
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
 import { useNavigate } from 'react-router-dom'
-
 import moment from '../../../node_modules/moment/moment'
-import { getOccultationsByAsteroid } from '../../services/api/PredictOccultation'
 import styles from './style'
-import { getNextTwenty, getOccultations } from '../../services/api/Occultation'
 
 
 function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
@@ -37,7 +34,6 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
         "multiplicity_flag",
         "ct"
     ];
-    const [pageSize, setPageSize] = useState(10)
     const [occultationsTable, setOccultationsTable] = useState([])
     const [occultationsCount, setOccultationsCount] = useState(0)
     const classes = styles();
@@ -91,8 +87,16 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             title: 'C/A Instant',
             width: 150,
             align: 'center',
-            headerTooltip: 'Instant of the Closest Approach',
-            customElement: (row) => row.date_time ? <span title={moment(row.date_time).format('YYYY-MM-DD HH:mm:ss')}>{moment(row.date_time).format('YYYY-MM-DD HH:mm:ss')}</span> : <span>Invalid Date</span>
+            headerTooltip: 'Instant of the Closest Approach in UTC',
+            customElement: (row) => row.date_time ? <span title={moment(row.date_time).format('YYYY-MM-DD HH:mm:ss')}>{moment(row.date_time).utc().format('YYYY-MM-DD HH:mm:ss')}</span> : <span>Invalid Date</span>
+        },
+        {
+            name: 'closest_approach',
+            title: 'C/A',
+            width: 150,
+            align: 'center',
+            headerTooltip: 'Geocentric Closest Approach (arcsec)',
+            customElement: (row) => <span>{row.closest_approach?row.closest_approach.toFixed(3):''}</span>
         },
         {
             name: 'position_angle',

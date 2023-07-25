@@ -68,9 +68,6 @@ const styles = makeStyles({
     textAlign: 'center',
     padding: '10px'
   },
-  btnClear:{
-    float: 'right'
-  },
 })
 
 export default styles
