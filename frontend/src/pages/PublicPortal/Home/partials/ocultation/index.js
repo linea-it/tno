@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Grid, Card, CardContent,
-  Typography,
-  Slider,
   Box,
-  Button,
   FormControl
 } from '@material-ui/core';
 import styles from './styles';
@@ -12,14 +9,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { getOccultations, getNextTwenty, filter_by_location } from '../../../../../services/api/Occultation';
-import {
-  getDynClassList,
-  getBaseDynClassList,
-  getAsteroidsWithPredictionList,
-  getFilteredWithPredictionList
-} from '../../../../../services/api/Asteroid';
-import Select from 'react-select';
-import { CircularProgress, Icon, TextField } from '../../../../../../node_modules/@material-ui/core/index';
 import { useNavigate } from '../../../../../../node_modules/react-router-dom/dist/index';
 import "./ocultation.css";
 import clsx from 'clsx'
@@ -39,6 +28,7 @@ function PublicOcutation() {
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [radius, setRadius] = useState(500);
+  const [geoFilter, setGeoFilter] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [erroLocation, setErroLocation] = useState(false);
   const [tableData, setTableData] = useState([]);
@@ -85,7 +75,7 @@ function PublicOcutation() {
       })
     }
     else {
-      if (latitude && longitude && radius) {
+      if (latitude && longitude && radius && geoFilter) {
         setLoadingLocation(true);
         setTableData([]);
         setTotalCount(0);
@@ -228,6 +218,8 @@ function PublicOcutation() {
             setLongitude={setLongitude}
             radius={radius}
             setRadius={setRadius}
+            geoFilter={geoFilter}
+            setGeoFilter={setGeoFilter}
             loadingLocation={loadingLocation}
             setLoadingLocation={setLoadingLocation}
             erroLocation={erroLocation}

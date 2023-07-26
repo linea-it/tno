@@ -14,14 +14,13 @@ import {
   } from '../../services/api/Asteroid';
 
 
-function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filterType, setFilterType, filterValue, setFilterValue, magnitude, setMagnitude, latitude, setLatitude, longitude, setLongitude, radius, setRadius, loadingLocation, setLoadingLocation, erroLocation, setErroLocation, filter }) {
+function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filterType, setFilterType, filterValue, setFilterValue, magnitude, setMagnitude, latitude, setLatitude, longitude, setLongitude, radius, setRadius, geoFilter, setGeoFilter, loadingLocation, setLoadingLocation, erroLocation, setErroLocation, filter }) {
     
     const classes = styles();
     const [filterTypeList, setFilterTypeList] = useState([{ value: 'name', label: 'Object name' }, { value: 'dynclass', label: 'Dynamic class (with subclasses)' }, { value: 'base_dynclass', label: 'Dynamic class' }]);
     const [asteroidsList, setAsteroidsList] = useState([]);
     const [dynClassList, setDynClassList] = useState([]);
     const [baseDynClassList, setBaseDynClassList] = useState([]);
-    const [geoFilter, setGeoFilter] = useState(false);
     const [erroLatitude, setErroLatitude] = useState(false);
     const [erroLongitude, setErroLongitude] = useState(false);
     const useMountEffect = (fun) => useEffect(fun, []);
@@ -111,7 +110,7 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
       setMagnitude([4, 14]);
       setLatitude('');
       setLongitude('');
-      setRadius('');
+      setRadius(500);
     }
 
     const filterClick = () =>{
@@ -279,7 +278,7 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
                                   </Box>
                                 </Grid>
                                 <Grid item xs={12}>
-                                  <i>It is strongly recommend to use a short range of date or a filter combination to search by location.</i>
+                                  <i>It is strongly recommend to use a short date range or a filter combination to search by location.</i>
                                 </Grid>
                                 {erroLocation &&
                                   <Grid item xs={12}>

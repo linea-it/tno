@@ -1,47 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import moment from 'moment';
+import React, { useState } from 'react';
 import {
   Grid,
-  Card,
-  CardContent,
-  Typography,
-  Slider,
-  Box,
-  Button,
-  FormControl,
-
 } from '@material-ui/core';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { getOccultations, filter_by_location } from '../../services/api/Occultation';
-import Image from '../../components/List/Image';
-import useStyles from './styles'
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import {
-  getDynClassList,
-  getBaseDynClassList,
-  getAsteroidsWithPredictionList,
-  getFilteredWithPredictionList
-} from '../../services/api/Asteroid'
-import Select from 'react-select'
-import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
-import { useNavigate } from '../../../node_modules/react-router-dom/dist/index'
-
 import './occultation.css'
-import { CardHeader, Icon, MenuItem, OutlinedInput } from '../../../node_modules/@material-ui/core/index';
 import OccultationFilter from '../../components/OccultationFilter/index';
 import OccultationTable from '../../components/OccultationTable/index';
 
 function Occultation() {
-  const [magnitude, setMagnitude] = useState([4, 23]);
+  const [magnitude, setMagnitude] = useState([4, 14]);
   const [dateStart, setDateStart] = useState('');
   const [dateEnd, setDateEnd] = useState('');
   const [filterType, setFilterType] = useState('');
   const [filterValue, setFilterValue] = useState('');
-  const [locationFilter, setLocationFilter] = useState(false);
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [radius, setRadius] = useState(500);
+  const [geoFilter, setGeoFilter] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [erroLocation, setErroLocation] = useState(false);
   const [tableData, setTableData] = useState([]);
@@ -70,7 +45,7 @@ function Occultation() {
     const value =  filterValue.value ? filterValue.value : null;
     const minmag = magnitude[0];
     const maxmag = magnitude[1];
-    if (latitude && longitude && radius) {
+    if (latitude && longitude && radius && geoFilter) {
         setLoadingLocation(true);
         setTableData([]);
         setTotalCount(0);
@@ -157,6 +132,8 @@ function Occultation() {
             setLongitude={setLongitude}
             radius={radius}
             setRadius={setRadius}
+            geoFilter={geoFilter}
+            setGeoFilter={setGeoFilter}
             loadingLocation={loadingLocation}
             setLoadingLocation={setLoadingLocation}
             erroLocation={erroLocation}
