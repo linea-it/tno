@@ -56,173 +56,178 @@ function OccultationDetail() {
 
     setCircumstances([
       {
-        title: 'Date',
-        value: moment(occultation.date_time).format(
-          'ddd. DD MMMM YYYY HH:mm:ss'
-        ),
+        title: 'Instant of the Closest Approach',
+        value: moment(occultation.date_time).utc().format(
+          'ddd. DD MMMM YYYY HH:mm:ss'),
       },
       {
         title: 'Star position (ICRF)',
         tooltip:
-          'Right ascension and declination with assumed proper motion in ICRF/J2000',
+          'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
         value: `${occultation.ra_star_candidate} ${occultation.dec_star_candidate}`,
       },
       {
-        title: 'C/A',
-        tooltip: 'Geocentric closest approach (arcsec)',
-        value: `${occultation.closest_approach} arcsec`,
+        title: 'Closest Approach',
+        tooltip: 'Geocentric closest approach',
+        value: `${occultation.closest_approach} (arcsec)`,
       },
       {
-        title: 'P/A',
-        tooltip: 'Planet position angle wrt to star at C/A (deg)',
-        value: occultation.position_angle,
+        title: 'Position Angle',
+        tooltip: "Planet's position angle with respect to the star at closest approach",
+        value: `${occultation.position_angle} (deg)`
       },
       {
         title: 'Velocity',
         tooltip:
-          'Velocity in plane of sky (positive= prograde, negative= retrograde)',
-        value: `${occultation.velocity} km/s`,
+          'Velocity on the plane of the sky. Positive is prograde, negative is retrograde',
+        value: `${occultation.velocity} (km/s)`,
       },
       {
         title: 'Geocentric distance Δ',
-        value: `${occultation.delta} au`,
+        value: `${occultation.delta} (AU)`,
       },
       {
-        title: 'G mag*',
-        tooltip: 'Gaia magnitude corrected from velocity (Source: Gaia DR1)',
-        value: occultation.g,
+        title: 'G* mag*',
+        tooltip: 'Gaia magnitude corrected from velocity',
+        value: occultation.g_mag_vel_corrected,
       },
       {
-        title: 'RP mag*',
-        tooltip: 'RP magnitude corrected from velocity (Source: GaiaDR2)',
-        value: '-',
+        title: 'RP* mag*',
+        tooltip: 'Gaia RP magnitude corrected from velocity',
+        value: occultation.g_mag_vel_corrected,
       },
       {
-        title: 'H mag*',
-        tooltip: 'H magnitude corrected from velocity (Source: 2MASS)',
-        value: '-',
+        title: 'H* mag*',
+        tooltip: '2MASS H magnitude corrected from velocity',
+        value: occultation.h_mag_vel_corrected,
       },
       {
-        title: 'Magnitude drop',
-        value: '-',
+        title: 'Magnitude Drop',
+        value: occultation.magnitude_drop,
       },
       {
-        title: 'Uncertainty in time',
-        value: '-',
+        title: 'Uncertainty in Time',
+        value: occultation.instant_uncertainty,
       },
     ]);
 
     setStar([
       {
         title: 'Star source ID',
-        value: '-',
+        tooltip: 'Unique source identifier',
+        value: '{star.source_id}'
       },
       {
         title: 'Stellar catalogue',
-        value: '-',
+        value: 'Gaia DR2',
       },
       {
         title: 'Star astrometric position in catalogue (ICRF)',
-        value: '-',
+        value: '{star.ra_dec}',
       },
       {
         title: 'Star astrometric position with proper motion (ICRF)',
-        value: '-',
+        value: `${occultation.ra_star_with_pm } ${occultation.dec_star_with_pm}`,
       },
       {
         title: 'Star apparent position (date)',
-        value: '-',
+        value: `${occultation.ra_star_to_date } ${occultation.dec_star_to_date}`
       },
       {
         title: 'Proper motion',
-        value: '-',
+        value: '{star.pmra ±pmra_error pmdec ±pmdec_error (mas/yr)}',
       },
       {
         title: 'Source of proper motion',
-        value: '-',
+        value: 'Gaia DR2',
       },
       {
         title: 'Uncertainty in the star position',
-        value: '-',
+        value: '{star.ra_error dec_error (mas)}',
       },
       {
         title: 'G magnitude',
-        value: '-',
+        value: '{star.phot_g_mean_mag}',
       },
       {
         title: 'RP magnitude (source: GaiaDR2)',
-        value: '-',
+        value: '{star.phot_rp_mean_mag}',
+      },
+      {
+        title: 'BP magnitude (source: GaiaDR2)',
+        value: '{star.phot_bp_mean_mag}',
       },
       {
         title: 'J magnitude (source: 2MASS)',
-        value: '-',
+        value: occultation.j,
       },
       {
         title: 'H magnitude (source: 2MASS)',
-        value: '-',
+        value: occultation.h,
       },
       {
         title: 'K magnitude (source: 2MASS)',
-        value: '-',
+        value: occultation.k,
       },
     ]);
 
     setObject([
       {
         title: 'Object',
-        value: occultation.name,
+        value: `${occultation.name} ${occultation.number?'('+occultation.number +')' :'' }`,
       },
       {
         title: 'Diameter',
-        value: '-',
+        value: `${occultation.diameter} (Km)`
       },
       {
-        title: 'Apparent diameter',
-        value: '-',
+        title: 'Aparent Diameter',
+        value: `${occultation.aparent_diameter} (mas)`,
       },
       {
-        title: 'Object astrometric position (ICRF)',
-        value: '-',
+        title: "Object's Astrometric Position (ICRF)",
+        value: `${occultation.ra_target} ${occultation.dec_target}`,
       },
       {
-        title: 'Object apparent position (date)',
-        value: '-',
+        title: "Object's Apparent Position (date)",
+        tooltip: "Relative to the Earth's center",
+        value: `${occultation.ra_target_apparent} ${occultation.dec_target_apparent}`,
       },
       {
         title: 'Uncertainty in position',
-        value: '-',
+        value: `RA: ${occultation.e_ra_target}, DEC: ${occultation.e_dec_target} (mas)`,
       },
       {
-        title: 'Apparent magnitude',
-        value: '-',
+        title: 'Apparent Magnitude',
+        value: `${occultation.apparent_magnitude}`,
       },
       {
         title: 'Ephemeris',
-        value: '-',
+        value: `${occultation.ephemeris_version}`,
       },
       {
         title: 'Dynamic class',
-        value: '-',
+        value: `${occultation.dynamic_class}`,
       },
       {
-        title: 'Semi major axis',
-        value: '-',
+        title: 'Semimajor Axis',
+        value: `${occultation.semimajor_axis} (AU)`,
       },
       {
         title: 'Eccentricity',
-        value: '-',
+        value: `${occultation.eccentricity} (Km)`,
       },
       {
         title: 'Inclination',
-        value: '-',
+        value: `${occultation.inclination} (deg)`,
       },
       {
         title: 'Perihelion',
-        value: '-',
+        value: `${occultation.perihelion} (AU)`,
       },
       {
         title: 'Aphelion',
-        value: '-',
+        value: `${occultation.aphelion} (AU)`,
       },
     ]);
   }, [occultation]);
@@ -232,7 +237,7 @@ function OccultationDetail() {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Card>
-            <CardHeader title="Occultation Map" />
+            <CardHeader title="Occultation Prediction Map" />
             <CardContent className={classes.divImg}>
               { map && !erroMap &&
                 <img
@@ -258,7 +263,7 @@ function OccultationDetail() {
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <Card>
-            <CardHeader title="Occultation Circumstances" />
+            <CardHeader title="Occultation Prediction Circumstances" />
             <CardContent>
               <List data={circumstances} />
             </CardContent>
@@ -266,7 +271,7 @@ function OccultationDetail() {
         </Grid>
         <Grid item xs={12} md={6}>
           <Card>
-            <CardHeader title="Occulted star" />
+            <CardHeader title="Occulted Star" />
             <CardContent>
               <List data={star} />
             </CardContent>

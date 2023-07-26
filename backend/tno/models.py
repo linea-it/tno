@@ -328,6 +328,195 @@ class Occultation(models.Model):
         auto_now_add=True
     )
 
+    g_mag_vel_corrected = models.FloatField(
+        verbose_name="g_mag_vel_corrected",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Gaia magnitude corrected from velocity",
+    )
+
+    rp_mag_vel_corrected = models.FloatField(
+        verbose_name="rp_mag_vel_corrected",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Gaia RP magnitude corrected from velocity",
+    )
+
+    h_mag_vel_corrected = models.FloatField(
+        verbose_name="h_mag_vel_corrected",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="2MASS H magnitude corrected from velocity",
+    )
+
+    magnitude_drop = models.FloatField(
+        verbose_name="magnitude_drop",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Magnitude drop",
+    )
+
+    instant_uncertainty = models.FloatField(
+        verbose_name="instant_uncertainty",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Instant uncertainty",
+    )
+
+    ra_star_with_pm = models.CharField(
+        max_length=35,
+        default=None,
+        null=True,
+        blank=True,
+        verbose_name="ra_star_with_pm",
+        help_text="ra_star_with_pm",
+    )
+
+    dec_star_with_pm = models.CharField(
+        max_length=35,
+        default=None,
+        null=True,
+        blank=True,
+        verbose_name="dec_star_with_pm",
+        help_text="dec_star_with_pm",
+    )
+
+    ra_star_to_date = models.CharField(
+        max_length=35,
+        default=None,
+        null=True,
+        blank=True,
+        verbose_name="ra_star_to_date",
+        help_text="ra_star_to_date",
+    )
+
+    dec_star_to_date = models.CharField(
+        max_length=35,
+        default=None,
+        null=True,
+        blank=True,
+        verbose_name="dec_star_to_date",
+        help_text="dec_star_to_date",
+    )
+
+    diameter = models.FloatField(
+        verbose_name="diameter",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Diameter",
+    )
+
+    aparent_diameter = models.FloatField(
+        verbose_name="aparent_diameter",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Aparent diameter",
+    )
+
+    ra_target_apparent = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        verbose_name="ra_target_apparent",
+    )
+
+    dec_target_apparent = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        verbose_name="dec_target_apparent",
+    )
+
+    e_ra_target = models.FloatField(
+        verbose_name="E_ra_target",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="E_ra_target",
+    )
+
+    e_dec_target = models.FloatField(
+        verbose_name="E_dec_target",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="E_dec_target",
+    )
+
+    apparent_magnitude = models.CharField(
+        max_length=35,
+        default=None,
+        null=True,
+        blank=True,
+        verbose_name="Apparent magnitude",
+        help_text="Apparent magnitude",
+    )
+
+    ephemeris_version = models.CharField(
+        max_length=35,
+        default=None,
+        null=True,
+        blank=True,
+        verbose_name="Ephemeris version",
+        help_text="Ephemeris version",
+    )
+
+    dynamic_class = models.CharField(
+        max_length=35,
+        default=None,
+        null=True,
+        blank=True,
+        verbose_name="Dynamic class",
+        help_text="Dynamic class",
+    )
+
+    semimajor_axis = models.FloatField(
+        verbose_name="Semimajor axis",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Semimajor axis",
+    )
+
+    eccentricity = models.FloatField(
+        verbose_name="Eccentricity",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Eccentricity",
+    )
+
+    inclination = models.FloatField(
+        verbose_name="Inclination",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Inclination",
+    )
+
+    perihelion = models.FloatField(
+        verbose_name="Perihelion",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Perihelion",
+    )
+
+    aphelion = models.FloatField(
+        verbose_name="Aphelion",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Aphelion",
+    )
+
 
 class LeapSecond(models.Model):
     class Meta:
