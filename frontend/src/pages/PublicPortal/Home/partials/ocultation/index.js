@@ -61,8 +61,8 @@ function PublicOcutation() {
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
     const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
-    const start = dateStart ? new Date(dateStart).toISOString().slice(0, 10) + ' 00:00:00' : null;
-    const end = dateEnd ? new Date(dateEnd).toISOString().slice(0, 10) + ' 23:59:59' : null;
+    const start = (filterView == "userSelect" || filterView == "period") && dateStart ? new Date(dateStart).toISOString().slice(0, 10) + ' 00:00:00' : null;
+    const end = (filterView == "userSelect" || filterView == "period") && dateEnd ? new Date(dateEnd).toISOString().slice(0, 10) + ' 23:59:59' : null;
     const type = filterView == "userSelect" && filterType.value ? filterType.value.toLowerCase().replaceAll(' ', '_') : null;
     const value = filterView == "userSelect" && filterValue.value ? filterValue.value : null;
     const minmag = filterView == "userSelect" ? magnitude[0] : null;
