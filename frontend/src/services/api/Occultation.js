@@ -47,6 +47,8 @@ export const getNextTwenty = ({ page, pageSize, ordering}) => {
   return api.get(`/occultations/next_twenty/`, { params }).then((res) => res.data)
 }
 
+export const getStarByOccultationId = ({ id }) => api.get(`/occultations/${id}/get_star_by_event`).then((res) => res.data)
+
 export const getOccultationMap = ({object, date, time}) => {
   const params ={
     body: object,

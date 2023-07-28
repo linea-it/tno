@@ -17,6 +17,8 @@ from operator import  attrgetter
 from tno.occviz import visibility
 from django.conf import settings
 import time
+from tno.db import DBBase
+from sqlalchemy.sql import text
 
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
@@ -131,3 +133,14 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = OccultationSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
 
+    @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
+    def get_star_by_event(self, request,pk=None):
+        pre_occ = Occultation.objects.get(id=pk)
+        ra = pre_occ.ra_star_deg
+        dec = pre_occ.dec_star_deg
+        db = DBBase()
+        sql = f"SELECT * FROM gaia.dr2 WHERE q3c_radial_query(ra, dec, {ra}, {dec}, 0.1)"
+        rows = db.fetch_all_dict(text(sql))
+        if len(rows) > 0:
+            return Response(rows[0])
+        return Response({})

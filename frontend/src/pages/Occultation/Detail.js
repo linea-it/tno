@@ -13,13 +13,15 @@ import List from '../../components/List';
 import Aladin from '../../components/Aladin/index';
 import {
   getOccultationById,
-  getOccultationMap
+  getOccultationMap,
+  getStarByOccultationId
 } from '../../services/api/Occultation';
 import useStyles from './styles'
 
 function OccultationDetail() {
   const { id } = useParams();
   const [occultation, setOccultation] = useState({});
+  const [starObj, setStarObj] = useState({});
   const [circumstances, setCircumstances] = useState([]);
   const [star, setStar] = useState([]);
   const [object, setObject] = useState([]);
@@ -34,14 +36,12 @@ function OccultationDetail() {
         ...res,
       });
     });
+    getStarByOccultationId({ id }).then((res) => {
+      setStarObj({
+        ...res,
+      });
+    });
   }, [id]);
-
-  const s2ab = (s) => {
-    var buf = new ArrayBuffer(s.length);
-    var view = new Uint8Array(buf);
-    for (var i=0; i!=s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-    return buf;
-  }
 
   useEffect(() => {
     if (occultation.date_time) {
@@ -53,7 +53,9 @@ function OccultationDetail() {
         setErroMap(true);
       });
     }
+  }, [occultation])
 
+  useEffect(() => {
     setCircumstances([
       {
         title: 'Instant of the Closest Approach',
@@ -115,7 +117,7 @@ function OccultationDetail() {
       {
         title: 'Star source ID',
         tooltip: 'Unique source identifier',
-        value: '{star.source_id}'
+        value: `${starObj.source_id}`
       },
       {
         title: 'Stellar catalogue',
@@ -123,7 +125,7 @@ function OccultationDetail() {
       },
       {
         title: 'Star astrometric position in catalogue (ICRF)',
-        value: '{star.ra_dec}',
+        value: `${starObj.ra} ${starObj.dec}`,
       },
       {
         title: 'Star astrometric position with proper motion (ICRF)',
@@ -135,7 +137,7 @@ function OccultationDetail() {
       },
       {
         title: 'Proper motion',
-        value: '{star.pmra ±pmra_error pmdec ±pmdec_error (mas/yr)}',
+        value: `${starObj.pmra} ±${starObj.pmra_error} ${starObj.pmdec} ±${starObj.pmdec_error} (mas/yr)}`,
       },
       {
         title: 'Source of proper motion',
@@ -143,19 +145,19 @@ function OccultationDetail() {
       },
       {
         title: 'Uncertainty in the star position',
-        value: '{star.ra_error dec_error (mas)}',
+        value: `${starObj.ra_error} ${starObj.dec_error} (mas)}`,
       },
       {
         title: 'G magnitude',
-        value: '{star.phot_g_mean_mag}',
+        value: `${starObj.phot_g_mean_mag}`,
       },
       {
         title: 'RP magnitude (source: GaiaDR2)',
-        value: '{star.phot_rp_mean_mag}',
+        value: `${starObj.phot_rp_mean_mag}`,
       },
       {
         title: 'BP magnitude (source: GaiaDR2)',
-        value: '{star.phot_bp_mean_mag}',
+        value:  `${starObj.phot_bp_mean_mag}`,
       },
       {
         title: 'J magnitude (source: 2MASS)',
@@ -230,7 +232,7 @@ function OccultationDetail() {
         value: `${occultation.aphelion} (AU)`,
       },
     ]);
-  }, [occultation]);
+  }, [occultation, starObj]);
 
   return (
     <>
