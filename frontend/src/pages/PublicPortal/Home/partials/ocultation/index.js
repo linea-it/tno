@@ -145,6 +145,12 @@ function PublicOcutation() {
     }
   }, [filterView]);
 
+  useEffect(() => {
+    if (!isMount && filterView == 'period') {
+      loadData({ sorting: [{ columnName: 'date_time', direction: 'asc' }], pageSize: 10, currentPage: 0 });
+    }
+  }, [dateStart, dateEnd]);
+
   const filter = () => {
     setErroLocation(false);
     loadData({ sorting: [{ columnName: 'date_time', direction: 'asc' }], pageSize: 10, currentPage: 0 });
