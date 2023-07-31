@@ -18,7 +18,7 @@ function Footer() {
         <Grid item className={classes.marginItem}>
           <Typography color='primary'>
             <span className={classes.poweredBy}>Powered by</span>
-            <a href='http://www.linea.gov.br/' target='blank' className={classes.logoLink}>
+            <a href='http://www.linea.org.br/' target='blank' className={classes.logoLink}>
               <img src={logo} title='LIneA' alt='LineA' className={classes.logoFooter} />
             </a>
           </Typography>

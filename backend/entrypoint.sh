@@ -1,37 +1,36 @@
-#!/bin/sh
+#!/bin/bash
 
-YELLOW='\033[00;33m'
-GREEN="\[\033[0;32m\]"
-NO_COLOR='\033[0m'
+# if any of the commands in your code fails for any reason, the entire script fails
+set -o errexit
+# fail exit if one of your pipe command fails
+set -o pipefail
+# exits if any of your variables is not set
+set -o nounset
 
-# Se nao tiver o manage.py e a primeira vez que o container e executado, apenas abre o terminal.
-if [ -e manage.py ]
-then
-    echo "Running Migrate to apply changes in database"
-    python manage.py migrate
+# postgres_ready() {
+# python << END
+# import sys
 
-    echo "Running Collect Statics"
-    python manage.py collectstatic --clear --noinput --verbosity 0
+# import psycopg2
 
+# try:
+#     psycopg2.connect(
+#         dbname="${SQL_DATABASE}",
+#         user="${SQL_USER}",
+#         password="${SQL_PASSWORD}",
+#         host="${SQL_HOST}",
+#         port="${SQL_PORT}",
+#     )
+# except psycopg2.OperationalError:
+#     sys.exit(-1)
+# sys.exit(0)
 
-    # Para produção é necessário usar o uWSGI!
-    # uWSGI para servir o app e ter compatibilidade com Shibboleth
-    # https://uwsgi-docs.readthedocs.io/en/latest/WSGIquickstart.html
-    # TODO: Em produção não é recomendado o auto reload. utilizar uma variavel de ambiente para ligar ou desligar esta opção.
-    echo "${YELLOW}Running Django with uWSGI.${NO_COLOR}"
-    uwsgi \
-        --socket 0.0.0.0:8000 \
-        --wsgi-file /app/coreAdmin/wsgi.py \
-        --module coreAdmin.wsgi:application \
-        --buffer-size=32768 \
-        --processes=4 \
-        --threads=2 \
-        --http-timeout=120 \
-        --static-map /django_static=/app/django_static \
-        --py-autoreload=1 
-else
-    /bin/bash
-fi
+# END
+# }
+# until postgres_ready; do
+#     >&2 echo 'Waiting for PostgreSQL to become available...'
+#     sleep 1
+# done
+# >&2 echo 'PostgreSQL is available'
 
-
-
+exec "$@"

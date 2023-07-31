@@ -15,50 +15,30 @@ function Interfaces() {
   const [interfaces] = useState([
     {
       id: '1',
-      app_url: 'dashboard',
-      app_display_name: 'Dashboard'
+      app_url: '/dashboard/stats',
+      app_display_name: 'Statistics'
     },
     {
       id: '2',
-      app_url: 'data-preparation/des/discovery',
+      app_url: '/dashboard/data-preparation/des/discovery',
       app_display_name: 'Discovery'
     },
-    // {
-    //   id: '3',
-    //   app_url: 'data-preparation/des/download',
-    //   app_display_name: 'Download',
-    // },
-    // {
-    //   id: '4',
-    //   app_url: 'data-preparation/des/astrometry',
-    //   app_display_name: 'Astrometry',
-    // },
-    // {
-    //   id: '5',
-    //   app_url: 'refine-orbit',
-    //   app_display_name: 'Refine Orbits',
-    // },
     {
-      id: '6',
-      app_url: 'prediction-of-occultation',
+      id: '3',
+      app_url: '/dashboard/prediction-of-occultation',
       app_display_name: 'Prediction of Occultation'
     },
     {
-      id: '7',
-      app_url: 'occultation',
+      id: '4',
+      app_url: '/dashboard/occultation',
       app_display_name: 'Occultation'
-    },
-    {
-      id: '8',
-      app_url: 'occultation-calendar',
-      app_display_name: 'Occultation Calendar'
     }
   ])
 
   const handleCardClick = (pathname) => navigate(pathname)
 
   return (
-    <Container className={classes.mainContainer}>
+    <Container>
       <Grid container spacing={2} direction='row' justifyContent='center' alignItems='stretch'>
         {interfaces.map((item) => (
           <Grid key={item.id} item xs={12} sm={6} md={4} lg={3}>

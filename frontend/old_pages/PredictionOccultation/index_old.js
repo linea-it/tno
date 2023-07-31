@@ -350,7 +350,7 @@ function PredictionOccultation({ setTitle }) {
                 />
                 <DatePredict
                   defaultDate={initialDate}
-                  label="Ephemeris Initial Date"
+                  label="Ephemeris Initial Date" 
                   valueSubmition={valueSubmition}
                   setSubmition={setValueSubmition}
                   setInitialDate={setInitialDate}

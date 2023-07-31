@@ -23,6 +23,8 @@ from des.views import (
     SkybotByYearViewSet,
     SkybotJobResultViewSet,
     SkybotJobViewSet,
+    OrbitTraceJobViewSet,
+    OrbitTraceJobResultViewSet,
     SummaryDynclassViewSet,
     ObservationViewSet
 )
@@ -34,12 +36,14 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from skybot.views import PositionViewSet
-from tno.views import AsteroidViewSet, UserViewSet, OccultationViewSet, LeapSecondViewSet, BspPlanetaryViewSet, CatalogViewSet
+from tno.views import AsteroidViewSet, UserViewSet, OccultationViewSet, LeapSecondViewSet, BspPlanetaryViewSet, CatalogViewSet, PredictionJobViewSet, PredictionJobResultViewSet
 
 router = DefaultRouter()
 router.register(r"users", UserViewSet)
 
 router.register(r"des/skybot_job", SkybotJobViewSet)
+router.register(r"des/orbit_trace_job", OrbitTraceJobViewSet)
+router.register(r"des/orbit_trace_job_result", OrbitTraceJobResultViewSet)
 router.register(r"des/exposure", ExposureViewSet)
 router.register(r"des/ccd", CcdViewSet)
 router.register(r"des/skybot_job_result", SkybotJobResultViewSet)
@@ -63,6 +67,10 @@ router.register(r"leap_second", LeapSecondViewSet)
 router.register(r"bsp_planetary", BspPlanetaryViewSet)
 router.register(r"catalog", CatalogViewSet)
 
+router.register(r"prediction_job", PredictionJobViewSet)
+
+router.register(r"prediction_job_result", PredictionJobResultViewSet)
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     re_path(r"^api/", include(router.urls)),
@@ -72,6 +80,7 @@ urlpatterns = [
     re_path(r"^api/read_file", common_views.read_file),
     re_path(r"^api/read_csv", common_views.read_csv),
     re_path(r"^api/teste", common_views.teste),
+    re_path(r"^api/test_background_task", common_views.test_background_task),
     re_path(
         r"^api/des/clear_des_data_preparation_tables",
         des_management_views.clear_des_data_preparation_tables,

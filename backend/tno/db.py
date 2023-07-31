@@ -402,76 +402,62 @@ class DBBase:
             connection.close()
 
 
-# class CatalogDB(DBBase):
-#     def __init__(self, pool=True):
+class CatalogDB(DBBase):
 
-#         if pool is False:
-#             self.engine = create_engine(self.get_db_uri(), poolclass=NullPool)
-#         else:
-#             self.engine = create_engine(self.get_db_uri())
+    def get_db_uri(self):
 
-#         self.current_dialect = None
+        db_admin = settings.DATABASES["catalog"]
+        # postgresql+psycopg2
+        db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
+            db_admin["USER"],
+            db_admin["PASSWORD"],
+            db_admin["HOST"],
+            db_admin["PORT"],
+            db_admin["NAME"],
+        )
 
-#         self.inspect = inspect(self.engine)
+        self.current_dialect = postgresql.dialect()
 
-#         self.logger = logging.getLogger("django")
+        return db_uri
 
-#     def get_db_uri(self):
-#         db_uri = ""
+    def radial_query(
+        self,
+        tablename,
+        ra_property,
+        dec_property,
+        ra,
+        dec,
+        radius,
+        schema=None,
+        columns=None,
+        limit=None,
+    ):
+        s_columns = "*"
+        if columns != None and len(columns) > 0:
+            s_columns = ", ".join(columns)
 
-#         if "CATALOG_DB_NAME" in os.environ:
-#             # postgresql+psycopg2
-#             db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
-#                 os.environ["CATALOG_DB_USER"],
-#                 os.environ["CATALOG_DB_PASS"],
-#                 os.environ["CATALOG_DB_HOST"],
-#                 os.environ["CATALOG_DB_PORT"],
-#                 os.environ["CATALOG_DB_NAME"],
-#             )
+        if schema != None:
+            tablename = "%s.%s" % (schema, tablename)
 
-#             self.current_dialect = postgresql.dialect()
+        s_limit = ""
+        if limit != None:
+            s_limit = "LIMIT %s" % limit
 
-#         return db_uri
+        stm = (
+            """SELECT %s FROM %s WHERE q3c_radial_query("%s", "%s", %s, %s, %s) %s """
+            % (
+                s_columns,
+                tablename,
+                ra_property,
+                dec_property,
+                ra,
+                dec,
+                radius,
+                s_limit,
+            )
+        )
 
-#     def radial_query(
-#         self,
-#         tablename,
-#         ra_property,
-#         dec_property,
-#         ra,
-#         dec,
-#         radius,
-#         schema=None,
-#         columns=None,
-#         limit=None,
-#     ):
-
-#         s_columns = "*"
-#         if columns != None and len(columns) > 0:
-#             s_columns = ", ".join(columns)
-
-#         if schema != None:
-#             tablename = "%s.%s" % (schema, tablename)
-
-#         s_limit = ""
-#         if limit != None:
-#             s_limit = "LIMIT %s" % limit
-
-#         stm = (
-#             """SELECT %s FROM %s WHERE q3c_radial_query("%s", "%s", %s, %s, %s) %s """
-#             % (
-#                 s_columns,
-#                 tablename,
-#                 ra_property,
-#                 dec_property,
-#                 ra,
-#                 dec,
-#                 radius,
-#                 s_limit,
-#             )
-#         )
-
-#         return self.fetch_all_dict(text(stm))
+        return self.fetch_all_dict(text(stm))
 
 #     def poly_query(
 #         self,

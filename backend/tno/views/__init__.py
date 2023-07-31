@@ -5,3 +5,5 @@ from tno.views.johnston_archive import JohnstonArchiveViewSet
 from tno.views.leap_second import LeapSecondViewSet
 from tno.views.bsp_planetary import BspPlanetaryViewSet
 from tno.views.catalog import CatalogViewSet
+from tno.views.prediction_job import PredictionJobViewSet
+from tno.views.prediction_job_result import PredictionJobResultViewSet

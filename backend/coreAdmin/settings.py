@@ -49,6 +49,9 @@ if not os.path.exists(MEDIA_TMP_DIR):
 
 MEDIA_TMP_URL = urllib.parse.urljoin(MEDIA_URL, "tmp/")
 
+DATA_URL = "/data/"
+DATA_TMP_DIR = MEDIA_TMP_DIR
+DATA_TMP_URL = urllib.parse.urljoin(DATA_URL, "tmp/")
 
 ENVIRONMENT_NAME = os.environ.get("ENVIRONMENT_NAME", "Development")
 
@@ -99,6 +102,8 @@ INSTALLED_APPS = [
     "url_filter",
     "corsheaders",
     "shibboleth",
+    "django_celery_results",
+    # "django_celery_beat",
     # Project Apps
     "common",
     "tno",
@@ -142,19 +147,29 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "staticfiles"),)
 
 WSGI_APPLICATION = "coreAdmin.wsgi.application"
 
+DATABASE_ROUTERS = ["tno.router.CatalogRouter"]
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "tno_admin",
+        "NAME": "postgres",
         "USER": "postgres",
         "PASSWORD": "postgres",
         "HOST": "database",
         "PORT": 5432,
-        # caso o banco de dados tenha definido um schema
+        # IF Need Schema
         # "OPTIONS": {"options": "-c search_path=<DB_SCHEMA>,public"},
     },
+    'catalog': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'database',
+        'PORT': 5432,
+    }, 
+  
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -217,6 +232,8 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter",
     ),
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    # https://www.django-rest-framework.org/api-guide/relations/#select-field-cutoffs
+    "HTML_SELECT_CUTOFF": 50
 }
 
 # CORS com essa combinação o serv de desenvolvimento do frontend consegue se authenticar
@@ -246,7 +263,8 @@ if DES_ARCHIVE_URL is not None:
 # Skybot da Franca: SKYBOT_SERVER="http://vo.imcce.fr/webservices/skybot/"
 SKYBOT_SERVER = "http://vo.imcce.fr/webservices/skybot/"
 
-
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "amqp://tno:adminadmin@rabbit:5672/tno_vhost")
+CELERY_RESULT_BACKEND = 'django-db'
 
 LOGGING = {
     "version": 1,
@@ -309,7 +327,7 @@ LOGGING = {
         "django": {
             "handlers": ["file"],
             "level": LOGGING_LEVEL,
-            "propagate": True,
+            "propagate": False,
         },
         # "proccess": {
         #     "handlers": ["proccess"],
@@ -329,12 +347,12 @@ LOGGING = {
         "shibboleth": {
             "handlers": ["shibboleth"],
             "level": LOGGING_LEVEL,
-            "propagate": True,
+            "propagate": False,
         },
         "asteroids": {
             "handlers": ["asteroids"],
             "level": LOGGING_LEVEL,
-            "propagate": True,
+            "propagate": False,
         },
     },
 }

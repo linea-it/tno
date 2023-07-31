@@ -2,13 +2,14 @@ import logging
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from tno.dao.asteroids import AsteroidDao
-from tno.models import Asteroid, Occultation
+from tno.models import Asteroid, Occultation, PredictionJobResult
 from des.models import Observation
 from tno.serializers import AsteroidSerializer
+from rest_framework.pagination import PageNumberPagination
 
 from datetime import datetime
 import humanize
@@ -118,7 +119,7 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(dict({"success": True}))        
 
     @action(
-        detail=False, methods=["GET"], permission_classes=(IsAuthenticated,)
+        detail=False, methods=["GET"], permission_classes=(AllowAny,)
     )
     def dynclasses(self, request):
         """All Dynamic Classes.
@@ -130,7 +131,7 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(dict({"results": rows, "count": len(rows)}))        
 
     @action(
-        detail=False, methods=["GET"], permission_classes=(IsAuthenticated,)
+        detail=False, methods=["GET"], permission_classes=(AllowAny,)
     )
     def base_dynclasses(self, request):
         """All Base Dynamic Classes.
@@ -140,4 +141,42 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
 
         rows = AsteroidDao(pool=False).distinct_base_dynclass()
 
-        return Response(dict({"results": rows, "count": len(rows)}))        
+        return Response(dict({"results": rows, "count": len(rows)}))  
+
+    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    def with_prediction(self, request):
+        """
+        #     Este endpoint obtem o asteroids com ao menos uma predicao.
+
+        #     Returns:
+        #         result (json): asteroid list.
+        #     """
+        paginator = PageNumberPagination()
+        paginator.page_size = 100
+        predictions = PredictionJobResult.objects.all()
+        filtro = self.request.query_params.get('name', None)
+        
+        if filtro:
+            aa = Asteroid.objects.filter(name__icontains=filtro, id__in=predictions.values('asteroid__id'))
+        else:
+            aa = Asteroid.objects.filter(id__in=predictions.values('asteroid__id'))  
+        result_page = paginator.paginate_queryset(aa, request)
+        serializer = AsteroidSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    def search(self, request):
+        """
+        #     Este endpoint obtem o lista de asteroids filtrada por parte do nome.
+
+        #     Returns:
+        #         result (json): asteroid list.
+        #     """
+        paginator = PageNumberPagination()
+        paginator.page_size = 100
+        aa = Asteroid.objects.filter(name__icontains=self.request.query_params.get('name', None))
+        result_page = paginator.paginate_queryset(aa, request)
+        serializer = AsteroidSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+        

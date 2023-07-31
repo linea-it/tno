@@ -1,4 +1,4 @@
-static/
+django_static/
 Dockerfile
 coreAdmin/local_vars.py
 *.pyc

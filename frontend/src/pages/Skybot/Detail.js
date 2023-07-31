@@ -92,7 +92,7 @@ function SkybotDetail() {
           return <span>-</span>
         }
         return (
-          <Button onClick={() => navigate(`/data-preparation/des/discovery/asteroid/${row.id}`)}>
+          <Button onClick={() => navigate(`/dashboard/data-preparation/des/discovery/asteroid/${row.id}`)}>
             <InfoOutlinedIcon />
           </Button>
         )
@@ -593,7 +593,7 @@ function SkybotDetail() {
                 </Card>
               </Grid>
             ) : null}
-          </>
+          </> 
         ) : null
       }
     </Grid>

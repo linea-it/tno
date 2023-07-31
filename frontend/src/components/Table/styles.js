@@ -70,6 +70,9 @@ const useStyles = makeStyles((theme) => ({
     // color: '#FFF',
     color: '#D79F15'
   },
+  btnAborting:{
+    color: '#e19f41'
+  },
   container: {
     position: 'relative'
   }

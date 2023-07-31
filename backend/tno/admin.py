@@ -6,6 +6,20 @@ from tno.models import BspPlanetary
 from tno.models import LeapSecond
 from tno.models import Occultation
 from tno.models import Catalog
+from tno.models import PredictionJob
+from tno.models import PredictionJobResult
+from tno.models import Profile
+from tno.models import PredictionJobStatus
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "dashboard",
+    )
+
+    raw_id_fields = ("user",)
+
 
 
 @admin.register(Asteroid)
@@ -33,6 +47,7 @@ class OccultationAdmin(admin.ModelAdmin):
         "dec_star_deg",
         "ra_target_deg",
         "dec_target_deg",
+        "created_at"
     )
     search_fields = ("name", "number")
 
@@ -87,3 +102,52 @@ class CatalogAdmin(admin.ModelAdmin):
         "registration_date"
     )
     search_fields = ("name", "display_name")
+
+
+@admin.register(PredictionJob)
+class PredictionJobAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "status",
+        "predict_start_date",
+        "predict_end_date",
+        "predict_interval",
+        "filter_type",
+        "filter_value",
+        "count_asteroids",
+        "count_occ",
+        "count_success",
+        "count_failures",
+        "avg_exec_time",
+        "exec_time"
+    )
+
+
+@admin.register(PredictionJobResult)
+class PredictionJobResultAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "job",
+        "asteroid",
+    )
+
+    # Troca o tipo de input de Select para um text field com botao de busca
+    # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
+    raw_id_fields = (
+        "job",
+        "asteroid",
+    )
+
+@admin.register(PredictionJobStatus)
+class PredictionJobStatusAdmin(admin.ModelAdmin):
+    list_display = (
+        "job",
+        "step",
+        "status",
+        "count",
+        "current",
+        "average_time",
+        "time_estimate",
+        "success",
+        "failures"
+    )

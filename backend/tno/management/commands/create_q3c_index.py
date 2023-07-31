@@ -20,7 +20,7 @@ class Command(BaseCommand):
 
         if options["table"]:
             if options["table"] == "occultation":
-                # Criar index para tabela tno/occultation
+                # Criar index para tabela tno_occultation
                 self.create_index_occultation()
 
         else:
@@ -38,7 +38,7 @@ class Command(BaseCommand):
             # Criar index para tabela des/Cccd
             self.create_index_des_ccd()
 
-            # Criar index para tabela tno/occultation
+            # Criar index para tabela tno_occultation
             self.create_index_occultation()
 
             self.stdout.write("Done!")

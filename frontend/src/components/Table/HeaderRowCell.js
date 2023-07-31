@@ -41,7 +41,7 @@ const SortingIcon = ({ direction }) =>
 const SortLabel = ({ onSort, children, direction, ...restProps }) => {
   const classes = useStyles()
   return (
-    <Tooltip title={children.props.children}>
+    <Tooltip title={restProps.column.tooltip?restProps.column.tooltip: children.props.children}>
       <span
         onClick={!restProps.disabled ? onSort : null}
         className={classes.invisibleButton}

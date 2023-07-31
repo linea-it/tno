@@ -1,0 +1,15 @@
+.buttonFilter {
+    min-width: 150px !important;
+    margin-top: 15px !important;
+}
+
+/* .MuiIconButton-root {
+    padding: 0px !important;
+    padding-bottom: 2px !important;
+    padding-left: 4px !important;
+} */
+
+.label-tooltip-margin{
+    margin-bottom: -10px;
+    margin-top: -14px;
+}

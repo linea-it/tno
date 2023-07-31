@@ -4,6 +4,9 @@ from .models import (
     Ccd,
     Exposure,
     SkybotJob,
+    OrbitTraceJob,
+    OrbitTraceJobResult,
+    OrbitTraceJobStatus,
     SkybotJobResult,
     SkybotPosition,
     SummaryDynclass,
@@ -30,7 +33,6 @@ class ExposureAdmin(admin.ModelAdmin):
     )
 
     search_fields = ("id",)
-
     # This will help you to disbale add functionality
     def has_add_permission(self, request):
         return False
@@ -136,6 +138,54 @@ class SkybotJobAdmin(admin.ModelAdmin):
         "nights",
     )
 
+@admin.register(OrbitTraceJob)
+class OrbitTraceJobAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "status",
+        "owner",
+        "bsp_planetary",
+        "leap_seconds",
+        "filter_type",
+        "filter_value",
+        "exec_time",
+    )
+
+@admin.register(OrbitTraceJobResult)
+class OrbitTraceJobResultAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "job",
+        "asteroid",
+        "status",
+        "name",
+        "number",
+        "base_dynclass",
+        "dynclass",
+        "observations",
+        "ccds",
+    )
+
+    # Troca o tipo de input de Select para um text field com botao de busca
+    # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
+    raw_id_fields = (
+        "job",
+        "asteroid",
+    )
+
+@admin.register(OrbitTraceJobStatus)
+class OrbitTraceJobStatusAdmin(admin.ModelAdmin):
+    list_display = (
+        "job",
+        "step",
+        "status",
+        "count",
+        "current",
+        "average_time",
+        "time_estimate",
+        "success",
+        "failures"
+    )
 
 @admin.register(SkybotJobResult)
 class SkybotJobResultAdmin(admin.ModelAdmin):
@@ -228,7 +278,7 @@ class SkybotByDynclassAdmin(admin.ModelAdmin):
 class ObservationAdmin(admin.ModelAdmin):
     list_display = (
         "asteroid",
-        "ccd",
+        # "ccd_id",
         "name",
         "date_obs",
         "date_jd",
@@ -238,13 +288,12 @@ class ObservationAdmin(admin.ModelAdmin):
         "offset_dec",
         "mag_psf",
         "mag_psf_err",
+        "created_at"
     )
-
     search_fields = ("name",)
 
     # Troca o tipo de imput de Select para um text field com botao de busca
     # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
     raw_id_fields = (
         "asteroid",
-        "ccd",
     )

@@ -4,13 +4,23 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from tno.models import JohnstonArchive
-from tno.models import Asteroid, Occultation, LeapSecond, BspPlanetary, Catalog
+from tno.models import Asteroid, Occultation, LeapSecond, BspPlanetary, Catalog, PredictionJob, PredictionJobResult, PredictionJobStatus, Profile
 
 
 class UserSerializer(serializers.ModelSerializer):
+    dashboard = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ("username",)
+        fields = ("username", "dashboard")
+
+    def get_dashboard(self, obj):
+        if hasattr(obj, 'profile'):
+            return obj.profile.dashboard
+        else:
+            # creating a new profile if the user does not have one
+            profile = Profile(user_id=obj.id, dashboard=False)
+            profile.save()
+            return profile.dashboard
 
 
 class JohnstonArchiveSerializer(serializers.ModelSerializer):
@@ -71,10 +81,30 @@ class AsteroidSerializer(serializers.ModelSerializer):
 
 
 class OccultationSerializer(serializers.ModelSerializer):
+    dynclass = serializers.CharField(source='asteroid.dynclass')
     class Meta:
         model = Occultation
-        fields = (
-            "id",
-            "number",
-            "name",
-        )
+        fields = '__all__'
+
+class PredictionJobSerializer(serializers.ModelSerializer):
+    owner = serializers.SerializerMethodField()
+    class Meta:
+        model = PredictionJob
+        fields = '__all__'
+
+    def get_owner(self, obj):
+        try:
+            return obj.owner.username
+        except:
+            return None
+
+
+class PredictionJobResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PredictionJobResult
+        fields = '__all__'
+
+class PredictionJobStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PredictionJobStatus
+        fields = '__all__'

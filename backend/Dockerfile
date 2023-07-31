@@ -1,6 +1,6 @@
-FROM python:3.10-slim as builder
+FROM python:3.10-slim
 
-WORKDIR /app
+# WORKDIR /app
 
 # If this is set to a non-empty string, Python won’t try
 # to write .pyc files on the import of source modules
@@ -29,46 +29,44 @@ RUN apt-get update && \
     && apt-get autoremove --purge  -y \
     && rm -rf /var/lib/apt/lists/*
 
-# Add venv
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
 # Install python packages
-COPY requirements.txt .
-RUN pip install --upgrade pip wheel  && \
-    pip install --disable-pip-version-check --no-cache-dir -r requirements.txt
+COPY requirements.txt /tmp/pip-tmp/
+RUN pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
+    && rm -rf /tmp/pip-tmp
 
-#  Runtime Stage
-FROM python:3.10-slim
-
-# Copy Dependencies for Python LDAP, Psql
-COPY --from=builder /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
-
-# # Criar o grupo des-brazil com o mesmo id usado no linea
-# RUN groupadd --gid 10000 des-brazil
-# # add user so we can run things as non-root
-# RUN adduser --system tnouser --gid 10000
+ARG USERNAME=tnouser
+ARG USER_UID=1000
+ARG USER_GID=1000
 
 # add user so we can run things as non-root
-RUN adduser --system tnouser 
+# https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    && mkdir /usr/src/app /usr/src/app/django_static /archive /log \
+    && chown -R $USER_UID:$USER_GID /usr/src/app /usr/src/app/django_static /archive /log
 
-# Copy from builder and set ENV for venv
-COPY --from=builder /opt/venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+ENV PYTHONPATH="/usr/src/app:$PYTHONPATH"
 
-# Set Python ENV
-ENV PYTHONUNBUFFERED=1 
-ENV PYTHONPATH="/app:$PYTHONPATH"
-# Matplotlib Config 
-ENV MPLCONFIGDIR="/tmp"
+WORKDIR /usr/src/app
+COPY . /usr/src/app
 
-ENV SHELL /bin/bash
+# COPY --chmod=0775 ./entrypoint.sh /entrypoint.sh
+# COPY --chmod=0775 ./start.sh /start.sh
+# COPY --chmod=0775 ./start_worker.sh /start_worker.sh
+# COPY --chmod=0775 ./start_beat.sh /start_beat.sh
 
-# Copy app files into container
-WORKDIR /app
-COPY . .
+COPY ./entrypoint.sh /entrypoint.sh
+COPY ./start.sh /start.sh
+COPY ./start_worker.sh /start_worker.sh
+COPY ./start_beat.sh /start_beat.sh
+RUN chmod 775 /entrypoint.sh && chown $USER_UID:$USER_GID /entrypoint.sh 
+RUN chmod 775 /start.sh && chown $USER_UID:$USER_GID /start.sh
+RUN chmod 775 /start_worker.sh && chown $USER_UID:$USER_GID /start_worker.sh
+RUN chmod 775 /start_beat.sh && chown $USER_UID:$USER_GID /start_beat.sh
 
 # Switch to non-priviliged user and run app
 USER tnouser
-# CMD ["/app/entrypoint.sh"]
-ENTRYPOINT ./entrypoint.sh
+
+# NÃO adicionar o script /start.sh no entrypoint
+# O /start.sh deve ser adicionado no docker-compose command.
+ENTRYPOINT ["/entrypoint.sh"]

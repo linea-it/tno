@@ -10,19 +10,28 @@ from rest_framework.decorators import action, renderer_classes, api_view
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 
+from tno.tasks import teste_api_task
 
 @api_view(["GET"])
 def teste(request):
-
     if request.method == "GET":
         result = dict(
             {
                 "success": True,
             }
         )
-
         return Response(result)
 
+@api_view(["GET"])
+def test_background_task(request):
+    if request.method == "GET":
+        teste_api_task.delay()
+        result = dict(
+            {
+                "success": True,
+            }
+        )
+        return Response(result)
 
 @action(detail=False, methods=["GET"])
 def logout_view(request):

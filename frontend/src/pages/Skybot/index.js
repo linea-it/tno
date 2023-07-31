@@ -139,16 +139,17 @@ function Skybot() {
   }, [executedNightsByPeriod, currentSelectedDateYear, chartType, exposuresByPeriod])
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
+    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
     getSkybotRunList({
       page: currentPage + 1,
       pageSize,
-      ordering: sorting
+      ordering: ordering
     }).then((res) => {
       const { data } = res
 
       setTableData(
         data.results.map((row) => ({
-          detail: `/data-preparation/des/discovery/${row.id}`,
+          detail: `/dashboard/data-preparation/des/discovery/${row.id}`,
           ...row
         }))
       )
@@ -181,7 +182,7 @@ function Skybot() {
           setHasJobRunningOrIdleFeedback(true)
           setReload((prevState) => !prevState)
         } else {
-          navigate(`/data-preparation/des/discovery/${id}`)
+          navigate(`/dashboard/data-preparation/des/discovery/${id}`)
         }
 
         setBackdropOpen(false)
@@ -451,7 +452,7 @@ function Skybot() {
           </Grid>
         </Grid>
 
-        <Grid item xs={12} md={8} lg={9}>
+        <Grid item xs={12} md={8} lg={9}open>
           <Card>
             <CardHeader title='Number of Exposures in Selected Period' />
             <CardContent>{renderExposurePlot()}</CardContent>
@@ -470,8 +471,8 @@ function Skybot() {
                 loadData={loadData}
                 hasSearching={false}
                 hasPagination
-                hasColumnVisibility={false}
-                hasToolbar={false}
+                hasColumnVisibility={true}
+                hasToolbar={true}
                 reload={reload}
                 totalCount={totalCount}
                 defaultSorting={[{ columnName: 'id', direction: 'asc' }]}
