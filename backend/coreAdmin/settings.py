@@ -147,19 +147,29 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "staticfiles"),)
 
 WSGI_APPLICATION = "coreAdmin.wsgi.application"
 
+DATABASE_ROUTERS = ["tno.router.CatalogRouter"]
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "tno_admin",
+        "NAME": "postgres",
         "USER": "postgres",
         "PASSWORD": "postgres",
         "HOST": "database",
         "PORT": 5432,
-        # caso o banco de dados tenha definido um schema
+        # IF Need Schema
         # "OPTIONS": {"options": "-c search_path=<DB_SCHEMA>,public"},
     },
+    'catalog': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'database',
+        'PORT': 5432,
+    }, 
+  
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

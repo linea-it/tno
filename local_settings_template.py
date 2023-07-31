@@ -28,6 +28,14 @@ DATABASES = {
         # IF Need Schema
         # "OPTIONS": {"options": "-c search_path=<DB_SCHEMA>,public"},
     },
+    'catalog': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'database',
+        'PORT': 5432,
+    }, 
 }
 
 # Skybot Server

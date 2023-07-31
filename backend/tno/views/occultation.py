@@ -17,7 +17,7 @@ from operator import  attrgetter
 from tno.occviz import visibility
 from django.conf import settings
 import time
-from tno.db import DBBase
+from tno.db import DBBase, CatalogDB
 from sqlalchemy.sql import text
 
 
@@ -135,12 +135,22 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
     def get_star_by_event(self, request,pk=None):
-        pre_occ = Occultation.objects.get(id=pk)
+        pre_occ = self.get_object()
         ra = pre_occ.ra_star_deg
         dec = pre_occ.dec_star_deg
-        db = DBBase()
-        sql = f"SELECT * FROM gaia.dr2 WHERE q3c_radial_query(ra, dec, {ra}, {dec}, 0.1)"
-        rows = db.fetch_all_dict(text(sql))
+
+        # TODO: No futuro vai ser necessário identificar qual o catalogo de estrela foi utilizado 
+        # nas predição, no momento todas as predições estão utilizando o gaia.DR2
+        db = CatalogDB(pool=False)
+        rows = db.radial_query(
+            tablename="dr2",
+            schema="gaia",
+            ra_property="ra", 
+            dec_property="dec", 
+            ra=float(ra), 
+            dec=float(dec),
+            radius=0.001)
+        
         if len(rows) > 0:
             return Response(rows[0])
         return Response({})
