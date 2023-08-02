@@ -233,7 +233,7 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
                                 <Grid item xs={12} sm={6} md={3}>
                                   <Box sx={{ minWidth: 120 }}>
                                     <Tooltip title="Latitude in degrees. North is positive, and South is negative.">
-                                      <FormControl fullWidth ><label>Latitude</label>
+                                      <FormControl fullWidth ><label>Latitude (deg)</label>
                                         <TextField
                                           disabled={!geoFilter}
                                           name="latitude"
@@ -248,7 +248,7 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
                                 <Grid item xs={12} sm={6} md={3}>
                                   <Box sx={{ minWidth: 120 }}>
                                     <Tooltip title="Longitude in degrees. East is positive, and West is negative.">
-                                      <FormControl fullWidth ><label>Longitude</label>
+                                      <FormControl fullWidth ><label>Longitude (deg)</label>
                                         <TextField
                                           disabled={!geoFilter}
                                           name="longitude"
@@ -263,7 +263,7 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
                                 <Grid item xs={12} sm={6} md={3}>
                                   <Box sx={{ minWidth: 120 }}>
                                     <Tooltip title="Search radius in Km.'">
-                                    <FormControl fullWidth ><label>Radius</label>
+                                    <FormControl fullWidth ><label>Radius (Km)</label>
                                       <Slider
                                         disabled={!geoFilter}
                                         value={radius}
@@ -278,7 +278,7 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
                                   </Box>
                                 </Grid>
                                 <Grid item xs={12}>
-                                  <i>It is strongly recommend to use a short date range or a filter combination to search by location.</i>
+                                  <i>This is an experimental feature and may take some time to process. To prevent timeouts, we recommend using date and magnitude ranges that restrict the supplied list to a maximum of 200 objects. You can find this information in 'Total Occultation Predictions' after performing a search.</i>
                                 </Grid>
                                 {erroLocation &&
                                   <Grid item xs={12}>
