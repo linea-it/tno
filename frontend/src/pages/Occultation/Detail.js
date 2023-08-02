@@ -137,7 +137,7 @@ function OccultationDetail() {
       },
       {
         title: 'Proper motion',
-        value: `${starObj.pmra} ±${starObj.pmra_error} ${starObj.pmdec} ±${starObj.pmdec_error} (mas/yr)}`,
+        value: `${starObj.pmra?starObj.pmra.toFixed(4):0} ±${starObj.pmra_error?starObj.pmra_error.toFixed(4):0} ${starObj.pmdec?starObj.pmdec.toFixed(4):0} ±${starObj.pmdec_error?starObj.pmdec_error.toFixed(4):0} (mas/yr)`,
       },
       {
         title: 'Source of proper motion',
@@ -145,31 +145,31 @@ function OccultationDetail() {
       },
       {
         title: 'Uncertainty in the star position',
-        value: `${starObj.ra_error} ${starObj.dec_error} (mas)}`,
+        value: `${starObj.ra_error?starObj.ra_error.toFixed(4):0} ${starObj.dec_error?starObj.dec_error.toFixed(4):0} (mas)`,
       },
       {
         title: 'G magnitude',
-        value: `${starObj.phot_g_mean_mag}`,
+        value: `${starObj.phot_g_mean_mag?starObj.phot_g_mean_mag.toFixed(4):0}`,
       },
       {
         title: 'RP magnitude (source: GaiaDR2)',
-        value: `${starObj.phot_rp_mean_mag}`,
+        value: `${starObj.phot_g_mean_mag?starObj.phot_g_mean_mag.toFixed(4):0}`,
       },
       {
         title: 'BP magnitude (source: GaiaDR2)',
-        value:  `${starObj.phot_bp_mean_mag}`,
+        value:  `${starObj.phot_bp_mean_mag?starObj.phot_bp_mean_mag.toFixed(4):0}`,
       },
       {
         title: 'J magnitude (source: 2MASS)',
-        value: occultation.j,
+        value: `${occultation.j?occultation.j.toFixed(4):0}`,
       },
       {
         title: 'H magnitude (source: 2MASS)',
-        value: occultation.h,
+        value: `${occultation.h?occultation.h.toFixed(4):0}`,
       },
       {
         title: 'K magnitude (source: 2MASS)',
-        value: occultation.k,
+        value: `${occultation.k?occultation.k.toFixed(4):0}`,
       },
     ]);
 
@@ -217,7 +217,7 @@ function OccultationDetail() {
       },
       {
         title: 'Eccentricity',
-        value: `${occultation.eccentricity} (Km)`,
+        value: `${occultation.eccentricity}`,
       },
       {
         title: 'Inclination',
