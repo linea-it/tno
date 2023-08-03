@@ -10,6 +10,7 @@ import {
 import List from '../../components/List'
 import moment from '../../../node_modules/moment/moment'
 import useStyles from './styles'
+import { Alert } from '@material-ui/lab'
 
 function OrbitTraceAsteroid() {
   const { id } = useParams()
@@ -164,12 +165,6 @@ function OrbitTraceAsteroid() {
           value: orbitTraceResult.exec_time ? orbitTraceResult.exec_time.split('.')[0] : "-"
         }
       ]
-      if(orbitTraceResult.status == 2){
-        defaultSummary.push(        {
-          title: 'Messages',
-          value: orbitTraceResult.error
-        },)
-      }
       setSummary(defaultSummary)
   }, [orbitTraceResult])
 
@@ -186,7 +181,7 @@ function OrbitTraceAsteroid() {
   }
 
   const handleBackNavigation = () => navigate(-1)
-
+  console.log(summary)
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -201,6 +196,11 @@ function OrbitTraceAsteroid() {
           </Grid>
         </Grid>
       </Grid>
+      {'error' in orbitTraceResult && orbitTraceResult.status === 2 && orbitTraceResult.error !== null && (
+        <Grid item xs={12}>
+          <Alert severity='error'>{orbitTraceResult.error}</Alert>
+        </Grid>
+      )}
       <Grid item xs={12} md={4}>
         <Grid container spacing={2}>
           <Grid item xs={12}>

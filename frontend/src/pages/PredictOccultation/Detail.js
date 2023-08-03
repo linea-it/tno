@@ -167,7 +167,7 @@ function PredictDetail() {
       name: 'exec_time',
       title: 'Exec Time',
       align: 'center',
-      customElement: (row) => {return <span>{row.exec_time}</span>},
+      customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : "-"),
       width: 140
     },
   ];
@@ -310,24 +310,16 @@ function PredictDetail() {
           ) : null}
         </Grid>
       </Grid>
+      {'error' in predictionJob && predictionJob.error !== null && (
+        <Grid item xs={12}>
+          <Alert severity='error'>{predictionJob.error}</Alert>
+        </Grid>
+      )}      
       <Grid item xs={12} md={5} xl={3}>
         <Card>
           <CardHeader title='Summary Execution' />
           <CardContent>
             <List data={summaryExecution} />
-            {haveError === true ? (
-              <Alert
-                severity='warning'
-              // action={
-              //   <Button color='inherit' size='small' href={orbitTraceJob.results.replace('/archive', '/data')}>
-              //     CHECK IT OUT
-              //   </Button>
-              // }
-              >
-                {/* <strong>{totalErrorCount}</strong> exposures out of {skybotJob.exposures} failed. */}
-              </Alert>
-            ) : null}
-            {(predictionJob?.error !== null && predictionJob?.error !== '') ? <Alert severity='error'>{predictionJob?.error}</Alert> : null}
           </CardContent>
         </Card>
       </Grid>

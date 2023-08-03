@@ -25,7 +25,7 @@ class ObservationViewSet(viewsets.ReadOnlyModelViewSet):
     # queryset = Observation.objects.all()
     serializer_class = ObservationSerializer
     filterset_class = ObservationFilter
-    ordering_fields = ("date_obs", "id", "name", "ra", "dec", "offset_ra", "offset_dec", "mag_psf", "mag_psf_err",)
+    ordering_fields = ("date_obs", "id", "name", "ra", "dec", "offset_ra", "offset_dec", "mag_psf", "mag_psf_err", "ccd_id")
     # ordering = ("date_obs",)
     filter_fields = (
         "id",
