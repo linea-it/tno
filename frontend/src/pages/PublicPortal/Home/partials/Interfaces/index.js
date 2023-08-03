@@ -12,7 +12,7 @@ function PublicInterfaces() {
     <>
       <br></br>
       <Grid container justifyContent="center" alignItems="center">
-        <div className={classes.titleItem}><label>SSSOs Stellar Occultation Prediction Database</label></div><br></br>     
+        <div className={classes.titleItem}><label>SSSO Stellar Occultation Prediction Database</label></div><br></br>     
       </Grid><br></br>
       <Grid container justifyContent="center" alignItems="center">       
         <div><label>(Last update: 2023-05-12)</label></div>
