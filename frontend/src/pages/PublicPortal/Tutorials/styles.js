@@ -5,19 +5,19 @@ const styles = makeStyles(() => ({
     paddingTop: 20,
     paddingBottom: 100
   },
-  root: {
-    paddingTop: 25
+  grid: {
+    margin: 'auto'
   },
-  item: {
-    cursor: 'pointer',
-    maxHeight: 460,
-    overflow: 'overlay',
-    borderRight: 'solid 1px #cccccc',
-    borderBottom: 'solid 1px #cccccc',
-    backgroundColor: '#f5f5f5',
-    '&:hover': {
-      background: '#efefef'
-    }
+  textFormat: {
+    marginTop: 40,
+    fontSize: '1.07rem!important',
+    fontFamily: 'arial',
+    fontWeight: '100',
+    lineHeight: '1.5',
+    textAlign: 'justify',
+    color: 'black',
+    letterSpacing: '0.0em',
+    textTransform: 'none'
   }
 }))
 

@@ -68,6 +68,15 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
           headerTooltip: 'Occultation Prediction Details'
         },
         {
+            name: 'map',
+            title: 'Map',
+            width: 150,
+            align: 'center',
+            headerTooltip: 'Occultation Map',
+            customElement: (row) => row.map?<img className={classes.imgThumb} src={row.map} />:<i>no map</i>
+            
+        },
+        {
             name: 'name',
             title: 'Object',
             width: 150,
@@ -298,15 +307,6 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             align: 'center',
             headerTooltip: "Only Gaia DR1 stars used"
         },
-        {
-            name: 'map',
-            title: 'Map',
-            width: 150,
-            align: 'center',
-            headerTooltip: 'Occultation Map',
-            customElement: (row) => row.map?<img className={classes.imgThumb} src={row.map} />:<i>no map</i>
-            
-        }
     ]
 
     return (

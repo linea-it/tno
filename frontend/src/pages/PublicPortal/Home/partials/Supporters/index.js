@@ -29,7 +29,7 @@ function PublicSupporters() {
     {
       id: 4,
       title: 'INCT do Universo',
-      image: 'e-universo.png'
+      image: 'e-universo_square.png'
     }
   ]
   return (

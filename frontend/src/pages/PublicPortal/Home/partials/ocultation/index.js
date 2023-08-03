@@ -170,7 +170,7 @@ function PublicOcutation() {
           <div className={clsx(filterView == 'next' ? classes.selected : classes.celula)}>Next 20 events</div>
         </Grid>
         <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('userSelect')}>
-          <div className={clsx(filterView == 'userSelect' ? classes.selected : classes.celula)}>User selected</div>
+          <div className={clsx(filterView == 'userSelect' ? classes.selected : classes.celula)}>User Selected</div>
         </Grid>
       </Grid>
       {filterView == 'period' &&
