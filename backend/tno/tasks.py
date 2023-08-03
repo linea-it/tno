@@ -35,10 +35,11 @@ def teste_api_task():
 @shared_task
 def generate_maps():
     tomorrow = datetime.now().date() + timedelta(1)
-    occultations = Occultation.objects.filter(date_time__date = tomorrow).order_by('date_time')[:50]
+    qtdMaps = settings.SORA_QTD_MAPS if hasattr(settings, 'SORA_QTD_MAPS') else 50
+    occultations = Occultation.objects.filter(date_time__date = tomorrow).order_by('date_time')[:qtdMaps]
     for occ in occultations:
-        conteudo = {'body': occ.name, 'date': str(occ.date_time.date()), 'time': str(occ.date_time.time())}
         try:
+            conteudo = create_json_occ(occ)
             log_sora_map("generating map " + occ.name + "_" +  occ.date_time.strftime("Y%m%d%H%M%S"))
             # a função gera arquivos json na pasta settings.SORA_INPUT que são usados pelo sora como requisição para geração dos mapas
             write_json_file(generate_filename(), conteudo)
@@ -66,6 +67,20 @@ def delete_files(lista):
         except OSError as e:
             # se não conseguir loga.
             log_sora_map("Error: %s - %s." % (e.filename, e.strerror))
+
+def create_json_occ(occ):
+    return {'name': occ.name,
+            'radius': occ.diameter if occ.diameter != None else 0,
+            'coord': occ.ra_star_candidate + " " + occ.dec_star_candidate, 
+            'time': occ.date_time.strftime('%Y-%m-%dT%H:%M:%S.%f'), 
+            'ca': occ.closest_approach,
+            'pa': occ.position_angle,
+            'vel': occ.velocity,
+            'dist': occ.delta,
+            'mag': occ.g,
+            'longi': occ.long
+            }
+        
 
 def write_json_file(nome_arquivo, conteudo):
     caminho_arquivo = os.path.join(settings.SORA_INPUT, nome_arquivo)

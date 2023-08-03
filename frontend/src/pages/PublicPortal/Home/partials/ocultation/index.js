@@ -46,7 +46,7 @@ function PublicOcutation() {
   }
 
   function getMapUrl(occultation) {
-    return process.env.REACT_APP_SORA + '/map?body=' + encodeURI(occultation.name) + '&date=' + encodeURI(occultation.date_time.split('T')[0]) + '&time=' + encodeURI(occultation.date_time.split('T')[1].replaceAll('Z', ''))
+    return process.env.REACT_APP_SORA + '/map?name=' + encodeURI(occultation.name) + '&time=' + encodeURI(new Date(occultation.date_time).toISOString())
   }
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
