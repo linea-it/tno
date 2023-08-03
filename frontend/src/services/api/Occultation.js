@@ -49,13 +49,8 @@ export const getNextTwenty = ({ page, pageSize, ordering}) => {
 
 export const getStarByOccultationId = ({ id }) => api.get(`/occultations/${id}/get_star_by_event`).then((res) => res.data)
 
-export const getOccultationMap = ({object, date, time}) => {
-  const params ={
-    body: object,
-    date: date,
-    time: time
-  }
-  return sora.post('/map', params);
+export const getOccultationMap = (json) => {
+  return sora.post('/map', json);
 }
 
 

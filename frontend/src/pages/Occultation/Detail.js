@@ -43,11 +43,26 @@ function OccultationDetail() {
     });
   }, [id]);
 
+  const createJsonOcc = (occ) =>{
+    return {'name': occ.name,
+    'radius': occ.diameter?occ.diameter:0,
+    'coord': occ.ra_star_candidate + " " + occ.dec_star_candidate, 
+    'time': new Date(occ.date_time).toISOString(), 
+    'ca': occ.closest_approach,
+    'pa': occ.position_angle,
+    'vel': occ.velocity,
+    'dist': occ.delta,
+    'mag': occ.g,
+    'longi': occ.long
+    }
+  }
+
   useEffect(() => {
     if (occultation.date_time) {
-      getOccultationMap({ object: occultation.name, date: occultation.date_time.split('T')[0], time: occultation.date_time.split('T')[1].replaceAll('Z', '') })
+      const conteudo = createJsonOcc(occultation)
+      getOccultationMap(conteudo)
         .then((res) => {
-        setMap(res.config.baseURL + res.config.url + '?body=' + encodeURI(occultation.name) + '&date=' + encodeURI(occultation.date_time.split('T')[0]) + '&time=' + encodeURI(occultation.date_time.split('T')[1].replaceAll('Z', '')));
+        setMap(res.config.baseURL + res.config.url + '?name=' + encodeURI(occultation.name) + '&time=' + encodeURI(new Date(occultation.date_time).toISOString()));
       },
       ).catch((err) =>{
         setErroMap(true);

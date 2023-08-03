@@ -46,6 +46,7 @@ SKYBOT_SERVER = "http://vo.imcce.fr/webservices/skybot/"
 SORA_OUTPUT = "/archive/sora/output"
 SORA_INPUT = "/archive/sora/input"
 SORA_LOG = "/log/sora_maps.log"
+SORA_QTD_MAPS = 50
 
 # Shibboleth Authentication
 # Habilita ou desabilita autenticação pelo shibboleth.
