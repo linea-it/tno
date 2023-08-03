@@ -11,6 +11,7 @@ import moment from '../../../node_modules/moment/moment'
 import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
 import { CircularProgress } from '../../../node_modules/@material-ui/core/index'
 import styles from './styles'
+import { Alert } from '@material-ui/lab'
 
 
 function PredictionAsteroid() {
@@ -169,6 +170,11 @@ function PredictionAsteroid() {
           </Grid>
         </Grid>
       </Grid>
+      {'messages' in predictionJobResult && predictionJobResult.messages !== null && (
+        <Grid item xs={12}>
+          <Alert severity='error'>{predictionJobResult.messages}</Alert>
+        </Grid>
+      )}
       <Grid item xs={12} md={4}>
         <Grid container spacing={2}>
           <Grid item xs={12}>

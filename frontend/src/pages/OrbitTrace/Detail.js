@@ -326,6 +326,11 @@ function OrbitTraceDetail() {
           ) : null}
         </Grid>
       </Grid>
+      {'error' in orbitTraceJob && orbitTraceJob.error !== null && (
+        <Grid item xs={12}>
+          <Alert severity='error'>{orbitTraceJob.error}</Alert>
+        </Grid>
+      )}
       <Grid item xs={12} md={5} xl={3}>
         <Card>
           <CardHeader title='Summary Execution' />
@@ -343,7 +348,7 @@ function OrbitTraceDetail() {
                 {/* <strong>{totalErrorCount}</strong> exposures out of {skybotJob.exposures} failed. */}
               </Alert>
             ) : null}
-            {(orbitTraceJob?.error !== null && orbitTraceJob?.error !== '') ? <Alert severity='error'>{orbitTraceJob?.error}</Alert> : null}
+            {/* {(orbitTraceJob?.error !== null && orbitTraceJob?.error !== '') ? <Alert severity='error'>{orbitTraceJob?.error}</Alert> : null} */}
           </CardContent>
         </Card>
       </Grid>
