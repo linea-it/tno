@@ -167,7 +167,7 @@ function PredictDetail() {
       name: 'exec_time',
       title: 'Exec Time',
       align: 'center',
-      customElement: (row) => {return <span>{row.exec_time}</span>},
+      customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : "-"),
       width: 140
     },
   ];
