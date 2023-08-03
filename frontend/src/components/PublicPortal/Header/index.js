@@ -13,6 +13,7 @@ import styles from './styles'
 import './header.css'
 import { useAuth } from '../../../contexts/AuthContext.js'
 import { useNavigate } from '../../../../node_modules/react-router-dom/dist/index'
+
 function PublicHeader() {
   const { isAuthenticated, user, signIn, logout } = useAuth()
   const navigate = useNavigate();
