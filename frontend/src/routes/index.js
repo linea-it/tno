@@ -96,7 +96,7 @@ export default function AppRoutes() {
             <PublicBanner />
             <div className={classes.root}>
               <Grid container justifyContent="center" alignItems="center">
-                <div className={classes.titleItem}><label>Detail Prediction of stellar occultations</label></div>
+                <div className={classes.titleItem}><label>Occultation Prediction Details</label></div>
               </Grid><br></br>
               <OccultationDetail />
               <PublicSupporters />
