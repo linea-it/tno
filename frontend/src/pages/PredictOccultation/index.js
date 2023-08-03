@@ -108,9 +108,9 @@ function PredictOccultation() {
     })
 
     getCatalogList().then((list) => {
-      setCatalogList(list.map(x => { return { value: x.name, label: x.name } }));
+      setCatalogList(list.map(x => { return { value: x.name, label: x.display_name } }));
       if (list.length > 0)
-        setCatalog({ value: list[0].name, label: list[0].name })
+        setCatalog({ value: list[0].name, label: list[0].display_name })
     })
   });
 
