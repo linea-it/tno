@@ -1,0 +1,94 @@
+FROM python:3.7-alpine
+
+RUN apk update && apk upgrade \
+ && apk add git geos proj-data proj \
+ && apk --update add libxml2-dev libxslt-dev libffi-dev gcc musl-dev libgcc openssl-dev curl build-base \
+ && apk add jpeg-dev zlib-dev freetype-dev openjpeg-dev py3-scipy lapack-dev libquadmath libgfortran musl gfortran \
+ && apk cache clean \
+ && rm -rf /var/cache/apk/*
+
+ARG USER_NAME=tnouser
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+ARG GROUP_NAME=tnogroup
+
+RUN addgroup -g $GROUP_ID $GROUP_NAME \
+    && adduser --shell /sbin/nologin --disabled-password --uid $USER_ID --ingroup $GROUP_NAME $USER_NAME \ 
+    #--no-create-home
+    && chown -R $USER_ID:$GROUP_ID /home/$USER_NAME
+
+
+RUN  wget -O proj.tar.gz http://download.osgeo.org/proj/proj-4.9.3.tar.gz \ 
+ && mkdir -p /usr/src/proj \ 
+ && tar -xzf proj.tar.gz -C /usr/src/proj --strip-components=1 \ 
+ && (cd /usr/src/proj; \ 
+     ./configure; \ 
+     make -j ${NPROC}; \ 
+     make install) \ 
+ && rm -r /usr/src/proj \ 
+ && rm -rf /usr/src/proj \ 
+ && rm -rf /proj.tar.gz \ 
+ && : "---------- geos (for gis module) ----------" \ 
+ && wget -O geos.tar.bz2 http://download.osgeo.org/geos/geos-3.6.0.tar.bz2 \ 
+ && mkdir -p /usr/src/geos \ 
+ && tar -xjf geos.tar.bz2 -C /usr/src/geos --strip-components=1 \ 
+ && (cd /usr/src/geos; \ 
+     ./configure; \ 
+     make -j ${NPROC}; \ 
+     make install) \ 
+ && rm -r /usr/src/geos \ 
+ && rm -rf /usr/src/geos \ 
+ && rm -rf /geos.tar.bz2 
+
+ENV PATH=/home/$USER_NAME/.local/bin:$PATH
+
+USER $USER_NAME 
+
+RUN python3.7 -m pip install --disable-pip-version-check --no-cache-dir --upgrade pip \
+ && python3.7 -m pip install --upgrade Pillow \
+ && python3.7 -m pip install matplotlib \
+ && export CFLAGS="-DACCEPT_USE_OF_DEPRECATED_PROJ_API_H=1"
+
+#RUN python3.7 -m pip install markupsafe==2.0.1 --force-reinstall
+#RUN python3.7 -m pip install --upgrade --force-reinstall setuptools
+
+RUN python3.7 -m pip install --upgrade --force-reinstall shapely==1.8.2 \
+ && python3.7 -m pip install setuptools setuptools_scm wheel cython==0.29.22 jinja2==2.10.3 numpy markupsafe==2.0.1 extension-helpers pythran pybind11 \
+ && python3.7 -m pip install cartopy==0.18 \
+ && python3.7 -m pip install --no-build-isolation astropy \
+ && python3.7 -m pip install --no-build-isolation scipy
+
+RUN cd /home/$USER_NAME \
+ && git clone https://github.com/riogroup/SORA.git \
+ && cd SORA \
+ && python3.7 -m pip install . \
+ && cd .. \
+ && rm -rf SORA
+
+RUN python3.7 -m pip install bottle paste 
+
+USER root 
+RUN mkdir /opt/server \
+  && chown -R $USER_ID:$GROUP_ID /opt/server \
+  && mkdir /home/$USER_NAME/media \
+  && mkdir /home/$USER_NAME/media/input \
+  && mkdir /home/$USER_NAME/media/output \
+  && mkdir /home/$USER_NAME/media/cache \
+  && chown -R $USER_ID:$GROUP_ID /home/$USER_NAME/media \
+  && chown -R $USER_ID:$GROUP_ID /home/$USER_NAME/media/cache \
+  && chown -R $USER_ID:$GROUP_ID /home/$USER_NAME/media/input \
+  && chown -R $USER_ID:$GROUP_ID /home/$USER_NAME/media/output \
+  && chmod -R 775 /home/$USER_NAME/media \
+  && chmod -R 775 /home/$USER_NAME/media/cache \
+  && chmod -R 775 /home/$USER_NAME/media/input \
+  && chmod -R 775 /home/$USER_NAME/media/output
+
+WORKDIR /opt/server
+
+COPY ./src/*.py /opt/server/
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod 0775 /entrypoint.sh
+
+USER $USER_NAME 
+
+ENTRYPOINT ["/entrypoint.sh"]
