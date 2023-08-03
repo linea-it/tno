@@ -170,7 +170,7 @@ function PredictionAsteroid() {
           </Grid>
         </Grid>
       </Grid>
-      {'messages' in predictionJobResult && predictionJobResult.messages !== null && (
+      {'messages' in predictionJobResult && predictionJobResult.status === 2 && predictionJobResult.messages !== null && (
         <Grid item xs={12}>
           <Alert severity='error'>{predictionJobResult.messages}</Alert>
         </Grid>

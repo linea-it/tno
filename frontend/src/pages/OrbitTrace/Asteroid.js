@@ -196,7 +196,7 @@ function OrbitTraceAsteroid() {
           </Grid>
         </Grid>
       </Grid>
-      {'error' in orbitTraceResult && orbitTraceResult.error !== null && (
+      {'error' in orbitTraceResult && orbitTraceResult.status === 2 && orbitTraceResult.error !== null && (
         <Grid item xs={12}>
           <Alert severity='error'>{orbitTraceResult.error}</Alert>
         </Grid>
