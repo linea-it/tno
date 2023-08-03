@@ -310,24 +310,16 @@ function PredictDetail() {
           ) : null}
         </Grid>
       </Grid>
+      {'error' in predictionJob && predictionJob.error !== null && (
+        <Grid item xs={12}>
+          <Alert severity='error'>{predictionJob.error}</Alert>
+        </Grid>
+      )}      
       <Grid item xs={12} md={5} xl={3}>
         <Card>
           <CardHeader title='Summary Execution' />
           <CardContent>
             <List data={summaryExecution} />
-            {haveError === true ? (
-              <Alert
-                severity='warning'
-              // action={
-              //   <Button color='inherit' size='small' href={orbitTraceJob.results.replace('/archive', '/data')}>
-              //     CHECK IT OUT
-              //   </Button>
-              // }
-              >
-                {/* <strong>{totalErrorCount}</strong> exposures out of {skybotJob.exposures} failed. */}
-              </Alert>
-            ) : null}
-            {(predictionJob?.error !== null && predictionJob?.error !== '') ? <Alert severity='error'>{predictionJob?.error}</Alert> : null}
           </CardContent>
         </Card>
       </Grid>
