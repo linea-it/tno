@@ -17,14 +17,6 @@ git clone https://github.com/riogroup/SORA.git
 cd SORA
 pip install .
 
-
-
-teste
-b = sora.Body(name='Chariklo')
-p = sora.prediction.prediction(time_beg='2013-05-08 00:00',time_end='2013-07-21 00:00', body=b, step=10, divs=12, radius=600, verbose=False)
-
-
-
 pip3 install --upgrade --force-reinstall setuptools
 pip uninstall shapely
 pip install shapely==1.6
@@ -35,64 +27,27 @@ pip install --no-binary :all: shapely
 
 
 
-SORA linux
+teste velho
+b = sora.Body(name='Chariklo')
+p = sora.prediction.prediction(time_beg='2013-05-08 00:00',time_end='2013-07-21 00:00', body=b, step=10, divs=12, radius=600, verbose=False)
 
-#Criar ambiente de dev
-dockerfile
-
-criar dockerfile "ubuntugui"
-FROM ubuntu:latest
-RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y lubuntu-desktop lightdm
-RUN rm /run/reboot-required*
-RUN echo "/usr/sbin/lightdm" > /etc/X11/default-display-manager
-RUN echo "\
-[LightDM]\n\
-[Seat:*]\n\
-type=xremote\n\
-xserver-hostname=host.docker.internal\n\
-xserver-display-number=0\n\
-autologin-user=root\n\
-autologin-user-timeout=0\n\
-autologin-session=Lubuntu\n\
-" > /etc/lightdm/lightdm.conf.d/lightdm.conf
-ENV DISPLAY=host.docker.internal:0.0
+teste novo
+from sora.prediction.occmap import plot_occ_map as occmap
+occmap(name, radius, coord, time, ca, pa, vel, dist, mag=mag, longi=longi, dpi=50,  nameimg='image_filename', path='path/to/save/file/', fmt='jpg')
 
 
-criar dockerfile "bsgui"
-FROM ubuntugui
-RUN DEBIAN_FRONTEND=noninteractive apt install -y libxss1
+name -> Nome do objeto conforme aparece na coluna Object da tabela: name (number), formato str
+radius -> Raio do objeto, valor da coluna diameter da tabela dividido por dois e 0 se não existir, formato float
+coord -> String formada pelos campos 'ra_star_candidate dec_star_candidate' da tabela de predição
+time -> Campo date_time da tabela, porém passado no formato iso e em UTC, no format string
+ca -> Campo closest_approach na tabela de predição, no formato float
+pa -> Campo position_angle na tabela de predição, no formato float
+vel -> Campo velocity na tabela de predição, no formato float
+dist -> Campo delta na tabela de predição, no formato float
+mag -> Campo g na tabela de predição, no formato float
+longi -> Campo long na tabela de predição, no formato float
 
-criar dockerfile "bsgui-dev"
-FROM bsgui
-RUN DEBIAN_FRONTEND=noninteractive apt install -y python3.7 python3.7-dev language-pack-en
-RUN python3.7 -m pip install --force-reinstall -v setuptools==61.2 &&
-    python3.7 -m pip install screeninfo cefpython3 tk cx_freeze tzlocal psutil distro PyCryptodome
-
-#Criar portable com o cxfreeze
-docker run --name BSDevLinux --rm -it -v"%cd%:/code" -w/code bsgui-dev bash
-cxfreeze -c main.py --target-name=BrowserSafe --target-dir=dist --packages=json,tk,cefpython3,screeninfo,urllib,tkinter,tzlocal,psutil,distro,Crypto
-
-
-#Testar portable
-docker run --name BSDevLinux --rm -it -v"%cd%/dist:/opt/bin/BrowserSafe" -w/opt/bin/BrowserSafe bsgui ./BrowserSafe
-cxfreeze -c main.py --target-dir dist --packages=json,tk,cefpython3,screeninfo,urllib,tkinter,tzlocal,psutil,distro,Crypto
-
-
-linux xmodmap -  apt install x11-xserver-utils
-
-disable lctrl
-xmodmap -e "keycode 37 = "  
-disable rctrl
-xmodmap -e "keycode 109 = "  
-
-xev para ver o mapeamento
-alt-esq -> state 0x8, keycode 64 (keysym 0xffe9, Alt_L), same_screen YES,
-alt-dir -> state 0x80, keycode 113 (keysym 0xfe03, ISO_Level3_Shift), same_screen YES
-
-
-
-
-
+O campo diameter está para ser adicionado na tabela com a finalização da pagina de detalhes, até lá o raio pode ser passado com valor 0.
 
 
 criar imagem
