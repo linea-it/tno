@@ -125,17 +125,17 @@ function OrbitTrace() {
 
   useMountEffect(() => {
     getBspPlanetaryList().then((list) => {
-      setBspPlanetaryList(list.map(x => { return { value: x.name, label: x.name } }));
+      setBspPlanetaryList(list.map(x => { return { value: x.name, label: x.display_name } }));
       //set default value
       if (list.length > 0)
-        setBspPlanetary({ value: list[0].name, label: list[0].name })
+        setBspPlanetary({ value: list[0].name, label: list[0].display_name })
     })
 
     getLeapSecondList().then((list) => {
-      setLeapSecondList(list.map(x => { return { value: x.name, label: x.name } }));
+      setLeapSecondList(list.map(x => { return { value: x.name, label: x.display_name } }));
       //set default value
       if (list.length > 0)
-        setLeapSecond({ value: list[0].name, label: list[0].name })
+        setLeapSecond({ value: list[0].name, label: list[0].display_name })
     })
 
     getDynClassList().then((list) => {
@@ -205,8 +205,10 @@ function OrbitTrace() {
       }
       createOrbitTraceJob(data)
         .then((response) => {
-          navigate(`/dashboard/data-preparation/des/orbittrace-detail/${response.data.id}`)
-          //cleanFields();
+          // navigate(`/dashboard/data-preparation/des/orbittrace-detail/${response.data.id}`)
+          cleanFields();
+          setMessageTextSuccess('Information registered successfully');
+          setMessageOpenSuccess(true);
         })
         .catch((err) => {
           console.log(err)
@@ -218,10 +220,11 @@ function OrbitTrace() {
 
   function cleanFields() {
     setBspPlanetary({ value: bspPlanetaryList[0].value, label: bspPlanetaryList[0].label })
-    setLeapSecond({ value: "", label: "Select..." });
+    setLeapSecond({ value: leapSecondList[0].value, label: leapSecondList[0].label });
     setFilterType({ value: 'base_dynclass', label: 'Dynamic class' });
     setFilterValue({ value: "", label: "Select..." });
     setBspValue({ value: 0, label: "None" });
+    setDebug(false);
     setParslInitBlocks({ value: 600, label: "600" });
     setMessageTextSuccess('Information registered successfully');
     setMessageOpenSuccess(true);
