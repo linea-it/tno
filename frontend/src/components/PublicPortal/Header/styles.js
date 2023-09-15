@@ -8,8 +8,8 @@ const styles = makeStyles((theme) => ({
     marginRight: 10
   },
   appbar: {
-    background: '#e2e1e2',
-    height:'50px'
+    background: '#24292e',
+    height:'64px'
   },
   separator: {
     flexGrow: 1
@@ -27,17 +27,17 @@ const styles = makeStyles((theme) => ({
     }
   },
   menuLink: {
-    color: '#000000',
+    color: '#fff',
     textDecoration: 'none',
     fontWeight: 500,
     textTransform: 'uppercase',
     whiteSpace: 'nowrap'
   },
-  logoLIneA: {
+  logoLIneA:   {
     [theme.breakpoints.up('sm')]: {
-      maxWidth: 75
+      maxWidth: 75,
     },
-    maxWidth: 75
+    maxWidth: 75,
   },
   toolbar: {
     display: 'flex',
