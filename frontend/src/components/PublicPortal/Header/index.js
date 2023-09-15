@@ -13,6 +13,7 @@ import styles from './styles'
 import './header.css'
 import { useAuth } from '../../../contexts/AuthContext.js'
 import { useNavigate } from '../../../../node_modules/react-router-dom/dist/index'
+import LineaLogo from '../../../assets/img/linea-logo-mini.png'
 
 function PublicHeader() {
   const { isAuthenticated, user, signIn, logout } = useAuth()
@@ -72,7 +73,7 @@ function PublicHeader() {
   function UserUnLogged() {
     return (
       <>
-        <Button onClick={signIn} color='default'>
+        <Button onClick={signIn} color='inherit'>
           Sign in
         </Button>
       </>
@@ -111,7 +112,12 @@ function PublicHeader() {
 
   return (
     <AppBar position='static' className={classes.appbar}>
-      <Toolbar className={classes.toolbar}>      
+      <Toolbar className={classes.toolbar}>
+        <img
+          src={LineaLogo}
+          alt="LineA"
+          className={classes.logoLIneA}
+        />
         <List className={classes.menuList}>
           {menus.map((menu) => (
             
