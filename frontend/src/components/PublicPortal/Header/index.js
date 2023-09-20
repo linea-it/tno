@@ -123,7 +123,8 @@ function PublicHeader() {
             
             <ListItem key={menu.href?menu.href:Math.random() } className={classes.menuListItem}>
               { menu.description &&
-                <Link onClick={() => handleCardClick(menu.href)} className={classes.menuLink}>
+                <Link onClick={() => handleCardClick(menu.href)} className={classes.menuLink}
+                  style={{ cursor: 'pointer' }} >
                   {menu.description}
                 </Link>
               }
