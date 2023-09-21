@@ -218,7 +218,7 @@ function OccultationDetail() {
       },
       {
         title: 'Uncertainty in position',
-        value: `RA: ${occultation.e_ra_target}, DEC: ${occultation.e_dec_target} (mas)`,
+        value: `RA: ${occultation.e_ra_target}, Dec: ${occultation.e_dec_target} (mas)`,
       },
       {
         title: 'Apparent Magnitude',
