@@ -37,6 +37,8 @@ import PublicOccultation from '../pages/PublicPortal/occultation/index'
 import OccultationDetail from '../pages/Occultation/Detail'
 import PublicSupporters from '../pages/PublicPortal/Home/partials/Supporters/index'
 import PublicBanner from '../components/PublicPortal/Banner/index'
+import PublicDocumentation from '../pages/PublicPortal/occultation/index'
+import PublicContact from '../pages/PublicPortal/Tutorials/index'
 
 
 export default function AppRoutes() {
@@ -117,20 +119,20 @@ export default function AppRoutes() {
       <Route
         isHomePage
         exact
-        path='/tutorials'
+        path='/contact'
         element={
           <PublicPortalPage>
-            <PublicTutorials />
+            <PublicContact />
           </PublicPortalPage>
         }
       />
       <Route
         isHomePage
         exact
-        path='/occultation'
+        path='/documentation'
         element={
           <PublicPortalPage>
-            <PublicOccultation />
+            <PublicDocumentation />
           </PublicPortalPage>
         }
       />

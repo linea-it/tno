@@ -86,18 +86,18 @@ function PublicHeader() {
       target: '_self'
     },
     {
-      description: 'Occultation',
-      href: '/occultation',
-      target: '_self'
-    },
-    {
       description: 'About',
       href: '/about-us',
       target: '_self'
     },
     {
-      description: 'Tutorials',
-      href: '/tutorials',
+      description: 'Documentation',
+      href: '/documentation',
+      target: '_self'
+    },
+    {
+      description: 'Contact',
+      href: '/contact',
       target: '_self'
     },  
     isAuthenticated && user.dashboard && {
