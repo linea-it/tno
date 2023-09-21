@@ -27,7 +27,7 @@ class CatalogViewSet(viewsets.ReadOnlyModelViewSet):
             que necessitam de acesso ao banco de catalogos. 
 
             IMPORTANTE: Não deveria ficar disponivel no futuro!
-            @param catalog 
+            @param catalog - use internal Catalog.name ex: gaia_dr2
             @param ra 
             @param dec
             @param radius
