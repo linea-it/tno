@@ -5,9 +5,7 @@ import {
   Grid,
   Card,
   CardHeader,
-  CardContent,
-  CircularProgress
-} from '@material-ui/core';
+  CardContent} from '@material-ui/core';
 import List from '../../components/List';
 
 import Aladin from '../../components/Aladin/index';
@@ -17,7 +15,6 @@ import {
   getStarByOccultationId
 } from '../../services/api/Occultation';
 import useStyles from './styles'
-import { isNull } from 'lodash';
 import PredictOccultationMap from './partials/PredictMap';
 
 function OccultationDetail() {
@@ -29,7 +26,6 @@ function OccultationDetail() {
   const [object, setObject] = useState([]);
   const [map, setMap] = useState(null);
   const [erroMap, setErroMap] = useState(false);
-  const classes = useStyles()
 
 
   useEffect(() => {
