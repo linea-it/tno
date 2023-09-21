@@ -130,7 +130,7 @@ function OccultationDetail() {
       {
         title: 'Creation Date',
         tooltip: 'Date of the prediction\'s computation',
-        value: null,
+        value: `${occultation.created_at?moment(occultation.created_at).utc() : null}`
       },
     ]);
 
