@@ -143,7 +143,11 @@ function OccultationDetail() {
       },
       {
         title: 'Star astrometric position in catalogue (ICRF)',
+<<<<<<< HEAD
         value: `${starObj.ra ? starObj.ra.toFixed(8) : null} ${starObj.dec ? starObj.dec.toFixed(7) : null}`,
+=======
+        value: `${starObj.ra?starObj.ra.toFixed(8):null} ${starObj.dec?starObj.dec.toFixed(7):null}`,
+>>>>>>> f7adbc8 (Occultation Star parameters and exhibition update)
       },
       {
         title: 'Star astrometric position with proper motion (ICRF)',
@@ -155,7 +159,11 @@ function OccultationDetail() {
       },
       {
         title: 'Proper motion',
+<<<<<<< HEAD
         value: `RA: ${starObj.pmra ? starObj.pmra.toFixed(1) : null} ±${starObj.pmra_error ? starObj.pmra_error.toFixed(1) : null}, Dec: ${starObj.pmdec ? starObj.pmdec.toFixed(1) : null} ±${starObj.pmdec_error ? starObj.pmdec_error.toFixed(1) : null} (mas/yr)`,
+=======
+        value: `RA: ${starObj.pmra?starObj.pmra.toFixed(1):null} ±${starObj.pmra_error?starObj.pmra_error.toFixed(1):null}, Dec: ${starObj.pmdec?starObj.pmdec.toFixed(1):null} ±${starObj.pmdec_error?starObj.pmdec_error.toFixed(1):null} (mas/yr)`,
+>>>>>>> f7adbc8 (Occultation Star parameters and exhibition update)
       },
       {
         title: 'Source of proper motion',
@@ -163,6 +171,7 @@ function OccultationDetail() {
       },
       {
         title: 'Uncertainty in the star position',
+<<<<<<< HEAD
         value: `${starObj.ra_error ? starObj.ra_error.toFixed(1) : null} ${starObj.dec_error ? starObj.dec_error.toFixed(1) : null} (mas)`,
       },
       {
@@ -188,6 +197,33 @@ function OccultationDetail() {
       {
         title: 'K magnitude (source: 2MASS)',
         value: `${occultation.k ? occultation.k.toFixed(3) : null}`,
+=======
+        value: `${starObj.ra_error?starObj.ra_error.toFixed(1):null} ${starObj.dec_error?starObj.dec_error.toFixed(1):null} (mas)`,
+      },
+      {
+        title: 'G magnitude',
+        value: `${starObj.phot_g_mean_mag?starObj.phot_g_mean_mag.toFixed(3):null}`,
+      },
+      {
+        title: 'RP magnitude (source: GaiaDR2)',
+        value: `${starObj.phot_g_mean_mag?starObj.phot_g_mean_mag.toFixed(3):null}`,
+      },
+      {
+        title: 'BP magnitude (source: GaiaDR2)',
+        value:  `${starObj.phot_bp_mean_mag?starObj.phot_bp_mean_mag.toFixed(3):null}`,
+      },
+      {
+        title: 'J magnitude (source: 2MASS)',
+        value: `${occultation.j?occultation.j.toFixed(3):null}`,
+      },
+      {
+        title: 'H magnitude (source: 2MASS)',
+        value: `${occultation.h?occultation.h.toFixed(3):null}`,
+      },
+      {
+        title: 'K magnitude (source: 2MASS)',
+        value: `${occultation.k?occultation.k.toFixed(3):null}`,
+>>>>>>> f7adbc8 (Occultation Star parameters and exhibition update)
       },
     ]);
 
