@@ -17,6 +17,7 @@ import {
   getStarByOccultationId
 } from '../../services/api/Occultation';
 import useStyles from './styles'
+import { isNull } from 'lodash';
 
 function OccultationDetail() {
   const { id } = useParams();
@@ -81,7 +82,7 @@ function OccultationDetail() {
         title: 'Star position (ICRF)',
         tooltip:
           'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
-        value: `${occultation.ra_star_candidate} ${occultation.dec_star_candidate}`,
+        value: `${occultation.ra_star_candidate}, ${occultation.dec_star_candidate}`,
       },
       {
         title: 'Closest Approach',
@@ -106,25 +107,30 @@ function OccultationDetail() {
       {
         title: 'G* mag*',
         tooltip: 'Gaia magnitude corrected from velocity',
-        value: occultation.g_mag_vel_corrected,
+        value: `${occultation.g_mag_vel_corrected?occultation.g_mag_vel_corrected.toFixed(3):null}`,
       },
       {
         title: 'RP* mag*',
         tooltip: 'Gaia RP magnitude corrected from velocity',
-        value: occultation.g_mag_vel_corrected,
+        value: `${occultation.g_mag_vel_corrected?occultation.g_mag_vel_corrected.toFixed(3):null}`,
       },
       {
         title: 'H* mag*',
         tooltip: '2MASS H magnitude corrected from velocity',
-        value: occultation.h_mag_vel_corrected,
+        value: `${occultation.h_mag_vel_corrected?occultation.h_mag_vel_corrected.toFixed(3):null}`,
       },
       {
         title: 'Magnitude Drop',
-        value: occultation.magnitude_drop,
+        value: `${occultation.magnitude_drop?occultation.magnitude_drop.toFixed(3):null}`,
       },
       {
         title: 'Uncertainty in Time',
-        value: occultation.instant_uncertainty,
+        value: `${occultation.instant_uncertainty?occultation.instant_uncertainty.toFixed(1):null}`,
+      },
+      {
+        title: 'Creation Date',
+        tooltip: 'Date of the prediction\'s computation',
+        value: null,
       },
     ]);
 
