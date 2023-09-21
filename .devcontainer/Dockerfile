@@ -26,9 +26,9 @@ RUN pip install --upgrade pip wheel setuptools \
     && pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
     && rm -rf /tmp/pip-tmp
 
-COPY --chmod=0755 ./backend/entrypoint.sh /entrypoint.sh
+# COPY --chmod=0755 ./backend/entrypoint.sh /entrypoint.sh
 
-COPY --chmod=0775 ./backend/start.sh /start.sh
+# COPY --chmod=0775 ./backend/start.sh /start.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+# ENTRYPOINT ["/entrypoint.sh"]
 
