@@ -119,7 +119,7 @@ export default function AppRoutes() {
       <Route
         isHomePage
         exact
-        path='/contact'
+        path='/contact-us'
         element={
           <PublicPortalPage>
             <PublicContact />

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Grid, Link } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import styles from './styles'
 import './styles.css'
 
@@ -13,13 +13,16 @@ function PublicBanner() {
         <Grid item xs={12} className={classes.titleWrapper} >
           <h1 className={classes.title}>LIneA Occultation Prediction Database</h1>
         </Grid>
-        <Grid item xs={12} container className={classes.bannerWrapper} >
-          <div className="container textBanner">
-            <Grid item xs={12} className={classes.textOcultatiom}><label >This is a database of predictions for 
-              stellar occultations by small Solar System objects, calculated from the legacy positions 
-              provided by the Dark Energy Survey (DES) and the constantly updated positions from the 
-              Minor Planet Center (MPC). These predictions are regularly updated. Use our advanced filters 
-              to refine your search and find more suitable events.</label></Grid>
+        <Grid item xs={12} container className={classes.bannerWrapper}>
+          <div className="container textBanner" style={{ borderRadius: '6px', width: '45vw' }}>
+            <Grid item xs={12} className={classes.textOcultatiom}>
+              <label>This is a database of predictions for 
+                stellar occultations by small Solar System objects, calculated from the legacy positions 
+                provided by the Dark Energy Survey (DES) and the constantly updated positions from the 
+                Minor Planet Center (MPC). These predictions are regularly updated. Use our advanced filters 
+                to refine your search and find more suitable events.
+              </label>
+            </Grid>
           </div>
         </Grid>
       </Grid>

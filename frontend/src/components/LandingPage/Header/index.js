@@ -87,15 +87,15 @@ function Header() {
       target: '_self'
     },
     {
-      description: 'Tutorials',
-      href: '/tutorials',
+      description: 'Documentation',
+      href: '/documentation',
       target: '_self'
     },
-    // {
-    //   description: 'Contact',
-    //   href: '/contact-us',
-    //   target: '_self'
-    // }
+    {
+     description: 'Contact',
+     href: '/contact-us',
+     target: '_self'
+    }
   ]
 
   return (
