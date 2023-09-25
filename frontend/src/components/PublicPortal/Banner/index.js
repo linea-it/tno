@@ -1,5 +1,6 @@
 import React from 'react'
 import { Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import styles from './styles'
 import './styles.css'
 
@@ -14,7 +15,7 @@ function PublicBanner() {
           <h1 className={classes.title}>LIneA Occultation Prediction Database</h1>
         </Grid>
         <Grid item xs={12} container className={classes.bannerWrapper}>
-          <div className="container textBanner" style={{ borderRadius: '6px', width: '45vw', border: '1px solid rgba(255, 255, 255, 0.1)', textAlign: 'center' }}>
+          <div className="container textBanner" style={{ borderRadius: '6px', width: '45vw' }}>
             <Grid item xs={12} className={classes.textOcultatiom}>
               <label>This is a database of predictions for 
                 stellar occultations by small Solar System objects, calculated from the legacy positions 

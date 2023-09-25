@@ -163,7 +163,6 @@ function PublicOcutation() {
         <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('')}>
           <div className={clsx(filterView === '' ? classes.selected : classes.celula)}>All events</div>
         </Grid>
-
         <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('userSelect')}>
           <div className={clsx(filterView === 'userSelect' ? classes.selected : classes.celula)}>User Selected</div>
         </Grid>
