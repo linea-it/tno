@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import urllib.parse
+from pathlib import Path
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,16 +25,16 @@ BIN_DIR = os.path.join(BASE_DIR, "bin")
 # os mesmos listados aqui.
 LOG_DIR = "/log"
 LOGGING_LEVEL = "INFO"
-ARCHIVE_DIR = "/archive"
+ARCHIVE_DIR = Path("/archive")
 PROCCESS_DIR = "/proccess"
 DES_CCD_CATALOGS_DIR = "/archive/des/public/catalogs/"
 
 # Sub diretorios que ficam dentro de /archive
 
 SKYBOT_ROOT = "skybot_output"
-SKYBOT_OUTPUT = os.path.join(ARCHIVE_DIR, SKYBOT_ROOT)
-if not os.path.exists(SKYBOT_OUTPUT):
-    os.mkdir(SKYBOT_OUTPUT)
+SKYBOT_OUTPUT = Path.joinpath(ARCHIVE_DIR, SKYBOT_ROOT)
+if not SKYBOT_OUTPUT.exists():
+    SKYBOT_OUTPUT.mkdir(parents=True, exist_ok=False)
 
 # JHONSTONS_ARCHIVE_ROOT = "jhonstons_archive"
 # JHONSTONS_ARCHIVE = os.path.join(ARCHIVE_DIR, JHONSTONS_ARCHIVE_ROOT)
@@ -43,15 +44,23 @@ if not os.path.exists(SKYBOT_OUTPUT):
 MEDIA_ROOT = ARCHIVE_DIR
 MEDIA_URL = "/media/"
 
-MEDIA_TMP_DIR = os.path.join(MEDIA_ROOT, "tmp")
-if not os.path.exists(MEDIA_TMP_DIR):
-    os.mkdir(MEDIA_TMP_DIR)
+MEDIA_TMP_DIR = Path.joinpath(MEDIA_ROOT, "tmp")
+if not MEDIA_TMP_DIR.exists():
+    MEDIA_TMP_DIR.mkdir(parents=True, exist_ok=False)
 
 MEDIA_TMP_URL = urllib.parse.urljoin(MEDIA_URL, "tmp/")
 
 DATA_URL = "/data/"
 DATA_TMP_DIR = MEDIA_TMP_DIR
 DATA_TMP_URL = urllib.parse.urljoin(DATA_URL, "tmp/")
+
+OCCULTATION_URL = "maps/"
+OCCULTATION_MAP_DIR = MEDIA_TMP_DIR.joinpath("maps")
+if not OCCULTATION_MAP_DIR.exists():
+    OCCULTATION_MAP_DIR.mkdir(parents=True, exist_ok=False)
+
+OCCULTATION_MAP_URL = urllib.parse.urljoin(DATA_TMP_URL, OCCULTATION_URL)
+
 
 ENVIRONMENT_NAME = os.environ.get("ENVIRONMENT_NAME", "Development")
 

@@ -9,17 +9,79 @@ from django.shortcuts import redirect
 from rest_framework.decorators import action, renderer_classes, api_view
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
+from datetime import datetime, timezone
+import dateutil.parser
 
 from tno.tasks import teste_api_task
+from sora.prediction.occmap import plot_occ_map as occmap
 
 @api_view(["GET"])
 def teste(request):
     if request.method == "GET":
-        result = dict(
-            {
-                "success": True,
-            }
-        )
+        # ORIGINAL VALUES
+        name = "Chiron"
+        diameter = None
+        ra_star_candidate = "00 47 31.2926"
+        dec_star_candidate = "+06 50 46.320"
+        date_time = dateutil.parser.isoparse("2023-02-27T08:36:40Z")
+        closest_approach = 0.215
+        position_angle = 159.27
+        velocity = 29.66
+        delta = 19.6
+        g = 19.1
+        long = 131.0
+
+        # FORMATED VALUES
+        radius = diameter if diameter != None else 0
+        coord = f"{ra_star_candidate}{dec_star_candidate}"
+        time = date_time              
+        ca = closest_approach 
+        pa = position_angle
+        vel = velocity
+        dist = delta
+        mag = g
+        longi = long
+        dpi=50
+        nameimg='image_filename' 
+        path='/archive/tmp'
+        fmt='jpg'
+
+        occmap(
+            name, 
+            radius, 
+            coord, 
+            time, 
+            ca, 
+            pa, 
+            vel, 
+            dist, 
+            mag=mag, 
+            longi=longi, 
+            dpi=50,  
+            nameimg='image_filename', 
+            path=path, 
+            fmt='jpg')
+
+        result = {
+            "success": True,
+            "name": name,
+            "radius": radius,
+            "coord": coord,
+            "time": time,
+            "ca": ca,
+            "pa": pa,
+            "vel": vel,
+            "dist": dist,
+            "mag": mag,
+            "longi": longi,
+            "dpi": dpi,
+            "nameimg": nameimg,
+            "path": path,
+            "fmt": fmt,
+            # "data_url": data_url
+        }
+        # data_url = settings.DATA_TMP_URL
+
         return Response(result)
 
 @api_view(["GET"])

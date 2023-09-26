@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 import os
 import json
+from tno.sora_map import sora_occultation_map
 
 
 # Example task
@@ -29,6 +30,12 @@ def teste_periodic_task():
 def teste_api_task():
     print(f"Executou Tarefa submetida pela API. {datetime.now()}")
     return True
+
+@shared_task
+def create_occ_map_task(**kwargs):
+    return sora_occultation_map(**kwargs)
+    
+
 
 # task para gerar os mapas das ocultações todos os dias as 23:00
 # a task tentará gerar os mapas das 50 primeiras ocultações do próximo dia
