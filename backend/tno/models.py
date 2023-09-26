@@ -5,7 +5,9 @@ from current_user import get_current_user
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+from django.conf import settings
+from pathlib import Path
+import urllib.parse
 class Profile(models.Model):
     class Meta:
         verbose_name_plural = "profile"
@@ -66,6 +68,10 @@ class Asteroid(models.Model):
             return "%s (%s)" % (self.name, self.number)
         else:
             return self.name
+
+    def get_alias(self):
+        alias = self.name.replace(" ", "").replace("_", "").replace("/", "")
+        return alias
 
 
 class Occultation(models.Model):
@@ -517,6 +523,21 @@ class Occultation(models.Model):
         help_text="Aphelion",
     )
 
+    def get_alias(self):
+        return self.asteroid.get_alias()
+
+    def get_map_filename(self):
+        dt = self.date_time.strftime("%Y%m%d_%H%M%S")
+        return f"{self.get_alias()}_{dt}.jpg"
+  
+    def get_map_filepath(self):
+        return Path.joinpath(settings.OCCULTATION_MAP_DIR, self.get_map_filename())
+
+    def get_map_relative_url(self):
+        if self.get_map_filepath().exists():
+            return  urllib.parse.urljoin(settings.OCCULTATION_MAP_URL, self.get_map_filename())
+        else:
+            return None
 
 class LeapSecond(models.Model):
     class Meta:
