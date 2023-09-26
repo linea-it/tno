@@ -71,7 +71,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     ordering = ("date_time",)
 
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
-    def create_map(self, request, pk):
+    def get_or_create_map(self, request, pk):
         obj = self.get_object()
 
         filepath = obj.get_map_filepath()

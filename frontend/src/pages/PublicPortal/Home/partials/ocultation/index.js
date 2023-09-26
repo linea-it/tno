@@ -45,9 +45,9 @@ function PublicOcutation() {
       return false;
   }
 
-  function getMapUrl(occultation) {
-    return process.env.REACT_APP_SORA + '/map?name=' + encodeURI(occultation.name) + '&time=' + encodeURI(new Date(occultation.date_time).toISOString())
-  }
+  // function getMapUrl(occultation) {
+  //   return process.env.REACT_APP_SORA + '/map?name=' + encodeURI(occultation.name) + '&time=' + encodeURI(new Date(occultation.date_time).toISOString())
+  // }
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
     const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
