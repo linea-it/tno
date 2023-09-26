@@ -11,17 +11,17 @@ import styles from './style'
 function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
     const navigate = useNavigate()
     const defaultHiddenColumnNames = [
-        "number", 
-        "delta", 
-        "long", 
-        "loc_t", 
-        "off_ra", 
-        "off_dec", 
-        "proper_motion", 
-        "j", 
-        "h", 
-        "k", 
-        "ra_target", 
+        "number",
+        "delta",
+        "long",
+        "loc_t",
+        "off_ra",
+        "off_dec",
+        "proper_motion",
+        "j",
+        "h",
+        "k",
+        "ra_target",
         "dec_target",
         "ra_target_deg",
         "dec_target_deg",
@@ -40,41 +40,40 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
 
     useEffect(() => {
         setOccultationsTable(tableData);
-      }, [tableData])
+    }, [tableData])
 
     useEffect(() => {
         setOccultationsCount(totalCount);
-     }, [totalCount])
+    }, [totalCount])
 
-    
+
     const occultationsTableColumns = [
         {
-          name: 'index',
-          title: ' ',
-          width: 50,
-          sortingEnabled: false
+            name: 'index',
+            title: ' ',
+            width: 50,
+            sortingEnabled: false
         },
         {
-          name: 'detail',
-          title: publicPage?' ': 'Detail',
-          width: 80,
-          customElement: (row) => (
-            <Button className={classes.btnDetail} onClick={() => publicPage?window.open(row.detail, "_blank"):navigate(row.detail)}>
-              <InfoOutlinedIcon />
-            </Button>
-          ),
-          align: 'center',
-          sortingEnabled: false,
-          headerTooltip: 'Occultation Prediction Details'
+            name: 'detail',
+            title: publicPage ? ' ' : 'Detail',
+            width: 80,
+            customElement: (row) => (
+                <Button className={classes.btnDetail} onClick={() => publicPage ? window.open(row.detail, "_blank") : navigate(row.detail)}>
+                    <InfoOutlinedIcon />
+                </Button>
+            ),
+            align: 'center',
+            sortingEnabled: false,
+            headerTooltip: 'Occultation Prediction Details'
         },
         {
-            name: 'map',
+            name: 'map_url',
             title: 'Map',
             width: 150,
             align: 'center',
             headerTooltip: 'Occultation Map',
-            customElement: (row) => row.map?<img className={classes.imgThumb} src={row.map} />:<i>no map</i>
-            
+            customElement: (row) => row.map_url !== null ? <img className={classes.imgThumb} src={row.map_url} /> : <i>no map</i>
         },
         {
             name: 'name',
@@ -82,7 +81,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: 'Asteroid Name (Number)',
-            customElement: (row) => <span>{row.name + (row.number? ' (' +row.number + ')':'')}</span>
+            customElement: (row) => <span>{row.name + (row.number ? ' (' + row.number + ')' : '')}</span>
         },
         {
             name: 'number',
@@ -105,7 +104,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: 'Geocentric Closest Approach (arcsec)',
-            customElement: (row) => <span>{row.closest_approach?row.closest_approach.toFixed(3):''}</span>
+            customElement: (row) => <span>{row.closest_approach ? row.closest_approach.toFixed(3) : ''}</span>
         },
         {
             name: 'position_angle',
@@ -113,7 +112,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: 'Position Angle with respect to the star at closest approach (deg)',
-            customElement: (row) => <span>{row.position_angle?row.position_angle.toFixed(2):''}</span>
+            customElement: (row) => <span>{row.position_angle ? row.position_angle.toFixed(2) : ''}</span>
         },
         {
             name: 'velocity',
@@ -121,7 +120,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: 'Velocity in the plane of the sky (positive is prograde, negative is retrograde) (Km/s)',
-            customElement: (row) => <span>{row.velocity?row.velocity.toFixed(2):''}</span>
+            customElement: (row) => <span>{row.velocity ? row.velocity.toFixed(2) : ''}</span>
         },
         {
             name: 'delta',
@@ -129,7 +128,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: 'Geocentric Distance (AU)',
-            customElement: (row) => <span>{row.delta?row.delta.toFixed(2):''}</span>
+            customElement: (row) => <span>{row.delta ? row.delta.toFixed(2) : ''}</span>
         },
         {
             name: 'long',
@@ -137,7 +136,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: 'East longitude of sub-planet point (positive towards East) (deg)',
-            customElement: (row) => <span>{row.long?row.long.toFixed(2):''}</span>
+            customElement: (row) => <span>{row.long ? row.long.toFixed(2) : ''}</span>
         },
         {
             name: 'loc_t',
@@ -152,7 +151,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: 'Offset applied to ephemeris in RA (mas)',
-            customElement: (row) => <span>{row.off_ra?row.off_ra.toFixed(2):''}</span>
+            customElement: (row) => <span>{row.off_ra ? row.off_ra.toFixed(2) : ''}</span>
         },
         {
             name: 'off_dec',
@@ -160,7 +159,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: 'Offset applied to ephemeris in DEC (mas)',
-            customElement: (row) => <span>{row.off_dec?row.off_dec.toFixed(2):''}</span>
+            customElement: (row) => <span>{row.off_dec ? row.off_dec.toFixed(2) : ''}</span>
         },
         {
             name: 'proper_motion',
@@ -175,7 +174,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: "Star's G magnitude (mag)",
-            customElement: (row) => <span>{row.g?row.g.toFixed(2):''}</span>
+            customElement: (row) => <span>{row.g ? row.g.toFixed(2) : ''}</span>
         },
         {
             name: 'j',
@@ -183,7 +182,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: "Star's J magnitude (mag)",
-            customElement: (row) => <span>{row.j?row.j.toFixed(2):''}</span>
+            customElement: (row) => <span>{row.j ? row.j.toFixed(2) : ''}</span>
         },
         {
             name: 'h',
@@ -191,7 +190,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: "Star's H magnitude (mag)",
-            customElement: (row) => <span>{row.h?row.h.toFixed(2):''}</span>
+            customElement: (row) => <span>{row.h ? row.h.toFixed(2) : ''}</span>
         },
         {
             name: 'k',
@@ -199,14 +198,14 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: "Star's K magnitude (mag)",
-            customElement: (row) => <span>{row.k?row.k.toFixed(2):''}</span>
+            customElement: (row) => <span>{row.k ? row.k.toFixed(2) : ''}</span>
         },
         {
             name: 'ra_target',
             title: 'Object RA',
             width: 150,
             align: 'center',
-            headerTooltip:"Object's Right Ascension (hh mm ss.ssss)"
+            headerTooltip: "Object's Right Ascension (hh mm ss.ssss)"
         },
         {
             name: 'dec_target',
@@ -221,7 +220,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: "Object's Right Ascension (deg)",
-            customElement: (row) => <span>{row.ra_target_deg?row.ra_target_deg.toFixed(8):''}</span>
+            customElement: (row) => <span>{row.ra_target_deg ? row.ra_target_deg.toFixed(8) : ''}</span>
         },
         {
             name: 'dec_target_deg',
@@ -229,7 +228,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: "Object's Declination (deg)",
-            customElement: (row) => <span>{row.dec_target_deg?row.dec_target_deg.toFixed(8):''}</span>
+            customElement: (row) => <span>{row.dec_target_deg ? row.dec_target_deg.toFixed(8) : ''}</span>
         },
         {
             name: 'ra_star_candidate',
@@ -251,7 +250,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: "Star's Right Ascension (deg)",
-            customElement: (row) => <span>{row.ra_star_deg?row.ra_star_deg.toFixed(8):''}</span>
+            customElement: (row) => <span>{row.ra_star_deg ? row.ra_star_deg.toFixed(8) : ''}</span>
         },
         {
             name: 'dec_star_deg',
@@ -259,7 +258,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: "Star's Declination (deg)",
-            customElement: (row) => <span>{row.dec_star_deg?row.dec_star_deg.toFixed(8):''}</span>
+            customElement: (row) => <span>{row.dec_star_deg ? row.dec_star_deg.toFixed(8) : ''}</span>
         },
         {
             name: 'e_ra',
@@ -267,7 +266,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: "Star's RA uncertainty (mas)",
-            customElement: (row) => <span>{row.e_ra?row.e_ra.toFixed(2):''}</span>
+            customElement: (row) => <span>{row.e_ra ? row.e_ra.toFixed(2) : ''}</span>
         },
         {
             name: 'e_dec',
@@ -275,7 +274,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: "Star's DEC uncertainty (mas)",
-            customElement: (row) => <span>{row.e_dec?row.e_dec.toFixed(2):''}</span>
+            customElement: (row) => <span>{row.e_dec ? row.e_dec.toFixed(2) : ''}</span>
         },
         {
             name: 'pmra',
@@ -283,7 +282,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: "Star's proper motion in RA (mas/y)",
-            customElement: (row) => <span>{row.pmra?row.pmra.toFixed(2):''}</span>
+            customElement: (row) => <span>{row.pmra ? row.pmra.toFixed(2) : ''}</span>
         },
         {
             name: 'pmdec',
@@ -291,7 +290,7 @@ function OccultationTable({ loadData, tableData, totalCount, publicPage }) {
             width: 150,
             align: 'center',
             headerTooltip: "Star's proper motion in DEC (mas/y)",
-            customElement: (row) => <span>{row.pmdec?row.pmdec.toFixed(2):''}</span>
+            customElement: (row) => <span>{row.pmdec ? row.pmdec.toFixed(2) : ''}</span>
         },
         {
             name: 'multiplicity_flag',
