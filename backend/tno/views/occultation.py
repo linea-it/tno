@@ -6,6 +6,7 @@ from pathlib import Path
 
 import django_filters
 from django.conf import settings
+from more_itertools import first
 from rest_framework import viewsets
 from rest_framework.authentication import (BasicAuthentication,
                                            SessionAuthentication,
@@ -22,7 +23,8 @@ from tno.occviz import visibility
 from tno.serializers import OccultationSerializer
 from tno.sora_map import sora_occultation_map
 from tno.tasks import create_occ_map_task
-
+import calendar
+from dateutil.relativedelta import relativedelta
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
     pass
@@ -69,6 +71,52 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     ordering_fields = ("id", "name", "number", "date_time", "ra_star_candidate", "dec_star_candidate", "ra_target", " dec_target", "closest_approach", "position_angle", "velocity", "delta", "g", "j", "h",
                        "k", "long", "loc_t", "off_ra", "off_dec", "proper_motion", "ct", "multiplicity_flag", "e_ra", "e_dec", "pmra", "pmdec", "ra_star_deg", "dec_star_deg", "ra_target_deg", "dec_target_deg", "created_at")
     ordering = ("date_time",)
+
+
+    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    def highlights(self, request):
+
+        count = Occultation.objects.count()
+        first_datetime = Occultation.objects.earliest('date_time')
+        last_datetime = Occultation.objects.latest('date_time')
+        unique_asteroids = Occultation.objects.values('asteroid').distinct().count()
+        
+        today_utc = datetime.utcnow().date()
+        today_events = Occultation.objects.filter(date_time__date=today_utc)
+
+        # Total de eventos para hoje que já possuem mapas.
+        maps_size = []
+        for event in today_events:
+            map_filepath = event.get_map_filepath()
+            if (map_filepath.exists()):
+                maps_size.append(map_filepath.stat().st_size)
+
+        today_already_have_map = len(maps_size)
+        total_maps_size = sum(maps_size)
+
+        week_number = today_utc.isocalendar().week
+        next_week_number = week_number+1
+
+        this_week_count = Occultation.objects.filter(date_time__date__week=week_number).count()
+        next_week_count = Occultation.objects.filter(date_time__date__week=next_week_number).count()
+
+        next_month = today_utc + relativedelta(months=1)
+        this_month_count = Occultation.objects.filter(date_time__date__month=today_utc.month).count()
+        next_month_count = Occultation.objects.filter(date_time__date__month=next_month.month).count()
+
+        return Response({
+            "count": count,
+            "earliest": first_datetime.date_time.isoformat(),
+            "latest": last_datetime.date_time.isoformat(),
+            "unique_asteroids": unique_asteroids,
+            "today_count": today_events.count(),
+            "today_already_have_map": today_already_have_map,  
+            "total_maps_size": total_maps_size,                       
+            "week_count": this_week_count,
+            "next_week_count": next_week_count,
+            "month_count": this_month_count,
+            "next_month_count": next_month_count
+        })
 
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
     def get_or_create_map(self, request, pk):
