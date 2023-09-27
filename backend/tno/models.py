@@ -533,8 +533,11 @@ class Occultation(models.Model):
     def get_map_filepath(self):
         return Path.joinpath(settings.OCCULTATION_MAP_DIR, self.get_map_filename())
 
+    def map_exists(self):
+        return self.get_map_filepath().exists()
+
     def get_map_relative_url(self):
-        if self.get_map_filepath().exists():
+        if self.map_exists():
             return  urllib.parse.urljoin(settings.OCCULTATION_MAP_URL, self.get_map_filename())
         else:
             return None
