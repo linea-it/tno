@@ -1,30 +1,24 @@
 import time
-import urllib.parse
 from datetime import datetime, timezone
 from operator import attrgetter
-from pathlib import Path
 
 import django_filters
-from django.conf import settings
-from more_itertools import first
+from dateutil.relativedelta import relativedelta
 from rest_framework import viewsets
 from rest_framework.authentication import (BasicAuthentication,
                                            SessionAuthentication,
                                            TokenAuthentication)
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from sqlalchemy.sql import text
 
-from tno.db import CatalogDB, DBBase
+from tno.db import CatalogDB
 from tno.models import Occultation
 from tno.occviz import visibility
 from tno.serializers import OccultationSerializer
-from tno.sora_map import sora_occultation_map
-from tno.tasks import create_occ_map_task
-import calendar
-from dateutil.relativedelta import relativedelta
+from tno.prediction_map import sora_occultation_map
+
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
     pass

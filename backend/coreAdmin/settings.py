@@ -54,12 +54,17 @@ DATA_URL = "/data/"
 DATA_TMP_DIR = MEDIA_TMP_DIR
 DATA_TMP_URL = urllib.parse.urljoin(DATA_URL, "tmp/")
 
-OCCULTATION_URL = "maps/"
-OCCULTATION_MAP_DIR = MEDIA_TMP_DIR.joinpath("maps")
-if not OCCULTATION_MAP_DIR.exists():
-    OCCULTATION_MAP_DIR.mkdir(parents=True, exist_ok=False)
+PREDICTION_URL = "maps/"
+PREDICTION_MAP_DIR = MEDIA_TMP_DIR.joinpath("maps")
+if not PREDICTION_MAP_DIR.exists():
+    PREDICTION_MAP_DIR.mkdir(parents=True, exist_ok=False)
 
-OCCULTATION_MAP_URL = urllib.parse.urljoin(DATA_TMP_URL, OCCULTATION_URL)
+PREDICTION_MAP_URL = urllib.parse.urljoin(DATA_TMP_URL, PREDICTION_URL)
+# Tamanho maximo em MB do diretório de mapas.
+PREDICTION_MAP_MAX_FOLDER_SIZE = 500
+# Determina a quantidade de mapas/subtasks submetidos a cada execução da task
+# Em desenvolvimento um numero muito alto pode incomodo devido ao consumo de processamento.
+PREDICTION_MAP_BLOCK_SIZE = 100
 
 
 ENVIRONMENT_NAME = os.environ.get("ENVIRONMENT_NAME", "Development")
@@ -275,6 +280,37 @@ SKYBOT_SERVER = "http://vo.imcce.fr/webservices/skybot/"
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "amqp://tno:adminadmin@rabbit:5672/tno_vhost")
 CELERY_RESULT_BACKEND = 'django-db'
 
+# Autenticacao com Shibboleth desativada por padrão
+SHIBBOLETH_ENABLED = False
+
+# Aqui é feita a importação do arquivo de variaveis locais.
+# As variaveis declaradas neste arquivo sobrescrevem as variaveais declaradas antes
+# deste import. isso é usado para permitir diferentes configurações por ambiente.
+# basta cada ambiente ter o seu arquivo local_vars.py.
+try:
+    from coreAdmin.local_settings import *
+except Exception:
+    raise FileNotFoundError(
+        "local_settings.py file not found. it is necessary that the coraAdmin/local_settings.py file exists with the specific settings of this environment."
+    )
+
+SETTINGS_EXPORT = []
+
+# Shibboleth Authentication
+if SHIBBOLETH_ENABLED is True:
+    # https://github.com/Brown-University-Library/django-shibboleth-remoteuser
+    SHIBBOLETH_ATTRIBUTE_MAP = {
+        "eppn": (True, "username"),
+        "cn": (False, "first_name"),
+        "sn": (False, "last_name"),
+        "Shib-inetOrgPerson-mail": (False, "email"),
+    }
+    SHIBBOLETH_GROUP_ATTRIBUTES = "Shibboleth"
+    # Including Shibboleth authentication:
+    AUTHENTICATION_BACKENDS += ("shibboleth.backends.ShibbolethRemoteUserBackend",)
+
+    SHIBBOLETH_ENABLED = True
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -331,6 +367,22 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "asteroids.log"),
             "formatter": "standard",
         },
+        "garbage_collector": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "garbage_collector.log"),
+            "formatter": "standard",
+        }, 
+        "predict_maps": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "predict_maps.log"),
+            "formatter": "standard",
+        },                
     },
     "loggers": {
         "django": {
@@ -363,35 +415,15 @@ LOGGING = {
             "level": LOGGING_LEVEL,
             "propagate": False,
         },
+        "garbage_collector": {
+            "handlers": ["garbage_collector"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },        
+        "predict_maps": {
+            "handlers": ["predict_maps"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },        
     },
 }
-# Autenticacao com Shibboleth desativada por padrão
-SHIBBOLETH_ENABLED = False
-
-# Aqui é feita a importação do arquivo de variaveis locais.
-# As variaveis declaradas neste arquivo sobrescrevem as variaveais declaradas antes
-# deste import. isso é usado para permitir diferentes configurações por ambiente.
-# basta cada ambiente ter o seu arquivo local_vars.py.
-try:
-    from coreAdmin.local_settings import *
-except Exception:
-    raise FileNotFoundError(
-        "local_settings.py file not found. it is necessary that the coraAdmin/local_settings.py file exists with the specific settings of this environment."
-    )
-
-SETTINGS_EXPORT = []
-
-# Shibboleth Authentication
-if SHIBBOLETH_ENABLED is True:
-    # https://github.com/Brown-University-Library/django-shibboleth-remoteuser
-    SHIBBOLETH_ATTRIBUTE_MAP = {
-        "eppn": (True, "username"),
-        "cn": (False, "first_name"),
-        "sn": (False, "last_name"),
-        "Shib-inetOrgPerson-mail": (False, "email"),
-    }
-    SHIBBOLETH_GROUP_ATTRIBUTES = "Shibboleth"
-    # Including Shibboleth authentication:
-    AUTHENTICATION_BACKENDS += ("shibboleth.backends.ShibbolethRemoteUserBackend",)
-
-    SHIBBOLETH_ENABLED = True
