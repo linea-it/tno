@@ -34,14 +34,15 @@ const styles = makeStyles((theme) => ({
   logo: {
     position: 'relative',
     [theme.breakpoints.up('sm')]: {
-      maxWidth: 120
+      maxWidth: 150,
+      margin: '0 auto',
     },
     maxWidth: 120
   },
   titleWrapper: {
     [theme.breakpoints.up('sm')]: {
       display: 'flex',
-      justifyContent: 'flex-start',
+      justifyContent: 'center',
       alignItems: 'center'
     }
   },
@@ -55,7 +56,7 @@ const styles = makeStyles((theme) => ({
   bannerWrapper: {
     [theme.breakpoints.up('sm')]: {
       display: 'flex',
-      justifyContent: 'flex-end',
+      justifyContent: 'center',
       alignItems: 'center'
     }
   },

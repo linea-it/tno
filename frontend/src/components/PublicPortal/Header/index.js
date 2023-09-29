@@ -13,7 +13,6 @@ import styles from './styles'
 import './header.css'
 import { useAuth } from '../../../contexts/AuthContext.js'
 import { useNavigate } from '../../../../node_modules/react-router-dom/dist/index'
-import LineaLogo from '../../../assets/img/linea-logo-mini.png'
 
 function PublicHeader() {
   const { isAuthenticated, user, signIn, logout } = useAuth()
@@ -87,18 +86,19 @@ function PublicHeader() {
       target: '_self'
     },
     {
-      description: 'Occultation',
-      href: '/occultation',
-      target: '_self'
-    },
-    {
       description: 'About',
       href: '/about-us',
       target: '_self'
     },
     {
-      description: 'Tutorials',
-      href: '/tutorials',
+      description: 'Documentation',
+      href: '/documentation',
+      target: '_self'
+    },
+    {
+      description: 'Contact',
+      href: '/contact-us',
+      href: '/contact-us',
       target: '_self'
     },  
     isAuthenticated && user.dashboard && {
@@ -113,14 +113,9 @@ function PublicHeader() {
   return (
     <AppBar position='static' className={classes.appbar}>
       <Toolbar className={classes.toolbar}>
-        <img
-          src={LineaLogo}
-          alt="LineA"
-          className={classes.logoLIneA}
-        />
+        <img src={`${process.env.PUBLIC_URL}/img/linea-dark-invert.png`} alt='LIneA' className={classes.logoLIneA} />
         <List className={classes.menuList}>
           {menus.map((menu) => (
-            
             <ListItem key={menu.href?menu.href:Math.random() } className={classes.menuListItem}>
               { menu.description &&
                 <Link onClick={() => handleCardClick(menu.href)} className={classes.menuLink}

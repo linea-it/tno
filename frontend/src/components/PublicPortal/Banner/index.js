@@ -1,5 +1,6 @@
 import React from 'react'
-import { Grid, Link } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import styles from './styles'
 import './styles.css'
 
@@ -9,16 +10,20 @@ function PublicBanner() {
   return (
     <div className={classes.root}>
       <Grid container direction='row' justifyContent='space-between' spacing={2} className={classes.container}>
-        <Grid item xs={12} className={classes.titleWrapper} >
           <img src={`${process.env.PUBLIC_URL}/img/tno_logo_projetos.png`} alt='Data Release Interface' className={classes.logo} />
-          <h1 className={classes.title}>LIneA Solar System Portal</h1>
+        <Grid item xs={12} className={classes.titleWrapper} >
+          <h1 className={classes.title}>LIneA Occultation Prediction Database</h1>
         </Grid>
-        <Grid item xs={12} container className={classes.bannerWrapper} >
-          <div className="container textBanner">
-            <Grid item xs={12} className={classes.textTitleOcultatiom}><label>Stellar Occultation</label></Grid>
-            <Grid item xs={12} className={classes.textOcultatiom}><label >A Stellar Occultation is an astronomical event that occurs when the flux of the light from a star is temporarily blocked by a Solar System Object passing in front of it for an specific observer on Earth. This technique allows the determination of sizes and shapes with accuracy comparable to observations by spacecraft and also provides information about the object's surroundings, such as: atmosphere, rings, jets, among other structures around the body.</label></Grid>
-            <Grid item xs={12} className={classes.bannerWrapper}><Link color='inherit' href="/occultation"
-              target="_self" className={classes.menuLink}><label>read more</label></Link></Grid>
+        <Grid item xs={12} container className={classes.bannerWrapper}>
+          <div className="container textBanner" style={{ borderRadius: '6px', width: '45vw' }}>
+            <Grid item xs={12} className={classes.textOcultatiom}>
+              <label>This is a database of predictions for 
+                stellar occultations by small Solar System objects, calculated from the legacy positions 
+                provided by the Dark Energy Survey (DES) and the constantly updated positions from the 
+                Minor Planet Center (MPC). These predictions are regularly updated. Use our advanced filters 
+                to refine your search and find more suitable events.
+              </label>
+            </Grid>
           </div>
         </Grid>
       </Grid>

@@ -8,7 +8,8 @@ const styles = makeStyles((theme) => ({
     marginRight: 10
   },
   appbar: {
-    background: '#212121'
+    background: '#24292e',
+    height: '64px'
   },
   separator: {
     flexGrow: 1
@@ -34,9 +35,10 @@ const styles = makeStyles((theme) => ({
   },
   logoLIneA: {
     [theme.breakpoints.up('sm')]: {
-      maxWidth: 75
+      maxWidth: 75,
+      marginTop: '5px'
     },
-    maxWidth: 75
+    maxWidth: 75,
   },
   toolbar: {
     display: 'flex',

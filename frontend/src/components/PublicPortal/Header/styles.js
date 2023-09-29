@@ -36,6 +36,7 @@ const styles = makeStyles((theme) => ({
   logoLIneA:   {
     [theme.breakpoints.up('sm')]: {
       maxWidth: 75,
+      marginTop: '5px'
     },
     maxWidth: 75,
   },
