@@ -6,99 +6,34 @@ from django.conf import settings
 from django.contrib.auth import logout
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from rest_framework.decorators import action, renderer_classes, api_view
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
-from datetime import datetime, timezone
-import dateutil.parser
 
-from tno.tasks import teste_api_task
-from sora.prediction.occmap import plot_occ_map as occmap
 
 @api_view(["GET"])
 def teste(request):
     if request.method == "GET":
-        # Exemplo de execução com valores reais.
-        # from sora.prediction.occmap import plot_occ_map as occmap
-        # occmap("Chiron", 0, "00 47 31.2926+06 50 46.320", "2023-02-27T08:36:40Z", 0.215, 159.27, 29.66, 19.6, 19.1, 131.0, dpi=50, nameimg='teste_cache', path="/archive/tmp/maps", fmt='jpg')
-
-
-        # ORIGINAL VALUES
-        name = "Chiron"
-        diameter = None
-        ra_star_candidate = "00 47 31.2926"
-        dec_star_candidate = "+06 50 46.320"
-        date_time = dateutil.parser.isoparse("2023-02-27T08:36:40Z")
-        closest_approach = 0.215
-        position_angle = 159.27
-        velocity = 29.66
-        delta = 19.6
-        g = 19.1
-        long = 131.0
-
-        # FORMATED VALUES
-        radius = diameter if diameter != None else 0
-        coord = f"{ra_star_candidate}{dec_star_candidate}"
-        time = date_time              
-        ca = closest_approach 
-        pa = position_angle
-        vel = velocity
-        dist = delta
-        mag = g
-        longi = long
-        dpi=50
-        nameimg='image_filename' 
-        path='/archive/tmp'
-        fmt='jpg'
-
-        occmap(
-            name, 
-            radius, 
-            coord, 
-            time, 
-            ca, 
-            pa, 
-            vel, 
-            dist, 
-            mag=mag, 
-            longi=longi, 
-            dpi=50,  
-            nameimg='image_filename', 
-            path=path, 
-            fmt='jpg')
-
         result = {
             "success": True,
-            "name": name,
-            "radius": radius,
-            "coord": coord,
-            "time": time,
-            "ca": ca,
-            "pa": pa,
-            "vel": vel,
-            "dist": dist,
-            "mag": mag,
-            "longi": longi,
-            "dpi": dpi,
-            "nameimg": nameimg,
-            "path": path,
-            "fmt": fmt,
-            # "data_url": data_url
         }
-        # data_url = settings.DATA_TMP_URL
-
         return Response(result)
+
 
 @api_view(["GET"])
 def test_background_task(request):
+    # from tno.tasks import teste_api_task
+    # from tno.tasks import create_prediction_maps
+    # from tno.tasks import garbage_collector
     if request.method == "GET":
-        teste_api_task.delay()
+        # teste_api_task.delay()
+        # garbage_collector.delay()
         result = dict(
             {
                 "success": True,
             }
         )
         return Response(result)
+
 
 @action(detail=False, methods=["GET"])
 def logout_view(request):
