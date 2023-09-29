@@ -45,19 +45,19 @@ function PublicOcutation() {
       return false;
   }
 
-  function getMapUrl(occultation) {
-    return process.env.REACT_APP_SORA + '/map?name=' + encodeURI(occultation.name) + '&time=' + encodeURI(new Date(occultation.date_time).toISOString())
-  }
+  // function getMapUrl(occultation) {
+  //   return process.env.REACT_APP_SORA + '/map?name=' + encodeURI(occultation.name) + '&time=' + encodeURI(new Date(occultation.date_time).toISOString())
+  // }
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
     const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
-    const start = (filterView == "userSelect" || filterView == "period") && dateStart ? new Date(dateStart).toISOString().slice(0, 10) + ' 00:00:00' : null;
-    const end = (filterView == "userSelect" || filterView == "period") && dateEnd ? new Date(dateEnd).toISOString().slice(0, 10) + ' 23:59:59' : null;
-    const type = filterView == "userSelect" && filterType.value ? filterType.value.toLowerCase().replaceAll(' ', '_') : null;
-    const value = filterView == "userSelect" && filterValue.value ? filterValue.value : null;
-    const minmag = filterView == "userSelect" ? magnitude[0] : null;
-    const maxmag = filterView == "userSelect" ? magnitude[1] : null;
-    if (filterView == "next") {
+    const start = (filterView === "userSelect" || filterView === "period") && dateStart ? new Date(dateStart).toISOString().slice(0, 10) + ' 00:00:00' : null;
+    const end = (filterView === "userSelect" || filterView === "period") && dateEnd ? new Date(dateEnd).toISOString().slice(0, 10) + ' 23:59:59' : null;
+    const type = filterView === "userSelect" && filterType.value ? filterType.value.toLowerCase().replaceAll(' ', '_') : null;
+    const value = filterView === "userSelect" && filterValue.value ? filterValue.value : null;
+    const minmag = filterView === "userSelect" ? magnitude[0] : null;
+    const maxmag = filterView === "userSelect" ? magnitude[1] : null;
+    if (filterView === "next") {
       getNextTwenty({
         page: currentPage + 1,
         pageSize,
@@ -67,7 +67,7 @@ function PublicOcutation() {
           res.results.map((row) => ({
             key: row.id,
             detail: `/occultation-detail/${row.id}`,
-            map: urlExists(getMapUrl(row)) ? getMapUrl(row) : '',
+            // map: urlExists(getMapUrl(row)) ? getMapUrl(row) : '',
             ...row
           }))
         )
@@ -99,7 +99,7 @@ function PublicOcutation() {
             data.results.map((row) => ({
               key: row.id,
               detail: `/occultation-detail/${row.id}`,
-              map: urlExists(getMapUrl(row)) ? getMapUrl(row) : '',
+              // map: urlExists(getMapUrl(row)) ? getMapUrl(row) : '',
               ...row
             }))
           )
@@ -128,7 +128,7 @@ function PublicOcutation() {
             data.results.map((row) => ({
               key: row.id,
               detail: `/occultation-detail/${row.id}`,
-              map: urlExists(getMapUrl(row)) ? getMapUrl(row) : '',
+              //map: urlExists(getMapUrl(row)) ? getMapUrl(row) : '',
               ...row
             }))
           )
@@ -146,7 +146,7 @@ function PublicOcutation() {
   }, [filterView]);
 
   useEffect(() => {
-    if (!isMount && filterView == 'period') {
+    if (!isMount && filterView === 'period') {
       loadData({ sorting: [{ columnName: 'date_time', direction: 'asc' }], pageSize: 10, currentPage: 0 });
     }
   }, [dateStart, dateEnd]);
@@ -161,13 +161,14 @@ function PublicOcutation() {
       <br></br><br></br>
       <Grid container spacing={1} mt="3">
         <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('')}>
-          <div className={clsx(filterView == '' ? classes.selected : classes.celula)}>All events</div>
+          <div className={clsx(filterView === '' ? classes.selected : classes.celula)}>All events</div>
         </Grid>
+
         <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('userSelect')}>
-          <div className={clsx(filterView == 'userSelect' ? classes.selected : classes.celula)}>User Selected</div>
+          <div className={clsx(filterView === 'userSelect' ? classes.selected : classes.celula)}>User Selected</div>
         </Grid>
       </Grid>
-      {filterView == 'period' &&
+      {filterView === 'period' &&
         <><br></br><Grid container spacing={2}>
           <Grid item xs={12}>
             <Card>
@@ -199,7 +200,7 @@ function PublicOcutation() {
           </Grid>
         </Grid></>
       }
-      {filterView == 'userSelect' &&
+      {filterView === 'userSelect' &&
         <><br></br>
           <OccultationFilter
             dateStart={dateStart}

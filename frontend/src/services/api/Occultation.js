@@ -49,8 +49,12 @@ export const getNextTwenty = ({ page, pageSize, ordering}) => {
 
 export const getStarByOccultationId = ({ id }) => api.get(`/occultations/${id}/get_star_by_event`).then((res) => res.data)
 
-export const getOccultationMap = (json) => {
-  return sora.post('/map', json);
+export const getOrCreatePredictionMap = ({ queryKey }) => {
+  const [_, params] = queryKey
+  const { id, force } = params
+  if (!id) { return }
+
+  return api.get(`/occultations/${id}/get_or_create_map`, { params: { force: force } }).then(res => res.data)
 }
 
 

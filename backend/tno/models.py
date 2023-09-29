@@ -1,10 +1,14 @@
+import urllib.parse
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Optional
+
 from django.conf import settings
-from django.db import models
-from datetime import datetime
-from current_user import get_current_user
 from django.contrib.auth.models import User
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
 
 class Profile(models.Model):
     class Meta:
@@ -18,7 +22,7 @@ class Profile(models.Model):
     def create_or_update_user_profile(sender, instance, created, **kwargs):
         """Cria um profile para o usuario e adiciona dashboard como verdadeiro.
         Só é executado quando um usuario é criado.
-        
+
         Args:
             instance (User): instancia do model User.
             created (bool): True se o evento for disparado pela criação de um novo usuario.
@@ -27,6 +31,7 @@ class Profile(models.Model):
             Profile.objects.get_or_create(
                 user=instance, defaults={"dashboard": True}
             )
+
 
 class Asteroid(models.Model):
 
@@ -66,6 +71,10 @@ class Asteroid(models.Model):
             return "%s (%s)" % (self.name, self.number)
         else:
             return self.name
+
+    def get_alias(self):
+        alias = self.name.replace(" ", "").replace("_", "").replace("/", "")
+        return alias
 
 
 class Occultation(models.Model):
@@ -318,13 +327,13 @@ class Occultation(models.Model):
         blank=True,
     )
 
-    # Data de criação do registro, 
+    # Data de criação do registro,
     # Representa o momento em que o evento foi identificado/processado
-    # Como esta tabela nunca é update, cada novo processamento é um delete/insert 
-    # este campo sempre representa o momento da ultima atualização deste evento de 
+    # Como esta tabela nunca é update, cada novo processamento é um delete/insert
+    # este campo sempre representa o momento da ultima atualização deste evento de
     # ocultação.
     created_at = models.DateTimeField(
-        verbose_name="Created at", 
+        verbose_name="Created at",
         auto_now_add=True
     )
 
@@ -517,6 +526,34 @@ class Occultation(models.Model):
         help_text="Aphelion",
     )
 
+    def get_alias(self) -> str:
+        return self.asteroid.get_alias()
+
+    def get_map_filename(self) -> str:
+        dt = self.date_time.strftime("%Y%m%d%H%M%S")
+        return f"{self.get_alias()}-{dt}.jpg"
+
+    def get_map_filepath(self) -> Path:
+        return Path.joinpath(settings.PREDICTION_MAP_DIR, self.get_map_filename())
+
+    def map_exists(self) -> bool:
+        return self.get_map_filepath().exists()
+
+    def get_map_relative_url(self) -> Optional[str]:
+        if self.map_exists():
+            return urllib.parse.urljoin(settings.PREDICTION_MAP_URL, self.get_map_filename())
+        else:
+            return None
+
+    def map_is_updated(self) -> bool:
+        # Verificar se a data de criação do mapa é mais recente do que a do evento.
+        if not self.map_exists():
+            return False
+
+        map_date_time = datetime.fromtimestamp(
+            self.get_map_filepath().stat().st_ctime).astimezone(timezone.utc)
+        return map_date_time > self.created_at
+
 
 class LeapSecond(models.Model):
     class Meta:
@@ -583,9 +620,11 @@ class BspPlanetary(models.Model):
     def __str__(self):
         return str(self.name)
 
+
 class Catalog(models.Model):
     name = models.CharField(max_length=128, verbose_name="Internal Name")
-    display_name = models.CharField(max_length=128, verbose_name="Display Name")
+    display_name = models.CharField(
+        max_length=128, verbose_name="Display Name")
     database = models.CharField(
         max_length=128,
         verbose_name="Database",
@@ -664,8 +703,10 @@ class JohnstonArchive(models.Model):
         blank=True,
         default=None,
     )
-    a = models.FloatField(verbose_name="a (AU)", null=True, blank=True, default=None)
-    e = models.FloatField(verbose_name="e", null=True, blank=True, default=None)
+    a = models.FloatField(verbose_name="a (AU)",
+                          null=True, blank=True, default=None)
+    e = models.FloatField(verbose_name="e", null=True,
+                          blank=True, default=None)
     perihelion_distance = models.FloatField(
         verbose_name="perihelion distance",
         help_text="q (AU) perihelion distance",
@@ -680,7 +721,8 @@ class JohnstonArchive(models.Model):
         blank=True,
         default=None,
     )
-    i = models.FloatField(verbose_name="i (deg)", null=True, blank=True, default=None)
+    i = models.FloatField(verbose_name="i (deg)",
+                          null=True, blank=True, default=None)
     diameter = models.FloatField(
         verbose_name="Diameter (Km)", null=True, blank=True, default=None
     )
@@ -727,6 +769,7 @@ class JohnstonArchive(models.Model):
     updated = models.DateTimeField(
         verbose_name="Updated", auto_now_add=True, null=True, blank=True
     )
+
 
 class PredictionJob (models.Model):
 
@@ -782,9 +825,9 @@ class PredictionJob (models.Model):
 
     # Tempo médio de execução por Asteroid ( exec_time / count_asteroids) em segundos
     avg_exec_time = models.FloatField(
-        verbose_name="Average Execution Time", 
-        help_text= "average execution time per asteroid. (seconds)",
-        null=True, 
+        verbose_name="Average Execution Time",
+        help_text="average execution time per asteroid. (seconds)",
+        null=True,
         blank=True,
         default=0
     )
@@ -794,12 +837,12 @@ class PredictionJob (models.Model):
         max_length=15,
         choices=(
             ("name", "Object name"),
-            ("dynclass", "Dynamic class (with subclasses)"),            
+            ("dynclass", "Dynamic class (with subclasses)"),
             ("base_dynclass", "Dynamic class"),
         ),
     )
 
-    filter_value = models.TextField (
+    filter_value = models.TextField(
         verbose_name="Filter Value",
     )
 
@@ -818,26 +861,26 @@ class PredictionJob (models.Model):
     )
 
     predict_interval = models.CharField(
-        verbose_name= "Predict Interval",
+        verbose_name="Predict Interval",
         max_length=100,
         null=True, blank=True, default=None,
         help_text="Prediction range formatted with humanize."
     )
 
     predict_step = models.IntegerField(
-        verbose_name="Prediction Step",        
+        verbose_name="Prediction Step",
         help_text="Prediction Step",
         default=600,
     )
 
     count_asteroids = models.IntegerField(
         verbose_name="Asteroids",
-        help_text="Total asteroids selected to run this job",        
+        help_text="Total asteroids selected to run this job",
         default=0,
     )
 
     count_asteroids_with_occ = models.IntegerField(
-        verbose_name="Asteroids With Occultations",        
+        verbose_name="Asteroids With Occultations",
         help_text="Total asteroids with at least one occultation event identified by predict occultation.",
         default=0,
     )
@@ -856,34 +899,36 @@ class PredictionJob (models.Model):
 
     count_failures = models.IntegerField(
         verbose_name="Failures Count",
-        help_text="Total asteroids that failed at least one of the steps.",        
-        default=0,        
+        help_text="Total asteroids that failed at least one of the steps.",
+        default=0,
     )
 
     debug = models.BooleanField(
-        verbose_name="Debug",        
+        verbose_name="Debug",
         help_text="Debug False all log files and intermediate results will be deleted at the end of the job.",
         default=False,
     )
 
     # Pasta onde estão os dados do Job.
     path = models.CharField(
-        verbose_name="Path",        
+        verbose_name="Path",
         help_text="Path to the directory where the job data is located.",
-        max_length=2048,        
+        max_length=2048,
         null=True,
-        blank=True        
+        blank=True
     )
 
     error = models.TextField(verbose_name="Error", null=True, blank=True)
 
-    traceback = models.TextField(verbose_name="Traceback", null=True, blank=True)
+    traceback = models.TextField(
+        verbose_name="Traceback", null=True, blank=True)
 
     def __str__(self):
         return str(self.id)
 
+
 class PredictionJobResult(models.Model):
-    
+
     job = models.ForeignKey(
         PredictionJob,
         on_delete=models.CASCADE,
@@ -905,22 +950,22 @@ class PredictionJobResult(models.Model):
         max_length=100,
         verbose_name="Asteroid Number",
         null=True,
-        blank=True,        
+        blank=True,
     )
 
     base_dynclass = models.CharField(
         max_length=100,
         verbose_name="Asteroid Base DynClass",
         # Default value only because this field is added after table already have data
-        default="" 
+        default=""
     )
 
     dynclass = models.CharField(
         max_length=100,
         verbose_name="Asteroid DynClass",
-        # Default value only because this field is added after table already have data        
+        # Default value only because this field is added after table already have data
         default=""
-    )    
+    )
 
     status = models.IntegerField(
         verbose_name="Status",
@@ -931,7 +976,7 @@ class PredictionJobResult(models.Model):
         ),
     )
 
-    # Total de Observações no DES para este asteroid. 
+    # Total de Observações no DES para este asteroid.
     # referente a tabela des_observations.
     des_obs = models.IntegerField(
         verbose_name="des_obs",
@@ -948,7 +993,7 @@ class PredictionJobResult(models.Model):
     # Indica a Origem das Observations pode ser AstDys ou MPC
     obs_source = models.CharField(
         max_length=100,
-        null=True, 
+        null=True,
         blank=True,
         verbose_name="Observation Source",
         help_text="Observation data source, AstDys or MPC."
@@ -957,25 +1002,25 @@ class PredictionJobResult(models.Model):
     # Indica a Origem dos Orbital Elements pode ser AstDys ou MPC
     orb_ele_source = models.CharField(
         max_length=100,
-        null=True, 
+        null=True,
         blank=True,
         verbose_name="Orbital Elements Source",
         help_text="Orbital Elements data source, AstDys or MPC."
     )
 
-    # Tempo de execução para um unico asteroid. 
+    # Tempo de execução para um unico asteroid.
     # Não considera o tempo em que job ficou em idle nem o tempo de consolidação do job.
     exec_time = models.DurationField(
-        verbose_name="exec_time", 
-        null=True, 
+        verbose_name="exec_time",
+        null=True,
         blank=True,
         help_text="Prediction pipeline runtime for this asteroid."
     )
 
     # Mensagens de erro pode conter mais de uma separadas por ;
     messages = models.TextField(
-        verbose_name="messages", 
-        null=True, 
+        verbose_name="messages",
+        null=True,
         blank=True,
         help_text="Error messages that occurred while running this asteroid, there may be more than one in this case will be separated by ;"
     )
@@ -984,144 +1029,144 @@ class PredictionJobResult(models.Model):
 
     # Etapa DES Observations
     des_obs_start = models.DateTimeField(
-        verbose_name="DES Observations Start", 
-        auto_now_add=False, 
-        null=True, 
+        verbose_name="DES Observations Start",
+        auto_now_add=False,
+        null=True,
         blank=True,
         help_text="Start of the execution of the DES Observations step"
     )
 
     des_obs_finish = models.DateTimeField(
-        verbose_name="DES Observations Finish", 
-        auto_now_add=False, 
-        null=True, 
+        verbose_name="DES Observations Finish",
+        auto_now_add=False,
+        null=True,
         blank=True,
         help_text="End of the DES Observations stage"
     )
 
     des_obs_exec_time = models.DurationField(
-        verbose_name="DES Observations Execution Time", 
-        null=True, 
+        verbose_name="DES Observations Execution Time",
+        null=True,
         blank=True,
         help_text="DES Observations step execution time in seconds."
     )
 
-    # Etapa Download BSP from JPL 
+    # Etapa Download BSP from JPL
     bsp_jpl_start = models.DateTimeField(
-        verbose_name="BSP JPL start", 
-        auto_now_add=False, 
-        null=True, 
+        verbose_name="BSP JPL start",
+        auto_now_add=False,
+        null=True,
         blank=True,
         help_text="Beginning of the JPL BSP Download step."
     )
 
     bsp_jpl_finish = models.DateTimeField(
-        verbose_name="BSP JPL finish", 
-        auto_now_add=False, 
-        null=True, 
+        verbose_name="BSP JPL finish",
+        auto_now_add=False,
+        null=True,
         blank=True,
         help_text="End of the Dwonload stage of the JPL BSP."
     )
 
     bsp_jpl_dw_time = models.DurationField(
-        verbose_name="BSP JPL download time", 
-        null=True, 
+        verbose_name="BSP JPL download time",
+        null=True,
         blank=True,
         help_text="BSP download time from JPL."
     )
 
     # Etapa Download Observations from AstDys or MPC
     obs_start = models.DateTimeField(
-        verbose_name="Observations Download Start", 
-        auto_now_add=False, 
-        null=True, 
+        verbose_name="Observations Download Start",
+        auto_now_add=False,
+        null=True,
         blank=True,
         help_text="Beginning of the Download stage of observations."
     )
 
     obs_finish = models.DateTimeField(
-        verbose_name="Observations Download Finish", 
-        auto_now_add=False, 
-        null=True, 
+        verbose_name="Observations Download Finish",
+        auto_now_add=False,
+        null=True,
         blank=True,
         help_text="End of the Download stage of the observations."
     )
 
     obs_dw_time = models.DurationField(
-        verbose_name="Observations Download Time", 
-        null=True, 
+        verbose_name="Observations Download Time",
+        null=True,
         blank=True,
         help_text="Observations download time."
     )
 
     # Etapa Orbital Elements from AstDys or MPC
     orb_ele_start = models.DateTimeField(
-        verbose_name="Orbital Elements Start", 
-        auto_now_add=False, 
-        null=True, 
+        verbose_name="Orbital Elements Start",
+        auto_now_add=False,
+        null=True,
         blank=True,
         help_text="Beginning of the Orbtial Elements Download stage."
     )
 
     orb_ele_finish = models.DateTimeField(
-        verbose_name="Orbital Elements Finish", 
-        auto_now_add=False, 
-        null=True, 
+        verbose_name="Orbital Elements Finish",
+        auto_now_add=False,
+        null=True,
         blank=True,
         help_text="End of Orbital Elements Download step."
     )
 
     orb_ele_dw_time = models.DurationField(
-        verbose_name="Orbital Elements Download Time", 
-        null=True, 
+        verbose_name="Orbital Elements Download Time",
+        null=True,
         blank=True,
         help_text="Orbital Elements download time."
     )
 
     # Etapa Refinamento de Orbita (NIMA)
     ref_orb_start = models.DateTimeField(
-        verbose_name="Refine Orbit Start", 
-        auto_now_add=False, 
-        null=True, 
+        verbose_name="Refine Orbit Start",
+        auto_now_add=False,
+        null=True,
         blank=True,
         help_text="Start of the Refine Orbit step."
     )
 
     ref_orb_finish = models.DateTimeField(
-        verbose_name="Refine Orbit Finish", 
-        auto_now_add=False, 
-        null=True, 
+        verbose_name="Refine Orbit Finish",
+        auto_now_add=False,
+        null=True,
         blank=True,
         help_text="End of the Refine Orbit step."
     )
 
     ref_orb_exec_time = models.DurationField(
-        verbose_name="Refine Orbit execution time", 
-        null=True, 
+        verbose_name="Refine Orbit execution time",
+        null=True,
         blank=True,
         help_text="Refine Orbit runtime."
     )
 
     # Etapa Predict Occultation (PRAIA Occ)
     pre_occ_start = models.DateTimeField(
-        verbose_name="Predict Occultation Start", 
-        auto_now_add=False, 
-        null=True, 
+        verbose_name="Predict Occultation Start",
+        auto_now_add=False,
+        null=True,
         blank=True,
         help_text="Start of the Predict Occultation step."
     )
 
     pre_occ_finish = models.DateTimeField(
-        verbose_name="Predict Occultation Finish", 
-        auto_now_add=False, 
-        null=True, 
+        verbose_name="Predict Occultation Finish",
+        auto_now_add=False,
+        null=True,
         blank=True,
         help_text="End of the Predict Occultation step."
     )
 
     pre_occ_exec_time = models.DurationField(
-        verbose_name="Predict Occultation Execution Time", 
-        null=True, 
+        verbose_name="Predict Occultation Execution Time",
+        null=True,
         blank=True,
         help_text="Predict Occultation runtime."
     )
@@ -1129,7 +1174,7 @@ class PredictionJobResult(models.Model):
     # Etapa de Ingestão de Resultados (prenchimento dessa tabela e da tno_occultation)
 
     # Total de ocultações que foram inseridas no banco de dados
-    # Deve ser igual a observations caso seja diferente indica que 
+    # Deve ser igual a observations caso seja diferente indica que
     # houve falha no registro dos resultados
     # TODO: Talvez esse campo não seja necessário depois da fase de validação.
     ing_occ_count = models.IntegerField(
@@ -1139,33 +1184,34 @@ class PredictionJobResult(models.Model):
     )
 
     ing_occ_start = models.DateTimeField(
-        verbose_name="Result Ingestion Start", 
-        auto_now_add=False, 
-        null=True, 
+        verbose_name="Result Ingestion Start",
+        auto_now_add=False,
+        null=True,
         blank=True,
         help_text="Start recording the results."
     )
 
     ing_occ_finish = models.DateTimeField(
-        verbose_name="Result Ingestion Finish", 
-        auto_now_add=False, 
-        null=True, 
+        verbose_name="Result Ingestion Finish",
+        auto_now_add=False,
+        null=True,
         blank=True,
         help_text="End of record of results."
     )
 
     ing_occ_exec_time = models.DurationField(
-        verbose_name="Result Ingestion Execution Time", 
-        null=True, 
+        verbose_name="Result Ingestion Execution Time",
+        null=True,
         blank=True,
         help_text="Execution time of the results ingestion step."
     )
 
     def __str__(self):
-        return str(self.id)    
+        return str(self.id)
+
 
 class PredictionJobStatus(models.Model):
-    
+
     job = models.ForeignKey(
         PredictionJob,
         on_delete=models.CASCADE,
@@ -1179,7 +1225,7 @@ class PredictionJobStatus(models.Model):
         choices=((1, "Primeira Etapa"), (2, "Segunda Etapa"))
     )
 
-    task = models.CharField (
+    task = models.CharField(
         verbose_name="Task",
         max_length=100,
         help_text="Name of the task being executed.",
@@ -1238,9 +1284,9 @@ class PredictionJobStatus(models.Model):
     )
 
     updated = models.DateTimeField(
-        verbose_name="Updated", 
-        auto_now_add=True, 
-        null=True, 
+        verbose_name="Updated",
+        auto_now_add=True,
+        null=True,
         blank=True
     )
 
