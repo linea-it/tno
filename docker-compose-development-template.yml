@@ -1,30 +1,17 @@
 version: "3.6"
 services:
-  # Database
-  database:
-    image: linea/postgresql_q3c:latest
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
-    expose:
-      # Deixar a porta exposta para desenvolvimento
-      # isto permite acessar o banco de dados a partir de outros apps como o DBeaver
-      - 5432
+  # Frontend React
+  frontend:
+    image: node:18.12.1
+    working_dir: /app
     volumes:
-      - ./pg_data:/var/lib/postgresql/data
-      - ./pg_backups:/pg_backups
-      - ./database_subset:/data
-
-  # Message-Broker Software RabbitMQ
-  rabbit:
-    image: rabbitmq:3-management-alpine
+      - ./frontend:/app
+      - ./frontend/node_modules:/app/node_modules
+    stdin_open: true
     environment:
-      RABBITMQ_DEFAULT_USER: tno
-      RABBITMQ_DEFAULT_PASS: adminadmin
-      RABBITMQ_DEFAULT_VHOST: tno_vhost
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq/      
+      # Fixes bug where websocket connection is fixed to default port 3000
+      - WDS_SOCKET_PORT=0
+    command: yarn start
 
   # Backend Django
   backend: &backend
@@ -47,52 +34,60 @@ services:
   celery_worker: &celery_worker
     <<: *backend
     command: /start_worker.sh
+    depends_on:
+      - backend
 
   # Copia do serviço backend, mas executando outro comando
   celery_beat: &celery_beat
     <<: *backend
     command: /start_beat.sh
 
-  # Frontend React
-  frontend:
-    image: node:18.12.1
-    working_dir: /app
-    volumes:
-      - ./frontend:/app
-      - ./frontend/node_modules:/app/node_modules
-    stdin_open: true
-    environment:
-      # Fixes bug where websocket connection is fixed to default port 3000
-      - WDS_SOCKET_PORT=0
-    command: yarn start
+  # Handling Periodic Tasks in Django with Celery and Docker
+  # https://testdriven.io/blog/django-celery-periodic-tasks/
+  # https://testdriven.io/courses/django-celery/docker/
+  celery_flower: &celery_flower
+    <<: *backend
+    command: /start_flower.sh
+    depends_on:
+      - backend
 
-  sora:
-    image: mozaru/carto-sora
-    user: "1000:1000"
-    environment:
-      INPUT_PATH: "/media/input"
-      OUTPUT_PATH: "/media/output"
-      CACHE_PATH: "/media/output"
-      PORT: 8000
-    volumes:
-      - ./archive/sora/input:/media/input
-      - ./archive/sora/output:/media/output
-    command: python3.7 /opt/server/main.py
-
-  # jupyter:
-  #   image: jupyter/scipy-notebook:latest
-  #   command: "start-notebook.sh"
+  # sora:
+  #   image: mozaru/carto-sora
+  #   user: "1000:1000"
   #   environment:
-  #     NB_USER: docker_worker
-  #     CHOWN_HOME: 'yes'
-  #     CHOWN_HOME_OPTS: -R
-  #     JUPYTER_ENABLE_LAB: 'yes'
+  #     INPUT_PATH: "/media/input"
+  #     OUTPUT_PATH: "/media/output"
+  #     CACHE_PATH: "/media/output"
+  #     PORT: 8000
   #   volumes:
-  #     - ./archive/jupyter:/home/jovyan/work
-  #   ports:
-  #     - 8888:8888
-  #   links:
-  #     - database      
+  #     - ./archive/sora/input:/media/input
+  #     - ./archive/sora/output:/media/output
+  #   command: python3.7 /opt/server/main.py
+
+  # Database
+  database:
+    image: linea/postgresql_q3c:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      # Deixar a porta exposta para desenvolvimento
+      # isto permite acessar o banco de dados a partir de outros apps como o DBeaver
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./database_subset:/data
+
+  # Message-Broker Software RabbitMQ
+  rabbit:
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: tno
+      RABBITMQ_DEFAULT_PASS: adminadmin
+      RABBITMQ_DEFAULT_VHOST: tno_vhost
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq/
 
   # Servidor Web NGINX
   nginx:
@@ -108,6 +103,23 @@ services:
     depends_on:
       - backend
       - frontend
+      - celery_flower
+      - rabbit
+  # jupyter:
+  #   image: jupyter/scipy-notebook:latest
+  #   command: "start-notebook.sh"
+  #   environment:
+  #     NB_USER: docker_worker
+  #     CHOWN_HOME: 'yes'
+  #     CHOWN_HOME_OPTS: -R
+  #     JUPYTER_ENABLE_LAB: 'yes'
+  #   volumes:
+  #     - ./archive/jupyter:/home/jovyan/work
+  #   ports:
+  #     - 8888:8888
+  #   links:
+  #     - database      
 
 volumes:
   rabbitmq-data:
+  postgres-data:

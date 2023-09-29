@@ -12,3 +12,4 @@ celery -A coreAdmin worker \
     --pidfile="/tmp/%n.pid" \
     --logfile="/log/%n%I.log"        
 
+# --concurrency=1 \

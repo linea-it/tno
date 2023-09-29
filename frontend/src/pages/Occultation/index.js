@@ -69,7 +69,7 @@ function Occultation() {
             data.results.map((row) => ({
               key: row.id,
               detail: `/dashboard/occultation-detail/${row.id}`,
-              map: urlExists(getMapUrl(row)) ? getMapUrl(row) : '',
+              // map: urlExists(getMapUrl(row)) ? getMapUrl(row) : '',
               ...row
             }))
           )
@@ -98,7 +98,7 @@ function Occultation() {
             data.results.map((row) => ({
               key: row.id,
               detail: `/dashboard/occultation-detail/${row.id}`,
-              map: urlExists(getMapUrl(row)) ? getMapUrl(row) : '',
+              // map: urlExists(getMapUrl(row)) ? getMapUrl(row) : '',
               ...row
             }))
           )

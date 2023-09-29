@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.10
 
 # WORKDIR /app
 
@@ -18,11 +18,6 @@ RUN apt-get update && \
     build-essential \
     # Dependency for psycopg2-binary
     libpq-dev \
-    # libaio-dev \
-    # libcfitsio-bin \
-    # libsasl2-dev \
-    # libldap2-dev \
-    # libssl-dev \
     ## cleanup
     && apt-get clean \
     && apt-get autoclean \
@@ -50,19 +45,21 @@ ENV PYTHONPATH="/usr/src/app:$PYTHONPATH"
 WORKDIR /usr/src/app
 COPY . /usr/src/app
 
-# COPY --chmod=0775 ./entrypoint.sh /entrypoint.sh
-# COPY --chmod=0775 ./start.sh /start.sh
-# COPY --chmod=0775 ./start_worker.sh /start_worker.sh
-# COPY --chmod=0775 ./start_beat.sh /start_beat.sh
+COPY --chmod=0775 ./entrypoint.sh /entrypoint.sh
+COPY --chmod=0775 ./start.sh /start.sh
+COPY --chmod=0775 ./start_worker.sh /start_worker.sh
+COPY --chmod=0775 ./start_beat.sh /start_beat.sh
+COPY --chmod=0775 ./start_flower.sh /start_flower.sh
 
-COPY ./entrypoint.sh /entrypoint.sh
-COPY ./start.sh /start.sh
-COPY ./start_worker.sh /start_worker.sh
-COPY ./start_beat.sh /start_beat.sh
-RUN chmod 775 /entrypoint.sh && chown $USER_UID:$USER_GID /entrypoint.sh 
-RUN chmod 775 /start.sh && chown $USER_UID:$USER_GID /start.sh
-RUN chmod 775 /start_worker.sh && chown $USER_UID:$USER_GID /start_worker.sh
-RUN chmod 775 /start_beat.sh && chown $USER_UID:$USER_GID /start_beat.sh
+# COPY ./entrypoint.sh /entrypoint.sh
+# COPY ./start.sh /start.sh
+# COPY ./start_worker.sh /start_worker.sh
+# COPY ./start_beat.sh /start_beat.sh
+# RUN chmod 775 /entrypoint.sh && chown $USER_UID:$USER_GID /entrypoint.sh 
+# RUN chmod 775 /start.sh && chown $USER_UID:$USER_GID /start.sh
+# RUN chmod 775 /start_worker.sh && chown $USER_UID:$USER_GID /start_worker.sh
+# RUN chmod 775 /start_beat.sh && chown $USER_UID:$USER_GID /start_beat.sh
+# RUN chmod 775 /start_beat.sh && chown $USER_UID:$USER_GID /start_beat.sh
 
 # Switch to non-priviliged user and run app
 USER tnouser

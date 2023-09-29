@@ -1,14 +1,16 @@
-from skybot.models.position import Position
 import humanize
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from skybot.models.position import Position
 
-from tno.models import JohnstonArchive
-from tno.models import Asteroid, Occultation, LeapSecond, BspPlanetary, Catalog, PredictionJob, PredictionJobResult, PredictionJobStatus, Profile
+from tno.models import (Asteroid, BspPlanetary, Catalog, JohnstonArchive,
+                        LeapSecond, Occultation, PredictionJob,
+                        PredictionJobResult, PredictionJobStatus, Profile)
 
 
 class UserSerializer(serializers.ModelSerializer):
     dashboard = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = ("username", "dashboard")
@@ -48,6 +50,7 @@ class JohnstonArchiveSerializer(serializers.ModelSerializer):
             "updated",
         )
 
+
 class LeapSecondSerializer(serializers.ModelSerializer):
     class Meta:
         model = LeapSecond
@@ -59,6 +62,7 @@ class BspPlanetarySerializer(serializers.ModelSerializer):
         model = BspPlanetary
         fields = '__all__'
 
+
 class CatalogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Catalog
@@ -67,6 +71,7 @@ class CatalogSerializer(serializers.ModelSerializer):
             "name",
             "display_name"
         )
+
 
 class AsteroidSerializer(serializers.ModelSerializer):
     class Meta:
@@ -82,12 +87,28 @@ class AsteroidSerializer(serializers.ModelSerializer):
 
 class OccultationSerializer(serializers.ModelSerializer):
     dynclass = serializers.CharField(source='asteroid.dynclass')
+    alias = serializers.SerializerMethodField()
+    map_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Occultation
         fields = '__all__'
 
+    def get_alias(self, obj):
+        return obj.get_alias()
+
+    def get_map_url(self, obj):
+        request = self.context.get("request")
+        relative_url = obj.get_map_relative_url()
+        if relative_url == None:
+            return None
+        # Convert to absolute url
+        return request.build_absolute_uri(relative_url)
+
+
 class PredictionJobSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
+
     class Meta:
         model = PredictionJob
         fields = '__all__'
@@ -103,6 +124,7 @@ class PredictionJobResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = PredictionJobResult
         fields = '__all__'
+
 
 class PredictionJobStatusSerializer(serializers.ModelSerializer):
     class Meta:
