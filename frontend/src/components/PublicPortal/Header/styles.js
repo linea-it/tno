@@ -11,9 +11,6 @@ const styles = makeStyles((theme) => ({
     background: '#24292e',
     height:'64px'
   },
-  separator: {
-    flexGrow: 1
-  },
   menuList: {
     display: 'flex',
     [theme.breakpoints.down('xs')]: {
