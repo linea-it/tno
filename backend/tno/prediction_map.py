@@ -80,7 +80,6 @@ def map_folder_have_free_space() -> bool:
     logger.debug(f"Maps folder have free space?: {have_free_space}")
     return have_free_space
 
-
 def upcoming_events_to_create_maps() -> list:
     logger = logging.getLogger("predict_maps")
     logger.info(f"Looking for upcoming events")
@@ -104,14 +103,14 @@ def upcoming_events_to_create_maps() -> list:
     block_size = int(settings.PREDICTION_MAP_BLOCK_SIZE)
     now = datetime.utcnow()
     next_events = Occultation.objects.filter(
-        date_time__gte=now).order_by('date_time')[:500]
+        date_time__gte=now).order_by('date_time')
 
     logger.debug(f"Next events count: {next_events.count()}")
     for obj in next_events:
         # Verifica se existe mapa já criado e se esta atualizado
         if obj.map_is_updated():
-            logger.debug(
-                f"Predict event {obj.id} ignored because the map is already updated.")
+            # logger.debug(
+            #     f"Predict event {obj.id} ignored because the map is already updated.")
             continue
 
         events.append({

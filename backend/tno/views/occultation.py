@@ -4,21 +4,23 @@ from operator import attrgetter
 
 import django_filters
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
 from rest_framework import viewsets
 from rest_framework.authentication import (BasicAuthentication,
                                            SessionAuthentication,
                                            TokenAuthentication)
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from tno.db import CatalogDB
 from tno.models import Occultation
 from tno.occviz import visibility
-from tno.serializers import OccultationSerializer
 from tno.prediction_map import sora_occultation_map
-from tno.tasks import create_occ_map_task
+from tno.serializers import OccultationSerializer
+from tno.tasks import create_occ_map_task, create_prediction_maps
+
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
     pass
@@ -66,15 +68,15 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                        "k", "long", "loc_t", "off_ra", "off_dec", "proper_motion", "ct", "multiplicity_flag", "e_ra", "e_dec", "pmra", "pmdec", "ra_star_deg", "dec_star_deg", "ra_target_deg", "dec_target_deg", "created_at")
     ordering = ("date_time",)
 
-
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def highlights(self, request):
 
         count = Occultation.objects.count()
         first_datetime = Occultation.objects.earliest('date_time')
         last_datetime = Occultation.objects.latest('date_time')
-        unique_asteroids = Occultation.objects.values('asteroid').distinct().count()
-        
+        unique_asteroids = Occultation.objects.values(
+            'asteroid').distinct().count()
+
         today_utc = datetime.utcnow().date()
         today_events = Occultation.objects.filter(date_time__date=today_utc)
 
@@ -91,12 +93,16 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         week_number = today_utc.isocalendar().week
         next_week_number = week_number+1
 
-        this_week_count = Occultation.objects.filter(date_time__date__week=week_number).count()
-        next_week_count = Occultation.objects.filter(date_time__date__week=next_week_number).count()
+        this_week_count = Occultation.objects.filter(
+            date_time__date__week=week_number).count()
+        next_week_count = Occultation.objects.filter(
+            date_time__date__week=next_week_number).count()
 
         next_month = today_utc + relativedelta(months=1)
-        this_month_count = Occultation.objects.filter(date_time__date__month=today_utc.month).count()
-        next_month_count = Occultation.objects.filter(date_time__date__month=next_month.month).count()
+        this_month_count = Occultation.objects.filter(
+            date_time__date__month=today_utc.month).count()
+        next_month_count = Occultation.objects.filter(
+            date_time__date__month=next_month.month).count()
 
         return Response({
             "count": count,
@@ -104,12 +110,22 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             "latest": last_datetime.date_time.isoformat(),
             "unique_asteroids": unique_asteroids,
             "today_count": today_events.count(),
-            "today_already_have_map": today_already_have_map,  
-            "total_maps_size": total_maps_size,                       
+            "today_already_have_map": today_already_have_map,
+            "total_maps_size": total_maps_size,
             "week_count": this_week_count,
             "next_week_count": next_week_count,
             "month_count": this_month_count,
             "next_month_count": next_month_count
+        })
+
+    @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
+    def create_maps_for_today(self, request):
+        create_prediction_maps.delay()
+
+        block_size = int(settings.PREDICTION_MAP_BLOCK_SIZE)
+        return Response({
+            "success": True,
+            "message": f"It was submitted to create {block_size} maps in the background.",
         })
 
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
@@ -121,7 +137,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         force = False
         if "force" in request.query_params and request.query_params["force"] == "true":
             force = True
-       
+
         if force == True and filepath.exists():
             filepath.unlink()
 
@@ -157,7 +173,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             })
         else:
             # TODO: Retornar mensagem de erro
-             return Response({
+            return Response({
                 "url": None,
             })
 
