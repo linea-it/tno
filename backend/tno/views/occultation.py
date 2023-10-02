@@ -18,7 +18,7 @@ from tno.models import Occultation
 from tno.occviz import visibility
 from tno.serializers import OccultationSerializer
 from tno.prediction_map import sora_occultation_map
-
+from tno.tasks import create_occ_map_task
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
     pass
@@ -118,27 +118,31 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
         filepath = obj.get_map_filepath()
 
-        force = bool(request.query_params.get('force', False))
+        force = False
+        if "force" in request.query_params and request.query_params["force"] == "true":
+            force = True
+       
         if force == True and filepath.exists():
             filepath.unlink()
 
         if not filepath.exists():
-            # TODO: Generate map with celery
-            sora_occultation_map(
+            # Generate in background with celery
+            res = create_occ_map_task.delay(
                 name=obj.name,
                 diameter=obj.diameter,
                 ra_star_candidate=obj.ra_star_candidate,
                 dec_star_candidate=obj.dec_star_candidate,
-                date_time=obj.date_time,
+                date_time=obj.date_time.isoformat(),
                 closest_approach=obj.closest_approach,
                 position_angle=obj.position_angle,
                 velocity=obj.velocity,
                 delta=obj.delta,
                 g=obj.g,
                 long=obj.long,
-                filepath=filepath,
+                filepath=str(filepath),
                 dpi=50
             )
+            res.wait()
 
         if filepath.exists():
             return Response({
@@ -153,7 +157,9 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             })
         else:
             # TODO: Retornar mensagem de erro
-            pass
+             return Response({
+                "url": None,
+            })
 
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def next_twenty(self, request):
