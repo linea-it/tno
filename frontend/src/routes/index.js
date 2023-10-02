@@ -29,7 +29,6 @@ import PersistentDrawerLeft from '../components/Drawer'
 import OrbitTraceDetail from '../pages/OrbitTrace/Detail'
 import OrbitTraceAsteroid from '../pages/OrbitTrace/Asteroid'
 import PublicHeader from '../components/PublicPortal/Header/index'
-import PublicFooter from '../components/PublicPortal/Footer/index'
 import PublicHome from '../pages/PublicPortal/Home'
 import PublicAboutUs from '../pages/PublicPortal/AboutUs/index'
 import PublicTutorials from '../pages/PublicPortal/Contact/index'
@@ -39,6 +38,7 @@ import PublicSupporters from '../pages/PublicPortal/Home/partials/Supporters/ind
 import PublicBanner from '../components/PublicPortal/Banner/index'
 import PublicDocumentation from '../pages/PublicPortal/documentation/index'
 import PublicContact from '../pages/PublicPortal/Contact/index'
+import FooterSupporte from '../components/PublicPortal/Footer/FooterSupporters'
 
 
 export default function AppRoutes() {
@@ -63,7 +63,7 @@ export default function AppRoutes() {
       <>
         <PublicHeader />
         {children}
-        <PublicFooter />
+        <FooterSupporte />
       </>
     )
   }
