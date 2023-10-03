@@ -4,8 +4,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
     float: 'right',
-    height: 64,
-    position: 'fixed'
+    height: 64
   },
   appBarDrawerClose: {
     top: 'auto',
