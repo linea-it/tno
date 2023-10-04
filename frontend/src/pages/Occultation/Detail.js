@@ -292,7 +292,7 @@ function OccultationDetail() {
         </Grid>
         {occultation.ra_star_candidate && occultation.dec_star_candidate ? (
           <Grid item xs={12} md={6}>
-            <Card>
+            {/* <Card>
               <CardHeader title="Sky map (Aladin)" />
               <CardContent>
                 <Aladin
@@ -300,7 +300,7 @@ function OccultationDetail() {
                   dec={occultation.dec_star_candidate}
                 />
               </CardContent>
-            </Card>
+            </Card> */}
           </Grid>
         ) : null}
       </Grid>
