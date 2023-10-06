@@ -255,15 +255,6 @@ function OccultationDetail() {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
-          {occultation.id !== undefined && (
-            <PredictOccultationMap
-              occultationId={occultation.id}
-            />
-          )}
-        </Grid>
-      </Grid>
-      <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <Card>
             <CardHeader title="Occultation Prediction Circumstances" />
@@ -272,6 +263,13 @@ function OccultationDetail() {
             </CardContent>
           </Card>
         </Grid>
+        {occultation.id !== undefined && (
+          <Grid item xs={12} md={6}>
+            <PredictOccultationMap 
+            occultationId={occultation.id}
+             />
+          </Grid>
+        )}
         <Grid item xs={12} md={6}>
           <Card>
             <CardHeader title="Occulted Star" />
@@ -280,8 +278,6 @@ function OccultationDetail() {
             </CardContent>
           </Card>
         </Grid>
-      </Grid>
-      <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <Card>
             <CardHeader title="Object" />
@@ -290,8 +286,10 @@ function OccultationDetail() {
             </CardContent>
           </Card>
         </Grid>
-        {occultation.ra_star_candidate && occultation.dec_star_candidate ? (
-          <Grid item xs={12} md={6}>
+      </Grid>
+
+        {/* {occultation.ra_star_candidate && occultation.dec_star_candidate ? ( */}
+          {/* // <Grid item xs={12} md={6}> */}
             {/* <Card>
               <CardHeader title="Sky map (Aladin)" />
               <CardContent>
@@ -301,9 +299,9 @@ function OccultationDetail() {
                 />
               </CardContent>
             </Card> */}
-          </Grid>
-        ) : null}
-      </Grid>
+          {/* </Grid> */}
+        {/* ) : null} */}
+      {/* </Grid> */}
     </>
   );
 }
