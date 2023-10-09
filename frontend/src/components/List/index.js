@@ -1,7 +1,6 @@
 import React from 'react'
-import { List as MuiList, ListItem, ListItemText, Icon } from '@material-ui/core'
+import { List as MuiList, ListItem, ListItemText, Typography } from '@material-ui/core'
 import PropTypes from 'prop-types'
-import clsx from 'clsx'
 import useStyles from './styles'
 
 function List({ data, height, width, align }) {
@@ -19,21 +18,14 @@ function List({ data, height, width, align }) {
           <ListItem key={i} divider={i !== arr.length - 1} dense={item.dense ? item.dense : false}>
             <ListItemText
               primary={
-                <span title={item.tooltip ? item.tooltip : ''} className={item.tooltip ? classes.tooltip : ''}>
-                  {item.title}
-                  {item.tooltip ? (
-                    <sup>
-                      <Icon className={clsx(classes.tooltipIcon, 'fas', 'fa-info-circle')} />
-                    </sup>
-                  ) : null}
-                </span>
+                <div>
+                  <Typography variant="subtitle1">{item.title}</Typography>
+                  {item.message && <Typography variant="caption" style={{ fontSize: '0.8rem' }}>{item.message}</Typography>}
+                </div>
               }
               className={classes.itemText}
             />
-            <ListItemText
-              className={clsx(classes.itemText, classes.itemValueText)}
-              secondary={typeof item.value === 'function' ? item.value() : item.value}
-            />
+            <Typography variant="body1">{item.value}</Typography>
           </ListItem>
         );
       })}

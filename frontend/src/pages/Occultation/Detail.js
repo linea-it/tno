@@ -77,25 +77,23 @@ function OccultationDetail() {
       },
       {
         title: 'Star position (ICRF)',
-        tooltip:
-          'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
         value: `${occultation.ra_star_candidate}, ${occultation.dec_star_candidate}`,
+        message: 'Right ascension and declination with assumed proper motion in ICRF/J2000',
       },
       {
         title: 'Closest Approach',
-        tooltip: 'Geocentric closest approach',
         value: `${occultation.closest_approach} (arcsec)`,
+        message: 'Geocentric closest approach',
       },
       {
         title: 'Position Angle',
-        tooltip: "Planet's position angle with respect to the star at closest approach",
-        value: `${occultation.position_angle} (deg)`
+        value: `${occultation.position_angle} (deg)`,
+        message: "Planet's position angle with respect to the star at closest approach",
       },
       {
         title: 'Velocity',
-        tooltip:
-          'Velocity on the plane of the sky. Positive is prograde, negative is retrograde',
         value: `${occultation.velocity} (km/s)`,
+        message: 'Velocity on the plane of the sky. Positive is prograde, negative is retrograde',
       },
       {
         title: 'Geocentric distance Δ',
@@ -103,22 +101,23 @@ function OccultationDetail() {
       },
       {
         title: 'G* mag*',
-        tooltip: 'Gaia magnitude corrected from velocity',
         value: `${occultation.g_mag_vel_corrected ? occultation.g_mag_vel_corrected.toFixed(3) : null}`,
+        message: 'Gaia magnitude corrected from velocity',
       },
       {
         title: 'RP* mag*',
-        tooltip: 'Gaia RP magnitude corrected from velocity',
         value: `${occultation.g_mag_vel_corrected ? occultation.g_mag_vel_corrected.toFixed(3) : null}`,
+        message: 'Gaia RP magnitude corrected from velocity',
       },
       {
         title: 'H* mag*',
-        tooltip: '2MASS H magnitude corrected from velocity',
         value: `${occultation.h_mag_vel_corrected ? occultation.h_mag_vel_corrected.toFixed(3) : null}`,
+        message: '2MASS H magnitude corrected from velocity',
       },
       {
         title: 'Magnitude Drop',
         value: `${occultation.magnitude_drop ? occultation.magnitude_drop.toFixed(3) : null}`,
+        message: 'Change in magnitude during the occultation',
       },
       {
         title: 'Uncertainty in Time',
@@ -126,16 +125,16 @@ function OccultationDetail() {
       },
       {
         title: 'Creation Date',
-        tooltip: 'Date of the prediction\'s computation',
-        value: `${occultation.created_at ? moment(occultation.created_at).utc() : null}`
+        value: `${occultation.created_at ? moment(occultation.created_at).utc() : null}`,
+        message: 'Date of the prediction\'s computation',
       },
     ]);
 
     setStar([
       {
         title: 'Star source ID',
-        tooltip: 'Unique source identifier',
-        value: `${starObj.source_id}`
+        value: `${starObj.source_id}`,
+        message: 'Unique source identifier',
       },
       {
         title: 'Stellar catalogue',
@@ -210,8 +209,8 @@ function OccultationDetail() {
       },
       {
         title: "Object's Apparent Position (date)",
-        tooltip: "Relative to the Earth's center",
         value: `${occultation.ra_target_apparent} ${occultation.dec_target_apparent}`,
+        message: 'Relative to the Earth\'s center',
       },
       {
         title: 'Uncertainty in position',
