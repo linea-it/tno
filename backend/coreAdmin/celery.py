@@ -32,6 +32,8 @@ app.conf.beat_schedule = {
         'schedule': crontab(minute='*/10')
     },    
 
+
+
     # 'add-every-30-seconds': {
     #     'task': 'tno.tasks.add',
     #     'schedule': 30.0,

@@ -1,6 +1,7 @@
 # Create your tasks here
 import logging
 from datetime import datetime
+from typing import Optional
 
 from celery import group, shared_task
 
@@ -94,6 +95,7 @@ def create_prediction_maps():
 
 @shared_task
 def calculate_occultation_path(occultation_id, **kwargs):
+    print(f"calculate_occultation_path: {occultation_id}")
     output = occultation_path_coeff2(**kwargs)
     occ_event = Occultation.objects.get(pk=occultation_id)
 
@@ -117,10 +119,18 @@ def calculate_occultation_path(occultation_id, **kwargs):
 
 @shared_task
 def create_occultation_path_coeff():
-    # next_events = Occultation.objects.filter(pk=366627)
     now = datetime.utcnow()
     next_events = Occultation.objects.filter(
         date_time__gte=now, have_path_coeff=False).order_by('date_time')[0:500]
+
+    # Desenvolvimento apenas!
+    # Cria os paths para um periodo especifico.
+    # print("-----------------------------------")    
+    # now = datetime.strptime(f"2023-08-01 00:00:00", '%Y-%m-%d %H:%M:%S')
+    # next_events = Occultation.objects.filter(
+    #     date_time__gte=now, have_path_coeff=False).order_by('date_time')[0:20000]
+    # print(len(next_events))
+    # print("-----------------------------------")
 
     job = group(
         calculate_occultation_path.s(
@@ -140,6 +150,7 @@ def create_occultation_path_coeff():
     # Submete as tasks aos workers    
     job.apply_async()
 
+    return len(next_events)
     # # Util em desenvolvimento para acompanhar as tasks
     # # Aguarda todas as subtasks terminarem
     # result = job.apply_async()

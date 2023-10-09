@@ -1,3 +1,4 @@
+import queue
 import time
 from datetime import datetime, timezone
 from operator import attrgetter
@@ -16,13 +17,14 @@ from rest_framework.response import Response
 
 from tno.db import CatalogDB
 from tno.models import Occultation
-from tno.occviz import visibility
+from tno.occviz import visibility, visibility_from_coeff2
 from tno.prediction_map import sora_occultation_map
 from tno.serializers import OccultationSerializer
-from tno.tasks import create_occ_map_task, create_prediction_maps
+from tno.tasks import create_occ_map_task, create_prediction_maps, create_occultation_path_coeff
 from django.db.models import Q, F, Value, FloatField
 from functools import reduce
 import operator
+
 
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
@@ -70,12 +72,6 @@ class OccultationFilter(django_filters.FilterSet):
 
     def longitude_filter(self, queryset, name, value):
         value = float(value)
-        # # Para garantir que valores de min_longitude que sejam 0.xxx sejam incluidos.
-        # if value == 0:
-        #     value = -1
-        # #
-        # if value > 360:
-        #     value = 360
         # Query de exemplo usando valor de longitude = 2
         # select count(*) from tno_occultation to2 where 2 between min_longitude  and max_longitude
         # Para fazer o between entre duas colunas diferentes, é preciso
@@ -174,23 +170,46 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         return lat, long, radius
 
     def get_queryset(self):
-
         queryset = Occultation.objects.all()
         # Usando Filter_Queryset e aplicado os filtros listados no filterbackend
         queryset = self.filter_queryset(queryset)
-        print(queryset.query)
-        print(queryset.count())
+        # print(queryset.query)
 
         # Recupera os parametros da requisição
         params = self.request.query_params
         lat, long, radius = self.check_user_location_params(params)
 
+        # TODO: Necessário implementar forma de fazer a paginação. 
+        # TODO: Implementar memcache para eventos já processados
+        # TODO: Estudar a possibilidade de um metodo asyncrono
         if None not in [lat, long, radius]:
-            print("Todos os parametros de user location OK")
-            print(f"Latitude: {lat} Longitude: {long} Radius: {radius}")            
-
-            # TODO Executar a função de visibilidade
+            # print("Todos os parametros de user location OK")
+            # print(f"Latitude: {lat} Longitude: {long} Radius: {radius}")            
             
+            wanted_ids = []
+            count = 0
+            # TODO Executar a função de visibilidade
+            for event in queryset:
+                is_visible, info = visibility_from_coeff2(
+                    latitude=lat,
+                    longitude=long,
+                    radius=radius,
+                    date_time=event.date_time,
+                    inputdict=event.occultation_path_coeff,
+                    # object_diameter=event.diameter,
+                    # ring_diameter=event.diameter,
+                    # n_elements= 1500,                    
+                    # ignore_nighttime= False,
+                    # latitudinal= False
+                )
+                
+
+                if is_visible == True:
+                    wanted_ids.append(event.id)
+                    count += 1
+                    # print(f"IS VISIBLE: {is_visible}: {event.id} - {event.date_time} - {event.name}")                                    
+                    if count == 10:
+                        return queryset.filter(id__in=wanted_ids)
         else: 
             # Verifica se pelo menos um dos parametros de user location tem valor
             # TODO avisar que os 3 parametros precisam ter valores
@@ -247,6 +266,17 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             "month_count": this_month_count,
             "next_month_count": next_month_count
         })
+
+
+    @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
+    def create_prediction_path(self, request):
+
+        # create_occultation_path_coeff()
+
+        return Response({
+            "success": True,
+        })
+
 
     @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
     def create_maps_for_today(self, request):
