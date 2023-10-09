@@ -9,13 +9,62 @@ from django.shortcuts import redirect
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 
-
 @api_view(["GET"])
 def teste(request):
     if request.method == "GET":
+        # # from tno.occviz import occultation_path_coeff2, visibility_from_coeff
+        # print("Test generate path coeff")
+        # from tno.models import Occultation 
+        # from tno.tasks import calculate_occultation_path
+        # # occ_event = Occultation.objects.get(pk=85359)
+        # # occ_events = Occultation.objects.all()
+        # occ_events = Occultation.objects.filter(pk=366627)
+        # for occ_event in occ_events:
+        #     print(f"OCC Event:  {occ_event}")
+            
+        #     # calcula coeficientes
+        #     result = calculate_occultation_path(occultation_id = occ_event.id,
+        #         date_time=occ_event.date_time.isoformat(), 
+        #         ra_star_candidate=occ_event.ra_star_candidate,
+        #         dec_star_candidate=occ_event.dec_star_candidate,
+        #         closest_approach=occ_event.closest_approach, 
+        #         position_angle=occ_event.position_angle, 
+        #         velocity=occ_event.velocity , 
+        #         delta_distance=occ_event.delta, 
+        #         offset_ra=occ_event.off_ra, 
+        #         offset_dec=occ_event.off_dec, 
+        #         object_diameter=occ_event.diameter, 
+        #         ring_radius=None)
+
+        #     output = result["output"]
+
+        #     if output['coeff_latitude'] != None and output['coeff_longitude'] != None:
+        #         occ_event.have_path_coeff = True
+        #         occ_event.min_longitude = float(output['min_longitude'])
+        #         occ_event.max_longitude = float(output['max_longitude'])
+        #         occ_event.occultation_path_coeff = output
+        #         occ_event.save()
+        #         print(output)
+        #         row = output
+        #         occ = occ_event
+        #         break
+
+        # result = {
+        #     "success": True,
+        #     "occultation_id": occ_event.id,
+        #     "name": occ_event.name,
+        #     "date_time": occ_event.date_time.isoformat(),
+        #     "output": row,
+        #     "occultation": OccultationSerializer(occ).data
+        # }
+
+        # from tno.tasks import create_occultation_path_coeff
+        # create_occultation_path_coeff.delay()
+
         result = {
             "success": True,
         }
+
         return Response(result)
 
 

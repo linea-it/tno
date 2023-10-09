@@ -20,31 +20,118 @@ from tno.occviz import visibility
 from tno.prediction_map import sora_occultation_map
 from tno.serializers import OccultationSerializer
 from tno.tasks import create_occ_map_task, create_prediction_maps
+from django.db.models import Q, F, Value, FloatField
+from functools import reduce
+import operator
 
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
     pass
 
 
+# class OccultationFilter(django_filters.FilterSet):
+#     start_date = django_filters.DateTimeFilter(
+#         field_name='date_time', lookup_expr='gte')
+#     end_date = django_filters.DateTimeFilter(
+#         field_name='date_time', lookup_expr='lte')
+#     min_mag = django_filters.NumberFilter(field_name='g', lookup_expr='gte')
+#     max_mag = django_filters.NumberFilter(field_name='g', lookup_expr='lte')
+#     dynclass = django_filters.CharFilter(
+#         field_name='asteroid__dynclass', lookup_expr='iexact')
+#     base_dynclass = django_filters.CharFilter(
+#         field_name='asteroid__base_dynclass', lookup_expr='iexact')
+#     name = CharInFilter(field_name='asteroid__name', lookup_expr='in')
+#     asteroid_id = django_filters.NumberFilter(
+#         field_name='asteroid__id', lookup_expr='exact')
+
+#     class Meta:
+#         model = Occultation
+#         fields = ['start_date', 'end_date', 'min_mag', 'max_mag',
+#                   'dynclass', 'base_dynclass', 'name', 'asteroid_id']
+
 class OccultationFilter(django_filters.FilterSet):
-    start_date = django_filters.DateTimeFilter(
-        field_name='date_time', lookup_expr='gte')
-    end_date = django_filters.DateTimeFilter(
-        field_name='date_time', lookup_expr='lte')
-    min_mag = django_filters.NumberFilter(field_name='g', lookup_expr='gte')
-    max_mag = django_filters.NumberFilter(field_name='g', lookup_expr='lte')
+
+    date_time = django_filters.DateTimeFromToRangeFilter()
+
+    name = CharInFilter(field_name='name', lookup_expr='in')
+
+    number = CharInFilter(field_name='number', lookup_expr='in')
+
+    mag_g = django_filters.RangeFilter(field_name='g')
+
     dynclass = django_filters.CharFilter(
         field_name='asteroid__dynclass', lookup_expr='iexact')
+
     base_dynclass = django_filters.CharFilter(
         field_name='asteroid__base_dynclass', lookup_expr='iexact')
-    name = CharInFilter(field_name='asteroid__name', lookup_expr='in')
-    asteroid_id = django_filters.NumberFilter(
-        field_name='asteroid__id', lookup_expr='exact')
+
+    long = django_filters.NumberFilter(
+        method='longitude_filter', label="Longitude")
+
+    def longitude_filter(self, queryset, name, value):
+        value = float(value)
+        # # Para garantir que valores de min_longitude que sejam 0.xxx sejam incluidos.
+        # if value == 0:
+        #     value = -1
+        # #
+        # if value > 360:
+        #     value = 360
+        # Query de exemplo usando valor de longitude = 2
+        # select count(*) from tno_occultation to2 where 2 between min_longitude  and max_longitude
+        # Para fazer o between entre duas colunas diferentes, é preciso
+        # Criar uma coluna com o valor fixo usando annotate. 
+        # E usar o F para dizer ao Django que é uma coluna. 
+        # A logica aqui é, a longitude é maior ou igual a coluna min_longitude
+        # e menor ou igua a coluna max_longitude.
+        return queryset.annotate(
+            temp_longitude=Value(value, output_field=FloatField())
+        ).filter(
+            have_path_coeff=True,
+            temp_longitude__gte=F('min_longitude'), 
+            temp_longitude__lte=F('max_longitude'))
+
+    lat = django_filters.NumberFilter(
+        method='latitude_filter', label="Latitude")
+
+    radius = django_filters.NumberFilter(
+        method='radius_filter', label="Radius")
+
+    def latitude_filter(self, queryset, name, value):
+        # O filtro por latitude vai ser aplicado na get_queryset
+        # Esta declarado aqui só para vicar explicito e visivel na interface DRF
+        return queryset
+
+    def radius_filter(self, queryset, name, value):
+        # O filtro por latitude vai ser aplicado na get_queryset
+        # Esta declarado aqui só para vicar explicito e visivel na interface DRF
+        return queryset
+
+
+    # teste = django_filters.CharFilter(method='my_custom_filter')
+    # def my_custom_filter(self, queryset, name, value):
+    #     print(f"TESTE: {self.request}")
+    #     # if "force" in request.query_params and request.query_params["force"] == "true":
+    #     return queryset
+
+    # # https://stackoverflow.com/questions/57668670/how-to-use-same-same-django-filters-charfilter-field-for-two-separate-fields
+    # # https://stackoverflow.com/questions/4824759/django-query-using-contains-each-value-in-a-list
+    # def name_lookup_method(self, queryset, name, value):
+    #     a_names = value.split(',')
+    #     print(a_names)
+    #     query = reduce(operator.or_, (Q(name__contains = item) for item in a_names))
+    #     print(query)
+    #     return queryset.filter(query)
 
     class Meta:
         model = Occultation
-        fields = ['start_date', 'end_date', 'min_mag', 'max_mag',
-                  'dynclass', 'base_dynclass', 'name', 'asteroid_id']
+        fields = [
+            "date_time",
+            "mag_g", "dynclass",
+            "base_dynclass",
+            "name",
+            "number",
+            "long"
+        ]
 
 
 class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
@@ -56,17 +143,60 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     ]
     permission_classes = [AllowAny]
 
-    queryset = Occultation.objects.all()
-
     serializer_class = OccultationSerializer
 
     filterset_class = OccultationFilter
-    filter_fields = ("id", "name", "number", "date_time")
     search_fields = ("name", "number")
 
     ordering_fields = ("id", "name", "number", "date_time", "ra_star_candidate", "dec_star_candidate", "ra_target", " dec_target", "closest_approach", "position_angle", "velocity", "delta", "g", "j", "h",
                        "k", "long", "loc_t", "off_ra", "off_dec", "proper_motion", "ct", "multiplicity_flag", "e_ra", "e_dec", "pmra", "pmdec", "ra_star_deg", "dec_star_deg", "ra_target_deg", "dec_target_deg", "created_at")
     ordering = ("date_time",)
+
+    def check_user_location_params(self, params):
+        lat = params.get('lat', None)
+        long = params.get('long', None)
+        radius = params.get('radius', None)
+
+        if None in [lat, long, radius]:
+            return lat, long, radius
+
+        lat = float(lat)
+        if lat < -90 or lat > 90:
+            raise Exception("the lat parameter must be between -90 and 90")
+        
+        long = float(long)
+        # TODO: Tratar os intervalos da longitude
+
+        radius = float(radius)
+        if radius < 10 or radius > 5000:
+            raise Exception("the radius parameter must be between 10 and 5000")
+
+        return lat, long, radius
+
+    def get_queryset(self):
+
+        queryset = Occultation.objects.all()
+        # Usando Filter_Queryset e aplicado os filtros listados no filterbackend
+        queryset = self.filter_queryset(queryset)
+        print(queryset.query)
+        print(queryset.count())
+
+        # Recupera os parametros da requisição
+        params = self.request.query_params
+        lat, long, radius = self.check_user_location_params(params)
+
+        if None not in [lat, long, radius]:
+            print("Todos os parametros de user location OK")
+            print(f"Latitude: {lat} Longitude: {long} Radius: {radius}")            
+
+            # TODO Executar a função de visibilidade
+            
+        else: 
+            # Verifica se pelo menos um dos parametros de user location tem valor
+            # TODO avisar que os 3 parametros precisam ter valores
+            print("Falta um dos parametros")
+        
+        return queryset
 
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def highlights(self, request):

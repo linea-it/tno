@@ -6,7 +6,9 @@ from celery import group, shared_task
 
 from tno.prediction_map import (garbage_collector_maps, sora_occultation_map,
                           upcoming_events_to_create_maps)
-
+from tno.occviz import occultation_path_coeff2
+from tno.models import Occultation 
+from time import sleep
 
 @shared_task
 def add(x=2, y=2):
@@ -89,6 +91,62 @@ def create_prediction_maps():
     # t2 = datetime.now()
     # dt = t2 - t0
     # logger.info(f"All {len(to_run)} tasks completed in {humanize.naturaldelta(dt)}")
+
+@shared_task
+def calculate_occultation_path(occultation_id, **kwargs):
+    output = occultation_path_coeff2(**kwargs)
+    occ_event = Occultation.objects.get(pk=occultation_id)
+
+    occ_event.have_path_coeff = False
+    occ_event.min_longitude = None
+    occ_event.max_longitude = None
+    occ_event.occultation_path_coeff = {}
+
+    if output['coeff_latitude'] != None and output['coeff_longitude'] != None:
+        occ_event.have_path_coeff = True
+        occ_event.min_longitude = float(output['min_longitude'])
+        occ_event.max_longitude = float(output['max_longitude'])
+        occ_event.occultation_path_coeff = output
+
+    occ_event.save()
+    
+    return {
+        "occultation_id": occultation_id,
+        "have_coeff": occ_event.have_path_coeff
+    }          
+
+@shared_task
+def create_occultation_path_coeff():
+    # next_events = Occultation.objects.filter(pk=366627)
+    now = datetime.utcnow()
+    next_events = Occultation.objects.filter(
+        date_time__gte=now, have_path_coeff=False).order_by('date_time')[0:500]
+
+    job = group(
+        calculate_occultation_path.s(
+            occultation_id = event.id,
+            date_time=event.date_time.isoformat(), 
+            ra_star_candidate=event.ra_star_candidate,
+            dec_star_candidate=event.dec_star_candidate,
+            closest_approach=event.closest_approach, 
+            position_angle=event.position_angle, 
+            velocity=event.velocity , 
+            delta_distance=event.delta, 
+            offset_ra=event.off_ra, 
+            offset_dec=event.off_dec, 
+            object_diameter=event.diameter, 
+            ring_radius=None) for event in next_events)
+
+    # Submete as tasks aos workers    
+    job.apply_async()
+
+    # # Util em desenvolvimento para acompanhar as tasks
+    # # Aguarda todas as subtasks terminarem
+    # result = job.apply_async()
+    # while result.ready() == False:
+    #     print(f"Coeff Completed: {result.completed_count()}")
+    #     sleep(3)
+
 
 # 11 Tech implementation of SORA Maps.
 # # task para gerar os mapas das ocultações todos os dias as 23:00

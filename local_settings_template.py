@@ -64,3 +64,5 @@ SHIBBOLETH_ENABLED = False
 
 # Celery Configs
 CELERY_BROKER_URL = "amqp://tno:adminadmin@rabbit:5672/tno_vhost"
+if ENVIRONMENT_NAME == "Development":
+    CELERY_WORKER_CONCURRENCY = 2
