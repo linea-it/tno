@@ -20,12 +20,12 @@ function List({ data, height, width, align }) {
               primary={
                 <div>
                   <Typography variant="subtitle1">{item.title}</Typography>
-                  {item.message && <Typography variant="caption" style={{ fontSize: '0.8rem' }}>{item.message}</Typography>}
+                  {item.message && <Typography variant="caption" style={{ fontSize: '0.8rem', color: '#9e9e9e' }}>{item.message}</Typography>}
                 </div>
               }
               className={classes.itemText}
             />
-            <Typography variant="body1">{item.value}</Typography>
+            <Typography variant="body1" style={{ color: '#757575' }}>{item.value}</Typography>
           </ListItem>
         );
       })}
