@@ -1,19 +1,31 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, Union
 
 import humanize
 from django.conf import settings
-from pytz import timezone
 from sora.prediction.occmap import plot_occ_map as occmap
 
 from tno.models import Occultation
+import os
 
+import numpy as np
+from itertools import groupby
+from operator import itemgetter
 
 def get_size_of_map_folder():
     maps_directory = Path(settings.PREDICTION_MAP_DIR)
     return sum(f.stat().st_size for f in maps_directory.glob('**/*') if f.is_file())
+
+def get_map_folder_size_limit():
+    # Tamanho maximo desejado em Mb para a pasta de mapas.
+    max_folder_size = int(
+        settings.PREDICTION_MAP_MAX_FOLDER_SIZE) * 1000 * 1000
+    # Limite é 90% do total, deve ter pelo menos 10% livre
+    min_free = (max_folder_size * 0.1)
+    size_limit = max_folder_size - min_free
+    return size_limit
 
 
 def map_event_has_already_happened(filepath: Path) -> bool:
@@ -61,14 +73,7 @@ def garbage_collector_maps():
 def map_folder_have_free_space() -> bool:
     logger = logging.getLogger("predict_maps")
 
-    # Tamanho maximo desejado em Mb para a pasta de mapas.
-    max_folder_size = int(
-        settings.PREDICTION_MAP_MAX_FOLDER_SIZE) * 1000 * 1000
-    logger.debug(
-        f"Maps folder Max Size: {humanize.naturalsize(max_folder_size)}")
-    # Limite é 90% do total, deve ter pelo menos 10% livre
-    min_free = (max_folder_size * 0.1)
-    size_limit = max_folder_size - min_free
+    size_limit = get_map_folder_size_limit()
     logger.debug(f"Maps folder size limit: {humanize.naturalsize(size_limit)}")
     # O Tamanho maximo não é absoluto, podendo variar para mais
     # Exemplo 68% ocupado, vai executar a criação de mais mapas
@@ -186,3 +191,59 @@ def sora_occultation_map(
         raise Exception(f"Map file was not generated. {filepath}")
 
     return str(filename)
+
+
+
+def get_longest_consecutive_numbers(numbers):
+    # https://stackoverflow.com/questions/55616217/find-longest-consecutive-range-of-numbers-in-list
+    idx = max(
+        (
+            list(map(itemgetter(0), g)) 
+            for i, g in groupby(enumerate(np.diff(numbers)==1), itemgetter(1)) 
+            if i
+        ), 
+        key=len
+    )
+    return (idx[0], idx[-1]+1)
+
+
+
+def maps_folder_stats():
+    
+    # Verifica a situação do diretório de mapas.
+    map_paths = sorted(Path(settings.PREDICTION_MAP_DIR).iterdir(), key=os.path.getmtime)
+
+    maps_count = len(map_paths)
+    maps_dates = []
+    for map_path in map_paths:
+        filename = map_path.name
+        event_dt = filename.strip('.jpg').split('-')[1]
+        date = datetime.strptime(event_dt, '%Y%m%d%H%M%S').date()
+        maps_dates.append(date)
+
+    oldest_file = datetime.fromtimestamp(map_paths[0].stat().st_mtime)
+    newest_file = datetime.fromtimestamp(map_paths[-1].stat().st_mtime)
+
+    # Remove Duplicated dates
+    maps_dates = sorted(list(set(maps_dates)))
+
+    first_map = maps_dates[0]
+    last_map = maps_dates[-1]
+
+    if len(maps_dates) > 1:
+        # Convert dates to integer
+        date_ints = [d.toordinal() for d in maps_dates]
+        start, end = get_longest_consecutive_numbers(list(date_ints))
+        first_map = maps_dates[start]
+        last_map = maps_dates[end]
+
+        return {
+            "maps_count": maps_count,
+            "maps_total_size": get_size_of_map_folder(),
+            "maps_size_limit": get_map_folder_size_limit(),
+            "period": [first_map.isoformat(), last_map.isoformat()],
+            "oldest_file": oldest_file.astimezone(tz=timezone.utc).isoformat(),
+            "newest_file": newest_file.astimezone(tz=timezone.utc).isoformat(),
+        }   
+    
+    

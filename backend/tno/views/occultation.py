@@ -18,13 +18,14 @@ from rest_framework.response import Response
 from tno.db import CatalogDB
 from tno.models import Occultation
 from tno.occviz import visibility, visibility_from_coeff2
-from tno.prediction_map import sora_occultation_map
+from tno.prediction_map import sora_occultation_map, maps_folder_stats
 from tno.serializers import OccultationSerializer
 from tno.tasks import create_occ_map_task, create_prediction_maps, create_occultation_path_coeff
 from django.db.models import Q, F, Value, FloatField
 from functools import reduce
 import operator
-
+from pathlib import Path
+import os
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
     pass
@@ -237,9 +238,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         for event in today_events:
             map_filepath = event.get_map_filepath()
             if (map_filepath.exists()):
-                maps_size.append(map_filepath.stat().st_size)
-
-
+                maps_size.append(map_filepath.stat().st_size)       
 
         today_already_have_map = len(maps_size)
         total_maps_size = sum(maps_size)
@@ -258,6 +257,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         next_month_count = Occultation.objects.filter(
             date_time__date__month=next_month.month).count()
 
+        maps_stats = maps_folder_stats()
         return Response({
             "count": count,
             "earliest": first_datetime.date_time.isoformat(),
@@ -269,7 +269,8 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             "week_count": this_week_count,
             "next_week_count": next_week_count,
             "month_count": this_month_count,
-            "next_month_count": next_month_count
+            "next_month_count": next_month_count,
+            "maps_stats": maps_stats,
         })
 
     @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
