@@ -87,7 +87,7 @@ def map_folder_have_free_space() -> bool:
     logger.debug(f"Maps folder have free space?: {have_free_space}")
     return have_free_space
 
-def upcoming_events_to_create_maps() -> list:
+def upcoming_events_to_create_maps(date_start:Optional[str]=None, date_end:Optional[str]=None, limit:Optional[int]=None) -> list:
     logger = logging.getLogger("predict_maps")
     logger.info(f"Looking for upcoming events")
 
@@ -108,9 +108,21 @@ def upcoming_events_to_create_maps() -> list:
     events = []
     # Block size determina quantas tasks serao criadas
     block_size = int(settings.PREDICTION_MAP_BLOCK_SIZE)
-    now = datetime.utcnow()
+    if limit != None:
+        block_size = int(limit)
+
+    if date_start == None:
+        date_start = datetime.utcnow()
+    if isinstance(date_start, str):
+        date_start = datetime.fromisoformat(date_start).astimezone(tz=timezone.utc)
+
     next_events = Occultation.objects.filter(
-        date_time__gte=now).order_by('date_time')
+        date_time__gte=date_start).order_by('date_time')
+    
+    if isinstance(date_end, str):
+        date_end = datetime.fromisoformat(date_end).astimezone(tz=timezone.utc)
+        next_events.filter(date_time__lte=date_end)
+
 
     logger.debug(f"Next events count: {next_events.count()}")
     for obj in next_events:
