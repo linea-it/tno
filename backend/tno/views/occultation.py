@@ -26,7 +26,6 @@ from functools import reduce
 import operator
 
 
-
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
     pass
 
@@ -75,19 +74,40 @@ class OccultationFilter(django_filters.FilterSet):
         # Query de exemplo usando valor de longitude = 2
         # select count(*) from tno_occultation to2 where 2 between min_longitude  and max_longitude
         # Para fazer o between entre duas colunas diferentes, é preciso
-        # Criar uma coluna com o valor fixo usando annotate. 
-        # E usar o F para dizer ao Django que é uma coluna. 
+        # Criar uma coluna com o valor fixo usando annotate.
+        # E usar o F para dizer ao Django que é uma coluna.
         # A logica aqui é, a longitude é maior ou igual a coluna min_longitude
         # e menor ou igua a coluna max_longitude.
         return queryset.annotate(
             temp_longitude=Value(value, output_field=FloatField())
         ).filter(
             have_path_coeff=True,
-            temp_longitude__gte=F('min_longitude'), 
+            temp_longitude__gte=F('min_longitude'),
             temp_longitude__lte=F('max_longitude'))
 
     lat = django_filters.NumberFilter(
         method='latitude_filter', label="Latitude")
+
+    lat = django_filters.NumberFilter(
+        method='latitude_filter', label="Latitude")
+
+    def latitude_filter(self, queryset, name, value):
+        value = float(value)
+        # Query de exemplo usando valor de latitude = 2
+        # select count(*) from tno_occultation to2 where 2 between min_latitude and max_latitude
+        # Para fazer o between entre duas colunas diferentes, é preciso
+        # Criar uma coluna com o valor fixo usando annotate.
+        # E usar o F para dizer ao Django que é uma coluna.
+        # A logica aqui é, a latitude é maior ou igual a coluna min_latitude
+        # e menor ou igual a coluna max_latitude
+        # TODO: Esperando implementação do campo min_latitude e max_latitude na função de path.
+        # return queryset.annotate(
+        #     temp_latitude=Value(value, output_field=FloatField())
+        # ).filter(
+        #     have_path_coeff=True,
+        #     temp_latitude__gte=F('min_latitude'),
+        #     temp_latitude__lte=F('max_latitude'))
+        return queryset
 
     radius = django_filters.NumberFilter(
         method='radius_filter', label="Radius")
@@ -101,22 +121,6 @@ class OccultationFilter(django_filters.FilterSet):
         # O filtro por latitude vai ser aplicado na get_queryset
         # Esta declarado aqui só para vicar explicito e visivel na interface DRF
         return queryset
-
-
-    # teste = django_filters.CharFilter(method='my_custom_filter')
-    # def my_custom_filter(self, queryset, name, value):
-    #     print(f"TESTE: {self.request}")
-    #     # if "force" in request.query_params and request.query_params["force"] == "true":
-    #     return queryset
-
-    # # https://stackoverflow.com/questions/57668670/how-to-use-same-same-django-filters-charfilter-field-for-two-separate-fields
-    # # https://stackoverflow.com/questions/4824759/django-query-using-contains-each-value-in-a-list
-    # def name_lookup_method(self, queryset, name, value):
-    #     a_names = value.split(',')
-    #     print(a_names)
-    #     query = reduce(operator.or_, (Q(name__contains = item) for item in a_names))
-    #     print(query)
-    #     return queryset.filter(query)
 
     class Meta:
         model = Occultation
@@ -159,7 +163,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         lat = float(lat)
         if lat < -90 or lat > 90:
             raise Exception("the lat parameter must be between -90 and 90")
-        
+
         long = float(long)
         # TODO: Tratar os intervalos da longitude
 
@@ -179,13 +183,13 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         params = self.request.query_params
         lat, long, radius = self.check_user_location_params(params)
 
-        # TODO: Necessário implementar forma de fazer a paginação. 
+        # TODO: Necessário implementar forma de fazer a paginação.
         # TODO: Implementar memcache para eventos já processados
         # TODO: Estudar a possibilidade de um metodo asyncrono
         if None not in [lat, long, radius]:
             # print("Todos os parametros de user location OK")
-            # print(f"Latitude: {lat} Longitude: {long} Radius: {radius}")            
-            
+            # print(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
+
             wanted_ids = []
             count = 0
             # TODO Executar a função de visibilidade
@@ -198,23 +202,22 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                     inputdict=event.occultation_path_coeff,
                     # object_diameter=event.diameter,
                     # ring_diameter=event.diameter,
-                    # n_elements= 1500,                    
+                    # n_elements= 1500,
                     # ignore_nighttime= False,
                     # latitudinal= False
                 )
-                
 
                 if is_visible == True:
                     wanted_ids.append(event.id)
                     count += 1
-                    # print(f"IS VISIBLE: {is_visible}: {event.id} - {event.date_time} - {event.name}")                                    
+                    # print(f"IS VISIBLE: {is_visible}: {event.id} - {event.date_time} - {event.name}")
                     if count == 10:
                         return queryset.filter(id__in=wanted_ids)
-        else: 
+        else:
             # Verifica se pelo menos um dos parametros de user location tem valor
             # TODO avisar que os 3 parametros precisam ter valores
             print("Falta um dos parametros")
-        
+
         return queryset
 
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
@@ -235,6 +238,8 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             map_filepath = event.get_map_filepath()
             if (map_filepath.exists()):
                 maps_size.append(map_filepath.stat().st_size)
+
+
 
         today_already_have_map = len(maps_size)
         total_maps_size = sum(maps_size)
@@ -267,7 +272,6 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             "next_month_count": next_month_count
         })
 
-
     @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
     def create_prediction_path(self, request):
 
@@ -276,7 +280,6 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         return Response({
             "success": True,
         })
-
 
     @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
     def create_maps_for_today(self, request):
@@ -337,81 +340,81 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                 "url": None,
             })
 
-    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
-    def next_twenty(self, request):
-        """
-        #     Este endpoint obtem as próximas 20 occultações .
+    # @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    # def next_twenty(self, request):
+    #     """
+    #     #     Este endpoint obtem as próximas 20 occultações .
 
-        #     Returns:
-        #         result (json): Ocultation list.
-        #     """
-        paginator = PageNumberPagination()
-        paginator.page_size = 10
-        lista = Occultation.objects.filter(
-            date_time__gte=datetime.now()).order_by('date_time')[:20]
-        ordered = sorted(lista, key=attrgetter(request.query_params.get('ordering', '').replace(
-            '-', '')), reverse='-' in request.query_params.get('ordering', ''))
-        result_page = paginator.paginate_queryset(ordered, request)
-        serializer = OccultationSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+    #     #     Returns:
+    #     #         result (json): Ocultation list.
+    #     #     """
+    #     paginator = PageNumberPagination()
+    #     paginator.page_size = 10
+    #     lista = Occultation.objects.filter(
+    #         date_time__gte=datetime.now()).order_by('date_time')[:20]
+    #     ordered = sorted(lista, key=attrgetter(request.query_params.get('ordering', '').replace(
+    #         '-', '')), reverse='-' in request.query_params.get('ordering', ''))
+    #     result_page = paginator.paginate_queryset(ordered, request)
+    #     serializer = OccultationSerializer(result_page, many=True)
+    #     return paginator.get_paginated_response(serializer.data)
 
-    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
-    def filter_location(self, request):
-        queryset = Occultation.objects.all()
-        # date filter
-        start_date = self.request.query_params.get('start_date', None)
-        end_date = self.request.query_params.get('end_date', None)
-        if start_date and end_date:
-            queryset = queryset.filter(date_time__range=[start_date, end_date])
-        elif start_date:
-            queryset = queryset.filter(date_time__gte=start_date)
-        elif end_date:
-            queryset = queryset.filter(date_time__lte=end_date)
-        # magnitude filter
-        min_mag = self.request.query_params.get('min_mag', None)
-        max_mag = self.request.query_params.get('max_mag', None)
-        if min_mag and max_mag:
-            queryset = queryset.filter(g__range=[min_mag, max_mag])
-        # asteroid filter  (filter_type, filter_value)
-        if (self.request.query_params.get('filter_type', None) == "name"):
-            values = self.request.query_params.get('filter_value', None)
-            names = values.split(';')
-            queryset = queryset.filter(asteroid__name__in=names)
-        elif (self.request.query_params.get('filter_type', None) == "dynclass"):
-            dynclass = self.request.query_params.get('filter_value', None)
-            queryset = queryset.filter(asteroid__dynclass=dynclass)
-        elif (self.request.query_params.get('filter_type', None) == "base_dynclass"):
-            basedyn = self.request.query_params.get('filter_value', None)
-            queryset = queryset.filter(asteroid__base_dynclass=basedyn)
-        # geografic filter
-        latitude = self.request.query_params.get('lat', None)
-        longitude = self.request.query_params.get('long', None)
-        radius = self.request.query_params.get('radius', None)
-        if latitude and longitude and radius:
-            tempo_inicio = time.time()
-            limite_tempo = 3 * 60
-            visibles = []
-            for item in queryset:
-                tempo_atual = time.time()
-                tempo_decorrido = tempo_atual - tempo_inicio
-                if tempo_decorrido >= limite_tempo:
-                    break
-                star_cordinates = item.ra_star_candidate + " " + item.dec_star_candidate
-                status, info = visibility(float(latitude), float(longitude), float(radius), item.date_time, star_cordinates,
-                                          item.closest_approach, item.position_angle, item.velocity, item.delta, offset=(item.off_ra, item.off_dec))
-                if (status):
-                    visibles.append(item.id)
-            queryset = queryset.filter(id__in=visibles)
-        # order
-        ordering = self.request.query_params.get('ordering', None)
-        if ordering:
-            queryset = queryset.order_by(ordering)
-        # return
-        paginator = PageNumberPagination()
-        paginator.page_size = 10
-        result_page = paginator.paginate_queryset(queryset, request)
-        serializer = OccultationSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+    # @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    # def filter_location(self, request):
+    #     queryset = Occultation.objects.all()
+    #     # date filter
+    #     start_date = self.request.query_params.get('start_date', None)
+    #     end_date = self.request.query_params.get('end_date', None)
+    #     if start_date and end_date:
+    #         queryset = queryset.filter(date_time__range=[start_date, end_date])
+    #     elif start_date:
+    #         queryset = queryset.filter(date_time__gte=start_date)
+    #     elif end_date:
+    #         queryset = queryset.filter(date_time__lte=end_date)
+    #     # magnitude filter
+    #     min_mag = self.request.query_params.get('min_mag', None)
+    #     max_mag = self.request.query_params.get('max_mag', None)
+    #     if min_mag and max_mag:
+    #         queryset = queryset.filter(g__range=[min_mag, max_mag])
+    #     # asteroid filter  (filter_type, filter_value)
+    #     if (self.request.query_params.get('filter_type', None) == "name"):
+    #         values = self.request.query_params.get('filter_value', None)
+    #         names = values.split(';')
+    #         queryset = queryset.filter(asteroid__name__in=names)
+    #     elif (self.request.query_params.get('filter_type', None) == "dynclass"):
+    #         dynclass = self.request.query_params.get('filter_value', None)
+    #         queryset = queryset.filter(asteroid__dynclass=dynclass)
+    #     elif (self.request.query_params.get('filter_type', None) == "base_dynclass"):
+    #         basedyn = self.request.query_params.get('filter_value', None)
+    #         queryset = queryset.filter(asteroid__base_dynclass=basedyn)
+    #     # geografic filter
+    #     latitude = self.request.query_params.get('lat', None)
+    #     longitude = self.request.query_params.get('long', None)
+    #     radius = self.request.query_params.get('radius', None)
+    #     if latitude and longitude and radius:
+    #         tempo_inicio = time.time()
+    #         limite_tempo = 3 * 60
+    #         visibles = []
+    #         for item in queryset:
+    #             tempo_atual = time.time()
+    #             tempo_decorrido = tempo_atual - tempo_inicio
+    #             if tempo_decorrido >= limite_tempo:
+    #                 break
+    #             star_cordinates = item.ra_star_candidate + " " + item.dec_star_candidate
+    #             status, info = visibility(float(latitude), float(longitude), float(radius), item.date_time, star_cordinates,
+    #                                       item.closest_approach, item.position_angle, item.velocity, item.delta, offset=(item.off_ra, item.off_dec))
+    #             if (status):
+    #                 visibles.append(item.id)
+    #         queryset = queryset.filter(id__in=visibles)
+    #     # order
+    #     ordering = self.request.query_params.get('ordering', None)
+    #     if ordering:
+    #         queryset = queryset.order_by(ordering)
+    #     # return
+    #     paginator = PageNumberPagination()
+    #     paginator.page_size = 10
+    #     result_page = paginator.paginate_queryset(queryset, request)
+    #     serializer = OccultationSerializer(result_page, many=True)
+    #     return paginator.get_paginated_response(serializer.data)
 
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
     def get_star_by_event(self, request, pk=None):

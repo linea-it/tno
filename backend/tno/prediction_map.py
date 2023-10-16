@@ -5,6 +5,7 @@ from typing import Optional, Union
 
 import humanize
 from django.conf import settings
+from pytz import timezone
 from sora.prediction.occmap import plot_occ_map as occmap
 
 from tno.models import Occultation
@@ -17,11 +18,12 @@ def get_size_of_map_folder():
 
 def map_event_has_already_happened(filepath: Path) -> bool:
     # checks if the event has already happened
+    # Considera que o evento já aconteceu quando se passa mais de um dia do evento
     now_utc = datetime.utcnow()
     filename = filepath.name
     event_dt = filename.strip('.jpg').split('-')[1]
     date_time = datetime.strptime(event_dt, '%Y%m%d%H%M%S')
-    dt = now_utc.date() - date_time.date()
+    dt = now_utc.date() - date_time.astimezone(tz=timezone.utc).date()
     if dt.days > 0:
         return True
     return False
@@ -64,8 +66,8 @@ def map_folder_have_free_space() -> bool:
         settings.PREDICTION_MAP_MAX_FOLDER_SIZE) * 1000 * 1000
     logger.debug(
         f"Maps folder Max Size: {humanize.naturalsize(max_folder_size)}")
-    # Limite é 70% do total, deve ter pelo menos 30% livre
-    min_free = (max_folder_size * 0.3)
+    # Limite é 90% do total, deve ter pelo menos 10% livre
+    min_free = (max_folder_size * 0.1)
     size_limit = max_folder_size - min_free
     logger.debug(f"Maps folder size limit: {humanize.naturalsize(size_limit)}")
     # O Tamanho maximo não é absoluto, podendo variar para mais

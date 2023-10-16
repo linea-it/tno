@@ -458,6 +458,7 @@ class Occultation(models.Model):
         help_text="Aphelion",
     )
 
+    # Occultation Path Fields.
     min_longitude = models.FloatField(
         verbose_name="Min Logintude",
         null=True,
@@ -473,6 +474,23 @@ class Occultation(models.Model):
         default=None,
         help_text="Max Logintude Occultation Path",
     )
+
+    min_latitude = models.FloatField(
+        verbose_name="Min Latitude",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Min Latitude Occultation Path",
+    )
+
+    max_latitude = models.FloatField(
+        verbose_name="Max Latitude",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Max Latitude Occultation Path",
+    )   
+
     have_path_coeff = models.BooleanField(
         verbose_name="Have Path Coeff",
         null=True,
@@ -480,6 +498,7 @@ class Occultation(models.Model):
         default=False,
         help_text="Have Path Coeff",
     )
+
     occultation_path_coeff = models.JSONField(
         verbose_name="Occultation Path Coeff",
         null=True,

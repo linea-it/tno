@@ -19,7 +19,7 @@ import { useIsMount } from '../../../../../hooks/useIsMount';
 function PublicOcutation() {
   const navigate = useNavigate();
   const classes = styles();
-  const [filterView, setFilterView] = useState('next');
+  const [filterView, setFilterView] = useState('userSelect');
   const [magnitude, setMagnitude] = useState([4, 14]);
   const [dateStart, setDateStart] = useState('');
   const [dateEnd, setDateEnd] = useState('');
@@ -156,49 +156,10 @@ function PublicOcutation() {
     loadData({ sorting: [{ columnName: 'date_time', direction: 'asc' }], pageSize: 10, currentPage: 0 });
   }
 
+  console.log("Date: ", dateStart)
+
   return (
     <>
-      <br></br><br></br>
-      <Grid container spacing={1} mt="3">
-        <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('')}>
-          <div className={clsx(filterView === '' ? classes.selected : classes.celula)}>All events</div>
-        </Grid>
-        <Grid item xs={6} sm={3} className={classes.mouse} onClick={() => setFilterView('userSelect')}>
-          <div className={clsx(filterView === 'userSelect' ? classes.selected : classes.celula)}>User Selected</div>
-        </Grid>
-      </Grid>
-      {filterView === 'period' &&
-        <><br></br><Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Card>
-              <CardContent>
-                <form noValidate autoComplete="off">
-                  <Grid container spacing={2} alignItems='stretch'>
-                    <Grid item xs={12} sm={4} md={3}>
-                      <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth ><label>Date Start</label>
-                          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
-                          </LocalizationProvider>
-                        </FormControl>
-                      </Box>
-                    </Grid>
-                    <Grid item xs={7} sm={4} md={3}>
-                      <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Date End</label>
-                          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
-                          </LocalizationProvider>
-                        </FormControl>
-                      </Box>
-                    </Grid>
-                  </Grid>
-                </form>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid></>
-      }
       {filterView === 'userSelect' &&
         <><br></br>
           <OccultationFilter

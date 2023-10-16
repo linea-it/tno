@@ -12,7 +12,7 @@ import {
     getAsteroidsWithPredictionList,
     getFilteredWithPredictionList
   } from '../../services/api/Asteroid';
-
+import dayjs from 'dayjs';
 
 function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filterType, setFilterType, filterValue, setFilterValue, magnitude, setMagnitude, latitude, setLatitude, longitude, setLongitude, radius, setRadius, geoFilter, setGeoFilter, loadingLocation, setLoadingLocation, erroLocation, setErroLocation, filter }) {
     
@@ -133,7 +133,11 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
                         <Box sx={{ minWidth: 120 }}>
                           <FormControl fullWidth ><label>Date Start</label>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
+                              <DatePicker 
+                                format="YYYY-MM-DD" 
+                                defaultValue={dayjs('2022-04-17')}
+                                value={dateStart} 
+                                onChange={date => { setDateStart(date) }} />
                             </LocalizationProvider>
                           </FormControl>
                         </Box>

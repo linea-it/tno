@@ -108,6 +108,9 @@ def calculate_occultation_path(occultation_id, **kwargs):
         occ_event.have_path_coeff = True
         occ_event.min_longitude = float(output['min_longitude'])
         occ_event.max_longitude = float(output['max_longitude'])
+        # TODO: Esperando implementação do campo min_latitude e max_latitude na função de path.
+        # occ_event.min_latitude = float(output['min_latitude'])
+        # occ_event.max_latitude = float(output['max_latitude'])
         occ_event.occultation_path_coeff = output
 
     occ_event.save()
