@@ -14,7 +14,7 @@ import PredictOccultation from '../pages/PredictOccultation'
 import PredictDetail from '../pages/PredictOccultation/Detail'
 import PredictionAsteroid from '../pages/PredictOccultation/Asteroid'
 
-import Occultation from '../pages/Occultation'
+// import Occultation from '../pages/Occultation'
 
 import Home from '../pages/LandingPage/Home'
 import AboutUs from '../pages/LandingPage/AboutUs'
@@ -33,13 +33,13 @@ import PublicHome from '../pages/PublicPortal/Home'
 import PublicAboutUs from '../pages/PublicPortal/AboutUs/index'
 import PublicTutorials from '../pages/PublicPortal/Contact/index'
 import PublicOccultation from '../pages/PublicPortal/documentation/index'
-import OccultationDetail from '../pages/Occultation/Detail'
+// import OccultationDetail from '../pages/Occultation/Detail'
 import PublicSupporters from '../pages/PublicPortal/Home/partials/Supporters/index'
 import PublicBanner from '../components/PublicPortal/Banner/index'
 import PublicDocumentation from '../pages/PublicPortal/documentation/index'
 import PublicContact from '../pages/PublicPortal/Contact/index'
 import FooterSupporte from '../components/PublicPortal/Footer/FooterSupporters'
-
+import PredictionEvents from '../pages/PredictionEvents/index'
 
 export default function AppRoutes() {
   const { isAuthenticated, signIn } = useAuth()
@@ -100,7 +100,7 @@ export default function AppRoutes() {
               <Grid container justifyContent="center" alignItems="center">
                 <div className={classes.titleItem}><label>Occultation Prediction Details</label></div>
               </Grid><br></br>
-              <OccultationDetail />
+              {/* <OccultationDetail /> */}
               <PublicSupporters />
             </div>
           </PublicPortalPage>
@@ -160,7 +160,7 @@ export default function AppRoutes() {
 
       {/* Dashboard  Layout*/}
       <Route
-        isPrivate
+        // isPrivate
         exact
         path='/dashboard/stats'
         element={
@@ -291,6 +291,8 @@ export default function AppRoutes() {
           </PrivateRoute>
         }
       />
+
+
       <Route
         isPrivate
         exact
@@ -316,7 +318,17 @@ export default function AppRoutes() {
         }
       />
       <Route
-        isPrivate
+        // isPrivate
+        exact
+        path='/dashboard/occultation'
+        element={
+            <DashboardPage>
+              <PredictionEvents />
+            </DashboardPage>
+        }
+      />
+      {/* <Route
+        // isPrivate
         exact
         path='/dashboard/occultation'
         element={
@@ -326,9 +338,10 @@ export default function AppRoutes() {
             </DashboardPage>
           </PrivateRoute>
         }
-      />
-      <Route
-        IsPrivate
+      /> */}
+
+      {/* <Route
+        // IsPrivate
         exact
         path='/dashboard/occultation-detail/:id'
         element={
@@ -338,7 +351,7 @@ export default function AppRoutes() {
             </DashboardPage>
           </PrivateRoute>
         }
-      />
+      /> */}
 
       <Route path='*' element={<Navigate to='/' />} />
     </Routes>

@@ -44,7 +44,8 @@ const light = createTheme({
         paddingBottom: 8
       },
       title: {
-        color: '#34465d',
+        // color: '#34465d',
+        color: 'rgb(33, 43, 54)',
         fontSize: 16,
         fontWeight: 'bold'
       },

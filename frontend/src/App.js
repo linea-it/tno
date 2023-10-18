@@ -6,6 +6,7 @@ import AppRoutes from './routes'
 import history from './services/history'
 import { AuthProvider } from './contexts/AuthContext.js'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import { PredictionEventsProvider } from './contexts/PredictionContext'
 
 const queryClient = new QueryClient()
 
@@ -14,9 +15,11 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <MuiThemeProvider theme={light}>
         <AuthProvider>
-          <BrowserRouter history={history}>
-            <AppRoutes />
-          </BrowserRouter>
+          <PredictionEventsProvider>
+            <BrowserRouter history={history}>
+              <AppRoutes />
+            </BrowserRouter>
+          </PredictionEventsProvider>
         </AuthProvider>
       </MuiThemeProvider>
     </QueryClientProvider>

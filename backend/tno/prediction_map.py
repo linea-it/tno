@@ -13,15 +13,20 @@ import os
 import numpy as np
 from itertools import groupby
 from operator import itemgetter
+import humanize
 
 def get_size_of_map_folder():
     maps_directory = Path(settings.PREDICTION_MAP_DIR)
     return sum(f.stat().st_size for f in maps_directory.glob('**/*') if f.is_file())
 
-def get_map_folder_size_limit():
+def get_map_folder_desired_size():
     # Tamanho maximo desejado em Mb para a pasta de mapas.
     max_folder_size = int(
         settings.PREDICTION_MAP_MAX_FOLDER_SIZE) * 1000 * 1000
+    return max_folder_size
+
+def get_map_folder_size_limit():
+    max_folder_size = get_map_folder_desired_size()
     # Limite é 90% do total, deve ter pelo menos 10% livre
     min_free = (max_folder_size * 0.1)
     size_limit = max_folder_size - min_free
@@ -249,10 +254,17 @@ def maps_folder_stats():
         first_map = maps_dates[start]
         last_map = maps_dates[end]
 
+        total_size = get_size_of_map_folder()
+        folder_max_size = get_map_folder_desired_size()
+        folder_size_threshold = get_map_folder_size_limit()
         return {
-            "maps_count": maps_count,
-            "maps_total_size": get_size_of_map_folder(),
-            "maps_size_limit": get_map_folder_size_limit(),
+            "total_count": maps_count,
+            "total_size": total_size,
+            "h_total_size": humanize.naturalsize(total_size),
+            "folder_max_size": folder_max_size,
+            "h_folder_max_size": humanize.naturalsize(folder_max_size),
+            "folder_size_threshold": folder_size_threshold,
+            "h_folder_size_threshold": humanize.naturalsize(folder_size_threshold),
             "period": [first_map.isoformat(), last_map.isoformat()],
             "oldest_file": oldest_file.astimezone(tz=timezone.utc).isoformat(),
             "newest_file": newest_file.astimezone(tz=timezone.utc).isoformat(),
