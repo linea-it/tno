@@ -12,7 +12,7 @@ Asteroid Search by Number (icontains) = http://localhost/api/occultations/?searc
 Asteroid Name (iexact ?)
 
 Asteroid Dynclass iexact = http://localhost/api/occultations/?dynclass=KBO>Resonant>5:2
-Asteroid Base Dynclass exact = http://localhost/api/occultations/?base_dynclass=KBO
+Asteroid Base Dynclass iexact = http://localhost/api/occultations/?base_dynclass=KBO
 
 Magnitude Range = http://localhost/api/occultations/?mag_g_min=4&mag_g_max=14
 Magnitude Min Only = http://localhost/api/occultations/?mag_g_min=4

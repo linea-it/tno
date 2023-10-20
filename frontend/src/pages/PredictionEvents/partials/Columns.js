@@ -2,7 +2,13 @@ import { Box } from '../../../../node_modules/@material-ui/core/index';
 
 function ImageCell(props) {
   if (props.value == null) {
-    return null;
+    return (<Box
+    width={props.colDef.computedWidth}
+    height={props.colDef.computedWidth}
+    component="img"
+    alt=""
+    // src=
+    />)
   }
   return (
     <Box
@@ -98,6 +104,12 @@ export const PredictionEventsColumns = [
     headerName: 'Number',
     description: 'Asteroid Number',
   },
+  {
+    field: 'dynclass',
+    headerName: 'Dynamic class',
+    description: 'Dynamic class',
+    width: 180,
+  },  
   {
     field: 'date_time',
     headerName: 'C/A Instant',
@@ -297,6 +309,7 @@ export const predictionEventsColumnVisibilityModel = {
   map_url: true,
   name: true,
   number: false,
+  dynclass: true,
   date_time: true,
   closest_approach: true,
   position_angle: true,

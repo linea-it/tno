@@ -1,4 +1,5 @@
-import { api, parseFilters } from './Api'
+import { FilterSharp } from '../../../node_modules/@material-ui/icons/index'
+import { api } from './Api'
 
 export const getOccultations = ({ page, pageSize, ordering, start_date, end_date, filter_type, filter_value, min_mag, max_mag }) => {
   const params = {
@@ -82,14 +83,46 @@ export const listAllPredictionEvents = ({ queryKey }) => {
   }
   let ordering = sortFields.length !== 0 ? sortFields.join(',') : null
 
-  // let filters_temp = parseFilters(filterModel)
-  console.log("Filters:", filters)
-  // const filters = {date_time_after:'2023-10-18'}
+  const newFilters = {}
+  if (filters !== undefined) {
+
+    // Filtro por periodo
+    newFilters.date_time_after = filters.date_time_after
+    newFilters.date_time_before = filters.date_time_before
+
+    // Filtro por Nome, Dynclass e Base Dynclass
+    if (filters.filterValue !== undefined && filters.filterValue !== '') {
+
+      if (filters.filterType === 'name') {
+        newFilters['name'] = filters.filterValue.map(row => row.name).join(',')
+      } else {
+        newFilters[filters.filterType] = filters.filterValue
+      }
+    }
+
+    // Filtro por magnitude maxima
+    newFilters.mag_g_max = filters.maginitudeMax
+  }
+
+  console.log("NewFilters: ", newFilters)
 
   return api.get(
-    `/occultations/`, { params: { page, pageSize, ordering, ...filters } })
+    `/occultations/`, { params: { page, pageSize, ordering, ...newFilters } })
     .then((res) => res.data);
 };
 
+export const listAllAsteroidsWithEvents = ({ queryKey }) => {
+  const [_, params] = queryKey
+  const { name } = params
 
+  return api.get(`/asteroids/with_prediction/`, { params: { name } }).then(res => res.data)
+}
+
+export const allBaseDynclassWithEvents = () => {
+  return api.get(`/occultations/base_dynclass_with_prediction/`).then(res => res.data)
+}
+
+export const allDynclassWithEvents = () => {
+  return api.get(`/occultations/dynclass_with_prediction/`).then(res => res.data)
+}
 

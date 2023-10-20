@@ -13,12 +13,6 @@ export function PredictionEventsDataGrid() {
   const columns = PredictionEventsColumns
   const columnVisibilityModel = predictionEventsColumnVisibilityModel
 
-  // const [queryOptions, setQueryOptions] = useState({
-  //   paginationModel: { page: 0, pageSize: 5 },
-  //   selectionModel: [],
-  //   sortModel: [{ field: 'date_time', sort: 'asc' }],
-  //   filterModel: { items: [] }
-  // })
   const { queryOptions, setQueryOptions } = useContext(PredictionEventsContext)
 
   const { paginationModel, sortModel, filters } = queryOptions
@@ -53,6 +47,7 @@ export function PredictionEventsDataGrid() {
     <DataGrid
       disableColumnFilter 
       disableRowSelectionOnClick
+      // getRowHeight={() => '200'} 
       getRowHeight={() => 'auto'} 
       // getEstimatedRowHeight={() => 200}
       pagination

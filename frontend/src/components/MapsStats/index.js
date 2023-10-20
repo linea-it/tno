@@ -12,31 +12,12 @@ export default function Mapsdata() {
   const { data, isLoading } = useQuery({
     queryKey: ['occultationHighlights'],
     queryFn: getOccultationHighlights,
-    // keepPreviousData: true,
+    keepPreviousData: true,
     refetchInterval: false,
-    refetchOnWindowFocus: true,
-    // staleTime: 1 * 60 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    staleTime: 1 * 60 * 60 * 1000,
   })
 
-
-  // if (isLoading) {
-  //   return (
-  //     <Card sx={{}}>
-  //       <CardHeader
-  //         title="Total Prediction Maps"
-  //         titleTypographyProps={{ variant: 'h6', fontSize: '1rem', }}
-  //         // subheader={`from ${data.period[0]} to ${data.period[1]}`}
-  //         // subheaderTypographyProps={{ variant: 'body2', fontSize: '0.87rem', }}
-  //       />
-  //       <CardContent>
-  //         <Typography variant="h3" gutterBottom sx={{ fontWeight: 700, fontSize: "2rem", textAlign: "left" }}>
-
-  //         </Typography>
-  //         <UsagePlot maxSize={100} used={0}></UsagePlot>
-  //       </CardContent>
-  //     </Card>
-  //   )
-  // }
   return (
     <Card>
       <CardHeader

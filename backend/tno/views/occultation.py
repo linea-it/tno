@@ -175,7 +175,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         return lat, long, radius
 
     def get_queryset(self):
-        queryset = Occultation.objects.all()
+        queryset = Occultation.objects.select_related().all()
         # Usando Filter_Queryset e aplicado os filtros listados no filterbackend
         queryset = self.filter_queryset(queryset)
         # print(queryset.query)
@@ -274,15 +274,6 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         })
 
     @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
-    def create_prediction_path(self, request):
-
-        # create_occultation_path_coeff()
-
-        return Response({
-            "success": True,
-        })
-
-    @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
     def create_maps_for_today(self, request):
         create_prediction_maps.delay()
 
@@ -340,6 +331,25 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             return Response({
                 "url": None,
             })
+
+    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    def base_dynclass_with_prediction(self, request):
+        """Returns all base_dynclass that have at least one prediction event.
+        """
+        queryset = Occultation.objects.order_by('asteroid__base_dynclass').distinct('asteroid__base_dynclass')
+
+        rows = [x.asteroid.base_dynclass for x in queryset]
+        return Response(dict({"results": rows, "count": len(rows)}))
+
+    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    def dynclass_with_prediction(self, request):
+        """Returns all dynclass that have at least one prediction event.
+        """
+        queryset = Occultation.objects.order_by('asteroid__dynclass').distinct('asteroid__dynclass')
+
+        rows = [x.asteroid.dynclass for x in queryset]
+        return Response(dict({"results": rows, "count": len(rows)}))
+
 
     # @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     # def next_twenty(self, request):

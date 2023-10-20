@@ -18,9 +18,9 @@ function PredictionEvents() {
       <Grid container spacing={3}>
         <Grid item xs={12}>
         <Card>
-          <CardHeader
+          {/* <CardHeader
             title={"Prediction Events"}
-            titleTypographyProps={{ variant: 'h6', fontSize: '1rem', }}/>
+            titleTypographyProps={{ variant: 'h6', fontSize: '1rem', }}/> */}
           <CardContent>
             <PredictionEventsFilter />
           </CardContent>
@@ -28,9 +28,9 @@ function PredictionEvents() {
         </Grid>
         <Grid item xs={12}>
           <Card>
-          <CardHeader
+          {/* <CardHeader
             title={filterOptions?.date_time_start}
-            titleTypographyProps={{ variant: 'h6', fontSize: '1rem', }}/>
+            titleTypographyProps={{ variant: 'h6', fontSize: '1rem', }}/> */}
           <CardContent sx={{minHeight: 500}}>
             <PredictionEventsDataGrid />
           </CardContent>

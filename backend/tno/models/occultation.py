@@ -409,14 +409,15 @@ class Occultation(models.Model):
         help_text="Ephemeris version",
     )
 
-    dynamic_class = models.CharField(
-        max_length=35,
-        default=None,
-        null=True,
-        blank=True,
-        verbose_name="Dynamic class",
-        help_text="Dynamic class",
-    )
+    # TODO: Resolver este campo está duplicado com asteroid.dynclass
+    # dynamic_class = models.CharField(
+    #     max_length=35,
+    #     default=None,
+    #     null=True,
+    #     blank=True,
+    #     verbose_name="Dynamic class",
+    #     help_text="Dynamic class",
+    # )
 
     semimajor_axis = models.FloatField(
         verbose_name="Semimajor axis",
