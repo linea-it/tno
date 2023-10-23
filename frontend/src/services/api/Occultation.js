@@ -1,4 +1,4 @@
-import { FilterSharp } from '../../../node_modules/@material-ui/icons/index'
+import { FilterSharp } from '../../../node_modules/@mui/icons-material/index'
 import { api } from './Api'
 
 export const getOccultations = ({ page, pageSize, ordering, start_date, end_date, filter_type, filter_value, min_mag, max_mag }) => {

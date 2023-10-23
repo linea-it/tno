@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core/styles'
-import { Height } from '../../../node_modules/@material-ui/icons/index'
+import { Height } from '../../../node_modules/@mui/icons-material/index'
 
 const useStyles = makeStyles((theme) => ({
   formControl: {

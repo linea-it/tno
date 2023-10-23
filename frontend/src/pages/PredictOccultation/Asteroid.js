@@ -8,7 +8,7 @@ import {
 } from '../../services/api/PredictOccultation'
 import List from '../../components/List'
 import moment from '../../../node_modules/moment/moment'
-import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { CircularProgress } from '../../../node_modules/@material-ui/core/index'
 import styles from './styles'
 import { Alert } from '@material-ui/lab'
