@@ -17,6 +17,10 @@ export const getOccultations = ({ page, pageSize, ordering , start_date, end_dat
   return api.get('/occultations/', { params })
 }
 
+export const getOccultationHighlights = () => {
+  return api.get('/occultations/highlights').then((res) => res.data)
+}
+
 export const filter_by_location = ({ page, pageSize, ordering , start_date, end_date, filter_type, filter_value, min_mag, max_mag, lat, long, radius }) => {
   const params = {
     page,
