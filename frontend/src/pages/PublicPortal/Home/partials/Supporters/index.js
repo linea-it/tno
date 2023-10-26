@@ -1,10 +1,8 @@
 import React from 'react'
 import { CardMedia, Typography, Grid } from '@material-ui/core'
-import styles from './styles'
 
 function PublicSupporters() {
-  const classes = styles()
-
+  
   const interfaces = [
     {
       id: 0,
@@ -33,7 +31,7 @@ function PublicSupporters() {
     }
   ]
   return (
-    <div className={classes.root}>
+    <div m={4}>
       <Typography variant='h6' align='center' gutterBottom>
         LIneA is supported by
       </Typography>
@@ -41,7 +39,12 @@ function PublicSupporters() {
         {interfaces.map((item) => (
           <Grid key={item.id} item>
             <CardMedia
-              className={classes.carouselItem}
+              sx={{
+                maxWidth: '150px',
+                width: 'auto',
+                height: 'auto',
+                margin: 'auto'
+              }}
               component='img'
               alt={item.title}
               image={`${process.env.PUBLIC_URL}/img/supporters/${item.image}`}

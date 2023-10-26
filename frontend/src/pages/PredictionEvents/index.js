@@ -19,9 +19,6 @@ function PredictionEvents() {
       <Grid container spacing={3}>
         <Grid item xs={12}>
         <Card>
-          {/* <CardHeader
-            title={"Prediction Events"}
-            titleTypographyProps={{ variant: 'h6', fontSize: '1rem', }}/> */}
           <CardContent>
             <PredictionEventsFilter />
           </CardContent>
