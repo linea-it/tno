@@ -5,9 +5,8 @@ function ImageCell(props) {
     return (<Box
     width={props.colDef.computedWidth}
     height={props.colDef.computedWidth}
-    component="img"
-    alt=""
-    // src=
+    // component="img"
+    // alt=""
     />)
   }
   return (

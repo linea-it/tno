@@ -10,9 +10,9 @@ import PredictionEventsFilter from './partials/EventsFilter';
 
 function PredictionEvents() {
 
-  const {filterOptions} = useContext(PredictionEventsContext)
+  const {queryOptions} = useContext(PredictionEventsContext)
 
-  return (
+    return (
     
     <Grid>
       <Grid container spacing={3}>
@@ -27,14 +27,7 @@ function PredictionEvents() {
         </Card>
         </Grid>
         <Grid item xs={12}>
-          <Card>
-          {/* <CardHeader
-            title={filterOptions?.date_time_start}
-            titleTypographyProps={{ variant: 'h6', fontSize: '1rem', }}/> */}
-          <CardContent sx={{minHeight: 500}}>
-            <PredictionEventsDataGrid />
-          </CardContent>
-        </Card>
+          <PredictionEventsDataGrid />
         </Grid>        
       </Grid>
     </Grid>

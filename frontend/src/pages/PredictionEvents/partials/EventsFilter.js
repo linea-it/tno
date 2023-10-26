@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
 import { Typography } from '../../../../node_modules/@material-ui/core/index';
 import { PredictionEventsContext } from '../../../contexts/PredictionContext';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -15,7 +14,7 @@ import MaginitudeSelect from '../../../components/MaginitudeSelect/index';
 import GeoFilter from '../../../components/GeoFilter/index';
 function PredictionEventsFilter() {
 
-  const { queryOptions, setQueryOptions, parseFilterOptions } = useContext(PredictionEventsContext)
+  const { queryOptions, setQueryOptions } = useContext(PredictionEventsContext)
 
   return (
     <Box>
@@ -95,9 +94,28 @@ function PredictionEventsFilter() {
           </Stack>
         </LocalizationProvider>
         <AsteroidSelect value={{
-              filterType: queryOptions.filters.filterType,
-              filterValue: queryOptions.filters.filterValue
-            }} onChange={(value) => {
+          filterType: queryOptions.filters.filterType,
+          filterValue: queryOptions.filters.filterValue
+        }} onChange={(value) => {
+          setQueryOptions(prev => {
+            return {
+              ...prev,
+              filters: {
+                ...prev.filters,
+                ...value
+              }
+            }
+          })
+        }} />
+        <Box mt={2}>
+          <GeoFilter
+            value={{
+              geo: queryOptions.filters.geo,
+              latitude: queryOptions.filters.latitude,
+              longitude: queryOptions.filters.longitude,
+              radius: queryOptions.filters.radius,
+            }}
+            onChange={(value) => {
               setQueryOptions(prev => {
                 return {
                   ...prev,
@@ -107,29 +125,10 @@ function PredictionEventsFilter() {
                   }
                 }
               })
-            }} />        
-        <Box mt={2}>
-        <GeoFilter 
-          value={{
-            geo: queryOptions.filters.geo,
-            latitude: queryOptions.filters.latitude,
-            longitude: queryOptions.filters.longitude,
-            radius: queryOptions.filters.radius,
-          }} 
-          onChange={(value) => {
-            // console.log("On Change Geo Filter: ", value)
-            setQueryOptions(prev => {
-              return {
-                ...prev,
-                filters: {
-                  ...prev.filters,
-                  ...value
-                }
-              }})
             }}
-        /></Box>            
-      </Box>      
-      <Typography m={1} variant="body1">This is an experimental feature and may take some time to process. To prevent timeouts, we recommend using date and magnitude ranges that restrict the supplied list to a maximum of 200 objects. You can find this information in 'Total Occultation Predictions' after performing a search.</Typography>
+          /></Box>
+      </Box>
+      <Typography m={1} variant="body2">This is an experimental feature and may take some time to process. To prevent timeouts, we recommend using date and magnitude ranges that restrict the supplied list to a maximum of 200 objects. You can find this information in 'Total Occultation Predictions' after performing a search.</Typography>
 
     </Box >
 

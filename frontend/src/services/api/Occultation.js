@@ -1,5 +1,3 @@
-import { filter } from 'lodash'
-import { FilterSharp } from '../../../node_modules/@mui/icons-material/index'
 import { api } from './Api'
 
 export const getOccultations = ({ page, pageSize, ordering, start_date, end_date, filter_type, filter_value, min_mag, max_mag }) => {
@@ -9,9 +7,9 @@ export const getOccultations = ({ page, pageSize, ordering, start_date, end_date
     ordering,
     start_date,
     end_date,
-    dynclass: filter_type == "dynclass" ? filter_value : null,
-    base_dynclass: filter_type == "base_dynclass" ? filter_value : null,
-    name: filter_type == "name" ? filter_value.replaceAll(';', ',') : null,
+    dynclass: filter_type === "dynclass" ? filter_value : null,
+    base_dynclass: filter_type === "base_dynclass" ? filter_value : null,
+    name: filter_type === "name" ? filter_value.replaceAll(';', ',') : null,
     min_mag,
     max_mag
   }
@@ -25,9 +23,9 @@ export const filter_by_location = ({ page, pageSize, ordering, start_date, end_d
     ordering,
     start_date,
     end_date,
-    dynclass: filter_type == "dynclass" ? filter_value : null,
-    base_dynclass: filter_type == "base_dynclass" ? filter_value : null,
-    name: filter_type == "name" ? filter_value.replaceAll(';', ',') : null,
+    dynclass: filter_type === "dynclass" ? filter_value : null,
+    base_dynclass: filter_type === "base_dynclass" ? filter_value : null,
+    name: filter_type === "name" ? filter_value.replaceAll(';', ',') : null,
     min_mag,
     max_mag,
     lat,
@@ -64,7 +62,6 @@ export const getOccultationHighlights = () => {
 
 
 export const geoFilterIsValid = (value) => {
-  console.log("geoFilterIsValid")
   if (value.geo) {
     if ((value.latitude === undefined) || (value.latitude === '')) {
       return false
@@ -127,7 +124,8 @@ export const listAllPredictionEvents = ({ queryKey }) => {
     newFilters.mag_g_max = filters.maginitudeMax
 
     // Filtro por Nighside
-    newFilters.nightside = filters.nightside
+    // Caso Nighside seja false ignora esse filtro. se não o backend vai retornar apenas resultados nightside = false.
+    newFilters.nightside = filters.nightside === true ? true : null
 
     // GEO Filter
     if (filters.geo === true && geoFilterIsValid(filters)) {
@@ -136,8 +134,6 @@ export const listAllPredictionEvents = ({ queryKey }) => {
         newFilters.radius = filters.radius
     }
   }
-
-  console.log("NewFilters: ", newFilters)
 
   return api.get(
     `/occultations/`, { params: { page, pageSize, ordering, ...newFilters } })

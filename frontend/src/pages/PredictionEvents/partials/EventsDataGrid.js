@@ -5,7 +5,9 @@ import { PredictionEventsColumns, predictionEventsColumnVisibilityModel } from '
 import { listAllPredictionEvents } from '../../../services/api/Occultation';
 import CustomPagination from '../../../components/CustomDataGrid/Pagination';
 import { PredictionEventsContext } from '../../../contexts/PredictionContext';
-
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
 export function PredictionEventsDataGrid() {
 
   const columns = PredictionEventsColumns
@@ -42,18 +44,24 @@ export function PredictionEventsDataGrid() {
   }, [data?.count, setRowCountState]);
 
   return (
+    <Card>
+    <CardHeader
+      title={`Total Occultation Predictions: ${rowCountState}`}
+      titleTypographyProps={{ variant: 'h6', fontSize: '1rem', }}/>
+    <CardContent sx={{minHeight: 500}}>
     <DataGrid
+      sx={{minHeight: '500px'}}
       disableColumnFilter
       disableRowSelectionOnClick
       // getRowHeight={() => '200'} 
       getRowHeight={() => 'auto'}
-      // getEstimatedRowHeight={() => 200}
+      getEstimatedRowHeight={() => 200}
       pagination
       rows={data?.results !== undefined ? data.results : []}
       columns={columns}
       rowCount={rowCountState}
       loading={isLoading}
-      pageSizeOptions={[100]}
+      pageSizeOptions={[25,50,100]}
       paginationModel={queryOptions.paginationModel}
       paginationMode="server"
       onPaginationModelChange={(paginationModel) => {
@@ -76,7 +84,7 @@ export function PredictionEventsDataGrid() {
       initialState={{
         pagination: {
           paginationModel: {
-            pageSize: 100,
+            pageSize: 25,
           },
         },
         sorting: {
@@ -90,6 +98,8 @@ export function PredictionEventsDataGrid() {
         pagination: CustomPagination,
       }}
     />
+    </CardContent>
+  </Card>    
   );
 
 }
