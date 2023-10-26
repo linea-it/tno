@@ -5,7 +5,8 @@ import {
   Grid,
   Card,
   CardHeader,
-  CardContent} from '@material-ui/core';
+  CardContent
+} from '@material-ui/core';
 import List from '../../components/List';
 
 import Aladin from '../../components/Aladin/index';
@@ -254,15 +255,6 @@ function PredictionEventDetail() {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
-          {occultation.id !== undefined && (
-            <PredictOccultationMap
-              occultationId={occultation.id}
-            />
-          )}
-        </Grid>
-      </Grid>
-      <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <Card>
             <CardHeader title="Occultation Prediction Circumstances" />
@@ -271,6 +263,13 @@ function PredictionEventDetail() {
             </CardContent>
           </Card>
         </Grid>
+        {occultation.id !== undefined && (
+          <Grid item xs={12} md={6}>
+            <PredictOccultationMap
+              occultationId={occultation.id}
+            />
+          </Grid>
+        )}
         <Grid item xs={12} md={6}>
           <Card>
             <CardHeader title="Occulted Star" />
@@ -279,8 +278,6 @@ function PredictionEventDetail() {
             </CardContent>
           </Card>
         </Grid>
-      </Grid>
-      <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
           <Card>
             <CardHeader title="Object" />
@@ -289,9 +286,11 @@ function PredictionEventDetail() {
             </CardContent>
           </Card>
         </Grid>
-        {occultation.ra_star_candidate && occultation.dec_star_candidate ? (
-          <Grid item xs={12} md={6}>
-            <Card>
+      </Grid>
+
+      {/* {occultation.ra_star_candidate && occultation.dec_star_candidate ? ( */}
+      {/* // <Grid item xs={12} md={6}> */}
+      {/* <Card>
               <CardHeader title="Sky map (Aladin)" />
               <CardContent>
                 <Aladin
@@ -299,10 +298,10 @@ function PredictionEventDetail() {
                   dec={occultation.dec_star_candidate}
                 />
               </CardContent>
-            </Card>
-          </Grid>
-        ) : null}
-      </Grid>
+            </Card> */}
+      {/* </Grid> */}
+      {/* ) : null} */}
+      {/* </Grid> */}
     </>
   );
 }

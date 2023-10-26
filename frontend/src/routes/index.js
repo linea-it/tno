@@ -34,7 +34,6 @@ import PublicAboutUs from '../pages/PublicPortal/AboutUs/index'
 import PublicTutorials from '../pages/PublicPortal/Contact/index'
 import PublicOccultation from '../pages/PublicPortal/documentation/index'
 // import OccultationDetail from '../pages/Occultation/Detail'
-import PublicSupporters from '../pages/PublicPortal/Home/partials/Supporters/index'
 import PublicBanner from '../components/PublicPortal/Banner/index'
 import PublicDocumentation from '../pages/PublicPortal/documentation/index'
 import PublicContact from '../pages/PublicPortal/Contact/index'
@@ -102,7 +101,6 @@ export default function AppRoutes() {
                 <div className={classes.titleItem}><label>Occultation Prediction Details</label></div>
               </Grid><br></br>
               {/* <OccultationDetail /> */}
-              <PublicSupporters />
             </div>
           </PublicPortalPage>
         }

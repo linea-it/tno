@@ -110,7 +110,8 @@ function PredictOccultationMap({ occultationId }) {
               <Box
                 component="img"
                 sx={{
-                  maxWidth: { xs: 400, sm: 450, md: 480, lg: 500, xl: 900 },
+                  maxWidth: '90%',
+                  height: 'auto',
                 }}
                 alt=""
                 src={data.url}
