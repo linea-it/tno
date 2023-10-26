@@ -161,15 +161,15 @@ export default function AppRoutes() {
 
       {/* Dashboard  Layout*/}
       <Route
-        // isPrivate
+        isHomePage
         exact
         path='/dashboard/stats'
         element={
-          <PrivateRoute auth={{ isAuthenticated }}>
+          // <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
               <Dashboard />
             </DashboardPage>
-          </PrivateRoute>
+          // </PrivateRoute>
         }
       />
       <Route

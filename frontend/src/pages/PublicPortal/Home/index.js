@@ -6,19 +6,21 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import PredictionEventsFilter from '../../../components/PredictionEventsFilter/index'
 import PredictionEventsDataGrid from '../../../components/PredictionEventsDataGrid/index'
+import PredictionHighlights from '../../../components/PredictionHighlights/index'
 
 function Main() {
 
   return (
     <>
       <PublicBanner />
+      <PredictionHighlights />
       <Box mt={3} ml={8} mr={8}>
         <Grid>
           <Grid container spacing={3}>
             <Grid item xs={12}>
             <Card>
               <CardContent>
-                <PredictionEventsFilter />
+                <PredictionEventsFilter/>
               </CardContent>
             </Card>
             </Grid>

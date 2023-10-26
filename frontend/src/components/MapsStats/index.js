@@ -19,7 +19,7 @@ export default function Mapsdata() {
   })
 
   return (
-    <Card>
+    <Card sx={{ borderRadius: '10px' }}>
       <CardHeader
         title={
           isLoading ? (
