@@ -14,10 +14,9 @@ import {
   // getOccultationMap,
   getStarByOccultationId
 } from '../../services/api/Occultation';
-import useStyles from './styles'
 import PredictOccultationMap from './partials/PredictMap';
 
-function OccultationDetail() {
+function PredictionEventDetail() {
   const { id } = useParams();
   const [occultation, setOccultation] = useState({});
   const [starObj, setStarObj] = useState({});
@@ -308,4 +307,4 @@ function OccultationDetail() {
   );
 }
 
-export default OccultationDetail;
+export default PredictionEventDetail;

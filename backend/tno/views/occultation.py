@@ -17,15 +17,18 @@ from rest_framework.response import Response
 
 from tno.db import CatalogDB
 from tno.models import Occultation
-from tno.occviz import visibility, visibility_from_coeff2
+from tno.occviz import visibility, visibility_from_coeff
 from tno.prediction_map import sora_occultation_map, maps_folder_stats
 from tno.serializers import OccultationSerializer
-from tno.tasks import create_occ_map_task, create_prediction_maps, create_occultation_path_coeff
+from tno.tasks import create_occ_map_task, create_prediction_maps, create_occultation_path_coeff, assync_visibility_from_coeff
+
 from django.db.models import Q, F, Value, FloatField
 from functools import reduce
 import operator
 from pathlib import Path
 import os
+from celery import group
+from time import sleep
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
     pass
@@ -176,20 +179,20 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
         # Recupera os parametros da requisição
         params = self.request.query_params
+        # pageSize = params.get('pageSize', 25)
+        pageSize = params.get('pageSize', 10)
         lat, long, radius = self.check_user_location_params(params)
 
         # TODO: Necessário implementar forma de fazer a paginação.
         # TODO: Implementar memcache para eventos já processados
-        # TODO: Estudar a possibilidade de um metodo asyncrono
-        if None not in [lat, long, radius]:
-            # print("Todos os parametros de user location OK")
-            # print(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
 
+        # Sync Method
+        if None not in [lat, long, radius]:
+            # print(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
             wanted_ids = []
             count = 0
-            # TODO Executar a função de visibilidade
             for event in queryset:
-                is_visible, info = visibility_from_coeff2(
+                is_visible, info = visibility_from_coeff(
                     latitude=lat,
                     longitude=long,
                     radius=radius,
@@ -206,8 +209,33 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                     wanted_ids.append(event.id)
                     count += 1
                     # print(f"IS VISIBLE: {is_visible}: {event.id} - {event.date_time} - {event.name}")
-                    if count == 10:
+                    if count == pageSize:
                         return queryset.filter(id__in=wanted_ids)
+
+        # TODO: Estudar a possibilidade de um metodo asyncrono
+        # Teste Com metodo assincrono pode ser promissor!       
+        # if None not in [lat, long, radius]:
+        #     # print(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
+        #     job = group(
+        #         assync_visibility_from_coeff.s(
+        #             event_id=event.id,
+        #             latitude=lat,
+        #             longitude=long,
+        #             radius=radius,
+        #             date_time=event.date_time.isoformat(),
+        #             inputdict=event.occ_path_coeff,
+        #             # object_diameter=event.diameter,
+        #             # ring_diameter=event.diameter,
+        #             # n_elements= 1500,
+        #             # ignore_nighttime= False,
+        #             # latitudinal= False
+        #          ) for event in queryset) 
+            
+        #     result = job.apply_async()
+        #     while result.ready() == False:
+        #         print(f"Completed: {result.completed_count()}")
+        #         sleep(1)
+
         else:
             # Verifica se pelo menos um dos parametros de user location tem valor
             # TODO avisar que os 3 parametros precisam ter valores

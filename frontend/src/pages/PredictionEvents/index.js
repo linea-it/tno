@@ -5,8 +5,9 @@ import { PredictionEventsContext, PredictionEventsProvider } from '../../context
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
-import PredictionEventsDataGrid from './partials/EventsDataGrid';
-import PredictionEventsFilter from './partials/EventsFilter';
+import PredictionEventsFilter from '../../components/PredictionEventsFilter/index';
+import PredictionEventsDataGrid from '../../components/PredictionEventsDataGrid/index';
+
 
 function PredictionEvents() {
 

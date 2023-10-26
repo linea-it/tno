@@ -1,17 +1,19 @@
 import { useContext } from 'react';
 
 import Box from '@mui/material/Box';
-import { Typography } from '../../../../node_modules/@material-ui/core/index';
-import { PredictionEventsContext } from '../../../contexts/PredictionContext';
+// import { PredictionEventsContext } from '../../../contexts/PredictionContext';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
-import AsteroidSelect from '../../../components/AsteroidSelect/AsteroidSelect';
-import MaginitudeSelect from '../../../components/MaginitudeSelect/index';
-import GeoFilter from '../../../components/GeoFilter/index';
+import Typography from '@mui/material/Typography';
+import MaginitudeSelect from '../MaginitudeSelect/index';
+import AsteroidSelect from '../AsteroidSelect/AsteroidSelect';
+import GeoFilter from '../GeoFilter/index';
+import { PredictionEventsContext } from '../../contexts/PredictionContext';
+
 function PredictionEventsFilter() {
 
   const { queryOptions, setQueryOptions } = useContext(PredictionEventsContext)
@@ -129,10 +131,7 @@ function PredictionEventsFilter() {
           /></Box>
       </Box>
       <Typography m={1} variant="body2">This is an experimental feature and may take some time to process. To prevent timeouts, we recommend using date and magnitude ranges that restrict the supplied list to a maximum of 200 objects. You can find this information in 'Total Occultation Predictions' after performing a search.</Typography>
-
     </Box >
-
-
   )
 }
 

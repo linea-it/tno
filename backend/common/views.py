@@ -14,7 +14,7 @@ def teste(request):
     if request.method == "GET":
 
         import pandas as pd
-        from tno.occviz import visibility_from_coeff2
+        from tno.occviz import visibility_from_coeff
         from datetime import datetime, timezone
         from tno.models import Occultation
 
@@ -27,7 +27,7 @@ def teste(request):
         rows = []
         ids = []
         for e in events:
-            is_visible, info = visibility_from_coeff2(
+            is_visible, info = visibility_from_coeff(
                 latitude=float(lat),
                 longitude=float(long),
                 radius=float(radius),

@@ -40,6 +40,7 @@ import PublicDocumentation from '../pages/PublicPortal/documentation/index'
 import PublicContact from '../pages/PublicPortal/Contact/index'
 import FooterSupporte from '../components/PublicPortal/Footer/FooterSupporters'
 import PredictionEvents from '../pages/PredictionEvents/index'
+import PredictionEventDetail from '../pages/PredictionEvents/Detail'
 
 export default function AppRoutes() {
   const { isAuthenticated, signIn } = useAuth()
@@ -327,6 +328,16 @@ export default function AppRoutes() {
             </DashboardPage>
         }
       />
+      <Route
+        // IsPrivate
+        exact
+        path='/prediction-event-detail/:id'
+        element={
+            <PublicPortalPage>
+              <PredictionEventDetail />
+            </PublicPortalPage>
+        }
+      />      
       {/* <Route
         // isPrivate
         exact

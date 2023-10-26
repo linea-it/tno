@@ -986,7 +986,7 @@ def occultation_path_coeff2(
     return output
 
 
-def visibility_from_coeff2(
+def visibility_from_coeff(
     latitude: float,
     longitude: float,
     radius: float,

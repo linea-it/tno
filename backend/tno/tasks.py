@@ -7,9 +7,10 @@ from celery import group, shared_task
 
 from tno.prediction_map import (garbage_collector_maps, sora_occultation_map,
                           upcoming_events_to_create_maps)
-from tno.occviz import occultation_path_coeff2
+from tno.occviz import occultation_path_coeff2, visibility_from_coeff
 from tno.models import Occultation 
 from time import sleep
+
 
 @shared_task
 def add(x=2, y=2):
@@ -166,6 +167,11 @@ def create_occultation_path_coeff():
     #     print(f"Coeff Completed: {result.completed_count()}")
     #     sleep(3)
 
+
+@shared_task
+def assync_visibility_from_coeff(event_id, **kwargs):
+    is_visible, info = visibility_from_coeff(**kwargs)
+    return event_id, bool(is_visible)
 
 # 11 Tech implementation of SORA Maps.
 # # task para gerar os mapas das ocultações todos os dias as 23:00
