@@ -1,15 +1,13 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { useQuery } from 'react-query';
-import PropTypes from 'prop-types';
 import { DataGrid } from '@mui/x-data-grid';
-import  { PredictionEventsColumns, predictionEventsColumnVisibilityModel }  from './Columns';
+import { PredictionEventsColumns, predictionEventsColumnVisibilityModel } from './Columns';
 import { listAllPredictionEvents } from '../../../services/api/Occultation';
-import CustomToolbar from '../../../components/CustomDataGrid/Toolbar';
 import CustomPagination from '../../../components/CustomDataGrid/Pagination';
 import { PredictionEventsContext } from '../../../contexts/PredictionContext';
 
 export function PredictionEventsDataGrid() {
-  
+
   const columns = PredictionEventsColumns
   const columnVisibilityModel = predictionEventsColumnVisibilityModel
 
@@ -19,8 +17,8 @@ export function PredictionEventsDataGrid() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['predictionEvents', { paginationModel, sortModel, filters }],
-    queryFn: listAllPredictionEvents ,
-    keepPreviousData: true,
+    queryFn: listAllPredictionEvents,
+    keepPreviousData: false,
     refetchInterval: false,
     refetchOnWindowFocus: false,
     refetchOnmount: false,
@@ -45,10 +43,10 @@ export function PredictionEventsDataGrid() {
 
   return (
     <DataGrid
-      disableColumnFilter 
+      disableColumnFilter
       disableRowSelectionOnClick
       // getRowHeight={() => '200'} 
-      getRowHeight={() => 'auto'} 
+      getRowHeight={() => 'auto'}
       // getEstimatedRowHeight={() => 200}
       pagination
       rows={data?.results !== undefined ? data.results : []}
@@ -65,7 +63,7 @@ export function PredictionEventsDataGrid() {
             paginationModel: { ...paginationModel }
           }
         })
-      }}     
+      }}
       sortingMode="server"
       onSortModelChange={(sortModel) => {
         setQueryOptions(prev => {
@@ -75,23 +73,6 @@ export function PredictionEventsDataGrid() {
           }
         })
       }}
-      // filterMode="server"
-      // onFilterModelChange={(filterModel) => {
-      //   // console.log("FilterModel: ", filterModel)
-      //   setQueryOptions(prev => {
-      //     return {
-      //       ...prev,
-      //       paginationModel: {
-      //         ...prev.paginationModel,
-      //         page: 0,
-      //       },
-      //       filterModel: { ...filterModel }
-      //     }
-      //   })
-      // }}
-
-
-      // onCellKeyDown={onCellKeyDown}
       initialState={{
         pagination: {
           paginationModel: {
@@ -106,7 +87,6 @@ export function PredictionEventsDataGrid() {
         }
       }}
       slots={{
-        // toolbar: CustomToolbar,
         pagination: CustomPagination,
       }}
     />

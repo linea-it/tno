@@ -62,6 +62,28 @@ export const getOccultationHighlights = () => {
   return api.get(`/occultations/highlights/`).then(res => res.data)
 }
 
+
+export const geoFilterIsValid = (value) => {
+  console.log("geoFilterIsValid")
+  if (value.geo) {
+    if ((value.latitude === undefined) || (value.latitude === '')) {
+      return false
+    }
+    if ((value.latitude < -90 || value.latitude > 90)) {
+      return false
+    }
+
+    if ((value.longitude === undefined) || (value.longitude === '')) {
+      return false
+    }
+    
+    if ((value.longitude < -180 || value.longitude > 180)) {
+      return false
+    }
+  }
+  return true
+}
+
 export const listAllPredictionEvents = ({ queryKey }) => {
   const [_, params] = queryKey
 
@@ -108,12 +130,10 @@ export const listAllPredictionEvents = ({ queryKey }) => {
     newFilters.nightside = filters.nightside
 
     // GEO Filter
-    if (filters.geo === true) {
-      if ((filters.latitude !== undefined) && (filters.longitude !== undefined) && (filters.radius !== undefined)) {
+    if (filters.geo === true && geoFilterIsValid(filters)) {
         newFilters.lat = filters.latitude
         newFilters.long = filters.longitude
         newFilters.radius = filters.radius
-      }
     }
   }
 
