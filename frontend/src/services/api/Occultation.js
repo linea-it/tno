@@ -1,3 +1,4 @@
+import { filter } from 'lodash'
 import { FilterSharp } from '../../../node_modules/@mui/icons-material/index'
 import { api } from './Api'
 
@@ -102,6 +103,18 @@ export const listAllPredictionEvents = ({ queryKey }) => {
 
     // Filtro por magnitude maxima
     newFilters.mag_g_max = filters.maginitudeMax
+
+    // Filtro por Nighside
+    newFilters.nightside = filters.nightside
+
+    // GEO Filter
+    if (filters.geo === true) {
+      if ((filters.latitude !== undefined) && (filters.longitude !== undefined) && (filters.radius !== undefined)) {
+        newFilters.lat = filters.latitude
+        newFilters.long = filters.longitude
+        newFilters.radius = filters.radius
+      }
+    }
   }
 
   console.log("NewFilters: ", newFilters)

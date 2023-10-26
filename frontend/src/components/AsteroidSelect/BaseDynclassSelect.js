@@ -22,7 +22,7 @@ function BaseDynclassSelect({ value, onChange }) {
 
 
   return (
-    <FormControl size="normal" sx={{ width: '50ch' }}>
+    <FormControl size="normal" sx={{ minWidth: '50ch' }}>
       <InputLabel id="filter-base-dynclass-select-label">Dynamic class</InputLabel>
       <Select
         labelId="filter-base-dynclass-select-label"

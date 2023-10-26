@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 function FilterTypeSelect({ value, onChange }) {
 
   return (
-    <FormControl size="normal" sx={{width: '30ch'}}>
+    <FormControl size="normal" sx={{width: '18ch'}}>
       <InputLabel id="fiter-type-select-label">Filter Type</InputLabel>
       <Select
         labelId="fiter-type-select-label"

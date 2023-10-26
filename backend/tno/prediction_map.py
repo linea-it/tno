@@ -239,7 +239,9 @@ def maps_folder_stats():
         maps_dates.append(date)
 
     oldest_file = datetime.fromtimestamp(map_paths[0].stat().st_mtime)
+    oldest = oldest_file.astimezone(tz=timezone.utc).isoformat()
     newest_file = datetime.fromtimestamp(map_paths[-1].stat().st_mtime)
+    newest = newest_file.astimezone(tz=timezone.utc).isoformat()
 
     # Remove Duplicated dates
     maps_dates = sorted(list(set(maps_dates)))
@@ -266,8 +268,8 @@ def maps_folder_stats():
             "folder_size_threshold": folder_size_threshold,
             "h_folder_size_threshold": humanize.naturalsize(folder_size_threshold),
             "period": [first_map.isoformat(), last_map.isoformat()],
-            "oldest_file": oldest_file.astimezone(tz=timezone.utc).isoformat(),
-            "newest_file": newest_file.astimezone(tz=timezone.utc).isoformat(),
+            "oldest_file": oldest,
+            "newest_file": newest,
         }   
     
     

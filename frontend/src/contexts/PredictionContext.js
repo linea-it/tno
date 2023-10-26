@@ -19,7 +19,12 @@ export function PredictionEventsProvider({ children }) {
             date_time_before: null,
             filterType: 'base_dynclass',
             filterValue: undefined,
-            maginitudeMax: 16
+            maginitudeMax: 16,
+            nightside: true,
+            geo: false,
+            latitude: undefined,
+            longitude: undefined,
+            radius: 500
         }
     })
 

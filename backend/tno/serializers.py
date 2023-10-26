@@ -93,7 +93,11 @@ class OccultationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Occultation
-        exclude = ('min_longitude', 'max_longitude', 'min_latitude', 'max_latitude')
+        exclude = (
+            'occ_path_min_longitude', 
+            'occ_path_max_longitude', 
+            'occ_path_min_latitude', 
+            'occ_path_max_latitude')
 
     def get_alias(self, obj):
         return obj.get_alias()

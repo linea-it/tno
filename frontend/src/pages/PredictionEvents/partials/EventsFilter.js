@@ -7,10 +7,12 @@ import { PredictionEventsContext } from '../../../contexts/PredictionContext';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
 import AsteroidSelect from '../../../components/AsteroidSelect/AsteroidSelect';
 import MaginitudeSelect from '../../../components/MaginitudeSelect/index';
+import GeoFilter from '../../../components/GeoFilter/index';
 function PredictionEventsFilter() {
 
   const { queryOptions, setQueryOptions, parseFilterOptions } = useContext(PredictionEventsContext)
@@ -19,15 +21,13 @@ function PredictionEventsFilter() {
     <Box>
       <Box
         component="form"
-        // sx={{
-        //   '& > :not(style)': { m: 1, width: '25ch' },
-        // }}
         noValidate
         autoComplete="off"
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Stack direction="row" spacing={1} alignItems="stretch" mb={2}>
             <DateTimePicker
+              sx={{ minWidth: '25ch' }}
               label="Date Start"
               name="date_time_after"
               value={queryOptions.filters.dt_after_local}
@@ -46,6 +46,7 @@ function PredictionEventsFilter() {
               }}
             />
             <DateTimePicker
+              sx={{ minWidth: '25ch' }}
               label="Date End"
               name="date_time_before"
               value={queryOptions.filters.dt_before_local}
@@ -65,8 +66,6 @@ function PredictionEventsFilter() {
             <MaginitudeSelect
               value={queryOptions.filters.maginitudeMax}
               onChange={(event) => {
-                console.log(event.target.value)
-                console.log("Magnitude Value: ", event.target.value)
                 setQueryOptions(prev => {
 
                   return {
@@ -78,11 +77,27 @@ function PredictionEventsFilter() {
                   }
                 })
               }} />
-            <AsteroidSelect value={{
+            <FormControlLabel control={
+              <Switch
+                checked={queryOptions.filters.nightside}
+                onChange={(event) => {
+                  setQueryOptions(prev => {
+                    return {
+                      ...prev,
+                      filters: {
+                        ...prev.filters,
+                        nightside: event.target.checked
+                      }
+                    }
+                  })
+                }}
+              />} label="Nightside" />
+          </Stack>
+        </LocalizationProvider>
+        <AsteroidSelect value={{
               filterType: queryOptions.filters.filterType,
               filterValue: queryOptions.filters.filterValue
             }} onChange={(value) => {
-              console.log("Asteroid Select Value: ", value)
               setQueryOptions(prev => {
                 return {
                   ...prev,
@@ -92,23 +107,30 @@ function PredictionEventsFilter() {
                   }
                 }
               })
-            }} />
-          </Stack>
-        </LocalizationProvider>
-      </Box>
-      <Box
-        component="form"
-        sx={{
-          '& > :not(style)': { m: 1, width: '25ch' },
-        }}
-        noValidate
-        autoComplete="off"
-      >
-        <TextField id="outlined-basic" label="Latitude (deg)" variant="outlined" />
-        <TextField id="outlined-basic" label="Longitude (deg)" variant="outlined" />
-        <TextField id="outlined-basic" label="Radius (Km)" variant="outlined" />
-      </Box>
+            }} />        
+        <Box mt={2}>
+        <GeoFilter 
+          value={{
+            geo: queryOptions.filters.geo,
+            latitude: queryOptions.filters.latitude,
+            longitude: queryOptions.filters.longitude,
+            radius: queryOptions.filters.radius,
+          }} 
+          onChange={(value) => {
+            // console.log("On Change Geo Filter: ", value)
+            setQueryOptions(prev => {
+              return {
+                ...prev,
+                filters: {
+                  ...prev.filters,
+                  ...value
+                }
+              }})
+            }}
+        /></Box>            
+      </Box>      
       <Typography m={1} variant="body1">This is an experimental feature and may take some time to process. To prevent timeouts, we recommend using date and magnitude ranges that restrict the supplied list to a maximum of 200 objects. You can find this information in 'Total Occultation Predictions' after performing a search.</Typography>
+
     </Box >
 
 

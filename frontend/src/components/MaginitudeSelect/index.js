@@ -14,7 +14,7 @@ function MaginitudeSelect({ value, onChange, min, max }) {
 
   const options = Array.from({length: max-min+1}, (_, i) => i + min);
   return (
-    <FormControl size="normal" sx={{ width: '20ch' }}>
+    <FormControl size="normal" sx={{minWidth:'12ch'}}>
       <InputLabel id="magnitude-max-select-label">Magnitude Max</InputLabel>
       <Select
         labelId="magnitude-max-select-label"

@@ -97,21 +97,26 @@ def create_prediction_maps():
 def calculate_occultation_path(occultation_id, **kwargs):
     print(f"calculate_occultation_path: {occultation_id}")
     output = occultation_path_coeff2(**kwargs)
+    print(output)
     occ_event = Occultation.objects.get(pk=occultation_id)
 
     occ_event.have_path_coeff = False
-    occ_event.min_longitude = None
-    occ_event.max_longitude = None
-    occ_event.occultation_path_coeff = {}
+    occ_event.occ_path_min_longitude = None
+    occ_event.occ_path_max_longitude = None
+    occ_event.occ_path_min_latitude = None
+    occ_event.occ_path_max_latitude = None    
+    occ_event.occ_path_is_nightside = None
+    occ_event.occ_path_coeff = {}
+
 
     if output['coeff_latitude'] != None and output['coeff_longitude'] != None:
         occ_event.have_path_coeff = True
-        occ_event.min_longitude = float(output['min_longitude'])
-        occ_event.max_longitude = float(output['max_longitude'])
-        # TODO: Esperando implementação do campo min_latitude e max_latitude na função de path.
-        # occ_event.min_latitude = float(output['min_latitude'])
-        # occ_event.max_latitude = float(output['max_latitude'])
-        occ_event.occultation_path_coeff = output
+        occ_event.occ_path_min_longitude = float(output['min_longitude']) if output['min_longitude'] != None else None
+        occ_event.occ_path_max_longitude = float(output['max_longitude']) if output['max_longitude'] != None else None
+        occ_event.occ_path_min_latitude = float(output['min_latitude']) if output['min_latitude'] != None else None
+        occ_event.occ_path_max_latitude = float(output['max_latitude']) if output['max_latitude'] != None else None
+        occ_event.occ_path_is_nightside = bool(output['nightside'])
+        occ_event.occ_path_coeff = output
 
     occ_event.save()
     

@@ -916,6 +916,7 @@ def occultation_path_coeff2(
     })
     lons.append([result[2], result[3]])
     lats.append([result[4], result[5]])
+
     nightside.append([result[6]])
 
     if object_radius is not None:
@@ -979,7 +980,8 @@ def occultation_path_coeff2(
 
     nightsides = np.array(
         [item for sublist in nightside if sublist is not None for item in sublist if item is not None])
-    output.update({'nightside': nightsides.any()})
+
+    output.update({'nightside': any(nightsides)})
 
     return output
 

@@ -23,25 +23,44 @@ class Command(BaseCommand):
             default=1000,
             type=int,
             help="Maximum number of jobs to be submitted, default is 1000",
-        )        
+        )
+        parser.add_argument(
+            "--force",
+            default=False,
+            type=bool,
+            help="Creates the path by overwriting previous results",
+        ) 
 
+        parser.add_argument(
+            "--id",
+            default=None,
+            type=int,
+            help="Run only for select ID",)
+        
     def handle(self, *args, **options):
 
-        start = datetime.strptime(options["start"], '%Y-%m-%d').astimezone(tz=timezone.utc)
-        end = datetime.strptime(options.get("end"), '%Y-%m-%d').replace(hour=23, minute=59, second=59).astimezone(tz=timezone.utc) if options.get("end", None) != None else None
-        limit = options['limit']
-
-        if end == None:
-            self.stdout.write(f"Submitting background tasks to create occultation paths for date {start}")
+        if options['id'] != None:
+            to_run = [Occultation.objects.get(pk=options['id'])]
+            self.stdout.write(f"Submitting background tasks to create occultation paths for id {options['id']}")
+            limit = 1
         else:
-            self.stdout.write(f"Submitting background tasks to create occultation paths for period {start} to {end}")
-            
-        to_run = Occultation.objects.filter(
-            date_time__gte=start, have_path_coeff=False).order_by('date_time')
-        if end != None:
-            to_run.filter(
-                date_time__lte=end
-            )
+            start = datetime.strptime(options["start"], '%Y-%m-%d').astimezone(tz=timezone.utc)
+            end = datetime.strptime(options.get("end"), '%Y-%m-%d').replace(hour=23, minute=59, second=59).astimezone(tz=timezone.utc) if options.get("end", None) != None else None
+            limit = options['limit']
+
+            if end == None:
+                self.stdout.write(f"Submitting background tasks to create occultation paths for date {start}")
+            else:
+                self.stdout.write(f"Submitting background tasks to create occultation paths for period {start} to {end}")
+
+            to_run = Occultation.objects.filter(
+                date_time__gte=start).order_by('date_time')
+            if end != None:
+                to_run.filter(
+                    date_time__lte=end
+                )
+            if options['force'] == False:
+                to_run.filter(have_path_coeff=False)
 
         self.stdout.write(f"Events to run [{len(to_run)}].")
         job = group(
@@ -61,5 +80,7 @@ class Command(BaseCommand):
 
         # Submete as tasks aos workers    
         results = job.apply_async()
+
+
         self.stdout.write(f"All [{len(results)}] subtasks are submited.")
         self.stdout.write("For monitoring use celery*.log in log directory")

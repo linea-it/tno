@@ -409,16 +409,6 @@ class Occultation(models.Model):
         help_text="Ephemeris version",
     )
 
-    # TODO: Resolver este campo está duplicado com asteroid.dynclass
-    # dynamic_class = models.CharField(
-    #     max_length=35,
-    #     default=None,
-    #     null=True,
-    #     blank=True,
-    #     verbose_name="Dynamic class",
-    #     help_text="Dynamic class",
-    # )
-
     semimajor_axis = models.FloatField(
         verbose_name="Semimajor axis",
         null=True,
@@ -460,38 +450,6 @@ class Occultation(models.Model):
     )
 
     # Occultation Path Fields.
-    min_longitude = models.FloatField(
-        verbose_name="Min Logintude",
-        null=True,
-        blank=True,
-        default=None,
-        help_text="Min Logintude Occultation Path",
-    )
-
-    max_longitude = models.FloatField(
-        verbose_name="Max Logintude",
-        null=True,
-        blank=True,
-        default=None,
-        help_text="Max Logintude Occultation Path",
-    )
-
-    min_latitude = models.FloatField(
-        verbose_name="Min Latitude",
-        null=True,
-        blank=True,
-        default=None,
-        help_text="Min Latitude Occultation Path",
-    )
-
-    max_latitude = models.FloatField(
-        verbose_name="Max Latitude",
-        null=True,
-        blank=True,
-        default=None,
-        help_text="Max Latitude Occultation Path",
-    )   
-
     have_path_coeff = models.BooleanField(
         verbose_name="Have Path Coeff",
         null=True,
@@ -500,7 +458,47 @@ class Occultation(models.Model):
         help_text="Have Path Coeff",
     )
 
-    occultation_path_coeff = models.JSONField(
+    occ_path_min_longitude = models.FloatField(
+        verbose_name="Min Logintude",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Min Logintude Occultation Path",
+    )
+
+    occ_path_max_longitude = models.FloatField(
+        verbose_name="Max Logintude",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Max Logintude Occultation Path",
+    )
+
+    occ_path_min_latitude = models.FloatField(
+        verbose_name="Min Latitude",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Min Latitude Occultation Path. -180 +180",
+    )
+
+    occ_path_max_latitude = models.FloatField(
+        verbose_name="Max Latitude",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Max Latitude Occultation Path. -180 +180",
+    )   
+
+    occ_path_is_nightside = models.BooleanField(
+        verbose_name="Occultation Path Nightside",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="True if any part of the path occurs at night",        
+    )
+
+    occ_path_coeff = models.JSONField(
         verbose_name="Occultation Path Coeff",
         null=True,
         blank=True,
@@ -535,3 +533,17 @@ class Occultation(models.Model):
         map_date_time = datetime.fromtimestamp(
             self.get_map_filepath().stat().st_ctime).astimezone(timezone.utc)
         return map_date_time > self.created_at
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['name',]),
+            models.Index(fields=['number',]),
+            models.Index(fields=['date_time',]),
+            models.Index(fields=['g',]),
+            models.Index(fields=['have_path_coeff',]),
+            models.Index(fields=['occ_path_min_longitude',]),
+            models.Index(fields=['occ_path_max_longitude',]),
+            models.Index(fields=['occ_path_min_latitude',]),
+            models.Index(fields=['occ_path_max_latitude',]),
+            models.Index(fields=['occ_path_is_nightside',]),
+        ]

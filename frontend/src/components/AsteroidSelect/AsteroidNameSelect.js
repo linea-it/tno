@@ -30,19 +30,14 @@ function AsteroidNameSelect({ value, onChange }) {
       options={ data !== undefined ? data.results : []}
       getOptionLabel={(option) => option.name}
       loading={isLoading}
-      limitTags={2}
-      // size="small"
-      sx={{width: '50ch'}}
-      // filterOptions={(x) => x}
-      // defaultValue={[]}
+      limitTags={1}
+      sx={{minWidth: '50ch'}}
       filterSelectedOptions
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
       }}
       onChange={(event, newValue) => {
         onChange(newValue)
-        // setOptions(newValue ? [newValue, ...options] : options);
-        // setValue(newValue);
       }}
 
       renderInput={(params) => (

@@ -18,6 +18,7 @@ class Asteroid(models.Model):
         null=True,
         blank=True,
         verbose_name="Number",
+        db_index=True,
         help_text="(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).",
     )
 

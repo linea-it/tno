@@ -70,6 +70,8 @@ class OccultationFilter(django_filters.FilterSet):
     long = django_filters.NumberFilter(
         method='longitude_filter', label="Longitude")
 
+    nightside = django_filters.BooleanFilter(field_name='occ_path_is_nightside', label='nightside')
+
     def longitude_filter(self, queryset, name, value):
         value = float(value)
         # Query de exemplo usando valor de longitude = 2
@@ -83,44 +85,35 @@ class OccultationFilter(django_filters.FilterSet):
             temp_longitude=Value(value, output_field=FloatField())
         ).filter(
             have_path_coeff=True,
-            temp_longitude__gte=F('min_longitude'),
-            temp_longitude__lte=F('max_longitude'))
-
-    lat = django_filters.NumberFilter(
-        method='latitude_filter', label="Latitude")
+            temp_longitude__gte=F('occ_path_min_longitude'),
+            temp_longitude__lte=F('occ_path_max_longitude'))
 
     lat = django_filters.NumberFilter(
         method='latitude_filter', label="Latitude")
 
     def latitude_filter(self, queryset, name, value):
         value = float(value)
-        # Query de exemplo usando valor de latitude = 2
+        # Query de exemplo usando valor de longitude = 2
         # select count(*) from tno_occultation to2 where 2 between min_latitude and max_latitude
         # Para fazer o between entre duas colunas diferentes, é preciso
         # Criar uma coluna com o valor fixo usando annotate.
         # E usar o F para dizer ao Django que é uma coluna.
         # A logica aqui é, a latitude é maior ou igual a coluna min_latitude
-        # e menor ou igual a coluna max_latitude
-        # TODO: Esperando implementação do campo min_latitude e max_latitude na função de path.
-        # return queryset.annotate(
-        #     temp_latitude=Value(value, output_field=FloatField())
-        # ).filter(
-        #     have_path_coeff=True,
-        #     temp_latitude__gte=F('min_latitude'),
-        #     temp_latitude__lte=F('max_latitude'))
-        return queryset
+        # e menor ou igual a coluna max_latitude.
+        return queryset.annotate(
+            temp_latitude=Value(value, output_field=FloatField())
+        ).filter(
+            have_path_coeff=True,
+            temp_latitude__gte=F('occ_path_min_latitude'),
+            temp_latitude__lte=F('occ_path_max_latitude'))
 
     radius = django_filters.NumberFilter(
         method='radius_filter', label="Radius")
 
-    def latitude_filter(self, queryset, name, value):
-        # O filtro por latitude vai ser aplicado na get_queryset
-        # Esta declarado aqui só para vicar explicito e visivel na interface DRF
-        return queryset
 
     def radius_filter(self, queryset, name, value):
         # O filtro por latitude vai ser aplicado na get_queryset
-        # Esta declarado aqui só para vicar explicito e visivel na interface DRF
+        # Esta declarado aqui só para ficar explicito e visivel na interface DRF
         return queryset
 
     class Meta:
@@ -131,7 +124,8 @@ class OccultationFilter(django_filters.FilterSet):
             "base_dynclass",
             "name",
             "number",
-            "long"
+            "long",
+            "nightside"
         ]
 
 
@@ -200,7 +194,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                     longitude=long,
                     radius=radius,
                     date_time=event.date_time,
-                    inputdict=event.occultation_path_coeff,
+                    inputdict=event.occ_path_coeff,
                     # object_diameter=event.diameter,
                     # ring_diameter=event.diameter,
                     # n_elements= 1500,

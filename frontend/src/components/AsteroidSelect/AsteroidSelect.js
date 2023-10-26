@@ -14,9 +14,6 @@ import DynclassSelect from './DynclassSelect';
 
 function AsteroidSelect({ value, onChange }) {
 
-  // const [filterType, setFilterType] = useState('name');
-  // const [filterValue, setFilterValue] = useState('name');
-
   return (
     <Stack direction="row" spacing={1} alignItems="stretch">
       <FilterTypeSelect
