@@ -43,5 +43,5 @@ class Asteroid(models.Model):
             return self.name
 
     def get_alias(self):
-        alias = self.name.replace(" ", "").replace("_", "").replace("/", "")
+        alias = self.name.replace(" ", "").replace("_", "").replace("-", "").replace("/", "")
         return alias
