@@ -226,7 +226,20 @@ def get_longest_consecutive_numbers(numbers):
 
 
 def maps_folder_stats():
-    
+
+    result = {
+            "total_count": 0,
+            "total_size": 0,
+            "h_total_size": humanize.naturalsize(0),
+            "folder_max_size": 0,
+            "h_folder_max_size": humanize.naturalsize(0),
+            "folder_size_threshold": 0,
+            "h_folder_size_threshold": humanize.naturalsize(0),
+            "period": [None, None],
+            "oldest_file": None,
+            "newest_file": None,
+        }
+
     # Verifica a situação do diretório de mapas.
     map_paths = sorted(Path(settings.PREDICTION_MAP_DIR).iterdir(), key=os.path.getmtime)
 
@@ -238,38 +251,46 @@ def maps_folder_stats():
         date = datetime.strptime(event_dt, '%Y%m%d%H%M%S').date()
         maps_dates.append(date)
 
-    oldest_file = datetime.fromtimestamp(map_paths[0].stat().st_mtime)
-    oldest = oldest_file.astimezone(tz=timezone.utc).isoformat()
-    newest_file = datetime.fromtimestamp(map_paths[-1].stat().st_mtime)
-    newest = newest_file.astimezone(tz=timezone.utc).isoformat()
+    total_size = get_size_of_map_folder()
+    folder_max_size = get_map_folder_desired_size()
+    folder_size_threshold = get_map_folder_size_limit()
 
-    # Remove Duplicated dates
-    maps_dates = sorted(list(set(maps_dates)))
+    result.update({
+        "total_count": maps_count,
+        "total_size": total_size,
+        "h_total_size": humanize.naturalsize(total_size),
+        "folder_max_size": folder_max_size,
+        "h_folder_max_size": humanize.naturalsize(folder_max_size),
+        "folder_size_threshold": folder_size_threshold,
+        "h_folder_size_threshold": humanize.naturalsize(folder_size_threshold),        
+    })
 
-    first_map = maps_dates[0]
-    last_map = maps_dates[-1]
+    oldest = None
+    newest = None
+    if len(map_paths) > 0:
+        oldest_file = datetime.fromtimestamp(map_paths[0].stat().st_mtime)
+        oldest = oldest_file.astimezone(tz=timezone.utc).isoformat()
+        newest_file = datetime.fromtimestamp(map_paths[-1].stat().st_mtime)
+        newest = newest_file.astimezone(tz=timezone.utc).isoformat()
 
-    if len(maps_dates) > 1:
-        # Convert dates to integer
-        date_ints = [d.toordinal() for d in maps_dates]
-        start, end = get_longest_consecutive_numbers(list(date_ints))
-        first_map = maps_dates[start]
-        last_map = maps_dates[end]
+        # Remove Duplicated dates
+        maps_dates = sorted(list(set(maps_dates)))
 
-        total_size = get_size_of_map_folder()
-        folder_max_size = get_map_folder_desired_size()
-        folder_size_threshold = get_map_folder_size_limit()
-        return {
-            "total_count": maps_count,
-            "total_size": total_size,
-            "h_total_size": humanize.naturalsize(total_size),
-            "folder_max_size": folder_max_size,
-            "h_folder_max_size": humanize.naturalsize(folder_max_size),
-            "folder_size_threshold": folder_size_threshold,
-            "h_folder_size_threshold": humanize.naturalsize(folder_size_threshold),
+        first_map = maps_dates[0]
+        last_map = maps_dates[-1]
+
+        if len(maps_dates) > 1:
+            # Convert dates to integer
+            date_ints = [d.toordinal() for d in maps_dates]
+            start, end = get_longest_consecutive_numbers(list(date_ints))
+            first_map = maps_dates[start]
+            last_map = maps_dates[end]
+
+        result.update({
             "period": [first_map.isoformat(), last_map.isoformat()],
             "oldest_file": oldest,
-            "newest_file": newest,
-        }   
-    
+            "newest_file": newest,            
+        })
+        
+    return result
     
