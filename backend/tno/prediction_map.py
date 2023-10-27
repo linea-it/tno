@@ -247,7 +247,7 @@ def maps_folder_stats():
     maps_dates = []
     for map_path in map_paths:
         filename = map_path.name
-        event_dt = filename.strip('.jpg').split('-')[1]
+        event_dt = filename.strip('.jpg').split('-')[-1]
         date = datetime.strptime(event_dt, '%Y%m%d%H%M%S').date()
         maps_dates.append(date)
 
