@@ -39,16 +39,11 @@ function PublicSupporters() {
         {interfaces.map((item) => (
           <Grid key={item.id} item>
             <CardMedia
-              sx={{
-                maxWidth: '150px',
-                width: 'auto',
-                height: 'auto',
-                margin: 'auto'
-              }}
               component='img'
               alt={item.title}
               image={`${process.env.PUBLIC_URL}/img/supporters/${item.image}`}
               title={item.title}
+              style={{ maxWidth: '150px', width: 'auto', height: 'auto', margin: 'auto' }}
             />
           </Grid>
         ))}
