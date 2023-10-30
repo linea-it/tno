@@ -1091,4 +1091,4 @@ def visibility_from_coeff(
     visibility = np.logical_or.reduce(np.array(
         [path_visibility, obj_upperlim_visibility, obj_lowerlim_visibility, upper_ring_visibility, lower_ring_visibility]))
 
-    return np.logical_and(nighttime, visibility), info
+    return bool(np.logical_and(nighttime, visibility)), info

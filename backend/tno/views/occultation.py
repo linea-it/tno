@@ -19,7 +19,8 @@ from tno.serializers import OccultationSerializer
 from tno.tasks import create_occ_map_task, create_prediction_maps
 
 from django.db.models import F, Value, FloatField
-
+import logging
+import humanize
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
     pass
@@ -143,25 +144,39 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         return lat, long, radius
 
     def get_queryset(self):
-        queryset = Occultation.objects.select_related().all()
-        # Usando Filter_Queryset e aplicado os filtros listados no filterbackend
-        queryset = self.filter_queryset(queryset)
-        # print(queryset.query)
+        t0 = datetime.now()
+
+        logger = logging.getLogger("predict_events")
+        logger.info(f"------------------------------------------------")
+        logger.info(f"Prediction query for the following parameters")
 
         # Recupera os parametros da requisição
         params = self.request.query_params
-        # pageSize = params.get('pageSize', 25)
-        pageSize = params.get('pageSize', 10)
+        logger.info(dict(params))
+
+        # Base queryset usando join com a tabela asteroids
+        queryset = Occultation.objects.select_related().all()
+        # Aplica os fitros da classe OccultationFilter
+        # Filter_Queryset  aplica todos os filtros passados por parametro
+        # Mas não calcula a visibilidade
+        queryset = self.filter_queryset(queryset)
+        # print(queryset.query)
+        logger.info(f"Results after filters in the database: [{queryset.count()}]")
+
         lat, long, radius = self.check_user_location_params(params)
 
         # TODO: Necessário implementar forma de fazer a paginação.
         # TODO: Implementar memcache para eventos já processados
+        pageSize = int(params.get('pageSize', 25))
 
         # Sync Method
         if None not in [lat, long, radius]:
-            # print(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
+            logger.info(f"Applying the visibility function to each result")
+            logger.debug(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
+
             wanted_ids = []
             count = 0
+            processed = 0
             for event in queryset:
                 is_visible, info = visibility_from_coeff(
                     latitude=lat,
@@ -175,13 +190,27 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                     # ignore_nighttime= False,
                     # latitudinal= False
                 )
+                processed +=1
 
-                if is_visible == True:
+                if is_visible:
                     wanted_ids.append(event.id)
                     count += 1
-                    # print(f"IS VISIBLE: {is_visible}: {event.id} - {event.date_time} - {event.name}")
-                    if count == pageSize:
-                        return queryset.filter(id__in=wanted_ids)
+                    logger.info(f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}")
+                else:
+                    logger.debug(f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}")
+
+                if count > pageSize:
+                    logger.info("The page's registration limit has been reached.")
+                    break
+
+            logger.debug(f"Event IDs with visibility equal to true: {wanted_ids}")
+            logger.info(f"Number of events processed: [{processed}]")
+            logger.info(f"Number of events that the visibility function returned true: [{count}]")
+
+            if count > 0:
+                queryset = queryset.filter(id__in=wanted_ids)
+                logger.info(f"Results after visibility function: [{queryset.count()}]")                
+                logger.debug(queryset.query)
 
         # TODO: Estudar a possibilidade de um metodo asyncrono
         # Teste Com metodo assincrono pode ser promissor!
@@ -206,12 +235,9 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         #     while result.ready() == False:
         #         print(f"Completed: {result.completed_count()}")
         #         sleep(1)
-
-        else:
-            # Verifica se pelo menos um dos parametros de user location tem valor
-            # TODO avisar que os 3 parametros precisam ter valores
-            print("Falta um dos parametros")
-
+        t1 = datetime.now()
+        dt = t1 - t0
+        logger.info(f"Query Completed in {humanize.naturaldelta(dt)}")
         return queryset
 
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
