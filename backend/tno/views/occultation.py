@@ -199,7 +199,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                 else:
                     logger.debug(f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}")
 
-                if count > pageSize:
+                if count == pageSize:
                     logger.info("The page's registration limit has been reached.")
                     break
 

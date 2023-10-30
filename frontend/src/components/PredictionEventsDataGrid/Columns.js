@@ -8,9 +8,9 @@ function ImageCell(props) {
       target="_blank"
       >   
       <Box
-      width={props.colDef.computedWidth}
-      height={props.colDef.computedWidth}
-      // sx={{backgroundColor: "#ededed"}}
+      // width={props.colDef.computedWidth}
+      // height={props.colDef.computedWidth}
+      height={48}
       >
         {/* TODO Adicionar uma imagem placeholder */}
         </Box>
@@ -22,11 +22,12 @@ function ImageCell(props) {
       component="a"
       href={`/prediction-event-detail/${props.row.id}`}
       target="_blank"
-      >
+    >
       <Box
-        width={props.colDef.computedWidth}
-        height={props.colDef.computedWidth}
         component="img"
+        // width={props.colDef.computedWidth}
+        width='auto'
+        height={48}
         alt=""
         src={props.value}
       />
@@ -40,7 +41,6 @@ export const ImageCol = {
   sortable: false,
   editable: false,
   groupable: false,
-  width: 150,
   align: 'center',
   renderCell: (params) => <ImageCell {...params} />,
 };

@@ -9,6 +9,7 @@ import { PredictionEventsContext } from '../../contexts/PredictionContext';
 import CustomPagination from '../CustomDataGrid/Pagination';
 import { PredictionEventsColumns, predictionEventsColumnVisibilityModel } from './Columns';
 import { listAllPredictionEvents } from '../../services/api/Occultation';
+import CircularProgress from '@mui/material/CircularProgress';
 export function PredictionEventsDataGrid() {
 
   const columns = PredictionEventsColumns
@@ -29,7 +30,6 @@ export function PredictionEventsDataGrid() {
     // retry: 1,
     staleTime: 1 * 60 * 60 * 1000,
   })
-
   // Some API clients return undefined while loading
   // Following lines are here to prevent `rowCountState` from being undefined during the loading
   const [rowCountState, setRowCountState] = React.useState(
@@ -47,16 +47,17 @@ export function PredictionEventsDataGrid() {
   return (
     <Card>
     <CardHeader
-      title={`Total Occultation Predictions: ${rowCountState}`}
+      // title={`Total Occultation Predictions: {isLoading ? <CircularProgress color="inherit" size={20} /> : null}`}
+      title={isLoading ? (<><span>Total Occultation Predictions:</span> <CircularProgress size='1rem' /> </>): `Total Occultation Predictions: ${rowCountState}`}
       titleTypographyProps={{ variant: 'h6', fontSize: '1rem', }}/>
     <CardContent sx={{minHeight: 500}}>
     <DataGrid
       sx={{minHeight: '500px'}}
       disableColumnFilter
       disableRowSelectionOnClick
-      // getRowHeight={() => '200'} 
+      getRowHeight={() => 48} 
       // getRowHeight={() => 'auto'}
-      // getEstimatedRowHeight={() => 64}
+      // getEstimatedRowHeight={() => 48}
       pagination
       rows={data?.results !== undefined ? data.results : []}
       columns={columns}
