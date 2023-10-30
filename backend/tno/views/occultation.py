@@ -167,7 +167,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
         # TODO: Necessário implementar forma de fazer a paginação.
         # TODO: Implementar memcache para eventos já processados
-        pageSize = int(params.get('pageSize', 25))
+        pageSize = int(params.get('pageSize', 10))
 
         # Sync Method
         if None not in [lat, long, radius]:
