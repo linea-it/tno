@@ -55,8 +55,8 @@ export function PredictionEventsDataGrid() {
       disableColumnFilter
       disableRowSelectionOnClick
       // getRowHeight={() => '200'} 
-      getRowHeight={() => 'auto'}
-      getEstimatedRowHeight={() => 200}
+      // getRowHeight={() => 'auto'}
+      // getEstimatedRowHeight={() => 64}
       pagination
       rows={data?.results !== undefined ? data.results : []}
       columns={columns}
