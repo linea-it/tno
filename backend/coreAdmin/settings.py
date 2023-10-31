@@ -382,7 +382,15 @@ LOGGING = {
             "backupCount": 5,
             "filename": os.path.join(LOG_DIR, "predict_maps.log"),
             "formatter": "standard",
-        },                
+        },
+        "predict_events": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "predict_events.log"),
+            "formatter": "standard",
+        },                        
     },
     "loggers": {
         "django": {
@@ -422,6 +430,11 @@ LOGGING = {
         },        
         "predict_maps": {
             "handlers": ["predict_maps"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },        
+        "predict_events": {
+            "handlers": ["predict_events"],
             "level": LOGGING_LEVEL,
             "propagate": False,
         },        
