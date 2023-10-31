@@ -7,6 +7,8 @@ import UsagePlot from './UsagePlot'
 import { getOccultationHighlights } from '../../services/api/Occultation'
 import { useQuery } from 'react-query'
 import Skeleton from '@mui/material/Skeleton'
+import moment from '../../../node_modules/moment/moment'
+
 export default function Mapsdata() {
 
   const { data, isLoading } = useQuery({
@@ -19,7 +21,7 @@ export default function Mapsdata() {
   })
 
   return (
-    <Card sx={{ height: '210px', borderRadius: '10px' }}>
+    <Card sx={{ height: '90%', borderRadius: '10px' }}>
       <CardHeader
         title={
           isLoading ? (
@@ -27,16 +29,21 @@ export default function Mapsdata() {
               animation="wave"
             />
           ) : (
-            "Total Prediction Maps"
+            "MAPS OVERVIEW"
           )}
-        titleTypographyProps={{ variant: 'h6', fontSize: '1.3rem', }}
+          titleTypographyProps={{ variant: 'h6', fontSize: '1.0rem', color:'#4f4e4e'}}
       />
       <CardContent>
         <Typography 
           variant="h3" 
-          sx={{ fontWeight: 700, fontSize: "2.2rem", textAlign: "left" }}>
+          sx={{ fontWeight: 700, fontSize: "1.8rem", textAlign: "left", paddingBottom: '10px', color: '#4dabf5' }}>
           {isLoading ? ( <Skeleton /> ) : (data?.maps_stats.total_count)}
         </Typography>
+
+        <Typography variant="body2" sx={{ margin: '5px 0', fontSize: '0.9rem' }}>
+        <strong>Period:</strong> {isLoading ? <Skeleton /> : moment(data?.maps_stats.period[0]).utc().format('YYYY-MM-DD')} to { moment(data?.maps_stats.period[1]).utc().format('YYYY-MM-DD') }
+        </Typography>
+
         {isLoading ? (
           <></>
           ) : (
@@ -44,9 +51,6 @@ export default function Mapsdata() {
               maxSize={data?.maps_stats.folder_max_size} 
               used={data?.maps_stats.total_size} />            
           )}
-        <Typography variant="body2" sx={{ margin: '5px 0' }}>
-        <strong>Period:</strong> {isLoading ? <Skeleton /> : data?.maps_stats.period[0]} to { data?.maps_stats.period[1]}
-        </Typography>
       </CardContent>
     </Card>
   )

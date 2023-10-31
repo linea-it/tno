@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography'
 import Skeleton from '@mui/material/Skeleton'
 import { useQuery } from 'react-query'
 import { getOccultationHighlights } from '../../services/api/Occultation'
+import moment from '../../../node_modules/moment/moment'
 
 function UniqueAsteroids() {
     const { data, isLoading } = useQuery({
@@ -18,31 +19,31 @@ function UniqueAsteroids() {
     })
 
     return (
-        <Card sx={{ height: '210px', borderRadius: '10px' }}>
+        <Card sx={{ height: '90%', borderRadius: '10px'}}>
             <CardHeader
                 title={
                     isLoading ? (
-                        <Skeleton width={200} animation="wave" />
+                        <Skeleton width={200} animation="wave"/>
                     ) : (
-                        'Total Occultation Predictions'
+                        'TOTAL FORECAST'
                     )
                 }
-                titleTypographyProps={{ variant: 'h6', fontSize: '1.3rem' }}
+                titleTypographyProps={{ variant: 'h6', fontSize: '1.0rem', color:'#4f4e4e'}}
             />
             <CardContent>
                 <Typography
                     variant="h3"
-                    sx={{ fontWeight: 700, fontSize: "2.2rem", textAlign: "left", paddingBottom: '10px'}}>
+                    sx={{ fontWeight: 700, fontSize: "1.8rem", textAlign: "left", paddingBottom: '10px',  color:'#0e4686'}}>
                     {isLoading ? <Skeleton /> : data?.count}
                 </Typography>
-                <Typography variant="body2" sx={{ margin: '5px 0' }}>
+                <Typography variant="body2" sx={{ margin: '5px 0', fontSize: '0.9rem' }}>
                     <strong>Unique Asteroids:</strong> {isLoading ? <Skeleton /> : data?.unique_asteroids}
                 </Typography>
-                <Typography variant="body2" sx={{ margin: '5px 0' }}>
-                    <strong>Earliest:</strong> {isLoading ? <Skeleton /> : data?.earliest}
+                <Typography variant="body2" sx={{ margin: '5px 0', fontSize: '0.9rem'}}>
+                    <strong>Earliest:</strong> {isLoading ? <Skeleton /> :  moment(data?.earliest).utc().format('YYYY-MM-DD HH:mm:ss')} (UTC)
                 </Typography>
-                <Typography variant="body2" sx={{ margin: '5px 0' }}>
-                    <strong>Lastest:</strong> {isLoading ? <Skeleton /> : data?.latest}
+                <Typography variant="body2" sx={{ margin: '5px 0', fontSize: '0.9rem'}}>
+                    <strong>Lastest:</strong> {isLoading ? <Skeleton /> :  moment(data?.latest).utc().format('YYYY-MM-DD HH:mm:ss')} (UTC)
                 </Typography>
             </CardContent>
         </Card>

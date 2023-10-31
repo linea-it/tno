@@ -18,7 +18,7 @@ function WeeklyForecast() {
     })
 
     return (
-        <Card sx={{ height: '210px', borderRadius: '10px' }}>
+        <Card sx={{ height: '90%', borderRadius: '10px' }}>
             <CardHeader
                 title={
                     isLoading ? (
@@ -27,21 +27,21 @@ function WeeklyForecast() {
                             animation="wave"
                         />
                     ) : (
-                        'Occultations Predictions Today'
+                        'EVENTS TODAY'
                     )
                 }
-                titleTypographyProps={{ variant: 'h6', fontSize: '1.3rem' }}
+                titleTypographyProps={{ variant: 'h6', fontSize: '1.0rem', color:'#4f4e4e'}}
             />
             <CardContent>
                 <Typography
                     variant="h3"
-                    sx={{ fontWeight: 700, fontSize: "2.2rem", textAlign: "left", paddingBottom: '10px' }}>
+                    sx={{ fontWeight: 700, fontSize: "1.8rem", textAlign: "left", paddingBottom: '10px', color:'#1565c0' }}>
                     {isLoading ? <Skeleton /> : data?.today_count}
                 </Typography>
-                <Typography variant="body2">
+                <Typography variant="body2"  sx={{ margin: '5px 0', fontSize: '0.9rem' }}>
                     <strong>This Week:</strong> {isLoading ? <Skeleton /> : data?.week_count}
                 </Typography>
-                <Typography variant="body2">
+                <Typography variant="body2"  sx={{ margin: '5px 0', fontSize: '0.9rem' }}>
                     <strong>Next Week:</strong> {isLoading ? <Skeleton /> : data?.next_week_count}    
                 </Typography>
             </CardContent>
