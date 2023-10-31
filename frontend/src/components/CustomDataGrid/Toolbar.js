@@ -25,7 +25,7 @@ function CustomToolbar() {
 
   return (
     <GridToolbarContainer>
-      <GridToolbarQuickFilter debounceMs={600} />
+      {/* <GridToolbarQuickFilter debounceMs={600} /> */}
       <GridToolbarColumnsButton />
       {/* <GridToolbarFilterButton /> */}
     </GridToolbarContainer>

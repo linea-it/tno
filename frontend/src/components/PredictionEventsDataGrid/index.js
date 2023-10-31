@@ -10,6 +10,7 @@ import CustomPagination from '../CustomDataGrid/Pagination';
 import { PredictionEventsColumns, predictionEventsColumnVisibilityModel } from './Columns';
 import { listAllPredictionEvents } from '../../services/api/Occultation';
 import CircularProgress from '@mui/material/CircularProgress';
+import CustomToolbar from '../CustomDataGrid/Toolbar';
 export function PredictionEventsDataGrid() {
 
   const columns = PredictionEventsColumns
@@ -98,6 +99,7 @@ export function PredictionEventsDataGrid() {
       }}
       slots={{
         pagination: CustomPagination,
+        toolbar: CustomToolbar
       }}
     />
     </CardContent>
