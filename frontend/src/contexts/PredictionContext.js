@@ -24,7 +24,7 @@ export function PredictionEventsProvider({ children }) {
             geo: false,
             latitude: undefined,
             longitude: undefined,
-            radius: 500
+            radius: 100
         }
     })
 
