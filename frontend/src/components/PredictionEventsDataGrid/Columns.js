@@ -10,7 +10,7 @@ function ImageCell(props) {
       <Box
       // width={props.colDef.computedWidth}
       // height={props.colDef.computedWidth}
-      height={48}
+      height={68}
       >
         {/* TODO Adicionar uma imagem placeholder */}
         </Box>
@@ -27,7 +27,7 @@ function ImageCell(props) {
         component="img"
         // width={props.colDef.computedWidth}
         width='auto'
-        height={48}
+        height={68}
         alt=""
         src={props.value}
       />

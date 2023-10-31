@@ -55,7 +55,7 @@ export function PredictionEventsDataGrid() {
       sx={{minHeight: '500px'}}
       disableColumnFilter
       disableRowSelectionOnClick
-      getRowHeight={() => 48} 
+      getRowHeight={() => 68} 
       // getRowHeight={() => 'auto'}
       // getEstimatedRowHeight={() => 48}
       pagination
