@@ -16,7 +16,7 @@ function Main() {
       <PredictionHighlights />
       <Box mt={3} ml={8} mr={8}>
         <Grid>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12}>
             <Card>
               <CardContent>

@@ -92,7 +92,7 @@ function PredictionEventsFilter() {
                     }
                   })
                 }}
-              />} label="Nightside" />
+              />} label="Nighttime Only" />
           </Stack>
         </LocalizationProvider>
         <AsteroidSelect value={{
@@ -130,7 +130,7 @@ function PredictionEventsFilter() {
             }}
           /></Box>
       </Box>
-      <Typography m={1} variant="body2">This is an experimental feature and may take some time to process. To prevent timeouts, we recommend using date and magnitude ranges that restrict the supplied list to a maximum of 200 objects. You can find this information in 'Total Occultation Predictions' after performing a search.</Typography>
+      <Typography m={1} variant="body2" fontSize='1.0rem' color="#1565c0">The Geo Filter feature is experimental and should be used with caution. To prevent timeouts, we recommend to use date and magnitude constraints to restrict the supplied list to be filtered to a maximum of 2000 records. You can find this information below as 'Total Retrieved Records' after applying a filter.</Typography>
     </Box >
   )
 }

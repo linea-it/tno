@@ -15,12 +15,12 @@ function MaginitudeSelect({ value, onChange, min, max }) {
   const options = Array.from({length: max-min+1}, (_, i) => i + min);
   return (
     <FormControl size="normal" sx={{minWidth:'12ch'}}>
-      <InputLabel id="magnitude-max-select-label">Magnitude Max</InputLabel>
+      <InputLabel id="magnitude-max-select-label">Mag Limit</InputLabel>
       <Select
         labelId="magnitude-max-select-label"
         id="magnitude-max-select"
         value={value !== undefined ? value : ''}
-        label="Magnitude Max"
+        label="Mag Limit"
         onChange={onChange}
       >
         {(

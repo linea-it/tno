@@ -49,7 +49,7 @@ export function PredictionEventsDataGrid() {
     <Card>
     <CardHeader
       // title={`Total Occultation Predictions: {isLoading ? <CircularProgress color="inherit" size={20} /> : null}`}
-      title={isLoading ? (<><span>Total Occultation Predictions:</span> <CircularProgress size='1rem' /> </>): `Total Occultation Predictions: ${rowCountState}`}
+      title={isLoading ? (<><span>Total Retrieved Records:</span> <CircularProgress size='1rem' /> </>): `Total Retrieved Records: ${rowCountState}`}
       titleTypographyProps={{ variant: 'h6', fontSize: '1rem', }}/>
     <CardContent sx={{minHeight: 500}}>
     <DataGrid
