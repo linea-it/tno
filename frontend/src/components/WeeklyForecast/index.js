@@ -1,13 +1,13 @@
 import React from 'react'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
+import CardHeader from '@mui/material/CardHeader'
 import Typography from '@mui/material/Typography'
 import Skeleton from '@mui/material/Skeleton'
 import { useQuery } from 'react-query'
 import { getOccultationHighlights } from '../../services/api/Occultation'
 
 function WeeklyForecast() {
-
     const { data, isLoading } = useQuery({
         queryKey: ['occultationHighlights'],
         queryFn: getOccultationHighlights,
@@ -18,28 +18,31 @@ function WeeklyForecast() {
     })
 
     return (
-        <Card sx={{ borderRadius: '10px' }}>
-            <CardContent>
-                <Typography sx={{ fontSize: '0.9rem', fontWeight: '500', marginBottom: '15px' }}>
-                    {isLoading ? (
+        <Card sx={{ height: '210px', borderRadius: '10px' }}>
+            <CardHeader
+                title={
+                    isLoading ? (
                         <Skeleton
                             width={200}
                             animation="wave"
                         />
                     ) : (
-                        'Occultations Today'
-                    )}
-                </Typography >
-                <Typography 
-                variant="h3" 
-                sx={{ fontWeight: 'bold', fontSize: '1.4rem', margin: '10px 0' }}>
+                        'Occultations Predictions Today'
+                    )
+                }
+                titleTypographyProps={{ variant: 'h6', fontSize: '1.3rem' }}
+            />
+            <CardContent>
+                <Typography
+                    variant="h3"
+                    sx={{ fontWeight: 700, fontSize: "2.2rem", textAlign: "left", paddingBottom: '10px' }}>
                     {isLoading ? <Skeleton /> : data?.today_count}
                 </Typography>
                 <Typography variant="body2">
-                    {isLoading ? <Skeleton /> : data?.week_count}
+                    <strong>This Week:</strong> {isLoading ? <Skeleton /> : data?.week_count}
                 </Typography>
                 <Typography variant="body2">
-                    {isLoading ? <Skeleton /> : data?.next_week_count}
+                    <strong>Next Week:</strong> {isLoading ? <Skeleton /> : data?.next_week_count}    
                 </Typography>
             </CardContent>
         </Card>

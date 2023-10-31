@@ -1,13 +1,13 @@
 import React from 'react'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
+import CardHeader from '@mui/material/CardHeader'
 import Typography from '@mui/material/Typography'
 import Skeleton from '@mui/material/Skeleton'
 import { useQuery } from 'react-query'
 import { getOccultationHighlights } from '../../services/api/Occultation'
 
-export default function UniqueAsteroids() {
-
+function UniqueAsteroids() {
     const { data, isLoading } = useQuery({
         queryKey: ['occultationHighlights'],
         queryFn: getOccultationHighlights,
@@ -18,39 +18,35 @@ export default function UniqueAsteroids() {
     })
 
     return (
-        <Card sx={{ borderRadius: '10px' }}>
-            <CardContent>
-                <Typography sx={{ fontSize: '0.9rem', fontWeight: '500', marginBottom: '15px' }}>
-                    {isLoading ? (
-                        <Skeleton
-                            width={200}
-                            animation="wave"
-                        />
+        <Card sx={{ height: '210px', borderRadius: '10px' }}>
+            <CardHeader
+                title={
+                    isLoading ? (
+                        <Skeleton width={200} animation="wave" />
                     ) : (
-                        'Total Occultations Count'
-                    )}
-                </Typography>
+                        'Total Occultation Predictions'
+                    )
+                }
+                titleTypographyProps={{ variant: 'h6', fontSize: '1.3rem' }}
+            />
+            <CardContent>
                 <Typography
                     variant="h3"
-                    sx={{ fontWeight: 'bold', fontSize: '1.4rem', margin: '10px 0' }}>
+                    sx={{ fontWeight: 700, fontSize: "2.2rem", textAlign: "left", paddingBottom: '10px'}}>
                     {isLoading ? <Skeleton /> : data?.count}
                 </Typography>
-                <Typography
-                    variant="body2"
-                    sx={{ margin: '5px 0' }}>
-                    {isLoading ? <Skeleton /> : data?.unique_asteroids}
+                <Typography variant="body2" sx={{ margin: '5px 0' }}>
+                    <strong>Unique Asteroids:</strong> {isLoading ? <Skeleton /> : data?.unique_asteroids}
                 </Typography>
-                <Typography
-                    variant="body2"
-                    sx={{ margin: '5px 0' }}>
-                    {isLoading ? <Skeleton /> : data?.earliest}
+                <Typography variant="body2" sx={{ margin: '5px 0' }}>
+                    <strong>Earliest:</strong> {isLoading ? <Skeleton /> : data?.earliest}
                 </Typography>
-                <Typography
-                    variant="body2"
-                    sx={{ margin: '5px 0' }}>
-                    {isLoading ? <Skeleton /> : data?.latest}
+                <Typography variant="body2" sx={{ margin: '5px 0' }}>
+                    <strong>Lastest:</strong> {isLoading ? <Skeleton /> : data?.latest}
                 </Typography>
             </CardContent>
         </Card>
     )
 }
+
+export default UniqueAsteroids
