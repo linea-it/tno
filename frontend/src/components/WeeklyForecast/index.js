@@ -18,7 +18,7 @@ function WeeklyForecast() {
     })
 
     return (
-        <Card sx={{ height: '90%', borderRadius: '10px' }}>
+        <Card sx={{ height: '100%', borderRadius: '10px' }}>
             <CardHeader
                 title={
                     isLoading ? (
@@ -35,13 +35,13 @@ function WeeklyForecast() {
             <CardContent>
                 <Typography
                     variant="h3"
-                    sx={{ fontWeight: 700, fontSize: "1.8rem", textAlign: "left", paddingBottom: '10px', color:'#1565c0' }}>
+                    sx={{ fontWeight: 700, fontSize: "1.8rem", textAlign: "left", paddingBottom: '20px', color:'#1565c0' }}>
                     {isLoading ? <Skeleton /> : data?.today_count}
                 </Typography>
-                <Typography variant="body2"  sx={{ margin: '5px 0', fontSize: '0.9rem' }}>
+                <Typography variant="body2"  sx={{ margin: '5px 0', fontSize: '1rem' }}>
                     <strong>This Week:</strong> {isLoading ? <Skeleton /> : data?.week_count}
                 </Typography>
-                <Typography variant="body2"  sx={{ margin: '5px 0', fontSize: '0.9rem' }}>
+                <Typography variant="body2"  sx={{ margin: '5px 0', fontSize: '1rem' }}>
                     <strong>Next Week:</strong> {isLoading ? <Skeleton /> : data?.next_week_count}    
                 </Typography>
             </CardContent>

@@ -18,7 +18,7 @@ function MonthlyForecast() {
     })
 
     return (
-        <Card sx={{ height: '90%', borderRadius: '10px' }}>
+        <Card sx={{ height: '100%', borderRadius: '10px' }}>
             <CardHeader
                 title={
                     isLoading ? (
@@ -35,10 +35,10 @@ function MonthlyForecast() {
             <CardContent>
                 <Typography
                     variant="h3"
-                    sx={{ fontWeight: 700, fontSize: "1.8rem", textAlign: "left", paddingBottom: '10px', color:'#4383cc' }}>
+                    sx={{ fontWeight: 700, fontSize: "1.8rem", textAlign: "left", paddingBottom: '20px', color:'#4383cc' }}>
                     {isLoading ? <Skeleton /> : data?.month_count}
                 </Typography>
-                <Typography variant="body2" sx={{ margin: '5px 0', fontSize: '0.9rem' }}>
+                <Typography variant="body2" sx={{ margin: '5px 0', fontSize: '1rem' }}>
                     <strong>Next Month:</strong> {isLoading ? <Skeleton /> : data?.next_month_count}
                 </Typography>    
             </CardContent>

@@ -21,7 +21,7 @@ export default function Mapsdata() {
   })
 
   return (
-    <Card sx={{ height: '90%', borderRadius: '10px' }}>
+    <Card sx={{ height: '100%', borderRadius: '10px' }}>
       <CardHeader
         title={
           isLoading ? (
@@ -36,11 +36,11 @@ export default function Mapsdata() {
       <CardContent>
         <Typography 
           variant="h3" 
-          sx={{ fontWeight: 700, fontSize: "1.8rem", textAlign: "left", paddingBottom: '10px', color: '#4dabf5' }}>
+          sx={{ fontWeight: 700, fontSize: "1.8rem", textAlign: "left", paddingBottom: '20px', color: '#4dabf5' }}>
           {isLoading ? ( <Skeleton /> ) : (data?.maps_stats.total_count)}
         </Typography>
 
-        <Typography variant="body2" sx={{ margin: '5px 0', fontSize: '0.9rem' }}>
+        <Typography variant="body2" sx={{ margin: '5px 0', fontSize: '1rem' }}>
         <strong>Period:</strong> {isLoading ? <Skeleton /> : moment(data?.maps_stats.period[0]).utc().format('YYYY-MM-DD')} to { moment(data?.maps_stats.period[1]).utc().format('YYYY-MM-DD') }
         </Typography>
 
