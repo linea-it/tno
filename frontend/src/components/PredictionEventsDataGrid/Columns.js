@@ -118,12 +118,16 @@ export const PredictionEventsColumns = [
     field: 'id',
     headerName: 'ID',
     description: 'Internal ID',
-    type: 'number',
+    // type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     width: 100
   },
   {
     field: 'map_url',
     headerName: 'Map',
+    headerAlign: 'center',
+    align: 'center',
     ...ImageCol
   },
   {
@@ -131,20 +135,26 @@ export const PredictionEventsColumns = [
     headerName: 'Object',
     description: 'Asteroid Name (Number)',
     minWidth: 160,
-    maxWidth: 300,
+    maxWidth: 200,
     flex: 1,
+    headerAlign: 'center',
+    align: 'center',
     ...NameCol
   },
   {
     field: 'number',
-    headerName: 'Number',
+    headerName: 'Ast Number',
     description: 'Asteroid Number',
+    headerAlign: 'center',
+    align: 'center',
   },
   {
     field: 'dynclass',
     headerName: 'Dynamic class',
     description: 'Dynamic class',
     width: 180,
+    headerAlign: 'center',
+    align: 'center',
   },  
   {
     field: 'date_time',
@@ -152,6 +162,8 @@ export const PredictionEventsColumns = [
     description: 'Instant of the Closest Approach in UTC',
     width: 180,
     type: 'dateTime',
+    headerAlign: 'center',
+    align: 'center',
     valueGetter: ({ value }) => value && new Date(value),
   },
   {
@@ -159,6 +171,8 @@ export const PredictionEventsColumns = [
     headerName: 'C/A',
     description: 'Geocentric Closest Approach (arcsec)',
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision3
   },
   {
@@ -166,6 +180,8 @@ export const PredictionEventsColumns = [
     headerName: 'P/A',
     description: 'Position Angle with respect to the star at closest approach (deg)',
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision2
   },
   {
@@ -173,13 +189,17 @@ export const PredictionEventsColumns = [
     headerName: 'Velocity',
     description: 'Velocity in the plane of the sky (positive is prograde, negative is retrograde) (Km/s)',
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision2
   },
   {
     field: 'delta',
-    headerName: 'Geoc. Distance',
+    headerName: 'Distance',
     description: 'Geocentric Distance (AU)',
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision2
   },
   {
@@ -187,18 +207,24 @@ export const PredictionEventsColumns = [
     headerName: 'Long',
     description: 'East longitude of sub-planet point (positive towards East) (deg)',
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision2
   },
   {
     field: 'loc_t',
     headerName: 'Local Solar Time',
     description: 'Local solar time at sub-planet point (hh:mm)',
+    headerAlign: 'center',
+    align: 'center',
   },
   {
     field: 'off_ra',
     headerName: 'RA offset',
     description: 'Offset applied to ephemeris in RA (mas)',
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision2
   },
   {
@@ -206,6 +232,8 @@ export const PredictionEventsColumns = [
     headerName: 'DEC offset',
     description: 'Offset applied to ephemeris in DEC (mas)',
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision2
   },
   {
@@ -213,12 +241,16 @@ export const PredictionEventsColumns = [
     headerName: 'Proper Motion Status',
     description: 'Status of proper motion correction (Ok/No)',
     align: 'center',
+    headerAlign: 'center',
+    align: 'center',
   },
   {
     field: 'g',
     headerName: 'G mag',
     description: "Star's G magnitude (mag)",
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision2
   },
   {
@@ -226,6 +258,8 @@ export const PredictionEventsColumns = [
     headerName: 'J mag',
     description: "Star's J magnitude (mag)",
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision2
   },
   {
@@ -233,6 +267,8 @@ export const PredictionEventsColumns = [
     headerName: 'H mag',
     description: "Star's H magnitude (mag)",
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision2
   },
   {
@@ -240,6 +276,8 @@ export const PredictionEventsColumns = [
     headerName: 'K mag',
     description: "Star's K magnitude (mag)",
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision2
   },
   {
@@ -247,6 +285,8 @@ export const PredictionEventsColumns = [
     headerName: 'Object RA',
     description: "Object's Right Ascension (hh mm ss.ssss)",
     width: 130,
+    headerAlign: 'center',
+    align: 'center',
     sortable: false
   },
   {
@@ -254,6 +294,8 @@ export const PredictionEventsColumns = [
     headerName: 'Object DEC',
     description: "Object's Declination (dd mm ss.sss)",
     width: 130,
+    headerAlign: 'center',
+    align: 'center',
     sortable: false
   },
   {
@@ -261,6 +303,8 @@ export const PredictionEventsColumns = [
     headerName: 'Object RA (deg)',
     description: "Object's Right Ascension (deg)",
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision8
   },
   {
@@ -268,6 +312,8 @@ export const PredictionEventsColumns = [
     headerName: 'Object DEC (deg)',
     description: "Object's Declination (deg)",
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision8
   },
   {
@@ -275,6 +321,8 @@ export const PredictionEventsColumns = [
     headerName: 'Star RA',
     description: "Star's Right Ascension (hh mm ss.ssss)",
     width: 130,
+    headerAlign: 'center',
+    align: 'center',
     sortable: false
   },
   {
@@ -282,6 +330,8 @@ export const PredictionEventsColumns = [
     headerName: 'Star DEC',
     description: "Star's Declination (dd mm ss.sss)",
     width: 130,
+    headerAlign: 'center',
+    align: 'center',
     sortable: false
   },
   {
@@ -289,6 +339,8 @@ export const PredictionEventsColumns = [
     headerName: 'Star RA (deg)',
     description: "Star's Right Ascension (deg)",
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision8
   },
   {
@@ -296,6 +348,8 @@ export const PredictionEventsColumns = [
     headerName: 'Star DEC (deg)',
     description: "Star's Declination (deg)",
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision8
   },
   {
@@ -303,6 +357,8 @@ export const PredictionEventsColumns = [
     headerName: 'Star RA unc',
     description: "Star's RA uncertainty (mas)",
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision2
   },
   {
@@ -310,6 +366,8 @@ export const PredictionEventsColumns = [
     headerName: 'Star DEC unc',
     description: "Star's DEC uncertainty (mas)",
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision2
   },
   {
@@ -317,6 +375,8 @@ export const PredictionEventsColumns = [
     headerName: 'Star RA pm',
     description: "Star's proper motion in RA (mas/y)",
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision2
   },
   {
@@ -324,24 +384,30 @@ export const PredictionEventsColumns = [
     headerName: 'Star DEC pm',
     description: "Star's proper motion in DEC (mas/y)",
     type: 'number',
+    headerAlign: 'center',
+    align: 'center',
     ...floatFixedPrecision2
   },
-  {
-    field: 'multiplicity_flag',
-    headerName: 'Multiplicity Flag ',
-    description: "See documentation for details",
-    sortable: false
-  },
-  {
-    field: 'ct',
-    headerName: 'CT',
-    description: "Only Gaia DR1 stars used",
-    sortable: false
-  },
+  // {
+  //   field: 'multiplicity_flag',
+  //   headerName: 'Multiplicity Flag ',
+  //   description: "See documentation for details",
+  //   headerAlign: 'center',
+  //   align: 'center',
+  //   sortable: false
+  // },
+  // {
+  //   field: 'ct',
+  //   headerName: 'CT',
+  //   description: "Only Gaia DR1 stars used",
+  //   headerAlign: 'center',
+  //   align: 'center',
+  //   sortable: false
+  // },
 ];
 
 export const predictionEventsColumnVisibilityModel = {
-  id: false,
+  id: true,
   map_url: true,
   name: true,
   number: false,
@@ -350,7 +416,7 @@ export const predictionEventsColumnVisibilityModel = {
   closest_approach: true,
   position_angle: true,
   velocity: true,
-  delta: false,
+  delta: true,
   long: false,
   loc_t: false,
   off_ra: false,
@@ -372,6 +438,6 @@ export const predictionEventsColumnVisibilityModel = {
   e_dec: false,
   pmra: false,
   pmdec: false,
-  multiplicity_flag: false,
-  ct: false,
+  // multiplicity_flag: false,
+  // ct: false,
 }
