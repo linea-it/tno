@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Grid, Card, CardHeader, CardContent, Icon, Button, ButtonGroup, Chip, Typography, CircularProgress } from '@material-ui/core'
 import { useParams, useNavigate } from 'react-router-dom'
 import moment from 'moment'
-import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import List from '../../components/List'
 import Table from '../../components/Table'
 import ColumnStatus from '../../components/Table/ColumnStatus'

@@ -61,7 +61,7 @@ router.register(r"skybot/position", PositionViewSet)
 
 router.register(r"asteroids", AsteroidViewSet)
 
-router.register(r"occultations", OccultationViewSet)
+router.register(r"occultations", OccultationViewSet, basename="occultations")
 
 router.register(r"leap_second", LeapSecondViewSet)
 router.register(r"bsp_planetary", BspPlanetaryViewSet)

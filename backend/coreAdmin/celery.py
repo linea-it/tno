@@ -26,7 +26,14 @@ app.conf.beat_schedule = {
         # a job is scheduled to run for every first minute of every hour
         'schedule': crontab(hour='*', minute=1),
         # 'schedule': 30.0
+    },
+    'occultation-path-coeff-every-10-minutes': {
+        'task': 'tno.tasks.create_occultation_path_coeff',
+        'schedule': crontab(minute='*/10')
     },    
+
+
+
     # 'add-every-30-seconds': {
     #     'task': 'tno.tasks.add',
     #     'schedule': 30.0,

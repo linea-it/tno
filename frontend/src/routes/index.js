@@ -14,7 +14,7 @@ import PredictOccultation from '../pages/PredictOccultation'
 import PredictDetail from '../pages/PredictOccultation/Detail'
 import PredictionAsteroid from '../pages/PredictOccultation/Asteroid'
 
-import Occultation from '../pages/Occultation'
+// import Occultation from '../pages/Occultation'
 
 import Home from '../pages/LandingPage/Home'
 import AboutUs from '../pages/LandingPage/AboutUs'
@@ -33,13 +33,13 @@ import PublicHome from '../pages/PublicPortal/Home'
 import PublicAboutUs from '../pages/PublicPortal/AboutUs/index'
 import PublicTutorials from '../pages/PublicPortal/Contact/index'
 import PublicOccultation from '../pages/PublicPortal/documentation/index'
-import OccultationDetail from '../pages/Occultation/Detail'
-import PublicSupporters from '../pages/PublicPortal/Home/partials/Supporters/index'
+// import OccultationDetail from '../pages/Occultation/Detail'
 import PublicBanner from '../components/PublicPortal/Banner/index'
 import PublicDocumentation from '../pages/PublicPortal/documentation/index'
 import PublicContact from '../pages/PublicPortal/Contact/index'
 import FooterSupporte from '../components/PublicPortal/Footer/FooterSupporters'
-
+import PredictionEvents from '../pages/PredictionEvents/index'
+import PredictionEventDetail from '../pages/PredictionEvents/Detail'
 
 export default function AppRoutes() {
   const { isAuthenticated, signIn } = useAuth()
@@ -100,8 +100,7 @@ export default function AppRoutes() {
               <Grid container justifyContent="center" alignItems="center">
                 <div className={classes.titleItem}><label>Occultation Prediction Details</label></div>
               </Grid><br></br>
-              <OccultationDetail />
-              <PublicSupporters />
+              {/* <OccultationDetail /> */}
             </div>
           </PublicPortalPage>
         }
@@ -160,15 +159,15 @@ export default function AppRoutes() {
 
       {/* Dashboard  Layout*/}
       <Route
-        isPrivate
+        isHomePage
         exact
         path='/dashboard/stats'
         element={
-          <PrivateRoute auth={{ isAuthenticated }}>
+          // <PrivateRoute auth={{ isAuthenticated }}>
             <DashboardPage>
               <Dashboard />
             </DashboardPage>
-          </PrivateRoute>
+          // </PrivateRoute>
         }
       />
       <Route
@@ -280,7 +279,7 @@ export default function AppRoutes() {
         }
       />
       <Route
-        isPrivate
+        // isPrivate
         exact
         path='/dashboard/prediction-of-occultation'
         element={
@@ -291,8 +290,10 @@ export default function AppRoutes() {
           </PrivateRoute>
         }
       />
+
+
       <Route
-        isPrivate
+        // isPrivate
         exact
         path='/dashboard/data-preparation/predict-detail/:id'
         element={
@@ -304,7 +305,7 @@ export default function AppRoutes() {
         }
       />
       <Route
-        isPrivate
+        // isPrivate
         exact
         path='/dashboard/data-preparation/predict-asteroid/:id'
         element={
@@ -316,7 +317,27 @@ export default function AppRoutes() {
         }
       />
       <Route
-        isPrivate
+        // isPrivate
+        exact
+        path='/dashboard/occultation'
+        element={
+            <DashboardPage>
+              <PredictionEvents />
+            </DashboardPage>
+        }
+      />
+      <Route
+        // IsPrivate
+        exact
+        path='/prediction-event-detail/:id'
+        element={
+            <PublicPortalPage>
+              <PredictionEventDetail />
+            </PublicPortalPage>
+        }
+      />      
+      {/* <Route
+        // isPrivate
         exact
         path='/dashboard/occultation'
         element={
@@ -326,9 +347,10 @@ export default function AppRoutes() {
             </DashboardPage>
           </PrivateRoute>
         }
-      />
-      <Route
-        IsPrivate
+      /> */}
+
+      {/* <Route
+        // IsPrivate
         exact
         path='/dashboard/occultation-detail/:id'
         element={
@@ -338,7 +360,7 @@ export default function AppRoutes() {
             </DashboardPage>
           </PrivateRoute>
         }
-      />
+      /> */}
 
       <Route path='*' element={<Navigate to='/' />} />
     </Routes>

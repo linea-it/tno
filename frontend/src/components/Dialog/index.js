@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Dialog as MuiDialog, DialogTitle, DialogContent, IconButton, Typography } from '@material-ui/core'
-import { Close as CloseIcon } from '@material-ui/icons'
+import CloseIcon from '@mui/icons-material/Close';
 import useStyles from './styles'
 
 function Dialog({ visible, setVisible, title, content, maxWidth, headerStyle, bodyStyle, wrapperStyle }) {

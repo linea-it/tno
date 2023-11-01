@@ -21,7 +21,7 @@ import {
   CircularProgress
 } from '@material-ui/core'
 import Plot from 'react-plotly.js'
-import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Table from '../../components/Table'
 import ColumnStatus from '../../components/Table/ColumnStatus'
 import DateRangePicker from '../../components/Date/DateRangePicker'

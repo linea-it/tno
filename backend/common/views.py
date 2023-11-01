@@ -9,13 +9,43 @@ from django.shortcuts import redirect
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 
-
 @api_view(["GET"])
 def teste(request):
     if request.method == "GET":
+
+        import pandas as pd
+        from tno.occviz import visibility_from_coeff
+        from datetime import datetime, timezone
+        from tno.models import Occultation
+
+        lat=-22.90278
+        long=-43.2075
+        radius=50
+
+        events = Occultation.objects.filter(date_time__date='2023-08-01', have_path_coeff=True)
+
+        rows = []
+        ids = []
+        for e in events:
+            is_visible, info = visibility_from_coeff(
+                latitude=float(lat),
+                longitude=float(long),
+                radius=float(radius),
+                date_time= e.date_time.isoformat(),
+                inputdict= e.occultation_path_coeff,
+            )
+
+            # print(f"Occ ID: {e.id} - {e.date_time.isoformat()} - {e.name} IS Visible: [ {is_visible} ] Info: [{info}]")
+            if is_visible:
+                rows.append(e)
+                ids.append(e.id)
+
         result = {
             "success": True,
+            "rows": len(rows),
+            "ids": ids
         }
+
         return Response(result)
 
 

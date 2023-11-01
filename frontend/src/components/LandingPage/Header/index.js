@@ -8,7 +8,7 @@ import Popover from '@material-ui/core/Popover'
 import { useLocation } from 'react-router-dom'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
-import ExitToAppIcon from '@material-ui/icons/ExitToApp'
+import ExitToAppIcon from '@mui/icons-material/ExitToApp'
 import styles from './styles'
 import { useAuth } from '../../../contexts/AuthContext.js'
 function Header() {

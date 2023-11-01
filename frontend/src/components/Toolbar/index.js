@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button'
 import Popover from '@material-ui/core/Popover'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
-import ExitToAppIcon from '@material-ui/icons/ExitToApp'
+import ExitToAppIcon from '@mui/icons-material/ExitToApp'
 
 function DashToolbar({ open, handleDrawerOpen, title }) {
   const { isAuthenticated, user, logout } = useAuth()

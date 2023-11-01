@@ -13,12 +13,10 @@ import {
   Typography,
   CircularProgress,
 } from '@material-ui/core';
-import {
-  List as ListIcon,
-  BugReport as BugReportIcon,
-} from '@material-ui/icons';
+import ListIcon from '@mui/icons-material/List';
+import BugReportIcon from '@mui/icons-material/BugReport';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import List from '../../components/List';
 import Table from '../../components/Table';
 import Dialog from '../../components/Dialog';

@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, Union
 
@@ -8,20 +8,39 @@ from django.conf import settings
 from sora.prediction.occmap import plot_occ_map as occmap
 
 from tno.models import Occultation
+import os
 
+import numpy as np
+from itertools import groupby
+from operator import itemgetter
+import humanize
 
 def get_size_of_map_folder():
     maps_directory = Path(settings.PREDICTION_MAP_DIR)
     return sum(f.stat().st_size for f in maps_directory.glob('**/*') if f.is_file())
 
+def get_map_folder_desired_size():
+    # Tamanho maximo desejado em Mb para a pasta de mapas.
+    max_folder_size = int(
+        settings.PREDICTION_MAP_MAX_FOLDER_SIZE) * 1000 * 1000
+    return max_folder_size
+
+def get_map_folder_size_limit():
+    max_folder_size = get_map_folder_desired_size()
+    # Limite é 90% do total, deve ter pelo menos 10% livre
+    min_free = (max_folder_size * 0.1)
+    size_limit = max_folder_size - min_free
+    return size_limit
+
 
 def map_event_has_already_happened(filepath: Path) -> bool:
     # checks if the event has already happened
+    # Considera que o evento já aconteceu quando se passa mais de um dia do evento
     now_utc = datetime.utcnow()
     filename = filepath.name
     event_dt = filename.strip('.jpg').split('-')[1]
     date_time = datetime.strptime(event_dt, '%Y%m%d%H%M%S')
-    dt = now_utc.date() - date_time.date()
+    dt = now_utc.date() - date_time.astimezone(tz=timezone.utc).date()
     if dt.days > 0:
         return True
     return False
@@ -59,14 +78,7 @@ def garbage_collector_maps():
 def map_folder_have_free_space() -> bool:
     logger = logging.getLogger("predict_maps")
 
-    # Tamanho maximo desejado em Mb para a pasta de mapas.
-    max_folder_size = int(
-        settings.PREDICTION_MAP_MAX_FOLDER_SIZE) * 1000 * 1000
-    logger.debug(
-        f"Maps folder Max Size: {humanize.naturalsize(max_folder_size)}")
-    # Limite é 70% do total, deve ter pelo menos 30% livre
-    min_free = (max_folder_size * 0.3)
-    size_limit = max_folder_size - min_free
+    size_limit = get_map_folder_size_limit()
     logger.debug(f"Maps folder size limit: {humanize.naturalsize(size_limit)}")
     # O Tamanho maximo não é absoluto, podendo variar para mais
     # Exemplo 68% ocupado, vai executar a criação de mais mapas
@@ -80,7 +92,7 @@ def map_folder_have_free_space() -> bool:
     logger.debug(f"Maps folder have free space?: {have_free_space}")
     return have_free_space
 
-def upcoming_events_to_create_maps() -> list:
+def upcoming_events_to_create_maps(date_start:Optional[str]=None, date_end:Optional[str]=None, limit:Optional[int]=None) -> list:
     logger = logging.getLogger("predict_maps")
     logger.info(f"Looking for upcoming events")
 
@@ -101,9 +113,21 @@ def upcoming_events_to_create_maps() -> list:
     events = []
     # Block size determina quantas tasks serao criadas
     block_size = int(settings.PREDICTION_MAP_BLOCK_SIZE)
-    now = datetime.utcnow()
+    if limit != None:
+        block_size = int(limit)
+
+    if date_start == None:
+        date_start = datetime.utcnow()
+    if isinstance(date_start, str):
+        date_start = datetime.fromisoformat(date_start).astimezone(tz=timezone.utc)
+
     next_events = Occultation.objects.filter(
-        date_time__gte=now).order_by('date_time')
+        date_time__gte=date_start).order_by('date_time')
+    
+    if isinstance(date_end, str):
+        date_end = datetime.fromisoformat(date_end).astimezone(tz=timezone.utc)
+        next_events.filter(date_time__lte=date_end)
+
 
     logger.debug(f"Next events count: {next_events.count()}")
     for obj in next_events:
@@ -184,3 +208,89 @@ def sora_occultation_map(
         raise Exception(f"Map file was not generated. {filepath}")
 
     return str(filename)
+
+
+
+def get_longest_consecutive_numbers(numbers):
+    # https://stackoverflow.com/questions/55616217/find-longest-consecutive-range-of-numbers-in-list
+    idx = max(
+        (
+            list(map(itemgetter(0), g)) 
+            for i, g in groupby(enumerate(np.diff(numbers)==1), itemgetter(1)) 
+            if i
+        ), 
+        key=len
+    )
+    return (idx[0], idx[-1]+1)
+
+
+
+def maps_folder_stats():
+
+    result = {
+            "total_count": 0,
+            "total_size": 0,
+            "h_total_size": humanize.naturalsize(0),
+            "folder_max_size": 0,
+            "h_folder_max_size": humanize.naturalsize(0),
+            "folder_size_threshold": 0,
+            "h_folder_size_threshold": humanize.naturalsize(0),
+            "period": [None, None],
+            "oldest_file": None,
+            "newest_file": None,
+        }
+
+    # Verifica a situação do diretório de mapas.
+    map_paths = sorted(Path(settings.PREDICTION_MAP_DIR).iterdir(), key=os.path.getmtime)
+
+    maps_count = len(map_paths)
+    maps_dates = []
+    for map_path in map_paths:
+        filename = map_path.name
+        event_dt = filename.strip('.jpg').split('-')[-1]
+        date = datetime.strptime(event_dt, '%Y%m%d%H%M%S').date()
+        maps_dates.append(date)
+
+    total_size = get_size_of_map_folder()
+    folder_max_size = get_map_folder_desired_size()
+    folder_size_threshold = get_map_folder_size_limit()
+
+    result.update({
+        "total_count": maps_count,
+        "total_size": total_size,
+        "h_total_size": humanize.naturalsize(total_size),
+        "folder_max_size": folder_max_size,
+        "h_folder_max_size": humanize.naturalsize(folder_max_size),
+        "folder_size_threshold": folder_size_threshold,
+        "h_folder_size_threshold": humanize.naturalsize(folder_size_threshold),        
+    })
+
+    oldest = None
+    newest = None
+    if len(map_paths) > 0:
+        oldest_file = datetime.fromtimestamp(map_paths[0].stat().st_mtime)
+        oldest = oldest_file.astimezone(tz=timezone.utc).isoformat()
+        newest_file = datetime.fromtimestamp(map_paths[-1].stat().st_mtime)
+        newest = newest_file.astimezone(tz=timezone.utc).isoformat()
+
+        # Remove Duplicated dates
+        maps_dates = sorted(list(set(maps_dates)))
+
+        first_map = maps_dates[0]
+        last_map = maps_dates[-1]
+
+        if len(maps_dates) > 1:
+            # Convert dates to integer
+            date_ints = [d.toordinal() for d in maps_dates]
+            start, end = get_longest_consecutive_numbers(list(date_ints))
+            first_map = maps_dates[start]
+            last_map = maps_dates[end]
+
+        result.update({
+            "period": [first_map.isoformat(), last_map.isoformat()],
+            "oldest_file": oldest,
+            "newest_file": newest,            
+        })
+        
+    return result
+    

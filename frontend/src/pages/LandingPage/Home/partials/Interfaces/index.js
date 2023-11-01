@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Grid from '@material-ui/core/Grid'
-import Card from '@material-ui/core/Card'
+import Card from '@mui/material/Card'
 import Container from '@material-ui/core/Container'
 import CardActionArea from '@material-ui/core/CardActionArea'
 import CardMedia from '@material-ui/core/CardMedia'

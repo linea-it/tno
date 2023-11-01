@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/python:0-3.8
+FROM mcr.microsoft.com/devcontainers/python:0-3.10
 
 ENV PYTHONUNBUFFERED 1
 
@@ -26,6 +26,7 @@ RUN pip install --upgrade pip wheel setuptools \
     && pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
     && rm -rf /tmp/pip-tmp
 
+ENV DJANGO_SETTINGS_MODULE=coreAdmin.settings
 # COPY --chmod=0755 ./backend/entrypoint.sh /entrypoint.sh
 
 # COPY --chmod=0775 ./backend/start.sh /start.sh

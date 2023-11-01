@@ -19,11 +19,11 @@ import {
 } from '../../services/api/Asteroid'
 import { Alert } from '../../../node_modules/@material-ui/lab/index'
 import ColumnStatus from '../../components/Table/ColumnStatus'
-import { InfoOutlined as InfoOutlinedIcon } from '@material-ui/icons'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Select from 'react-select'
 import './orbittrace.css'
 import useInterval from '../../hooks/useInterval'
-import { Pages } from '../../../node_modules/@material-ui/icons/index'
+import { Pages } from '../../../node_modules/@mui/icons-material/index'
 
 function OrbitTrace() {
   const navigate = useNavigate();

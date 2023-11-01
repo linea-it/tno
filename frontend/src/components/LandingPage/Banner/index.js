@@ -1,7 +1,9 @@
 import React from 'react'
 import Grid from '@material-ui/core/Grid'
 import IconButton from '@material-ui/core/IconButton'
-import { YouTube, Twitter, GitHub } from '@material-ui/icons'
+import YouTubeIcon from '@mui/icons-material/YouTube';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import GitHubIcon from '@mui/icons-material/GitHub';
 // import Stars from '../Stars';
 import styles from './styles'
 
@@ -44,7 +46,7 @@ function Banner() {
           aria-label='YouTube'
           component='span'
         >
-          <YouTube />
+          <YouTubeIcon />
         </IconButton>
         <IconButton
           onClick={() => {
@@ -54,7 +56,7 @@ function Banner() {
           aria-label='Twitter'
           component='span'
         >
-          <Twitter />
+          <TwitterIcon />
         </IconButton>
         <IconButton
           onClick={() => {
@@ -64,7 +66,7 @@ function Banner() {
           aria-label='GitHub'
           component='span'
         >
-          <GitHub />
+          <GitHubIcon />
         </IconButton>
       </div>
     </div>

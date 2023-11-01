@@ -3,7 +3,7 @@
 import React, { useRef } from 'react'
 import { Grid, Container, Typography, TextField, Button, Breadcrumbs, Link, Snackbar } from '@material-ui/core'
 import { Alert, AlertTitle } from '@material-ui/lab'
-import EmailIcon from '@material-ui/icons/Email'
+import EmailIcon from '@mui/icons-material/Email'
 import styles from './styles'
 // import { sendEmail } from '../../Services/api';
 
