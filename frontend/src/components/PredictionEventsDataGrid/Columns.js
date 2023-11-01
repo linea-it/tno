@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import moment from '../../../node_modules/moment/moment'
 function ImageCell(props) {
   if (props.value == null) {
     return (
@@ -160,11 +161,17 @@ export const PredictionEventsColumns = [
     field: 'date_time',
     headerName: 'C/A Instant',
     description: 'Instant of the Closest Approach in UTC',
-    width: 180,
+    width: 200,
     type: 'dateTime',
     headerAlign: 'center',
     align: 'center',
     valueGetter: ({ value }) => value && new Date(value),
+    valueFormatter: (params) => {
+      if (params.value == null) {
+        return '';
+      }
+      return `${moment(params.value).utc().format('YYYY-MM-DD HH:mm:ss')} (UTC)`;
+    },
   },
   {
     field: 'closest_approach',
