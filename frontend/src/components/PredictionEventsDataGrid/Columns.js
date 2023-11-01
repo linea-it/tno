@@ -170,7 +170,7 @@ export const PredictionEventsColumns = [
       if (params.value == null) {
         return '';
       }
-      return `${moment(params.value).utc().format('YYYY-MM-DD HH:mm:ss')} (UTC)`;
+      return `${moment(params.value).utc().format('YYYY-MM-DD HH:mm:ss')}`;
     },
   },
   {
