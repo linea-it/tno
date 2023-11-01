@@ -41,6 +41,10 @@ import { Box, IconButton, OutlinedInput, Tooltip } from '../../../node_modules/@
 import Select from 'react-select'
 import { Alert } from '../../../node_modules/@material-ui/lab/index'
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 function PredictOccultation() {
   const navigate = useNavigate()
@@ -63,8 +67,8 @@ function PredictOccultation() {
   const [bspValue, setBspValue] = useState({ value: 0, label: "None" });
   const [catalogList, setCatalogList] = useState([{ value: 0, label: 'None' }]);
   const [catalog, setCatalog] = useState({ value: '', label: "None" });
-  const [dateStart, setDateStart] = useState(dayjs(new Date()));
-  const [dateEnd, setDateEnd] = useState('');
+  const [dateStart, setDateStart] = useState(dayjs.utc());
+  const [dateEnd, setDateEnd] = useState(null);
 
   const [dateStartError, setDateStartError] = React.useState(false);
   const [dateEndError, setDateEndError] = React.useState(false);
@@ -224,7 +228,7 @@ function PredictOccultation() {
       }
       createPredictionJob(data)
         .then((response) => {
-          setDateStart(dayjs(new Date()));
+          setDateStart(dayjs.utc());
           setDateEnd("");
           setFilterType({ value: 'base_dynclass', label: 'Dynamic class' });
           setFilterValue({ value: "", label: "Select..." });

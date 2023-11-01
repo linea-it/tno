@@ -279,7 +279,7 @@ export default function AppRoutes() {
         }
       />
       <Route
-        isPrivate
+        // isPrivate
         exact
         path='/dashboard/prediction-of-occultation'
         element={
@@ -293,7 +293,7 @@ export default function AppRoutes() {
 
 
       <Route
-        isPrivate
+        // isPrivate
         exact
         path='/dashboard/data-preparation/predict-detail/:id'
         element={
@@ -305,7 +305,7 @@ export default function AppRoutes() {
         }
       />
       <Route
-        isPrivate
+        // isPrivate
         exact
         path='/dashboard/data-preparation/predict-asteroid/:id'
         element={
