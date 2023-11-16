@@ -380,16 +380,18 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
         # TODO: No futuro vai ser necessário identificar qual o catalogo de estrela foi utilizado
         # nas predição, no momento todas as predições estão utilizando o gaia.DR2
-        db = CatalogDB(pool=False)
-        rows = db.radial_query(
-            tablename="dr2",
-            schema="gaia",
-            ra_property="ra",
-            dec_property="dec",
-            ra=float(ra),
-            dec=float(dec),
-            radius=0.001)
-
-        if len(rows) > 0:
-            return Response(rows[0])
-        return Response({})
+        try:
+            db = CatalogDB(pool=False)
+            rows = db.radial_query(
+                tablename="dr2",
+                schema="gaia",
+                ra_property="ra",
+                dec_property="dec",
+                ra=float(ra),
+                dec=float(dec),
+                radius=0.001)
+            if len(rows) > 0:
+                return Response(rows[0])
+            return Response({})
+        except:
+            return Response({})

@@ -8,7 +8,7 @@ import {
   CardContent} from '@material-ui/core';
 import List from '../../components/List';
 
-import Aladin from '../../components/Aladin/index';
+import Aladin from '../../components/AladinV2_Exemplo/index';
 import {
   getOccultationById,
   // getOccultationMap,
