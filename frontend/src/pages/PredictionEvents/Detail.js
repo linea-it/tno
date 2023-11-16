@@ -297,7 +297,6 @@ function PredictionEventDetail() {
               >
               {occultation?.id !== undefined && (
                 <AladinV3 
-                  aladinProps={{}} 
                   ra={occultation?.ra_star_deg}
                   dec={occultation?.dec_star_deg}
                   />
