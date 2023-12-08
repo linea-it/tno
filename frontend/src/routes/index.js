@@ -13,7 +13,6 @@ import DesManagement from '../pages/DesManagement'
 import PredictOccultation from '../pages/PredictOccultation'
 import PredictDetail from '../pages/PredictOccultation/Detail'
 import PredictionAsteroid from '../pages/PredictOccultation/Asteroid'
-
 // import Occultation from '../pages/Occultation'
 
 import Home from '../pages/LandingPage/Home'

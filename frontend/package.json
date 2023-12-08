@@ -25,6 +25,7 @@
     "@mui/material": "^5.10.17",
     "@mui/x-data-grid": "^6.16.2",
     "@mui/x-date-pickers": "^6.16.2",
+    "aladin-lite": "^3.2.0",
     "axios": "1.2.0",
     "clsx": "^1.0.4",
     "d3": "7.6.1",
@@ -53,7 +54,8 @@
     "react-sizeme": "3.0.2",
     "react-syntax-highlight": "^15.3.1",
     "react-youtube": "10.1.0",
-    "sql-formatter": "12.0.3"
+    "sql-formatter": "12.0.3",
+    "uuid": "^9.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

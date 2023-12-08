@@ -7,15 +7,17 @@ import {
   CardHeader,
   CardContent
 } from '@material-ui/core';
+import Box from '@mui/material/Box';
 import List from '../../components/List';
 
-import Aladin from '../../components/Aladin/index';
+import Aladin from '../../components/AladinV2_Exemplo/index';
 import {
   getOccultationById,
   // getOccultationMap,
   getStarByOccultationId
 } from '../../services/api/Occultation';
 import PredictOccultationMap from './partials/PredictMap';
+import AladinV3 from '../../components/AladinV3/index';
 
 function PredictionEventDetail() {
   const { id } = useParams();
@@ -286,6 +288,23 @@ function PredictionEventDetail() {
             </CardContent>
           </Card>
         </Grid>
+        <Grid item xs={12}>
+          <Card >
+            <CardHeader title="Aladin Sky Atlas" />
+            <CardContent >
+              <Box
+                height={800}
+              >
+              {occultation?.id !== undefined && (
+                <AladinV3 
+                  ra={occultation?.ra_star_deg}
+                  dec={occultation?.dec_star_deg}
+                  />
+              ) }
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>        
       </Grid>
 
       {/* {occultation.ra_star_candidate && occultation.dec_star_candidate ? ( */}
