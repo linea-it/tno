@@ -3,6 +3,7 @@ import { createContext, useEffect, useState, useContext } from 'react'
 import { parseCookies, destroyCookie } from 'nookies'
 import { loggedUser, urlLogin, urlLogout } from '../services/api/Auth.js'
 import PropTypes from 'prop-types'
+import { cs } from 'date-fns/locale'
 
 export const AuthContext = createContext({})
 
@@ -10,10 +11,12 @@ export const AuthContext = createContext({})
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
 
-  const isAuthenticated = !!user
+  const { 'tno.csrftoken': csrftoken } = parseCookies()
+
+  const isAuthenticated = !!csrftoken
 
   useEffect(() => {
-    const { 'tno.csrftoken': csrftoken } = parseCookies()
+
     if (csrftoken) {
       // Carrega os dados do usuario logo apos o login
       loggedUser()
@@ -22,10 +25,11 @@ export function AuthProvider({ children }) {
           setUser(u)
         })
         .catch((res) => {
-          // console.log(res)
+          logout()
         })
     }
   }, [])
+
 
   async function signIn() {
     window.location.replace(urlLogin)

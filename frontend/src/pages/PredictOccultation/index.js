@@ -229,7 +229,7 @@ function PredictOccultation() {
       createPredictionJob(data)
         .then((response) => {
           setDateStart(dayjs.utc());
-          setDateEnd("");
+          setDateEnd(null);
           setFilterType({ value: 'base_dynclass', label: 'Dynamic class' });
           setFilterValue({ value: "", label: "Select..." });
           setCatalog({ value: "", label: "Select..." });
@@ -564,22 +564,6 @@ function PredictOccultation() {
                             {catalogError ? (<span className={classes.errorText}>Required field</span>) : ''}
                           </Box>
                         </Grid>
-                        {/* <Grid item xs={12} sm={6} md={12} lg={6}>
-                          <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth><label>Input Expiration Time <span className={classes.errorText}>*</span></label>
-                              <Select
-                                value={bspValue}
-                                id="bspValue"
-                                label="BSP Value"
-                                onChange={bspValuehandleChange}
-                                options={bspValueList}
-                                menuPortalTarget={document.body}
-                                menuPosition={'fixed'}
-                              />
-                            </FormControl>
-                            {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
-                          </Box>
-                        </Grid> */}
                         <Grid item xs={12} sm={6} md={12} lg={6}>
                           <Box sx={{ minWidth: 120 }}>
                             <FormControl fullWidth><label className='label-tooltip-margin'> Ephemeris Step(s) <span className={classes.errorText}>*</span><Tooltip title={<label className={classes.tooltip}> Step in time, in seconds, to determine the positions of objects. 600 for distant objects and 60 for nearby objects.</label>}><IconButton><InfoOutlinedIcon /></IconButton>
@@ -592,7 +576,6 @@ function PredictOccultation() {
                         <Grid item xs={12} sm={6} md={4} lg={4}>
                           <Box sx={{ minWidth: 120 }}>
                           <FormControl fullWidth>
-                              
                             <FormGroup>
                               <FormControlLabel
                                 control={<Switch checked={debug} onChange={handleChangeDebug} color="primary" />}
@@ -600,19 +583,7 @@ function PredictOccultation() {
                               />
                             </FormGroup> </FormControl>
                           </Box>
-                        </Grid>
-                        {/* <Grid item xs={12} sm={6} md={12} lg={6}>
-                          <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth><label>Force Refresh Inputs ON/OFF</label>
-                              <FormGroup>
-                                <FormControlLabel
-                                  control={<Switch checked={forceRefreshInputs} onChange={handleChangeForceRefreshInputs} color="primary" />}
-                                  label='Force Refresh Inputs'
-                                />
-                              </FormGroup></FormControl>
-                          </Box>
-                        </Grid> */}
-                        
+                        </Grid>                       
                       </Grid>
                     </Grid>
                   </Grid>

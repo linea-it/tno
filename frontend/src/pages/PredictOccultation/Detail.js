@@ -66,7 +66,7 @@ function PredictDetail() {
     if ([1, 2].includes(predictionJob.status) && id) {
       loadDataProgress(id)
     }
-  }, [2000])
+  }, [10000])
 
   const handleStopRun = () => {
     cancelPredictionJobById(id).then(() => {

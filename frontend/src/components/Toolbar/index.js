@@ -29,7 +29,7 @@ function DashToolbar({ open, handleDrawerOpen, title }) {
     return (
       <>
         <Button color='inherit' onClick={handleClick}>
-          {user.username || ''}
+          {user?.username || ''}
         </Button>
         <Popover
           id='user_menu'
