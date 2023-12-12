@@ -10,7 +10,6 @@ import {
 import Box from '@mui/material/Box';
 import List from '../../components/List';
 
-import Aladin from '../../components/AladinV2_Exemplo/index';
 import {
   getOccultationById,
   // getOccultationMap,
@@ -26,8 +25,6 @@ function PredictionEventDetail() {
   const [circumstances, setCircumstances] = useState([]);
   const [star, setStar] = useState([]);
   const [object, setObject] = useState([]);
-  const [map, setMap] = useState(null);
-  const [erroMap, setErroMap] = useState(false);
 
 
   useEffect(() => {

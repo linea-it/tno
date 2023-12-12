@@ -11,7 +11,7 @@ function ProgressList({ lista }) {
   return (
     <>
         {lista.map((item, i) => (
-             <Grid item>
+             <Grid item key={`progress_${i}`}>
                 <Progress
                   key={item.step}
                   title={item.task}

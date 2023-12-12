@@ -20,6 +20,8 @@ export function PredictionEventsDataGrid() {
 
   const { paginationModel, sortModel, filters } = queryOptions
 
+  // console.log("QueryOptions: ", queryOptions)
+
   const { data, isLoading } = useQuery({
     queryKey: ['predictionEvents', { paginationModel, sortModel, filters }],
     queryFn: listAllPredictionEvents,

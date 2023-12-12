@@ -185,6 +185,7 @@ function PredictDetail() {
 
     getPredictionJobById({ id }).then((job) => {
       setPredictionJob(job);
+      loadDataProgress(id)
     });
 
 

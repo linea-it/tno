@@ -29,47 +29,47 @@ const light = createTheme({
         color: pink[500]
       }
     },
-    MuiCard: {
-      root: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column'
-      }
-    },
-    MuiCardHeader: {
-      root: {
-        backgroundColor: 'rgb(248, 249, 252)',
-        borderBottom: '1px solid rgb(227, 230, 240)',
-        paddingTop: 8,
-        paddingBottom: 8
-      },
-      title: {
-        // color: '#34465d',
-        color: 'rgb(33, 43, 54)',
-        fontSize: 16,
-        fontWeight: 'bold'
-      },
-      action: {
-        marginTop: -4
-      }
-    },
-    MuiTableRow: {
-      root: {
-        '&:hover': {
-          backgroundColor: 'rgba(244, 244, 244, 1)'
-        }
-      }
-    },
-    MuiSkeleton: {
-      text: {
-        marginTop: 0,
-        marginBottom: 0
-      }
-    },
-    initContainer: {
-      paddingTop: 20,
-      paddingBottom: 100
-    },
+    // MuiCard: {
+    //   root: {
+    //     height: '100%',
+    //     display: 'flex',
+    //     flexDirection: 'column'
+    //   }
+    // },
+    // MuiCardHeader: {
+    //   root: {
+    //     backgroundColor: 'rgb(248, 249, 252)',
+    //     borderBottom: '1px solid rgb(227, 230, 240)',
+    //     paddingTop: 8,
+    //     paddingBottom: 8
+    //   },
+    //   title: {
+    //     // color: '#34465d',
+    //     color: 'rgb(33, 43, 54)',
+    //     fontSize: 16,
+    //     fontWeight: 'bold'
+    //   },
+    //   action: {
+    //     marginTop: -4
+    //   }
+    // },
+    // MuiTableRow: {
+    //   root: {
+    //     '&:hover': {
+    //       backgroundColor: 'rgba(244, 244, 244, 1)'
+    //     }
+    //   }
+    // },
+    // MuiSkeleton: {
+    //   text: {
+    //     marginTop: 0,
+    //     marginBottom: 0
+    //   }
+    // },
+    // initContainer: {
+    //   paddingTop: 20,
+    //   paddingBottom: 100
+    // },
     // MuiCollapse: {
     //   wrapperInner: {
     //     paddingLeft: 15,

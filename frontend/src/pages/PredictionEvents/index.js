@@ -1,9 +1,5 @@
-import{ useState, useContext } from 'react';
 import Grid from '@mui/material/Grid'
-import { PredictionEventsContext, PredictionEventsProvider } from '../../contexts/PredictionContext';
-
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import PredictionEventsFilter from '../../components/PredictionEventsFilter/index';
 import PredictionEventsDataGrid from '../../components/PredictionEventsDataGrid/index';
@@ -11,7 +7,6 @@ import PredictionEventsDataGrid from '../../components/PredictionEventsDataGrid/
 
 function PredictionEvents() {
 
-  const {queryOptions} = useContext(PredictionEventsContext)
 
     return (
     

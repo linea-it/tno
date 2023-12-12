@@ -2,7 +2,6 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 
 import Dashboard from '../pages/Dashboard'
-import Grid from '@material-ui/core/Grid'
 import Skybot from '../pages/Skybot'
 import SkybotDetail from '../pages/Skybot/Detail'
 import SkybotAsteroid from '../pages/Skybot/Asteroid'
@@ -16,11 +15,6 @@ import PredictionAsteroid from '../pages/PredictOccultation/Asteroid'
 // import Occultation from '../pages/Occultation'
 
 import Home from '../pages/LandingPage/Home'
-import AboutUs from '../pages/LandingPage/AboutUs'
-import Help from '../pages/LandingPage/Help'
-import Tutorials from '../pages/LandingPage/Tutorials'
-import Contact from '../pages/LandingPage/Contact'
-import styles from './styles'
 import { useAuth } from '../contexts/AuthContext.js'
 import Header from '../components/LandingPage/Header'
 import Footer from '../components/LandingPage/Footer'
@@ -30,10 +24,7 @@ import OrbitTraceAsteroid from '../pages/OrbitTrace/Asteroid'
 import PublicHeader from '../components/PublicPortal/Header/index'
 import PublicHome from '../pages/PublicPortal/Home'
 import PublicAboutUs from '../pages/PublicPortal/AboutUs/index'
-import PublicTutorials from '../pages/PublicPortal/Contact/index'
-import PublicOccultation from '../pages/PublicPortal/documentation/index'
 // import OccultationDetail from '../pages/Occultation/Detail'
-import PublicBanner from '../components/PublicPortal/Banner/index'
 import PublicDocumentation from '../pages/PublicPortal/documentation/index'
 import PublicContact from '../pages/PublicPortal/Contact/index'
 import FooterSupporte from '../components/PublicPortal/Footer/FooterSupporters'
@@ -42,8 +33,6 @@ import PredictionEventDetail from '../pages/PredictionEvents/Detail'
 
 export default function AppRoutes() {
   const { isAuthenticated, signIn } = useAuth()
-
-  const classes = styles()
 
   const PrivateRoute = ({ auth: { isAuthenticated }, children }) => {
     return isAuthenticated ? children : signIn()
