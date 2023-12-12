@@ -40,7 +40,7 @@ function Header() {
     return (
       <>
         <Button color='inherit' onClick={handleClick}>
-          {user.username || ''}
+          {user?.username || ''}
         </Button>
         <Popover
           id='simple-popover'

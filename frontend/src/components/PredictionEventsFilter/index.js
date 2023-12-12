@@ -33,7 +33,6 @@ function PredictionEventsFilter() {
               name="date_time_after"
               value={queryOptions.filters.dt_after_local}
               onChange={(value) => {
-                console.log("Teste: ", value.utc().format())
                 setQueryOptions(prev => {
                   return {
                     ...prev,
