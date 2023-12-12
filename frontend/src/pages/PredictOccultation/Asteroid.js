@@ -1,68 +1,58 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Grid, Card, CardHeader, CardContent, Icon, Button, Typography } from '@material-ui/core'
-import OccultationTable from '../../components/OccultationTable'
-import {
-  getPredictionJobResultById,
-  getOccultationsByAsteroid
-} from '../../services/api/PredictOccultation'
+import Button from '@mui/material/Button';
+import Icon from '@mui/material/Icon';
+import Grid from '@mui/material/Grid';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
+import Skeleton from '@mui/material/Skeleton';
+import { getPredictionJobResultById} from '../../services/api/PredictOccultation'
 import List from '../../components/List'
-import moment from '../../../node_modules/moment/moment'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { CircularProgress } from '../../../node_modules/@material-ui/core/index'
-import styles from './styles'
-import { Alert } from '@material-ui/lab'
-
+import { PredictionEventsContext } from '../../contexts/PredictionContext';
+import PredictionEventsDataGrid from '../../components/PredictionEventsDataGrid/index'
+import dayjs from "dayjs"
 
 function PredictionAsteroid() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const classes = styles();
-  const [predictionJobResult, setPredictionJobResult] = useState({
-    asteroid: 0,
-    status: 0,
-    name: "",
-    number: "",
-    base_dynclass: "",
-    dynclass: "",
-    des_obs: 0,
-    exec_time: "",
-    occultations: 0,
-    bsp_jpl_dw_time: "",
-    obs_dw_time: "",
-    orb_ele_dw_time: "",
-    des_obs_exec_time: "",
-    ref_orb_exec_time: "",
-    pre_occ_exec_time: "",
-    ing_occ_exec_time: "",
-  })
+  const [predictionJobResult, setPredictionJobResult] = useState(undefined)
 
   const [summary, setSummary] = useState([])
-  const [occultationsTable, setOccultationsTable] = useState([])
-  const [occultationsCount, setOccultationsCount] = useState(0)
-  const [asteroidId, setAsteroidId] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [times, setTimes] = useState([])
+
+  const {setQueryOptions} = useContext(PredictionEventsContext)
 
   useEffect(() => {
     getPredictionJobResultById(id).then((res) => {
       setPredictionJobResult(res)
-      setAsteroidId(res.asteroid)
-      loadOccultationsData({
-        asteroid_id: res.asteroid,
-        currentPage: 0,
-        pageSize: 10,
-        sorting: [{ columnName: 'id', direction: 'asc' }]
+      setQueryOptions(prev => {
+        return {
+          ...prev,
+          filters: {
+            ...prev.filters,
+            date_time_after: dayjs(`${res.predict_start_date} 00:00:00+00:00`).utc().format(),
+            date_time_before: dayjs(`${res.predict_end_date} 23:59:59+00:00`).utc().format(),
+            filterType: 'name',
+            filterValue: [{name:res.name}],
+            maginitudeMax: undefined,
+            nightside: false,
+            geo: false,
+          }
+        }
       })
-      
     })
+  }, [id, setQueryOptions])
 
-  }, [id])
 
   useEffect(() => {
+    if (predictionJobResult) {
       setSummary([
         {
           title: 'Status',
-          value: predictionJobResult.status == 1 ? 'success' : 'failure'
+          value: predictionJobResult.status === 1 ? 'success' : 'failure'
         },
         {
           title: 'Name',
@@ -77,17 +67,19 @@ function PredictionAsteroid() {
           value: predictionJobResult.base_dynclass
         },
         {
-          title: 'Execution time',
-          value: predictionJobResult.exec_time?predictionJobResult.exec_time.split('.')[0]:"-"
-        },
-        {
           title: '# Occultations',
           value: predictionJobResult.occultations
         },
         {
           title: '# Des Observations',
           value: predictionJobResult.des_obs
-        },
+        }
+      ])
+      setTimes([
+        {
+          title: 'Execution time',
+          value: predictionJobResult.exec_time?predictionJobResult.exec_time.split('.')[0]:"-"
+        },        
         {
           title: 'Download BSP',
           value: predictionJobResult.bsp_jpl_dw_time?predictionJobResult.bsp_jpl_dw_time.split('.')[0]:"-"
@@ -117,44 +109,19 @@ function PredictionAsteroid() {
           value: predictionJobResult.ing_occ_exec_time?predictionJobResult.ing_occ_exec_time.split('.')[0]:"-"
         },
       ])
+    }
   }, [predictionJobResult])
 
-  function urlExists(url) {
-    var http = new XMLHttpRequest();
-    http.open('HEAD', url, false);
-    http.send();
-    if (http.status != 404)
-        return true;
-    else
-        return false;
-  }
-
-  function getMapUrl(occultation){
-    return process.env.REACT_APP_SORA + '/map?body=' + encodeURI(occultation.name) + '&date=' + encodeURI(occultation.date_time.split('T')[0]) + '&time=' + encodeURI(occultation.date_time.split('T')[1].replaceAll('Z', ''))
-  }
-
-  const loadOccultationsData = ({ asteroid_id, currentPage, pageSize, sorting }) => {
-    if(asteroid_id || asteroidId){  
-      setLoading(true);
-      const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
-      // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
-      const page = currentPage + 1
-      
-      getOccultationsByAsteroid({asteroid_id: asteroid_id?asteroid_id:asteroidId, page, pageSize, ordering}).then((res) => {
-        
-        setOccultationsTable(res.results.map((row) => ({
-          key: row.id,
-          detail: `/dashboard/occultation-detail/${row.id}`,
-          map: urlExists(getMapUrl(row))?getMapUrl(row):'',
-          ...row
-        })));
-        setOccultationsCount(res.count);
-        setLoading(false);
-      })
-    }
-  }
-
   const handleBackNavigation = () => navigate(-1)
+
+  const loadingCard = (height) => {
+    return (
+      <Skeleton height={height} animation="wave" sx={{
+        paddingTop: 0,
+        paddingBotton: 0,
+      }} />
+    )
+  }
 
   return (
     <Grid container spacing={2}>
@@ -170,37 +137,38 @@ function PredictionAsteroid() {
           </Grid>
         </Grid>
       </Grid>
-      {'messages' in predictionJobResult && predictionJobResult.status === 2 && predictionJobResult.messages !== null && (
+      {predictionJobResult !== undefined && 'messages' in predictionJobResult && predictionJobResult.status === 2 && predictionJobResult.messages !== null && (
         <Grid item xs={12}>
-          <Alert severity='error'>{predictionJobResult.messages}</Alert>
+          <Alert severity='error'>{predictionJobResult?.messages}</Alert>
         </Grid>
       )}
-      <Grid item xs={12} md={4}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Card>
-              <CardHeader title='Summary' />
-              <CardContent>
-                <List data={summary} />
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid item xs={12} md={8}>
+      <Grid item xs={6}>
+      {!predictionJobResult && loadingCard(400)}
+      {predictionJobResult && (
         <Card>
-          <CardHeader title='Asteroid Graphic' />
+          <CardHeader title='Summary' titleTypographyProps={{ variant: 'h6' }}/>
           <CardContent>
-            {/* <img src={graphFake} style={{ width:'100%', margin: 'auto' }} /> */}
+              <List data={summary} />  
           </CardContent>
         </Card>
+      )}
       </Grid>
-      <Grid item xs={12}>
-        <OccultationTable
-          loadData={loadOccultationsData}
-          tableData={occultationsTable}
-          totalCount={occultationsCount}
-          />
+      <Grid item xs={6}>
+        {!predictionJobResult && loadingCard(400)}
+        {predictionJobResult && (
+        <Card>
+          <CardHeader title='Execution Statistics' titleTypographyProps={{ variant: 'h6' }}/>
+          <CardContent>
+            <List data={times} />
+          </CardContent>
+        </Card>
+      )}
+      </Grid>
+      <Grid item xs={12} sx={{mt: 2}}>
+        {!predictionJobResult && loadingCard(600)}
+        {predictionJobResult && (
+          <PredictionEventsDataGrid />
+        )}
       </Grid>
     </Grid>
   )

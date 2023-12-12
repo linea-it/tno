@@ -113,7 +113,6 @@ class OccultationSerializer(serializers.ModelSerializer):
 
 class PredictionJobSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
-
     class Meta:
         model = PredictionJob
         fields = '__all__'
@@ -126,6 +125,8 @@ class PredictionJobSerializer(serializers.ModelSerializer):
 
 
 class PredictionJobResultSerializer(serializers.ModelSerializer):
+    predict_start_date = serializers.DateField(source='job.predict_start_date')
+    predict_end_date = serializers.DateField(source='job.predict_end_date')
     class Meta:
         model = PredictionJobResult
         fields = '__all__'
