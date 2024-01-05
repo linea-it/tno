@@ -67,6 +67,14 @@ Load Initial Data (LeapSecond, BspPlanetary, Stelar Catalog)
 docker-compose exec backend python manage.py loaddata initial_data.yaml
 ```
 
+### Acesso ao banco de dados do LINEA usando SSH Tunel
+TODO: Documentar como configurar o banco de catalogo para ler os dados do GAIA.
+Executar o comando antes de ligar os container para criar um tunel para o banco de dados de catalogo. 
+Editar e configurar os dados de acesso para a porta local.
+```bash
+ssh -f <linea_user>@login.linea.org.br -L <local_port>:desdb4.linea.org.br:5432 -N
+```
+
 ### Load DES release data
 
 Load table exposure and ccds from fixtures files.

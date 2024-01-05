@@ -36,36 +36,54 @@ class Occultation(models.Model):
         help_text="(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).",
     )
 
+    base_dynclass = models.CharField(
+        verbose_name="Base Object classification",
+        help_text="(ucd=“meta.code.class”) Base Object class (TNO, Centaur, Trojan, etc.).",
+        max_length=24,
+        default=None,
+        null=True,
+        blank=True,        
+    )
+
+    dynclass = models.CharField(
+        verbose_name="Object classification",
+        help_text="(ucd=“meta.code.class;src.class”) Object class (TNO, Centaur, Trojan, etc.).",
+        max_length=24,
+        default=None,
+        null=True,
+        blank=True,        
+    )
+
     date_time = models.DateTimeField(
         verbose_name="Date Time", auto_now_add=False, null=False, blank=False
     )
 
     ra_star_candidate = models.CharField(
+        verbose_name="RA Star Candidate",
         max_length=20,
         null=False,
         blank=False,
-        verbose_name="RA Star Candidate",
     )
 
     dec_star_candidate = models.CharField(
+        verbose_name="Dec Star Candidate",
         max_length=20,
         null=False,
         blank=False,
-        verbose_name="Dec Star Candidate",
     )
 
     ra_target = models.CharField(
+        verbose_name="RA Target",
         max_length=20,
         null=False,
         blank=False,
-        verbose_name="RA Target",
     )
 
     dec_target = models.CharField(
+        verbose_name="Dec Target",
         max_length=20,
         null=False,
         blank=False,
-        verbose_name="Dec Target",
     )
 
     closest_approach = models.FloatField(
@@ -450,6 +468,7 @@ class Occultation(models.Model):
     )
 
     # Occultation Path Fields.
+    # -----------------------------------------------
     have_path_coeff = models.BooleanField(
         verbose_name="Have Path Coeff",
         null=True,
@@ -505,6 +524,90 @@ class Occultation(models.Model):
         default=dict,
         help_text="Occultation Path Coeff",
     )
+
+    # Provenance Fields
+    # -----------------------------------------------    
+    catalog = models.CharField(
+        max_length=10,
+        default="GAIA DR2",
+        null=True,
+        blank=True,
+        verbose_name="Stellar Catalog",
+        help_text="Catalog of stars used in prediction. for example GAIA DR2",
+    )
+
+    predict_step = models.IntegerField(
+        verbose_name="Prediction Step",
+        help_text="Prediction Step",
+        null=True,
+        blank=True,
+        default=600,
+    )
+
+    # Indica a Origem do aquivo BSP do Asteroid. atualmente JPL.
+    bsp_source = models.CharField(
+        max_length=10,
+        null=True,
+        blank=True,
+        default="JPL",
+        verbose_name="Bsp Source",
+        help_text="Asteroid Bsp ephemeris data source. for example JPL."
+    )
+
+    # Indica a Origem das Observations pode ser AstDys ou MPC
+    obs_source = models.CharField(
+        max_length=10,
+        null=True,
+        blank=True,
+        default="MPC",
+        verbose_name="Observation Source",
+        help_text="Observation data source, AstDys or MPC."
+    )
+
+    # Indica a Origem dos Orbital Elements pode ser AstDys ou MPC
+    orb_ele_source = models.CharField(
+        max_length=10,
+        null=True,
+        blank=True,
+        default="MPC",
+        verbose_name="Orbital Elements Source",
+        help_text="Orbital Elements data source, AstDys or MPC."
+    )
+
+    bsp_planetary = models.CharField(
+        max_length=10,
+        null=True,
+        blank=True,
+        default="de440",
+        verbose_name="Planetary Ephemeris",
+        help_text="File/version of planetary ephemeris used."
+    )
+
+    leap_seconds = models.CharField(
+        max_length=10,
+        null=True,
+        blank=True,
+        default="naif0012",
+        verbose_name="Leap Seconds",
+        help_text="File/version of Leap Seconds used."
+    )
+
+    nima = models.BooleanField(
+        verbose_name="NIMA",
+        null=True,
+        blank=True,
+        default=False,
+        help_text="True if the prediction used NIMA results.",        
+    )
+
+    job_id =  models.IntegerField(
+        verbose_name="Prediction Job",
+        help_text="Identification of the prediction job that generated this prediction.",
+        null=True,
+        blank=True,
+        default=None,
+    )
+   
 
     def get_alias(self) -> str:
         return self.asteroid.get_alias()
