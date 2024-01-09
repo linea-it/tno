@@ -86,11 +86,11 @@ class AsteroidSerializer(serializers.ModelSerializer):
 
 
 class OccultationSerializer(serializers.ModelSerializer):
-    dynclass = serializers.CharField(source='asteroid.dynclass')
-    base_dynclass = serializers.CharField(source='asteroid.base_dynclass')
+    # dynclass = serializers.CharField(source='asteroid.dynclass')
+    # base_dynclass = serializers.CharField(source='asteroid.base_dynclass')
     alias = serializers.SerializerMethodField()
     map_url = serializers.SerializerMethodField()
-
+    
     class Meta:
         model = Occultation
         exclude = (

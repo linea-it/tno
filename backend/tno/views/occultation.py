@@ -90,6 +90,9 @@ class OccultationFilter(django_filters.FilterSet):
         # O filtro por latitude vai ser aplicado na get_queryset
         # Esta declarado aqui só para ficar explicito e visivel na interface DRF
         return queryset
+    
+    jobid = django_filters.NumberFilter(
+        field_name="job_id", label="Jobid")
 
     class Meta:
         model = Occultation
@@ -100,7 +103,8 @@ class OccultationFilter(django_filters.FilterSet):
             "name",
             "number",
             "long",
-            "nightside"
+            "nightside",
+            "jobid"
         ]
 
 

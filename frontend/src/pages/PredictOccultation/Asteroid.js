@@ -33,13 +33,16 @@ function PredictionAsteroid() {
           ...prev,
           filters: {
             ...prev.filters,
-            date_time_after: dayjs(`${res.predict_start_date} 00:00:00+00:00`).utc().format(),
-            date_time_before: dayjs(`${res.predict_end_date} 23:59:59+00:00`).utc().format(),
+            // date_time_after: dayjs(`${res.predict_start_date} 00:00:00+00:00`).utc().format(),
+            // date_time_before: dayjs(`${res.predict_end_date} 23:59:59+00:00`).utc().format(),
+            date_time_after: undefined,
+            date_time_before: undefined,            
             filterType: 'name',
             filterValue: [{name:res.name}],
             maginitudeMax: undefined,
             nightside: false,
             geo: false,
+            jobid: res.job
           }
         }
       })
