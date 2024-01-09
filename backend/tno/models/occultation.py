@@ -128,25 +128,25 @@ class Occultation(models.Model):
 
     j = models.FloatField(
         verbose_name="J*",
-        null=False,
-        blank=False,
-        default=0,
+        null=True,
+        blank=True,
+        default=None,
         help_text="G*, J*, H*, K* are normalized magnitudes to a common",
     )
 
     h = models.FloatField(
         verbose_name="H*",
-        null=False,
-        blank=False,
-        default=0,
+        null=True,
+        blank=True,
+        default=None,
         help_text="G*, J*, H*, K* are normalized magnitudes to a common",
     )
 
     k = models.FloatField(
         verbose_name="K*",
-        null=False,
-        blank=False,
-        default=0,
+        null=True,
+        blank=True,
+        default=None,
         help_text="G*, J*, H*, K* are normalized magnitudes to a common",
     )
 
@@ -641,7 +641,10 @@ class Occultation(models.Model):
         indexes = [
             models.Index(fields=['name',]),
             models.Index(fields=['number',]),
+            models.Index(fields=['base_dynclass',]),
+            models.Index(fields=['dynclass',]),
             models.Index(fields=['date_time',]),
+            models.Index(fields=['job_id',]),
             models.Index(fields=['g',]),
             models.Index(fields=['have_path_coeff',]),
             models.Index(fields=['occ_path_min_longitude',]),
