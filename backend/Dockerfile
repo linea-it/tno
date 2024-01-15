@@ -41,6 +41,7 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && chown -R $USER_UID:$USER_GID /usr/src/app /usr/src/app/django_static /archive /log
 
 ENV PYTHONPATH="/usr/src/app:$PYTHONPATH"
+ENV DJANGO_SETTINGS_MODULE=coreAdmin.settings
 
 WORKDIR /usr/src/app
 COPY . /usr/src/app
@@ -51,15 +52,6 @@ COPY --chmod=0775 ./start_worker.sh /start_worker.sh
 COPY --chmod=0775 ./start_beat.sh /start_beat.sh
 COPY --chmod=0775 ./start_flower.sh /start_flower.sh
 
-# COPY ./entrypoint.sh /entrypoint.sh
-# COPY ./start.sh /start.sh
-# COPY ./start_worker.sh /start_worker.sh
-# COPY ./start_beat.sh /start_beat.sh
-# RUN chmod 775 /entrypoint.sh && chown $USER_UID:$USER_GID /entrypoint.sh 
-# RUN chmod 775 /start.sh && chown $USER_UID:$USER_GID /start.sh
-# RUN chmod 775 /start_worker.sh && chown $USER_UID:$USER_GID /start_worker.sh
-# RUN chmod 775 /start_beat.sh && chown $USER_UID:$USER_GID /start_beat.sh
-# RUN chmod 775 /start_beat.sh && chown $USER_UID:$USER_GID /start_beat.sh
 
 # Switch to non-priviliged user and run app
 USER tnouser
