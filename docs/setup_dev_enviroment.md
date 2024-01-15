@@ -9,7 +9,7 @@ git clone https://github.com/linea-it/tno.git tno
 Create directorys
 
 ```bash
-mkdir tno/database_subset tno/archive tno/archive/sora tno/archive/sora/input tno/archive/sora/output tno/log && cd tno
+mkdir tno/database_subset tno/archive tno/log && cd tno
 ```
 
 ## Setup Backend

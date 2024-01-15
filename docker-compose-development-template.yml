@@ -29,6 +29,7 @@ services:
       - ./archive:/archive
     depends_on:
       - database
+      - rabbit
 
   # Copia do serviço backend, mas executando outro comando
   celery_worker: &celery_worker
@@ -51,19 +52,6 @@ services:
     depends_on:
       - backend
 
-  # sora:
-  #   image: mozaru/carto-sora
-  #   user: "1000:1000"
-  #   environment:
-  #     INPUT_PATH: "/media/input"
-  #     OUTPUT_PATH: "/media/output"
-  #     CACHE_PATH: "/media/output"
-  #     PORT: 8000
-  #   volumes:
-  #     - ./archive/sora/input:/media/input
-  #     - ./archive/sora/output:/media/output
-  #   command: python3.7 /opt/server/main.py
-
   # Database
   database:
     image: linea/postgresql_q3c:latest
@@ -73,7 +61,9 @@ services:
       - POSTGRES_DB=postgres
     ports:
       # Deixar a porta exposta para desenvolvimento
-      # isto permite acessar o banco de dados a partir de outros apps como o DBeaver
+      # isto permite:
+      #  - Outros apps como Dbeaver acessar o banco de dados
+      #  - Container pipelines acessar o banco administrativo.
       - 5432:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data
@@ -105,20 +95,43 @@ services:
       - frontend
       - celery_flower
       - rabbit
-  # jupyter:
-  #   image: jupyter/scipy-notebook:latest
-  #   command: "start-notebook.sh"
+
+  pipelines:
+    build: ./pipelines
+    # Para executar os pipelines
+    # Utilizar daemon.sh Para Executar automaticamente conforme sao criados no portal
+    command: /app/daemon.sh
+    # Utilizar sleep infinite Para Executar manualmente
+    # command: /bin/sh -c "while sleep 1000; do :; done"
+    network_mode: "host"
+    volumes:
+      - ./pipelines/src:/app/src
+      - ./archive:/app/outputs
+    environment:
+      # Acesso ao DB de Catalogo e Administrativo, caso localhost não funcione utilizar o host.docker.internal.
+      # Usando Localhost
+      # - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@localhost:3307/prod_gavo
+      # - DB_URI_ADMIN=postgresql+psycopg2://tnouseradmindev:TnoDev405060@localhost:3307/tnodbdev
+      # Usando host.docker.internal
+      - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@host.docker.internal:3307/prod_gavo
+      - DB_URI_ADMIN=postgresql+psycopg2://postgres:postgres@host.docker.internal:5432/postgres
+      - USER=apptno
+      - PARSL_ENV=local # PARSL_ENV define onde será o processamento: local ou linea (Slurm)
+      - PREFIX_ENV=local
+      - PREDICT_OUTPUTS=/app/outputs/predict_occultation
+
+  # sora:
+  #   image: mozaru/carto-sora
+  #   user: "1000:1000"
   #   environment:
-  #     NB_USER: docker_worker
-  #     CHOWN_HOME: 'yes'
-  #     CHOWN_HOME_OPTS: -R
-  #     JUPYTER_ENABLE_LAB: 'yes'
+  #     INPUT_PATH: "/media/input"
+  #     OUTPUT_PATH: "/media/output"
+  #     CACHE_PATH: "/media/output"
+  #     PORT: 8000
   #   volumes:
-  #     - ./archive/jupyter:/home/jovyan/work
-  #   ports:
-  #     - 8888:8888
-  #   links:
-  #     - database      
+  #     - ./archive/sora/input:/media/input
+  #     - ./archive/sora/output:/media/output
+  #   command: python3.7 /opt/server/main.py
 
 volumes:
   rabbitmq-data:
