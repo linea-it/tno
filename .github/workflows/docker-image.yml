@@ -27,6 +27,9 @@ jobs:
         tags: |
           type=semver,pattern={{version}},prefix=backend_
           type=sha,format=short,prefix=backend_
+        flavor: |
+          latest=auto
+          prefix=backend_
     -
       name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -67,6 +70,9 @@ jobs:
         tags: |
           type=semver,pattern={{version}},prefix=frontend_
           type=sha,format=short,prefix=frontend_
+        flavor: |
+          latest=auto
+          prefix=frontend_          
     -
       name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -107,6 +113,9 @@ jobs:
         tags: |
           type=semver,pattern={{version}},prefix=pipelines_
           type=sha,format=short,prefix=pipelines_
+        flavor: |
+          latest=auto
+          prefix=pipelines_
     -
       name: Set up QEMU
       uses: docker/setup-qemu-action@v3
