@@ -13,6 +13,7 @@
       + [Run Django Manage.py](#run-django-managepy)
       + [Acesso ao banco de dados do LINEA usando SSH Tunel](#acesso-ao-banco-de-dados-do-linea-usando-ssh-tunel)
       + [Build manual das imagens e push para docker hub](#build-manual-das-imagens-e-push-para-docker-hub)
+      + [Run CI Github Actions Locally](#run-ci-github_actions-localy)
       + [Export Tables to csv](#export-tables-to-csv)
       + [Import Table csv Postgresql](#import-table-csv-postgresql)
 
@@ -298,6 +299,48 @@ docker push linea/tno:frontend_$(git describe --always)
 cd tno/pipelines
 docker build -t linea/tno:pipelines_$(git describe --always) .
 docker push linea/tno:pipelines_$(git describe --always)
+```
+
+
+<!-- TOC --><a name="run-ci-github_actions-localy"></a>
+### Run CI Github Actions Locally
+
+O devcontainer do repositório já está configurado com as dependencias (github cli, act, docker) necessárias para executar os github actions localmente. 
+é necessário criar um arquivo .secrets com as variaveis de acesso ao Dockerhub e o token de login do github. 
+
+Primeiro faça a autenticação no github cli usando o comando 
+```bash
+gh auth login
+```
+Após realizar o login com sucesso, execute o comando 
+
+```bash
+gh auth token
+```
+Copie o Token gerado. 
+
+Crie um arquivo .secrets com as seguintes variaveis:
+
+```bash
+GITHUB_TOKEN=<Token gerado pelo gh auth token>
+DOCKERHUB_USERNAME=<Usuario do dokerhub>
+DOCKERHUB_TOKEN=<Senha do dockerhub>
+```
+
+Utilize os seguintes comandos para testar os pipelines:
+
+```bash
+# Command structure:
+act [<event>] [options]
+
+# List all actions for all events:
+act -l
+
+# Executa o job build_backend simulando um pull_request
+act pull_request --secret-file .secrets  -j build_backend 
+
+# Executa o job build_backend simulando um push
+act pull --secret-file .secrets  -j build_backend
 ```
 
 <!-- TOC --><a name="export-tables-to-csv"></a>

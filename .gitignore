@@ -1,6 +1,8 @@
 # Node Packages
 node_modules
 
+.secrets
+
 # Build Directory
 /build
 
