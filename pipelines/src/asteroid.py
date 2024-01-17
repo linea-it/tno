@@ -792,6 +792,10 @@ class Asteroid:
                 self.path, self.predict_occultation["filename"]
             )
 
+            if not predict_table_path.exists():
+                # Arquivo com resultados da predicao nao foi criado
+                return 0
+
             dao = OccultationDao()
 
             # Apaga as occultations já registradas para este asteroid antes de inserir.
@@ -866,6 +870,8 @@ class Asteroid:
                 }
             )
 
+
+
             coeff_paths = []
 
             # Para cada Ocultacao e necessario calcular o occultation path. 
@@ -909,17 +915,27 @@ class Asteroid:
               
                 coeff_paths.append(new_row)        
 
+            if len(coeff_paths) > 0:
+                df_coeff = pd.DataFrame.from_dict(coeff_paths)
 
-            df_coeff = pd.DataFrame.from_dict(coeff_paths)
+                df["have_path_coeff"] = df_coeff["have_path_coeff"]
+                df["occ_path_max_longitude"] = df_coeff["occ_path_max_longitude"]
+                df["occ_path_min_longitude"] = df_coeff["occ_path_min_longitude"]
+                df["occ_path_coeff"] = df_coeff["occ_path_coeff"]
+                df["occ_path_is_nightside"] = df_coeff["occ_path_is_nightside"]
+                df["occ_path_max_latitude"] = df_coeff["occ_path_max_latitude"]
+                df["occ_path_min_latitude"] = df_coeff["occ_path_min_latitude"]
 
-            df["have_path_coeff"] = df_coeff["have_path_coeff"]
-            df["occ_path_max_longitude"] = df_coeff["occ_path_max_longitude"]
-            df["occ_path_min_longitude"] = df_coeff["occ_path_min_longitude"]
-            df["occ_path_coeff"] = df_coeff["occ_path_coeff"]
-            df["occ_path_is_nightside"] = df_coeff["occ_path_is_nightside"]
-            df["occ_path_max_latitude"] = df_coeff["occ_path_max_latitude"]
-            df["occ_path_min_latitude"] = df_coeff["occ_path_min_latitude"]
-           
+                del df_coeff
+            else:           
+                df["have_path_coeff"] = False
+                df["occ_path_max_longitude"] = None
+                df["occ_path_min_longitude"] = None
+                df["occ_path_coeff"] = None
+                df["occ_path_is_nightside"] = None
+                df["occ_path_max_latitude"] = None
+                df["occ_path_min_latitude"] = None
+
             # log.debug(df.columns.values.tolist())
 
             # Adiciona algumas informacoes de Proveniencia a cada evento de predicao
@@ -1015,7 +1031,6 @@ class Asteroid:
             rowcount = dao.import_occultations(data)
 
             del df
-            del df_coeff
             del data
             del dao
 
