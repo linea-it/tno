@@ -18,20 +18,28 @@ do
     esac
 done
 
-URL=https://raw.githubusercontent.com/linea-it/tno/${VERSION}/pipelines
-
 echo "BASEDIR: " $BASEDIR;
-echo "URL: " $URL;
 echo "UID: " $USERID;
 echo "GID: " $GID;
 
+git clone https://github.com/linea-it/tno.git $BASEDIR/tno
+cd tno
+git checkout $VERSION
+cd ..
+
+# Download da BSP planetary
+wget --no-verbose --show-progress --progress=bar:force:noscroll https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de440.bsp 
+
+# Download Leap Second
+wget --no-verbose --show-progress --progress=bar:force:noscroll https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls 
+
 # 1. create envs
 function create_env {
-    FILEENV="environment.${2}.yml"
-    HASENV=`conda env list | grep ${2}`
+    FILEENV="environment.${1}.yml"
+    HASENV=`conda env list | grep ${1}`
 
     rm -f ${FILEENV}
-    wget ${1}/${FILEENV}
+    cp tno/pipelines/${FILEENV} .
 
     if [ -z "$HASENV" ]
     then
@@ -39,15 +47,17 @@ function create_env {
     else
         conda env update --file ${FILEENV} --prune
     fi
+
+    rm -rf ${FILEENV}
 }
 
-echo "create_env $URL py2"
-create_env $URL py2
-echo "create_env $URL py3"
-create_env $URL py3
+echo "create_env py2"
+create_env py2
+echo "create_env py3"
+create_env py3
 
 # 2. create docker-compose.yml
-wget $URL/docker-compose.template.yml
+cp tno/pipelines/docker-compose.template.yml .
 mv docker-compose.template.yml docker-compose.yml
 
 awk "{sub(\"_UID\",\"$USERID\")} {print}" docker-compose.yml > temp.yml && mv temp.yml docker-compose.yml
@@ -60,14 +70,18 @@ awk "{sub(\"_BASEDIR\",\"$BASEDIR\")} {print}" docker-compose.yml > temp.yml && 
 # 3. create directory structure for cluster configuration
 mkdir -p $BASEDIR/configs/script_dir
 
-cat <<EOF > $BASEDIR/configs/cluster.sh
-#!/bin/bash
 export CONDAPATH=${CONDA_PREFIX}/bin
 export PIPELINE_PREDIC_OCC=${BASEDIR}/predict_occ
 export PIPELINE_PATH=${BASEDIR}/predict_occ/pipeline
-export PYTHONPATH=$PYTHONPATH:$PIPELINE_PATH:$PIPELINE_PREDIC_OCC
 
-source $CONDAPATH/activate
+cat <<EOF > $BASEDIR/configs/cluster.sh
+#!/bin/bash
+export CONDAPATH=${CONDAPATH}
+export PIPELINE_PREDIC_OCC=${PIPELINE_PREDIC_OCC}
+export PIPELINE_PATH=${PIPELINE_PATH}
+export PYTHONPATH=${PIPELINE_PATH}:${PIPELINE_PREDIC_OCC}
+
+source ${CONDAPATH}/activate
 conda activate py3
 
 export DB_URI=postgresql+psycopg2://untrustedprod:untrusted@desdb4.linea.gov.br:5432/prod_gavo
@@ -78,27 +92,18 @@ ulimit -u 100000
 umask 0002
 EOF
 
+shift $#
+
 source $BASEDIR/configs/cluster.sh
 
 mkdir $PIPELINE_PREDIC_OCC
 mkdir $BASEDIR/outputs
 
 # 4. copy tno pipeline according to version
-git clone https://github.com/linea-it/tno.git $BASEDIR && cd tno
-git checkout $VERSION && cd ..
-mv tno/pipelines/predict_occultation $PIPELINE_PREDIC_OCC
+mv tno/pipelines/predict_occultation/* $PIPELINE_PREDIC_OCC
 rm -rf tno
 
-# 4.1 Download da BSP planetary
-wget --no-verbose --show-progress \
---progress=bar:force:noscroll \ 
-https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de440.bsp 
-
-# 4.2 Download Leap Second
-wget --no-verbose --show-progress \
---progress=bar:force:noscroll \
-https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls 
-
+# 5. move aux files to PIPELINE_PATH
 mv de440.bsp $PIPELINE_PATH
 mv naif0012.tls $PIPELINE_PATH
 
