@@ -48,7 +48,7 @@ def get_config(key):
         "local": HighThroughputExecutor(
             label="local",
             worker_debug=False,
-            max_workers=4,
+            max_workers=8,
             provider=LocalProvider(
                 min_blocks=1,
                 init_blocks=1,
