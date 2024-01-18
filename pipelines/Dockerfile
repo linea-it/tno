@@ -1,4 +1,6 @@
-FROM ubuntu:20.04 as base
+# FROM ubuntu:20.04 as base
+FROM debian:buster-slim as base
+
 
 # Instalação do Anaconda seguindo a imagem oficial
 # https://github.com/ContinuumIO/docker-images/blob/main/anaconda3/debian/Dockerfile
