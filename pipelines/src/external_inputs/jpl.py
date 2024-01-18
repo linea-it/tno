@@ -59,19 +59,29 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
     # &COMMAND=chiron
     # &START_TIME=2023-Jan-01
     # &STOP_TIME=2023-Mar-30
+    
+    # first we will assume the object is an asteroid or comet
     urlJPL = 'https://ssd.jpl.nasa.gov/api/horizons.api'
     parameters = {
         'format': "json",
         'EPHEM_TYPE': "SPK",
         'OBJ_DATA': "YES",
-        'COMMAND': identifier,
+        'COMMAND': "'DES="+identifier+"'",
         'START_TIME': date1.strftime('%Y-%b-%d'),
         'STOP_TIME': date2.strftime('%Y-%b-%d'),
     }
     r = requests.get(urlJPL, params=parameters, stream=True)
+        
+    # now we will check if there was a match in the results if not it will search other minor planets suche as Ceres, Makemake...
+    if 'No matches found.' in json.loads(r.text)['result']:
+        parameters['COMMAND'] = "'"+identifier+";'"
+        r = requests.get(urlJPL, params=parameters, stream=True)
+
+    
     if r.status_code == requests.codes.ok and r.headers['Content-Type'] == 'application/json':
         try:
             data = json.loads(r.text)
+            
             # If the SPK file was generated, decode it and write it to the output file:
             if "spk" in data:
                 with open(spk_file, "wb") as f:
@@ -82,7 +92,7 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
                 return spk_file 
             else:
                 # Otherwise, the SPK file was not generated so output an error:
-                raise Exception(f"SPK file not generated: {response.text}")
+                raise Exception(f"SPK file not generated: {r.text}")
         except ValueError as e:
             raise Exception(f"Unable to decode JSON. {e}")
         except OSError as e:
