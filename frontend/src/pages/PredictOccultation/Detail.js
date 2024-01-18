@@ -217,7 +217,7 @@ function PredictDetail() {
         },
         {
           title: 'Start',
-          value: predictionJob.start?moment(predictionJob.start).format('YYYY-MM-DD'):"Not started"
+          value: predictionJob.start?moment(predictionJob.start).format('YYYY-MM-DD HH:mm:ss'):"Not started"
         },
         {
           title: 'Finish',
