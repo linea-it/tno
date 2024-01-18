@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.10-slim
 
 # WORKDIR /app
 
@@ -13,7 +13,7 @@ ENV PYTHONUNBUFFERED=1
 # Install Packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    gcc \
+    # gcc \
     python3-dev \
     build-essential \
     # Dependency for psycopg2-binary
