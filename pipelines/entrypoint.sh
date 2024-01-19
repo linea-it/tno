@@ -1,11 +1,6 @@
 #!/bin/bash --login
 
+echo "Running Rsync: ${PIPELINE_PREDIC_OCC}"
 rsync -r /predict_occultation/ ${PIPELINE_PREDIC_OCC}/
-
-#echo "CONDA_ENVS: ${CONDA_ENVS}";
-#
-#if [ -n "$CONDA_ENVS" ]; then 
-#    rsync -a /opt/conda/envs ${CONDA_ENVS}
-#fi
 
 exec "$@"

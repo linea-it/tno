@@ -1,71 +1,35 @@
-FROM ubuntu:20.04 as base
+FROM debian:buster-slim as base
+# FROM ubuntu:20.04 as base
 
-# Instalação do Anaconda seguindo a imagem oficial
-# https://github.com/ContinuumIO/docker-images/blob/main/anaconda3/debian/Dockerfile
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
 
+# Instalacao do Gfortran 7 e Miniconda
 RUN set -x && \
     apt-get update --fix-missing && \
     apt-get install -y --no-install-recommends \
     gcc \
-    bzip2 \
+    gfortran-7 \
     ca-certificates \
     git \
-    libc-dev \
-    libglib2.0-0 \
-    libpq5 \
-    libsm6 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxi6 \
-    libxinerama1 \
-    libxrandr2 \
-    libxrender1 \
-    mercurial \
-    openssh-client \
-    procps \
-    subversion \
     ssh \
     wget \
+    rsync \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* && \
-    UNAME_M="$(uname -m)" && \
-    if [ "${UNAME_M}" = "x86_64" ]; then \
-    ANACONDA_URL="https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh"; \
-    SHA256SUM="6c8a4abb36fbb711dc055b7049a23bbfd61d356de9468b41c5140f8a11abd851"; \
-    elif [ "${UNAME_M}" = "s390x" ]; then \
-    ANACONDA_URL="https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-s390x.sh"; \
-    SHA256SUM="ee817071a2ad94e044fb48061a721bc86606b2f4906b705e4f42177eeb3ca7c5"; \
-    elif [ "${UNAME_M}" = "aarch64" ]; then \
-    ANACONDA_URL="https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-aarch64.sh"; \
-    SHA256SUM="69ee26361c1ec974199bce5c0369e3e9a71541de7979d2b9cfa4af556d1ae0ea"; \
-    elif [ "${UNAME_M}" = "ppc64le" ]; then \
-    ANACONDA_URL="https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-ppc64le.sh"; \
-    SHA256SUM="5ea1ed9808af95eb2655fe6a4ffdb66bea66ecd1d053fc2ee69eacc7685ef665"; \
-    fi && \
-    wget "${ANACONDA_URL}" -O anaconda.sh -q && \
-    echo "${SHA256SUM} anaconda.sh" > shasum && \
-    sha256sum --check --status shasum && \
-    /bin/bash anaconda.sh -b -p /opt/conda && \
-    rm anaconda.sh shasum && \
-    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc && \
-    find /opt/conda/ -follow -type f -name '*.a' -delete && \
-    find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
-    /opt/conda/bin/conda clean -afy
-
-# Instalacao do Gfortran 7
-RUN apt update \
-    && apt install -y gfortran-7 
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /opt/conda \
+    && wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /opt/conda/miniconda.sh \
+    && bash /opt/conda/miniconda.sh -b -u -p /opt/conda \
+    && rm -rf /opt/conda/miniconda.sh \
+    && /opt/conda/bin/conda init bash \
+    && find /opt/conda/ -follow -type f -name '*.a' -delete \
+    && find /opt/conda/ -follow -type f -name '*.js.map' -delete \
+    && /opt/conda/bin/conda clean -afy \
+    && chmod =2775 /opt/conda \
+    && ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
 
 # -------------- PRAIA OCC compile Stage -------------- 
 FROM base as praia_occ
-# Instalação do PRAIA OCC
 ADD praia_occ_src /tmp/praia_occ_src
 RUN mkdir /tmp/praia_occ \
     && cd /tmp/praia_occ_src \
@@ -82,7 +46,6 @@ RUN mkdir /tmp/praia_occ \
 
 # -------------- Python 2.7 Environment Stage -------------- 
 FROM base as py2_build
-# Create the environment
 COPY environment.py2.yml .
 RUN /bin/bash --login -c "conda init bash \
     && source ~/.bashrc \
@@ -91,14 +54,13 @@ RUN /bin/bash --login -c "conda init bash \
 
 # -------------- Python 3.8 Environment Stage -------------- 
 FROM base as py3_build
-# Create the environment
 COPY environment.py3.yml .
 RUN /bin/bash --login -c "conda init bash \
     && source ~/.bashrc \
     && conda env create -f environment.py3.yml \
     && conda activate py3"
 
-# -------------- Runtime Stage -------------- 
+# # -------------- Runtime Stage -------------- 
 FROM base
 
 # Download da BSP planetary
@@ -117,28 +79,20 @@ COPY --from=praia_occ /tmp/praia_occ/* /usr/local/bin
 
 # Python 2.7 environment
 COPY --chown=:conda --chmod=775 --from=py2_build /opt/conda/envs/py2 /opt/conda/envs/py2
+
 # Python 3.8 environment
 COPY --chown=:conda --chmod=775 --from=py3_build /opt/conda/envs/py3 /opt/conda/envs/py3
 
-RUN chmod =2775 /opt/conda
-
-# Setup conda to mirror contents from https://github.com/ContinuumIO/docker-images/blob/master/anaconda3/debian/Dockerfile
-ENV LANG=C.UTF-8 \
-    LC_ALL=C.UTF-8 \
-    PATH=/opt/conda/bin:$PATH
-
-# devcontainer dependencies and utils 
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    git \
+RUN set -x && \
+    apt-get update --fix-missing && \
+    apt-get install -y --no-install-recommends \
     bash-completion \
     nano \
-    ssh \
     vim \
-    rsync \
-    wget
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 ARG APP_HOME=/app
-
 ARG USERNAME=vscode
 ARG USERUID=1000
 ARG USERGID=1000
@@ -152,7 +106,6 @@ RUN groupadd --gid ${USERGID} ${USERNAME} \
     && groupadd -r conda --gid 900 \ 
     && usermod -aG conda,ton ${USERNAME} \
     && usermod -aG conda apptno
-
 
 ENV PIPELINE_ROOT=${APP_HOME}/src
 ENV PIPELINE_PREDIC_OCC=/predict_occultation
@@ -169,15 +122,9 @@ COPY --chown=${USERNAME}:ton --chmod=775 entrypoint.sh ${APP_HOME}
 COPY --chown=${USERNAME}:ton --chmod=775 run_daemon.py ${APP_HOME}
 
 RUN chmod =2775 ${PIPELINE_ROOT} \
-    && chmod =2775 ${APP_HOME}
-
-RUN mv de440.bsp ${PIPELINE_PATH}/de440.bsp \
+    && chmod =2775 ${APP_HOME} \
+    && mv de440.bsp ${PIPELINE_PATH}/de440.bsp \
     && mv naif0012.tls ${PIPELINE_PATH}/naif0012.tls
-
-# RUN rm -rf ${PIPELINE_ROOT}/*.pyc ${PIPELINE_ROOT}/__pycache__
-# RUN rm -rf ${PIPELINE_ROOT}/external_inputs/*.pyc ${PIPELINE_ROOT}/external_inputs/__pycache__
-# RUN rm -rf ${PIPELINE_PATH}/*.pyc ${PIPELINE_PATH}/__pycache__
-# RUN rm -rf ${PIPELINE_PREDICT_OCC}/*.pyc ${PIPELINE_PREDIC_OCC}/__pycache__
 
 WORKDIR ${APP_HOME}
 

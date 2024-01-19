@@ -81,7 +81,7 @@ function PredictOccultation() {
   const [filterType, setFilterType] = React.useState({ value: 'base_dynclass', label: 'Dynamic class' });
   const [filterValue, setFilterValue] = React.useState({ value: "", label: "Select..." });
   const [filterValueNames, setFilterValueNames] = React.useState([]);
-  const [predictStep, setpredictStep] = React.useState('600');
+  const [predictStep, setpredictStep] = React.useState('60');
 
   const [messageOpenSuccess, setMessageOpenSuccess] = useState(false);
   const [messageTextSuccess, setMessageTextSuccess] = React.useState('');

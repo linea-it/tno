@@ -1,5 +1,6 @@
 #!/bin/bash --login
 
+echo "Activating py3 environment" 
 conda activate py3
 
 export PYTHONPATH=${PYTHONPATH}:${PIPELINE_ROOT}:${PIPELINE_PATH}:${PIPELINE_PREDIC_OCC}
