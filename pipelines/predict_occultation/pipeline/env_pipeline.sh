@@ -8,7 +8,9 @@ then
     export EUPS_USERDATA=/tmp/`whoami`/eups
     . /mnt/eups/linea_eups_setup.sh
     setup gcc 4.9.3+1
-    export PATH=$PATH:/lustre/t1/scratch/users/app.tno/tno_testing/bin
+    setup geradata 20240101+0
+    setup elimina 20240101+0
+    setup praia_occ_star_search_12 20240101+0
     source ${CONDAPATH}/activate
 fi
 

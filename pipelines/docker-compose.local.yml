@@ -17,5 +17,4 @@ services:
       # - DB_URI_ADMIN=postgresql+psycopg2://tnouseradmindev:TnoDev405060@host.docker.internal:3307/tnodbdev
       - USER=apptno
       - PARSL_ENV=local # PARSL_ENV define onde será o processamento: local ou linea (Slurm)
-      - PREFIX_ENV=local
       - PREDICT_OUTPUTS=/app/outputs/predict_occultation
