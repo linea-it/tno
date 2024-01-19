@@ -30,7 +30,6 @@ RUN set -x && \
 
 # -------------- PRAIA OCC compile Stage -------------- 
 FROM base as praia_occ
-# Instalação do PRAIA OCC
 ADD praia_occ_src /tmp/praia_occ_src
 RUN mkdir /tmp/praia_occ \
     && cd /tmp/praia_occ_src \
@@ -47,48 +46,19 @@ RUN mkdir /tmp/praia_occ \
 
 # -------------- Python 2.7 Environment Stage -------------- 
 FROM base as py2_build
+COPY environment.py2.yml .
 RUN /bin/bash --login -c "conda init bash \
     && source ~/.bashrc \
-    && conda create -y -n py2 python=2.7 \
-    && conda activate py2 \
-    && conda install pip freetype libpng pkg-config \
-    && pip install \
-    numpy==1.16.6 \
-    astropy==2.0.8 \
-    matplotlib \
-    Pillow==5.3.0 \
-    OWSLib==0.17.0 \
-    Cython==0.29 \
-    pyproj==1.9.5.1 \
-    pyshp==1.2.12 \
-    pandas==0.24.2 \
-    spiceypy==2.1.2 \
-    sqlalchemy==1.4.25 \
-    psycopg2-binary==2.8.6 \
-    && conda deactivate"
+    && conda env create -f environment.py2.yml \
+    && conda activate py2" 
 
 # -------------- Python 3.8 Environment Stage -------------- 
 FROM base as py3_build
+COPY environment.py3.yml .
 RUN /bin/bash --login -c "conda init bash \
     && source ~/.bashrc \
-    && conda create -y -n py3 python=3.8 \
-    && conda activate py3 \
-    && conda install pip \ 
-    && pip install \
-    parsl==2023.9.25 \
-    numpy==1.21.2 \
-    astropy==5.0.3 \
-    astroquery==0.4.6 \
-    humanize==3.10.0 \
-    pandas==1.4.1 \
-    psycopg2-binary==2.8.6 \
-    python-dateutil==2.8.2 \
-    scipy==1.7.3 \
-    requests==2.27.1 \
-    spiceypy==5.0.1 \
-    sqlalchemy==1.4.32 \
-    celery==5.3 \
-    && conda deactivate"
+    && conda env create -f environment.py3.yml \
+    && conda activate py3"
 
 # # -------------- Runtime Stage -------------- 
 FROM base

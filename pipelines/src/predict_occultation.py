@@ -18,7 +18,8 @@ from dao import (
     PredictOccultationJobStatusDao,
 )
 from io import StringIO
-from library import get_configs
+
+# from library import get_configs
 import shutil
 
 from library import (
@@ -33,8 +34,8 @@ try:
     from app import run_pipeline
     from parsl_config import get_config
 except Exception as error:
-    print('Error: %s' % str(error))
-    raise('Predict Occultation pipeline not installed!')
+    print("Error: %s" % str(error))
+    raise ("Predict Occultation pipeline not installed!")
 
 import parsl
 
@@ -186,17 +187,17 @@ def remove_job_directory(jobid):
 
 
 def get_job_path(jobid):
-    """Retorna o path para o diretorio do job, cria o diretorio caso nao exista.
-    """
-    config = get_configs()
+    """Retorna o path para o diretorio do job, cria o diretorio caso nao exista."""
+    # config = get_configs()
     # orbit_trace_root = config["DEFAULT"].get("PredictOccultationJobPath")
-    orbit_trace_root = os.getenv('PREDICT_OUTPUTS', '/predict_occultation')
+    orbit_trace_root = os.getenv("PREDICT_OUTPUTS", "/predict_occultation")
     folder_name = f"{jobid}"
     # folder_name = f"teste_{job['id']}"
     # folder_name = f"{job['id']}-{str(uuid.uuid4())[:8]}"
 
-    prefix_env = os.getenv('PREFIX_ENV', 'dev')
-    job_path = pathlib.Path(orbit_trace_root).joinpath(prefix_env, folder_name)
+    # prefix_env = os.getenv('PREFIX_ENV', 'dev')
+    # job_path = pathlib.Path(orbit_trace_root).joinpath(prefix_env, folder_name)
+    job_path = pathlib.Path(orbit_trace_root).joinpath(folder_name)
 
     if not job_path.exists():
         job_path.mkdir(parents=True, mode=0o775)
@@ -433,10 +434,8 @@ def run_job(jobid: int):
 
     job = dao.get_job_by_id(jobid)
 
-    config = get_configs()
-
-    # Cria um diretório para o job    
-    job_path = get_job_path(job['id'])
+    # Cria um diretório para o job
+    job_path = get_job_path(job["id"])
 
     # Escreve o arquivo job.json
     make_job_json_file(job, job_path)
@@ -475,7 +474,7 @@ def submit_tasks(jobid: int):
     print("submit_tasks")
 
     # Settings Parsl configurations
-    envname = os.getenv('PARSL_ENV', 'linea')
+    envname = os.getenv("PARSL_ENV", "linea")
     parsl_conf = get_config(envname)
     parsl.clear()
     parsl.load(parsl_conf)
@@ -750,8 +749,6 @@ def submit_tasks(jobid: int):
                 # Ignora as proximas etapas para este asteroid.
                 continue
 
-
-
             step1_success += 1
             current_idx += 1
 
@@ -777,7 +774,17 @@ def submit_tasks(jobid: int):
 
             try:
                 proc = run_pipeline(
-                    (workdir, name, start_date, end_date, number, path, PREDICT_STEP, LEAP_SECOND, BSP_PLANETARY),
+                    (
+                        workdir,
+                        name,
+                        start_date,
+                        end_date,
+                        number,
+                        path,
+                        PREDICT_STEP,
+                        LEAP_SECOND,
+                        BSP_PLANETARY,
+                    ),
                     stderr=f"{path}/{name}.err",
                     stdout=f"{path}/{name}.out",
                 )
@@ -842,7 +849,7 @@ def submit_tasks(jobid: int):
                             status = errobj.exitcode
                         except AttributeError:
                             status = -1
-                        log.warn('JobParslError: %s' % str(status))
+                        log.warn("JobParslError: %s" % str(status))
                     else:
                         status = task.result()
 
@@ -1124,9 +1131,7 @@ def complete_job(job, log, status):
     # Calc average time by asteroid
     avg_exec_time_asteroid = 0
     if count_success > 0:
-        avg_exec_time_asteroid = int(
-            tdelta.total_seconds() / count_success
-        )
+        avg_exec_time_asteroid = int(tdelta.total_seconds() / count_success)
 
     # Status 3 = Completed
     job.update(
@@ -1161,4 +1166,3 @@ def complete_job(job, log, status):
 
     log.info("Execution Time: %s" % tdelta)
     log.info("Predict Occultation is done!.")
-

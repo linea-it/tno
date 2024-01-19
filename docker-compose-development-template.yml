@@ -110,28 +110,14 @@ services:
     environment:
       # Acesso ao DB de Catalogo e Administrativo, caso localhost não funcione utilizar o host.docker.internal.
       # Usando Localhost
-      # - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@localhost:3307/prod_gavo
-      # - DB_URI_ADMIN=postgresql+psycopg2://tnouseradmindev:TnoDev405060@localhost:3307/tnodbdev
+      - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@localhost:3307/prod_gavo
+      - DB_URI_ADMIN=postgresql+psycopg2://tnouseradmindev:TnoDev405060@localhost:3307/tnodbdev
       # Usando host.docker.internal
-      - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@host.docker.internal:3307/prod_gavo
-      - DB_URI_ADMIN=postgresql+psycopg2://postgres:postgres@host.docker.internal:5432/postgres
+      # - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@host.docker.internal:3307/prod_gavo
+      # - DB_URI_ADMIN=postgresql+psycopg2://postgres:postgres@host.docker.internal:5432/postgres
       - USER=apptno
       - PARSL_ENV=local # PARSL_ENV define onde será o processamento: local ou linea (Slurm)
-      - PREFIX_ENV=local
       - PREDICT_OUTPUTS=/app/outputs/predict_occultation
-
-  # sora:
-  #   image: mozaru/carto-sora
-  #   user: "1000:1000"
-  #   environment:
-  #     INPUT_PATH: "/media/input"
-  #     OUTPUT_PATH: "/media/output"
-  #     CACHE_PATH: "/media/output"
-  #     PORT: 8000
-  #   volumes:
-  #     - ./archive/sora/input:/media/input
-  #     - ./archive/sora/output:/media/output
-  #   command: python3.7 /opt/server/main.py
 
 volumes:
   rabbitmq-data:
