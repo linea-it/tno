@@ -10,12 +10,6 @@ class PredictionJobResult(models.Model):
         verbose_name="Prediction Job",
     )
 
-    asteroid = models.ForeignKey(
-        Asteroid,
-        on_delete=models.CASCADE,
-        verbose_name="Asteroid",
-    )
-
     name = models.CharField(
         max_length=100,
         verbose_name="Asteroid Name",

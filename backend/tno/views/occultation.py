@@ -376,6 +376,16 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         rows = [x.dynclass for x in queryset]
         return Response(dict({"results": rows, "count": len(rows)}))
 
+    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    def asteroids_with_prediction(self, request):
+        """Returns all Asteroid that have at least one prediction event.
+        """
+        queryset = Occultation.objects.order_by(
+            'name').distinct('name')
+
+        rows = [x.name for x in queryset]
+        return Response(dict({"results": rows, "count": len(rows)}))
+
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
     def get_star_by_event(self, request, pk=None):
         pre_occ = self.get_object()
