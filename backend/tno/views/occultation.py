@@ -37,10 +37,10 @@ class OccultationFilter(django_filters.FilterSet):
     mag_g = django_filters.RangeFilter(field_name='g')
 
     dynclass = django_filters.CharFilter(
-        field_name='asteroid__dynclass', lookup_expr='iexact')
+        field_name='dynclass', lookup_expr='iexact')
 
     base_dynclass = django_filters.CharFilter(
-        field_name='asteroid__base_dynclass', lookup_expr='iexact')
+        field_name='base_dynclass', lookup_expr='iexact')
 
     long = django_filters.NumberFilter(
         method='longitude_filter', label="Longitude")
@@ -251,7 +251,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         first_datetime = Occultation.objects.earliest('date_time')
         last_datetime = Occultation.objects.latest('date_time')
         unique_asteroids = Occultation.objects.values(
-            'asteroid').distinct().count()
+            'name').distinct().count()
 
         today_utc = datetime.utcnow().date()
         today_events = Occultation.objects.filter(date_time__date=today_utc)
@@ -361,9 +361,9 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         """Returns all base_dynclass that have at least one prediction event.
         """
         queryset = Occultation.objects.order_by(
-            'asteroid__base_dynclass').distinct('asteroid__base_dynclass')
+            'base_dynclass').distinct('base_dynclass')
 
-        rows = [x.asteroid.base_dynclass for x in queryset]
+        rows = [x.base_dynclass for x in queryset]
         return Response(dict({"results": rows, "count": len(rows)}))
 
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
@@ -371,9 +371,9 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         """Returns all dynclass that have at least one prediction event.
         """
         queryset = Occultation.objects.order_by(
-            'asteroid__dynclass').distinct('asteroid__dynclass')
+            'dynclass').distinct('dynclass')
 
-        rows = [x.asteroid.dynclass for x in queryset]
+        rows = [x.dynclass for x in queryset]
         return Response(dict({"results": rows, "count": len(rows)}))
 
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))

@@ -11,14 +11,14 @@ from tno.models import Asteroid
 
 class Occultation(models.Model):
 
-    asteroid = models.ForeignKey(
-        Asteroid,
-        on_delete=models.CASCADE,
-        verbose_name="Asteroid",
-        null=False,
-        blank=False,
-        related_name="occultation",
-    )
+    # asteroid = models.ForeignKey(
+    #     Asteroid,
+    #     on_delete=models.CASCADE,
+    #     verbose_name="Asteroid",
+    #     null=False,
+    #     blank=False,
+    #     related_name="occultation",
+    # )
 
     name = models.CharField(
         max_length=32,
@@ -610,7 +610,7 @@ class Occultation(models.Model):
    
 
     def get_alias(self) -> str:
-        return self.asteroid.get_alias()
+        return self.name.replace(" ", "").replace("_", "").replace("-", "").replace("/", "")
 
     def get_map_filename(self) -> str:
         dt = self.date_time.strftime("%Y%m%d%H%M%S")
