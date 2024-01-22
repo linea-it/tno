@@ -799,8 +799,8 @@ class Asteroid:
             dao = OccultationDao()
 
             # Apaga as occultations já registradas para este asteroid antes de inserir.
-            dao.delete_by_asteroid_id(self.id, start_period, end_period)
-
+            dao.delete_by_asteroid_name(self.name, start_period, end_period)
+            print("Passou aqui!")
             # Le o arquivo occultation table e cria um dataframe
             # occultation_date;ra_star_candidate;dec_star_candidate;ra_object;dec_object;ca;pa;vel;delta;g;j;h;k;long;loc_t;off_ra;off_de;pm;ct;f;e_ra;e_de;pmra;pmde
             df = pd.read_csv(
@@ -845,7 +845,7 @@ class Asteroid:
             # Adicionar colunas para asteroid id, name e number
             df["name"] = self.name
             df["number"] = self.number
-            df["asteroid_id"] = self.id
+            # df["asteroid_id"] = self.id
 
             # Remover valores como -- ou -
             df["ct"] = df["ct"].str.replace("--", "")
@@ -993,7 +993,6 @@ class Asteroid:
                     "dec_star_deg",
                     "ra_target_deg",
                     "dec_target_deg",
-                    "asteroid_id",
                     "created_at",
                     "have_path_coeff", 
                     "occ_path_max_longitude",

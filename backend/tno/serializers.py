@@ -86,9 +86,7 @@ class AsteroidSerializer(serializers.ModelSerializer):
 
 
 class OccultationSerializer(serializers.ModelSerializer):
-    # dynclass = serializers.CharField(source='asteroid.dynclass')
-    # base_dynclass = serializers.CharField(source='asteroid.base_dynclass')
-    alias = serializers.SerializerMethodField()
+    # alias = serializers.SerializerMethodField()
     map_url = serializers.SerializerMethodField()
     
     class Meta:
@@ -99,8 +97,8 @@ class OccultationSerializer(serializers.ModelSerializer):
             'occ_path_min_latitude', 
             'occ_path_max_latitude')
 
-    def get_alias(self, obj):
-        return obj.get_alias()
+    # def get_alias(self, obj):
+    #     return obj.get_alias()
 
     def get_map_url(self, obj):
         request = self.context.get("request")

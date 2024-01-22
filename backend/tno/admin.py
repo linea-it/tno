@@ -41,7 +41,7 @@ class AsteroidAdmin(admin.ModelAdmin):
 class OccultationAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "asteroid",
+        "name",
         "date_time",
         "ra_star_deg",
         "dec_star_deg",
@@ -53,7 +53,7 @@ class OccultationAdmin(admin.ModelAdmin):
 
     # Troca o tipo de imput de Select para um text field com botao de busca
     # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
-    raw_id_fields = ("asteroid",)
+    # raw_id_fields = ("asteroid",)
 
 
 @admin.register(JohnstonArchive)
