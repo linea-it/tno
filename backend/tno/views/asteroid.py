@@ -152,15 +152,18 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         """
         filtro = self.request.query_params.get('name', None)
 
-        queryset = Occultation.objects.select_related().order_by('asteroid__name').distinct('asteroid__name')
+        queryset = Occultation.objects.order_by('name').distinct('name')
 
         if filtro:
-            queryset = queryset.filter(asteroid__name__icontains=filtro)
+            queryset = queryset.filter(name__icontains=filtro)
 
         paginator = PageNumberPagination()
         paginator.page_size = 25
         result_page = paginator.paginate_queryset(queryset, request)
-        asteroids = [x.asteroid for x in result_page]
+
+        names_in_page = [x.name for x in result_page]
+        asteroids = Asteroid.objects.filter(name__in=names_in_page)
+
         serializer = AsteroidSerializer(asteroids, many=True)
         return paginator.get_paginated_response(serializer.data)
 

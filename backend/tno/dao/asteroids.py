@@ -110,6 +110,7 @@ class AsteroidDao(DBBase):
         rows = self.fetch_scalars(stm)
 
         return rows
+    
 
     # def delete_all(self):
        

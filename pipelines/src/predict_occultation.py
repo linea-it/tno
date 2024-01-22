@@ -245,7 +245,6 @@ def ingest_job_results(job_path, job_id):
         filepath,
         delimiter=";",
         usecols=[
-            "ast_id",
             "name",
             "number",
             "base_dynclass",
@@ -282,7 +281,7 @@ def ingest_job_results(job_path, job_id):
         ],
     )
     df["job_id"] = int(job_id)
-    df = df.rename(columns={"ast_id": "asteroid_id", "pre_occ_count": "occultations"})
+    df = df.rename(columns={"pre_occ_count": "occultations"})
 
     df["des_obs"].fillna(0, inplace=True)
     df["occultations"].fillna(0, inplace=True)
@@ -293,7 +292,6 @@ def ingest_job_results(job_path, job_id):
             "des_obs": "int32",
             "occultations": "int32",
             "ing_occ_count": "int32",
-            "asteroid_id": "int32",
             "job_id": "int32",
             "status": "int32",
         }
@@ -313,7 +311,6 @@ def ingest_job_results(job_path, job_id):
             "ing_occ_count",
             "exec_time",
             "messages",
-            "asteroid_id",
             "job_id",
             "des_obs_start",
             "des_obs_finish",
@@ -1117,12 +1114,7 @@ def complete_job(job, log, status):
     count_failures = int(l_status.count(2))
     occultations = int(df["ing_occ_count"].sum())
     ast_with_occ = int((df["ing_occ_count"] != 0).sum())
-
-    log.info("AST WITH OCC: %i" % ast_with_occ)
-
-    log.info(
-        f"Count Success {count_success} Failure {count_failures} Occ {occultations} ast {ast_with_occ}"
-    )
+     
 
     t0 = datetime.fromisoformat(job.get("start"))
     t1 = datetime.now(tz=timezone.utc)
@@ -1159,10 +1151,12 @@ def complete_job(job, log, status):
         shutil.rmtree(asteroid_path)
         log.info("Directory of asteroids has been removed!")
 
-    log.info(
-        "Asteroids Success: [%s] Failure: [%s] Total: [%s]"
-        % (job["count_success"], job["count_failures"], job["count_asteroids"])
-    )
+
+    log.info(f"Total Asteroids: [{job['count_asteroids']}]")
+    log.info(f"Asteroids Success: [{count_success}]")
+    log.info(f"Asteroids Failure: [{count_failures}]")
+    log.info(f"Predict Events: [{occultations}]")
+    log.info(f"Asteroids With Events: [{ast_with_occ}]")  
 
     log.info("Execution Time: %s" % tdelta)
     log.info("Predict Occultation is done!.")
