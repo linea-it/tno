@@ -214,7 +214,7 @@ def load_mpcorb_extended(local_filename):
                           'H', 'G', 'Epoch', 'a', 'e', 'i',
                           'Node', 'Peri', 'M', 'n',
                           'Perihelion_dist', 'Aphelion_dist', 
-                          'Epoch', 'rms', 'Last_obs',
+                          'rms', 'Last_obs',
                           'PHA_flag', 
                           'Critical_list_numbered_object_flag']
     # load the json file
@@ -235,7 +235,7 @@ def load_mpcorb_extended(local_filename):
         data.rename(columns={'Number': 'number',
                              'Name': 'name',
                              'H':'h', 'G':'g', 'Epoch':'epoch',
-                             'a':'semimajor-axis', 'e':'excentricity', 'i':'inclination',
+                             'a':'semimajor_axis', 'e':'excentricity', 'i':'inclination',
                              'Node':'long_asc_node', 'Peri':'arg_perihelion',
                              'M':'mean_anomaly', 'n':'mean_daily_motion',
                              'Last_obs':'last_obs_included', 'PHA_flag':'pha_flag',
@@ -338,6 +338,7 @@ def crossmatch_dataframes(data_mpc, data_bft):
     data_bft_copy.dropna(subset=['sso_number'], inplace=True)
     merged_data_1 = data_mpc_copy.merge(data_bft_copy, left_on='number', right_on='sso_number', how='left')
     number_indices = merged_data_1.index.tolist()
+    
     
     # Step 2: Crossmatch 'name' column in data_mpc with 'sso_name' in data_bft
     # renew copy
@@ -624,7 +625,7 @@ def conform_astorb_lowell_obs_dynclass(dataframe):
             logging.info(f'Remaining Time: {remaining_time:.2f} seconds...' if remaining_time <= 60 else f'Remaining Time: {remaining_time/60:.2f} minutes...' if remaining_time <= 3600 else f'Remaining Time: {remaining_time/3600:.2f} hours...')
 
         try:
-            a = dataframe.iloc[index]['semimajor-axis']
+            a = dataframe.iloc[index]['semimajor_axis']
             q = dataframe.iloc[index]['perihelion_dist']
             i = dataframe.iloc[index]['inclination']
             e = dataframe.iloc[index]['excentricity']
@@ -725,6 +726,11 @@ def asteroid_table_build(table_path='/archive/asteroid_table', log_path='/log'):
     # Fill with principal_designation cases without principal designation
     asteroid_table['name'] = asteroid_table['name'].fillna(asteroid_table['principal_designation'])
     asteroid_table['alias'] = asteroid_table['name'].apply(lambda origname: str(origname).replace(" ", "").replace("_", "").replace("-", "").replace("/", ""))
+    
+    # Transform pha_flag and mpc_critical_list into boolean
+    asteroid_table['pha_flag'].replace(np.nan, False)
+    asteroid_table['mpc_critical_list'].replace(np.nan, False)
+    
     # Fix duplicated aliases
     asteroid_table['alias'] = fix_duplicated_alias(asteroid_table['alias'].values)
 
