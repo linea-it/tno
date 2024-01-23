@@ -744,4 +744,20 @@ def asteroid_table_build(table_path='/archive/asteroid_table', log_path='/log'):
 
 
 if __name__ == "__main__":
-    asteroid_table_build()
+    # asteroid_table_build()
+
+    from dao.asteroids import AsteroidDao
+
+    db = AsteroidDao(pool=False)
+    result = db.reset_table()
+    print(result)
+
+    # df = pd.read_csv('/archive/asteroid_table/teste.csv')
+
+    # # df = pd.read_csv('/archive/asteroid_table/asteroid_table_build.csv')
+    # print(df.head())
+
+    # print(df.columns.values.tolist())
+
+    # for row_dict in df.to_dict(orient="records"):
+    #     print(row_dict['pha_flag'])
