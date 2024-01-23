@@ -42,45 +42,45 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         """
         # TODO: Deveria ser executada apenas por Admin.
         try:
-            t0 = datetime.now()
+            # t0 = datetime.now()
 
-            log = logging.getLogger("asteroids")
+            # log = logging.getLogger("asteroids")
 
-            log.info("--------------------------------------------------------")
-            log.info("Update Asteroid Table Started!")
+            # log.info("--------------------------------------------------------")
+            # log.info("Update Asteroid Table Started!")
 
-            dao = AsteroidDao(pool=False)
+            # dao = AsteroidDao(pool=False)
 
-            count_before = dao.count()
-            log.info(f"Total Asteroid Before Update: [{count_before}]")
+            # count_before = dao.count()
+            # log.info(f"Total Asteroid Before Update: [{count_before}]")
 
-            count_affected = dao.insert_update()
+            # count_affected = dao.insert_update()
 
-            count_after = dao.count()
-            log.info(f"Total Asteroid After Update: [{count_after}]")
+            # count_after = dao.count()
+            # log.info(f"Total Asteroid After Update: [{count_after}]")
 
-            log.info(f"Affected Rows: [{count_affected}]")
+            # log.info(f"Affected Rows: [{count_affected}]")
 
-            new_asteroids = count_after - count_before
-            log.info(f"New Asteroids: {new_asteroids}")
+            # new_asteroids = count_after - count_before
+            # log.info(f"New Asteroids: {new_asteroids}")
 
-            t1 = datetime.now()
-            tdelta = t1 - t0
+            # t1 = datetime.now()
+            # tdelta = t1 - t0
 
-            result = dict(
-                {
-                    "success": True,
-                    "count_before": count_before,
-                    "count_after": count_after,
-                    "new_asteroids": new_asteroids,
-                    "execution_time": tdelta,
-                    "h_execution_time": str(
-                        humanize.naturaldelta(tdelta, minimum_unit="seconds")
-                    ),
-                }
-            )
+            # result = dict(
+            #     {
+            #         "success": True,
+            #         "count_before": count_before,
+            #         "count_after": count_after,
+            #         "new_asteroids": new_asteroids,
+            #         "execution_time": tdelta,
+            #         "h_execution_time": str(
+            #             humanize.naturaldelta(tdelta, minimum_unit="seconds")
+            #         ),
+            #     }
+            # )
 
-            return Response(result)
+            return Response({})
 
         except Exception as e:
             # TODO Implementar error handling
@@ -166,22 +166,4 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
 
         serializer = AsteroidSerializer(asteroids, many=True)
         return paginator.get_paginated_response(serializer.data)
-
-
-
-    # TODO: endpoint inutil basta utilizar o atributo search do endpoints asteroids.
-    # @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
-    # def search(self, request):
-    #     """
-    #     #     Este endpoint obtem o lista de asteroids filtrada por parte do nome.
-
-    #     #     Returns:
-    #     #         result (json): asteroid list.
-    #     #     """
-    #     paginator = PageNumberPagination()
-    #     paginator.page_size = 100
-    #     aa = Asteroid.objects.filter(name__icontains=self.request.query_params.get('name', None))
-    #     result_page = paginator.paginate_queryset(aa, request)
-    #     serializer = AsteroidSerializer(result_page, many=True)
-    #     return paginator.get_paginated_response(serializer.data)
         

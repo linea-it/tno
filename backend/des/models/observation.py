@@ -11,13 +11,13 @@ class Observation(models.Model):
     depois de processado pelo pipeline Orbit Trace
     """
 
-    # Ligação com a tabela de tno.asteroids.
-    # Associa a observação a um asteroid.
-    asteroid = models.ForeignKey(
-        Asteroid,
-        on_delete=models.CASCADE,
-        verbose_name="Asteroid",
-    )
+    # # Ligação com a tabela de tno.asteroids.
+    # # Associa a observação a um asteroid.
+    # asteroid = models.ForeignKey(
+    #     Asteroid,
+    #     on_delete=models.CASCADE,
+    #     verbose_name="Asteroid",
+    # )
 
     # Ligação com a tabela de apontamentos.
     # Este campo representa um CCD unico. que é a composição de
@@ -79,7 +79,7 @@ class Observation(models.Model):
     class Meta:
         # A mesma posição não pode se repetir em um mesmo ccd para um mesmo asteroid.
         unique_together = (
-            "asteroid",
+            "name",
             "ccd_id",
         )
         indexes = [
