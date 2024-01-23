@@ -31,6 +31,9 @@ import FooterSupporte from '../components/PublicPortal/Footer/FooterSupporters'
 import PredictionEvents from '../pages/PredictionEvents/index'
 import PredictionEventDetail from '../pages/PredictionEvents/Detail'
 
+import AsteroidJob from '../pages/AsteroidJob/index'
+import AsteroidJobDetail from '../pages/AsteroidJob/AsteroidJobDetail'
+
 export default function AppRoutes() {
   const { isAuthenticated, signIn } = useAuth()
 
@@ -294,16 +297,26 @@ export default function AppRoutes() {
               </DashboardPage>
           }
         />
-        {/* <Route
-          IsPrivate
+        <Route
+          isPrivate
           exact
-          path='/prediction-event-detail/:id'
+          path='/dashboard/asteroid_job'
           element={
-              <PublicPortalPage>
-                <PredictionEventDetail />
-              </PublicPortalPage>
+              <DashboardPage>
+                <AsteroidJob />
+              </DashboardPage>
           }
-        /> */}
+        />
+        <Route
+          isPrivate
+          exact
+          path='/dashboard/asteroid_job/:id'
+          element={
+              <DashboardPage>
+                <AsteroidJobDetail />
+              </DashboardPage>
+          }
+        />
       </>
     )
   }

@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import moment from '../../../node_modules/moment/moment'
+import moment from 'moment';
 function ImageCell(props) {
   if (props.value == null) {
     return (

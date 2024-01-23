@@ -81,6 +81,8 @@ const routes = [
   { path: '/dashboard/stats', title: 'Dashboard' },
   { path: '/dashboard/data-preparation/des/orbittrace-detail/:id', title: 'Orbit Trace Details' },
   { path: '/dashboard/data-preparation/des/orbittrace/asteroid/:id', title: 'Orbit Trace Asteroid' },
+  { path: '/dashboard/asteroid_job', title: 'Asteroid Job' },
+  { path: '/dashboard/asteroid_job/:id', title: 'Asteroid Job Detail' },  
 ]
 
 const useCurrentPath = () => {
@@ -199,7 +201,10 @@ export default function PersistentDrawerLeft({ children }) {
           </ListItemButton>
           <ListItemButton onClick={() => navigate('/')}>
             <ListItemText primary='Public Page' />
-          </ListItemButton>          
+          </ListItemButton>
+          <ListItemButton onClick={() => navigate('/dashboard/asteroid_job')}>
+            <ListItemText primary='Asteroid Jobs' />
+          </ListItemButton>                    
         </List>
       </Drawer>
       <Main open={open}>
