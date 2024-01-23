@@ -244,3 +244,18 @@ def ast_visual_mag_from_astdys(file_path):
         return None if np.isnan(max_mag) else float(max_mag)
     except:
         return None
+    
+def compute_magnitude_drop(asteroid_visual_magnitude, star_visual_magnitude):
+    """
+    Compute the magnitude drop of an asteroid relative to a star.
+
+    Parameters:
+    - asteroid_visual_magnitude (float): The visual magnitude of the asteroid.
+    - star_visual_magnitude (float): The visual magnitude of the star.
+
+    Returns:
+    - float: The magnitude drop of the asteroid relative to the star.
+    """
+    delta_magnitude = asteroid_visual_magnitude - star_visual_magnitude    
+    drop_magnitude = 2.5 * np.log10( 1 + 10**(delta_magnitude*0.4))
+    return drop_magnitude
