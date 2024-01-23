@@ -1,4 +1,5 @@
 from .profile import Profile
+from .asteroid_job import AsteroidJob
 from .asteroid import Asteroid
 from .occultation import Occultation
 from .leadp_seconds import LeapSecond

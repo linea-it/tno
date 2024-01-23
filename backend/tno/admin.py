@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from tno.models import JohnstonArchive
+from tno.models import AsteroidJob
 from tno.models import Asteroid
 from tno.models import BspPlanetary
 from tno.models import LeapSecond
@@ -20,6 +21,19 @@ class ProfileAdmin(admin.ModelAdmin):
 
     raw_id_fields = ("user",)
 
+@admin.register(AsteroidJob)
+class AsteroidJobAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "status",
+        "submit_time",
+        "start",
+        "end",
+        "exec_time",
+        "asteroids_before",
+        "asteroids_after",
+        "error"
+    )
 
 
 @admin.register(Asteroid)

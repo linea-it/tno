@@ -3,9 +3,10 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from skybot.models.position import Position
 
-from tno.models import (Asteroid, BspPlanetary, Catalog, JohnstonArchive,
+from tno.models import (AsteroidJob, Asteroid, BspPlanetary, Catalog, JohnstonArchive,
                         LeapSecond, Occultation, PredictionJob,
                         PredictionJobResult, PredictionJobStatus, Profile)
+
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -72,6 +73,11 @@ class CatalogSerializer(serializers.ModelSerializer):
             "display_name"
         )
 
+
+class AsteroidJobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AsteroidJob
+        fields = '__all__'
 
 class AsteroidSerializer(serializers.ModelSerializer):
     class Meta:
