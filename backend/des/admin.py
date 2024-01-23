@@ -277,8 +277,7 @@ class SkybotByDynclassAdmin(admin.ModelAdmin):
 @admin.register(Observation)
 class ObservationAdmin(admin.ModelAdmin):
     list_display = (
-        "asteroid",
-        # "ccd_id",
+        "ccd_id",
         "name",
         "date_obs",
         "date_jd",
@@ -294,6 +293,6 @@ class ObservationAdmin(admin.ModelAdmin):
 
     # Troca o tipo de imput de Select para um text field com botao de busca
     # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
-    raw_id_fields = (
-        "asteroid",
-    )
+    # raw_id_fields = (
+    #     "asteroid",
+    # )

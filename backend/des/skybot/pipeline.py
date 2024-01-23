@@ -1640,8 +1640,10 @@ class DesSkybotPipeline:
                             summary_result.run_by_year()
                             summary_result.run_by_dynclass()
 
+                            # Removido na issue #791
+                            # Tabela de Asteroids sera atualizada por um novo serviço.
                             #  Executa o Update na tabela de Asteroids.
-                            self.update_asteroid_table(job["id"])
+                            # self.update_asteroid_table(job["id"])
 
                         self.logger_import.info("Summary result finished!")
 
@@ -1682,42 +1684,44 @@ class DesSkybotPipeline:
             self.logger_import.error(e)
             self.on_error(job_id, e)
 
-    def update_asteroid_table(self, job_id):
-        self.logger_import.info(
-            "--------------------------------------------------------"
-        )
-        self.logger_import.info("Update Asteroid Table Started!")
+    # Removido na issue #791
+    # Tabela de Asteroids sera atualizada por um novo serviço.
+    # def update_asteroid_table(self, job_id):
+    #     self.logger_import.info(
+    #         "--------------------------------------------------------"
+    #     )
+    #     self.logger_import.info("Update Asteroid Table Started!")
 
-        t0 = datetime.now()
-        try:
-            dao = AsteroidDao(pool=False)
-            count_before = dao.count()
-            self.logger_import.info(f"Total Asteroid Before Update: [{count_before}]")
+    #     t0 = datetime.now()
+    #     try:
+    #         dao = AsteroidDao(pool=False)
+    #         count_before = dao.count()
+    #         self.logger_import.info(f"Total Asteroid Before Update: [{count_before}]")
 
-            count_affected = dao.insert_update()
+    #         count_affected = dao.insert_update()
 
-            count_after = dao.count()
-            self.logger_import.info(f"Total Asteroid After Update: [{count_after}]")
+    #         count_after = dao.count()
+    #         self.logger_import.info(f"Total Asteroid After Update: [{count_after}]")
 
-            self.logger_import.info(f"Affected Rows: [{count_affected}]")
+    #         self.logger_import.info(f"Affected Rows: [{count_affected}]")
 
-            self.logger_import.info("New Asteroids: [%s]" % (count_after - count_before))
+    #         self.logger_import.info("New Asteroids: [%s]" % (count_after - count_before))
 
-        except Exception as e:
-            trace = traceback.format_exc()
-            self.logger_import.error(trace)
-            self.logger_import.error(e)
-            self.on_error(job_id, e)
-        finally:
-            t1 = datetime.now()
-            tdelta = t1 - t0
-            self.logger_import.info(
-                "Update Asteroid Table Finished in %s"
-                % (str(humanize.naturaldelta(tdelta, minimum_unit="seconds")),)
-            )
-            self.logger_import.info(
-                "--------------------------------------------------------"
-            )
+    #     except Exception as e:
+    #         trace = traceback.format_exc()
+    #         self.logger_import.error(trace)
+    #         self.logger_import.error(e)
+    #         self.on_error(job_id, e)
+    #     finally:
+    #         t1 = datetime.now()
+    #         tdelta = t1 - t0
+    #         self.logger_import.info(
+    #             "Update Asteroid Table Finished in %s"
+    #             % (str(humanize.naturaldelta(tdelta, minimum_unit="seconds")),)
+    #         )
+    #         self.logger_import.info(
+    #             "--------------------------------------------------------"
+    #         )
 
 
     def on_error(self, job_id, e):
