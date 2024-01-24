@@ -265,3 +265,23 @@ def compute_magnitude_drop(asteroid_visual_magnitude, star_visual_magnitude):
     return drop_magnitude
 
 
+def generate_date_range(start_date, end_date, num_points):
+    """
+    Generate a range of evenly spaced dates between two specified dates.
+
+    Args:
+        start_date (str): The start date in ISO format ('YYYY-MM-DD').
+        end_date (str): The end date in ISO format ('YYYY-MM-DD').
+        num_points (int): The number of evenly spaced dates to generate.
+
+    Returns:
+        list of str: A list of dates formatted as '%Y-%b-%d %H:%M'.
+    """
+    start_datetime = datetime.fromisoformat(start_date)
+    end_datetime = datetime.fromisoformat(end_date)
+    time_difference = (end_datetime - start_datetime).total_seconds()
+    step_seconds = time_difference / (num_points - 1)
+    date_range = [(start_datetime + timedelta(seconds=step_seconds * n)).strftime('%Y-%b-%d %H:%M') for n in range(num_points)]
+    return date_range
+
+
