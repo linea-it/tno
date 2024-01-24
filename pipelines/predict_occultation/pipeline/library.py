@@ -285,3 +285,94 @@ def generate_date_range(start_date, end_date, num_points):
     return date_range
 
 
+def get_position_vector(target, observer, et, spice_object):
+    """
+    Retrieve the position vector of a target relative to an observer at a given ephemeris time.
+
+    Args:
+        target (str): The target object (e.g., a planet or asteroid).
+        observer (str): The observer object (e.g., a spacecraft or planet).
+        et (float): The ephemeris time for which the position is required.
+        spice_object (module): The SPICE module used for calculations.
+
+    Returns:
+        numpy.array: A 3-element array representing the position vector.
+    """
+    state, ltime = spice_object.spkezr(target, et, 'J2000', 'NONE', observer)
+    return state[:3]
+
+
+def asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, instant, h=None, g=None):
+    """
+    Calculate the visual magnitude of an asteroid at a specific instant.
+
+    Args:
+        asteroid_bsp (str): Path to the asteroid's BSP file.
+        naif_tls (str): Path to the NAIF Toolkit Leap Seconds (TLS) file.
+        planetary_bsp (str): Path to the planetary data BSP file.
+        instant (str): The specific instant in ISO format for the calculation.
+        h (float, optional): Absolute magnitude parameter (H). If None, a default value is used.
+        g (float, optional): Slope parameter (G). If None, a default value is used.
+
+    Returns:
+        float or None: The visual magnitude at the given instant, or None if an error occurs.
+    """
+    
+    # Retrieve information from bsp header
+    bsp_header = get_bsp_header_values(asteroid_bsp)
+    
+    if h is None:
+        try:
+            h = bsp_header['bsp_absmag']
+        except:
+            h = None
+    
+    if g is None:
+        try:
+            g = bsp_header['bsp_gcoeff']
+        except:
+            g = None    
+    
+    try:
+        # Load necessary SPICE kernels
+        spice.furnsh([asteroid_bsp, naif_tls, planetary_bsp])
+
+        # Convert instant to ephemeris time
+        et = spice.str2et(instant)
+        
+        # Define the target object (asteroid)
+        target = bsp_header['bsp_spkid']
+
+        # Calculate heliocentric distance
+        r_vec = get_position_vector(target, 'SUN', et, spice)
+        r_mod = np.sqrt(np.sum(np.array(r_vec**2)))
+        r = r_mod/149597870.7  # Convert to astronomical units (AU)
+
+        # Calculate geocentric distance
+        delta_vec = get_position_vector(target, '399', et, spice)
+        delta_mod = np.sqrt(np.sum(np.array(delta_vec**2)))
+        delta = delta_mod/149597870.7 # Convert to astronomical units (AU)
+        
+        # Calculate solar phase angle
+        prod_scalar = np.dot(r_vec, delta_vec)
+        costheta = prod_scalar/(r_mod*delta_mod)
+        phase_angle = np.arccos(costheta)
+
+        # Calculate the apparent magnitude
+        tfase = np.tan(0.5 * phase_angle)  # Half phase angle in radians
+        phi1 = np.exp(-3.33 * (tfase**0.63))  # First phase angle coefficient
+        phi2 = np.exp(-1.87 * (tfase**1.22))  # Second phase angle coefficient
+
+        gcoeff = 0.15 if g is None else g  # Default or specified slope parameter
+
+        # Calculate the apparent magnitude using the standard formula
+        apmag = h + 5 * np.log10(delta * r) - 2.5 * np.log10((1 - gcoeff) * phi1 + gcoeff * phi2)
+
+        # Unload SPICE kernels
+        spice.kclear()
+
+        return apmag
+    except Exception as e:
+        # print(f"Error: {e}")
+        return None
+
