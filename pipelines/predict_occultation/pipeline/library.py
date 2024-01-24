@@ -401,3 +401,91 @@ def asteroid_max_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, start_d
     except:
         return None
     
+
+def get_bsp_header_values(asteroid_bsp):
+    """
+    Extracts header information from an asteroid's binary SPK file.
+
+    Args:
+        asteroid_bsp (str): The path to the asteroid binary SPK file.
+
+    Returns:
+        dict: A dictionary with key-value pairs of the extracted header values.
+
+    Raises:
+        FileNotFoundError: If the SPK file is not found at the specified path.
+        ValueError: If the SPK file contents are in an unexpected format.
+
+    Example:
+        bsp_values = get_bsp_header_values('3031857.bsp')
+    """
+    try:
+        with open(asteroid_bsp, 'rb') as binary_file:
+            # Read the binary data into a bytearray
+            binary_data = bytearray(binary_file.read())
+
+        # Convert the bytearray to a string using the appropriate encoding
+        texto = binary_data.decode('latin')
+
+        # Extract header information
+        # texto = decoded_string.split('SPK file contents:')[1]
+        bspdict = {}
+
+        # Extract target body name
+        target_body_match = re.search(r'\s*Target\s+body\s+:\s+\((.*?)\)', texto)
+        if target_body_match:
+            target_body_value = target_body_match.group(1).strip()
+            bspdict['bsp_target_body'] = target_body_value
+        else:
+            bspdict['bsp_target_body'] = None
+
+        # Extract SPK ID
+        spkid_match = re.search(r'\s*Target\s+SPK\s+ID\s+:\s+(\d+)', texto)
+        if spkid_match:
+            spkid_value = spkid_match.group(1).strip()
+            bspdict['bsp_spkid'] = str(spkid_value)
+        else:
+            bspdict['bsp_spkid'] = None
+        
+        # This part is commented because the dates in the header seem not to match with the time range 
+        # validity of the file. However, the code is kept for it may be useful in terms of pattern search 
+        # inside bsps.
+
+#         # Extract start time
+#         start_time_match = re.search(r'\s*Start\s+time\s*:\s*(A\.D\.\s+[^\s:]+.*?)\s*TDB', texto)
+#         if start_time_match:
+#             start_time_value = start_time_match.group(1).strip('A.D.').strip()
+#             bspdict['bsp_start_time'] = datetime.strptime(start_time_value, '%Y-%b-%d %H:%M:%S.%f')
+#         else:
+#             bspdict['bsp_start_time'] = None
+
+#         # Extract stop time
+#         stop_time_match = re.search(r'\s*Stop\s+time\s*:\s*(A\.D\.\s+[^\s:]+.*?)\s*TDB', texto)
+#         if stop_time_match:
+#             stop_time_value = stop_time_match.group(1).strip('A.D.').strip()
+#             bspdict['bsp_stop_time'] = datetime.strptime(stop_time_value, '%Y-%b-%d %H:%M:%S.%f')
+#         else:
+#             bspdict['bsp_stop_time'] = None
+
+        # Extract absolute magnitude
+        absmag_match = re.search(r'\s+H=\s+([\d.]+)', texto)
+        if absmag_match:
+            absmag_value = absmag_match.group(1).strip()
+            bspdict['bsp_absmag'] = float(absmag_value)
+        else:
+            bspdict['bsp_absmag'] = None
+
+        # Extract gravitational coefficient
+        gcoeff_match = re.search(r'\s+G=\s+([\d.]+)', texto)
+        if gcoeff_match:
+            gcoeff_value = gcoeff_match.group(1).strip()
+            bspdict['bsp_gcoeff'] = float(gcoeff_value)
+        else:
+            bspdict['bsp_gcoeff'] = None
+
+        return bspdict
+
+    except FileNotFoundError:
+        raise FileNotFoundError(f"The specified SPK file '{asteroid_bsp}' does not exist.")
+    except Exception as e:
+        raise ValueError(f"Error parsing SPK file: {str(e)}")
