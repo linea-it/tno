@@ -376,3 +376,28 @@ def asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, instant, h=
         # print(f"Error: {e}")
         return None
 
+
+def asteroid_max_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, start_date, end_date, num_points=10, h=None, g=None):
+    """
+    Calculate the maximum visual magnitude of an asteroid over a given date range.
+
+    Args:
+        asteroid_bsp (str): Path to the asteroid's BSP file.
+        naif_tls (str): Path to the NAIF Toolkit Leap Seconds (TLS) file.
+        planetary_bsp (str): Path to the planetary data BSP file.
+        start_date (str): The start date in ISO format.
+        end_date (str): The end date in ISO format.
+        num_points (int, optional): The number of points for magnitude calculation. Defaults to 10.
+        h (float, optional): Absolute magnitude parameter (H). If None, a default value is used.
+        g (float, optional): Slope parameter (G). If None, a default value is used.
+
+    Returns:
+        float or None: The maximum visual magnitude, or None if an error occurs.
+    """
+    try:
+        date_range = generate_date_range(start_date, end_date, num_points)
+        magnitudes = [asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, date, h=h, g=g) for date in date_range]
+        return np.max(magnitudes)
+    except:
+        return None
+    
