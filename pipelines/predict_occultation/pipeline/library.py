@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 import os
 import numpy as np
+import spiceypy as spice
+from datetime import datetime, timedelta
+import re
+
 
 def check_leapsec(filename):
     """
@@ -259,3 +263,5 @@ def compute_magnitude_drop(asteroid_visual_magnitude, star_visual_magnitude):
     delta_magnitude = asteroid_visual_magnitude - star_visual_magnitude    
     drop_magnitude = 2.5 * np.log10( 1 + 10**(delta_magnitude*0.4))
     return drop_magnitude
+
+
