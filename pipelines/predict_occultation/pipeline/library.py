@@ -249,6 +249,7 @@ def ast_visual_mag_from_astdys(file_path):
     except:
         return None
     
+    
 def compute_magnitude_drop(asteroid_visual_magnitude, star_visual_magnitude):
     """
     Compute the magnitude drop of an asteroid relative to a star.
