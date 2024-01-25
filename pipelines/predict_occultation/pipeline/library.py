@@ -1,11 +1,11 @@
 #!/usr/bin/python2.7
 # -*- coding: utf-8 -*-
-import os
-import numpy as np
+from __future__ import division
 import spiceypy as spice
 from datetime import datetime, timedelta
+import numpy as np
 import re
-
+import os
 
 def check_leapsec(filename):
     """
@@ -249,7 +249,7 @@ def ast_visual_mag_from_astdys(file_path):
     except:
         return None
     
-    
+
 def compute_magnitude_drop(asteroid_visual_magnitude, star_visual_magnitude):
     """
     Compute the magnitude drop of an asteroid relative to a star.
@@ -268,21 +268,55 @@ def compute_magnitude_drop(asteroid_visual_magnitude, star_visual_magnitude):
 
 def generate_date_range(start_date, end_date, num_points):
     """
-    Generate a range of evenly spaced dates between two specified dates.
+    Generate a range of evenly spaced dates between two specified dates, allowing for partial input.
 
     Args:
-        start_date (str): The start date in ISO format ('YYYY-MM-DD').
-        end_date (str): The end date in ISO format ('YYYY-MM-DD').
+        start_date (str): The start date in ISO format ('YYYY-MM-DD [HH[:MM[:SS[.ffffff]]]]').
+        end_date (str): The end date in ISO format ('YYYY-MM-DD [HH[:MM[:SS[.ffffff]]]]').
         num_points (int): The number of evenly spaced dates to generate.
 
     Returns:
-        list of str: A list of dates formatted as '%Y-%b-%d %H:%M'.
+        list of str: A list of dates formatted as '%Y-%b-%d %H:%M:%S.%f'.
     """
-    start_datetime = datetime.fromisoformat(start_date)
-    end_datetime = datetime.fromisoformat(end_date)
+    
+    if ('T' in start_date) or ('T' in end_date):
+        start_date = start_date.replace('T'," ")
+        end_date = end_date.replace('T'," ")
+        
+    date_format = '%Y-%m-%d %H:%M:%S.%f'
+
+    remove_trailing_colon = lambda s: s[:-1] if s.endswith(':') else s
+    start_date = remove_trailing_colon(start_date)
+    end_date = remove_trailing_colon(end_date)
+    print
+    # Add missing parts to the partial input
+    if ':' not in start_date:
+        if len(start_date.split()) > 1:
+            start_date += ':00:00.000000'
+        else:
+            start_date += ' 00:00:00.000000'
+    elif start_date.count(':') == 1:
+        start_date += ':00.000000'
+    elif (start_date.count(':') == 2) and (start_date.count('.') == 0):
+        start_date += '.0000'
+
+    if ':' not in end_date:
+        if len(end_date.split()) > 1:
+            end_date += ':00:00.000000'
+        else:
+            end_date += ' 00:00:00.000000'
+    elif end_date.count(':') == 1:
+        end_date += ':00.000000'
+    elif (end_date.count(':') == 2) and (end_date.count('.') == 0):
+        end_date += '.0000'
+
+    start_datetime = datetime.strptime(start_date, date_format)
+    end_datetime = datetime.strptime(end_date, date_format)
     time_difference = (end_datetime - start_datetime).total_seconds()
     step_seconds = time_difference / (num_points - 1)
-    date_range = [(start_datetime + timedelta(seconds=step_seconds * n)).strftime('%Y-%b-%d %H:%M') for n in range(num_points)]
+
+    date_range = [(start_datetime + timedelta(seconds=step_seconds * n)).strftime('%Y-%b-%d %H:%M:%S.%f') for n in range(num_points)]
+    
     return date_range
 
 
@@ -303,6 +337,31 @@ def get_position_vector(target, observer, et, spice_object):
     return state[:3]
 
 
+def asteroid_max_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, start_date, end_date, num_points=10, h=None, g=None):
+    """
+    Calculate the maximum visual magnitude of an asteroid over a given date range.
+
+    Args:
+        asteroid_bsp (str): Path to the asteroid's BSP file.
+        naif_tls (str): Path to the NAIF Toolkit Leap Seconds (TLS) file.
+        planetary_bsp (str): Path to the planetary data BSP file.
+        start_date (str): The start date in ISO format.
+        end_date (str): The end date in ISO format.
+        num_points (int, optional): The number of points for magnitude calculation. Defaults to 10.
+        h (float, optional): Absolute magnitude parameter (H). If None, a default value is used.
+        g (float, optional): Slope parameter (G). If None, a default value is used.
+
+    Returns:
+        float or None: The maximum visual magnitude, or None if an error occurs.
+    """
+    try:
+        date_range = generate_date_range(start_date, end_date, num_points)
+        magnitudes = [asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, date, h=h, g=g) for date in date_range]
+        return np.max(magnitudes)
+    except Exception as e:
+        return None
+    
+    
 def asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, instant, h=None, g=None):
     """
     Calculate the visual magnitude of an asteroid at a specific instant.
@@ -339,8 +398,8 @@ def asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, instant, h=
         spice.furnsh([asteroid_bsp, naif_tls, planetary_bsp])
 
         # Convert instant to ephemeris time
-        et = spice.str2et(instant)
-        
+        et = spice.str2et(instant.encode('utf-8'))  # Encode the string as UTF-8 for compatibility
+
         # Define the target object (asteroid)
         target = bsp_header['bsp_spkid']
 
@@ -374,34 +433,9 @@ def asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, instant, h=
 
         return apmag
     except Exception as e:
-        # print(f"Error: {e}")
+        # print("Error: {}".format(e))
         return None
 
-
-def asteroid_max_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, start_date, end_date, num_points=10, h=None, g=None):
-    """
-    Calculate the maximum visual magnitude of an asteroid over a given date range.
-
-    Args:
-        asteroid_bsp (str): Path to the asteroid's BSP file.
-        naif_tls (str): Path to the NAIF Toolkit Leap Seconds (TLS) file.
-        planetary_bsp (str): Path to the planetary data BSP file.
-        start_date (str): The start date in ISO format.
-        end_date (str): The end date in ISO format.
-        num_points (int, optional): The number of points for magnitude calculation. Defaults to 10.
-        h (float, optional): Absolute magnitude parameter (H). If None, a default value is used.
-        g (float, optional): Slope parameter (G). If None, a default value is used.
-
-    Returns:
-        float or None: The maximum visual magnitude, or None if an error occurs.
-    """
-    try:
-        date_range = generate_date_range(start_date, end_date, num_points)
-        magnitudes = [asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, date, h=h, g=g) for date in date_range]
-        return np.max(magnitudes)
-    except:
-        return None
-    
 
 def get_bsp_header_values(asteroid_bsp):
     """
@@ -486,7 +520,7 @@ def get_bsp_header_values(asteroid_bsp):
 
         return bspdict
 
-    except FileNotFoundError:
-        raise FileNotFoundError(f"The specified SPK file '{asteroid_bsp}' does not exist.")
+    except IOError:
+        raise IOError("The specified SPK file '{}' does not exist.".format(asteroid_bsp))
     except Exception as e:
-        raise ValueError(f"Error parsing SPK file: {str(e)}")
+        raise ValueError("Error parsing SPK file: {}".format(str(e)))
