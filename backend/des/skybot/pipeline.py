@@ -82,6 +82,7 @@ class DesSkybotPipeline:
         fh.setFormatter(formatter)
         self.logger.addHandler(fh)
         self.logger.setLevel(settings.LOGGING_LEVEL)
+        self.logger.propagate = False
 
     def create_loaddata_log(self, job_path):
         """Cria um arquivo de log no diretório execução do Job.
@@ -96,6 +97,7 @@ class DesSkybotPipeline:
         fh.setFormatter(formatter)
         self.logger_import.addHandler(fh)
         self.logger.setLevel(settings.LOGGING_LEVEL)
+        self.logger.propagate = False
 
     def get_base_path(self):
         """Retorna o diretório onde estão todos os jobs do skybot.

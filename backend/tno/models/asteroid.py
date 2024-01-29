@@ -12,8 +12,7 @@ class Asteroid(models.Model):
         help_text="(ucd=“meta.id;meta.main”) Object name (official or provisional designation).",
     )
 
-    number = models.CharField(
-        max_length=35,
+    number = models.PositiveBigIntegerField(
         default=None,
         null=True,
         blank=True,

@@ -40,7 +40,8 @@ import datetime
 import time
 import pandas as pd
 import numpy as np
-            
+from tno.dao.asteroids import AsteroidDao
+from io import StringIO
 
 # Function to download the file if it doesn't exist or if it has changed
 def download_file_if_not_exists_or_changed(url, directory_path, filename):
@@ -679,6 +680,18 @@ def fix_duplicated_alias(series):
     return pd.Series(result)
 
 
+def import_asteroid_table(filepath="/archive/asteroid_table/asteroid_table_build.csv"):
+
+    logging.info("Deleting all records in asteroid table.")
+    db = AsteroidDao(pool=False)
+    db.reset_table()
+
+    f = open(filepath, "r")
+    data = StringIO(f.read())
+    data.seek(0)
+    rows = db.import_asteroids(data, delimiter=",")
+    logging.info(f"Rows imported: {rows}")
+
 def asteroid_table_build(table_path='/archive/asteroid_table', log_path='/log'):
     """
     Main function to orchestrate the download, loading, and processing of asteroid data.
@@ -723,23 +736,44 @@ def asteroid_table_build(table_path='/archive/asteroid_table', log_path='/log'):
     
     output_table = os.path.join(table_path, 'asteroid_table_build.csv')
     
+    # Convert number to column to int64 
+    asteroid_table['number'] = asteroid_table['number'].fillna(-1)
+    asteroid_table['number'] = asteroid_table['number'].astype('int64')
+    asteroid_table['number'] = asteroid_table['number'].astype('str')
+    asteroid_table['number'] = asteroid_table['number'].replace('-1', '')
+
     # Fill with principal_designation cases without principal designation
     asteroid_table['name'] = asteroid_table['name'].fillna(asteroid_table['principal_designation'])
     asteroid_table['alias'] = asteroid_table['name'].apply(lambda origname: str(origname).replace(" ", "").replace("_", "").replace("-", "").replace("/", ""))
     
     # Transform pha_flag and mpc_critical_list into boolean
-    asteroid_table['pha_flag'].replace(np.nan, False)
-    asteroid_table['mpc_critical_list'].replace(np.nan, False)
+    asteroid_table['pha_flag'] = asteroid_table['pha_flag'].replace(np.nan, 0)
+    asteroid_table['pha_flag'] = asteroid_table['pha_flag'].astype(int).astype(bool)
+    asteroid_table['mpc_critical_list'] = asteroid_table['mpc_critical_list'].replace(np.nan, 0)
+    asteroid_table['mpc_critical_list'] = asteroid_table['mpc_critical_list'].astype(int).astype(bool)
     
     # Fix duplicated aliases
     asteroid_table['alias'] = fix_duplicated_alias(asteroid_table['alias'].values)
 
-    # Reorder the columns
-    columns = asteroid_table.columns.tolist()
-    ### Move 'alias' to the third position (index 2)
-    columns.insert(2, columns.pop(columns.index('alias')))
-    asteroid_table = asteroid_table[columns]
-                                               
+    asteroid_table = asteroid_table.rename(
+        columns={
+            "skybot_dynbaseclass": "base_dynclass",
+            "skybot_dynsubclass": "dynclass",
+        }
+    )
+    asteroid_table = asteroid_table.reindex(
+        columns=[
+            "name", "number", "base_dynclass", "dynclass", "albedo", 
+            "albedo_err_max", "albedo_err_min", "alias", "aphelion_dist", 
+            "arg_perihelion", "astorb_dynbaseclass", "astorb_dynsubclass", 
+            "density", "density_err_max", "density_err_min", "diameter", 
+            "diameter_err_max", "diameter_err_min", "epoch", "excentricity", 
+            "g", "h", "inclination", "last_obs_included", "long_asc_node", 
+            "mass", "mass_err_max", "mass_err_min", "mean_anomaly", "mean_daily_motion", 
+            "mpc_critical_list", "perihelion_dist", "pha_flag", "principal_designation", 
+            "rms", "semimajor_axis" 
+        ]
+    )
 
     try:
         asteroid_table.to_csv(output_table, index=False)
@@ -748,22 +782,10 @@ def asteroid_table_build(table_path='/archive/asteroid_table', log_path='/log'):
         logging.error(f"An error occurred while saving the asteroid table. Additional information: {e}")
         logging.error("Asteroid table build failed.")
 
+    try:
+        import_asteroid_table(output_table)
+    except Exception as e:
+        logging.error(f"An error occurred while import the asteroid table. Additional information: {e}")
+        logging.error("Asteroid table import failed.")
 
-if __name__ == "__main__":
-    # asteroid_table_build()
 
-    from dao.asteroids import AsteroidDao
-
-    db = AsteroidDao(pool=False)
-    result = db.reset_table()
-    print(result)
-
-    # df = pd.read_csv('/archive/asteroid_table/teste.csv')
-
-    # # df = pd.read_csv('/archive/asteroid_table/asteroid_table_build.csv')
-    # print(df.head())
-
-    # print(df.columns.values.tolist())
-
-    # for row_dict in df.to_dict(orient="records"):
-    #     print(row_dict['pha_flag'])
