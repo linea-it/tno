@@ -692,6 +692,33 @@ def import_asteroid_table(filepath="/archive/asteroid_table/asteroid_table_build
     rows = db.import_asteroids(data, delimiter=",")
     logging.info(f"Rows imported: {rows}")
 
+
+def validate_last_obs_included(date_string):
+    """
+    Validate a date string and ensure it includes the last observation date for a given year.
+
+    Parameters:
+        date_string (str): A string representing a date in the format "YYYY-MM-DD".
+
+    Returns:
+        str: If the input date_string is valid, it returns the same date_string.
+             If the input date_string is invalid, it returns a date in the format "YYYY-01-01".
+
+    Examples:
+        - validate_last_obs_included("2023-12-31") returns "2023-12-31"
+        - validate_last_obs_included("2023-13-01") returns "2023-01-01" (invalid date)
+    """
+    try:
+        datetime.strptime(date_string, "%Y-%m-%d")
+        return date_string
+    except:
+        try:
+            dummy_test = int(date_string[:4])
+            return date_string[:4]+'-01-01'
+        except:
+            return '1800-01-01'
+
+
 def asteroid_table_build(table_path='/archive/asteroid_table', log_path='/log'):
     """
     Main function to orchestrate the download, loading, and processing of asteroid data.
@@ -751,6 +778,9 @@ def asteroid_table_build(table_path='/archive/asteroid_table', log_path='/log'):
     asteroid_table['pha_flag'] = asteroid_table['pha_flag'].astype(int).astype(bool)
     asteroid_table['mpc_critical_list'] = asteroid_table['mpc_critical_list'].replace(np.nan, 0)
     asteroid_table['mpc_critical_list'] = asteroid_table['mpc_critical_list'].astype(int).astype(bool)
+    
+    # Validate possible errors in last obs included column
+    asteroid_table['last_obs_included'] = asteroid_table['last_obs_included'].apply(validate_last_obs_included)
     
     # Fix duplicated aliases
     asteroid_table['alias'] = fix_duplicated_alias(asteroid_table['alias'].values)
