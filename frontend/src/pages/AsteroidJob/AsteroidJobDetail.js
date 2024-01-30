@@ -31,76 +31,81 @@ function AsteroidJob() {
             <Alert severity='error'>{data?.error}</Alert>
           </Grid>
         )}        
-        <Grid item xs={12}>
-          <Box
-          component="form"
-          sx={{
-            '& > :not(style)': { m: 1, width: '25ch' },
-          }}
-          noValidate
-          autoComplete="off"
-          >
-            <TextField 
-              label="ID" 
-              value={data?.id} 
-              InputProps={{
-                readOnly: true,
-              }}
-              />
-            <ColumnStatus status={data?.status} />
-            <TextField 
-              label="Submit Time" 
-              value={moment(data?.submit_time).utc().format('YYYY-MM-DD HH:mm:ss')}
-              InputProps={{
-                readOnly: true,
-              }}
-              />
-            <TextField 
-              label="Start Time" 
-              value={moment(data?.start).utc().format('YYYY-MM-DD HH:mm:ss')}
-              InputProps={{
-                readOnly: true,
-              }}
-              />
-            <TextField 
-              label="End Time" 
-              value={moment(data?.end).utc().format('YYYY-MM-DD HH:mm:ss')}
-              InputProps={{
-                readOnly: true,
-              }}
-              />
-            <TextField 
-              label="Execution Time" 
-              value={data?.exec_time}
-              InputProps={{
-                readOnly: true,
-              }}
-              />
-            <TextField 
-              label="Asteroids Before" 
-              value={data?.asteroids_before}
-              InputProps={{
-                readOnly: true,
-              }}
-              />
-            <TextField 
-              label="Asteroids After" 
-              value={data?.asteroids_after}
-              InputProps={{
-                readOnly: true,
-              }}
-              />
-            <TextField 
-              label="Traceback" 
-              value={data?.traceback} 
-              multiline 
-              rows={4}
-              InputProps={{
-                readOnly: true,
-              }}
-              />
-        </Box>
-      </Grid>
+        {isLoading && (
+          <span>Loading</span>
+        )}
+        {!isLoading && (
+          <Grid item xs={12}>
+            <Box
+            component="form"
+            sx={{
+              '& > :not(style)': { m: 1, width: '25ch' },
+            }}
+            noValidate
+            autoComplete="off"
+            >
+              <TextField 
+                label="ID" 
+                value={data?.id} 
+                InputProps={{
+                  readOnly: true,
+                }}
+                />
+              <ColumnStatus status={data?.status} />
+              <TextField 
+                label="Submit Time" 
+                value={moment(data?.submit_time).utc().format('YYYY-MM-DD HH:mm:ss')}
+                InputProps={{
+                  readOnly: true,
+                }}
+                />
+              <TextField 
+                label="Start Time" 
+                value={moment(data?.start).utc().format('YYYY-MM-DD HH:mm:ss')}
+                InputProps={{
+                  readOnly: true,
+                }}
+                />
+              <TextField 
+                label="End Time" 
+                value={moment(data?.end).utc().format('YYYY-MM-DD HH:mm:ss')}
+                InputProps={{
+                  readOnly: true,
+                }}
+                />
+              <TextField 
+                label="Execution Time" 
+                value={data?.exec_time}
+                InputProps={{
+                  readOnly: true,
+                }}
+                />
+              <TextField 
+                label="Asteroids Before" 
+                value={data?.asteroids_before}
+                InputProps={{
+                  readOnly: true,
+                }}
+                />
+              <TextField 
+                label="Asteroids After" 
+                value={data?.asteroids_after}
+                InputProps={{
+                  readOnly: true,
+                }}
+                />
+              <TextField 
+                label="Traceback" 
+                value={data?.traceback} 
+                multiline 
+                rows={4}
+                InputProps={{
+                  readOnly: true,
+                }}
+                />
+            </Box>
+          </Grid>
+        )}
     </Grid>
   )
 }

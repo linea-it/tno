@@ -36,15 +36,18 @@ changes or additional requirements in the future.
 import requests
 import os
 import logging
-import datetime
 import time
 import pandas as pd
 import numpy as np
-from tno.dao.asteroids import AsteroidDao
+from datetime import datetime, timezone
+from tno.dao import AsteroidDao, AsteroidJobDao
 from io import StringIO
+from pathlib import Path
+import traceback
+import humanize
 
 # Function to download the file if it doesn't exist or if it has changed
-def download_file_if_not_exists_or_changed(url, directory_path, filename):
+def download_file_if_not_exists_or_changed(url, directory_path, filename, log):
     """
     Download a file from a URL if it does not exist in the given directory or if the remote file has changed.
     
@@ -52,8 +55,8 @@ def download_file_if_not_exists_or_changed(url, directory_path, filename):
     - url (str): The URL of the file to download.
     - directory_path (str): The directory path where the file should be stored.
     - filename (str): The name of the file to store.
-    """    
-    logging.info(f"Fetching {url} ...")
+    """   
+    log.info(f"Fetching {url} ...")
 
     if not os.path.exists(directory_path):
         os.makedirs(directory_path)
@@ -63,19 +66,19 @@ def download_file_if_not_exists_or_changed(url, directory_path, filename):
     if not os.path.exists(local_filename):
         # File does not exist, so download it
         download_file(url, local_filename)
-        logging.info(f"Download completed: {local_filename}")
+        log.info(f"Download completed: {local_filename}")
     else:
         # File exists, check if it has changed
-        remote_size = get_remote_file_size(url)
+        remote_size = get_remote_file_size(url, log)
         local_size = os.path.getsize(local_filename)
         if remote_size != local_size:
             if remote_size is None:
                 # Get current date and time in a specific format
-                datetime_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                datetime_str = datetime.now().strftime("%Y%m%d_%H%M%S")
                 backup_filename = f"{local_filename}_{datetime_str}.bkp"
                 os.rename(local_filename, backup_filename)
-                logging.warning(f"Failed to check the remote filesize. Creating a backup as {backup_filename}")
-                logging.warning(f"Downloading file again...")
+                log.warning(f"Failed to check the remote filesize. Creating a backup as {backup_filename}")
+                log.warning(f"Downloading file again...")
             # File has changed, so download and overwrite
             download_file(url, local_filename)
             
@@ -83,13 +86,13 @@ def download_file_if_not_exists_or_changed(url, directory_path, filename):
             directory_path, filename = os.path.split(local_filename)
             garbage_collector('ssoBFT-', 'bkp', directory_path, 2)
             
-            logging.info(f"Download completed: {local_filename}" if remote_size is None else f"File updated: {local_filename}")
+            log.info(f"Download completed: {local_filename}" if remote_size is None else f"File updated: {local_filename}")
         else:
-            logging.info(f"File is up to date: {local_filename}")
+            log.info(f"File is up to date: {local_filename}")
 
             
 # Function garbage collector of ssoBFT downlaods
-def garbage_collector(filename_partial, extension, directory_path, num_files_to_keep):
+def garbage_collector(filename_partial, extension, directory_path, num_files_to_keep, log):
     """
     Removes oldest files from a specified directory, retaining only a certain number of the most recent files.
 
@@ -122,11 +125,11 @@ def garbage_collector(filename_partial, extension, directory_path, num_files_to_
     for i in range(num_files_to_remove):
         file_to_remove = os.path.join(directory_path, files[i])
         os.remove(file_to_remove)
-        logging.info(f"Garbage collector removed: {file_to_remove}")
+        log.info(f"Garbage collector removed: {file_to_remove}")
 
     # Check if all remaining files have the same size and log a warning if they do
     if len(sizes) == 1:
-        logging.warning('All ssoBFT remaining backups have the same size.')
+        log.warning('All ssoBFT remaining backups have the same size.')
 
 
 # Function to download the file
@@ -146,7 +149,7 @@ def download_file(url, local_filename):
 
                 
 # Function to get the remote file size
-def get_remote_file_size(url):
+def get_remote_file_size(url, log):
     """
     Get the size of a remote file from its URL.
 
@@ -157,7 +160,7 @@ def get_remote_file_size(url):
     if 'Content-Length' in response.headers:
         return int(response.headers['Content-Length'])
     else:
-        logging.warning(f"Content-Length header is missing in response from {url}")
+        log.warning(f"Content-Length header is missing in response from {url}")
         return None
 
     
@@ -200,7 +203,7 @@ def process_dataframe_cols_remove_parenthesis(dataframe, columns_to_rem_par):
 
 # Function to loads mpcorb_extended database
 # Gets latest data from https://minorplanetcenter.net/Extended_Files/mpcorb_extended.json.gz
-def load_mpcorb_extended(local_filename):
+def load_mpcorb_extended(local_filename, log):
     """
     Loads the mpcorb_extended database from a local file, processing and filtering specific columns.
 
@@ -210,7 +213,7 @@ def load_mpcorb_extended(local_filename):
     Returns:
     pandas.DataFrame: The loaded and processed DataFrame.
     """
-    logging.info(f"Loading mpcorb_extended file: {local_filename}")
+    log.info(f"Loading mpcorb_extended file: {local_filename}")
     columns_to_include = ['Number', 'Name', 'Principal_desig',
                           'H', 'G', 'Epoch', 'a', 'e', 'i',
                           'Node', 'Peri', 'M', 'n',
@@ -223,7 +226,8 @@ def load_mpcorb_extended(local_filename):
         start_time = time.time()  # Record the start time
         data = pd.read_json(local_filename, compression='gzip')      
     except MemoryError as e:
-        logging.error(f"MemoryError occurred while loading mpcorb_extended file:{e}")
+        raise Exception(f"MemoryError occurred while loading mpcorb_extended file:{e}")
+
             
     # drop unwanted columns
     try:
@@ -252,9 +256,9 @@ def load_mpcorb_extended(local_filename):
         # Log loading and processing time
         end_time = time.time()    # Record the end time
         loading_time = end_time - start_time
-        logging.info(f"{local_filename} took {loading_time:.2f} seconds to load and process")
+        log.info(f"{local_filename} took {loading_time:.2f} seconds to load and process")
     except:
-        logging.error(F"An error occurred while {error_message} in DataFrame read from: {local_filename}")
+        raise Exception(f"An error occurred while {error_message} in DataFrame read from: {local_filename}")
 
     return data
 
@@ -262,7 +266,7 @@ def load_mpcorb_extended(local_filename):
 # Function to loads ssoBFT database
 # Broad and Flat Table of all properties
 # from https://ssp.imcce.fr/webservices/ssodnet/api/ssobft/
-def load_ssoBFT(local_filename):
+def load_ssoBFT(local_filename, log):
     """
     Loads the ssoBFT database from a local file, processing and filtering specific columns.
 
@@ -272,7 +276,7 @@ def load_ssoBFT(local_filename):
     Returns:
     pandas.DataFrame: The loaded and processed DataFrame.
     """
-    logging.info(f"Loading ssoBFT file: {local_filename}")
+    log.info(f"Loading ssoBFT file: {local_filename}")
     columns_to_include = [ 'sso_number', 'sso_name', 'sso_class',
                            'albedo.value', 'albedo.error.min', 'albedo.error.max', 
                            'density.value', 'density.error.min', 'density.error.max',
@@ -283,7 +287,7 @@ def load_ssoBFT(local_filename):
         data = pd.read_csv(local_filename, delimiter=',', comment='#', compression='bz2', usecols=columns_to_include)
         
     except MemoryError as e:
-        logging.error(f"MemoryError occurred while loading ssoBFT file: {e}")
+        raise Exception(f"MemoryError occurred while loading ssoBFT file: {e}")
             
     # drop unwanted columns
     try:
@@ -305,9 +309,9 @@ def load_ssoBFT(local_filename):
         # Log loading and processing time
         end_time = time.time()    # Record the end time
         loading_time = end_time - start_time
-        logging.info(f"{local_filename} took {loading_time:.2f} seconds to load and process")
+        log.info(f"{local_filename} took {loading_time:.2f} seconds to load and process")
     except:
-        logging.error(F"An error occurred while {error_message} in DataFrame read from: {local_filename}")
+        raise Exception(f"An error occurred while {error_message} in DataFrame read from: {local_filename}")
 
     return data
 
@@ -382,7 +386,7 @@ def crossmatch_dataframes(data_mpc, data_bft):
 
 
 # Function to separate Base classes from Subclasses for skybot dynamical class classifications
-def conform_skybot_dynclass(dataframe):
+def conform_skybot_dynclass(dataframe, log):
     """
     Separates base classes from subclasses for skybot dynamical class classifications in a DataFrame.
 
@@ -398,7 +402,7 @@ def conform_skybot_dynclass(dataframe):
     # Rename column 'sso_class' to 'skybot_dynsubclass'
     dataframe.rename(columns={'sso_class': 'skybot_dynsubclass'}, inplace=True)
   
-    logging.info("Parsing dynamical classes according to Skybot database...")
+    log.info("Parsing dynamical classes according to Skybot database...")
 
     # Dictionary mapping skybot_dynsubclass values to their corresponding base classes
     baseclasses = {'NEA':'Near-Earth Asteroid',
@@ -598,7 +602,7 @@ def compute_astorb_dynclass(a, e, i, q, Q, pha):
             return ['Unclassified', 'Unclassified']
 
 # Function to separate Base classes from Subclasses for astorb dynamical class classifications
-def conform_astorb_lowell_obs_dynclass(dataframe):
+def conform_astorb_lowell_obs_dynclass(dataframe, log):
     """
     Separates base classes from subclasses for astorb dynamical class classifications in a DataFrame.
 
@@ -613,17 +617,17 @@ def conform_astorb_lowell_obs_dynclass(dataframe):
     dataframe.insert(5, 'astorb_dynbaseclass', None)
     dataframe.insert(6, 'astorb_dynsubclass', None)
     
-    logging.info("Computing and parsing dynamical classes according to ASTORB database...")
-    logging.info("Estimating remaining time...")
+    log.info("Computing and parsing dynamical classes according to ASTORB database...")
+    log.info("Estimating remaining time...")
     total_rows = len(dataframe)
-    modref = 100 if (100 % total_rows) < 0.1 else np.ceil(total_rows*0.1)
+    modref = 100 if (100 / total_rows) < 0.1 else np.ceil(total_rows*0.1)
     start_time = time.time()  # Record the start time
     
     
     for index in range(total_rows):
         if index == modref:
             remaining_time = (total_rows - modref)*(time.time() - start_time)/modref
-            logging.info(f'Remaining Time: {remaining_time:.2f} seconds...' if remaining_time <= 60 else f'Remaining Time: {remaining_time/60:.2f} minutes...' if remaining_time <= 3600 else f'Remaining Time: {remaining_time/3600:.2f} hours...')
+            log.info(f'Remaining Time: {remaining_time:.2f} seconds...' if remaining_time <= 60 else f'Remaining Time: {remaining_time/60:.2f} minutes...' if remaining_time <= 3600 else f'Remaining Time: {remaining_time/3600:.2f} hours...')
 
         try:
             a = dataframe.iloc[index]['semimajor_axis']
@@ -652,7 +656,7 @@ def conform_astorb_lowell_obs_dynclass(dataframe):
         except:
             dataframe.at[index, 'astorb_dynbaseclass'] = 'Unclassified'
             dataframe.at[index, 'astorb_dynsubclass'] = 'Unclassified'
-    logging.info("Dynamical classes computation completed.")
+    log.info("Dynamical classes computation completed.")
     return dataframe
 
 
@@ -678,20 +682,6 @@ def fix_duplicated_alias(series):
             result.append(value)
 
     return pd.Series(result)
-
-
-def import_asteroid_table(filepath="/archive/asteroid_table/asteroid_table_build.csv"):
-
-    logging.info("Deleting all records in asteroid table.")
-    db = AsteroidDao(pool=False)
-    db.reset_table()
-
-    f = open(filepath, "r")
-    data = StringIO(f.read())
-    data.seek(0)
-    rows = db.import_asteroids(data, delimiter=",")
-    logging.info(f"Rows imported: {rows}")
-
 
 def validate_last_obs_included(date_string):
     """
@@ -719,7 +709,7 @@ def validate_last_obs_included(date_string):
             return '1800-01-01'
 
 
-def asteroid_table_build(table_path='/archive/asteroid_table', log_path='/log'):
+def asteroid_table_build(table_path, log):
     """
     Main function to orchestrate the download, loading, and processing of asteroid data.
 
@@ -732,90 +722,144 @@ def asteroid_table_build(table_path='/archive/asteroid_table', log_path='/log'):
                                   Defaults to './asteroid_table'.
     - log_path (str, optional): The directory path to store log files. Defaults to './log/'.
     """
+    
+    try:
+        # Define the URL of the file
+        mpcext_url = "https://minorplanetcenter.net/Extended_Files/mpcorb_extended.json.gz"
+        # Define the local filename for the downloaded file
+        mpcext_local_filename = "mpcorb_extended.json.gz"
+
+        download_file_if_not_exists_or_changed(mpcext_url, table_path, mpcext_local_filename, log)
+        data_mpc = load_mpcorb_extended(os.path.join(table_path, mpcext_local_filename), log)
+
+        # Development Only
+        # data_mpc = data_mpc.iloc[0:5, ]
+
+        # Define the URL of the file
+        ssoBFT_url = "https://ssp.imcce.fr/data/ssoBFT-latest.ecsv.bz2"
+        # Define the local filename for the downloaded file
+        ssoBFT_local_filename = "ssoBFT-latest.ecsv.bz2"
+
+        download_file_if_not_exists_or_changed(ssoBFT_url, table_path, ssoBFT_local_filename, log)
+        data_bft = load_ssoBFT(os.path.join(table_path, ssoBFT_local_filename), log)
+
+        asteroid_table = crossmatch_dataframes(data_mpc, data_bft)
+        asteroid_table = conform_skybot_dynclass(asteroid_table, log)
+        asteroid_table = conform_astorb_lowell_obs_dynclass(asteroid_table, log)
+               
+        # Convert number to column to int64 
+        asteroid_table['number'] = asteroid_table['number'].fillna(-1)
+        asteroid_table['number'] = asteroid_table['number'].astype('int64')
+        asteroid_table['number'] = asteroid_table['number'].astype('str')
+        asteroid_table['number'] = asteroid_table['number'].replace('-1', '')
+
+        # Fill with principal_designation cases without principal designation
+        asteroid_table['name'] = asteroid_table['name'].fillna(asteroid_table['principal_designation'])
+        asteroid_table['alias'] = asteroid_table['name'].apply(lambda origname: str(origname).replace(" ", "").replace("_", "").replace("-", "").replace("/", ""))
+        
+        # Transform pha_flag and mpc_critical_list into boolean
+        asteroid_table['pha_flag'] = asteroid_table['pha_flag'].replace(np.nan, 0)
+        asteroid_table['pha_flag'] = asteroid_table['pha_flag'].astype(int).astype(bool)
+        asteroid_table['mpc_critical_list'] = asteroid_table['mpc_critical_list'].replace(np.nan, 0)
+        asteroid_table['mpc_critical_list'] = asteroid_table['mpc_critical_list'].astype(int).astype(bool)
+        
+        # Validate possible errors in last obs included column
+        asteroid_table['last_obs_included'] = asteroid_table['last_obs_included'].apply(validate_last_obs_included)
+        
+        # Fix duplicated aliases
+        asteroid_table['alias'] = fix_duplicated_alias(asteroid_table['alias'].values)
+
+        asteroid_table = asteroid_table.rename(
+            columns={
+                "skybot_dynbaseclass": "base_dynclass",
+                "skybot_dynsubclass": "dynclass",
+            }
+        )
+        asteroid_table = asteroid_table.reindex(
+            columns=[
+                "name", "number", "base_dynclass", "dynclass", "albedo", 
+                "albedo_err_max", "albedo_err_min", "alias", "aphelion_dist", 
+                "arg_perihelion", "astorb_dynbaseclass", "astorb_dynsubclass", 
+                "density", "density_err_max", "density_err_min", "diameter", 
+                "diameter_err_max", "diameter_err_min", "epoch", "excentricity", 
+                "g", "h", "inclination", "last_obs_included", "long_asc_node", 
+                "mass", "mass_err_max", "mass_err_min", "mean_anomaly", "mean_daily_motion", 
+                "mpc_critical_list", "perihelion_dist", "pha_flag", "principal_designation", 
+                "rms", "semimajor_axis" 
+            ]
+        )
+
+
+        # import_asteroid_table(output_table)
+        return asteroid_table
+    except Exception as e:
+        raise Exception(e)
+
+def import_asteroid_table(asteroid_table, log):
+
+    try:
+        start = datetime.now(tz=timezone.utc)
+        log.info("Deleting all records in asteroid table.")
+
+        db = AsteroidDao(pool=False)
+        db.reset_table()
+
+        end = datetime.now(tz=timezone.utc)
+        tdelta = end - start
+        log.info("All records in the asteroids table were deleted in %s." %
+                humanize.naturaldelta(tdelta, minimum_unit="milliseconds"))
+
+        start = datetime.now(tz=timezone.utc)
+        data = StringIO()
+        asteroid_table.to_csv(
+            data,
+            header=True,
+            index=False,
+        )
+        data.seek(0)
+
+        rows = db.import_asteroids(data, delimiter=",")
+
+        end = datetime.now(tz=timezone.utc)
+        tdelta = end - start
+        log.info(f"Rows imported: {rows} ")
+        log.info("All records have been imported in in %s." %
+                humanize.naturaldelta(tdelta, minimum_unit="milliseconds"))
+
+        return rows
+    except Exception as e:
+        raise Exception(f"An error occurred while import the asteroid table. Additional information: {e}")
+
+
+if __name__ == "__main__":
+
     # Reconfigure logging within the main function
+    log_path = "/log"    
     if not os.path.exists(os.path.dirname(log_path)):
-        os.makedirs(os.path.dirname(log_path))
-    
+        os.makedirs(os.path.dirname(log_path))   
     log_filename = os.path.join(log_path,'asteroid_table_build.log')   
-    logging.basicConfig(filename=log_filename, level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
-
-    
-    logging.info("-------< New asteroid table build execution >-------")
-    # Define the URL of the file
-    mpcext_url = "https://minorplanetcenter.net/Extended_Files/mpcorb_extended.json.gz"
-    # Define the local filename for the downloaded file
-    mpcext_local_filename = "mpcorb_extended.json.gz"
-
-    download_file_if_not_exists_or_changed(mpcext_url, table_path, mpcext_local_filename)
-    data_mpc = load_mpcorb_extended(os.path.join(table_path, mpcext_local_filename))
-    
-    # Define the URL of the file
-    ssoBFT_url = "https://ssp.imcce.fr/data/ssoBFT-latest.ecsv.bz2"
-    # Define the local filename for the downloaded file
-    ssoBFT_local_filename = "ssoBFT-latest.ecsv.bz2"
-
-    download_file_if_not_exists_or_changed(ssoBFT_url, table_path, ssoBFT_local_filename)
-    data_bft = load_ssoBFT(os.path.join(table_path, ssoBFT_local_filename))
-    
-    asteroid_table = crossmatch_dataframes(data_mpc, data_bft)
-    asteroid_table = conform_skybot_dynclass(asteroid_table)
-    asteroid_table = conform_astorb_lowell_obs_dynclass(asteroid_table)
-    
-    output_table = os.path.join(table_path, 'asteroid_table_build.csv')
-    
-    # Convert number to column to int64 
-    asteroid_table['number'] = asteroid_table['number'].fillna(-1)
-    asteroid_table['number'] = asteroid_table['number'].astype('int64')
-    asteroid_table['number'] = asteroid_table['number'].astype('str')
-    asteroid_table['number'] = asteroid_table['number'].replace('-1', '')
-
-    # Fill with principal_designation cases without principal designation
-    asteroid_table['name'] = asteroid_table['name'].fillna(asteroid_table['principal_designation'])
-    asteroid_table['alias'] = asteroid_table['name'].apply(lambda origname: str(origname).replace(" ", "").replace("_", "").replace("-", "").replace("/", ""))
-    
-    # Transform pha_flag and mpc_critical_list into boolean
-    asteroid_table['pha_flag'] = asteroid_table['pha_flag'].replace(np.nan, 0)
-    asteroid_table['pha_flag'] = asteroid_table['pha_flag'].astype(int).astype(bool)
-    asteroid_table['mpc_critical_list'] = asteroid_table['mpc_critical_list'].replace(np.nan, 0)
-    asteroid_table['mpc_critical_list'] = asteroid_table['mpc_critical_list'].astype(int).astype(bool)
-    
-    # Validate possible errors in last obs included column
-    asteroid_table['last_obs_included'] = asteroid_table['last_obs_included'].apply(validate_last_obs_included)
-    
-    # Fix duplicated aliases
-    asteroid_table['alias'] = fix_duplicated_alias(asteroid_table['alias'].values)
-
-    asteroid_table = asteroid_table.rename(
-        columns={
-            "skybot_dynbaseclass": "base_dynclass",
-            "skybot_dynsubclass": "dynclass",
-        }
-    )
-    asteroid_table = asteroid_table.reindex(
-        columns=[
-            "name", "number", "base_dynclass", "dynclass", "albedo", 
-            "albedo_err_max", "albedo_err_min", "alias", "aphelion_dist", 
-            "arg_perihelion", "astorb_dynbaseclass", "astorb_dynsubclass", 
-            "density", "density_err_max", "density_err_min", "diameter", 
-            "diameter_err_max", "diameter_err_min", "epoch", "excentricity", 
-            "g", "h", "inclination", "last_obs_included", "long_asc_node", 
-            "mass", "mass_err_max", "mass_err_min", "mean_anomaly", "mean_daily_motion", 
-            "mpc_critical_list", "perihelion_dist", "pha_flag", "principal_designation", 
-            "rms", "semimajor_axis" 
-        ]
-    )
+    logfile = os.path.join(log_path, log_filename)
+    log = logging.getLogger(log_filename.split(".log")[0])
+    log.setLevel(logging.INFO)
+    formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+    file_handler = logging.FileHandler(logfile)
+    file_handler.setFormatter(formatter)    
+    log.addHandler(file_handler)
 
     try:
-        asteroid_table.to_csv(output_table, index=False)
-        logging.info(f"Asteroid table build completed successfully. File saved at: {output_table}")
+        table_path = "/archive/asteroid_table/"
+        csv_filename = "asteroid_table_build.csv"
+
+        # Executa a funcao e retorna um dataframe
+        df = asteroid_table_build(table_path, log)
+
+        # Cria o arquivo csv.
+        df.to_csv(os.path.join(table_path, csv_filename), index=False)
+
+        # Importa o dataframe no banco de dados
+        import_asteroid_table(df, log)
+
     except Exception as e:
-        logging.error(f"An error occurred while saving the asteroid table. Additional information: {e}")
-        logging.error("Asteroid table build failed.")
-
-    try:
-        import_asteroid_table(output_table)
-    except Exception as e:
-        logging.error(f"An error occurred while import the asteroid table. Additional information: {e}")
-        logging.error("Asteroid table import failed.")
-
-
+        log.error(e)
+        raise e
+    

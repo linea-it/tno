@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import Button from '@mui/material/Button'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
+
 export function PredictionEventsDataGrid() {
 const navigate = useNavigate()
   const columns = [
@@ -85,8 +86,14 @@ const navigate = useNavigate()
         field: 'exec_time',
         headerName: 'Exec Time',
         description: '',
-        width: 80,
+        width: 120,
         type: 'string',
+        valueFormatter: (params) => {
+          if (params.value == null) {
+            return '';
+          }
+          return params.value.split('.')[0];
+        }
       },
       {
         field: 'asteroids_before',
@@ -109,6 +116,7 @@ const navigate = useNavigate()
         headerName: 'Error',
         description: '',
         type: 'string',
+        flex: 1
       },                       
   ]
   const columnVisibilityModel = {
@@ -126,7 +134,7 @@ const navigate = useNavigate()
   const [queryOptions, setQueryOptions] = useState({
     paginationModel: { page: 0, pageSize: 25 },
     selectionModel: [],
-    sortModel: [{ field: 'date_time', sort: 'asc' }],
+    sortModel: [{ field: 'start', sort: 'desc' }],
     filters: {}
 })
 

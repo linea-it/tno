@@ -40,7 +40,7 @@ RUN groupadd --gid $USER_GID $USERNAME \
     && mkdir /usr/src/app /usr/src/app/django_static /archive /log \
     && chown -R $USER_UID:$USER_GID /usr/src/app /usr/src/app/django_static /archive /log
 
-ENV PYTHONPATH="/usr/src/app:$PYTHONPATH"
+ENV PYTHON_PATH="/usr/src/app:$PYTHON_PATH"
 ENV DJANGO_SETTINGS_MODULE=coreAdmin.settings
 
 WORKDIR /usr/src/app

@@ -47,26 +47,14 @@ class AsteroidJobDao(DBBase):
         return row.id
 
     def update(self,
-               id,
-               status,
-               end=None,
-               exec_time=None,
-               asteroids_after=None, 
-               error=None,
-               traceback=None
+            id,
+            **kwargs
         ):
 
         update_stm = (
             update(self.tbl)
             .where(self.tbl.c.id == id)
-            .values(
-                status=status, 
-                end = end, 
-                exec_time=exec_time,
-                asteroids_after=asteroids_after,
-                error=error,
-                traceback=traceback
-            )
+            .values(**kwargs)
         )
 
         self.execute(update_stm)
