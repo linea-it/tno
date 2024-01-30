@@ -19,12 +19,6 @@ class AsteroidJob (models.Model):
         ),
     )
 
-    # Momento em que o Job foi submetido.
-    submit_time = models.DateTimeField(
-        verbose_name="Submit Time",
-        auto_now_add=True,
-    )
-
     # Momento em que o Job foi criado.
     start = models.DateTimeField(
         verbose_name="Start", auto_now_add=False, null=True, blank=True
@@ -49,7 +43,9 @@ class AsteroidJob (models.Model):
     asteroids_after = models.IntegerField(
         verbose_name="Asteroids After",
         help_text="Total asteroids após a execução",
-        default=0,
+        default=None,
+        null=True,
+        blank=True
     )
 
     # Pasta onde estão os dados do Job.

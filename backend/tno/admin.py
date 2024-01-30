@@ -26,7 +26,6 @@ class AsteroidJobAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "status",
-        "submit_time",
         "start",
         "end",
         "exec_time",
