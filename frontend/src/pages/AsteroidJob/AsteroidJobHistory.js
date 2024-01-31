@@ -21,6 +21,8 @@ const navigate = useNavigate()
         headerAlign: 'center',
         align: 'center',
         width: 100,
+        filterable: true,
+        sortable: true,
         renderCell: (params) => (
             <Button onClick={() => navigate(`/dashboard/asteroid_job/${params.value}`)}>
                 <InfoOutlinedIcon />
@@ -38,28 +40,17 @@ const navigate = useNavigate()
         renderCell: (params) => (
            <ColumnStatus status={params.value} />
         ),
-        
+        filterable: false,
+        sortable: true,
     },
-    {
-        field: 'submit_time',
-        headerName: 'Submit',
-        description: '',
-        width: 180,
-        type: 'dateTime',
-        valueGetter: ({ value }) => value && new Date(value),
-        valueFormatter: (params) => {
-          if (params.value == null) {
-            return '';
-          }
-          return `${moment(params.value).utc().format('YYYY-MM-DD HH:mm:ss')}`;
-        },
-      },
       {
         field: 'start',
         headerName: 'Start',
         description: '',
         width: 180,
         type: 'dateTime',
+        filterable: false,
+        sortable: true,        
         valueGetter: ({ value }) => value && new Date(value),
         valueFormatter: (params) => {
           if (params.value == null) {
@@ -68,12 +59,15 @@ const navigate = useNavigate()
           return `${moment(params.value).utc().format('YYYY-MM-DD HH:mm:ss')}`;
         },
       },
+      
       {
         field: 'end',
         headerName: 'End',
         description: '',
         width: 180,
         type: 'dateTime',
+        filterable: false,
+        sortable: true,           
         valueGetter: ({ value }) => value && new Date(value),
         valueFormatter: (params) => {
           if (params.value == null) {
@@ -88,6 +82,8 @@ const navigate = useNavigate()
         description: '',
         width: 120,
         type: 'string',
+        filterable: false,
+        sortable: true,   
         valueFormatter: (params) => {
           if (params.value == null) {
             return '';
@@ -102,6 +98,8 @@ const navigate = useNavigate()
         type: 'number',
         headerAlign: 'center',
         align: 'center',
+        filterable: false,
+        sortable: true,           
       },
       {
         field: 'asteroids_after',
@@ -110,24 +108,39 @@ const navigate = useNavigate()
         type: 'number',
         headerAlign: 'center',
         align: 'center',
+        filterable: false,
+        sortable: true,           
       },  
+      {
+        field: 'new_records',
+        headerName: 'New Records',
+        description: '',
+        type: 'number',
+        headerAlign: 'center',
+        align: 'center',
+        filterable: false,
+        sortable: true,           
+      },        
+      
       {
         field: 'error',
         headerName: 'Error',
         description: '',
         type: 'string',
-        flex: 1
+        flex: 1,
+        filterable: false,
+        sortable: false,   
       },                       
   ]
   const columnVisibilityModel = {
     id: true,
     status: true,
-    submit_time: false,
     start: true,
     end: true,
     exec_time: true,
     asteroids_before: true,
     asteroids_after: true,
+    new_records: true,
     error: true
   }
 

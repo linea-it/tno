@@ -31,6 +31,7 @@ class AsteroidJobAdmin(admin.ModelAdmin):
         "exec_time",
         "asteroids_before",
         "asteroids_after",
+        "new_records",
         "error"
     )
 

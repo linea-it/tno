@@ -48,6 +48,14 @@ class AsteroidJob (models.Model):
         blank=True
     )
 
+    new_records = models.IntegerField(
+        verbose_name="New Records",
+        help_text="Quantidade de registros adicionados ou removidos em relação a execução anterior.",
+        default=None,
+        null=True,
+        blank=True
+    )
+
     # Pasta onde estão os dados do Job.
     path = models.CharField(
         verbose_name="Path",

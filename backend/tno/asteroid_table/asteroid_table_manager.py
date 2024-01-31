@@ -10,14 +10,24 @@ from io import StringIO
 from pathlib import Path
 import traceback
 import humanize
+import colorlog
 
 from tno.asteroid_table.asteroid_table_build import asteroid_table_build, import_asteroid_table
-
+import sys
 class AsteroidTableManager():
 
-    def __init__(self):
+    def __init__(self, stdout=False):
         
-        self.log = logging.getLogger("asteroids")
+        # self.log = logging.getLogger("asteroids")
+        self.log = colorlog.getLogger('asteroids')
+        if stdout:
+            # consoleFormatter = logging.Formatter("[%(levelname)s] %(message)s")
+            # consoleHandler = logging.StreamHandler(sys.stdout)
+            consoleFormatter = colorlog.ColoredFormatter('%(log_color)s%(message)s')
+            consoleHandler = colorlog.StreamHandler(sys.stdout)
+            consoleHandler.setFormatter(consoleFormatter)
+            self.log.addHandler(consoleHandler)
+
         self.job_dao = AsteroidJobDao()
         self.ast_dao = AsteroidDao()
 
@@ -81,7 +91,7 @@ class AsteroidTableManager():
             return job_id
         except Exception as e:
             raise Exception(f"Failed to create the record in the asteroid job table. {e}")        
-       
+
     def on_success(self):
         try:
             self.job_dao.update(
@@ -113,14 +123,21 @@ class AsteroidTableManager():
         try:
             end = datetime.now(tz=timezone.utc)
             tdelta = end - start
+
+
+            new_records = self.asteroids_after - self.asteroids_before
             self.job_dao.update(
                 self.job_id,
                 end = end,
-                exec_time = tdelta
+                exec_time = tdelta,
+                new_records=new_records
             )
 
             self.log.info(f"Asteroid table update completed successfully.")
-            
+            self.log.info(f"Records Before Update: [{self.asteroids_before}]")
+            self.log.info(f"Records After  Update: [{self.asteroids_after}]")
+            self.log.info(f"New Records: [{new_records}]")
+
             self.log.info("Job complete in %s" %
                 humanize.naturaldelta(tdelta, minimum_unit="milliseconds"))
             

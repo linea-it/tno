@@ -84,7 +84,7 @@ def download_file_if_not_exists_or_changed(url, directory_path, filename, log):
             
             # Remove oldest backups if needed
             directory_path, filename = os.path.split(local_filename)
-            garbage_collector('ssoBFT-', 'bkp', directory_path, 2)
+            garbage_collector('ssoBFT-', 'bkp', directory_path, 2, log)
             
             log.info(f"Download completed: {local_filename}" if remote_size is None else f"File updated: {local_filename}")
         else:
@@ -256,7 +256,7 @@ def load_mpcorb_extended(local_filename, log):
         # Log loading and processing time
         end_time = time.time()    # Record the end time
         loading_time = end_time - start_time
-        log.info(f"{local_filename} took {loading_time:.2f} seconds to load and process")
+        log.debug(f"{local_filename} took {loading_time:.2f} seconds to load and process")
     except:
         raise Exception(f"An error occurred while {error_message} in DataFrame read from: {local_filename}")
 
@@ -309,7 +309,7 @@ def load_ssoBFT(local_filename, log):
         # Log loading and processing time
         end_time = time.time()    # Record the end time
         loading_time = end_time - start_time
-        log.info(f"{local_filename} took {loading_time:.2f} seconds to load and process")
+        log.debug(f"{local_filename} took {loading_time:.2f} seconds to load and process")
     except:
         raise Exception(f"An error occurred while {error_message} in DataFrame read from: {local_filename}")
 
@@ -618,7 +618,7 @@ def conform_astorb_lowell_obs_dynclass(dataframe, log):
     dataframe.insert(6, 'astorb_dynsubclass', None)
     
     log.info("Computing and parsing dynamical classes according to ASTORB database...")
-    log.info("Estimating remaining time...")
+    log.debug("Estimating remaining time...")
     total_rows = len(dataframe)
     modref = 100 if (100 / total_rows) < 0.1 else np.ceil(total_rows*0.1)
     start_time = time.time()  # Record the start time
@@ -627,7 +627,7 @@ def conform_astorb_lowell_obs_dynclass(dataframe, log):
     for index in range(total_rows):
         if index == modref:
             remaining_time = (total_rows - modref)*(time.time() - start_time)/modref
-            log.info(f'Remaining Time: {remaining_time:.2f} seconds...' if remaining_time <= 60 else f'Remaining Time: {remaining_time/60:.2f} minutes...' if remaining_time <= 3600 else f'Remaining Time: {remaining_time/3600:.2f} hours...')
+            log.debug(f'Remaining Time: {remaining_time:.2f} seconds...' if remaining_time <= 60 else f'Remaining Time: {remaining_time/60:.2f} minutes...' if remaining_time <= 3600 else f'Remaining Time: {remaining_time/3600:.2f} hours...')
 
         try:
             a = dataframe.iloc[index]['semimajor_axis']
@@ -799,7 +799,7 @@ def import_asteroid_table(asteroid_table, log):
 
     try:
         start = datetime.now(tz=timezone.utc)
-        log.info("Deleting all records in asteroid table.")
+        log.debug("Deleting all records in asteroid table.")
 
         db = AsteroidDao(pool=False)
         db.reset_table()
@@ -822,7 +822,7 @@ def import_asteroid_table(asteroid_table, log):
 
         end = datetime.now(tz=timezone.utc)
         tdelta = end - start
-        log.info(f"Rows imported: {rows} ")
+        log.debug(f"Rows imported: {rows} ")
         log.info("All records have been imported in in %s." %
                 humanize.naturaldelta(tdelta, minimum_unit="milliseconds"))
 
