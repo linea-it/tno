@@ -51,7 +51,7 @@ class AsteroidTableManager():
             # Create new job in database           
             self.job_id = self.create_job()
             
-            self.log.info(f"Asteroids before the update: [{self.asteroids_before}]")        
+            self.log.debug(f"Asteroids before the update: [{self.asteroids_before}]")        
             
             # Create path for input and outputs files.
             self.path.mkdir(parents=True, exist_ok=True)
@@ -87,7 +87,7 @@ class AsteroidTableManager():
                 self.asteroids_before,
                 str(self.filepath)
             )
-            self.log.info(f"Asteroid Job ID: [{job_id}]")
+            self.log.debug(f"Asteroid Job ID: [{job_id}]")
             return job_id
         except Exception as e:
             raise Exception(f"Failed to create the record in the asteroid job table. {e}")        
@@ -159,8 +159,8 @@ class AsteroidTableManager():
             end = datetime.now(tz=timezone.utc)
             tdelta = end - start
 
-            self.log.info("The asteroid table was recreated with data from previous runs.")
-            self.log.info("Rollback successful with %s rows affected in %s." %(rows, humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))
+            self.log.warning("The asteroid table was recreated with data from previous runs.")
+            self.log.warning("Rollback successful with %s rows affected in %s." %(rows, humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))
 
         except Exception as e:
             raise Exception(f"Failed to rollback asteroid job table. {e}")
