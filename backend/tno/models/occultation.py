@@ -314,6 +314,9 @@ class Occultation(models.Model):
         blank=True,
     )
 
+    #------------------------------------------------------
+    # Colunas que aparentemente não esto sendo preenchidas
+    #------------------------------------------------------
     g_mag_vel_corrected = models.FloatField(
         verbose_name="g_mag_vel_corrected",
         null=True,
@@ -485,6 +488,9 @@ class Occultation(models.Model):
         default=None,
         help_text="Aphelion",
     )
+    #------------------------------------------------------
+    # FIM Colunas que aparentemente não esto sendo preenchidas
+    #------------------------------------------------------
 
     #-------------------------------------------------
     # Occultation Path Fields.
@@ -663,12 +669,16 @@ class Occultation(models.Model):
     pha_flag = models.BooleanField(
         verbose_name = "pha_flag",
         help_text="",
+        null=True,
+        blank=True,        
         default=False
     )
 
     mpc_critical_list = models.BooleanField(
         verbose_name = "MPC critical list",
         help_text="",
+        null=True,
+        blank=True,
         default=False
     )
 

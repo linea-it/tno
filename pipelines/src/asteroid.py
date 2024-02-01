@@ -842,10 +842,9 @@ class Asteroid:
             df["ra_star_deg"] = df["ra_star_candidate"].apply(ra_hms_to_deg)
             df["dec_star_deg"] = df["dec_star_candidate"].apply(dec_hms_to_deg)
 
-            # Adicionar colunas para asteroid id, name e number
+            # Adicionar colunas para name e number
             df["name"] = self.name
             df["number"] = self.number
-            # df["asteroid_id"] = self.id
 
             # Remover valores como -- ou -
             df["ct"] = df["ct"].str.replace("--", "")
@@ -862,11 +861,16 @@ class Asteroid:
                     "ca": "closest_approach",
                     "pa": "position_angle",
                     "vel": "velocity",
+                    "g": "g_star",
+                    "j": "j_star",
+                    "h": "h_star",
+                    "k": "k_star",
                     "off_de": "off_dec",
                     "pm": "proper_motion",
                     "f": "multiplicity_flag",
                     "e_de": "e_dec",
                     "pmde": "pmdec",
+
                 }
             )
 
@@ -956,9 +960,9 @@ class Asteroid:
             
             # Correcao de valores nao validos
             # Fix https://github.com/linea-it/tno_pipelines/issues/10.
-            df.loc[df['j'] == 50, 'j'] = None
-            df.loc[df['h'] == 50, 'h'] = None
-            df.loc[df['k'] == 50, 'k'] = None
+            df.loc[df['j_star'] == 50, 'j_star'] = None
+            df.loc[df['h_star'] == 50, 'h_star'] = None
+            df.loc[df['k_star'] == 50, 'k_star'] = None
 
             # Altera a ordem das colunas para coincidir com a da tabela
             df = df.reindex(
@@ -974,10 +978,10 @@ class Asteroid:
                     "position_angle",
                     "velocity",
                     "delta",
-                    "g",
-                    "j",
-                    "h",
-                    "k",
+                    "g_star",
+                    "j_star",
+                    "h_star",
+                    "k_star",
                     "long",
                     "loc_t",
                     "off_ra",
