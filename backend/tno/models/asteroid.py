@@ -33,12 +33,20 @@ class Asteroid(models.Model):
 
     alias = models.CharField(
         max_length=35,
+<<<<<<< HEAD
+        verbose_name="Alias used internally as an internal name, formed by the name without special characters and with the addition of sequential numbers if necessary.",
+=======
         verbose_name="Alias",
+>>>>>>> 4b3d516da8a0c1ceb9877e5dd557b82b55bc34f4
         help_text="",
         null=True,
         blank=True,
         default=None,        
     )
+<<<<<<< HEAD
+    # TODO: Renomear este campo, Impacto grande.
+=======
+>>>>>>> 4b3d516da8a0c1ceb9877e5dd557b82b55bc34f4
     # 'skybot_dynbaseclass', 
     base_dynclass = models.CharField(
         max_length=35,
