@@ -7,6 +7,7 @@ class AsteroidJobViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = AsteroidJob.objects.select_related().all()
     serializer_class = AsteroidJobSerializer
-    # filter_fields = ("id", "name", "number", "dynclass", "base_dynclass")
-    # search_fields = ("name", "number")
+    ordering_fields = ("id", "start", "end", "asteroids_before", "asteroids_after", "new_records")
+    ordering = ("-start",)
+
 

@@ -82,13 +82,7 @@ class AsteroidJobSerializer(serializers.ModelSerializer):
 class AsteroidSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asteroid
-        fields = (
-            "id",
-            "number",
-            "name",
-            "base_dynclass",
-            "dynclass",
-        )
+        fields = '__all__'
 
 
 class OccultationSerializer(serializers.ModelSerializer):

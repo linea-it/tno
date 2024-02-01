@@ -27,6 +27,12 @@ app.conf.beat_schedule = {
         'schedule': crontab(hour='*', minute=1),
         # 'schedule': 30.0
     },
+    # Executes every Monday morning at 2:00 a.m.
+    'update_asteroid_table-every-hour': {
+        'task': 'tno.tasks.update_asteroid_table',
+        'schedule': crontab(hour=2, minute=0, day_of_week=1),
+    },    
+    
     # Calculo Occultation Path foi adicionado ao pipeline nao sendo mais necessario
     # Ser executado pelo portal.
     # 'occultation-path-coeff-every-10-minutes': {

@@ -44,4 +44,4 @@ scheduler.add_job(
 )
 
 
-scheduler.start()
+# scheduler.start()
