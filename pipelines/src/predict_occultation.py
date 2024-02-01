@@ -506,8 +506,9 @@ def submit_tasks(jobid: int):
 
         # Start Running Time
         t0 = datetime.now(tz=timezone.utc)
-
-        log.info("--------------< Predict Occultation Pipeline >--------------")
+        log.info("#============================================================#")
+        log.info("|                Predict Occultation Pipeline                |")
+        log.info("#============================================================#")
         log.info("Job ID: [%s]" % jobid)
         log.debug("Current Path: [%s]" % current_path)
         log.debug("DEBUG: [%s]" % DEBUG)

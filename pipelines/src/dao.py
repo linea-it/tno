@@ -176,7 +176,9 @@ class AsteroidDao(Dao):
 
     def get_asteroids_by_names(self, names):
 
-        stm = select(self.tbl.c).where(and_(self.tbl.c.name.in_(names)))
+        stm = select(
+            self.tbl.c.name, self.tbl.c.number, self.tbl.c.base_dynclass, self.tbl.c.dynclass)\
+                .where(and_(self.tbl.c.name.in_(names)))
 
         rows = self.fetch_all_dict(stm)
 
