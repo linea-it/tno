@@ -9,21 +9,50 @@
 
 def get_logger(path, filename="refine.log", debug=False):
     import logging
+    import colorlog
     import os
+    import sys
 
+    # File Handler
     logfile = os.path.join(path, filename)
     formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
     file_handler = logging.FileHandler(logfile)
     file_handler.setFormatter(formatter)
+
+    # Stdout handler
+    consoleFormatter = colorlog.ColoredFormatter('%(log_color)s%(message)s')
+    consoleHandler = colorlog.StreamHandler(sys.stdout)
+    consoleHandler.setFormatter(consoleFormatter)
+
     log = logging.getLogger(filename.split(".log")[0])
+    log.addHandler(file_handler)
+    log.addHandler(consoleHandler)
+
     if debug:
         log.setLevel(logging.DEBUG)
     else:
         log.setLevel(logging.INFO)
 
-    log.addHandler(file_handler)
-
     return log
+
+    # import logging
+    # import os
+
+    # logfile = os.path.join(path, filename)
+    # formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+    # file_handler = logging.FileHandler(logfile)
+    # file_handler.setFormatter(formatter)
+    # log = logging.getLogger(filename.split(".log")[0])
+
+    # if debug:
+    #     log.setLevel(logging.DEBUG)
+    # else:
+    #     log.setLevel(logging.INFO)
+
+    # log.addHandler(file_handler)
+
+    # return log
+    
 
 
 def read_inputs(path, filename="job.json"):

@@ -166,6 +166,14 @@ class AsteroidDao(Dao):
 
         self.tbl = self.get_table('tno_asteroid')
 
+    def get_by_name(self, name):
+
+        stm = select(self.tbl.c).where(and_(self.tbl.c.name == name))
+
+        rows = self.fetch_one_dict(stm)
+
+        return rows
+
     def get_asteroids_by_names(self, names):
 
         stm = select(self.tbl.c).where(and_(self.tbl.c.name.in_(names)))

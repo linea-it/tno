@@ -21,6 +21,7 @@ from io import StringIO
 import logging
 from external_inputs.jpl import get_bsp_from_jpl, findSPKID
 from occviz import occultation_path_coeff
+from typing import Optional
 
 def serialize(obj):
     """JSON serializer for objects not serializable by default json code"""
@@ -45,54 +46,53 @@ def serialize(obj):
 
 class Asteroid:
     __log = None
-    __BSP_START_PERIOD = "2012-01-01"
-    __BSP_YEARS_AHEAD = 1
-    __BSP_YEARS_BEHIND = 1
-    __BSP_DAYS_TO_EXPIRE = 60
-    __BASE_PATH = None
+    __BSP_START_PERIOD: str = "2012-01-01"
+    __BSP_YEARS_AHEAD: int = 1
+    __BSP_YEARS_BEHIND: int = 1
+    __BSP_DAYS_TO_EXPIRE: int = 60
+    __BASE_PATH: pathlib.Path
+    __dao = None
 
     # Status
     # 0 = undefined
     # 1 = Success
     # 2 = Failure
-    # status = 0
+    status: int
 
-    id = None
-    name = None
-    number = None
-    spkid = None
-    alias = None
-    dynclass = None
-    base_dynclass = None
-    path = None
+    # spkid = None
+    name: str
+    number: str
+    alias: str
+    spkid: Optional[str]    
+    base_dynclass: str
+    dynclass: str
+    path: pathlib.Path 
 
-    ot_query_ccds = dict()
-    ot_theo_pos = dict()
-    ot_ing_obs = dict()
+    ot_query_ccds: dict
+    ot_theo_pos: dict
+    ot_ing_obs: dict
 
-    condor_job = None
-    #des_observations = {}
-    #bsp_jpl = {}
-    #observations = {}
-    #orbital_elements = {}
-    #refine_orbit = {}
-    #predict_occultation = {}
-    #ingest_occultations = {}
+    des_observations: dict
+    bsp_jpl: dict
+    observations: dict
+    orbital_elements: dict
+    refine_orbit: dict
+    predict_occultation: dict
+    ingest_occultations: dict
 
-    # messages = list()
-    exec_time = None
+    messages: list
+    exec_time: float
 
     def __init__(
         self,
         name,
-        id=None,
-        number=None,
-        base_dynclass=None,
-        dynclass=None,
-        base_path=None,
+        base_path,
+        log,
+        new_run=False
     ):
-        self.name = name
-        self.set_alias(name)
+
+        self.__BASE_PATH = base_path        
+        self.set_log(log)
 
         # Status
         # 0 = undefined
@@ -100,51 +100,55 @@ class Asteroid:
         # 2 = Failure
         self.status = 0
 
-        self.des_observations = dict()
-        self.bsp_jpl = dict()
-        self.observations = dict()
-        self.orbital_elements = dict()
-        self.refine_orbit = dict()
-        self.predict_occultation = dict()
-        self.ingest_occultations = dict()
+        # Instantiate Asteroid Data Access Object 
+        self.__dao = AsteroidDao()
 
-        self.id = id
-        if number is not None and number != "-" and number != "":
-            self.number = str(number)
-        self.base_dynclass = base_dynclass
-        self.dynclass = dynclass
+        # Query asteroid mpc data from tno portal asteroid table.
+        self.__log.info("Querying asteroid data in the portal tno_asteroid table.")
+        ast_data = self.__dao.get_by_name(name)
+        # self.__log.debug(ast_data)
 
-        # Cria ou recupera o path do asteroid
-        self.__BASE_PATH = base_path
+        # Remove o atributo ID (interno do portal)
+        ast_data.pop('id', None)
+
+        # Setando os astributos de identificação do asteroid.
+        self.name = ast_data['name']
+        self.number = str(ast_data['number'])
+        self.alias = ast_data['alias']
+        self.spkid = None
+        self.base_dynclass = ast_data['base_dynclass']
+        self.dynclass = ast_data['dynclass']
+
+        # Adiciona todos os campos retornados na query
+        # Como atributos da instancia dessa classe.
+        self.__dict__.update(ast_data)
+
+        self.des_observations = {}
+        self.bsp_jpl = {}
+        self.observations = {}
+        self.orbital_elements = {}
+        self.refine_orbit = {}
+        self.predict_occultation = {}
+        self.ingest_occultations = {}
+        self.messages = []
+
+        # Verifica se existe diretório/json file para este asteroid.
         self.path = self.get_or_create_dir()
+        if new_run:
+            self.remove_previus_results(remove_inputs=True)
 
-        # Verifica se existe arquivo json para o objeto se existir carrega o conteudo na classe
+        # Se existir arquivo json para o objeto carrega o seu conteudo 
+        # Atualizando/Adicionando atributos na class.
+        self.__log.info("Loading information from asteroid.json if it exists.")
         json_data = self.read_asteroid_json()
-
-        # print('JSON_DATA: ', json_data)
-
-        self.messages = list()
         self.__dict__.update(json_data)
+        # self.__log.debug(json_data)
 
-        # TODO: O Correto é que a leitura do json seja feita por ultimo.
-        # Mas no momento existe jsons com valores antigos e invalidos
-        # para corrigir isto vou sobrescrever alguns campos apos a leitura do json.
-        # Os campos que vem por parametro vem do banco de dados que é sempre atualizado.
-
-        # if number is not None and number != "-" and number != "":
-        #     self.number = str(number)
-
-        # if base_dynclass is not None:
-        #     self.base_dynclass = base_dynclass
-
-        # if dynclass is not None:
-        #     self.dynclass = dynclass
+        self.write_asteroid_json()
 
     def __getitem__(self, item):
         return self.__dict__[item]
 
-    def set_alias(self, name):
-        self.alias = name.replace(" ", "").replace("_", "").replace("/", "")
 
     def to_dict(self):
         dcopy = self.__dict__.copy()
@@ -158,7 +162,8 @@ class Asteroid:
         if isinstance(logname, str):
             self.__logname = logname
             self.__log = logging.getLogger(logname)
-        else:
+        elif isinstance(logname, logging.Logger):
+            self.__logname = logname.name
             self.__log = logname
 
     def get_log(self):
@@ -215,7 +220,8 @@ class Asteroid:
 
         if not filepath.exists():
             # Se não existir um json para este asteroid cria um.
-            self.write_asteroid_json()
+            # self.write_asteroid_json()
+            return {}
 
         with open(filepath) as json_file:
             return json.load(json_file)
@@ -228,11 +234,6 @@ class Asteroid:
 
         with open(filepath, "w") as json_file:
             json.dump(d, json_file, default=serialize)
-
-    def set_condor_job(self, procid, clusterid):
-        self.condor_job = dict({"proc_id": procid, "cluster_id": clusterid})
-
-        self.write_asteroid_json()
 
     def get_bsp_path(self):
         filename = self.get_bsp_filename()
@@ -273,7 +274,7 @@ class Asteroid:
         """
         log = self.get_log()
         log.debug("Downloading BSP JPL started")
-        log.debug(self.get_bsp_path())
+        log.debug(f"BSP JPL: [{self.get_bsp_path()}]")
 
         bsp_path = self.get_bsp_path()
         bsp_filename = self.get_bsp_filename()
@@ -426,7 +427,7 @@ class Asteroid:
         tp0 = dt.now(tz=timezone.utc)
 
         try:
-            log.info("Checking Orbital Elements")
+            log.debug("Checking Orbital Elements")
 
             aei = AsteroidExternalInputs(
                 name=self.name,
@@ -512,7 +513,7 @@ class Asteroid:
         tp0 = dt.now(tz=timezone.utc)
 
         try:
-            log.info("Checking Observations")
+            log.debug("Checking Observations")
 
             aei = AsteroidExternalInputs(
                 name=self.name,
@@ -629,7 +630,7 @@ class Asteroid:
 
             rows += "{ra}{dec}{mag}{mjd}{obs}{cat}\n".format(**row)
 
-        log.info("Creating DES observations file.")
+        log.debug("Creating DES observations file.")
         with open(fpath, "w") as f:
             f.write(rows)
 
@@ -706,9 +707,8 @@ class Asteroid:
             else:
                 msg = "DES Observations file was not created."
                 self.des_observations = dict({"message": msg})
+                # log.warning("Asteroid [%s] %s" % (self.name, msg))
                 return False
-
-                log.warning("Asteroid [%s] %s" % (self.name, msg))
 
         except Exception as e:
             msg = "Failed in the DES Observations stage. Error: %s" % e
@@ -752,7 +752,6 @@ class Asteroid:
             ignore_files = []
 
             # Ao remover os arquivos de input limpa tb os metadados sobre os arquivos
-            self.condor_job = None
             self.des_observations = {}
             self.bsp_jpl = {}
             self.observations = {}
@@ -762,6 +761,7 @@ class Asteroid:
         for f in path.iterdir():
             if f.name not in ignore_files:
                 removed_files.append(f.name)
+                log.debug(f"Removed: [{f.name}]")
                 f.unlink()
 
         # Limpa os metadados das etapas de resultado
@@ -800,7 +800,7 @@ class Asteroid:
 
             # Apaga as occultations já registradas para este asteroid antes de inserir.
             dao.delete_by_asteroid_name(self.name, start_period, end_period)
-            print("Passou aqui!")
+
             # Le o arquivo occultation table e cria um dataframe
             # occultation_date;ra_star_candidate;dec_star_candidate;ra_object;dec_object;ca;pa;vel;delta;g;j;h;k;long;loc_t;off_ra;off_de;pm;ct;f;e_ra;e_de;pmra;pmde
             df = pd.read_csv(
@@ -1068,7 +1068,6 @@ class Asteroid:
 
         a = dict(
             {
-                "ast_id": self.id,
                 "name": self.name,
                 "number": self.number,
                 "base_dynclass": self.base_dynclass,
@@ -1165,7 +1164,9 @@ class Asteroid:
 
             if self.refine_orbit:
                 if "message" in self.refine_orbit:
-                    self.messages.append(self.refine_orbit["message"])
+                    # TODO: Temporariamente nao adicionar essa mensagem pois o nima esta fora do pipeline.
+                    # self.messages.append(self.refine_orbit["message"])
+                    pass
                 else:
                     a.update(
                         {
@@ -1277,7 +1278,7 @@ class Asteroid:
 
         # Limpa o cache de resultados anteriores, esta etapa
         # Para esta etapa sempre será executada uma query nova.
-        self.ot_query_ccds = dict()
+        self.ot_query_ccds = {}
 
         tp0 = dt.now(tz=timezone.utc)
 
