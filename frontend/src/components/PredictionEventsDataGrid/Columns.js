@@ -247,13 +247,12 @@ export const PredictionEventsColumns = [
     field: 'proper_motion',
     headerName: 'Proper Motion Status',
     description: 'Status of proper motion correction (Ok/No)',
-    align: 'center',
     headerAlign: 'center',
     align: 'center',
   },
   {
-    field: 'g',
-    headerName: 'G mag',
+    field: 'g_star',
+    headerName: 'G*',
     description: "Star's G magnitude (mag)",
     type: 'number',
     headerAlign: 'center',
@@ -261,8 +260,8 @@ export const PredictionEventsColumns = [
     ...floatFixedPrecision2
   },
   {
-    field: 'j',
-    headerName: 'J mag',
+    field: 'j_star',
+    headerName: 'J*',
     description: "Star's J magnitude (mag)",
     type: 'number',
     headerAlign: 'center',
@@ -270,8 +269,8 @@ export const PredictionEventsColumns = [
     ...floatFixedPrecision2
   },
   {
-    field: 'h',
-    headerName: 'H mag',
+    field: 'h_star',
+    headerName: 'H*',
     description: "Star's H magnitude (mag)",
     type: 'number',
     headerAlign: 'center',
@@ -279,8 +278,8 @@ export const PredictionEventsColumns = [
     ...floatFixedPrecision2
   },
   {
-    field: 'k',
-    headerName: 'K mag',
+    field: 'k_star',
+    headerName: 'K*',
     description: "Star's K magnitude (mag)",
     type: 'number',
     headerAlign: 'center',
