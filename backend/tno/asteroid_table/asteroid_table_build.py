@@ -46,6 +46,9 @@ from pathlib import Path
 import traceback
 import humanize
 
+import functools
+import tqdm
+import shutil
 # Function to download the file if it doesn't exist or if it has changed
 def download_file_if_not_exists_or_changed(url, directory_path, filename, log):
     """
@@ -141,11 +144,20 @@ def download_file(url, local_filename):
     - url (str): URL of the file to be downloaded.
     - local_filename (str): Path and name for the file to be saved locally.
     """
-    response = requests.get(url, stream=True)
-    with open(local_filename, 'wb') as file:
-        for chunk in response.iter_content(chunk_size=1024):
-            if chunk:
-                file.write(chunk)
+    r = requests.get(url, stream=True)
+
+    file_size = int(r.headers.get('Content-Length', 0))
+    desc = "(Unknown total file size)" if file_size == 0 else ""
+    r.raw.read = functools.partial(r.raw.read, decode_content=True)
+    with tqdm.tqdm.wrapattr(r.raw, "read", total=file_size, desc=desc) as r_raw:
+        with open(local_filename, 'wb') as f:
+            shutil.copyfileobj(r_raw, f)
+
+    # r = requests.get(url, stream=True)
+    # with open(local_filename, 'wb') as file:
+    #     for chunk in r.iter_content(chunk_size=1024):
+    #         if chunk:
+    #             file.write(chunk)
 
                 
 # Function to get the remote file size
@@ -789,8 +801,6 @@ def asteroid_table_build(table_path, log):
             ]
         )
 
-
-        # import_asteroid_table(output_table)
         return asteroid_table
     except Exception as e:
         raise Exception(e)
