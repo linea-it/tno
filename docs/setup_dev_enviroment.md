@@ -93,7 +93,7 @@ docker-compose exec backend python manage.py loaddata initial_data.yaml
 Load Initial Asteroids Data
 
 ```bash
-docker-compose exec backend django-admin loaddata asteroid.json.gz
+docker-compose exec backend python manage.py update_asteroid_table
 ```
 
 
