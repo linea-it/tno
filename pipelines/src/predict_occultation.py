@@ -21,6 +21,7 @@ from io import StringIO
 
 # from library import get_configs
 import shutil
+import tqdm
 
 from library import (
     get_logger,
@@ -887,10 +888,10 @@ def submit_tasks(jobid: int):
                         )
 
                 is_done.append(proc.get("done"))
-            log.debug(
-                "Predict Occultation Parsl Task Running: %s/%s"
-                % (is_done.count(True), len(jobs_asteroids))
-            )
+            # log.debug(
+            #     "Predict Occultation Parsl Task Running: %s/%s"
+            #     % (is_done.count(True), len(jobs_asteroids))
+            # )
             # log.debug("N# FAILED: %i" % step2_failures)
             # log.debug("N# SUCCESSED: %i" % step2_success)
             time.sleep(30)

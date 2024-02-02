@@ -2,9 +2,11 @@ import os
 import requests
 import shutil
 from datetime import datetime
-
+import functools
+import tqdm
 
 class Download():
+
     def download_file_from_url(self, url, output_path, filename, overwrite=True, ignore_errors=False, timeout=30, auth=None):
         """
         Esta funcao faz o download de um arquivo
@@ -21,19 +23,9 @@ class Download():
 
         # Se a sobreescreita estiver ativa tenta apagar o arquivo
         if overwrite:
-            if os.path.isfile(file_path):
-                try:
-                    os.remove(file_path)
-                except OSError as e:
-                    print("Failed to remove an existing file")
-                    print(e)
-                    if ignore_errors:
-                        return None, None
-                    else:
-                        raise e
+            self.remove_file(file_path)
 
         if not os.path.exists(file_path):
-
             try:
                 requests.packages.urllib3.disable_warnings()
                 # Resolve problema de SSL precisa da lib pyopenssl.
@@ -49,9 +41,18 @@ class Download():
                 r = requests.get(url, stream=True, verify=False,
                                  timeout=timeout, auth=auth)
                 if r.status_code == 200:
-                    with open(file_path, 'wb') as f:
-                        r.raw.decode_content = True
-                        shutil.copyfileobj(r.raw, f)
+                    # with open(file_path, 'wb') as f:
+                    #     r.raw.decode_content = True
+                    #     shutil.copyfileobj(r.raw, f)
+
+                    file_size = int(r.headers.get('Content-Length', 0))
+                    desc = "(Unknown total file size)" if file_size == 0 else ""
+                    r.raw.read = functools.partial(r.raw.read, decode_content=True)
+                    with tqdm.tqdm.wrapattr(r.raw, "read", total=file_size, desc=desc) as r_raw:
+                        with open(file_path, 'wb') as f:
+                            shutil.copyfileobj(r_raw, f)
+
+
             except Exception as e:
                 if ignore_errors:
                     return None, None
@@ -95,3 +96,10 @@ class Download():
                 return None, None
             else:
                 raise Exception(msg)
+
+    def remove_file(self, file_path):
+        if os.path.isfile(file_path):
+            try:
+                os.remove(file_path)
+            except OSError as e:
+                raise Exception(f"Failed to remove an existing file. {e}")        
