@@ -34,17 +34,19 @@ try:
         name="Chiron",
         base_path=base_path, 
         log=log,
-        new_run=True
+        # new_run=False
     )
-    a.check_des_observations(0)
-    have_bsp_jpl = a.check_bsp_jpl(
-                start_period='2024-01-01',
-                end_period=str('2024-01-31'),
-                days_to_expire=0,
-            )
-    have_orb_ele = a.check_orbital_elements(
-        days_to_expire=0
-    )
+
+
+    # a.check_des_observations(0)
+    # have_bsp_jpl = a.check_bsp_jpl(
+    #             start_period='2024-01-01',
+    #             end_period=str('2024-01-31'),
+    #             days_to_expire=0,
+    #         )
+    # have_orb_ele = a.check_orbital_elements(
+    #     days_to_expire=0
+    # )
 
     a.have_obs = a.check_observations(days_to_expire=0)
     # raise Exception("shdshds")

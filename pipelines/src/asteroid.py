@@ -52,6 +52,7 @@ class Asteroid:
     __BSP_DAYS_TO_EXPIRE: int = 60
     __BASE_PATH: pathlib.Path
     __dao = None
+    __ast_data_columns = list = []
 
     # Status
     # 0 = undefined
@@ -110,6 +111,10 @@ class Asteroid:
 
         # Remove o atributo ID (interno do portal)
         ast_data.pop('id', None)
+
+        # Guarda a lista de atributos do asteroid, para facilitar 
+        # a criacao do dataframe de predicoes.
+        self.__ast_data_columns = list(ast_data.keys())
 
         # Setando os astributos de identificação do asteroid.
         self.name = ast_data['name']
@@ -842,16 +847,10 @@ class Asteroid:
             df["ra_star_deg"] = df["ra_star_candidate"].apply(ra_hms_to_deg)
             df["dec_star_deg"] = df["dec_star_candidate"].apply(dec_hms_to_deg)
 
-            # Adicionar colunas para name e number
-            df["name"] = self.name
-            df["number"] = self.number
-
             # Remover valores como -- ou -
             df["ct"] = df["ct"].str.replace("--", "")
             df["f"] = df["f"].str.replace("-", "")
-
-            df["created_at"] = dt.now(tz=timezone.utc)
-
+       
             # Altera o nome das colunas
             df = df.rename(
                 columns={
@@ -870,12 +869,18 @@ class Asteroid:
                     "f": "multiplicity_flag",
                     "e_de": "e_dec",
                     "pmde": "pmdec",
-
                 }
             )
 
+            # Correcao de valores nao validos
+            # Fix https://github.com/linea-it/tno_pipelines/issues/10.
+            df.loc[df['j_star'] == 50, 'j_star'] = None
+            df.loc[df['h_star'] == 50, 'h_star'] = None
+            df.loc[df['k_star'] == 50, 'k_star'] = None
 
-
+            #-------------------------------------------------
+            # Coeff paths 
+            #-------------------------------------------------
             coeff_paths = []
 
             # Para cada Ocultacao e necessario calcular o occultation path. 
@@ -940,14 +945,16 @@ class Asteroid:
                 df["occ_path_max_latitude"] = None
                 df["occ_path_min_latitude"] = None
 
-            # log.debug(df.columns.values.tolist())
+            #-------------------------------------------------
+            # MPC asteroid data used for prediction
+            #-------------------------------------------------
+            for column in self.__ast_data_columns:
+                df[column] = self.__dict__.get(column)
 
-            # Adiciona algumas informacoes de Proveniencia a cada evento de predicao
-            # base_dynclass, dynclass, catalog, predict_step, bsp_source, obs_source, orb_ele_source, bsp_planetary, leap_seconds, nima , job_id  
-
-            df["base_dynclass"] = self.base_dynclass
-            df["dynclass"] = self.dynclass
-            
+            #-------------------------------------------------
+            # Provenance Fields
+            # Adiciona algumas informacoes de Proveniencia a cada evento de predicao                
+            #-------------------------------------------------
             df["catalog"] = self.predict_occultation['catalog']
             df["predict_step"] = self.predict_occultation['predict_step']
             df["bsp_source"] = self.bsp_jpl['source']
@@ -956,14 +963,22 @@ class Asteroid:
             df["bsp_planetary"] = self.predict_occultation['bsp_planetary']
             df["leap_seconds"] = self.predict_occultation['leap_seconds']
             df["nima"] = self.predict_occultation['nima']
+            df["created_at"] = dt.now(tz=timezone.utc)
             df["job_id"] = jobid
-            
-            # Correcao de valores nao validos
-            # Fix https://github.com/linea-it/tno_pipelines/issues/10.
-            df.loc[df['j_star'] == 50, 'j_star'] = None
-            df.loc[df['h_star'] == 50, 'h_star'] = None
-            df.loc[df['k_star'] == 50, 'k_star'] = None
 
+            #------------------------------------------------------
+            # Colunas que aparentemente não esto sendo preenchidas
+            #------------------------------------------------------
+            columns_for_future = [
+                'g_mag_vel_corrected', 'rp_mag_vel_corrected', 'h_mag_vel_corrected', 'magnitude_drop', 
+                'instant_uncertainty', 'ra_star_with_pm', 'dec_star_with_pm', 'ra_star_to_date', 
+                'dec_star_to_date', 'aparent_diameter', 'ra_target_apparent', 'dec_target_apparent', 
+                'e_ra_target', 'e_dec_target', 'apparent_magnitude', 'ephemeris_version', 'eccentricity', 
+                'perihelion', 'aphelion' 
+            ]
+            for column in  columns_for_future: 
+                df[column] = None
+            
             # Altera a ordem das colunas para coincidir com a da tabela
             df = df.reindex(
                 columns=[
@@ -978,9 +993,9 @@ class Asteroid:
                     "position_angle",
                     "velocity",
                     "delta",
-                    "g_star",
+                    "g",
                     "j_star",
-                    "h_star",
+                    "h",
                     "k_star",
                     "long",
                     "loc_t",
@@ -998,6 +1013,28 @@ class Asteroid:
                     "ra_target_deg",
                     "dec_target_deg",
                     "created_at",
+                    "aparent_diameter",
+                    "aphelion",
+                    "apparent_magnitude",
+                    "dec_star_to_date",
+                    "dec_star_with_pm",
+                    "dec_target_apparent",
+                    "diameter",
+                    "e_dec_target",
+                    "e_ra_target",
+                    "eccentricity",
+                    "ephemeris_version",
+                    "g_mag_vel_corrected",
+                    "h_mag_vel_corrected",
+                    "inclination",
+                    "instant_uncertainty",
+                    "magnitude_drop",
+                    "perihelion",
+                    "ra_star_to_date",
+                    "ra_star_with_pm",
+                    "ra_target_apparent",
+                    "rp_mag_vel_corrected",
+                    "semimajor_axis",
                     "have_path_coeff", 
                     "occ_path_max_longitude",
                     "occ_path_min_longitude",
@@ -1006,18 +1043,49 @@ class Asteroid:
                     "occ_path_max_latitude",
                     "occ_path_min_latitude",
                     "base_dynclass", 
+                    "bsp_planetary",
+                    "bsp_source",
+                    "catalog",
                     "dynclass", 
-                    "catalog", 
-                    "predict_step", 
-                    "bsp_source", 
-                    "obs_source",
-                    "orb_ele_source", 
-                    "bsp_planetary", 
+                    "job_id",
                     "leap_seconds", 
                     "nima", 
-                    "job_id",  
+                    "obs_source",
+                    "orb_ele_source", 
+                    "predict_step", 
+                    "albedo",
+                    "albedo_err_max",
+                    "albedo_err_min",
+                    "alias",
+                    "aphelion_dist",
+                    "arg_perihelion",
+                    "astorb_dynbaseclass",
+                    "astorb_dynsubclass",
+                    "density",
+                    "density_err_max",
+                    "density_err_min",
+                    "diameter_err_max",
+                    "diameter_err_min",
+                    "epoch",
+                    "excentricity",
+                    "last_obs_included",
+                    "long_asc_node",
+                    "mass",
+                    "mass_err_max",
+                    "mass_err_min",
+                    "mean_anomaly",
+                    "mean_daily_motion",
+                    "mpc_critical_list",
+                    "perihelion_dist",
+                    "pha_flag",
+                    "principal_designation",
+                    "rms",
+                    "g_star",
+                    "h_star",
                 ]
             )
+
+            # log.debug(df.columns.values.tolist())
 
             # ATENCAO! Sobrescreve o arquivo occultation_table.csv
             df.to_csv(predict_table_path, index=False, sep=";")

@@ -465,13 +465,13 @@ class Occultation(models.Model):
         help_text="Eccentricity",
     )
 
-    inclination = models.FloatField(
-        verbose_name="Inclination",
-        null=True,
-        blank=True,
-        default=None,
-        help_text="Inclination",
-    )
+    # inclination = models.FloatField(
+    #     verbose_name="Inclination",
+    #     null=True,
+    #     blank=True,
+    #     default=None,
+    #     help_text="Inclination",
+    # )
 
     perihelion = models.FloatField(
         verbose_name="Perihelion",
