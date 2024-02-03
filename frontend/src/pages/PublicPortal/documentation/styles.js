@@ -18,7 +18,13 @@ const styles = makeStyles(() => ({
     color: 'black',
     letterSpacing: '0.0em',
     textTransform: 'none'
-  }
+  },
+  menuContainer: {
+    position: 'sticky',
+    top: -10,
+    height: '50vh',
+    overflowY: 'auto',
+  },
 }))
 
 export default styles
