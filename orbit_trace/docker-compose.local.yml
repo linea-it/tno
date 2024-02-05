@@ -1,0 +1,20 @@
+version: "3.6"
+services:
+  tno_pipeline:
+    build: .
+    command: /app/daemon.sh
+    network_mode: "host"
+    volumes:
+      - ./src:/app/src
+      - ./outputs:/app/outputs
+    environment:
+      # Acesso ao DB de Catalogo e Administrativo, caso localhost não funcione utilizar o host.docker.internal.
+      # Usando Localhost
+      - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@localhost:3307/prod_gavo
+      - DB_URI_ADMIN=postgresql+psycopg2://tnouseradmindev:TnoDev405060@localhost:3307/tnodbdev
+      # Usando host.docker.internal
+      # - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@host.docker.internal:3307/prod_gavo
+      # - DB_URI_ADMIN=postgresql+psycopg2://tnouseradmindev:TnoDev405060@host.docker.internal:3307/tnodbdev
+      - USER=apptno
+      - PARSL_ENV=local # PARSL_ENV define onde será o processamento: local ou linea (Slurm)
+      - PREDICT_OUTPUTS=/app/outputs/predict_occultation
