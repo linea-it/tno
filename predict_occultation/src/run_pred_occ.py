@@ -22,9 +22,6 @@ from io import StringIO
 import shutil
 import tqdm
 
-from library import (
-    retrieve_asteroids,
-)
 from dao import AsteroidDao
 try:
     from app import run_pipeline

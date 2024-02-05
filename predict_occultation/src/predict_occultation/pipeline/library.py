@@ -244,3 +244,27 @@ def ast_visual_mag_from_astdys(file_path):
         return None if np.isnan(max_mag) else float(max_mag)
     except:
         return None
+    
+
+def ra_hms_to_deg(ra):
+    rs = 1
+
+    H, M, S = [float(i) for i in ra.split()]
+    if str(H)[0] == "-":
+        rs, H = -1, abs(H)
+    deg = (H * 15) + (M / 4) + (S / 240)
+    ra_deg = deg * rs
+
+    return ra_deg
+
+
+def dec_hms_to_deg(dec):
+    ds = 1
+
+    D, M, S = [float(i) for i in dec.split()]
+    if str(D)[0] == "-":
+        ds, D = -1, abs(D)
+    deg = D + (M / 60) + (S / 3600)
+    dec_deg = deg * ds
+
+    return dec_deg    

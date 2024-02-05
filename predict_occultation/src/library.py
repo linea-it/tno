@@ -7,29 +7,6 @@ def write_json(filepath, data):
         json.dump(data, json_file)
 
 
-def retrieve_asteroids(type, values):
-
-    from dao import AsteroidDao
-
-    dao = AsteroidDao()
-
-    asteroids = list()
-
-    if type == "name":
-        asteroids = dao.get_asteroids_by_names(names=values.split(";"))
-    elif type == "dynclass":
-        asteroids = dao.get_asteroids_by_dynclass(dynclass=values)
-    elif type == "base_dynclass":
-        asteroids = dao.get_asteroids_by_base_dynclass(dynclass=values)
-
-    for asteroid in asteroids:
-        asteroid.update(
-            {"status": "running",}
-        )
-
-    return asteroids
-
-
 def ra2HMS(radeg, ndecimals=0):
     radeg = float(radeg) / 15
     raH = int(radeg)

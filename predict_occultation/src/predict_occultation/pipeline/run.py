@@ -11,6 +11,8 @@ from run_nima import start_nima
 from run_praia_occ import start_praia_occ
 from library import read_asteroid_json, write_asteroid_json, count_lines, create_nima_input, ast_visual_mag_from_astdys
 from dao import GaiaDao
+from occ_path_coeff import run_occultation_path_coeff
+from pathlib import Path
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -234,11 +236,14 @@ if __name__ == "__main__":
 
         obj_data['predict_occultation'] = praia_result
 
+        # Executar o calculo Coeff Path
+        if os.path.exists(occultation_file):
+            print("Calculating path coef")
+            obj_data['calculate_path_coeff'] = run_occultation_path_coeff(Path(occultation_file), obj_data)
+
         # Escreve os dados da execução no arquivo json do objeto.
         write_asteroid_json(name, obj_data, callback_path)
-
-        
-
+      
     except Exception as e:
         print(e)
         traceback.print_exc()
@@ -252,6 +257,3 @@ if __name__ == "__main__":
         td = t1 - t0
         print("Predict Occultation Done in %s" % td)
 
-
-# Exemplo usando o script Run.py
-# docker run -it --rm --user 10139:10000 --volume /home/glauber/linea/1999RB216:/home/glauber/linea/1999RB216 --volume /home/glauber/linea/praia_occultation/src/run.py:/app/run.py --volume /home/glauber/linea/praia_occultation/src/library.py:/app/library.py --network host -e DB_URI=postgresql+psycopg2://postgres:postgres@172.18.0.2:5432/tno_v2 linea/praiaoccultation:v2.8.2 python run.py 1999RB216 2021-10-01 2023-01-01 --number 137295 --step 600 --path /home/glauber/linea/1999RB216
