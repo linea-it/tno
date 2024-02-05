@@ -59,7 +59,7 @@ def praia_occ_input_file(star_catalog, object_ephemeris):
 
         if os.path.exists(output):
             # Altera permissão do arquivo para escrita do grupo
-            os.chmod(output, 0664)
+            os.chmod(output, 0o664)
             # Cria um link simbolico no diretório app
             os.symlink(output, out_link)
 
@@ -84,7 +84,7 @@ def run_praia_occ(input, ):
         )
         p.communicate()
 
-    os.chmod(log, 0664)
+    os.chmod(log, 0o664)
 
 
 def fix_table(filename):
@@ -92,20 +92,20 @@ def fix_table(filename):
     inoutFile = open(filename, "r+b")
     contents = inoutFile.readlines()
 
-    contents[4] = " G: G magnitude from Gaia\n"
-    contents[5] = contents[5][:41] + "cluded)\n"
-    contents[6] = " G" + contents[6][2:]
-    contents[17] = contents[17][:27] + "\n"
-    contents[26] = contents[26][:6] + "only Gaia DR1 stars are used\n"
-    contents[27] = contents[27][:-1] + " (not applicable here)\n"
-    contents[35] = contents[35][:34] + "10)\n"
-    contents[36] = contents[36][:41] + "\n"
+    contents[4] = b" G: G magnitude from Gaia\n"
+    contents[5] = contents[5][:41] + b"cluded)\n"
+    contents[6] = b" G" + contents[6][2:]
+    contents[17] = contents[17][:27] + b"\n"
+    contents[26] = contents[26][:6] + b"only Gaia DR1 stars are used\n"
+    contents[27] = contents[27][:-1] + b" (not applicable here)\n"
+    contents[35] = contents[35][:34] + b"10)\n"
+    contents[36] = contents[36][:41] + b"\n"
     contents[37] = contents[37][:36] + \
-        "/yr); (0 when not provided by Gaia DR1)\n"
-    contents[39] = contents[39][:115] + "G" + contents[39][116:]
+        b"/yr); (0 when not provided by Gaia DR1)\n"
+    contents[39] = contents[39][:115] + b"G" + contents[39][116:]
 
     for i in range(41, len(contents)):
-        contents[i] = contents[i][:169] + "-- -" + contents[i][173:]
+        contents[i] = contents[i][:169] + b"-- -" + contents[i][173:]
 
     inoutFile.seek(0)  # go at the begining of the read/write file
     inoutFile.truncate()  # clean the file (delete all content)
@@ -211,7 +211,7 @@ def search_candidates(star_catalog, object_ephemeris, filename):
 
         if os.path.exists(output):
             # Altera permissão do arquivo para escrita do grupo
-            os.chmod(output, 0664)
+            os.chmod(output, 0o664)
             # Cria um link simbolico no diretório app
             os.symlink(output, out_link)
 
@@ -219,7 +219,7 @@ def search_candidates(star_catalog, object_ephemeris, filename):
             files = ["g4_micro_catalog_JOHNSTON_2018", "g4_occ_catalog_JOHNSTON_2018",
                      "g4_occ_data_JOHNSTON_2018", "g4_occ_data_JOHNSTON_2018_table"]
             for f in files:
-                os.chmod(os.path.join(data_dir, f), 0664)
+                os.chmod(os.path.join(data_dir, f), 0o664)
 
             return output
         else:

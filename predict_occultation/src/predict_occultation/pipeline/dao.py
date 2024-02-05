@@ -240,7 +240,7 @@ class GaiaDao(Dao):
 
         if os.path.exists(output):
             # Altera permissão do arquivo para escrita do grupo
-            os.chmod(output, 0664)
+            os.chmod(output, 0o664)
             # Cria um link simbolico no diretório app
             os.symlink(output, out_link)
 
@@ -260,7 +260,7 @@ class GaiaDao(Dao):
 
         if os.path.exists(output):
             # Altera permissão do arquivo para escrita do grupo
-            os.chmod(output, 0664)
+            os.chmod(output, 0o664)
             # Cria um link simbolico no diretório app
             os.symlink(output, out_link)
 

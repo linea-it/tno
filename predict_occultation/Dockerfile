@@ -77,8 +77,8 @@ RUN wget --no-verbose --show-progress \
 # PRAIA OCC binaries
 COPY --from=praia_occ /tmp/praia_occ/* /usr/local/bin
 
-# Python 2.7 environment
-COPY --chown=:conda --chmod=775 --from=py2_build /opt/conda/envs/py2 /opt/conda/envs/py2
+# # Python 2.7 environment
+# COPY --chown=:conda --chmod=775 --from=py2_build /opt/conda/envs/py2 /opt/conda/envs/py2
 
 # Python 3.8 environment
 COPY --chown=:conda --chmod=775 --from=py3_build /opt/conda/envs/py3 /opt/conda/envs/py3
@@ -143,4 +143,4 @@ RUN /bin/bash --login -c "conda init bash \
     && echo 'conda activate py3' >> ~/.bashrc \
     && source ~/.bashrc"
 
-# # ENTRYPOINT [ "./entrypoint.sh" ]
+ENTRYPOINT [ "./entrypoint.sh" ]

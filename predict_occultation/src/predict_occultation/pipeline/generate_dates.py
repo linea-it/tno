@@ -12,13 +12,20 @@ def generate_dates_file(start_date, final_date, step, filename):
 
     with open(output, 'w') as fp:
 
+        # Py2
+        # parameters = [start_date, final_date, step]
+        # strParameters = '\n'.join(map(str, parameters))
+        # p = subprocess.Popen('geradata', stdin=subprocess.PIPE, stdout=fp)
+        # p.communicate(strParameters)
+
+        # Py3
         parameters = [start_date, final_date, step]
         strParameters = '\n'.join(map(str, parameters))
-        # p = subprocess.Popen('./geradata', stdin=subprocess.PIPE, stdout=fp)
-        p = subprocess.Popen('geradata', stdin=subprocess.PIPE, stdout=fp)
-        p.communicate(strParameters)
+        p = subprocess.Popen('geradata', stdin=subprocess.PIPE, stdout=fp, shell=True)
+        p.communicate(str.encode(strParameters))
 
-    os.chmod(output, 0664)
+
+    os.chmod(output, 0o664)
 
     if os.path.exists(output):
 

@@ -14,7 +14,7 @@ then
     source ${CONDAPATH}/activate
 fi
 
-conda activate py2
+conda activate py3
 
 ulimit -s 100000
 ulimit -u 100000

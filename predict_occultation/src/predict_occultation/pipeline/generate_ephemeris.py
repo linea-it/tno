@@ -106,7 +106,7 @@ def generate_ephemeris(dates_file, bsp, dexxx, leap_sec, eph_filename, radec_fil
     radecFile.close()
 
     # Altera permissão do arquivo para escrita do grupo
-    os.chmod(output_radec, 0664)
+    os.chmod(output_radec, 0o664)
     # Cria um link simbolico no diretório app
     os.symlink(output_radec, radec_link)
 
@@ -130,7 +130,7 @@ def generate_ephemeris(dates_file, bsp, dexxx, leap_sec, eph_filename, radec_fil
     if os.path.exists(output_eph):
 
         # Altera permissão do arquivo para escrita do grupo
-        os.chmod(output_eph, 0664)
+        os.chmod(output_eph, 0o664)
         # Cria um link simbolico no diretório app
         os.symlink(output_eph, eph_link)
 
@@ -155,7 +155,7 @@ def generate_positions(eph_filename, positions_filename):
     if os.path.exists(output_pos):
 
         # Altera permissão do arquivo para escrita do grupo
-        os.chmod(output_pos, 0664)
+        os.chmod(output_pos, 0o664)
         # Cria um link simbolico no diretório app
         os.symlink(output_pos, pos_link)
 
@@ -179,11 +179,11 @@ def run_elimina(eph_filename, centers_filename):
             'elimina', stdin=subprocess.PIPE, stdout=outFile, shell=True)
 
     # set the input parameters to the script
-    p.communicate(strParameters)
+    p.communicate(str.encode(strParameters))
 
     if os.path.exists(output):
         # Altera permissão do arquivo para escrita do grupo
-        os.chmod(output, 0664)
+        os.chmod(output, 0o664)
         # Cria um link simbolico no diretório app
         os.symlink(output, out_link)
 
@@ -218,7 +218,7 @@ def centers_positions_to_deg(centers_file, centers_deg_filename):
 
     if os.path.exists(output):
         # Altera permissão do arquivo para escrita do grupo
-        os.chmod(output, 0664)
+        os.chmod(output, 0o664)
         # Cria um link simbolico no diretório app
         os.symlink(output, out_link)
 

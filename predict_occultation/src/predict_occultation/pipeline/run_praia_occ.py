@@ -153,7 +153,7 @@ def start_praia_occ(
     sys.stdout = orig_stdout
     f.close()
 
-    os.chmod(log_file, 0664)
+    os.chmod(log_file, 0o664)
 
     return occultation_file
 
