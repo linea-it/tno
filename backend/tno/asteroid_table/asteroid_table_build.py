@@ -268,7 +268,7 @@ def load_mpcorb_extended(local_filename, log):
         # Log loading and processing time
         end_time = time.time()    # Record the end time
         loading_time = end_time - start_time
-        log.debug(f"{local_filename} took {loading_time:.2f} seconds to load and process")
+        log.debug(f"{local_filename} took {loading_time:.0f} seconds to load and process")
     except:
         raise Exception(f"An error occurred while {error_message} in DataFrame read from: {local_filename}")
 
@@ -321,7 +321,7 @@ def load_ssoBFT(local_filename, log):
         # Log loading and processing time
         end_time = time.time()    # Record the end time
         loading_time = end_time - start_time
-        log.debug(f"{local_filename} took {loading_time:.2f} seconds to load and process")
+        log.debug(f"{local_filename} took {loading_time:.0f} seconds to load and process")
     except:
         raise Exception(f"An error occurred while {error_message} in DataFrame read from: {local_filename}")
 
@@ -632,14 +632,14 @@ def conform_astorb_lowell_obs_dynclass(dataframe, log):
     log.info("Computing and parsing dynamical classes according to ASTORB database...")
     log.debug("Estimating remaining time...")
     total_rows = len(dataframe)
-    modref = 100 if (100 / total_rows) < 0.1 else np.ceil(total_rows*0.1)
+    modref = 1000 if (1000 / total_rows) < 0.1 else np.ceil(total_rows*0.1)
     start_time = time.time()  # Record the start time
     
     
     for index in range(total_rows):
         if index == modref:
             remaining_time = (total_rows - modref)*(time.time() - start_time)/modref
-            log.debug(f'Remaining Time: {remaining_time:.2f} seconds...' if remaining_time <= 60 else f'Remaining Time: {remaining_time/60:.2f} minutes...' if remaining_time <= 3600 else f'Remaining Time: {remaining_time/3600:.2f} hours...')
+            log.debug(f'Remaining Time: {remaining_time:.0f} seconds...' if remaining_time <= 60 else f'Remaining Time: {remaining_time/60:.0f} minutes...' if remaining_time <= 3600 else f'Remaining Time: {remaining_time/3600:.0f} hours...')
 
         try:
             a = dataframe.iloc[index]['semimajor_axis']
@@ -720,6 +720,55 @@ def validate_last_obs_included(date_string):
         except:
             return '1800-01-01'
 
+def clean_duplicate_asteroids(dataframe, category='name'):
+    """
+    Clean a DataFrame by removing duplicate rows based on a specified category column.
+
+    Parameters:
+    -----------
+    dataframe : pandas DataFrame
+        The input DataFrame containing asteroid data.
+    category : str, optional
+        The name of the column used for grouping and identifying duplicates. 
+        Default is 'name'.
+
+    Returns:
+    --------
+    pandas DataFrame
+        A cleaned DataFrame with duplicate rows removed.
+
+    Example:
+    --------
+    # Import pandas and create a sample DataFrame
+    import pandas as pd
+    data = {'name': ['Asteroid1', 'Asteroid2', 'Asteroid1', 'Asteroid3'],
+            'diameter_km': [5, 8, 5, 10]}
+    df = pd.DataFrame(data)
+
+    # Clean the DataFrame by removing duplicate asteroids based on 'name'
+    cleaned_df = clean_duplicate_asteroids(df, category='name')
+
+    # Display the cleaned DataFrame
+    print(cleaned_df)
+
+    Output:
+        name  diameter_km
+    1  Asteroid2            8
+    3  Asteroid3           10
+    """
+    data_groups = dataframe.groupby(category)
+    
+    for name, group in data_groups:
+        if len(group) > 1:
+            index, idxmax = group.index.tolist(), group.count(axis=1).idxmax()
+            index.remove(idxmax)
+            
+            # Drop duplicate rows from the original DataFrame
+            for i in index:
+                dataframe = dataframe.drop(i)
+    
+    return dataframe
+
 
 def asteroid_table_build(table_path, log):
     """
@@ -746,6 +795,8 @@ def asteroid_table_build(table_path, log):
 
         # Development Only
         # data_mpc = data_mpc.iloc[0:5, ]
+        # index = [1,2,3,4,5,131240,644901,201725,656765,470433,710161]
+        # data_mpc = data_mpc.iloc[index]
 
         # Define the URL of the file
         ssoBFT_url = "https://ssp.imcce.fr/data/ssoBFT-latest.ecsv.bz2"
@@ -780,6 +831,9 @@ def asteroid_table_build(table_path, log):
         
         # Fix duplicated aliases
         asteroid_table['alias'] = fix_duplicated_alias(asteroid_table['alias'].values)
+        
+        # Fix duplicated rows
+        asteroid_table = clean_duplicate_asteroids(asteroid_table, category='name')
 
         asteroid_table = asteroid_table.rename(
             columns={
