@@ -18,19 +18,14 @@ from dao import (
     PredictOccultationJobStatusDao,
 )
 from io import StringIO
-from download import Download
-# from library import get_configs
+
 import shutil
 import tqdm
 
 from library import (
-    get_logger,
-    read_inputs,
-    write_job_file,
     retrieve_asteroids,
-    submit_job,
 )
-
+from dao import AsteroidDao
 try:
     from app import run_pipeline
     from parsl_config import get_config
@@ -53,6 +48,34 @@ class AbortError(Exception):
 
     def __str__(self):
         return str(self.message)
+
+def get_logger(path, filename="refine.log", debug=False):
+    import logging
+    import colorlog
+    import os
+    import sys
+
+    # File Handler
+    logfile = os.path.join(path, filename)
+    formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+    file_handler = logging.FileHandler(logfile)
+    file_handler.setFormatter(formatter)
+
+    # Stdout handler
+    consoleFormatter = colorlog.ColoredFormatter('%(log_color)s%(message)s')
+    consoleHandler = colorlog.StreamHandler(sys.stdout)
+    consoleHandler.setFormatter(consoleFormatter)
+
+    log = logging.getLogger(filename.split(".log")[0])
+    log.addHandler(file_handler)
+    log.addHandler(consoleHandler)
+
+    if debug:
+        log.setLevel(logging.DEBUG)
+    else:
+        log.setLevel(logging.INFO)
+
+    return log
 
 
 def job_to_run():
@@ -133,6 +156,9 @@ def predict_job_queue():
     # print("Deveria executar o job com ID: %s" % to_run.get("id"))
     run_job(to_run.get("id"))
 
+def write_job_file(path, data):
+    with open(os.path.join(path, "job.json"), "w") as json_file:
+        json.dump(data, json_file)
 
 def make_job_json_file(job, path):
     job_data = dict(
@@ -174,6 +200,14 @@ def make_job_json_file(job, path):
     write_job_file(path, job_data)
     update_job(job_data)
 
+def read_inputs(path, filename="job.json"):
+    import os
+    import json
+
+    with open(os.path.join(path, filename)) as json_file:
+        data = json.load(json_file)
+
+    return data
 
 def remove_job_directory(jobid):
     # Apaga o diretorio usando rm pq o diretorio tem links simbolicos.
@@ -206,6 +240,25 @@ def get_job_path(jobid):
     print(f"Job Path: {job_path}")
     return job_path
 
+def retrieve_asteroids(type, values):
+
+    dao = AsteroidDao()
+
+    asteroids = list()
+
+    if type == "name":
+        asteroids = dao.get_asteroids_by_names(names=values.split(";"))
+    elif type == "dynclass":
+        asteroids = dao.get_asteroids_by_dynclass(dynclass=values)
+    elif type == "base_dynclass":
+        asteroids = dao.get_asteroids_by_base_dynclass(dynclass=values)
+
+    for asteroid in asteroids:
+        asteroid.update(
+            {"status": "running",}
+        )
+
+    return asteroids
 
 def rerun_job(jobid: int):
     """Apaga os dados no DB referente ao job e remove o diretorio.
@@ -884,7 +937,7 @@ def submit_tasks(jobid: int):
             # )
             # log.debug("N# FAILED: %i" % step2_failures)
             # log.debug("N# SUCCESSED: %i" % step2_success)
-            time.sleep(30)
+            time.sleep(5)
 
         is_abort = check_abort_job(jobid)
         if is_abort:

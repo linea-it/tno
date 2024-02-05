@@ -9,6 +9,9 @@ __pycache__/
 de440.bsp
 naif0012.tls
 
+# Parsl
+/src/runinfo/
+
 # Distribution / packaging
 .Python
 build/

@@ -1,5 +1,5 @@
 
-from predict_occultation import predict_job_queue, run_job as predict_run_job
+from run_pred_occ import predict_job_queue, run_job as predict_run_job
 
 
 def predict_occultation_queue():

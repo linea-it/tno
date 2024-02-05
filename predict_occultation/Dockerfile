@@ -44,13 +44,13 @@ RUN mkdir /tmp/praia_occ \
     && cd ~/ \
     && rm -r /tmp/praia_occ_src
 
-# -------------- Python 2.7 Environment Stage -------------- 
-FROM base as py2_build
-COPY environment.py2.yml .
-RUN /bin/bash --login -c "conda init bash \
-    && source ~/.bashrc \
-    && conda env create -f environment.py2.yml \
-    && conda activate py2" 
+# # -------------- Python 2.7 Environment Stage -------------- 
+# FROM base as py2_build
+# COPY environment.py2.yml .
+# RUN /bin/bash --login -c "conda init bash \
+#     && source ~/.bashrc \
+#     && conda env create -f environment.py2.yml \
+#     && conda activate py2" 
 
 # -------------- Python 3.8 Environment Stage -------------- 
 FROM base as py3_build
