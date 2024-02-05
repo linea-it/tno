@@ -240,6 +240,31 @@ class PredictionJobResult(models.Model):
         help_text="Predict Occultation runtime."
     )
 
+    # Etapa de Calculo do Path Coeff, é executado junto com a predição,
+    # Mas por ser um pouco demorado é interessante ter o seu tempo separado.
+    calc_path_coeff_start = models.DateTimeField(
+        verbose_name="Calc Path Coeff Start",
+        auto_now_add=False,
+        null=True,
+        blank=True,
+        help_text="Start of path coeff."
+    )
+
+    calc_path_coeff_finish = models.DateTimeField(
+        verbose_name="Calc Path Coeff Finish",
+        auto_now_add=False,
+        null=True,
+        blank=True,
+        help_text="End of path coeff."
+    )
+
+    calc_path_coeff_exec_time = models.DurationField(
+        verbose_name="Calc Path Coeff Execution Time",
+        null=True,
+        blank=True,
+        help_text="Execution time of the path coeff step."
+    )
+
     # Etapa de Ingestão de Resultados (prenchimento dessa tabela e da tno_occultation)
 
     # Total de ocultações que foram inseridas no banco de dados

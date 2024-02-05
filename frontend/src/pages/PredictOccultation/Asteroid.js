@@ -108,6 +108,10 @@ function PredictionAsteroid() {
           value: predictionJobResult.pre_occ_exec_time?predictionJobResult.pre_occ_exec_time.split('.')[0]:"-"
         },
         {
+          title: 'Path Coeff Execution Time',
+          value: predictionJobResult.calc_path_coeff_exec_time?predictionJobResult.calc_path_coeff_exec_time.split('.')[0]:"-"
+        },        
+        {
           title: 'Result Ingestion Execution Time',
           value: predictionJobResult.ing_occ_exec_time?predictionJobResult.ing_occ_exec_time.split('.')[0]:"-"
         },

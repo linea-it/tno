@@ -79,6 +79,7 @@ class Asteroid:
     orbital_elements: dict
     refine_orbit: dict
     predict_occultation: dict
+    calculate_path_coeff: dict
     ingest_occultations: dict
 
     messages: list
@@ -136,6 +137,7 @@ class Asteroid:
         self.refine_orbit = {}
         self.predict_occultation = {}
         self.ingest_occultations = {}
+        self.calculate_path_coeff = {}
         self.messages = []
 
         # Verifica se existe diretório/json file para este asteroid.
@@ -1455,6 +1457,20 @@ class Asteroid:
                         }
                     )
                     exec_time += float(self.predict_occultation["exec_time"])
+
+            # Calculate Path Coeff
+            if "message" in self.calculate_path_coeff:
+                self.messages.append(self.calculate_path_coeff["message"])
+                self.set_failure()
+
+            a.update(
+                {
+                    "calc_path_coeff_start": self.calculate_path_coeff.get("start", None),
+                    "calc_path_coeff_finish": self.calculate_path_coeff.get("finish", None),
+                    "calc_path_coeff_exec_time": self.calculate_path_coeff.get("exec_time", 0),
+                }
+            )
+            exec_time += float(self.calculate_path_coeff.get("exec_time", 0))
 
             # Ingest Occultations
             if "message" in self.ingest_occultations:

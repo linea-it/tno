@@ -326,6 +326,9 @@ def ingest_job_results(job_path, job_id):
             "pre_occ_start",
             "pre_occ_finish",
             "pre_occ_exec_time",
+            "calc_path_coeff_start",
+            "calc_path_coeff_finish",
+            "calc_path_coeff_exec_time",
             "ing_occ_start",
             "ing_occ_finish",
             "ing_occ_exec_time",
@@ -384,6 +387,9 @@ def ingest_job_results(job_path, job_id):
             "ing_occ_start",
             "ing_occ_finish",
             "ing_occ_exec_time",
+            "calc_path_coeff_start",
+            "calc_path_coeff_finish",
+            "calc_path_coeff_exec_time"
         ]
     )
 
@@ -1056,11 +1062,11 @@ def submit_tasks(jobid: int):
         if len(l_consolidated) > 0:
             consolidate_job_results(l_consolidated, current_path, log)
 
-        log.info("Ingest Predict Occultation Job Results in database")
-        count_results_ingested = ingest_job_results(current_path, jobid)
-        log.debug(
-            "Predict Occultation Job Results ingested: %s" % count_results_ingested
-        )
+            log.info("Ingest Predict Occultation Job Results in database")
+            count_results_ingested = ingest_job_results(current_path, jobid)
+            log.debug(
+                "Predict Occultation Job Results ingested: %s" % count_results_ingested
+            )
 
         complete_job(job, log, job.get("status", "Completed"))
 
@@ -1113,6 +1119,9 @@ def consolidate_job_results(consolidated, job_path, log):
             "pre_occ_start",
             "pre_occ_finish",
             "pre_occ_exec_time",
+            "calc_path_coeff_start",
+            "calc_path_coeff_finish",
+            "calc_path_coeff_exec_time",
             "ing_occ_count",
             "ing_occ_start",
             "ing_occ_finish",
