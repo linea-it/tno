@@ -58,3 +58,6 @@ env_tno
 core_admin/.astropy
 
 database_subset/
+
+# Parsl Runinfo
+predict_occultation/runinfo
