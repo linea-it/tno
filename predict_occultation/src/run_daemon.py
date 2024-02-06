@@ -13,4 +13,8 @@ def predict_occultation_queue():
     return to_run_id
 
 if __name__ == '__main__':
-    run_id = predict_occultation_queue()
+    try:
+        run_id = predict_occultation_queue()
+    except Exception as e:
+        # Este exception é para evitar que a daemon desligue em caso de falha.
+        print(e)

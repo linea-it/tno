@@ -24,8 +24,8 @@ import tqdm
 
 from dao import AsteroidDao
 try:
-    from app import run_pipeline
-    from parsl_config import get_config
+    from predict_occultation.app import run_pipeline
+    from predict_occultation.parsl_config import get_config
 except Exception as error:
     print("Error: %s" % str(error))
     raise ("Predict Occultation pipeline not installed!")
@@ -525,12 +525,6 @@ def run_job(jobid: int):
 
 
 def submit_tasks(jobid: int):
-    # Settings Parsl configurations
-    envname = os.getenv("PARSL_ENV", "linea")
-    parsl_conf = get_config(envname)
-    parsl.clear()
-    parsl.load(parsl_conf)
-
     # Read Inputs from job.json
     job = read_job_json_by_id(jobid)
 
@@ -590,6 +584,15 @@ def submit_tasks(jobid: int):
 
         log.info("Update Job status to running.")
         update_job(job)
+
+        # =========================== Parsl ===========================
+        log.info("Settings Parsl configurations")
+        envname = os.getenv("PARSL_ENV", "linea")
+        parsl_conf = get_config(envname)
+        # Altera o diretório runinfo para dentro do diretório do job.
+        parsl_conf.run_dir = os.path.join(current_path, "runinfo")
+        parsl.clear()
+        parsl.load(parsl_conf)
 
         # =========================== Parameters ===========================
 
