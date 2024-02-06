@@ -59,6 +59,9 @@ class AsteroidTableManager():
             # Create dataframe with asteroids
             df = asteroid_table_build(str(self.path), self.log)
 
+            # Write the dataframe to csv file as a debug file.
+            df.to_csv(self.path.joinpath("asteroid_table_debug.csv"), index=False)
+
             # Import dataframe to database
             self.asteroids_after = import_asteroid_table(df, self.log)
 

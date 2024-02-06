@@ -38,6 +38,7 @@ dependencies:
       - click-plugins==1.1.1
       - click-repl==0.3.0
       - cryptography==41.0.7
+      - colorlog==6.8.2
       - dill==0.3.7
       - globus-sdk==3.34.0
       - greenlet==3.0.3
@@ -77,6 +78,7 @@ dependencies:
       - spiceypy==5.0.1
       - sqlalchemy==1.4.32
       - tblib==3.0.0
+      - tqdm==4.66.1
       - typeguard==2.13.3
       - typing-extensions==4.9.0
       - tzdata==2023.4
