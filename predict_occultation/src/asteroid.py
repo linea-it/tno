@@ -322,7 +322,7 @@ class Asteroid:
                 }
             )
 
-            log.info("Asteroid [%s] BSP Downloaded in %s" % (self.name, tdelta))
+            log.info(f"Asteroid BSP Downloaded in {tdelta}")
 
             return data
         except Exception as e:
@@ -335,7 +335,7 @@ class Asteroid:
         tp0 = dt.now(tz=timezone.utc)
 
         try:
-            log.debug("Asteroid [%s] Checking BSP JPL" % self.name)
+            log.debug("Asteroid Checking BSP JPL")
 
             if days_to_expire is None:
                 days_to_expire = self.__BSP_DAYS_TO_EXPIRE
@@ -384,10 +384,7 @@ class Asteroid:
                             # BSP que já existe atente todos os critérios não será necessário um novo Download.
                             bsp_jpl = self.bsp_jpl
                             bsp_jpl["downloaded_in_this_run"] = False
-                            log.info(
-                                "Asteroid [%s] Pre-existing BSP is still valid and will be reused."
-                                % self.name
-                            )
+                            log.info("Asteroid Pre-existing BSP is still valid and will be reused.")
 
             if not bsp_jpl:
                 # Fazer um novo Download do BSP

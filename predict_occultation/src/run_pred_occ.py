@@ -21,7 +21,7 @@ from io import StringIO
 
 import shutil
 import tqdm
-
+import subprocess
 from dao import AsteroidDao
 try:
     from predict_occultation.app import run_pipeline
@@ -650,6 +650,16 @@ def submit_tasks(jobid: int):
         DES_OBSERVATIONS_DAYS_TO_EXPIRE = inputs_days_to_expire
         log.debug("Input days to expire: [%s]" % inputs_days_to_expire)
 
+        # ======================= Generate dates file =======================
+        # Arquivo de datas pode ser o mesmo para todos os asteroids. 
+        # Executa o programa fortran geradata. 
+        # O arquivo de datas será copiado para cada asteroid.
+        step_t0 = datetime.now(tz=timezone.utc)
+        dates_filepath = generate_dates_file(PREDICT_START, PREDICT_END, PREDICT_STEP, current_path.joinpath("dates.txt"))
+        step_t1 = datetime.now(tz=timezone.utc)
+        step_tdelta = step_t1 - step_t0
+        log.debug(f"Dates file: [{dates_filepath.name}] created in {step_tdelta}")
+
         # =========================== Asteroids ===========================
         # Retrieve Asteroids.
         log.info("Retriving Asteroids started")
@@ -728,6 +738,10 @@ def submit_tasks(jobid: int):
             # caso FORCE_REFRESH_INPUTS = TRUE os inputs também serão removidos
             # a.remove_previus_results(remove_inputs=FORCE_REFRESH_INPUTS)
 
+            # Dates File ----------------------------------------------------
+            ast_dates_file = pathlib.Path(a.get_path()).joinpath("dates.txt")
+            shutil.copy(dates_filepath, ast_dates_file)
+
             # ========================= Download dos Inputs Externos ============================
             # Observações do DES ----------------------------------
             # Se o objeto não tiver observações no DES
@@ -796,7 +810,7 @@ def submit_tasks(jobid: int):
                 step1_failures += 1
                 # Ignora as proximas etapas para este asteroid.
                 continue
-
+            
             step1_success += 1
             current_idx += 1
 
@@ -1209,3 +1223,30 @@ def complete_job(job, log, status):
 
     log.info("Execution Time: %s" % tdelta)
     log.info("Predict Occultation is done!.")
+
+def generate_dates_file(start_date: str, final_date: str, step: int, filepath: pathlib.Path):
+    
+    original_path = os.getcwd()
+
+    try:
+        # Altera o path de execução
+        # A raiz agora é o path passado como parametro.        
+        pipeline_path = os.getenv("PIPELINE_PATH", "/app/src/predict_occultation/pipeline").rstrip('/')
+        os.chdir(pipeline_path)
+
+        with open(filepath, 'w') as fp:
+            parameters = [start_date, final_date, step]
+            strParameters = '\n'.join(map(str, parameters))
+            p = subprocess.Popen('geradata', stdin=subprocess.PIPE, stdout=fp, shell=True)
+            p.communicate(str.encode(strParameters))
+
+        if filepath.exists():
+            # filepath.chmod(664)
+            return filepath
+        else:
+            raise Exception(f"Date file not generated.")
+
+    except Exception as e:
+        raise Exception(f"Failed in the geradata step. [{e}]")
+    finally:
+        os.chdir(original_path)
