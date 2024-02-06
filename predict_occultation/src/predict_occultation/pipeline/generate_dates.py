@@ -5,7 +5,8 @@ import subprocess
 
 
 def generate_dates_file(start_date, final_date, step, filename):
-
+    print(f"Generate dates file: start:[{start_date}] final: [{final_date}]")
+    
     app_path = os.environ.get("APP_PATH").rstrip('/')
     data_dir = os.environ.get("DIR_DATA").rstrip('/')
     output = os.path.join(data_dir, filename)
