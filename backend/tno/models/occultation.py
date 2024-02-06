@@ -100,7 +100,7 @@ class Occultation(models.Model):
         max_length=20,
         null=False,
         blank=False,
-        help="Star candidate right ascension (hh:mm:ss)",
+        help_text="Star candidate right ascension (hh:mm:ss)",
     )
 
     dec_star_candidate = models.CharField(
@@ -108,7 +108,7 @@ class Occultation(models.Model):
         max_length=20,
         null=False,
         blank=False,
-        help="Star candidate declination (dd:mm:ss)",
+        help_text="Star candidate declination (dd:mm:ss)",
     )
 
     ra_target = models.CharField(
@@ -116,7 +116,7 @@ class Occultation(models.Model):
         max_length=20,
         null=False,
         blank=False,
-        help="Target's right ascension (hh:mm:ss)",
+        help_text="Target's right ascension (hh:mm:ss)",
     )
 
     dec_target = models.CharField(
@@ -124,7 +124,7 @@ class Occultation(models.Model):
         max_length=20,
         null=False,
         blank=False,
-        help="Target's declination (dd:mm:ss)",
+        help_text="Target's declination (dd:mm:ss)",
     )
 
     closest_approach = models.FloatField(

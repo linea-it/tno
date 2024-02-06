@@ -222,7 +222,7 @@ def get_job_path(jobid):
     """Retorna o path para o diretorio do job, cria o diretorio caso nao exista."""
     # config = get_configs()
     # orbit_trace_root = config["DEFAULT"].get("PredictOccultationJobPath")
-    orbit_trace_root = os.getenv("PREDICT_OUTPUTS", "/predict_occultation")
+    orbit_trace_root = os.getenv("PREDICT_OUTPUTS", "/app/outputs/predict_occultation")
     folder_name = f"{jobid}"
     # folder_name = f"teste_{job['id']}"
     # folder_name = f"{job['id']}-{str(uuid.uuid4())[:8]}"

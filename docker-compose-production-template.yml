@@ -1,9 +1,10 @@
 version: "3.6"
 services:
-  # Backend Django
   backend: &backend
     user: "1000:10000"
-    image: linea/tno:backend_11tech_089d4cb
+    image: linea/tno:backend_d212e5b
+    #image: linea/tno:backend_783abb4
+    #image: linea/tno:backend_11tech_6ae6899
     command: /start.sh
     volumes:
       # Arquivo de Variaveis de ambiente
@@ -31,6 +32,12 @@ services:
     <<: *backend
     command: /start_beat.sh
 
+  celery_flower: &celery_flower
+    <<: *backend
+    command: /start_flower.sh
+    depends_on:
+      - backend
+
   # Esta aberto na rede para que os pipelines possam conectar neste servico.
   rabbit:
     image: rabbitmq:3-management
@@ -55,7 +62,9 @@ services:
 
   # Frontend React/Servidor Web NGINX
   frontend:
-    image: linea/tno:frontend_11tech_089d4cb
+    image: linea/tno:frontend_d212e5b
+    #image: linea/tno:frontend_783abb4
+    #image: linea/tno:frontend_11tech_6ae6899
     ports:
       - 8060:8080
     volumes:
@@ -64,38 +73,35 @@ services:
       - ./data:/var/www/data
     depends_on:
       - backend
-      - jupyter
-      - sora            
+      - rabbit
+      - celery_flower
 
-  sora:
-    image: mozaru/carto-sora
-    user: "1000:10000"
-    environment:
-      INPUT_PATH: "/media/input"
-      OUTPUT_PATH: "/media/output"
-      CACHE_PATH: "/media/output"
-      PORT: 8000
+  pipelines:
+    user: "31670:15010"
+    group_add:
+        - "900"
+    image: linea/tno:pipelines_f2c9b54
+    restart: always
+    command: /app/daemon.sh
+    network_mode: "host"
     volumes:
-      - ./data/sora/input:/media/input
-      - ./data/sora/output:/media/output
-    command: python3.7 /opt/server/main.py
+      - /lustre/t1/scratch/users/app.tno/.ssh/:/home/apptno/.ssh
+      - /lustre/t1/scratch/users/app.tno/tno_testing/outputs/runinfo/:/app/runinfo
+      - /lustre/t1/scratch/users/app.tno/tno_testing/:/lustre/t1/scratch/users/app.tno/tno_testing
+    environment:
+      - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@desdb4.linea.gov.br:5432/prod_gavo
+      - DB_URI_ADMIN=postgresql+psycopg2://tnouseradmindev:TnoDev405060@desdb4.linea.gov.br:5432/tnodbdev
+      - USER=apptno
+      - PARSL_ENV=linea
+      - PREFIX_ENV=testing
+      - PIPELINE_PREDIC_OCC=/lustre/t1/scratch/users/app.tno/tno_testing/predict_occ
+      - PIPELINE_PATH=/lustre/t1/scratch/users/app.tno/tno_testing/predict_occ/pipeline
+      - PREDICT_OUTPUTS=/lustre/t1/scratch/users/app.tno/tno_testing/outputs/predict_occ
+      - SLURM_REMOTE_DIR=/lustre/t1/scratch/users/app.tno/tno_testing/configs
+      - PIPE_BIN=/lustre/t1/scratch/users/app.tno/tno_testing/bin
+      - CONDA_ENVS=/lustre/t1/scratch/users/app.tno/tno_testing/miniconda/envs
+      - SSHKEY=/home/apptno/.ssh/id_rsa
 
-  # #Jupyter Notebook for Science Verification (access database and files)
-  # jupyter:
-  #   image: jupyter/scipy-notebook:latest
-  #   command: "start-notebook.sh"
-  #   user: "1000:10000"
-  #   environment:
-  #     NB_USER: docker_worker
-  #     CHOWN_HOME: 'yes'
-  #     CHOWN_HOME_OPTS: -R
-  #     JUPYTER_ENABLE_LAB: 'yes'
-  #     PASSWORD: "password"
-  #   volumes:
-  #     - ./jupyter_data:/home/jovyan/work
-  #     - ./jupyter_server_config.py:/home/jovyan/.jupyter/jupyter_server_config.py:ro
-  #   ports:
-  #     - 8888:8888      
 volumes:
   rabbitmq-data:
   rabbitmq_portal-data:

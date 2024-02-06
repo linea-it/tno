@@ -12,9 +12,11 @@ then
     setup elimina 20240101+0
     setup praia_occ_star_search_12 20240101+0
     source ${CONDAPATH}/activate
+
+    ulimit -s 100000
+    ulimit -u 100000
 fi
 
 conda activate py3
 
-ulimit -s 100000
-ulimit -u 100000
+
