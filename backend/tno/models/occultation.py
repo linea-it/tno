@@ -32,7 +32,7 @@ class Occultation(models.Model):
     principal_designation = models.CharField(
         max_length=35,
         verbose_name="Principal Designation",
-        help_text="",
+        help_text="Principal designation assigned by the International Astronomical Union (IAU)",
         default=None,
         null=True,
         blank=True,
@@ -49,8 +49,8 @@ class Occultation(models.Model):
     # TODO: Renomear este campo, Impacto grande.
     # 'skybot_dynbaseclass', 
     base_dynclass = models.CharField(
-        verbose_name="Base Object classification",
-        help_text="(ucd=“meta.code.class”) Base Object class (TNO, Centaur, Trojan, etc.).",
+        verbose_name="Object's base dynamical classification as defined by Skybot",
+        help_text="(ucd=“meta.code.class”) Object's base dynamical classification as defined by Skybot (KBO, Centaur, Trojan, MB, etc.).",
         max_length=24,
         default=None,
         null=True,
@@ -60,8 +60,8 @@ class Occultation(models.Model):
     # TODO: Renomear este campo, Impacto grande.
     # 'skybot_dynsubclass'
     dynclass = models.CharField(
-        verbose_name="Object classification",
-        help_text="(ucd=“meta.code.class;src.class”) Object class (TNO, Centaur, Trojan, etc.).",
+        verbose_name="Object's dynamical subclass as defined by Skybot",
+        help_text="(ucd=“meta.code.class;src.class”) Object's dynamical subclass as defined by Skybot (KBO>Resonant>12:5, MB>Inner, etc.).",
         max_length=24,
         default=None,
         null=True,
@@ -70,8 +70,8 @@ class Occultation(models.Model):
 
     astorb_dynbaseclass = models.CharField(
         max_length=35,
-        verbose_name="Astorb Dynbaseclass",
-        help_text="",
+        verbose_name="Object's base dynamical classification as defined by AstOrb",
+        help_text="Object's base dynamical classification as defined by AstOrb (Lowell Observatory)",
         db_index=True,
         null=True,
         blank=True,
@@ -80,8 +80,8 @@ class Occultation(models.Model):
 
     astorb_dynsubclass = models.CharField(
         max_length=35,
-        verbose_name="Astorb Dynsubclass",
-        help_text="",
+        verbose_name="Object's dynamical subclass as defined by AstOrb",
+        help_text="Object's dynamical subclass as defined by AstOrb (Lowell Observatory)",
         db_index=True,
         null=True,
         blank=True,
@@ -100,6 +100,7 @@ class Occultation(models.Model):
         max_length=20,
         null=False,
         blank=False,
+        help="Star candidate right ascension (hh:mm:ss)",
     )
 
     dec_star_candidate = models.CharField(
@@ -107,6 +108,7 @@ class Occultation(models.Model):
         max_length=20,
         null=False,
         blank=False,
+        help="Star candidate declination (dd:mm:ss)",
     )
 
     ra_target = models.CharField(
@@ -114,6 +116,7 @@ class Occultation(models.Model):
         max_length=20,
         null=False,
         blank=False,
+        help="Target's right ascension (hh:mm:ss)",
     )
 
     dec_target = models.CharField(
@@ -121,6 +124,7 @@ class Occultation(models.Model):
         max_length=20,
         null=False,
         blank=False,
+        help="Target's declination (dd:mm:ss)",
     )
 
     closest_approach = models.FloatField(
@@ -128,7 +132,7 @@ class Occultation(models.Model):
         null=False,
         blank=False,
         default=0,
-        help_text="geocentric closest approach, in arcsec",
+        help_text="Geocentric closest approach (arcsec)",
     )
 
     position_angle = models.FloatField(
@@ -136,7 +140,7 @@ class Occultation(models.Model):
         null=False,
         blank=False,
         default=0,
-        help_text="Planet position angle wrt to star at C/A, in deg",
+        help_text="Planet position angle with respect to star at C/A (degrees)",
     )
 
     velocity = models.FloatField(
@@ -144,7 +148,7 @@ class Occultation(models.Model):
         null=False,
         blank=False,
         default=0,
-        help_text="velocity in plane of sky, in km/sec, positive= prograde, negative= retrograde",
+        help_text="Velocity in plane of sky (km/s), positive= prograde, negative= retrograde",
     )
 
     delta = models.FloatField(
@@ -156,35 +160,35 @@ class Occultation(models.Model):
     )
 
     g_star = models.FloatField(
-        verbose_name="G*",
+        verbose_name="Gaia g magnitude",
         null=False,
         blank=False,
         default=0,
-        help_text="G*, J*, H*, K* are normalized magnitudes to a common",
+        help_text="Gaia g magnitude",
     )
 
     j_star = models.FloatField(
-        verbose_name="J*",
+        verbose_name="2MASS J magnitude",
         null=True,
         blank=True,
         default=None,
-        help_text="G*, J*, H*, K* are normalized magnitudes to a common",
+        help_text="2MASS J magnitude",
     )
 
     h_star = models.FloatField(
-        verbose_name="H*",
+        verbose_name="2MASS H magnitude",
         null=True,
         blank=True,
         default=None,
-        help_text="G*, J*, H*, K* are normalized magnitudes to a common",
+        help_text="2MASS H magnitude",
     )
 
     k_star = models.FloatField(
-        verbose_name="K*",
+        verbose_name="2MASS K magnitude",
         null=True,
         blank=True,
         default=None,
-        help_text="G*, J*, H*, K* are normalized magnitudes to a common",
+        help_text="2MASS K magnitude",
     )
 
     long = models.FloatField(
@@ -225,7 +229,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         default=None,
-        help_text="proper motion applied? (ok, no)",
+        help_text="Is proper motion applied? (ok, no)",
         choices=(("ok", "ok"), ("no", "no")),
     )
 
@@ -235,7 +239,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         default=None,
-        help_text="only Gaia DR1 stars are used",
+        help_text="Only Gaia DR1 stars are used",
     )
 
     multiplicity_flag = models.CharField(
@@ -277,7 +281,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         default=0,
-        help_text="star proper motion (mas/yr); (0 when not provided by Gaia DR1)",
+        help_text="Star proper motion in right ascension (mas/yr); (0 when not provided by Gaia DR1)",
     )
 
     pmdec = models.FloatField(
@@ -285,31 +289,31 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         default=0,
-        help_text="star proper motion (mas/yr); (0 when not provided by Gaia DR1)",
+        help_text="Star's proper motion in declination (mas/yr); (0 when not provided by Gaia DR1)",
     )
 
     ra_star_deg = models.FloatField(
-        verbose_name="RA Star (deg)",
-        help_text="Right ascension of star in degrees",
+        verbose_name="RA Star deg",
+        help_text="Star's right ascension (degrees)",
         null=True,
         blank=True,
     )
     dec_star_deg = models.FloatField(
-        verbose_name="Dec Star (deg)",
-        help_text="Declination of star in degrees",
+        verbose_name="Dec Star deg",
+        help_text="Star's declination (degrees)",
         null=True,
         blank=True,
     )
     ra_target_deg = models.FloatField(
-        verbose_name="RA Target (deg)",
-        help_text="Right ascension of target in degrees",
+        verbose_name="RA Target deg",
+        help_text="Target's right ascension (degrees)",
         null=True,
         blank=True,
     )
 
     dec_target_deg = models.FloatField(
-        verbose_name="Dec Target (deg)",
-        help_text="Declination of target in degrees",
+        verbose_name="Dec Target deg",
+        help_text="Target's declination (degrees)",
         null=True,
         blank=True,
     )
@@ -317,6 +321,14 @@ class Occultation(models.Model):
     #------------------------------------------------------
     # Colunas que aparentemente não esto sendo preenchidas
     #------------------------------------------------------
+    
+    # remover quando possivel dependencia e colunas:
+    #    [g_mag_vel_corrected, rp_mag_vel_corrected, bp_mag_vel_corrected, 
+    #     j_mag_vel_corrected, h_mag_vel_corrected, k_mag_vel_corrected]
+    # ou adaptar esses valores somente para TNOs, pois não podem ser usados com 
+    # asteroides proximos (trata-se de uma determinacao empirica para objetos a
+    # distancia media equivalente ao planeta anao Plutao)
+
     g_mag_vel_corrected = models.FloatField(
         verbose_name="g_mag_vel_corrected",
         null=True,
@@ -346,7 +358,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         default=None,
-        help_text="Magnitude drop",
+        help_text="Expected star's magnitude drop",
     )
 
     instant_uncertainty = models.FloatField(
@@ -354,7 +366,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         default=None,
-        help_text="Instant uncertainty",
+        help_text="Instant of the closest approach uncertainty (seconds)",
     )
 
     ra_star_with_pm = models.CharField(
@@ -363,7 +375,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         verbose_name="ra_star_with_pm",
-        help_text="ra_star_with_pm",
+        help_text="Star's right ascension corrected for proper motion",
     )
 
     dec_star_with_pm = models.CharField(
@@ -372,7 +384,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         verbose_name="dec_star_with_pm",
-        help_text="dec_star_with_pm",
+        help_text="Star's declination corrected for proper motion",
     )
 
     ra_star_to_date = models.CharField(
@@ -381,7 +393,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         verbose_name="ra_star_to_date",
-        help_text="ra_star_to_date",
+        help_text="Star's right ascension reduced to date",
     )
 
     dec_star_to_date = models.CharField(
@@ -390,7 +402,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         verbose_name="dec_star_to_date",
-        help_text="dec_star_to_date",
+        help_text="Star's declination reduced to date",
     )
 
     aparent_diameter = models.FloatField(
@@ -398,7 +410,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         default=None,
-        help_text="Aparent diameter em graus.",
+        help_text="Apparent diameter of the Earth as seen from the Asteroid (degrees)",
     )
 
     ra_target_apparent = models.CharField(
@@ -406,6 +418,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         verbose_name="ra_target_apparent",
+        help_text="Target's apparent right ascension",
     )
 
     dec_target_apparent = models.CharField(
@@ -413,6 +426,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         verbose_name="dec_target_apparent",
+        help_text="Target's apparent declination",
     )
 
     e_ra_target = models.FloatField(
@@ -420,7 +434,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         default=None,
-        help_text="E_ra_target",
+        help_text="Error in target's right ascension",
     )
 
     e_dec_target = models.FloatField(
@@ -428,7 +442,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         default=None,
-        help_text="E_dec_target",
+        help_text="Error in target's declination",
     )
 
     apparent_magnitude = models.CharField(
@@ -437,7 +451,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         verbose_name="Apparent magnitude",
-        help_text="Apparent magnitude",
+        help_text="Asteroids' apparent magnitude at the date (mag)",
     )
 
     ephemeris_version = models.CharField(
@@ -478,7 +492,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         default=None,
-        help_text="Perihelion",
+        help_text="Perihelion (AU)",
     )
 
     aphelion = models.FloatField(
@@ -486,7 +500,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         default=None,
-        help_text="Aphelion",
+        help_text="Aphelion (AU)",
     )
     #------------------------------------------------------
     # FIM Colunas que aparentemente não esto sendo preenchidas
@@ -496,91 +510,91 @@ class Occultation(models.Model):
     # Occultation Path Fields.
     #-------------------------------------------------
     have_path_coeff = models.BooleanField(
-        verbose_name="Have Path Coeff",
+        verbose_name="Has path coefficients",
         null=True,
         blank=True,
         default=False,
-        help_text="Have Path Coeff",
+        help_text="Has path coefficients, i.e., the occultation passes over the earth;",
     )
 
     occ_path_min_longitude = models.FloatField(
-        verbose_name="Min Logintude",
+        verbose_name="Minimum longitude",
         null=True,
         blank=True,
         default=None,
-        help_text="Min Logintude Occultation Path",
+        help_text="Minimum longitude the occultation path reaches. -90 +90",
     )
 
     occ_path_max_longitude = models.FloatField(
-        verbose_name="Max Logintude",
+        verbose_name="Maximum longitude",
         null=True,
         blank=True,
         default=None,
-        help_text="Max Logintude Occultation Path",
+        help_text="Maximum longitude the occultation path reaches. -90 +90",
     )
 
     occ_path_min_latitude = models.FloatField(
-        verbose_name="Min Latitude",
+        verbose_name="Minimum latitude",
         null=True,
         blank=True,
         default=None,
-        help_text="Min Latitude Occultation Path. -180 +180",
+        help_text="Minimum latitude the occultation path reaches. -180 +180",
     )
 
     occ_path_max_latitude = models.FloatField(
-        verbose_name="Max Latitude",
+        verbose_name="Maximum latitude",
         null=True,
         blank=True,
         default=None,
-        help_text="Max Latitude Occultation Path. -180 +180",
+        help_text="Maximum latitude the occultation path reaches. -180 +180",
     )   
 
     occ_path_is_nightside = models.BooleanField(
-        verbose_name="Occultation Path Nightside",
+        verbose_name="Occultation path nightside",
         null=True,
         blank=True,
         default=None,
-        help_text="True if any part of the path occurs at night",        
+        help_text="True if any part of the path crosses the nightside of the Earth",        
     )
 
     occ_path_coeff = models.JSONField(
-        verbose_name="Occultation Path Coeff",
+        verbose_name="Occultation path coefficients",
         null=True,
         blank=True,
         default=dict,
-        help_text="Occultation Path Coeff",
+        help_text="Occultation path coefficients of the polynomial fit",
     )
 
     #-------------------------------------------------
     # MPC asteroid data used for prediction
     #-------------------------------------------------
     h = models.FloatField(
-        verbose_name = "h",
-        help_text="",
+        verbose_name = "H",
+        help_text="Absolute magnitude",
         null=True,
         blank=True,
         default=None,        
     )
 
     g = models.FloatField(
-        verbose_name = "g",
-        help_text="",
+        verbose_name = "G",
+        help_text="Phase slope parameter",
         null=True,
         blank=True,
         default=None,        
     )
     
     epoch = models.FloatField(
-        verbose_name = "epoch",
-        help_text="",
+        verbose_name = "Epoch of the orbit",
+        help_text="Epoch of the orbit (Julian Date)",
         null=True,
         blank=True,
         default=None,        
     )
 
     semimajor_axis = models.FloatField(
-        verbose_name = "Semimajor Axis",
-        help_text="",
+        verbose_name = "Semimajor axis",
+        help_text="Semimajor axis (AU)",
         null=True,
         blank=True,
         default=None,        
@@ -588,7 +602,7 @@ class Occultation(models.Model):
 
     excentricity = models.FloatField(
         verbose_name = "Excentricity",
-        help_text="",
+        help_text="Excentricity",
         null=True,
         blank=True,
         default=None,        
@@ -596,23 +610,23 @@ class Occultation(models.Model):
 
     inclination = models.FloatField(
         verbose_name = "Inclination",
-        help_text="",
+        help_text="Inclination (degres)",
         null=True,
         blank=True,
         default=None,        
     )
 
     long_asc_node = models.FloatField(
-        verbose_name = "Long asc node",
-        help_text="",
+        verbose_name = "Longitude of the ascending node",
+        help_text="Longitude of the ascending node, J2000.0 (degrees)",
         null=True,
         blank=True,
         default=None,        
     )
 
     arg_perihelion = models.FloatField(
-        verbose_name = "Arg perihelion",
-        help_text="",
+        verbose_name = "Argument of perihelion",
+        help_text="Argument of perihelion, J2000.0 (degrees)",
         null=True,
         blank=True,
         default=None,        
@@ -620,7 +634,7 @@ class Occultation(models.Model):
 
     mean_anomaly = models.FloatField(
         verbose_name = "Mean anomaly",
-        help_text="",
+        help_text="Mean anomaly at the epoch (degrees)",
         null=True,
         blank=True,
         default=None,        
@@ -628,39 +642,39 @@ class Occultation(models.Model):
 
     mean_daily_motion = models.FloatField(
         verbose_name = "Mean daily motion",
-        help_text="",
+        help_text="Mean daily motion (degrees/day)",
         null=True,
         blank=True,
         default=None,        
     )
 
     perihelion_dist = models.FloatField(
-        verbose_name = "Perihelion dist",
-        help_text="",
+        verbose_name = "Perihelion distance",
+        help_text="Perihelion distance (AU)",
         null=True,
         blank=True,
         default=None,        
     )
 
     aphelion_dist = models.FloatField(
-        verbose_name = "Aphelion dist",
-        help_text="",
+        verbose_name = "Aphelion distance",
+        help_text="Aphelion distance (AU)",
         null=True,
         blank=True,
         default=None,        
     )
 
     rms = models.FloatField(
-        verbose_name = "rms",
-        help_text="",
+        verbose_name = "r.m.s. residual",
+        help_text="r.m.s. residual of the fit (arcsec)",
         null=True,
         blank=True,
         default=None,        
     )
 
     last_obs_included = models.DateField(
-        verbose_name = "Last obs included",
-        help_text="",
+        verbose_name = "Date of last observation included",
+        help_text="Date of last observation included in orbit solution (YYYY-MM-DD format)",
         null=True,
         blank=True,
         default=None,        
@@ -675,8 +689,8 @@ class Occultation(models.Model):
     )
 
     mpc_critical_list = models.BooleanField(
-        verbose_name = "MPC critical list",
-        help_text="",
+        verbose_name = "mpc_critical_list",
+        help_text="Critical objects numbered on the MPC list are those whose orbits require improvement",
         null=True,
         blank=True,
         default=False
@@ -684,7 +698,7 @@ class Occultation(models.Model):
 
     albedo = models.FloatField(
         verbose_name = "albedo",
-        help_text="",
+        help_text="Albedo",
         null=True,
         blank=True,
         default=None, 
@@ -692,7 +706,7 @@ class Occultation(models.Model):
 
     albedo_err_min = models.FloatField(
         verbose_name = "albedo_err_min",
-        help_text="",
+        help_text="Albedo lower error",
         null=True,
         blank=True,
         default=None, 
@@ -700,7 +714,7 @@ class Occultation(models.Model):
 
     albedo_err_max = models.FloatField(
         verbose_name = "albedo_err_max",
-        help_text="",
+        help_text="Albedo upper error",
         null=True,
         blank=True,
         default=None, 
@@ -708,7 +722,7 @@ class Occultation(models.Model):
 
     density = models.FloatField(
         verbose_name = "density",
-        help_text="",
+        help_text="Density (kg/m^3)",
         null=True,
         blank=True,
         default=None, 
@@ -716,7 +730,7 @@ class Occultation(models.Model):
 
     density_err_min = models.FloatField(
         verbose_name = "density_err_min",
-        help_text="",
+        help_text="Density lower error (kg/m^3)",
         null=True,
         blank=True,
         default=None, 
@@ -724,7 +738,7 @@ class Occultation(models.Model):
 
     density_err_max = models.FloatField(
         verbose_name = "density_err_max",
-        help_text="",
+        help_text="Density upper error (kg/m^3)",
         null=True,
         blank=True,
         default=None, 
@@ -732,7 +746,7 @@ class Occultation(models.Model):
 
     diameter = models.FloatField(
         verbose_name = "diameter",
-        help_text="Diametro do asteroid em km.",
+        help_text="Diameter (km)",
         null=True,
         blank=True,
         default=None, 
@@ -740,7 +754,7 @@ class Occultation(models.Model):
 
     diameter_err_min = models.FloatField(
         verbose_name = "diameter_err_min",
-        help_text="",
+        help_text="Diameter lower error (km)",
         null=True,
         blank=True,
         default=None, 
@@ -748,7 +762,7 @@ class Occultation(models.Model):
 
     diameter_err_max = models.FloatField(
         verbose_name = "diameter_err_max",
-        help_text="",
+        help_text="Diameter upper error (km)",
         null=True,
         blank=True,
         default=None, 
@@ -756,7 +770,7 @@ class Occultation(models.Model):
 
     mass = models.FloatField(
         verbose_name = "mass",
-        help_text="",
+        help_text="Mass (kg)",
         null=True,
         blank=True,
         default=None, 
@@ -764,7 +778,7 @@ class Occultation(models.Model):
 
     mass_err_min = models.FloatField(
         verbose_name = "mass_err_min",
-        help_text="",
+        help_text="Mass upper error (kg)",
         null=True,
         blank=True,
         default=None, 
@@ -772,7 +786,7 @@ class Occultation(models.Model):
     
     mass_err_max = models.FloatField(
         verbose_name = "mass_err_max",
-        help_text="",
+        help_text="Mass lower error (kg)",
         null=True,
         blank=True,
         default=None, 
@@ -791,7 +805,7 @@ class Occultation(models.Model):
 
     predict_step = models.IntegerField(
         verbose_name="Prediction Step",
-        help_text="Prediction Step",
+        help_text="Prediction step size (seconds)",
         null=True,
         blank=True,
         default=600,
