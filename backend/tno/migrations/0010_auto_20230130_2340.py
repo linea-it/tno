@@ -6,20 +6,20 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0009_auto_20230130_2311'),
+        ("tno", "0009_auto_20230130_2311"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='catalog',
-            name='columns',
+            model_name="catalog",
+            name="columns",
         ),
         migrations.RemoveField(
-            model_name='catalog',
-            name='rows',
+            model_name="catalog",
+            name="rows",
         ),
         migrations.RemoveField(
-            model_name='catalog',
-            name='size',
+            model_name="catalog",
+            name="size",
         ),
     ]

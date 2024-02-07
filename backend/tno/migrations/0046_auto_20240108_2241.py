@@ -6,23 +6,41 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0045_auto_20240108_1511'),
+        ("tno", "0045_auto_20240108_1511"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='occultation',
-            name='h',
-            field=models.FloatField(blank=True, default=None, help_text='G*, J*, H*, K* are normalized magnitudes to a common', null=True, verbose_name='H*'),
+            model_name="occultation",
+            name="h",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="G*, J*, H*, K* are normalized magnitudes to a common",
+                null=True,
+                verbose_name="H*",
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='j',
-            field=models.FloatField(blank=True, default=None, help_text='G*, J*, H*, K* are normalized magnitudes to a common', null=True, verbose_name='J*'),
+            model_name="occultation",
+            name="j",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="G*, J*, H*, K* are normalized magnitudes to a common",
+                null=True,
+                verbose_name="J*",
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='k',
-            field=models.FloatField(blank=True, default=None, help_text='G*, J*, H*, K* are normalized magnitudes to a common', null=True, verbose_name='K*'),
+            model_name="occultation",
+            name="k",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="G*, J*, H*, K* are normalized magnitudes to a common",
+                null=True,
+                verbose_name="K*",
+            ),
         ),
     ]

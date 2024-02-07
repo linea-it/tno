@@ -6,13 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0050_auto_20240123_1941'),
+        ("tno", "0050_auto_20240123_1941"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='asteroid',
-            name='number',
-            field=models.PositiveBigIntegerField(blank=True, db_index=True, default=None, help_text='(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).', null=True, verbose_name='Number'),
+            model_name="asteroid",
+            name="number",
+            field=models.PositiveBigIntegerField(
+                blank=True,
+                db_index=True,
+                default=None,
+                help_text="(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).",
+                null=True,
+                verbose_name="Number",
+            ),
         ),
     ]

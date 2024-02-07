@@ -59,7 +59,7 @@
 #             "count_asteroids": 0,
 #             "count_ccds": 0,
 #             "count_observations": 0,
-#             "time_profile": list(),
+#             "time_profile": [],
 #             "traceback": None,
 #             "error": None,
 #         }
@@ -67,7 +67,7 @@
 
 #     job_path = None
 
-#     time_profile = list()
+#     time_profile = []
 
 #     asteroids = dict()
 
@@ -159,13 +159,13 @@
 #     #                 'bsp_planetary': self.BSP_PLANETARY,
 #     #                 'leap_second': self.LEAP_SECOND,
 #     #                 'bsp_jpl': None,
-#     #                 'ccds': list(),
-#     #                 'observations': list(),
-#     #                 'time_profile': list(),
+#     #                 'ccds': [],
+#     #                 'observations': [],
+#     #                 'time_profile': [],
 #     #                 'exec_time': 0,
 #     #             })
 
-#     #         parsl_tasks = list()
+#     #         parsl_tasks = []
 
 #     #         # Estas etapas não são paralelizadas!
 #     #         for asteroid_name in self.asteroids:
@@ -236,15 +236,15 @@
 #     #         # self.log.info(
 #     #         #     "Submitting the tasks to Parsl. The tasks will now run in parallel.")
 
-#     #         # futures = list()
+#     #         # futures = []
 #     #         # for task in parsl_tasks:
 #     #         #     futures.append(proccess_ccd(
 #     #         #         task['name'], task['ccd'], task['path']))
 
 #     #         # # Monitoramento parcial das tasks
-#     #         # is_done = list()
+#     #         # is_done = []
 #     #         # while is_done.count(True) != len(futures):
-#     #         #     is_done = list()
+#     #         #     is_done = []
 #     #         #     for f in futures:
 #     #         #         is_done.append(f.done())
 #     #         #     self.log.debug("%s/%s" % (is_done.count(True), len(futures)))
@@ -256,7 +256,7 @@
 
 #     #         # self.log.info("Generating list of all observations.")
 #     #         # # Lista com TODAS as posições observadas independente do asteroid e ccd.
-#     #         # observed_postions = list()
+#     #         # observed_postions = []
 
 #     #         # # Espera o Resultado de todos os jobs.
 #     #         # for task in futures:
@@ -311,7 +311,7 @@
 #     #         #     exec_time = 0
 #     #         #     # TODO: Criar uma função que calcule o tempo de execução individual por asteroid
 #     #         #     # deve pegar a menor start e a maior end da etapa match_position e fazer a diferença.
-#     #         #     # a_start_match = list()
+#     #         #     # a_start_match = []
 #     #         #     # for tp in asteroid['time_profile']:
 #     #         #     #     exec_time += tp['exec_time']
 
@@ -633,14 +633,14 @@
 
 #     #         return asteroid
 
-#     # def retrive_asteroids(self, dynclass=None, asteroid_name=None, asteroids=list()):
+#     # def retrive_asteroids(self, dynclass=None, asteroid_name=None, asteroids=[]):
 #     #     self.log.info("Retriving Asteroids started")
 
 #     #     t0 = datetime.now(timezone.utc)
 #     #     self.result['retrieve_asteroids']['start'] = t0.isoformat()
 
 #     #     try:
-#     #         records = list()
+#     #         records = []
 
 #     #         if dynclass is not None:
 #     #             self.log.info(
@@ -913,7 +913,7 @@
 #                 "observatory_location": self.OBSERVATORY_LOCATION,
 #                 "match_radius": self.MATCH_RADIUS,
 #                 "expected_asteroids": 0,
-#                 "time_profile": list(),
+#                 "time_profile": [],
 #                 "traceback": None,
 #                 "error": None,
 #             }

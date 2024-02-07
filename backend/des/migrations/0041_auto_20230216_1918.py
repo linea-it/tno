@@ -8,36 +8,50 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0012_alter_catalog_database'),
-        ('des', '0040_orbittracejob'),
+        ("tno", "0012_alter_catalog_database"),
+        ("des", "0040_orbittracejob"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='orbittracejob',
-            name='path',
+            model_name="orbittracejob",
+            name="path",
         ),
         migrations.AddField(
-            model_name='orbittracejob',
-            name='bsp_planetary',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='tno.bspplanetary', verbose_name='Planetary Ephemeris'),
+            model_name="orbittracejob",
+            name="bsp_planetary",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="tno.bspplanetary",
+                verbose_name="Planetary Ephemeris",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='orbittracejob',
-            name='leap_seconds',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='tno.leapsecond', verbose_name='Leap Second'),
+            model_name="orbittracejob",
+            name="leap_seconds",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="tno.leapsecond",
+                verbose_name="Leap Second",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='orbittracejob',
-            name='submit_time',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now, verbose_name='Submit Time'),
+            model_name="orbittracejob",
+            name="submit_time",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=django.utils.timezone.now,
+                verbose_name="Submit Time",
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='orbittracejob',
-            name='start',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Start'),
+            model_name="orbittracejob",
+            name="start",
+            field=models.DateTimeField(blank=True, null=True, verbose_name="Start"),
         ),
     ]

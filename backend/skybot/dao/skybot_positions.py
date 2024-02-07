@@ -41,7 +41,7 @@ class SkybotPositionsDao(DBBase):
             ]
         )
 
-        results = list()
+        results = []
         for c in cls:
             stm = select([func.count(self.tbl.c.name).label("count")]).where(
                 and_(self.tbl.c.dynclass.ilike(c))

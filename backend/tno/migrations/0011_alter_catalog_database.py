@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0010_auto_20230130_2340'),
+        ("tno", "0010_auto_20230130_2340"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='catalog',
-            name='database',
-            field=models.CharField(default='catalog', help_text='Database identifier in settings', max_length=128, verbose_name='Database'),
+            model_name="catalog",
+            name="database",
+            field=models.CharField(
+                default="catalog",
+                help_text="Database identifier in settings",
+                max_length=128,
+                verbose_name="Database",
+            ),
         ),
     ]

@@ -586,7 +586,7 @@ class AstrometryPipeline:
         else:
             catalog_name = "gaia1"
 
-        condor_jobs = list()
+        condor_jobs = []
 
         # Condor precisa do path absoluto para escrever os arquivos de log.
         absolute_archive_path = os.getenv("ARCHIVE_DIR", None)

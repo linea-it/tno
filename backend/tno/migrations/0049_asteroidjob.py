@@ -6,24 +6,90 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0048_remove_predictionjobresult_asteroid'),
+        ("tno", "0048_remove_predictionjobresult_asteroid"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AsteroidJob',
+            name="AsteroidJob",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.IntegerField(choices=[(1, 'Idle'), (2, 'Running'), (3, 'Completed'), (4, 'Failed'), (5, 'Aborted'), (6, 'Warning'), (7, 'Aborting')], default=1, verbose_name='Status')),
-                ('submit_time', models.DateTimeField(auto_now_add=True, verbose_name='Submit Time')),
-                ('start', models.DateTimeField(blank=True, null=True, verbose_name='Start')),
-                ('end', models.DateTimeField(blank=True, null=True, verbose_name='Finish')),
-                ('exec_time', models.DurationField(blank=True, null=True, verbose_name='Execution Time')),
-                ('asteroids_before', models.IntegerField(default=0, help_text='Total asteroids antes da execução', verbose_name='Asteroids Before')),
-                ('asteroids_after', models.IntegerField(default=0, help_text='Total asteroids após a execução', verbose_name='Asteroids After')),
-                ('path', models.CharField(blank=True, help_text='Path to the directory where the job data is located.', max_length=2048, null=True, verbose_name='Path')),
-                ('error', models.TextField(blank=True, null=True, verbose_name='Error')),
-                ('traceback', models.TextField(blank=True, null=True, verbose_name='Traceback')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.IntegerField(
+                        choices=[
+                            (1, "Idle"),
+                            (2, "Running"),
+                            (3, "Completed"),
+                            (4, "Failed"),
+                            (5, "Aborted"),
+                            (6, "Warning"),
+                            (7, "Aborting"),
+                        ],
+                        default=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "submit_time",
+                    models.DateTimeField(auto_now_add=True, verbose_name="Submit Time"),
+                ),
+                (
+                    "start",
+                    models.DateTimeField(blank=True, null=True, verbose_name="Start"),
+                ),
+                (
+                    "end",
+                    models.DateTimeField(blank=True, null=True, verbose_name="Finish"),
+                ),
+                (
+                    "exec_time",
+                    models.DurationField(
+                        blank=True, null=True, verbose_name="Execution Time"
+                    ),
+                ),
+                (
+                    "asteroids_before",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Total asteroids antes da execução",
+                        verbose_name="Asteroids Before",
+                    ),
+                ),
+                (
+                    "asteroids_after",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Total asteroids após a execução",
+                        verbose_name="Asteroids After",
+                    ),
+                ),
+                (
+                    "path",
+                    models.CharField(
+                        blank=True,
+                        help_text="Path to the directory where the job data is located.",
+                        max_length=2048,
+                        null=True,
+                        verbose_name="Path",
+                    ),
+                ),
+                (
+                    "error",
+                    models.TextField(blank=True, null=True, verbose_name="Error"),
+                ),
+                (
+                    "traceback",
+                    models.TextField(blank=True, null=True, verbose_name="Traceback"),
+                ),
             ],
         ),
     ]

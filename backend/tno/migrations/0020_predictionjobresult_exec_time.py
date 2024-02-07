@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0019_auto_20230314_1409'),
+        ("tno", "0019_auto_20230314_1409"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='predictionjobresult',
-            name='exec_time',
-            field=models.DurationField(blank=True, null=True, verbose_name='exec_time'),
+            model_name="predictionjobresult",
+            name="exec_time",
+            field=models.DurationField(blank=True, null=True, verbose_name="exec_time"),
         ),
     ]

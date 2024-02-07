@@ -6,18 +6,18 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0015_predictionjob_force_refresh_inputs'),
+        ("tno", "0015_predictionjob_force_refresh_inputs"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='predictionjob',
-            old_name='force_refresh_inputs',
-            new_name='force_refresh_input',
+            model_name="predictionjob",
+            old_name="force_refresh_inputs",
+            new_name="force_refresh_input",
         ),
         migrations.RenameField(
-            model_name='predictionjob',
-            old_name='inputs_days_to_expire',
-            new_name='input_days_to_expire',
+            model_name="predictionjob",
+            old_name="inputs_days_to_expire",
+            new_name="input_days_to_expire",
         ),
     ]

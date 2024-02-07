@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0052_remove_asteroidjob_submit_time'),
+        ("tno", "0052_remove_asteroidjob_submit_time"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='asteroidjob',
-            name='asteroids_after',
-            field=models.IntegerField(blank=True, default=None, help_text='Total asteroids após a execução', null=True, verbose_name='Asteroids After'),
+            model_name="asteroidjob",
+            name="asteroids_after",
+            field=models.IntegerField(
+                blank=True,
+                default=None,
+                help_text="Total asteroids após a execução",
+                null=True,
+                verbose_name="Asteroids After",
+            ),
         ),
     ]

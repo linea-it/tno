@@ -6,43 +6,85 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0036_auto_20230726_1428'),
+        ("tno", "0036_auto_20230726_1428"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='occultation',
-            name='aphelion',
-            field=models.FloatField(blank=True, default=None, help_text='Aphelion', null=True, verbose_name='Aphelion'),
+            model_name="occultation",
+            name="aphelion",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="Aphelion",
+                null=True,
+                verbose_name="Aphelion",
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='e_dec_target',
-            field=models.FloatField(blank=True, default=None, help_text='E_dec_target', null=True, verbose_name='E_dec_target'),
+            model_name="occultation",
+            name="e_dec_target",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="E_dec_target",
+                null=True,
+                verbose_name="E_dec_target",
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='e_ra_target',
-            field=models.FloatField(blank=True, default=None, help_text='E_ra_target', null=True, verbose_name='E_ra_target'),
+            model_name="occultation",
+            name="e_ra_target",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="E_ra_target",
+                null=True,
+                verbose_name="E_ra_target",
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='eccentricity',
-            field=models.FloatField(blank=True, default=None, help_text='Eccentricity', null=True, verbose_name='Eccentricity'),
+            model_name="occultation",
+            name="eccentricity",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="Eccentricity",
+                null=True,
+                verbose_name="Eccentricity",
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='inclination',
-            field=models.FloatField(blank=True, default=None, help_text='Inclination', null=True, verbose_name='Inclination'),
+            model_name="occultation",
+            name="inclination",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="Inclination",
+                null=True,
+                verbose_name="Inclination",
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='perihelion',
-            field=models.FloatField(blank=True, default=None, help_text='Perihelion', null=True, verbose_name='Perihelion'),
+            model_name="occultation",
+            name="perihelion",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="Perihelion",
+                null=True,
+                verbose_name="Perihelion",
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='semimajor_axis',
-            field=models.FloatField(blank=True, default=None, help_text='Semimajor axis', null=True, verbose_name='Semimajor axis'),
+            model_name="occultation",
+            name="semimajor_axis",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="Semimajor axis",
+                null=True,
+                verbose_name="Semimajor axis",
+            ),
         ),
     ]

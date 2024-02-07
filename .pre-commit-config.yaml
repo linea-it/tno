@@ -7,9 +7,10 @@ repos:
       - id: check-toml
       - id: check-xml
       - id: check-yaml
-      # - id: debug-statements
-      # - id: check-builtin-literals
-        # exclude: ^pipelines/
+      - id: debug-statements
+        exclude: ^pipelines/
+      - id: check-builtin-literals
+        exclude: ^(pipelines/|backend/old_apps/|orbit_trace/)
       - id: check-case-conflict
       - id: check-docstring-first
       - id: detect-private-key
@@ -17,4 +18,4 @@ repos:
     rev: 22.10.0
     hooks:
     -   id: black
-        exclude: ^pipelines/
+        exclude: ^(migrations/|pipelines/)

@@ -609,7 +609,7 @@ class SkybotOutput(DBBase):
             ]
         )
 
-        results = list()
+        results = []
         for c in cls:
             stm = select([func.count(self.tbl.c.name).label("count")]).where(
                 and_(self.tbl.c.dynclass.ilike(c))
@@ -704,7 +704,7 @@ class Pointing(DBBase):
     def counts_by_bands(self):
         bands = ["u", "g", "r", "i", "z", "Y"]
 
-        results = list()
+        results = []
         for band in bands:
             results.append(dict({"name": band, "band": self.count_by_band(band)}))
 
@@ -792,7 +792,7 @@ class Pointing(DBBase):
 
         exptimes = ["0, 100", "100, 200", "200, 300", "300, 400"]
 
-        results = list()
+        results = []
         for exptime in exptimes:
             start, end = exptime.split(",")
 

@@ -6,30 +6,42 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0063_observation_created_at'),
+        ("des", "0063_observation_created_at"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='orbittracejob',
-            name='condor_job_completed',
+            model_name="orbittracejob",
+            name="condor_job_completed",
         ),
         migrations.RemoveField(
-            model_name='orbittracejob',
-            name='condor_job_removed',
+            model_name="orbittracejob",
+            name="condor_job_removed",
         ),
         migrations.RemoveField(
-            model_name='orbittracejob',
-            name='condor_job_submited',
+            model_name="orbittracejob",
+            name="condor_job_submited",
         ),
         migrations.AddField(
-            model_name='orbittracejob',
-            name='avg_exec_time_asteroid',
-            field=models.FloatField(blank=True, default=0, help_text='average execution time per asteroid. (seconds)', null=True, verbose_name='Average Execution Time Asteroid'),
+            model_name="orbittracejob",
+            name="avg_exec_time_asteroid",
+            field=models.FloatField(
+                blank=True,
+                default=0,
+                help_text="average execution time per asteroid. (seconds)",
+                null=True,
+                verbose_name="Average Execution Time Asteroid",
+            ),
         ),
         migrations.AddField(
-            model_name='orbittracejob',
-            name='avg_exec_time_ccd',
-            field=models.FloatField(blank=True, default=0, help_text='average execution time per ccd. (seconds)', null=True, verbose_name='Average Execution Time CCD'),
+            model_name="orbittracejob",
+            name="avg_exec_time_ccd",
+            field=models.FloatField(
+                blank=True,
+                default=0,
+                help_text="average execution time per ccd. (seconds)",
+                null=True,
+                verbose_name="Average Execution Time CCD",
+            ),
         ),
     ]

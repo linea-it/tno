@@ -36,7 +36,7 @@ class Dao:
 
             queryset = con.execute(stm)
 
-            rows = list()
+            rows = []
             for row in queryset:
                 d = dict(collections.OrderedDict(row))
                 rows.append(d)

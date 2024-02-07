@@ -4,7 +4,7 @@ import csv
 class DownloadParameters:
     def read_input(self, input_file):
 
-        records = list()
+        records = []
         with open(input_file) as csvfile:
             reader = csv.DictReader(csvfile, delimiter=";")
             for row in reader:

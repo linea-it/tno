@@ -6,40 +6,40 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0027_alter_occultation_created_at'),
+        ("tno", "0027_alter_occultation_created_at"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='predictionjobresult',
-            name='bsp_jpl_tp_finish',
+            model_name="predictionjobresult",
+            name="bsp_jpl_tp_finish",
         ),
         migrations.RemoveField(
-            model_name='predictionjobresult',
-            name='bsp_jpl_tp_start',
+            model_name="predictionjobresult",
+            name="bsp_jpl_tp_start",
         ),
         migrations.RemoveField(
-            model_name='predictionjobresult',
-            name='des_obs_tp_finish',
+            model_name="predictionjobresult",
+            name="des_obs_tp_finish",
         ),
         migrations.RemoveField(
-            model_name='predictionjobresult',
-            name='des_obs_tp_start',
+            model_name="predictionjobresult",
+            name="des_obs_tp_start",
         ),
         migrations.RemoveField(
-            model_name='predictionjobresult',
-            name='obs_tp_finish',
+            model_name="predictionjobresult",
+            name="obs_tp_finish",
         ),
         migrations.RemoveField(
-            model_name='predictionjobresult',
-            name='obs_tp_start',
+            model_name="predictionjobresult",
+            name="obs_tp_start",
         ),
         migrations.RemoveField(
-            model_name='predictionjobresult',
-            name='orb_ele_tp_finish',
+            model_name="predictionjobresult",
+            name="orb_ele_tp_finish",
         ),
         migrations.RemoveField(
-            model_name='predictionjobresult',
-            name='orb_ele_tp_start',
+            model_name="predictionjobresult",
+            name="orb_ele_tp_start",
         ),
     ]

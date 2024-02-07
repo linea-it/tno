@@ -7,14 +7,18 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0041_auto_20230215_2328'),
+        ("des", "0041_auto_20230215_2328"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='skybotjob',
-            name='submit_time',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now, verbose_name='Submit Time'),
+            model_name="skybotjob",
+            name="submit_time",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=django.utils.timezone.now,
+                verbose_name="Submit Time",
+            ),
             preserve_default=False,
         ),
     ]

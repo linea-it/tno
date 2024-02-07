@@ -6,183 +6,274 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0049_asteroidjob'),
+        ("tno", "0049_asteroidjob"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='asteroid',
-            name='albedo',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='albedo'),
+            model_name="asteroid",
+            name="albedo",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="albedo"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='albedo_err_max',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='albedo_err_max'),
+            model_name="asteroid",
+            name="albedo_err_max",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="albedo_err_max"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='albedo_err_min',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='albedo_err_min'),
+            model_name="asteroid",
+            name="albedo_err_min",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="albedo_err_min"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='alias',
-            field=models.CharField(blank=True, default=None, max_length=35, null=True, verbose_name='Alias'),
+            model_name="asteroid",
+            name="alias",
+            field=models.CharField(
+                blank=True, default=None, max_length=35, null=True, verbose_name="Alias"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='aphelion_dist',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Aphelion dist'),
+            model_name="asteroid",
+            name="aphelion_dist",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Aphelion dist"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='arg_perihelion',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Arg perihelion'),
+            model_name="asteroid",
+            name="arg_perihelion",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Arg perihelion"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='astorb_dynbaseclass',
-            field=models.CharField(blank=True, db_index=True, default=None, max_length=35, null=True, verbose_name='Astorb Dynbaseclass'),
+            model_name="asteroid",
+            name="astorb_dynbaseclass",
+            field=models.CharField(
+                blank=True,
+                db_index=True,
+                default=None,
+                max_length=35,
+                null=True,
+                verbose_name="Astorb Dynbaseclass",
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='astorb_dynsubclass',
-            field=models.CharField(blank=True, db_index=True, default=None, max_length=35, null=True, verbose_name='Astorb Dynsubclass'),
+            model_name="asteroid",
+            name="astorb_dynsubclass",
+            field=models.CharField(
+                blank=True,
+                db_index=True,
+                default=None,
+                max_length=35,
+                null=True,
+                verbose_name="Astorb Dynsubclass",
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='density',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='density'),
+            model_name="asteroid",
+            name="density",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="density"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='density_err_max',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='density_err_max'),
+            model_name="asteroid",
+            name="density_err_max",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="density_err_max"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='density_err_min',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='density_err_min'),
+            model_name="asteroid",
+            name="density_err_min",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="density_err_min"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='diameter',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='diameter'),
+            model_name="asteroid",
+            name="diameter",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="diameter"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='diameter_err_max',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='diameter_err_max'),
+            model_name="asteroid",
+            name="diameter_err_max",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="diameter_err_max"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='diameter_err_min',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='diameter_err_min'),
+            model_name="asteroid",
+            name="diameter_err_min",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="diameter_err_min"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='epoch',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='epoch'),
+            model_name="asteroid",
+            name="epoch",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="epoch"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='excentricity',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Excentricity'),
+            model_name="asteroid",
+            name="excentricity",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Excentricity"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='g',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='g'),
+            model_name="asteroid",
+            name="g",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="g"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='h',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='h'),
+            model_name="asteroid",
+            name="h",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="h"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='inclination',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Inclination'),
+            model_name="asteroid",
+            name="inclination",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Inclination"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='last_obs_included',
-            field=models.DateField(blank=True, default=None, null=True, verbose_name='Last obs included'),
+            model_name="asteroid",
+            name="last_obs_included",
+            field=models.DateField(
+                blank=True, default=None, null=True, verbose_name="Last obs included"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='long_asc_node',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Long asc node'),
+            model_name="asteroid",
+            name="long_asc_node",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Long asc node"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='mass',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='mass'),
+            model_name="asteroid",
+            name="mass",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="mass"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='mass_err_max',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='mass_err_max'),
+            model_name="asteroid",
+            name="mass_err_max",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="mass_err_max"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='mass_err_min',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='mass_err_min'),
+            model_name="asteroid",
+            name="mass_err_min",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="mass_err_min"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='mean_anomaly',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Mean anomaly'),
+            model_name="asteroid",
+            name="mean_anomaly",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Mean anomaly"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='mean_daily_motion',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Mean daily motion'),
+            model_name="asteroid",
+            name="mean_daily_motion",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Mean daily motion"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='mpc_critical_list',
-            field=models.BooleanField(default=False, verbose_name='MPC critical list'),
+            model_name="asteroid",
+            name="mpc_critical_list",
+            field=models.BooleanField(default=False, verbose_name="MPC critical list"),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='perihelion_dist',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Perihelion dist'),
+            model_name="asteroid",
+            name="perihelion_dist",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Perihelion dist"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='pha_flag',
-            field=models.BooleanField(default=False, verbose_name='pha_flag'),
+            model_name="asteroid",
+            name="pha_flag",
+            field=models.BooleanField(default=False, verbose_name="pha_flag"),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='principal_designation',
-            field=models.CharField(blank=True, db_index=True, default=None, max_length=35, null=True, verbose_name='Principal Designation'),
+            model_name="asteroid",
+            name="principal_designation",
+            field=models.CharField(
+                blank=True,
+                db_index=True,
+                default=None,
+                max_length=35,
+                null=True,
+                verbose_name="Principal Designation",
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='rms',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='rms'),
+            model_name="asteroid",
+            name="rms",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="rms"
+            ),
         ),
         migrations.AddField(
-            model_name='asteroid',
-            name='semimajor_axis',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Semimajor Axis'),
+            model_name="asteroid",
+            name="semimajor_axis",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Semimajor Axis"
+            ),
         ),
         migrations.AlterField(
-            model_name='asteroid',
-            name='base_dynclass',
-            field=models.CharField(db_index=True, help_text='(ucd=“meta.code.class”) Base Object class (TNO, Centaur, Trojan, etc.).', max_length=35, verbose_name='Base Object classification'),
+            model_name="asteroid",
+            name="base_dynclass",
+            field=models.CharField(
+                db_index=True,
+                help_text="(ucd=“meta.code.class”) Base Object class (TNO, Centaur, Trojan, etc.).",
+                max_length=35,
+                verbose_name="Base Object classification",
+            ),
         ),
         migrations.AlterField(
-            model_name='asteroid',
-            name='dynclass',
-            field=models.CharField(db_index=True, help_text='(ucd=“meta.code.class;src.class”) Object class (TNO, Centaur, Trojan, etc.).', max_length=35, verbose_name='Object classification'),
+            model_name="asteroid",
+            name="dynclass",
+            field=models.CharField(
+                db_index=True,
+                help_text="(ucd=“meta.code.class;src.class”) Object class (TNO, Centaur, Trojan, etc.).",
+                max_length=35,
+                verbose_name="Object classification",
+            ),
         ),
         migrations.AlterField(
-            model_name='asteroid',
-            name='name',
-            field=models.CharField(db_index=True, help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).', max_length=35, unique=True, verbose_name='Name'),
+            model_name="asteroid",
+            name="name",
+            field=models.CharField(
+                db_index=True,
+                help_text="(ucd=“meta.id;meta.main”) Object name (official or provisional designation).",
+                max_length=35,
+                unique=True,
+                verbose_name="Name",
+            ),
         ),
     ]

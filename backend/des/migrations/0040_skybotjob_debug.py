@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0039_auto_20230131_1617'),
+        ("des", "0039_auto_20230131_1617"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='skybotjob',
-            name='debug',
-            field=models.BooleanField(default=False, verbose_name='Debug'),
+            model_name="skybotjob",
+            name="debug",
+            field=models.BooleanField(default=False, verbose_name="Debug"),
         ),
     ]

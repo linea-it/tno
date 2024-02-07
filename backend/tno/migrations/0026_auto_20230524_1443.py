@@ -6,53 +6,59 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0025_occultation_created_at'),
+        ("tno", "0025_occultation_created_at"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='predictionjob',
-            name='condor_job_completed',
+            model_name="predictionjob",
+            name="condor_job_completed",
         ),
         migrations.RemoveField(
-            model_name='predictionjob',
-            name='condor_job_removed',
+            model_name="predictionjob",
+            name="condor_job_removed",
         ),
         migrations.RemoveField(
-            model_name='predictionjob',
-            name='condor_job_submited',
+            model_name="predictionjob",
+            name="condor_job_submited",
         ),
         migrations.RemoveField(
-            model_name='predictionjob',
-            name='force_refresh_input',
+            model_name="predictionjob",
+            name="force_refresh_input",
         ),
         migrations.RemoveField(
-            model_name='predictionjob',
-            name='input_days_to_expire',
+            model_name="predictionjob",
+            name="input_days_to_expire",
         ),
         migrations.RemoveField(
-            model_name='predictionjob',
-            name='parsl_init_blocks',
+            model_name="predictionjob",
+            name="parsl_init_blocks",
         ),
         migrations.RemoveField(
-            model_name='predictionjobresult',
-            name='bsp_jpl_dw_run',
+            model_name="predictionjobresult",
+            name="bsp_jpl_dw_run",
         ),
         migrations.RemoveField(
-            model_name='predictionjobresult',
-            name='des_obs_gen_run',
+            model_name="predictionjobresult",
+            name="des_obs_gen_run",
         ),
         migrations.RemoveField(
-            model_name='predictionjobresult',
-            name='obs_dw_run',
+            model_name="predictionjobresult",
+            name="obs_dw_run",
         ),
         migrations.RemoveField(
-            model_name='predictionjobresult',
-            name='orb_ele_dw_run',
+            model_name="predictionjobresult",
+            name="orb_ele_dw_run",
         ),
         migrations.AlterField(
-            model_name='predictionjobresult',
-            name='orb_ele_source',
-            field=models.CharField(blank=True, help_text='Orbital Elements data source, AstDys or MPC.', max_length=100, null=True, verbose_name='Orbital Elements Source'),
+            model_name="predictionjobresult",
+            name="orb_ele_source",
+            field=models.CharField(
+                blank=True,
+                help_text="Orbital Elements data source, AstDys or MPC.",
+                max_length=100,
+                null=True,
+                verbose_name="Orbital Elements Source",
+            ),
         ),
     ]

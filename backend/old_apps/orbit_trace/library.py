@@ -57,7 +57,7 @@ def retrieve_asteroids(type, values):
         asteroids = AsteroidDao().get_asteroids_by_dynclass(dynclass=values)
 
     for asteroid in asteroids:
-        asteroid.update({"status": "running", "ccds": list()})
+        asteroid.update({"status": "running", "ccds": []})
 
     return asteroids
 
@@ -256,7 +256,7 @@ def compute_theoretical_positions(
     spice.furnsh(leap_second)
     spice.furnsh(bsp_jpl)
 
-    results = list()
+    results = []
 
     for ccd in ccds:
         date_jd = ccd["date_jd"]

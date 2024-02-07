@@ -6,18 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0033_predictionjobstatus'),
+        ("tno", "0033_predictionjobstatus"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='predictionjobstatus',
-            name='updated',
-            field=models.DateTimeField(auto_now_add=True, null=True, verbose_name='Updated'),
+            model_name="predictionjobstatus",
+            name="updated",
+            field=models.DateTimeField(
+                auto_now_add=True, null=True, verbose_name="Updated"
+            ),
         ),
         migrations.AlterField(
-            model_name='predictionjobstatus',
-            name='current',
-            field=models.IntegerField(default=0, help_text='Current position in execution.', verbose_name='Current'),
+            model_name="predictionjobstatus",
+            name="current",
+            field=models.IntegerField(
+                default=0,
+                help_text="Current position in execution.",
+                verbose_name="Current",
+            ),
         ),
     ]

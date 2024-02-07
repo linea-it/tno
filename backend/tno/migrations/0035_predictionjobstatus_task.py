@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0034_auto_20230605_1327'),
+        ("tno", "0034_auto_20230605_1327"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='predictionjobstatus',
-            name='task',
-            field=models.CharField(default='', help_text='Name of the task being executed.', max_length=100, verbose_name='Task'),
+            model_name="predictionjobstatus",
+            name="task",
+            field=models.CharField(
+                default="",
+                help_text="Name of the task being executed.",
+                max_length=100,
+                verbose_name="Task",
+            ),
         ),
     ]

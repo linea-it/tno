@@ -6,188 +6,296 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0054_asteroidjob_new_records'),
+        ("tno", "0054_asteroidjob_new_records"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='occultation',
-            name='albedo',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='albedo'),
+            model_name="occultation",
+            name="albedo",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="albedo"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='albedo_err_max',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='albedo_err_max'),
+            model_name="occultation",
+            name="albedo_err_max",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="albedo_err_max"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='albedo_err_min',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='albedo_err_min'),
+            model_name="occultation",
+            name="albedo_err_min",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="albedo_err_min"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='alias',
-            field=models.CharField(blank=True, default=None, help_text='Alias used internally as an internal name, formed by the name without special characters and with the addition of sequential numbers if necessary.', max_length=35, null=True, verbose_name='Alias'),
+            model_name="occultation",
+            name="alias",
+            field=models.CharField(
+                blank=True,
+                default=None,
+                help_text="Alias used internally as an internal name, formed by the name without special characters and with the addition of sequential numbers if necessary.",
+                max_length=35,
+                null=True,
+                verbose_name="Alias",
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='aphelion_dist',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Aphelion dist'),
+            model_name="occultation",
+            name="aphelion_dist",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Aphelion dist"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='arg_perihelion',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Arg perihelion'),
+            model_name="occultation",
+            name="arg_perihelion",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Arg perihelion"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='astorb_dynbaseclass',
-            field=models.CharField(blank=True, db_index=True, default=None, max_length=35, null=True, verbose_name='Astorb Dynbaseclass'),
+            model_name="occultation",
+            name="astorb_dynbaseclass",
+            field=models.CharField(
+                blank=True,
+                db_index=True,
+                default=None,
+                max_length=35,
+                null=True,
+                verbose_name="Astorb Dynbaseclass",
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='astorb_dynsubclass',
-            field=models.CharField(blank=True, db_index=True, default=None, max_length=35, null=True, verbose_name='Astorb Dynsubclass'),
+            model_name="occultation",
+            name="astorb_dynsubclass",
+            field=models.CharField(
+                blank=True,
+                db_index=True,
+                default=None,
+                max_length=35,
+                null=True,
+                verbose_name="Astorb Dynsubclass",
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='density',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='density'),
+            model_name="occultation",
+            name="density",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="density"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='density_err_max',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='density_err_max'),
+            model_name="occultation",
+            name="density_err_max",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="density_err_max"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='density_err_min',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='density_err_min'),
+            model_name="occultation",
+            name="density_err_min",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="density_err_min"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='diameter_err_max',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='diameter_err_max'),
+            model_name="occultation",
+            name="diameter_err_max",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="diameter_err_max"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='diameter_err_min',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='diameter_err_min'),
+            model_name="occultation",
+            name="diameter_err_min",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="diameter_err_min"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='epoch',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='epoch'),
+            model_name="occultation",
+            name="epoch",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="epoch"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='excentricity',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Excentricity'),
+            model_name="occultation",
+            name="excentricity",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Excentricity"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='last_obs_included',
-            field=models.DateField(blank=True, default=None, null=True, verbose_name='Last obs included'),
+            model_name="occultation",
+            name="last_obs_included",
+            field=models.DateField(
+                blank=True, default=None, null=True, verbose_name="Last obs included"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='long_asc_node',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Long asc node'),
+            model_name="occultation",
+            name="long_asc_node",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Long asc node"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='mass',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='mass'),
+            model_name="occultation",
+            name="mass",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="mass"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='mass_err_max',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='mass_err_max'),
+            model_name="occultation",
+            name="mass_err_max",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="mass_err_max"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='mass_err_min',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='mass_err_min'),
+            model_name="occultation",
+            name="mass_err_min",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="mass_err_min"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='mean_anomaly',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Mean anomaly'),
+            model_name="occultation",
+            name="mean_anomaly",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Mean anomaly"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='mean_daily_motion',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Mean daily motion'),
+            model_name="occultation",
+            name="mean_daily_motion",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Mean daily motion"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='mpc_critical_list',
-            field=models.BooleanField(default=False, verbose_name='MPC critical list'),
+            model_name="occultation",
+            name="mpc_critical_list",
+            field=models.BooleanField(default=False, verbose_name="MPC critical list"),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='perihelion_dist',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Perihelion dist'),
+            model_name="occultation",
+            name="perihelion_dist",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Perihelion dist"
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='pha_flag',
-            field=models.BooleanField(default=False, verbose_name='pha_flag'),
+            model_name="occultation",
+            name="pha_flag",
+            field=models.BooleanField(default=False, verbose_name="pha_flag"),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='principal_designation',
-            field=models.CharField(blank=True, db_index=True, default=None, max_length=35, null=True, verbose_name='Principal Designation'),
+            model_name="occultation",
+            name="principal_designation",
+            field=models.CharField(
+                blank=True,
+                db_index=True,
+                default=None,
+                max_length=35,
+                null=True,
+                verbose_name="Principal Designation",
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='rms',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='rms'),
+            model_name="occultation",
+            name="rms",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="rms"
+            ),
         ),
         migrations.AlterField(
-            model_name='asteroid',
-            name='alias',
-            field=models.CharField(blank=True, default=None, max_length=35, null=True, verbose_name='Alias used internally as an internal name, formed by the name without special characters and with the addition of sequential numbers if necessary.'),
+            model_name="asteroid",
+            name="alias",
+            field=models.CharField(
+                blank=True,
+                default=None,
+                max_length=35,
+                null=True,
+                verbose_name="Alias used internally as an internal name, formed by the name without special characters and with the addition of sequential numbers if necessary.",
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='aparent_diameter',
-            field=models.FloatField(blank=True, default=None, help_text='Aparent diameter em graus.', null=True, verbose_name='aparent_diameter'),
+            model_name="occultation",
+            name="aparent_diameter",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="Aparent diameter em graus.",
+                null=True,
+                verbose_name="aparent_diameter",
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='diameter',
-            field=models.FloatField(blank=True, default=None, help_text='Diametro do asteroid em km.', null=True, verbose_name='diameter'),
+            model_name="occultation",
+            name="diameter",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="Diametro do asteroid em km.",
+                null=True,
+                verbose_name="diameter",
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='g',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='g'),
+            model_name="occultation",
+            name="g",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="g"
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='h',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='h'),
+            model_name="occultation",
+            name="h",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="h"
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='inclination',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Inclination'),
+            model_name="occultation",
+            name="inclination",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Inclination"
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='name',
-            field=models.CharField(db_index=True, help_text='(ucd=“meta.id;meta.main”) Object name (official or provisional designation).', max_length=35, verbose_name='Name'),
+            model_name="occultation",
+            name="name",
+            field=models.CharField(
+                db_index=True,
+                help_text="(ucd=“meta.id;meta.main”) Object name (official or provisional designation).",
+                max_length=35,
+                verbose_name="Name",
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='number',
-            field=models.PositiveBigIntegerField(blank=True, db_index=True, default=None, help_text='(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).', null=True, verbose_name='Number'),
+            model_name="occultation",
+            name="number",
+            field=models.PositiveBigIntegerField(
+                blank=True,
+                db_index=True,
+                default=None,
+                help_text="(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).",
+                null=True,
+                verbose_name="Number",
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='semimajor_axis',
-            field=models.FloatField(blank=True, default=None, null=True, verbose_name='Semimajor Axis'),
+            model_name="occultation",
+            name="semimajor_axis",
+            field=models.FloatField(
+                blank=True, default=None, null=True, verbose_name="Semimajor Axis"
+            ),
         ),
     ]

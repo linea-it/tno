@@ -201,7 +201,7 @@ def centers_positions_to_deg(centers_file, centers_deg_filename):
     output = os.path.join(data_dir, centers_deg_filename)
     out_link = os.path.join(app_path, centers_deg_filename)
 
-    a_radec = list()
+    a_radec = []
     with open(centers_file, "r") as f:
 
         with open(output, "w") as csvfile:

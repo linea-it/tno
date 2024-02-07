@@ -339,10 +339,10 @@ class Asteroid:
 
             if days_to_expire == 0:
                 # Força o download de um novo BSP
-                self.bsp_jpl = dict()
+                self.bsp_jpl = {}
                 log.debug("Force Download days to expire = 0")
 
-            bsp_jpl = dict()
+            bsp_jpl = {}
 
             # Verificar insformações sobre o BSP no Json
             if self.bsp_jpl and "filename" in self.bsp_jpl:
@@ -443,7 +443,7 @@ class Asteroid:
             if days_to_expire is None:
                 days_to_expire = aei.MPC_DAYS_TO_EXPIRE
 
-            orb_ele = dict()
+            orb_ele = {}
 
             # Verificar insformações sobre Orbital Elements no Json
             if self.orbital_elements and "filename" in self.orbital_elements:
@@ -526,7 +526,7 @@ class Asteroid:
             if days_to_expire is None:
                 days_to_expire = aei.MPC_DAYS_TO_EXPIRE
 
-            observations = dict()
+            observations = {}
 
             # Verificar insformações sobre Observations no Json
             if self.observations and "filename" in self.observations:
@@ -666,7 +666,7 @@ class Asteroid:
         try:
             log.info("Checking DES Observations")
 
-            observations = dict()
+            observations = {}
             # Verificar insformações sobre DES Observations no Json
             if self.des_observations and "filename" in self.des_observations:
                 # Já existe Informações
@@ -732,7 +732,7 @@ class Asteroid:
 
         t0 = dt.now(tz=timezone.utc)
 
-        removed_files = list()
+        removed_files = []
 
         ignore_files = [
             "{}.json".format(self.alias),
@@ -1171,7 +1171,7 @@ class Asteroid:
 
         t0 = dt.now(tz=timezone.utc)
 
-        removed_files = list()
+        removed_files = []
 
         ignore_files = [
             "{}.json".format(self.alias),

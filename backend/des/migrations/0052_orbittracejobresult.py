@@ -7,26 +7,84 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0012_alter_catalog_database'),
-        ('des', '0051_auto_20230301_1833'),
+        ("tno", "0012_alter_catalog_database"),
+        ("des", "0051_auto_20230301_1833"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='OrbitTraceJobResult',
+            name="OrbitTraceJobResult",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('asteroid_name', models.CharField(max_length=100, verbose_name='Asteroid Name')),
-                ('asteroid_number', models.CharField(max_length=100, verbose_name='Asteroid Number')),
-                ('base_dynclass', models.CharField(max_length=100, verbose_name='Asteroid Base DynClass')),
-                ('dynclass', models.CharField(max_length=100, verbose_name='Asteroid DynClass')),
-                ('status', models.IntegerField(choices=[(1, 'Success'), (2, 'Failed')], default=1, verbose_name='Status')),
-                ('spk_id', models.CharField(max_length=100, verbose_name='Spk Id')),
-                ('observations', models.IntegerField(default=0, help_text='Observations Count', verbose_name='Observations Count')),
-                ('ccds', models.IntegerField(default=0, help_text='CCDS Count', verbose_name='CCDS Count')),
-                ('error', models.TextField(blank=True, null=True, verbose_name='Error')),
-                ('asteroid', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tno.asteroid', verbose_name='Asteroid')),
-                ('job', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='des.orbittracejob', verbose_name='Planetary Ephemeris')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "asteroid_name",
+                    models.CharField(max_length=100, verbose_name="Asteroid Name"),
+                ),
+                (
+                    "asteroid_number",
+                    models.CharField(max_length=100, verbose_name="Asteroid Number"),
+                ),
+                (
+                    "base_dynclass",
+                    models.CharField(
+                        max_length=100, verbose_name="Asteroid Base DynClass"
+                    ),
+                ),
+                (
+                    "dynclass",
+                    models.CharField(max_length=100, verbose_name="Asteroid DynClass"),
+                ),
+                (
+                    "status",
+                    models.IntegerField(
+                        choices=[(1, "Success"), (2, "Failed")],
+                        default=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                ("spk_id", models.CharField(max_length=100, verbose_name="Spk Id")),
+                (
+                    "observations",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Observations Count",
+                        verbose_name="Observations Count",
+                    ),
+                ),
+                (
+                    "ccds",
+                    models.IntegerField(
+                        default=0, help_text="CCDS Count", verbose_name="CCDS Count"
+                    ),
+                ),
+                (
+                    "error",
+                    models.TextField(blank=True, null=True, verbose_name="Error"),
+                ),
+                (
+                    "asteroid",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="tno.asteroid",
+                        verbose_name="Asteroid",
+                    ),
+                ),
+                (
+                    "job",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="des.orbittracejob",
+                        verbose_name="Planetary Ephemeris",
+                    ),
+                ),
             ],
         ),
     ]

@@ -53,7 +53,7 @@ class Dao:
 
             queryset = con.execute(stm)
 
-            rows = list()
+            rows = []
             for row in queryset:
                 d = dict(collections.OrderedDict(row))
                 rows.append(d)
@@ -153,7 +153,7 @@ class GaiaDao(Dao):
             # Agrupar clausulas em grupos para diminuir a quantidade de querys
             for gpos in self.chunks_positions(positions, self.POSITION_GROUP):
 
-                clauses = list()
+                clauses = []
 
                 for pos in gpos:
                     clauses.append(self.q3c_clause(pos[0], pos[1], radius))
@@ -293,7 +293,7 @@ class GaiaDao(Dao):
 
 #     import csv
 
-#     positions = list()
+#     positions = []
 #     with open('/data/centers_deg.csv', 'r') as csvfile:
 #         reader = csv.DictReader(csvfile)
 #         for row in reader:

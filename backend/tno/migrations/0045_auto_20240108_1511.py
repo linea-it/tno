@@ -6,20 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0044_auto_20240105_1959'),
+        ("tno", "0044_auto_20240105_1959"),
     ]
 
     operations = [
         migrations.AddIndex(
-            model_name='occultation',
-            index=models.Index(fields=['base_dynclass'], name='tno_occulta_base_dy_ccaa5f_idx'),
+            model_name="occultation",
+            index=models.Index(
+                fields=["base_dynclass"], name="tno_occulta_base_dy_ccaa5f_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='occultation',
-            index=models.Index(fields=['dynclass'], name='tno_occulta_dynclas_2aaa71_idx'),
+            model_name="occultation",
+            index=models.Index(
+                fields=["dynclass"], name="tno_occulta_dynclas_2aaa71_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='occultation',
-            index=models.Index(fields=['job_id'], name='tno_occulta_job_id_46ebd9_idx'),
+            model_name="occultation",
+            index=models.Index(fields=["job_id"], name="tno_occulta_job_id_46ebd9_idx"),
         ),
     ]

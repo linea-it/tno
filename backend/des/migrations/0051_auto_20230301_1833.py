@@ -6,53 +6,64 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0050_merge_20230228_2107'),
+        ("des", "0050_merge_20230228_2107"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='orbittracejob',
-            name='date_final',
+            model_name="orbittracejob",
+            name="date_final",
         ),
         migrations.RemoveField(
-            model_name='orbittracejob',
-            name='date_initial',
+            model_name="orbittracejob",
+            name="date_initial",
         ),
         migrations.RemoveField(
-            model_name='orbittracejob',
-            name='expected_asteroids',
+            model_name="orbittracejob",
+            name="expected_asteroids",
         ),
         migrations.RemoveField(
-            model_name='orbittracejob',
-            name='observatory_location',
+            model_name="orbittracejob",
+            name="observatory_location",
         ),
         migrations.RemoveField(
-            model_name='orbittracejob',
-            name='processed_asteroids',
+            model_name="orbittracejob",
+            name="processed_asteroids",
         ),
         migrations.RemoveField(
-            model_name='orbittracejob',
-            name='results',
+            model_name="orbittracejob",
+            name="results",
         ),
         migrations.AddField(
-            model_name='orbittracejob',
-            name='bps_days_to_expire',
-            field=models.IntegerField(default=0, help_text='bps_days_to_expire', verbose_name='bps_days_to_expire'),
+            model_name="orbittracejob",
+            name="bps_days_to_expire",
+            field=models.IntegerField(
+                default=0,
+                help_text="bps_days_to_expire",
+                verbose_name="bps_days_to_expire",
+            ),
         ),
         migrations.AddField(
-            model_name='orbittracejob',
-            name='debug',
-            field=models.BooleanField(default=False, help_text='Debug', verbose_name='Debug'),
+            model_name="orbittracejob",
+            name="debug",
+            field=models.BooleanField(
+                default=False, help_text="Debug", verbose_name="Debug"
+            ),
         ),
         migrations.AddField(
-            model_name='orbittracejob',
-            name='path',
-            field=models.CharField(default=1, help_text='Path to the directory where the job data is located.', max_length=2048, verbose_name='Path'),
+            model_name="orbittracejob",
+            name="path",
+            field=models.CharField(
+                default=1,
+                help_text="Path to the directory where the job data is located.",
+                max_length=2048,
+                verbose_name="Path",
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='orbittracejob',
-            name='filter_value',
-            field=models.CharField(max_length=100, verbose_name='Filter Value'),
+            model_name="orbittracejob",
+            name="filter_value",
+            field=models.CharField(max_length=100, verbose_name="Filter Value"),
         ),
     ]

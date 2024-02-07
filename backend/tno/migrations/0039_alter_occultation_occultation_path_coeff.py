@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0038_auto_20231005_2321'),
+        ("tno", "0038_auto_20231005_2321"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='occultation',
-            name='occultation_path_coeff',
-            field=models.JSONField(blank=True, default=dict, help_text='Occultation Path Coeff', null=True, verbose_name='Occultation Path Coeff'),
+            model_name="occultation",
+            name="occultation_path_coeff",
+            field=models.JSONField(
+                blank=True,
+                default=dict,
+                help_text="Occultation Path Coeff",
+                null=True,
+                verbose_name="Occultation Path Coeff",
+            ),
         ),
     ]

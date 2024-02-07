@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0047_remove_occultation_asteroid'),
+        ("tno", "0047_remove_occultation_asteroid"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='predictionjobresult',
-            name='asteroid',
+            model_name="predictionjobresult",
+            name="asteroid",
         ),
     ]

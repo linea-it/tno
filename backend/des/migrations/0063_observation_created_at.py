@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0062_alter_observation_unique_together'),
+        ("des", "0062_alter_observation_unique_together"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='observation',
-            name='created_at',
-            field=models.DateTimeField(auto_now=True, verbose_name='Created at'),
+            model_name="observation",
+            name="created_at",
+            field=models.DateTimeField(auto_now=True, verbose_name="Created at"),
         ),
     ]

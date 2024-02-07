@@ -6,17 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0030_predictionjob_predict_h_period'),
+        ("tno", "0030_predictionjob_predict_h_period"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='predictionjob',
-            name='predict_h_period',
+            model_name="predictionjob",
+            name="predict_h_period",
         ),
         migrations.AddField(
-            model_name='predictionjob',
-            name='predict_interval',
-            field=models.CharField(blank=True, default=None, help_text='Prediction range formatted with humanize.', max_length=100, null=True, verbose_name='Predict Interval'),
+            model_name="predictionjob",
+            name="predict_interval",
+            field=models.CharField(
+                blank=True,
+                default=None,
+                help_text="Prediction range formatted with humanize.",
+                max_length=100,
+                null=True,
+                verbose_name="Predict Interval",
+            ),
         ),
     ]

@@ -248,7 +248,7 @@ def retrieve_asteroids(type, values):
 
     dao = AsteroidDao()
 
-    asteroids = list()
+    asteroids = []
 
     if type == "name":
         asteroids = dao.get_asteroids_by_names(names=values.split(";"))
@@ -709,7 +709,7 @@ def submit_tasks(jobid: int):
             )
 
         # Lista de Jobs do Condor.
-        # htc_jobs = list()
+        # htc_jobs = []
 
         # Diretório para armazenar os jobs que foram submetidos no HTCondor.
         # Cada job vai gerar um arquivo neste diretório
@@ -723,7 +723,7 @@ def submit_tasks(jobid: int):
 
         hb_t0 = datetime.now(tz=timezone.utc)
 
-        jobs_asteroids = list()
+        jobs_asteroids = []
         workdir = os.getenv("PIPELINE_PATH")
 
         step1_count = len(asteroids)
@@ -901,11 +901,11 @@ def submit_tasks(jobid: int):
         log.debug(f"Jobs to Parsl: [{len(jobs_asteroids)}]")
 
         # # Monitoramento parcial das tasks
-        is_done = list()
+        is_done = []
         step2_count = len(jobs_asteroids)
 
         while is_done.count(True) != step2_count:
-            is_done = list()
+            is_done = []
             is_abort = check_abort_job(jobid)
             # log.debug("IS ABORT: %s" % str(is_abort))
             for proc in jobs_asteroids:
@@ -1064,7 +1064,7 @@ def submit_tasks(jobid: int):
             t0=hb_t0,
         )
     finally:
-        l_consolidated = list()
+        l_consolidated = []
 
         asteroids = retrieve_asteroids(job["filter_type"], job["filter_value"])
         consolid_current_idx = 1
