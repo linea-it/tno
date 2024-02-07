@@ -35,7 +35,7 @@ def create_ccd_images_list(run_id, name, output_filepath, max_workers=10):
 
         if positions is not None and len(positions) > 0:
             pdb = PointingDB()
-            rows = list()
+            rows = []
 
             # Para cada posicao recuperar os dados do ccd na tabela de apontamentos.
             for position in positions:

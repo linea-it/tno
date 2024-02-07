@@ -12,7 +12,7 @@ def csv_to_dataframe(filepath, delimiter=";", header=True, page=1, pageSize=100)
 
     df_temp = pd.read_csv(filepath, delimiter=delimiter)
 
-    columns = list()
+    columns = []
     if header is True:
         for col in df_temp.columns:
             columns.append(col)
@@ -27,7 +27,7 @@ def csv_to_dataframe(filepath, delimiter=";", header=True, page=1, pageSize=100)
 
     df = df.fillna(0)
 
-    rows = list()
+    rows = []
     for record in df.itertuples():
         row = dict({})
 

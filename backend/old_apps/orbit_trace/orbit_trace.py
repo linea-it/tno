@@ -276,7 +276,7 @@ try:
 
     step_t0 = datetime.now(tz=timezone.utc)
 
-    futures = list()
+    futures = []
     for asteroid in asteroids:
         if asteroid["status"] != "failure":
             futures.append(
@@ -286,9 +286,9 @@ try:
             )
 
     # Monitoramento parcial das tasks
-    is_done = list()
+    is_done = []
     while is_done.count(True) != len(futures):
-        is_done = list()
+        is_done = []
         for f in futures:
             is_done.append(f.done())
         log.debug(
@@ -297,7 +297,7 @@ try:
         time.sleep(1)
 
     # asteroids = [i.result() for i in futures]
-    asteroids = list()
+    asteroids = []
     for task in futures:
         asteroid = task.result()
 
@@ -336,7 +336,7 @@ try:
 
     step_t0 = datetime.now(tz=timezone.utc)
 
-    futures = list()
+    futures = []
     for asteroid in asteroids:
         if asteroid["status"] != "failure":
             idx = 0
@@ -361,9 +361,9 @@ try:
                     idx += 1
 
     # Monitoramento parcial das tasks
-    is_done = list()
+    is_done = []
     while is_done.count(True) != len(futures):
-        is_done = list()
+        is_done = []
         for f in futures:
             is_done.append(f.done())
         log.debug(
@@ -377,7 +377,7 @@ try:
 
         alias = asteroid_name.replace(" ", "_")
         if alias not in results:
-            results[alias] = dict({"ccds": list(), "observations": list()})
+            results[alias] = dict({"ccds": [], "observations": []})
 
         results[alias]["ccds"].append(ccd)
         if obs_coordinates is not None:
@@ -466,7 +466,7 @@ try:
 
     # =========================== Asteroids Json ===========================
     log.info("Write Asteroid Data in json started")
-    futures = list()
+    futures = []
     for asteroid in asteroids:
         asteroid.update({"status": "completed"})
         futures.append(write_asteroid_data(asteroid))

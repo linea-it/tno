@@ -283,7 +283,7 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
                 delim_whitespace=True,
             )
 
-            rows = list()
+            rows = []
             for record in df.itertuples():
                 ra = "%s:%s:%s" % (
                     "{:02d}".format(int(record[1])),
@@ -357,7 +357,7 @@ class AstrometryAsteroidViewSet(viewsets.ModelViewSet):
         # Recuperar na tabela pointings todos os apontamentos.
         pointings = Pointing.objects.filter(id__in=distinct_ids)
 
-        data = list()
+        data = []
         if tree:
             for pointing in pointings:
                 outputs = queryset.filter(ccd_image=pointing.pk)

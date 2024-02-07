@@ -175,7 +175,7 @@ def register_csv_stages_outputs(filepath, rows, unique_stage=""):
     columns = list(["object", "start", "finish", "execution_time", "ccd", "stage"])
 
     # Time profile list:
-    time_profile_list = list()
+    time_profile_list = []
 
     for stage in stages:
         time_profile_list.append(

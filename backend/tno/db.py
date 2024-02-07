@@ -107,7 +107,7 @@ class DBBase:
             if settings.DEBUG is True and log is True:
                 self.debug_query(stm, True)
 
-            rows = list()
+            rows = []
             for row in queryset:
                 rows.append(self.to_dict(row))
 

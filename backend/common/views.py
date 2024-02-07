@@ -127,7 +127,7 @@ def read_file(request):
 
         # Ler o arquivo.
         try:
-            rows = list()
+            rows = []
             with open(filepath) as fp:
                 lines = fp.readlines()
                 for line in lines:
@@ -195,7 +195,7 @@ def read_csv(request):
             skiprows = (page * pageSize) - pageSize
 
         df_temp = pd.read_csv(filepath, delimiter=";")
-        columns = list()
+        columns = []
         for col in df_temp.columns:
             columns.append(col)
 
@@ -209,7 +209,7 @@ def read_csv(request):
 
         df = df.fillna(0)
 
-        rows = list()
+        rows = []
         for record in df.itertuples():
             row = dict({})
 

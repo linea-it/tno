@@ -62,7 +62,7 @@ class OrbitRunViewSet(viewsets.ModelViewSet):
             # Checar se o log existe
             result = dict(
                 {
-                    "lines": list(),
+                    "lines": [],
                 }
             )
 
@@ -221,7 +221,7 @@ class RefinedAsteroidViewSet(viewsets.ModelViewSet):
             )
 
         try:
-            new_lines = list()
+            new_lines = []
             with open(log_path, "r") as fp:
                 lines = fp.readlines()
                 for line in lines:
