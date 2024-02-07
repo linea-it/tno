@@ -6,18 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0047_orbittracejob_time_profile'),
+        ("des", "0047_orbittracejob_time_profile"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='orbittracejob',
-            name='h_exec_time',
-            field=models.IntegerField(default=0, help_text='h_exec_time', verbose_name='h_exec_time'),
+            model_name="orbittracejob",
+            name="h_exec_time",
+            field=models.IntegerField(
+                default=0, help_text="h_exec_time", verbose_name="h_exec_time"
+            ),
         ),
         migrations.AddField(
-            model_name='orbittracejob',
-            name='parsl_init_blocks',
-            field=models.IntegerField(default=0, help_text='parsl_init_blocks', verbose_name='parsl_init_blocks'),
+            model_name="orbittracejob",
+            name="parsl_init_blocks",
+            field=models.IntegerField(
+                default=0,
+                help_text="parsl_init_blocks",
+                verbose_name="parsl_init_blocks",
+            ),
         ),
     ]

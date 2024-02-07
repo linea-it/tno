@@ -6,23 +6,31 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0043_auto_20230216_2036'),
+        ("des", "0043_auto_20230216_2036"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='orbittracejob',
-            name='count_asteroids',
-            field=models.IntegerField(default=0, help_text='Asteroids Count', verbose_name='Asteroids Count'),
+            model_name="orbittracejob",
+            name="count_asteroids",
+            field=models.IntegerField(
+                default=0, help_text="Asteroids Count", verbose_name="Asteroids Count"
+            ),
         ),
         migrations.AddField(
-            model_name='orbittracejob',
-            name='count_ccds',
-            field=models.IntegerField(default=0, help_text='CCDs Count', verbose_name='CCDs Count'),
+            model_name="orbittracejob",
+            name="count_ccds",
+            field=models.IntegerField(
+                default=0, help_text="CCDs Count", verbose_name="CCDs Count"
+            ),
         ),
         migrations.AddField(
-            model_name='orbittracejob',
-            name='count_observations',
-            field=models.IntegerField(default=0, help_text='Observations Count', verbose_name='Observations Count'),
+            model_name="orbittracejob",
+            name="count_observations",
+            field=models.IntegerField(
+                default=0,
+                help_text="Observations Count",
+                verbose_name="Observations Count",
+            ),
         ),
     ]

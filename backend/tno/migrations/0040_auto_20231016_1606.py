@@ -6,18 +6,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0039_alter_occultation_occultation_path_coeff'),
+        ("tno", "0039_alter_occultation_occultation_path_coeff"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='occultation',
-            name='max_latitude',
-            field=models.FloatField(blank=True, default=None, help_text='Max Latitude Occultation Path', null=True, verbose_name='Max Latitude'),
+            model_name="occultation",
+            name="max_latitude",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="Max Latitude Occultation Path",
+                null=True,
+                verbose_name="Max Latitude",
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='min_latitude',
-            field=models.FloatField(blank=True, default=None, help_text='Min Latitude Occultation Path', null=True, verbose_name='Min Latitude'),
+            model_name="occultation",
+            name="min_latitude",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="Min Latitude Occultation Path",
+                null=True,
+                verbose_name="Min Latitude",
+            ),
         ),
     ]

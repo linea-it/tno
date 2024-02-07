@@ -6,16 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0038_delete_astrometryjob'),
+        ("des", "0038_delete_astrometryjob"),
     ]
 
     operations = [
         migrations.AddIndex(
-            model_name='observation',
-            index=models.Index(fields=['name'], name='des_observa_name_13e3e4_idx'),
+            model_name="observation",
+            index=models.Index(fields=["name"], name="des_observa_name_13e3e4_idx"),
         ),
         migrations.AddIndex(
-            model_name='observation',
-            index=models.Index(fields=['date_obs'], name='des_observa_date_ob_284449_idx'),
+            model_name="observation",
+            index=models.Index(
+                fields=["date_obs"], name="des_observa_date_ob_284449_idx"
+            ),
         ),
     ]

@@ -6,13 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0055_auto_20230330_2300'),
+        ("des", "0055_auto_20230330_2300"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='orbittracejob',
-            name='h_exec_time',
-            field=models.CharField(blank=True, default=None, help_text='Execution Time formated with humanize.', max_length=100, null=True, verbose_name='Human Exec Time'),
+            model_name="orbittracejob",
+            name="h_exec_time",
+            field=models.CharField(
+                blank=True,
+                default=None,
+                help_text="Execution Time formated with humanize.",
+                max_length=100,
+                null=True,
+                verbose_name="Human Exec Time",
+            ),
         ),
     ]

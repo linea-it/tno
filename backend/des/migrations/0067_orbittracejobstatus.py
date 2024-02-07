@@ -7,24 +7,107 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0066_orbittracejobresult_exec_time'),
+        ("des", "0066_orbittracejobresult_exec_time"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='OrbitTraceJobStatus',
+            name="OrbitTraceJobStatus",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('step', models.IntegerField(choices=[(1, 'Primeira Etapa'), (2, 'Segunda Etapa')], help_text='Identification of the step in the pipeline.', verbose_name='Step')),
-                ('status', models.IntegerField(choices=[(1, 'Idle'), (2, 'Running'), (3, 'Completed'), (4, 'Failed'), (5, 'Aborted'), (6, 'Warning'), (7, 'Aborting')], default=1, verbose_name='Status')),
-                ('count', models.IntegerField(default=0, help_text='Total items to be processed in the step.', verbose_name='Total Count')),
-                ('current', models.IntegerField(default=0, help_text='Current position in execution.', verbose_name='Current')),
-                ('average_time', models.FloatField(default=0, help_text='Average time per item in seconds.', verbose_name='Average Time')),
-                ('time_estimate', models.FloatField(default=0, help_text='Estimated time to complete the step in seconds.', verbose_name='Estimated Time')),
-                ('success', models.IntegerField(default=0, help_text='Number of items successfully executed.', verbose_name='Success')),
-                ('failures', models.IntegerField(default=0, help_text='Number of items that failed.', verbose_name='Failures')),
-                ('updated', models.DateTimeField(auto_now_add=True, verbose_name='Updated')),
-                ('job', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='job_status', to='des.orbittracejob', verbose_name='Orbit Trace Job')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "step",
+                    models.IntegerField(
+                        choices=[(1, "Primeira Etapa"), (2, "Segunda Etapa")],
+                        help_text="Identification of the step in the pipeline.",
+                        verbose_name="Step",
+                    ),
+                ),
+                (
+                    "status",
+                    models.IntegerField(
+                        choices=[
+                            (1, "Idle"),
+                            (2, "Running"),
+                            (3, "Completed"),
+                            (4, "Failed"),
+                            (5, "Aborted"),
+                            (6, "Warning"),
+                            (7, "Aborting"),
+                        ],
+                        default=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "count",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Total items to be processed in the step.",
+                        verbose_name="Total Count",
+                    ),
+                ),
+                (
+                    "current",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Current position in execution.",
+                        verbose_name="Current",
+                    ),
+                ),
+                (
+                    "average_time",
+                    models.FloatField(
+                        default=0,
+                        help_text="Average time per item in seconds.",
+                        verbose_name="Average Time",
+                    ),
+                ),
+                (
+                    "time_estimate",
+                    models.FloatField(
+                        default=0,
+                        help_text="Estimated time to complete the step in seconds.",
+                        verbose_name="Estimated Time",
+                    ),
+                ),
+                (
+                    "success",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Number of items successfully executed.",
+                        verbose_name="Success",
+                    ),
+                ),
+                (
+                    "failures",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Number of items that failed.",
+                        verbose_name="Failures",
+                    ),
+                ),
+                (
+                    "updated",
+                    models.DateTimeField(auto_now_add=True, verbose_name="Updated"),
+                ),
+                (
+                    "job",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="job_status",
+                        to="des.orbittracejob",
+                        verbose_name="Orbit Trace Job",
+                    ),
+                ),
             ],
         ),
     ]

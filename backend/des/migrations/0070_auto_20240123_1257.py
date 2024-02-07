@@ -6,16 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0069_alter_orbittracejobstatus_task'),
+        ("des", "0069_alter_orbittracejobstatus_task"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='observation',
-            unique_together={('name', 'ccd_id')},
+            name="observation",
+            unique_together={("name", "ccd_id")},
         ),
         migrations.RemoveField(
-            model_name='observation',
-            name='asteroid',
+            model_name="observation",
+            name="asteroid",
         ),
     ]

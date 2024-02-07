@@ -6,21 +6,29 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0064_auto_20230531_2149'),
+        ("des", "0064_auto_20230531_2149"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='orbittracejob',
-            name='bps_days_to_expire',
+            model_name="orbittracejob",
+            name="bps_days_to_expire",
         ),
         migrations.RemoveField(
-            model_name='orbittracejob',
-            name='parsl_init_blocks',
+            model_name="orbittracejob",
+            name="parsl_init_blocks",
         ),
         migrations.AlterField(
-            model_name='orbittracejob',
-            name='filter_type',
-            field=models.CharField(choices=[('name', 'Object name'), ('dynclass', 'Dynamic class (with subclasses)'), ('base_dynclass', 'Dynamic class')], max_length=15, verbose_name='Filter Type'),
+            model_name="orbittracejob",
+            name="filter_type",
+            field=models.CharField(
+                choices=[
+                    ("name", "Object name"),
+                    ("dynclass", "Dynamic class (with subclasses)"),
+                    ("base_dynclass", "Dynamic class"),
+                ],
+                max_length=15,
+                verbose_name="Filter Type",
+            ),
         ),
     ]

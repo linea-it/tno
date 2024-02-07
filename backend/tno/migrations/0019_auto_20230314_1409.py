@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0018_auto_20230313_2146'),
+        ("tno", "0018_auto_20230313_2146"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='predictionjob',
-            name='error',
-            field=models.TextField(blank=True, null=True, verbose_name='Error'),
+            model_name="predictionjob",
+            name="error",
+            field=models.TextField(blank=True, null=True, verbose_name="Error"),
         ),
         migrations.AddField(
-            model_name='predictionjob',
-            name='traceback',
-            field=models.TextField(blank=True, null=True, verbose_name='Traceback'),
+            model_name="predictionjob",
+            name="traceback",
+            field=models.TextField(blank=True, null=True, verbose_name="Traceback"),
         ),
     ]

@@ -6,30 +6,30 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0008_auto_20221118_1448'),
+        ("tno", "0008_auto_20221118_1448"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='proccess',
-            name='input_list',
+            model_name="proccess",
+            name="input_list",
         ),
         migrations.RemoveField(
-            model_name='proccess',
-            name='owner',
+            model_name="proccess",
+            name="owner",
         ),
         migrations.RemoveField(
-            model_name='bspplanetary',
-            name='upload',
+            model_name="bspplanetary",
+            name="upload",
         ),
         migrations.RemoveField(
-            model_name='leapsecond',
-            name='upload',
+            model_name="leapsecond",
+            name="upload",
         ),
         migrations.DeleteModel(
-            name='CustomList',
+            name="CustomList",
         ),
         migrations.DeleteModel(
-            name='Proccess',
+            name="Proccess",
         ),
     ]

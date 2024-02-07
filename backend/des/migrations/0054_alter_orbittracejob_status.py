@@ -6,13 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0053_alter_orbittracejobresult_job'),
+        ("des", "0053_alter_orbittracejobresult_job"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='orbittracejob',
-            name='status',
-            field=models.IntegerField(choices=[(1, 'Idle'), (2, 'Running'), (3, 'Completed'), (4, 'Failed'), (5, 'Aborted'), (6, 'Warning'), (7, 'Aborting')], default=1, verbose_name='Status'),
+            model_name="orbittracejob",
+            name="status",
+            field=models.IntegerField(
+                choices=[
+                    (1, "Idle"),
+                    (2, "Running"),
+                    (3, "Completed"),
+                    (4, "Failed"),
+                    (5, "Aborted"),
+                    (6, "Warning"),
+                    (7, "Aborting"),
+                ],
+                default=1,
+                verbose_name="Status",
+            ),
         ),
     ]

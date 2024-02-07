@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0014_predictionjob_owner'),
+        ("tno", "0014_predictionjob_owner"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='predictionjob',
-            name='force_refresh_inputs',
-            field=models.BooleanField(default=False, help_text='Force Refresh Inputs', verbose_name='Force Refresh Inputs'),
+            model_name="predictionjob",
+            name="force_refresh_inputs",
+            field=models.BooleanField(
+                default=False,
+                help_text="Force Refresh Inputs",
+                verbose_name="Force Refresh Inputs",
+            ),
         ),
     ]

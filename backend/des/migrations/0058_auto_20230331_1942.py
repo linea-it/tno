@@ -6,48 +6,80 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0057_auto_20230331_0223'),
+        ("des", "0057_auto_20230331_0223"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='orbittracejob',
-            name='bps_days_to_expire',
-            field=models.IntegerField(default=0, help_text='Number of days that a BSP file already downloaded is considered valid.', verbose_name='BSP days to expire'),
+            model_name="orbittracejob",
+            name="bps_days_to_expire",
+            field=models.IntegerField(
+                default=0,
+                help_text="Number of days that a BSP file already downloaded is considered valid.",
+                verbose_name="BSP days to expire",
+            ),
         ),
         migrations.AlterField(
-            model_name='orbittracejob',
-            name='count_asteroids',
-            field=models.IntegerField(default=0, help_text='Total asteroids selected to run this job', verbose_name='Asteroids'),
+            model_name="orbittracejob",
+            name="count_asteroids",
+            field=models.IntegerField(
+                default=0,
+                help_text="Total asteroids selected to run this job",
+                verbose_name="Asteroids",
+            ),
         ),
         migrations.AlterField(
-            model_name='orbittracejob',
-            name='count_ccds',
-            field=models.IntegerField(default=0, help_text='Total ccds processed in this job.', verbose_name='CCDs'),
+            model_name="orbittracejob",
+            name="count_ccds",
+            field=models.IntegerField(
+                default=0,
+                help_text="Total ccds processed in this job.",
+                verbose_name="CCDs",
+            ),
         ),
         migrations.AlterField(
-            model_name='orbittracejob',
-            name='count_failures',
-            field=models.IntegerField(default=0, help_text='Total asteroids that failed at least one of the steps.', verbose_name='Failures Count'),
+            model_name="orbittracejob",
+            name="count_failures",
+            field=models.IntegerField(
+                default=0,
+                help_text="Total asteroids that failed at least one of the steps.",
+                verbose_name="Failures Count",
+            ),
         ),
         migrations.AlterField(
-            model_name='orbittracejob',
-            name='count_observations',
-            field=models.IntegerField(default=0, help_text='Total observations identified by the orbit trace.', verbose_name='Observations Count'),
+            model_name="orbittracejob",
+            name="count_observations",
+            field=models.IntegerField(
+                default=0,
+                help_text="Total observations identified by the orbit trace.",
+                verbose_name="Observations Count",
+            ),
         ),
         migrations.AlterField(
-            model_name='orbittracejob',
-            name='count_success',
-            field=models.IntegerField(default=0, help_text='Total asteroids successfully executed in all steps.', verbose_name='Success'),
+            model_name="orbittracejob",
+            name="count_success",
+            field=models.IntegerField(
+                default=0,
+                help_text="Total asteroids successfully executed in all steps.",
+                verbose_name="Success",
+            ),
         ),
         migrations.AlterField(
-            model_name='orbittracejob',
-            name='debug',
-            field=models.BooleanField(default=False, help_text='Debug False all log files and intermediate results will be deleted at the end of the job.', verbose_name='Debug'),
+            model_name="orbittracejob",
+            name="debug",
+            field=models.BooleanField(
+                default=False,
+                help_text="Debug False all log files and intermediate results will be deleted at the end of the job.",
+                verbose_name="Debug",
+            ),
         ),
         migrations.AlterField(
-            model_name='orbittracejob',
-            name='parsl_init_blocks',
-            field=models.IntegerField(default=400, help_text='Value that defines the parallelism factor that parsl will use in the process.', verbose_name='Parsl Blocks'),
+            model_name="orbittracejob",
+            name="parsl_init_blocks",
+            field=models.IntegerField(
+                default=400,
+                help_text="Value that defines the parallelism factor that parsl will use in the process.",
+                verbose_name="Parsl Blocks",
+            ),
         ),
     ]

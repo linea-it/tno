@@ -6,28 +6,52 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0037_auto_20230726_1846'),
+        ("tno", "0037_auto_20230726_1846"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='occultation',
-            name='have_path_coeff',
-            field=models.BooleanField(blank=True, default=False, help_text='Have Path Coeff', null=True, verbose_name='Have Path Coeff'),
+            model_name="occultation",
+            name="have_path_coeff",
+            field=models.BooleanField(
+                blank=True,
+                default=False,
+                help_text="Have Path Coeff",
+                null=True,
+                verbose_name="Have Path Coeff",
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='max_longitude',
-            field=models.FloatField(blank=True, default=None, help_text='Max Logintude Occultation Path', null=True, verbose_name='Max Logintude'),
+            model_name="occultation",
+            name="max_longitude",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="Max Logintude Occultation Path",
+                null=True,
+                verbose_name="Max Logintude",
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='min_longitude',
-            field=models.FloatField(blank=True, default=None, help_text='Min Logintude Occultation Path', null=True, verbose_name='Min Logintude'),
+            model_name="occultation",
+            name="min_longitude",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                help_text="Min Logintude Occultation Path",
+                null=True,
+                verbose_name="Min Logintude",
+            ),
         ),
         migrations.AddField(
-            model_name='occultation',
-            name='occultation_path_coeff',
-            field=models.JSONField(blank=True, default={}, help_text='Occultation Path Coeff', null=True, verbose_name='Occultation Path Coeff'),
+            model_name="occultation",
+            name="occultation_path_coeff",
+            field=models.JSONField(
+                blank=True,
+                default={},
+                help_text="Occultation Path Coeff",
+                null=True,
+                verbose_name="Occultation Path Coeff",
+            ),
         ),
     ]

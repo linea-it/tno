@@ -6,14 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0046_orbittracejob_observatory_location'),
+        ("des", "0046_orbittracejob_observatory_location"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='orbittracejob',
-            name='time_profile',
-            field=models.JSONField(default='[]'),
+            model_name="orbittracejob",
+            name="time_profile",
+            field=models.JSONField(default="[]"),
             preserve_default=False,
         ),
     ]

@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0053_alter_asteroidjob_asteroids_after'),
+        ("tno", "0053_alter_asteroidjob_asteroids_after"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='asteroidjob',
-            name='new_records',
-            field=models.IntegerField(blank=True, default=None, help_text='Quantidade de registros adicionados ou removidos em relação a execução anterior.', null=True, verbose_name='New Records'),
+            model_name="asteroidjob",
+            name="new_records",
+            field=models.IntegerField(
+                blank=True,
+                default=None,
+                help_text="Quantidade de registros adicionados ou removidos em relação a execução anterior.",
+                null=True,
+                verbose_name="New Records",
+            ),
         ),
     ]

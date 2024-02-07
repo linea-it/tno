@@ -6,18 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0057_auto_20240131_1713'),
+        ("tno", "0057_auto_20240131_1713"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='occultation',
-            name='mpc_critical_list',
-            field=models.BooleanField(blank=True, default=False, null=True, verbose_name='MPC critical list'),
+            model_name="occultation",
+            name="mpc_critical_list",
+            field=models.BooleanField(
+                blank=True, default=False, null=True, verbose_name="MPC critical list"
+            ),
         ),
         migrations.AlterField(
-            model_name='occultation',
-            name='pha_flag',
-            field=models.BooleanField(blank=True, default=False, null=True, verbose_name='pha_flag'),
+            model_name="occultation",
+            name="pha_flag",
+            field=models.BooleanField(
+                blank=True, default=False, null=True, verbose_name="pha_flag"
+            ),
         ),
     ]

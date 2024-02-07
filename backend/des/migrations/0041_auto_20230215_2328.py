@@ -6,18 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0040_skybotjob_debug'),
+        ("des", "0040_skybotjob_debug"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='skybotjob',
-            name='summary',
-            field=models.BooleanField(default=True, help_text='summary = True runs the methods that populate the job statistics tables.', verbose_name='Summary'),
+            model_name="skybotjob",
+            name="summary",
+            field=models.BooleanField(
+                default=True,
+                help_text="summary = True runs the methods that populate the job statistics tables.",
+                verbose_name="Summary",
+            ),
         ),
         migrations.AlterField(
-            model_name='skybotjob',
-            name='debug',
-            field=models.BooleanField(default=False, help_text='debug = False The files returned by skybot will be removed at the end of the job.', verbose_name='Debug'),
+            model_name="skybotjob",
+            name="debug",
+            field=models.BooleanField(
+                default=False,
+                help_text="debug = False The files returned by skybot will be removed at the end of the job.",
+                verbose_name="Debug",
+            ),
         ),
     ]

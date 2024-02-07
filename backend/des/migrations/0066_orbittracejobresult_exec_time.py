@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0065_auto_20230531_2222'),
+        ("des", "0065_auto_20230531_2222"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='orbittracejobresult',
-            name='exec_time',
-            field=models.DurationField(blank=True, null=True, verbose_name='Execution Time'),
+            model_name="orbittracejobresult",
+            name="exec_time",
+            field=models.DurationField(
+                blank=True, null=True, verbose_name="Execution Time"
+            ),
         ),
     ]

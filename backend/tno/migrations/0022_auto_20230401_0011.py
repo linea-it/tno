@@ -6,126 +6,201 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0021_predictionjob_catalog'),
+        ("tno", "0021_predictionjob_catalog"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='predictionjobresult',
-            old_name='asteroid_name',
-            new_name='name',
+            model_name="predictionjobresult",
+            old_name="asteroid_name",
+            new_name="name",
         ),
         migrations.RemoveField(
-            model_name='predictionjob',
-            name='count_asteroids_failure',
+            model_name="predictionjob",
+            name="count_asteroids_failure",
         ),
         migrations.RemoveField(
-            model_name='predictionjobresult',
-            name='asteroid_number',
+            model_name="predictionjobresult",
+            name="asteroid_number",
         ),
         migrations.AddField(
-            model_name='predictionjob',
-            name='count_failures',
-            field=models.IntegerField(default=0, help_text='Total asteroids that failed at least one of the steps.', verbose_name='Failures Count'),
+            model_name="predictionjob",
+            name="count_failures",
+            field=models.IntegerField(
+                default=0,
+                help_text="Total asteroids that failed at least one of the steps.",
+                verbose_name="Failures Count",
+            ),
         ),
         migrations.AddField(
-            model_name='predictionjob',
-            name='count_success',
-            field=models.IntegerField(default=0, help_text='Total asteroids successfully executed in all steps.', verbose_name='Success'),
+            model_name="predictionjob",
+            name="count_success",
+            field=models.IntegerField(
+                default=0,
+                help_text="Total asteroids successfully executed in all steps.",
+                verbose_name="Success",
+            ),
         ),
         migrations.AddField(
-            model_name='predictionjob',
-            name='debug',
-            field=models.BooleanField(default=False, help_text='Debug False all log files and intermediate results will be deleted at the end of the job.', verbose_name='Debug'),
+            model_name="predictionjob",
+            name="debug",
+            field=models.BooleanField(
+                default=False,
+                help_text="Debug False all log files and intermediate results will be deleted at the end of the job.",
+                verbose_name="Debug",
+            ),
         ),
         migrations.AddField(
-            model_name='predictionjob',
-            name='parsl_init_blocks',
-            field=models.IntegerField(default=400, help_text='Value that defines the parallelism factor that parsl will use in the process.', verbose_name='Parsl Blocks'),
+            model_name="predictionjob",
+            name="parsl_init_blocks",
+            field=models.IntegerField(
+                default=400,
+                help_text="Value that defines the parallelism factor that parsl will use in the process.",
+                verbose_name="Parsl Blocks",
+            ),
         ),
         migrations.AddField(
-            model_name='predictionjobresult',
-            name='base_dynclass',
-            field=models.CharField(default='', max_length=100, verbose_name='Asteroid Base DynClass'),
+            model_name="predictionjobresult",
+            name="base_dynclass",
+            field=models.CharField(
+                default="", max_length=100, verbose_name="Asteroid Base DynClass"
+            ),
         ),
         migrations.AddField(
-            model_name='predictionjobresult',
-            name='dynclass',
-            field=models.CharField(default='', max_length=100, verbose_name='Asteroid DynClass'),
+            model_name="predictionjobresult",
+            name="dynclass",
+            field=models.CharField(
+                default="", max_length=100, verbose_name="Asteroid DynClass"
+            ),
         ),
         migrations.AddField(
-            model_name='predictionjobresult',
-            name='number',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Asteroid Number'),
+            model_name="predictionjobresult",
+            name="number",
+            field=models.CharField(
+                blank=True, max_length=100, null=True, verbose_name="Asteroid Number"
+            ),
         ),
         migrations.AlterField(
-            model_name='predictionjob',
-            name='condor_job_completed',
-            field=models.IntegerField(default=0, help_text='HTCondor Jobs Completed.', verbose_name='HTCondor Completed'),
+            model_name="predictionjob",
+            name="condor_job_completed",
+            field=models.IntegerField(
+                default=0,
+                help_text="HTCondor Jobs Completed.",
+                verbose_name="HTCondor Completed",
+            ),
         ),
         migrations.AlterField(
-            model_name='predictionjob',
-            name='condor_job_removed',
-            field=models.IntegerField(default=0, help_text='Condor Jobs Removed', verbose_name='HTCondor Removed'),
+            model_name="predictionjob",
+            name="condor_job_removed",
+            field=models.IntegerField(
+                default=0,
+                help_text="Condor Jobs Removed",
+                verbose_name="HTCondor Removed",
+            ),
         ),
         migrations.AlterField(
-            model_name='predictionjob',
-            name='condor_job_submited',
-            field=models.IntegerField(default=0, help_text='HTCondor Job Submited', verbose_name='HTCondor Jobs'),
+            model_name="predictionjob",
+            name="condor_job_submited",
+            field=models.IntegerField(
+                default=0,
+                help_text="HTCondor Job Submited",
+                verbose_name="HTCondor Jobs",
+            ),
         ),
         migrations.AlterField(
-            model_name='predictionjob',
-            name='count_asteroids',
-            field=models.IntegerField(default=0, help_text='Total asteroids selected to run this job', verbose_name='Asteroids'),
+            model_name="predictionjob",
+            name="count_asteroids",
+            field=models.IntegerField(
+                default=0,
+                help_text="Total asteroids selected to run this job",
+                verbose_name="Asteroids",
+            ),
         ),
         migrations.AlterField(
-            model_name='predictionjob',
-            name='count_asteroids_with_occ',
-            field=models.IntegerField(default=0, help_text='Total asteroids with at least one occultation event identified by predict occultation.', verbose_name='Asteroids With Occultations'),
+            model_name="predictionjob",
+            name="count_asteroids_with_occ",
+            field=models.IntegerField(
+                default=0,
+                help_text="Total asteroids with at least one occultation event identified by predict occultation.",
+                verbose_name="Asteroids With Occultations",
+            ),
         ),
         migrations.AlterField(
-            model_name='predictionjob',
-            name='count_occ',
-            field=models.IntegerField(default=0, help_text='Total occultation events identified by predict occultation.', verbose_name='Occultations'),
+            model_name="predictionjob",
+            name="count_occ",
+            field=models.IntegerField(
+                default=0,
+                help_text="Total occultation events identified by predict occultation.",
+                verbose_name="Occultations",
+            ),
         ),
         migrations.AlterField(
-            model_name='predictionjob',
-            name='filter_type',
-            field=models.CharField(choices=[('name', 'Name'), ('dynclass', 'DynClass'), ('base_dynclass', 'Base DynClass')], max_length=15, verbose_name='Filter Type'),
+            model_name="predictionjob",
+            name="filter_type",
+            field=models.CharField(
+                choices=[
+                    ("name", "Name"),
+                    ("dynclass", "DynClass"),
+                    ("base_dynclass", "Base DynClass"),
+                ],
+                max_length=15,
+                verbose_name="Filter Type",
+            ),
         ),
         migrations.AlterField(
-            model_name='predictionjob',
-            name='filter_value',
-            field=models.TextField(verbose_name='Filter Value'),
+            model_name="predictionjob",
+            name="filter_value",
+            field=models.TextField(verbose_name="Filter Value"),
         ),
         migrations.AlterField(
-            model_name='predictionjob',
-            name='force_refresh_input',
-            field=models.BooleanField(default=False, help_text='Force Refresh Inputs', verbose_name='Refresh Inputs'),
+            model_name="predictionjob",
+            name="force_refresh_input",
+            field=models.BooleanField(
+                default=False,
+                help_text="Force Refresh Inputs",
+                verbose_name="Refresh Inputs",
+            ),
         ),
         migrations.AlterField(
-            model_name='predictionjob',
-            name='input_days_to_expire',
-            field=models.IntegerField(default=5, help_text='Days to expire inputs', verbose_name='Days to expire'),
+            model_name="predictionjob",
+            name="input_days_to_expire",
+            field=models.IntegerField(
+                default=5,
+                help_text="Days to expire inputs",
+                verbose_name="Days to expire",
+            ),
         ),
         migrations.AlterField(
-            model_name='predictionjob',
-            name='path',
-            field=models.CharField(blank=True, help_text='Path to the directory where the job data is located.', max_length=2048, null=True, verbose_name='Path'),
+            model_name="predictionjob",
+            name="path",
+            field=models.CharField(
+                blank=True,
+                help_text="Path to the directory where the job data is located.",
+                max_length=2048,
+                null=True,
+                verbose_name="Path",
+            ),
         ),
         migrations.AlterField(
-            model_name='predictionjob',
-            name='predict_end_date',
-            field=models.DateField(help_text='Date Final of Predictions', verbose_name='Date Final of Predictions'),
+            model_name="predictionjob",
+            name="predict_end_date",
+            field=models.DateField(
+                help_text="Date Final of Predictions",
+                verbose_name="Date Final of Predictions",
+            ),
         ),
         migrations.AlterField(
-            model_name='predictionjob',
-            name='predict_start_date',
-            field=models.DateField(help_text='Date Initial of Predictions', verbose_name='Date Initial'),
+            model_name="predictionjob",
+            name="predict_start_date",
+            field=models.DateField(
+                help_text="Date Initial of Predictions", verbose_name="Date Initial"
+            ),
         ),
         migrations.AlterField(
-            model_name='predictionjob',
-            name='predict_step',
-            field=models.IntegerField(default=600, help_text='Prediction Step', verbose_name='Prediction Step'),
+            model_name="predictionjob",
+            name="predict_step",
+            field=models.IntegerField(
+                default=600, help_text="Prediction Step", verbose_name="Prediction Step"
+            ),
         ),
     ]

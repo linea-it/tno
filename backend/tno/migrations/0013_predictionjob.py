@@ -6,33 +6,151 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0012_alter_catalog_database'),
+        ("tno", "0012_alter_catalog_database"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PredictionJob',
+            name="PredictionJob",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.IntegerField(choices=[(1, 'Idle'), (2, 'Running'), (3, 'Completed'), (4, 'Failed'), (5, 'Aborted'), (6, 'Warning')], default=1, verbose_name='Status')),
-                ('submit_time', models.DateTimeField(auto_now_add=True, verbose_name='Submit Time')),
-                ('start', models.DateTimeField(blank=True, null=True, verbose_name='Start')),
-                ('end', models.DateTimeField(blank=True, null=True, verbose_name='Finish')),
-                ('exec_time', models.DurationField(blank=True, null=True, verbose_name='Execution Time')),
-                ('filter_type', models.CharField(max_length=100, verbose_name='Filter Type')),
-                ('filter_value', models.CharField(max_length=100, verbose_name='Filter Value')),
-                ('predict_start_date', models.DateField(verbose_name='Date Initial of Predictions')),
-                ('predict_end_date', models.DateField(verbose_name='Date Final of Predictions')),
-                ('predict_step', models.IntegerField(default=0, help_text='Prediction Step', verbose_name='Prediction Step')),
-                ('inputs_days_to_expire', models.IntegerField(default=0, help_text='Days to expire inputs', verbose_name='Days to expire inputs')),
-                ('count_asteroids', models.IntegerField(default=0, help_text='Asteroids Count', verbose_name='Asteroids Count')),
-                ('count_asteroids_with_occ', models.IntegerField(default=0, help_text='Asteroids With Occultations Count', verbose_name='Asteroids With Occultations Count')),
-                ('count_occ', models.IntegerField(default=0, help_text='Occultations Count', verbose_name='Occultations Count')),
-                ('count_asteroids_failure', models.IntegerField(default=0, help_text='Asteroids Failure Count', verbose_name='Asteroids Failure Count')),
-                ('condor_job_submited', models.IntegerField(default=0, help_text='Condor Job Submited', verbose_name='Condor Job Submited')),
-                ('condor_job_completed', models.IntegerField(default=0, help_text='Condor Job Completed', verbose_name='Condor Job Completed')),
-                ('condor_job_removed', models.IntegerField(default=0, help_text='Condor Job Removed', verbose_name='Condor Job Removed')),
-                ('path', models.CharField(help_text='Path to the directory where the job data is located.', max_length=2048, verbose_name='Path')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.IntegerField(
+                        choices=[
+                            (1, "Idle"),
+                            (2, "Running"),
+                            (3, "Completed"),
+                            (4, "Failed"),
+                            (5, "Aborted"),
+                            (6, "Warning"),
+                        ],
+                        default=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "submit_time",
+                    models.DateTimeField(auto_now_add=True, verbose_name="Submit Time"),
+                ),
+                (
+                    "start",
+                    models.DateTimeField(blank=True, null=True, verbose_name="Start"),
+                ),
+                (
+                    "end",
+                    models.DateTimeField(blank=True, null=True, verbose_name="Finish"),
+                ),
+                (
+                    "exec_time",
+                    models.DurationField(
+                        blank=True, null=True, verbose_name="Execution Time"
+                    ),
+                ),
+                (
+                    "filter_type",
+                    models.CharField(max_length=100, verbose_name="Filter Type"),
+                ),
+                (
+                    "filter_value",
+                    models.CharField(max_length=100, verbose_name="Filter Value"),
+                ),
+                (
+                    "predict_start_date",
+                    models.DateField(verbose_name="Date Initial of Predictions"),
+                ),
+                (
+                    "predict_end_date",
+                    models.DateField(verbose_name="Date Final of Predictions"),
+                ),
+                (
+                    "predict_step",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Prediction Step",
+                        verbose_name="Prediction Step",
+                    ),
+                ),
+                (
+                    "inputs_days_to_expire",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Days to expire inputs",
+                        verbose_name="Days to expire inputs",
+                    ),
+                ),
+                (
+                    "count_asteroids",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Asteroids Count",
+                        verbose_name="Asteroids Count",
+                    ),
+                ),
+                (
+                    "count_asteroids_with_occ",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Asteroids With Occultations Count",
+                        verbose_name="Asteroids With Occultations Count",
+                    ),
+                ),
+                (
+                    "count_occ",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Occultations Count",
+                        verbose_name="Occultations Count",
+                    ),
+                ),
+                (
+                    "count_asteroids_failure",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Asteroids Failure Count",
+                        verbose_name="Asteroids Failure Count",
+                    ),
+                ),
+                (
+                    "condor_job_submited",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Condor Job Submited",
+                        verbose_name="Condor Job Submited",
+                    ),
+                ),
+                (
+                    "condor_job_completed",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Condor Job Completed",
+                        verbose_name="Condor Job Completed",
+                    ),
+                ),
+                (
+                    "condor_job_removed",
+                    models.IntegerField(
+                        default=0,
+                        help_text="Condor Job Removed",
+                        verbose_name="Condor Job Removed",
+                    ),
+                ),
+                (
+                    "path",
+                    models.CharField(
+                        help_text="Path to the directory where the job data is located.",
+                        max_length=2048,
+                        verbose_name="Path",
+                    ),
+                ),
             ],
         ),
     ]

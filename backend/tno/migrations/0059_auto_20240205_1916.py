@@ -6,23 +6,38 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0058_auto_20240201_1703'),
+        ("tno", "0058_auto_20240201_1703"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='predictionjobresult',
-            name='calc_path_coeff_exec_time',
-            field=models.DurationField(blank=True, help_text='Execution time of the path coeff step.', null=True, verbose_name='Calc Path Coeff Execution Time'),
+            model_name="predictionjobresult",
+            name="calc_path_coeff_exec_time",
+            field=models.DurationField(
+                blank=True,
+                help_text="Execution time of the path coeff step.",
+                null=True,
+                verbose_name="Calc Path Coeff Execution Time",
+            ),
         ),
         migrations.AddField(
-            model_name='predictionjobresult',
-            name='calc_path_coeff_finish',
-            field=models.DateTimeField(blank=True, help_text='End of path coeff.', null=True, verbose_name='Calc Path Coeff Finish'),
+            model_name="predictionjobresult",
+            name="calc_path_coeff_finish",
+            field=models.DateTimeField(
+                blank=True,
+                help_text="End of path coeff.",
+                null=True,
+                verbose_name="Calc Path Coeff Finish",
+            ),
         ),
         migrations.AddField(
-            model_name='predictionjobresult',
-            name='calc_path_coeff_start',
-            field=models.DateTimeField(blank=True, help_text='Start of path coeff.', null=True, verbose_name='Calc Path Coeff Start'),
+            model_name="predictionjobresult",
+            name="calc_path_coeff_start",
+            field=models.DateTimeField(
+                blank=True,
+                help_text="Start of path coeff.",
+                null=True,
+                verbose_name="Calc Path Coeff Start",
+            ),
         ),
     ]

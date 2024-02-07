@@ -7,13 +7,17 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('des', '0052_orbittracejobresult'),
+        ("des", "0052_orbittracejobresult"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='orbittracejobresult',
-            name='job',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='des.orbittracejob', verbose_name='Orbit Trace Job'),
+            model_name="orbittracejobresult",
+            name="job",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="des.orbittracejob",
+                verbose_name="Orbit Trace Job",
+            ),
         ),
     ]

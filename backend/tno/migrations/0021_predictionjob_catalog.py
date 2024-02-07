@@ -7,14 +7,19 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0020_predictionjobresult_exec_time'),
+        ("tno", "0020_predictionjobresult_exec_time"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='predictionjob',
-            name='catalog',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='tno.catalog', verbose_name='Catalog'),
+            model_name="predictionjob",
+            name="catalog",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="tno.catalog",
+                verbose_name="Catalog",
+            ),
             preserve_default=False,
         ),
     ]

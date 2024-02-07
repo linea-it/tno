@@ -6,48 +6,62 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0041_auto_20231023_1813'),
+        ("tno", "0041_auto_20231023_1813"),
     ]
 
     operations = [
         migrations.AddIndex(
-            model_name='occultation',
-            index=models.Index(fields=['name'], name='tno_occulta_name_a76898_idx'),
+            model_name="occultation",
+            index=models.Index(fields=["name"], name="tno_occulta_name_a76898_idx"),
         ),
         migrations.AddIndex(
-            model_name='occultation',
-            index=models.Index(fields=['number'], name='tno_occulta_number_0b28dc_idx'),
+            model_name="occultation",
+            index=models.Index(fields=["number"], name="tno_occulta_number_0b28dc_idx"),
         ),
         migrations.AddIndex(
-            model_name='occultation',
-            index=models.Index(fields=['date_time'], name='tno_occulta_date_ti_6f7f46_idx'),
+            model_name="occultation",
+            index=models.Index(
+                fields=["date_time"], name="tno_occulta_date_ti_6f7f46_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='occultation',
-            index=models.Index(fields=['g'], name='tno_occulta_g_63a652_idx'),
+            model_name="occultation",
+            index=models.Index(fields=["g"], name="tno_occulta_g_63a652_idx"),
         ),
         migrations.AddIndex(
-            model_name='occultation',
-            index=models.Index(fields=['have_path_coeff'], name='tno_occulta_have_pa_d3e242_idx'),
+            model_name="occultation",
+            index=models.Index(
+                fields=["have_path_coeff"], name="tno_occulta_have_pa_d3e242_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='occultation',
-            index=models.Index(fields=['occ_path_min_longitude'], name='tno_occulta_occ_pat_8c7df7_idx'),
+            model_name="occultation",
+            index=models.Index(
+                fields=["occ_path_min_longitude"], name="tno_occulta_occ_pat_8c7df7_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='occultation',
-            index=models.Index(fields=['occ_path_max_longitude'], name='tno_occulta_occ_pat_cb7098_idx'),
+            model_name="occultation",
+            index=models.Index(
+                fields=["occ_path_max_longitude"], name="tno_occulta_occ_pat_cb7098_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='occultation',
-            index=models.Index(fields=['occ_path_min_latitude'], name='tno_occulta_occ_pat_76d749_idx'),
+            model_name="occultation",
+            index=models.Index(
+                fields=["occ_path_min_latitude"], name="tno_occulta_occ_pat_76d749_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='occultation',
-            index=models.Index(fields=['occ_path_max_latitude'], name='tno_occulta_occ_pat_cb23f0_idx'),
+            model_name="occultation",
+            index=models.Index(
+                fields=["occ_path_max_latitude"], name="tno_occulta_occ_pat_cb23f0_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='occultation',
-            index=models.Index(fields=['occ_path_is_nightside'], name='tno_occulta_occ_pat_09c378_idx'),
+            model_name="occultation",
+            index=models.Index(
+                fields=["occ_path_is_nightside"], name="tno_occulta_occ_pat_09c378_idx"
+            ),
         ),
     ]
