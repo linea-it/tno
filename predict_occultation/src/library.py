@@ -1,4 +1,3 @@
- 
 def write_json(filepath, data):
     import json
     import os
@@ -58,6 +57,7 @@ def count_lines(filepath):
     with open(filepath, "r") as fp:
         num_lines = sum(1 for line in fp if line.rstrip())
         return num_lines
+
 
 def ingest_occultations(asteroid_id, name, number, filepath, start_period, end_period):
 
@@ -177,7 +177,10 @@ def ingest_occultations(asteroid_id, name, number, filepath, start_period, end_p
 
     data = StringIO()
     df.to_csv(
-        data, sep="|", header=True, index=False,
+        data,
+        sep="|",
+        header=True,
+        index=False,
     )
     data.seek(0)
 
@@ -240,9 +243,10 @@ def date_to_jd(date_obs, exptime, leap_second):
 def get_configs():
     import configparser
     import os
+
     # Carrega as variaveis de configuração do arquivo config.ini
-    execution_path = os.environ['EXECUTION_PATH']
-    config_filepath = os.path.join(execution_path, 'config.ini')
+    execution_path = os.environ["EXECUTION_PATH"]
+    config_filepath = os.path.join(execution_path, "config.ini")
     config = configparser.ConfigParser()
     config.read(config_filepath)
 

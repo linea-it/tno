@@ -18,6 +18,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from des.dao.exposure import ExposureDao
 
+
 class SkybotJobViewSet(
     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
 ):
@@ -30,7 +31,18 @@ class SkybotJobViewSet(
 
     queryset = SkybotJob.objects.all()
     serializer_class = SkybotJobSerializer
-    ordering_fields = ("id", "status", "start", "finish", "execution_time", "nights", "exposures", "asteroids", "ccds", "ccds_with_asteroid")
+    ordering_fields = (
+        "id",
+        "status",
+        "start",
+        "finish",
+        "execution_time",
+        "nights",
+        "exposures",
+        "asteroids",
+        "ccds",
+        "ccds_with_asteroid",
+    )
     ordering = ("-start",)
 
     def estimate_execution_time(self, to_execute):
@@ -45,7 +57,7 @@ class SkybotJobViewSet(
 
         except:
             # Caso não tenha dados para a estimativa utilizar 2.15 segundos para cada exposição.
-            estimated_time = (int(to_execute) * 2.15)
+            estimated_time = int(to_execute) * 2.15
 
         return estimated_time
 
@@ -130,7 +142,7 @@ class SkybotJobViewSet(
             # Debug Mode
             debug=debug,
             # Execute Summary
-            summary=summary
+            summary=summary,
         )
         job.save()
 
@@ -139,7 +151,7 @@ class SkybotJobViewSet(
     @action(detail=False, methods=["post"])
     def submit_job_balanced_periods(self, request):
         """
-        Este endpoint Submete Jobs do Skybot em lotes para todo o periodo de observações do DES. 
+        Este endpoint Submete Jobs do Skybot em lotes para todo o periodo de observações do DES.
         criando uma fila balanceada de jobs.
         Os jobs estão divididos em blocos de aproximadamente 5000 exposições com duração estimada de ~3h.
         Para economizar tempo as operações de summary (DES/dashboard) serão executadas a cada 5 jobs e no ultimo job.
@@ -155,7 +167,9 @@ class SkybotJobViewSet(
         owner = self.request.user
 
         # Recuperar todas as datas envolvidas no Des Release.
-        start = datetime.strptime("2012-11-10", "%Y-%m-%d").strftime("%Y-%m-%d 00:00:00")
+        start = datetime.strptime("2012-11-10", "%Y-%m-%d").strftime(
+            "%Y-%m-%d 00:00:00"
+        )
         end = datetime.strptime("2019-02-28", "%Y-%m-%d").strftime("%Y-%m-%d 00:00:00")
         all_dates = ExposureDao().count_by_period(start, end)
 
@@ -168,18 +182,20 @@ class SkybotJobViewSet(
 
         for date in all_dates:
             if job_start is None:
-                job_start = date['date']
+                job_start = date["date"]
 
-            count += date['count']
+            count += date["count"]
 
             if count > bin or date == last_item:
-                job_end = date['date']
+                job_end = date["date"]
 
-                bins.append({'job_start': job_start, 'job_end': job_end, 'count': count})
+                bins.append(
+                    {"job_start": job_start, "job_end": job_end, "count": count}
+                )
 
                 # Para economizar tempo só executa as operações de Summary a cada 5 jobs.
                 summary = False
-                if len(jobs)%5 == 0:
+                if len(jobs) % 5 == 0:
                     summary = True
 
                 #  Ultimo item sempre vai executar o summary
@@ -187,13 +203,7 @@ class SkybotJobViewSet(
                     summary = True
 
                 # Submit Job
-                job = self.add_new_job(
-                    job_start, 
-                    job_end, 
-                    owner, 
-                    debug, 
-                    summary
-                )
+                job = self.add_new_job(job_start, job_end, owner, debug, summary)
 
                 jobs.append(job.id)
 
@@ -201,16 +211,9 @@ class SkybotJobViewSet(
                 job_start = None
                 job_end = None
 
-
-        return Response(dict({
-            'success': True, 
-            'job':jobs[0], 
-            'count': len(jobs),
-            'bins': bins
-        }))        
-
-
-
+        return Response(
+            dict({"success": True, "job": jobs[0], "count": len(jobs), "bins": bins})
+        )
 
     @action(detail=True, methods=["post"])
     def cancel_job(self, request, pk=None):
@@ -226,10 +229,7 @@ class SkybotJobViewSet(
 
             # Criar um arquivo no diretório do Job para indicar ao pipeline que foi abortado.
             data = dict(
-                {
-                    "status": "aborted",
-                    "reason": "The job was aborted by the user."
-                }
+                {"status": "aborted", "reason": "The job was aborted by the user."}
             )
 
             filepath = os.path.join(job.path, "status.json")
@@ -385,7 +385,9 @@ class SkybotJobViewSet(
         file_path = os.path.join(job.path, "results.csv")
 
         if not os.path.exists(file_path):
-            result = dict({"results": [], "count": 0, "message": "No such file results.csv"})
+            result = dict(
+                {"results": [], "count": 0, "message": "No such file results.csv"}
+            )
             return Response(result)
 
         job_result = pd.read_csv(
@@ -476,7 +478,9 @@ class SkybotJobViewSet(
         file_path = os.path.join(job.path, "results.csv")
 
         if not os.path.exists(file_path):
-            result = dict({"results": [], "count": 0, "message": "No such file results.csv"})
+            result = dict(
+                {"results": [], "count": 0, "message": "No such file results.csv"}
+            )
             return Response(result)
 
         df_results = pd.read_csv(

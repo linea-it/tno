@@ -40,11 +40,11 @@
 #     if diff.days <= 32:
 #         raise ValueError(
 #             'The [final_date] must be more than 32 days later than [initial_date]')
-     
+
 #     path = pathlib.Path(directory)
 #     if not path.exists():
 #         raise ValueError('The directory {} does not exist!'.format(path))
-        
+
 #     # Define API URL and SPK filename:
 #     url = 'https://ssd.jpl.nasa.gov/api/horizons.api'
 #     spk_filename = path.joinpath(filename)

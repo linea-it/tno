@@ -1,9 +1,9 @@
-
 from django.conf import settings
 from django.db import models
 from tno.models import Catalog
 
-class PredictionJob (models.Model):
+
+class PredictionJob(models.Model):
 
     # Usuario que solicitou a execução do Job.
     owner = models.ForeignKey(
@@ -61,7 +61,7 @@ class PredictionJob (models.Model):
         help_text="average execution time per asteroid. (seconds)",
         null=True,
         blank=True,
-        default=0
+        default=0,
     )
 
     filter_type = models.CharField(
@@ -95,8 +95,10 @@ class PredictionJob (models.Model):
     predict_interval = models.CharField(
         verbose_name="Predict Interval",
         max_length=100,
-        null=True, blank=True, default=None,
-        help_text="Prediction range formatted with humanize."
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Prediction range formatted with humanize.",
     )
 
     predict_step = models.IntegerField(
@@ -147,13 +149,12 @@ class PredictionJob (models.Model):
         help_text="Path to the directory where the job data is located.",
         max_length=2048,
         null=True,
-        blank=True
+        blank=True,
     )
 
     error = models.TextField(verbose_name="Error", null=True, blank=True)
 
-    traceback = models.TextField(
-        verbose_name="Traceback", null=True, blank=True)
+    traceback = models.TextField(verbose_name="Traceback", null=True, blank=True)
 
     def __str__(self):
         return str(self.id)

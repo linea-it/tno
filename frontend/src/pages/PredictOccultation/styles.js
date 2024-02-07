@@ -41,9 +41,9 @@ const useStyles = makeStyles((theme) => ({
   },
   input:{
     borderRadius: 4,
-    position: 'relative',    
-    border: '1px solid #ced4da',   
-    width: 'auto'    
+    position: 'relative',
+    border: '1px solid #ced4da',
+    width: 'auto'
   },
   tooltip: {
     fontSize: "1.4em",

@@ -3,12 +3,13 @@
 import os
 import numpy as np
 
+
 def check_leapsec(filename):
     """
-        Verifica se o arquivo leapSec existe
+    Verifica se o arquivo leapSec existe
     """
-    app_path = os.environ.get("APP_PATH").rstrip('/')
-    data_dir = os.environ.get("DIR_DATA").rstrip('/')
+    app_path = os.environ.get("APP_PATH").rstrip("/")
+    data_dir = os.environ.get("DIR_DATA").rstrip("/")
 
     # local_leap_sec = os.path.join(app_path, filename)
     in_leap_sec = os.path.join(data_dir, filename)
@@ -31,10 +32,10 @@ def check_leapsec(filename):
 
 def check_bsp_planetary(filename):
     """
-        Verifica se o arquivo BSP Planetary existe
+    Verifica se o arquivo BSP Planetary existe
     """
-    app_path = os.environ.get("APP_PATH").rstrip('/')
-    data_dir = os.environ.get("DIR_DATA").rstrip('/')
+    app_path = os.environ.get("APP_PATH").rstrip("/")
+    data_dir = os.environ.get("DIR_DATA").rstrip("/")
 
     in_bsp = os.path.join(data_dir, filename)
 
@@ -55,17 +56,17 @@ def check_bsp_planetary(filename):
 
 def check_bsp_object(filename):
     """
-        Verifica se o arquivo BSP Object existe e cria um link no diretório app
+    Verifica se o arquivo BSP Object existe e cria um link no diretório app
     """
-    app_path = os.environ.get("APP_PATH").rstrip('/')
-    data_dir = os.environ.get("DIR_DATA").rstrip('/')
+    app_path = os.environ.get("APP_PATH").rstrip("/")
+    data_dir = os.environ.get("DIR_DATA").rstrip("/")
 
     in_bsp = os.path.join(data_dir, filename)
 
     dest = os.path.join(app_path, filename)
 
-    print('IN BSP: ', in_bsp)
-    print('DEST: ', dest)
+    print("IN BSP: ", in_bsp)
+    print("DEST: ", dest)
 
     # Verifica se o Arquivo existe no diretorio data
     if os.path.exists(in_bsp):
@@ -76,21 +77,21 @@ def check_bsp_object(filename):
         raise (Exception("BSP Object %s file does not exist. %s" % (filename, in_bsp)))
 
 
-def HMS2deg(ra='', dec=''):
-    RA, DEC, rs, ds = '', '', 1, 1
+def HMS2deg(ra="", dec=""):
+    RA, DEC, rs, ds = "", "", 1, 1
     if dec:
         D, M, S = [float(i) for i in dec.split()]
-        if str(D)[0] == '-':
+        if str(D)[0] == "-":
             ds, D = -1, abs(D)
-        deg = D + (M/60) + (S/3600)
-        DEC = deg*ds
+        deg = D + (M / 60) + (S / 3600)
+        DEC = deg * ds
 
     if ra:
         H, M, S = [float(i) for i in ra.split()]
-        if str(H)[0] == '-':
+        if str(H)[0] == "-":
             rs, H = -1, abs(H)
-        deg = (H*15) + (M/4) + (S/240)
-        RA = deg*rs
+        deg = (H * 15) + (M / 4) + (S / 240)
+        RA = deg * rs
 
     if ra and dec:
         return [RA, DEC]
@@ -99,7 +100,7 @@ def HMS2deg(ra='', dec=''):
 
 
 def clear_for_rerun(input_files, output_files):
-    """Remove os arquivos de input e output utilizados no processo. 
+    """Remove os arquivos de input e output utilizados no processo.
     - para arquivos de input remove só os links simbolicos em /app
     - para arquivos de output remove os links em /app e os arquivos originais em /data
 
@@ -108,8 +109,8 @@ def clear_for_rerun(input_files, output_files):
         output_files (list): Lista com os nomes de arquivos a serem removidos
     """
 
-    app_path = os.environ.get("APP_PATH").rstrip('/')
-    data_dir = os.environ.get("DIR_DATA").rstrip('/')
+    app_path = os.environ.get("APP_PATH").rstrip("/")
+    data_dir = os.environ.get("DIR_DATA").rstrip("/")
 
     # Remover o arquivo bsp_object apenas o link
     for filename in input_files:
@@ -131,8 +132,8 @@ def read_asteroid_json(asteroid_name):
     import json
     import os
 
-    path = os.environ.get("DIR_DATA").rstrip('/')
-    alias = asteroid_name.replace(' ', '').replace('_', '')
+    path = os.environ.get("DIR_DATA").rstrip("/")
+    alias = asteroid_name.replace(" ", "").replace("_", "")
     filename = "{}.json".format(alias)
 
     filepath = os.path.join(path, filename)
@@ -149,23 +150,23 @@ def write_asteroid_json(asteroid_name, data, callback_path=None):
     import os
     import json
 
-    path = os.environ.get("DIR_DATA").rstrip('/')
-    alias = asteroid_name.replace(' ', '').replace('_', '')
+    path = os.environ.get("DIR_DATA").rstrip("/")
+    alias = asteroid_name.replace(" ", "").replace("_", "")
     filename = "{}.json".format(alias)
 
     filepath = os.path.join(path, filename)
 
-    with open(filepath, 'w') as json_file:
+    with open(filepath, "w") as json_file:
         json.dump(data, json_file)
 
     if callback_path is not None:
         filepath = os.path.join(callback_path, filename)
-        with open(filepath, 'w') as json_file:
+        with open(filepath, "w") as json_file:
             json.dump(data, json_file)
 
 
 def count_lines(filepath):
-    with open(filepath, 'r') as fp:
+    with open(filepath, "r") as fp:
         num_lines = sum(1 for line in fp if line.rstrip())
         return num_lines
 
@@ -175,7 +176,7 @@ def create_nima_input(name, number, period_end):
     import os
     from datetime import datetime, timedelta
 
-    path = os.environ.get("DIR_DATA").rstrip('/')
+    path = os.environ.get("DIR_DATA").rstrip("/")
     nima_input_file = os.path.join(path, "nima_input.txt")
 
     # Path para arquivo template de input do NIMA
@@ -187,38 +188,39 @@ def create_nima_input(name, number, period_end):
 
         # Substitui no template as tags {} pelo valor das variaveis.
         # Parametro Asteroid Name
-        name = name.replace('_', '').replace(' ', '')
-        data = data.replace('{name}', name.ljust(66))
+        name = name.replace("_", "").replace(" ", "")
+        data = data.replace("{name}", name.ljust(66))
 
-        data = data.replace('{dir_data}', path.ljust(66))
+        data = data.replace("{dir_data}", path.ljust(66))
 
         # Parametro Asteroid Number
-        if number is None or number == '-':
+        if number is None or number == "-":
             number = name
-        data = data.replace('{number}', number.ljust(66))
+        data = data.replace("{number}", number.ljust(66))
 
         # Parametro Plot start e Plot end
         # data = data.replace('{plot_start_date}', period_start.ljust(66))
         # year = int(period_end.split('-')[0]) - 1
         # data = data.replace('{plot_end_year}', str(year))
-        data = data.replace('{plot_end}', str(period_end).ljust(66))
+        data = data.replace("{plot_end}", str(period_end).ljust(66))
 
         # Parametro BSP start e BSP end
         # data = data.replace('{bsp_start_date}', period_start.ljust(66))
         # year = int(period_end.split('-')[0]) - 1
         # data = data.replace('{bsp_end_year}', str(year))
-        data = data.replace('{bsp_end}', str(period_end).ljust(66))
+        data = data.replace("{bsp_end}", str(period_end).ljust(66))
 
         # Parametro Ephem start e Ephem end
         # data = data.replace('{ephem_start_date}', period_start.ljust(66))
         # year = int(period_end.split('-')[0]) - 1
         # data = data.replace('{ephem_end_year}', str(year))
-        data = data.replace('{ephem_end}', str(period_end).ljust(66))
+        data = data.replace("{ephem_end}", str(period_end).ljust(66))
 
-        with open(nima_input_file, 'w') as new_file:
+        with open(nima_input_file, "w") as new_file:
             new_file.write(data)
 
         return nima_input_file
+
 
 def ast_visual_mag_from_astdys(file_path):
     """
@@ -239,12 +241,18 @@ def ast_visual_mag_from_astdys(file_path):
     """
 
     try:
-        data = np.genfromtxt(file_path, dtype="U16,f8,U16", delimiter=[156,5,36], names=['_0', 'mag', '_1'], skip_header=7)
-        max_mag = np.nanmax(data['mag'])
+        data = np.genfromtxt(
+            file_path,
+            dtype="U16,f8,U16",
+            delimiter=[156, 5, 36],
+            names=["_0", "mag", "_1"],
+            skip_header=7,
+        )
+        max_mag = np.nanmax(data["mag"])
         return None if np.isnan(max_mag) else float(max_mag)
     except:
         return None
-    
+
 
 def ra_hms_to_deg(ra):
     rs = 1
@@ -267,4 +275,4 @@ def dec_hms_to_deg(dec):
     deg = D + (M / 60) + (S / 3600)
     dec_deg = deg * ds
 
-    return dec_deg    
+    return dec_deg

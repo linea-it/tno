@@ -9,18 +9,18 @@
 
 @media (max-width: 1200px) {
     .textBanner {
-        width: 40%;        
+        width: 40%;
     }
 }
 
 @media (max-width: 800px) {
     .textBanner {
-        width: 60%;      
+        width: 60%;
     }
 }
 
 @media (max-width: 600px) {
     .textBanner {
-        width: 90%;        
+        width: 90%;
     }
 }

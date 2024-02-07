@@ -111,16 +111,16 @@ docker-compose run frontend yarn
 
 O pipeline de predição precisa de acesso a dois banco de dados diferentes, utilize as variaveis:
 
-`DB_URI_ADMIN` para permitir o acesso ao banco de dados administrativo do portal. 
+`DB_URI_ADMIN` para permitir o acesso ao banco de dados administrativo do portal.
 
-`DB_URI` para permitir o acesso ao banco de dados de catalog, necessário ter acesso a tabela gaia.dr2. 
+`DB_URI` para permitir o acesso ao banco de dados de catalog, necessário ter acesso a tabela gaia.dr2.
 
 No docker-compose.yml identifique o serviço "pipelines"
 e altere as variaveis de ambiente:
 
-Para que o container pipelines tenha acesso aos DBs ele está configurado com a rede do tipo "host". utilize nos hostname os valores `localhost` ou caso nao funcione use `host.docker.internal` 
+Para que o container pipelines tenha acesso aos DBs ele está configurado com a rede do tipo "host". utilize nos hostname os valores `localhost` ou caso nao funcione use `host.docker.internal`
 
-Para acessar o banco admistrativo, certifique-se que o serviço database está com a porta exposta para o Host. 
+Para acessar o banco admistrativo, certifique-se que o serviço database está com a porta exposta para o Host.
 ```yml
   database:
     image: linea/postgresql_q3c:latest
@@ -132,18 +132,18 @@ Para acessar o banco admistrativo, certifique-se que o serviço database está c
       - 5432:5432
 ```
 
-Neste exemplo a variavel DB_URI_ADMIN recebe o seguinte valor: 
+Neste exemplo a variavel DB_URI_ADMIN recebe o seguinte valor:
 
 ```bash
 DB_URI_ADMIN=postgresql+psycopg2://postgres:postgres@localhost:5432/postgres
 ```
 
-Já o acesso ao banco de catalogos é mais complicado. 
-É necessário criar um tunel ssh com o banco de dados do LIneA. 
+Já o acesso ao banco de catalogos é mais complicado.
+É necessário criar um tunel ssh com o banco de dados do LIneA.
 ```bash
 ssh -f <linea_user>@login.linea.org.br -L <local_port>:desdb4.linea.org.br:5432 -N
 ```
-Neste comando substitua `<linea_user>` pelo seu usuario de acesso a srvlogin e `<local_port>` por uma porta disponivel na sua maquina por ex: `3307`. 
+Neste comando substitua `<linea_user>` pelo seu usuario de acesso a srvlogin e `<local_port>` por uma porta disponivel na sua maquina por ex: `3307`.
 
 É necessário sempre executar esse comando antes de ligar o ambiente.
 
@@ -169,9 +169,9 @@ A configuração do serviço pipeline deve ficar como algo do tipo:
 
 
 <!-- TOC --><a name="setup-pipeline-skybot-discovery"></a>
-## Setup Pipeline Skybot Discovery 
+## Setup Pipeline Skybot Discovery
 
-**Importante!** Esta etapa não é necessária para a execução do pipeline de predição. somente para Skybot Discovery e Orbit Trace. Se não for utilizar estes pipelines em dev, pode pular esta seção. 
+**Importante!** Esta etapa não é necessária para a execução do pipeline de predição. somente para Skybot Discovery e Orbit Trace. Se não for utilizar estes pipelines em dev, pode pular esta seção.
 
 O pipeline Skybot Discovery é responsavel por identificar os asteroids que tiveram observacao no DES. para isso é necessário ter a tabela com todas as exposições e ccds do DES estas tabels são bem grandes. um dump delas está disponivel para download no ambiente do linea.
 
@@ -278,7 +278,7 @@ ssh -f <linea_user>@login.linea.org.br -L <local_port>:desdb4.linea.org.br:5432 
 
 Docker Hub: <https://hub.docker.com/repository/docker/linea/tno/>
 
-No docker hub é apenas um repositório `linea/tno` e as imagens estão divididas em duas tags uma para o backend (**:backend_[version]**) e outra para frontend (**:frontend_[version]**). 
+No docker hub é apenas um repositório `linea/tno` e as imagens estão divididas em duas tags uma para o backend (**:backend_[version]**) e outra para frontend (**:frontend_[version]**).
 
 A identificação unica de cada tag pode ser o numero de versão exemplo: `linea/tno:backend_v0.1` ou o hash do commit para versões de desenvolvimento: `linea/tno:backend_8816330` para obter o hash do commit usar o comando `$(git describe --always)`.
 
@@ -305,19 +305,19 @@ docker push linea/tno:pipelines_$(git describe --always)
 <!-- TOC --><a name="run-ci-github_actions-localy"></a>
 ### Run CI Github Actions Locally
 
-O devcontainer do repositório já está configurado com as dependencias (github cli, act, docker) necessárias para executar os github actions localmente. 
-é necessário criar um arquivo .secrets com as variaveis de acesso ao Dockerhub e o token de login do github. 
+O devcontainer do repositório já está configurado com as dependencias (github cli, act, docker) necessárias para executar os github actions localmente.
+é necessário criar um arquivo .secrets com as variaveis de acesso ao Dockerhub e o token de login do github.
 
-Primeiro faça a autenticação no github cli usando o comando 
+Primeiro faça a autenticação no github cli usando o comando
 ```bash
 gh auth login
 ```
-Após realizar o login com sucesso, execute o comando 
+Após realizar o login com sucesso, execute o comando
 
 ```bash
 gh auth token
 ```
-Copie o Token gerado. 
+Copie o Token gerado.
 
 Crie um arquivo .secrets com as seguintes variaveis:
 
@@ -337,7 +337,7 @@ act [<event>] [options]
 act -l
 
 # Executa o job build_backend simulando um pull_request
-act pull_request --secret-file .secrets  -j build_backend 
+act pull_request --secret-file .secrets  -j build_backend
 
 # Executa o job build_backend simulando um push
 act pull --secret-file .secrets  -j build_backend

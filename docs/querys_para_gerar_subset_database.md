@@ -1,4 +1,4 @@
-# QUERYS E COMANDOS PARA GERAR UM SUBSET DE TESTES PARA O TNO 
+# QUERYS E COMANDOS PARA GERAR UM SUBSET DE TESTES PARA O TNO
 
 Usei como exemplo os objetos da classe KBO e Centaur
 
@@ -31,13 +31,13 @@ psql -h desdb4 -U gavo gavo -c "COPY (SELECT a.* FROM tno.tno_ccdimage a INNER J
 ```
 
 ## Importar os csv para o banco de dados
-Com o Container Database rodando, verificar se o diretorio com os csv está montado como volume no container. 
+Com o Container Database rodando, verificar se o diretorio com os csv está montado como volume no container.
 executar os comando do psql para importar as tabelas. nos exemplos o diretorio com os CSVs esta montado em /data.
 
 Usar o comando docker ps para saber o nome do container que esta rodando neste exemplo 'tno_database_1'
-``` 
-docker ps 
-``` 
+```
+docker ps
+```
 
 
 ### Pointings

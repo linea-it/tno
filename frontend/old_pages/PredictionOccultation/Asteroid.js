@@ -265,7 +265,7 @@ function PredictionOccultationAsteroid({ setTitle, drawerOpen }) {
       {
         title: 'Leap Seconds',
         value: asteroidData.leap_second,
-      },      
+      },
       {
         title: 'Observations',
         value: '',

@@ -21,8 +21,8 @@ DES_CATALOG_PATH = "/lustre/t1/tmp/tno/temp_catalogs"
 BASE_DES_URL = "https://desar2.cosmology.illinois.edu/DESFiles/desarchive/OPS/"
 DOWNLOAD_MISSING_FILES = True
 
-#asteroids = retrieve_asteroids("name", "Eris")
-#centaurs = retrieve_asteroids("base_dynclass", "Centaur")
+# asteroids = retrieve_asteroids("name", "Eris")
+# centaurs = retrieve_asteroids("base_dynclass", "Centaur")
 kbos = retrieve_asteroids("base_dynclass", "KBO")
 # asteroids = centaurs + kbos
 asteroids = kbos[0:300]
@@ -44,7 +44,7 @@ for asteroid in asteroids:
     a.set_log("orbit_trace")
 
     ccds = a.retrieve_ccds(LEAP_SECOND)
-    #print(ccds)
+    # print(ccds)
     missing = 0
     downloaded = 0
     downloaded_size = 0

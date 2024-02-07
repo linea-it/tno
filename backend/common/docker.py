@@ -1,3 +1,7 @@
+"""
+    Funcoes para converter as estatisticas de um container,
+    retiradas deste repositorio: https://github.com/TomasTomecek/sen/blob/master/sen/util.py#L162
+"""
 import os
 import logging
 import functools
@@ -6,11 +10,6 @@ import time
 from datetime import datetime
 
 from docker.errors import APIError
-
-"""
-    Funcoes para converter as estatisticas de um container, 
-    retiradas deste repositorio: https://github.com/TomasTomecek/sen/blob/master/sen/util.py#L162
-"""
 
 
 # this is taken directly from docker client:

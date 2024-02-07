@@ -403,7 +403,6 @@ class DBBase:
 
 
 class CatalogDB(DBBase):
-
     def get_db_uri(self):
 
         db_admin = settings.DATABASES["catalog"]
@@ -458,6 +457,7 @@ class CatalogDB(DBBase):
         )
 
         return self.fetch_all_dict(text(stm))
+
 
 #     def poly_query(
 #         self,

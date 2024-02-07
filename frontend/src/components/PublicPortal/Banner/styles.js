@@ -69,9 +69,9 @@ const styles = makeStyles((theme) => ({
     fontWeight: 100,
     fontSize: 20,
   },
-  menuLink: {   
+  menuLink: {
     textDecoration: 'none',
-    fontWeight: 500,    
+    fontWeight: 500,
     whiteSpace: 'nowrap',
     cursor: 'pointer'
   },

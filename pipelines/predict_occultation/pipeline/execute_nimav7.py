@@ -4,7 +4,7 @@ import subprocess
 import os
 
 
-#Function to execute scripts, the parameters must be an numpy array 
+#Function to execute scripts, the parameters must be an numpy array
 #with specific and ordered values
 #for example the script sc_wget needs [number, name, par1, par2]
 #where par1 is the parameter for creation of observations file
@@ -42,11 +42,11 @@ def NIMAmanager(inputParametersFile):
 
     myPath = os.getcwd()
 
-    #changing from local path to especific path 
+    #changing from local path to especific path
     os.chdir(pathNIMAuser)
-    
 
-    #create the folder "number" if it does not exist    
+
+    #create the folder "number" if it does not exist
     if os.path.exists(asteroidFolder):
         subprocess.call(["rm", "-r", asteroidFolder])
     os.mkdir(asteroidFolder)
@@ -57,7 +57,7 @@ def NIMAmanager(inputParametersFile):
 
 
     #============================= EXECUTE ALL SCRIPTS NIMA =============================
-    
+
     #print "========================== sc_AstDySMPC2NIMA =========================="
 
     executeScript("./sc_AstDySMPC2NIMA.sh", np.concatenate([parameters[5:7], parameters[3:5]]) )
@@ -66,7 +66,7 @@ def NIMAmanager(inputParametersFile):
     #print "============================== sc_esoopd =============================="
 
     executeScript("./sc_esoopd.sh", parameters[5:7])
-    
+
     #print "=============================== sc_cat ================================"
 
     executeScript("./sc_cat.sh", np.insert(parameters[7:8],0,number))
@@ -84,12 +84,12 @@ def NIMAmanager(inputParametersFile):
     executeScript("./sc_importbsp.sh", np.append(parameters[5:7],"jplbsp/" + name + ".bsp"))
 
     #print "============================ sc_diffjplomc ============================"
-    
+
     executeScript("./sc_diffjplomcPython.sh", np.insert(parameters[17:31],0,number))
 
-    
+
     #print "============================== sc_makebsp ============================="
-    
+
     executeScript("./sc_makebsp.sh", np.insert(parameters[31:38],0,number))
 
     #print "=============================== sc_ephem =============================="
@@ -117,8 +117,7 @@ if __name__ == "__main__":
     print parametersFile
 
     NIMAmanager(parametersFile)
-    
+
     end_time = datetime.now()
 
     print "Duration: ", end_time - start_time
-

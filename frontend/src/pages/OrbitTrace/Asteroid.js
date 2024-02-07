@@ -124,8 +124,8 @@ function OrbitTraceAsteroid() {
         customElement: (row) => <span>{row.mag_psf_err.toFixed(3)}</span>
       },
 
-      
-      
+
+
   ]
 
 
@@ -172,7 +172,7 @@ function OrbitTraceAsteroid() {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
     const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
-    
+
     getObservationByAsteroid({asteroid_id: asteroid_id?asteroid_id:asteroidId, page, pageSize, ordering: ordering}).then((res) => {
       setObservationsTable(res.results);
       setObservationsCount(res.count);
@@ -216,7 +216,7 @@ function OrbitTraceAsteroid() {
       <Grid item xs={12} md={8}>
         <Card>
           <CardHeader title='Asteroid Graphic' />
-          {orbitTraceResult.status != 2 && <>          
+          {orbitTraceResult.status != 2 && <>
             {observationPlotError && <CardContent>
               <label className={classes.errorText}>An error occurred while the plot was generated</label>
             </CardContent>}
@@ -233,15 +233,15 @@ function OrbitTraceAsteroid() {
 
           {/* <iframe src="/data/tmp/plot_des_observations_Eris-2013-08-30-2018-10-20.html"></iframe> */}
           {/* <CardContent>
-            
-            <img src={graphFake} style={{ width:'100%', margin: 'auto' }} /> 
+
+            <img src={graphFake} style={{ width:'100%', margin: 'auto' }} />
           </CardContent> */}
         </Card>
       </Grid>
       <Grid item xs={12}>
         <Card>
           <CardHeader title='Observations' />
-          <CardContent>            
+          <CardContent>
               <Table
                 columns={observationsTableColumns}
                 data={observationsTable}

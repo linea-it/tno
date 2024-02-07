@@ -4,6 +4,7 @@ from sqlalchemy.sql import and_, select
 from tno.db import DBBase
 from datetime import datetime
 
+
 class DesSkybotJobDao(DBBase):
     def __init__(self, pool=True):
         super(DesSkybotJobDao, self).__init__(pool)
@@ -56,16 +57,15 @@ class DesSkybotJobDao(DBBase):
                 status=job["status"],
                 start=job["start"],
                 exposures=job["exposures"],
-                nights=job["nights"],           
-                ccds=job["ccds"],  
+                nights=job["nights"],
+                ccds=job["ccds"],
                 positions=job["positions"],
                 asteroids=job["asteroids"],
                 exposures_with_asteroid=job["exposures_with_asteroid"],
                 ccds_with_asteroid=job["ccds_with_asteroid"],
                 path=job["path"],
                 results=job["results"],
-                estimated_execution_time=job["estimated_execution_time"]
-
+                estimated_execution_time=job["estimated_execution_time"],
             )
         )
 

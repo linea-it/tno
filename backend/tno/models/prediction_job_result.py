@@ -1,6 +1,6 @@
-
 from django.db import models
 from tno.models import PredictionJob, Asteroid
+
 
 class PredictionJobResult(models.Model):
 
@@ -26,14 +26,14 @@ class PredictionJobResult(models.Model):
         max_length=100,
         verbose_name="Asteroid Base DynClass",
         # Default value only because this field is added after table already have data
-        default=""
+        default="",
     )
 
     dynclass = models.CharField(
         max_length=100,
         verbose_name="Asteroid DynClass",
         # Default value only because this field is added after table already have data
-        default=""
+        default="",
     )
 
     status = models.IntegerField(
@@ -56,7 +56,7 @@ class PredictionJobResult(models.Model):
     occultations = models.IntegerField(
         default=0,
         verbose_name="Occultations",
-        help_text="Number of occultation events identified for this asteroid."
+        help_text="Number of occultation events identified for this asteroid.",
     )
 
     # Indica a Origem das Observations pode ser AstDys ou MPC
@@ -65,7 +65,7 @@ class PredictionJobResult(models.Model):
         null=True,
         blank=True,
         verbose_name="Observation Source",
-        help_text="Observation data source, AstDys or MPC."
+        help_text="Observation data source, AstDys or MPC.",
     )
 
     # Indica a Origem dos Orbital Elements pode ser AstDys ou MPC
@@ -74,7 +74,7 @@ class PredictionJobResult(models.Model):
         null=True,
         blank=True,
         verbose_name="Orbital Elements Source",
-        help_text="Orbital Elements data source, AstDys or MPC."
+        help_text="Orbital Elements data source, AstDys or MPC.",
     )
 
     # Tempo de execução para um unico asteroid.
@@ -83,7 +83,7 @@ class PredictionJobResult(models.Model):
         verbose_name="exec_time",
         null=True,
         blank=True,
-        help_text="Prediction pipeline runtime for this asteroid."
+        help_text="Prediction pipeline runtime for this asteroid.",
     )
 
     # Mensagens de erro pode conter mais de uma separadas por ;
@@ -91,7 +91,7 @@ class PredictionJobResult(models.Model):
         verbose_name="messages",
         null=True,
         blank=True,
-        help_text="Error messages that occurred while running this asteroid, there may be more than one in this case will be separated by ;"
+        help_text="Error messages that occurred while running this asteroid, there may be more than one in this case will be separated by ;",
     )
 
     # TODO: REVER ESTES CAMPOS que seriam usados só no time profile
@@ -102,7 +102,7 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="Start of the execution of the DES Observations step"
+        help_text="Start of the execution of the DES Observations step",
     )
 
     des_obs_finish = models.DateTimeField(
@@ -110,14 +110,14 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="End of the DES Observations stage"
+        help_text="End of the DES Observations stage",
     )
 
     des_obs_exec_time = models.DurationField(
         verbose_name="DES Observations Execution Time",
         null=True,
         blank=True,
-        help_text="DES Observations step execution time in seconds."
+        help_text="DES Observations step execution time in seconds.",
     )
 
     # Etapa Download BSP from JPL
@@ -126,7 +126,7 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="Beginning of the JPL BSP Download step."
+        help_text="Beginning of the JPL BSP Download step.",
     )
 
     bsp_jpl_finish = models.DateTimeField(
@@ -134,14 +134,14 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="End of the Dwonload stage of the JPL BSP."
+        help_text="End of the Dwonload stage of the JPL BSP.",
     )
 
     bsp_jpl_dw_time = models.DurationField(
         verbose_name="BSP JPL download time",
         null=True,
         blank=True,
-        help_text="BSP download time from JPL."
+        help_text="BSP download time from JPL.",
     )
 
     # Etapa Download Observations from AstDys or MPC
@@ -150,7 +150,7 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="Beginning of the Download stage of observations."
+        help_text="Beginning of the Download stage of observations.",
     )
 
     obs_finish = models.DateTimeField(
@@ -158,14 +158,14 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="End of the Download stage of the observations."
+        help_text="End of the Download stage of the observations.",
     )
 
     obs_dw_time = models.DurationField(
         verbose_name="Observations Download Time",
         null=True,
         blank=True,
-        help_text="Observations download time."
+        help_text="Observations download time.",
     )
 
     # Etapa Orbital Elements from AstDys or MPC
@@ -174,7 +174,7 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="Beginning of the Orbtial Elements Download stage."
+        help_text="Beginning of the Orbtial Elements Download stage.",
     )
 
     orb_ele_finish = models.DateTimeField(
@@ -182,14 +182,14 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="End of Orbital Elements Download step."
+        help_text="End of Orbital Elements Download step.",
     )
 
     orb_ele_dw_time = models.DurationField(
         verbose_name="Orbital Elements Download Time",
         null=True,
         blank=True,
-        help_text="Orbital Elements download time."
+        help_text="Orbital Elements download time.",
     )
 
     # Etapa Refinamento de Orbita (NIMA)
@@ -198,7 +198,7 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="Start of the Refine Orbit step."
+        help_text="Start of the Refine Orbit step.",
     )
 
     ref_orb_finish = models.DateTimeField(
@@ -206,14 +206,14 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="End of the Refine Orbit step."
+        help_text="End of the Refine Orbit step.",
     )
 
     ref_orb_exec_time = models.DurationField(
         verbose_name="Refine Orbit execution time",
         null=True,
         blank=True,
-        help_text="Refine Orbit runtime."
+        help_text="Refine Orbit runtime.",
     )
 
     # Etapa Predict Occultation (PRAIA Occ)
@@ -222,7 +222,7 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="Start of the Predict Occultation step."
+        help_text="Start of the Predict Occultation step.",
     )
 
     pre_occ_finish = models.DateTimeField(
@@ -230,14 +230,14 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="End of the Predict Occultation step."
+        help_text="End of the Predict Occultation step.",
     )
 
     pre_occ_exec_time = models.DurationField(
         verbose_name="Predict Occultation Execution Time",
         null=True,
         blank=True,
-        help_text="Predict Occultation runtime."
+        help_text="Predict Occultation runtime.",
     )
 
     # Etapa de Calculo do Path Coeff, é executado junto com a predição,
@@ -247,7 +247,7 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="Start of path coeff."
+        help_text="Start of path coeff.",
     )
 
     calc_path_coeff_finish = models.DateTimeField(
@@ -255,14 +255,14 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="End of path coeff."
+        help_text="End of path coeff.",
     )
 
     calc_path_coeff_exec_time = models.DurationField(
         verbose_name="Calc Path Coeff Execution Time",
         null=True,
         blank=True,
-        help_text="Execution time of the path coeff step."
+        help_text="Execution time of the path coeff step.",
     )
 
     # Etapa de Ingestão de Resultados (prenchimento dessa tabela e da tno_occultation)
@@ -274,7 +274,7 @@ class PredictionJobResult(models.Model):
     ing_occ_count = models.IntegerField(
         default=0,
         verbose_name="Occultations Ingested",
-        help_text="Total Occultations registered in the database."
+        help_text="Total Occultations registered in the database.",
     )
 
     ing_occ_start = models.DateTimeField(
@@ -282,7 +282,7 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="Start recording the results."
+        help_text="Start recording the results.",
     )
 
     ing_occ_finish = models.DateTimeField(
@@ -290,14 +290,14 @@ class PredictionJobResult(models.Model):
         auto_now_add=False,
         null=True,
         blank=True,
-        help_text="End of record of results."
+        help_text="End of record of results.",
     )
 
     ing_occ_exec_time = models.DurationField(
         verbose_name="Result Ingestion Execution Time",
         null=True,
         blank=True,
-        help_text="Execution time of the results ingestion step."
+        help_text="Execution time of the results ingestion step.",
     )
 
     def __str__(self):

@@ -2,8 +2,8 @@ from rest_framework import serializers
 from des.models import Observation, Ccd
 from tno.models import Asteroid
 
+
 class ObservationSerializer(serializers.ModelSerializer):
-   
     class Meta:
         model = Observation
         fields = (

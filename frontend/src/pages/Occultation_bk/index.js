@@ -145,7 +145,7 @@ function Occultation() {
             loadData={loadData}
             tableData={tableData}
             totalCount={totalCount}
-            /> 
+            />
         </Grid>
       </Grid>
     </Grid>

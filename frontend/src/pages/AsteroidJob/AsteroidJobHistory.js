@@ -50,7 +50,7 @@ const navigate = useNavigate()
         width: 180,
         type: 'dateTime',
         filterable: false,
-        sortable: true,        
+        sortable: true,
         valueGetter: ({ value }) => value && new Date(value),
         valueFormatter: (params) => {
           if (params.value == null) {
@@ -59,7 +59,7 @@ const navigate = useNavigate()
           return `${moment(params.value).utc().format('YYYY-MM-DD HH:mm:ss')}`;
         },
       },
-      
+
       {
         field: 'end',
         headerName: 'End',
@@ -67,7 +67,7 @@ const navigate = useNavigate()
         width: 180,
         type: 'dateTime',
         filterable: false,
-        sortable: true,           
+        sortable: true,
         valueGetter: ({ value }) => value && new Date(value),
         valueFormatter: (params) => {
           if (params.value == null) {
@@ -75,7 +75,7 @@ const navigate = useNavigate()
           }
           return `${moment(params.value).utc().format('YYYY-MM-DD HH:mm:ss')}`;
         },
-      },     
+      },
       {
         field: 'exec_time',
         headerName: 'Exec Time',
@@ -83,7 +83,7 @@ const navigate = useNavigate()
         width: 120,
         type: 'string',
         filterable: false,
-        sortable: true,   
+        sortable: true,
         valueFormatter: (params) => {
           if (params.value == null) {
             return '';
@@ -99,7 +99,7 @@ const navigate = useNavigate()
         headerAlign: 'center',
         align: 'center',
         filterable: false,
-        sortable: true,           
+        sortable: true,
       },
       {
         field: 'asteroids_after',
@@ -109,8 +109,8 @@ const navigate = useNavigate()
         headerAlign: 'center',
         align: 'center',
         filterable: false,
-        sortable: true,           
-      },  
+        sortable: true,
+      },
       {
         field: 'new_records',
         headerName: 'New Records',
@@ -119,9 +119,9 @@ const navigate = useNavigate()
         headerAlign: 'center',
         align: 'center',
         filterable: false,
-        sortable: true,           
-      },        
-      
+        sortable: true,
+      },
+
       {
         field: 'error',
         headerName: 'Error',
@@ -129,8 +129,8 @@ const navigate = useNavigate()
         type: 'string',
         flex: 1,
         filterable: false,
-        sortable: false,   
-      },                       
+        sortable: false,
+      },
   ]
   const columnVisibilityModel = {
     id: true,

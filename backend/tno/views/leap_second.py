@@ -11,4 +11,7 @@ class LeapSecondViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = LeapSecond.objects.all()
     serializer_class = LeapSecondSerializer
-    filterset_fields = ("id", "name",)
+    filterset_fields = (
+        "id",
+        "name",
+    )

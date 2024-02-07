@@ -115,7 +115,7 @@ def fix_table(filename):
 
 def get_position_from_occ_table(data_array, index_list):
     """Function to extract right ascension or declination from a array
-    The index of specific columns (RA or Dec) is defined inside of index_list     
+    The index of specific columns (RA or Dec) is defined inside of index_list
     Args:
         data_array ([type]): [description]
         index_list ([type]): [description]

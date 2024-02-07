@@ -4,9 +4,11 @@ import django_filters
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from rest_framework import viewsets
-from rest_framework.authentication import (BasicAuthentication,
-                                           SessionAuthentication,
-                                           TokenAuthentication)
+from rest_framework.authentication import (
+    BasicAuthentication,
+    SessionAuthentication,
+    TokenAuthentication,
+)
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -22,6 +24,7 @@ from django.db.models import F, Value, FloatField
 import logging
 import humanize
 
+
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
     pass
 
@@ -30,23 +33,23 @@ class OccultationFilter(django_filters.FilterSet):
 
     date_time = django_filters.DateTimeFromToRangeFilter()
 
-    name = CharInFilter(field_name='name', lookup_expr='in')
+    name = CharInFilter(field_name="name", lookup_expr="in")
 
-    number = CharInFilter(field_name='number', lookup_expr='in')
+    number = CharInFilter(field_name="number", lookup_expr="in")
 
-    mag_g = django_filters.RangeFilter(field_name='g')
+    mag_g = django_filters.RangeFilter(field_name="g")
 
-    dynclass = django_filters.CharFilter(
-        field_name='dynclass', lookup_expr='iexact')
+    dynclass = django_filters.CharFilter(field_name="dynclass", lookup_expr="iexact")
 
     base_dynclass = django_filters.CharFilter(
-        field_name='base_dynclass', lookup_expr='iexact')
+        field_name="base_dynclass", lookup_expr="iexact"
+    )
 
-    long = django_filters.NumberFilter(
-        method='longitude_filter', label="Longitude")
+    long = django_filters.NumberFilter(method="longitude_filter", label="Longitude")
 
     nightside = django_filters.BooleanFilter(
-        field_name='occ_path_is_nightside', label='nightside')
+        field_name="occ_path_is_nightside", label="nightside"
+    )
 
     def longitude_filter(self, queryset, name, value):
         value = float(value)
@@ -61,11 +64,11 @@ class OccultationFilter(django_filters.FilterSet):
             temp_longitude=Value(value, output_field=FloatField())
         ).filter(
             have_path_coeff=True,
-            temp_longitude__gte=F('occ_path_min_longitude'),
-            temp_longitude__lte=F('occ_path_max_longitude'))
+            temp_longitude__gte=F("occ_path_min_longitude"),
+            temp_longitude__lte=F("occ_path_max_longitude"),
+        )
 
-    lat = django_filters.NumberFilter(
-        method='latitude_filter', label="Latitude")
+    lat = django_filters.NumberFilter(method="latitude_filter", label="Latitude")
 
     def latitude_filter(self, queryset, name, value):
         value = float(value)
@@ -80,31 +83,31 @@ class OccultationFilter(django_filters.FilterSet):
             temp_latitude=Value(value, output_field=FloatField())
         ).filter(
             have_path_coeff=True,
-            temp_latitude__gte=F('occ_path_min_latitude'),
-            temp_latitude__lte=F('occ_path_max_latitude'))
+            temp_latitude__gte=F("occ_path_min_latitude"),
+            temp_latitude__lte=F("occ_path_max_latitude"),
+        )
 
-    radius = django_filters.NumberFilter(
-        method='radius_filter', label="Radius")
+    radius = django_filters.NumberFilter(method="radius_filter", label="Radius")
 
     def radius_filter(self, queryset, name, value):
         # O filtro por latitude vai ser aplicado na get_queryset
         # Esta declarado aqui só para ficar explicito e visivel na interface DRF
         return queryset
-    
-    jobid = django_filters.NumberFilter(
-        field_name="job_id", label="Jobid")
+
+    jobid = django_filters.NumberFilter(field_name="job_id", label="Jobid")
 
     class Meta:
         model = Occultation
         fields = [
             "date_time",
-            "mag_g", "dynclass",
+            "mag_g",
+            "dynclass",
             "base_dynclass",
             "name",
             "number",
             "long",
             "nightside",
-            "jobid"
+            "jobid",
         ]
 
 
@@ -122,14 +125,46 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_class = OccultationFilter
     search_fields = ("name", "number")
 
-    ordering_fields = ("id", "name", "number", "date_time", "ra_star_candidate", "dec_star_candidate", "ra_target", " dec_target", "closest_approach", "position_angle", "velocity", "delta", "g", "j", "h",
-                       "k", "long", "loc_t", "off_ra", "off_dec", "proper_motion", "ct", "multiplicity_flag", "e_ra", "e_dec", "pmra", "pmdec", "ra_star_deg", "dec_star_deg", "ra_target_deg", "dec_target_deg", "created_at")
+    ordering_fields = (
+        "id",
+        "name",
+        "number",
+        "date_time",
+        "ra_star_candidate",
+        "dec_star_candidate",
+        "ra_target",
+        " dec_target",
+        "closest_approach",
+        "position_angle",
+        "velocity",
+        "delta",
+        "g",
+        "j",
+        "h",
+        "k",
+        "long",
+        "loc_t",
+        "off_ra",
+        "off_dec",
+        "proper_motion",
+        "ct",
+        "multiplicity_flag",
+        "e_ra",
+        "e_dec",
+        "pmra",
+        "pmdec",
+        "ra_star_deg",
+        "dec_star_deg",
+        "ra_target_deg",
+        "dec_target_deg",
+        "created_at",
+    )
     ordering = ("date_time",)
 
     def check_user_location_params(self, params):
-        lat = params.get('lat', None)
-        long = params.get('long', None)
-        radius = params.get('radius', None)
+        lat = params.get("lat", None)
+        long = params.get("long", None)
+        radius = params.get("radius", None)
 
         if None in [lat, long, radius]:
             return lat, long, radius
@@ -171,7 +206,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
         # TODO: Necessário implementar forma de fazer a paginação.
         # TODO: Implementar memcache para eventos já processados
-        pageSize = int(params.get('pageSize', 10))
+        pageSize = int(params.get("pageSize", 10))
 
         # Sync Method
         if None not in [lat, long, radius]:
@@ -194,14 +229,18 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                     # ignore_nighttime= False,
                     # latitudinal= False
                 )
-                processed +=1
+                processed += 1
 
                 if is_visible:
                     wanted_ids.append(event.id)
                     count += 1
-                    logger.info(f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}")
+                    logger.info(
+                        f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}"
+                    )
                 else:
-                    logger.debug(f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}")
+                    logger.debug(
+                        f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}"
+                    )
 
                 if count == pageSize:
                     logger.info("The page's registration limit has been reached.")
@@ -209,11 +248,13 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
             logger.debug(f"Event IDs with visibility equal to true: {wanted_ids}")
             logger.info(f"Number of events processed: [{processed}]")
-            logger.info(f"Number of events that the visibility function returned true: [{count}]")
+            logger.info(
+                f"Number of events that the visibility function returned true: [{count}]"
+            )
 
             if count > 0:
                 queryset = queryset.filter(id__in=wanted_ids)
-                logger.info(f"Results after visibility function: [{queryset.count()}]")                
+                logger.info(f"Results after visibility function: [{queryset.count()}]")
                 logger.debug(queryset.query)
 
         # TODO: Estudar a possibilidade de um metodo asyncrono
@@ -248,10 +289,9 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     def highlights(self, request):
 
         count = Occultation.objects.count()
-        first_datetime = Occultation.objects.earliest('date_time')
-        last_datetime = Occultation.objects.latest('date_time')
-        unique_asteroids = Occultation.objects.values(
-            'name').distinct().count()
+        first_datetime = Occultation.objects.earliest("date_time")
+        last_datetime = Occultation.objects.latest("date_time")
+        unique_asteroids = Occultation.objects.values("name").distinct().count()
 
         today_utc = datetime.utcnow().date()
         today_events = Occultation.objects.filter(date_time__date=today_utc)
@@ -260,52 +300,60 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         maps_size = []
         for event in today_events:
             map_filepath = event.get_map_filepath()
-            if (map_filepath.exists()):
+            if map_filepath.exists():
                 maps_size.append(map_filepath.stat().st_size)
 
         today_already_have_map = len(maps_size)
         total_maps_size = sum(maps_size)
 
         week_number = today_utc.isocalendar().week
-        next_week_number = week_number+1
+        next_week_number = week_number + 1
 
         this_week_count = Occultation.objects.filter(
-            date_time__date__week=week_number).count()
+            date_time__date__week=week_number
+        ).count()
         next_week_count = Occultation.objects.filter(
-            date_time__date__week=next_week_number).count()
+            date_time__date__week=next_week_number
+        ).count()
 
         next_month = today_utc + relativedelta(months=1)
         this_month_count = Occultation.objects.filter(
-            date_time__date__month=today_utc.month).count()
+            date_time__date__month=today_utc.month
+        ).count()
         next_month_count = Occultation.objects.filter(
-            date_time__date__month=next_month.month).count()
+            date_time__date__month=next_month.month
+        ).count()
 
         maps_stats = maps_folder_stats()
 
-        return Response({
-            "count": count,
-            "earliest": first_datetime.date_time.isoformat(),
-            "latest": last_datetime.date_time.isoformat(),
-            "unique_asteroids": unique_asteroids,
-            "today_count": today_events.count(),
-            "today_already_have_map": today_already_have_map,
-            "total_maps_size": total_maps_size,
-            "week_count": this_week_count,
-            "next_week_count": next_week_count,
-            "month_count": this_month_count,
-            "next_month_count": next_month_count,
-            "maps_stats": maps_stats,
-        })
+        return Response(
+            {
+                "count": count,
+                "earliest": first_datetime.date_time.isoformat(),
+                "latest": last_datetime.date_time.isoformat(),
+                "unique_asteroids": unique_asteroids,
+                "today_count": today_events.count(),
+                "today_already_have_map": today_already_have_map,
+                "total_maps_size": total_maps_size,
+                "week_count": this_week_count,
+                "next_week_count": next_week_count,
+                "month_count": this_month_count,
+                "next_month_count": next_month_count,
+                "maps_stats": maps_stats,
+            }
+        )
 
     @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
     def create_maps_for_today(self, request):
         create_prediction_maps.delay()
 
         block_size = int(settings.PREDICTION_MAP_BLOCK_SIZE)
-        return Response({
-            "success": True,
-            "message": f"It was submitted to create {block_size} maps in the background.",
-        })
+        return Response(
+            {
+                "success": True,
+                "message": f"It was submitted to create {block_size} maps in the background.",
+            }
+        )
 
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
     def get_or_create_map(self, request, pk):
@@ -335,53 +383,54 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                 g=obj.g,
                 long=obj.long,
                 filepath=str(filepath),
-                dpi=50
+                dpi=50,
             )
             res.wait()
 
         if filepath.exists():
-            return Response({
-                "url": request.build_absolute_uri(obj.get_map_relative_url()),
-                "occultation": obj.id,
-                "name": obj.name,
-                "date_time": obj.date_time.isoformat(),
-                "filename": filepath.name,
-                "filezise": filepath.stat().st_size,
-                "creation_time": datetime.fromtimestamp(
-                    filepath.stat().st_ctime).astimezone(timezone.utc).isoformat()
-            })
+            return Response(
+                {
+                    "url": request.build_absolute_uri(obj.get_map_relative_url()),
+                    "occultation": obj.id,
+                    "name": obj.name,
+                    "date_time": obj.date_time.isoformat(),
+                    "filename": filepath.name,
+                    "filezise": filepath.stat().st_size,
+                    "creation_time": datetime.fromtimestamp(filepath.stat().st_ctime)
+                    .astimezone(timezone.utc)
+                    .isoformat(),
+                }
+            )
         else:
             # TODO: Retornar mensagem de erro
-            return Response({
-                "url": None,
-            })
+            return Response(
+                {
+                    "url": None,
+                }
+            )
 
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def base_dynclass_with_prediction(self, request):
-        """Returns all base_dynclass that have at least one prediction event.
-        """
-        queryset = Occultation.objects.order_by(
-            'base_dynclass').distinct('base_dynclass')
+        """Returns all base_dynclass that have at least one prediction event."""
+        queryset = Occultation.objects.order_by("base_dynclass").distinct(
+            "base_dynclass"
+        )
 
         rows = [x.base_dynclass for x in queryset]
         return Response(dict({"results": rows, "count": len(rows)}))
 
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def dynclass_with_prediction(self, request):
-        """Returns all dynclass that have at least one prediction event.
-        """
-        queryset = Occultation.objects.order_by(
-            'dynclass').distinct('dynclass')
+        """Returns all dynclass that have at least one prediction event."""
+        queryset = Occultation.objects.order_by("dynclass").distinct("dynclass")
 
         rows = [x.dynclass for x in queryset]
         return Response(dict({"results": rows, "count": len(rows)}))
 
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def asteroids_with_prediction(self, request):
-        """Returns all Asteroid that have at least one prediction event.
-        """
-        queryset = Occultation.objects.order_by(
-            'name').distinct('name')
+        """Returns all Asteroid that have at least one prediction event."""
+        queryset = Occultation.objects.order_by("name").distinct("name")
 
         rows = [x.name for x in queryset]
         return Response(dict({"results": rows, "count": len(rows)}))
@@ -403,7 +452,8 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                 dec_property="dec",
                 ra=float(ra),
                 dec=float(dec),
-                radius=0.001)
+                radius=0.001,
+            )
             if len(rows) > 0:
                 return Response(rows[0])
             return Response({})

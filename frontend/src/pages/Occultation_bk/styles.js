@@ -42,10 +42,10 @@ const useStyles = makeStyles((theme) => ({
   },
   input:{
     borderRadius: 4,
-    position: 'relative',    
-    border: '1px solid #ced4da',   
-    width: 'auto',  
-    height: '43px'  
+    position: 'relative',
+    border: '1px solid #ced4da',
+    width: 'auto',
+    height: '43px'
   },
   divImg:{
     display: 'flex !important',

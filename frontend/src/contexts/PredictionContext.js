@@ -37,5 +37,3 @@ export function PredictionEventsProvider({ children }) {
 PredictionEventsProvider.propTypes = {
     children: PropTypes.node
 }
-
-

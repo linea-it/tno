@@ -40,7 +40,7 @@ class ImportSkybotPositions:
 
                 # Le o arquivo de outputs e gera um pandas dataframe
                 df = self.read_output_file(filepath, job_id)
-                
+
                 rowcount = self.import_data(df)
             elif flag == 0:
                 self.logger.info(
@@ -115,10 +115,10 @@ class ImportSkybotPositions:
         df["ticket"] = self.read_ticket_from_output(filepath)
 
         df["base_dynclass"] = df["dynclass"].apply(lambda x: x.split(">")[0])
-        
+
         # Adicionar uma coluna com o job_id
         df["skybot_job"] = int(job_id)
-        
+
         # Mudar a ordem das colunas de arcordo com a ordem  da tabela.
         # Isso facilita a importacao por csv.
         columns = self.get_columns()
@@ -156,7 +156,7 @@ class ImportSkybotPositions:
             "jdref",
             "ticket",
             "base_dynclass",
-            "skybot_job"
+            "skybot_job",
         ]
 
         return columns

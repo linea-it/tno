@@ -13,6 +13,7 @@ def check_request_queue():
 def check_loaddata_queue():
     DesSkybotPipeline().check_loaddata_queue()
 
+
 def check_job_timeout_queue():
     DesSkybotPipeline().check_job_timeout()
 

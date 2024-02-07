@@ -20,7 +20,7 @@ from library import (
     write_job_file,
     ingest_observations,
     write_json,
-    get_configs
+    get_configs,
 )
 from orbit_trace_apps import observed_positions, theoretical_positions
 from parsl_config import htex_config
@@ -32,11 +32,13 @@ import shutil
 import subprocess
 import uuid
 
+
 def update_job(job) -> None:
     otjdao = OrbitTraceJobDao()
     otjdao.update_job(job)
 
-    write_job_file(job.get('path'), job)
+    write_job_file(job.get("path"), job)
+
 
 def orbit_trace_job_to_run():
     """Retorna o job com status=1 Idle mas antigo.
@@ -64,6 +66,7 @@ def orbit_trace_has_job_running() -> bool:
     else:
         return False
 
+
 def orbit_trace_job_queue():
 
     # Verifica se ha algum job sendo executado.
@@ -77,48 +80,51 @@ def orbit_trace_job_queue():
         return
 
     # Inicia o job.
-    # print("Deveria executar o job com ID: %s" % job_to_run.get("id")) 
+    # print("Deveria executar o job com ID: %s" % job_to_run.get("id"))
     # orbit_trace_run_job(job_to_run.get("id"))
     return job_to_run.get("id")
 
 
 def orbit_trace_make_job_json_file(job, path):
 
-    job_data = dict({
-        "id": job.get('id'),
-        "status": "Submited",
-        "submit_time": job.get('submit_time').astimezone(timezone.utc).isoformat(),
-        "estimated_execution_time": str(job.get('estimated_execution_time')),
-        "path": str(path),
-        "match_radius": job.get('match_radius'),
-        "filter_type": job.get('filter_type'),
-        "filter_value": job.get('filter_value'),
-        "bsp_days_to_expire": job.get('bps_days_to_expire', 0),
-        "parsl_init_blocks": job.get('parsl_init_blocks', 600),        
-        "debug": bool(job.get('debug', False)),
-        "traceback": None,
-        "error": None,
-        "time_profile": [],     
-        # TODO: Estes parametros devem ser gerados pelo pipeline lendo do config.
-        # TODO: Bsp e leap second deve fazer a query e verificar o arquivo ou fazer o download.
-        "period": ["2012-11-01", "2019-02-01"],
-        "observatory_location": [289.193583333, -30.16958333, 2202.7],
-        "bsp_planetary": {
-            "name": "de440",
-            "filename": "de440.bsp",
-            "absolute_path": "/lustre/t1/tmp/tno/bsp_planetary/de440.bsp",
-        },
-        "leap_seconds": {
-            "name": "naif0012",
-            "filename": "naif0012.tls",
-            "absolute_path": "/lustre/t1/tmp/tno/leap_seconds/naif0012.tls",
-        },           
-    })
+    job_data = dict(
+        {
+            "id": job.get("id"),
+            "status": "Submited",
+            "submit_time": job.get("submit_time").astimezone(timezone.utc).isoformat(),
+            "estimated_execution_time": str(job.get("estimated_execution_time")),
+            "path": str(path),
+            "match_radius": job.get("match_radius"),
+            "filter_type": job.get("filter_type"),
+            "filter_value": job.get("filter_value"),
+            "bsp_days_to_expire": job.get("bps_days_to_expire", 0),
+            "parsl_init_blocks": job.get("parsl_init_blocks", 600),
+            "debug": bool(job.get("debug", False)),
+            "traceback": None,
+            "error": None,
+            "time_profile": [],
+            # TODO: Estes parametros devem ser gerados pelo pipeline lendo do config.
+            # TODO: Bsp e leap second deve fazer a query e verificar o arquivo ou fazer o download.
+            "period": ["2012-11-01", "2019-02-01"],
+            "observatory_location": [289.193583333, -30.16958333, 2202.7],
+            "bsp_planetary": {
+                "name": "de440",
+                "filename": "de440.bsp",
+                "absolute_path": "/lustre/t1/tmp/tno/bsp_planetary/de440.bsp",
+            },
+            "leap_seconds": {
+                "name": "naif0012",
+                "filename": "naif0012.tls",
+                "absolute_path": "/lustre/t1/tmp/tno/leap_seconds/naif0012.tls",
+            },
+        }
+    )
 
     write_job_file(path, job_data)
 
+
 def run_job(jobid: int):
-    otjdao = OrbitTraceJobDao()    
+    otjdao = OrbitTraceJobDao()
 
     # TODO: ONLY DEVELOPMENT
     # otjdao.development_reset_job(jobid)
@@ -132,7 +138,7 @@ def run_job(jobid: int):
     # TODO: ONLY DEVELOPMENT
     # folder_name = f"teste_{job['id']}"
     # folder_name = f"orbit_trace_{job['id']}-{str(uuid.uuid4())[:8]}"
-    folder_name = f"{job['id']}-{str(uuid.uuid4())[:8]}"        
+    folder_name = f"{job['id']}-{str(uuid.uuid4())[:8]}"
     job_path = Path(orbit_trace_root).joinpath(folder_name)
     if job_path.exists():
         shutil.rmtree(job_path)
@@ -142,14 +148,14 @@ def run_job(jobid: int):
     orbit_trace_make_job_json_file(job, job_path)
 
     # Executa o job usando subproccess.
-    env_file = Path(os.environ['EXECUTION_PATH']).joinpath('env.sh')
+    env_file = Path(os.environ["EXECUTION_PATH"]).joinpath("env.sh")
     proc = subprocess.Popen(
         # f"source /lustre/t1/tmp/tno/pipelines/env.sh; python orbit_trace.py {job_path}",
         f"source {env_file}; python orbit_trace.py {job_path}",
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         shell=True,
-        text=True
+        text=True,
     )
 
     # import time
@@ -170,7 +176,7 @@ def run_job(jobid: int):
 
 def ingest_job_results(job_path, job_id):
 
-    file_names = ['asteroids_failed.json', 'asteroids_success.json']
+    file_names = ["asteroids_failed.json", "asteroids_success.json"]
 
     data = list()
 
@@ -180,40 +186,42 @@ def ingest_job_results(job_path, job_id):
             asteroids = read_inputs(job_path, fname)
             for asteroid in asteroids:
                 status = 2
-                if fname == 'asteroids_success.json':
+                if fname == "asteroids_success.json":
                     status = 1
-             
-                row = dict({
-                    'name': asteroid['name'],
-                    'number': asteroid.get('number', None),           
-                    'base_dynclass': asteroid['base_dynclass'],
-                    'dynclass': asteroid['dynclass'],       
-                    'status': status,
-                    'spk_id': asteroid.get('spkid', None),
-                    'observations': asteroid.get('observations_count', 0),
-                    'ccds': len(asteroid.get('ccds', [])),           
-                    'error': asteroid.get('error', None),
-                    'asteroid_id': asteroid['id'],                    
-                    'job_id': job_id,                    
-                }) 
+
+                row = dict(
+                    {
+                        "name": asteroid["name"],
+                        "number": asteroid.get("number", None),
+                        "base_dynclass": asteroid["base_dynclass"],
+                        "dynclass": asteroid["dynclass"],
+                        "status": status,
+                        "spk_id": asteroid.get("spkid", None),
+                        "observations": asteroid.get("observations_count", 0),
+                        "ccds": len(asteroid.get("ccds", [])),
+                        "error": asteroid.get("error", None),
+                        "asteroid_id": asteroid["id"],
+                        "job_id": job_id,
+                    }
+                )
                 data.append(row)
-            
+
     df_results = pd.DataFrame(
         data,
         columns=[
-                "name",
-                "number",
-                "base_dynclass",
-                "dynclass",
-                "status",
-                "spk_id",
-                "observations",
-                "ccds",                
-                "error",
-                "asteroid_id",                
-                "job_id",                
-            ],
-        )
+            "name",
+            "number",
+            "base_dynclass",
+            "dynclass",
+            "status",
+            "spk_id",
+            "observations",
+            "ccds",
+            "error",
+            "asteroid_id",
+            "job_id",
+        ],
+    )
 
     # Guarda uma copia das observações no diretório do Asteroid.
     filepath = Path(job_path, "orbit_trace_results.csv")
@@ -221,7 +229,10 @@ def ingest_job_results(job_path, job_id):
 
     str_data = StringIO()
     df_results.to_csv(
-        str_data, sep="|", header=True, index=False,
+        str_data,
+        sep="|",
+        header=True,
+        index=False,
     )
     str_data.seek(0)
 
@@ -230,6 +241,7 @@ def ingest_job_results(job_path, job_id):
     rowcount = otjrdao.import_orbit_trace_results(str_data)
 
     return rowcount
+
 
 def main(path):
     try:
@@ -280,7 +292,7 @@ def main(path):
         log.info("Update Job status to running.")
         # write_job_file(current_path, job)
         update_job(job)
-    # try:
+        # try:
         # log.debug('Job Inputs: %s' % json.dumps(job))
 
         # Setting Inputs
@@ -322,7 +334,7 @@ def main(path):
 
         asteroids = retrieve_asteroids(job["filter_type"], job["filter_value"])
 
-        #asteroids = asteroids[0:20]
+        # asteroids = asteroids[0:20]
 
         job.update({"count_asteroids": len(asteroids)})
 
@@ -353,7 +365,10 @@ def main(path):
         update_job(job)
 
         if job["count_asteroids"] == 0:
-            raise ("No asteroid satisfying the criteria %s and %s. There is nothing to run." % (job["filter_type"], job["filter_value"]))
+            raise (
+                "No asteroid satisfying the criteria %s and %s. There is nothing to run."
+                % (job["filter_type"], job["filter_value"])
+            )
 
         # =========================== CCDs ===========================
         # Retrieve CCDs
@@ -401,7 +416,8 @@ def main(path):
                     success_asteroids.append(asteroid)
 
                 log.info(
-                    "Asteroid: [%s] CCDs: [%s]" % (asteroid["name"], len(asteroid["ccds"]))
+                    "Asteroid: [%s] CCDs: [%s]"
+                    % (asteroid["name"], len(asteroid["ccds"]))
                 )
 
                 del a
@@ -455,7 +471,6 @@ def main(path):
 
             writer.writeheader()
             writer.writerows(all_ccds)
-
 
         # =========================== BSP ===========================
         # Retrieve BSPs
@@ -573,9 +588,9 @@ def main(path):
             )
 
             # Adicionar o ID do processo ao arquivo de submissão do condor
-            htex_config.executors[0].provider.scheduler_options += "+AppId = {}\n".format(
-                jobid
-            )
+            htex_config.executors[
+                0
+            ].provider.scheduler_options += "+AppId = {}\n".format(jobid)
 
             # TODO: Este parametro pode vir do config.ini
             MAX_PARSL_BLOCKS = 400
@@ -594,7 +609,9 @@ def main(path):
                 htex_config.executors[0].provider.init_blocks = int(blocks)
                 log.info("Parsl limiting the amount of Blocks to [%s]" % blocks)
 
-            job.update({"parsl_init_blocks": htex_config.executors[0].provider.init_blocks})
+            job.update(
+                {"parsl_init_blocks": htex_config.executors[0].provider.init_blocks}
+            )
 
         except:
             # Considera que é uma execução local
@@ -644,7 +661,8 @@ def main(path):
             for f in futures:
                 is_done.append(f.done())
             log.debug(
-                "Theoretical Positions running: %s/%s" % (is_done.count(True), len(futures))
+                "Theoretical Positions running: %s/%s"
+                % (is_done.count(True), len(futures))
             )
             time.sleep(30)
 
@@ -732,7 +750,8 @@ def main(path):
             for f in futures:
                 is_done.append(f.done())
             log.debug(
-                "Observed Positions running: %s/%s" % (is_done.count(True), len(futures))
+                "Observed Positions running: %s/%s"
+                % (is_done.count(True), len(futures))
             )
             time.sleep(30)
 
@@ -752,11 +771,13 @@ def main(path):
             htcondor_jobs_completed += 1
 
         # TODO: Implementar remoção de jobs por time out.
-        job.update({
-            'condor_job_submited': htcondor_job_submited,
-            'condor_job_completed': htcondor_jobs_completed,
-            'condor_job_removed': htcondor_jobs_removed
-        })
+        job.update(
+            {
+                "condor_job_submited": htcondor_job_submited,
+                "condor_job_completed": htcondor_jobs_completed,
+                "condor_job_removed": htcondor_jobs_removed,
+            }
+        )
         update_job(job)
 
         # Agrupar os resultados.
@@ -864,7 +885,9 @@ def main(path):
                     # Adiciona o Asteroid na lista de falhas
                     a_failed.append(asteroid)
                     ingested_ast_failed += 1
-                    log.warning("Asteroid [%s] %s" % (asteroid["name"], result["error"]))
+                    log.warning(
+                        "Asteroid [%s] %s" % (asteroid["name"], result["error"])
+                    )
                     asteroid.update({"status": "failed", "error": result["error"]})
                 else:
                     success_asteroids.append(asteroid)
@@ -973,7 +996,6 @@ def main(path):
         # Status 3 = Completed
         job.update({"status": "Completed"})
 
-
     except Exception as e:
         trace = traceback.format_exc()
         log.error(trace)
@@ -981,7 +1003,11 @@ def main(path):
 
         # Status 4 = Failed
         job.update(
-            {"status": "Failed", "error": str(e), "traceback": str(trace),}
+            {
+                "status": "Failed",
+                "error": str(e),
+                "traceback": str(trace),
+            }
         )
 
     finally:
@@ -992,13 +1018,15 @@ def main(path):
 
         # Calc average time by asteroid
         avg_exec_time_asteroid = 0
-        if (job.get('count_asteroids') > 0):
-            avg_exec_time_asteroid = int(tdelta.total_seconds() / job.get('count_asteroids'))
-        
+        if job.get("count_asteroids") > 0:
+            avg_exec_time_asteroid = int(
+                tdelta.total_seconds() / job.get("count_asteroids")
+            )
+
         # Calc average time by CCDs
         avg_exec_time_ccd = 0
-        if (job.get('count_ccds') > 0):
-            avg_exec_time_ccd = int(tdelta.total_seconds() / job.get('count_ccds'))
+        if job.get("count_ccds") > 0:
+            avg_exec_time_ccd = int(tdelta.total_seconds() / job.get("count_ccds"))
 
         job.update(
             {
@@ -1006,7 +1034,7 @@ def main(path):
                 "exec_time": tdelta.total_seconds(),
                 "h_exec_time": humanize.naturaldelta(tdelta),
                 "avg_exec_time_asteroid": avg_exec_time_asteroid,
-                "avg_exec_time_ccd": avg_exec_time_ccd
+                "avg_exec_time_ccd": avg_exec_time_ccd,
             }
         )
 
@@ -1025,12 +1053,13 @@ def main(path):
         log.info("Execution Time: %s" % tdelta)
         log.info("Identification of DES object is done!.")
 
+
 # Como Utilízar:
 # cd /archive/des/tno/dev/nima/pipeline
 # source env.sh
 # python orbit_trace.py 1 /archive/des/tno/dev/nima/pipeline/examples/orbit_trace_job
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("path", help="Job Path")
     args = parser.parse_args()

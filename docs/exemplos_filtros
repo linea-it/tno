@@ -18,7 +18,7 @@ Magnitude Range = http://localhost/api/occultations/?mag_g_min=4&mag_g_max=14
 Magnitude Min Only = http://localhost/api/occultations/?mag_g_min=4
 Magnitude Max Only = http://localhost/api/occultations/?mag_g_max=14
 
-Geo Filter Boolean 
+Geo Filter Boolean
 User Position Only: http://localhost/api/occultations/?lat=-22.90278&long=-43.2075&radius=500
 User Position and Period: http://localhost/api/occultations/?date_time_after=2023-08-01&date_time_before=2023-08-30&lat=-22.90278&long=-43.2075&radius=500
 

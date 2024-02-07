@@ -2,7 +2,7 @@ import React from 'react'
 import { CardMedia, Typography, Grid } from '@material-ui/core'
 
 function PublicSupporters() {
-  
+
   const interfaces = [
     {
       id: 0,

@@ -39,7 +39,7 @@ function SubmitSkybotJobs() {
     console.log(data)
     navigate(`/dashboard/data-preparation/des/discovery/${data.data.job}`)
   }
-  
+
   useInterval(() => {
     if (status === 'success' || status === 'error')  {
       setOpen(false)
@@ -65,11 +65,11 @@ function SubmitSkybotJobs() {
               Algumas informações de estimativa do job só ficaram disponiveis quando o job for iniciado.
             </li>
           </ul>
-          Para agilizar os jobs as operações de summary são executadas somente a cada 5 jobs e no ultimo. 
+          Para agilizar os jobs as operações de summary são executadas somente a cada 5 jobs e no ultimo.
           <br /><br />
           Recomendo apagar todos os dados do DES antes de executar essa operação.
           <br /><br />
-          Em caso de erro em um dos Jobs não é necessario rodar o periodo todo novamente apenas o periodo que deu erro. 
+          Em caso de erro em um dos Jobs não é necessario rodar o periodo todo novamente apenas o periodo que deu erro.
           <br /><br />
           Os jobs podem ser acompanhados normalmente na interface Skybot Discovery.
         </Typography>
@@ -89,14 +89,14 @@ function SubmitSkybotJobs() {
           SUBMIT SKYBOT JOBS
         </LoadingButton>
         {open === true && <>
-          {status === 'success' && 
+          {status === 'success' &&
           <Alert severity='success' action={
           <Button color="inherit" size="small" onClick={handleCheckJob}>
             Check Job
           </Button>
           }>
             Foram gerados {data.data.count} jobs.</Alert>}
-        {status === 'error' && <Alert severity='error'>Não foi possivel executar a função "/api/des/skybot_job/submit_job_balanced_periods/".</Alert>}        
+        {status === 'error' && <Alert severity='error'>Não foi possivel executar a função "/api/des/skybot_job/submit_job_balanced_periods/".</Alert>}
         </>}
 
       </CardContent>

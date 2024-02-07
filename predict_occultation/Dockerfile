@@ -28,7 +28,7 @@ RUN set -x && \
     && chmod =2775 /opt/conda \
     && ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
 
-# -------------- PRAIA OCC compile Stage -------------- 
+# -------------- PRAIA OCC compile Stage --------------
 FROM base as praia_occ
 ADD praia_occ_src /tmp/praia_occ_src
 RUN mkdir /tmp/praia_occ \
@@ -44,15 +44,15 @@ RUN mkdir /tmp/praia_occ \
     && cd ~/ \
     && rm -r /tmp/praia_occ_src
 
-# # -------------- Python 2.7 Environment Stage -------------- 
+# # -------------- Python 2.7 Environment Stage --------------
 # FROM base as py2_build
 # COPY environment.py2.yml .
 # RUN /bin/bash --login -c "conda init bash \
 #     && source ~/.bashrc \
 #     && conda env create -f environment.py2.yml \
-#     && conda activate py2" 
+#     && conda activate py2"
 
-# -------------- Python 3.8 Environment Stage -------------- 
+# -------------- Python 3.8 Environment Stage --------------
 FROM base as py3_build
 COPY environment.py3.yml .
 RUN /bin/bash --login -c "conda init bash \
@@ -60,19 +60,27 @@ RUN /bin/bash --login -c "conda init bash \
     && conda env create -f environment.py3.yml \
     && conda activate py3"
 
-# # -------------- Runtime Stage -------------- 
+# # -------------- Runtime Stage --------------
 FROM base
+
+# If this is set to a non-empty string, Python won’t try
+# to write .pyc files on the import of source modules
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Force the stdout and stderr streams to be unbuffered.
+# This option has no effect on the stdin stream.
+ENV PYTHONUNBUFFERED=1
 
 # Download da BSP planetary
 # OBS. o Download demora bastante!
 RUN wget --no-verbose --show-progress \
-    --progress=bar:force:noscroll \ 
-    https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de440.bsp 
+    --progress=bar:force:noscroll \
+    https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de440.bsp
 
 # Download Leap Second
 RUN wget --no-verbose --show-progress \
     --progress=bar:force:noscroll \
-    https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls 
+    https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls
 
 # PRAIA OCC binaries
 COPY --from=praia_occ /tmp/praia_occ/* /usr/local/bin
@@ -97,15 +105,17 @@ ARG USERNAME=vscode
 ARG USERUID=1000
 ARG USERGID=1000
 
-# Create remote user 
+# Create remote user
 # Create the conda group and add remote user to the group
 RUN groupadd --gid ${USERGID} ${USERNAME} \
     && useradd --uid ${USERUID} --gid ${USERGID} --shell /bin/bash --create-home ${USERNAME} \
     && groupadd --gid 15010 ton \
     && useradd --uid 31670 --gid 15010 --shell /bin/bash --create-home apptno \
-    && groupadd -r conda --gid 900 \ 
+    && groupadd -r conda --gid 900 \
     && usermod -aG conda,ton ${USERNAME} \
     && usermod -aG conda apptno
+
+
 
 ENV PIPELINE_ROOT=${APP_HOME}/src
 ENV PIPELINE_PREDIC_OCC=${PIPELINE_ROOT}/predict_occultation
@@ -121,7 +131,7 @@ COPY --chown=${USERNAME}:ton --chmod=775 entrypoint.sh ${APP_HOME}
 # COPY --chown=${USERNAME}:ton --chmod=775 src ${PIPELINE_ROOT}
 # COPY --chown=${USERNAME}:ton --chmod=775 predict_occultation ${PIPELINE_PREDIC_OCC}
 # COPY --chown=${USERNAME}:ton --chmod=775 rerun.py ${APP_HOME}
-# COPY --chown=${USERNAME}:ton --chmod=775 rerun.sh ${APP_HOME} 
+# COPY --chown=${USERNAME}:ton --chmod=775 rerun.sh ${APP_HOME}
 # COPY --chown=${USERNAME}:ton --chmod=775 daemon.sh ${APP_HOME}
 # COPY --chown=${USERNAME}:ton --chmod=775 entrypoint.sh ${APP_HOME}
 # COPY --chown=${USERNAME}:ton --chmod=775 run_daemon.py ${APP_HOME}
@@ -137,10 +147,12 @@ USER apptno
 RUN /bin/bash --login -c "conda init bash \
     && echo 'conda activate py3' >> ~/.bashrc \
     && source ~/.bashrc"
+ENV PATH=${PATH}:/home/apptno/.local/bin
 
 USER ${USERNAME}
 RUN /bin/bash --login -c "conda init bash \
     && echo 'conda activate py3' >> ~/.bashrc \
     && source ~/.bashrc"
+ENV PATH=${PATH}:/home/${USERNAME}/.local/bin
 
 ENTRYPOINT [ "./entrypoint.sh" ]

@@ -16,7 +16,7 @@ import dayjs from 'dayjs';
 
 
 function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filterType, setFilterType, filterValue, setFilterValue, magnitude, setMagnitude, latitude, setLatitude, longitude, setLongitude, radius, setRadius, geoFilter, setGeoFilter, loadingLocation, setLoadingLocation, erroLocation, setErroLocation, filter }) {
-    
+
     const classes = styles();
     const [filterTypeList, setFilterTypeList] = useState([{ value: 'name', label: 'Object name' }, { value: 'dynclass', label: 'Dynamic class (with subclasses)' }, { value: 'base_dynclass', label: 'Dynamic class' }]);
     const [asteroidsList, setAsteroidsList] = useState([]);
@@ -37,17 +37,17 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
         getDynClassList().then((list) => {
           setDynClassList(list.map(x => { return { value: x, label: x } }));
         })
-    
+
         getBaseDynClassList().then((list) => {
           setBaseDynClassList(list.map(x => { return { value: x, label: x } }));
         })
-    
+
         getAsteroidsWithPredictionList().then((list) => {
           setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
         })
-    
+
     });
-      
+
     const onKeyUp = async (event) => {
         if (event.target.value.length > 1) {
           getFilteredWithPredictionList(event.target.value).then((list) => {
@@ -70,12 +70,12 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
     };
 
     const handleChangeMagnitudeValue = (event, value) => {
-        
+
         setMagnitude(value);
     };
 
     const handleChangeRadiusValue = (event, value) => {
-        
+
       setRadius(value);
     };
 
@@ -115,7 +115,7 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
     }
 
     const filterClick = () =>{
-      var validLatitude = isValidLatitude(latitude) 
+      var validLatitude = isValidLatitude(latitude)
       var validLongitude = isValidLongitude(longitude)
       if((validLatitude && validLongitude) || !geoFilter )
         filter()
@@ -134,10 +134,10 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
                         <Box sx={{ minWidth: 120 }}>
                           <FormControl fullWidth ><label>Date Start</label>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <DatePicker 
-                                format="YYYY-MM-DD" 
+                              <DatePicker
+                                format="YYYY-MM-DD"
                                 defaultValue={dayjs('2022-04-17')}
-                                value={dateStart} 
+                                value={dateStart}
                                 onChange={date => { setDateStart(date) }} />
                             </LocalizationProvider>
                           </FormControl>

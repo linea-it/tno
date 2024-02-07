@@ -439,7 +439,7 @@ function Skybot() {
                       control={<Switch checked={debug} onChange={handleChangeDebug} />}
                       label='Debug mode'
                     />
-                  </FormGroup>                  
+                  </FormGroup>
                   <Typography color='textSecondary' gutterBottom>
                     Click here to submit a job on the selected period
                   </Typography>

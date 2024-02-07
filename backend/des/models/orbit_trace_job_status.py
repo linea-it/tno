@@ -4,7 +4,7 @@ from des.models import OrbitTraceJob
 
 
 class OrbitTraceJobStatus(models.Model):
-    
+
     # Des Skybot Job
     job = models.ForeignKey(
         OrbitTraceJob,
@@ -18,7 +18,7 @@ class OrbitTraceJobStatus(models.Model):
         help_text="Identification of the step in the pipeline.",
     )
 
-    task = models.CharField (
+    task = models.CharField(
         verbose_name="Task",
         max_length=100,
         help_text="Name of the task being executed.",
@@ -43,43 +43,36 @@ class OrbitTraceJobStatus(models.Model):
     count = models.IntegerField(
         verbose_name="Total Count",
         help_text="Total items to be processed in the step.",
-        default=0
+        default=0,
     )
 
     current = models.IntegerField(
-        verbose_name="Current",
-        help_text="Current position in execution.",
-        default=0
+        verbose_name="Current", help_text="Current position in execution.", default=0
     )
 
     average_time = models.FloatField(
         verbose_name="Average Time",
         help_text="Average time per item in seconds.",
-        default=0
+        default=0,
     )
 
     time_estimate = models.FloatField(
         verbose_name="Estimated Time",
         help_text="Estimated time to complete the step in seconds.",
-        default=0
+        default=0,
     )
 
     success = models.IntegerField(
         verbose_name="Success",
         help_text="Number of items successfully executed.",
-        default=0
+        default=0,
     )
 
     failures = models.IntegerField(
-        verbose_name="Failures",
-        help_text="Number of items that failed.",
-        default=0
+        verbose_name="Failures", help_text="Number of items that failed.", default=0
     )
 
-    updated = models.DateTimeField(
-        verbose_name="Updated", 
-        auto_now_add=True 
-    )
+    updated = models.DateTimeField(verbose_name="Updated", auto_now_add=True)
 
     def __str__(self):
         return str(self.id)

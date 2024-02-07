@@ -27,7 +27,7 @@ class OrbitTraceJobResult(models.Model):
         max_length=100,
         verbose_name="Asteroid Number",
         null=True,
-        blank=True,        
+        blank=True,
     )
 
     base_dynclass = models.CharField(
@@ -74,7 +74,6 @@ class OrbitTraceJobResult(models.Model):
     )
 
     error = models.TextField(verbose_name="Error", null=True, blank=True)
-
 
     def __str__(self):
         return str(self.id)

@@ -16,44 +16,47 @@ class CatalogViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Catalog.objects.all()
     serializer_class = CatalogSerializer
-    filterset_fields = ("id", "name",)
+    filterset_fields = (
+        "id",
+        "name",
+    )
 
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def q3c_radial_query(self, request):
         """
-            Executa query por posição em um catalogo. 
+        Executa query por posição em um catalogo.
 
-            Este endpoint foi criado com intuito de facilitar o desenvolvimento dos demais componentes do portal
-            que necessitam de acesso ao banco de catalogos. 
+        Este endpoint foi criado com intuito de facilitar o desenvolvimento dos demais componentes do portal
+        que necessitam de acesso ao banco de catalogos.
 
-            IMPORTANTE: Não deveria ficar disponivel no futuro!
-            @param catalog - use internal Catalog.name ex: gaia_dr2
-            @param ra 
-            @param dec
-            @param radius
-            @param limit
-            eg: http://localhost/api/catalog/q3c_radial_query/?catalog=gaia_dr2&ra=10.17196&dec=6.2755&radius=0.15
+        IMPORTANTE: Não deveria ficar disponivel no futuro!
+        @param catalog - use internal Catalog.name ex: gaia_dr2
+        @param ra
+        @param dec
+        @param radius
+        @param limit
+        eg: http://localhost/api/catalog/q3c_radial_query/?catalog=gaia_dr2&ra=10.17196&dec=6.2755&radius=0.15
         """
 
-        catalog = request.query_params.get('catalog')
+        catalog = request.query_params.get("catalog")
         if catalog == None:
             raise ParseError(detail="catalog parameter is mandatory.")
 
-        ra = request.query_params.get('ra')
+        ra = request.query_params.get("ra")
         if ra == None:
             raise ParseError(detail="ra parameter is mandatory.")
-        l_ra = [float(x) for x in ra.split(',')]
+        l_ra = [float(x) for x in ra.split(",")]
 
-        dec = request.query_params.get('dec')
+        dec = request.query_params.get("dec")
         if dec == None:
             raise ParseError(detail="dec parameter is mandatory.")
-        l_dec = [float(x) for x in dec.split(',')]
+        l_dec = [float(x) for x in dec.split(",")]
 
-        radius = float(request.query_params.get('radius'))
+        radius = float(request.query_params.get("radius"))
         if radius == None:
             raise ParseError(detail="radius parameter is mandatory.")
 
-        limit = int(request.query_params.get('limit', 1000))
+        limit = int(request.query_params.get("limit", 1000))
 
         # TODO: Dados do catalogo Hardcoded quanto tiver mais catalogos deve vir ta tabela catalogs
         schema = None
@@ -75,9 +78,10 @@ class CatalogViewSet(viewsets.ReadOnlyModelViewSet):
                 dec_property=dec_property,
                 ra=l_ra[idx],
                 dec=l_dec[idx],
-                radius=radius, 
-                limit=limit)
-            
+                radius=radius,
+                limit=limit,
+            )
+
             results.extend(rows)
 
         result = dict(
@@ -88,10 +92,10 @@ class CatalogViewSet(viewsets.ReadOnlyModelViewSet):
                     "ra": l_ra,
                     "dec": l_dec,
                     "radius": radius,
-                    "limit": limit
+                    "limit": limit,
                 },
                 "count": len(results),
-                "results": results
+                "results": results,
             }
         )
         return Response(result)

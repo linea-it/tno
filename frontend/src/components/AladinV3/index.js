@@ -4,18 +4,18 @@ import PropTypes from 'prop-types'
 import A from 'aladin-lite'
 
 export default class AladinV3 extends React.Component {
-  // Importante tentei criar o componente com Hooks mas não funcionou corretamente. 
-  // Usando Class based Component funcionou como esperado. 
-  // Acredito que seja pelo comportamento do didmount. 
+  // Importante tentei criar o componente com Hooks mas não funcionou corretamente.
+  // Usando Class based Component funcionou como esperado.
+  // Acredito que seja pelo comportamento do didmount.
   // Aladin precisa que a div já exista antes da função ser chamada.
-  // 
+  //
   // Exemplos que usei como base:
   // https://blog.logrocket.com/complete-guide-react-refs/
   // https://legacy.reactjs.org/docs/hooks-effect.html
-  // 
+  //
   // Complete List with all Options for Aladin
   // https://aladin.cds.unistra.fr/AladinLite/doc/API/
-  // Lista de Exemplos: 
+  // Lista de Exemplos:
   // https://aladin.cds.unistra.fr/AladinLite/doc/API/examples/
 
 
@@ -68,7 +68,7 @@ export default class AladinV3 extends React.Component {
   componentWillUnmount() { }
 
   drawCatalog() {
-    // Cria um Catalogo contendo a coordenada ra e dec como source. 
+    // Cria um Catalogo contendo a coordenada ra e dec como source.
     // https://aladin.cds.unistra.fr/AladinLite/doc/API/examples/cat-custom-shape/
 
     if (this.props.ra !== undefined && this.props.dec !== undefined) {

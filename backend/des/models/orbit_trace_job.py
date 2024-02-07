@@ -79,7 +79,7 @@ class OrbitTraceJob(models.Model):
         max_length=15,
         choices=(
             ("name", "Object name"),
-            ("dynclass", "Dynamic class (with subclasses)"),            
+            ("dynclass", "Dynamic class (with subclasses)"),
             ("base_dynclass", "Dynamic class"),
         ),
     )
@@ -90,20 +90,20 @@ class OrbitTraceJob(models.Model):
 
     count_asteroids = models.IntegerField(
         verbose_name="Asteroids",
-        help_text="Total asteroids selected to run this job",        
-        default=0,        
+        help_text="Total asteroids selected to run this job",
+        default=0,
     )
 
     count_ccds = models.IntegerField(
         verbose_name="CCDs",
-        help_text="Total ccds processed in this job.",        
-        default=0,        
+        help_text="Total ccds processed in this job.",
+        default=0,
     )
 
     count_observations = models.IntegerField(
         verbose_name="Observations Count",
-        help_text="Total observations identified by the orbit trace.",        
-        default=0,        
+        help_text="Total observations identified by the orbit trace.",
+        default=0,
     )
 
     count_success = models.IntegerField(
@@ -114,32 +114,32 @@ class OrbitTraceJob(models.Model):
 
     count_failures = models.IntegerField(
         verbose_name="Failures Count",
-        help_text="Total asteroids that failed at least one of the steps.",        
-        default=0,        
+        help_text="Total asteroids that failed at least one of the steps.",
+        default=0,
     )
 
     h_exec_time = models.CharField(
         verbose_name="Human Exec Time",
         help_text="Execution Time formated with humanize.",
-        max_length=100,        
+        max_length=100,
         null=True,
         default=None,
-        blank=True        
+        blank=True,
     )
 
     debug = models.BooleanField(
-        verbose_name="Debug",        
+        verbose_name="Debug",
         help_text="Debug False all log files and intermediate results will be deleted at the end of the job.",
         default=False,
     )
 
     # Pasta onde estão os dados do Job.
     path = models.CharField(
-        verbose_name="Path",        
+        verbose_name="Path",
         help_text="Path to the directory where the job data is located.",
-        max_length=2048,        
+        max_length=2048,
         null=True,
-        blank=True        
+        blank=True,
     )
 
     # Em caso de erro o Job fica com status 'Failed'
@@ -147,23 +147,23 @@ class OrbitTraceJob(models.Model):
     error = models.TextField(verbose_name="Error", null=True, blank=True)
 
     traceback = models.TextField(verbose_name="Traceback", null=True, blank=True)
-    
+
     # Tempo médio de execução por Asteroid ( exec_time / count_asteroids) em segundos
     avg_exec_time_asteroid = models.FloatField(
-        verbose_name="Average Execution Time Asteroid", 
-        help_text= "average execution time per asteroid. (seconds)",
-        null=True, 
+        verbose_name="Average Execution Time Asteroid",
+        help_text="average execution time per asteroid. (seconds)",
+        null=True,
         blank=True,
-        default=0
+        default=0,
     )
 
     # Tempo médio de execução por Asteroid ( exec_time / count_ccds) em segundos
     avg_exec_time_ccd = models.FloatField(
-        verbose_name="Average Execution Time CCD", 
-        help_text= "average execution time per ccd. (seconds)",
-        null=True, 
+        verbose_name="Average Execution Time CCD",
+        help_text="average execution time per ccd. (seconds)",
+        null=True,
         blank=True,
-        default=0
+        default=0,
     )
 
     def __str__(self):

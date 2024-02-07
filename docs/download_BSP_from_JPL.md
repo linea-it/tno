@@ -1,7 +1,7 @@
 
 # Download BSP from JPL
 
-Descrição de como baixar os arquivo BSP que serão usados como input pelo programa NIMA. 
+Descrição de como baixar os arquivo BSP que serão usados como input pelo programa NIMA.
 
 ### Dependência
 Instalar a tool Expect. [documentation here](https://core.tcl.tk/expect/index)
@@ -32,7 +32,7 @@ chmod +x smb_spk
 
 Para baixar os arquivos BSP é necessário passar os seguintes parametros
 
-Nome do Objeto, Periodo, um email válido e o nome do arquivo. 
+Nome do Objeto, Periodo, um email válido e o nome do arquivo.
 
 exemplo:
 ```
@@ -42,12 +42,12 @@ Mais descrições de como usar o script estão no cabeçalho do script.
 
 Parametros utilizados no exemplo:
 
-    -b  : create file in default binary format. RECOMMENDED. SPICE Toolkit versions N0052 and later have platform independent reader subroutines which can read files regardless of the "little-endian" or "big-endian" byte-order of the platform they were created on. 
+    -b  : create file in default binary format. RECOMMENDED. SPICE Toolkit versions N0052 and later have platform independent reader subroutines which can read files regardless of the "little-endian" or "big-endian" byte-order of the platform they were created on.
 
     [small-body] : Horizons command to select single asteroid or comet (no planets or satellites .. SPK files for those object are precomputed and distributed separately). ENCLOSE STRING IN QUOTES. REQUIRED.
 
-    [start] : Date the SPK file is to begin, within span [1900-2100]. REQUIRED. 
-        Examples:  2003-Feb-1 
+    [start] : Date the SPK file is to begin, within span [1900-2100]. REQUIRED.
+        Examples:  2003-Feb-1
                    "2003-Feb-1 16:00"
 
     [stop] : Date the SPK file is to end, within span [1900-2100]. REQUIRED. Must be more than 32 days later than [start].
@@ -60,13 +60,13 @@ Parametros utilizados no exemplo:
 
     {file_name} : OPTIONAL name to give the file on your system. If not specified, it uses the SPK ID to assign a local file name in the current directory. Default form:
     #######.bsp  (binary SPK -b argument)
-    where "#######" is the SPICE ID integer. 
+    where "#######" is the SPICE ID integer.
 
 
 ### Alteração do Código
 Ao utilizar o script smb_spk a partir do contariner, foi necessário alterar parte do código, estava tendo erro de conexão do lado do container, até abria a conexão autenticava mais dava erro na ultima etapa na linha do comando get.
 
-Para resolver tive que alterar essa parte do código e adicionar o comanto ftp "passive" isso resolveu o problema de conexão. adicionei também o comando para fechar o ftp "quit". 
+Para resolver tive que alterar essa parte do código e adicionar o comanto ftp "passive" isso resolveu o problema de conexão. adicionei também o comando para fechar o ftp "quit".
 
 O código funcional ficou assim
 

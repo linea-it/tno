@@ -36,10 +36,10 @@ shift $#
 source $PIPELINE_PATH/env_pipeline.sh
 
 # run.sh <name> <start_date> <final_date> \
-#   --number <number> 
+#   --number <number>
 #   --path <path>
-#   --step <step> 
-#   --leap_sec <leap_sec> 
+#   --step <step>
+#   --leap_sec <leap_sec>
 #   --bsp_planetary <bsp_planetary>
 #   --refina_orbit OPCIONAL
 python run.py $_name $_start $_end --number $_number --path $_path --step $_step --leap_sec $_leap_sec --bsp_planetary $_bsp_planetary

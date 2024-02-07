@@ -12,9 +12,9 @@ from tno.models import Asteroid
 # https://coderbook.com/@marcus/how-to-squash-and-merge-django-migrations/
 class Occultation(models.Model):
 
-    #-------------------------------------------------
+    # -------------------------------------------------
     # Identificação do Objeto
-    #-------------------------------------------------
+    # -------------------------------------------------
     name = models.CharField(
         max_length=35,
         verbose_name="Name",
@@ -44,17 +44,17 @@ class Occultation(models.Model):
         help_text="Alias used internally as an internal name, formed by the name without special characters and with the addition of sequential numbers if necessary.",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
     # TODO: Renomear este campo, Impacto grande.
-    # 'skybot_dynbaseclass', 
+    # 'skybot_dynbaseclass',
     base_dynclass = models.CharField(
         verbose_name="Object's base dynamical classification as defined by Skybot",
         help_text="(ucd=“meta.code.class”) Object's base dynamical classification as defined by Skybot (KBO, Centaur, Trojan, MB, etc.).",
         max_length=24,
         default=None,
         null=True,
-        blank=True,        
+        blank=True,
     )
 
     # TODO: Renomear este campo, Impacto grande.
@@ -65,7 +65,7 @@ class Occultation(models.Model):
         max_length=24,
         default=None,
         null=True,
-        blank=True,        
+        blank=True,
     )
 
     astorb_dynbaseclass = models.CharField(
@@ -75,7 +75,7 @@ class Occultation(models.Model):
         db_index=True,
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     astorb_dynsubclass = models.CharField(
@@ -85,12 +85,12 @@ class Occultation(models.Model):
         db_index=True,
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
-    #-------------------------------------------------
+    # -------------------------------------------------
     # Informações da prediçao
-    #-------------------------------------------------
+    # -------------------------------------------------
     date_time = models.DateTimeField(
         verbose_name="Date Time", auto_now_add=False, null=False, blank=False
     )
@@ -318,14 +318,14 @@ class Occultation(models.Model):
         blank=True,
     )
 
-    #------------------------------------------------------
+    # ------------------------------------------------------
     # Colunas que aparentemente não esto sendo preenchidas
-    #------------------------------------------------------
-    
+    # ------------------------------------------------------
+
     # remover quando possivel dependencia e colunas:
-    #    [g_mag_vel_corrected, rp_mag_vel_corrected, bp_mag_vel_corrected, 
+    #    [g_mag_vel_corrected, rp_mag_vel_corrected, bp_mag_vel_corrected,
     #     j_mag_vel_corrected, h_mag_vel_corrected, k_mag_vel_corrected]
-    # ou adaptar esses valores somente para TNOs, pois não podem ser usados com 
+    # ou adaptar esses valores somente para TNOs, pois não podem ser usados com
     # asteroides proximos (trata-se de uma determinacao empirica para objetos a
     # distancia media equivalente ao planeta anao Plutao)
 
@@ -502,13 +502,13 @@ class Occultation(models.Model):
         default=None,
         help_text="Aphelion (AU)",
     )
-    #------------------------------------------------------
+    # ------------------------------------------------------
     # FIM Colunas que aparentemente não esto sendo preenchidas
-    #------------------------------------------------------
+    # ------------------------------------------------------
 
-    #-------------------------------------------------
+    # -------------------------------------------------
     # Occultation Path Fields.
-    #-------------------------------------------------
+    # -------------------------------------------------
     have_path_coeff = models.BooleanField(
         verbose_name="Has path coefficients",
         null=True,
@@ -547,14 +547,14 @@ class Occultation(models.Model):
         blank=True,
         default=None,
         help_text="Maximum latitude the occultation path reaches. -180 +180",
-    )   
+    )
 
     occ_path_is_nightside = models.BooleanField(
         verbose_name="Occultation path nightside",
         null=True,
         blank=True,
         default=None,
-        help_text="True if any part of the path crosses the nightside of the Earth",        
+        help_text="True if any part of the path crosses the nightside of the Earth",
     )
 
     occ_path_coeff = models.JSONField(
@@ -565,235 +565,231 @@ class Occultation(models.Model):
         help_text="Occultation path coefficients of the polynomial fit",
     )
 
-    #-------------------------------------------------
+    # -------------------------------------------------
     # MPC asteroid data used for prediction
-    #-------------------------------------------------
+    # -------------------------------------------------
     h = models.FloatField(
-        verbose_name = "H",
+        verbose_name="H",
         help_text="Absolute magnitude",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     g = models.FloatField(
-        verbose_name = "G",
+        verbose_name="G",
         help_text="Phase slope parameter",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
-    
+
     epoch = models.FloatField(
-        verbose_name = "Epoch of the orbit",
+        verbose_name="Epoch of the orbit",
         help_text="Epoch of the orbit (Julian Date)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     semimajor_axis = models.FloatField(
-        verbose_name = "Semimajor axis",
+        verbose_name="Semimajor axis",
         help_text="Semimajor axis (AU)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     excentricity = models.FloatField(
-        verbose_name = "Excentricity",
+        verbose_name="Excentricity",
         help_text="Excentricity",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     inclination = models.FloatField(
-        verbose_name = "Inclination",
+        verbose_name="Inclination",
         help_text="Inclination (degres)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     long_asc_node = models.FloatField(
-        verbose_name = "Longitude of the ascending node",
+        verbose_name="Longitude of the ascending node",
         help_text="Longitude of the ascending node, J2000.0 (degrees)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     arg_perihelion = models.FloatField(
-        verbose_name = "Argument of perihelion",
+        verbose_name="Argument of perihelion",
         help_text="Argument of perihelion, J2000.0 (degrees)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     mean_anomaly = models.FloatField(
-        verbose_name = "Mean anomaly",
+        verbose_name="Mean anomaly",
         help_text="Mean anomaly at the epoch (degrees)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     mean_daily_motion = models.FloatField(
-        verbose_name = "Mean daily motion",
+        verbose_name="Mean daily motion",
         help_text="Mean daily motion (degrees/day)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     perihelion_dist = models.FloatField(
-        verbose_name = "Perihelion distance",
+        verbose_name="Perihelion distance",
         help_text="Perihelion distance (AU)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     aphelion_dist = models.FloatField(
-        verbose_name = "Aphelion distance",
+        verbose_name="Aphelion distance",
         help_text="Aphelion distance (AU)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     rms = models.FloatField(
-        verbose_name = "r.m.s. residual",
+        verbose_name="r.m.s. residual",
         help_text="r.m.s. residual of the fit (arcsec)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     last_obs_included = models.DateField(
-        verbose_name = "Date of last observation included",
+        verbose_name="Date of last observation included",
         help_text="Date of last observation included in orbit solution (YYYY-MM-DD format)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     pha_flag = models.BooleanField(
-        verbose_name = "pha_flag",
-        help_text="",
-        null=True,
-        blank=True,        
-        default=False
+        verbose_name="pha_flag", help_text="", null=True, blank=True, default=False
     )
 
     mpc_critical_list = models.BooleanField(
-        verbose_name = "mpc_critical_list",
+        verbose_name="mpc_critical_list",
         help_text="Critical objects numbered on the MPC list are those whose orbits require improvement",
         null=True,
         blank=True,
-        default=False
+        default=False,
     )
 
     albedo = models.FloatField(
-        verbose_name = "albedo",
+        verbose_name="albedo",
         help_text="Albedo",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     albedo_err_min = models.FloatField(
-        verbose_name = "albedo_err_min",
+        verbose_name="albedo_err_min",
         help_text="Albedo lower error",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     albedo_err_max = models.FloatField(
-        verbose_name = "albedo_err_max",
+        verbose_name="albedo_err_max",
         help_text="Albedo upper error",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     density = models.FloatField(
-        verbose_name = "density",
+        verbose_name="density",
         help_text="Density (kg/m^3)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     density_err_min = models.FloatField(
-        verbose_name = "density_err_min",
+        verbose_name="density_err_min",
         help_text="Density lower error (kg/m^3)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     density_err_max = models.FloatField(
-        verbose_name = "density_err_max",
+        verbose_name="density_err_max",
         help_text="Density upper error (kg/m^3)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     diameter = models.FloatField(
-        verbose_name = "diameter",
+        verbose_name="diameter",
         help_text="Diameter (km)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     diameter_err_min = models.FloatField(
-        verbose_name = "diameter_err_min",
+        verbose_name="diameter_err_min",
         help_text="Diameter lower error (km)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     diameter_err_max = models.FloatField(
-        verbose_name = "diameter_err_max",
+        verbose_name="diameter_err_max",
         help_text="Diameter upper error (km)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     mass = models.FloatField(
-        verbose_name = "mass",
+        verbose_name="mass",
         help_text="Mass (kg)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     mass_err_min = models.FloatField(
-        verbose_name = "mass_err_min",
+        verbose_name="mass_err_min",
         help_text="Mass upper error (kg)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
-    
+
     mass_err_max = models.FloatField(
-        verbose_name = "mass_err_max",
+        verbose_name="mass_err_max",
         help_text="Mass lower error (kg)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
-    #-------------------------------------------------
+    # -------------------------------------------------
     # Provenance Fields
-    #-------------------------------------------------
+    # -------------------------------------------------
     catalog = models.CharField(
         max_length=10,
         default="GAIA DR2",
@@ -818,7 +814,7 @@ class Occultation(models.Model):
         blank=True,
         default="JPL",
         verbose_name="Bsp Source",
-        help_text="Asteroid Bsp ephemeris data source. for example JPL."
+        help_text="Asteroid Bsp ephemeris data source. for example JPL.",
     )
 
     # Indica a Origem das Observations pode ser AstDys ou MPC
@@ -828,7 +824,7 @@ class Occultation(models.Model):
         blank=True,
         default="MPC",
         verbose_name="Observation Source",
-        help_text="Observation data source, AstDys or MPC."
+        help_text="Observation data source, AstDys or MPC.",
     )
 
     # Indica a Origem dos Orbital Elements pode ser AstDys ou MPC
@@ -838,7 +834,7 @@ class Occultation(models.Model):
         blank=True,
         default="MPC",
         verbose_name="Orbital Elements Source",
-        help_text="Orbital Elements data source, AstDys or MPC."
+        help_text="Orbital Elements data source, AstDys or MPC.",
     )
 
     bsp_planetary = models.CharField(
@@ -847,7 +843,7 @@ class Occultation(models.Model):
         blank=True,
         default="de440",
         verbose_name="Planetary Ephemeris",
-        help_text="File/version of planetary ephemeris used."
+        help_text="File/version of planetary ephemeris used.",
     )
 
     leap_seconds = models.CharField(
@@ -856,7 +852,7 @@ class Occultation(models.Model):
         blank=True,
         default="naif0012",
         verbose_name="Leap Seconds",
-        help_text="File/version of Leap Seconds used."
+        help_text="File/version of Leap Seconds used.",
     )
 
     nima = models.BooleanField(
@@ -864,7 +860,7 @@ class Occultation(models.Model):
         null=True,
         blank=True,
         default=False,
-        help_text="True if the prediction used NIMA results.",        
+        help_text="True if the prediction used NIMA results.",
     )
 
     # Data de criação do registro,
@@ -872,13 +868,9 @@ class Occultation(models.Model):
     # Como esta tabela nunca é update, cada novo processamento é um delete/insert
     # este campo sempre representa o momento da ultima atualização deste evento de
     # ocultação.
-    created_at = models.DateTimeField(
-        verbose_name="Created at",
-        auto_now_add=True
-    )
+    created_at = models.DateTimeField(verbose_name="Created at", auto_now_add=True)
 
-
-    job_id =  models.IntegerField(
+    job_id = models.IntegerField(
         verbose_name="Prediction Job",
         help_text="Identification of the prediction job that generated this prediction.",
         null=True,
@@ -901,7 +893,9 @@ class Occultation(models.Model):
 
     def get_map_relative_url(self) -> Optional[str]:
         if self.map_exists():
-            return urllib.parse.urljoin(settings.PREDICTION_MAP_URL, self.get_map_filename())
+            return urllib.parse.urljoin(
+                settings.PREDICTION_MAP_URL, self.get_map_filename()
+            )
         else:
             return None
 
@@ -911,32 +905,104 @@ class Occultation(models.Model):
             return False
 
         map_date_time = datetime.fromtimestamp(
-            self.get_map_filepath().stat().st_ctime).astimezone(timezone.utc)
+            self.get_map_filepath().stat().st_ctime
+        ).astimezone(timezone.utc)
         return map_date_time > self.created_at
 
     class Meta:
         indexes = [
             # object identification indexes
-            models.Index(fields=['name',]),
-            models.Index(fields=['number',]),
-            models.Index(fields=['principal_designation',]),
-            models.Index(fields=['base_dynclass',]),
-            models.Index(fields=['dynclass',]),
-            models.Index(fields=['astorb_dynbaseclass',]),
-            models.Index(fields=['astorb_dynsubclass',]),
+            models.Index(
+                fields=[
+                    "name",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "number",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "principal_designation",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "base_dynclass",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "dynclass",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "astorb_dynbaseclass",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "astorb_dynsubclass",
+                ]
+            ),
             # event indexes
-            models.Index(fields=['date_time',]),
-            models.Index(fields=['g_star',]),
-            models.Index(fields=['have_path_coeff',]),
-            models.Index(fields=['occ_path_min_longitude',]),
-            models.Index(fields=['occ_path_max_longitude',]),
-            models.Index(fields=['occ_path_min_latitude',]),
-            models.Index(fields=['occ_path_max_latitude',]),
-            models.Index(fields=['occ_path_is_nightside',]),
+            models.Index(
+                fields=[
+                    "date_time",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "g_star",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "have_path_coeff",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "occ_path_min_longitude",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "occ_path_max_longitude",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "occ_path_min_latitude",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "occ_path_max_latitude",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "occ_path_is_nightside",
+                ]
+            ),
             # Asteroid indexes
-            models.Index(fields=['g',]),
+            models.Index(
+                fields=[
+                    "g",
+                ]
+            ),
             # Provenance indexes
-            models.Index(fields=['created_at',]),
-            models.Index(fields=['job_id',]),            
-            
+            models.Index(
+                fields=[
+                    "created_at",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "job_id",
+                ]
+            ),
         ]

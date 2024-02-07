@@ -86,25 +86,21 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
             # TODO Implementar error handling
             pass
 
-    @action(
-        detail=False, methods=["GET"], permission_classes=(IsAuthenticated,)
-    )
+    @action(detail=False, methods=["GET"], permission_classes=(IsAuthenticated,))
     def count_asteroid_table(self, request):
 
         count = Asteroid.objects.count()
 
-        return Response(dict({"count":count}))
+        return Response(dict({"count": count}))
 
-    @action(
-        detail=False, methods=["POST"], permission_classes=(IsAuthenticated,)
-    )
+    @action(detail=False, methods=["POST"], permission_classes=(IsAuthenticated,))
     def delete_all(self, request):
-        """Apaga todos os Asteroids e seus resultados do banco de dados. 
+        """Apaga todos os Asteroids e seus resultados do banco de dados.
         Utilizada duranto o desenvolvimento dos pipelines ou quando se deseja gerar novos resultados.
         Isso implica em perder todos os resultados gerados pelas etapas posteriores ao Skybot Discovery que são:
             Orbit Trace: Cada posição encontrada pelo pipeline é associada a um Asteroid. Todos os registros na tabela DES_OBSERVATION serão apagados.
             Predict Occultation: Toda Ocultação encontrada pelo pipeline é associada a um Asteroid. Todos os registros na tabela TNO_OCCULTATION serão apagados.
-        
+
         Após está operação será necessário:
             Update Asteroid Table: Executar o função "Update Asteroid Table" para gerar novamente a lista de Asteroids.
             Orbit Trace: Executar o pipeline "Orbit Trace" para gerar novos registros de Observações na tabela DES_OBSERVATION.
@@ -117,11 +113,9 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         Occultation.objects.all().delete()
         Asteroid.objects.all().delete()
 
-        return Response(dict({"success": True}))        
+        return Response(dict({"success": True}))
 
-    @action(
-        detail=False, methods=["GET"], permission_classes=(AllowAny,)
-    )
+    @action(detail=False, methods=["GET"], permission_classes=(AllowAny,))
     def dynclasses(self, request):
         """All Dynamic Classes.
         Distinct dynclass in tno_asteroid table.
@@ -129,11 +123,9 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
 
         rows = AsteroidDao(pool=False).distinct_dynclass()
 
-        return Response(dict({"results": rows, "count": len(rows)}))        
+        return Response(dict({"results": rows, "count": len(rows)}))
 
-    @action(
-        detail=False, methods=["GET"], permission_classes=(AllowAny,)
-    )
+    @action(detail=False, methods=["GET"], permission_classes=(AllowAny,))
     def base_dynclasses(self, request):
         """All Base Dynamic Classes.
         Distinct base_dynclass in tno_asteroid table.
@@ -142,7 +134,7 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
 
         rows = AsteroidDao(pool=False).distinct_base_dynclass()
 
-        return Response(dict({"results": rows, "count": len(rows)}))  
+        return Response(dict({"results": rows, "count": len(rows)}))
 
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def with_prediction(self, request):
@@ -150,9 +142,9 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         Asteroids can be filtered by name using the name parameter.
 
         """
-        filtro = self.request.query_params.get('name', None)
+        filtro = self.request.query_params.get("name", None)
 
-        queryset = Occultation.objects.order_by('name').distinct('name')
+        queryset = Occultation.objects.order_by("name").distinct("name")
 
         if filtro:
             queryset = queryset.filter(name__icontains=filtro)
@@ -166,4 +158,3 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
 
         serializer = AsteroidSerializer(asteroids, many=True)
         return paginator.get_paginated_response(serializer.data)
-        

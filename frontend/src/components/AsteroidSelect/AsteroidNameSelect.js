@@ -52,8 +52,8 @@ function AsteroidNameSelect({ value, onChange }) {
                 {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
                 {params.InputProps.endAdornment}
               </React.Fragment>
-            ), 
-          }}           
+            ),
+          }}
         />
       )}
     />
@@ -103,8 +103,8 @@ export default AsteroidNameSelect
 //                {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
 //                {params.InputProps.endAdornment}
 //              </React.Fragment>
-//            ), 
-//          }}           
+//            ),
+//          }}
 //        />
 //      )}
 //    />

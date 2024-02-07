@@ -24,13 +24,13 @@ function AsteroidJob() {
   })
 
   console.log(data)
-    return (   
+    return (
       <Grid container spacing={2}>
         {data !== undefined && data.status === 4 && (
           <Grid item xs={12}>
             <Alert severity='error'>{data?.error}</Alert>
           </Grid>
-        )}        
+        )}
         {isLoading && (
           <span>Loading</span>
         )}
@@ -44,60 +44,60 @@ function AsteroidJob() {
             noValidate
             autoComplete="off"
             >
-              <TextField 
-                label="ID" 
-                value={data?.id} 
+              <TextField
+                label="ID"
+                value={data?.id}
                 InputProps={{
                   readOnly: true,
                 }}
                 />
               <ColumnStatus status={data?.status} />
-              <TextField 
-                label="Submit Time" 
+              <TextField
+                label="Submit Time"
                 value={moment(data?.submit_time).utc().format('YYYY-MM-DD HH:mm:ss')}
                 InputProps={{
                   readOnly: true,
                 }}
                 />
-              <TextField 
-                label="Start Time" 
+              <TextField
+                label="Start Time"
                 value={moment(data?.start).utc().format('YYYY-MM-DD HH:mm:ss')}
                 InputProps={{
                   readOnly: true,
                 }}
                 />
-              <TextField 
-                label="End Time" 
+              <TextField
+                label="End Time"
                 value={moment(data?.end).utc().format('YYYY-MM-DD HH:mm:ss')}
                 InputProps={{
                   readOnly: true,
                 }}
                 />
-              <TextField 
-                label="Execution Time" 
+              <TextField
+                label="Execution Time"
                 value={data?.exec_time}
                 InputProps={{
                   readOnly: true,
                 }}
                 />
-              <TextField 
-                label="Asteroids Before" 
+              <TextField
+                label="Asteroids Before"
                 value={data?.asteroids_before}
                 InputProps={{
                   readOnly: true,
                 }}
                 />
-              <TextField 
-                label="Asteroids After" 
+              <TextField
+                label="Asteroids After"
                 value={data?.asteroids_after}
                 InputProps={{
                   readOnly: true,
                 }}
                 />
-              <TextField 
-                label="Traceback" 
-                value={data?.traceback} 
-                multiline 
+              <TextField
+                label="Traceback"
+                value={data?.traceback}
+                multiline
                 rows={4}
                 InputProps={{
                   readOnly: true,

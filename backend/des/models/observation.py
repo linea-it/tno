@@ -32,7 +32,7 @@ class Observation(models.Model):
     ccd_id = models.IntegerField(
         verbose_name="CCD",
         help_text="Field that identifies an CCD in the DES CCD table. represents desfile_id",
-        default=0
+        default=0,
     )
 
     name = models.CharField(
@@ -67,14 +67,11 @@ class Observation(models.Model):
 
     mag_psf_err = models.FloatField(verbose_name="Mag PSF Error", null=True, blank=True)
 
-    # Data de criação do registro, 
+    # Data de criação do registro,
     # Representa o momento em que a observação foi processada
-    # Como esta tabela nunca é update, cada novo processamento é um delete/insert 
+    # Como esta tabela nunca é update, cada novo processamento é um delete/insert
     # este campo sempre representa o momento da ultima atualização.
-    created_at = models.DateTimeField(
-        verbose_name="Created at", 
-        auto_now=True
-    )
+    created_at = models.DateTimeField(verbose_name="Created at", auto_now=True)
 
     class Meta:
         # A mesma posição não pode se repetir em um mesmo ccd para um mesmo asteroid.

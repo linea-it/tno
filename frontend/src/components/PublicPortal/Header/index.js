@@ -49,7 +49,7 @@ function PublicHeader() {
     }
   ]
 
-  const handleCardClick = (pathname) => navigate(pathname)   
+  const handleCardClick = (pathname) => navigate(pathname)
 
   return (
     <AppBar position='static' className={classes.appbar}>

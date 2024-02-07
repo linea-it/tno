@@ -1,11 +1,12 @@
 from sqlalchemy.sql import delete, and_
 from dao.db_base import DBBase
 
+
 class OccultationDao(DBBase):
     def __init__(self):
         super(OccultationDao, self).__init__()
 
-        self.tbl = self.get_table('tno_occultation')
+        self.tbl = self.get_table("tno_occultation")
 
     def delete_by_asteroid_name(self, name):
 
@@ -22,7 +23,7 @@ class OccultationDao(DBBase):
         stm = delete(self.tbl).where(
             and_(
                 self.tbl.c.name == id,
-                self.tbl.c.date_time.between(start_period, end_period)
+                self.tbl.c.date_time.between(start_period, end_period),
             )
         )
 
@@ -36,7 +37,8 @@ class OccultationDao(DBBase):
 
         # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
         # IMPORTANTA! A ORDEM DAS COLUNAS PRECISA SER IDENTICA A COMO ESTA NO DB!
-        sql = (f"COPY {self.tbl} (name, number, date_time, ra_star_candidate, dec_star_candidate, "
+        sql = (
+            f"COPY {self.tbl} (name, number, date_time, ra_star_candidate, dec_star_candidate, "
             "ra_target, dec_target, closest_approach, position_angle, velocity, delta, g, j_star, h, "
             "k_star, long, loc_t, off_ra, off_dec, proper_motion, ct, multiplicity_flag, e_ra, e_dec, "
             "pmra, pmdec, ra_star_deg, dec_star_deg, ra_target_deg, dec_target_deg, created_at, "
@@ -51,7 +53,8 @@ class OccultationDao(DBBase):
             "astorb_dynsubclass, density, density_err_max, density_err_min, diameter_err_max, diameter_err_min, "
             "epoch, excentricity, last_obs_included, long_asc_node, mass, mass_err_max, mass_err_min, mean_anomaly, "
             "mean_daily_motion, mpc_critical_list, perihelion_dist, pha_flag, principal_designation, rms, g_star, h_star) "
-        "FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);")
+            "FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);"
+        )
 
         rowcount = self.import_with_copy_expert(sql, data)
 

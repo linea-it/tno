@@ -10,7 +10,7 @@
 	  INTEGER HH,MH,GG,MG
 	  INTEGER IHMSF(4),IDMSF(4)
 	  CHARACTER*1 SIGN
-	  CHARACTER*1 X          
+	  CHARACTER*1 X
 	  CHARACTER*80 INFILE
           DOUBLE PRECISION SOA,SH,SG
 	  DOUBLE PRECISION RA(MAX),DEC(MAX)
@@ -49,30 +49,30 @@ C	  WRITE(STDOUT,5000)
 
 	  DO J=1,I
 
-	   v1(1) =dcos(DEC(J)) * dcos(RA(J))  
-	   v1(2) =dcos(DEC(J)) * dsin(RA(J))  
+	   v1(1) =dcos(DEC(J)) * dcos(RA(J))
+	   v1(2) =dcos(DEC(J)) * dsin(RA(J))
 	   v1(3) =               dsin(DEC(J))
 
            DO K=J+1,I
 
             IF (INDX(J).EQ.1) THEN
-	   
+
 	     v2(1) = dcos(DEC(K)) * dcos(RA(K))
 	     v2(2) = dcos(DEC(K)) * dsin(RA(K))
 	     v2(3) =                dsin(DEC(K))
-	   
+
 	     DIST = dacos((v1(1)*v2(1) + v1(2)*v2(2) + v1(3)*v2(3)))
 	     DIST = DIST*180d0/DPI*60D0
 
 	     IF (DIST.LE.DIFMAX) INDX(K)=0
 
 	    ENDIF
-		  
+
 	   END DO
 	  END DO
 
 	  DO J=1,I
-           IF (INDX(J).EQ.1) THEN 
+           IF (INDX(J).EQ.1) THEN
             CALL sla_DR2TF(NDP,RA(J),SIGN,IHMSF)
             CALL sla_DR2AF(NDP-1,DEC(J),SIGN,IDMSF)
 
@@ -85,7 +85,7 @@ C	  WRITE(STDOUT,5000)
 
 	  GOTO 5
 4	  WRITE(STDOUT,'(A21)')'AJUSTAR PARAMETRO MAX'
-          CLOSE(1)  
+          CLOSE(1)
 5	  STOP
 	  END
 
@@ -142,8 +142,8 @@ C	  WRITE(STDOUT,5000)
 *    GNU General Public License for more details.
 *
 *    You should have received a copy of the GNU General Public License
-*    along with this program (see SLA_CONDITIONS); if not, write to the 
-*    Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
+*    along with this program (see SLA_CONDITIONS); if not, write to the
+*    Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 *    Boston, MA  02111-1307  USA
 *
 *-
@@ -218,8 +218,8 @@ C	  WRITE(STDOUT,5000)
 *    GNU General Public License for more details.
 *
 *    You should have received a copy of the GNU General Public License
-*    along with this program (see SLA_CONDITIONS); if not, write to the 
-*    Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
+*    along with this program (see SLA_CONDITIONS); if not, write to the
+*    Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 *    Boston, MA  02111-1307  USA
 *
 *-
@@ -292,8 +292,8 @@ C	  WRITE(STDOUT,5000)
 *    GNU General Public License for more details.
 *
 *    You should have received a copy of the GNU General Public License
-*    along with this program (see SLA_CONDITIONS); if not, write to the 
-*    Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
+*    along with this program (see SLA_CONDITIONS); if not, write to the
+*    Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 *    Boston, MA  02111-1307  USA
 *
 *-

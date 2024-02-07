@@ -138,6 +138,7 @@ class SkybotJobAdmin(admin.ModelAdmin):
         "nights",
     )
 
+
 @admin.register(OrbitTraceJob)
 class OrbitTraceJobAdmin(admin.ModelAdmin):
     list_display = (
@@ -150,6 +151,7 @@ class OrbitTraceJobAdmin(admin.ModelAdmin):
         "filter_value",
         "exec_time",
     )
+
 
 @admin.register(OrbitTraceJobResult)
 class OrbitTraceJobResultAdmin(admin.ModelAdmin):
@@ -173,6 +175,7 @@ class OrbitTraceJobResultAdmin(admin.ModelAdmin):
         "asteroid",
     )
 
+
 @admin.register(OrbitTraceJobStatus)
 class OrbitTraceJobStatusAdmin(admin.ModelAdmin):
     list_display = (
@@ -184,8 +187,9 @@ class OrbitTraceJobStatusAdmin(admin.ModelAdmin):
         "average_time",
         "time_estimate",
         "success",
-        "failures"
+        "failures",
     )
+
 
 @admin.register(SkybotJobResult)
 class SkybotJobResultAdmin(admin.ModelAdmin):
@@ -287,7 +291,7 @@ class ObservationAdmin(admin.ModelAdmin):
         "offset_dec",
         "mag_psf",
         "mag_psf_err",
-        "created_at"
+        "created_at",
     )
     search_fields = ("name",)
 

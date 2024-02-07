@@ -39,7 +39,7 @@ WORKDIR $APP_PATH
 
 COPY --chown=app:app requirements.txt requirements.txt
 
-RUN pip install -r requirements.txt 
+RUN pip install -r requirements.txt
 
 COPY --chown=app:app . .
 
@@ -72,7 +72,7 @@ ENTRYPOINT ./entrypoint.sh
 # ADD requirements.txt $APP_PATH
 
 
-# RUN pip install --user -r requirements.txt 
+# RUN pip install --user -r requirements.txt
 
 
 # WORKDIR $APP_PATH

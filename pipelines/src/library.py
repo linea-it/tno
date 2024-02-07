@@ -20,7 +20,7 @@ def get_logger(path, filename="refine.log", debug=False):
     file_handler.setFormatter(formatter)
 
     # Stdout handler
-    consoleFormatter = colorlog.ColoredFormatter('%(log_color)s%(message)s')
+    consoleFormatter = colorlog.ColoredFormatter("%(log_color)s%(message)s")
     consoleHandler = colorlog.StreamHandler(sys.stdout)
     consoleHandler.setFormatter(consoleFormatter)
 
@@ -52,7 +52,6 @@ def get_logger(path, filename="refine.log", debug=False):
     # log.addHandler(file_handler)
 
     # return log
-    
 
 
 def read_inputs(path, filename="job.json"):
@@ -129,7 +128,9 @@ def retrieve_asteroids(type, values):
 
     for asteroid in asteroids:
         asteroid.update(
-            {"status": "running",}
+            {
+                "status": "running",
+            }
         )
 
     return asteroids
@@ -366,7 +367,10 @@ def ingest_occultations(asteroid_id, name, number, filepath, start_period, end_p
 
     data = StringIO()
     df.to_csv(
-        data, sep="|", header=True, index=False,
+        data,
+        sep="|",
+        header=True,
+        index=False,
     )
     data.seek(0)
 
@@ -585,7 +589,10 @@ def ingest_observations(path, observations):
         # TODO: Tratar os dados se necessário
         data = StringIO()
         df_obs.to_csv(
-            data, sep="|", header=True, index=False,
+            data,
+            sep="|",
+            header=True,
+            index=False,
         )
         data.seek(0)
 
@@ -608,7 +615,9 @@ def ingest_observations(path, observations):
     except Exception as e:
         msg = "Failed on ingest des observation in database. Error: %s" % e
         result.update(
-            {"error": msg,}
+            {
+                "error": msg,
+            }
         )
 
     finally:
@@ -621,9 +630,10 @@ def ingest_observations(path, observations):
 def get_configs():
     import configparser
     import os
+
     # Carrega as variaveis de configuração do arquivo config.ini
-    execution_path = os.environ['EXECUTION_PATH']
-    config_filepath = os.path.join(execution_path, 'config.ini')
+    execution_path = os.environ["EXECUTION_PATH"]
+    config_filepath = os.path.join(execution_path, "config.ini")
     config = configparser.ConfigParser()
     config.read(config_filepath)
 

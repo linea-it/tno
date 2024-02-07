@@ -3,7 +3,7 @@ from des.models import OrbitTraceJobResult
 
 
 class OrbitTraceJobResultSerializer(serializers.ModelSerializer):
-    
+
     job = serializers.PrimaryKeyRelatedField(read_only=True)
     asteroid = serializers.PrimaryKeyRelatedField(read_only=True)
 

@@ -567,7 +567,7 @@ function PredictOccultation() {
                         <Grid item xs={12} sm={6} md={12} lg={6}>
                           <Box sx={{ minWidth: 120 }}>
                             <FormControl fullWidth><label className='label-tooltip-margin'> Ephemeris Step(s) <span className={classes.errorText}>*</span><Tooltip title={<label className={classes.tooltip}> Step in time, in seconds, to determine the positions of objects. 600 for distant objects and 60 for nearby objects.</label>}><IconButton><InfoOutlinedIcon /></IconButton>
-                            </Tooltip></label> 
+                            </Tooltip></label>
                               <OutlinedInput id="my-input" value={predictStep} className={classes.input} variant="outlined" onChange={(e) => setpredictStep(e.target.value)} />
                             </FormControl>
                             {predictStepError ? (<span className={classes.errorText}>Required field</span>) : ''}
@@ -583,7 +583,7 @@ function PredictOccultation() {
                               />
                             </FormGroup> </FormControl>
                           </Box>
-                        </Grid>                       
+                        </Grid>
                       </Grid>
                     </Grid>
                   </Grid>
@@ -659,4 +659,3 @@ function PredictOccultation() {
 }
 
 export default PredictOccultation
-

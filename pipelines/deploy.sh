@@ -28,10 +28,10 @@ git checkout $VERSION
 cd ..
 
 # Download da BSP planetary
-wget --no-verbose --show-progress --progress=bar:force:noscroll https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de440.bsp 
+wget --no-verbose --show-progress --progress=bar:force:noscroll https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de440.bsp
 
 # Download Leap Second
-wget --no-verbose --show-progress --progress=bar:force:noscroll https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls 
+wget --no-verbose --show-progress --progress=bar:force:noscroll https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls
 
 # 1. create envs
 function create_env {
@@ -106,4 +106,3 @@ rm -rf tno
 # 5. move aux files to PIPELINE_PATH
 mv de440.bsp $PIPELINE_PATH
 mv naif0012.tls $PIPELINE_PATH
-

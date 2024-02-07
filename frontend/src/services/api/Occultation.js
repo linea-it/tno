@@ -74,7 +74,7 @@ export const geoFilterIsValid = (value) => {
     if ((value.longitude === undefined) || (value.longitude === '')) {
       return false
     }
-    
+
     if ((value.longitude < -180 || value.longitude > 180)) {
       return false
     }
@@ -160,4 +160,3 @@ export const allBaseDynclassWithEvents = () => {
 export const allDynclassWithEvents = () => {
   return api.get(`/occultations/dynclass_with_prediction/`).then(res => res.data)
 }
-

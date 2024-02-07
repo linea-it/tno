@@ -449,7 +449,7 @@ function SkybotDetail() {
                   {progress.request.exposures_failed > 0 ? (
                     <Grid item>
                       <Chip label={`Exposures Failed: ${progress.request.exposures_failed}`} className={classes.chipError} variant='outlined' />
-                    </Grid>                  
+                    </Grid>
                   ) : null}
                 </Grid>
               </Grid>
@@ -485,8 +485,8 @@ function SkybotDetail() {
                   {progress.loaddata.exposures_failed > 0 ? (
                     <Grid item>
                       <Chip label={`Exposures Failed: ${progress.loaddata.exposures_failed}`} className={classes.chipError} variant='outlined' />
-                    </Grid>                  
-                  ) : null}                  
+                    </Grid>
+                  ) : null}
                 </Grid>
               </Grid>
               {hasCircularProgress && [1, 2].includes(skybotJob.status) ? (
@@ -593,7 +593,7 @@ function SkybotDetail() {
                 </Card>
               </Grid>
             ) : null}
-          </> 
+          </>
         ) : null
       }
     </Grid>

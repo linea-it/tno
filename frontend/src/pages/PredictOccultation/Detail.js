@@ -169,7 +169,7 @@ function PredictDetail() {
       width: 140
     },
   ];
-  
+
   useEffect(() => {
     loadDataSuccess({
       currentPage: 0,
@@ -209,7 +209,7 @@ function PredictDetail() {
           value: () => (
             <ColumnStatus status={predictionJob.status} title={predictionJob.error} align="right" />
           ),
-          
+
         },
         {
           title: 'Owner',
@@ -265,7 +265,7 @@ function PredictDetail() {
     const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
-    
+
     getPredictionJobResultsByJobId({ id, page, pageSize, ordering }, true).then((res) => {
       setTableData(res.results)
       setTotalCount(res.count)
@@ -282,7 +282,7 @@ function PredictDetail() {
       setTotalErrorCount(res.count)
     })
   }
-  
+
 
 
   return (
@@ -313,7 +313,7 @@ function PredictDetail() {
         <Grid item xs={12}>
           <Alert severity='error'>{predictionJob.error}</Alert>
         </Grid>
-      )}      
+      )}
       <Grid item xs={12} md={5} xl={3}>
         <Card>
           <CardHeader title='Summary Execution' />
@@ -328,8 +328,8 @@ function PredictDetail() {
           <CardContent>
             <Grid container spacing={3} direction='column' className={classes.progressWrapper}>
             <ProgressList
-                lista={progress}    
-              /> 
+                lista={progress}
+              />
               {predictionJob.status == 1 && progress.length == 0 ? (
                 <CircularProgress className={classes.circularProgress} disableShrink size={50} />
               ) : null}

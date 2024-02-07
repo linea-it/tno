@@ -110,16 +110,15 @@ class AsteroidDao(DBBase):
         rows = self.fetch_scalars(stm)
 
         return rows
-    
 
-    def delete_all(self):      
+    def delete_all(self):
         # ! Deleta todos os registros na TNO_Occultations
 
         tbl = self.get_tbl()
         stm = delete(tbl)
 
         return self.execute(stm)
-    
+
     def reset_table(self):
         # Apaga todo conteudo da tabela, e reinicia o campo auto increment.
 
@@ -133,7 +132,7 @@ class AsteroidDao(DBBase):
 
         result = self.execute(stm)
         return result.rowcount
-    
+
     def import_asteroids(self, data, delimiter=","):
 
         # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
@@ -143,7 +142,7 @@ class AsteroidDao(DBBase):
             diameter_err_max, diameter_err_min, epoch, excentricity, g, h, inclination, \
             last_obs_included, long_asc_node, mass, mass_err_max, mass_err_min, mean_anomaly, \
             mean_daily_motion, mpc_critical_list, perihelion_dist, pha_flag, principal_designation, \
-            rms, semimajor_axis) FROM STDIN with (FORMAT CSV, DELIMITER '{delimiter}', HEADER);" 
+            rms, semimajor_axis) FROM STDIN with (FORMAT CSV, DELIMITER '{delimiter}', HEADER);"
 
         rowcount = self.import_with_copy_expert(sql, data)
 

@@ -20,8 +20,8 @@
       CALL FURNSH (KERNEL)
 
 1000  FORMAT('Data inicial (AAAA-MMM-DD HH:MM:SS.SSS): ',$)
-1100  FORMAT('Data final (AAAA-MMM-DD HH:MM:SS.SSS) : ', $)   
-1200  FORMAT('Passo (s) : ', $)   
+1100  FORMAT('Data final (AAAA-MMM-DD HH:MM:SS.SSS) : ', $)
+1200  FORMAT('Passo (s) : ', $)
 
 c      WRITE(STDOUT,1000)
       READ(STDIN,'(A30)')CALENDI
@@ -43,9 +43,9 @@ c      WRITE(STDOUT,1200)
      +CALEND(1:4),'-',CALEND(6:8),'-',
      +CALEND(10:11),' ',CALEND(13:24)
 c       write(6,'(f20.10)')ETOBS-ETOBSF
-       TDB=ETOBS/D2S+T0         
+       TDB=ETOBS/D2S+T0
        DATE1=T0
-       DATE2=TDB-T0        
+       DATE2=TDB-T0
 
        CALL ET2JD (ETOBS,JDUTC)
        JDUTC=JDUTC+PASSO/D2S
@@ -72,7 +72,7 @@ c       write(6,'(f20.10)')ETOBS-ETOBSF
 
 C 2008-JAN-01 00:00:00.000
 C 2008-DEC-31 23:59:00.000
- 
+
       DOUBLE PRECISION FUNCTION iau_DTDB ( DATE1, DATE2,
      :                                     UT, ELONG, U, V )
 *+
@@ -1274,17 +1274,17 @@ C 2008-DEC-31 23:59:00.000
 *
 *  2. Permission is granted to anyone to use the SOFA software for any
 *     purpose, including commercial applications, free of charge and
-*     without payment of royalties, subject to the conditions and 
+*     without payment of royalties, subject to the conditions and
 *     restrictions listed below.
 *
-*  3. You (the user) may copy and adapt the SOFA software and its 
+*  3. You (the user) may copy and adapt the SOFA software and its
 *     algorithms for your own purposes and you may copy and distribute
-*     a resulting "derived work" to others on a world-wide, royalty-free 
+*     a resulting "derived work" to others on a world-wide, royalty-free
 *     basis, provided that the derived work complies with the following
-*     requirements: 
+*     requirements:
 *
 *     a) Your work shall be marked or carry a statement that it (i) uses
-*        routines and computations derived by you from software provided 
+*        routines and computations derived by you from software provided
 *        by SOFA under license to you; and (ii) does not contain
 *        software provided by SOFA or software that has been distributed
 *        by or endorsed by SOFA.
@@ -1305,7 +1305,7 @@ C 2008-DEC-31 23:59:00.000
 *        software or algorithms embedded in the SOFA software.
 *
 *     f) These requirements must be reproduced intact in any source
-*        distribution and shall apply to anyone to whom you have granted 
+*        distribution and shall apply to anyone to whom you have granted
 *        a further right to modify the source code of your derived work.
 *
 *  4. In any published work or commercial products which includes
@@ -1316,10 +1316,10 @@ C 2008-DEC-31 23:59:00.000
 *     disrepute, either by misuse, or use for inappropriate tasks, or by
 *     inappropriate modification.
 *
-*  6. The SOFA software is provided "as is" and the Board makes no 
-*     warranty as to its use or performance.   The Board does not and 
-*     cannot warrant the performance or results which the user may obtain 
-*     by using the SOFA software.  The Board makes no warranties, express 
+*  6. The SOFA software is provided "as is" and the Board makes no
+*     warranty as to its use or performance.   The Board does not and
+*     cannot warrant the performance or results which the user may obtain
+*     by using the SOFA software.  The Board makes no warranties, express
 *     or implied, as to non-infringement of third party rights,
 *     merchantability, or fitness for any particular purpose.  In no
 *     event will the Board be liable to the user for any consequential,
@@ -1327,7 +1327,7 @@ C 2008-DEC-31 23:59:00.000
 *     savings, even if a Board representative has been advised of such
 *     damages, or for any claim by any third party.
 *
-*  7. The provision of any version of the SOFA software under the terms 
+*  7. The provision of any version of the SOFA software under the terms
 *     and conditions specified herein does not imply that future
 *     versions will also be made available under the same terms and
 *     conditions.
@@ -1509,8 +1509,8 @@ C ROTINA ET2UTC DIRETAMENTE
 *    GNU General Public License for more details.
 *
 *    You should have received a copy of the GNU General Public License
-*    along with this program (see SLA_CONDITIONS); if not, write to the 
-*    Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
+*    along with this program (see SLA_CONDITIONS); if not, write to the
+*    Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 *    Boston, MA  02111-1307  USA
 *
 *-
@@ -1734,8 +1734,8 @@ C ROTINA ET2UTC DIRETAMENTE
 *    GNU General Public License for more details.
 *
 *    You should have received a copy of the GNU General Public License
-*    along with this program (see SLA_CONDITIONS); if not, write to the 
-*    Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
+*    along with this program (see SLA_CONDITIONS); if not, write to the
+*    Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 *    Boston, MA  02111-1307  USA
 *
 *-
@@ -1839,8 +1839,8 @@ C ROTINA ET2UTC DIRETAMENTE
 *    GNU General Public License for more details.
 *
 *    You should have received a copy of the GNU General Public License
-*    along with this program (see SLA_CONDITIONS); if not, write to the 
-*    Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
+*    along with this program (see SLA_CONDITIONS); if not, write to the
+*    Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 *    Boston, MA  02111-1307  USA
 *
 *-
@@ -1910,8 +1910,8 @@ C ROTINA ET2UTC DIRETAMENTE
 *    GNU General Public License for more details.
 *
 *    You should have received a copy of the GNU General Public License
-*    along with this program (see SLA_CONDITIONS); if not, write to the 
-*    Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
+*    along with this program (see SLA_CONDITIONS); if not, write to the
+*    Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 *    Boston, MA  02111-1307  USA
 *
 *-
@@ -2013,8 +2013,8 @@ C ROTINA ET2UTC DIRETAMENTE
 *    GNU General Public License for more details.
 *
 *    You should have received a copy of the GNU General Public License
-*    along with this program (see SLA_CONDITIONS); if not, write to the 
-*    Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
+*    along with this program (see SLA_CONDITIONS); if not, write to the
+*    Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 *    Boston, MA  02111-1307  USA
 *
 *-
@@ -2112,8 +2112,8 @@ c      write(6,*)sla_DAT(UTC)
 *    GNU General Public License for more details.
 *
 *    You should have received a copy of the GNU General Public License
-*    along with this program (see SLA_CONDITIONS); if not, write to the 
-*    Free Software Foundation, Inc., 59 Temple Place, Suite 330, 
+*    along with this program (see SLA_CONDITIONS); if not, write to the
+*    Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 *    Boston, MA  02111-1307  USA
 *
 *-

@@ -1,11 +1,12 @@
 from sqlalchemy.sql import select, delete, and_
 from dao.db_base import DBBase
 
+
 class ObservationDao(DBBase):
     def __init__(self):
         super(ObservationDao, self).__init__()
 
-        self.tbl = self.get_table('des_observation')
+        self.tbl = self.get_table("des_observation")
 
     def delete_by_asteroid_name(self, name):
 

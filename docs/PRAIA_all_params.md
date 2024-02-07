@@ -2,13 +2,13 @@
 # PRAIA All parameters in .dat
 
 | Display name      | name                  | type    |  default value                 |  Description |
-|-------------------|-----------------------|---------|---------------------------|------------------------------------------------------------------------------------| 
-| 2MASS             | path_2mass            | string  |                           | root directory under which the 2MASS catalogue sub-directories lay 
-| UCAC4             | path_ucac4            | string  |                           | root directory under which the UCAC4 catalogue sub-directories lay 
-| UCAC5             | path_ucac5            | string  |                           | root directory under which the UCAC5 catalogue directory lays 
-| GAIA              | path_gaia             | string  |                           | root directory under which the complete GAIA catalogue (GAIA_1) sub-directories lay 
-| Magnitude min cutoff Gaia |mag_min_cutoff_gaia2  | string | +10                 | magnitude cutoffs: minimum magnitude defining GAIA_2 catalogue solution 
-| Magnitude max cutoff Gaia |mag_max_cutoff_gaia2  | string | +30                 | magnitude cutoffs: maximum magnitude defining GAIA_2 catalogue solution 
+|-------------------|-----------------------|---------|---------------------------|------------------------------------------------------------------------------------|
+| 2MASS             | path_2mass            | string  |                           | root directory under which the 2MASS catalogue sub-directories lay
+| UCAC4             | path_ucac4            | string  |                           | root directory under which the UCAC4 catalogue sub-directories lay
+| UCAC5             | path_ucac5            | string  |                           | root directory under which the UCAC5 catalogue directory lays
+| GAIA              | path_gaia             | string  |                           | root directory under which the complete GAIA catalogue (GAIA_1) sub-directories lay
+| Magnitude min cutoff Gaia |mag_min_cutoff_gaia2  | string | +10                 | magnitude cutoffs: minimum magnitude defining GAIA_2 catalogue solution
+| Magnitude max cutoff Gaia |mag_max_cutoff_gaia2  | string | +30                 | magnitude cutoffs: maximum magnitude defining GAIA_2 catalogue solution
 | User Catalog      | path_user_catalog     | string  | gaia.cat                  | User reference catalogue (PRAIA format)  |
 | Remake Astrometry | remake_astrometry     | choice  |0                          | (0) Astrometry of fits images .:. Remake astrometry from PRAIA's previous: (1) measured (x,y)s ; (2) measured (RA,DEC)s (tangent plane technique)
 | Astrometry Option | astrometry_option     | string  |output                     | Astrometry option = 0 -> file with extracted header data from fits images .:. option = 1,2 -> List of PRAIA xy files for remaking astrometry
@@ -35,7 +35,7 @@
 |                     |  | |astrometry_target_PRAIA_GAIA2                     | target file PRAIA format for GAIA_2 solution
 |                     |  | |astrometry_target_PRAIA_GAIA3                     | target file PRAIA format for GAIA_3 solution
 |                     |  | |astrometry_target_PRAIA_GAIA4                     | target file PRAIA format for GAIA_4 solution
-|                     |  | |astrometry_target_PRAIA_GAIA5                     | target file PRAIA format for GAIA_5 solution 
+|                     |  | |astrometry_target_PRAIA_GAIA5                     | target file PRAIA format for GAIA_5 solution
 |                     |  | |astrometry_target_PRAIA_GAIA6                     | target file PRAIA format for GAIA_6 solution
 |                     |  | |astrometry_target_PRAIA_GAIA7                     | target file PRAIA format for GAIA_7 solution
 |                     |  | |astrometry_target_PRAIA_CUSER                     | target file PRAIA format for User reference catalogue solution
@@ -62,7 +62,7 @@
 |                     |  | |C                                                 | object type for target MPC output format only
 |                     |  | |R                                                 | magnitude bandpass for target MPC output format only
 |                     |  | |W84                                               | IAU code of observation site or user-based site designation for target NIMA/MPC output formats only
-|                     |  | |U                                                 | User's reference catalogue code for target NIMA/MPC output formats only 
+|                     |  | |U                                                 | User's reference catalogue code for target NIMA/MPC output formats only
 |                     |  | |ucac4.rad.xy                                      | extension of "xy" output files, UCAC4 reduction
 |                     |  | |ucac5.rad.xy                                      | extension of "xy" output files, UCAC5 reduction
 |                     |  | |gaia1.rad.xy                                      | extension of "xy" output files  GAIA_1 reduction
@@ -73,12 +73,12 @@
 |                     |  | |gaia6.rad.xy                                      | extension of "xy" output files  GAIA_6 reduction
 |                     |  | |gaia7.rad.xy                                      | extension of "xy" output files  GAIA_7 reduction
 |                     |  | |cuser.rad.xy                                      | extension of "xy" output files, User reference catalog reduction
-|                     |  | |1.0                                               | time instant tolerance for target identification (seconds) 
-|                     |  | |2.0                                               | position error radius for target identification (arcsec) 
+|                     |  | |1.0                                               | time instant tolerance for target identification (seconds)
+|                     |  | |2.0                                               | position error radius for target identification (arcsec)
 |                     |  | |0.263                                             | pixel scale (arcsec/pixel)
 |                     |  | |0.002                                             | +/- error of pixel scale (arcsec/pixel)
-|                     |  | |2                                                 | Automatic catalogue <-> (x,y) identification: 1 - same N-S/E-W orientation & pixel scale;  2 - mixed images 
-|                     |  | |-90000                                            | ADU minimum count cutoff (ex.: -10,0,...); if cutoff < 0, pixel counts are reset: new count = original - cutoff  
+|                     |  | |2                                                 | Automatic catalogue <-> (x,y) identification: 1 - same N-S/E-W orientation & pixel scale;  2 - mixed images
+|                     |  | |-90000                                            | ADU minimum count cutoff (ex.: -10,0,...); if cutoff < 0, pixel counts are reset: new count = original - cutoff
 |                     |  | |1                                                 | Pixel physical counts: 0 = from image header or 1 = from user (here)
 |                     |  | |1.0d0                                             | Pixel physical counts: bscale;  Pixel = bscale * matrix + bzero
 |                     |  | |0.0d0                                             | Pixel physical counts: bzero ;  Pixel = bscale * matrix + bzero
@@ -91,16 +91,16 @@
 |                     |  | |05.0                                              | Object detection .:. maximum allowed FWHM range
 |                     |  | |2                                                 | Object detection .:. ring width (in pixels) in circular spiral search (suggestion: 1 or 2 pixels)
 |                     |  | |5                                                 | Object detection .:. step (in pixels) of rectangular perimeter delimitation of trace-shaped objects (suggestion: N pixels equivalent to 1 FWHM)
-|                     |  | |3.0000                                            | Object detection (rounded-shaped PSFs) .:. ADU noise threshold FACTOR: pixel - sky > FACTOR * ADU_sigma 
-|                     |  | |0005.00                                           |   PSF   fitting  (rounded-shaped PSFs) .:. pixel elimination, ADU threshold FACTOR: pixel - PSF > FACTOR * PSF_sigma 
-|                     |  | |0.01                                              |   PSF   fitting  (rounded-shaped PSFs) .:. PSF_sigma convergence FACTOR:  PSF_sigma(i+1) - PSF_sigma(i) < FACTOR 
-|                     |  | |0.001                                             |   PSF   fitting  (rounded-shaped PSFs) .:. PSF centroid convergence THRESHOLD (mas): PSFxy_centroid(i+1) - PSFxy_centroid(i) < THRESHOLD 
-|                     |  | |30                                                |   PSF   fitting  (rounded-shaped PSFs) .:. Limit number of internal L.S. fitting iterations 
+|                     |  | |3.0000                                            | Object detection (rounded-shaped PSFs) .:. ADU noise threshold FACTOR: pixel - sky > FACTOR * ADU_sigma
+|                     |  | |0005.00                                           |   PSF   fitting  (rounded-shaped PSFs) .:. pixel elimination, ADU threshold FACTOR: pixel - PSF > FACTOR * PSF_sigma
+|                     |  | |0.01                                              |   PSF   fitting  (rounded-shaped PSFs) .:. PSF_sigma convergence FACTOR:  PSF_sigma(i+1) - PSF_sigma(i) < FACTOR
+|                     |  | |0.001                                             |   PSF   fitting  (rounded-shaped PSFs) .:. PSF centroid convergence THRESHOLD (mas): PSFxy_centroid(i+1) - PSFxy_centroid(i) < THRESHOLD
+|                     |  | |30                                                |   PSF   fitting  (rounded-shaped PSFs) .:. Limit number of internal L.S. fitting iterations
 |                     |  | |10                                                |   PSF   fitting  (rounded-shaped PSFs) .:. Limit number of external L.S. fitting iterations (FWHM-radius fitting region convergence)
-|                     |  | |1000.00                                           | Object detection (trace-shaped PSF) .:. ADU noise threshold FACTOR: pixel - sky > FACTOR * ADU_sigma 
-|                     |  | |0003.00                                           |   PSF  fitting   (trace-shaped PSF) .:. pixel elimination, ADU threshold FACTOR: pixel - PSF > FACTOR * PSF_sigma 
-|                     |  | |0.01                                              |   PSF  fitting   (trace-shaped PSF) .:. PSF_sigma convergence FACTOR:  PSF_sigma(i+1) - PSF_sigma(i) < FACTOR 
-|                     |  | |0.001                                             |   PSF  fitting   (trace-shaped PSF) .:. PSF centroid convergence THRESHOLD (mas): PSFxy_centroid(i+1) - PSFxy_centroid(i) < THRESHOLD 
+|                     |  | |1000.00                                           | Object detection (trace-shaped PSF) .:. ADU noise threshold FACTOR: pixel - sky > FACTOR * ADU_sigma
+|                     |  | |0003.00                                           |   PSF  fitting   (trace-shaped PSF) .:. pixel elimination, ADU threshold FACTOR: pixel - PSF > FACTOR * PSF_sigma
+|                     |  | |0.01                                              |   PSF  fitting   (trace-shaped PSF) .:. PSF_sigma convergence FACTOR:  PSF_sigma(i+1) - PSF_sigma(i) < FACTOR
+|                     |  | |0.001                                             |   PSF  fitting   (trace-shaped PSF) .:. PSF centroid convergence THRESHOLD (mas): PSFxy_centroid(i+1) - PSFxy_centroid(i) < THRESHOLD
 |                     |  | |30                                                |   PSF  fitting   (trace-shaped PSF) .:. Limit number of L.S. fitting iterations
 |                     |  | |200                                               | No. of brightest GAIA_1 stars for cross-identification with brightest measured (x,y) objects
 |                     |  | |20                                                | No. of brightest measured (x,y) objects for cross-identification with brightest GAIA_1 stars
@@ -117,14 +117,14 @@
 |                     |  | |0.030                                             | (O-C) cutoff for outliers in (RA,DEC) reductions with GAIA_5 catalogue
 |                     |  | |0.030                                             | (O-C) cutoff for outliers in (RA,DEC) reductions with GAIA_6 catalogue
 |                     |  | |0.030                                             | (O-C) cutoff for outliers in (RA,DEC) reductions with GAIA_7 catalogue
-|                     |  | |0.030                                             | (O-C) cutoff for outliers in (RA,DEC) reductions with user's reference catalogue 
+|                     |  | |0.030                                             | (O-C) cutoff for outliers in (RA,DEC) reductions with user's reference catalogue
 |                     |  | |3                                                 | polynomial (x,y) <-> (X,Y) in (RA,DEC) reductions: 0 = 4 Ctes; 1 to 3 = complete order
-|                     |  | |0                                                 | radial distortion of 3rd order (x,y) <-> (X,Y) in (RA,DEC) reduction: 0 = no; 3 = yes  
+|                     |  | |0                                                 | radial distortion of 3rd order (x,y) <-> (X,Y) in (RA,DEC) reduction: 0 = no; 3 = yes
 |                     |  | |0                                                 | radial distortion of 5th order (x,y) <-> (X,Y) in (RA,DEC) reduction: 0 = no; 5 = yes
 |                     |  | |000                                               | first field (image, xy PRAIA file) to proccess  .:. zero for first and last fields -> proccess all fields
 |                     |  | |000                                               | last  field (image, xy PRAIA file) to proccess  .:. zero for first and last fields -> proccess all fields
-|                     |  | |0635                                              | x coordinate center for plot of trace-shaped image (analysis purposes) 
-|                     |  | |0530                                              | y coordinate center for plot of trace-shaped image (analysis purposes) 
+|                     |  | |0635                                              | x coordinate center for plot of trace-shaped image (analysis purposes)
+|                     |  | |0530                                              | y coordinate center for plot of trace-shaped image (analysis purposes)
 ************************************************************************************************************************************************************************************************************
 
 
@@ -174,7 +174,7 @@ Typical pixel scales of some instruments (1x1 pixel binning)  (error = 0.01 arcs
 
 0.4350         - 40cm Las Campanas Astrograph, Chile
 
-0.6989         - 77cm La Hita, Spain 
+0.6989         - 77cm La Hita, Spain
 
 1.4698         - 45cm Astrograph for the Southern Hemisphere, Cerro Burek (CASLEO, San Juan), Argentina
 

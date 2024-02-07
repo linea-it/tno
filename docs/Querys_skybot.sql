@@ -14,11 +14,11 @@ select count(name) from tno_skybotoutput where pointing_id is not null;
 --518748
 
 -- Total de Objetos diferentes na tabela Skybot
-select count(distinct(name)) as count_asteroids from tno_skybotoutput; 
+select count(distinct(name)) as count_asteroids from tno_skybotoutput;
 --95346
 
 -- Total CCDs Unicos (considerando expnum, ccdnum e band como unico)
-select count(distinct(expnum, ccdnum, band)) from tno_pointing; 
+select count(distinct(expnum, ccdnum, band)) from tno_pointing;
 --327487
 
 -- Total CCDs Unicos com pelo menos um Asteroid.
@@ -35,7 +35,7 @@ select count(distinct(name)) from tno_skybotoutput where pointing_id is null;
 --63758
 
 -- Total de CCDs downloaded
-select count(distinct(expnum, ccdnum, band)) as ccds_downloaded from tno_pointing where downloaded is true; 
+select count(distinct(expnum, ccdnum, band)) as ccds_downloaded from tno_pointing where downloaded is true;
 --8137
 
 -- Total de CCDs not Downloaded
@@ -43,10 +43,10 @@ select count(distinct(expnum, ccdnum, band)) as ccds_not_downloaded from tno_poi
 --319350
 
 -- Distinct Dynclass
-select distinct(dynclass) from tno_skybotoutput 
+select distinct(dynclass) from tno_skybotoutput
 
 -- Asteroids Grouped by dynclass
-select dynclass, count(distinct(name)) from tno_skybotoutput where dynclass in (select distinct(dynclass) from tno_skybotoutput) group by dynclass 
+select dynclass, count(distinct(name)) from tno_skybotoutput where dynclass in (select distinct(dynclass) from tno_skybotoutput) group by dynclass
 
 
 --Asteroids por Classes
@@ -94,4 +94,3 @@ select  floor(dhelio/10) * 10 as dhelio_floor, count(*) as count from tno_skybot
 select count(*) from tno_skybotoutput where dhelio > 95
 
 select floor(dhelio / 10) * 10 as dhelio_floor, count(*) as count from tno_skybotoutput group by 1
-
